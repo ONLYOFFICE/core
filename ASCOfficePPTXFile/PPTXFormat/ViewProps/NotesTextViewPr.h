@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_NOTES_TEXT_VIEW_PROPERTIES_INCLUDE_H_
-#define PPTX_VIEWPROPS_NOTES_TEXT_VIEW_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "CViewPr.h"
@@ -45,10 +43,9 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(NotesTextViewPr)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				CViewPr = node.ReadNode(_T("p:cViewPr"));
+				CViewPr = node.ReadNode(L"p:cViewPr");
 
 				FillParentPointersForChilds();
 			}
@@ -57,24 +54,44 @@ namespace PPTX
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(CViewPr);
 
-				return XmlUtils::CreateNode(_T("p:notesTextViewPr"), oValue);
+				return XmlUtils::CreateNode(L"p:notesTextViewPr", oValue);
 			}
-
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteRecord1(0, CViewPr);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							CViewPr.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:notesTextViewPr"));
+				pWriter->StartNode(L"p:notesTextViewPr");
 				pWriter->EndAttributes();
 
 				CViewPr.toXmlWriter(pWriter);
 
-				pWriter->EndNode(_T("p:notesTextViewPr"));
+				pWriter->EndNode(L"p:notesTextViewPr");
 			}
 
-		public:
 			nsViewProps::CViewPr CViewPr;
 		protected:
 			virtual void FillParentPointersForChilds()
@@ -84,5 +101,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_NOTES_TEXT_VIEW_PROPERTIES_INCLUDE_H_

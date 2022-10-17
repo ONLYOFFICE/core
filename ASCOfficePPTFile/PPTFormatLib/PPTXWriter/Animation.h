@@ -53,6 +53,7 @@
 #include "../Records/SlideProgTagsContainer.h"
 #include "ImageManager.h"
 #include "../Records/Animations/AnimationInfoContainer.h"
+#include <unordered_set>
 
 namespace PPT_FORMAT
 {
@@ -86,14 +87,16 @@ struct SValue
 class Animation
 {
 public:
-    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim, CExMedia* pExMedia, CRelsGenerator* pRels) :
+    Animation(CRecordPP10SlideBinaryTagExtension *pPPT10Ext, const std::vector<SOldAnimation> &oldAnim,
+              CExMedia* pExMedia, CRelsGenerator* pRels, const std::unordered_set<int>& realShapesId) :
         m_pPPT10(pPPT10Ext),
         m_arrOldAnim(oldAnim),
         m_pExMedia(pExMedia),
         m_pRels(pRels),
         m_cTnId(1),
         m_pBldLst(nullptr),
-        m_currentBldP(nullptr)
+        m_currentBldP(nullptr),
+        m_realShapesId(realShapesId)
     {
 
     }
@@ -216,6 +219,7 @@ private:
     void ConvertCheckerboard(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
     void ConvertCrawlIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
+    void ConvertFade(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim);
     void ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
     void ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, SOldAnimation* pOldAnim, int& presetSub);
@@ -259,9 +263,10 @@ private:
     int m_cTnDeep = 0;
     PPTX::Logic::BldLst *m_pBldLst; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP;
+    const std::unordered_set<int> m_realShapesId;
 
     int m_nextRID; // it needs for audio maybe video for compisation id number;
-    bool m_isPPT10Broken = false;
+    bool m_isPPT10Broken = true;
 };
 
 }

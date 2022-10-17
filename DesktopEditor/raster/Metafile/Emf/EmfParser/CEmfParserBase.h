@@ -69,8 +69,11 @@ namespace MetaFile
 		int		GetCharSpace()				override;
 		bool		IsWindowFlippedY()			override;
 		bool		IsWindowFlippedX()			override;
+		double      GetScale() override;
+		bool		IsViewportFlippedY();
+		bool		IsViewportFlippedX();
 
-		void SetInterpretator(IOutputDevice* pOutput);
+		virtual void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
 		void SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);

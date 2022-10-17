@@ -403,9 +403,9 @@ namespace OOX
 				writer.StartNodeWithNS(node_ns, node_name);
 				writer.StartAttributes();
 				writer.EndAttributes();
-				if(m_oPatternFill.IsInit())
+				if (m_oPatternFill.IsInit())
 					m_oPatternFill->toXMLWithNS(writer, child_ns, L"patternFill", child_ns);
-				if(m_oGradientFill.IsInit())
+				if (m_oGradientFill.IsInit())
 					m_oGradientFill->toXMLWithNS(writer, child_ns, L"gradientFill", child_ns);
 				writer.EndNodeWithNS(node_ns, node_name);
 			}
@@ -429,9 +429,11 @@ namespace OOX
 			}
             void fromBin(XLS::BaseObjectPtr& obj)
             {
-                //ReadAttributes(obj);
                 m_oPatternFill  = obj;
                 m_oGradientFill = obj;
+
+				if ((m_oGradientFill.IsInit()) && (false == m_oGradientFill->m_oType.IsInit()))
+					m_oGradientFill.reset();
             }
 			virtual EElementType getType () const
 			{

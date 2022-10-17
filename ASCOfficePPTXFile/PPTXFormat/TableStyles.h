@@ -85,8 +85,6 @@ namespace PPTX
 		{
 			WrapperFile::write(filename, directory, content);
 		}
-
-	public:
 		virtual const OOX::FileType type() const
 		{
 			return OOX::Presentation::FileTypes::TableStyles;

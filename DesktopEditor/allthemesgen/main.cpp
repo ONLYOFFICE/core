@@ -531,9 +531,9 @@ int main(int argc, char** argv)
         if (NSFile::CFileBinary::ReadAllBytes(sThemeFile, &pData, nBytesCount))
         {
             NSOnlineOfficeBinToPdf::CMetafileToRenderterRaster imageWriter(NULL);
-            imageWriter.SetHtmlPlace(sOut);
-            imageWriter.SetThemesPlace(L"");
-            imageWriter.SetTempDir(sOut);
+			imageWriter.SetMediaDirectory(sOut);
+			imageWriter.SetThemesDirectory(L"");
+			imageWriter.SetTempDirectory(sOut);
             imageWriter.SetApplication(pApplicationFonts);
             imageWriter.SetRasterFormat(4);
             imageWriter.SetSaveType(0);

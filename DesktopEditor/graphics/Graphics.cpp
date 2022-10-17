@@ -68,6 +68,7 @@ namespace Aggplus
         m_dDpiTile = -1;
 
         m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
+        m_nBlendMode = agg::comp_op_src_over;
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -101,6 +102,7 @@ namespace Aggplus
         m_dDpiTile = -1;
 		
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
+		m_nBlendMode = agg::comp_op_src_over;
 	}
 
 	CGraphics::CGraphics(CImage* pImage) : m_dwConfigFlags(0)
@@ -139,6 +141,7 @@ namespace Aggplus
         m_dDpiTile = -1;
 		
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
+		m_nBlendMode = agg::comp_op_src_over;
 	}
 
 	CGraphics::~CGraphics()
@@ -612,6 +615,20 @@ namespace Aggplus
 		double dblMiterLimit = pPen->MiterLimit;
 		
 		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
+		bool bIsUseIdentity = m_bIntegerGrid;
+		if (!bIsUseIdentity)
+		{
+			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
+
+			if (full_trans->sx < 0.01 && full_trans->sy < 0.01)
+			{
+				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
+				dWidth *= sqrt(full_trans->sx * full_trans->sy);
+
+				bIsUseIdentity = true;
+			}
+		}
+
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
 				
 		conv_crv_type c_c_path(path_copy);
@@ -642,7 +659,7 @@ namespace Aggplus
         }
 
 		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
-		if (m_bIntegerGrid)
+		if (bIsUseIdentity)
 			pAffine = new agg::trans_affine();
 		 
 		if (DashStyleSolid == eStyle)
@@ -748,7 +765,7 @@ namespace Aggplus
         if (gamma >= 0)
             m_rasterizer.gamma(1.0);
 
-		if (m_bIntegerGrid)
+		if (bIsUseIdentity)
 			RELEASEOBJECT(pAffine);
 
 		return Ok;
@@ -1283,11 +1300,29 @@ namespace Aggplus
 
 	void CGraphics::DoFillPathSolid(CColor dwColor)
 	{
-		typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
-		solid_renderer_type ren_fine(m_frame_buffer.ren_base());
-		ren_fine.color(dwColor.GetAggColor());
-		
-		render_scanlines(ren_fine);
+		if (m_nBlendMode != agg::comp_op_src_over)
+		{
+			typedef agg::renderer_scanline_aa_solid<comp_renderer_type> solid_comp_renderer_type;
+			solid_comp_renderer_type ren_solid;
+			comp_renderer_type ren_base;
+			pixfmt_type_comp pixfmt;
+
+			pixfmt.attach(m_frame_buffer.ren_buf());
+			pixfmt.comp_op(m_nBlendMode);
+			ren_base.attach(pixfmt);
+			ren_solid.attach(ren_base);
+
+			ren_solid.color(dwColor.GetAggColor());
+			render_scanlines(ren_solid);
+		}
+		else
+		{
+			typedef agg::renderer_scanline_aa_solid<base_renderer_type> solid_renderer_type;
+			solid_renderer_type ren_fine(m_frame_buffer.ren_base());
+			ren_fine.color(dwColor.GetAggColor());
+
+			render_scanlines(ren_fine);
+		}
 	}
 
 	void CGraphics::DoFillPathGradient(CBrushLinearGradient *pBrush)

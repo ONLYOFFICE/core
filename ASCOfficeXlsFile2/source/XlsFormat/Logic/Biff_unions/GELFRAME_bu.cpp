@@ -81,8 +81,6 @@ const bool GELFRAME::loadContent(BinProcessor& proc)
 		elements_.clear();
 	}
 
-	count = proc.repeated<Continue>(0, 0);
-
 	if (proc.optional<PICF>())
 	{
 		m_PICF = elements_.back();

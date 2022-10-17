@@ -118,6 +118,8 @@ public:
     int m_nLOAD_MODE;
     int m_nRENDER_MODE;
 
+	bool m_bCorrectFontByName;
+
 	CApplicationFonts*	m_pApplication;
 	CFontsCache*		m_pOwnerCache;
 
@@ -189,6 +191,8 @@ public:
     
     virtual void GetFace(double& d0, double& d1, double& d2);
     virtual void GetLimitsY(double& dMin, double& dMax);
+
+	virtual void SetUseCorrentFontByName(const bool& use);
 
     CFontFile* GetFontFileBySymbol(CFontFile* pFile, int code);
 };

@@ -479,7 +479,9 @@ public:
 	int ReadSdtFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPr(BYTE type, long length, void* poResult);
 	int ReadSdtTextFormPrComb(BYTE type, long length, void* poResult);
+	int ReadSdtTextFormPrFormat(BYTE type, long length, void* poResult);
 	int ReadSdtPicture(BYTE type, long length, void* poResult);
+	int ReadSdtComplexFormPr(BYTE type, long length, void* poResult);
 };
 class Binary_NotesTableReader : public Binary_CommonReader
 {
@@ -500,8 +502,9 @@ private:
 	NSBinPptxRW::CBinaryFileReader& m_oBufferedStream;
 	Writers::FileWriter&			m_oFileWriter;
     std::wstring					m_sFileInDir;
-	bool							m_bMacro;
-public: 
+	bool							m_bMacro = false;
+	bool							m_bMacroRead = false;
+public:
 		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
 		int ReadFile();
 		int ReadMainTable();

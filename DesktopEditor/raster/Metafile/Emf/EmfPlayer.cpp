@@ -137,12 +137,9 @@ namespace MetaFile
 	void    CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
 	{
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
+
 		if (m_mObjects.end() != oPos)
-		{ 
-			CEmfObjectBase* pOldObject = oPos->second;
-			delete pOldObject;
-			m_mObjects.erase(ulIndex);
-		}
+			DeleteObject(ulIndex);
 
 		m_mObjects.insert(std::pair<unsigned int, CEmfObjectBase*>(ulIndex, pObject));
 	}
@@ -314,6 +311,7 @@ namespace MetaFile
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
+		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
 		pNewDC->m_oBgColor.Copy(&m_oBgColor);
 		pNewDC->m_ulTextAlign    = m_ulTextAlign;
@@ -562,6 +560,12 @@ namespace MetaFile
 		m_oWindow.ulW = oPoint.cx;
 		m_oWindow.ulH = oPoint.cy;
 
+		if (0 == m_oViewport.ulW || 0 == m_oViewport.ulH)
+		{
+			m_oViewport.ulW = oPoint.cx;
+			m_oViewport.ulH = oPoint.cy;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -580,6 +584,13 @@ namespace MetaFile
 	{
 		m_oViewport.ulW = oPoint.cx;
 		m_oViewport.ulH = oPoint.cy;
+
+		if (0 == m_oWindow.ulW || 0 == m_oWindow.ulH)
+		{
+			m_oWindow.ulW = oPoint.cx;
+			m_oWindow.ulH = oPoint.cy;
+		}
+
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
 	}
@@ -590,17 +601,21 @@ namespace MetaFile
 	bool            CEmfDC::UpdatePixelMetrics()
 	{
 		unsigned int ulMapMode = m_ulMapMode;
+
+		if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
+			return false;
+
 		if (MM_ISOTROPIC == ulMapMode)
 		{
-			if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
-				return false;
-
 			double dPixel = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
 			SetPixelHeight(dPixel);
 			SetPixelWidth(dPixel);
 		}
 		else if (MM_ANISOTROPIC == ulMapMode)
 		{
+			if (0 == m_oWindow.ulH || 0 == m_oViewport.ulH)
+				return false;
+
 			double dPixelX = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
 			double dPixelY = (double)m_oViewport.ulH / (double)m_oWindow.ulH;
 
@@ -615,12 +630,11 @@ namespace MetaFile
 		TEmfWindow* pWindow   = GetWindow();
 		TEmfWindow* pViewPort = GetViewport();
 
-		double dM11 = (pViewPort->ulW < 0) ? -1 : 1;
-		double dM22 = (pViewPort->ulH < 0) ? -1 : 1;
+		double dM11 = (pViewPort->ulW >= 0) ? 1 : -1;
+		double dM22 = (pViewPort->ulH >= 0) ? 1 : -1;
 
-		//TODO:: разобраться в вычислениях
-		TEmfXForm oWindowXForm(GetPixelWidth(), 0, 0, GetPixelHeight(), -pWindow->lX * GetPixelWidth() * dM11, -pWindow->lY * GetPixelHeight() * dM22);
-		TEmfXForm oViewportXForm(dM11, 0, 0, dM22, pViewPort->lX / GetPixelWidth(), pViewPort->lY / GetPixelHeight());
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->lX * GetPixelWidth() * dM11), -(pWindow->lY * GetPixelHeight() * dM22));
+		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->lX, pViewPort->lY);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
@@ -629,7 +643,7 @@ namespace MetaFile
 
 		m_oFinalTransform2.Init();
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-//		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 	void            CEmfDC::SetRop2Mode(unsigned int& nMode)

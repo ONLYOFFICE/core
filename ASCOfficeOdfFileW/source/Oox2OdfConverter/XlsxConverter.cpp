@@ -164,7 +164,7 @@ bool XlsxConverter::convertDocument()
 	if (xlsx_flat_document) delete xlsx_flat_document;	xlsx_flat_document = NULL;
 
 	ods_context->end_document();
-
+	
 	return true;
 }
 
@@ -1678,7 +1678,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 		if (table_id >= 0 && table_id < (int)Workbook->m_oSheets->m_arrItems.size())
 		{
 			ods_context->settings_context()->add_property(L"ActiveTable", L"string", 
-				*Workbook->m_oSheets->m_arrItems[table_id]->m_oName);
+				XmlUtils::EncodeXmlString(*Workbook->m_oSheets->m_arrItems[table_id]->m_oName));
 		}
 	}
 	if (oox_book_views->m_oShowSheetTabs.IsInit())
@@ -3057,9 +3057,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if(oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if(oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);

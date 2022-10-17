@@ -790,83 +790,6 @@ namespace MetaFile
 
 			return *this;
 		}
-		CDataStream& operator>>(CEmfPlusRegionNode& oEmfPlusRegionNode)
-		{
-			unsigned int unType;
-
-			*this >> unType;
-
-			switch (unType)
-			{
-			case RegionNodeDataTypeAnd:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeAnd;
-				break;
-			}
-			case RegionNodeDataTypeOr:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeOr;
-				break;
-			}
-			case RegionNodeDataTypeXor:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeXor;
-				break;
-			}
-			case RegionNodeDataTypeExclude:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeExclude;
-				break;
-			}
-			case RegionNodeDataTypeComplement:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeComplement;
-				break;
-			}
-			case RegionNodeDataTypeRect:
-			{
-				oEmfPlusRegionNode.pRect = new TEmfPlusRectF;
-
-				*this >> *oEmfPlusRegionNode.pRect;
-
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeRect;
-				break;
-			}
-			case RegionNodeDataTypePath:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypePath;
-				break;
-			}
-			case RegionNodeDataTypeEmpty:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeEmpty;
-				break;
-			}
-			case RegionNodeDataTypeInfinite:
-			{
-				oEmfPlusRegionNode.eType = RegionNodeDataTypeInfinite;
-				break;
-			}
-			}
-
-			return *this;
-		}
-		CDataStream& operator>>(CEmfPlusRegion& oEmfPlusRegion)
-		{
-			unsigned int unVersion, unRegionCount;
-
-			*this >> unVersion;
-			*this >> unRegionCount;
-
-			oEmfPlusRegion.arNodes.resize(unRegionCount + 1);
-
-			for (unsigned int unIndex = 0; unIndex <= unRegionCount; ++unIndex)
-				*this >> oEmfPlusRegion.arNodes[unIndex];
-
-			//TODO: реализовать
-
-			return *this;
-		}
 		CDataStream& operator>>(CEmfPlusImageAttributes& oAttributes)
 		{
 			Skip(8); //Version, Reserved 1 (4 bytes)
@@ -884,6 +807,7 @@ namespace MetaFile
 			*this >> oAttributes.nObjectClamp;
 
 			Skip(4); //Reserved 2 (4 bytes)
+			return *this;
 		}
 		CDataStream& operator>>(TEmfPlusCustomLineCapArrowData& oLineCapData)
 		{
@@ -1267,7 +1191,7 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
-	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
 	std::wstring StringNormalization(std::wstring wsString);
 	std::wstring ConvertToWString(double dValue, unsigned int unAccuracy = 2);

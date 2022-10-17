@@ -18,6 +18,8 @@ DEFINES -= UNICODE _UNICODE
 
 #DEFINES += BUILDING_WASM_MODULE
 
+CONFIG += disable_cximage_mng
+CONFIG += disable_cximage_all
 include(../../../raster.pri)
 
 #CONFIG += graphics_disable_metafile
@@ -97,3 +99,5 @@ SOURCES += $$PWD/pro_Graphics_empty.cpp
 
 SOURCES += ./raster.cpp
 HEADERS += ./raster.h
+
+SOURCES += ./main.cpp

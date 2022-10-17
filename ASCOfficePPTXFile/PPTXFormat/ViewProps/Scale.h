@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_SCALE_INCLUDE_H_
-#define PPTX_VIEWPROPS_SCALE_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Ratio.h"
@@ -45,11 +43,10 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Scale)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				sx = node.ReadNodeNoNS(_T("sx"));
-				sy = node.ReadNodeNoNS(_T("sy"));
+				sx = node.ReadNodeNoNS(L"sx");
+				sy = node.ReadNodeNoNS(L"sy");
 
 				FillParentPointersForChilds();
 			}
@@ -59,7 +56,7 @@ namespace PPTX
 				oValue.Write(sx);
 				oValue.Write(sy);
 
-				return XmlUtils::CreateNode(_T("p:scale"), oValue);
+				return XmlUtils::CreateNode(L"p:scale", oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -67,30 +64,55 @@ namespace PPTX
 				pWriter->WriteRecord1(0, sx);
 				pWriter->WriteRecord1(1, sy);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							sx.name = L"sx";
+							sx.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							sy.name = L"sy";
+							sy.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:scale"));
+				pWriter->StartNode(L"p:scale");
 				pWriter->EndAttributes();
 
-				pWriter->StartNode(_T("a:sx"));
+				pWriter->StartNode(L"a:sx");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("n"), sx.n);
-				pWriter->WriteAttribute(_T("d"), sx.d);
+				pWriter->WriteAttribute(L"n", sx.n);
+				pWriter->WriteAttribute(L"d", sx.d);
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:sx"));
+				pWriter->EndNode(L"a:sx");
 
-				pWriter->StartNode(_T("a:sy"));
+				pWriter->StartNode(L"a:sy");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("n"), sy.n);
-				pWriter->WriteAttribute(_T("d"), sy.d);
+				pWriter->WriteAttribute(L"n", sy.n);
+				pWriter->WriteAttribute(L"d", sy.d);
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:sy"));
+				pWriter->EndNode(L"a:sy");
 				
-				pWriter->EndNode(_T("p:scale"));
+				pWriter->EndNode(L"p:scale");
 			}
-
-		public:
 			nsViewProps::Ratio sx;
 			nsViewProps::Ratio sy;
 		protected:
@@ -102,5 +124,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_SCALE_INCLUDE_H_

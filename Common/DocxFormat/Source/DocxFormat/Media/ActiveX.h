@@ -54,19 +54,26 @@ namespace OOX
 	public:
 		ActiveXObject() {}
 		static ActiveXObject* Create(const std::wstring &class_id);
+		static ActiveXObject* Create(_UINT16 type);
 		virtual void Parse(unsigned char* pData, DWORD size) = 0;
+		virtual std::wstring toXml();
 
 		void toFormControlPr(OOX::Spreadsheet::CFormControlPr* pFormControlPr); 
 		
-		std::wstring readString(MemoryStream *stream, size_t size, bool bCompressed);
+		std::wstring readString(MemoryStream *stream, size_t CountOfCharsWithCompressionFlag);
+		void readArrayString(MemoryStream *stream, std::vector<std::wstring> &Array, size_t size);		
 		void readTextProps(MemoryStream *stream);
+		_UINT32 readColumnInfo(MemoryStream *stream);
+
 		std::pair<boost::shared_array<unsigned char>, size_t> readStdPicture(MemoryStream *stream);
+		_GUID_ readGUID(MemoryStream *stream);
+		void readStdFont(MemoryStream *stream);
 
 		nullable<SimpleTypes::Spreadsheet::CObjectType<>> m_oObjectType;
-		
-		nullable_int	m_oForeColor;
-		nullable_int	m_oBackColor;
-		nullable_int	m_oBorderColor;
+
+		nullable_uint	m_oForeColor;
+		nullable_uint	m_oBackColor;
+		nullable_uint	m_oBorderColor;
 		nullable_int	m_oBorderStyle;
 		nullable_string	m_oCaption;
 		nullable_int	m_oMin;
@@ -79,10 +86,13 @@ namespace OOX
 		nullable_string	m_oValue;
 		nullable_bool	m_oPasswordEdit;
 		nullable<SimpleTypes::Spreadsheet::CSelType<>> m_oSelType;
+		nullable_int	m_oListRows;
+		nullable_int	m_oScrollBarsType;
 		nullable_bool	m_oLockText;
+		nullable_bool	m_oMultiLine;
 
-		nullable_int	m_oWidth;
-		nullable_int	m_oHeight;
+		nullable_uint	m_oWidth;
+		nullable_uint	m_oHeight;
 
 		nullable_string	m_oFontName;
 		nullable_uint	m_oFontHeight;
@@ -94,6 +104,8 @@ namespace OOX
 
 		nullable<std::pair<boost::shared_array<unsigned char>, size_t>> m_oPicture;
 		nullable<std::pair<boost::shared_array<unsigned char>, size_t>> m_oMouseIcon;
+
+		std::vector<_UINT32> m_arColumnInfo;
 	};
 
 	class ActiveXObjectScroll : public ActiveXObject
@@ -119,14 +131,19 @@ namespace OOX
 	class ActiveXObjectImage : public ActiveXObject
 	{
 	public:
-		ActiveXObjectImage() : bTile(false), nImageSize(0)
+		ActiveXObjectImage() : nImageSize(0)
 		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectImage);
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
+		virtual std::wstring toXml();
 
 		size_t nImageSize;
 		boost::shared_array<unsigned char> pImageData;
-		bool bTile;
+		
+		nullable_bool m_oTile;
+		nullable_int m_oPictureSizeMode;
 	};
 	class ActiveXObjectLabel : public ActiveXObject
 	{
@@ -158,6 +175,41 @@ namespace OOX
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDialog);
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
+		
+// FormDataBlock
+		_CP_OPT(_UINT32) m_oNextAvailableID;
+		_CP_OPT(unsigned char) m_oMousePointer;
+		_CP_OPT(unsigned char) m_oScrollBars;
+		_CP_OPT(_UINT32) m_oGroupCnt;
+		_CP_OPT(unsigned char) m_oCycle;
+		_CP_OPT(unsigned char) m_oSpecialEffect;
+		_CP_OPT(_UINT32) m_oZoom;
+		_CP_OPT(unsigned char) m_oPictureAlignment;
+		_CP_OPT(unsigned char) m_oPictureSizeMode;
+		_CP_OPT(_UINT32) m_oShapeCookie;
+		_CP_OPT(_UINT32) m_oDrawBuffer;
+// FormExtraDataBlock
+		_CP_OPT(_UINT32) m_oDisplayedWidth;
+		_CP_OPT(_UINT32) m_oDisplayedHeight;
+		_CP_OPT(_UINT32) m_oLogicalWidth;
+		_CP_OPT(_UINT32) m_oLogicalHeight;
+		_CP_OPT(_UINT32) m_oScrollTop;
+		_CP_OPT(_UINT32) m_oScrollLeft;
+
+// FormStreamData
+		_CP_OPT(_GUID_) m_oMouseIconGUID;
+		_CP_OPT(_GUID_) m_oFontGUID;
+		_CP_OPT(_GUID_) m_oPictureGUID;
+
+	};
+	class ActiveXObjectFrame : public ActiveXObjectFormControl
+	{
+	public:
+		ActiveXObjectFrame()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectGBox);
+		}
 	};
 	class ActiveXObjectMorphData : public ActiveXObject
 	{
@@ -172,19 +224,39 @@ namespace OOX
 		}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
-	//TabStrip
+	class ActiveXObjectTabStrip : public ActiveXObject
+	{
+	public:
+		ActiveXObjectTabStrip()
+		{
+			m_oObjectType.Init();
+			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectTabStrip);
+		}
+		virtual void Parse(unsigned char* pData, DWORD size);
+		virtual std::wstring toXml();
 
+		std::vector<std::wstring> m_oItems;
+		std::vector<std::wstring> m_oTipStrings;
+		std::vector<std::wstring> m_oNames;
+		std::vector<std::wstring> m_oTags;
+		std::vector<std::wstring> m_oAccelerators;
+
+		nullable_uint m_oListIndex;
+		nullable_uint m_oTabOrientation;
+		nullable_uint m_oTabStyle;
+		nullable_uint m_oTabData;
+		nullable_uint m_oTabFixedWidth;
+		nullable_uint m_oTabFixedHeight;
+
+		std::vector<std::pair<bool, bool>> m_oTabStripTabFlags;
+	};
 //-------------------------------------------------------------------------------------------------
 	class COcxPr : public WritingElement
 	{
 	public:
 		WritingElement_AdditionConstructors(COcxPr)
-		COcxPr()
-		{
-		}
-		virtual ~COcxPr()
-		{
-		}
+		COcxPr() {}
+		virtual ~COcxPr() {}
 		virtual void fromXML(XmlUtils::CXmlNode& node)
 		{
 		}
@@ -194,7 +266,7 @@ namespace OOX
 		}
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(L"<ocxPr");
+			writer.WriteString(L"<ax:ocxPr");
 			if (m_oName.IsInit())
 				writer.WriteString(L" ax:name=\"" + *m_oName + L"\"");
 			if (m_oValue.IsInit())
@@ -217,12 +289,34 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start(oReader)
-
-			WritingElement_ReadAttributes_Read_if		(oReader, L"ax:name", m_oName)
-			WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:value", m_oValue)
-
+				WritingElement_ReadAttributes_Read_if		(oReader, L"ax:name", m_oName)
+				WritingElement_ReadAttributes_Read_else_if	(oReader, L"ax:value", m_oValue)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // attribute start
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				else if (0 == _at)	m_oName = pReader->GetString2();
+				else if (1 == _at)	m_oValue = pReader->GetString2();
+			}
+			pReader->Seek(end);
+		}
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+				pWriter->WriteString2(0, m_oName);
+				pWriter->WriteString2(1, m_oValue);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+
 		nullable_string m_oName;
 		nullable_string m_oValue;
 
@@ -267,6 +361,8 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		bool									m_bDocument;
 		CPath									m_oReadPath;
@@ -277,7 +373,9 @@ namespace OOX
 		nullable<SimpleTypes::CRelationshipId >	m_oId;
 		std::vector<OOX::COcxPr*>				m_arrOcxPr;
 //---------bin
-		nullable<ActiveXObject>					m_oObject;
+
+		std::vector<BYTE>		m_oObjectBinData;
+		nullable<ActiveXObject>	m_oObject;
 	};
 
 	class ActiveX_bin : public Media
@@ -305,7 +403,7 @@ namespace OOX
 		}
 		virtual const CPath DefaultFileName() const
 		{
-			return m_filename.GetFilename();
+			return type().DefaultFileName();
 		}
 		void set_filename_cache(const std::wstring & file_path)
 		{

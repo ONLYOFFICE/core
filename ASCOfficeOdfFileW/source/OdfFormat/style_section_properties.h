@@ -51,9 +51,9 @@ class style_columns : public office_element_impl<style_columns>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleColumns;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
@@ -76,9 +76,9 @@ class style_column : public office_element_impl<style_column>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleColumn;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -100,9 +100,9 @@ class style_column_sep : public office_element_impl<style_column_sep>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleColumnSep;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -124,9 +124,9 @@ class style_section_properties : public office_element_impl<style_section_proper
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleSectionProperties;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);

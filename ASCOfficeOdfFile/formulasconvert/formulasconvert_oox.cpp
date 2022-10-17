@@ -159,7 +159,7 @@ public:
 				}break;
 				case 'T':
 				{	
-					if ((pos + 6 <= size) && (expr.substr(pos, 6) == L"ТОСHKA"))
+					if ((pos + 6 <= size) && (expr.substr(pos, 6) == L"TОСHKA"))
 					{
 						result += L"."; pos += 6;
 					}
@@ -230,6 +230,21 @@ public:
 					{
 						result += L"'"; pos += 8;
 					}
+					else if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"APERSAND"))
+					{
+						result += L"&"; pos += 8;
+					}
+					else
+					{
+						result += expr[pos++];
+					}
+				}break;
+				case 'Z':
+				{
+					if ((pos + 9 <= size) && (expr.substr(pos, 9) == L"ZAPYATAYA"))
+					{
+						result += L","; pos += 9;
+					}
 					else
 					{
 						result += expr[pos++];
@@ -243,7 +258,7 @@ public:
 		}
 		expr = result;
 		//XmlUtils::replace_all( expr, L"MINYS", L"-");
-		//XmlUtils::replace_all( expr, L"ТОСHKA", L".");
+		//XmlUtils::replace_all( expr, L"TОСHKA", L".");
 		//XmlUtils::replace_all( expr, L"VOSKL", L"!");
 
 		//XmlUtils::replace_all( expr, L"SCOBCAIN", L"(");
@@ -273,7 +288,11 @@ public:
 				}break;
 				case '.':
 				{	
-					result += L"ТОСHKA";
+					result += L"TОСHKA";
+				}break;
+				case ',':
+				{
+					result += L"ZAPYATAYA";
 				}break;
 				case '!':
 				{
@@ -307,6 +326,10 @@ public:
 				{
 					result += L"KAVYCHKA";
 				}break;
+				case '&':
+				{
+					result += L"APERSAND";
+				}break;
 				default:
 				{
 					result += expr[pos];
@@ -317,7 +340,7 @@ public:
 		expr = result;
 
 		//XmlUtils::replace_all( expr, L"-", L"MINYS");
-		//XmlUtils::replace_all( expr, L".", L"ТОСHKA");
+		//XmlUtils::replace_all( expr, L".", L"TОСHKA");
 		//XmlUtils::replace_all( expr, L"!", L"VOSKL");
 
 		//XmlUtils::replace_all( expr, L"(", L"SCOBCAIN");
@@ -648,6 +671,7 @@ void oox2odf_converter::Impl::replace_semicolons(std::wstring& expr)
 //        boost::match_default | boost::format_all);
 //     expr = res;
 //}
+
 // заменить вертикальную черту во всех вхождениях в фигурных скобках, но не внутри строк
 void oox2odf_converter::Impl::replace_vertical(std::wstring& expr)
 {
@@ -804,6 +828,7 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 	     
 	}
 
+	XmlUtils::replace_all(res, L"&", L"&amp;");
     oox_replace_tmp_back( res);
 
 	replace_vertical(res);

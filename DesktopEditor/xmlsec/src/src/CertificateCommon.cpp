@@ -117,6 +117,16 @@ namespace NSCertificate
         return NULL;
     }
 
+    ICertificate* FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
+                               unsigned char* cert, unsigned int certLen, const std::string& certPassword)
+    {
+        CCertificate_openssl* pCert = new CCertificate_openssl();
+        if (pCert->FromFilesRaw(key, keyLen, keyPassword, cert, certLen, certPassword))
+            return pCert;
+        RELEASEOBJECT(pCert);
+        return NULL;
+    }
+
     int GetOOXMLHashAlg(const std::string& sAlg)
     {
         if ("http://www.w3.org/2000/09/xmldsig#rsa-sha1" == sAlg ||
@@ -177,6 +187,9 @@ namespace NSCertificate
             return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-256";
         case OOXML_HASH_ALG_GOST_GR3411_2012_512:
             return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34112012-512";
+        case OOXML_HASH_ALG_ED25519:
+        case OOXML_HASH_ALG_ED448:
+            return "http://www.w3.org/2001/04/xmlenc#sha512";
         default:
             break;
         }
@@ -207,6 +220,9 @@ namespace NSCertificate
             return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-256";
         case OOXML_HASH_ALG_GOST_GR3411_2012_512:
             return "urn:ietf:params:xml:ns:cpxmlsec:algorithms:gostr34102012-gostr34112012-512";
+        case OOXML_HASH_ALG_ED25519:
+        case OOXML_HASH_ALG_ED448:
+            return "http://www.w3.org/2001/04/xmldsig-more#rsa-sha512";
         default:
             break;
         }

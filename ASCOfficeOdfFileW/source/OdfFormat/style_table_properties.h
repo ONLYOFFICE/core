@@ -97,10 +97,10 @@ class style_table_properties : public office_element_impl<style_table_properties
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTableProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -134,10 +134,10 @@ class style_table_column_properties : public office_element_impl<style_table_col
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTableColumnProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
   
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void serialize(std::wostream & strm);
@@ -168,10 +168,10 @@ class style_table_row_properties : public office_element_impl<style_table_row_pr
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTableRowProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);	
 	virtual void serialize(std::wostream & strm);
@@ -236,10 +236,10 @@ class style_table_cell_properties : public office_element_impl<style_table_cell_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTableCellProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 

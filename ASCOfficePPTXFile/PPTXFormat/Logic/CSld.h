@@ -47,10 +47,9 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(CSld)
 			
-			CSld() : spTree(L"p")
+			CSld(OOX::Document *pMain = NULL) : WrapperWritingElement(pMain), spTree(L"p")
 			{
 			}
-
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
@@ -58,9 +57,9 @@ namespace PPTX
 			{
                 XmlMacroReadAttributeBase(node, L"name", attrName);
 				
-				bg			= node.ReadNode(_T("p:bg"));
-				spTree		= node.ReadNodeNoNS(_T("spTree"));
-				controls	= node.ReadNode(_T("p:controls"));
+				bg			= node.ReadNode(L"p:bg");
+				spTree		= node.ReadNodeNoNS(L"spTree");
+				controls	= node.ReadNode(L"p:controls");
 				
 				FillParentPointersForChilds();
 			}
@@ -68,58 +67,55 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("name"), attrName);
+				oAttr.Write(L"name", attrName);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteNullable(bg);
 				oValue.Write(spTree);
+				oValue.WriteNullable(controls);
 
-				return XmlUtils::CreateNode(_T("p:cSld"), oAttr, oValue);
+				return XmlUtils::CreateNode(L"p:cSld", oAttr, oValue);
 			}
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:cSld"));
+				pWriter->StartNode(L"p:cSld");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute2(_T("name"), attrName);
+				pWriter->WriteAttribute2(L"name", attrName);
 				pWriter->EndAttributes();
 
 				pWriter->Write(bg);
 				spTree.toXmlWriter(pWriter);
+				pWriter->Write(controls);
 
-				pWriter->EndNode(_T("p:cSld"));
+				pWriter->EndNode(L"p:cSld");
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				////проблема переноса картинок !!!
-				//if (controls.IsInit())
-				//{
-				//	controls->AddObjectsTo(&spTree.SpTreeElems, pWriter->m_pCommon->m_pMediaManager);
-				//}
-
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteString2(0, attrName);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, bg);
-				//придется расписывать полностью SpTree - так как меняет spTree.toPPTY нельязя (много где используется)
 
 				pWriter->StartRecord(1);
 					pWriter->StartRecord(SPTREE_TYPE_SPTREE);
 						pWriter->WriteRecord1(0, spTree.nvGrpSpPr);
 						pWriter->WriteRecord1(1, spTree.grpSpPr);						
 						
-						pWriter->StartRecord(2);		//pWriter->WriteRecordArray(2, 0, spTree.SpTreeElems);  - вручную
-							pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size() + (controls.IsInit() ? 1 : 0));
-							for(size_t i = 0; i < spTree.SpTreeElems.size();i++)
+						pWriter->StartRecord(2);
+							pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size());
+							for (size_t i = 0; i < spTree.SpTreeElems.size(); i++)
+							{
 								pWriter->WriteRecord1(0, spTree.SpTreeElems[i]);
-						
-							if (controls.IsInit())	controls->toPPTY(pWriter); //можно искуственно добавить controls в sptree .. и все "это" перенести туда
+							}					
 						pWriter->EndRecord();
 					pWriter->EndRecord();
 				pWriter->EndRecord();
+				
+				pWriter->WriteRecord2(2, controls);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -153,6 +149,12 @@ namespace PPTX
 						case 1:
 						{
 							spTree.fromPPTY(pReader);
+							break;
+						}
+						case 2:
+						{
+							controls = new Controls(m_pMainDocument);
+							controls->fromPPTY(pReader);
 							break;
 						}
 						default:

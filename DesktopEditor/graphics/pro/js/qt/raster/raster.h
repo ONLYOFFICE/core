@@ -21,12 +21,11 @@ RASTER_DECL_EXPORT int Raster_GetWidth(void* frame);
 RASTER_DECL_EXPORT int Raster_GetStride(void* frame);
 RASTER_DECL_EXPORT void Raster_Destroy(void* frame);
 
-RASTER_DECL_EXPORT void* Raster_EncodeFile(unsigned char* buffer, int w, int h, int stride, int format, bool isRgba = false);
-RASTER_DECL_EXPORT int Raster_GetEncodedSize(void* encodedData);
+RASTER_DECL_EXPORT void* Raster_EncodeImageData(unsigned char* buffer, int w, int h, int stride, int format, bool isRgba = false);
+RASTER_DECL_EXPORT void* Raster_Encode(unsigned char* buffer, int size, int format);
 RASTER_DECL_EXPORT void* Raster_GetEncodedBuffer(void* encodedData);
+RASTER_DECL_EXPORT int Raster_GetEncodedSize(void* encodedData);
 RASTER_DECL_EXPORT void Raster_DestroyEncodedData(void* encodedData);
-
-RASTER_DECL_EXPORT void* SVG_DecodeMetafile(unsigned char* buffer, int size);
 
 RASTER_DECL_EXPORT int Image_GetFormat(unsigned char* buffer, int size);
 

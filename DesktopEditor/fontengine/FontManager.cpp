@@ -232,13 +232,8 @@ NSFonts::IFontFile* CFontsCache::LockFont(NSFonts::CLibrary& library, const std:
 	if (NULL == m_pApplicationFontStreams)
 		return NULL;
 
-	std::string sLock = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(strFileName.c_str(), strFileName.length(), false);
-	
-	char buffer[50];
-	sprintf(buffer, "%d_%.2lf", lFaceIndex, dSize);
-	std::string s(buffer);
-
-	sLock += s;
+	std::string sLock = U_TO_UTF8(strFileName);
+	sLock += (std::to_string(lFaceIndex) + "_" + std::to_string((int)(100 * dSize + 0.5)));
 
 	CFontFile* pFile = m_mapFiles[sLock];
 
@@ -345,6 +340,8 @@ CFontManager::CFontManager() : NSFonts::IFontManager()
     m_lAscender = 0;
     m_lDescender = 0;
     m_lLineHeight = 0;
+
+	m_bCorrectFontByName = true;
 }
 
 CFontManager::~CFontManager()
@@ -704,7 +701,7 @@ INT CFontManager::GetStringPath(NSFonts::ISimpleGraphicsPath* pInterface)
 		pPath->ToMM(m_pFont->m_unHorDpi, m_pFont->m_unVerDpi);
 
 		pPath->Offset(m_oString.m_fX + pCurGlyph->fX * 25.4 / m_pFont->m_unHorDpi,
-						m_oString.m_fY + pCurGlyph->fY + 25.4 / m_pFont->m_unVerDpi);
+						m_oString.m_fY + pCurGlyph->fY * 25.4 / m_pFont->m_unVerDpi);
 
 		pOverallPath->Append(pPath);
 		delete pPath;
@@ -748,7 +745,7 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 	if (lStyle & 0x02)
 		*oFormat.bItalic = TRUE;
 
-    NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat);
+	NSFonts::CFontInfo* pInfo = m_pApplication->GetList()->GetByParams(oFormat, m_bCorrectFontByName);
     if (NULL == pInfo)
         return FALSE;
 
@@ -756,7 +753,7 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 
     if (bLoad == TRUE)
     {
-        bool bIsNeedBold = false;
+		bool bIsNeedBold = false;
         if (NULL != oFormat.bBold && (*oFormat.bBold) == TRUE && pInfo->m_bBold == FALSE)
             bIsNeedBold = true;
         bool bIsNeedItalic = false;
@@ -784,7 +781,7 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
         return FALSE;
 
 	m_pFont->m_pFontManager = this;
-	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
+	m_pFont->SetSizeAndDpi(dSize, dDpiX, dDpiY);
 
     m_sName = L"";
     if (m_pFont->m_pFace)
@@ -810,7 +807,7 @@ INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wst
 		return FALSE;
 
 	m_pFont->m_pFontManager = this;
-	m_pFont->SetSizeAndDpi(dSize, (UINT)dDpiX, (UINT)dDpiY);
+	m_pFont->SetSizeAndDpi(dSize, dDpiX, dDpiY);
 
     m_sName = L"";
     if (m_pFont->m_pFace)
@@ -899,6 +896,11 @@ void CFontManager::GetLimitsY(double& dMin, double& dMax)
         dMin = ttface->header.yMin;
         dMax = ttface->header.yMax;
     }
+}
+
+void CFontManager::SetUseCorrentFontByName(const bool& use)
+{
+	m_bCorrectFontByName = use;
 }
 
 CFontFile* CFontManager::GetFontFileBySymbol(CFontFile* pFile, int code)

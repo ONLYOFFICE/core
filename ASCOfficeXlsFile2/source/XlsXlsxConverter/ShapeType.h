@@ -362,7 +362,7 @@ namespace oox
         //case msosptSeal24 : 					return L"star24";
         //case msosptStripedRightArrow : 		return L"stripedRightArrow";
         //case msosptNotchedRightArrow : 		return L"notchedRightArrow";
-        //case msosptBlockArc : 				return L"blockArc";
+        case msosptBlockArc : 					return L"blockArc";
         //case msosptSmileyFace : 				return L"smileyFace";
         //case msosptVerticalScroll : 			return L"verticalScroll";
         //case msosptHorizontalScroll : 		return L"horizontalScroll";
@@ -410,7 +410,7 @@ namespace oox
         //case msosptBorderCallout90 : 			return L"borderCallout1";
         //case msosptAccentBorderCallout90 : 	return L"accentBorderCallout1";
         //case msosptLeftRightUpArrow : 		return L"leftRightUpArrow";
-        //case msosptSun : 						return L"sun";
+        case msosptSun : 						return L"sun";
         //case msosptMoon : 					return L"moon";
         //case msosptBracketPair : 				return L"bracketPair";
         //case msosptBracePair : 				return L"bracePair";

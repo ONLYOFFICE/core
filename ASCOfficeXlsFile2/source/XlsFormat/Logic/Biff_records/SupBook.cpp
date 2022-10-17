@@ -81,7 +81,11 @@ void SupBook::readFields(CFRecord& record)
 //transfer-base-path = transfer-type "://" file-path 
 //transfer-type		= "ftp" / "http" / "https" 
 //rel-volume = %x0001 %x0002 file-path
-//...
+
+//path-string = 1 * path-character 
+//path-character = %x0020-%x0021 / %x0023-%x0029 / %x002B-%x002E / %x0030-%x0039 / %x003B / %x003D / %x0040-%x005B / %x005D-%x007B / %x007D-%xFFFF
+
+
 	bool bFilePathType = false;
 	if (!origin.empty())
 	{
@@ -115,7 +119,7 @@ void SupBook::readFields(CFRecord& record)
 					virtPath.push_back(sResult);
 				sResult.clear();
 			}break;
-			case 3:
+			case 0x03:
 			{
 				if (false == sResult.empty())
 				{
@@ -126,7 +130,10 @@ void SupBook::readFields(CFRecord& record)
 						
 						if (bFilePathType)
 						{
-							virtPath.back() += L"file:///" + sResult.substr(0, 1) + L":\\" + sResult.substr(1, sResult.length() - 1);
+							if (sResult.substr(0, 1) == L"@")
+								virtPath.back() += L"\\\\" + sResult.substr(1, sResult.length() - 1);
+							else
+								virtPath.back() += L"file:///" + sResult.substr(0, 1) + L":\\" + sResult.substr(1, sResult.length() - 1);
 							bFilePathType = false;
 						}
 						else
@@ -166,8 +173,9 @@ void SupBook::readFields(CFRecord& record)
 		{
 			if (bPath)
 			{
-				if (false == sResult.empty())
+				if (virtPath.empty())
 					virtPath.push_back(L"");
+
 				virtPath.back() += L"/" + sResult;
 			}
 			else

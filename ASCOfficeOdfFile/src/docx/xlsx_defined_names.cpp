@@ -33,9 +33,9 @@
 #include "xlsx_defined_names.h"
 
 #include <vector>
-#include "../../include/xml/simple_xml_writer.h"
 
 #include "../../formulasconvert/formulasconvert.h"
+#include "../../include/xml/simple_xml_writer.h"
 
 namespace cpdoccore {
 namespace oox {
@@ -75,7 +75,7 @@ public:
                 {
                     CP_XML_NODE(L"definedName")
                     {
-                        CP_XML_ATTR(L"name", content_[i].name);
+                        CP_XML_ATTR(L"name", XmlUtils::EncodeXmlString(content_[i].name));
 						
 						if (content_[i].tableId >= 0)
 						{
@@ -84,11 +84,11 @@ public:
 						
 						if ( content_[i].ref.find(L"#REF!") != std::wstring::npos )
 						{
-							CP_XML_ATTR(L"comment", content_[i].ref);
+							CP_XML_ATTR(L"comment", XmlUtils::EncodeXmlString(content_[i].ref));
 							CP_XML_CONTENT(L"#REF!");
 						}
 						else
-							CP_XML_CONTENT(content_[i].ref);
+							CP_XML_CONTENT(XmlUtils::EncodeXmlString(content_[i].ref));
 
                     }
                 }

@@ -47,6 +47,13 @@ void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 
 	toUnicodeDirs->append(sFolder->copy()->append("/CMap"));
 }
+void GlobalParamsAdaptor::SetCMapMemory()
+{
+	cidToUnicodes->add(new GString("Adobe-GB1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-Korea1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-KR"), new GString());
+	cidToUnicodes->add(new GString("Adobe-Japan1"), new GString());
+}
 void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 {
 	char *tok1, *tok2;
@@ -134,172 +141,33 @@ namespace NSStrings
     {
         return std::string(str->getCString(), str->getLength());
     }
-}
 
-
-void XMLConverter::XRefToXml(XRef &xref, std::wstring &wsXml, bool bParseStreams)
-{
-    for (int nNum = 0; nNum < xref.getSize(); ++nNum)
+    std::wstring GetStringFromUTF32(GString* str)
     {
-        XRefEntry *pEntry = xref.getEntry(nNum);
-        if (xrefEntryFree != pEntry->type)
-        {
+        if (!str)
+            return L"";
+        TextString* s = new TextString(str);
+        std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
+        delete s;
+        return sValue;
+    }
 
-            Object oTemp;
-            xref.fetch(nNum, 0/*pEntry->nGen*/, &oTemp);
-
-            if (oTemp.isDict() || oTemp.isStream())
-            {
-                if (xrefEntryCompressed == pEntry->type)
-                    wsXml +=
-                            L"<Obj num=\"" + std::to_wstring(nNum) + L"\" gen=\"" + std::to_wstring(0/*pEntry->nGen*/) +
-                            L"\" compressed=\"true\">";
-                else
-                    wsXml +=
-                            L"<Obj num=\"" + std::to_wstring(nNum) + L"\" gen=\"" + std::to_wstring(0/*pEntry->nGen*/) +
-                            L"\">";
-
-                if (oTemp.isDict())
-                {
-                    ObjectToXml(&oTemp, wsXml);
-                } else if (oTemp.isStream())
-                {
-                    Dict *pStreamDict = oTemp.streamGetDict();
-                    StreamDictToXml(pStreamDict, wsXml);
-                    wsXml += L"<Stream>";
-
-                    if (bParseStreams)
-                    {
-                        std::wstring wsTemp;
-                        Stream *pStream = oTemp.getStream();
-                        pStream->reset();
-
-                        Object oFilter;
-                        pStreamDict->lookup("Filter", &oFilter);
-                        if (oFilter.isNull() || oFilter.isName("FlateDecode"))
-                        {
-                            int nChar;
-                            while (EOF != (nChar = pStream->getChar()))
-                            {
-                                char sTemp[1] = {(char) nChar};
-
-                                switch (sTemp[0])
-                                {
-                                    case '\"':
-                                        wsTemp += L"&quot;";
-                                        break;
-                                    case '&':
-                                        wsTemp += L"&amp;";
-                                        break;
-                                    case '<':
-                                        wsTemp += L"&lt;";
-                                        break;
-                                    case '>':
-                                        wsTemp += L"&gt;";
-                                        break;
-                                    default:
-                                        AppendStringToXml(wsTemp, std::string(sTemp));
-                                }
-                            }
-                        } else
-                        {
-                            wsXml += L"BinaryData";
-                        }
-
-                        wsXml += wsTemp;
-                    }
-
-                    wsXml += L"</Stream>";
-                }
-
-                wsXml += L"</Obj>";
-            }
-
-            oTemp.free();
-        }
+    std::string GetStringAFromUTF32(GString* str)
+    {
+        if (!str)
+            return "";
+        TextString* s = new TextString(str);
+        std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        delete s;
+        return sValue;
     }
 }
 
-void XMLConverter::ObjectToXml(Object *obj, std::wstring &wsXml)
+void AppendStringToXml(std::wstring& wsXml, const std::string& sString)
 {
-    Object oTemp;
-
-    switch (obj->getType())
-    {
-        case objBool:
-            wsXml += obj->getBool() ? L"true" : L"false";
-            break;
-        case objInt:
-            wsXml += std::to_wstring(obj->getInt());
-            break;
-        case objReal:
-            wsXml += std::to_wstring(obj->getReal());
-            break;
-        case objString:
-            wsXml += L"(";
-            AppendStringToXml(wsXml, obj->getString()->getCString());
-            wsXml += L")";
-            break;
-        case objName:
-            wsXml += L"/";
-            AppendStringToXml(wsXml, obj->getName());
-            break;
-        case objNull:
-            wsXml += L"null";
-            break;
-        case objArray:
-            wsXml += L"[";
-            for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
-            {
-                if (nIndex > 0)
-                    wsXml += L" ";
-
-                obj->arrayGet(nIndex, &oTemp);
-                ObjectToXml(&oTemp, wsXml);
-                oTemp.free();
-            }
-            wsXml += L"]";
-            break;
-        case objDict:
-            for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
-            {
-                char *sKey = obj->dictGetKey(nIndex);
-                wsXml += L"<";
-                AppendStringToXml(wsXml, sKey);
-                wsXml += L">";
-                obj->dictGetVal(nIndex, &oTemp);
-                ObjectToXml(&oTemp, wsXml);
-                oTemp.free();
-                wsXml += L"</";
-                AppendStringToXml(wsXml, sKey);
-                wsXml += L">";
-            }
-            break;
-        case objStream:
-            wsXml += L"<stream/>";
-            // TODO: Запись стрима
-            break;
-        case objRef:
-            wsXml += std::to_wstring(obj->getRefNum());
-            wsXml += L" ";
-            wsXml += std::to_wstring(obj->getRefGen());
-            wsXml += L" R";
-            break;
-        case objCmd:
-            AppendStringToXml(wsXml, obj->getCmd());
-            break;
-        case objError:
-            wsXml += L"error";
-            break;
-        case objEOF:
-            wsXml += L"EOF";
-            break;
-        case objNone:
-            wsXml += L"none";
-            break;
-    }
+	std::wstring wsTmp(sString.begin(), sString.end());
+	wsXml += wsTmp;
 }
-
 void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
 {
     Object oTemp;
@@ -348,7 +216,7 @@ void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
         break;
     case objName:
         wsXml += L"Name\" num=\"";
-        XMLConverter::AppendStringToXml(wsXml, obj->getName());
+		AppendStringToXml(wsXml, obj->getName());
         wsXml += L"\">";
         break;
     case objNull:
@@ -371,7 +239,7 @@ void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
         {
             char *sKey = obj->dictGetKey(nIndex);
             wsXml += L"<";
-            XMLConverter::AppendStringToXml(wsXml, sKey);
+			AppendStringToXml(wsXml, sKey);
             if (strcmp("Resources", sKey) == 0 || strcmp("AcroForm", sKey) == 0)
                 obj->dictGetVal(nIndex, &oTemp);
             else
@@ -379,7 +247,7 @@ void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
             DictToXmlR(&oTemp, wsXml, strcmp("ID", sKey) == 0 ? true : bBinary);
             oTemp.free();
             wsXml += L"</";
-            XMLConverter::AppendStringToXml(wsXml, sKey);
+			AppendStringToXml(wsXml, sKey);
             wsXml += L">";
         }
         break;
@@ -395,7 +263,7 @@ void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
         break;
     case objCmd:
         wsXml += L"Cmd\" num=\"";
-        XMLConverter::AppendStringToXml(wsXml, obj->getCmd());
+		AppendStringToXml(wsXml, obj->getCmd());
         wsXml += L"\">";
         break;
     case objError:
@@ -409,7 +277,6 @@ void DictToXmlR(Object* obj, std::wstring& wsXml, bool bBinary)
         break;
     }
 }
-
 std::wstring XMLConverter::DictToXml(const std::wstring& wsName, Object* obj, int nNum, int nGen, bool bBinary)
 {
     std::wstring sRes = L"<" + wsName;
@@ -423,20 +290,244 @@ std::wstring XMLConverter::DictToXml(const std::wstring& wsName, Object* obj, in
     return sRes;
 }
 
-void XMLConverter::StreamDictToXml(Dict *dict, std::wstring &wsXml)
+XMLConverter::XMLConverter(XRef* pXRef, bool isParseStreams)
 {
+	m_pXRef = pXRef;
+	m_bParseStreams = isParseStreams;
+	m_nNumMax = 0;
+
+	ParseDicts();
+	PdfToXml();
+}
+void XMLConverter::ParseDicts()
+{
+	m_nNumMax = m_pXRef->getSize() + 1000;
+
+	for (int nNum = 0, nCount = m_pXRef->getSize(); nNum < nCount; ++nNum)
+	{
+		XRefEntry *pEntry = m_pXRef->getEntry(nNum);
+		if (xrefEntryFree != pEntry->type)
+		{
+			Object oTemp;
+			m_pXRef->fetch(nNum, 0, &oTemp);
+
+			if (oTemp.isDict() || oTemp.isStream())
+			{
+				Dict* pDict = NULL;
+				if (oTemp.isDict())
+					pDict = oTemp.getDict();
+				else if (oTemp.isStream())
+					pDict = oTemp.streamGetDict();
+
+				if (pDict)
+					m_mDict.insert({pDict, nNum});
+			}
+
+			oTemp.free();
+		}
+	}
+}
+void XMLConverter::ObjectToXml(Object *pObject, bool isSkipCheck)
+{
+	Object oTemp;
+
+	switch (pObject->getType())
+	{
+		case objBool:
+			m_wsXml += pObject->getBool() ? L"true" : L"false";
+			break;
+		case objInt:
+			m_wsXml += std::to_wstring(pObject->getInt());
+			break;
+		case objReal:
+			m_wsXml += std::to_wstring(pObject->getReal());
+			break;
+		case objString:
+			m_wsXml += L"(";
+			Append(pObject->getString());
+			m_wsXml += L")";
+			break;
+		case objName:
+			m_wsXml += L"/";
+			Append(pObject->getName());
+			break;
+		case objNull:
+			m_wsXml += L"null";
+			break;
+		case objArray:
+			m_wsXml += L"[";
+			for (int nIndex = 0; nIndex < pObject->arrayGetLength(); ++nIndex)
+			{
+				if (nIndex > 0)
+					m_wsXml += L" ";
+
+				pObject->arrayGet(nIndex, &oTemp);
+				ObjectToXml(&oTemp);
+			}
+			m_wsXml += L"]";
+			break;
+		case objDict:
+		{
+			Dict* pDict = pObject->getDict();
+			if (!isSkipCheck && CheckDict(pDict))
+				return;
+
+			DictToXml(pDict);
+			break;
+		}
+		case objStream:
+			m_wsXml += L"<stream/>";
+			// TODO: Запись стрима
+			break;
+		case objRef:
+			m_wsXml += std::to_wstring(pObject->getRefNum());
+			m_wsXml += L" ";
+			m_wsXml += std::to_wstring(pObject->getRefGen());
+			m_wsXml += L" R";
+			break;
+		case objCmd:
+			AppendStringToXml(m_wsXml, pObject->getCmd());
+			break;
+		case objError:
+			m_wsXml += L"error";
+			break;
+		case objEOF:
+			m_wsXml += L"EOF";
+			break;
+		case objNone:
+			m_wsXml += L"none";
+			break;
+	}
+}
+void XMLConverter::PdfToXml()
+{
+	std::vector<Dict*> vPassed;
+	for (int nNum = 0, nCount = m_pXRef->getSize(); nNum < nCount; ++nNum)
+	{
+		XRefEntry *pEntry = m_pXRef->getEntry(nNum);
+		if (xrefEntryFree != pEntry->type)
+		{
+			Object oTemp;
+			m_pXRef->fetch(nNum, 0, &oTemp);
+
+			if (oTemp.isDict() || oTemp.isStream())
+			{
+				if (xrefEntryCompressed == pEntry->type)
+					m_wsXml +=
+							L"<Obj num=\"" + std::to_wstring(nNum) + L"\" gen=\"" + std::to_wstring(0/*pEntry->nGen*/) +
+							L"\" compressed=\"true\">";
+				else
+					m_wsXml +=
+							L"<Obj num=\"" + std::to_wstring(nNum) + L"\" gen=\"" + std::to_wstring(0/*pEntry->nGen*/) +
+							L"\">";
+
+				if (oTemp.isDict())
+				{
+					ObjectToXml(&oTemp, true);
+				}
+				else if (oTemp.isStream())
+				{
+					Dict *pStreamDict = oTemp.streamGetDict();
+					StreamDictToXml(pStreamDict, true);
+					m_wsXml += L"<Stream>";
+
+					if (m_bParseStreams)
+					{
+						std::wstring wsTemp;
+						Stream *pStream = oTemp.getStream();
+						pStream->reset();
+
+						Object oFilter;
+						pStreamDict->lookup("Filter", &oFilter);
+						if (oFilter.isNull() || oFilter.isName("FlateDecode"))
+						{
+							int nChar;
+							while (EOF != (nChar = pStream->getChar()))
+							{
+								char sTemp[1] = {(char) nChar};
+
+								switch (sTemp[0])
+								{
+									case '\"':
+										wsTemp += L"&quot;";
+										break;
+									case '&':
+										wsTemp += L"&amp;";
+										break;
+									case '<':
+										wsTemp += L"&lt;";
+										break;
+									case '>':
+										wsTemp += L"&gt;";
+										break;
+									default:
+										AppendStringToXml(wsTemp, sTemp);
+								}
+							}
+						}
+						else
+						{
+							m_wsXml += L"BinaryData";
+						}
+
+						m_wsXml += wsTemp;
+					}
+
+					m_wsXml += L"</Stream>";
+				}
+
+				m_wsXml += L"</Obj>";
+			}
+
+			oTemp.free();
+		}
+	}
+}
+void XMLConverter::StreamDictToXml(Dict *pStreamDict, bool isSkipCheck)
+{
+	if (!isSkipCheck && CheckDict(pStreamDict))
+		return;
+
     Object oTemp;
-    for (int nIndex = 0; nIndex < dict->getLength(); ++nIndex)
+	for (int nIndex = 0, nCount = pStreamDict->getLength(); nIndex < nCount; ++nIndex)
     {
-        char *sKey = dict->getKey(nIndex);
-        wsXml += L"<";
-        AppendStringToXml(wsXml, sKey);
-        wsXml += L">";
-        dict->getVal(nIndex, &oTemp);
-        ObjectToXml(&oTemp, wsXml);
+		char *sKey = pStreamDict->getKey(nIndex);
+		m_wsXml += L"<";
+		Append(sKey);
+		m_wsXml += L">";
+		pStreamDict->getVal(nIndex, &oTemp);
+		ObjectToXml(&oTemp);
         oTemp.free();
-        wsXml += L"</";
-        AppendStringToXml(wsXml, sKey);
-        wsXml += L">";
+		m_wsXml += L"</";
+		Append(sKey);
+		m_wsXml += L">";
     }
+}
+void XMLConverter::DictToXml(Dict* pDict)
+{
+	Object oTemp;
+	for (int nIndex = 0, nCount = pDict->getLength(); nIndex < nCount; ++nIndex)
+	{
+		char *sKey = pDict->getKey(nIndex);
+		m_wsXml += L"<";
+		Append(sKey);
+		m_wsXml += L">";
+		pDict->getVal(nIndex, &oTemp);
+		ObjectToXml(&oTemp);
+		m_wsXml += L"</";
+		Append(sKey);
+		m_wsXml += L">";
+	}
+}
+bool XMLConverter::CheckDict(Dict *pDict)
+{
+	std::map<Dict*, int>::iterator iter = m_mDict.find(pDict);
+	if (iter != m_mDict.end())
+	{
+		m_wsXml += std::to_wstring(iter->second) + L" 0 R";
+		return true;
+	}
+
+	m_mDict.insert({pDict, ++m_nNumMax});
+	return false;
 }

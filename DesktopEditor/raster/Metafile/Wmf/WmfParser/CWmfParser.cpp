@@ -32,12 +32,12 @@ namespace MetaFile
 
 		bool bEof = false;
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->Begin();
+
 		Read_META_HEADER();
 
 		unsigned int unRecordIndex = 1;
-
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->Begin();
 
 		do
 		{
@@ -167,6 +167,8 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->End();
+
+		ClearFile();
 	}
 
 	void CWmfParser::Scan()
@@ -205,8 +207,9 @@ namespace MetaFile
 
 				m_pDC->SetViewportOrg(m_oPlaceable.BoundingBox.Left,  m_oPlaceable.BoundingBox.Top);
 				m_pDC->SetViewportExt((m_oPlaceable.BoundingBox.Right - m_oPlaceable.BoundingBox.Left), (m_oPlaceable.BoundingBox.Bottom - m_oPlaceable.BoundingBox.Top));
-				m_pDC->SetViewportScale(dKoef, dKoef);
+				m_pDC->SetWindowScale(dKoef, dKoef);
 			}
+
 			SkipVoid();
 		}
 		else
@@ -414,11 +417,8 @@ namespace MetaFile
 
 		HANDLE_META_EXTTEXTOUT(shY, shX, shStringLength, ushFwOptions, oRectangle, pString, pDx);
 
-		if (pString)
-			delete [] pString;
-
-		if (pDx)
-			delete [] pDx;
+		RELEASEARRAYOBJECTS(pString);
+		RELEASEARRAYOBJECTS(pDx);
 	}
 
 	void CWmfParser::Read_META_FILLREGION()
@@ -490,7 +490,9 @@ namespace MetaFile
 
 		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
 
-		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
+		m_oStream >> arPoints[0];
+
+		for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
 
 		HANDLE_META_POLYLINE(arPoints);
@@ -505,7 +507,9 @@ namespace MetaFile
 
 		std::vector<TWmfPointS> arPoints(shNumberOfPoints);
 
-		for (short shIndex = 0; shIndex < shNumberOfPoints; shIndex++)
+		m_oStream >> arPoints[0];
+
+		for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
 			m_oStream >> arPoints[shIndex];
 
 		HANDLE_META_POLYGON(arPoints);
@@ -537,7 +541,9 @@ namespace MetaFile
 			if (ushPointsCount <= 0)
 				continue;
 
-			for (unsigned short ushPointIndex = 0; ushPointIndex < ushPointsCount; ushPointIndex++)
+			m_oStream >> arPolygons[ushPolygonIndex][0];
+
+			for (unsigned short ushPointIndex = 1; ushPointIndex < ushPointsCount; ushPointIndex++)
 				m_oStream >> arPolygons[ushPolygonIndex][ushPointIndex];
 		}
 
@@ -717,7 +723,7 @@ namespace MetaFile
 		short shLeft, shTop, shRight, shBottom;
 		m_oStream >> shBottom >> shRight >> shTop >> shLeft;
 
-		HANDLE_META_INTERSECTCLIPRECT(shBottom, shRight, shTop, shLeft);
+		HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
 	}
 
 	void CWmfParser::Read_META_MOVETO()

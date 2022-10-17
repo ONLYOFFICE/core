@@ -96,6 +96,7 @@ int CDocxRenderer::Convert(IOfficeDrawingFile* pFile, const std::wstring& sDstFi
     int nPagesCount = pFile->GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
     {
+        //std::cout << "Page " << i + 1 << "/" << nPagesCount << std::endl;
         NewPage();
         BeginCommand(c_nPageType);
         m_pInternal->m_oDocument.m_bIsDisablePageCommand = true;

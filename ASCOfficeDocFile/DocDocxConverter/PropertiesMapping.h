@@ -35,7 +35,6 @@
 
 #include "Global.h"
 #include "BorderCode.h"
-#include "RGBColor.h"
 #include "ShadingDescriptor.h"
 #include "SinglePropertyModifier.h"
 

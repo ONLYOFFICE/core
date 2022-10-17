@@ -424,7 +424,7 @@ void ods_table_context::set_data_validation_error(const std::wstring &title, con
 			text_p *p = dynamic_cast<text_p*>(error_message->content_.back().get());
 			if (p)
 			{
-				p->paragraph_.add_text(content);
+				p->add_text(content);
 			}
 		}
 	}
@@ -452,7 +452,7 @@ void ods_table_context::set_data_validation_promt(const std::wstring &title, con
 			text_p *p = dynamic_cast<text_p*>(help_message->content_.back().get());
 			if (p)
 			{
-				p->paragraph_.add_text(content);
+				p->add_text(content);
 			}
 		}	
 	}

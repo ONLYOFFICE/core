@@ -64,16 +64,26 @@ public:
 		if (bMemoryCopy)
 			RELEASEARRAYOBJECTS (m_Data);
 	}
+	virtual _UINT64 ReadUInt64()
+	{
+		_UINT64 rdU64 = 0;
 
+		if (m_Data)
+		{
+			rdU64 = DocFileFormat::FormatUtils::BytesToUInt64(m_Data, m_Position, m_Size);
+			m_Position += 8;
+		}
 
+		return rdU64;
+	}
 	virtual unsigned short ReadUInt16()
 	{
 		unsigned short rdUShort = 0;
 
 		if (m_Data)
 		{
-            rdUShort	=	DocFileFormat::FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
-			m_Position	+=	sizeof(rdUShort);
+            rdUShort = DocFileFormat::FormatUtils::BytesToUInt16 (m_Data, m_Position, m_Size);
+			m_Position += 2;
 		}
 
 		return rdUShort;
@@ -83,7 +93,7 @@ public:
 		if (m_Data && (m_Position + sizeof(unsigned short) <= m_Size))
 		{
 			((unsigned short *)(m_Data + m_Position))[0] = val;
-			m_Position	+=	sizeof(unsigned short);
+			m_Position	+=	2;
 		}
 	}
 	virtual short ReadInt16()
@@ -93,7 +103,7 @@ public:
 		if (m_Data)
 		{
             rdShort		=	DocFileFormat::FormatUtils::BytesToInt16 (m_Data, m_Position, m_Size);
-			m_Position	+=	sizeof(rdShort);
+			m_Position	+=	2;
 		}
 
 		return rdShort;
@@ -106,7 +116,7 @@ public:
 		if (m_Data)
 		{
             rdInt		=	DocFileFormat::FormatUtils::BytesToInt32 (m_Data, m_Position, m_Size);
-			m_Position	+=	sizeof(rdInt);
+			m_Position	+=	4;
 		}
 
 		return rdInt;
@@ -116,9 +126,17 @@ public:
 		if (m_Data && (m_Position + sizeof(_INT32) <= m_Size))
 		{
 			((_INT32 *)(m_Data + m_Position))[0] = val;
-			m_Position	+=	sizeof(_INT32);
+			m_Position	+=	4;
 		}
 	}
+	void Align(_UINT32 val)
+	{
+		_UINT32 padding = val - (m_Position % val);
+		
+		if (padding > 0 && padding < 4)
+			m_Position += padding;
+	}
+
 	virtual unsigned int ReadUInt32()
 	{
 		int rdUInt = 0;
@@ -126,7 +144,7 @@ public:
 		if (m_Data )
 		{
             rdUInt		=	DocFileFormat::FormatUtils::BytesToUInt32 (m_Data, m_Position, m_Size);
-			m_Position	+=	sizeof(rdUInt);
+			m_Position	+=	4;
 		}
 
 		return rdUInt;

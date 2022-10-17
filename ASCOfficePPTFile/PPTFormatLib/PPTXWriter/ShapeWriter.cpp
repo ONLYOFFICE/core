@@ -482,7 +482,7 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
     }
     else
     {
-//        needHiddenEffect = shadow.Visible;
+        //        needHiddenEffect = shadow.Visible;
         shadow_writer.WriteString(L"<a:outerShdw");
         shadow_writer.WriteString(strDist);
         shadow_writer.WriteString(strDir);
@@ -499,14 +499,14 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertShadow(CShadow	& shadow)
         shadow_writer.WriteString(L"</a:outerShdw>");
     }
     shadow_writer.WriteString(L"</a:effectLst>");
-//    if (needHiddenEffect)
-//    {
-//        std::wstring STRshadow;
-//        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-//        STRshadow += shadow_writer.GetData();
-//        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
-//        return STRshadow;
-//    }
+    //    if (needHiddenEffect)
+    //    {
+    //        std::wstring STRshadow;
+    //        STRshadow = L"<a:extLst><a:ext uri=\"{AF507438-7753-43E0-B8FC-AC1667EBCBE1}\"><a14:hiddenEffects xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
+    //        STRshadow += shadow_writer.GetData();
+    //        STRshadow += L"</a14:hiddenEffects></a:ext><a:ext uri=\"{53640926-AAD7-44D8-BBD7-CCE9431645EC}\"><a14:shadowObscured xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"1\"/></a:ext></a:extLst>";
+    //        return STRshadow;
+    //    }
 
     return shadow_writer.GetData();
 }
@@ -628,11 +628,11 @@ void PPT_FORMAT::CShapeWriter::WriteImageInfo()
         bool bExternal = false;
         std::wstring strRid = m_pRels->WriteAudio(pAudioElement->m_strAudioFileName, bExternal);
 
-        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
-                (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
-            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>");
-        else
-            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
+//        if ((int)pAudioElement->m_strAudioFileName.find(L".WAV") == -1 &&
+//                (int)pAudioElement->m_strAudioFileName.find(L".wav") == -1)
+//            m_oWriter.WriteString(L"<a:wavAudioFile r:embed=\"" + strRid + L"\"/>");
+//        else
+            m_oWriter.WriteString(L"<a:audioFile r:link=\"" + strRid + L"\"/>"); // todo for anim connection
 
         sMediaFile = bExternal ? L"" : pAudioElement->m_strAudioFileName;
     }
@@ -676,7 +676,7 @@ void PPT_FORMAT::CShapeWriter::WriteGroupInfo()
     if (!pGroupElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-        m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pGroupElement->m_sDescription));
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -729,7 +729,7 @@ void PPT_FORMAT::CShapeWriter::WriteTableInfo()
     if (!pGroupElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-        m_oWriter.WriteStringXML(pGroupElement->m_sDescription);
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pGroupElement->m_sDescription));
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -782,7 +782,7 @@ void PPT_FORMAT::CShapeWriter::WriteShapeInfo()
     if (!pShapeElement->m_sDescription.empty())
     {
         m_oWriter.WriteString(std::wstring(L" descr=\""));
-        m_oWriter.WriteStringXML(pShapeElement->m_sDescription);
+        m_oWriter.WriteStringXML(XmlUtils::EncodeXmlStringExtend(pShapeElement->m_sDescription, true));
         m_oWriter.WriteString(std::wstring(L"\""));
     }
     m_oWriter.WriteString(std::wstring(L">"));
@@ -1556,7 +1556,7 @@ void PPT_FORMAT::CShapeWriter::WriteHyperlink(const std::vector<CInteractiveInfo
                 && actions[i].m_lType == II_NoAction)
             continue;
 
-        if (actions[i].m_strHyperlink.empty())
+        if (actions[i].m_strHyperlink.empty() && actions[i].m_lType != LT_CustomShow)
             continue;
 
         PPTX::Logic::Hyperlink hlink;
@@ -2053,8 +2053,11 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertImage()
         m_oWriter.WriteString(L"><a:lum");
         if (pImageElement->m_lpictureBrightness != 0)
         {
-            std::wstring bright = std::to_wstring((UINT)(pImageElement->m_lpictureBrightness * 3.051705)); // 0 - min, backgrpund. 50000 - usually. 100000 - max,white
-            m_oWriter.WriteString(L" bright=\"" + bright + L"\"");
+            int bright = std::round(3.051705 * pImageElement->m_lpictureBrightness); // -100000 - min, backgrpund. 50000 - usually. 100000 - max,white
+            if (bright < -100000 || bright > 100000)
+                bright = 50000;
+
+            m_oWriter.WriteString(L" bright=\"" + std::to_wstring(bright) + L"\"");
         }
         if (pImageElement->m_lpictureContrast != 0x10000)
         {

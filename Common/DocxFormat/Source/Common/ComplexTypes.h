@@ -810,9 +810,7 @@ namespace ComplexTypes
 			{
                 std::wstring sResult;
 
-				sResult += L"w:val=\"";
-				sResult += m_oVal.ToString();
-				sResult += L"\" ";
+				sResult += L"w:val=\"" + m_oVal.ToString() + L"\" ";
 
 				return sResult;
 			}
@@ -826,6 +824,8 @@ namespace ComplexTypes
 			{
 				if (m_oVal.ToBool())
 					return L"<" + node_name + L"/>";
+				else 
+					return L"<" + node_name + L" w:val=\"0\"/>";
 				return L"";
 			}
 		public:

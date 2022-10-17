@@ -2746,6 +2746,25 @@ namespace NSEditorApi
         }
     };
     
+    class CAscPageScrollInfo : public IMenuEventDataBase
+    {
+    public:
+        int status;
+        int page;
+        int pages;
+        
+    public:
+        CAscPageScrollInfo()
+        {
+            status = 0;
+            page = 0;
+            pages = 0;
+        }
+        virtual ~CAscPageScrollInfo()
+        {
+        }
+    };
+
     class CAscStatisticInfo : public IMenuEventDataBase
     {
     public:

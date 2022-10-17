@@ -111,6 +111,11 @@ namespace OOX
 		
 			int	m_nLastReadRow;
 			int	m_nLastReadCol;
+			std::pair<double, double> getMaxDigitSize();
+
+			std::wstring m_strFontDirectory;
+		private:
+			std::pair<double, double> m_maxDigitSize;
 		};
 
 	}

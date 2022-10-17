@@ -2401,7 +2401,11 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
                 oInfo.m_type = CExFilesInfo::ExFilesType::eftSlide;
                 m_oExMedia.m_arSlides.push_back(oInfo);
                 wasSlide = true;
-            }
+            } /*else if (oInfo.isHTTPLink(recStr))
+            {
+                oInfo.m_type = CExFilesInfo::ExFilesType::eftHyperlink;
+                m_oExMedia.m_arSlides.push_back(oInfo);
+            }*/
         }
 
         if (pExHyperlink->m_targetAtom.IsInit())
@@ -2482,6 +2486,9 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
         oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
 
         oInfo.m_bLoop			= oArrayExMedia[0]->m_bLoop;
+
+        oInfo.m_fNarration      = oArrayExMedia[0]->m_bNarration;
+        oInfo.m_fRewind         = oArrayExMedia[0]->m_bRewind;
 
         m_oExMedia.m_arAudios.push_back(oInfo);
     }

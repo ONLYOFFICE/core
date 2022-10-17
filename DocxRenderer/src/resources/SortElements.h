@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 
 // у класса T должен быть метод IsBigger, IsBiggerOrEqual
@@ -15,9 +14,7 @@ void SortElements(std::vector<T*>& oArray)
     {
         if (oArray[0]->IsBigger(oArray[1]))
         {
-            T* pTemp	= oArray[0];
-            oArray[0]	= oArray[1];
-            oArray[1]	= pTemp;
+            std::swap(oArray[0], oArray[1]);
         }
         return;
     }

@@ -215,6 +215,17 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">
 						WritingElement_ReadAttributes_Start(oReader)
 							WritingElement_ReadAttributes_Read_if(oReader, L"appName", m_oAppName)
 						WritingElement_ReadAttributes_End(oReader)
+					}					
+					else if (L"WindowHeight" == sName)
+					{
+					}
+					else if (L"WindowWidth" == sName)
+					{
+					}
+					else if (L"RefModeR1C1" == sName)
+					{
+						if (!m_oCalcPr.IsInit()) m_oCalcPr.Init();
+						m_oCalcPr->m_oRefMode = SimpleTypes::Spreadsheet::refmodeR1C1;
 					}
 				}
 			}

@@ -609,13 +609,9 @@ std::wstring CPdfRenderer::GetTempFile()
 {
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(m_wsTempFolder, L"PDF");
 }
-void         CPdfRenderer::SetThemesPlace(const std::wstring& wsThemesPlace)
+std::wstring CPdfRenderer::GetTempDirectory()
 {
-	m_wsThemesPlace = wsThemesPlace;
-}
-std::wstring CPdfRenderer::GetThemesPlace()
-{
-	return m_wsThemesPlace;
+	return m_wsTempFolder;
 }
 //----------------------------------------------------------------------------------------
 // Тип рендерера
@@ -1858,6 +1854,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 			pField->SetPlaceHolderText(wsPlaceHolder, oNormalColor, oPlaceHolderColor);
 		}
+
+		pField->SetFormat(pPr->GetFormatPr());
 	}
 	else if (oInfo.IsDropDownList())
 	{
@@ -2722,16 +2720,16 @@ void CPdfRenderer::Reset()
 
 	m_lClipDepth = 0;
 }
-HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
+HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, bIsUsePicker))
+	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))
 		return S_FALSE;
 
 	return S_OK;
 }
-HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, const bool& bIsUsePicker)
+HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, bIsUsePicker))
+	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
 		return S_FALSE;
 
 	return S_OK;

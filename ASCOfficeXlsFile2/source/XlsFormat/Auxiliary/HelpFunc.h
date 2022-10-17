@@ -35,13 +35,16 @@
 #include <vector>
 #include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
-typedef struct  
+#ifndef _GUID_TYPEDEF_GUID_
+#define _GUID_TYPEDEF_GUID_
+typedef struct
 {
 	_UINT32 Data1;
 	_UINT16 Data2;
 	_UINT16 Data3;
-    unsigned char  Data4[ 8 ];
+	unsigned char  Data4[8];
 } _GUID_;
+#endif
 
 namespace XLS
 {

@@ -1252,6 +1252,7 @@ extern int g_nCurFormatVersion;
 		TextFormPrCombBorder = 56,
 		TextFormPrAutoFit = 57,
 		TextFormPrMultiLine = 58,
+		TextFormPrFormat = 59,
 		PictureFormPr = 60,
 		PictureFormPrScaleFlag = 61,
 		PictureFormPrLockProportions = 62,
@@ -1260,7 +1261,12 @@ extern int g_nCurFormatVersion;
 		PictureFormPrShiftY = 65,
 		FormPrBorder = 70,
 		FormPrShd = 71,
-		TextFormPrCombWRule = 72
+		TextFormPrCombWRule = 72,
+		TextFormPrFormatType    = 80,
+		TextFormPrFormatVal     = 81,
+		TextFormPrFormatSymbols = 82,	
+		ComplexFormPr     = 90,
+		ComplexFormPrType = 91
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

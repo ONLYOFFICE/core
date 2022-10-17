@@ -44,7 +44,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMI;
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -68,7 +68,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMO;
 
 		_CP_OPT(Bool)				accent_;
@@ -97,7 +97,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMN;
 
 	
@@ -123,7 +123,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMText;
 
 
@@ -149,7 +149,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMSpace;
 
 
@@ -173,7 +173,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMS;
 
 
@@ -197,7 +197,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMGlyph;
 
 

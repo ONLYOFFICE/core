@@ -222,15 +222,10 @@ public:
 
 	virtual bool LoadGuidesList(const std::wstring& xml)
 	{
-		// std::wstring sFormulasTemp;
-		// sFormulasTemp.Format(_T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">%ls</root>"),xml);
-
-
 		std::wstring sBegin(_T("<root xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">"));
 
 		std::wstring sEnd(_T("</root>"));
 		std::wstring sFormulasTemp = sBegin + xml + sEnd;
-
 
 		XmlUtils::CXmlNode oNodeRoot;
 		if (oNodeRoot.FromXmlString(sFormulasTemp) == false) return false;
@@ -238,28 +233,28 @@ public:
 		XmlUtils::CXmlNode oNodeGuides;
 		if (oNodeRoot.GetNode(_T("v:formulas"), oNodeGuides) == false) return false;
 
-		if ((_T("v:formulas") == oNodeGuides.GetName()))
+		if (L"v:formulas" == oNodeGuides.GetName())
 		{
+			int lCount = 0;
 			m_oManager.Clear();
 
 			XmlUtils::CXmlNodes oList;
-			if (oNodeGuides.GetNodes(_T("v:f"), oList))
+			if (oNodeGuides.GetNodes(L"v:f", oList))
 			{
-				int lCount = oList.GetCount();
+				lCount = oList.GetCount();
 				for (int nIndex = 0; nIndex < lCount; ++nIndex)
 				{
 					XmlUtils::CXmlNode oNodeFormula;
 					oList.GetAt(nIndex, oNodeFormula);
 
-					m_oManager.AddFormula(oNodeFormula.GetAttributeOrValue(_T("eqn")));
+					m_oManager.AddFormula(oNodeFormula.GetAttributeOrValue(L"eqn"));
 				}
 			}
 
 			m_oManager.Clear(&m_arAdjustments);
 			m_oManager.CalculateResults();
-			return true;
+			return (lCount > 0);
 		}
-
 		return false;
 	}
 
@@ -343,7 +338,7 @@ public:
 
 	virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
 	{
-		if ((_T("") != m_strPathLimoX) || _T("") != m_strPathLimoY)
+		if (false == m_strPathLimoX.empty() || false == m_strPathLimoY.empty())
 		{
 			m_strPath = (GeomInfo.m_dWidth >= GeomInfo.m_dHeight) ? m_strPathLimoX : m_strPathLimoY;
 			ReCalculate();
@@ -360,10 +355,10 @@ public:
 		if (!m_bIsShapeType)
 			m_oManager.CalculateResults();
 
-		if (_T("") == m_strPath)
-			return;
-
-		LoadPathList(m_strPath);
+		if (false == m_strPath.empty())
+		{
+			LoadPathList(m_strPath);
+		}
 	}
 
 	static CBaseShapePtr CreateByType(PPTShapes::ShapeType type);

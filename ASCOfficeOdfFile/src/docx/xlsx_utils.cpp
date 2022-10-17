@@ -236,20 +236,20 @@ double convertTime(int hours, int minutes, double sec)
     return v;
 }
 
-bool parseDate(const std::wstring & Date, int & Year, int & Month, int & Day)
+bool parseDateTime(const std::wstring & DateTime, int & Year, int & Month, int & Day,
+									_CP_OPT(int) & Hours, _CP_OPT(int) & Minutes, _CP_OPT(int) & Sec)
 {
     // for example, "1899-12-31T05:37:46.665696"
     try 
     {
         boost::wregex r(L"([\\d]+)-([\\d]+)-([\\d]+)(?:T([\\d]+):([\\d]+):([\\d]+)(?:\\.([\\d]+))?)?");
         boost::match_results<std::wstring::const_iterator> res;
-        if (boost::regex_match(Date, res, r))
+        if (boost::regex_match(DateTime, res, r))
         {
             Year    = boost::lexical_cast<int>(res[1].str());
             Month   = boost::lexical_cast<int>(res[2].str());
             Day     = boost::lexical_cast<int>(res[3].str());
 
-            int Hours, Minutes, Sec, FSec;
             if (res[4].matched)
                 Hours = boost::lexical_cast<int>(res[4].str());
 
@@ -260,7 +260,7 @@ bool parseDate(const std::wstring & Date, int & Year, int & Month, int & Day)
                 Sec = boost::lexical_cast<int>(res[6].str());
 
             if (res[7].matched)
-                FSec = boost::lexical_cast<int>(res[7].str());
+				int FSec = boost::lexical_cast<int>(res[7].str());
 
             return true;
         }

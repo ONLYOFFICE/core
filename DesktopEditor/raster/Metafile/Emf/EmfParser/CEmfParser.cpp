@@ -210,6 +210,8 @@ namespace MetaFile
 
 		if (!CheckError())
 			m_oStream.SeekToStart();
+
+		ClearFile();
 	}
 
 	void CEmfParser::Scan()
@@ -229,6 +231,13 @@ namespace MetaFile
 	void CEmfParser::SetStream(BYTE *pBuf, unsigned int unSize)
 	{
 		m_oStream.SetStream(pBuf, unSize);
+	}
+
+	void CEmfParser::SetInterpretator(IOutputDevice* pOutput)
+	{
+		CEmfParserBase::SetInterpretator(pOutput);
+		if (m_pEmfPlusParser)
+			RELEASEOBJECT(m_pEmfPlusParser);
 	}
 
 	bool CEmfParser::ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)

@@ -268,7 +268,7 @@ namespace MetaFile
 			}
 
 			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
-				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
+				m_pRenderer->CommandDrawTextCHAR(wsString[unIndex], arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
 
 		}
 
@@ -314,7 +314,7 @@ namespace MetaFile
 			double dM11, dM12, dM21, dM22, dRx, dRy;
 			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-			if (dM11 * dM22 > 0)
+			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
@@ -411,43 +411,36 @@ namespace MetaFile
 			double dX = oTextPoint.x;
 			double dY = oTextPoint.y;
 
-			double dXCoef = dM11 / std::abs(dM11);
-			double dYCoef = dM22 / std::abs(dM22);
-
 			// Найдем начальную точку текста
 			unsigned int ulTextAlign = m_pFile->GetTextAlign();
-
-			if (dYScale < 0)
-				dY += fabs(fH);
-
-			if (ulTextAlign & 18)
+			if (ulTextAlign & TA_BASELINE)
 			{
 				// Ничего не делаем
 			}
 			else if (ulTextAlign & TA_BOTTOM)
 			{
-				float fTemp = -fH;
+				float fTemp = -(-fT + fH);
 
-				dX -= fTemp * dSinTheta * dXCoef;
-				dY += fTemp * dCosTheta * dYCoef;
+				dX += -fTemp * dSinTheta;
+				dY +=  fTemp * dCosTheta;
 			}
 			else // if (ulTextAlign & TA_TOP)
 			{
 				float fTemp = -fT;
 
-				dX -= fTemp * dSinTheta * dXCoef;
-				dY += fTemp * dCosTheta * dYCoef;
+				dX += -fTemp * dSinTheta;
+				dY +=  fTemp * dCosTheta;
 			}
 
 			if (ulTextAlign & TA_CENTER)
 			{
-				dX += -fW / 2 * dCosTheta * dXCoef;
-				dY += -fW / 2 * dSinTheta * dYCoef;
+				dX += -fW / 2 * dCosTheta;
+				dY += -fW / 2 * dSinTheta;
 			}
 			else if (ulTextAlign & TA_RIGHT)
 			{
-				dX += -fW * dCosTheta * dXCoef;
-				dY += -fW * dSinTheta * dYCoef;
+				dX += -fW * dCosTheta;
+				dY += -fW * dSinTheta;
 			}
 			else //if (ulTextAlign & TA_LEFT)
 			{
@@ -470,21 +463,25 @@ namespace MetaFile
 				double dShiftY = 0;
 
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
 				if (dXScale < -0.00001)
 				{
-					if (dM11 > 0)
-						dX -= fabs(fW);
+					dX += fabs(fW);
 
-					dShiftX = (2 * dX - fabs(fW)) * dM11;
+					if (m_pFile->IsWindowFlippedX())
+					{
+						dShiftX = (2 * dX - fabs(fW)) * dM11;
+					}
+					else
+					{
+						dShiftX = (2 * dX + fabs(fW)) * dM11;
+					}
 
 					dM11 = fabs(dM11);
 				}
 
 				if (dYScale < -0.00001)
 				{
-					if (dM22 > 0)
-						dY -= fabs(fH);
+					dY += fabs(fH);
 
 					dShiftY = (2 * dY - fabs(fH)) * dM22;
 
@@ -570,8 +567,7 @@ namespace MetaFile
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
 					{
-						std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32(&*(pUnicode + unCharIndex), 1);
-						m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
+						m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
 						dOffset += (pDx[unCharIndex] * dKoefX);
 					}
 
@@ -845,6 +841,12 @@ namespace MetaFile
 				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
 			}
+			else if (BS_PATTERN == unBrushStyle)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypePattern);
+				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTileCenter);
+				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
+			}
 			else if (BS_HATCHED == unBrushStyle)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeHatch1);
@@ -852,12 +854,66 @@ namespace MetaFile
 
 				switch (pBrush->GetHatch())
 				{
-				case HS_HORIZONTAL: wsBrushType = L"horz"; break;
-				case HS_VERTICAL:   wsBrushType = L"vert"; break;
-				case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
-				case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
-				case HS_CROSS:      wsBrushType = L"cross"; break;
-				case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+					case HS_HORIZONTAL: wsBrushType = L"horz"; break;
+					case HS_VERTICAL:   wsBrushType = L"vert"; break;
+					case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
+					case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
+					case HS_CROSS:      wsBrushType = L"cross"; break;
+					case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+
+					case HS_05Percent:	wsBrushType = L"pct5"; break;
+					case HS_10Percent:	wsBrushType = L"pct10"; break;
+					case HS_20Percent:	wsBrushType = L"pct20"; break;
+					case HS_25Percent:	wsBrushType = L"pct25"; break;
+					case HS_30Percent:	wsBrushType = L"pct30"; break;
+					case HS_40Percent:	wsBrushType = L"pct40"; break;
+					case HS_50Percent:	wsBrushType = L"pct50"; break;
+					case HS_60Percent:	wsBrushType = L"pct60"; break;
+					case HS_70Percent:	wsBrushType = L"pct70"; break;
+					case HS_75Percent:	wsBrushType = L"pct75"; break;
+					case HS_80Percent:	wsBrushType = L"pct80"; break;
+					case HS_90Percent:	wsBrushType = L"pct90"; break;
+
+					case HS_LTDOWNWARDDIAG:	wsBrushType = L"ltDnDiag"; break;
+					case HS_LTUPWARDDIAG:	wsBrushType = L"ltUpDiag"; break;
+					case HS_DNDOWNWARDDIAG:	wsBrushType = L"dkDnDiag"; break;
+					case HS_DNUPWARDDIAG:	wsBrushType = L"dkUpDiag"; break;
+					case HS_WDOWNWARDDIAG:	wsBrushType = L"wdDnDiag"; break;
+					case HS_WUPWARDDIAG:	wsBrushType = L"wdUpDiag"; break;
+
+					case HS_LTVERTICAL:		wsBrushType = L"ltVert"; break;
+					case HS_LTHORIZONTAL:	wsBrushType = L"ltHorz"; break;
+					case HS_NVERTICAL:		wsBrushType = L"narVert"; break;
+					case HS_NHORIZONTAL:	wsBrushType = L"narHorz"; break;
+					case HS_DNVERTICAL:		wsBrushType = L"dkVert"; break;
+					case HS_DNHORIZONTAL:	wsBrushType = L"dkHorz"; break;
+
+					case HS_DASHDOWNWARDDIAG:	wsBrushType = L"dashDnDiag"; break;
+					case HS_DASHUPWARDDIAG:		wsBrushType = L"dashUpDiag"; break;
+					case HS_DASHHORIZONTAL:		wsBrushType = L"dashHorz"; break;
+					case HS_DASHVERTICAL:		wsBrushType = L"dashVert"; break;
+
+					case HS_SMALLCONFETTI:		wsBrushType = L"smConfetti"; break;
+					case HS_LARGECONFETTI:		wsBrushType = L"lgConfetti"; break;
+					case HS_ZIGZAG:				wsBrushType = L"zigZag"; break;
+					case HS_WAVE:				wsBrushType = L"wave"; break;
+					case HS_DIAGBRICK:			wsBrushType = L"diagBrick"; break;
+					case HS_HORIZBRICK:			wsBrushType = L"horzBrick"; break;
+					case HS_WEAVE:				wsBrushType = L"weave"; break;
+					case HS_PLAID:				wsBrushType = L"plaid"; break;
+					case HS_DIVOT:				wsBrushType = L"divot"; break;
+					case HS_DOTGRID:			wsBrushType = L"dotGrid"; break;
+					case HS_DOTDIAMOND:			wsBrushType = L"dotDmnd"; break;
+					case HS_SHINGLE:			wsBrushType = L"shingle"; break;
+					case HS_TRELLIS:			wsBrushType = L"trellis"; break;
+					case HS_SPHERE:				wsBrushType = L"sphere"; break;
+					case HS_SGRID:				wsBrushType = L"smGrid"; break;
+					case HS_SCHECHERBOARD:		wsBrushType = L"smCheck"; break;
+					case HS_LCHECHERBOARD:		wsBrushType = L"lgCheck"; break;
+					case HS_OUTLINEDDIAMOND:	wsBrushType = L"openDmnd"; break;
+					case HS_SOLIDDIAMOND:		wsBrushType = L"solidDmnd"; break;
+
+					default: break;
 				}
 
 				// TODO: Непонятно почему, но в Hatch все цвета идут не как RGB, а как BGR
@@ -866,12 +922,17 @@ namespace MetaFile
 				else
 				{
 					m_pRenderer->put_BrushAlpha2(255);
-					m_pRenderer->put_BrushColor2(m_pFile->GetTextBgColor());
+
+					TColor oBgColor(m_pFile->GetTextBgColor());
+					oBgColor.SwapRGBtoBGR();
+					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
 				}
 
+				TColor oFgColor(pBrush->GetColor());
+				oFgColor.SwapRGBtoBGR();
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
-				m_pRenderer->put_BrushColor1(pBrush->GetColor());
+				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
 			}
 			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
 						BS_RECTGRADIENT		== unBrushStyle ||
@@ -913,8 +974,8 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
 				long Colors[2];
-				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
-				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
+				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
 				double Position[2] = {0, 1};
 				
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
@@ -954,7 +1015,21 @@ namespace MetaFile
 			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-			double dWidth = std::abs(pPen->GetWidth() * m_dScaleY);
+
+			double dWidth = pPen->GetWidth();
+
+			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
+			{
+				TRectD oRect(*m_pFile->GetDCBounds());
+
+				double dScale = m_pFile->GetScale();
+
+				oRect *= dScale;
+
+				dWidth = std::fabs(m_dW / (oRect.dRight - oRect.dLeft) / m_pFile->GetPixelWidth());
+			}
+			else
+				dWidth *= m_dScaleX;
 
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)

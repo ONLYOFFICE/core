@@ -4706,9 +4706,9 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if (oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if (oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if (oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if (oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
@@ -4735,9 +4735,20 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 		if (pOleObject->m_oProgId.IsInit())
 			olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
+		
+		if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit())
+		{
+			olePic->oleObject->m_oMoveWithCells = pOleObject->m_oObjectPr->m_oAnchor->m_oMoveWithCells;
+			olePic->oleObject->m_oSizeWithCells = pOleObject->m_oObjectPr->m_oAnchor->m_oSizeWithCells;
+		}
 
 		olePic->oleObject->m_oId = pRId;
 		olePic->oleObject->m_OleObjectFile = pFileOleObject;
+
+		if (pOleObject->m_oDvAspect.IsInit())
+		{
+			olePic->oleObject->m_oDrawAspect = (BYTE)pOleObject->m_oDvAspect->GetValue();
+		}
 
 		if (olePic->oleObject->m_OleObjectFile.IsInit())
 		{
@@ -4756,6 +4767,9 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 					pClientData->toCellAnchor(oCellAnchor.GetPointer());
+
+					olePic->oleObject->m_oMoveWithCells = pClientData->m_oMoveWithCells;
+					olePic->oleObject->m_oSizeWithCells = pClientData->m_oSizeWithCells;
 				}
 				if (OOX::et_v_imagedata == pChildElemShape->getType())
 				{
@@ -4888,9 +4902,9 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if(oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if(oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);

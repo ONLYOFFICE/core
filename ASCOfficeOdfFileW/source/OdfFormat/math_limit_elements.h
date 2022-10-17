@@ -43,11 +43,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMSub;
 	
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -65,11 +65,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMSup;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -88,11 +88,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMSubSup;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -109,11 +109,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMNone;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -132,11 +132,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMPreScripts;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -151,11 +151,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMMultiScripts;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -174,11 +174,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMUnderOver;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -195,11 +195,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMOver;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
         _CP_OPT(Bool)	accent;
 	private:
@@ -217,11 +217,11 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-		static const xml::NodeType xml_type = xml::typeElement;
+	
 		static const ElementType type = typeMUnder;
 
-        CPDOCCORE_DEFINE_VISITABLE();
-        CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_
+        
+    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);

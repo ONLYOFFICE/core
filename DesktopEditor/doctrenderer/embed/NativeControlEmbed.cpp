@@ -214,3 +214,21 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImagesPath()
 {
     return CJSContext::createString(m_pInternal->m_strImagesDirectory);
 }
+
+#include "./../../graphics/MetafileToRenderer.h"
+#include "./../../raster/BgraFrame.h"
+JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sUrl)
+{
+	IMetafileToRenderter oRenderer(NULL);
+	oRenderer.SetMediaDirectory(NSDirectory::GetFolderPath(m_pInternal->m_strImagesDirectory));
+	std::wstring sPath = oRenderer.GetImagePath(sUrl->toStringW());
+	CBgraFrame oFrame;
+	if (oFrame.OpenFile(sPath))
+	{
+		JSSmart<CJSObject> ret = CJSContext::createObject();
+		ret->set("W", oFrame.get_Width());
+		ret->set("H", oFrame.get_Height());
+		return ret->toValue();
+	}
+	return CJSContext::createUndefined();
+}

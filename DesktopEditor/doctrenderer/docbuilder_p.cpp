@@ -31,6 +31,8 @@
  */
 #include "docbuilder_p.h"
 
+std::wstring NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = L"";
+
 void CV8RealTimeWorker::_LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
 {
 	std::string sT = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strType);
@@ -422,6 +424,8 @@ namespace NSDoctRenderer
 
 	bool CDocBuilderValue::IsEmpty()
 	{
+		if (!m_internal->m_value.is_init())
+			return true;
 		return m_internal->m_value->isEmpty();
 	}
 	void CDocBuilderValue::Clear()
@@ -430,38 +434,62 @@ namespace NSDoctRenderer
 	}
 	bool CDocBuilderValue::IsNull()
 	{
+		if (!m_internal->m_value.is_init())
+			return (m_internal->m_nativeType == CDocBuilderValue_Private::ptNull) ? true : false;
 		return m_internal->m_value->isNull();
 	}
 	bool CDocBuilderValue::IsUndefined()
 	{
+		if (!m_internal->m_value.is_init())
+			return (m_internal->m_nativeType == CDocBuilderValue_Private::ptUndefined) ? true : false;
 		return m_internal->m_value->isUndefined();
 	}
 	bool CDocBuilderValue::IsBool()
 	{
+		if (!m_internal->m_value.is_init())
+			return (m_internal->m_nativeType == CDocBuilderValue_Private::ptBool) ? true : false;
 		return m_internal->m_value->isBool();
 	}
 	bool CDocBuilderValue::IsInt()
 	{
+		if (!m_internal->m_value.is_init())
+			return (m_internal->m_nativeType == CDocBuilderValue_Private::ptInt) ? true : false;
 		return m_internal->m_value->isNumber();
 	}
 	bool CDocBuilderValue::IsDouble()
 	{
+		if (!m_internal->m_value.is_init())
+			return (m_internal->m_nativeType == CDocBuilderValue_Private::ptDouble) ? true : false;
 		return m_internal->m_value->isNumber();
 	}
 	bool CDocBuilderValue::IsString()
 	{
+		if (!m_internal->m_value.is_init())
+			return (m_internal->m_nativeType == CDocBuilderValue_Private::ptString) ? true : false;
 		return m_internal->m_value->isString();
+	}
+	bool CDocBuilderValue::IsObject()
+	{
+		if (!m_internal->m_value.is_init())
+			return false;
+		return m_internal->m_value->isObject();
 	}
 	bool CDocBuilderValue::IsFunction()
 	{
+		if (!m_internal->m_value.is_init())
+			return false;
 		return m_internal->m_value->isFunction();
 	}
 	bool CDocBuilderValue::IsArray()
 	{
+		if (!m_internal->m_value.is_init())
+			return false;
 		return m_internal->m_value->isArray();
 	}
 	bool CDocBuilderValue::IsTypedArray()
 	{
+		if (!m_internal->m_value.is_init())
+			return false;
 		return m_internal->m_value->isTypedArray();
 	}
 
@@ -482,18 +510,39 @@ namespace NSDoctRenderer
 
 	bool CDocBuilderValue::ToBool()
 	{
+		if (!m_internal->m_value.is_init() && (m_internal->m_nativeType == CDocBuilderValue_Private::ptBool))
+			return m_internal->m_nativeValue.bValue;
+
 		if (IsEmpty() || !m_internal->m_value->isBool())
-			return 0;
+			return false;
 		return m_internal->m_value->toBool();
 	}
 	int CDocBuilderValue::ToInt()
 	{
+		if (!m_internal->m_value.is_init())
+		{
+			if (m_internal->m_nativeType == CDocBuilderValue_Private::ptInt)
+				return m_internal->m_nativeValue.nValue;
+			if (m_internal->m_nativeType == CDocBuilderValue_Private::ptUInt)
+				return (int)m_internal->m_nativeValue.unValue;
+		}
+
 		if (IsEmpty() || !m_internal->m_value->isNumber())
 			return 0;
 		return m_internal->m_value->toInt32();
 	}
 	double CDocBuilderValue::ToDouble()
 	{
+		if (!m_internal->m_value.is_init())
+		{
+			if (m_internal->m_nativeType == CDocBuilderValue_Private::ptDouble)
+				return m_internal->m_nativeValue.dValue;
+			if (m_internal->m_nativeType == CDocBuilderValue_Private::ptInt)
+				return (double)m_internal->m_nativeValue.nValue;
+			if (m_internal->m_nativeType == CDocBuilderValue_Private::ptUInt)
+				return (double)m_internal->m_nativeValue.unValue;
+		}
+
 		if (IsEmpty() || !m_internal->m_value->isNumber())
 			return 0;
 		return m_internal->m_value->toDouble();
@@ -501,6 +550,17 @@ namespace NSDoctRenderer
 	CString CDocBuilderValue::ToString()
 	{
 		CString ret;
+		if (!m_internal->m_value.is_init() && (m_internal->m_nativeType == CDocBuilderValue_Private::ptString))
+		{
+			wchar_t* pValue = m_internal->m_nativeValue.sValue;
+			size_t len = wcslen(pValue);
+			wchar_t* buffer = new wchar_t[len + 1];
+			memcpy(buffer, pValue, len * sizeof(wchar_t));
+			buffer[len] = '\0';
+			ret.m_internal->Attach(buffer);
+			return ret;
+		}
+
 		if (IsEmpty() || !m_internal->m_value->isString())
 			return ret;
 		std::wstring sValue = m_internal->m_value->toStringW();
@@ -1333,6 +1393,7 @@ namespace NSDoctRenderer
 		if (directory)
 			sDirectory = std::wstring(directory);
 
+		NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory = sDirectory;
 		CJSContext::ExternalInitialize(sDirectory);
 	}
 

@@ -44,6 +44,29 @@ public:
     Impl() 
 	{
 	}
+	void clear()
+	{
+		cols_.clear();
+		sheetPr_.clear();
+		sheetFormatPr_.clear();
+		sheetData_.clear();
+		mergeCells_.clear();
+		ole_objects_.clear();
+		activeXs_.clear();
+		drawing_.clear();
+		hyperlinks_.clear();
+		comments_.clear();
+		dimension_.clear();
+		sheetViews_.clear();
+		pageProperties_.clear();
+		sortAndFilters_.clear();
+		customViews_.clear();
+		conditionalFormatting_.clear();
+		picture_background_.clear();
+		dataValidations_.clear();
+		protection_.clear();
+		tableParts_.clear();
+	}
 
 	std::wstringstream  cols_;
 	std::wstringstream  sheetPr_;
@@ -217,13 +240,15 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_NODE(L"sheetData")
             {
-                CP_XML_STREAM() << impl_->sheetData_.str();
+				if (impl_->sheetData_.rdbuf()->in_avail() != 0)
+				{
+					impl_->sheetData_.flush();
+					CP_XML_STREAM() << impl_->sheetData_.rdbuf();
+					impl_->sheetData_.clear();
+				}
             }
 
 			CP_XML_STREAM() << impl_->protection_.str();
-
-			//оказывается порядок нахождения элементов важен !!! (для office 2010)
-			//объединенные ячейки раньше чем гиперлинки !!!
 
 			CP_XML_STREAM() << impl_->sortAndFilters_.str();
            

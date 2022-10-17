@@ -144,10 +144,12 @@ int LBL::serialize(std::wostream & stream)
 
 	if (name_.empty()) name_ = L"_";
 
-	std::map<std::wstring, int>::iterator pFind = global_info_->mapDefineNamesSerialized.find(name_);
+	std::wstring name_check = name_ + L"sheet(" + std::to_wstring(lbl->itab) + L")";
+
+	std::map<std::wstring, int>::iterator pFind = global_info_->mapDefineNamesSerialized.find(name_check);
 	if (pFind == global_info_->mapDefineNamesSerialized.end())
 	{
-		global_info_->mapDefineNamesSerialized.insert(std::make_pair(name_, 1));
+		global_info_->mapDefineNamesSerialized.insert(std::make_pair(name_check, 1));
 	}
 	else
 	{

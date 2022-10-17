@@ -392,10 +392,10 @@ void common_xlink_attlist::apply_from(const common_xlink_attlist & Other)
 }
 void common_xlink_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"xlink:href",		href_);
-    CP_XML_ATTR_OPT(L"xlink:type",		type_);
-    CP_XML_ATTR_OPT(L"xlink:show",		show_);    
-    CP_XML_ATTR_OPT(L"xlink:actuate",	actuate_);    
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"xlink:href", href_);
+    CP_XML_ATTR_OPT(L"xlink:type", type_);
+    CP_XML_ATTR_OPT(L"xlink:show", show_);    
+    CP_XML_ATTR_OPT(L"xlink:actuate", actuate_);    
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -444,7 +444,7 @@ void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
     CP_XML_ATTR_OPT(L"office:date-value", office_date_value_);
     CP_XML_ATTR_OPT(L"office:time-value", office_time_value_);
     CP_XML_ATTR_OPT(L"office:boolean-value", office_boolean_value_);
-    CP_XML_ATTR_OPT(L"office:string-value", office_string_value_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"office:string-value", office_string_value_);
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

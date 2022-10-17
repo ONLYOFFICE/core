@@ -48,10 +48,8 @@ class draw_base : public office_element_impl<draw_base>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeDrawBase;
-    
-	CPDOCCORE_DEFINE_VISITABLE()
+
+    static const ElementType type = typeDrawBase;  
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -62,7 +60,6 @@ public:
 	odf_types::union_common_draw_attlists  common_draw_attlists_;
 
     office_element_ptr_array content_;
-
 };
 
 }

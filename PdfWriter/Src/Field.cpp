@@ -104,6 +104,40 @@ namespace PdfWriter
 
 		Add("Ff", nFlags);
 	}
+	CDictObject* CFieldBase::GetAA()
+	{
+		CDictObject* pAA = dynamic_cast<CDictObject*>(this->Get("AA"));
+		if (pAA)
+			return pAA;
+
+		pAA = new CDictObject();
+		if (!pAA)
+			return NULL;
+
+		Add("AA", pAA);
+		return pAA;
+	}
+	void CFieldBase::AddScriptToAA(const std::string& sKey, const std::string& sScript, CDictObject* pAA)
+	{
+		if (sScript.empty())
+			return;
+
+		CDictObject* _pAA = pAA;
+		if (!_pAA)
+			_pAA = GetAA();
+
+		if (!_pAA)
+			return;
+
+		CDictObject* pKey = new CDictObject();
+		if (!pKey)
+			return;
+
+		m_pXref->Add(pKey);
+		pAA->Add(sKey.c_str(), pKey);
+		pKey->Add("S", "JavaScript");
+		pKey->Add("JS", new CStringObject(sScript.c_str(), true, true));
+	}
 	void CFieldBase::AddPageRect(CPage* pPage, const TRect& oRect)
 	{
 		if (!pPage)
@@ -476,18 +510,16 @@ namespace PdfWriter
 
 		std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(vPlaceHolders[vPlaceHolders.size() - 1]);
 		const TRgb& oColor = vPlaceHolderColors[vPlaceHolderColors.size() - 1];
-		std::string sBlur = "\nif (event.target.value == \"\")\n{	event.target.value = \"" + sText + "\";\n	event.target.textColor =[\"RGB\", " +
+		std::string sBlur = "\nif (event.target.value == \"\")\n{\n	event.target.textColor =[\"RGB\", " +
 			std::to_string(oColor.r) + ", " +
 			std::to_string(oColor.g) + ", " +
-			std::to_string(oColor.b) + "];\n}";
+			std::to_string(oColor.b) + "];\nevent.target.value = \"" + sText + "\";\n}";
 
 		if (!m_pFocus || !m_pBlur)
 		{
-			CDictObject* pAA = new CDictObject();
+			CDictObject* pAA = GetAA();
 			if (!pAA)
 				return;
-
-			Add("AA", pAA);
 
 			CDictObject* pFocus = new CDictObject();
 			CDictObject* pBlur = new CDictObject();
@@ -587,6 +619,83 @@ namespace PdfWriter
 	const TRgb& CFieldBase::GetPlaceHolderColor()
 	{
 		return m_oPlaceHolderColor;
+	}
+	void CFieldBase::SetFormat(const CFormFieldInfo::CTextFormFormat* pFormat)
+	{
+		if (!pFormat || pFormat->IsEmpty())
+			return;
+
+		std::string scriptK, scriptF, scriptV;
+
+		const TRgb& oNormalColor = GetNormalColor();
+
+		const std::string prefix = "var curColor = color.convert(event.target.textColor, \"RGB\");\nif (Math.abs(curColor[1] - " + std::to_string(oNormalColor.r) +
+			") < 0.005 && Math.abs(curColor[2] - " + std::to_string(oNormalColor.g) +
+			") < 0.005 && Math.abs(curColor[3] - " + std::to_string(oNormalColor.b) +
+			") < 0.005)\n{";
+		const std::string postfix = "}";
+
+		if (pFormat->GetSymbolsCount())
+		{
+			scriptK += "\nvar s=String.fromCharCode(";
+			scriptV += "\nvar s=String.fromCharCode(";
+			for (unsigned int unIndex = 0, unCount = pFormat->GetSymbolsCount(); unIndex < unCount; ++unIndex)
+			{
+				if (unIndex)
+				{
+					scriptK += ", ";
+					scriptV += ", ";
+				}
+
+				scriptK += std::to_string(pFormat->GetSymbol(unIndex));
+				scriptV += std::to_string(pFormat->GetSymbol(unIndex));
+			}
+			scriptK += ");";
+			scriptV += ");";
+
+			scriptK += "\nfor (var i = 0, l = event.change.length; i < l; ++i){\nvar c = event.change.charAt(i);\nif(-1 == s.indexOf(c)){\nevent.rc = false;\nbreak;\n}\n}";
+			scriptV += "\nfor (var i = 0, l = event.value.length; i < l; ++i){\nvar c = event.value.charAt(i);\nif(-1 == s.indexOf(c)){\nevent.rc = false;\nbreak;\n}\n}";
+		}
+
+		if (pFormat->IsDigit())
+		{
+			scriptK += "\nif(false !== event.rc)\n{for(var i = 0, l = event.change.length; i < l; ++i){var c = event.change.charCodeAt(i);if(c < 48 || c > 57){event.rc = false;break;}}}";
+			scriptV += "\nfor(var i = 0, l = event.value.length; i < l; ++i){var c = event.value.charCodeAt(i);if(c < 48 || c > 57){event.rc = false;break;}}";
+		}
+		else if (pFormat->IsLetter())
+		{
+			scriptK += "\nvar r=/^[^\\d.!?\\/\\\\+\\-\\x20'\":;\\(\\)\\[\\]\\{\\}=_@#$%^&*]+$/;\nif(false !== event.rc)\n{for(var i = 0, l = event.change.length; i < l; ++i){var c = event.change.charCodeAt(i);if(!r.test(String.fromCharCode(c))){event.rc = false;break;}}}";
+			scriptV += "\nvar r=/^[^\\d.!?\\/\\\\+\\-\\x20'\":;\\(\\)\\[\\]\\{\\}=_@#$%^&*]+$/;\nfor(var i = 0, l = event.value.length; i < l; ++i){var c = event.value.charCodeAt(i);if(!r.test(String.fromCharCode(c))){event.rc = false;break;}}";
+		}
+		else if (pFormat->IsMask())
+		{
+			scriptK += "\nAFSpecial_KeystrokeEx(\"" + NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pFormat->GetMask()) + "\");";
+		}
+		else if (pFormat->IsRegExp())
+		{
+			scriptV += "\nvar r=/" + NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pFormat->GetRegExp()) + "/;";
+			scriptV += "\nif(event.value)event.rc=!!event.value.match(r);";
+		}
+
+		CDictObject* pAA = GetAA();
+
+		if (!scriptK.empty())
+		{
+			scriptK = prefix + scriptK + postfix;
+			AddScriptToAA("K", scriptK, pAA);
+		}
+
+		if (!scriptV.empty())
+		{
+			scriptV = prefix + scriptV + postfix;
+			AddScriptToAA("V", scriptV, pAA);
+		}
+
+		if (!scriptF.empty())
+		{
+			scriptV = prefix + scriptF + postfix;
+			AddScriptToAA("F", scriptF, pAA);
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextField
@@ -745,11 +854,9 @@ namespace PdfWriter
 	}
 	void CChoiceField::SetPlaceHolderText(const std::wstring& wsText, const TRgb& oNormalColor, const TRgb& oPlaceHolderColor)
 	{
-		CDictObject* pAA = new CDictObject();
+		CDictObject* pAA = GetAA();
 		if (!pAA)
 			return;
-
-		Add("AA", pAA);
 
 		CDictObject* pFocus = new CDictObject();
 		CDictObject* pBlur = new CDictObject();
@@ -812,10 +919,10 @@ namespace PdfWriter
 				") < 0.005 && Math.abs(curColor[3] - " + std::to_string(oPlaceHolderColor.b) +
 				") < 0.005)\n	event.target.value = \"\";";
 
-			sBlur = "\nif (event.target.value == \"\")\n{	event.target.value = \"" + sText + "\";\n	event.target.textColor = [\"RGB\", " +
+			sBlur = "\nif (event.target.value == \"\")\n{\n	event.target.textColor = [\"RGB\", " +
 				std::to_string(oPlaceHolderColor.r) + ", " +
 				std::to_string(oPlaceHolderColor.g) + ", " +
-				std::to_string(oPlaceHolderColor.b) + "];\n}";
+				std::to_string(oPlaceHolderColor.b) + "];\nevent.target.value = \"" + sText + "\";\n}";
 		}
 
 		m_pXref->Add(pFocus);

@@ -111,10 +111,14 @@ namespace OOX
 			}
 		}
 
+		if (false == m_pStyles->m_oDocDefaults.IsInit())
+			m_pStyles->m_oDocDefaults.Init();
+
+		if (false == m_pStyles->m_oDocDefaults->m_oParPr.IsInit())
+			m_pStyles->m_oDocDefaults->m_oParPr.Init();
+
 		if ((m_pFontTable.IsInit() && m_pStyles.IsInit()) && (m_pFontTable->m_oDefaultFonts.IsInit()))
 		{
-			if (false == m_pStyles->m_oDocDefaults.IsInit())
-				m_pStyles->m_oDocDefaults.Init();
 			if (false == m_pStyles->m_oDocDefaults->m_oRunPr.IsInit())
 				m_pStyles->m_oDocDefaults->m_oRunPr.Init();
 

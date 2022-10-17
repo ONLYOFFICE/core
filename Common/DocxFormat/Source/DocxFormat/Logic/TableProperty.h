@@ -58,7 +58,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -73,9 +73,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -86,7 +86,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -110,7 +110,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:type"), m_oType );
+				XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -125,9 +125,9 @@ namespace ComplexTypes
 
 				if ( m_oType.IsInit() )
 				{
-					sResult += _T("w:type=\"");
+					sResult += L"w:type=\"";
 					sResult += m_oType->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -138,7 +138,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:type"), m_oType )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:type", m_oType )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -162,13 +162,13 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:firstColumn"), m_oFirstColumn );
-				XmlMacroReadAttributeBase( oNode, _T("w:firstRow"),    m_oFirstRow );
-				XmlMacroReadAttributeBase( oNode, _T("w:lastColumn"),  m_oLastColumn );
-				XmlMacroReadAttributeBase( oNode, _T("w:lastRow"),     m_oLastRow );
-				XmlMacroReadAttributeBase( oNode, _T("w:noHBand"),     m_oNoHBand );
-				XmlMacroReadAttributeBase( oNode, _T("w:noVBand"),     m_oNoVBand );
-				XmlMacroReadAttributeBase( oNode, _T("w:val"),         m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:firstColumn", m_oFirstColumn );
+				XmlMacroReadAttributeBase( oNode, L"w:firstRow",    m_oFirstRow );
+				XmlMacroReadAttributeBase( oNode, L"w:lastColumn",  m_oLastColumn );
+				XmlMacroReadAttributeBase( oNode, L"w:lastRow",     m_oLastRow );
+				XmlMacroReadAttributeBase( oNode, L"w:noHBand",     m_oNoHBand );
+				XmlMacroReadAttributeBase( oNode, L"w:noVBand",     m_oNoVBand );
+				XmlMacroReadAttributeBase( oNode, L"w:val",         m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -183,47 +183,47 @@ namespace ComplexTypes
 
 				if ( m_oFirstColumn.IsInit() )
 				{
-					sResult += _T("w:firstColumn=\"");
+					sResult += L"w:firstColumn=\"";
 					sResult += m_oFirstColumn->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oFirstRow.IsInit() )
 				{
-					sResult += _T("w:firstRow=\"");
+					sResult += L"w:firstRow=\"";
 					sResult += m_oFirstRow->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oLastColumn.IsInit() )
 				{
-					sResult += _T("w:lastColumn=\"");
+					sResult += L"w:lastColumn=\"";
 					sResult += m_oLastColumn->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oLastRow.IsInit() )
 				{
-					sResult += _T("w:lastRow=\"");
+					sResult += L"w:lastRow=\"";
 					sResult += m_oLastRow->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oNoHBand.IsInit() )
 				{
-					sResult += _T("w:noHBand=\"");
+					sResult += L"w:noHBand=\"";
 					sResult += m_oNoHBand->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				if ( m_oNoVBand.IsInit() )
 				{
-					sResult += _T("w:noVBand=\"");
+					sResult += L"w:noVBand=\"";
 					sResult += m_oNoVBand->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
+				ComplexTypes_WriteAttribute( L"w:val=\"", m_oVal );
 
 				return sResult;
 			}
@@ -351,13 +351,13 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:firstColumn"), m_oFirstColumn )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:firstRow"),    m_oFirstRow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:lastColumn"),  m_oLastColumn )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:lastRow"),     m_oLastRow )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:noHBand"),     m_oNoHBand )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:noVBand"),     m_oNoVBand )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),         m_oVal )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:firstColumn", m_oFirstColumn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:firstRow",    m_oFirstRow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:lastColumn",  m_oLastColumn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:lastRow",     m_oLastRow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:noHBand",     m_oNoHBand )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:noVBand",     m_oNoVBand )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",         m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
@@ -386,13 +386,13 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 			virtual std::wstring ToString() const
@@ -401,9 +401,9 @@ namespace ComplexTypes
 
 				if ( m_oVal.IsInit() )
 				{
-					sResult += _T("w:val=\"");
+					sResult += L"w:val=\"";
 					sResult += m_oVal->ToString();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -523,16 +523,16 @@ namespace ComplexTypes
 			}
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:bottomFromText"), m_oBottomFromText );
-				XmlMacroReadAttributeBase( oNode, _T("w:horzAnchor"),     m_oHorzAnchor );
-				XmlMacroReadAttributeBase( oNode, _T("w:leftFromText"),   m_oLeftFromText );
-				XmlMacroReadAttributeBase( oNode, _T("w:rightFromText"),  m_oRightFromText );
-				XmlMacroReadAttributeBase( oNode, _T("w:tblpX"),          m_oTblpX );
-				XmlMacroReadAttributeBase( oNode, _T("w:tblpXSpec"),      m_oTblpXSpec );
-				XmlMacroReadAttributeBase( oNode, _T("w:tblpY"),          m_oTblpY );
-				XmlMacroReadAttributeBase( oNode, _T("w:tblpYSpec"),      m_oTblpYSpec );
-				XmlMacroReadAttributeBase( oNode, _T("w:topFromText"),    m_oTopFromText );
-				XmlMacroReadAttributeBase( oNode, _T("w:vertAnchor"),     m_oVertAnchor );
+				XmlMacroReadAttributeBase( oNode, L"w:bottomFromText", m_oBottomFromText );
+				XmlMacroReadAttributeBase( oNode, L"w:horzAnchor",     m_oHorzAnchor );
+				XmlMacroReadAttributeBase( oNode, L"w:leftFromText",   m_oLeftFromText );
+				XmlMacroReadAttributeBase( oNode, L"w:rightFromText",  m_oRightFromText );
+				XmlMacroReadAttributeBase( oNode, L"w:tblpX",          m_oTblpX );
+				XmlMacroReadAttributeBase( oNode, L"w:tblpXSpec",      m_oTblpXSpec );
+				XmlMacroReadAttributeBase( oNode, L"w:tblpY",          m_oTblpY );
+				XmlMacroReadAttributeBase( oNode, L"w:tblpYSpec",      m_oTblpYSpec );
+				XmlMacroReadAttributeBase( oNode, L"w:topFromText",    m_oTopFromText );
+				XmlMacroReadAttributeBase( oNode, L"w:vertAnchor",     m_oVertAnchor );
 				PrepareAfterRead();
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -547,16 +547,16 @@ namespace ComplexTypes
 			{
 				std::wstring sResult;
 
-				ComplexTypes_WriteAttribute( _T("w:bottomFromText=\""), m_oBottomFromText );
-				ComplexTypes_WriteAttribute( _T("w:horzAnchor=\""),     m_oHorzAnchor );
-				ComplexTypes_WriteAttribute( _T("w:leftFromText=\""),   m_oLeftFromText );
-				ComplexTypes_WriteAttribute( _T("w:rightFromText=\""),  m_oRightFromText );
-				ComplexTypes_WriteAttribute( _T("w:tblpX=\""),          m_oTblpX );
-				ComplexTypes_WriteAttribute( _T("w:tblpXSpec=\""),      m_oTblpXSpec );
-				ComplexTypes_WriteAttribute( _T("w:tblpY=\""),          m_oTblpY );
-				ComplexTypes_WriteAttribute( _T("w:tblpYSpec=\""),      m_oTblpYSpec );
-				ComplexTypes_WriteAttribute( _T("w:topFromText=\""),    m_oTopFromText );
-				ComplexTypes_WriteAttribute( _T("w:vertAnchor=\""),     m_oVertAnchor );
+				ComplexTypes_WriteAttribute( L"w:bottomFromText=\"", m_oBottomFromText );
+				ComplexTypes_WriteAttribute( L"w:horzAnchor=\"",     m_oHorzAnchor );
+				ComplexTypes_WriteAttribute( L"w:leftFromText=\"",   m_oLeftFromText );
+				ComplexTypes_WriteAttribute( L"w:rightFromText=\"",  m_oRightFromText );
+				ComplexTypes_WriteAttribute( L"w:tblpX=\"",          m_oTblpX );
+				ComplexTypes_WriteAttribute( L"w:tblpXSpec=\"",      m_oTblpXSpec );
+				ComplexTypes_WriteAttribute( L"w:tblpY=\"",          m_oTblpY );
+				ComplexTypes_WriteAttribute( L"w:tblpYSpec=\"",      m_oTblpYSpec );
+				ComplexTypes_WriteAttribute( L"w:topFromText=\"",    m_oTopFromText );
+				ComplexTypes_WriteAttribute( L"w:vertAnchor=\"",     m_oVertAnchor );
 
 				return sResult;
 			}
@@ -566,16 +566,16 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:bottomFromText"), m_oBottomFromText )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:horzAnchor"),     m_oHorzAnchor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:leftFromText"),   m_oLeftFromText )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rightFromText"),  m_oRightFromText )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tblpX"),          m_oTblpX )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tblpXSpec"),      m_oTblpXSpec )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tblpY"),          m_oTblpY )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:tblpYSpec"),      m_oTblpYSpec )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:topFromText"),    m_oTopFromText )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vertAnchor"),     m_oVertAnchor )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:bottomFromText", m_oBottomFromText )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:horzAnchor",     m_oHorzAnchor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:leftFromText",   m_oLeftFromText )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:rightFromText",  m_oRightFromText )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:tblpX",          m_oTblpX )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:tblpXSpec",      m_oTblpXSpec )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:tblpY",          m_oTblpY )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:tblpYSpec",      m_oTblpYSpec )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:topFromText",    m_oTopFromText )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vertAnchor",     m_oVertAnchor )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -615,33 +615,33 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tblBorders") != oNode.GetName() )
+				if ( L"w:tblBorders" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:bottom"), oChild ) )  
+				if ( oNode.GetNode( L"w:bottom", oChild ) )  
 					m_oBottom = oChild;
 
-				if ( oNode.GetNode( _T("w:end"), oChild ) )  
+				if ( oNode.GetNode( L"w:end", oChild ) )  
 					m_oEnd = oChild;
 
-				if ( oNode.GetNode( _T("w:insideH"), oChild ) )  
+				if ( oNode.GetNode( L"w:insideH", oChild ) )  
 					m_oInsideH = oChild;
 
-				if ( oNode.GetNode( _T("w:insideV"), oChild ) )  
+				if ( oNode.GetNode( L"w:insideV", oChild ) )  
 					m_oInsideV = oChild;
 
-				if ( oNode.GetNode( _T("w:start"), oChild ) )  
+				if ( oNode.GetNode( L"w:start", oChild ) )  
 					m_oStart = oChild;
 
-				if ( oNode.GetNode( _T("w:top"), oChild ) )  
+				if ( oNode.GetNode( L"w:top", oChild ) )  
 					m_oTop = oChild;
 
-				if ( !m_oEnd.IsInit() && oNode.GetNode( _T("w:right"), oChild ) )
+				if ( !m_oEnd.IsInit() && oNode.GetNode( L"w:right", oChild ) )
 					m_oEnd = oChild;
 
-				if ( !m_oStart.IsInit() && oNode.GetNode( _T("w:left"), oChild ) )
+				if ( !m_oStart.IsInit() && oNode.GetNode( L"w:left", oChild ) )
 					m_oStart = oChild;
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
@@ -653,71 +653,71 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:bottom") == sName )
+					if ( L"w:bottom" == sName )
 						m_oBottom = oReader;
-					else if ( _T("w:end") == sName )
+					else if ( L"w:end" == sName )
 						m_oEnd = oReader;
-					else if ( _T("w:insideH") == sName )
+					else if ( L"w:insideH" == sName )
 						m_oInsideH = oReader;
-					else if ( _T("w:insideV") == sName )
+					else if ( L"w:insideV" == sName )
 						m_oInsideV = oReader;
-					else if ( _T("w:start") == sName )
+					else if ( L"w:start" == sName )
 						m_oStart = oReader;
-					else if ( _T("w:top") == sName )
+					else if ( L"w:top" == sName )
 						m_oTop = oReader;
-					else if ( _T("w:right") == sName )
+					else if ( L"w:right" == sName )
 						m_oEnd = oReader;
-					else if ( _T("w:left") == sName )
+					else if ( L"w:left" == sName )
 						m_oStart = oReader;
 				}
 			}
 			virtual std::wstring toXML() const                     
 			{
-				std::wstring sResult = _T("<w:tblBorders>");
+				std::wstring sResult = L"<w:tblBorders>";
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += _T("<w:bottom ");
+					sResult += L"<w:bottom ";
 					sResult += m_oBottom->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oEnd.IsInit() )
 				{
-					sResult += _T("<w:end ");
+					sResult += L"<w:end ";
 					sResult += m_oEnd->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oInsideH.IsInit() )
 				{
-					sResult += _T("<w:insideH ");
+					sResult += L"<w:insideH ";
 					sResult += m_oInsideH->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oInsideV.IsInit() )
 				{
-					sResult += _T("<w:insideV ");
+					sResult += L"<w:insideV ";
 					sResult += m_oInsideV->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oStart.IsInit() )
 				{
-					sResult += _T("<w:start ");
+					sResult += L"<w:start ";
 					sResult += m_oStart->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oTop.IsInit() )
 				{
-					sResult += _T("<w:top ");
+					sResult += L"<w:top ";
 					sResult += m_oTop->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
-				sResult += _T("</w:tblBorders>");
+				sResult += L"</w:tblBorders>";
 
 				return sResult;
 			}
@@ -775,27 +775,27 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tblCellMar") != oNode.GetName() )
+				if ( L"w:tblCellMar" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				if ( oNode.GetNode( _T("w:bottom"), oChild ) )  
+				if ( oNode.GetNode( L"w:bottom", oChild ) )  
 					m_oBottom = oChild;
 
-				if ( oNode.GetNode( _T("w:end"), oChild ) )  
+				if ( oNode.GetNode( L"w:end", oChild ) )  
 					m_oEnd = oChild;
 
-				if ( oNode.GetNode( _T("w:start"), oChild ) )  
+				if ( oNode.GetNode( L"w:start", oChild ) )  
 					m_oStart = oChild;
 
-				if ( oNode.GetNode( _T("w:top"), oChild ) )  
+				if ( oNode.GetNode( L"w:top", oChild ) )  
 					m_oTop = oChild;
 
-				if ( !m_oEnd.IsInit() && oNode.GetNode( _T("w:right"), oChild ) )
+				if ( !m_oEnd.IsInit() && oNode.GetNode( L"w:right", oChild ) )
 					m_oEnd = oChild;
 
-				if ( !m_oStart.IsInit() && oNode.GetNode( _T("w:left"), oChild ) )
+				if ( !m_oStart.IsInit() && oNode.GetNode( L"w:left", oChild ) )
 					m_oStart = oChild;
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
@@ -807,53 +807,53 @@ namespace OOX
 				while( oReader.ReadNextSiblingNode( nParentDepth ) )
 				{
 					std::wstring sName = oReader.GetName();
-					if ( _T("w:bottom") == sName )  
+					if ( L"w:bottom" == sName )  
 						m_oBottom = oReader;
-					else if ( _T("w:end") == sName )  
+					else if ( L"w:end" == sName )  
 						m_oEnd = oReader;
-					else if ( _T("w:start") == sName )  
+					else if ( L"w:start" == sName )  
 						m_oStart = oReader;
-					else if ( _T("w:top") == sName )  
+					else if ( L"w:top" == sName )  
 						m_oTop = oReader;
-					else if ( _T("w:right") == sName )  
+					else if ( L"w:right" == sName )  
 						m_oEnd = oReader;
-					else if ( _T("w:left") == sName )  
+					else if ( L"w:left" == sName )  
 						m_oStart = oReader;
 				}
 			}
 			virtual std::wstring      toXML() const                     
 			{
-				std::wstring sResult = _T("<w:tblCellMar>");
+				std::wstring sResult = L"<w:tblCellMar>";
 
 				if ( m_oBottom.IsInit() )
 				{
-					sResult += _T("<w:bottom ");
+					sResult += L"<w:bottom ";
 					sResult += m_oBottom->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oEnd.IsInit() )
 				{
-					sResult += _T("<w:end ");
+					sResult += L"<w:end ";
 					sResult += m_oEnd->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oStart.IsInit() )
 				{
-					sResult += _T("<w:start ");
+					sResult += L"<w:start ";
 					sResult += m_oStart->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
 				if ( m_oTop.IsInit() )
 				{
-					sResult += _T("<w:top ");
+					sResult += L"<w:top ";
 					sResult += m_oTop->ToString();
-					sResult += _T("/>");						
+					sResult += L"/>";						
 				}
 
-				sResult += _T("</w:tblCellMar>");
+				sResult += L"</w:tblCellMar>";
 
 				return sResult;
 			}
@@ -962,32 +962,32 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tblPr") != oNode.GetName() )
+				if ( L"w:tblPr" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:bidiVisual"),          m_oBidiVisual );
-				WritingElement_ReadNode( oNode, oChild, _T("w:jc"),                  m_oJc );
-				WritingElement_ReadNode( oNode, oChild, _T("w:shd"),                 m_oShade );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblBorders"),          m_oTblBorders );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblCaption"),          m_oTblCaption );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblCellMar"),          m_oTblCellMar );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblCellSpacing"),      m_oTblCellSpacing );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblDescription"),      m_oTblDescription );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblInd"),              m_oTblInd );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblLayout"),           m_oTblLayout );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblLook"),             m_oTblLook );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblOverlap"),          m_oTblOverlap );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblpPr"),              m_oTblpPr );
+				WritingElement_ReadNode( oNode, oChild, L"w:bidiVisual",          m_oBidiVisual );
+				WritingElement_ReadNode( oNode, oChild, L"w:jc",                  m_oJc );
+				WritingElement_ReadNode( oNode, oChild, L"w:shd",                 m_oShade );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblBorders",          m_oTblBorders );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblCaption",          m_oTblCaption );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblCellMar",          m_oTblCellMar );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblCellSpacing",      m_oTblCellSpacing );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblDescription",      m_oTblDescription );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblInd",              m_oTblInd );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblLayout",           m_oTblLayout );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblLook",             m_oTblLook );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblOverlap",          m_oTblOverlap );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblpPr",              m_oTblpPr );
 
 				if ( !m_bTblPrChange )
-					WritingElement_ReadNode( oNode, oChild, _T("w:tblPrChange"), m_oTblPrChange );
+					WritingElement_ReadNode( oNode, oChild, L"w:tblPrChange", m_oTblPrChange );
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblStyle"),            m_oTblStyle );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblStyleColBandSize"), m_oTblStyleColBandSize );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblStyleRowBandSize"), m_oTblStyleRowBandSize );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblW"),                m_oTblW );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblStyle",            m_oTblStyle );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblStyleColBandSize", m_oTblStyleColBandSize );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblStyleRowBandSize", m_oTblStyleRowBandSize );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblW",                m_oTblW );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -999,25 +999,25 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if      ( _T("w:bidiVisual")          == sName ) m_oBidiVisual = oReader;
-					else if ( _T("w:jc")                  == sName ) m_oJc = oReader;
-					else if ( _T("w:shd")                 == sName ) m_oShade = oReader;
-					else if ( _T("w:tblBorders")          == sName ) m_oTblBorders = oReader;
-					else if ( _T("w:tblCaption")          == sName ) m_oTblCaption = oReader;
-					else if ( _T("w:tblCellMar")          == sName ) m_oTblCellMar = oReader;
-					else if ( _T("w:tblCellSpacing")      == sName ) m_oTblCellSpacing = oReader;
-					else if ( _T("w:tblDescription")      == sName ) m_oTblDescription = oReader;
-					else if ( _T("w:tblInd")              == sName ) m_oTblInd = oReader;
-					else if ( _T("w:tblLayout")           == sName ) m_oTblLayout = oReader;
-					else if ( _T("w:tblLook")             == sName ) m_oTblLook = oReader;
-					else if ( _T("w:tblOverlap")          == sName ) m_oTblOverlap = oReader;
-					else if ( _T("w:tblpPr")              == sName ) m_oTblpPr = oReader;
-					else if ( !m_bTblPrChange && _T("w:tblPrChange") == sName ) m_oTblPrChange = oReader;
-					else if ( _T("w:tblStyle")            == sName ) m_oTblStyle = oReader;
-					else if ( _T("w:tblStyleColBandSize") == sName ) m_oTblStyleColBandSize = oReader;
-					else if ( _T("w:tblStyleRowBandSize") == sName ) m_oTblStyleRowBandSize = oReader;
-					else if ( _T("w:tblW")                == sName ) m_oTblW = oReader;
-					else if ( _T("w:tblPr") == sName)
+					if      ( L"w:bidiVisual"          == sName ) m_oBidiVisual = oReader;
+					else if ( L"w:jc"                  == sName ) m_oJc = oReader;
+					else if ( L"w:shd"                 == sName ) m_oShade = oReader;
+					else if ( L"w:tblBorders"          == sName ) m_oTblBorders = oReader;
+					else if ( L"w:tblCaption"          == sName ) m_oTblCaption = oReader;
+					else if ( L"w:tblCellMar"          == sName ) m_oTblCellMar = oReader;
+					else if ( L"w:tblCellSpacing"      == sName ) m_oTblCellSpacing = oReader;
+					else if ( L"w:tblDescription"      == sName ) m_oTblDescription = oReader;
+					else if ( L"w:tblInd"              == sName ) m_oTblInd = oReader;
+					else if ( L"w:tblLayout"           == sName ) m_oTblLayout = oReader;
+					else if ( L"w:tblLook"             == sName ) m_oTblLook = oReader;
+					else if ( L"w:tblOverlap"          == sName ) m_oTblOverlap = oReader;
+					else if ( L"w:tblpPr"              == sName ) m_oTblpPr = oReader;
+					else if ( !m_bTblPrChange && L"w:tblPrChange" == sName ) m_oTblPrChange = oReader;
+					else if ( L"w:tblStyle"            == sName ) m_oTblStyle = oReader;
+					else if ( L"w:tblStyleColBandSize" == sName ) m_oTblStyleColBandSize = oReader;
+					else if ( L"w:tblStyleRowBandSize" == sName ) m_oTblStyleRowBandSize = oReader;
+					else if ( L"w:tblW"                == sName ) m_oTblW = oReader;
+					else if ( L"w:tblPr" == sName)
 					{//387.docx
 						fromXML(oReader);
 					}
@@ -1025,31 +1025,31 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const                     
 			{
-				std::wstring sResult = _T("<w:tblPr>");
+				std::wstring sResult = L"<w:tblPr>";
 
-				WritingElement_WriteNode_1( _T("<w:bidiVisual "),          m_oBidiVisual );
-				WritingElement_WriteNode_1( _T("<w:jc "),                  m_oJc );
-				WritingElement_WriteNode_1( _T("<w:shd "),                 m_oShade );
+				WritingElement_WriteNode_1( L"<w:bidiVisual ",          m_oBidiVisual );
+				WritingElement_WriteNode_1( L"<w:jc ",                  m_oJc );
+				WritingElement_WriteNode_1( L"<w:shd ",                 m_oShade );
 				WritingElement_WriteNode_2( m_oTblBorders );
-				WritingElement_WriteNode_1( _T("<w:tblCaption "),          m_oTblCaption );
+				WritingElement_WriteNode_1( L"<w:tblCaption ",          m_oTblCaption );
 				WritingElement_WriteNode_2( m_oTblCellMar );
-				WritingElement_WriteNode_1( _T("<w:tblCellSpacing "),      m_oTblCellSpacing );
-				WritingElement_WriteNode_1( _T("<w:tblDescription "),      m_oTblDescription );
-				WritingElement_WriteNode_1( _T("<w:tblInd "),              m_oTblInd );
-				WritingElement_WriteNode_1( _T("<w:tblLayout "),           m_oTblLayout );
-				WritingElement_WriteNode_1( _T("<w:tblLook "),             m_oTblLook );
-				WritingElement_WriteNode_1( _T("<w:tblOverlap "),          m_oTblOverlap );
-				WritingElement_WriteNode_1( _T("<w:tblpPr "),              m_oTblpPr );
+				WritingElement_WriteNode_1( L"<w:tblCellSpacing ",      m_oTblCellSpacing );
+				WritingElement_WriteNode_1( L"<w:tblDescription ",      m_oTblDescription );
+				WritingElement_WriteNode_1( L"<w:tblInd ",              m_oTblInd );
+				WritingElement_WriteNode_1( L"<w:tblLayout ",           m_oTblLayout );
+				WritingElement_WriteNode_1( L"<w:tblLook ",             m_oTblLook );
+				WritingElement_WriteNode_1( L"<w:tblOverlap ",          m_oTblOverlap );
+				WritingElement_WriteNode_1( L"<w:tblpPr ",              m_oTblpPr );
 
 				if ( !m_bTblPrChange )
 					WritingElement_WriteNode_2( m_oTblPrChange );
 
-				WritingElement_WriteNode_1( _T("<w:tblStyle "),            m_oTblStyle );
-				WritingElement_WriteNode_1( _T("<w:tblStyleColBandSize "), m_oTblStyleColBandSize );
-				WritingElement_WriteNode_1( _T("<w:tblStyleRowBandSize "), m_oTblStyleRowBandSize );
-				WritingElement_WriteNode_1( _T("<w:tblW "),                m_oTblW );
+				WritingElement_WriteNode_1( L"<w:tblStyle ",            m_oTblStyle );
+				WritingElement_WriteNode_1( L"<w:tblStyleColBandSize ", m_oTblStyleColBandSize );
+				WritingElement_WriteNode_1( L"<w:tblStyleRowBandSize ", m_oTblStyleRowBandSize );
+				WritingElement_WriteNode_1( L"<w:tblW ",                m_oTblW );
 
-				sResult += _T("</w:tblPr>");
+				sResult += L"</w:tblPr>";
 
 				return sResult;
 			}
@@ -1151,8 +1151,9 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:hRule"), m_oHRule );
-				XmlMacroReadAttributeBase( oNode, _T("w:val"),   m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:hRule", m_oHRule );
+				XmlMacroReadAttributeBase( oNode, L"w:val",   m_oVal );
+				XmlMacroReadAttributeBase(oNode, L"w:h-rule", m_oHRule);
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1165,8 +1166,8 @@ namespace ComplexTypes
 			{
 				std::wstring sResult;
 
-				ComplexTypes_WriteAttribute( _T("w:hRule=\""), m_oHRule );
-				ComplexTypes_WriteAttribute( _T("w:val=\""),   m_oVal );
+				ComplexTypes_WriteAttribute( L"w:hRule=\"", m_oHRule );
+				ComplexTypes_WriteAttribute( L"w:val=\"",   m_oVal );
 
 				return sResult;
 			}
@@ -1175,8 +1176,9 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:hRule"), m_oHRule )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:val"),   m_oVal )
+				WritingElement_ReadAttributes_Read_if ( oReader, L"w:hRule", m_oHRule )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val", m_oVal )
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-rule", m_oHRule)
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1269,29 +1271,29 @@ namespace OOX
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:trPr") != oNode.GetName() )
+				if ( L"w:trPr" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:cantSplit"),      m_oCantSplit );
-				WritingElement_ReadNode( oNode, oChild, _T("w:cnfStyle"),       m_oCnfStyle );
-				WritingElement_ReadNode( oNode, oChild, _T("w:del"),            m_oDel );
-				WritingElement_ReadNode( oNode, oChild, _T("w:divId"),          m_oDivId );
-				WritingElement_ReadNode( oNode, oChild, _T("w:gridAfter"),      m_oGridAfter );
-				WritingElement_ReadNode( oNode, oChild, _T("w:gridBefore"),     m_oGridBefore );
-				WritingElement_ReadNode( oNode, oChild, _T("w:hidden"),         m_oHidden );
-				WritingElement_ReadNode( oNode, oChild, _T("w:ins"),            m_oIns );
-				WritingElement_ReadNode( oNode, oChild, _T("w:jc"),             m_oJc );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblCellSpacing"), m_oTblCellSpacing );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tblHeader"),      m_oTblHeader );
-				WritingElement_ReadNode( oNode, oChild, _T("w:trHeight"),       m_oTblHeight );
+				WritingElement_ReadNode( oNode, oChild, L"w:cantSplit",      m_oCantSplit );
+				WritingElement_ReadNode( oNode, oChild, L"w:cnfStyle",       m_oCnfStyle );
+				WritingElement_ReadNode( oNode, oChild, L"w:del",            m_oDel );
+				WritingElement_ReadNode( oNode, oChild, L"w:divId",          m_oDivId );
+				WritingElement_ReadNode( oNode, oChild, L"w:gridAfter",      m_oGridAfter );
+				WritingElement_ReadNode( oNode, oChild, L"w:gridBefore",     m_oGridBefore );
+				WritingElement_ReadNode( oNode, oChild, L"w:hidden",         m_oHidden );
+				WritingElement_ReadNode( oNode, oChild, L"w:ins",            m_oIns );
+				WritingElement_ReadNode( oNode, oChild, L"w:jc",             m_oJc );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblCellSpacing", m_oTblCellSpacing );
+				WritingElement_ReadNode( oNode, oChild, L"w:tblHeader",      m_oTblHeader );
+				WritingElement_ReadNode( oNode, oChild, L"w:trHeight",       m_oTblHeight );
 
 				if ( !m_bTrPrChange )
-					WritingElement_ReadNode( oNode, oChild, _T("w:trPrChange"), m_oTrPrChange );
+					WritingElement_ReadNode( oNode, oChild, L"w:trPrChange", m_oTrPrChange );
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:wAfter"),         m_oWAfter );
-				WritingElement_ReadNode( oNode, oChild, _T("w:wBefore"),        m_oWBefore );
+				WritingElement_ReadNode( oNode, oChild, L"w:wAfter",         m_oWAfter );
+				WritingElement_ReadNode( oNode, oChild, L"w:wBefore",        m_oWBefore );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1303,47 +1305,47 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if      ( _T("w:cantSplit")      == sName ) m_oCantSplit = oReader;
-					else if ( _T("w:cnfStyle")       == sName ) m_oCnfStyle = oReader;
-					else if ( _T("w:del")            == sName ) m_oDel = oReader;
-					else if ( _T("w:divId")          == sName ) m_oDivId = oReader;
-					else if ( _T("w:gridAfter")      == sName ) m_oGridAfter = oReader;
-					else if ( _T("w:gridBefore")     == sName ) m_oGridBefore = oReader;
-					else if ( _T("w:hidden")         == sName ) m_oHidden = oReader;
-					else if ( _T("w:ins")            == sName ) m_oIns = oReader;
-					else if ( _T("w:jc")             == sName ) m_oJc = oReader;
-					else if ( _T("w:tblCellSpacing") == sName ) m_oTblCellSpacing = oReader;
-					else if ( _T("w:tblHeader")      == sName ) m_oTblHeader = oReader;
-					else if ( _T("w:trHeight")       == sName ) m_oTblHeight = oReader;
-					else if ( !m_bTrPrChange && _T("w:trPrChange") == sName ) m_oTrPrChange = oReader;
-					else if ( _T("w:wAfter")         == sName ) m_oWAfter = oReader;
-					else if ( _T("w:wBefore")        == sName ) m_oWBefore = oReader;
+					if      ( L"w:cantSplit"      == sName ) m_oCantSplit = oReader;
+					else if ( L"w:cnfStyle"       == sName ) m_oCnfStyle = oReader;
+					else if ( L"w:del"            == sName ) m_oDel = oReader;
+					else if ( L"w:divId"          == sName ) m_oDivId = oReader;
+					else if ( L"w:gridAfter"      == sName ) m_oGridAfter = oReader;
+					else if ( L"w:gridBefore"     == sName ) m_oGridBefore = oReader;
+					else if ( L"w:hidden"         == sName ) m_oHidden = oReader;
+					else if ( L"w:ins"            == sName ) m_oIns = oReader;
+					else if ( L"w:jc"             == sName ) m_oJc = oReader;
+					else if ( L"w:tblCellSpacing" == sName ) m_oTblCellSpacing = oReader;
+					else if ( L"w:tblHeader"      == sName ) m_oTblHeader = oReader;
+					else if ( L"w:trHeight"       == sName ) m_oTblHeight = oReader;
+					else if ( !m_bTrPrChange && L"w:trPrChange" == sName ) m_oTrPrChange = oReader;
+					else if ( L"w:wAfter"         == sName ) m_oWAfter = oReader;
+					else if ( L"w:wBefore"        == sName ) m_oWBefore = oReader;
 				}
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<w:trPr>");
+				std::wstring sResult = L"<w:trPr>";
 
-				WritingElement_WriteNode_1( _T("<w:cantSplit "),      m_oCantSplit );
-				WritingElement_WriteNode_1( _T("<w:cnfStyle "),       m_oCnfStyle );
-				WritingElement_WriteNode_1( _T("<w:del "),            m_oDel );
-				WritingElement_WriteNode_1( _T("<w:divId "),          m_oDivId );
-				WritingElement_WriteNode_1( _T("<w:gridAfter "),      m_oGridAfter );
-				WritingElement_WriteNode_1( _T("<w:gridBefore "),     m_oGridBefore );
-				WritingElement_WriteNode_1( _T("<w:hidden "),         m_oHidden );
-				WritingElement_WriteNode_1( _T("<w:ins "),            m_oIns );
-				WritingElement_WriteNode_1( _T("<w:jc "),             m_oJc );
-				WritingElement_WriteNode_1( _T("<w:tblCellSpacing "), m_oTblCellSpacing );
-				WritingElement_WriteNode_1( _T("<w:tblHeader "),      m_oTblHeader );
-				WritingElement_WriteNode_1( _T("<w:trHeight "),       m_oTblHeight );
+				WritingElement_WriteNode_1( L"<w:cantSplit ",      m_oCantSplit );
+				WritingElement_WriteNode_1( L"<w:cnfStyle ",       m_oCnfStyle );
+				WritingElement_WriteNode_1( L"<w:del ",            m_oDel );
+				WritingElement_WriteNode_1( L"<w:divId ",          m_oDivId );
+				WritingElement_WriteNode_1( L"<w:gridAfter ",      m_oGridAfter );
+				WritingElement_WriteNode_1( L"<w:gridBefore ",     m_oGridBefore );
+				WritingElement_WriteNode_1( L"<w:hidden ",         m_oHidden );
+				WritingElement_WriteNode_1( L"<w:ins ",            m_oIns );
+				WritingElement_WriteNode_1( L"<w:jc ",             m_oJc );
+				WritingElement_WriteNode_1( L"<w:tblCellSpacing ", m_oTblCellSpacing );
+				WritingElement_WriteNode_1( L"<w:tblHeader ",      m_oTblHeader );
+				WritingElement_WriteNode_1( L"<w:trHeight ",       m_oTblHeight );
 
 				if ( !m_bTrPrChange )
 					WritingElement_WriteNode_2( m_oTrPrChange );
 
-				WritingElement_WriteNode_1( _T("<w:wAfter "),         m_oWAfter );
-				WritingElement_WriteNode_1( _T("<w:wBefore "),        m_oWBefore );
+				WritingElement_WriteNode_1( L"<w:wAfter ",         m_oWAfter );
+				WritingElement_WriteNode_1( L"<w:wBefore ",        m_oWBefore );
 
-				sResult += _T("</w:trPr>");
+				sResult += L"</w:trPr>";
 
 				return sResult;
 			}
@@ -1431,12 +1433,12 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:author"),     m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, _T("w:date"),       m_oDate );
-				XmlMacroReadAttributeBase( oNode, _T("w:id"),         m_oId );
-				XmlMacroReadAttributeBase( oNode, _T("w:vMerge"),     m_oVMerge );
-				XmlMacroReadAttributeBase( oNode, _T("w:vMergeOrig"), m_oVMergeOrig );
-				XmlMacroReadAttributeBase( oNode, _T("oouserid"),     m_sUserId );
+				XmlMacroReadAttributeBase( oNode, L"w:author",     m_sAuthor );
+				XmlMacroReadAttributeBase( oNode, L"w:date",       m_oDate );
+				XmlMacroReadAttributeBase( oNode, L"w:id",         m_oId );
+				XmlMacroReadAttributeBase( oNode, L"w:vMerge",     m_oVMerge );
+				XmlMacroReadAttributeBase( oNode, L"w:vMergeOrig", m_oVMergeOrig );
+				XmlMacroReadAttributeBase( oNode, L"oouserid",     m_sUserId );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1451,21 +1453,21 @@ namespace ComplexTypes
 
 				if ( m_sAuthor.IsInit() )
 				{
-					sResult += _T("w:author=\"");
+					sResult += L"w:author=\"";
                     sResult += m_sAuthor.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
-				ComplexTypes_WriteAttribute( _T("w:date=\""),       m_oDate );
-				ComplexTypes_WriteAttribute( _T("w:id=\""),         m_oId );
-				ComplexTypes_WriteAttribute( _T("w:vMerge=\""),     m_oVMerge );
-				ComplexTypes_WriteAttribute( _T("w:vMergeOrig=\""), m_oVMergeOrig );
+				ComplexTypes_WriteAttribute( L"w:date=\"",       m_oDate );
+				ComplexTypes_WriteAttribute( L"w:id=\"",         m_oId );
+				ComplexTypes_WriteAttribute( L"w:vMerge=\"",     m_oVMerge );
+				ComplexTypes_WriteAttribute( L"w:vMergeOrig=\"", m_oVMergeOrig );
 
 				if ( m_sUserId.IsInit() )
 				{
-					sResult += _T("oouserid=\"");
+					sResult += L"oouserid=\"";
                     sResult += m_sUserId.get2();
-					sResult += _T("\" ");
+					sResult += L"\" ";
 				}
 
 				return sResult;
@@ -1476,12 +1478,12 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"),     m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),       m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),         m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vMerge"),     m_oVMerge )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:vMergeOrig"), m_oVMergeOrig )
-				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"),     m_sUserId )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",     m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",       m_oDate )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",         m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vMerge",     m_oVMerge )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:vMergeOrig", m_oVMergeOrig )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",     m_sUserId )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1511,7 +1513,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1524,7 +1526,7 @@ namespace ComplexTypes
 			{
 				std::wstring sResult;
 
-				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
+				ComplexTypes_WriteAttribute( L"w:val=\"", m_oVal );
 
 				return sResult;
 			}
@@ -1534,7 +1536,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1560,7 +1562,7 @@ namespace ComplexTypes
 
 			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
 			{
-				XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
+				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 			}
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -1573,7 +1575,7 @@ namespace ComplexTypes
 			{
 				std::wstring sResult;
 
-				ComplexTypes_WriteAttribute( _T("w:val=\""), m_oVal );
+				ComplexTypes_WriteAttribute( L"w:val=\"", m_oVal );
 
 				return sResult;
 			}
@@ -1583,7 +1585,7 @@ namespace ComplexTypes
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
@@ -1622,12 +1624,12 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:headers") != oNode.GetName() )
+				if ( L"w:headers" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNodes oHeaders;
 
-				if ( oNode.GetNodes( _T("w:header"), oHeaders ) )
+				if ( oNode.GetNodes( L"w:header", oHeaders ) )
 				{
 					XmlUtils::CXmlNode oHeader;
 					for ( int nIndex = 0; nIndex < oHeaders.GetCount(); nIndex++ )
@@ -1650,7 +1652,7 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if ( _T("w:header") == sName )
+					if ( L"w:header" == sName )
 					{
 						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oReader);
 						if (oHead) m_arrHeaders.push_back( oHead );
@@ -1659,17 +1661,17 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<w:headers>");
+				std::wstring sResult = L"<w:headers>";
 
 				for (unsigned int nIndex = 0; nIndex < m_arrHeaders.size(); nIndex++ )
 				{		
-					sResult += _T("<w:header ");
+					sResult += L"<w:header ";
 					if (m_arrHeaders[nIndex])
 						sResult += m_arrHeaders[nIndex]->ToString();
-					sResult += _T("/>");
+					sResult += L"/>";
 				}
 
-				sResult += _T("</w:headers>");
+				sResult += L"</w:headers>";
 
 				return sResult;
 			}
@@ -1698,25 +1700,25 @@ namespace OOX
 		public:
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tcBorders") != oNode.GetName() )
+				if ( L"w:tcBorders" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:bottom"),  m_oBottom );
-				WritingElement_ReadNode( oNode, oChild, _T("w:end"),     m_oEnd );
-				WritingElement_ReadNode( oNode, oChild, _T("w:insideH"), m_oInsideH );
-				WritingElement_ReadNode( oNode, oChild, _T("w:insideV"), m_oInsideV );
-				WritingElement_ReadNode( oNode, oChild, _T("w:start"),   m_oStart );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tl2br"),   m_oTL2BR );
-				WritingElement_ReadNode( oNode, oChild, _T("w:top"),     m_oTop );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tr2bl"),   m_oTR2BL );
+				WritingElement_ReadNode( oNode, oChild, L"w:bottom",  m_oBottom );
+				WritingElement_ReadNode( oNode, oChild, L"w:end",     m_oEnd );
+				WritingElement_ReadNode( oNode, oChild, L"w:insideH", m_oInsideH );
+				WritingElement_ReadNode( oNode, oChild, L"w:insideV", m_oInsideV );
+				WritingElement_ReadNode( oNode, oChild, L"w:start",   m_oStart );
+				WritingElement_ReadNode( oNode, oChild, L"w:tl2br",   m_oTL2BR );
+				WritingElement_ReadNode( oNode, oChild, L"w:top",     m_oTop );
+				WritingElement_ReadNode( oNode, oChild, L"w:tr2bl",   m_oTR2BL );
 
 				if ( !m_oEnd.IsInit() )
-					WritingElement_ReadNode( oNode, oChild, _T("w:right"), m_oEnd );
+					WritingElement_ReadNode( oNode, oChild, L"w:right", m_oEnd );
 
 				if ( !m_oStart.IsInit() )
-					WritingElement_ReadNode( oNode, oChild, _T("w:left"),  m_oStart );
+					WritingElement_ReadNode( oNode, oChild, L"w:left",  m_oStart );
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1728,32 +1730,32 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if      ( _T("w:bottom")  == sName ) m_oBottom = oReader;
-					else if ( _T("w:end")     == sName ) m_oEnd = oReader;
-					else if ( _T("w:insideH") == sName ) m_oInsideH = oReader;
-					else if ( _T("w:insideV") == sName ) m_oInsideV = oReader;
-					else if ( _T("w:start")   == sName ) m_oStart = oReader;
-					else if ( _T("w:tl2br")   == sName ) m_oTL2BR = oReader;
-					else if ( _T("w:top")     == sName ) m_oTop = oReader;
-					else if ( _T("w:tr2bl")   == sName ) m_oTR2BL = oReader;
-					else if ( !m_oEnd.IsInit()   && _T("w:right") == sName ) m_oEnd = oReader;
-					else if ( !m_oStart.IsInit() && _T("w:left")  == sName ) m_oStart = oReader;
+					if      ( L"w:bottom"  == sName ) m_oBottom = oReader;
+					else if ( L"w:end"     == sName ) m_oEnd = oReader;
+					else if ( L"w:insideH" == sName ) m_oInsideH = oReader;
+					else if ( L"w:insideV" == sName ) m_oInsideV = oReader;
+					else if ( L"w:start"   == sName ) m_oStart = oReader;
+					else if ( L"w:tl2br"   == sName ) m_oTL2BR = oReader;
+					else if ( L"w:top"     == sName ) m_oTop = oReader;
+					else if ( L"w:tr2bl"   == sName ) m_oTR2BL = oReader;
+					else if ( !m_oEnd.IsInit()   && L"w:right" == sName ) m_oEnd = oReader;
+					else if ( !m_oStart.IsInit() && L"w:left"  == sName ) m_oStart = oReader;
 				}
 			}
 			virtual std::wstring      toXML() const
 			{
-				std::wstring sResult = _T("<w:tcBorders>");
+				std::wstring sResult = L"<w:tcBorders>";
 
-				WritingElement_WriteNode_1( _T("<w:bottom "),  m_oBottom );
-				WritingElement_WriteNode_1( _T("<w:end "),     m_oEnd );
-				WritingElement_WriteNode_1( _T("<w:insideH "), m_oInsideH );
-				WritingElement_WriteNode_1( _T("<w:insideV "), m_oInsideV );
-				WritingElement_WriteNode_1( _T("<w:start "),   m_oStart );
-				WritingElement_WriteNode_1( _T("<w:tl2br "),   m_oTL2BR );
-				WritingElement_WriteNode_1( _T("<w:top "),     m_oTop );
-				WritingElement_WriteNode_1( _T("<w:tr2bl "),   m_oTR2BL );
+				WritingElement_WriteNode_1( L"<w:bottom ",  m_oBottom );
+				WritingElement_WriteNode_1( L"<w:end ",     m_oEnd );
+				WritingElement_WriteNode_1( L"<w:insideH ", m_oInsideH );
+				WritingElement_WriteNode_1( L"<w:insideV ", m_oInsideV );
+				WritingElement_WriteNode_1( L"<w:start ",   m_oStart );
+				WritingElement_WriteNode_1( L"<w:tl2br ",   m_oTL2BR );
+				WritingElement_WriteNode_1( L"<w:top ",     m_oTop );
+				WritingElement_WriteNode_1( L"<w:tr2bl ",   m_oTR2BL );
 
-				sResult += _T("</w:tcBorders>");
+				sResult += L"</w:tcBorders>";
 
 				return sResult;
 			}
@@ -1815,21 +1817,21 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tcMar") != oNode.GetName() )
+				if ( L"w:tcMar" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:bottom"),  m_oBottom );
-				WritingElement_ReadNode( oNode, oChild, _T("w:end"),     m_oEnd );
-				WritingElement_ReadNode( oNode, oChild, _T("w:start"),   m_oStart );
-				WritingElement_ReadNode( oNode, oChild, _T("w:top"),     m_oTop );
+				WritingElement_ReadNode( oNode, oChild, L"w:bottom",  m_oBottom );
+				WritingElement_ReadNode( oNode, oChild, L"w:end",     m_oEnd );
+				WritingElement_ReadNode( oNode, oChild, L"w:start",   m_oStart );
+				WritingElement_ReadNode( oNode, oChild, L"w:top",     m_oTop );
 
 				if ( !m_oEnd.IsInit() )
-					WritingElement_ReadNode( oNode, oChild, _T("w:right"), m_oEnd );
+					WritingElement_ReadNode( oNode, oChild, L"w:right", m_oEnd );
 
 				if ( !m_oStart.IsInit() )
-					WritingElement_ReadNode( oNode, oChild, _T("w:left"),  m_oStart );
+					WritingElement_ReadNode( oNode, oChild, L"w:left",  m_oStart );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
 			{
@@ -1841,24 +1843,24 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if      ( _T("w:bottom")  == sName ) m_oBottom = oReader;
-					else if ( _T("w:end")     == sName ) m_oEnd = oReader;
-					else if ( _T("w:start")   == sName ) m_oStart = oReader;
-					else if ( _T("w:top")     == sName ) m_oTop = oReader;
-					else if ( !m_oEnd.IsInit()   && _T("w:right") == sName ) m_oEnd = oReader;
-					else if ( !m_oStart.IsInit() && _T("w:left")  == sName ) m_oStart = oReader;
+					if      ( L"w:bottom"  == sName ) m_oBottom = oReader;
+					else if ( L"w:end"     == sName ) m_oEnd = oReader;
+					else if ( L"w:start"   == sName ) m_oStart = oReader;
+					else if ( L"w:top"     == sName ) m_oTop = oReader;
+					else if ( !m_oEnd.IsInit()   && L"w:right" == sName ) m_oEnd = oReader;
+					else if ( !m_oStart.IsInit() && L"w:left"  == sName ) m_oStart = oReader;
 				}
 			}
 			virtual std::wstring toXML() const
 			{
-				std::wstring sResult = _T("<w:tcMar>");
+				std::wstring sResult = L"<w:tcMar>";
 
-				WritingElement_WriteNode_1( _T("<w:bottom "), m_oBottom );
-				WritingElement_WriteNode_1( _T("<w:end "),    m_oEnd );
-				WritingElement_WriteNode_1( _T("<w:start "),  m_oStart );
-				WritingElement_WriteNode_1( _T("<w:top "),    m_oTop );
+				WritingElement_WriteNode_1( L"<w:bottom ", m_oBottom );
+				WritingElement_WriteNode_1( L"<w:end ",    m_oEnd );
+				WritingElement_WriteNode_1( L"<w:start ",  m_oStart );
+				WritingElement_WriteNode_1( L"<w:top ",    m_oTop );
 
-				sResult += _T("</w:tcMar>");
+				sResult += L"</w:tcMar>";
 
 				return sResult;
 			}
@@ -1966,41 +1968,41 @@ namespace OOX
 			}
 			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				if ( _T("w:tcPr") != oNode.GetName() )
+				if ( L"w:tcPr" != oNode.GetName() )
 					return;
 
 				XmlUtils::CXmlNode oChild;
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:cellDel"),        m_oCellDel );
-				WritingElement_ReadNode( oNode, oChild, _T("w:cellIns"),        m_oCellIns );
-				WritingElement_ReadNode( oNode, oChild, _T("w:cellMerge"),      m_oCellMerge );
-				WritingElement_ReadNode( oNode, oChild, _T("w:cnfStyle"),       m_oCnfStyle );
-				WritingElement_ReadNode( oNode, oChild, _T("w:gridSpan"),       m_oGridSpan );
-				WritingElement_ReadNode( oNode, oChild, _T("w:headers"),        m_oHeaders );
-				WritingElement_ReadNode( oNode, oChild, _T("w:hideMark"),       m_oHideMark );
+				WritingElement_ReadNode( oNode, oChild, L"w:cellDel",        m_oCellDel );
+				WritingElement_ReadNode( oNode, oChild, L"w:cellIns",        m_oCellIns );
+				WritingElement_ReadNode( oNode, oChild, L"w:cellMerge",      m_oCellMerge );
+				WritingElement_ReadNode( oNode, oChild, L"w:cnfStyle",       m_oCnfStyle );
+				WritingElement_ReadNode( oNode, oChild, L"w:gridSpan",       m_oGridSpan );
+				WritingElement_ReadNode( oNode, oChild, L"w:headers",        m_oHeaders );
+				WritingElement_ReadNode( oNode, oChild, L"w:hideMark",       m_oHideMark );
 
 				// В списке аттрибутов написано "hMerge", а в примере "hmerge"
-				WritingElement_ReadNode( oNode, oChild, _T("w:hmerge"),         m_oHMerge );
+				WritingElement_ReadNode( oNode, oChild, L"w:hmerge",         m_oHMerge );
 				if ( !m_oHMerge.IsInit() )
-					WritingElement_ReadNode( oNode, oChild, _T("w:hMerge"),     m_oHMerge );
+					WritingElement_ReadNode( oNode, oChild, L"w:hMerge",     m_oHMerge );
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:noWrap"),         m_oNoWrap );
-				WritingElement_ReadNode( oNode, oChild, _T("w:shd"),            m_oShd );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tcBorders"),      m_oTcBorders );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tcFitText"),      m_oTcFitText );
-				WritingElement_ReadNode( oNode, oChild, _T("w:tcMar"),          m_oTcMar );
+				WritingElement_ReadNode( oNode, oChild, L"w:noWrap",         m_oNoWrap );
+				WritingElement_ReadNode( oNode, oChild, L"w:shd",            m_oShd );
+				WritingElement_ReadNode( oNode, oChild, L"w:tcBorders",      m_oTcBorders );
+				WritingElement_ReadNode( oNode, oChild, L"w:tcFitText",      m_oTcFitText );
+				WritingElement_ReadNode( oNode, oChild, L"w:tcMar",          m_oTcMar );
 
 				if ( !m_bTcPrChange )
-					WritingElement_ReadNode( oNode, oChild, _T("w:tcPrChange"), m_oTcPrChange );
+					WritingElement_ReadNode( oNode, oChild, L"w:tcPrChange", m_oTcPrChange );
 
-				WritingElement_ReadNode( oNode, oChild, _T("w:tcW"),            m_oTcW );
-				WritingElement_ReadNode( oNode, oChild, _T("w:textDirection"),  m_oTextDirection );
-				WritingElement_ReadNode( oNode, oChild, _T("w:vAlign"),         m_oVAlign );
+				WritingElement_ReadNode( oNode, oChild, L"w:tcW",            m_oTcW );
+				WritingElement_ReadNode( oNode, oChild, L"w:textDirection",  m_oTextDirection );
+				WritingElement_ReadNode( oNode, oChild, L"w:vAlign",         m_oVAlign );
 
 				// В списке аттрибутов написано "vMerge", а в примере "vmerge"
-				WritingElement_ReadNode( oNode, oChild, _T("w:vmerge"),         m_oVMerge );
+				WritingElement_ReadNode( oNode, oChild, L"w:vmerge",         m_oVMerge );
 				if ( !m_oVMerge.IsInit() )
-					WritingElement_ReadNode( oNode, oChild, _T("w:vMerge"),     m_oVMerge );
+					WritingElement_ReadNode( oNode, oChild, L"w:vMerge",     m_oVMerge );
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -2012,63 +2014,63 @@ namespace OOX
 				{
 					std::wstring sName = oReader.GetName();
 
-					if      ( _T("w:cellDel")        == sName ) m_oCellDel = oReader;
-					else if ( _T("w:cellIns")        == sName ) m_oCellIns = oReader;
-					else if ( _T("w:cellMerge")      == sName ) m_oCellMerge = oReader;
-					else if ( _T("w:cnfStyle")       == sName ) m_oCnfStyle = oReader;
-					else if ( _T("w:gridSpan")       == sName ) m_oGridSpan = oReader;
-					else if ( _T("w:headers")        == sName ) m_oHeaders = oReader;
-					else if ( _T("w:hideMark")       == sName ) m_oHideMark = oReader;
+					if      ( L"w:cellDel"        == sName ) m_oCellDel = oReader;
+					else if ( L"w:cellIns"        == sName ) m_oCellIns = oReader;
+					else if ( L"w:cellMerge"      == sName ) m_oCellMerge = oReader;
+					else if ( L"w:cnfStyle"       == sName ) m_oCnfStyle = oReader;
+					else if ( L"w:gridSpan"       == sName ) m_oGridSpan = oReader;
+					else if ( L"w:headers"        == sName ) m_oHeaders = oReader;
+					else if ( L"w:hideMark"       == sName ) m_oHideMark = oReader;
 					// В списке аттрибутов написано "hMerge", а в примере "hmerge"
-					else if ( _T("w:hmerge")         == sName ) m_oHMerge = oReader;
-					else if ( _T("w:hMerge")         == sName ) m_oHMerge = oReader;
-					else if ( _T("w:noWrap")         == sName ) m_oNoWrap = oReader;
-					else if ( _T("w:shd")            == sName ) m_oShd = oReader;
-					else if ( _T("w:tcBorders")      == sName ) m_oTcBorders = oReader;
-					else if ( _T("w:tcFitText")      == sName ) m_oTcFitText = oReader;
-					else if ( _T("w:tcMar")          == sName ) m_oTcMar = oReader;
-					else if ( !m_bTcPrChange && _T("w:tcPrChange") == sName ) m_oTcPrChange = oReader;
-					else if ( _T("w:tcW")            == sName ) m_oTcW = oReader;
-					else if ( _T("w:textDirection")  == sName ) m_oTextDirection = oReader;
-					else if ( _T("w:vAlign")         == sName ) m_oVAlign = oReader;
+					else if ( L"w:hmerge"         == sName ) m_oHMerge = oReader;
+					else if ( L"w:hMerge"         == sName ) m_oHMerge = oReader;
+					else if ( L"w:noWrap"         == sName ) m_oNoWrap = oReader;
+					else if ( L"w:shd"            == sName ) m_oShd = oReader;
+					else if ( L"w:tcBorders"      == sName ) m_oTcBorders = oReader;
+					else if ( L"w:tcFitText"      == sName ) m_oTcFitText = oReader;
+					else if ( L"w:tcMar"          == sName ) m_oTcMar = oReader;
+					else if ( !m_bTcPrChange && L"w:tcPrChange" == sName ) m_oTcPrChange = oReader;
+					else if ( L"w:tcW"            == sName ) m_oTcW = oReader;
+					else if ( L"w:textDirection"  == sName ) m_oTextDirection = oReader;
+					else if ( L"w:vAlign"         == sName ) m_oVAlign = oReader;
 					// В списке аттрибутов написано "vMerge", а в примере "vmerge"
-					else if ( _T("w:vmerge")         == sName ) m_oVMerge = oReader;
-					else if ( _T("w:vMerge")         == sName ) m_oVMerge = oReader;
+					else if ( L"w:vmerge"         == sName ) m_oVMerge = oReader;
+					else if ( L"w:vMerge"         == sName ) m_oVMerge = oReader;
 				}
 			}
 			virtual std::wstring toXML() const             
 			{
-				std::wstring sResult = _T("<w:tcPr>");
+				std::wstring sResult = L"<w:tcPr>";
 
-				WritingElement_WriteNode_1(_T("<w:cnfStyle "), m_oCnfStyle );
-				WritingElement_WriteNode_1(_T("<w:tcW "), m_oTcW);
-				WritingElement_WriteNode_1(_T("<w:gridSpan "), m_oGridSpan);
-				WritingElement_WriteNode_1(_T("<w:hmerge "), m_oHMerge);
-				WritingElement_WriteNode_1(_T("<w:vmerge "), m_oVMerge);
+				WritingElement_WriteNode_1(L"<w:cnfStyle ", m_oCnfStyle );
+				WritingElement_WriteNode_1(L"<w:tcW ", m_oTcW);
+				WritingElement_WriteNode_1(L"<w:gridSpan ", m_oGridSpan);
+				WritingElement_WriteNode_1(L"<w:hMerge ", m_oHMerge);
+				WritingElement_WriteNode_1(L"<w:vMerge ", m_oVMerge);
 				
 				WritingElement_WriteNode_2(m_oTcBorders);
 				
-				WritingElement_WriteNode_1(_T("<w:shd "), m_oShd);
-				WritingElement_WriteNode_1(_T("<w:noWrap "), m_oNoWrap);
+				WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
+				WritingElement_WriteNode_1(L"<w:noWrap ", m_oNoWrap);
 				
 				WritingElement_WriteNode_2(m_oTcMar);
 				
-				WritingElement_WriteNode_1(_T("<w:textDirection "), m_oTextDirection);
-				WritingElement_WriteNode_1(_T("<w:tcFitText "), m_oTcFitText);
+				WritingElement_WriteNode_1(L"<w:textDirection ", m_oTextDirection);
+				WritingElement_WriteNode_1(L"<w:tcFitText ", m_oTcFitText);
 
-				WritingElement_WriteNode_1(_T("<w:vAlign "), m_oVAlign);
-				WritingElement_WriteNode_1(_T("<w:hideMark "), m_oHideMark);
+				WritingElement_WriteNode_1(L"<w:vAlign ", m_oVAlign);
+				WritingElement_WriteNode_1(L"<w:hideMark ", m_oHideMark);
 
 				WritingElement_WriteNode_2(m_oHeaders);
 
-				WritingElement_WriteNode_1(_T("<w:cellIns "), m_oCellIns );
-				WritingElement_WriteNode_1(_T("<w:cellDel "), m_oCellDel );
-				WritingElement_WriteNode_1(_T("<w:cellMerge "), m_oCellMerge);
+				WritingElement_WriteNode_1(L"<w:cellIns ", m_oCellIns );
+				WritingElement_WriteNode_1(L"<w:cellDel ", m_oCellDel );
+				WritingElement_WriteNode_1(L"<w:cellMerge ", m_oCellMerge);
 
 				if ( !m_bTcPrChange )
 					WritingElement_WriteNode_2( m_oTcPrChange );
 
-				sResult += _T("</w:tcPr>");
+				sResult += L"</w:tcPr>";
 
 				return sResult;
 			}

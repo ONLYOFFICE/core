@@ -367,16 +367,10 @@ void Cx2tTester::Start()
 		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end())
 			continue;
 
-		// show proggres
-		std::cout << i << "/" << files.size() << " - " << U_TO_UTF8(input_file) << " started\n";
-
-		// setup folder for output files
 		std::wstring output_files_directory = m_outputDirectory + L'/' + NSFile::GetFileName(input_file);
 
-		if(NSDirectory::Exists(output_files_directory))
-			NSDirectory::DeleteDirectory(output_files_directory);
-
-		NSDirectory::CreateDirectory(output_files_directory);
+		// show proggres
+		std::cout << "[" <<  i << "/" << files.size() << "]" << " - " << U_TO_UTF8(input_file) << " started\n";
 
 		// setup output_formats for file
 		std::vector<int> output_file_formats;
@@ -404,9 +398,8 @@ void Cx2tTester::Start()
 			}
 		}
 		// waiting...
-		do
-			NSThreads::Sleep(150);
-		while(isAllBusy());
+		while(isAllBusy())
+			NSThreads::Sleep(100);
 
 		// setup & start new coverter
 		m_currentProc++;
@@ -525,7 +518,6 @@ void CConverter::SetInputFormat(int inputFormat)
 {
 	m_inputFormat = inputFormat;
 }
-
 void CConverter::SetOutputFilesDirectory(const std::wstring& outputFilesDirectory)
 {
 	m_outputFilesDirectory = outputFilesDirectory;
@@ -534,7 +526,6 @@ void CConverter::SetOutputFormats(const std::vector<int> outputFormats)
 {
 	m_outputFormats = outputFormats;
 }
-
 void CConverter::SetFontsDirectory(const std::wstring& fontsDirectory)
 {
 	m_fontsDirectory = fontsDirectory;
@@ -556,6 +547,12 @@ DWORD CConverter::ThreadProc()
 {
 	std::wstring xml_params_file = m_outputFilesDirectory + L"/params.xml";
 	std::vector<Cx2tTester::Report> reports;
+
+	// setup folder for output files
+	if(NSDirectory::Exists(m_outputFilesDirectory))
+		NSDirectory::DeleteDirectory(m_outputFilesDirectory);
+
+	NSDirectory::CreateDirectory(m_outputFilesDirectory);
 
 	DWORD time_file_start = NSTimers::GetTickCount();
 

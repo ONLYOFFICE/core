@@ -132,13 +132,10 @@ public:
 
 	void SetInputFile(const std::wstring& inputFile);
 	void SetInputFormat(int inputFormat);
-
 	void SetOutputFilesDirectory(const std::wstring& outputFilesDirectory);
 	void SetOutputFormats(const std::vector<int> outputFormats);
-
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
-
 	void SetOnlyErrors(bool bIsErrorsOnly);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 

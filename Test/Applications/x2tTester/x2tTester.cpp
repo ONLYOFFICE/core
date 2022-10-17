@@ -554,6 +554,10 @@ DWORD CConverter::ThreadProc()
 
 	NSDirectory::CreateDirectory(m_outputFilesDirectory);
 
+	// waiting for directory
+	if(!NSDirectory::Exists(m_outputFilesDirectory))
+		NSThreads::Sleep(60);
+
 	DWORD time_file_start = NSTimers::GetTickCount();
 
 	// input_format in many output exts
@@ -621,12 +625,21 @@ DWORD CConverter::ThreadProc()
 
 		NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
 
+		// waiting
+		while(!NSFile::CFileBinary::Exists(xml_params_file))
+				NSThreads::Sleep(50);
+
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 
 		if (!exit_code && output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 		{
 			NSDirectory::CreateDirectory(output_file);
 			COfficeUtils oUtils;
+
+			// waiting for directory
+			if(!NSDirectory::Exists(output_file))
+				NSThreads::Sleep(60);
+
 			if (S_OK == oUtils.ExtractToDirectory(output_file + L".zip", output_file, NULL, 0))
 				NSFile::CFileBinary::Remove(output_file + L".zip");
 		}

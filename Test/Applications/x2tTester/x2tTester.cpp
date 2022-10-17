@@ -231,7 +231,7 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 
 	if(!m_reportStream.CreateFileW(m_reportFile))
 	{
-		std::wcerr << "Report file is not open!" << std::endl;
+		std::cerr << "Report file is not open!" << std::endl;
 		exit(-1);
 	}
 
@@ -299,7 +299,11 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 			}
 		}
 	}
-	// else err
+	else
+	{
+		std::cerr << "Config file is not open!" << std::endl;
+		exit(-1);
+	}
 
 	if(default_input_formats)
 		m_inputFormats = m_inputFormatsList.allFormats();

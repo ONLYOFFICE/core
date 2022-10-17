@@ -308,14 +308,14 @@ namespace OOX
 					m_oRtlGutter = oReader;
 				else if ( !m_bSectPrChange && L"w:sectPrChange" == sName )
 					m_oSectPrChange = oReader;
-				else if ( L"w:textDirection" == sName )
-					m_oTextDirection = oReader;
 				else if ( L"w:titlePg" == sName )
 					m_oTitlePg = oReader;
 				else if ( L"w:type" == sName )
 					m_oType = oReader;
 				else if ( L"w:vAlign" == sName )
 					m_oVAlign = oReader;
+				else if (L"w:textDirection" == sName || L"w:textFlow" == sName)
+					m_oTextDirection = oReader;
 				else if ( L"w:hdr" == sName )
 				{
 					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);

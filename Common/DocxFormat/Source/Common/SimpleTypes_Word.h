@@ -5851,13 +5851,21 @@ namespace SimpleTypes
 
         virtual ETextDirection FromString(std::wstring &sValue)
 		{
-            if      ( (L"lr")  == sValue || (L"btLr")  == sValue ) this->m_eValue = textdirectionLr;
-            else if ( (L"lrV") == sValue || (L"tbLrV") == sValue ) this->m_eValue = textdirectionLrV;
-            else if ( (L"rl")  == sValue || (L"tbRl")  == sValue ) this->m_eValue = textdirectionRl;
-            else if ( (L"rlV") == sValue || (L"tbRlV") == sValue ) this->m_eValue = textdirectionRlV;
-            else if ( (L"tb")  == sValue || (L"lrTb")  == sValue ) this->m_eValue = textdirectionTb;
-            else if ( (L"tbV") == sValue || (L"lrTbV") == sValue ) this->m_eValue = textdirectionTbV;
-            else                                                     this->m_eValue = eDefValue;
+            if      ( (L"lr")  == sValue || (L"btLr")  == sValue || (L"bt-lr") == sValue) 
+				this->m_eValue = textdirectionLr;
+            else if ( (L"lrV") == sValue || (L"tbLrV") == sValue ) 
+				this->m_eValue = textdirectionLrV;
+            else if ( (L"rl")  == sValue || (L"tbRl")  == sValue || (L"tb-rl") == sValue) 
+				this->m_eValue = textdirectionRl;
+            else if ( (L"rlV") == sValue || (L"tbRlV") == sValue || (L"tb-rl-v") == sValue) 
+				this->m_eValue = textdirectionRlV;
+            else if ( (L"tb")  == sValue || (L"lrTb")  == sValue) 
+				this->m_eValue = textdirectionTb;
+            else if ( (L"tbV") == sValue || (L"lrTbV") == sValue || (L"lr-tb-v") == sValue)
+				this->m_eValue = textdirectionTbV;
+			//tb-rl
+            else 
+				this->m_eValue = eDefValue;
 
             return this->m_eValue;
 		}

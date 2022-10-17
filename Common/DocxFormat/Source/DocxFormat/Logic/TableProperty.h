@@ -2021,9 +2021,6 @@ namespace OOX
 					else if ( L"w:gridSpan"       == sName ) m_oGridSpan = oReader;
 					else if ( L"w:headers"        == sName ) m_oHeaders = oReader;
 					else if ( L"w:hideMark"       == sName ) m_oHideMark = oReader;
-					// В списке аттрибутов написано "hMerge", а в примере "hmerge"
-					else if ( L"w:hmerge"         == sName ) m_oHMerge = oReader;
-					else if ( L"w:hMerge"         == sName ) m_oHMerge = oReader;
 					else if ( L"w:noWrap"         == sName ) m_oNoWrap = oReader;
 					else if ( L"w:shd"            == sName ) m_oShd = oReader;
 					else if ( L"w:tcBorders"      == sName ) m_oTcBorders = oReader;
@@ -2031,11 +2028,11 @@ namespace OOX
 					else if ( L"w:tcMar"          == sName ) m_oTcMar = oReader;
 					else if ( !m_bTcPrChange && L"w:tcPrChange" == sName ) m_oTcPrChange = oReader;
 					else if ( L"w:tcW"            == sName ) m_oTcW = oReader;
-					else if ( L"w:textDirection"  == sName ) m_oTextDirection = oReader;
 					else if ( L"w:vAlign"         == sName ) m_oVAlign = oReader;
-					// В списке аттрибутов написано "vMerge", а в примере "vmerge"
-					else if ( L"w:vmerge"         == sName ) m_oVMerge = oReader;
-					else if ( L"w:vMerge"         == sName ) m_oVMerge = oReader;
+					
+					else if ( L"w:textDirection" == sName || L"w:textFlow" == sName) m_oTextDirection = oReader;
+					else if ( L"w:hMerge" == sName || L"w:hmerge" == sName) m_oHMerge = oReader;
+					else if ( L"w:vMerge" == sName || L"w:vmerge" == sName) m_oVMerge = oReader;
 				}
 			}
 			virtual std::wstring toXML() const             

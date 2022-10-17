@@ -6,7 +6,7 @@ You need to create an xml configuration file. It must contain:
 	# root of xml
 	<settings> </settings>
 
-	# report.csv path
+	# report (.csv) path
 	<reportPath> </reportPath>
 
 	# directory with test documents
@@ -21,23 +21,23 @@ You need to create an xml configuration file. It must contain:
 	# num cores to use
 	<cores> </cores>
 
-	# reports only errors (0 or 1)
+	# (non-required) reports only errors (default - 0)
 	<errorsOnly> </errorsOnly>
 
-	# fonts settings
-	# if no node - using system fonts
+	# (non-required) timestamp in report file name (default - 1)
+	<timestamp> </timestamp>
+
+	# (non-required) fonts settings (default - "1")
 	# you can set "system" param to "0" or "1",
-	# if "1", set additional directory for fonts
+	# if "0", set additional directory for fonts
 	<fonts system="">
 		<directory> </directory>
 	</fonts>
 
-	# (non-required) input extensions of files
-	# if no this node, sets all input extensions
+	# (non-required) input extensions of files (default - all possible input extensions)
 	<input> </input>
 
-	# (non-required) output extensions of files, for example docx
-	# if no this node, sets all possible output extensions
+	# (non-required) output extensions of files (default - all possible output extensions)
 	<output> </output>
 
 	# input & output values example:
@@ -56,7 +56,8 @@ You can use the following template:
 		<outputDirectory> </outputDirectory>
 		<x2tPath> </x2tPath>
 		<cores> </cores>
-		<onlyErrors> </onlyErrors>
+		<errorsOnly> </errorsOnly>
+		<timestamp> </timestamp>
 		<fonts system="">
 			<directory> </directory>
 		</fonts>

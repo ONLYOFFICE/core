@@ -1,65 +1,65 @@
 #include "x2tTester.h"
 #include "../../../X2tConverter/src/run.h"
 
-class FormatsList;
+class CFormatsList;
 class Cx2tTester;
 class CConverter;
 
-FormatsList::FormatsList()
+CFormatsList::CFormatsList()
 {
 }
 
-std::vector<int> FormatsList::GetDocuments() const
+std::vector<int> CFormatsList::GetDocuments() const
 {
 	return m_documents;
 }
-std::vector<int> FormatsList::GetPresentations() const
+std::vector<int> CFormatsList::GetPresentations() const
 {
 	return m_presentations;
 }
-std::vector<int> FormatsList::GetSpreadsheets() const
+std::vector<int> CFormatsList::GetSpreadsheets() const
 {
 	return m_spreadsheets;
 }
-std::vector<int> FormatsList::GetCrossplatform() const
+std::vector<int> CFormatsList::GetCrossplatform() const
 {
 	return m_crossplatform;
 }
-std::vector<int> FormatsList::GetImages() const
+std::vector<int> CFormatsList::GetImages() const
 {
 	return m_images;
 }
-int FormatsList::GetPdf() const
+int CFormatsList::GetPdf() const
 {
 	return m_pdf;
 }
 
-bool FormatsList::isDocument(int format) const
+bool CFormatsList::isDocument(int format) const
 {
 	return std::find(m_documents.begin(), m_documents.end(), format) != m_documents.end();
 }
-bool FormatsList::isPresentation(int format) const
+bool CFormatsList::isPresentation(int format) const
 {
 	return std::find(m_presentations.begin(), m_presentations.end(), format) != m_presentations.end();
 }
-bool FormatsList::isSpreadsheet(int format) const
+bool CFormatsList::isSpreadsheet(int format) const
 {
 	return std::find(m_spreadsheets.begin(), m_spreadsheets.end(), format) != m_spreadsheets.end();
 }
-bool FormatsList::isCrossplatform(int format) const
+bool CFormatsList::isCrossplatform(int format) const
 {
 	return std::find(m_crossplatform.begin(), m_crossplatform.end(), format) != m_crossplatform.end();
 }
-bool FormatsList::isImage(int format) const
+bool CFormatsList::isImage(int format) const
 {
 	return std::find(m_images.begin(), m_images.end(), format) != m_images.end();
 }
-bool FormatsList::isPdf(int format) const
+bool CFormatsList::isPdf(int format) const
 {
 	return format == m_pdf;
 }
 
-void FormatsList::SetDefault()
+void CFormatsList::SetDefault()
 {
 	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
 	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC);
@@ -117,7 +117,7 @@ void FormatsList::SetDefault()
 	m_pdf = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 }
 
-void FormatsList::SetOutput()
+void CFormatsList::SetOutput()
 {
 	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX);
 //	m_documents.push_back(AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC);
@@ -174,7 +174,7 @@ void FormatsList::SetOutput()
 
 	m_pdf = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 }
-std::vector<int> FormatsList::allFormats() const
+std::vector<int> CFormatsList::allFormats() const
 {
 	std::vector<int> all_formats;
 
@@ -203,9 +203,28 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 {
 	m_bIsUseSystemFonts = true;
 	m_bIsErrorsOnly = false;
+	m_bIsTimestamp = true;
 	m_inputFormatsList.SetDefault();
 	m_outputFormatsList.SetOutput();
 	setConfig(configPath);
+	m_errorsXmlDirectory = m_outputDirectory + L"/_errors";
+
+	if(m_bIsTimestamp)
+	{
+		time_t now = time(0);
+		std::tm* time = std::localtime(&now);
+		std::wstring timestamp =
+				std::to_wstring(time->tm_mday) + L"_" +
+				std::to_wstring(time->tm_mon + 1) + L"_" +
+				std::to_wstring(time->tm_year + 1900) + L"_" +
+				std::to_wstring(time->tm_hour) + L"_" +
+				std::to_wstring(time->tm_min) + L"_" +
+				std::to_wstring(time->tm_sec);
+
+		std::wstring report_ext = NSFile::GetFileExtention(m_reportFile);
+		m_reportFile = m_reportFile.substr(0, m_reportFile.size() - report_ext.size() - 1);
+		m_reportFile += L"_" + timestamp + L"." + report_ext;
+	}
 
 	if(NSFile::CFileBinary::Exists(m_reportFile))
 		NSFile::CFileBinary::Remove(m_reportFile);
@@ -218,16 +237,14 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 
 	m_coresCS.InitializeCriticalSection();
 	m_reportCS.InitializeCriticalSection();
-	m_outputCS.InitializeCriticalSection();
 
 	m_currentProc = 0;
-	setReportHeader();
+	writeReportHeader();
 }
 Cx2tTester::~Cx2tTester()
 {
 	m_coresCS.DeleteCriticalSection();
 	m_reportCS.DeleteCriticalSection();
-	m_outputCS.DeleteCriticalSection();
 
 	m_reportStream.CloseFile();
 }
@@ -254,6 +271,7 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 			else if(name == L"x2tPath") m_x2tPath = node.GetText();
 			else if(name == L"cores") m_maxProc = std::stoi(node.GetText());
 			else if(name == L"errorsOnly") m_bIsErrorsOnly = std::stoi(node.GetText());
+			else if(name == L"timestamp") m_bIsTimestamp = std::stoi(node.GetText());
 			else if(name == L"input")
 			{
 				default_input_formats = false;
@@ -293,6 +311,9 @@ void Cx2tTester::setConfig(const std::wstring& configPath)
 }
 void Cx2tTester::Start()
 {
+	// setup timer
+	m_timeStart = NSTimers::GetTickCount();
+
 	// check fonts
 	std::wstring fonts_directory = NSFile::GetProcessDirectory() + L"/fonts";
 	CApplicationFontsWorker fonts_worker;
@@ -320,19 +341,30 @@ void Cx2tTester::Start()
 
 	NSDirectory::CreateDirectory(m_outputDirectory);
 
+	// setup & clear errors folder
+	if(NSDirectory::Exists(m_errorsXmlDirectory))
+		NSDirectory::DeleteDirectory(m_errorsXmlDirectory);
+
+	NSDirectory::CreateDirectory(m_errorsXmlDirectory);
+
 	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, false);
 
 	if(files.size() < m_maxProc)
 		m_maxProc = files.size();
 
-	for(std::wstring& input_file : files)
+	for(int i = 0; i < files.size(); i++)
 	{
+		std::wstring& input_file = files[i];
+
 		std::wstring input_ext = NSFile::GetFileExtention(input_file);
 		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
 
 		// if no format in input formats - skip
 		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end())
 			continue;
+
+		// show proggres
+		std::cout << i << "/" << files.size() << " - " << U_TO_UTF8(input_file) << " started\n";
 
 		// setup folder for output files
 		std::wstring output_files_directory = m_outputDirectory + L'/' + NSFile::GetFileName(input_file);
@@ -382,6 +414,7 @@ void Cx2tTester::Start()
 		converter->SetFontsDirectory(fonts_directory);
 		converter->SetX2tPath(m_x2tPath);
 		converter->SetOnlyErrors(m_bIsErrorsOnly);
+		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
 
 		converter->DestroyOnFinish();
 		converter->Start(0);
@@ -390,8 +423,18 @@ void Cx2tTester::Start()
 	// waiting all procs end
 	while(!isAllFree())
 		NSThreads::Sleep(150);
-}
 
+	writeTime();
+}
+void Cx2tTester::writeReportHeader()
+{
+	m_reportStream.WriteStringUTF8(L"Input file\t", false);
+	m_reportStream.WriteStringUTF8(L"Output file\t", true);
+	m_reportStream.WriteStringUTF8(L"Input extension\t", true);
+	m_reportStream.WriteStringUTF8(L"Output extension\t", true);
+	m_reportStream.WriteStringUTF8(L"Time\t", true);
+	m_reportStream.WriteStringUTF8(L"Exit code\n", true);
+}
 void Cx2tTester::writeReport(const Report& report)
 {
 	CTemporaryCS CS(&m_reportCS);
@@ -400,6 +443,7 @@ void Cx2tTester::writeReport(const Report& report)
 	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
 	m_reportStream.WriteStringUTF8(report.inputExt + L"\t", true);
 	m_reportStream.WriteStringUTF8(report.outputExt + L"\t", true);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
 	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\n", true);
 }
 void Cx2tTester::writeReports(const std::vector<Report>& reports)
@@ -411,8 +455,15 @@ void Cx2tTester::writeReports(const std::vector<Report>& reports)
 		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
 		m_reportStream.WriteStringUTF8(report.inputExt + L"\t", true);
 		m_reportStream.WriteStringUTF8(report.outputExt + L"\t", true);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
 		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\n", true);
 	}
+}
+void Cx2tTester::writeTime()
+{
+	CTemporaryCS CS(&m_reportCS);
+	DWORD time = NSTimers::GetTickCount() - m_timeStart;
+	m_reportStream.WriteStringUTF8(L"Time: " + std::to_wstring(time));
 }
 
 bool Cx2tTester::isAllBusy()
@@ -426,16 +477,7 @@ bool Cx2tTester::isAllFree()
 	return m_currentProc == 0;
 }
 
-void Cx2tTester::setReportHeader()
-{
-	m_reportStream.WriteStringUTF8(L"Input file\t", false);
-	m_reportStream.WriteStringUTF8(L"Output file\t", true);
-	m_reportStream.WriteStringUTF8(L"Input extension\t", true);
-	m_reportStream.WriteStringUTF8(L"Output extension\t", true);
-	m_reportStream.WriteStringUTF8(L"Exit code\n", true);
-}
-
-std::vector<int> Cx2tTester::parseExtensionsString(std::wstring extensions, const FormatsList& fl)
+std::vector<int> Cx2tTester::parseExtensionsString(std::wstring extensions, const CFormatsList& fl)
 {
 	std::vector<int> formats;
 	int pos = 0;
@@ -501,11 +543,17 @@ void CConverter::SetOnlyErrors(bool bIsErrorsOnly)
 {
 	m_bIsErrorsOnly = bIsErrorsOnly;
 }
+void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
+{
+	m_errorsXmlDirectory = errorsXmlDirectory;
+}
 
 DWORD CConverter::ThreadProc()
 {
 	std::wstring xml_params_file = m_outputFilesDirectory + L"/params.xml";
 	std::vector<Cx2tTester::Report> reports;
+
+	DWORD time_file_start = NSTimers::GetTickCount();
 
 	// input_format in many output exts
 	for(int& output_format : m_outputFormats)
@@ -513,8 +561,10 @@ DWORD CConverter::ThreadProc()
 		if(m_inputFormat == output_format)
 			continue;
 
+		std::wstring output_ext =  checker.GetExtensionByType(output_format);
+
 		std::wstring output_file = m_outputFilesDirectory
-				+ L"/" + NSFile::GetFileName(m_inputFile) + checker.GetExtensionByType(output_format);
+				+ L"/" + NSFile::GetFileName(m_inputFile) + output_ext;
 
 		// creating temporary xml file with params
 		NSStringUtils::CStringBuilder builder;
@@ -580,6 +630,14 @@ DWORD CConverter::ThreadProc()
 				NSFile::CFileBinary::Remove(output_file + L".zip");
 		}
 
+		// save param xml of error conversion
+		if(exit_code)
+		{
+			std::wstring err_xml_file = m_errorsXmlDirectory;
+			std::wstring input_fielname = NSFile::GetFileName(m_inputFile);
+			err_xml_file += L"/" + input_fielname + L"_" + output_ext + L".xml";
+			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
+		}
 
 		// writing report
 		if(!m_bIsErrorsOnly || exit_code)
@@ -589,6 +647,7 @@ DWORD CConverter::ThreadProc()
 			report.outputFile = output_file;
 			report.inputExt = checker.GetExtensionByType(m_inputFormat);
 			report.outputExt = checker.GetExtensionByType(output_format);
+			report.time = NSTimers::GetTickCount() - time_file_start;
 			report.exitCode = exit_code;
 			reports.push_back(report);
 		}
@@ -596,7 +655,6 @@ DWORD CConverter::ThreadProc()
 		std::string input_file_UTF8 = U_TO_UTF8(m_inputFile);
 		std::string output_file_UTF8 = U_TO_UTF8(output_file);
 
-		CTemporaryCS CS(&m_internal->m_outputCS);
 		std::cout << input_file_UTF8 << " to " << output_file_UTF8 << " ";
 
 		if(!exit_code)

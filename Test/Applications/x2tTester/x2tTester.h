@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 
 #include "../../../Common/OfficeFileFormats.h"
 #include "../../../Common/OfficeFileFormatChecker.h"
@@ -19,10 +20,10 @@
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-class FormatsList
+class CFormatsList
 {
 public:
-	FormatsList();
+	CFormatsList();
 
 	std::vector<int> GetDocuments() const;
 	std::vector<int> GetPresentations() const;
@@ -66,6 +67,7 @@ public:
 		std::wstring outputFile;
 		std::wstring inputExt;
 		std::wstring outputExt;
+		DWORD time;
 		int exitCode;
 	};
 
@@ -75,30 +77,31 @@ public:
 	void setConfig(const std::wstring& configPath);
 	void Start();
 
+	void writeReportHeader();
 	void writeReport(const Report& report);
 	void writeReports(const std::vector<Report>& reports);
+	void writeTime();
 
 	bool isAllBusy();
 	bool isAllFree();
 
 	NSCriticalSection::CRITICAL_SECTION m_coresCS;
 	NSCriticalSection::CRITICAL_SECTION m_reportCS;
-	NSCriticalSection::CRITICAL_SECTION m_outputCS;
 
 	int m_currentProc;
 	int m_maxProc;
 
 private:
-	void setReportHeader();
-
 	// parse string like "docx txt" into vector of formats
-	std::vector<int> parseExtensionsString(std::wstring extensions, const FormatsList& fl);
+	std::vector<int> parseExtensionsString(std::wstring extensions, const CFormatsList& fl);
 
 	// takes from config
 	std::wstring m_reportFile;
 	std::wstring m_inputDirectory;
 	std::wstring m_outputDirectory;
 	std::wstring m_x2tPath;
+
+	std::wstring m_errorsXmlDirectory;
 
 	// fonts
 	bool m_bIsUseSystemFonts;
@@ -111,10 +114,13 @@ private:
 	std::vector<int> m_outputFormats;
 
 	// list of formats
-	FormatsList m_inputFormatsList;
-	FormatsList m_outputFormatsList;
+	CFormatsList m_inputFormatsList;
+	CFormatsList m_outputFormatsList;
 
 	bool m_bIsErrorsOnly;
+	bool m_bIsTimestamp;
+
+	DWORD m_timeStart;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport
@@ -134,6 +140,7 @@ public:
 	void SetX2tPath(const std::wstring& x2tPath);
 
 	void SetOnlyErrors(bool bIsErrorsOnly);
+	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 
 	virtual DWORD ThreadProc();
 
@@ -150,6 +157,7 @@ private:
 	COfficeFileFormatChecker checker;
 
 	std::wstring m_x2tPath;
+	std::wstring m_errorsXmlDirectory;
 
 	bool m_bIsErrorsOnly;
 };

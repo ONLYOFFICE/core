@@ -545,7 +545,7 @@ void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
 
 DWORD CConverter::ThreadProc()
 {
-	std::wstring input_fielname = NSFile::GetFileName(m_inputFile);
+	std::wstring input_filename = NSFile::GetFileName(m_inputFile);
 	std::vector<Cx2tTester::Report> reports;
 
 	// setup folder for output files
@@ -567,7 +567,8 @@ DWORD CConverter::ThreadProc()
 			continue;
 
 		std::wstring output_ext =  checker.GetExtensionByType(output_format);
-		std::wstring xml_params_file = m_outputFilesDirectory + L"/" + input_fielname + L"_" + output_ext + L".xml";
+		std::wstring xml_params_filename = input_filename + L"_" + output_ext + L".xml";
+		std::wstring xml_params_file = m_outputFilesDirectory + L"/" + xml_params_filename;
 
 		std::wstring output_file = m_outputFilesDirectory
 				+ L"/" + NSFile::GetFileName(m_inputFile) + output_ext;
@@ -649,7 +650,7 @@ DWORD CConverter::ThreadProc()
 		// save param xml of error conversion
 		if(exit_code)
 		{
-			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_file;
+			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_filename;
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
 		}
 

@@ -1763,38 +1763,51 @@ namespace MetaFile
 		int nImageSize = 0;
 		std::wstring wsStyleId;
 
-		NSFile::CBase64Converter::Encode(pBuffer, unWidth * 4 * unHeight, pImageData, nImageSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+		CBgraFrame oFrame;
+		oFrame.put_Data(pBuffer);
+		oFrame.put_Width(unWidth);
+		oFrame.put_Height(unHeight);
+		oFrame.put_Stride(4 * unWidth);
 
-		if (NULL != pImageData)
+		BYTE *pTempBuffer = NULL;
+		int nTempSize;
+
+		oFrame.Encode(pTempBuffer, nTempSize, 4);
+		NSFile::CBase64Converter::Encode(pTempBuffer, nTempSize, pImageData, nImageSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+		if (NULL == pTempBuffer || 0 == nTempSize || NULL == pImageData || 0 == nImageSize)
+			return std::wstring();
+
+		oFrame.put_Data(NULL);
+
+		wsStyleId += L"DIBPATTERN_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
+
+		double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
+
+		if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
 		{
-			wsStyleId += L"DIBPATTERN_" + ConvertToWString(++m_unNumberDefs, 0);
-
-			std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
-
-			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
-
-			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
-			{
-				dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-			}
-			else
-			{
-				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-
-				if (dStrokeWidth < dMinStrokeWidth)
-					dStrokeWidth = dMinStrokeWidth;
-			}
-
-			std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
-			std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
-
-			m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
-						L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
-						L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
-						L"</pattern> ";
-
-			delete [] pImageData;
+			dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
 		}
+		else
+		{
+			double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+
+			if (dStrokeWidth < dMinStrokeWidth)
+				dStrokeWidth = dMinStrokeWidth;
+		}
+
+		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
+		std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
+
+		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
+		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
+		            L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
+		            L"</pattern> ";
+
+		delete [] pImageData;
+		delete [] pTempBuffer;
 
 		return wsStyleId;
 	}

@@ -387,7 +387,7 @@ void Cx2tTester::Start()
 		for(auto format : m_outputFormats)
 		{
 			// documents -> documents
-			if((m_outputFormatsList.isDocument(format) && m_inputFormatsList.isDocument(input_format))
+			if(((m_outputFormatsList.isDocument(format) && m_inputFormatsList.isDocument(input_format))
 			// spreadsheets -> spreadsheets
 			|| (m_outputFormatsList.isSpreadsheet(format) && m_inputFormatsList.isSpreadsheet(input_format))
 			//presentations -> presentations
@@ -400,6 +400,8 @@ void Cx2tTester::Start()
 			|| m_outputFormatsList.isImage(format)
 			// all formats -> pdf
 			|| m_outputFormatsList.isPdf(format))
+			// input format != output format
+			&& format != input_format)
 			{
 				output_file_formats.push_back(format);
 			}
@@ -588,8 +590,9 @@ DWORD CConverter::ThreadProc()
 	for(int i = 0; i < m_outputFormats.size(); i++)
 	{
 		int& output_format = m_outputFormats[i];
-		if(m_inputFormat == output_format)
-			continue;
+
+//		if(m_inputFormat == output_format)
+//			continue;
 
 		// utils_CS start
 		utils_CS.EnterCS(&m_internal->m_utilsCS);

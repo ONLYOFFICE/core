@@ -36,9 +36,11 @@
 
 #include <time.h>
 #include <math.h>
+#include <sstream>
+#include <iomanip>
 
 #ifndef DIB_RGB_COLORS
-#define DIB_RGB_COLORS  0x00
+    #define DIB_RGB_COLORS  0x00
 #endif
 
 namespace MetaFile
@@ -995,25 +997,33 @@ namespace MetaFile
 		return sTmpFile;
 	}
 
-	std::wstring StringNormalization(std::wstring wsString)
-	{
+	    std::wstring StringNormalization(std::wstring wsString)
+	    {
 		std::wstring wsText;
 		for (wchar_t wChar : wsString)
-		{
-			if (wChar == L'<')
-				wsText += L"&lt;";
-			else if (wChar == L'>')
-				wsText += L"&gt;";
-			else if (wChar == L'&')
-				wsText += L"&amp;";
-			else if (wChar == L'\'')
-				wsText += L"&apos;";
-			else if (wChar == L'"')
-				wsText += L"&quot;";
-			else if (wChar == 0x00)
-				return wsText;
-			else wsText += wChar;
-		}
+		    if (wChar == L'<')
+			   wsText += L"&lt;";
+		    else if (wChar == L'>')
+			   wsText += L"&gt;";
+		    else if (wChar == L'&')
+			   wsText += L"&amp;";
+		    else if (wChar == L'\'')
+			   wsText += L"&apos;";
+		    else if (wChar == L'"')
+			   wsText += L"&quot;";
+		    else if (wChar == 0x00)
+			   return wsText;
+
+		    else wsText += wChar;
 		return wsText;
-	}
+		}
+
+		std::wstring ConvertToWString(double dValue, unsigned int unAccuracy)
+		{
+			std::wstringstream owsStream;
+			owsStream << std::fixed << std::setprecision(unAccuracy) << dValue;
+
+			return owsStream.str();
+		}
+
 }

@@ -363,7 +363,7 @@ void Cx2tTester::Start()
 	if(!NSDirectory::Exists(m_errorsXmlDirectory))
 		NSThreads::Sleep(30);
 
-	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, false);
+	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, true);
 
 	if(files.size() < m_maxProc)
 		m_maxProc = files.size();

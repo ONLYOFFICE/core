@@ -42,6 +42,8 @@
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
 
+
+#include <algorithm>
 #include <iostream>
 #include <ostream>
 static UINT nRTCounter = 1;
@@ -115,9 +117,10 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         }
         else
         {
-            std::wstring strColor = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06x");
+            std::wstring color = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06x");
+            std::transform(color.begin(), color.end(), color.begin(), std::towupper);
 
-            oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + strColor + L"\"/></a:solidFill>");
+            oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + color + L"\"/></a:solidFill>");
         }
     }
     if ((pCF->font.ansi.is_init()) && (!pCF->font.ansi->Name.empty()))
@@ -518,11 +521,15 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertColor(CColor & color, long alpha)
     {
         if (255 == alpha)
         {
-            color_writer.WriteString(L"<a:srgbClr val=\"" + XmlUtils::IntToString(color.GetLONG_RGB(), L"%06X") + L"\"/>");
+            auto strColor = XmlUtils::IntToString(color.GetLONG_RGB(), L"%06X");
+            std::transform(strColor.begin(), strColor.end(), strColor.begin(), std::towupper);
+            color_writer.WriteString(L"<a:srgbClr val=\"" + strColor + L"\"/>");
         }
         else
         {
-            color_writer.WriteString(L"<a:srgbClr val=\"" + XmlUtils::IntToString(color.GetLONG_RGB(), L"%06X") + L"\">" +
+            auto strColor = XmlUtils::IntToString(color.GetLONG_RGB(), L"%06X");
+            std::transform(strColor.begin(), strColor.end(), strColor.begin(), std::towupper);
+            color_writer.WriteString(L"<a:srgbClr val=\"" + strColor + L"\">" +
                                      L"<a:alpha val=\"" + std::to_wstring((int)(alpha * 100000 / 255)) + L"\"/></a:srgbClr>");
         }
     }
@@ -1153,10 +1160,10 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
         if (pLastCF && pLastCF->Size.is_init())
         {
             int sz = pLastCF->Size.get() * 100;
-            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\" sz=\"" + std::to_wstring(sz) + L"\"/></a:p></p:txBody>");
+            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr sz=\"" + std::to_wstring(sz) + L"\" dirty=\"0\"/></a:p></p:txBody>");
         } else
         {
-            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr dirty=\"0\" sz=\"1400\"/></a:p></p:txBody>");
+            m_oWriter.WriteString(L"<a:lstStyle/><a:p><a:endParaRPr sz=\"1400\" dirty=\"0\"/></a:p></p:txBody>");
         }
         return;
     }
@@ -1306,6 +1313,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
                     {
                         std::wstring strColor = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06x");
 
+                        std::transform(strColor.begin(), strColor.end(), strColor.begin(), std::towupper);
                         m_oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + strColor + L"\"/></a:solidFill>");
                     }
                 }
@@ -2318,6 +2326,7 @@ HRESULT PPT_FORMAT::CShapeWriter::SetBrush(std::wstring bsXML)
     //m_oBrush.FromXmlString((std::wstring)bsXML);
     return S_OK;
 }
+
 HRESULT PPT_FORMAT::CShapeWriter::get_BrushType(LONG* lType)
 {
     *lType = m_oBrush.Type;

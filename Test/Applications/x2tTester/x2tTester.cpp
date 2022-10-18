@@ -394,10 +394,8 @@ void Cx2tTester::Start()
 			|| (m_outputFormatsList.isPresentation(format) && m_inputFormatsList.isPresentation(input_format))
 			// crossplatform -> documents
 			|| (m_outputFormatsList.isDocument(format) && m_inputFormatsList.isCrossplatform(input_format))
-			// pdf -> documents
-			|| (m_outputFormatsList.isDocument(format) && m_inputFormatsList.isPdf(input_format))
-			// crossplatform -> pdf
-			|| (m_outputFormatsList.isPdf(format) && m_inputFormatsList.isCrossplatform(input_format))
+			// pdf -> docx
+			|| (format == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX && m_inputFormatsList.isPdf(input_format))
 			// all formats -> images
 			|| m_outputFormatsList.isImage(format)
 			// all formats -> pdf

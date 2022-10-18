@@ -237,6 +237,8 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 
 	m_coresCS.InitializeCriticalSection();
 	m_reportCS.InitializeCriticalSection();
+	m_outputCS.InitializeCriticalSection();
+	m_utilsCS.InitializeCriticalSection();
 
 	m_currentProc = 0;
 	writeReportHeader();
@@ -245,6 +247,8 @@ Cx2tTester::~Cx2tTester()
 {
 	m_coresCS.DeleteCriticalSection();
 	m_reportCS.DeleteCriticalSection();
+	m_outputCS.DeleteCriticalSection();
+	m_utilsCS.DeleteCriticalSection();
 
 	m_reportStream.CloseFile();
 }
@@ -345,11 +349,19 @@ void Cx2tTester::Start()
 
 	NSDirectory::CreateDirectory(m_outputDirectory);
 
+	// waiting for directory
+	if(!NSDirectory::Exists(m_outputDirectory))
+		NSThreads::Sleep(30);
+
 	// setup & clear errors folder
 	if(NSDirectory::Exists(m_errorsXmlDirectory))
 		NSDirectory::DeleteDirectory(m_errorsXmlDirectory);
 
 	NSDirectory::CreateDirectory(m_errorsXmlDirectory);
+
+	// waiting for directory
+	if(!NSDirectory::Exists(m_errorsXmlDirectory))
+		NSThreads::Sleep(30);
 
 	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, false);
 
@@ -368,9 +380,6 @@ void Cx2tTester::Start()
 			continue;
 
 		std::wstring output_files_directory = m_outputDirectory + L'/' + NSFile::GetFileName(input_file);
-
-		// show proggres
-		std::cout << "[" <<  i << "/" << files.size() << "]" << " - " << U_TO_UTF8(input_file) << " started\n";
 
 		// setup output_formats for file
 		std::vector<int> output_file_formats;
@@ -402,7 +411,6 @@ void Cx2tTester::Start()
 			NSThreads::Sleep(100);
 
 		// setup & start new coverter
-		m_currentProc++;
 		CConverter *converter = new CConverter(this);
 		converter->SetInputFile(input_file);
 		converter->SetInputFormat(input_format);
@@ -412,8 +420,13 @@ void Cx2tTester::Start()
 		converter->SetX2tPath(m_x2tPath);
 		converter->SetOnlyErrors(m_bIsErrorsOnly);
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
-
+		converter->SetFilesCount(files.size(), i + 1);
 		converter->DestroyOnFinish();
+
+		CTemporaryCS CS(&m_coresCS);
+		m_currentProc++;
+		CS.LeaveCS();
+
 		converter->Start(0);
 	}
 
@@ -425,6 +438,7 @@ void Cx2tTester::Start()
 }
 void Cx2tTester::writeReportHeader()
 {
+	CTemporaryCS CS(&m_reportCS);
 	m_reportStream.WriteStringUTF8(L"Input file\t", false);
 	m_reportStream.WriteStringUTF8(L"Output file\t", true);
 	m_reportStream.WriteStringUTF8(L"Input extension\t", true);
@@ -442,6 +456,7 @@ void Cx2tTester::writeReport(const Report& report)
 	m_reportStream.WriteStringUTF8(report.outputExt + L"\t", true);
 	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
 	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\n", true);
+
 }
 void Cx2tTester::writeReports(const std::vector<Report>& reports)
 {
@@ -501,7 +516,6 @@ std::vector<int> Cx2tTester::parseExtensionsString(std::wstring extensions, cons
 	return formats;
 }
 
-
 CConverter::CConverter(Cx2tTester* internal) : m_internal(internal), m_bIsErrorsOnly(false)
 {
 }
@@ -542,11 +556,18 @@ void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
 {
 	m_errorsXmlDirectory = errorsXmlDirectory;
 }
+void CConverter::SetFilesCount(int totalFiles, int currFile)
+{
+	m_totalFiles = totalFiles;
+	m_currFile = currFile;
+}
 
 DWORD CConverter::ThreadProc()
 {
-	std::wstring input_filename = NSFile::GetFileName(m_inputFile);
 	std::vector<Cx2tTester::Report> reports;
+
+	// utils_CS start
+	CTemporaryCS utils_CS(&m_internal->m_utilsCS);
 
 	// setup folder for output files
 	if(NSDirectory::Exists(m_outputFilesDirectory))
@@ -554,17 +575,26 @@ DWORD CConverter::ThreadProc()
 
 	NSDirectory::CreateDirectory(m_outputFilesDirectory);
 
-	// waiting for directory
-	if(!NSDirectory::Exists(m_outputFilesDirectory))
-		NSThreads::Sleep(60);
+	// waiting
+	while(!NSDirectory::Exists(m_outputFilesDirectory))
+		NSThreads::Sleep(30);
+
+	std::wstring input_filename = NSFile::GetFileName(m_inputFile);
+
+	// utils_CS end
+	utils_CS.LeaveCS();
 
 	DWORD time_file_start = NSTimers::GetTickCount();
 
 	// input_format in many output exts
-	for(int& output_format : m_outputFormats)
+	for(int i = 0; i < m_outputFormats.size(); i++)
 	{
+		int& output_format = m_outputFormats[i];
 		if(m_inputFormat == output_format)
 			continue;
+
+		// utils_CS start
+		utils_CS.EnterCS(&m_internal->m_utilsCS);
 
 		std::wstring output_ext =  checker.GetExtensionByType(output_format);
 		std::wstring xml_params_filename = input_filename + L"_" + output_ext + L".xml";
@@ -572,6 +602,9 @@ DWORD CConverter::ThreadProc()
 
 		std::wstring output_file = m_outputFilesDirectory
 				+ L"/" + NSFile::GetFileName(m_inputFile) + output_ext;
+
+		// utils_CS end
+		utils_CS.LeaveCS();
 
 		// creating temporary xml file with params
 		NSStringUtils::CStringBuilder builder;
@@ -625,33 +658,52 @@ DWORD CConverter::ThreadProc()
 
 		std::wstring xml_params = builder.GetData();
 
+		// utils_CS start
+		utils_CS.EnterCS(&m_internal->m_utilsCS);
+
 		NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
 
 		// waiting
 		while(!NSFile::CFileBinary::Exists(xml_params_file))
-				NSThreads::Sleep(50);
+			NSThreads::Sleep(30);
+
+		// utils_CS end
+		utils_CS.LeaveCS();
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 
-
 		if (!exit_code && output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 		{
-			NSDirectory::CreateDirectory(output_file);
-			COfficeUtils oUtils;
+			// utils_CS start
+			utils_CS.EnterCS(&m_internal->m_utilsCS);
 
-			// waiting for directory
-			if(!NSDirectory::Exists(output_file))
-				NSThreads::Sleep(60);
+			NSDirectory::CreateDirectory(output_file);
+
+			// waiting
+			while(!NSDirectory::Exists(output_file))
+				NSThreads::Sleep(30);
+
+			COfficeUtils oUtils;
 
 			if (S_OK == oUtils.ExtractToDirectory(output_file + L".zip", output_file, NULL, 0))
 				NSFile::CFileBinary::Remove(output_file + L".zip");
+
+			// utils_CS end
+			utils_CS.LeaveCS();
 		}
 
 		// save param xml of error conversion
 		if(exit_code)
 		{
 			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_filename;
+
+			// utils_CS start
+			utils_CS.EnterCS(&m_internal->m_utilsCS);
+
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
+
+			// utils_CS end
+			utils_CS.LeaveCS();
 		}
 
 		// writing report
@@ -667,22 +719,37 @@ DWORD CConverter::ThreadProc()
 			reports.push_back(report);
 		}
 
+		// utils_CS start
+		utils_CS.EnterCS(&m_internal->m_utilsCS);
+
+		NSFile::CFileBinary::Remove(xml_params_file);
+
+		// utils_CS end
+		utils_CS.LeaveCS();
+
 		std::string input_file_UTF8 = U_TO_UTF8(m_inputFile);
 		std::string output_file_UTF8 = U_TO_UTF8(output_file);
 
+		// output_CS start
+		CTemporaryCS output_CS(&m_internal->m_outputCS);
+
+		std::cout << "[" << m_currFile << "/" << m_totalFiles << "](" << i + 1 << "/" << m_outputFormats.size() << ") ";
+		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
 		std::cout << input_file_UTF8 << " to " << output_file_UTF8 << " ";
 
 		if(!exit_code)
-			std::cout << "OK";
+			std::cout << "OK ";
 		else
-			std::cout << "BAD";
+			std::cout << "BAD ";
 
 		std::cout << std::endl;
-		NSFile::CFileBinary::Remove(xml_params_file);
-
+		// output_CS end
 	}
 	m_internal->writeReports(reports);
+
+	CTemporaryCS CS(&m_internal->m_coresCS);
 	m_internal->m_currentProc--;
+
 	return 0;
 }
 

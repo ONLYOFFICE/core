@@ -87,6 +87,8 @@ public:
 
 	NSCriticalSection::CRITICAL_SECTION m_coresCS;
 	NSCriticalSection::CRITICAL_SECTION m_reportCS;
+	NSCriticalSection::CRITICAL_SECTION m_outputCS;
+	NSCriticalSection::CRITICAL_SECTION m_utilsCS;
 
 	int m_currentProc;
 	int m_maxProc;
@@ -138,6 +140,7 @@ public:
 	void SetX2tPath(const std::wstring& x2tPath);
 	void SetOnlyErrors(bool bIsErrorsOnly);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
+	void SetFilesCount(int totalFiles, int currFile);
 
 	virtual DWORD ThreadProc();
 
@@ -157,6 +160,9 @@ private:
 	std::wstring m_errorsXmlDirectory;
 
 	bool m_bIsErrorsOnly;
+
+	int m_totalFiles;
+	int m_currFile;
 };
 
 #endif // X2T_TESTER_H

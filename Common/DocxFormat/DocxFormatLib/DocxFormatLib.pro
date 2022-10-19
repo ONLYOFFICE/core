@@ -28,7 +28,6 @@ CONFIG += precompile_header
 PRECOMPILED_HEADER = precompiled_docx.h
 HEADERS += precompiled_docx.h
 }
-CONFIG += use_pch
 
 core_release {
 SOURCES += \

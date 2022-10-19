@@ -42,7 +42,7 @@ namespace MetaFile
 		double dKoef = 1;
 
 		if (oPlaceable.Inch != 0)
-			dKoef = 1440.f / oPlaceable.Inch;
+			dKoef = 1440.f / oPlaceable.Inch / (20.f * (72.f / 96.f));
 
 		if (m_oViewport.GetWidth() != 0)
 			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dKoef));

@@ -187,7 +187,7 @@ namespace MetaFile
 		//TODO:: добавить как появится реализация интерпретаторов
 	}
 
-	CWmfInterpretatorBase *CWmfParserBase::GetInterpretator() const
+	CWmfInterpretatorBase* CWmfParserBase::GetInterpretator()
 	{
 		return m_pInterpretator;
 	}

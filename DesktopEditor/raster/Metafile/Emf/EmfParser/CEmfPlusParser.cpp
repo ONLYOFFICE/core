@@ -541,7 +541,7 @@ namespace MetaFile
 			std::wstring wsImagePath;
 
 			if (SaveImage(oImage, wsImagePath))
-				pEmfPlusBrush->DibPatterPath = wsImagePath;
+				pEmfPlusBrush->DibPatternPath = wsImagePath;
 
 			m_ulRecordSize += unSkip;
 			break;

@@ -130,4 +130,9 @@ namespace MetaFile
 		if (NULL != m_pMetaFileRenderer)
 			m_pMetaFileRenderer->GetTransform(pdM11, pdM12, pdM21, pdM22, pdX, pdY);
 	}
+
+	CMetaFileRenderer *CWmfInterpretatorRender::GetRenderer() const
+	{
+		return m_pMetaFileRenderer;
+	}
 }

@@ -48,8 +48,10 @@ namespace MetaFile
 		virtual void HANDLE_EMR_SETMAPMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL&) = 0;
 		virtual void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL&) = 0;
+		virtual void HANDLE_EMR_SCALEWINDOWEXTEX(int, int, int, int) = 0;
 		virtual void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL&) = 0;
 		virtual void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL&) = 0;
+		virtual void HANDLE_EMR_SCALEVIEWPORTEXTEX(int, int, int, int) = 0;
 		virtual void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_SETICMMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&) = 0;
@@ -101,6 +103,8 @@ namespace MetaFile
 
 		virtual void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) = 0;
 		virtual void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) = 0;
+		virtual void HANDLE_EMR_PAINTRGN(const TEmfRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) = 0;
+		virtual void HANDLE_EMR_FRAMERGN(const TEmfRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) = 0;
 
 		virtual void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) = 0;
 		virtual void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) = 0;

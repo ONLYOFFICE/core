@@ -730,6 +730,23 @@ namespace MetaFile
 		WriteSize(oExtent);
 	}
 
+	void CEmfInterpretator::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		int unExplicitRecordSize    = 24;
+		int unType                  = EMR_SCALEWINDOWEXTEX;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		m_pOutStream->WriteFile((BYTE*)&nXNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nXDenom,               sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYDenom,               sizeof (int));
+	}
+
 	void CEmfInterpretator::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
 	{
 		int unExplicitRecordSize    = 16;
@@ -756,6 +773,23 @@ namespace MetaFile
 		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
 
 		WriteSize(oExtent);
+	}
+
+	void CEmfInterpretator::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		int unExplicitRecordSize    = 24;
+		int unType                  = EMR_SCALEVIEWPORTEXTEX;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		m_pOutStream->WriteFile((BYTE*)&nXNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nXDenom,               sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYNum,                 sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nYDenom,               sizeof (int));
 	}
 
 	void CEmfInterpretator::HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)
@@ -1757,6 +1791,53 @@ namespace MetaFile
 
 		m_pOutStream->WriteFile((BYTE*)&unRgnDataSize,          sizeof (int));
 		m_pOutStream->WriteFile((BYTE*)&unIhBrush,              sizeof (int));
+
+		WriteRegionDataHeader(oRegionDataHeader);
+
+		for (const TEmfRectL &oRect : arRects)
+			WriteRectangle(oRect);
+	}
+
+	void CEmfInterpretator::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		int unRgnDataSize           = 32 + arRects.size() * 16;
+		int unExplicitRecordSize    = 28 + unRgnDataSize;
+		int unType                  = EMR_PAINTRGN;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		WriteRectangle(oBounds);
+
+		m_pOutStream->WriteFile((BYTE*)&unRgnDataSize,          sizeof (int));
+
+		WriteRegionDataHeader(oRegionDataHeader);
+
+		for (const TEmfRectL &oRect : arRects)
+			WriteRectangle(oRect);
+	}
+
+	void CEmfInterpretator::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		int unRgnDataSize           = 40 + arRects.size() * 16;
+		int unExplicitRecordSize    = 28 + unRgnDataSize;
+		int unType                  = EMR_FRAMERGN;
+
+		unFileSize += unExplicitRecordSize;
+		++unNumberRecords;
+
+		m_pOutStream->WriteFile((BYTE*)&unType,                sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unExplicitRecordSize,  sizeof (int));
+
+		WriteRectangle(oBounds);
+
+		m_pOutStream->WriteFile((BYTE*)&unRgnDataSize, sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&unIhBrush,     sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nWidth,       sizeof (int));
+		m_pOutStream->WriteFile((BYTE*)&nHeight,      sizeof (int));
 
 		WriteRegionDataHeader(oRegionDataHeader);
 

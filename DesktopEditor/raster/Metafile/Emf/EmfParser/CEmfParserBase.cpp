@@ -620,11 +620,13 @@ namespace MetaFile
 		return m_pDC;
 	}
 
-	CEmfParserBase::CEmfParserBase() : m_oPlayer(this)
+	CEmfParserBase::CEmfParserBase()
+		: m_oPlayer(this)
 	{
 		m_pPath = NULL;
 		m_pDC   = m_oPlayer.GetDC();
 		m_pInterpretator = NULL;
+		m_bEof = false;
 	}
 
 	CEmfParserBase::~CEmfParserBase(){}
@@ -636,6 +638,7 @@ namespace MetaFile
 		RELEASEOBJECT(m_pPath);
 		m_oPlayer.Clear();
 		m_pDC = m_oPlayer.GetDC();
+		m_bEof = false;
 	}
 
 	TRect *CEmfParserBase::GetDCBounds()
@@ -769,9 +772,17 @@ namespace MetaFile
 		return (pWindow->ulW < 0);
 	}
 
-	double CEmfParserBase::GetScale()
+	unsigned int CEmfParserBase::GetMapMode()
 	{
-		return 1.f;
+		return m_pDC->GetMapMode();
+	}
+
+	double CEmfParserBase::GetPixWidth(double dScaleX)
+	{
+		if (MM_TEXT == m_pDC->GetMapMode())
+			return dScaleX * std::fabs((double)m_oHeader.oDevice.cx / (double)m_oHeader.oMillimeters.cx);
+
+		return dScaleX * std::fabs((double)(m_oHeader.oFrame.lRight - m_oHeader.oFrame.lLeft) / (double)(m_oHeader.oBounds.lRight - m_oHeader.oBounds.lLeft));
 	}
 
 	bool CEmfParserBase::IsViewportFlippedY()
@@ -891,6 +902,9 @@ namespace MetaFile
 
 		m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
 
+		m_pDC->SetWindowExtents(m_oHeader.oDevice);
+		m_pDC->SetViewportExtents(m_oHeader.oDevice);
+
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->Begin();
@@ -945,14 +959,17 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_EOF();
 			m_pInterpretator->End();
 		}
+
+		m_bEof = true;
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SAVEDC()
 	{
-		m_pDC = m_oPlayer.SaveDC();
-
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SAVEDC();
+
+		m_oPlayer.SaveDC();
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_RESTOREDC(int &nIndexDC)
@@ -966,10 +983,7 @@ namespace MetaFile
 			return;
 		}
 
-		int lCount = -nIndexDC;
-		for (int lIndex = 0; lIndex < lCount; lIndex++)
-			m_oPlayer.RestoreDC();
-
+		m_oPlayer.RestoreDC(nIndexDC);
 		m_pDC = m_oPlayer.GetDC();
 		UpdateOutputDC();
 	}
@@ -1075,10 +1089,6 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_CREATEPEN(unPenIndex, unWidthX, pPen);
 
-		if (!unWidthX)
-		{//emf from Bonetti Martínez. cálculo estructural de pilotes y pilas.xlsx
-			unWidthX = 1 / m_pDC->GetPixelWidth();
-		}
 		pPen->Width = unWidthX;
 
 		m_oPlayer.RegisterObject(unPenIndex, (CEmfObjectBase*)pPen);
@@ -1200,6 +1210,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SETWINDOWORGEX(oOrigin);
 
 		m_pDC->SetWindowOrigin(oOrigin);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETWINDOWEXTEX(TEmfSizeL &oExtent)
@@ -1207,7 +1218,23 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetWindowExtents(oExtent);
+		UpdateOutputDC();
+	}
+
+	void CEmfParserBase::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
+		m_pDC->ScaleWindow((double)nXNum / (double)nXDenom, (double)nYNum / (double)nYDenom);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL &oOrigin)
@@ -1216,6 +1243,7 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTORGEX(oOrigin);
 
 		m_pDC->SetViewportOrigin(oOrigin);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETVIEWPORTEXTEX(TEmfSizeL &oExtent)
@@ -1223,7 +1251,23 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetViewportExtents(oExtent);
+		UpdateOutputDC();
+	}
+
+	void CEmfParserBase::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_SCALEVIEWPORTEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
+		m_pDC->ScaleViewport((double)nXNum / (double)nXDenom, (double)nYNum / (double)nYDenom);
+		UpdateOutputDC();
 	}
 
 	void CEmfParserBase::HANDLE_EMR_SETSTRETCHBLTMODE(unsigned int &unStretchMode)
@@ -1669,22 +1713,45 @@ namespace MetaFile
 	void CEmfParserBase::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL>& arRects)
 	{
 		if (NULL != m_pInterpretator)
-		{
 			m_pInterpretator->HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
 
-			for (const TEmfRectL &oRect : arRects)
-			{
-				MoveTo(oRect.lLeft,  oRect.lTop);
-				LineTo(oRect.lRight, oRect.lTop);
-				LineTo(oRect.lRight, oRect.lBottom);
-				LineTo(oRect.lLeft,  oRect.lBottom);
-			}
-
-			ClosePath();
-			m_oPlayer.SelectObject(unIhBrush);
-
-			DrawPath(false, true);
+		for (const TEmfRectL &oRect : arRects)
+		{
+			MoveTo(oRect.lLeft,  oRect.lTop);
+			LineTo(oRect.lRight, oRect.lTop);
+			LineTo(oRect.lRight, oRect.lBottom);
+			LineTo(oRect.lLeft,  oRect.lBottom);
 		}
+
+		ClosePath();
+		m_oPlayer.SelectObject(unIhBrush);
+
+		DrawPath(false, true);
+	}
+
+	void CEmfParserBase::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
+
+		for (const TEmfRectL &oRect : arRects)
+		{
+			MoveTo(oRect.lLeft,  oRect.lTop);
+			LineTo(oRect.lRight, oRect.lTop);
+			LineTo(oRect.lRight, oRect.lBottom);
+			LineTo(oRect.lLeft,  oRect.lBottom);
+		}
+
+		ClosePath();
+		DrawPath(false, true);
+	}
+
+	void CEmfParserBase::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
+
+		//TODO: реализовать
 	}
 
 	void CEmfParserBase::HANDLE_EMR_POLYBEZIER(TEmfRectL &oBounds, std::vector<TEmfPointL> &arPoints)

@@ -3,17 +3,18 @@
 #include "../WmfInterpretator/CWmfInterpretatorRender.h"
 #include "../WmfInterpretator/CWmfInterpretatorSvg.h"
 
+#include "../../Emf/EmfParser/CEmfParser.h"
+
 namespace MetaFile
 {
-	CWmfParserBase::CWmfParserBase() : m_oPlayer(this), m_pInterpretator(NULL)
+	CWmfParserBase::CWmfParserBase()
+		: m_oPlayer(this), m_pInterpretator(NULL), m_bEof(false)
 	{
 		m_pDC = m_oPlayer.GetDC();
 	}
 
 	CWmfParserBase::~CWmfParserBase()
-	{
-		ClearFile();
-	}
+	{}
 
 	void CWmfParserBase::PlayMetaFile()
 	{
@@ -24,20 +25,12 @@ namespace MetaFile
 	{
 		m_oPlayer.Clear();
 		m_pDC = m_oPlayer.GetDC();
+		m_bEof = false;
 	}
 
 	TRect *CWmfParserBase::GetDCBounds()
 	{
 		m_oDCRect = GetBoundingBox();
-		return &m_oDCRect;
-
-		TWmfWindow* pViewport = m_pDC->GetViewport();
-
-		m_oDCRect.nLeft   = pViewport->x;
-		m_oDCRect.nTop    = pViewport->y;
-		m_oDCRect.nRight  = pViewport->w + pViewport->x;
-		m_oDCRect.nBottom = pViewport->h + pViewport->y;
-
 		return &m_oDCRect;
 	}
 
@@ -166,12 +159,17 @@ namespace MetaFile
 		return (pWindow->w < 0);
 	}
 
-	double CWmfParserBase::GetScale()
+	unsigned int CWmfParserBase::GetMapMode()
 	{
-		if (m_oPlaceable.Inch != 0)
-			return 1440.f / m_oPlaceable.Inch / (20.f * (72.f / 96.f));
+		return m_pDC->GetMapMode();
+	}
 
-		return 1.f;
+	double CWmfParserBase::GetPixWidth(double dScaleX)
+	{
+		if (0 != m_oPlaceable.Inch && MM_TEXT != m_pDC->GetMapMode())
+			return dScaleX * (1440. / (((m_oPlaceable.Inch <= 1440) ? m_oPlaceable.Inch : 96) * m_pDC->GetPixelWidth()));
+
+		return dScaleX * 10. / m_pDC->GetPixelWidth() / ((0 != m_oPlaceable.Inch) ? (1440. / m_oPlaceable.Inch) : 1.);
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
@@ -216,28 +214,15 @@ namespace MetaFile
 	TRectD CWmfParserBase::GetBounds()
 	{
 		TRect  oBoundsBox = GetBoundingBox();
-		TRectD oBounds = oBoundsBox;
-		//TODO: сильно падает качетсво изображения
-		//			if (IsPlaceable())
-		//			{
-		//				double dLogicalToMM = (m_oPlaceable.Inch > 0 ? 25.4 / m_oPlaceable.Inch : 25.4 / 1440);
-		//				oBounds *= dLogicalToMM;
-		//			}
-		//			else
-		//			{
-		//				// TODO:
-		//			}
+		TRectD oBounds(oBoundsBox);
 		return oBounds;
 	}
 
 	void CWmfParserBase::SkipVoid()
 	{
-		char chValue;
-
 		do
 		{
-			chValue = m_oStream.ReadChar();
-		} while (chValue == 0);
+		} while (m_oStream.ReadChar() == 0);
 
 		m_oStream.SeekBack(1);
 	}
@@ -250,9 +235,10 @@ namespace MetaFile
 
 	TRect CWmfParserBase::GetBoundingBox()
 	{
-		TRect oBB;
 		if (IsPlaceable())
 		{
+			TRect oBB;
+
 			oBB = m_oPlaceable.BoundingBox;
 
 			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
@@ -266,17 +252,11 @@ namespace MetaFile
 				oBB.nTop    = m_oBoundingBox.nTop;
 				oBB.nBottom = m_oBoundingBox.nBottom;
 			}
+
+			return oBB;
 		}
 		else
-			oBB = m_oBoundingBox;
-
-		if (abs(oBB.nRight - oBB.nLeft) <= 1)
-			oBB.nRight = oBB.nLeft + 1024;
-
-		if (abs(oBB.nBottom - oBB.nTop) <= 1)
-			oBB.nBottom = m_oBoundingBox.nTop + 1024;
-
-		return oBB;
+			return m_oBoundingBox;
 	}
 
 	bool CWmfParserBase::IsPlaceable()
@@ -452,7 +432,7 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx);
+			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx, 1, GetTransform()->M11, GetTransform()->M22);
 
 			RELEASEARRAYOBJECTS(pdDx);
 		}
@@ -787,18 +767,29 @@ namespace MetaFile
 		if (0x0100 != m_oHeader.Version && 0x0300 != m_oHeader.Version)
 			return SetError();
 
-		// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
-		// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
+		m_pDC->SetMapMode(MM_ANISOTROPIC);
+
 		if (NULL != m_pInterpretator)
 		{
 			m_oRect = GetBoundingBox();
-			m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
+
+			m_pDC->SetWindowOrg(m_oRect.nLeft, m_oRect.nTop);
 			m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+			m_pDC->SetViewportOrg(m_oRect.nLeft, m_oRect.nTop);
+			m_pDC->SetViewportExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
+
+			if (0 != m_oPlaceable.Inch)
+			{
+				double dScale = 1440. / m_oPlaceable.Inch;
+				m_pDC->SetWindowScale(dScale, dScale);
+			}
 		}
-		else
-		{
+
+		// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла.
+		// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
+		if (NULL == m_pInterpretator)
 			m_bFirstPoint = true;
-		}
+
 	}
 
 	void CWmfParserBase::HANDLE_META_BITBLT(const TWmfBitBlt &oWmfBitBlt, CDataStream &oDataStream)
@@ -814,9 +805,23 @@ namespace MetaFile
 
 		unsigned int unRecordSizeDword = m_unRecordSize >> 1;
 		unsigned int unValue = (META_DIBBITBLT >> 8) + 3;
-		if (unRecordSizeDword == unValue)
+		if (unRecordSizeDword == unValue) // похоже на META_PATBLT
 		{
-			m_oStream.Skip(2); // Reserved
+			if (0x00F00021 == oWmfBitBlt.RasterOperation)
+			{
+				short shSkip;
+
+				m_oStream >> shSkip;
+
+				MoveTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest);
+				LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest);
+				LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
+				LineTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
+				ClosePath();
+				DrawPath(false, true);
+			}
+			else
+				m_oStream.Skip(2);
 		}
 		else
 		{
@@ -869,6 +874,8 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_EOF();
+
+		m_bEof = true;
 	}
 
 	void CWmfParserBase::HANDLE_META_ARC(short shYEndArc, short shXEndArc, short shYStartArc, short shXStartArc, short shBottom, short shRight, short shTop, short shLeft)
@@ -925,7 +932,29 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_FILLREGION(ushRegionIndex, ushBrushIndex);
 
-		//TODO:: реализовать
+		m_oPlayer.SelectObject(ushRegionIndex);
+
+		CWmfRegion *pRegion = m_pDC->GetRegion();
+
+		if (NULL != pRegion)
+		{
+			for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+			{
+				TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+				if (pScanObject->Count == 0) continue;
+
+				for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+				{
+					MoveTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+				}
+			}
+			DrawPath(false, true);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth)
@@ -933,7 +962,29 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_FRAMEREGION(ushRegionIndex, ushBrushIndex, shHeight, shWidth);
 
-		//TODO:: реализовать
+		m_oPlayer.SelectObject(ushRegionIndex);
+
+		CWmfRegion *pRegion = m_pDC->GetRegion();
+
+		if (NULL != pRegion)
+		{
+			for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+			{
+				TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+				if (pScanObject->Count == 0) continue;
+
+				for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+				{
+					MoveTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Top);
+					LineTo(pScanObject->ScanLines[unIndex].Right, pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Bottom);
+					LineTo(pScanObject->ScanLines[unIndex].Left,  pScanObject->Top);
+				}
+			}
+			DrawPath(true, false);
+		}
 	}
 
 	void CWmfParserBase::HANDLE_META_INVERTREGION(unsigned short ushRegionIndex)
@@ -1143,6 +1194,12 @@ namespace MetaFile
 		CWmfBrush* pBrush = new CWmfBrush(oBrush);
 		if (!pBrush)
 			return SetError();
+
+		if (BS_PATTERN == pBrush->BrushStyle || BS_DIBPATTERNPT == pBrush->BrushStyle)
+		{
+			pBrush->BrushStyle = BS_SOLID;
+			pBrush->Color.Init();
+		}
 
 		m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
 	}
@@ -1360,6 +1417,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SCALEVIEWPORTEXT(yDenom, yNum, xDenom, xNum);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetViewportScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
 		UpdateOutputDC();
 	}
@@ -1368,6 +1428,9 @@ namespace MetaFile
 	{
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SCALEWINDOWEXT(yDenom, yNum, xDenom, xNum);
+
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
 
 		m_pDC->SetWindowScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
 		UpdateOutputDC();
@@ -1477,6 +1540,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SETVIEWPORTEXT(shX, shY);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetViewportExt(shX, shY);
 		UpdateOutputDC();
 	}
@@ -1495,6 +1561,9 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SETWINDOWEXT(shX, shY);
 
+		if (MM_ISOTROPIC != m_pDC->GetMapMode() && MM_ANISOTROPIC != m_pDC->GetMapMode())
+			return;
+
 		m_pDC->SetWindowExt(shX, shY);
 		UpdateOutputDC();
 	}
@@ -1511,8 +1580,66 @@ namespace MetaFile
 	void CWmfParserBase::HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount)
 	{
 		if (NULL != m_pInterpretator)
+		{
 			m_pInterpretator->HANDLE_META_ESCAPE(ushEscapeFunction, ushByteCount);
 
+			if (WMF_META_ESCAPE_ENHANCED_METAFILE == ushEscapeFunction)
+			{
+				if (ushByteCount < 34)
+					return;
+
+				unsigned int unCommentIdentifier, unCommentType, unVersion;
+
+				m_oStream >> unCommentIdentifier;
+				m_oStream >> unCommentType;
+				m_oStream >> unVersion;
+
+				if (0x43464D57 != unCommentIdentifier || 0x00000001 != unCommentType || 0x00010000 != unVersion)
+					return;
+
+				unsigned short ushChecksum;
+				unsigned int unFlags;
+
+				m_oStream >> ushChecksum;
+				m_oStream >> unFlags;
+
+				if (0x00000000 != unFlags)
+					return;
+
+				unsigned int unCommentRecordCount, unCurrentRecordSize, unRemainingBytes, unEnhancedMetafileDataSize;
+
+				m_oStream >> unCommentRecordCount;
+				m_oStream >> unCurrentRecordSize;
+				m_oStream >> unRemainingBytes;
+				m_oStream >> unEnhancedMetafileDataSize;
+
+				if (m_oEscapeBuffer.Empty())
+					m_oEscapeBuffer.SetSize(unEnhancedMetafileDataSize);
+
+				m_oStream.ReadBytes(m_oEscapeBuffer.GetCurPtr(), unCurrentRecordSize);
+
+				m_oEscapeBuffer.IncreasePosition(unCurrentRecordSize);
+
+				if (0 == unRemainingBytes)
+				{
+					CEmfParser oEmfParser;
+
+					oEmfParser.SetFontManager(GetFontManager());
+					oEmfParser.SetStream(m_oEscapeBuffer.GetBuffer(), m_oEscapeBuffer.GetSize());
+					oEmfParser.Scan();
+
+					if (!oEmfParser.CheckError() && InterpretatorType::Render == m_pInterpretator->GetType())
+					{
+						CMetaFileRenderer oEmfOut(&oEmfParser, ((CWmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
+						oEmfParser.SetInterpretator(&oEmfOut);
+
+						oEmfParser.PlayFile();
+
+						m_bEof = true;
+					}
+				}
+			}
+		}
 		// TODO: Реализовать
 	}
 

@@ -183,6 +183,20 @@ typedef unsigned char BYTE;
 #define TA_BOTTOM                    8
 #define TA_BASELINE                  24
 
+#if (WINVER >= 0x0400)
+#define TA_RTLREADING                256
+#define TA_MASK       (TA_BASELINE+TA_CENTER+TA_UPDATECP+TA_RTLREADING)
+#else
+#define TA_MASK       (TA_BASELINE+TA_CENTER+TA_UPDATECP)
+#endif
+
+#define VTA_BASELINE TA_BASELINE
+#define VTA_LEFT     TA_BOTTOM
+#define VTA_RIGHT    TA_TOP
+#define VTA_CENTER   TA_CENTER
+#define VTA_BOTTOM   TA_RIGHT
+#define VTA_TOP      TA_LEFT
+
 /* Binary raster ops */
 #define R2_BLACK            1   /*  0       */
 #define R2_NOTMERGEPEN      2   /* DPon     */

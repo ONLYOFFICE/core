@@ -42,7 +42,7 @@ namespace MetaFile
 		double dKoef = 1;
 
 		if (oPlaceable.Inch != 0)
-			dKoef = 1440.f / oPlaceable.Inch / (20.f * (72.f / 96.f));
+			dKoef = 1440.f / oPlaceable.Inch;
 
 		if (m_oViewport.GetWidth() != 0)
 			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dKoef));
@@ -269,7 +269,17 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_PATBLT(unsigned int unRasterOperation, short shH, short shW, short shY, short shX)
 	{
-		//TODO:: реализовать
+		TRectD oNewRect;
+
+		NodeAttributes arAttributes = {{L"x",		ConvertToWString(shX)},
+		                               {L"y",		ConvertToWString(shY)},
+		                               {L"width",	ConvertToWString(shW)},
+		                               {L"height",	ConvertToWString(shH)}};
+
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"rect", arAttributes);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL)

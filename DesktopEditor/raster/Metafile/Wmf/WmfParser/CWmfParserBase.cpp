@@ -813,12 +813,7 @@ namespace MetaFile
 
 				m_oStream >> shSkip;
 
-				MoveTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest);
-				LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest);
-				LineTo(oWmfBitBlt.YDest + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
-				LineTo(oWmfBitBlt.YSrc + shSkip, oWmfBitBlt.XDest + oWmfBitBlt.Width);
-				ClosePath();
-				DrawPath(false, true);
+				HANDLE_META_PATBLT(oWmfBitBlt.RasterOperation, oWmfBitBlt.Width, oWmfBitBlt.YDest, oWmfBitBlt.XDest, oWmfBitBlt.YSrc + shSkip);
 			}
 			else
 				m_oStream.Skip(2);

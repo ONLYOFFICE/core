@@ -52,9 +52,9 @@
             // 
             // textBoxDir
             // 
-            this.textBoxDir.Location = new System.Drawing.Point(12, 34);
+            this.textBoxDir.Location = new System.Drawing.Point(28, 34);
             this.textBoxDir.Name = "textBoxDir";
-            this.textBoxDir.Size = new System.Drawing.Size(539, 20);
+            this.textBoxDir.Size = new System.Drawing.Size(523, 20);
             this.textBoxDir.TabIndex = 1;
             // 
             // buttonSearch

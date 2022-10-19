@@ -815,6 +815,7 @@ namespace OOX
 		}
 		void CRowXLSB::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
+			bool hasHt = false;
 			WritingElement_ReadAttributes_StartChar( oReader )
 
 			if ( strcmp("r", wsName) == 0 )\
@@ -831,6 +832,7 @@ namespace OOX
 			}
 			else if ( strcmp("ht", wsName) == 0 )\
 			{
+				hasHt = true;
 				m_dHt = atof(oReader.GetTextChar());
 			}
 			else if ( strcmp("hidden", wsName) == 0 )\
@@ -866,6 +868,12 @@ namespace OOX
 				m_oPh.FromStringA(oReader.GetTextChar());
 			}
 			WritingElement_ReadAttributes_EndChar( oReader )
+
+			//invalid combination for xlsb, in this case in xlsx ht is calculated by content
+			if (m_oCustomHeight.ToBool() && !hasHt)
+			{
+				m_oCustomHeight.FromBool(false);
+			}
 		}
 
 		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const

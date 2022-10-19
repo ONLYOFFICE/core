@@ -30,11 +30,6 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader)
 	{
-		m_oViewport.dLeft	= oPlaceable.BoundingBox.Left;
-		m_oViewport.dTop	= oPlaceable.BoundingBox.Top;
-		m_oViewport.dRight	= oPlaceable.BoundingBox.Right;
-		m_oViewport.dBottom = oPlaceable.BoundingBox.Bottom;
-
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
@@ -43,6 +38,13 @@ namespace MetaFile
 
 		if (oPlaceable.Inch != 0)
 			dKoef = 1440.f / oPlaceable.Inch;
+
+		TRect *pBounds = m_pParser->GetDCBounds();
+
+		m_oViewport.dLeft	= pBounds->nLeft;
+		m_oViewport.dTop	= pBounds->nTop;
+		m_oViewport.dRight	= pBounds->nRight;
+		m_oViewport.dBottom = pBounds->nBottom;
 
 		if (m_oViewport.GetWidth() != 0)
 			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dKoef));
@@ -846,22 +848,12 @@ namespace MetaFile
 
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L"," + ConvertToWString(pPen->GetAlpha(), 0) + L")"});
 
-			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
+			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			if (PS_COSMETIC == m_pParser->GetPen())
-			{
-				dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-			}
-			else
-			{
-				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
+			if (0 == dStrokeWidth || (1 == dStrokeWidth && (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))))
+				dStrokeWidth = 1 / ((std::fabs(m_pParser->GetPixelHeight()) < 1) ? std::fabs(m_pParser->GetPixelHeight()) : 1);
 
-				if (dStrokeWidth < dMinStrokeWidth)
-					dStrokeWidth = dMinStrokeWidth;
-			}
-
-			if (dStrokeWidth > 0)
-				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
+			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
 			unsigned int unMetaPenStyle = pPen->GetStyle();
 

@@ -9,7 +9,7 @@
 namespace MetaFile
 {               
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
-		: m_pParser(pParser), m_unNumberDefs(0)
+	    : m_pParser(pParser), m_unNumberDefs(0), m_oScale(1, 1)
 	{
 		SetSize(unWidth, unHeight);
 	}
@@ -36,6 +36,9 @@ namespace MetaFile
 		m_oViewport.dTop    = oTEmfHeader.oFramePx.lTop;
 		m_oViewport.dRight  = oTEmfHeader.oFramePx.lRight;
 		m_oViewport.dBottom = oTEmfHeader.oFramePx.lBottom;
+
+		m_oScale.dX = (double)oTEmfHeader.oMillimeters.cx / (double)oTEmfHeader.oDevice.cx;
+		m_oScale.dY = (double)oTEmfHeader.oMillimeters.cy / (double)oTEmfHeader.oDevice.cy;
 
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
@@ -1302,22 +1305,13 @@ namespace MetaFile
 		{		
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")"});
 
-			double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth() * m_pParser->GetTransform()->M22);
+			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
-			{
-				dStrokeWidth = 1 / std::abs(m_pParser->GetTransform()->M22);
-			}
-			else
-			{
-				double dMinStrokeWidth = 1 / std::abs(m_pParser->GetTransform()->M22);
+			if (0 == dStrokeWidth || (1 == dStrokeWidth && (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))))
+//				dStrokeWidth = 1 / ((std::fabs(m_pParser->GetPixelHeight()) < 1) ? std::fabs(m_pParser->GetPixelHeight()) : 1);
+				dStrokeWidth = m_pParser->GetPixWidth(m_oScale.dX * 2);
 
-				if (dStrokeWidth < dMinStrokeWidth)
-					dStrokeWidth = dMinStrokeWidth;
-			}
-
-			if (dStrokeWidth > 0)
-				arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
+			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
 			unsigned int unMetaPenStyle = m_pParser->GetPen()->GetStyle();
 			//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;

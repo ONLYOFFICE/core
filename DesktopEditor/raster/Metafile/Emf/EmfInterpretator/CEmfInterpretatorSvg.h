@@ -141,6 +141,8 @@ namespace MetaFile
 
 		unsigned int			m_unNumberDefs;
 		std::wstring			m_wsDefs;
+
+		TEmfScale               m_oScale;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 

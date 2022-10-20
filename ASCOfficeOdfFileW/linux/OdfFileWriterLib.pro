@@ -30,6 +30,13 @@ CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
 
+# Use Precompiled headers (PCH)
+use_pch {
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
+}
+
 core_release {
 SOURCES += \
     odffilewriterlib_odf.cpp

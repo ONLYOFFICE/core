@@ -27,6 +27,13 @@ core_mac {
     #QMAKE_MAC_SDK = macosx10.11
 }
 
+# Use Precompiled headers (PCH)
+use_pch {
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
+}
+
 SOURCES +=  \
     ../DocFormatLib.cpp \
      ../../../Common/3dParty/pole/pole.cpp \

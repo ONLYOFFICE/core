@@ -404,6 +404,10 @@ void Cx2tTester::Start()
 		{
 			folder = folder.substr(0, folder.size() - 3);
 			NSDirectory::CreateDirectory(folder);
+
+			// waiting for directory
+			if(!NSDirectory::Exists(folder))
+				NSThreads::Sleep(30);
 		}
 		output_files_directory += L'/' + NSFile::GetFileName(input_file);
 

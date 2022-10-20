@@ -37,8 +37,6 @@
 #include "../XlsxFormat/Comments/Comments.h"
 #include "Document.h"
 
-#include <boost/unordered_map.hpp>
-
 namespace OOX
 {
 
@@ -60,7 +58,7 @@ namespace OOX
 		{
 			m_bDocument		= bDocument;
 			m_mapComments	= NULL;
-			m_lObjectIdVML	= 0;
+			m_lObjectIdVML	= 1024;
 		}
 		CVmlDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 		{
@@ -123,7 +121,7 @@ namespace OOX
 
 		std::wstring															m_sFileContent;
 //writing
-        boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>*    m_mapComments;
+        std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>*				m_mapComments;
         std::vector<std::wstring>                                               m_arObjectXml;
         std::vector<std::wstring>                                               m_arControlXml;
 

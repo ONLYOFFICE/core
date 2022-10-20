@@ -303,7 +303,8 @@ xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
 		
 		if (false == m_arControlXml.empty() || ((NULL != m_mapComments) && (false == m_mapComments->empty())))
 		{
-			sXml.WriteString(L"<o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout>");
+			int data = (int)((m_lObjectIdVML + 4096) / 1024);
+			sXml.WriteString(L"<o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"" + std::to_wstring(data) + L"\"/></o:shapelayout>");
 		}
 		
 		if (false == m_arControlXml.empty())
@@ -320,14 +321,14 @@ xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
 			}
 		}
 		
-		long nIndex = m_lObjectIdVML + 1;
+		long nIndex = 4096 + m_lObjectIdVML;
 		if ((NULL != m_mapComments) && (false == m_mapComments->empty()))
 		{				
 			sXml.WriteString(L"<v:shapetype id=\"_x0000_t202\" coordsize=\"21600,21600\" o:spt=\"202\"");
 			sXml.WriteString(L" path=\"m,l,21600r21600,l21600,xe\">");
 			sXml.WriteString(L"<v:stroke joinstyle=\"miter\"/><v:path gradientshapeok=\"t\" o:connecttype=\"rect\"/></v:shapetype>");
            
-			for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
+			for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_mapComments->begin(); it != m_mapComments->end(); ++it)
 			{
 				OOX::Spreadsheet::CCommentItem* comment = it->second;
                                         

@@ -316,7 +316,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}
 	//комментарии
-    boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
+	std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
 	while ( oox_sheet->m_mapComments.end() != pos )
 	{
 		convert(pos->second);
@@ -2850,7 +2850,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 		}
 		if (oox_sheet->m_oControls.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
+            std::map<unsigned int, nullable<OOX::Spreadsheet::CControl>>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oControls->m_mapControls.end())
 			{
 				//??? перенести даные привязки 
@@ -2996,9 +2996,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 {
 	if (!oox_controls) return;
 
-    for (std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator it = oox_controls->m_mapControls.begin(); it != oox_controls->m_mapControls.end(); ++it)
+    for (std::map<unsigned int, nullable<OOX::Spreadsheet::CControl>>::const_iterator it = oox_controls->m_mapControls.begin(); it != oox_controls->m_mapControls.end(); ++it)
 	{
-		OOX::Spreadsheet::CControl* pControl = it->second;
+		OOX::Spreadsheet::CControl* pControl = it->second.GetPointer();
 		if (!pControl) continue;
 	
 		OOX::WritingElement* pShapeElem	= NULL;

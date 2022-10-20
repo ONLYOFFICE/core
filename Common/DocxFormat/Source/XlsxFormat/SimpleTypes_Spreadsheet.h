@@ -1050,31 +1050,38 @@ namespace SimpleTypes
             virtual EHorizontalAlignment FromString(std::wstring &sValue)
 			{
 				// JustifyDistributed
+				std::wstring sValueL = XmlUtils::GetLower(sValue);
 
-				if(L"center" == sValue || L"Center" == sValue)
-                    this->m_eValue = horizontalalignmentCenter;
-				else if (L"centerContinuous" == sValue || L"CenterAcrossSelection" == sValue)
-					this->m_eValue = horizontalalignmentCenterContinuous;
-				else if(L"continuous" == sValue)
-                    this->m_eValue = horizontalalignmentContinuous;
-				else if(L"distributed" == sValue || L"Distributed" == sValue)
-                    this->m_eValue = horizontalalignmentDistributed;
-				else if(L"fill" == sValue || L"Fill" == sValue)
-                    this->m_eValue = horizontalalignmentFill;
-				else if(L"general" == sValue || L"Automatic" == sValue)
-                    this->m_eValue = horizontalalignmentGeneral;
-				else if(L"justify" == sValue || L"Justify" == sValue)
-                    this->m_eValue = horizontalalignmentJustify;
-				else if(L"left" == sValue || L"Left" == sValue)
-                    this->m_eValue = horizontalalignmentLeft;
-				else if(L"right" == sValue || L"Right" == sValue)
-                    this->m_eValue = horizontalalignmentRight;
+					 if(L"center" == sValueL)				this->m_eValue = horizontalalignmentCenter;
+				else if (L"centercontinuous" == sValueL)	this->m_eValue = horizontalalignmentCenterContinuous;
+				else if(L"continuous" == sValueL)			this->m_eValue = horizontalalignmentContinuous;
+				else if(L"distributed" == sValueL)			this->m_eValue = horizontalalignmentDistributed;
+				else if(L"fill" == sValueL)					this->m_eValue = horizontalalignmentFill;
+				else if(L"general" == sValueL)				this->m_eValue = horizontalalignmentGeneral;
+				else if(L"justify" == sValueL)				this->m_eValue = horizontalalignmentJustify;
+				else if(L"left" == sValueL)					this->m_eValue = horizontalalignmentLeft;
+				else if(L"right" == sValueL)				this->m_eValue = horizontalalignmentRight;
 				else
                     this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
-
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToVmlString() const
+			{
+				switch (this->m_eValue)
+				{
+				case horizontalalignmentCenter: return L"Center"; break;
+				case horizontalalignmentContinuous: return L"Continuous"; break;
+				case horizontalalignmentDistributed: return L"Distributed"; break;
+				case horizontalalignmentFill: return L"Fill"; break;
+				case horizontalalignmentGeneral: return L"Gneral"; break;
+				case horizontalalignmentJustify: return L"Justify"; break;
+				case horizontalalignmentLeft: return L"Left"; break;
+				case horizontalalignmentRight: return L"Right"; break;
+				case horizontalalignmentCenterContinuous: return L"CenterContinuous"; break;
+				default: return L"general";
+				}
+			}
+			virtual std::wstring ToString  () const 
 			{
                 switch(this->m_eValue)
 				{
@@ -1110,22 +1117,29 @@ namespace SimpleTypes
 
             virtual EVerticalAlignment FromString(std::wstring &sValue)
 			{
-				//Automatic, JustifyDistributed
-				if(L"bottom" == sValue || L"Bottom" == sValue)
-                    this->m_eValue = verticalalignmentBottom;
-				else if(L"center" == sValue || L"Center" == sValue)
-                    this->m_eValue = verticalalignmentCenter;
-				else if(L"distributed" == sValue || L"Distributed" == sValue)
-                    this->m_eValue = verticalalignmentDistributed;
-				else if(L"justify" == sValue || L"Justify" == sValue)
-                    this->m_eValue = verticalalignmentJustify;
-				else if(L"top" == sValue || L"Top" == sValue)
-                    this->m_eValue = verticalalignmentTop;
-				else
-                    this->m_eValue = eDefValue;
+				std::wstring sValueL = XmlUtils::GetLower(sValue);
+			//Automatic, JustifyDistributed
+				if(L"bottom" == sValueL)			this->m_eValue = verticalalignmentBottom;
+				else if(L"center" == sValueL)		this->m_eValue = verticalalignmentCenter;
+				else if(L"distributed" == sValueL)	this->m_eValue = verticalalignmentDistributed;
+				else if(L"justify" == sValueL)		this->m_eValue = verticalalignmentJustify;
+				else if(L"top" == sValueL)			this->m_eValue = verticalalignmentTop;
+				else this->m_eValue = eDefValue;
                 return this->m_eValue;
 			}
-			virtual std::wstring     ToString  () const 
+			virtual std::wstring ToVmlString() const
+			{
+				switch (this->m_eValue)
+				{
+				case verticalalignmentBottom: return L"Bottom"; break;
+				case verticalalignmentCenter: return L"Center"; break;
+				case verticalalignmentDistributed: return L"Distributed"; break;
+				case verticalalignmentJustify: return L"Justify"; break;
+				case verticalalignmentTop: return L"Top"; break;
+				default:return L"Bottom";
+				}
+			}
+			virtual std::wstring ToString  () const
 			{
                 switch(this->m_eValue)
 				{
@@ -4762,21 +4776,32 @@ namespace SimpleTypes
 
 			virtual EDropStyle FromString(std::wstring &sValue)
 			{
-				if ( L"combo" ==  sValue )	this->m_eValue = valCombo;
-				else if ( L"comboedit" == sValue ) this->m_eValue = valComboedit;
-				else if ( L"simple" ==  sValue ) this->m_eValue = valSimple;
+				std::wstring sValueL = XmlUtils::GetLower(sValue);
+
+					 if ( L"combo" == sValueL) this->m_eValue = valCombo;
+				else if ( L"comboedit" == sValueL) this->m_eValue = valComboedit;
+				else if ( L"simple" == sValueL) this->m_eValue = valSimple;
 				else this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
-
+			std::wstring ToVmlString() const
+			{
+				switch (this->m_eValue)
+				{
+				case valCombo: return L"Combo";
+				case valComboedit: return L"ComboEdit";
+				case valSimple:
+				default: return L"Simple";
+				}
+			}
 			virtual std::wstring ToString  () const
 			{
 				switch(this->m_eValue)
 				{
-					case valCombo	:	return L"combo";
-					case valComboedit :	return L"comboedit";
+					case valCombo: return L"combo";
+					case valComboedit:	return L"comboedit";
 					case valSimple:	
-					default :			return L"simple";
+					default : return L"simple";
 				}
 			}
 
@@ -4798,13 +4823,24 @@ namespace SimpleTypes
 
 			virtual ESelType FromString(std::wstring &sValue)
 			{
-				if      ( L"extended" ==  sValue )	this->m_eValue = valExtended;
-				else if ( L"multi" == sValue ) this->m_eValue = valMulti;
-				else if ( L"single" == sValue ) this->m_eValue = valSingle;
+				std::wstring sValueL = XmlUtils::GetLower(sValue);
+					
+				if      ( L"extended" == sValueL)	this->m_eValue = valExtended;
+				else if ( L"multi" == sValueL) this->m_eValue = valMulti;
+				else if ( L"single" == sValueL) this->m_eValue = valSingle;
 				else								this->m_eValue = eDefValue;
 				return this->m_eValue;
 			}
-
+			std::wstring ToVmlString() const
+			{
+				switch (this->m_eValue)
+				{
+				case valExtended:	return L"Extended";
+				case valMulti:		return L"Multi";
+				case valSingle:
+				default:			return L"Single";
+				}
+			}
 			virtual std::wstring ToString  () const
 			{
 				switch(this->m_eValue)

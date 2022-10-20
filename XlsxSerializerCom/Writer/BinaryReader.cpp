@@ -3672,7 +3672,7 @@ m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_arWorksheets(arWorks
 {
 	m_pOfficeDrawingConverter = pOfficeDrawingConverter;
 	m_nNextObjectId = 0xfffff; // в CDrawingConverter своя нумерация .. 
-	m_lObjectIdVML = 0;
+	m_lObjectIdVML = 1024;
 } 
 int BinaryWorksheetsTableReader::Read()
 {
@@ -3692,8 +3692,8 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 		m_pCurDrawing.reset(new OOX::Spreadsheet::CDrawing(NULL));
 		m_pCurOleObjects.reset(new OOX::Spreadsheet::COleObjects());
 
-		m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML = (long)(1024 * (m_oWorkbook.m_oSheets->m_arrItems.size() + 1) + 1);
-//todooo а если объектов на листе больше 1024??? переписать!
+		m_lObjectIdVML += 1024;
+		m_pCurVmlDrawing->m_lObjectIdVML = m_lObjectIdVML;
 
 		boost::unordered_map<BYTE, std::vector<unsigned int>> mapPos;
 		READ1_DEF(length, res, this->ReadWorksheetSeekPositions, &mapPos);
@@ -4166,7 +4166,7 @@ void BinaryWorksheetsTableReader::WriteComments()
 
 	OOX::Spreadsheet::CThreadedComments* pThreadedComments = NULL;
 
-	for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
+	for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = m_pCurWorksheet->m_mapComments.begin(); it != m_pCurWorksheet->m_mapComments.end(); ++it)
 	{
 		OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
 		if (pCommentItem->IsValid())
@@ -5945,28 +5945,28 @@ int BinaryWorksheetsTableReader::ReadControls(BYTE type, long length, void* poRe
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerControlTypes::Control == type)
 	{		
-		OOX::Spreadsheet::CControl *pControl = new OOX::Spreadsheet::CControl();		
+		nullable<OOX::Spreadsheet::CControl> pControl; pControl.Init();
 		
 		pControl->m_oFormControlPr.Init();
 		
 		pControl->m_oControlPr.Init();
 		pControl->m_oControlPr->m_oAnchor.Init();
 		
-		pControl->m_oShapeId = m_lObjectIdVML++;
+		pControl->m_oShapeId = 4096 + m_lObjectIdVML++;
 
-		READ1_DEF(length, res, this->ReadControl, pControl);
+		READ1_DEF(length, res, this->ReadControl, pControl.GetPointer());
 		
-		std::wstring strXml = GetControlVmlShape(pControl);
+		std::wstring strXml = GetControlVmlShape(pControl.GetPointer());
 				
 		m_pCurVmlDrawing->m_arControlXml.push_back(strXml);
 
-		pControls->m_mapControls.insert(std::make_pair(pControl->m_oShapeId->GetValue(), pControl));
-		
 		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pCtrlPropFile(new OOX::Spreadsheet::CCtrlPropFile(NULL));		
 		pCtrlPropFile->m_oFormControlPr = pControl->m_oFormControlPr;
 
 		smart_ptr<OOX::File> pFile = pCtrlPropFile.smart_dynamic_cast<OOX::File>();
 		pControl->m_oRid = new SimpleTypes::CRelationshipId(m_pCurWorksheet->Add(pFile).get());
+	
+		pControls->m_mapControls.insert(std::make_pair(pControl->m_oShapeId->GetValue(), pControl));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -6187,7 +6187,7 @@ int BinaryWorksheetsTableReader::ReadControlItems(BYTE type, long length, void* 
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSerControlTypes::Item == type)
 	{
-		OOX::Spreadsheet::CListItem* pItem = new OOX::Spreadsheet::CListItem();
+		nullable<OOX::Spreadsheet::CListItem> pItem; pItem.Init();
 		pItem->m_oVal = m_oBufferedStream.GetString4(length);
 
 		pItems->m_arrItems.push_back(pItem);
@@ -6242,7 +6242,7 @@ std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 		oClientData.m_oChecked = pControl->m_oFormControlPr->m_oChecked->ToString();
 	
 	if (pControl->m_oFormControlPr->m_oDropStyle.IsInit())
-		oClientData.m_oDropStyle = pControl->m_oFormControlPr->m_oDropStyle->ToString();
+		oClientData.m_oDropStyle = pControl->m_oFormControlPr->m_oDropStyle->ToVmlString();
 
 	oClientData.m_oDefaultSize = pControl->m_oControlPr->m_oDefaultSize;
 	oClientData.m_oAutoLine = pControl->m_oControlPr->m_oAutoLine;
@@ -7364,7 +7364,7 @@ int BinaryFileReader::Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sD
 
 			vmlDrawing->m_mapComments = &sheet->m_mapComments;
 
-			boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
+			std::map<std::wstring, unsigned int> mapByAuthors;
 			OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
 
 			pComments->m_oCommentList.Init();
@@ -7372,7 +7372,7 @@ int BinaryFileReader::Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sD
 
 			pComments->m_oAuthors.Init();
 
-			for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = sheet->m_mapComments.begin(); it != sheet->m_mapComments.end(); ++it)
+			for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = sheet->m_mapComments.begin(); it != sheet->m_mapComments.end(); ++it)
 			{
 				OOX::Spreadsheet::CCommentItem* pCommentItem = it->second;
 				if (pCommentItem->IsValid())
@@ -7386,7 +7386,7 @@ int BinaryFileReader::Xml2Xlsx(const std::wstring& sSrcFileName, std::wstring sD
 					if (pCommentItem->m_sAuthor.IsInit())
 					{
 						const std::wstring& sAuthor = pCommentItem->m_sAuthor.get();
-						boost::unordered_map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
+						std::map<std::wstring, unsigned int>::const_iterator pFind = mapByAuthors.find(sAuthor);
 
 						int nAuthorId;
 						if (pFind != mapByAuthors.end())

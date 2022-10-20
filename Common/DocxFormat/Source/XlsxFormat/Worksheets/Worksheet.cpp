@@ -634,7 +634,7 @@ namespace OOX
 							int nCol = pClientData->m_oColumn->GetValue();
 							std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
 
-							boost::unordered_map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+							std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 							if(pPair != m_mapComments.end())
 							{
 								CCommentItem* pCommentItem = pPair->second;
@@ -904,7 +904,7 @@ mc:Ignorable=\"x14ac\">");
 		}
 		void CWorksheet::ClearItems()
 		{
-			for (boost::unordered_map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+			for (std::map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 			{
 				delete it->second;
 			}

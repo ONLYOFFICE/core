@@ -37,6 +37,13 @@ INCLUDEPATH += ../XlsFormat
 INCLUDEPATH += ../Common
 INCLUDEPATH += ../../../Common/DocxFormat/Source/XlsbFormat
 
+# Use Precompiled headers (PCH)
+use_pch {
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled_xls.h
+HEADERS += precompiled_xls.h
+}
+
 core_release {
 SOURCES += \
     xlsformatlib_logic.cpp
@@ -812,7 +819,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/CFDatabar.cpp \
     ../XlsFormat/Logic/Biff_structures/CFGradient.cpp
 }
-SOURCES +=  \
+SOURCES +=  \    
     ../XlsFormat/Auxiliary/HelpFunc.cpp \
     ../XlsFormat/Binary/CFRecord.cpp \
     ../XlsFormat/Binary/CFRecordType.cpp \

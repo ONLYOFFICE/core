@@ -417,8 +417,8 @@ void table_columns::serialize(std::wostream & strm)
 // table-columns-no-group
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-//const wchar_t * table_columns_no_group::ns = L"table";
-//const wchar_t * table_columns_no_group::name = L"table-columns";
+const wchar_t * table_columns_no_group::ns = L"table";
+const wchar_t * table_columns_no_group::name = L"table-columns";
 table_columns_no_group::table_columns_no_group(odf_conversion_context * _Context) : was_header_(false) 
 {
 	Context = _Context;
@@ -564,24 +564,6 @@ void table_columns_and_groups::serialize(std::wostream & strm)
 		content_[i]->serialize(strm);
 	}
 }
-// table-table-cell-content
-//////////////////////////////////////////////////////////////////////////////////////////////////
-
-void table_table_cell_content::create_child_element(  const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context)
-{
-	CP_CREATE_ELEMENT_SIMPLE(text_content_);
-}
-void table_table_cell_content::add_child_element( const office_element_ptr & child_element)
-{
-	text_content_.push_back(child_element);
-}
-void table_table_cell_content::serialize(std::wostream & strm)
-{
-	for (size_t i = 0; i < text_content_.size(); i++)
-	{
-		text_content_[i]->serialize(strm);
-	}
-}
 // table:table-cell
 // table-table-cell
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -590,12 +572,11 @@ const wchar_t * table_table_cell::name = L"table-cell";
 
 void table_table_cell::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    content_.create_child_element(Ns, Name, getContext());
+	CP_CREATE_ELEMENT(content_);
 }
-
 void table_table_cell::add_child_element( const office_element_ptr & child_element)
 {
-	content_.add_child_element(child_element);
+	content_.push_back(child_element);
 }
 void table_table_cell::serialize(std::wostream & _Wostream)
 {
@@ -606,7 +587,10 @@ void table_table_cell::serialize(std::wostream & _Wostream)
 			attlist_.serialize(CP_GET_XML_NODE());
 			attlist_extra_.serialize(CP_GET_XML_NODE());
 				
-			content_.serialize(CP_XML_STREAM());
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}	
 }
@@ -619,12 +603,12 @@ const wchar_t * table_covered_table_cell::name = L"covered-table-cell";
 void table_covered_table_cell::create_child_element(  const std::wstring & Ns, const std::wstring & Name)
 {
 	empty_ = false;
-    content_.create_child_element( Ns, Name, getContext());
+	CP_CREATE_ELEMENT(content_);
 }
 void table_covered_table_cell::add_child_element( const office_element_ptr & child_element)
 {
 	empty_ = false;
-	content_.add_child_element(child_element);
+	content_.push_back(child_element);
 }
 void table_covered_table_cell::serialize(std::wostream & _Wostream)
 {
@@ -634,7 +618,10 @@ void table_covered_table_cell::serialize(std::wostream & _Wostream)
         {
 			attlist_.serialize(CP_GET_XML_NODE());
 				
-			content_.serialize(CP_XML_STREAM());
+			for (size_t i = 0; i < content_.size(); i++)
+			{
+				content_[i]->serialize(CP_XML_STREAM());
+			}
 		}
 	}	
 }

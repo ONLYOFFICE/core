@@ -615,6 +615,21 @@ namespace Aggplus
 		double dblMiterLimit = pPen->MiterLimit;
 		
 		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
+		bool bIsUseIdentity = m_bIntegerGrid;
+		if (!bIsUseIdentity)
+		{
+			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
+			double dDet = full_trans->determinant();
+
+			if (fabs(dDet) < 0.0001)
+			{
+				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
+				dWidth *= sqrt(dDet);
+
+				bIsUseIdentity = true;
+			}
+		}
+
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
 				
 		conv_crv_type c_c_path(path_copy);
@@ -645,7 +660,7 @@ namespace Aggplus
         }
 
 		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
-		if (m_bIntegerGrid)
+		if (bIsUseIdentity)
 			pAffine = new agg::trans_affine();
 		 
 		if (DashStyleSolid == eStyle)
@@ -751,7 +766,7 @@ namespace Aggplus
         if (gamma >= 0)
             m_rasterizer.gamma(1.0);
 
-		if (m_bIntegerGrid)
+		if (bIsUseIdentity)
 			RELEASEOBJECT(pAffine);
 
 		return Ok;

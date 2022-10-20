@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_SLD_INCLUDE_H_
-#define PPTX_VIEWPROPS_SLD_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/Orient.h"
@@ -44,8 +42,6 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(Sld)
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"id", id);
@@ -59,7 +55,6 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:sld"), oAttr);
 			}
-
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -69,7 +64,33 @@ namespace PPTX
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
 
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							id = pReader->GetString2();
+						}break;
+						case 1:
+						{
+							collapse = pReader->GetBool();
+						}break;
+						default:
+							break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
 				pWriter->StartNode(_T("p:sld"));
@@ -81,8 +102,6 @@ namespace PPTX
 		
 				pWriter->EndNode(_T("p:sld"));
 			}
-
-		public:
 			nullable_string		id;
 			nullable_bool		collapse;
 		protected:
@@ -91,4 +110,3 @@ namespace PPTX
 	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_VIEWPROPS_SLD_INCLUDE_H_

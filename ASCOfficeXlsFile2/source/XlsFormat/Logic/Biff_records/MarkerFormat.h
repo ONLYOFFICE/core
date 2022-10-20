@@ -49,7 +49,7 @@ public:
 	
 	void readFields(CFRecord& record);
 
-	int serialize(std::wostream & _stream, int index);
+	int serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME);
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgbFore;
@@ -63,6 +63,8 @@ public:
 	IcvChart icvFore;
 	IcvChart icvBack;
 	_UINT32	miSize;
+	
+	GlobalWorkbookInfoPtr global_info;
 };
 
 } // namespace XLS

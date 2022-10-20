@@ -117,6 +117,16 @@ namespace NSCertificate
         return NULL;
     }
 
+    ICertificate* FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
+                               unsigned char* cert, unsigned int certLen, const std::string& certPassword)
+    {
+        CCertificate_openssl* pCert = new CCertificate_openssl();
+        if (pCert->FromFilesRaw(key, keyLen, keyPassword, cert, certLen, certPassword))
+            return pCert;
+        RELEASEOBJECT(pCert);
+        return NULL;
+    }
+
     int GetOOXMLHashAlg(const std::string& sAlg)
     {
         if ("http://www.w3.org/2000/09/xmldsig#rsa-sha1" == sAlg ||

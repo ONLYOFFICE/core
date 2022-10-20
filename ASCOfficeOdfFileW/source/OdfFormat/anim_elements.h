@@ -49,9 +49,9 @@ class anim_par : public office_element_impl<anim_par>//Параллельные 
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeAnimPar;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	odf_types::common_anim_smil_attlist		attlist_;
   	office_element_ptr						anim_par_;
@@ -70,9 +70,8 @@ class anim_seq : public office_element_impl<anim_seq>//Последовател�
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeAnimSeq;
-    CPDOCCORE_DEFINE_VISITABLE();
+
+    static const ElementType type = typeAnimSeq;    
 
 	odf_types::common_anim_smil_attlist		attlist_;
 	office_element_ptr_array				anim_par_array_;
@@ -112,9 +111,9 @@ class anim_transitionFilter : public office_element_impl<anim_transitionFilter>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeAnimTransitionFilter;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}
@@ -131,9 +130,9 @@ class anim_audio : public office_element_impl<anim_audio>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeAnimAudio;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child){}

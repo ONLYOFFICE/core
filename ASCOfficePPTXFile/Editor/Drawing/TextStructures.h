@@ -34,6 +34,7 @@
 #include "../../../ASCOfficePPTFile/PPTFormatLib/Enums/enums.h"
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../../ASCOfficePPTXFile/Editor/Drawing/Interactive.h"
+#include <set>
 
 using namespace ODRAW;
 
@@ -91,8 +92,8 @@ namespace PPT_FORMAT
 	{
 	public:
 		std::wstring	Name;
-		BYTE			PitchFamily;
-		BYTE			Charset;
+        int             PitchFamily;
+        int             Charset;
 
 		CFontProperty() : PitchFamily(0), Charset(0) {}
 
@@ -108,15 +109,36 @@ namespace PPT_FORMAT
 
 			return *this;
 		}
-                std::wstring getXmlArgsStr()const
-                {
-                    std::wstring str = L" typeface=\"" + Name + L"\"";
-                    str += L" pitchFamily=\"" + std::to_wstring(PitchFamily) + L"\"";
-                    if (Charset != 0)
-                        str += L" charset=\"" + std::to_wstring((char)Charset) + L"\"";
 
-                    return str;
-                }
+        std::wstring getXmlArgsStr()const
+        {
+            std::wstring str = L" typeface=\"" + Name + L"\"";
+            if (IsValidPitchFamily(PitchFamily))
+                str += L" pitchFamily=\"" + std::to_wstring(PitchFamily) + L"\"";
+            if (IsValidCharset(Charset))
+                str += L" charset=\"" + std::to_wstring((char)Charset) + L"\"";
+
+            return str;
+        }
+
+        static bool IsValidCharset(int value)
+        {
+            if (value <= 0 || value > 255)
+                return false;
+
+            std::set<int> BLCharset = {128, 136, 129};
+            return BLCharset.find(value) == BLCharset.end();
+        }
+
+        static bool IsValidPitchFamily(int value)
+        {
+            if (value <= 0 || value > 255)
+                return false;
+
+            std::set<int> BLPitchFamily = {148, 164};
+            return BLPitchFamily.find(value) == BLPitchFamily.end();
+        }
+
 	};
 
     class CBulletAutoNum

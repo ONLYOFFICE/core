@@ -871,7 +871,7 @@ void ECMAWriteProtect::Generate()
 
 	_buf pHashBuf = HashAppend(pSalt, pPassword, data.hashAlgorithm);
 		
-	for (int i = 0; i < data.spinCount; i++)
+	for (_UINT32 i = 0; i < data.spinCount; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashBuf = HashAppend(pHashBuf, iterator, data.hashAlgorithm);
@@ -913,7 +913,7 @@ bool ECMAWriteProtect::Verify()
 
 	_buf pHashTest = HashAppend(pSalt, pPassword, data.hashAlgorithm);
 		
-	for (int i = 0; i < data.spinCount; i++)
+	for (_UINT32 i = 0; i < data.spinCount; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashTest = HashAppend(pHashTest, iterator, data.hashAlgorithm);

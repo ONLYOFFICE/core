@@ -38,11 +38,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <xml/xmlchar.h>
-
-#include <xml/attributes.h>
-
-
 #include "odf_conversion_context.h"
 
 namespace cpdoccore { 

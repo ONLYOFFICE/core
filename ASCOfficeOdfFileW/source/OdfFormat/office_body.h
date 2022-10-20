@@ -49,10 +49,10 @@ class office_body : public office_element_impl<office_body>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type		= typeOfficeBody;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     office_element * content() { return content_.get(); }
 

@@ -353,6 +353,7 @@ public:
   // appears to treat char codes as raw GIDs.
   GBool usesIdentityEncoding() { return identityEnc; }
   GBool usesIdentityCIDToGID() { return hasIdentityCIDToGID; }
+  GBool ctuUsesCharCodeToUnicode() { return ctuUsesCharCode; }
 
   virtual GBool problematicForUnicode();
 

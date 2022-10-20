@@ -53,77 +53,134 @@ namespace PPTX
                 XmlMacroReadAttributeBase(node, L"showOutlineIcons", attrShowOutlineIcons);
                 XmlMacroReadAttributeBase(node, L"snapVertSplitter", attrSnapVertSplitter);
 
-				restoredLeft	= node.ReadNodeNoNS(_T("restoredLeft"));
-				restoredTop		= node.ReadNodeNoNS(_T("restoredTop"));
+				restoredLeft	= node.ReadNodeNoNS(L"restoredLeft");
+				restoredTop		= node.ReadNodeNoNS(L"restoredTop");
 
 				FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("horzBarState"), attrHorzBarState->get());
-				oAttr.Write(_T("vertBarState"), attrVertBarState->get());
+				oAttr.Write(L"horzBarState", attrHorzBarState->get());
+				oAttr.Write(L"vertBarState", attrVertBarState->get());
 
-				oAttr.Write(_T("preferSingleView"), attrPreferSingleView);
-				oAttr.Write(_T("showOutlineIcons"), attrShowOutlineIcons);
-				oAttr.Write(_T("snapVertSplitter"), attrSnapVertSplitter);
+				oAttr.Write(L"preferSingleView", attrPreferSingleView);
+				oAttr.Write(L"showOutlineIcons", attrShowOutlineIcons);
+				oAttr.Write(L"snapVertSplitter", attrSnapVertSplitter);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(restoredTop);
 				oValue.Write(restoredLeft);
 
-				return XmlUtils::CreateNode(_T("p:normalViewPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(L"p:normalViewPr", oAttr, oValue);
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:normalViewPr"));
+				pWriter->StartNode(L"p:normalViewPr");
 
 				pWriter->StartAttributes();
 
-				pWriter->WriteAttribute(_T("horzBarState"), attrHorzBarState);
-				pWriter->WriteAttribute(_T("vertBarState"), attrVertBarState);
-				pWriter->WriteAttribute(_T("preferSingleView"), attrPreferSingleView);
-				pWriter->WriteAttribute(_T("showOutlineIcons"), attrShowOutlineIcons);
-				pWriter->WriteAttribute(_T("snapVertSplitter"), attrSnapVertSplitter);
+				pWriter->WriteAttribute(L"horzBarState", attrHorzBarState);
+				pWriter->WriteAttribute(L"vertBarState", attrVertBarState);
+				pWriter->WriteAttribute(L"preferSingleView", attrPreferSingleView);
+				pWriter->WriteAttribute(L"showOutlineIcons", attrShowOutlineIcons);
+				pWriter->WriteAttribute(L"snapVertSplitter", attrSnapVertSplitter);
 
 				pWriter->EndAttributes();
 
-				pWriter->StartNode(_T("p:restoredLeft"));
+				pWriter->StartNode(L"p:restoredLeft");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("sz"), restoredLeft.sz);
-				pWriter->WriteAttribute(_T("autoAdjust"), restoredLeft.autoAdjust);
+				pWriter->WriteAttribute(L"sz", restoredLeft.sz);
+				pWriter->WriteAttribute(L"autoAdjust", restoredLeft.autoAdjust);
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("p:restoredLeft"));
+				pWriter->EndNode(L"p:restoredLeft");
 
-				pWriter->StartNode(_T("p:restoredTop"));
+				pWriter->StartNode(L"p:restoredTop");
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("sz"), restoredTop.sz);
-				pWriter->WriteAttribute(_T("autoAdjust"), restoredTop.autoAdjust);
+				pWriter->WriteAttribute(L"sz", restoredTop.sz);
+				pWriter->WriteAttribute(L"autoAdjust", restoredTop.autoAdjust);
 				pWriter->EndAttributes();
-				pWriter->EndNode(_T("p:restoredTop"));
+				pWriter->EndNode(L"p:restoredTop");
 
-				pWriter->EndNode(_T("p:normalViewPr"));
+				pWriter->EndNode(L"p:normalViewPr");
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
 
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							attrHorzBarState = pReader->GetUChar();
+						}break;
+						case 1:
+						{
+							attrVertBarState = pReader->GetUChar();
+						}break;
+						case 2:
+						{
+							attrPreferSingleView = pReader->GetBool();
+						}break;
+						case 3:
+						{
+							attrShowOutlineIcons = pReader->GetBool();
+						}break;
+						case 4:
+						{
+							attrSnapVertSplitter = pReader->GetBool();
+						}break;
+						default:
+							break;
+					}
+				}
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+					case 0:
+					{
+						restoredLeft.name = L"restoredLeft";
+						restoredLeft.fromPPTY(pReader);
+					}break;
+					case 1:
+					{
+						restoredTop.name = L"restoredTop";
+						restoredTop.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
+					}
+				}
+				pReader->Seek(_end_rec);
 			}
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, attrPreferSingleView);
-				pWriter->WriteBool2(1, attrShowOutlineIcons);
-				pWriter->WriteBool2(2, attrSnapVertSplitter);
-				pWriter->WriteLimit2(3, attrHorzBarState);
-				pWriter->WriteLimit2(4, attrVertBarState);
+					pWriter->WriteBool2(0, attrPreferSingleView);
+					pWriter->WriteBool2(1, attrShowOutlineIcons);
+					pWriter->WriteBool2(2, attrSnapVertSplitter);
+					pWriter->WriteLimit2(3, attrHorzBarState);
+					pWriter->WriteLimit2(4, attrVertBarState);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord1(0, restoredLeft);
 				pWriter->WriteRecord1(1, restoredTop);
 			}
 
-			nsViewProps::Restored					restoredLeft;
-			nsViewProps::Restored					restoredTop;
+			nsViewProps::Restored restoredLeft;
+			nsViewProps::Restored restoredTop;
 
 			nullable_limit<Limit::SplitterBarState> attrHorzBarState;
 			nullable_limit<Limit::SplitterBarState> attrVertBarState;

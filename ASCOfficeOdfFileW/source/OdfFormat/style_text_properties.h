@@ -202,10 +202,10 @@ class style_text_properties : public office_element_impl<style_text_properties>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleTextProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE()
+    
     
 	void apply_from(const style_text_properties * Other);
 

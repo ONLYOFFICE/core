@@ -2064,6 +2064,11 @@ void variable_get::docx_convert(oox::docx_conversion_context & Context)
 const wchar_t * variable_set::ns	= L"text";
 const wchar_t * variable_set::name	= L"variable-set";
 
+void variable_set::add_text(const std::wstring & Text)
+{
+	office_element_ptr elm = text::create(Text);
+	content_.push_back(elm);
+}
 void variable_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"style:data-style-name",	style_data_style_name_);
@@ -2076,7 +2081,31 @@ void variable_set::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 void variable_set::docx_convert(oox::docx_conversion_context & Context)
 {
+	Context.finish_run();
 
+	Context.output_stream() << L"<w:sdt>";
+	Context.output_stream() << L"<w:sdtPr>";
+	{
+		Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
+		if (name_)
+		{
+			Context.output_stream() << L"<w:placeholder/>";
+			Context.output_stream() << L"<w:docPart w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+		}
+		Context.output_stream() << L"<w:showingPlcHdr/>";
+		Context.output_stream() << L"<w:text/>";
+	}
+	Context.output_stream() << L"</w:sdtPr>";
+	Context.output_stream() << L"<w:sdtContent>";
+	{
+		for (size_t i = 0; i < content_.size(); i++)
+		{
+			content_[i]->docx_convert(Context);
+		}
+	}
+	Context.finish_run();
+	Context.output_stream() << L"</w:sdtContent>";
+	Context.output_stream() << L"</w:sdt>";
 }
 //---------------------------------------------------------------------------------------------------
 const wchar_t * variable_decl::ns		= L"text";

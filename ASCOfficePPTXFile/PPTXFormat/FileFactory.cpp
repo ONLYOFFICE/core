@@ -161,6 +161,10 @@ namespace PPTX
 			return smart_ptr<OOX::File>(new OOX::JsaProject( pMain, filename ));
 		else if (relation.Type() == OOX::FileTypes::CustomXml)
 			return smart_ptr<OOX::File>(new OOX::CCustomXML(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ActiveX_xml)
+			return smart_ptr<OOX::File>(new OOX::ActiveX_xml(pMain, filename, filename));
+		else if (relation.Type() == OOX::FileTypes::ActiveX_bin)
+			return smart_ptr<OOX::File>(new OOX::ActiveX_bin(pMain, filename));
 
 		return smart_ptr<OOX::File>(new OOX::UnknowTypeFile(pMain));
 	}

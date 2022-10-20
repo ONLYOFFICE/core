@@ -48,9 +48,9 @@ class office_event_listeners : public office_element_impl<office_event_listeners
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeOfficeEventListeners;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
    
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -84,9 +84,9 @@ class presentation_event_listener : public office_element_impl<presentation_even
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typePresentationEventListener;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
     
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -107,9 +107,9 @@ class script_event_listener : public office_element_impl<presentation_event_list
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeScriptEventListener;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

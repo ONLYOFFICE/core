@@ -639,7 +639,18 @@ namespace XPS
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
 		int nUtf16Pos = 0;
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
-		m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
+
+		std::wstring sFullFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
+		if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+		{
+			NSFonts::IFontStream* pMemoryStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFullFontPath);
+			if (!pMemoryStream)
+				sFullFontPath = L"";
+		}
+
+		if (!sFullFontPath.empty())
+			m_pFontManager->LoadFontFromFile(sFullFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
+
 		double dFontKoef = dFontSize / 100.0;
 
 		bool bNeedItalic = false, bNeedBold = false, bChangeFont = true;

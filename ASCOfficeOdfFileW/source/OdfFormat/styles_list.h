@@ -65,9 +65,9 @@ class text_list_style : public office_element_impl<text_list_style>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextListStyle;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -117,9 +117,9 @@ class style_list_level_properties : public office_element_impl<style_list_level_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleListLevelProperties;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -151,9 +151,9 @@ class style_list_level_label_alignment : public office_element_impl<style_list_l
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleListLevelLabelAlignment;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child);
@@ -179,9 +179,9 @@ class text_list_level_style_number : public office_element_impl<text_list_level_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextListLevelStyleNumber;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
   
 	office_element_ptr style_list_level_properties_;
@@ -220,9 +220,9 @@ class text_list_level_style_bullet : public office_element_impl<text_list_level_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextListLevelStyleBullet;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
 	virtual void add_child_element( const office_element_ptr & child);
@@ -254,9 +254,9 @@ class text_list_level_style_image : public office_element_impl<text_list_level_s
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTextListLevelStyleImage;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
 	virtual void add_child_element( const office_element_ptr & child);
@@ -276,9 +276,9 @@ class text_outline_style : public office_element_impl<text_outline_style>
 public:
 	static const wchar_t * ns;
 	static const wchar_t * name;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 	static const ElementType type = typeTextOutlineStyle;
-	CPDOCCORE_DEFINE_VISITABLE();
+	
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child);
@@ -296,9 +296,9 @@ class text_outline_level_style : public office_element_impl<text_outline_level_s
 public:
 	static const wchar_t * ns;
 	static const wchar_t * name;
-	static const xml::NodeType xml_type = xml::typeElement;
+
 	static const ElementType type = typeTextOutlineLevelStyle;
-	CPDOCCORE_DEFINE_VISITABLE();
+	
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child);

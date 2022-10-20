@@ -483,7 +483,7 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
            
         contentTypes.add_override(std::wstring(L"/xl/pivotCache/") + fileNameD, kWSConTypeD);
 
-        package::simple_element(fileNameD, pivot_caches_[i]->str_d()).write(path);
+        package::simple_element(fileNameD, pivot_caches_[i]->definitions().str()).write(path);
 
         if (pivot_caches_[i]->get_rels().empty() == false)
 		{
@@ -500,7 +500,7 @@ void xl_pivot_cache_files::write(const std::wstring & RootPath)
 			const std::wstring fileRef = std::wstring(L"pivotCache/") + fileNameD;
 			rels_->add(id, kWSRel, fileRef);
 		}
-		std::wstring content_records = pivot_caches_[i]->str_r();
+		std::wstring content_records = pivot_caches_[i]->records().str();
 		if (!content_records.empty())
 		{
 			const std::wstring fileNameR = std::wstring(L"pivotCacheRecords") + std::to_wstring(i + 1) + L".xml";

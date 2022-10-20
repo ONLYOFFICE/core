@@ -37,6 +37,13 @@ INCLUDEPATH += \
     ../../../../ASCOfficeXlsFile2/source/Common \
     ../../../../Common/DocxFormat/Source/XlsbFormat
 
+# Use Precompiled headers (PCH)
+use_pch {
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
+}
+
 core_release {
 SOURCES += \
     pptxformatlib_logic.cpp
@@ -102,7 +109,8 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/imagemanager.cpp \
     ../../../Editor/Drawing/Shapes/BaseShape/PPTXShape/PptxShape.cpp
 
-HEADERS += pptxformatlib.h \
+HEADERS += \
+    pptxformatlib.h \
     ../../../ASCOfficeDrawingConverter.h \
     ../../../ASCOfficePPTXFile.h \
     ../../../PPTXFormat/FileTypes.h \

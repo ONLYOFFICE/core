@@ -372,6 +372,9 @@ void Cx2tTester::Start()
 	{
 		std::wstring& input_file = files[i];
 
+		// start utils_CS
+		CTemporaryCS utils_CS(&m_utilsCS);
+
 		std::wstring input_ext = NSFile::GetFileExtention(input_file);
 		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
 
@@ -379,7 +382,37 @@ void Cx2tTester::Start()
 		if(std::find(m_inputFormats.begin(), m_inputFormats.end(), input_format) == m_inputFormats.end())
 			continue;
 
-		std::wstring output_files_directory = m_outputDirectory + L'/' + NSFile::GetFileName(input_file);
+		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
+		std::wstring output_files_directory = m_outputDirectory;
+
+		// takes full directory after input folder
+		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
+																	input_file_directory.size() - m_inputDirectory.size());
+		output_files_directory += input_subfolders;
+
+		// setup & clear output subfolder
+		std::wstring folder = output_files_directory + L"/";
+		int subs = 0;
+		while(!NSDirectory::Exists(folder))
+		{
+			folder += L"../";
+			subs++;
+		}
+
+		// creating folders step by step
+		for(int i = 0; i < subs; i++)
+		{
+			folder = folder.substr(0, folder.size() - 3);
+			NSDirectory::CreateDirectory(folder);
+
+			// waiting for directory
+			if(!NSDirectory::Exists(folder))
+				NSThreads::Sleep(30);
+		}
+		output_files_directory += L'/' + NSFile::GetFileName(input_file);
+
+		// end utils_CS
+		utils_CS.LeaveCS();
 
 		// setup output_formats for file
 		std::vector<int> output_file_formats;
@@ -387,7 +420,7 @@ void Cx2tTester::Start()
 		for(auto format : m_outputFormats)
 		{
 			// documents -> documents
-			if((m_outputFormatsList.isDocument(format) && m_inputFormatsList.isDocument(input_format))
+			if(((m_outputFormatsList.isDocument(format) && m_inputFormatsList.isDocument(input_format))
 			// spreadsheets -> spreadsheets
 			|| (m_outputFormatsList.isSpreadsheet(format) && m_inputFormatsList.isSpreadsheet(input_format))
 			//presentations -> presentations
@@ -400,6 +433,8 @@ void Cx2tTester::Start()
 			|| m_outputFormatsList.isImage(format)
 			// all formats -> pdf
 			|| m_outputFormatsList.isPdf(format))
+			// input format != output format
+			&& format != input_format)
 			{
 				output_file_formats.push_back(format);
 			}
@@ -588,8 +623,9 @@ DWORD CConverter::ThreadProc()
 	for(int i = 0; i < m_outputFormats.size(); i++)
 	{
 		int& output_format = m_outputFormats[i];
-		if(m_inputFormat == output_format)
-			continue;
+
+//		if(m_inputFormat == output_format)
+//			continue;
 
 		// utils_CS start
 		utils_CS.EnterCS(&m_internal->m_utilsCS);

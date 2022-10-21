@@ -4,6 +4,7 @@
 #include "../WmfInterpretator/CWmfInterpretatorSvg.h"
 
 #include "../../Emf/EmfParser/CEmfParser.h"
+#include "../../Emf/EmfInterpretator/CEmfInterpretatorSvg.h"
 
 namespace MetaFile
 {
@@ -1629,6 +1630,16 @@ namespace MetaFile
 						oEmfParser.SetInterpretator(&oEmfOut);
 
 						oEmfParser.PlayFile();
+
+						m_bEof = true;
+					}
+					else if (!oEmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
+					{
+						((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
+
+						oEmfParser.PlayFile();
+
+						((CWmfInterpretatorSvg*)m_pInterpretator)->SetXmlWriter(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetXmlWriter());
 
 						m_bEof = true;
 					}

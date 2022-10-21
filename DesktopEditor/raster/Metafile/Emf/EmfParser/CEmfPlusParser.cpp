@@ -1677,8 +1677,10 @@ namespace MetaFile
 		m_bBanEmfProcessing = true;
 
 		if (NULL != m_pInterpretator)
+		{
 			m_pInterpretator->Begin();
-
+			m_pInterpretator->HANDLE_EMFPLUS_HEADER(unEmfPlusFlags, m_unLogicalDpiX, m_unLogicalDpiY);
+		}
 		//TODO: добавить установление нового Dpi (нужно ли?)
 	}
 
@@ -1687,6 +1689,9 @@ namespace MetaFile
 		TEmfPlusARGB oARGB;
 
 		m_oStream >> oARGB;
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_CLEAR(oARGB);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_DRAWARC(unsigned short unShFlags)
@@ -1728,6 +1733,9 @@ namespace MetaFile
 			  oConvertedRect.dY + oConvertedRect.dHeight,
 			  dStartAngle, dSweepAngle);
 		DrawPath(true, false);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWARC(chOgjectIndex, dStartAngle, dSweepAngle, oConvertedRect);
 
 		m_pDC->RemovePen(pPen);
 	}
@@ -1786,6 +1794,9 @@ namespace MetaFile
 					arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
 
 		DrawPath(true, false);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWBEZIERS(shOgjectIndex, arConvertedPoints);
 
 		m_pDC->RemovePen(pPen);
 	}
@@ -1847,6 +1858,9 @@ namespace MetaFile
 
 		DrawPath(true, false);
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWCLOSEDCURVE(shOgjectIndex, dTension, arConvertedPoints);
+
 		m_pDC->RemovePen(pPen);
 	}
 
@@ -1892,6 +1906,9 @@ namespace MetaFile
 					arConvertedPoints[unIndex + 2].X, arConvertedPoints[unIndex + 2].Y);
 
 		DrawPath(true, false);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWCURVE(shOgjectIndex, dTension, unOffset, unNumSegments, arConvertedPoints);
 
 		m_pDC->RemovePen(pPen);
 	}
@@ -1963,6 +1980,9 @@ namespace MetaFile
 
 			m_pInterpretator->DrawDriverString(wsString, arDPoints);
 
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_DRAWDRIVERSTRING(shOgjectIndex, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, NULL, wsString, arDPoints);
+
 			m_pDC->SetTextColor(oTextColor);
 		}
 		else //BrushId = Brush id
@@ -1984,12 +2004,13 @@ namespace MetaFile
 
 			m_pInterpretator->DrawDriverString(wsString, arDPoints);
 
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_DRAWDRIVERSTRING(shOgjectIndex, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, NULL, wsString, arDPoints);
+
 			m_pDC->SetTextColor(oTextColor);
 		}
 
 		m_pDC->RemoveFont(pFont);
-
-		//                HANDLE_EMFPLUS_DRAWDRIVERSTRING(shOgjectIndex, unBrushId, unDriverStringOptionsFlags, unMatrixPresent, wsString, arGlyphPos);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_DRAWELLIPSE(unsigned short unShFlags)
@@ -2025,6 +2046,9 @@ namespace MetaFile
 			ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
 
 		DrawPath(true, false);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWELLIPSE(shObjectID, GetConvertedRectangle(oRect));
 
 		if (NULL != pEmfPlusPen->Brush)
 			m_pDC->RemoveBrush(pEmfPlusPen->Brush);
@@ -2156,6 +2180,9 @@ namespace MetaFile
 
 		DrawLines(GetConvertedPoints(arPoints), ((unShFlags >>(13)) & 1));
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWLINES(shOgjectIndex, GetConvertedPoints(arPoints));
+
 		if (NULL != pEmfPlusPen->Brush)
 			m_pDC->RemoveBrush(pEmfPlusPen->Brush);
 
@@ -2216,6 +2243,9 @@ namespace MetaFile
 		m_oStream >> dSweepAngle;
 		m_oStream >> oRect;
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWPIE(shOgjectIndex, dStartAngle, dSweepAngle, GetConvertedRectangle(oRect));
+
 		//TODO: реализовать
 	}
 
@@ -2247,13 +2277,18 @@ namespace MetaFile
 		if (NULL != pEmfPlusPen->Brush)
 			m_pDC->SetBrush(pEmfPlusPen->Brush);
 
-		std::vector<T> arRects(unCount);
+		std::vector<TEmfPlusRectF> arRects(unCount);
+		T oTempRect;
 
 		for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
 		{
-			m_oStream >> arRects[unIndex];
-			DrawRectangle(GetConvertedRectangle(arRects[unIndex]), true, false);
+			m_oStream >> oTempRect;
+			arRects[unIndex] = GetConvertedRectangle(oTempRect);
+			DrawRectangle(arRects[unIndex], true, false);
 		}
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_DRAWRECTS(shPenIndex, arRects);
 
 		if (NULL != pEmfPlusPen->Brush)
 			m_pDC->RemoveBrush(pEmfPlusPen->Brush);
@@ -2303,9 +2338,6 @@ namespace MetaFile
 
 		unsigned int unOldTextAlign = m_pDC->GetTextAlign();
 
-		double dX = oRect.dX;
-		double dY = oRect.dY;
-
 		if (NULL != pStringFormat)
 		{
 			unsigned int unNewTextAlign = 0;
@@ -2313,23 +2345,23 @@ namespace MetaFile
 			if (StringAlignmentCenter == pStringFormat->unStringAlignment)
 			{
 				unNewTextAlign |= TA_CENTER;
-				dX += oRect.dWidth / 2;
+				oRect.dX += oRect.dWidth / 2;
 			}
 			else if (StringAlignmentFar == pStringFormat->unStringAlignment)
 			{
 				unNewTextAlign |= TA_RIGHT;
-				dX += oRect.dWidth;
+				oRect.dX += oRect.dWidth;
 			}
 
 			if (StringAlignmentCenter == pStringFormat->unLineAlign)
 			{
 				unNewTextAlign |= VTA_CENTER << 8;
-				dY += oRect.dHeight / 2;
+				oRect.dY += oRect.dHeight / 2;
 			}
 			else if (StringAlignmentFar == pStringFormat->unLineAlign)
 			{
 				unNewTextAlign |= VTA_BOTTOM << 8;
-				dY += oRect.dHeight;
+				oRect.dY += oRect.dHeight;
 			}
 
 			m_pDC->SetTextAlign(unNewTextAlign);
@@ -2348,7 +2380,10 @@ namespace MetaFile
 
 			m_pDC->SetTextColor(oColor);
 
-			m_pInterpretator->DrawString(wsString, wsString.length(), dX, dY, NULL, GM_ADVANCED);
+			m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dY, NULL, GM_ADVANCED);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_DRAWSTRING(shOgjectIndex, unBrushId, unFormatID, wsString, oRect);
 
 			m_pDC->SetTextColor(oTextColor);
 		}
@@ -2369,7 +2404,10 @@ namespace MetaFile
 
 			m_pDC->SetTextColor(oColor);
 
-			m_pInterpretator->DrawString(wsString, wsString.length(), dX, dY, NULL, GM_ADVANCED);
+			m_pInterpretator->DrawString(wsString, wsString.length(), oRect.dX, oRect.dX, NULL, GM_ADVANCED);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_DRAWSTRING(shOgjectIndex, unBrushId, unFormatID, wsString, oRect);
 
 			m_pDC->SetTextColor(oTextColor);
 		}
@@ -2455,6 +2493,9 @@ namespace MetaFile
 
 			DrawPath(false, true);
 
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLELLIPSE(unBrushId, GetConvertedRectangle(oRect));
+
 			m_pDC->RemoveBrush(&oBrush);
 		}
 		else //BrushId = Brush id
@@ -2471,6 +2512,9 @@ namespace MetaFile
 				ArcTo(oBox.lLeft, oBox.lBottom, oBox.lRight, oBox.lTop, 0, 360);
 
 			DrawPath(false, true);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLELLIPSE(unBrushId, GetConvertedRectangle(oRect));
 
 			m_pDC->RemoveBrush(pBrush);
 		}
@@ -2499,6 +2543,9 @@ namespace MetaFile
 
 			pPath->DrawWithoutClean(m_pInterpretator, false, true);
 
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLPATH(shOgjectIndex, unBrushId, pPath);
+
 			m_pDC->RemoveBrush(&oBrush);
 		}
 		else //BrushId = Brush id
@@ -2510,6 +2557,9 @@ namespace MetaFile
 			m_pDC->SetBrush(pBrush);
 
 			pPath->DrawWithoutClean(m_pInterpretator, false, true);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLPATH(shOgjectIndex, unBrushId, pPath);
 
 			m_pDC->RemoveBrush(pBrush);
 		}
@@ -2535,6 +2585,9 @@ namespace MetaFile
 		m_oStream >> dStartAngle;
 		m_oStream >> dSweepAngle;
 		m_oStream >> oRect;
+
+		if (NULL != m_pInterpretator)
+			    m_pInterpretator->HANDLE_EMFPLUS_FILLPIE(unBrushId, dStartAngle, dSweepAngle, GetConvertedRectangle(oRect));
 
 		//TODO: реализовать
 	}
@@ -2595,6 +2648,9 @@ namespace MetaFile
 			ClosePath();
 			DrawPath(false, true);
 
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLPOLYGON(unBrushId, arNewPoints);
+
 			m_pDC->RemoveBrush(&oBrush);
 		}
 		else //BrushId = Brush id
@@ -2609,6 +2665,9 @@ namespace MetaFile
 
 			for (unsigned int unIndex = 1; unIndex < unCount; ++unIndex)
 				LineTo(arNewPoints[unIndex].X, arNewPoints[unIndex].Y);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLPOLYGON(unBrushId, arNewPoints);
 
 			ClosePath();
 			DrawPath(false, true);
@@ -2636,10 +2695,14 @@ namespace MetaFile
 		if (unCount == 0)
 			return;
 
-		std::vector<T> arRects(unCount);
+		std::vector<TEmfPlusRectF> arRects(unCount);
+		T oTempRect;
 
 		for (unsigned int unIndex = 0; unIndex < unCount; ++unIndex)
-			m_oStream >> arRects[unIndex];
+		{
+			m_oStream >> oTempRect;
+			arRects[unIndex] = GetConvertedRectangle(oTempRect);
+		}
 
 		if ((unShFlags >>(15)) & 1 )//BrushId = Color
 		{
@@ -2652,11 +2715,11 @@ namespace MetaFile
 
 			m_pDC->SetBrush(&oBrush);
 
-			for (T &oBox : arRects)
-			{
-				TEmfPlusRectF oRect = GetConvertedRectangle(oBox);
-				DrawRectangle(oRect, false, true);
-			}
+			for (TEmfPlusRectF &oRectangle : arRects)
+				DrawRectangle(oRectangle, false, true);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLRECTS(unBrushId, arRects);
 
 			m_pDC->RemoveBrush(&oBrush);
 		}
@@ -2668,8 +2731,11 @@ namespace MetaFile
 
 			m_pDC->SetBrush(pEmfPlusBrush);
 
-			for (T &oBox : arRects)
-				DrawRectangle(GetConvertedRectangle(oBox), false, true);
+			for (TEmfPlusRectF &oRectangle : arRects)
+				DrawRectangle(oRectangle, false, true);
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_FILLRECTS(unBrushId, arRects);
 
 			m_pDC->RemoveBrush(pEmfPlusBrush);
 		}
@@ -3064,11 +3130,17 @@ namespace MetaFile
 
 		m_bEof = true;
 		m_bBanEmfProcessing = false;
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_ENDOFFILE();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_GETDC()
 	{
 		m_bBanEmfProcessing = false;
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_GETDC();
 	}
 
 	void CEmfPlusParser::Read_EMRPLUS_OFFSETCLIP()
@@ -3080,6 +3152,9 @@ namespace MetaFile
 		m_oStream >> dX;
 		m_oStream >> dY;
 
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_OFFSETCLIP(dX, dY);
+
 		//TODO: реализовать
 	}
 
@@ -3088,6 +3163,9 @@ namespace MetaFile
 		m_bBanEmfProcessing = true;
 
 		m_pDC->GetClip()->Reset();
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_RESETCLIP();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPPATH(unsigned short unShFlags)
@@ -3104,6 +3182,9 @@ namespace MetaFile
 
 		m_pDC->GetClip()->Reset();
 		m_pDC->GetClip()->SetPath(pPath, uchCM, GetTransform());
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPPATH(unShFlags, pPath);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPRECT(unsigned short unShFlags)
@@ -3118,6 +3199,9 @@ namespace MetaFile
 		m_pDC->GetClip()->Reset();
 		CombineClip(oRect.GetRectD(), shCM);
 		UpdateOutputDC();
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_SETCLIPRECT(shCM, oRect);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCLIPREGION(unsigned short unShFlags)
@@ -3169,12 +3253,18 @@ namespace MetaFile
 					}
 				}
 			}
+
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_SETCLIPREGION(shObjectIndex, shCM, pRegion);
 		}
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_COMMENT()
 	{
 		m_oStream.Skip(m_ulRecordSize);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMFPLUS_COMMENT(m_oStream, m_ulRecordSize);
 	}
 
 	template<typename T>

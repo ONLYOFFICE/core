@@ -703,6 +703,17 @@ namespace MetaFile
 			delete [] pNewBuffer;
 	}
 
+	void CWmfInterpretatorSvg::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
+	{
+		if (NULL != pXmlWriter)
+			m_oXmlWriter = *pXmlWriter;
+	}
+
+	XmlUtils::CXmlWriter *CWmfInterpretatorSvg::GetXmlWriter()
+	{
+		return &m_oXmlWriter;
+	}
+
 	std::wstring CWmfInterpretatorSvg::GetFile()
 	{
 		return m_oXmlWriter.GetXmlString();

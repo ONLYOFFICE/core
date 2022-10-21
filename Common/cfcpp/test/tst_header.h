@@ -1,24 +1,20 @@
 #pragma once
 
-#include <gtest/gtest.h>
-#include <gmock/gmock-matchers.h>
+#include "global.h"
 #include "header.h"
-#include "../../DesktopEditor/common/File.h"
 #include "streamrw.h"
 
-using namespace testing;
-using namespace std;
 using namespace CFCPP;
 
 
 struct HeaderTest : testing::Test
 {
-    string filename;
+    wstring filename;
     Stream stream;
     Header hd;
 
     HeaderTest() :
-        filename("../../../data/ex.ppt"),
+        filename(sourcePath + L"ex.ppt"),
         stream(OpenFileStream(filename, false))
     {
     }
@@ -47,22 +43,22 @@ void test_header_state(const Header& hd)
     ASSERT_FALSE(memcmp(hd.difat, difat, sizeof(difat)));
 }
 
-TEST_F(HeaderTest, test_header_open)
+TEST_F(HeaderTest, open)
 {
     EXPECT_TRUE(IsOpen(stream));
 }
 
-TEST_F(HeaderTest, test_header_read)
+TEST_F(HeaderTest, read)
 {
     hd.Read(stream);
     test_header_state(hd);
 }
 
-TEST_F(HeaderTest, test_header_write)
+TEST_F(HeaderTest, write)
 {
     hd.Read(stream);
 
-    std::string other_filename("../../../data/header.bin");
+    std::wstring other_filename = InitOutPath(L"header.bin");
     stream = OpenFileStream(other_filename, true);
     hd.Write(stream);
 
@@ -70,15 +66,13 @@ TEST_F(HeaderTest, test_header_write)
     stream->seek(0, std::ios::beg);
     other.Read(stream);
     test_header_state(other);
-    remove(other_filename.c_str());
 }
 
 TEST_F(HeaderTest, test_header_seek)
 {
     hd.Read(stream);
 
-    std::string other_filename("../../../data/sheader.bin");
-    remove(other_filename.c_str());
+    std::wstring other_filename = InitOutPath(L"sheader.bin");
     stream = OpenFileStream(other_filename, true);
 
     std::vector<char> zeroArray(512, 0);
@@ -105,6 +99,4 @@ TEST_F(HeaderTest, test_header_seek)
 
     other.Read(stream);
     test_header_state(other);
-
-
 }

@@ -1,22 +1,18 @@
 #pragma once
 
-#include <gtest/gtest.h>
-#include <gmock/gmock-matchers.h>
+#include "global.h"
 #include "directoryentry.h"
-#include "../../DesktopEditor/common/File.h"
 
-using namespace testing;
-using namespace std;
 using namespace CFCPP;
 
 
 struct DirEntryTest : testing::Test
 {
-    string filename;
+    wstring filename;
     Stream stream;
 
     DirEntryTest() :
-        filename("../../../data/ex.ppt"),
+        filename(sourcePath + L"ex.ppt"),
         stream(OpenFileStream(filename))
     {
     }
@@ -43,7 +39,7 @@ void test_dirEntry_read(const DirectoryEntry& de)
     EXPECT_EQ(de.size, 5632);
 }
 
-TEST_F(DirEntryTest, test_directoryentry_read)
+TEST_F(DirEntryTest, read)
 {
     DirectoryEntry de(L"", StgInvalid);
     stream->seek(0x400, std::ios::beg);
@@ -53,13 +49,13 @@ TEST_F(DirEntryTest, test_directoryentry_read)
     test_dirEntry_read(de);
 }
 
-TEST_F(DirEntryTest, test_directoryentry_write)
+TEST_F(DirEntryTest, write)
 {
     DirectoryEntry de(L"", StgInvalid);
     stream->seek(0x400, std::ios::beg);
     de.Read(stream);
 
-    std::string other_filename("../../../data/direntry.bin");
+    std::wstring other_filename = InitOutPath(L"direntry.bin");
     stream = OpenFileStream(other_filename, true);
     de.Write(stream);
     EXPECT_EQ(stream->tell(), 0x80);
@@ -68,5 +64,4 @@ TEST_F(DirEntryTest, test_directoryentry_write)
     DirectoryEntry other(L"", StgInvalid);
     other.Read(stream);
     test_dirEntry_read(other);
-    remove(other_filename.c_str());
 }

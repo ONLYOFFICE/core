@@ -1,25 +1,21 @@
 #pragma once
 
-#include <gtest/gtest.h>
-#include <gmock/gmock-matchers.h>
+#include "global.h"
 #include "streamrw.h"
-#include "../../DesktopEditor/common/File.h"
 #include <array>
 
-using namespace testing;
-using namespace std;
 using namespace CFCPP;
 
 struct StreamRWTest : testing::Test
 {
-    string filename;
+    wstring filename;
     Stream stream;
     shared_ptr<StreamRW> rw;
     const char symbol = 'a';
     const int integer = 13;
 
     StreamRWTest() :
-        filename("../../../data/types.bin"),
+        filename(L"types.bin"),
         stream(OpenFileStream(filename, true)),
         rw(new StreamRW(stream))
     {
@@ -51,7 +47,7 @@ TEST_F(StreamRWTest, test_stream_read)
     EXPECT_EQ(rw->Seek(0), 0);
     EXPECT_EQ(rw->Read<char>(), symbol);
     EXPECT_EQ(rw->Read<int>(), integer);
-    remove(filename.c_str());
+    NSFile::CFileBinary::Remove(filename.c_str());
 }
 
 TEST_F(StreamRWTest, test_stream_rw_array)
@@ -63,7 +59,7 @@ TEST_F(StreamRWTest, test_stream_rw_array)
     rw->ReadArray(reinterpret_cast<char*>(darr), sizeof (darr));
     EXPECT_EQ(sarr[2], darr[2]);
 
-    remove(filename.c_str());
+    NSFile::CFileBinary::Remove(filename.c_str());
 }
 
 TEST_F(StreamRWTest, test_stream_seek)
@@ -74,5 +70,5 @@ TEST_F(StreamRWTest, test_stream_seek)
     stream->write(reinterpret_cast<char*>(&dataVal), 4);
     EXPECT_EQ(Length(stream), 16);
 
-    remove(filename.c_str());
+    NSFile::CFileBinary::Remove(filename.c_str());
 }

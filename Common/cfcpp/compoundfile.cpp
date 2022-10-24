@@ -280,6 +280,7 @@ void CompoundFile::Save(Stream stream)
             stream->write(reinterpret_cast<char*>(sector->GetData().data()), sectorSize);
         }
 
+        stream->seek(0, std::ios::beg);
         header->Write(stream);
     }
     catch (std::exception &ex)

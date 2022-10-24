@@ -42,6 +42,21 @@ struct CompoundFileTest : testing::Test
     }
 };
 
+
+TEST_F(CompoundFileTest, read)
+{
+    EXPECT_TRUE(cf.HasSourceStream());
+}
+
+TEST_F(CompoundFileTest, copy)
+{
+    wstring other_filename = InitOutPath(L"ex2.ppt");
+    cf.Save(other_filename);
+
+    EXPECT_EQ(FileLenght(filename), FileLenght(other_filename));
+    EXPECT_EQ(FileSimpleHash(filename), FileSimpleHash(other_filename));
+}
+
 void TestLargeCompoundFileWrite(CompoundFile& cf, std::wstring largeFileName)
 {
     wstring largeFilePath = InitOutPath(largeFileName);
@@ -65,21 +80,6 @@ TEST(test_compoundfile, largeStream_v4)
 {
     CompoundFile cf_v4(CFCPP::Ver_4, CFCPP::Default);
     TestLargeCompoundFileWrite(cf_v4, L"largeStream_v3.cfb");
-}
-
-
-TEST_F(CompoundFileTest, read)
-{
-    EXPECT_TRUE(cf.HasSourceStream());
-}
-
-TEST_F(CompoundFileTest, copy)
-{
-    wstring other_filename = InitOutPath(L"ex2.ppt");
-    cf.Save(other_filename);
-
-    EXPECT_EQ(FileLenght(filename), FileLenght(other_filename));
-    EXPECT_EQ(FileSimpleHash(filename), FileSimpleHash(other_filename));
 }
 
 TEST_F(CompoundFileTest, SID)

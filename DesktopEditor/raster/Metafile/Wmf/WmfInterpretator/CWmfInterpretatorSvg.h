@@ -16,6 +16,8 @@ namespace MetaFile
 		InterpretatorType   GetType() const override;
 
 		void SetSize(unsigned int unWidth, unsigned int unHeight);
+		void GetSize(unsigned int& unWidth, unsigned int& unHeight);
+		void UpdateSize();
 
 		void HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader) override;
 		//-----------------------------------------------------------
@@ -113,6 +115,7 @@ namespace MetaFile
 
 		unsigned int			m_unNumberDefs;
 		std::wstring			m_wsDefs;
+		double                  m_dScale;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 

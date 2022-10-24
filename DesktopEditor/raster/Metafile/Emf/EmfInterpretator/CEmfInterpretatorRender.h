@@ -170,7 +170,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWIMAGE(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWLINES(short, const std::vector<TEmfPlusPointF>&) override {};
-		void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int) override {};
+		void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CEmfPath*) override {};
 		void HANDLE_EMFPLUS_DRAWPIE(short, double, double, const TEmfPlusRectF&) override {};
 		void HANDLE_EMFPLUS_DRAWRECTS(short, const std::vector<TEmfPlusRectF>&) override {};
 		void HANDLE_EMFPLUS_DRAWSTRING(short, unsigned int, unsigned int, const std::wstring&, const TEmfPlusRectF&) override {};

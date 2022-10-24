@@ -2217,6 +2217,9 @@ namespace MetaFile
 			oNewPath.DrawWithoutClean(m_pInterpretator, true, false);
 			oLineCapPath.DrawWithoutClean(m_pInterpretator, false, true);
 
+			if (NULL != m_pInterpretator)
+				m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, &oNewPath);
+
 			if (NULL != pEmfPlusPen->Brush)
 				m_pDC->RemoveBrush(pEmfPlusPen->Brush);
 

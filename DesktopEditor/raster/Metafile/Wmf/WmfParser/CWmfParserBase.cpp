@@ -925,10 +925,10 @@ namespace MetaFile
 
 	void CWmfParserBase::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)
 	{
+		m_oPlayer.SelectObject(ushRegionIndex);
+
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_FILLREGION(ushRegionIndex, ushBrushIndex);
-
-		m_oPlayer.SelectObject(ushRegionIndex);
 
 		CWmfRegion *pRegion = m_pDC->GetRegion();
 
@@ -1635,7 +1635,11 @@ namespace MetaFile
 					}
 					else if (!oEmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
 					{
-						((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
+						unsigned int unWidth, unHeight;
+
+						((CWmfInterpretatorSvg*)m_pInterpretator)->GetSize(unWidth, unHeight);
+
+						((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg, unWidth, unHeight);
 
 						oEmfParser.PlayFile();
 

@@ -177,7 +177,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWIMAGE(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override;
 		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override;
 		void HANDLE_EMFPLUS_DRAWLINES(short shOgjectIndex, const std::vector<TEmfPlusPointF>& arPoints) override;
-		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int) override;
+		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath) override;
 		void HANDLE_EMFPLUS_DRAWPIE(short shOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF& oRect) override;
 		void HANDLE_EMFPLUS_DRAWRECTS(short shOgjectIndex, const std::vector<TEmfPlusRectF>& arPoints) override;
 		void HANDLE_EMFPLUS_DRAWSTRING(short shOgjectIndex, unsigned int unBrushId, unsigned int unFormatID, const std::wstring& wsString, const TEmfPlusRectF& oRect) override;

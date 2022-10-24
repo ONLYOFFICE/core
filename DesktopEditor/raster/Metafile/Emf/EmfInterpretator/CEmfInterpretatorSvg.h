@@ -14,12 +14,14 @@ namespace MetaFile
 		CEmfInterpretatorSvg(CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		virtual ~CEmfInterpretatorSvg();
 
-		void CreateConditional(IMetaFileBase*) override {} ;
-		void ChangeConditional() override {};
+		void CreateConditional(IMetaFileBase*) override;
+		void ChangeConditional() override;
 
 		InterpretatorType   GetType() const override;
 
 		void SetSize(unsigned int unWidth, unsigned int unHeight);
+		void GetSize(unsigned int& unWidth, unsigned int& unHeight);
+		void UpdateSize();
 
 		void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
 		void HANDLE_EMR_ALPHABLEND(const TEmfAlphaBlend& oTEmfAlphaBlend, CDataStream &oDataStream) override ;
@@ -140,16 +142,16 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_DRAWIMAGE(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override;
 		void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short shOgjectIndex, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) override;
 		void HANDLE_EMFPLUS_DRAWLINES(short shOgjectIndex, const std::vector<TEmfPlusPointF>& arPoints) override;
-		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int) override;
+		void HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath) override;
 		void HANDLE_EMFPLUS_DRAWPIE(short shOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF& oRect) override;
-		void HANDLE_EMFPLUS_DRAWRECTS(short shOgjectIndex, const std::vector<TEmfPlusRectF>& arPoints) override;
+		void HANDLE_EMFPLUS_DRAWRECTS(short shOgjectIndex, const std::vector<TEmfPlusRectF>& arRects) override;
 		void HANDLE_EMFPLUS_DRAWSTRING(short shOgjectIndex, unsigned int unBrushId, unsigned int unFormatID, const std::wstring& wsString, const TEmfPlusRectF& oRect) override;
-		void HANDLE_EMFPLUS_FILLCLOSEDCURVE(unsigned int unBrushId, double dTension, const std::vector<TEmfPlusRectF>& arPoints) override;
+		void HANDLE_EMFPLUS_FILLCLOSEDCURVE(unsigned int unBrushId, double dTension, const std::vector<TEmfPlusRectF>& arRects) override;
 		void HANDLE_EMFPLUS_FILLELLIPSE(unsigned int unBrushId, const TEmfPlusRectF& oRect) override;
 		void HANDLE_EMFPLUS_FILLPATH(short shOgjectIndex, unsigned int unBrushId, const  CEmfPlusPath* pPath) override;
 		void HANDLE_EMFPLUS_FILLPIE(unsigned int unBrushId, double dStartAngle, double dSweepAngle, const TEmfPlusRectF& oRect) override;
 		void HANDLE_EMFPLUS_FILLPOLYGON(unsigned int unBrushId, const std::vector<TEmfPlusPointF>& arPoints) override;
-		void HANDLE_EMFPLUS_FILLRECTS(unsigned int unBrushId, const std::vector<TEmfPlusRectF>& arPoints) override;
+		void HANDLE_EMFPLUS_FILLRECTS(unsigned int unBrushId, const std::vector<TEmfPlusRectF>& arRects) override;
 		void HANDLE_EMFPLUS_FILLREGION(short shOgjectIndex, unsigned int unBrushId) override;
 
 		// 2.3.5 Object Record Types
@@ -190,6 +192,7 @@ namespace MetaFile
 		XmlUtils::CXmlWriter    m_oXmlWriter;
 
 		CEmfParserBase          *m_pParser;
+		CEmfParserBase			*m_pSecondParser;
 
 		TSvgViewport            m_oViewport;
 		TEmfSizeL               m_oSizeWindow;
@@ -246,9 +249,10 @@ namespace MetaFile
 
 		TPointD GetCutPos() const;
 
-		std::wstring CreatePath() const;
+		std::wstring CreatePath(const CEmfPath* pPath = NULL) const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
+		std::wstring CreateGradient(IBrush *pBrush);
 	};
 }
 

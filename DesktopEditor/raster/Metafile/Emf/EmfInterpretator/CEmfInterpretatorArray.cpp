@@ -828,9 +828,10 @@ namespace MetaFile
 			pInterpretator->HANDLE_EMFPLUS_DRAWLINES(shOgjectIndex, arPoints);
 	}
 
-	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int)
+	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPATH(short shOgjectIndex, unsigned int unPenId, const CEmfPath* pPath)
 	{
-
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, pPath);
 	}
 
 	void CEmfInterpretatorArray::HANDLE_EMFPLUS_DRAWPIE(short shOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF &oRect)

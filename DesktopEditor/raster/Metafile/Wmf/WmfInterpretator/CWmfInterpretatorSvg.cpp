@@ -7,7 +7,7 @@
 namespace MetaFile
 {
 	CWmfInterpretatorSvg::CWmfInterpretatorSvg(CWmfParserBase *pParser, unsigned int unWidth, unsigned int unHeight)
-		: m_pParser(pParser), m_unNumberDefs(0)
+	    : m_pParser(pParser), m_unNumberDefs(0), m_dScale(1)
 	{
 		SetSize(unWidth, unHeight);
 	}
@@ -28,16 +28,30 @@ namespace MetaFile
 		m_oSizeWindow.cy = unHeight;
 	}
 
+	void CWmfInterpretatorSvg::GetSize(unsigned int &unWidth, unsigned int &unHeight)
+	{
+		unWidth  = m_oSizeWindow.cx;
+		unHeight = m_oSizeWindow.cy;
+	}
+
+	void CWmfInterpretatorSvg::UpdateSize()
+	{
+		if (0 != m_oSizeWindow.cx && 0 == m_oSizeWindow.cy)
+			m_oSizeWindow.cy = m_oSizeWindow.cx * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
+		else if (0 == m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
+			m_oSizeWindow.cx = m_oSizeWindow.cy * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
+	}
+
 	void CWmfInterpretatorSvg::HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader)
 	{
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
-		double dKoef = 1;
+		m_dScale = 1;
 
 		if (oPlaceable.Inch != 0)
-			dKoef = 1440.f / oPlaceable.Inch;
+			m_dScale = 1440.f / oPlaceable.Inch;
 
 		TRect *pBounds = m_pParser->GetDCBounds();
 
@@ -46,11 +60,13 @@ namespace MetaFile
 		m_oViewport.dRight	= pBounds->nRight;
 		m_oViewport.dBottom = pBounds->nBottom;
 
+		UpdateSize();
+
 		if (m_oViewport.GetWidth() != 0)
-			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * dKoef));
+			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * m_dScale));
 
 		if (m_oViewport.GetHeight() != 0)
-			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * dKoef));
+			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * m_dScale));
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
@@ -73,7 +89,7 @@ namespace MetaFile
 		}
 
 		if (1 != dXScale || 1 != dYScale)
-			m_oXmlWriter.WriteAttribute(L"transform", L"matrix(" + ConvertToWString(dXScale) + L",0,0," + ConvertToWString(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
+			m_oXmlWriter.WriteAttribute(L"transform", L"matrix(" + std::to_wstring(dXScale) + L",0,0," + std::to_wstring(dYScale) + L',' + ConvertToWString(dXTranslate) + L',' + ConvertToWString(dYTranslate) + L')');
 
 		m_oXmlWriter.WriteNodeEnd(L"svg", true, false);
 	}
@@ -234,7 +250,35 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)
 	{
-		//TODO:: реализовать
+		CWmfRegion *pRegion = m_pParser->GetDC()->GetRegion();
+
+		if (NULL == pRegion)
+			return;
+
+		std::wstring wsValue;
+
+		for (unsigned int unScanIndex = 0; unScanIndex < pRegion->ScanCount; ++unScanIndex)
+		{
+			TWmfScanObject *pScanObject = &pRegion->aScans[unScanIndex];
+
+			if (pScanObject->Count == 0) continue;
+
+			for (unsigned int unIndex = 0; unIndex < pScanObject->Count >> 1; ++unIndex)
+			{
+				wsValue += L"M " + ConvertToWString(std::max((short)pScanObject->ScanLines[unIndex].Left, (short)pRegion->BoundingRectangle.Left)) + L',' +  ConvertToWString(std::max((short)pScanObject->Top, (short)pRegion->BoundingRectangle.Top)) + L' ' +
+				           ConvertToWString(std::min((short)pScanObject->ScanLines[unIndex].Right, (short)pRegion->BoundingRectangle.Right)) + L',' + ConvertToWString(std::max((short)pScanObject->Top, (short)pRegion->BoundingRectangle.Top)) + L' ' +
+				           ConvertToWString(std::min((short)pScanObject->ScanLines[unIndex].Right, (short)pRegion->BoundingRectangle.Right)) + L',' + ConvertToWString(std::min((short)pScanObject->Bottom, (short)pRegion->BoundingRectangle.Bottom)) + L' ' +
+				           ConvertToWString(std::max((short)pScanObject->ScanLines[unIndex].Left, (short)pRegion->BoundingRectangle.Left)) + L',' + ConvertToWString(std::min((short)pScanObject->Bottom, (short)pRegion->BoundingRectangle.Bottom)) + L' ' +
+				           ConvertToWString(std::max((short)pScanObject->ScanLines[unIndex].Left, (short)pRegion->BoundingRectangle.Left)) + L',' + ConvertToWString(std::max((short)pScanObject->Top, (short)pRegion->BoundingRectangle.Top)) + L' ';
+			}
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_FRAMEREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex, short shHeight, short shWidth)
@@ -299,10 +343,10 @@ namespace MetaFile
 		for (const TWmfPointS& oPoint : arPoints)
 			wsValue += ConvertToWString(oPoint.x) + L',' + ConvertToWString(oPoint.y) + L' ';
 
-		NodeAttributes arAttributes = {{L"points", wsValue},
-									   {L"fill", L"none"}};
+		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddStroke(arAttributes);
+		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
@@ -657,8 +701,23 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
 	{
-		if (0 == unWidth || 0 == unHeight)
+		if (NULL == pBuffer || 0 == dW || 0 == dH || 0 == unWidth || 0 == unHeight)
 			return;
+
+		if (1 == unWidth && 1 == unHeight)
+		{
+			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
+			                               {L"y",      ConvertToWString(dY)},
+			                               {L"width",  ConvertToWString(dW)},
+			                               {L"height", ConvertToWString(dH)},
+			                               {L"fill", L"rgb(" + std::to_wstring(pBuffer[2]) + L',' + std::to_wstring(pBuffer[1]) + L',' + std::to_wstring(pBuffer[0]) + L',' + std::to_wstring(pBuffer[3]) + L')'}};
+
+			AddTransform(arAttributes);
+
+			WriteNode(L"rect", arAttributes);
+
+			return;
+		}
 
 		CBgraFrame  oFrame;
 
@@ -685,14 +744,11 @@ namespace MetaFile
 
 			RELEASEARRAYOBJECTS(ucValue);
 
-			double dNewX = dX;
-			double dNewY = dY;
-
-			NodeAttributes arAttributes = {{L"x",		ConvertToWString(dNewX)},
-										   {L"y",		ConvertToWString(dNewY)},
-										   {L"width",	ConvertToWString(dW)},
-										   {L"height",	ConvertToWString(dH)},
-										   {L"xlink:href", L"data:image/png;base64," + wsValue}};;
+			NodeAttributes arAttributes = {{L"x",      ConvertToWString(dX)},
+			                               {L"y",      ConvertToWString(dY)},
+			                               {L"width",  ConvertToWString(dW)},
+			                               {L"height", ConvertToWString(dH)},
+			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);
 
@@ -862,7 +918,8 @@ namespace MetaFile
 			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 			if (0 == dStrokeWidth || (1 == dStrokeWidth && (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))))
-				dStrokeWidth = 1 / ((std::fabs(m_pParser->GetPixelHeight()) < 1) ? std::fabs(m_pParser->GetPixelHeight()) : 1);
+//				dStrokeWidth = 1 / ((std::fabs(m_pParser->GetPixelHeight()) < 1) ? std::fabs(m_pParser->GetPixelHeight()) : 1);
+				dStrokeWidth = m_pParser->GetPixWidth(0.5);
 
 			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

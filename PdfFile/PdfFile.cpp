@@ -6,6 +6,120 @@
 
 #include "../PdfReader/lib/xpdf/PDFDoc.h"
 #include "../PdfReader/lib/xpdf/AcroForm.h"
+#include "../PdfReader/lib/xpdf/TextString.h"
+
+#include "../PdfWriter/Src/Objects.h"
+#include "../PdfWriter/Src/Document.h"
+#include "../PdfWriter/Src/Pages.h"
+
+#define AddToObject(oVal)\
+{\
+    if (pObj->GetType() == PdfWriter::object_type_DICT)\
+        ((PdfWriter::CDictObject*)pObj)->Add(sKey, oVal);\
+    else if (pObj->GetType() == PdfWriter::object_type_ARRAY)\
+        ((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
+}
+
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, const std::string& sKey)
+{
+    Object oTemp;
+    switch (obj->getType())
+    {
+    case objBool:
+    {
+        AddToObject(obj->getBool())
+        break;
+    }
+    case objInt:
+    {
+        AddToObject(obj->getInt())
+        break;
+    }
+    case objReal:
+    {
+        AddToObject(obj->getReal())
+        break;
+    }
+    case objString:
+    {
+        if (bBinary)
+        {
+            GString* str = obj->getString();
+            int nLength = str->getLength();
+            BYTE* arrId = new BYTE[nLength];
+            for (int nIndex = 0; nIndex < nLength; ++nIndex)
+                arrId[nIndex] = str->getChar(nIndex);
+            AddToObject(new PdfWriter::CBinaryObject(arrId, nLength));
+            RELEASEARRAYOBJECTS(arrId);
+        }
+        else
+        {
+            TextString* s = new TextString(obj->getString());
+            std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            AddToObject(new PdfWriter::CStringObject(sValue.c_str()))
+            delete s;
+        }
+        break;
+    }
+    case objName:
+    {
+        AddToObject(obj->getName())
+        break;
+    }
+    case objNull:
+    {
+        AddToObject(new PdfWriter::CNullObject())
+        break;
+    }
+    case objArray:
+    {
+        PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+        AddToObject(pArray)
+
+        for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+        {
+            obj->arrayGetNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pArray, bBinary, "");
+            oTemp.free();
+        }
+        break;
+    }
+    case objDict:
+    {
+        PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+        AddToObject(pDict);
+
+        for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
+        {
+            char* chKey = obj->dictGetKey(nIndex);
+            if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0)
+                obj->dictGetVal(nIndex, &oTemp);
+            else
+                obj->dictGetValNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pDict, bBinary, chKey);
+            oTemp.free();
+        }
+        break;
+    }
+    case objRef:
+    {
+        PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+        pBase->SetRef(obj->getRefNum(), obj->getRefGen());
+        AddToObject(new PdfWriter::CProxyObject(pBase, true))
+        break;
+    }
+    case objNone:
+    {
+        AddToObject("None")
+        break;
+    }
+    case objStream:
+    case objCmd:
+    case objError:
+    case objEOF:
+        break;
+    }
+}
 
 class CPdfFile_Private
 {
@@ -17,7 +131,8 @@ public:
 
     void GetPageTree(XRef* xref, Object* pPagesRefObj)
     {
-        if (!pPagesRefObj || !xref)
+        PdfWriter::CDocument* pDoc = pWriter->GetPDFDocument();
+        if (!pPagesRefObj || !xref || !pDoc)
             return;
 
         Object typeDict, pagesObj;
@@ -32,9 +147,34 @@ public:
         typeDict.free();
 
         Ref topPagesRef = pPagesRefObj->getRef();
-        std::wstring sPageTree = XMLConverter::DictToXml(L"PageTree", &pagesObj, topPagesRef.num, topPagesRef.gen);
 
-        pWriter->CreatePageTree(sPageTree, topPagesRef.num);
+        PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, topPagesRef.num);
+        if (!pXref)
+        {
+            pagesObj.free();
+            return;
+        }
+
+        PdfWriter::CPageTree* pPageT = new PdfWriter::CPageTree(pXref);
+        if (!pPageT)
+        {
+            pagesObj.free();
+            RELEASEOBJECT(pXref);
+            return;
+        }
+
+        for (int nIndex = 0; nIndex < pagesObj.dictGetLength(); ++nIndex)
+        {
+            Object oTemp;
+            char* chKey = pagesObj.dictGetKey(nIndex);
+            pagesObj.dictGetValNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pPageT, false, chKey);
+            oTemp.free();
+        }
+
+        pDoc->CreatePageTree(pXref, pPageT);
+        pPageT->SetRef(topPagesRef.num, topPagesRef.gen);
+        pPageT->Fix();
 
         Object kidsArrObj;
         if (!pagesObj.dictLookup("Kids", &kidsArrObj) || !kidsArrObj.isArray())

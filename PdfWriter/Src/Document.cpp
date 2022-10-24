@@ -1090,6 +1090,20 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
+	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
+	{
+		if (!pXref || !pPageTree)
+			return false;
+
+		if (!m_pPageTree)
+			m_pPageTree = pPageTree;
+		else
+			m_pPageTree->Join(pPageTree);
+		pXref->SetPrev(m_pLastXref);
+		m_pLastXref = pXref;
+
+		return true;
+	}
 	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
 	{
 		Close();
@@ -1141,28 +1155,6 @@ namespace PdfWriter
 
 		m_unFormFields = nFormField;
 		m_wsFilePath = wsPath;
-		return true;
-	}
-	bool CDocument::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
-	{
-		CXref* pXref = new CXref(this, nPageTree);
-		if (!pXref)
-			return false;
-
-		CPageTree* pPageT = new CPageTree(pXref, sPageTree);
-		if (!pPageT)
-		{
-			RELEASEOBJECT(pXref);
-			return false;
-		}
-
-		if (!m_pPageTree)
-			m_pPageTree = pPageT;
-		else
-			m_pPageTree->Join(pPageT);
-		pXref->SetPrev(m_pLastXref);
-		m_pLastXref = pXref;
-
 		return true;
 	}
 	std::pair<int, int> CDocument::GetPageRef(int nPageIndex)

@@ -2116,14 +2116,6 @@ bool CPdfRenderer::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSi
 	}
 	return bRes;
 }
-bool CPdfRenderer::CreatePageTree(const std::wstring& sPageTree, int nPageTree)
-{
-	if (!m_bEdit)
-	{
-		return false;
-	}
-	return m_pDocument->CreatePageTree(sPageTree, nPageTree);
-}
 std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
 {
 	return m_pDocument->GetPageRef(nPageIndex);

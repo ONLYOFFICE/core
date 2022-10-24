@@ -62,7 +62,7 @@ namespace PdfWriter
 	{
 	public:
 		CPageTree(CXref* pXref);
-		CPageTree(CXref* pXref, const std::wstring& sPageTree);
+		void Fix();
 		void AddPage(CDictObject* pPage);
 		CObjectBase* GetObj(int nPageIndex);
 		CPage* GetPage(int nPageIndex);

@@ -193,13 +193,8 @@ namespace PdfWriter
 		Add("Kids", m_pPages);
 		Add("Count", m_pCount);
 	}
-	CPageTree::CPageTree(CXref* pXref, const std::wstring& sPageTree)
+	void CPageTree::Fix()
 	{
-		m_pXref = pXref;
-		pXref->Add(this);
-
-		FromXml(sPageTree);
-
 		// Инициализация текущего m_pPages
 		CObjectBase* pPages = Get("Kids");
 		if (pPages && pPages->GetType() == object_type_ARRAY)

@@ -269,6 +269,7 @@ typedef enum CF_RECORD_TYPE
 	rt_BoolErr_BIFF2			= 0x0005,
 	rt_BoolErr					= 0x0205,
 	rt_String_BIFF2				= 0x0007,
+	rt_Formula_BIFF3			= 0x0206,
 	rt_String					= 0x0207,
 	rt_Row_BIFF2				= 0x0008,
 	rt_Row						= 0x0208,
@@ -286,6 +287,7 @@ typedef enum CF_RECORD_TYPE
 	rt_CommentText				= 0x027d,//??
 	rt_RK						= 0x027e,
 	rt_Style					= 0x0293,
+	rt_Formula_BIFF4			= 0x0406,
 	rt_BOF_BIFF4				= 0x0409,
 	rt_BigName					= 0x0418,
 	rt_Format					= 0x041e,

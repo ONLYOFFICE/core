@@ -38,8 +38,6 @@
 
 namespace XLS
 {
-
-// Logical representation of Formula record in BIFF8
 class Formula: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Formula)
@@ -49,26 +47,47 @@ public:
 	~Formula();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeFormula;
+	static const ElementType type = typeFormula;
 
 	const CellRef getLocation() const;
 
 //-----------------------------
-	Cell					cell;
-	FormulaValue			val;
-	bool				fAlwaysCalc;
+	bool			bBiff_3_4 = false;
+	Cell			cell;
+	FormulaValue	val;
+	bool			fAlwaysCalc;
+	bool			fShrFmla;
+	
 	BackwardOnlyParam<bool> fFill;
-	bool				fShrFmla;
 	BackwardOnlyParam<bool> fClearErrors;
 
 	CellParsedFormula		formula;
 };
-
 typedef boost::shared_ptr<Formula> FormulaPtr;
+//--------------------------------------------------------------------
+class Formula_BIFF3 : public Formula
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Formula_BIFF3)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Formula_BIFF3)
+public:
+	Formula_BIFF3();
+	~Formula_BIFF3();
 
+	BaseObjectPtr clone();
+};
+//--------------------------------------------------------------------
+class Formula_BIFF4 : public Formula
+{
+	BIFF_RECORD_DEFINE_TYPE_INFO(Formula_BIFF4)
+	BASE_OBJECT_DEFINE_CLASS_NAME(Formula_BIFF4)
+public:
+	Formula_BIFF4();
+	~Formula_BIFF4();
+
+	BaseObjectPtr clone();
+};
 } // namespace XLS
 

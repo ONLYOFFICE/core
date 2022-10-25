@@ -87,6 +87,7 @@ SOURCES += \
     ../Source/DocxFormat/WritingElement.cpp \
     ../Source/Common/SimpleTypes_Word.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
+    ../Source/XlsxFormat/Styles/Styles.cpp \
     ../Source/XlsxFormat/Styles/rPr.cpp \
     ../Source/XlsxFormat/SharedStrings/Si.cpp \
     ../Source/XlsxFormat/SharedStrings/Text.cpp \

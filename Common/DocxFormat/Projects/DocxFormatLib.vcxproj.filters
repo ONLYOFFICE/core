@@ -880,5 +880,8 @@
     <ClCompile Include="..\Source\DocxFormat\Logic\Pict.cpp">
       <Filter>Logic\Drawing</Filter>
     </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Styles\Styles.cpp">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

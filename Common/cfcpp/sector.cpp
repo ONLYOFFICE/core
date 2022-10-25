@@ -5,7 +5,8 @@ using namespace CFCPP;
 int Sector::MINISECTOR_SIZE = 64;
 
 Sector::Sector(int size, const Stream stream) :
-    size(size), stream(stream)
+    size(size),
+    stream(stream)
 {}
 
 Sector::Sector(int size, const std::vector<BYTE>& data) :

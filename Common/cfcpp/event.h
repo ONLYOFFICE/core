@@ -1,6 +1,8 @@
 #pragma once
+
 #include <functional>
 #include <vector>
+
 
 template <class T>
 class Event

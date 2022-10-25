@@ -1,6 +1,7 @@
 #include "streamrw.h"
 #include <algorithm>
 
+
 using namespace CFCPP;
 
 StreamRW::StreamRW(CFCPP::Stream stream)

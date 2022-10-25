@@ -33,7 +33,9 @@ class CFFileFormatException : public CFException
 {
 public:
     CFFileFormatException() {}
-    CFFileFormatException(std::string message) : CFException(message) {}
+    CFFileFormatException(std::string message) :
+        CFException(message)
+    {}
     virtual ~CFFileFormatException() throw () {}
 };
 
@@ -41,7 +43,9 @@ class CFDisposedException : public CFException
 {
 public:
     CFDisposedException() {}
-    CFDisposedException(std::string message) : CFException(message) {}
+    CFDisposedException(std::string message) :
+        CFException(message)
+    {}
     virtual ~CFDisposedException() throw () {}
 };
 
@@ -49,7 +53,9 @@ class CFInvalidOperation : public CFException
 {
 public:
     CFInvalidOperation() {}
-    CFInvalidOperation(std::string message) : CFException(message) {}
+    CFInvalidOperation(std::string message) :
+        CFException(message)
+    {}
     virtual ~CFInvalidOperation() throw () {}
 };
 
@@ -57,7 +63,9 @@ class CFCorruptedFileException : public CFException
 {
 public:
     CFCorruptedFileException() {}
-    CFCorruptedFileException(std::string message) : CFException(message) {}
+    CFCorruptedFileException(std::string message) :
+        CFException(message)
+    {}
     virtual ~CFCorruptedFileException() throw () {}
 };
 
@@ -65,14 +73,18 @@ class CFDuplicatedItemException : public CFException
 {
 public:
     CFDuplicatedItemException() {}
-    CFDuplicatedItemException(std::wstring message) : CFException(message) {}
+    CFDuplicatedItemException(std::wstring message) :
+        CFException(message)
+    {}
     virtual ~CFDuplicatedItemException() throw () {}
 };
 class CFItemNotFound : public CFException
 {
 public:
     CFItemNotFound() {}
-    CFItemNotFound(std::wstring message) : CFException(message) {}
+    CFItemNotFound(std::wstring message) :
+        CFException(message)
+    {}
     virtual ~CFItemNotFound() throw () {}
 };
 

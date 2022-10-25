@@ -4,6 +4,7 @@
 #include "cfitem.h"
 #include <vector>
 
+
 namespace CFCPP
 {
 class CFStream : public CFItem
@@ -25,6 +26,7 @@ public:
     void CopyFrom(const Stream& input);
     void Resize(std::streamsize length);
 
-    std::streamsize size() const {return CFItem::size();}
+    std::streamsize size() const
+        {return CFItem::size();}
 };
 }

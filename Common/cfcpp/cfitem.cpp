@@ -3,8 +3,8 @@
 #include "compoundfile.h"
 #include <cstring>
 
-using namespace CFCPP;
 
+using namespace CFCPP;
 
 int CFItem::CompareTo(const CFItem &other) const
 {

@@ -4,12 +4,9 @@
 #include <memory>
 #include <string>
 
+
 namespace CFCPP
 {
-class CompoundFile;
-class IDirectoryEntry;
-
-
 struct DataTime
 {
     DataTime(unsigned long long time);
@@ -17,6 +14,8 @@ struct DataTime
     char data[8] = {0,0,0,0,0,0,0,0};
 };
 
+class CompoundFile;
+class IDirectoryEntry;
 
 class CFItem : public std::enable_shared_from_this<CFItem>
 {
@@ -51,8 +50,11 @@ protected:
 
 protected:
     CFItem() {};
-    CFItem(CompoundFile* compoundFile) : compoundFile(compoundFile) {}
-    inline CompoundFile* getCompoundFile() {return compoundFile;}
+    CFItem(CompoundFile* compoundFile) :
+        compoundFile(compoundFile)
+    {}
+    inline CompoundFile* getCompoundFile()
+        {return compoundFile;}
     void CheckDisposed() const;
 };
 }

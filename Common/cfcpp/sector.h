@@ -6,6 +6,7 @@
 #include "stream.h"
 #include "../../DesktopEditor/common/Types.h"
 
+
 namespace CFCPP
 {
 

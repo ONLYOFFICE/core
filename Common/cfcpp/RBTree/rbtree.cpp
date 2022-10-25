@@ -1,9 +1,11 @@
 #include "rbtree.h"
 #include "rbtreeexception.h"
 
+
 using namespace RedBlackTree;
 
-RBTree::RBTree(PIRBNode root) : root(root)
+RBTree::RBTree(PIRBNode root) :
+    root(root)
 {}
 
 const PIRBNode RBTree::getRoot() const
@@ -49,7 +51,7 @@ void RBTree::Insert(PIRBNode newNode)
             int compResult = newNode->CompareTo(node);
             if (compResult == 0)
             {
-                throw RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already present in tree");
+                throw RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already exists in tree");
             }
             else if (compResult < 0)
             {
@@ -112,7 +114,6 @@ void RBTree::Delete(PIRBNode pattern, PIRBNode &deletedAlt)
     {
         getRoot()->setColor(Color::BLACK);
     }
-
 
     return;
 }

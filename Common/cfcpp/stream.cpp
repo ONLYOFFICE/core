@@ -101,6 +101,5 @@ ULONG64 CFCPP::FileFNVHash(std::wstring filename, int len, int offset)
         len -= readLen;
     }
 
-
     return h;
 }

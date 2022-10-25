@@ -1,5 +1,6 @@
 #pragma once
 
+
 struct GUID
 {
     unsigned int Data1 = 0;

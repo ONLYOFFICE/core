@@ -9,7 +9,7 @@ CFStream::CFStream(CompoundFile* compFile, std::weak_ptr<IDirectoryEntry> dirEnt
     CFItem(compFile)
 {
     if (dirEntry.expired() || dirEntry.lock()->getSid() < 0)
-        throw CFException("Attempting to create a CFStorage using an unitialized directory");
+        throw CFException("Attempting to create a CFStorage without DirectoryEntry");
 
     this->dirEntry = dirEntry;
 }

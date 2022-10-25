@@ -2,10 +2,13 @@
 #include "cfexception.h"
 #include <cmath>
 
+
 using namespace CFCPP;
 
 StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream)
-    : sectorSize(sectorSize), sectorChain(sectorChain), stream(stream)
+    : sectorSize(sectorSize),
+      sectorChain(sectorChain),
+      stream(stream)
 {
     if (sectorChain == nullptr)
         throw CFException("Sector Chain cannot be null");
@@ -81,7 +84,6 @@ void StreamView::write(const char *buffer, std::streamsize count)
         }
 
         position += count;
-
     }
 }
 
@@ -110,7 +112,6 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
         }
 
         nRead += nToRead;
-
         sectorIndex++;
 
         while (nRead < (len - sectorSize))
@@ -141,8 +142,8 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
         return nRead;
 
     }
-    else
-        return 0;
+
+    return 0;
 }
 
 std::streamsize StreamView::seek(std::streamsize offset, std::ios_base::seekdir mode)

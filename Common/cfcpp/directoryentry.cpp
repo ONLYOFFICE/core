@@ -6,7 +6,6 @@
 
 using namespace CFCPP;
 
-
 DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType, SVector<IDirectoryEntry> &dirRepository) :
     dirRepository(dirRepository)
 {

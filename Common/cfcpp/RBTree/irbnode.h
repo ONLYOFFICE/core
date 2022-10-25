@@ -2,6 +2,7 @@
 
 #include <memory>
 
+
 namespace RedBlackTree
 {
 class IRBNode;

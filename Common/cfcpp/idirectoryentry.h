@@ -34,7 +34,6 @@ enum CFSVersion : int
 class IDirectoryEntry : public RedBlackTree::IRBNode
 {
 public:
-
     virtual int getChild() const = 0;
     virtual void setChild(int value) = 0;
     virtual int getLeftSibling() const = 0;

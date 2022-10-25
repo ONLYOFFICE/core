@@ -285,7 +285,7 @@ void CompoundFile::Save(Stream stream)
     }
     catch (std::exception &ex)
     {
-        throw CFException("Internal error while saving compound file to stream ", ex);
+        throw CFException("Internal error while saving compound file to Stream ", ex);
     }
 }
 
@@ -524,6 +524,7 @@ SVector<Sector> CompoundFile::GetMiniSectorChain(int sectorID)
             EnsureUniqueSectorIndex(nextSectorID, processedSectors);
         }
     }
+
     return result;
 }
 
@@ -1026,7 +1027,9 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
         std::copy_n(src, sizeof(int), dst+offsetDst);
     }
     else
+    {
         header->firstDIFATSectorID = Sector::ENDOFCHAIN;
+    }
 
     SList<Sector> zeroQueue;
     StreamView fatSv(FATsectorChain, GetSectorSize(), header->fatSectorsNumber * GetSectorSize(), zeroQueue, sourceStream);
@@ -1268,9 +1271,8 @@ void CompoundFile::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsi
         oldSectorSize = Sector::MINISECTOR_SIZE;
     }
 
+
     std::streamsize oldSize = cfItem->size();
-
-
     SVector<Sector> sectorChain = GetSectorChain(cfItem->dirEntry.lock()->getStartSetc(), oldSectorType);
     std::streamsize delta = length - cfItem->size();
 
@@ -1434,7 +1436,6 @@ SList<Sector> CompoundFile::FindFreeSectors(SectorType sType)
 
     if (sType == SectorType::Normal)
     {
-
         SVector<Sector> FatChain = GetSectorChain(-1, SectorType::FAT);
 
         StreamView fatStream(FatChain, GetSectorSize(), header->fatSectorsNumber * GetSectorSize(), zeroQueue, sourceStream);
@@ -1593,6 +1594,7 @@ std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
         throw CFDisposedException("Compound File closed: cannot access data");
     if (sid < 0)
         return {};
+
     std::vector<BYTE> result;
     try
     {
@@ -1615,6 +1617,7 @@ std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
     {
         throw CFException("Cannot get data for SID");
     }
+
     return result;
 }
 

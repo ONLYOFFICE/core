@@ -1,8 +1,10 @@
 #pragma once
+
 #include "irbnode.h"
 #include <iterator>
 #include <functional>
 #include <list>
+
 
 namespace RedBlackTree
 {

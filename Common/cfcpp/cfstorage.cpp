@@ -169,7 +169,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
     CheckDisposed();
 
     if (storageName.empty())
-        throw CFException("Stream name cannot be null or empty");
+        throw CFException("Stream name cannot be empty");
 
     std::shared_ptr<IDirectoryEntry> cfo
             = DirectoryEntry::New(storageName, StgType::StgStorage, compoundFile->GetDirectories());
@@ -182,7 +182,7 @@ std::shared_ptr<CFStorage> CFStorage::AddStorage(const std::wstring &storageName
     {
         compoundFile->ResetDirectoryEntry(cfo->getSid());
         cfo.reset();
-        throw CFDuplicatedItemException(L"An entry with name '" + storageName + L"' is already present in storage '" + Name() + L"' ");
+        throw CFDuplicatedItemException(L"An entry with name '" + storageName + L"' is already had in storage '" + Name() + L"' ");
     }
 
     std::shared_ptr<IDirectoryEntry> childrenRoot = std::dynamic_pointer_cast<IDirectoryEntry>(getChildren()->getRoot());

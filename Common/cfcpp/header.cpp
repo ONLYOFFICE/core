@@ -2,6 +2,7 @@
 #include "cfexception.h"
 #include "streamrw.h"
 
+
 using namespace CFCPP;
 
 Header::Header() :

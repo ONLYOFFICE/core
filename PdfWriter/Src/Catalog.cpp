@@ -99,11 +99,9 @@ namespace PdfWriter
             pRGBProfile->GetStream()->Write((unsigned char*)c_arrICCsRGB, c_nSizeICCsRGB, false);
 		}
 	}
-	CCatalog::CCatalog(CXref* pXref, const std::wstring& sCatalog)
+	CCatalog::CCatalog(CXref* pXref, bool bEmpty)
 	{
 		pXref->Add(this);
-
-		FromXml(sCatalog);
 	}
 	CPageTree*   CCatalog::GetRoot() const
 	{

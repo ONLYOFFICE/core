@@ -2107,26 +2107,22 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-bool CPdfRenderer::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+bool CPdfRenderer::EditPdf(bool bEdit)
 {
-	bool bRes = m_pDocument->EditPdf(wsPath, nPosLastXRef, nSizeXRef, sCatalog, nCatalog, sEncrypt, sPassword, nCryptAlgorithm, nFormField);
-	if (bRes)
-	{
-		m_bEdit = true;
-	}
-	return bRes;
+	m_bEdit = bEdit;
+	return m_bEdit;
 }
 std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
 {
 	return m_pDocument->GetPageRef(nPageIndex);
 }
-bool CPdfRenderer::EditPage(const std::wstring& sPage, int nPage)
+bool CPdfRenderer::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid() || !m_bEdit)
 		return false;
 	m_oCommandManager.Flush();
 
-	m_pPage = m_pDocument->EditPage(sPage, nPage);
+	m_pPage = pNewPage;
 	if (m_pPage)
 	{
 		m_dPageWidth  = PT_2_MM(m_pPage->GetWidth());
@@ -2162,7 +2158,7 @@ bool CPdfRenderer::DeletePage(int nPageIndex)
 	}
 	return m_pDocument->DeletePage(nPageIndex);
 }
-bool CPdfRenderer::EditClose(const std::wstring& sTrailer, const std::wstring& sInfo)
+bool CPdfRenderer::EditClose()
 {
 	if (!IsValid() || !m_bEdit)
 		return false;
@@ -2181,13 +2177,10 @@ bool CPdfRenderer::EditClose(const std::wstring& sTrailer, const std::wstring& s
 		}
 	}
 
-	bool bRes = m_pDocument->AddToFile(sTrailer, sInfo);
-	if (bRes)
-	{
-		m_bEdit = false;
-		m_bEditPage = false;
-	}
-	return bRes;
+	m_bEdit = false;
+	m_bEditPage = false;
+
+	return true;
 }
 void CPdfRenderer::PageRotate(int nRotate)
 {

@@ -11,6 +11,9 @@
 #include "../PdfWriter/Src/Objects.h"
 #include "../PdfWriter/Src/Document.h"
 #include "../PdfWriter/Src/Pages.h"
+#include "../PdfWriter/Src/Catalog.h"
+#include "../PdfWriter/Src/EncryptDictionary.h"
+#include "../PdfWriter/Src/Info.h"
 
 #define AddToObject(oVal)\
 {\
@@ -279,8 +282,6 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     if (!wsDstFile.empty())
         NSFile::CFileBinary::Copy(m_pInternal->wsSrcFile, wsDstFile);
 
-    // PdfReader
-
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
     if (!pPDFDocument)
         return false;
@@ -306,7 +307,8 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     }
 
     XRef* xref = pPDFDocument->getXRef();
-    if (!xref)
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
+    if (!xref || !pDoc)
         return false;
 
     Object catDict, catRefObj, pagesRefObj;
@@ -325,9 +327,37 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
         return false;
     }
 
-    // TODO Dict to PdfWriter::CDictObject
     Ref catRef = catRefObj.getRef();
-    std::wstring sCatalog = XMLConverter::DictToXml(L"Catalog", &catDict, catRef.num, catRef.gen);
+    catRefObj.free();
+
+    PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, catRef.num);
+    if (!pXref)
+    {
+        pagesRefObj.free();
+        catDict.free();
+        return false;
+    }
+
+    PdfWriter::CCatalog* pCatalog = new PdfWriter::CCatalog(pXref, true);
+    if (!pCatalog)
+    {
+        pagesRefObj.free();
+        catDict.free();
+        RELEASEOBJECT(pXref);
+        return false;
+    }
+
+    for (int nIndex = 0; nIndex < catDict.dictGetLength(); ++nIndex)
+    {
+        Object oTemp;
+        char* chKey = catDict.dictGetKey(nIndex);
+        catDict.dictGetValNF(nIndex, &oTemp);
+        DictToCDictObject(&oTemp, pCatalog, false, chKey);
+        oTemp.free();
+    }
+
+    pCatalog->SetRef(catRef.num, catRef.gen);
+    catDict.free();
 
     unsigned int nFormField = 0;
     AcroForm* form = pPDFDocument->getCatalog()->getForm();
@@ -355,7 +385,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     }
 
     int nCryptAlgorithm = -1;
-    std::wstring sEncrypt;
+    PdfWriter::CEncryptDict* pEncryptDict = NULL;
     if (xref->isEncrypted())
     {
         CryptAlgorithm encAlgorithm;
@@ -367,37 +397,59 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
         Object* pTrailerDict = xref->getTrailerDict();
         if (pTrailerDict)
         {
+            pEncryptDict = new PdfWriter::CEncryptDict();
+
             Object encrypt, ID, ID1;
             if (pTrailerDict->dictLookup("Encrypt", &encrypt) && encrypt.isDict())
-                sEncrypt = XMLConverter::DictToXml(L"Encrypt", &encrypt, 0, 0, true);
+            {
+                for (int nIndex = 0; nIndex < encrypt.dictGetLength(); ++nIndex)
+                {
+                    Object oTemp;
+                    char* chKey = encrypt.dictGetKey(nIndex);
+                    encrypt.dictGetValNF(nIndex, &oTemp);
+                    DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
+                    oTemp.free();
+                }
+
+                pEncryptDict->SetRef(0, 0);
+                pEncryptDict->Fix();
+            }
             encrypt.free();
-            if (sEncrypt.length() > 10)
-                sEncrypt.erase(sEncrypt.length() - 10);
 
             if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-                sEncrypt += XMLConverter::DictToXml(L"ID", &ID1, 0, 0, true);
-            if (sEncrypt.length() > 10)
-                sEncrypt += L"</Encrypt>";
+            {
+                for (int nIndex = 0; nIndex < ID1.dictGetLength(); ++nIndex)
+                {
+                    Object oTemp;
+                    char* chKey = ID1.dictGetKey(nIndex);
+                    ID1.dictGetValNF(nIndex, &oTemp);
+                    DictToCDictObject(&oTemp, pEncryptDict, true, chKey);
+                    oTemp.free();
+                }
+            }
+
+            pEncryptDict->SetRef(0, 0);
+            pEncryptDict->Fix();
+            pEncryptDict->SetPasswords(m_pInternal->wsPassword, m_pInternal->wsPassword);
+            pEncryptDict->UpdateKey(nCryptAlgorithm);
+
             ID.free();
             ID1.free();
         }
     }
 
-    // PdfWriter
-
-    bool bRes = m_pInternal->pWriter->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects(), sCatalog, catRef.num, sEncrypt, m_pInternal->wsPassword, nCryptAlgorithm, nFormField);
+    bool bRes = pDoc->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects(), pXref, pCatalog, pEncryptDict, nFormField);
     if (bRes)
         m_pInternal->GetPageTree(xref, &pagesRefObj);
     pagesRefObj.free();
-    catDict.free();
-    catRefObj.free();
     return bRes;
 }
 
 bool CPdfFile::EditClose()
 {
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
-    if (!pPDFDocument)
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
+    if (!pPDFDocument || !pDoc)
         return false;
 
     XRef* xref = pPDFDocument->getXRef();
@@ -405,20 +457,70 @@ bool CPdfFile::EditClose()
         return false;
 
     Object* trailerDict = xref->getTrailerDict();
-    std::wstring sTrailer;
-    if (trailerDict)
-        sTrailer = XMLConverter::DictToXml(L"Trailer", trailerDict);
 
-    std::wstring sInfo;
+    // Добавляем первый элемент в таблицу xref
+    // он должен иметь вид 0000000000 65535 f
+    PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, 0, 65535);
+    if (!pXref)
+        return false;
+
+    PdfWriter::CDictObject* pTrailer = NULL;
+    if (trailerDict)
+    {
+        pTrailer = pXref->GetTrailer();
+
+        for (int nIndex = 0; nIndex < trailerDict->dictGetLength(); ++nIndex)
+        {
+            Object oTemp;
+            char* chKey = trailerDict->dictGetKey(nIndex);
+            trailerDict->dictGetValNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pTrailer, true, chKey);
+            oTemp.free();
+        }
+    }
+
     Object info;
     pPDFDocument->getDocInfo(&info);
+    PdfWriter::CXref* pInfoXref = NULL;
+    PdfWriter::CInfoDict* pInfoDict = NULL;
     if (info.isDict())
-        sInfo = XMLConverter::DictToXml(L"Info", &info);
+    {
+        // Обновление Info
+        PdfWriter::CObjectBase* pInfo = pTrailer->Get("Info");
+        pInfoXref = new PdfWriter::CXref(pDoc, pInfo ? pInfo->GetObjId() : 0);
+        if (!pInfoXref)
+            return false;
+        pInfoDict = new PdfWriter::CInfoDict(pInfoXref);
+        if (!pInfoDict)
+        {
+            RELEASEOBJECT(pInfoXref);
+            return false;
+        }
+
+        for (int nIndex = 0; nIndex < info.dictGetLength(); ++nIndex)
+        {
+            Object oTemp;
+            char* chKey = info.dictGetKey(nIndex);
+            info.dictGetValNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pInfoDict, true, chKey);
+            oTemp.free();
+        }
+
+        if (pInfo)
+            pInfoDict->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
+        pInfoDict->SetTime(PdfWriter::InfoModaDate);
+    }
     info.free();
 
-    std::wstring wsPath = m_pInternal->pWriter->GetEditPdfPath();
-    bool bRes = m_pInternal->pWriter->EditClose(sTrailer, sInfo);
 
+    bool bRes = m_pInternal->pWriter->EditClose();
+    if (!bRes)
+        return false;
+    bRes = pDoc->AddToFile(pXref, pTrailer, pInfoXref, pInfoDict);
+    if (!bRes)
+        return false;
+
+    std::wstring wsPath = m_pInternal->pWriter->GetEditPdfPath();
     std::string sPathUtf8New = U_TO_UTF8(wsPath);
     std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->wsSrcFile);
     if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
@@ -443,7 +545,8 @@ bool CPdfFile::EditClose()
 bool CPdfFile::EditPage(int nPageIndex)
 {
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
-    if (!pPDFDocument)
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
+    if (!pPDFDocument || !pDoc)
         return false;
 
     XRef* xref = pPDFDocument->getXRef();
@@ -463,11 +566,31 @@ bool CPdfFile::EditPage(int nPageIndex)
         pageRefObj.free();
         return false;
     }
-    std::wstring sPage = XMLConverter::DictToXml(L"Page", &pageObj, pPageRef.first, pPageRef.second);
+
+    PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pPageRef.first);
+    if (!pXref)
+        return NULL;
+    PdfWriter::CPage* pNewPage = new PdfWriter::CPage(pXref, pDoc);
+
+    for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
+    {
+        Object oTemp;
+        char* chKey = pageObj.dictGetKey(nIndex);
+        pageObj.dictGetValNF(nIndex, &oTemp);
+        DictToCDictObject(&oTemp, pNewPage, true, chKey);
+        oTemp.free();
+    }
+    pNewPage->SetRef(pPageRef.first, pPageRef.second);
+    pNewPage->Fix();
+
     pageObj.free();
     pageRefObj.free();
 
-    return m_pInternal->pWriter->EditPage(sPage, pPageRef.first);
+    if (m_pInternal->pWriter->EditPage(pNewPage))
+    {
+        return pDoc->EditPage(pXref, pNewPage);
+    }
+    return false;
 }
 
 bool CPdfFile::DeletePage(int nPageIndex)
@@ -562,10 +685,10 @@ void CPdfFile::TEST(int i)
     }
     else if (i == 2)
     {
-        m_pInternal->pWriter->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"");
+        m_pInternal->pWriter->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../../../PdfWriter/test/example/pdf.bin", L"");
     }
     else if (i == 3)
     {
-        m_pInternal->pWriter->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"");
+        m_pInternal->pWriter->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../../../PdfWriter/test/example1/1/pdf.bin", L"");
     }
 }

@@ -97,14 +97,11 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CInfoDict
 	//----------------------------------------------------------------------------------------
-	CInfoDict::CInfoDict(CXref* pXref, const std::wstring& sInfo)
+	CInfoDict::CInfoDict(CXref* pXref)
 	{
 		pXref->Add(this);
-
-		if (!sInfo.empty())
-			FromXml(sInfo);
 	}
-	void        CInfoDict::SetInfo(EInfoType eType, const char* sValue)
+	void CInfoDict::SetInfo(EInfoType eType, const char* sValue)
 	{
 		const char* sName = InfoTypeToName(eType);
 

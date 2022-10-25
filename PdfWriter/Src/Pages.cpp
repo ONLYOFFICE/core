@@ -306,12 +306,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CXref* pXref, CDocument* pDocument, const std::wstring& sXml)
+	CPage::CPage(CXref* pXref, CDocument* pDocument)
 	{
 		Init(pXref, pDocument);
-
-		FromXml(sXml);
-
+	}
+	void CPage::Fix()
+	{
 		// Инициализация текущего contents
 		CObjectBase* pContents = Get("Contents");
 		if (pContents)

@@ -90,10 +90,11 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
-		CPage(CXref* pXref, CDocument* pDocument, const std::wstring& sXml);
+		CPage(CXref* pXref, CDocument* pDocument);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
+		void      Fix();
 		void      SetHeight(double dHeight);
 		void      SetWidth(double dWidth);
 		double    GetWidth();

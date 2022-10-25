@@ -276,8 +276,8 @@ namespace PdfWriter
 		else
 			pID->Clear();
 
-        pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
-        pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
+		pID->Add(new CBinaryObject(pEncrypt->m_anEncryptID, 16));
 	}
     void CDocument::SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword)
 	{
@@ -290,9 +290,9 @@ namespace PdfWriter
 		if (!m_pEncryptDict)
 			return;
 
-        m_pEncryptDict->SetPasswords(wsOwnerPassword, wsUserPassword);
+		m_pEncryptDict->SetPasswords(wsOwnerPassword, wsUserPassword);
 
-        m_pTrailer->Add("Encrypt", m_pEncryptDict);
+		m_pTrailer->Add("Encrypt", m_pEncryptDict);
 		m_bEncrypt = true;
 	}
     CPage* CDocument::AddPage()
@@ -527,20 +527,20 @@ namespace PdfWriter
 				pPage->AddAnnotation(pAnnot);
 		}
 
-	    return pAnnot;
+		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const unsigned int& unPageNum, const TRect& oRect, CDestination* pDest)
 	{
 		CAnnotation* pAnnot = new CLinkAnnotation(m_pXref, oRect, pDest);
-	    
+
 		if (pAnnot)
 		{
 			CPage* pPage = m_pPageTree->GetPage(unPageNum);
 			if (pPage)
 				pPage->AddAnnotation(pAnnot);
 		}
-	
-	    return pAnnot;
+
+		return pAnnot;
 	}	
 	CAnnotation* CDocument::CreateLinkAnnot(CPage* pPage, const TRect& oRect, CDestination* pDest)
 	{
@@ -1104,8 +1104,10 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField)
+	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
 	{
+		if (!pXref)
+			return false;
 		Close();
 
 		m_pXref = new CXref(this, nSizeXRef);
@@ -1120,10 +1122,7 @@ namespace PdfWriter
 
 		SetCompressionMode(COMP_ALL);
 
-		CXref* pXref = new CXref(this, nCatalog);
-		if (!pXref)
-			return false;
-		m_pCatalog = new CCatalog(pXref, sCatalog);
+		m_pCatalog = pCatalog;
 		if (!m_pCatalog)
 		{
 			RELEASEOBJECT(pXref);
@@ -1145,11 +1144,9 @@ namespace PdfWriter
 			// TODO заполнить поля m_pFieldsResources
 		}
 
-		if (!sEncrypt.empty())
+		if (pEncrypt)
 		{
-			m_pEncryptDict = new CEncryptDict(sEncrypt);
-			m_pEncryptDict->SetPasswords(sPassword, sPassword);
-			m_pEncryptDict->UpdateKey(nCryptAlgorithm);
+			m_pEncryptDict = pEncrypt;
 			m_bEncrypt = true;
 		}
 
@@ -1172,16 +1169,15 @@ namespace PdfWriter
 
 		return pRes;
 	}
-	CPage* CDocument::EditPage(const std::wstring& sPage, int nPage)
+    bool CDocument::EditPage(CXref* pXref, CPage* pPage)
 	{
-		CXref* pXref = new CXref(this, nPage);
 		if (!pXref)
-			return NULL;
-		CPage* pNewPage = new CPage(pXref, this, sPage);
+			return false;
+		CPage* pNewPage = pPage;
 		if (!pNewPage)
 		{
 			RELEASEOBJECT(pXref);
-			return NULL;
+			return false;
 		}
 
 		pNewPage->AddContents(m_pXref);
@@ -1193,8 +1189,7 @@ namespace PdfWriter
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 		m_pCurPage = pNewPage;
-
-		return pNewPage;
+		return true;
 	}
 	CPage* CDocument::AddPage(int nPageIndex)
 	{
@@ -1234,34 +1229,23 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	bool CDocument::AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo)
+	bool CDocument::AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
 	{
+		if (!pTrailer || !pInfoXref || !pInfo || m_wsFilePath.empty())
+			return false;
+
 		CFileStream* pStream = new CFileStream();
-		if (!pStream || m_wsFilePath.empty() || !pStream->OpenFile(m_wsFilePath, false))
+		if (!pStream)
 			return false;
 
-		// Добавляем первый элемент в таблицу xref
-		// он должен иметь вид 0000000000 65535 f
-		CXref* pXref = new CXref(this, 0, 65535);
-		if (!pXref)
-			return false;
-		m_pTrailer = pXref->GetTrailer();
-		m_pTrailer->FromXml(sTrailer);
-
-		// Обновление Info
-		CObjectBase* pInfo = m_pTrailer->Get("Info");
-		CXref* pInfoXref = new CXref(this, pInfo ? pInfo->GetObjId() : 0);
-		if (!pInfoXref)
-			return false;
-		m_pInfo = new CInfoDict(pInfoXref, sInfo);
-		if (!m_pInfo)
+		if (!pStream->OpenFile(m_wsFilePath, false))
 		{
-			RELEASEOBJECT(pInfoXref);
+			RELEASEOBJECT(pStream);
 			return false;
 		}
-		if (pInfo)
-			m_pInfo->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
-		m_pInfo->SetTime(InfoModaDate);
+
+		m_pTrailer = pTrailer;
+		m_pInfo = pInfo;
 
 		std::wstring sCreator = NSSystemUtils::GetEnvVariable(NSSystemUtils::gc_EnvApplicationName);
 		if (sCreator.empty())

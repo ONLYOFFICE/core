@@ -85,11 +85,11 @@ int main()
                 pdfFile.PageRotate(90);
             }
 
-            pdfFile.DeletePage(1);
+            //pdfFile.DeletePage(1);
 
             if (pdfFile.EditPage(1))
             {
-                pdfFile.TEST(3);
+                pdfFile.TEST(2);
             }
 
             if (pdfFile.AddPage(3))

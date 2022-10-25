@@ -246,12 +246,12 @@ public:
     //----------------------------------------------------------------------------------------
     // Дополнительные функции для дозаписи Pdf
     //----------------------------------------------------------------------------------------
-    bool EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
+    bool EditPdf(bool bEdit);
     std::pair<int, int> GetPageRef(int nPageIndex);
-    bool EditPage(const std::wstring& sPage, int nPage);
+    bool EditPage(PdfWriter::CPage* pNewPage);
     bool AddPage(int nPageIndex);
     bool DeletePage(int nPageIndex);
-    bool EditClose(const std::wstring& sTrailer, const std::wstring& sInfo);
+    bool EditClose();
     void PageRotate(int nRotate);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
     std::wstring GetEditPdfPath();

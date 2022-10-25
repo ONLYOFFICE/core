@@ -153,12 +153,12 @@ namespace PdfWriter
 		bool              CheckFieldName(CFieldBase* pField, const std::string& sName);
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
-		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, const std::wstring& sCatalog, int nCatalog, const std::wstring& sEncrypt, const std::wstring& sPassword, int nCryptAlgorithm, int nFormField);
+		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
 		std::pair<int, int> GetPageRef(int nPageIndex);
-		CPage*            EditPage(const std::wstring& sPage, int nPage);
+		bool              EditPage(CXref* pXref, CPage* pPage);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
-		bool              AddToFile(const std::wstring& sTrailer, const std::wstring& sInfo);
+		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 	private:		  

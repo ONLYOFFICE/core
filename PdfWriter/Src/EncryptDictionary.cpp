@@ -53,17 +53,18 @@ namespace PdfWriter
     //----------------------------------------------------------------------------------------
 	// CEncryptDict
 	//----------------------------------------------------------------------------------------
+	CEncryptDict::CEncryptDict()
+	{
+		m_pEncrypt = new CEncrypt();
+	}
 	CEncryptDict::CEncryptDict(CXref* pXref)
 	{
 		m_pEncrypt = new CEncrypt();
 
 		pXref->Add(this);
 	}
-    CEncryptDict::CEncryptDict(const std::wstring& sEncrypt)
+    void CEncryptDict::Fix()
     {
-        FromXml(sEncrypt);
-        m_pEncrypt = new CEncrypt();
-
         CObjectBase* pObj = NULL;
         SET_BINARY_PARAM("O", SetO);
         SET_BINARY_PARAM("U", SetU);

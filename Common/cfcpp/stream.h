@@ -46,6 +46,6 @@ bool IsOpen(const Stream& st);
 std::streamsize Length(const Stream& st);
 int FileLenght(std::wstring filename);
 
-ULONG64 FileSimpleHash(std::wstring filename, int len = -1, int offset = 0);
+ULONG64 FileFNVHash(std::wstring filename, int len = -1, int offset = 0);
 
 }

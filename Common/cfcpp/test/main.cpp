@@ -2,9 +2,9 @@
 #include "tst_header.h"
 #include "tst_directoryentry.h"
 #include "tst_compondfile.h"
+#include "tst_data_set.h"
 
 using namespace CFCPP;
-using namespace std;
 
 int main(int argc, char *argv[])
 {

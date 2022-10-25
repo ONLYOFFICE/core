@@ -6,28 +6,35 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "../../DesktopEditor/common/File.h"
+#include "../stream.h"
 #include "../../DesktopEditor/common/Directory.h"
+
 
 using namespace testing;
 using namespace std;
+using namespace CFCPP;
 
 
 constexpr int _70MBLen = 1024 * 1024 * 70;
-const std::vector<unsigned char> _8ByteData = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
-const std::vector<BYTE> _70MBVector(_70MBLen, 0x90);
+const vector<unsigned char> _8ByteData = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
+const vector<BYTE> _70MBVector(_70MBLen, 0x90);
 
-const std::wstring testDataPath = L"../../../data/";
-const std::wstring sourcePath = testDataPath + L"src/";
-const std::wstring outPath = testDataPath + L"out/";
+const wstring testDataPath = L"../../../data/";
+const wstring sourcePath = testDataPath + L"src/";
+const wstring outPath = testDataPath + L"out/";
 
 
-
-void EXPECT_FILE_EXIST(const std::wstring& filePath)
+void EXPECT_FILE_EXIST(const wstring& filePath)
 {
     EXPECT_TRUE(NSFile::CFileBinary::Exists(filePath));
 }
 
-std::wstring InitOutPath(const std::wstring& filename)
+void EXPECT_FILE_FNV_HASH(const wstring& filePath, LONG hash)
+{
+    EXPECT_EQ(CFCPP::FileFNVHash(filePath), hash);
+}
+
+wstring InitOutPath(const wstring& filename)
 {
     NSDirectory::CreateDirectory(outPath);
     wstring fullpath = outPath + filename;
@@ -37,7 +44,7 @@ std::wstring InitOutPath(const std::wstring& filename)
 }
 
 
-std::vector<std::wstring> arrForeignFileNames=
+vector<wstring> arrForeignFileNames=
 {
     L"file",        // Englang
     L"fil",         // Danish

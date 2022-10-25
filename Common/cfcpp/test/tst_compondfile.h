@@ -4,21 +4,14 @@
 #include "compoundfile.h"
 #include <iostream>
 #include <iomanip>
-#include <time.h>
-
-#include <chrono>
-
-using namespace testing;
-using namespace std;
-using namespace CFCPP;
 
 
 struct CompoundFileTest : testing::Test
 {
-    wstring filename = sourcePath + L"ex.ppt";
+    wstring srcFilePath = sourcePath + L"ex.ppt";
     CompoundFile cf;
 
-    CompoundFileTest() : cf(filename, CFSUpdateMode::Update)
+    CompoundFileTest() : cf(srcFilePath, CFSUpdateMode::Update)
     {
 
     }
@@ -43,6 +36,14 @@ struct CompoundFileTest : testing::Test
 };
 
 
+wstring SaveToFile(CompoundFile& cf, wstring filename)
+{
+    wstring filePath = InitOutPath(filename);
+    EXPECT_NO_THROW(cf.Save(filePath));
+
+    return filePath;
+}
+
 TEST_F(CompoundFileTest, read)
 {
     EXPECT_TRUE(cf.HasSourceStream());
@@ -50,24 +51,20 @@ TEST_F(CompoundFileTest, read)
 
 TEST_F(CompoundFileTest, copy)
 {
-    wstring other_filename = InitOutPath(L"ex2.ppt");
-    cf.Save(other_filename);
+    wstring savedFilePath = SaveToFile(cf, L"ex2.ppt");
 
-    EXPECT_EQ(FileLenght(filename), FileLenght(other_filename));
-    EXPECT_EQ(FileSimpleHash(filename), FileSimpleHash(other_filename));
+    EXPECT_EQ(FileLenght(srcFilePath), FileLenght(savedFilePath));
+    EXPECT_EQ(FileFNVHash(srcFilePath), FileFNVHash(savedFilePath));
 }
 
-void TestLargeCompoundFileWrite(CompoundFile& cf, std::wstring largeFileName)
+void TestLargeCompoundFileWrite(CompoundFile& cf, wstring largeFileName)
 {
-    wstring largeFilePath = InitOutPath(largeFileName);
     auto largeStream = cf.RootStorage()->AddStream(L"stream");
 
     EXPECT_NO_THROW(largeStream->Write(_70MBVector, 0));
 
-    EXPECT_NO_THROW(cf.Save(largeFilePath));
-    cf.Close();
-
-    EXPECT_GT(FileLenght(largeFilePath), _70MBLen);
+    wstring savedFilePath = SaveToFile(cf, largeFileName);
+    EXPECT_GT(FileLenght(savedFilePath), _70MBLen);
 }
 
 TEST(test_compoundfile, largeStream_v3)
@@ -92,14 +89,18 @@ TEST_F(CompoundFileTest, addEmptyStorage)
 {
     wstring storageName = L"storage";
     auto storage1 = cf.RootStorage()->AddStorage(storageName);
-    EXPECT_TRUE(storage1->getDataTime().getUINT64() > 116444736000000000ULL);
 
-    wstring other_filename = InitOutPath(L"ex3.ppt");
-    cf.Save(other_filename);
-    cf.Close();
+    wstring savedFilePath = SaveToFile(cf, L"ex3.ppt");
 
-    CompoundFile cf2(other_filename);
+    CompoundFile cf2(savedFilePath);
     EXPECT_NO_THROW(cf2.RootStorage()->GetStorage(storageName));
+}
+
+TEST_F(CompoundFileTest, timestamp)
+{
+    wstring storageName = L"storage";
+    auto storage = cf.RootStorage()->AddStorage(storageName);
+    EXPECT_TRUE(storage->getDataTime().getUINT64() > 116444736000000000ULL);
 }
 
 TEST_F(CompoundFileTest, addEmptyStream)
@@ -107,39 +108,31 @@ TEST_F(CompoundFileTest, addEmptyStream)
     wstring streamName = L"stream";
     cf.RootStorage()->AddStream(streamName);
 
-    wstring other_filename = InitOutPath(L"ex4.ppt");
-    cf.Save(other_filename);
+    wstring savedFilePath = SaveToFile(cf, L"ex4.ppt");
 
-    cf.Close();
-
-    CompoundFile cf2(other_filename);
-    EXPECT_TRUE(cf2.RootStorage()->GetStream(streamName) != nullptr);
+    CompoundFile cf2(savedFilePath);
+    EXPECT_NO_THROW(cf2.RootStorage()->GetStream(streamName));
 }
 
-TEST_F(CompoundFileTest, add2Stream)
+TEST_F(CompoundFileTest, add2StreamWithSameName)
 {
     wstring storageName = L"storage";
-    wstring streamName = L"stream";
+    wstring streamsName = L"stream";
 
-    cf.RootStorage()->AddStorage(storageName)->AddStream(streamName);
-    cf.RootStorage()->AddStream(streamName);
+    cf.RootStorage()->AddStorage(storageName)->AddStream(streamsName);
+    cf.RootStorage()->AddStream(streamsName);
 
 
-    wstring other_filename = InitOutPath(L"ex5.ppt");
-    cf.Save(other_filename);
-    cf.Close();
+    wstring savedFilePath = SaveToFile(cf, L"ex5.ppt");
 
-    CompoundFile cf2(other_filename);
-    EXPECT_TRUE(cf2.RootStorage()->GetStream(streamName) != nullptr);
-
-    auto storage = cf2.RootStorage()->GetStorage(storageName);
-    EXPECT_TRUE(storage != nullptr);
-    EXPECT_TRUE(storage->GetStream(streamName) != nullptr);
+    CompoundFile cf2(savedFilePath);
+    EXPECT_NO_THROW(cf2.RootStorage()->GetStream(streamsName));
+    EXPECT_NO_THROW(cf2.RootStorage()->GetStorage(storageName)->GetStream(streamsName));
 }
 
 TEST_F(CompoundFileTest, deleteStream)
 {
-    const std::wstring streamName = L"PowerPoint Document";
+    const wstring streamName = L"PowerPoint Document";
     EXPECT_TRUE(cf.RootStorage()->GetStream(streamName));
     cf.RootStorage()->Delete(streamName);
     EXPECT_THROW(cf.RootStorage()->GetStream(streamName), CFItemNotFound);
@@ -147,16 +140,13 @@ TEST_F(CompoundFileTest, deleteStream)
 
 TEST_F(CompoundFileTest, deleteStreamWithSave)
 {
-    const std::wstring streamName = L"PowerPoint Document";
-    cf.RootStorage()->Delete(L"PowerPoint Document");
+    const wstring streamName = L"PowerPoint Document";
+    cf.RootStorage()->Delete(streamName);
 
-    wstring other_filename = InitOutPath(L"ex6.ppt");
-    cf.Save(other_filename);
-    cf.Close();
+    wstring savedFilePath = SaveToFile(cf, L"ex6.ppt");
 
-    CompoundFile cf2(other_filename);
+    CompoundFile cf2(savedFilePath);
     EXPECT_THROW(cf2.RootStorage()->GetStream(streamName), CFItemNotFound);
-    EXPECT_TRUE(cf2.RootStorage()->GetStream(L"Current User"));
 }
 
 TEST_F(CompoundFileTest, deleteStorage)
@@ -165,37 +155,47 @@ TEST_F(CompoundFileTest, deleteStorage)
     auto storage2 = storage1->AddStorage(L"sto2");
     auto stream1 = storage2->AddStream(L"str1");
 
-    EXPECT_TRUE(cf.RootStorage()->GetStorage(L"sto1"));
+    EXPECT_NO_THROW(cf.RootStorage()->GetStorage(L"sto1"));
     cf.RootStorage()->Delete(L"sto1");
     EXPECT_THROW(cf.RootStorage()->GetStorage(L"sto1"), CFItemNotFound);
 }
 
-TEST_F(CompoundFileTest, writeStream)
+void WriteStreamWithDefaultData(CompoundFile &cf, wstring streamName)
 {
-    std::vector<BYTE> read(_8ByteData.size());
-    auto stream1 = cf.RootStorage()->AddStream(L"str1");
-    stream1->Write(_8ByteData,0);
+    auto stream = cf.RootStorage()->AddStream(streamName);
 
-    EXPECT_TRUE(cf.RootStorage()->GetStream(L"str1"));
-    EXPECT_EQ(stream1->size(), _8ByteData.size());
-    EXPECT_NO_THROW(stream1->Read(read, 0, _8ByteData.size()));
-    EXPECT_EQ(_8ByteData, read);
+    EXPECT_NO_THROW(stream->Write(_8ByteData, 0));
+    EXPECT_NO_THROW(cf.RootStorage()->GetStream(streamName));
+}
+
+void CheckStreamWithDefaultData(CompoundFile &cf, wstring streamName)
+{
+    vector<BYTE> vecForRead(_8ByteData.size());
+
+    shared_ptr<CFStream> stream;
+    EXPECT_TRUE(cf.RootStorage()->TryGetStream(streamName, stream));
+
+    EXPECT_NO_THROW(stream->Read(vecForRead, 0, _8ByteData.size()));
+    EXPECT_EQ(_8ByteData, vecForRead);
 }
 
 TEST_F(CompoundFileTest, writeStreams)
 {
     for (const auto& name : arrForeignFileNames)
     {
-        std::vector<BYTE> read(_8ByteData.size());
-        auto stream1 = cf.RootStorage()->AddStream(name);
-        EXPECT_TRUE(stream1);
+        WriteStreamWithDefaultData(cf, name);
+        CheckStreamWithDefaultData(cf, name);
+    }
+}
 
-        EXPECT_NO_THROW(stream1->Write(_8ByteData, 0));
-        EXPECT_NO_THROW(cf.RootStorage()->GetStream(name));
-
-        EXPECT_EQ(stream1->size(), _8ByteData.size());
-        EXPECT_NO_THROW(stream1->Read(read, 0, _8ByteData.size()));
-        EXPECT_EQ(_8ByteData, read);
+void TryToSaveEmptyCompoundFile(wstring filename)
+{
+    wstring outPath = InitOutPath(filename);
+    try {
+        CompoundFile cf;
+        cf.Save(outPath);
+    } catch (...) {
+        FAIL();
     }
 }
 
@@ -203,19 +203,8 @@ TEST(test_compoundfile, foreign_languages)
 {
     for (const auto& name : arrForeignFileNames)
     {
-        try {
-            wstring path = InitOutPath(name + L".cfb");
-
-            CompoundFile cf;
-            auto stream1 = cf.RootStorage()->AddStream(L"stream");
-            stream1->Write(_8ByteData, 0);
-
-            cf.Save(path);
-            cf.Close();
-        } catch (...) {
-            FAIL();
-        }
-
+        wstring filename = name + L".cfb";
+        TryToSaveEmptyCompoundFile(filename);
     }
     SUCCEED();
 }

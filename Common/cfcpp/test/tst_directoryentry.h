@@ -3,8 +3,6 @@
 #include "global.h"
 #include "directoryentry.h"
 
-using namespace CFCPP;
-
 
 struct DirEntryTest : testing::Test
 {
@@ -14,9 +12,19 @@ struct DirEntryTest : testing::Test
     DirEntryTest() :
         filename(sourcePath + L"ex.ppt"),
         stream(OpenFileStream(filename))
+    {}
+
+    DirectoryEntry LoadDirectoryEntryFromPPTFile()
     {
+        DirectoryEntry de(L"", StgInvalid);
+        const int fileShift = 0x400;
+        stream->seek(fileShift, ios::beg);
+        de.Read(stream);
+
+        return de;
     }
 };
+
 
 void test_dirEntry_read(const DirectoryEntry& de)
 {
@@ -41,27 +49,35 @@ void test_dirEntry_read(const DirectoryEntry& de)
 
 TEST_F(DirEntryTest, read)
 {
-    DirectoryEntry de(L"", StgInvalid);
-    stream->seek(0x400, std::ios::beg);
-    de.Read(stream);
-
+    auto de = LoadDirectoryEntryFromPPTFile();
     EXPECT_EQ(stream->tell(), 0x480);
     test_dirEntry_read(de);
 }
 
-TEST_F(DirEntryTest, write)
+void SaveDirectoryEntryToFile(const DirectoryEntry& de, wstring filename)
 {
-    DirectoryEntry de(L"", StgInvalid);
-    stream->seek(0x400, std::ios::beg);
-    de.Read(stream);
-
-    std::wstring other_filename = InitOutPath(L"direntry.bin");
-    stream = OpenFileStream(other_filename, true);
+    wstring other_filename = InitOutPath(filename);
+    auto stream = OpenFileStream(other_filename, true);
     de.Write(stream);
     EXPECT_EQ(stream->tell(), 0x80);
-    stream->seek(0, std::ios::beg);
+}
 
-    DirectoryEntry other(L"", StgInvalid);
-    other.Read(stream);
-    test_dirEntry_read(other);
+DirectoryEntry LoadDirectoryEntryFromFile(wstring filePath)
+{
+    DirectoryEntry de(L"", StgInvalid);
+    auto stream = OpenFileStream(outPath + filePath, false);
+    de.Read(stream);
+
+    return de;
+}
+
+TEST_F(DirEntryTest, write)
+{
+    auto de = LoadDirectoryEntryFromPPTFile();
+
+    wstring saveFilename = L"direntry.bin";
+    SaveDirectoryEntryToFile(de, saveFilename);
+    auto readDirectoryEntry = LoadDirectoryEntryFromFile(saveFilename);
+
+    test_dirEntry_read(readDirectoryEntry);
 }

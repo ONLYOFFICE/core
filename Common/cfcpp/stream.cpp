@@ -73,7 +73,7 @@ int CFCPP::FileLenght(std::wstring filename)
     return lenght;
 }
 
-ULONG64 CFCPP::FileSimpleHash(std::wstring filename, int len, int offset)
+ULONG64 CFCPP::FileFNVHash(std::wstring filename, int len, int offset)
 {
 
     auto stream = OpenFileStream(filename);

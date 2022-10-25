@@ -4,8 +4,6 @@
 #include "header.h"
 #include "streamrw.h"
 
-using namespace CFCPP;
-
 
 struct HeaderTest : testing::Test
 {
@@ -19,6 +17,7 @@ struct HeaderTest : testing::Test
     {
     }
 };
+
 
 void test_header_state(const Header& hd)
 {
@@ -54,49 +53,29 @@ TEST_F(HeaderTest, read)
     test_header_state(hd);
 }
 
+void SaveHeaderToFile(const Header& header, wstring filename)
+{
+    wstring savePath = InitOutPath(filename);
+    auto stream = OpenFileStream(savePath, true);
+    header.Write(stream);
+}
+
+Header LoadHeaderFromFile(wstring filename)
+{
+    auto stream = OpenFileStream(outPath + filename, false);
+    Header hd;
+    hd.Read(stream);
+
+    return hd;
+}
+
 TEST_F(HeaderTest, write)
 {
     hd.Read(stream);
 
-    std::wstring other_filename = InitOutPath(L"header.bin");
-    stream = OpenFileStream(other_filename, true);
-    hd.Write(stream);
+    wstring saveFilename = L"header.bin";
+    SaveHeaderToFile(hd, saveFilename);
+    Header readHeader = LoadHeaderFromFile(saveFilename);
 
-    Header other;
-    stream->seek(0, std::ios::beg);
-    other.Read(stream);
-    test_header_state(other);
-}
-
-TEST_F(HeaderTest, test_header_seek)
-{
-    hd.Read(stream);
-
-    std::wstring other_filename = InitOutPath(L"sheader.bin");
-    stream = OpenFileStream(other_filename, true);
-
-    std::vector<char> zeroArray(512, 0);
-    stream->write(zeroArray.data(), zeroArray.size());
-    zeroArray.clear();
-
-    EXPECT_EQ(Length(stream), 512);
-
-
-    stream->seek(4);
-    StreamRW rw(stream);
-    auto pos = rw.Tell();
-    EXPECT_EQ(pos, 4);
-
-    hd.Write(stream);
-    EXPECT_EQ(Length(stream), 512+4);
-
-
-    Header other;
-    stream->seek(0);
-    int zeroValue = StreamRW(stream).Read<int>();
-    EXPECT_EQ(zeroValue, 0);
-
-
-    other.Read(stream);
-    test_header_state(other);
+    test_header_state(readHeader);
 }

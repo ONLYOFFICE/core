@@ -10,7 +10,7 @@ class Header
 public:
     Header();
     Header(ushort version);
-    void Write(Stream& stream);
+    void Write(Stream& stream) const;
     void Read(Stream& stream);
 
 private:

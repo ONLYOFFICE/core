@@ -204,7 +204,7 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 	if (std::isnan(dValue) || std::isinf(dValue))
 		pEndPtr = (wchar_t *)sText.c_str();
 	
-	if ((0 == *pEndPtr) || (pEndPtr != sText.c_str() && (sText.c_str() + length  - pEndPtr) < 4))
+	if ((0 == *pEndPtr) || (pEndPtr != sText.c_str() && (sText.c_str() + length  - pEndPtr) < 3))
 	{
 		std::wstring data_format;
 		std::wstring postfix;

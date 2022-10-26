@@ -2107,10 +2107,9 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbi
 	m_pPage->GrRestore();
 	return S_OK;
 }
-bool CPdfRenderer::EditPdf(bool bEdit)
+void CPdfRenderer::EditPdf()
 {
-	m_bEdit = bEdit;
-	return m_bEdit;
+	m_bEdit = true;
 }
 std::pair<int, int> CPdfRenderer::GetPageRef(int nPageIndex)
 {

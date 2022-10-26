@@ -193,6 +193,14 @@ namespace PdfWriter
 		Add("Kids", m_pPages);
 		Add("Count", m_pCount);
 	}
+	CPageTree::CPageTree(CXref* pXref, bool bEmpty)
+	{
+		m_pXref = pXref;
+		pXref->Add(this);
+
+		m_pPages = NULL;
+		m_pCount = NULL;
+	}
 	void CPageTree::Fix()
 	{
 		// Инициализация текущего m_pPages

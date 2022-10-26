@@ -95,10 +95,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
         for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
         {
             char* chKey = obj->dictGetKey(nIndex);
-            if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0)
-                obj->dictGetVal(nIndex, &oTemp);
-            else
-                obj->dictGetValNF(nIndex, &oTemp);
+            obj->dictGetValNF(nIndex, &oTemp);
             DictToCDictObject(&oTemp, pDict, bBinary, chKey);
             oTemp.free();
         }
@@ -440,7 +437,10 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 
     bool bRes = pDoc->EditPdf(wsDstFile, xref->getLastXRefPos(), xref->getNumObjects(), pXref, pCatalog, pEncryptDict, nFormField);
     if (bRes)
+    {
         m_pInternal->GetPageTree(xref, &pagesRefObj);
+        m_pInternal->pWriter->EditPdf();
+    }
     pagesRefObj.free();
     return bRes;
 }
@@ -456,8 +456,6 @@ bool CPdfFile::EditClose()
     if (!xref)
         return false;
 
-    Object* trailerDict = xref->getTrailerDict();
-
     // Добавляем первый элемент в таблицу xref
     // он должен иметь вид 0000000000 65535 f
     PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, 0, 65535);
@@ -465,6 +463,7 @@ bool CPdfFile::EditClose()
         return false;
 
     PdfWriter::CDictObject* pTrailer = NULL;
+    Object* trailerDict = xref->getTrailerDict();
     if (trailerDict)
     {
         pTrailer = pXref->GetTrailer();
@@ -566,30 +565,42 @@ bool CPdfFile::EditPage(int nPageIndex)
         pageRefObj.free();
         return false;
     }
+    pageRefObj.free();
 
     PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pPageRef.first);
     if (!pXref)
-        return NULL;
+    {
+        pageObj.free();
+        return false;
+    }
+
     PdfWriter::CPage* pNewPage = new PdfWriter::CPage(pXref, pDoc);
+    if (!pNewPage)
+    {
+        pageObj.free();
+        RELEASEOBJECT(pXref);
+        return false;
+    }
 
     for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
     {
         Object oTemp;
         char* chKey = pageObj.dictGetKey(nIndex);
-        pageObj.dictGetValNF(nIndex, &oTemp);
+        if (strcmp("Resources", chKey) == 0 || strcmp("AcroForm", chKey) == 0)
+            pageObj.dictGetVal(nIndex, &oTemp);
+        else
+            pageObj.dictGetValNF(nIndex, &oTemp);
         DictToCDictObject(&oTemp, pNewPage, true, chKey);
         oTemp.free();
     }
     pNewPage->SetRef(pPageRef.first, pPageRef.second);
     pNewPage->Fix();
-
     pageObj.free();
-    pageRefObj.free();
 
-    if (m_pInternal->pWriter->EditPage(pNewPage))
-    {
-        return pDoc->EditPage(pXref, pNewPage);
-    }
+    if (m_pInternal->pWriter->EditPage(pNewPage) && pDoc->EditPage(pXref, pNewPage))
+        return true;
+
+    RELEASEOBJECT(pXref);
     return false;
 }
 

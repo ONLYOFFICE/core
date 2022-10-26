@@ -62,6 +62,7 @@ namespace PdfWriter
 	{
 	public:
 		CPageTree(CXref* pXref);
+		CPageTree(CXref* pXref, bool bEmpty);
 		void Fix();
 		void AddPage(CDictObject* pPage);
 		CObjectBase* GetObj(int nPageIndex);

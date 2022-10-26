@@ -246,7 +246,7 @@ public:
     //----------------------------------------------------------------------------------------
     // Дополнительные функции для дозаписи Pdf
     //----------------------------------------------------------------------------------------
-    bool EditPdf(bool bEdit);
+    void EditPdf();
     std::pair<int, int> GetPageRef(int nPageIndex);
     bool EditPage(PdfWriter::CPage* pNewPage);
     bool AddPage(int nPageIndex);

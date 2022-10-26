@@ -1106,7 +1106,7 @@ namespace PdfWriter
 	}
 	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
 	{
-		if (!pXref)
+		if (!pXref || !pCatalog)
 			return false;
 		Close();
 
@@ -1123,11 +1123,6 @@ namespace PdfWriter
 		SetCompressionMode(COMP_ALL);
 
 		m_pCatalog = pCatalog;
-		if (!m_pCatalog)
-		{
-			RELEASEOBJECT(pXref);
-			return false;
-		}
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
 
@@ -1171,24 +1166,19 @@ namespace PdfWriter
 	}
     bool CDocument::EditPage(CXref* pXref, CPage* pPage)
 	{
-		if (!pXref)
+		if (!pXref || !pPage)
 			return false;
-		CPage* pNewPage = pPage;
-		if (!pNewPage)
-		{
-			RELEASEOBJECT(pXref);
-			return false;
-		}
 
-		pNewPage->AddContents(m_pXref);
+		pPage->AddContents(m_pXref);
 #ifndef FILTER_FLATE_DECODE_DISABLED
 		if (m_unCompressMode & COMP_TEXT)
-			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
-		m_pCurPage = pNewPage;
+		m_pCurPage  = pPage;
+
 		return true;
 	}
 	CPage* CDocument::AddPage(int nPageIndex)

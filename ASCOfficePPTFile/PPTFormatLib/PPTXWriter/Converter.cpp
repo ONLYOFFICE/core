@@ -604,6 +604,7 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
     WriteNotes();
 }
 
+// todo reforming and refactoring!
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
@@ -644,9 +645,14 @@ bool CPPTXWriter::HasRoundTrips() const
 
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
     std::vector<RoundTripContentMasterInfo12Atom*> arrRTLayouts;
+    std::vector<RoundTripNotesMasterTextStyles12Atom*> arrRTNotes;
     auto pSlide = m_pUserInfo->m_mapMasters.begin()->second;
     pSlide->GetRecordsByType(&arrRTLayouts, false, false);
     pSlide->GetRecordsByType(&arrRTTheme, false, true);
+    pSlide->GetRecordsByType(&arrRTNotes, false, true);
+
+    if (m_pDocument->m_pNotesMaster && arrRTNotes.empty())
+        return false;
 
     return arrRTTheme.size() && arrRTLayouts.size();
 }

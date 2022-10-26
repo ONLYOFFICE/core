@@ -1,7 +1,23 @@
 #include <iostream>
+#include <comutil.h>
+#include <atlcomcli.h>
 
 #include "../_docbuilder.h"
 #include "../_docbuilder_i.c"
+
+#ifdef _NATIVE_WCHAR_T_DEFINED
+# ifdef _DEBUG
+# pragma comment(lib, "comsuppwd.lib")
+# else
+# pragma comment(lib, "comsuppw.lib")
+# endif
+#else
+# ifdef _DEBUG
+# pragma comment(lib, "comsuppd.lib")
+# else
+# pragma comment(lib, "comsupp.lib")
+# endif
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -30,29 +46,32 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	wchar_t param[] = L"--work-directory";
-	wchar_t Api[] = L"Api";
-	wchar_t GetDocument[] = L"GetDocument";
-	wchar_t CreateParagraph[] = L"CreateParagraph";
 	VARIANT_BOOL b;
 
 	oBuilder->Initialize(work_dir);
-	oBuilder->SetProperty(param, work_dir);
+	oBuilder->SetProperty(_bstr_t("--work-directory"), work_dir);
 	oBuilder->CreateFileW(result_path, &b);
-
-	//std::cout << oContext << std::endl;
-	hr = oBuilder->GetContext(&oContext); // NULL
+	oBuilder->GetContext(&oContext);
 
 	oContext->CreateScope(&oScope);
-
 	oContext->GetGlobal(&oGlobal);
-	oGlobal->GetProperty(Api, &oApi);
 
+	oGlobal->GetProperty(_bstr_t("Api"), &oApi);
+	oContext->CreateArray(1, &oContent);
 
-	wchar_t docx[] = L".docx";
-	oBuilder->SaveFile(docx, result_path, &b);
+	oApi->Call(_bstr_t(L"GetDocument"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), &oDocument);
+	oApi->Call(_bstr_t(L"CreateParagraph"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), &oParagraph);
+	oContext->CreateArray(1, &oContent);
+	
+
+	oParagraph->Call(_bstr_t(L"SetSpacingAfter"), ATL::CComVariant(1000), ATL::CComVariant(VARIANT_FALSE), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
+	oParagraph->Call(_bstr_t(L"AddText"), ATL::CComVariant(L"Hello from .com!"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
+	oContent->Set(0, oParagraph);
+
+	oDocument->Call(_bstr_t(L"InsertContent"), ATL::CComVariant(oContent), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
+
+	oBuilder->SaveFile(_bstr_t(".docx"), result_path, &b);
 	oBuilder->CloseFile();
-
 	oBuilder->Dispose();
 
 	CoUninitialize();

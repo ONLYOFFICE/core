@@ -87,7 +87,7 @@ __interface IONLYOFFICEDocBuilderValue : IDispatch
 	[id(119)] HRESULT SetProperty([in] BSTR name, [in] IONLYOFFICEDocBuilderValue* value);
 	[id(120)] HRESULT Set([in] long index, [in] IONLYOFFICEDocBuilderValue* value);
 
-	[id(121)] HRESULT Call([in] BSTR name, [in, optional] VARIANT val1, [in, optional] VARIANT val2, [in, optional] VARIANT val3, [in, optional] VARIANT val4, [in, optional] VARIANT val5, [in, optional] VARIANT val6, [out, retval] IONLYOFFICEDocBuilderValue** result);
+	[id(121)] HRESULT Call([in] BSTR name, [in, optional] VARIANT val1 = CComVariant(), [in, optional] VARIANT val2 = CComVariant(), [in, optional] VARIANT val3 = CComVariant(), [in, optional] VARIANT val4 = CComVariant(), [in, optional] VARIANT val5 = CComVariant(), [in, defaultvalue(CComVariant())] VARIANT val6 = CComVariant(), [out, retval] IONLYOFFICEDocBuilderValue** result = NULL);
 };
 
 // IONLYOFFICEDocBuilderContextScope
@@ -217,6 +217,12 @@ public:
 		if (value.vt == VT_BSTR)
 			m_pValue = new NSDoctRenderer::CDocBuilderValue(value.bstrVal);
 
+		if (value.vt == VT_DISPATCH)
+		{	
+			IONLYOFFICEDocBuilderValue* val = NULL;
+			value.pdispVal->QueryInterface(__uuidof(IONLYOFFICEDocBuilderValue), (void**)&val);
+			m_pValue = ((CONLYOFFICEDocBuilderValue*)(val))->GetPrivate();
+		}
 		return S_OK;
 	}
 
@@ -434,44 +440,44 @@ public:
 
 		int val_c = 0;
 
-		IONLYOFFICEDocBuilderValue* p1;
-		IONLYOFFICEDocBuilderValue* p2;
-		IONLYOFFICEDocBuilderValue* p3;
-		IONLYOFFICEDocBuilderValue* p4;
-		IONLYOFFICEDocBuilderValue* p5;
-		IONLYOFFICEDocBuilderValue* p6;
+		IONLYOFFICEDocBuilderValue* p1 = NULL;
+		IONLYOFFICEDocBuilderValue* p2 = NULL;
+		IONLYOFFICEDocBuilderValue* p3 = NULL;
+		IONLYOFFICEDocBuilderValue* p4 = NULL;
+		IONLYOFFICEDocBuilderValue* p5 = NULL;
+		IONLYOFFICEDocBuilderValue* p6 = NULL;
 
-		if (val1.vt != VT_ERROR)
+		if (val1.vt != VT_ERROR && val1.vt != VT_EMPTY)
 		{
 			val_c++;
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)&p1);
 			p1->CreateInstance(val1);
 		}
-		if (val2.vt != VT_ERROR)
+		if (val2.vt != VT_ERROR && val2.vt != VT_EMPTY)
 		{
 			val_c++;
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)&p2);
 			p2->CreateInstance(val2);
 		}
-		if (val3.vt != VT_ERROR)
+		if (val3.vt != VT_ERROR && val3.vt != VT_EMPTY)
 		{
 			val_c++;
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)&p3);
 			p3->CreateInstance(val3);
 		}
-		if (val4.vt != VT_ERROR)
+		if (val4.vt != VT_ERROR && val4.vt != VT_EMPTY)
 		{
 			val_c++;
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)&p4);
 			p4->CreateInstance(val4);
 		}
-		if (val5.vt != VT_ERROR)
+		if (val5.vt != VT_ERROR && val5.vt != VT_EMPTY)
 		{
 			val_c++;
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)&p5);
 			p5->CreateInstance(val5);
 		}
-		if (val6.vt != VT_ERROR)
+		if (val6.vt != VT_ERROR && val6.vt != VT_EMPTY)
 		{
 			val_c++;
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)&p6);
@@ -519,6 +525,56 @@ public:
 				break;
 			case 6:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
+					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p6))->m_pValue);
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch (val_c)
+			{
+			case 0:
+				m_pValue->Call(name);
+				break;
+			case 1:
+				m_pValue->Call(name,
+					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue);
+				break;
+			case 2:
+				m_pValue->Call(name,
+					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue);
+				break;
+			case 3:
+				m_pValue->Call(name,
+					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue);
+				break;
+			case 4:
+				m_pValue->Call(name,
+					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue);
+				break;
+			case 5:
+				m_pValue->Call(name,
+					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue,
+					((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue);
+				break;
+			case 6:
+				m_pValue->Call(name,
 					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
 					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
 					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,

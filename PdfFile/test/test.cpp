@@ -4,6 +4,31 @@
 #include "../../DesktopEditor/xmlsec/src/include/CertificateCommon.h"
 #include "../PdfFile.h"
 
+void TEST(IRenderer* pRenderer)
+{
+    // ТЕСТОВЫЕ КОММАНДЫ
+    pRenderer->PathCommandStart();
+    pRenderer->PathCommandMoveTo(10, 10);
+    pRenderer->PathCommandLineTo(20, 20);
+    pRenderer->PathCommandCurveTo(70, 30, 30, 20, 50, 50);
+    pRenderer->PathCommandClose();
+    pRenderer->put_BrushColor1(0xFF0000);
+    pRenderer->put_PenColor(0x0000FF);
+    pRenderer->put_PenSize(1);
+    pRenderer->DrawPath(c_nStroke | c_nWindingFillMode);
+    pRenderer->PathCommandEnd();
+}
+
+void TEST2(IRenderer* pRenderer)
+{
+    ((CPdfFile*)pRenderer)->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../example/pdf.bin", L"");
+}
+
+void TEST3(IRenderer* pRenderer)
+{
+    ((CPdfFile*)pRenderer)->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../example1/1/pdf.bin", L"");
+}
+
 int main()
 {
     CApplicationFontsWorker oWorker;
@@ -23,7 +48,7 @@ int main()
         NSDirectory::CreateDirectory(wsTempDir);
 
     CPdfFile pdfFile(pApplicationFonts);
-    pdfFile.SetTempDirectory(wsTempDir);
+    pdfFile.SetTemp(wsTempDir);
 
     std::wstring wsPassword;
     bool bResult = pdfFile.LoadFromFile(wsSrcFile);
@@ -55,11 +80,11 @@ int main()
         return 0;
     }
 
-    if (false)
+    if (true)
     {
         for (int i = 0; i < pdfFile.GetPagesCount(); i++)
         {
-            pdfFile.DrawPageOnRenderer(pdfFile.GetWriter(), i, NULL);
+            pdfFile.DrawPageOnRenderer(&pdfFile, i, NULL);
         }
         pdfFile.SaveToFile(wsDstFile);
 
@@ -81,7 +106,7 @@ int main()
         {
             if (pdfFile.EditPage(0))
             {
-                pdfFile.TEST(1);
+                TEST(&pdfFile);
                 pdfFile.PageRotate(90);
             }
 
@@ -89,12 +114,12 @@ int main()
 
             if (pdfFile.EditPage(1))
             {
-                pdfFile.TEST(2);
+                TEST2(&pdfFile);
             }
 
             if (pdfFile.AddPage(3))
             {
-                pdfFile.TEST(1);
+                TEST3(&pdfFile);
             }
         }
 

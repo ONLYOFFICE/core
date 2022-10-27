@@ -196,6 +196,62 @@ public:
     }
 };
 
+/*
+
+int CPdfFile2::GetError()
+{
+    return m_pInternal->pReader->GetError();
+}
+
+void CPdfFile2::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH,
+                               bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode)
+{
+    m_pInternal->pReader->ConvertToRaster(nPageIndex, path, nImageType, nRasterW, nRasterH, bIsFlip, pFonts, nBackgroundColor, bIsDarkMode);
+}
+
+void CPdfFile2::SetPassword(const std::wstring& wsPassword)
+{
+    m_pInternal->pWriter->SetPassword(wsPassword);
+}
+
+void CPdfFile2::SetDocumentID(const std::wstring& wsDocumentID)
+{
+    m_pInternal->pWriter->SetPassword(wsDocumentID);
+}
+
+int  CPdfFile2::SavePdfToFile(const std::wstring& wsPath)
+{
+    int nPagesCount = m_pInternal->pReader->GetPagesCount();
+    for (int i = 0; i < nPagesCount; ++i)
+    {
+        m_pInternal->pWriter->NewPage();
+        m_pInternal->pWriter->BeginCommand(c_nPageType);
+
+        double dPageDpiX, dPageDpiY;
+        double dWidth, dHeight;
+        m_pInternal->pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+        dWidth  *= 25.4 / dPageDpiX;
+        dHeight *= 25.4 / dPageDpiY;
+
+        m_pInternal->pWriter->put_Width(dWidth);
+        m_pInternal->pWriter->put_Height(dHeight);
+
+        m_pInternal->pReader->DrawPageOnRenderer(m_pInternal->pWriter, i, NULL);
+
+        m_pInternal->pWriter->EndCommand(c_nPageType);
+    }
+    return m_pInternal->pWriter->SaveToFile(wsPath);
+}
+
+HRESULT CPdfFile2::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->DrawImageWith1bppMask(pImage, pMaskBuffer, unMaskWidth, unMaskHeight, dX, dY, dW, dH);
+}
+*/
+
+// ------------------------------------------------------------------------
+
 CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA)
 {
     m_pInternal = new CPdfFile_Private();
@@ -204,74 +260,19 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA)
     m_pInternal->pReader = new PdfReader::CPdfReader(pAppFonts);
     m_pInternal->wsPassword = L"";
 }
-
 CPdfFile::~CPdfFile()
 {
     RELEASEOBJECT(m_pInternal->pWriter);
     RELEASEOBJECT(m_pInternal->pReader);
 }
-
-PdfReader::CPdfReader* CPdfFile::GetReader()
-{
-    return m_pInternal->pReader;
-}
-
-CPdfRenderer* CPdfFile::GetWriter()
-{
-    return m_pInternal->pWriter;
-}
-
-NSFonts::IFontManager* CPdfFile::GetFontManager()
-{
-    return m_pInternal->pReader->GetFontManager();
-}
-
-void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
+void CPdfFile::SetTemp(const std::wstring& wsPath)
 {
     m_pInternal->pWriter->SetTempFolder   (wsPath);
     m_pInternal->pReader->SetTempDirectory(wsPath);
 }
-
-bool CPdfFile::LoadFromFile(const std::wstring& wsSrcFile, const std::wstring& wsPassword)
+NSFonts::IFontManager* CPdfFile::GetFontManager()
 {
-    m_pInternal->wsSrcFile  = wsSrcFile;
-    m_pInternal->wsPassword = wsPassword;
-    return m_pInternal->pReader->LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword) &&
-          (m_pInternal->pReader->GetError() == 0);
-}
-
-bool CPdfFile::LoadFromMemory(BYTE* pData, DWORD nLength, const std::wstring& wsPassword)
-{
-    m_pInternal->wsSrcFile  = L"";
-    m_pInternal->wsPassword = wsPassword;
-    return m_pInternal->pReader->LoadFromMemory(pData, nLength, L"", wsPassword, wsPassword) &&
-          (m_pInternal->pReader->GetError() == 0);
-}
-
-int CPdfFile::GetPagesCount()
-{
-    return m_pInternal->pReader->GetPagesCount();
-}
-
-void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
-{
-    m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
-}
-
-void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
-{
-    m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
-}
-
-int CPdfFile::GetError()
-{
-    return m_pInternal->pReader->GetError();
-}
-
-void CPdfFile::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH,
-                               bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode)
-{
-    m_pInternal->pReader->ConvertToRaster(nPageIndex, path, nImageType, nRasterW, nRasterH, bIsFlip, pFonts, nBackgroundColor, bIsDarkMode);
+    return m_pInternal->pReader->GetFontManager();
 }
 
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
@@ -444,7 +445,6 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     pagesRefObj.free();
     return bRes;
 }
-
 bool CPdfFile::EditClose()
 {
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
@@ -540,7 +540,6 @@ bool CPdfFile::EditClose()
 
     return bRes;
 }
-
 bool CPdfFile::EditPage(int nPageIndex)
 {
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
@@ -603,12 +602,10 @@ bool CPdfFile::EditPage(int nPageIndex)
     RELEASEOBJECT(pXref);
     return false;
 }
-
 bool CPdfFile::DeletePage(int nPageIndex)
 {
     return m_pInternal->pWriter->DeletePage(nPageIndex);
 }
-
 bool CPdfFile::AddPage(int nPageIndex)
 {
     bool bRes = m_pInternal->pWriter->AddPage(nPageIndex);
@@ -626,80 +623,484 @@ bool CPdfFile::AddPage(int nPageIndex)
     }
     return bRes;
 }
-
 void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
 {
     m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pCertificate);
 }
-
 void CPdfFile::PageRotate(int nRotate)
 {
     m_pInternal->pWriter->PageRotate(nRotate);
 }
 
-HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams, bool bBinary)
+// ------------------------------------------------------------------------
+
+bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
-    if (bBinary)
-        return m_pInternal->pWriter->OnlineWordToPdfFromBinary(wsSrcFile, wsDstFile, pParams);
-    return m_pInternal->pWriter->OnlineWordToPdf(wsSrcFile, wsDstFile, pParams);
+    m_pInternal->wsSrcFile  = file;
+    m_pInternal->wsPassword = owner_password;
+    return m_pInternal->pReader->LoadFromFile(file, L"", owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
 }
-
-void CPdfFile::SetPassword(const std::wstring& wsPassword)
+bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
-    m_pInternal->pWriter->SetPassword(wsPassword);
+    m_pInternal->wsSrcFile  = L"";
+    m_pInternal->wsPassword = owner_password;
+    return m_pInternal->pReader->LoadFromMemory(data, length, L"", owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
 }
-
-void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
+void CPdfFile::Close()
 {
-    m_pInternal->pWriter->SetPassword(wsDocumentID);
+    m_pInternal->pReader->Close();
 }
-
-int  CPdfFile::SaveToFile(const std::wstring& wsPath)
+NSFonts::IApplicationFonts* CPdfFile::GetFonts()
 {
-    int nPagesCount = m_pInternal->pReader->GetPagesCount();
-    for (int i = 0; i < nPagesCount; ++i)
-    {
-        m_pInternal->pWriter->NewPage();
-        m_pInternal->pWriter->BeginCommand(c_nPageType);
+    return m_pInternal->pReader->GetFonts();
+}
+OfficeDrawingFileType CPdfFile::GetType()
+{
+    return odftPDF;
+}
+std::wstring CPdfFile::GetTempDirectory()
+{
+    return m_pInternal->pReader->GetTempDirectory();
+}
+void CPdfFile::SetTempDirectory(const std::wstring& directory)
+{
+    m_pInternal->pReader->SetTempDirectory(directory);
+}
+int CPdfFile::GetPagesCount()
+{
+    return m_pInternal->pReader->GetPagesCount();
+}
+void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
+{
+    m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
+}
+void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+{
+    m_pInternal->pReader->DrawPageOnRenderer((pRenderer == this ? m_pInternal->pWriter : pRenderer), nPageIndex, pBreak);
+}
+std::wstring CPdfFile::GetInfo()
+{
+    return m_pInternal->pReader->GetInfo();
+}
+#ifdef BUILDING_WASM_MODULE
+BYTE* CPdfFile::GetStructure()
+{
+    return m_pInternal->pReader->GetStructure();
+}
+BYTE* CPdfFile::GetLinks(int nPageIndex)
+{
+    return m_pInternal->pReader->GetLinks(nPageIndex);
+}
+#endif
 
-        double dPageDpiX, dPageDpiY;
-        double dWidth, dHeight;
-        m_pInternal->pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+// ------------------------------------------------------------------------
 
-        dWidth  *= 25.4 / dPageDpiX;
-        dHeight *= 25.4 / dPageDpiY;
-
-        m_pInternal->pWriter->put_Width(dWidth);
-        m_pInternal->pWriter->put_Height(dHeight);
-
-        m_pInternal->pReader->DrawPageOnRenderer(m_pInternal->pWriter, i, NULL);
-
-        m_pInternal->pWriter->EndCommand(c_nPageType);
-    }
+int CPdfFile::SaveToFile(const std::wstring& wsPath)
+{
     return m_pInternal->pWriter->SaveToFile(wsPath);
 }
-
-void CPdfFile::TEST(int i)
+HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-    if (i == 1)
-    {
-        m_pInternal->pWriter->PathCommandStart();
-        m_pInternal->pWriter->PathCommandMoveTo(10, 10);
-        m_pInternal->pWriter->PathCommandLineTo(20, 20);
-        m_pInternal->pWriter->PathCommandCurveTo(70, 30, 30, 20, 50, 50);
-        m_pInternal->pWriter->PathCommandClose();
-        m_pInternal->pWriter->put_BrushColor1(0xFF0000);
-        m_pInternal->pWriter->put_PenColor(0x0000FF);
-        m_pInternal->pWriter->put_PenSize(1);
-        m_pInternal->pWriter->DrawPath(c_nStroke | c_nWindingFillMode);
-        m_pInternal->pWriter->PathCommandEnd();
-    }
-    else if (i == 2)
-    {
-        m_pInternal->pWriter->OnlineWordToPdf(NSFile::GetProcessDirectory() + L"/../../../PdfWriter/test/example/pdf.bin", L"");
-    }
-    else if (i == 3)
-    {
-        m_pInternal->pWriter->OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/../../../PdfWriter/test/example1/1/pdf.bin", L"");
-    }
+    return m_pInternal->pWriter->OnlineWordToPdf(wsSrcFile, wsDstFile, pParams);
+}
+HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
+{
+    return m_pInternal->pWriter->OnlineWordToPdfFromBinary(wsSrcFile, wsDstFile, pParams);
+}
+
+HRESULT CPdfFile::get_Type(LONG* lType)
+{
+    return m_pInternal->pWriter->get_Type(lType);
+}
+HRESULT CPdfFile::NewPage()
+{
+    return m_pInternal->pWriter->NewPage();
+}
+HRESULT CPdfFile::get_Height(double* dHeight)
+{
+    return m_pInternal->pWriter->get_Height(dHeight);
+}
+HRESULT CPdfFile::put_Height(const double& dHeight)
+{
+    return m_pInternal->pWriter->put_Height(dHeight);
+}
+HRESULT CPdfFile::get_Width(double* dWidth)
+{
+    return m_pInternal->pWriter->get_Width(dWidth);
+}
+HRESULT CPdfFile::put_Width(const double& dWidth)
+{
+    return m_pInternal->pWriter->put_Width(dWidth);
+}
+HRESULT CPdfFile::get_DpiX(double* dDpiX)
+{
+    return m_pInternal->pWriter->get_DpiX(dDpiX);
+}
+HRESULT CPdfFile::get_DpiY(double* dDpiY)
+{
+    return m_pInternal->pWriter->get_DpiY(dDpiY);
+}
+HRESULT CPdfFile::get_PenColor(LONG* lColor)
+{
+    return m_pInternal->pWriter->get_PenColor(lColor);
+}
+HRESULT CPdfFile::put_PenColor(const LONG& lColor)
+{
+    return m_pInternal->pWriter->put_PenColor(lColor);
+}
+HRESULT CPdfFile::get_PenAlpha(LONG* lAlpha)
+{
+    return m_pInternal->pWriter->get_PenAlpha(lAlpha);
+}
+HRESULT CPdfFile::put_PenAlpha(const LONG& lAlpha)
+{
+    return m_pInternal->pWriter->put_PenAlpha(lAlpha);
+}
+HRESULT CPdfFile::get_PenSize(double* dSize)
+{
+    return m_pInternal->pWriter->get_PenSize(dSize);
+}
+HRESULT CPdfFile::put_PenSize(const double& dSize)
+{
+    return m_pInternal->pWriter->put_PenSize(dSize);
+}
+HRESULT CPdfFile::get_PenDashStyle(BYTE* nDashStyle)
+{
+    return m_pInternal->pWriter->get_PenDashStyle(nDashStyle);
+}
+HRESULT CPdfFile::put_PenDashStyle(const BYTE& nDashStyle)
+{
+    return m_pInternal->pWriter->put_PenDashStyle(nDashStyle);
+}
+HRESULT CPdfFile::get_PenLineStartCap(BYTE* nCapStyle)
+{
+    return m_pInternal->pWriter->get_PenLineStartCap(nCapStyle);
+}
+HRESULT CPdfFile::put_PenLineStartCap(const BYTE& nCapStyle)
+{
+    return m_pInternal->pWriter->put_PenLineStartCap(nCapStyle);
+}
+HRESULT CPdfFile::get_PenLineEndCap(BYTE* nCapStyle)
+{
+    return m_pInternal->pWriter->get_PenLineEndCap(nCapStyle);
+}
+HRESULT CPdfFile::put_PenLineEndCap(const BYTE& nCapStyle)
+{
+    return m_pInternal->pWriter->put_PenLineEndCap(nCapStyle);
+}
+HRESULT CPdfFile::get_PenLineJoin(BYTE* nJoinStyle)
+{
+    return m_pInternal->pWriter->get_PenLineJoin(nJoinStyle);
+}
+HRESULT CPdfFile::put_PenLineJoin(const BYTE& nJoinStyle)
+{
+    return m_pInternal->pWriter->put_PenLineJoin(nJoinStyle);
+}
+HRESULT CPdfFile::get_PenDashOffset(double* dOffset)
+{
+    return m_pInternal->pWriter->get_PenDashOffset(dOffset);
+}
+HRESULT CPdfFile::put_PenDashOffset(const double& dOffset)
+{
+    return m_pInternal->pWriter->put_PenDashOffset(dOffset);
+}
+HRESULT CPdfFile::get_PenAlign(LONG* lAlign)
+{
+    return m_pInternal->pWriter->get_PenAlign(lAlign);
+}
+HRESULT CPdfFile::put_PenAlign(const LONG& lAlign)
+{
+    return m_pInternal->pWriter->put_PenAlign(lAlign);
+}
+HRESULT CPdfFile::get_PenMiterLimit(double* dMiter)
+{
+    return m_pInternal->pWriter->get_PenMiterLimit(dMiter);
+}
+HRESULT CPdfFile::put_PenMiterLimit(const double& dMiter)
+{
+    return m_pInternal->pWriter->put_PenMiterLimit(dMiter);
+}
+HRESULT CPdfFile::PenDashPattern(double* pPattern, LONG lCount)
+{
+    return m_pInternal->pWriter->PenDashPattern(pPattern, lCount);
+}
+HRESULT CPdfFile::get_BrushType(LONG* lType)
+{
+    return m_pInternal->pWriter->get_BrushType(lType);
+}
+HRESULT CPdfFile::put_BrushType(const LONG& lType)
+{
+    return m_pInternal->pWriter->put_BrushType(lType);
+}
+HRESULT CPdfFile::get_BrushColor1(LONG* lColor)
+{
+    return m_pInternal->pWriter->get_BrushColor1(lColor);
+}
+HRESULT CPdfFile::put_BrushColor1(const LONG& lColor)
+{
+    return m_pInternal->pWriter->put_BrushColor1(lColor);
+}
+HRESULT CPdfFile::get_BrushAlpha1(LONG* lAlpha)
+{
+    return m_pInternal->pWriter->get_BrushAlpha1(lAlpha);
+}
+HRESULT CPdfFile::put_BrushAlpha1(const LONG& lAlpha)
+{
+    return m_pInternal->pWriter->put_BrushAlpha1(lAlpha);
+}
+HRESULT CPdfFile::get_BrushColor2(LONG* lColor)
+{
+    return m_pInternal->pWriter->get_BrushColor2(lColor);
+}
+HRESULT CPdfFile::put_BrushColor2(const LONG& lColor)
+{
+    return m_pInternal->pWriter->put_BrushColor2(lColor);
+}
+HRESULT CPdfFile::get_BrushAlpha2(LONG* lAlpha)
+{
+    return m_pInternal->pWriter->get_BrushAlpha2(lAlpha);
+}
+HRESULT CPdfFile::put_BrushAlpha2(const LONG& lAlpha)
+{
+    return m_pInternal->pWriter->put_BrushAlpha2(lAlpha);
+}
+HRESULT CPdfFile::get_BrushTexturePath(std::wstring* wsPath)
+{
+    return m_pInternal->pWriter->get_BrushTexturePath(wsPath);
+}
+HRESULT CPdfFile::put_BrushTexturePath(const std::wstring& wsPath)
+{
+    return m_pInternal->pWriter->put_BrushTexturePath(wsPath);
+}
+HRESULT CPdfFile::get_BrushTextureMode(LONG* lMode)
+{
+    return m_pInternal->pWriter->get_BrushTextureMode(lMode);
+}
+HRESULT CPdfFile::put_BrushTextureMode(const LONG& lMode)
+{
+    return m_pInternal->pWriter->put_BrushTextureMode(lMode);
+}
+HRESULT CPdfFile::get_BrushTextureAlpha(LONG* lAlpha)
+{
+    return m_pInternal->pWriter->get_BrushTextureAlpha(lAlpha);
+}
+HRESULT CPdfFile::put_BrushTextureAlpha(const LONG& lAlpha)
+{
+    return m_pInternal->pWriter->put_BrushTextureAlpha(lAlpha);
+}
+HRESULT CPdfFile::get_BrushLinearAngle(double* dAngle)
+{
+    return m_pInternal->pWriter->get_BrushLinearAngle(dAngle);
+}
+HRESULT CPdfFile::put_BrushLinearAngle(const double& dAngle)
+{
+    return m_pInternal->pWriter->put_BrushLinearAngle(dAngle);
+}
+HRESULT CPdfFile::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+{
+    return m_pInternal->pWriter->BrushRect(nVal, dLeft, dTop, dWidth, dHeight);
+}
+HRESULT CPdfFile::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+{
+    return m_pInternal->pWriter->BrushBounds(dLeft, dTop, dWidth, dHeight);
+}
+HRESULT CPdfFile::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
+{
+    return m_pInternal->pWriter->put_BrushGradientColors(pColors, pPositions, lCount);
+}
+HRESULT CPdfFile::get_FontName(std::wstring* wsName)
+{
+    return m_pInternal->pWriter->get_FontName(wsName);
+}
+HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
+{
+    return m_pInternal->pWriter->put_FontName(wsName);
+}
+HRESULT CPdfFile::get_FontPath(std::wstring* wsPath)
+{
+    return m_pInternal->pWriter->get_FontPath(wsPath);
+}
+HRESULT CPdfFile::put_FontPath(const std::wstring& wsPath)
+{
+    return m_pInternal->pWriter->put_FontPath(wsPath);
+}
+HRESULT CPdfFile::get_FontSize(double* dSize)
+{
+    return m_pInternal->pWriter->get_FontSize(dSize);
+}
+HRESULT CPdfFile::put_FontSize(const double& dSize)
+{
+    return m_pInternal->pWriter->put_FontSize(dSize);
+}
+HRESULT CPdfFile::get_FontStyle(LONG* lStyle)
+{
+    return m_pInternal->pWriter->get_FontStyle(lStyle);
+}
+HRESULT CPdfFile::put_FontStyle(const LONG& lStyle)
+{
+    return m_pInternal->pWriter->put_FontStyle(lStyle);
+}
+HRESULT CPdfFile::get_FontStringGID(INT* bGid)
+{
+    return m_pInternal->pWriter->get_FontStringGID(bGid);
+}
+HRESULT CPdfFile::put_FontStringGID(const INT& bGid)
+{
+    return m_pInternal->pWriter->put_FontStringGID(bGid);
+}
+HRESULT CPdfFile::get_FontCharSpace(double* dSpace)
+{
+    return m_pInternal->pWriter->get_FontCharSpace(dSpace);
+}
+HRESULT CPdfFile::put_FontCharSpace(const double& dSpace)
+{
+    return m_pInternal->pWriter->put_FontCharSpace(dSpace);
+}
+HRESULT CPdfFile::get_FontFaceIndex(int* lFaceIndex)
+{
+    return m_pInternal->pWriter->get_FontFaceIndex(lFaceIndex);
+}
+HRESULT CPdfFile::put_FontFaceIndex(const int& lFaceIndex)
+{
+    return m_pInternal->pWriter->put_FontFaceIndex(lFaceIndex);
+}
+HRESULT CPdfFile::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->CommandDrawTextCHAR(lUnicode, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->CommandDrawTextExCHAR(lUnicode, lGid, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->CommandDrawText(wsUnicodeText, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->CommandDrawTextEx(wsUnicodeText, pGids, nGidsCount, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::CommandDrawTextCHAR2(unsigned int* unUnicode, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->CommandDrawTextCHAR2(unUnicode, unUnicodeCount, unGid, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::BeginCommand(const DWORD& lType)
+{
+    return m_pInternal->pWriter->BeginCommand(lType);
+}
+HRESULT CPdfFile::EndCommand(const DWORD& lType)
+{
+    return m_pInternal->pWriter->EndCommand(lType);
+}
+HRESULT CPdfFile::PathCommandMoveTo(const double& dX, const double& dY)
+{
+    return m_pInternal->pWriter->PathCommandMoveTo(dX, dY);
+}
+HRESULT CPdfFile::PathCommandLineTo(const double& dX, const double& dY)
+{
+    return m_pInternal->pWriter->PathCommandLineTo(dX, dY);
+}
+HRESULT CPdfFile::PathCommandLinesTo(double* pPoints, const int& nCount)
+{
+    return m_pInternal->pWriter->PathCommandLinesTo(pPoints, nCount);
+}
+HRESULT CPdfFile::PathCommandCurveTo(const double& dX1, const double& dY1, const double& dX2, const double& dY2, const double& dXe, const double& dYe)
+{
+    return m_pInternal->pWriter->PathCommandCurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
+}
+HRESULT CPdfFile::PathCommandCurvesTo(double* pPoints, const int& nCount)
+{
+    return m_pInternal->pWriter->PathCommandCurvesTo(pPoints, nCount);
+}
+HRESULT CPdfFile::PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle)
+{
+    return m_pInternal->pWriter->PathCommandArcTo(dX, dY, dW, dH, dStartAngle, dSweepAngle);
+}
+HRESULT CPdfFile::PathCommandClose()
+{
+    return m_pInternal->pWriter->PathCommandClose();
+}
+HRESULT CPdfFile::PathCommandEnd()
+{
+    return m_pInternal->pWriter->PathCommandEnd();
+}
+HRESULT CPdfFile::DrawPath(const LONG& lType)
+{
+    return m_pInternal->pWriter->DrawPath(lType);
+}
+HRESULT CPdfFile::PathCommandStart()
+{
+    return m_pInternal->pWriter->PathCommandStart();
+}
+HRESULT CPdfFile::PathCommandGetCurrentPoint(double* dX, double* dY)
+{
+    return m_pInternal->pWriter->PathCommandGetCurrentPoint(dX, dY);
+}
+HRESULT CPdfFile::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->PathCommandTextCHAR(lUnicode, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->PathCommandTextExCHAR(lUnicode, lGid, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->PathCommandText(wsUnicodeText, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::PathCommandTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->PathCommandTextEx(wsUnicodeText, pGids, nGidsCount, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->DrawImage(pImage, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::DrawImageFromFile(const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
+{
+    return m_pInternal->pWriter->DrawImageFromFile(wsImagePath, dX, dY, dW, dH, nAlpha);
+}
+HRESULT CPdfFile::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
+{
+    return m_pInternal->pWriter->SetTransform(dM11, dM12, dM21, dM22, dX, dY);
+}
+HRESULT CPdfFile::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY)
+{
+    return m_pInternal->pWriter->GetTransform(dM11, dM12, dM21, dM22, dX, dY);
+}
+HRESULT CPdfFile::ResetTransform()
+{
+    return m_pInternal->pWriter->ResetTransform();
+}
+HRESULT CPdfFile::get_ClipMode(LONG* lMode)
+{
+    return m_pInternal->pWriter->get_ClipMode(lMode);
+}
+HRESULT CPdfFile::put_ClipMode(const LONG& lMode)
+{
+    return m_pInternal->pWriter->put_ClipMode(lMode);
+}
+HRESULT CPdfFile::CommandLong(const LONG& lType, const LONG& lCommand)
+{
+    return m_pInternal->pWriter->CommandLong(lType, lCommand);
+}
+HRESULT CPdfFile::CommandDouble(const LONG& lType, const double& dCommand)
+{
+    return m_pInternal->pWriter->CommandDouble(lType, dCommand);
+}
+HRESULT CPdfFile::CommandString(const LONG& lType, const std::wstring& sCommand)
+{
+    return m_pInternal->pWriter->CommandString(lType, sCommand);
+}
+HRESULT CPdfFile::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
+{
+    return m_pInternal->pWriter->AddHyperlink(dX, dY, dW, dH, wsUrl, wsTooltip);
+}
+HRESULT CPdfFile::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage)
+{
+    return m_pInternal->pWriter->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
+}
+HRESULT CPdfFile::AddFormField(const CFormFieldInfo& oInfo)
+{
+    return m_pInternal->pWriter->AddFormField(oInfo);
 }

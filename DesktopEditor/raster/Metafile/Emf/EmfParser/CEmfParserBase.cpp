@@ -832,12 +832,12 @@ namespace MetaFile
 		m_pInterpretator = pEmfInterpretatorArray;
 	}
 
-	void CEmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth, unsigned int unHeight)
+	void CEmfParserBase::SetInterpretator(InterpretatorType oInterpretatorType, double dWidth, double dHeight)
 	{
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CEmfInterpretatorSvg(this, unWidth, unHeight);
+			m_pInterpretator = new CEmfInterpretatorSvg(this, dWidth, dHeight);
 	}
 
 	CEmfInterpretatorBase* CEmfParserBase::GetInterpretator()

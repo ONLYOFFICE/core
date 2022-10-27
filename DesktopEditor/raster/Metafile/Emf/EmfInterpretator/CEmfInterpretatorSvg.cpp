@@ -8,10 +8,10 @@
 
 namespace MetaFile
 {               
-	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, unsigned int unWidth, unsigned int unHeight)
+	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, double dWidth, double dHeight)
 	    : m_pParser(pParser), m_pSecondParser(NULL), m_unNumberDefs(0), m_oScale(1, 1)
 	{
-		SetSize(unWidth, unHeight);
+		SetSize(dWidth, dHeight);
 	}
 
 	CEmfInterpretatorSvg::~CEmfInterpretatorSvg()
@@ -39,24 +39,24 @@ namespace MetaFile
 		return InterpretatorType::Svg;
 	}
 
-	void CEmfInterpretatorSvg::SetSize(unsigned int unWidth, unsigned int unHeight)
+	void CEmfInterpretatorSvg::SetSize(double dWidth, double dHeight)
 	{
-		m_oSizeWindow.cx = unWidth;
-		m_oSizeWindow.cy = unHeight;
+		m_oSizeWindow.x = dWidth;
+		m_oSizeWindow.y = dHeight;
 	}
 
-	void CEmfInterpretatorSvg::GetSize(unsigned int &unWidth, unsigned int &unHeight)
+	void CEmfInterpretatorSvg::GetSize(double &dWidth, double &dHeight)
 	{
-		unWidth  = m_oSizeWindow.cx;
-		unHeight = m_oSizeWindow.cy;
+		dWidth  = m_oSizeWindow.x;
+		dHeight = m_oSizeWindow.y;
 	}
 
 	void CEmfInterpretatorSvg::UpdateSize()
 	{
-		if (0 != m_oSizeWindow.cx && 0 == m_oSizeWindow.cy)
-			m_oSizeWindow.cy = m_oSizeWindow.cx * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
-		else if (0 == m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
-			m_oSizeWindow.cx = m_oSizeWindow.cy * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
+		if (0 != m_oSizeWindow.x && 0 == m_oSizeWindow.y)
+			m_oSizeWindow.y = m_oSizeWindow.x * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
+		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y)
+			m_oSizeWindow.x = m_oSizeWindow.y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_HEADER(const TEmfHeader &oTEmfHeader)
@@ -83,18 +83,18 @@ namespace MetaFile
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
-		if (0 != m_oSizeWindow.cx)
+		if (0 != m_oSizeWindow.x)
 		{
-			dXScale = m_oSizeWindow.cx / m_oViewport.GetWidth();
+			dXScale = m_oSizeWindow.x / m_oViewport.GetWidth();
 			dXTranslate = m_oViewport.GetWidth() / 2 * std::abs(dXScale - 1);
 
 			if (dXScale < 1)
 				dXTranslate = -dXTranslate;
 		}
 
-		if (0 != m_oSizeWindow.cy)
+		if (0 != m_oSizeWindow.y)
 		{
-			dYScale = m_oSizeWindow.cy / m_oViewport.GetHeight();
+			dYScale = m_oSizeWindow.y / m_oViewport.GetHeight();
 			dYTranslate = m_oViewport.GetHeight() / 2 * std::abs(dYScale - 1);
 
 			if (dYScale < 1)
@@ -1478,6 +1478,39 @@ namespace MetaFile
 		return m_oXmlWriter.GetXmlString();
 	}
 
+	void CEmfInterpretatorSvg::IncludeSvg(const std::wstring &wsSvg, const TRectD& oRect, const TRectD& oClipRect, const TPointD& oTranslate)
+	{
+		if (wsSvg.empty())
+			return;
+
+		m_oXmlWriter.WriteNodeBegin(L"g", true);
+
+		if (0 != oTranslate.x || 0 != oTranslate.y)
+			m_oXmlWriter.WriteAttribute(L"transform", L"translate(" + ConvertToWString(oTranslate.x) + L',' + ConvertToWString(oTranslate.y) + L')');
+
+		m_oXmlWriter.WriteNodeEnd(L"g", true, false);
+
+		std::wstring wsNewSvg = wsSvg;
+
+		size_t unFirstPos = 83;
+		size_t unSecondPos = wsSvg.find(L'>', unFirstPos);
+
+		if (std::wstring::npos == unSecondPos)
+			return;
+
+		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
+
+		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
+		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
+		                      L"viewBox=\"" + ConvertToWString(oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dTop) + L' ' + ConvertToWString(oClipRect.dRight - oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dBottom - oClipRect.dTop) + L'\"';
+
+		wsNewSvg.insert(unFirstPos, wsClip);
+
+		m_oXmlWriter.WriteString(wsNewSvg);
+
+		m_oXmlWriter.WriteNodeEnd(L"g");
+	}
+
 	void CEmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
 	{
 		m_oXmlWriter.WriteNodeBegin(wsNodeName, true);
@@ -1607,7 +1640,7 @@ namespace MetaFile
 
 			if (0 != pFont->GetEscapement())
 			{
-				double dEscapement = pFont->GetEscapement() / -10;
+				double dEscapement = pFont->GetEscapement() / 10;
 
 				if (m_pParser->IsWindowFlippedY())
 					dEscapement = -dEscapement;

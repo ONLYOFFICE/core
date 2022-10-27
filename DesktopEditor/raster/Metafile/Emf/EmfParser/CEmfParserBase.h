@@ -87,7 +87,7 @@ namespace MetaFile
 		virtual void    SetInterpretator(IOutputDevice* pOutput);
 		void            SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		void            SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
-		void            SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		void            SetInterpretator(InterpretatorType oInterpretatorType, double dWidth = 0, double dHeight = 0);
 
 		CEmfInterpretatorBase* GetInterpretator();
 

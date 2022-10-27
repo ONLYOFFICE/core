@@ -11,7 +11,7 @@ namespace MetaFile
 	class CEmfInterpretatorSvg : public CEmfInterpretatorBase
 	{
 	public:
-		CEmfInterpretatorSvg(CEmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		CEmfInterpretatorSvg(CEmfParserBase* pParser = NULL, double dWidth = 0, double dHeight = 0);
 		virtual ~CEmfInterpretatorSvg();
 
 		void CreateConditional(IMetaFileBase*) override;
@@ -19,8 +19,8 @@ namespace MetaFile
 
 		InterpretatorType   GetType() const override;
 
-		void SetSize(unsigned int unWidth, unsigned int unHeight);
-		void GetSize(unsigned int& unWidth, unsigned int& unHeight);
+		void SetSize(double dWidth, double dHeight);
+		void GetSize(double &dWidth, double &dHeight);
 		void UpdateSize();
 
 		void HANDLE_EMR_HEADER(const TEmfHeader& oTEmfHeader) override ;
@@ -195,7 +195,7 @@ namespace MetaFile
 		CEmfParserBase			*m_pSecondParser;
 
 		TSvgViewport            m_oViewport;
-		TEmfSizeL               m_oSizeWindow;
+		TEmfPointD              m_oSizeWindow;
 
 		unsigned int			m_unNumberDefs;
 		std::wstring			m_wsDefs;
@@ -235,6 +235,7 @@ namespace MetaFile
 		XmlUtils::CXmlWriter* GetXmlWriter();
 
 		std::wstring GetFile();
+		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, const TPointD& oTranslate);
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale);

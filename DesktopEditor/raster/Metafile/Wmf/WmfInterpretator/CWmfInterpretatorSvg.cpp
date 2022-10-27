@@ -775,6 +775,39 @@ namespace MetaFile
 		return m_oXmlWriter.GetXmlString();
 	}
 
+	void CWmfInterpretatorSvg::IncludeSvg(const std::wstring &wsSvg, const TRectD &oRect, const TRectD &oClipRect, const TPointD &oTranslate)
+	{
+		if (wsSvg.empty())
+			return;
+
+		m_oXmlWriter.WriteNodeBegin(L"g", true);
+
+		if (0 != oTranslate.x || 0 != oTranslate.y)
+			m_oXmlWriter.WriteAttribute(L"transform", L"translate(" + ConvertToWString(oTranslate.x) + L',' + ConvertToWString(oTranslate.y) + L')');
+
+		m_oXmlWriter.WriteNodeEnd(L"g", true, false);
+
+		std::wstring wsNewSvg = wsSvg;
+
+		size_t unFirstPos = 83;
+		size_t unSecondPos = wsSvg.find(L'>', unFirstPos);
+
+		if (std::wstring::npos == unSecondPos)
+			return;
+
+		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
+
+		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
+		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
+		                      L"viewBox=\"" + ConvertToWString(oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dTop) + L' ' + ConvertToWString(oClipRect.dRight - oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dBottom - oClipRect.dTop) + L'\"';
+
+		wsNewSvg.insert(unFirstPos, wsClip);
+
+		m_oXmlWriter.WriteString(wsNewSvg);
+
+		m_oXmlWriter.WriteNodeEnd(L"g");
+	}
+
 	void CWmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
 	{
 		m_oXmlWriter.WriteNodeBegin(wsNodeName, true);

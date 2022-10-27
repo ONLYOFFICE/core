@@ -1483,11 +1483,11 @@ namespace MetaFile
 					}
 					else if (NULL != m_pInterpretator && InterpretatorType::Svg == m_pInterpretator->GetType())
 					{
-						unsigned int unWidth, unHeight;
+						double dWidth, dHeight;
 
-						((CEmfInterpretatorSvg*)m_pInterpretator)->GetSize(unWidth, unHeight);
+						((CEmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
 
-						((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, unWidth, unHeight);
+						((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
 
 						oWmfParser.PlayFile();
 

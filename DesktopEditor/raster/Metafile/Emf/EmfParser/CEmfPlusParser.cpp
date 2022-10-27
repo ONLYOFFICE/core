@@ -70,9 +70,12 @@
 
 #include "CEmfParser.h"
 #include "../../Wmf/WmfFile.h"
+#include "../../Wmf/WmfInterpretator/CWmfInterpretatorSvg.h""
+
 #include "../EmfInterpretator/CEmfInterpretator.h"
+#include "../EmfInterpretator/CEmfInterpretatorSvg.h"
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
-#include "../EmfInterpretator/CEmfInterpretatorRender.h"
+#include "../EmfInterpretator/CEmfInterpretatorRender.h""
 
 #ifdef METAFILE_SUPPORT_WMF_EMF_XML
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
@@ -1464,7 +1467,7 @@ namespace MetaFile
 			oEmfParser.SetFontManager(GetFontManager());
 			oEmfParser.Scan();
 
-			if (!oEmfParser.CheckError())
+			if (!oEmfParser.CheckError() && InterpretatorType::Render == m_pInterpretator->GetType())
 			{
 				NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
@@ -1535,6 +1538,27 @@ namespace MetaFile
 				RELEASEINTERFACE(pGrRenderer);
 				RELEASEARRAYOBJECTS(pNewBuffer);
 			}
+			else if (!oEmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
+			{
+				((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg);
+
+				oEmfParser.PlayFile();
+
+				TXForm *pXForm = m_pDC->GetFinalTransform(GM_ADVANCED);
+
+				TRectD oRect;
+
+				oRect.dLeft   = arPoints[0].X;
+				oRect.dTop    = arPoints[0].Y;
+				oRect.dRight  = arPoints[1].X;
+				oRect.dBottom = arPoints[2].Y;
+
+				pXForm->Apply(oRect.dLeft,  oRect.dTop);
+				pXForm->Apply(oRect.dRight, oRect.dBottom);
+
+				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oSrcRect.GetRectD(), TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
+			}
+
 		}
 		else if (MetafileDataTypeWmf == eMetafileType ||
 				 MetafileDataTypeWmfPlaceable ==  eMetafileType)
@@ -1544,7 +1568,7 @@ namespace MetaFile
 			oWmfParser.SetFontManager(GetFontManager());
 			oWmfParser.Scan();
 
-			if (!oWmfParser.CheckError())
+			if (!oWmfParser.CheckError() && InterpretatorType::Render == m_pInterpretator->GetType())
 			{
 				NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 				pGrRenderer->SetFontManager(GetFontManager());
@@ -1612,6 +1636,26 @@ namespace MetaFile
 
 				RELEASEINTERFACE(pGrRenderer);
 				RELEASEARRAYOBJECTS(pNewBuffer);
+			}
+			else if (!oWmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
+			{
+				((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg);
+
+				oWmfParser.PlayFile();
+
+				TXForm *pXForm = m_pDC->GetFinalTransform(GM_ADVANCED);
+
+				TRectD oRect;
+
+				oRect.dLeft   = arPoints[0].X;
+				oRect.dTop    = arPoints[0].Y;
+				oRect.dRight  = arPoints[1].X;
+				oRect.dBottom = arPoints[2].Y;
+
+				pXForm->Apply(oRect.dLeft,  oRect.dTop);
+				pXForm->Apply(oRect.dRight, oRect.dBottom);
+
+				((CWmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetFile(), oRect, oSrcRect.GetRectD(), TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
 			}
 		}
 		//TODO: общую часть в идеале нужно вынести

@@ -150,6 +150,7 @@ namespace MetaFile
 		XmlUtils::CXmlWriter* GetXmlWriter();
 
 		std::wstring GetFile();
+		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, const TPointD& oTranslate);
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TWmfRect& oBounds = TWmfRect());

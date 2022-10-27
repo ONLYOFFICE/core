@@ -262,7 +262,7 @@ core_ios {
         CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
     } else {
 
-        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
+        QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
         CONFIG += core_ios_main_arch
 
         QMAKE_CFLAGS += -fembed-bitcode

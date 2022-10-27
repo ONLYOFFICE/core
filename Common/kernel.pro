@@ -25,6 +25,8 @@ include(../OfficeUtils/OfficeUtils.pri)
 CONFIG += core_static_link_xml_full
 include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
+include(../Common/cfcpp/cfcpp.pri)
+
 ADD_DEPENDENCY(UnicodeConverter)
 
 # CONFIG

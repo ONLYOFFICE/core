@@ -420,7 +420,7 @@ public:
 			return S_FALSE;
 
 		if (value)
-			m_pValue->SetProperty(name, ((CONLYOFFICEDocBuilderValue*)(value))->m_pValue);
+			m_pValue->SetProperty(name, *(((CONLYOFFICEDocBuilderValue*)(value))->m_pValue));
 		return S_OK;
 	}
 	STDMETHOD(Set)(long index, IONLYOFFICEDocBuilderValue* value)
@@ -429,7 +429,7 @@ public:
 			return S_FALSE;
 
 		if (value)
-			m_pValue->Set(index, ((CONLYOFFICEDocBuilderValue*)(value))->m_pValue);
+			m_pValue->Set(index, *(((CONLYOFFICEDocBuilderValue*)(value))->m_pValue));
 		return S_OK;
 	}
 
@@ -495,42 +495,42 @@ public:
 				break;
 			case 1:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue));
 				break;
 			case 2:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue));
 				break;
 			case 3:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue));
 				break;
 			case 4:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue));
 				break;
 			case 5:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue));
 				break;
 			case 6:
 				*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p6))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p6))->m_pValue));
 				break;
 			default:
 				break;
@@ -545,42 +545,42 @@ public:
 				break;
 			case 1:
 				m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue));
 				break;
 			case 2:
 				m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue));
 				break;
 			case 3:
 				m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue));
 				break;
 			case 4:
 				m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue));
 				break;
 			case 5:
 				m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue));
 				break;
 			case 6:
 				m_pValue->Call(name,
-					((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue,
-					((CONLYOFFICEDocBuilderValue*)(p6))->m_pValue);
+					*(((CONLYOFFICEDocBuilderValue*)(p1))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p2))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p3))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p4))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p5))->m_pValue),
+					*(((CONLYOFFICEDocBuilderValue*)(p6))->m_pValue));
 				break;
 			default:
 				break;

@@ -29,9 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "compoundfile.h"
-#include "cfstorage.h"
-#include "header.h"
+#include "compoundfile_impl.h"
 #include "directoryentry.h"
 #include "cfexception.h"
 #include "streamview.h"
@@ -42,14 +40,79 @@
 
 #include "sector.h"
 
-
+//--------------------------------------------------------------------------------
 using namespace CFCPP;
 
-CompoundFile::CompoundFile() :
-    CompoundFile(CFSVersion::Ver_3, CFSConfiguration::Default)
+CompoundFile::CompoundFile() : _impl(new CFCPP::CompoundFile_impl())
+{
+}
+CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters) :
+    _impl(new CFCPP::CompoundFile_impl(fileName, updateMode, configParameters))
+{
+}
+CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) :
+    _impl(new CFCPP::CompoundFile_impl(cfsVersion, configFlags))
+{
+}
+CompoundFile::CompoundFile(const std::wstring &fileName) :
+    _impl(new CFCPP::CompoundFile_impl(fileName))
+{
+}
+CompoundFile::CompoundFile(Stream stream) :
+    _impl(new CFCPP::CompoundFile_impl(stream))
+{
+}
+std::shared_ptr<CFStorage> CompoundFile::RootStorage()
+{
+    return _impl->RootStorage();
+}
+void CompoundFile::Save(std::wstring wFileName)
+{
+    _impl->Save(wFileName);
+}
+void CompoundFile::Save(Stream stream)
+{
+    _impl->Save(stream);
+}
+void CompoundFile::Commit(bool releaseMemory)
+{
+    _impl->Commit(releaseMemory);
+}
+bool CompoundFile::HasSourceStream() const
+{
+    return _impl->HasSourceStream();
+}
+bool CompoundFile::ValidationExceptionEnabled() const
+{
+    return _impl->ValidationExceptionEnabled();
+}
+bool CompoundFile::IsClosed()const
+{
+    return _impl->IsClosed();
+}
+void CompoundFile::Close()
+{
+    _impl->Close();
+}
+std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
+{
+    return _impl->GetDataBySID(sid);
+}
+GUID CompoundFile::getGuidBySID(int sid)
+{
+    return _impl->getGuidBySID(sid);
+}
+GUID CompoundFile::getGuidForStream(int sid)
+{
+    return _impl->getGuidForStream(sid);
+}
+//--------------------------------------------------------------------------------
+
+CompoundFile_impl::CompoundFile_impl() :
+    CompoundFile_impl(CFSVersion::Ver_3, CFSConfiguration::Default)
 {}
 
-CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
+CompoundFile_impl::CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
 {
     configuration = configParameters;
     isValidationExceptionEnabled = !(configParameters & CFSConfiguration::NoValidationException);
@@ -63,7 +126,7 @@ CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMod
     FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 }
 
-CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) : header(new Header(cfsVersion))
+CompoundFile_impl::CompoundFile_impl(CFSVersion cfsVersion, CFSConfiguration configFlags) : header(new Header(cfsVersion))
 {
     configuration = configFlags;
 
@@ -72,7 +135,7 @@ CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) 
 
     if (cfsVersion == CFSVersion::Ver_4)
     {
-        Ver3SizeLimitReached action = std::bind(&CompoundFile::OnSizeLimitReached, this);
+        Ver3SizeLimitReached action = std::bind(&CompoundFile_impl::OnSizeLimitReached, this);
         sectors.OnVer3SizeLimitReached += action;
     }
 
@@ -86,7 +149,7 @@ CompoundFile::CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags) 
     rootStorage.reset(new CFStorage(this, rootDir));
 }
 
-CompoundFile::CompoundFile(const std::wstring &fileName)
+CompoundFile_impl::CompoundFile_impl(const std::wstring &fileName)
 {
     sectorRecycle = false;
     updateMode = CFSUpdateMode::ReadOnly;
@@ -98,7 +161,7 @@ CompoundFile::CompoundFile(const std::wstring &fileName)
     FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 }
 
-CompoundFile::CompoundFile(Stream stream)
+CompoundFile_impl::CompoundFile_impl(Stream stream)
 {
     LoadStream(stream);
 
@@ -106,7 +169,7 @@ CompoundFile::CompoundFile(Stream stream)
     FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 }
 
-void CompoundFile::OnSizeLimitReached()
+void CompoundFile_impl::OnSizeLimitReached()
 {
     std::shared_ptr<Sector> rangeLockSector(new Sector(GetSectorSize(), sourceStream));
     sectors.Add(rangeLockSector);
@@ -118,7 +181,7 @@ void CompoundFile::OnSizeLimitReached()
 }
 
 
-void CompoundFile::Commit(bool releaseMemory)
+void CompoundFile_impl::Commit(bool releaseMemory)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot commit data");
@@ -177,27 +240,27 @@ void CompoundFile::Commit(bool releaseMemory)
     sourceStream->flush();
 }
 
-bool CompoundFile::HasSourceStream() const
+bool CompoundFile_impl::HasSourceStream() const
 {
     return sourceStream != nullptr;
 }
 
-bool CompoundFile::ValidationExceptionEnabled() const
+bool CompoundFile_impl::ValidationExceptionEnabled() const
 {
     return isValidationExceptionEnabled;
 }
 
-void CompoundFile::Close()
+void CompoundFile_impl::Close()
 {
     Close(true);
 }
 
-std::shared_ptr<RedBlackTree::RBTree> CompoundFile::CreateNewTree()
+std::shared_ptr<RedBlackTree::RBTree> CompoundFile_impl::CreateNewTree()
 {
     return std::shared_ptr<RedBlackTree::RBTree>(new RedBlackTree::RBTree);
 }
 
-std::shared_ptr<RedBlackTree::RBTree> CompoundFile::GetChildrenTree(int sid)
+std::shared_ptr<RedBlackTree::RBTree> CompoundFile_impl::GetChildrenTree(int sid)
 {
     std::shared_ptr<RedBlackTree::RBTree> bst(new RedBlackTree::RBTree());
 
@@ -206,12 +269,12 @@ std::shared_ptr<RedBlackTree::RBTree> CompoundFile::GetChildrenTree(int sid)
     return bst;
 }
 
-bool CompoundFile::IsClosed() const
+bool CompoundFile_impl::IsClosed() const
 {
     return isDisposed;
 }
 
-void CompoundFile::Load(Stream stream)
+void CompoundFile_impl::Load(Stream stream)
 {
     try
     {
@@ -250,7 +313,7 @@ void CompoundFile::Load(Stream stream)
     }
 }
 
-void CompoundFile::Save(std::wstring wFileName)
+void CompoundFile_impl::Save(std::wstring wFileName)
 {
     if (isDisposed)
         throw CFException("Compound File closed: cannot save data");
@@ -281,7 +344,7 @@ void CompoundFile::Save(std::wstring wFileName)
 }
 
 
-void CompoundFile::Save(Stream stream)
+void CompoundFile_impl::Save(Stream stream)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot save data");
@@ -322,7 +385,7 @@ void CompoundFile::Save(Stream stream)
     }
 }
 
-SVector<Sector> CompoundFile::GetFatSectorChain()
+SVector<Sector> CompoundFile_impl::GetFatSectorChain()
 {
     int N_HEADER_FAT_ENTRY = 109;
 
@@ -410,7 +473,7 @@ SVector<Sector> CompoundFile::GetFatSectorChain()
     return result;
 }
 
-SVector<Sector> CompoundFile::GetDifatSectorChain()
+SVector<Sector> CompoundFile_impl::GetDifatSectorChain()
 {
     int validationCount = 0;
 
@@ -470,7 +533,7 @@ SVector<Sector> CompoundFile::GetDifatSectorChain()
     return result;
 }
 
-SVector<Sector> CompoundFile::GetNormalSectorChain(int sectorID)
+SVector<Sector> CompoundFile_impl::GetNormalSectorChain(int sectorID)
 {
     SVector<Sector> result;
 
@@ -515,7 +578,7 @@ SVector<Sector> CompoundFile::GetNormalSectorChain(int sectorID)
     return result;
 }
 
-SVector<Sector> CompoundFile::GetMiniSectorChain(int sectorID)
+SVector<Sector> CompoundFile_impl::GetMiniSectorChain(int sectorID)
 {
     SVector<Sector> result;
 
@@ -561,7 +624,7 @@ SVector<Sector> CompoundFile::GetMiniSectorChain(int sectorID)
     return result;
 }
 
-SVector<Sector> CompoundFile::GetSectorChain(int sectorID, SectorType chainType)
+SVector<Sector> CompoundFile_impl::GetSectorChain(int sectorID, SectorType chainType)
 {
     switch (chainType)
     {
@@ -582,7 +645,7 @@ SVector<Sector> CompoundFile::GetSectorChain(int sectorID, SectorType chainType)
     }
 }
 
-void CompoundFile::EnsureUniqueSectorIndex(int nextSectorID, std::unordered_set<int>& processedSectors)
+void CompoundFile_impl::EnsureUniqueSectorIndex(int nextSectorID, std::unordered_set<int>& processedSectors)
 {
     if (processedSectors.find(nextSectorID) != processedSectors.end() && this->isValidationExceptionEnabled)
     {
@@ -592,7 +655,7 @@ void CompoundFile::EnsureUniqueSectorIndex(int nextSectorID, std::unordered_set<
     processedSectors.insert(nextSectorID);
 }
 
-void CompoundFile::CommitDirectory()
+void CompoundFile_impl::CommitDirectory()
 {
     const int DIRECTORY_SIZE = 128;
 
@@ -644,25 +707,25 @@ void CompoundFile::CommitDirectory()
     }
 }
 
-void CompoundFile::Close(bool closeStream)
+void CompoundFile_impl::Close(bool closeStream)
 {
     this->closeStream = closeStream;
     Dispose(closeStream);
 }
 
-std::shared_ptr<IDirectoryEntry> CompoundFile::RootEntry()
+std::shared_ptr<IDirectoryEntry> CompoundFile_impl::RootEntry()
 {
     if (directoryEntries.empty())
         return {};
     return directoryEntries[0];
 }
 
-std::shared_ptr<CFStorage> CompoundFile::RootStorage()
+std::shared_ptr<CFStorage> CompoundFile_impl::RootStorage()
 {
     return rootStorage;
 }
 
-SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryName)
+SVector<IDirectoryEntry> CompoundFile_impl::FindDirectoryEntries(std::wstring entryName)
 {
     SVector<IDirectoryEntry> result;
 
@@ -675,7 +738,7 @@ SVector<IDirectoryEntry> CompoundFile::FindDirectoryEntries(std::wstring entryNa
     return result;
 }
 
-std::shared_ptr<RedBlackTree::RBTree> CompoundFile::DoLoadChildrenTrusted(std::shared_ptr<IDirectoryEntry> de)
+std::shared_ptr<RedBlackTree::RBTree> CompoundFile_impl::DoLoadChildrenTrusted(std::shared_ptr<IDirectoryEntry> de)
 {
     std::shared_ptr<RedBlackTree::RBTree> bst;
 
@@ -687,7 +750,7 @@ std::shared_ptr<RedBlackTree::RBTree> CompoundFile::DoLoadChildrenTrusted(std::s
     return bst;
 }
 
-void CompoundFile::DoLoadChildren(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
+void CompoundFile_impl::DoLoadChildren(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
 {
     if (de->getChild() != DirectoryEntry::NOSTREAM)
     {
@@ -699,14 +762,14 @@ void CompoundFile::DoLoadChildren(std::shared_ptr<RedBlackTree::RBTree> bst, std
     }
 }
 
-void CompoundFile::NullifyChildNodes(std::shared_ptr<IDirectoryEntry> de)
+void CompoundFile_impl::NullifyChildNodes(std::shared_ptr<IDirectoryEntry> de)
 {
     de->setParent({});
     de->setLeft({});
     de->setRight({});
 }
 
-void CompoundFile::LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
+void CompoundFile_impl::LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
 {
     levelSIDs.clear();
 
@@ -722,7 +785,7 @@ void CompoundFile::LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::
     }
 }
 
-void CompoundFile::DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
+void CompoundFile_impl::DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de)
 {
     if (ValidateSibling(de->getLeftSibling()))
     {
@@ -740,7 +803,7 @@ void CompoundFile::DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std
     bst->Insert(de);
 }
 
-bool CompoundFile::ValidateSibling(int sid)
+bool CompoundFile_impl::ValidateSibling(int sid)
 {
     if (sid != DirectoryEntry::NOSTREAM)
     {
@@ -785,7 +848,7 @@ bool CompoundFile::ValidateSibling(int sid)
     return false;
 }
 
-void CompoundFile::LoadDirectories()
+void CompoundFile_impl::LoadDirectories()
 {
     SVector<Sector> directoryChain
             = GetSectorChain(header->firstDirectorySectorID, SectorType::Normal);
@@ -808,12 +871,12 @@ void CompoundFile::LoadDirectories()
     }
 }
 
-void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, bool zeroSector)
+void CompoundFile_impl::FreeMiniChain(SVector<Sector> &sectorChain, bool zeroSector)
 {
     FreeMiniChain(sectorChain,0, zeroSector);
 }
 
-void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
+void CompoundFile_impl::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
 {
     std::vector<char> ZEROED_MINI_SECTOR(Sector::MINISECTOR_SIZE, 0);
 
@@ -869,7 +932,7 @@ void CompoundFile::FreeMiniChain(SVector<Sector> &sectorChain, int nth_sector_to
     }
 }
 
-void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
+void CompoundFile_impl::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_remove, bool zeroSector)
 {
     SVector<Sector> FAT = GetSectorChain(-1, SectorType::FAT);
 
@@ -901,12 +964,12 @@ void CompoundFile::FreeChain(SVector<Sector> &sectorChain, int nth_sector_to_rem
     }
 }
 
-void CompoundFile::FreeChain(SVector<Sector> &sectorChain, bool zeroSector)
+void CompoundFile_impl::FreeChain(SVector<Sector> &sectorChain, bool zeroSector)
 {
     FreeChain(sectorChain, 0, zeroSector);
 }
 
-void CompoundFile::AllocateSectorChain(SVector<Sector> &sectorChain)
+void CompoundFile_impl::AllocateSectorChain(SVector<Sector> &sectorChain)
 {
     for (auto& sector : *sectorChain)
     {
@@ -920,7 +983,7 @@ void CompoundFile::AllocateSectorChain(SVector<Sector> &sectorChain)
     AllocateFATSectorChain(sectorChain);
 }
 
-void CompoundFile::AllocateFATSectorChain(SVector<Sector> &sectorChain)
+void CompoundFile_impl::AllocateFATSectorChain(SVector<Sector> &sectorChain)
 {
     SVector<Sector> fatSectors = GetSectorChain(-1, SectorType::FAT);
 
@@ -952,7 +1015,7 @@ void CompoundFile::AllocateFATSectorChain(SVector<Sector> &sectorChain)
     AllocateDIFATSectorChain(fatStream.BaseSectorChain());
 }
 
-void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
+void CompoundFile_impl::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
 {
     header->fatSectorsNumber = FATsectorChain.size();
 
@@ -1084,7 +1147,7 @@ void CompoundFile::AllocateDIFATSectorChain(SVector<Sector> &FATsectorChain)
     header->fatSectorsNumber = fatSv.BaseSectorChain().size();
 }
 
-void CompoundFile::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
+void CompoundFile_impl::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
 {
     SVector<Sector> miniFAT
             = GetSectorChain(header->firstMiniFATSectorID, SectorType::Normal);
@@ -1146,7 +1209,7 @@ void CompoundFile::AllocateMiniSectorChain(SVector<Sector> &sectorChain)
     }
 }
 
-void CompoundFile::PersistMiniStreamToStream(const SVector<Sector> &miniSectorChain)
+void CompoundFile_impl::PersistMiniStreamToStream(const SVector<Sector> &miniSectorChain)
 {
     SVector<Sector> miniStream = GetSectorChain(RootEntry()->getStartSetc(), SectorType::Normal);
 
@@ -1169,12 +1232,12 @@ void CompoundFile::PersistMiniStreamToStream(const SVector<Sector> &miniSectorCh
     }
 }
 
-int CompoundFile::LowSaturation(int x)
+int CompoundFile_impl::LowSaturation(int x)
 {
     return x > 0 ? x : 0;
 }
 
-void CompoundFile::SetSectorChain(SVector<Sector> sectorChain)
+void CompoundFile_impl::SetSectorChain(SVector<Sector> sectorChain)
 {
     if (sectorChain != nullptr && sectorChain.size() == 0)
         return;
@@ -1191,17 +1254,17 @@ void CompoundFile::SetSectorChain(SVector<Sector> sectorChain)
     }
 }
 
-CFSVersion CompoundFile::getVersion() const
+CFSVersion CompoundFile_impl::getVersion() const
 {
     return (CFSVersion)header->majorVersion;
 }
 
-SVector<IDirectoryEntry> &CompoundFile::GetDirectories()
+SVector<IDirectoryEntry> &CompoundFile_impl::GetDirectories()
 {
     return directoryEntries;
 }
 
-void CompoundFile::ResetDirectoryEntry(int sid)
+void CompoundFile_impl::ResetDirectoryEntry(int sid)
 {
     directoryEntries[sid]->SetEntryName(L"");
     directoryEntries[sid]->setLeft({});
@@ -1217,7 +1280,7 @@ void CompoundFile::ResetDirectoryEntry(int sid)
     directoryEntries[sid]->setModifyDate(0);
 }
 
-void CompoundFile::InvalidateDirectoryEntry(int sid)
+void CompoundFile_impl::InvalidateDirectoryEntry(int sid)
 {
     if (sid >= (int)directoryEntries.size())
         throw CFException("Invalid SID of the directory entry to remove");
@@ -1225,7 +1288,7 @@ void CompoundFile::InvalidateDirectoryEntry(int sid)
     ResetDirectoryEntry(sid);
 }
 
-void CompoundFile::FreeAssociatedData(int sid)
+void CompoundFile_impl::FreeAssociatedData(int sid)
 {
     if (directoryEntries[sid]->getSize() > 0)
     {
@@ -1244,7 +1307,7 @@ void CompoundFile::FreeAssociatedData(int sid)
     }
 }
 
-void CompoundFile::FreeData(CFStream *stream)
+void CompoundFile_impl::FreeData(CFStream *stream)
 {
     if (stream == nullptr || stream->size() == 0)
         return;
@@ -1266,22 +1329,22 @@ void CompoundFile::FreeData(CFStream *stream)
     stream->dirEntry.lock()->setSize(0);
 }
 
-void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, std::streamsize position, const std::vector<BYTE> &buffer)
+void CompoundFile_impl::WriteData(std::shared_ptr<CFItem> cfItem, std::streamsize position, const std::vector<BYTE> &buffer)
 {
     WriteData(cfItem, buffer, position, 0, buffer.size());
 }
 
-void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer)
+void CompoundFile_impl::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer)
 {
     WriteData(cfItem, 0, buffer);
 }
 
-void CompoundFile::AppendData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer)
+void CompoundFile_impl::AppendData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer)
 {
     WriteData(cfItem, cfItem->size(), buffer);
 }
 
-void CompoundFile::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsize length)
+void CompoundFile_impl::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsize length)
 {
     if (cfItem->size() == length)
         return;
@@ -1433,7 +1496,7 @@ void CompoundFile::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsi
 
         std::array<char, 256> buf;
         buf.fill(0);
-        std::streamsize toRead = std::min(length, cfItem->size());
+        ULONG64 toRead = (ULONG64)(std::min)((ULONG64)length, cfItem->size());
 
         while (toRead > count)
         {
@@ -1462,7 +1525,7 @@ void CompoundFile::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsi
     }
 }
 
-SList<Sector> CompoundFile::FindFreeSectors(SectorType sType)
+SList<Sector> CompoundFile_impl::FindFreeSectors(SectorType sType)
 {
     SList<Sector> freeList;
     SList<Sector> zeroQueue;
@@ -1532,7 +1595,7 @@ SList<Sector> CompoundFile::FindFreeSectors(SectorType sType)
     return freeList;
 }
 
-std::vector<BYTE> CompoundFile::GetData(const CFStream *cFStream)
+std::vector<BYTE> CompoundFile_impl::GetData(const CFStream *cFStream)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot access data");
@@ -1568,7 +1631,7 @@ std::vector<BYTE> CompoundFile::GetData(const CFStream *cFStream)
     return result;
 }
 
-int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::vector<BYTE> &buffer, int count)
+int CompoundFile_impl::ReadData(CFStream *cFStream, std::streamsize position, std::vector<BYTE> &buffer, int count)
 {
     if (count > (int)buffer.size())
         throw std::invalid_argument("count parameter exceeds buffer size");
@@ -1596,7 +1659,7 @@ int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::ve
     return result;
 }
 
-int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::vector<BYTE> &buffer, int offset, int count)
+int CompoundFile_impl::ReadData(CFStream *cFStream, std::streamsize position, std::vector<BYTE> &buffer, int offset, int count)
 {
     auto de = cFStream->dirEntry.lock();
 
@@ -1621,7 +1684,7 @@ int CompoundFile::ReadData(CFStream *cFStream, std::streamsize position, std::ve
     return result;
 }
 
-std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
+std::vector<BYTE> CompoundFile_impl::GetDataBySID(int sid)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot access data");
@@ -1654,7 +1717,7 @@ std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
     return result;
 }
 
-GUID CompoundFile::getGuidBySID(int sid)
+GUID CompoundFile_impl::getGuidBySID(int sid)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot access data");
@@ -1664,7 +1727,7 @@ GUID CompoundFile::getGuidBySID(int sid)
     return de->getStorageCLSID();
 }
 
-GUID CompoundFile::getGuidForStream(int sid)
+GUID CompoundFile_impl::getGuidForStream(int sid)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot access data");
@@ -1684,7 +1747,7 @@ GUID CompoundFile::getGuidForStream(int sid)
     return guid;
 }
 
-void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const char* data, std::streamsize position, int count)
+void CompoundFile_impl::WriteData(std::shared_ptr<CFItem> cfItem, const char* data, std::streamsize position, int count)
 {
     if (data == nullptr)
         throw CFInvalidOperation("Parameter [data] cannot be null");
@@ -1721,17 +1784,17 @@ void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const char* data, s
     }
 }
 
-void CompoundFile::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
+void CompoundFile_impl::WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
 {
     WriteData(cfItem, reinterpret_cast<const char*>(buffer.data() + offset), position, count);
 }
 
-int CompoundFile::GetSectorSize()
+int CompoundFile_impl::GetSectorSize()
 {
     return 2 << (header->sectorShift - 1);
 }
 
-void CompoundFile::Dispose(bool disposing)
+void CompoundFile_impl::Dispose(bool disposing)
 {
     try
     {
@@ -1762,7 +1825,7 @@ void CompoundFile::Dispose(bool disposing)
     }
 }
 
-void CompoundFile::CheckForLockSector()
+void CompoundFile_impl::CheckForLockSector()
 {
     if (transactionLockAdded && !isTransactionLockAllocated)
     {
@@ -1776,7 +1839,7 @@ void CompoundFile::CheckForLockSector()
     }
 }
 
-void CompoundFile::LoadFile(std::wstring fileName)
+void CompoundFile_impl::LoadFile(std::wstring fileName)
 {
     SetFileName(fileName);
     Stream fs;
@@ -1796,7 +1859,7 @@ void CompoundFile::LoadFile(std::wstring fileName)
     }
 }
 
-void CompoundFile::SetFileName(std::wstring fileName)
+void CompoundFile_impl::SetFileName(std::wstring fileName)
 {
     BYTE* pUtf8 = NULL;
     LONG lLen = 0;
@@ -1805,7 +1868,7 @@ void CompoundFile::SetFileName(std::wstring fileName)
     delete [] pUtf8;
 }
 
-void CompoundFile::LoadStream(Stream stream)
+void CompoundFile_impl::LoadStream(Stream stream)
 {
     if (stream.get() == nullptr)
         throw CFException("Stream parameter cannot be null");

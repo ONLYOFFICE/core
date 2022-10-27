@@ -38,11 +38,11 @@
 
 namespace CFCPP
 {
+class CompoundFile_impl;
 class CFStorage : public CFItem
 {
 public:
-    CFStorage(CompoundFile* compFile, const std::weak_ptr<IDirectoryEntry> &dirEntry);
-
+    CFStorage(CompoundFile_impl* compFile, const std::weak_ptr<IDirectoryEntry> &dirEntry);
 
     std::shared_ptr<RedBlackTree::RBTree> getChildren();
     std::shared_ptr<CFStream> AddStream(const std::wstring& streamName);

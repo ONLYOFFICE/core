@@ -32,11 +32,11 @@
 #include "cfstream.h"
 #include "cfexception.h"
 #include "idirectoryentry.h"
-#include "compoundfile.h"
+#include "compoundfile_impl.h"
 
 using namespace CFCPP;
 
-CFStream::CFStream(CompoundFile* compFile, std::weak_ptr<IDirectoryEntry> dirEntry) :
+CFStream::CFStream(CompoundFile_impl* compFile, std::weak_ptr<IDirectoryEntry> dirEntry) :
     CFItem(compFile)
 {
     if (dirEntry.expired() || dirEntry.lock()->getSid() < 0)

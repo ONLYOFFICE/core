@@ -42,6 +42,7 @@
 
 #include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
 #include "simple_xml_writer.h"
+#include "../../Common/cfcpp/compoundfile.h"
 
 //CRYPT::_ecmaCryptData cryptDataGlobal; for Test
 

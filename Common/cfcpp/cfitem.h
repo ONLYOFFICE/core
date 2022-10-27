@@ -34,7 +34,7 @@
 #include "cfexception.h" // Used by heirs
 #include <memory>
 #include <string>
-
+#include "../../DesktopEditor/common/Types.h"
 
 namespace CFCPP
 {
@@ -45,7 +45,7 @@ struct DataTime
     char data[8] = {0,0,0,0,0,0,0,0};
 };
 
-class CompoundFile;
+class CompoundFile_impl;
 class IDirectoryEntry;
 
 class CFItem : public std::enable_shared_from_this<CFItem>
@@ -73,18 +73,18 @@ public:
     void setDirEntry(const std::weak_ptr<IDirectoryEntry> &newDirEntry);
     std::shared_ptr<IDirectoryEntry> getDirEntry() const;
 
-    friend class CompoundFile;
+    friend class CompoundFile_impl;
 
 protected:
     std::weak_ptr<IDirectoryEntry> dirEntry;
-    CompoundFile* compoundFile = nullptr;
+    CompoundFile_impl* compoundFile = nullptr;
 
 protected:
     CFItem() {};
-    CFItem(CompoundFile* compoundFile) :
+    CFItem(CompoundFile_impl* compoundFile) :
         compoundFile(compoundFile)
     {}
-    inline CompoundFile* getCompoundFile()
+    inline CompoundFile_impl* getCompoundFile()
         {return compoundFile;}
     void CheckDisposed() const;
 };

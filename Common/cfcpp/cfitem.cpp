@@ -31,7 +31,7 @@
  */
 #include "cfitem.h"
 #include "idirectoryentry.h"
-#include "compoundfile.h"
+#include "compoundfile_impl.h"
 #include <cstring>
 
 

@@ -31,7 +31,7 @@
  */
 #include "cfstorage.h"
 #include "cfexception.h"
-#include "compoundfile.h"
+#include "compoundfile_impl.h"
 #include "directoryentry.h"
 #include "RBTree/rbtreeexception.h"
 #include "RBTree/irbnode.h"
@@ -40,7 +40,7 @@ using namespace CFCPP;
 using RedBlackTree::RBTree;
 
 
-CFStorage::CFStorage(CompoundFile *compFile, const std::weak_ptr<IDirectoryEntry> &dirEntry) :
+CFStorage::CFStorage(CompoundFile_impl *compFile, const std::weak_ptr<IDirectoryEntry> &dirEntry) :
     CFItem(compFile)
 {
     setDirEntry(dirEntry);
@@ -54,7 +54,7 @@ std::shared_ptr<RBTree> CFStorage::getChildren()
 
         if (children == nullptr)
         {
-            children = CompoundFile::CreateNewTree();
+            children = CompoundFile_impl::CreateNewTree();
         }
     }
     return children;

@@ -41,7 +41,7 @@ namespace CFCPP
 class CFStream : public CFItem
 {
 public:
-    CFStream(CompoundFile* compFile, std::weak_ptr<IDirectoryEntry> dirEntry);
+    CFStream(CompoundFile_impl* compFile, std::weak_ptr<IDirectoryEntry> dirEntry);
 
     void Append(const std::vector<BYTE>& data);
     void Write(const std::vector<BYTE>& data, std::streamsize position);

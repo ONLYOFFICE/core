@@ -156,31 +156,38 @@ namespace DocFileFormat
 						//}
 						_ftsWidth = (Global::CellWidthType)(_tcDef.ftsWidth);
 
-						if (tdef.rgTc80[_cellIndex].horzMerge == 1)
+						if (_cellIndex < tdef.rgTc80.size())
 						{
-							for (size_t i = _cellIndex; i < tdef.rgTc80.size(); i++)
+							if (tdef.rgTc80[_cellIndex].horzMerge == 1)
 							{
-								if (tdef.rgTc80[i].horzMerge < 1)
-									break;
-							
-								nComputedCellWidth += tdef.rgdxaCenter[ i + 1] - tdef.rgdxaCenter[ i ] ;
-								_gridSpan++;
-							}
-						}
-						else if (tdef.rgTc80[_cellIndex].horzMerge == 2)
-						{//skip cover cell
-							_gridSpan = 1;
-							nComputedCellWidth = 0;
-							_bCoverCell = true;
+								for (size_t i = _cellIndex; i < tdef.rgTc80.size(); i++)
+								{
+									if (tdef.rgTc80[i].horzMerge < 1)
+										break;
 
+									nComputedCellWidth += tdef.rgdxaCenter[i + 1] - tdef.rgdxaCenter[i];
+									_gridSpan++;
+								}
+							}
+							else if (tdef.rgTc80[_cellIndex].horzMerge == 2)
+							{//skip cover cell
+								_gridSpan = 1;
+								nComputedCellWidth = 0;
+								_bCoverCell = true;
+
+							}
+							else
+							{
+								_gridSpan = 1;
+
+								nComputedCellWidths += (tdef.rgdxaCenter[_cellIndex + 1] - tdef.rgdxaCenter[0]);
+								nComputedCellWidth += bUseWidth ? tdef.rgTc80[_cellIndex].wWidth :
+									(tdef.rgdxaCenter[_cellIndex + 1] - tdef.rgdxaCenter[_cellIndex]);
+							}
 						}
 						else
 						{
-							_gridSpan = 1;
 
-							nComputedCellWidths +=  (tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ 0 ]);
-							nComputedCellWidth	+= bUseWidth ? tdef.rgTc80[ _cellIndex].wWidth :
-													(tdef.rgdxaCenter[ _cellIndex + 1] - tdef.rgdxaCenter[ _cellIndex ]);
 						}
 
 						if (!IsTableBordersDefined(tapx->grpprl))

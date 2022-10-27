@@ -35,6 +35,7 @@
 #include <fstream>
 #include <memory>
 #include <algorithm>
+#include <iosfwd>
 
 #include "../../DesktopEditor/common/Types.h"
 

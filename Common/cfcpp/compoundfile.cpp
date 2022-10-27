@@ -1496,7 +1496,7 @@ void CompoundFile_impl::SetStreamLength(std::shared_ptr<CFItem> cfItem, std::str
 
         std::array<char, 256> buf;
         buf.fill(0);
-        ULONG64 toRead = (ULONG64)(std::min)((ULONG64)length, cfItem->size());
+        std::streamsize toRead = (std::min)(length, cfItem->size());
 
         while (toRead > count)
         {

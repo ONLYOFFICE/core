@@ -95,7 +95,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
 #xlsbformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
 #cf
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompaundLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompoundFileLib
 
 #Crypto++
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib

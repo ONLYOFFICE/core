@@ -98,11 +98,11 @@ std::vector<BYTE> CompoundFile::GetDataBySID(int sid)
 {
     return _impl->GetDataBySID(sid);
 }
-GUID CompoundFile::getGuidBySID(int sid)
+_GUID_ CompoundFile::getGuidBySID(int sid)
 {
     return _impl->getGuidBySID(sid);
 }
-GUID CompoundFile::getGuidForStream(int sid)
+_GUID_ CompoundFile::getGuidForStream(int sid)
 {
     return _impl->getGuidForStream(sid);
 }
@@ -1272,7 +1272,7 @@ void CompoundFile_impl::ResetDirectoryEntry(int sid)
     directoryEntries[sid]->setParent({});
     directoryEntries[sid]->setStgType(StgType::StgInvalid);
     directoryEntries[sid]->setStartSetc(DirectoryEntry::ZERO);
-    directoryEntries[sid]->setStorageCLSID(GUID());
+    directoryEntries[sid]->setStorageCLSID(_GUID_());
     directoryEntries[sid]->setSize(0);
     directoryEntries[sid]->setStateBits(0);
     directoryEntries[sid]->setColor(RedBlackTree::RED);
@@ -1717,7 +1717,7 @@ std::vector<BYTE> CompoundFile_impl::GetDataBySID(int sid)
     return result;
 }
 
-GUID CompoundFile_impl::getGuidBySID(int sid)
+_GUID_ CompoundFile_impl::getGuidBySID(int sid)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot access data");
@@ -1727,14 +1727,14 @@ GUID CompoundFile_impl::getGuidBySID(int sid)
     return de->getStorageCLSID();
 }
 
-GUID CompoundFile_impl::getGuidForStream(int sid)
+_GUID_ CompoundFile_impl::getGuidForStream(int sid)
 {
     if (isDisposed)
         throw CFDisposedException("Compound File closed: cannot access data");
     if (sid < 0)
         throw CFException("Invalid SID");
 
-    GUID guid;
+	_GUID_ guid;
 
     for (int i = sid - 1; i >= 0; i--)
     {

@@ -64,8 +64,8 @@ public:
     DataTime getDataTime()const;
     void setDataTime(const DataTime& value);
 
-    GUID getStorageCLSID() const;
-    void setStorageCLSID(GUID value);
+	_GUID_ getStorageCLSID() const;
+    void setStorageCLSID(_GUID_ value);
 
     int CompareTo(const CFItem& other);
     std::wstring ToString() const;

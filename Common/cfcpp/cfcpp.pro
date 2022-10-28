@@ -1,6 +1,6 @@
 QT       -= core gui
 
-TARGET = CompaundLib
+TARGET = CompoundFileLib
 TEMPLATE = lib
 CONFIG += staticlib
 

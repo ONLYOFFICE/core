@@ -98,8 +98,8 @@ public:
     virtual void setStgColor(StgColor value) = 0;
     virtual StgType getStgType() const = 0;
     virtual void setStgType(StgType value) = 0;
-    virtual GUID getStorageCLSID() const = 0;
-    virtual void setStorageCLSID(GUID value) = 0;
+    virtual _GUID_ getStorageCLSID() const = 0;
+    virtual void setStorageCLSID(_GUID_ value) = 0;
     virtual int GetHashCode() const = 0;
 };
 }

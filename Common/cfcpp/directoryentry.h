@@ -102,8 +102,8 @@ public:
     inline void setStgColor(StgColor value) override {stgColor = value;}
     inline StgType getStgType() const override {return stgType;}
     inline void setStgType(StgType value) override {stgType = value;}
-    inline GUID getStorageCLSID() const override {return storageCLSID;}
-    inline void setStorageCLSID(GUID value) override {storageCLSID = value;}
+    inline _GUID_ getStorageCLSID() const override {return storageCLSID;}
+    inline void setStorageCLSID(_GUID_ value) override {storageCLSID = value;}
     int GetHashCode() const override;
 
     inline std::wstring Name() const {return GetEntryName();}
@@ -133,7 +133,7 @@ private:
     SVector<IDirectoryEntry> emptyDir;
     SVector<IDirectoryEntry>& dirRepository;
     std::weak_ptr<RedBlackTree::IRBNode> parent;
-    GUID storageCLSID;
+	_GUID_ storageCLSID;
 };
 
 }

@@ -18,7 +18,7 @@ SUBDIRS = \
     OdfFileReaderLib \
     OdfFileWriterLib \
     XlsFormatLib \
-    CompaundLib \
+    CompoundFileLib \
     X2tConverter
 
 XlsbFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/XlsbFormatLib.pro
@@ -33,7 +33,7 @@ OdfFileReaderLib.file = ../../../ASCOfficeOdfFile/linux/OdfFileReaderLib.pro
 OdfFileWriterLib.file = ../../../ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro
 XlsFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro
 VbaFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/VbaFormatLib.pro
-CompaundLib.file = ../../../Common/cfcpp/cfcpp.pro
+CompoundFileLib.file = ../../../Common/cfcpp/cfcpp.pro
 
 X2tConverter.depends = \
     XlsbFormatLib \
@@ -48,7 +48,7 @@ X2tConverter.depends = \
     OdfFileWriterLib \
     VbaFormatLib \
     XlsFormatLib \
-    CompaundLib
+    CompoundFileLib
 
 # build the project sequentially as listed in SUBDIRS !
 CONFIG += ordered

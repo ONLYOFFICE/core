@@ -31,8 +31,7 @@
  */
 #pragma once
 
-
-struct GUID
+struct _GUID_
 {
     unsigned int Data1 = 0;
     unsigned short Data2 = 0;
@@ -44,11 +43,11 @@ struct GUID
         return reinterpret_cast<unsigned char*>(&Data4);
     }
 
-    GUID (const GUID& o) : Data1(o.Data1), Data2(o.Data2), Data3(o.Data3)
+	_GUID_(const _GUID_& o) : Data1(o.Data1), Data2(o.Data2), Data3(o.Data3)
     {
     }
 
-    GUID& operator=(const GUID& o)
+	_GUID_& operator=(const _GUID_& o)
     {
         Data1 = o.Data1;
         Data2 = o.Data2;
@@ -58,15 +57,15 @@ struct GUID
         return *this;
     }
 
-    bool operator!=(const GUID& oth)const
+    bool operator!=(const _GUID_& oth)const
     {
         return Data1 != oth.Data1 || Data2 != oth.Data2 || Data3 != oth.Data3 || Data4 != oth.Data4;
     }
 
-    bool operator==(const GUID& oth)const
+    bool operator==(const _GUID_& oth)const
     {
         return !operator!=(oth);
     }
 
-    GUID (){}
+	_GUID_(){}
 };

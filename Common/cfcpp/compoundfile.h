@@ -61,8 +61,6 @@ public:
     CompoundFile(Stream stream);
     CompoundFile();
 
-    ~CompoundFile();
-
     std::shared_ptr<CFStorage> RootStorage();
 
     void Save(std::wstring wFileName);
@@ -75,8 +73,8 @@ public:
     void Close();
 
     std::vector<BYTE> GetDataBySID(int sid);
-    GUID getGuidBySID(int sid);
-    GUID getGuidForStream(int sid);
+	_GUID_ getGuidBySID(int sid);
+	_GUID_ getGuidForStream(int sid);
 
 private:
     std::shared_ptr<CompoundFile_impl> _impl;

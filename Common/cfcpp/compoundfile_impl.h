@@ -68,8 +68,8 @@ public:
     void Close();
 
     std::vector<BYTE> GetDataBySID(int sid);
-    GUID getGuidBySID(int sid);
-    GUID getGuidForStream(int sid);
+	_GUID_ getGuidBySID(int sid);
+	_GUID_ getGuidForStream(int sid);
 
     // internal methods
     static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();

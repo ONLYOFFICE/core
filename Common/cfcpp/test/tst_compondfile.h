@@ -1,7 +1,7 @@
 #pragma once
 
 #include "global.h"
-#include "compoundfile.h"
+#include "../compoundfile.h"
 #include <iostream>
 #include <iomanip>
 

@@ -110,12 +110,12 @@ void CFItem::setDataTime(const DataTime &value)
         throw CFException(L"Modify Date can only be set on storage entries");
 }
 
-GUID CFItem::getStorageCLSID() const
+_GUID_ CFItem::getStorageCLSID() const
 {
     return dirEntry.lock()->getStorageCLSID();
 }
 
-void CFItem::setStorageCLSID(GUID value)
+void CFItem::setStorageCLSID(_GUID_ value)
 {
     dirEntry.lock()->setStorageCLSID(value);
 }

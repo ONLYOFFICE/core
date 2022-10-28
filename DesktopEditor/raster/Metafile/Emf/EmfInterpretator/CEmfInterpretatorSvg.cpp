@@ -1573,8 +1573,6 @@ namespace MetaFile
 			if (dFontHeight < 0.01)
 				dFontHeight = 18;
 
-			double dWidth = dFontHeight * wsText.size();
-
 			arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
 			std::wstring wsFaceName = pFont->GetFaceName();
@@ -1638,16 +1636,6 @@ namespace MetaFile
 				// Ничего не делаем
 			}
 
-			if (0 != pFont->GetEscapement())
-			{
-				double dEscapement = pFont->GetEscapement() / 10;
-
-				if (m_pParser->IsWindowFlippedY())
-					dEscapement = -dEscapement;
-
-				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
-			}
-
 			if (dYScale < -0.00001) //TODO::Тоже нужно и для dXScale
 			{
 				dYCoord += dFontHeight;
@@ -1655,6 +1643,16 @@ namespace MetaFile
 				oTransform.Dy += (2 * dYCoord - dFontHeight) * oTransform.M22;
 
 				oTransform.M22 = fabs(oTransform.M22);
+			}
+
+			if (0 != pFont->GetEscapement())
+			{
+				double dEscapement = pFont->GetEscapement() / -10;
+
+				if (m_pParser->GetTransform()->M22 < 0)
+					dEscapement = -dEscapement;
+
+				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
 			}
 		}
 

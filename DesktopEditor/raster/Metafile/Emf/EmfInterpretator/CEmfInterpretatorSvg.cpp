@@ -1752,10 +1752,12 @@ namespace MetaFile
 						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
 						return;
 					}
-
-					break;
 				}
 				case BS_LINEARGRADIENT:
+				case BS_RECTGRADIENT:
+				case BS_PATHGRADIENT:
+				case BS_RADIALGRADIENT:
+				case BS_AXIALGRADIENT:
 				{
 					const std::wstring wsStyleId = CreateGradient(pBrush);
 
@@ -2221,7 +2223,7 @@ namespace MetaFile
 
 		if (BS_LINEARGRADIENT	== pBrush->GetStyle() ||
 		    BS_RECTGRADIENT		== pBrush->GetStyle() ||
-		    BS_PATHGRADIENT		== pBrush->GetStyle())
+		    BS_PATHGRADIENT     == pBrush->GetStyle())
 		{
 			wsStyleId = L"LINEARGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
 
@@ -2232,6 +2234,38 @@ namespace MetaFile
 
 			return wsStyleId;
 		}
+		else if (BS_RADIALGRADIENT == pBrush->GetStyle() ||
+		         BS_AXIALGRADIENT  == pBrush->GetStyle())
+		{
+			wsStyleId = L"RADIALGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+			double dX = MININT8, dY = MININT8;
+
+			pBrush->GetCenterPoint(dX, dY);
+
+			std::wstring wsIndlude;
+
+			if (dX != MININT8 || dY != MININT8)
+			{
+				double dLeft, dTop, dWidth, dHeight;
+
+				pBrush->GetBounds(dLeft, dTop, dWidth, dHeight);
+
+				dX = ((dX - dLeft) / dWidth);
+				dY = ((dY - dTop)  / dHeight);
+
+				wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+			}
+
+			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +
+			            L"<stop offset=\"0%\" stop-color=\"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L", 255)\"/>" +
+			            L"<stop offset=\"100%\" stop-color=\"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor2()) + L", 255)\"/>" +
+			            L"</radialGradient>";
+
+			return wsStyleId;
+		}
+
+		return std::wstring();
 	}
 }
 

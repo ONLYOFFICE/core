@@ -103,6 +103,8 @@ namespace MetaFile
 		}
 		void GetBounds(double& left, double& top, double& width, double& height) {}
 
+		void GetCenterPoint(double& dX, double& dY){}
+
 		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight)
 		{
 			*pBuffer	= DibBuffer;

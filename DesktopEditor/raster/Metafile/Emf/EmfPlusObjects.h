@@ -219,6 +219,12 @@ namespace MetaFile
 
 		}
 
+		void GetCenterPoint(double& dX, double& dY)
+		{
+			dX = CenterPoint.X;
+			dY = CenterPoint.Y;
+		}
+
 		void GetBounds(double& left, double& top, double& width, double& height)
 		{
 			left   = RectF.dX;
@@ -227,13 +233,14 @@ namespace MetaFile
 			height = RectF.dHeight;
 		};
 
-		TEmfPlusARGB  Color;
-		TEmfPlusARGB  ColorBack;
-		unsigned int  Style;
-		unsigned int  Hatch;
-		TEmfPlusRectF RectF;
-		unsigned int  Angle;
-		std::wstring  DibPatternPath;
+		TEmfPlusARGB   Color;
+		TEmfPlusARGB   ColorBack;
+		unsigned int   Style;
+		unsigned int   Hatch;
+		TEmfPlusRectF  RectF;
+		TEmfPlusPointF CenterPoint;
+		unsigned int   Angle;
+		std::wstring   DibPatternPath;
 	};
 
 	class CEmfPlusPen: public CEmfPlusObject, public IPen

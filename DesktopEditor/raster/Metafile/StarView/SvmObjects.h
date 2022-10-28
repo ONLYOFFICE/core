@@ -292,6 +292,7 @@ public:
 	unsigned int GetAlpha();
 	unsigned int GetAlpha2();
 	std::wstring GetDibPatterPath(){ return L""; }
+	void GetCenterPoint(double& dX, double& dY){}
 	void GetBounds(double& left, double& top, double& width, double& height);
 	void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight);
 

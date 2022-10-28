@@ -562,8 +562,7 @@ namespace MetaFile
 			m_oStream.Skip(4); //WrapMode
 
 			m_oStream >> pEmfPlusBrush->Color;
-
-			m_oStream.Skip(8);
+			m_oStream >> pEmfPlusBrush->CenterPoint;
 
 			unsigned int unCountColors;
 

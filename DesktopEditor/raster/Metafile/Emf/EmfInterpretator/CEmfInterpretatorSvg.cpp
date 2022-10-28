@@ -1675,9 +1675,8 @@ namespace MetaFile
 
 			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			if (0 == dStrokeWidth || (1 == dStrokeWidth && (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))))
-//				dStrokeWidth = 1 / ((std::fabs(m_pParser->GetPixelHeight()) < 1) ? std::fabs(m_pParser->GetPixelHeight()) : 1);
-				dStrokeWidth = m_pParser->GetPixWidth(m_oScale.dX * 2);
+			if (0 == dStrokeWidth)
+				dStrokeWidth = 1 / std::fabs(m_pParser->GetTransform()->M11);
 
 			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

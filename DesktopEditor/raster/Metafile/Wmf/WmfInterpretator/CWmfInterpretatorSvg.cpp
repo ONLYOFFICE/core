@@ -910,7 +910,7 @@ namespace MetaFile
 			{
 				double dEscapement = pFont->GetEscapement() / -10;
 
-				if (m_pParser->IsWindowFlippedY())
+				if (m_pParser->GetTransform()->M22 < 0)
 					dEscapement = -dEscapement;
 
 				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
@@ -950,9 +950,8 @@ namespace MetaFile
 
 			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			if (0 == dStrokeWidth || (1 == dStrokeWidth && (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))))
-//				dStrokeWidth = 1 / ((std::fabs(m_pParser->GetPixelHeight()) < 1) ? std::fabs(m_pParser->GetPixelHeight()) : 1);
-				dStrokeWidth = m_pParser->GetPixWidth(0.5);
+			if (0 == dStrokeWidth)
+				dStrokeWidth = 1 / std::fabs(m_pParser->GetTransform()->M11);
 
 			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <comutil.h>
 #include <atlcomcli.h>
+#include <atlsafe.h>
 
 #include "../_docbuilder.h"
 #include "../_docbuilder_i.c"
@@ -19,9 +20,19 @@
 # endif
 #endif
 
+
+#define RELEASEINTERFACE(pinterface)\
+{\
+    if (pinterface!=NULL)\
+    {\
+        pinterface->Release();\
+        pinterface=NULL;\
+    }\
+}
+
+
 int main(int argc, char *argv[])
 {
-	wchar_t work_dir[] = L"C:/Program Files/ONLYOFFICE/DocumentBuilder";
 	wchar_t result_path[] = L"result.docx";
 	CoInitialize(NULL);
 
@@ -39,7 +50,7 @@ int main(int argc, char *argv[])
 
 	hr = CoCreateInstance(__uuidof(CONLYOFFICEDocBuilder), NULL, CLSCTX_ALL,
 		__uuidof(IONLYOFFICEDocBuilder), (void**)&oBuilder);
-	
+
 	if (FAILED(hr))
 	{
 		std::cout << "Failed!" << std::endl;
@@ -48,8 +59,7 @@ int main(int argc, char *argv[])
 
 	VARIANT_BOOL b;
 
-	oBuilder->Initialize(work_dir);
-	oBuilder->SetProperty(_bstr_t("--work-directory"), work_dir);
+	oBuilder->Initialize();
 	oBuilder->CreateFileW(result_path, &b);
 	oBuilder->GetContext(&oContext);
 
@@ -71,8 +81,26 @@ int main(int argc, char *argv[])
 	oDocument->Call(_bstr_t(L"InsertContent"), ATL::CComVariant(oContent), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
 
 	oBuilder->SaveFile(_bstr_t(".docx"), result_path, &b);
+
+	RELEASEINTERFACE(oContent);
+
+	IONLYOFFICEDocBuilderValue* oArr = NULL;
+	CComSafeArray<BYTE> arr;
+	arr.Add(1);
+	oContext->CreateTypedArray(ATL::CComVariant(arr), 1, &oArr);
+
 	oBuilder->CloseFile();
 	oBuilder->Dispose();
+
+	RELEASEINTERFACE(oBuilder);
+	RELEASEINTERFACE(oContext);
+	RELEASEINTERFACE(oScope);
+
+	RELEASEINTERFACE(oGlobal);
+	RELEASEINTERFACE(oApi);
+	RELEASEINTERFACE(oDocument);
+	RELEASEINTERFACE(oParagraph);
+	RELEASEINTERFACE(oContent);
 
 	CoUninitialize();
 	return 0;

@@ -61,6 +61,9 @@ using namespace ATL;
     }\
 }
 
+#define VALUE(x) *(((CONLYOFFICEDocBuilderValue*)(x))->m_pValue)
+#define VALUE_PRIVATE(x) *(((CONLYOFFICEDocBuilderValue*)(x))->GetPrivate())
+
 // IONLYOFFICEDocBuilderValue
 [object, uuid("2637FDFA-8473-4CB8-B90B-C23CB949D009"), dual, pointer_default(unique)]
 __interface IONLYOFFICEDocBuilderValue : IDispatch
@@ -115,13 +118,11 @@ __interface IONLYOFFICEDocBuilderContext : IDispatch
 	[id(102)] HRESULT CreateObject([out, retval] IONLYOFFICEDocBuilderValue** result);
 	[id(103)] HRESULT CreateArray([in] long length, [out, retval] IONLYOFFICEDocBuilderValue** result);
 
-	// CreateTypedArray
-	// AllocMemoryTypedArray
-	// FreeMemoryTypedArray
+	[id(104)] HRESULT CreateTypedArray([in] VARIANT buffer, [in] long length, [out, retval] IONLYOFFICEDocBuilderValue** result);
 
-	[id(104)] HRESULT GetGlobal([out, retval] IONLYOFFICEDocBuilderValue** result);
-	[id(105)] HRESULT CreateScope([out, retval] IONLYOFFICEDocBuilderContextScope** result);
-	[id(106)] HRESULT IsError([out, retval] VARIANT_BOOL* result);
+	[id(105)] HRESULT GetGlobal([out, retval] IONLYOFFICEDocBuilderValue** result);
+	[id(106)] HRESULT CreateScope([out, retval] IONLYOFFICEDocBuilderContextScope** result);
+	[id(107)] HRESULT IsError([out, retval] VARIANT_BOOL* result);
 };
 
 // IONLYOFFICEDocBuilder
@@ -139,17 +140,14 @@ __interface IONLYOFFICEDocBuilder : IDispatch
 	[id(106)] HRESULT Run([in] BSTR path, [out, retval] VARIANT_BOOL* result);
 	[id(107)] HRESULT RunText([in] BSTR commands, [out, retval] VARIANT_BOOL* result);
 	[id(108)] HRESULT SetProperty([in] BSTR key, [in] BSTR value);
-
-	// try do 2 retval (out)
 	[id(109)] HRESULT Execute([in] BSTR command, [out, retval] IONLYOFFICEDocBuilderValue** result);
 
 	[id(110)] HRESULT WriteData([in] BSTR path, [in] BSTR value, [in] VARIANT_BOOL append);
 	[id(111)] HRESULT IsSaveWithDoctrendererMode([out, retval] VARIANT_BOOL* result);
-	// char* -> BSTR? [id(112)] HRESULT GetVersion([out, retval] BSTR* result);
 
 	[id(112)] HRESULT GetContext([out, retval] IONLYOFFICEDocBuilderContext** result);
 
-	[id(201)] HRESULT Initialize([in] BSTR directory);
+	[id(201)] HRESULT Initialize();
 	[id(202)] HRESULT Dispose();
 };
 
@@ -230,7 +228,8 @@ public:
 		{	
 			IONLYOFFICEDocBuilderValue* val = NULL;
 			value.pdispVal->QueryInterface(__uuidof(IONLYOFFICEDocBuilderValue), (void**)&val);
-			m_pValue = ((CONLYOFFICEDocBuilderValue*)(val))->GetPrivate();
+			m_pValue = new NSDoctRenderer::CDocBuilderValue(VALUE(val));
+			RELEASEINTERFACE(val);
 		}
 		return S_OK;
 	}
@@ -242,6 +241,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsEmpty() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(Clear)()
@@ -257,6 +257,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsNull() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsUndefined)(VARIANT_BOOL* result)
@@ -266,6 +267,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsUndefined() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 
@@ -276,6 +278,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsBool() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsInt)(VARIANT_BOOL* result)
@@ -285,6 +288,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsInt() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsDouble)(VARIANT_BOOL* result)
@@ -294,6 +298,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsDouble() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsString)(VARIANT_BOOL* result)
@@ -303,6 +308,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsString() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsFunction)(VARIANT_BOOL* result)
@@ -312,6 +318,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsFunction() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsObject)(VARIANT_BOOL* result)
@@ -321,6 +328,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsObject() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 
@@ -331,6 +339,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsArray() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(IsTypedArray)(VARIANT_BOOL* result)
@@ -340,6 +349,7 @@ public:
 
 		if (result)
 			*result = m_pValue->IsTypedArray() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 
@@ -350,6 +360,7 @@ public:
 
 		if (result)
 			*result = m_pValue->GetLength();
+
 		return S_OK;
 	}
 
@@ -360,6 +371,7 @@ public:
 
 		if (result)
 			*result = m_pValue->ToBool() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 	STDMETHOD(ToInt)(long* result)
@@ -369,6 +381,7 @@ public:
 
 		if (result)
 			*result = m_pValue->ToInt();
+
 		return S_OK;
 	}
 	STDMETHOD(ToDouble)(double* result)
@@ -378,6 +391,7 @@ public:
 
 		if (result)
 			*result = m_pValue->ToDouble();
+
 		return S_OK;
 	}
 	STDMETHOD(ToString)(BSTR* result)
@@ -406,7 +420,7 @@ public:
 		if (result)
 		{
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-			*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->GetProperty(name);
+			VALUE(*result) = m_pValue->GetProperty(name);
 		}
 		return S_OK;
 	}
@@ -418,7 +432,7 @@ public:
 		if (result)
 		{
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-			*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = m_pValue->Get(index);
+			VALUE(*result) = m_pValue->Get(index);
 		}
 		return S_OK;
 	}
@@ -429,7 +443,8 @@ public:
 			return S_FALSE;
 
 		if (value)
-			m_pValue->SetProperty(name, *(((CONLYOFFICEDocBuilderValue*)(value))->m_pValue));
+			m_pValue->SetProperty(name, VALUE(value));
+
 		return S_OK;
 	}
 	STDMETHOD(Set)(long index, IONLYOFFICEDocBuilderValue* value)
@@ -438,7 +453,8 @@ public:
 			return S_FALSE;
 
 		if (value)
-			m_pValue->Set(index, *(((CONLYOFFICEDocBuilderValue*)(value))->m_pValue));
+			m_pValue->Set(index, VALUE(value));
+
 		return S_OK;
 	}
 
@@ -446,8 +462,6 @@ public:
 	{
 		if (NULL == m_pValue)
 			return S_FALSE;
-
-		int val_c = 0;
 
 		IONLYOFFICEDocBuilderValue* p1 = NULL;
 		IONLYOFFICEDocBuilderValue* p2 = NULL;
@@ -487,28 +501,26 @@ public:
 			p6->CreateInstance(val6);
 		}
 
-		#define value(x) *(((CONLYOFFICEDocBuilderValue*)(x))->m_pValue)
-
 		NSDoctRenderer::CDocBuilderValue oResult;
 		if (p6)
-			oResult = m_pValue->Call(name, value(p1), value(p2), value(p3), value(p4), value(p5), value(p6));
+			oResult = m_pValue->Call(name, VALUE(p1), VALUE(p2), VALUE(p3), VALUE(p4), VALUE(p5), VALUE(p6));
 		else if (p5)
-			oResult = m_pValue->Call(name, value(p1), value(p2), value(p3), value(p4), value(p5));
+			oResult = m_pValue->Call(name, VALUE(p1), VALUE(p2), VALUE(p3), VALUE(p4), VALUE(p5));
 		else if (p4)
-			oResult = m_pValue->Call(name, value(p1), value(p2), value(p3), value(p4));
+			oResult = m_pValue->Call(name, VALUE(p1), VALUE(p2), VALUE(p3), VALUE(p4));
 		else if (p3)
-			oResult = m_pValue->Call(name, value(p1), value(p2), value(p3));
+			oResult = m_pValue->Call(name, VALUE(p1), VALUE(p2), VALUE(p3));
 		else if (p2)
-			oResult = m_pValue->Call(name, value(p1), value(p2));
+			oResult = m_pValue->Call(name, VALUE(p1), VALUE(p2));
 		else if (p1)
-			oResult = m_pValue->Call(name, value(p1));
+			oResult = m_pValue->Call(name, VALUE(p1));
 		else
 			oResult = m_pValue->Call(name);
 
 		if (result)
 		{
 			CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-			*((CONLYOFFICEDocBuilderValue*)(*result))->m_pValue = oResult;
+			VALUE(*result) = oResult;
 		}
 
 		RELEASEINTERFACE(p1);
@@ -592,7 +604,7 @@ public:
 			return S_FALSE;
 
 		CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-		*(((CONLYOFFICEDocBuilderValue*)(*result))->GetPrivate()) = m_pBuilderContext->CreateUndefined();
+		VALUE_PRIVATE(*result) = m_pBuilderContext->CreateUndefined();
 
 		return S_OK;
 	}
@@ -602,7 +614,7 @@ public:
 			return S_FALSE;
 
 		CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-		*(((CONLYOFFICEDocBuilderValue*)(*result))->GetPrivate()) = m_pBuilderContext->CreateNull();
+		VALUE_PRIVATE(*result) = m_pBuilderContext->CreateNull();
 
 		return S_OK;
 
@@ -613,7 +625,7 @@ public:
 			return S_FALSE;
 
 		CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-		*(((CONLYOFFICEDocBuilderValue*)(*result))->GetPrivate()) = m_pBuilderContext->CreateObject();
+		VALUE_PRIVATE(*result) = m_pBuilderContext->CreateObject();
 
 		return S_OK;
 	}
@@ -623,14 +635,27 @@ public:
 			return S_FALSE;
 
 		CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-		*(((CONLYOFFICEDocBuilderValue*)(*result))->GetPrivate()) = m_pBuilderContext->CreateArray(length);
+		VALUE_PRIVATE(*result) = m_pBuilderContext->CreateArray(length);
 
 		return S_OK;
 	}
 
-	// CreateTypedArray
-	// AllocMemoryTypedArray
-	// FreeMemoryTypedArray
+	STDMETHOD(CreateTypedArray)(VARIANT buffer, long length, IONLYOFFICEDocBuilderValue** result)
+	{
+		if (NULL == m_pBuilderContext)
+			return S_FALSE;
+
+		if(buffer.vt != (VT_ARRAY | VT_UI1))
+			return S_FALSE;
+
+		unsigned char* p_array = m_pBuilderContext->AllocMemoryTypedArray(length);
+		memcpy(p_array, (unsigned char*)(buffer.parray->pvData), length);
+
+		CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
+		VALUE_PRIVATE(*result) = m_pBuilderContext->CreateTypedArray(p_array, length, false);
+
+		return S_OK;
+	}
 
 	STDMETHOD(GetGlobal)(IONLYOFFICEDocBuilderValue** result)
 	{
@@ -638,7 +663,7 @@ public:
 			return S_FALSE;
 
 		CoCreateInstance(__uuidof(CONLYOFFICEDocBuilderValue), NULL, CLSCTX_ALL, __uuidof(IONLYOFFICEDocBuilderValue), (void**)result);
-		*(((CONLYOFFICEDocBuilderValue*)(*result))->GetPrivate()) = m_pBuilderContext->GetGlobal();
+		VALUE_PRIVATE(*result) = m_pBuilderContext->GetGlobal();
 
 		return S_OK;
 	}
@@ -657,7 +682,9 @@ public:
 		if (NULL == m_pBuilderContext)
 			return S_FALSE;
 
-		*result = m_pBuilderContext->IsError() ? VARIANT_TRUE : VARIANT_FALSE;
+		if(result)
+			*result = m_pBuilderContext->IsError() ? VARIANT_TRUE : VARIANT_FALSE;
+
 		return S_OK;
 	}
 
@@ -697,13 +724,6 @@ public:
 			m_pBuilder = NULL;
 		}
 		m_pBuilder = new NSDoctRenderer::CDocBuilder();
-
-		/* do it manually
-		CStringW sCurrentDir = GetCurrentDllDirPath();
-		BSTR bsCurrentDir = sCurrentDir.AllocSysString();
-		m_pBuilder->SetProperty("--work-directory", (wchar_t*)bsCurrentDir);
-		SysFreeString(bsCurrentDir);
-		*/
 
 		return S_OK;
 	}
@@ -867,9 +887,14 @@ public:
 		return S_OK;
 	}
 
-	STDMETHOD(Initialize)(BSTR directory)
+	STDMETHOD(Initialize)()
 	{
-		NSDoctRenderer::CDocBuilder::Initialize(directory);
+		CStringW sCurrentDir = GetCurrentDllDirPath();
+		BSTR bsCurrentDir = sCurrentDir.AllocSysString();
+		NSDoctRenderer::CDocBuilder::Initialize(bsCurrentDir);
+		m_pBuilder->SetProperty("--work-directory", (wchar_t*)bsCurrentDir);
+
+		SysFreeString(bsCurrentDir);
 		return S_OK;
 	}
 	STDMETHOD(Dispose)()

@@ -57,6 +57,7 @@
 #include <atlhost.h>
 #include <atlcoll.h>
 #include <atlfile.h>
+#include <atlsafe.h>
 #include <memory.h>
 #include <math.h>
 #include <string.h>

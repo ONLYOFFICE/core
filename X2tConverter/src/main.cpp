@@ -94,10 +94,10 @@ static std::wstring utf8_to_unicode(const char *src)
 #endif
 #endif
 {
-#define __CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#define new DEBUG_NEW		
+//#define __CRTDBG_MAP_ALLOC
+//#include <crtdbg.h>
+//#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+//#define new DEBUG_NEW
 		
 // check arguments
     if (argc < 2)
@@ -196,6 +196,6 @@ static std::wstring utf8_to_unicode(const char *src)
 			result = NExtractTools::fromInputParams(oInputParams);
 		}
 	}
-	_CrtDumpMemoryLeaks(); 
+	//_CrtDumpMemoryLeaks(); 
 	return getReturnErrorCode(result);
 }

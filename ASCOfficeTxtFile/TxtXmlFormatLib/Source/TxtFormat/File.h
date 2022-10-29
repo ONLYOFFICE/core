@@ -42,24 +42,21 @@ namespace Txt
 		File();
 		~File();
 
-        void read			(const std::wstring& filename);
-        void read			(const std::wstring& filename, int code_page);
+		void read			(const std::wstring& filename);
+		void read			(const std::wstring& filename, int code_page);
 		
-        void write			(const std::wstring& filename) const;
+		void write			(const std::wstring& filename) const;
 		
-        void writeCodePage	(const std::wstring& filename, int code_page) const;
-        void writeUtf8		(const std::wstring& filename) const;
-        void writeUnicode	(const std::wstring& filename) const;
-        void writeBigEndian	(const std::wstring& filename) const;
-        void writeAnsi		(const std::wstring& filename) const;
+		void writeCodePage	(const std::wstring& filename, int code_page) const;
+		void writeUtf8		(const std::wstring& filename) const;
+		void writeUnicode	(const std::wstring& filename) const;
+		void writeBigEndian	(const std::wstring& filename) const;
+		void writeAnsi		(const std::wstring& filename) const;
 		
-        const bool isValid	(const std::wstring& filename) const;
+		const bool isValid	(const std::wstring& filename) const;
 		
-        std::vector<std::wstring>	m_listContent;			//unicode  (ранее было utf8)
+		std::vector<std::wstring>	m_listContent;			//unicode  (ранее было utf8)
 		int							m_listContentSize;		//для вывода процентов конвертации
 		int							m_nEncoding;
-	private:
-        void correctUnicode(std::vector<std::wstring>& oList);
-		bool IsUnicodeSymbol( wchar_t symbol );
 	};
 } // namespace Txt

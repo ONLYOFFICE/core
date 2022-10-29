@@ -24,16 +24,16 @@ DEFINES += UNICODE \
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 HEADERS += \
-    ../Source/TxtXmlFile.h \
     ../Source/Common/Encoding.h \
-    ../Source/Common/precompiled_utility.h \
-    ../Source/Common/StlUtils.h \
-    ../Source/Common/ToString.h \
-    ../Source/Common/Utility.h \
-    ../Source/TxtFormat/File.h \
+	../Source/Common/precompiled_utility.h \
+	../Source/Common/StlUtils.h \
+	../Source/Common/ToString.h \
+	../Source/Common/Utility.h \
+	../Source/TxtFormat/File.h \
     ../Source/TxtFormat/TxtFile.h \
     ../Source/TxtFormat/TxtFormat.h \
-    ../Source/ConvertDocx2Txt.h \
+	../Source/TxtXmlFile.h \
+	../Source/ConvertDocx2Txt.h \
     ../Source/ConvertTxt2Docx.h
 
 SOURCES += \

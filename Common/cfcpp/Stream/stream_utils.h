@@ -29,90 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "sector.h"
-#include "Stream/stream_utils.h"
+#pragma once
+
+#include "stream.h"
 
 
-using namespace CFCPP;
-
-_INT32 Sector::MINISECTOR_SIZE = 64;
-
-Sector::Sector(_INT32 size, const Stream stream) :
-    size(size),
-    stream(stream)
-{}
-
-Sector::Sector(_INT32 size, const std::vector<BYTE>& data) :
-    size(size), data(data)
-{}
-
-Sector::Sector(_INT32 size) :
-    size(size)
-{}
-
-
-bool Sector::IsStreamed()
+namespace CFCPP
 {
-    if (stream == nullptr || size == MINISECTOR_SIZE)
-        return false;
-
-    auto fileSize = Length(stream);
-    return  (this->id * size) + size < fileSize;
-}
-
-void Sector::ZeroData()
-{
-    std::fill(data.begin(), data.end(), 0);
-    dirtyFlag = true;
-}
-
-void Sector::InitFATData()
-{
-    data.clear();
-    data.resize(size);
-    std::fill(data.begin(), data.end(), 0xff);
-    dirtyFlag = true;
-}
-
-void Sector::ReleaseData()
-{
-    data.clear();
-}
-
-void Sector::Dispose(bool disposing)
-{
-    try
-    {
-        if (!_disposed)
-        {
-            std::lock_guard<std::mutex> lock(lockObject);
-            data.clear();
-            dirtyFlag = false;
-            id = ENDOFCHAIN;
-            size = 0;
-        }
-    }
-    catch(...)
-    {}
-    _disposed = true;
-}
-
-std::vector<BYTE> &Sector::GetData()
-{
-    if (data.empty())
-    {
-        data = std::vector<BYTE>(size, 0);
-        if (IsStreamed())
-        {
-            stream->seek(size + id * size, std::ios_base::beg);
-            stream->read(reinterpret_cast<char*>(data.data()), size);
-        }
-    }
-
-    return data;
-}
-
-_INT32 Sector::getSize() const
-{
-    return size;
+bool IsOpen(const Stream& st);
+_INT64 Length(const Stream& st);
 }

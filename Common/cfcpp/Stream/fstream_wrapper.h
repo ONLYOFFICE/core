@@ -29,90 +29,41 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "sector.h"
-#include "Stream/stream_utils.h"
+#pragma once
+
+#include <fstream>
+#include "stream.h"
 
 
-using namespace CFCPP;
-
-_INT32 Sector::MINISECTOR_SIZE = 64;
-
-Sector::Sector(_INT32 size, const Stream stream) :
-    size(size),
-    stream(stream)
-{}
-
-Sector::Sector(_INT32 size, const std::vector<BYTE>& data) :
-    size(size), data(data)
-{}
-
-Sector::Sector(_INT32 size) :
-    size(size)
-{}
-
-
-bool Sector::IsStreamed()
+namespace CFCPP
 {
-    if (stream == nullptr || size == MINISECTOR_SIZE)
-        return false;
-
-    auto fileSize = Length(stream);
-    return  (this->id * size) + size < fileSize;
-}
-
-void Sector::ZeroData()
+class FStreamWrapper : public IStream, public std::fstream
 {
-    std::fill(data.begin(), data.end(), 0);
-    dirtyFlag = true;
-}
+public:
+    FStreamWrapper(std::string filename, std::ios_base::openmode openmode) :
+        std::fstream(filename, openmode) {}
 
-void Sector::InitFATData()
-{
-    data.clear();
-    data.resize(size);
-    std::fill(data.begin(), data.end(), 0xff);
-    dirtyFlag = true;
-}
-
-void Sector::ReleaseData()
-{
-    data.clear();
-}
-
-void Sector::Dispose(bool disposing)
-{
-    try
-    {
-        if (!_disposed)
-        {
-            std::lock_guard<std::mutex> lock(lockObject);
-            data.clear();
-            dirtyFlag = false;
-            id = ENDOFCHAIN;
-            size = 0;
-        }
+    inline _INT64 tell() override {
+        return std::fstream::tellg();
     }
-    catch(...)
-    {}
-    _disposed = true;
-}
-
-std::vector<BYTE> &Sector::GetData()
-{
-    if (data.empty())
-    {
-        data = std::vector<BYTE>(size, 0);
-        if (IsStreamed())
-        {
-            stream->seek(size + id * size, std::ios_base::beg);
-            stream->read(reinterpret_cast<char*>(data.data()), size);
-        }
+    inline _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override {
+        std::fstream::seekp(offset, mode);
+        std::fstream::seekg(offset, mode);
+        return tell();
     }
+    inline _INT64 read(char* buffer, _INT64 len) override {
+        std::fstream::read(buffer, len);
+        return tell();
+    }
+    inline void write (const char* buffer, _INT64 len) override {
+        std::fstream::write(buffer, len);
+    }
+    inline void flush() override {
+        std::fstream::flush();
+    }
+    inline void close() override {
+        std::fstream::close();
+    }
+};
 
-    return data;
-}
-
-_INT32 Sector::getSize() const
-{
-    return size;
 }

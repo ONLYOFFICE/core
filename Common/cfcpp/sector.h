@@ -34,8 +34,7 @@
 #include <memory>
 #include <vector>
 #include <mutex>
-#include "stream.h"
-#include "../DocxFormat/Source/Base/Types_32.h"
+#include "Stream/stream.h"
 
 
 namespace CFCPP

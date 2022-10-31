@@ -30,6 +30,7 @@
  *
  */
 #include "directoryentry.h"
+#include <sstream>
 #include "cfexception.h"
 #include "streamrw.h"
 #include <stdexcept>

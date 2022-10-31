@@ -34,7 +34,7 @@
 #include <fstream>
 #include <array>
 #include <vector>
-#include "stream.h"
+#include "Stream/stream.h"
 
 
 namespace CFCPP

@@ -33,6 +33,7 @@
 #include "cfexception.h"
 #include "idirectoryentry.h"
 #include "compoundfile_impl.h"
+#include "Stream/stream_utils.h"
 
 using namespace CFCPP;
 

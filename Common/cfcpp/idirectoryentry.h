@@ -32,7 +32,7 @@
 #pragma once
 
 #include <map>
-#include "stream.h"
+#include "Stream/stream.h"
 #include "RBTree/irbnode.h"
 #include "guid.h"
 

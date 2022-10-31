@@ -40,6 +40,7 @@
 #include "idirectoryentry.h"
 #include <mutex>
 #include "header.h"
+#include "fstream"
 
 namespace CFCPP
 {

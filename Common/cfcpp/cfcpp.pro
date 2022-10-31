@@ -13,6 +13,8 @@ include(../base.pri)
 
 SOURCES += \
     RBTree/rbtree.cpp \
+    Stream/fstream_utils.cpp \
+    Stream/stream_utils.cpp \
     cfitem.cpp \
     cfstorage.cpp \
     cfstream.cpp \
@@ -21,7 +23,6 @@ SOURCES += \
     header.cpp \
     sector.cpp \
     sectorcollection.cpp \
-    stream.cpp \
     streamrw.cpp \
     streamview.cpp
 
@@ -29,6 +30,9 @@ HEADERS += \
     RBTree/irbnode.h \
     RBTree/rbtree.h \
     RBTree/rbtreeexception.h \
+    Stream/fstream_utils.h \
+    Stream/fstream_wrapper.h \
+    Stream/stream_utils.h \
     cfexception.h \
     cfitem.h \
     cfstorage.h \
@@ -43,7 +47,7 @@ HEADERS += \
     sector.h \
     sectorcollection.h \
     slist.h \
-    stream.h \
+    Stream/stream.h \
     streamrw.h \
     streamview.h \
     svector.h

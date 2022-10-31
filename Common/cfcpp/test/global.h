@@ -6,7 +6,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock-matchers.h>
 #include "../../DesktopEditor/common/File.h"
-#include "../stream.h"
+#include "../Stream/fstream_utils.h"
+#include "../Stream/stream_utils.h"
 #include "../../DesktopEditor/common/Directory.h"
 
 

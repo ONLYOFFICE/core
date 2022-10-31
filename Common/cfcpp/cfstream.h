@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "stream.h"
+#include "Stream/stream.h"
 #include "cfitem.h"
 #include <vector>
 

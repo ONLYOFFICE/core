@@ -28,7 +28,7 @@
 * Creative Commons Attribution-ShareAlike 4.0 International. See the License
 * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 *
-*/ì
+*/
 #include "rbtree.h"
 #include "rbtreeexception.h"
 

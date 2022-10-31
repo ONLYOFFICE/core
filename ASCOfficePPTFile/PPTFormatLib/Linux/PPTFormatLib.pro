@@ -27,6 +27,7 @@ DEFINES +=  UNICODE \
         #DISABLE_FILE_DOWNLOADER
 
 HEADERS += \
+    ../Converter/transition.h \
     ../Enums/RecordType.h \
     ../Enums/_includer.h \
     ../Enums/enums.h \
@@ -297,5 +298,6 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
+    ../Converter/transition.cpp \
     ../PPTXWriter/BulletsConverter.cpp
 

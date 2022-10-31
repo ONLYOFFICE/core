@@ -48,18 +48,7 @@
 
 #include "Converter.h"
 #include "Animation.h"
-
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/Transition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/TransitionBase.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EmptyTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OrientationTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EightDirectionTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OptionalBlackTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SideDirectionTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/CornerDirectionTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/WheelTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+#include "../Converter/transition.h"
 
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 
@@ -615,6 +604,7 @@ void PPT_FORMAT::CPPTXWriter::WriteAll()
     WriteNotes();
 }
 
+// todo reforming and refactoring!
 void PPT_FORMAT::CPPTXWriter::WriteThemes()
 {
     int nStartLayout = 0, nIndexTheme = 0;
@@ -655,9 +645,14 @@ bool CPPTXWriter::HasRoundTrips() const
 
     std::vector<RoundTripTheme12Atom*> arrRTTheme;
     std::vector<RoundTripContentMasterInfo12Atom*> arrRTLayouts;
+    std::vector<RoundTripNotesMasterTextStyles12Atom*> arrRTNotes;
     auto pSlide = m_pUserInfo->m_mapMasters.begin()->second;
     pSlide->GetRecordsByType(&arrRTLayouts, false, false);
     pSlide->GetRecordsByType(&arrRTTheme, false, true);
+    pSlide->GetRecordsByType(&arrRTNotes, false, true);
+
+    if (m_pDocument->m_pNotesMaster && arrRTNotes.empty())
+        return false;
 
     return arrRTTheme.size() && arrRTLayouts.size();
 }
@@ -1592,182 +1587,9 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
 void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShowInfo &oSSInfo)
 {
-    CTransition& transition = oSSInfo.m_oTransition;
-    PPTX::Logic::Transition Tr;
-
-    std::wstring param_name, param_value;
-    std::wstring param_name2, param_value2;
-
-    switch(transition.m_nEffectType)
-    {
-    case 1:
-    case 17:
-    case 18:
-    case 19:
-    case 22:
-    case 23:
-    case 27:
-    {
-        auto pTrBase = new PPTX::Logic::EmptyTransition();
-        switch (transition.m_nEffectType)
-        {
-        case 1:  pTrBase->name = L"random"; break;
-        case 17: pTrBase->name = L"diamond"; break;
-        case 18: pTrBase->name = L"plus"; break;
-        case 19: pTrBase->name = L"wedge"; break;
-        case 22: pTrBase->name = L"newsflash"; break;
-        case 23: pTrBase->name = L"fade"; break;
-        case 27: pTrBase->name = L"circle"; break;
-        }
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 2:
-    case 3:
-    case 8:
-    case 21:
-    {
-        auto pTrBase = new PPTX::Logic::OrientationTransition;
-        switch (transition.m_nEffectType)
-        {
-        case 2:  pTrBase->name = L"blinds"; break;
-        case 3:  pTrBase->name = L"checker"; break;
-        case 8:  pTrBase->name = L"randomBar"; break;
-        case 21: pTrBase->name = L"comb"; break;
-        }
-        pTrBase->dir = new PPTX::Limit::Orient;
-        pTrBase->dir->SetBYTECode(transition.m_nEffectDirection);
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 0:
-    case 5:
-    case 6:
-    {
-        // case was not documented
-        if ((UINT)transition.m_nEffectDirection > 1)
-            break;
-
-        auto pTrBase = new PPTX::Logic::OptionalBlackTransition;
-        if      (transition.m_nEffectType == 0) pTrBase->name	= L"cut";
-        else if (transition.m_nEffectType == 5) pTrBase->name	= L"dissolve";
-        else if (transition.m_nEffectType == 6) pTrBase->name	= L"fade";
-        pTrBase->thruBlk = (bool)transition.m_nEffectDirection;
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 4:
-    case 7:
-    {
-        auto pTrBase = new PPTX::Logic::EightDirectionTransition;
-        if      (transition.m_nEffectType == 4)	pTrBase->name = L"cover";
-        else if (transition.m_nEffectType == 7)	pTrBase->name = L"pull";
-
-        pTrBase->dir = new PPTX::Limit::EightDirectionVal;
-        switch(transition.m_nEffectDirection)
-        {
-        case 0:	param_value = L"r"; break;
-        case 1:	param_value = L"b"; break;
-        case 2:	param_value = L"l"; break;
-        case 3:	param_value = L"t"; break;
-        case 4:	param_value = L"br"; break;
-        case 5:	param_value = L"bl"; break;
-        case 6:	param_value = L"tr"; break;
-        case 7:	param_value = L"tl"; break;
-        }
-        pTrBase->dir->set(param_value);
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 9:
-    {
-
-        auto pTrBase = new PPTX::Logic::CornerDirectionTransition;
-        pTrBase->name = L"strips";
-        pTrBase->dir = new PPTX::Limit::CornerDirectionVal;
-        switch(transition.m_nEffectDirection)
-        {
-        case 0:	param_value = L"ru"; break;
-        case 1:	param_value = L"lu"; break;
-        case 2:	param_value = L"rd"; break;
-        case 3:	param_value = L"ld"; break;
-        }
-        pTrBase->dir->set(param_value);
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 10:
-    case 20:
-    {
-        auto pTrBase = new PPTX::Logic::SideDirectionTransition;
-        if (transition.m_nEffectType == 10)	pTrBase->name = L"wipe";
-        if (transition.m_nEffectType == 20)	pTrBase->name = L"push";
-
-        pTrBase->dir = new PPTX::Limit::SideDirectionVal;
-        switch(transition.m_nEffectDirection)
-        {
-        case 0:	param_value = L"l"; break;
-        case 1:	param_value = L"u"; break;
-        case 2:	param_value = L"r"; break;
-        case 3:	param_value = L"d"; break;
-        }
-        pTrBase->dir->set(param_value);
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 11:
-    {
-        auto pTrBase = new PPTX::Logic::ZoomTransition;
-        pTrBase->dir = new PPTX::Limit::InOutDirectionVal;
-        pTrBase->dir->SetBYTECode(!transition.m_nEffectDirection);
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 13:
-    {
-        auto pTrBase = new PPTX::Logic::SplitTransition;
-        pTrBase->dir = new PPTX::Limit::InOutDirectionVal;
-        pTrBase->orient = new PPTX::Limit::Orient;
-
-        switch(transition.m_nEffectDirection)
-        {
-        case 0:	param_value2 = L"horz";	param_value = L"out";	break;
-        case 1:	param_value2 = L"horz";	param_value = L"in";	break;
-        case 2:	param_value2 = L"vert";	param_value = L"out";	break;
-        case 3:	param_value2 = L"vert";	param_value = L"in";	break;
-        }
-        pTrBase->dir->set(param_value);
-        pTrBase->orient->set(param_value2);
-
-        Tr.base.base.reset(pTrBase);
-    }break;
-    case 26:
-    {
-        auto pTrBase = new PPTX::Logic::WheelTransition;
-        pTrBase->spokes = transition.m_nEffectDirection;
-        Tr.base.base.reset(pTrBase);
-    }break;
-    default:
-        break;
-    }
-
-    Tr.spd = new PPTX::Limit::TransitionSpeed;
-    // "2 -" переворот числа
-    Tr.spd->SetBYTECode(2 - transition.m_nSpeed);
-
-    Tr.advClick = oSSInfo.m_bManulClick;
-
-    if (oSSInfo.m_bAdvClick &&
-            oSSInfo.m_dSlideDuration >= 0 &&
-            oSSInfo.m_dSlideDuration <= 86399000)
-    {
-        Tr.advTm = oSSInfo.m_dSlideDuration;
-    }
-    if (transition.m_bAudioPresent)
-    {
-        bool bExternal = false;
-        std::wstring rId = m_pShapeWriter->m_pRels->WriteAudio(transition.m_oAudio.m_strAudioFileName, bExternal);
-        Tr.sndAc = new PPTX::Logic::SndAc;
-        Tr.sndAc->stSnd = new PPTX::Logic::StSnd;
-        Tr.sndAc->stSnd->embed = rId;
-
-        if (!transition.m_oAudio.m_sImageName.empty())
-            Tr.sndAc->stSnd->name = XmlUtils::EncodeXmlString(transition.m_oAudio.m_sImageName);
-    }
-    oWriter.WriteString(Tr.toXML());
+    PPT::Converter::Transition transitionConverter(oSSInfo, m_pShapeWriter->m_pRels);
+    auto transition = transitionConverter.Convert();
+    oWriter.WriteString(transition.toXML());
 }
 
 void PPT_FORMAT::CPPTXWriter::WriteNotes(int nIndexNotes)

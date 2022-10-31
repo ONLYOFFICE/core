@@ -339,7 +339,7 @@ namespace PPT_FORMAT
 			m_pRels = pGenerator;
 		}
 
-	protected:
+    protected:
 		void CalculateFullTransform()
 		{
 			m_oFullTransform	= m_oBaseTransform;

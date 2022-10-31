@@ -35,6 +35,7 @@
 #include "directoryentry.h"
 #include "RBTree/rbtreeexception.h"
 #include "RBTree/irbnode.h"
+#include "RBTree/rbtree.h"
 
 using namespace CFCPP;
 using RedBlackTree::RBTree;

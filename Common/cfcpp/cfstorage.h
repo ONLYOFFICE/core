@@ -31,10 +31,13 @@
  */
 #pragma once
 
-#include "RBTree/rbtree.h"
-#include "idirectoryentry.h"
+#include "RBTree/action.h"
 #include "cfstream.h"
 
+namespace RedBlackTree
+{
+class RBTree;
+}
 
 namespace CFCPP
 {

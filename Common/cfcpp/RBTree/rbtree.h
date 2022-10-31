@@ -4,14 +4,11 @@
 #include <iterator>
 #include <functional>
 #include <list>
+#include "action.h"
 
 
 namespace RedBlackTree
 {
-template  <class T>
-using Action = std::function<void(T)>;
-
-
 class RBTree
 {
 public:

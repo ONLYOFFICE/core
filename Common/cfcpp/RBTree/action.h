@@ -29,43 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "streamrw.h"
 
+#include <functional>
 
-using namespace CFCPP;
-
-StreamRW::StreamRW(CFCPP::Stream stream)
-    : stream(stream)
+namespace RedBlackTree
 {
-}
-
-_INT64 StreamRW::Seek(_INT64 offset)
-{
-    stream->seek(offset, std::ios::beg);
-    return stream->tell();
-}
-
-_INT64 CFCPP::StreamRW::Tell()
-{
-    return stream->tell();
-}
-
-void StreamRW::ReadArray(char *data, _INT32 lenght)
-{
-    stream->read(data, lenght);
-}
-
-void StreamRW::ReadArray(BYTE* data, _INT32 lenght)
-{
-    stream->read(reinterpret_cast<char*>(data), lenght);
-}
-
-void StreamRW::WriteArray(const BYTE *arr, _INT32 lenght)
-{
-    stream->write(reinterpret_cast<const char*>(arr), lenght);
-}
-
-void StreamRW::WriteArray(const char *arr, _INT32 lenght)
-{
-    stream->write(arr, lenght);
+template  <class T>
+using Action = std::function<void(T)>;
 }

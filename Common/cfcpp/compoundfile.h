@@ -32,6 +32,7 @@
 #pragma once
 
 #include "cfstorage.h"
+#include "idirectoryentry.h"
 
 namespace CFCPP
 {

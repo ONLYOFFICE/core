@@ -27,6 +27,7 @@ SOURCES += \
     streamview.cpp
 
 HEADERS += \
+    RBTree/action.h \
     RBTree/irbnode.h \
     RBTree/rbtree.h \
     RBTree/rbtreeexception.h \

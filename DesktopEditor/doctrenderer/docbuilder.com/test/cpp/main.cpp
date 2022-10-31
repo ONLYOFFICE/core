@@ -3,8 +3,8 @@
 #include <atlcomcli.h>
 #include <atlsafe.h>
 
-#include "../_docbuilder.h"
-#include "../_docbuilder_i.c"
+#include "../../src/_docbuilder.h"
+#include "../../src/_docbuilder_i.c"
 
 #ifdef _NATIVE_WCHAR_T_DEFINED
 # ifdef _DEBUG
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	
 
 	oParagraph->Call(_bstr_t(L"SetSpacingAfter"), ATL::CComVariant(1000), ATL::CComVariant(VARIANT_FALSE), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
-	oParagraph->Call(_bstr_t(L"AddText"), ATL::CComVariant(L"Hello from .com!"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
+	oParagraph->Call(_bstr_t(L"AddText"), ATL::CComVariant(L"Hello from COM!"), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);
 	oContent->Set(0, oParagraph);
 
 	oDocument->Call(_bstr_t(L"InsertContent"), ATL::CComVariant(oContent), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), ATL::CComVariant(), NULL);

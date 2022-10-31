@@ -44,13 +44,13 @@ using namespace ATL;
 #endif
 
 #ifdef _WIN64
-#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
+#pragma comment(lib, "../../../../build/lib/win_64/doctrenderer.lib")
 #else
-#pragma comment(lib, "../../../build/lib/win_32/doctrenderer.lib")
+#pragma comment(lib, "../../../../build/lib/win_32/doctrenderer.lib")
 #endif
 
-#include "../../../DesktopEditor/doctrenderer/docbuilder.h"
-#include "../../../Common/OfficeFileFormats.h"
+#include "../../../../DesktopEditor/doctrenderer/docbuilder.h"
+#include "../../../../Common/OfficeFileFormats.h"
 
 #define RELEASEINTERFACE(pinterface)\
 {\

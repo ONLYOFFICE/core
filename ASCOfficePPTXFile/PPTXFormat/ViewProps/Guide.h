@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_GUIDE_INCLUDE_H_
-#define PPTX_VIEWPROPS_GUIDE_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/Orient.h"
@@ -45,7 +43,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Guide)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"orient", orient);
@@ -56,12 +53,11 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("pos"), pos);
-				oAttr.WriteLimitNullable(_T("orient"), orient);
+				oAttr.Write(L"pos", pos);
+				oAttr.WriteLimitNullable(L"orient", orient);
 
-				return XmlUtils::CreateNode(_T("p:guide"), oAttr);
+				return XmlUtils::CreateNode(L"p:guide", oAttr);
 			}
-
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -71,20 +67,45 @@ namespace PPTX
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							pos = pReader->GetLong();
+						}break;
+						case 1:
+						{
+							orient = pReader->GetUChar();
+						}break;
+						default:
+							break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:guide"));
+				pWriter->StartNode(L"p:guide");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("pos"), pos);
-				pWriter->WriteAttribute(_T("orient"), orient);
+				pWriter->WriteAttribute(L"pos", pos);
+				pWriter->WriteAttribute(L"orient", orient);
 				pWriter->EndAttributes();
 
-				pWriter->EndNode(_T("p:guide"));
+				pWriter->EndNode(L"p:guide");
 			}
-
-		public:
 			nullable_int					pos;
 			nullable_limit<Limit::Orient>	orient;
 		protected:
@@ -97,5 +118,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_GUIDE_INCLUDE_H_

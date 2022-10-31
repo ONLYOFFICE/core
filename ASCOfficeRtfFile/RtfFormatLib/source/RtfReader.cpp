@@ -251,7 +251,7 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
         RtfFont oFont;
         if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) && !m_bUseGlobalCodepage)
         {
-            if( PROP_DEF != oFont.m_nCharset )
+            if( PROP_DEF != oFont.m_nCharset && oFont.m_nCharset > 1)
             {
                 nCodepage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
             }

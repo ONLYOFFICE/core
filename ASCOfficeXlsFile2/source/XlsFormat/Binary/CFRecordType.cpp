@@ -253,6 +253,8 @@ CFRecordTypeValues[] =
 	{ "BoolErr_BIFF2",			rt_BoolErr_BIFF2 },
 	{ "String",					rt_String },
 	{ "String_BIFF2",			rt_String_BIFF2 },
+	{ "Formula_BIFF3",			rt_Formula_BIFF3 },
+	{ "Formula_BIFF4",			rt_Formula_BIFF4 },
 	{ "Row",					rt_Row },
 	{ "Row_BIFF2",				rt_Row_BIFF2 },
 	{ "Index",					rt_Index },

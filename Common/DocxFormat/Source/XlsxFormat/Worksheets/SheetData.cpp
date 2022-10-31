@@ -58,6 +58,8 @@
 #include "../../XlsbFormat/Biff12_structures/CellRef.h"
 
 #include <boost/regex.hpp>
+#include <boost/date_time/gregorian/gregorian.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 using namespace XLS;
 
@@ -176,7 +178,77 @@ namespace OOX
 			return (bAbsoluteCol ? "$" : "") + getColAddressA(col) + (bAbsoluteRow ? "$" : "") + getRowAddressA(row);
 		}
 //------------------------------------------------------------------------------
+		static bool parseDate(const std::wstring & Date, double & Value)
+		{
+			// for example, "1899-12-31T05:37:46.665696"
+			try
+			{
+				boost::wregex r(L"([\\d]+)-([\\d]+)-([\\d]+)(?:T([\\d]+):([\\d]+):([\\d]+)(?:\\.([\\d]+))?)?");
+				boost::match_results<std::wstring::const_iterator> res;
+				
+				if (boost::regex_match(Date, res, r))
+				{
+					Value = 0;
 
+					int Hours = 0, Minutes = 0, Sec = 0, FSec = 0;
+					int Year, Month, Day;
+
+					Year = boost::lexical_cast<int>(res[1].str());
+					Month = boost::lexical_cast<int>(res[2].str());
+					Day = boost::lexical_cast<int>(res[3].str());
+
+					if (res[4].matched)
+						Hours = boost::lexical_cast<int>(res[4].str());
+
+					if (res[5].matched)
+						Minutes = boost::lexical_cast<int>(res[5].str());
+
+					if (res[6].matched)
+						Sec = boost::lexical_cast<int>(res[6].str());
+
+					if (res[7].matched)
+						FSec = boost::lexical_cast<int>(res[7].str());
+
+					if (Year < 1400 || Year >10000)
+						return -1;
+					if (Month < 1 || Month > 12)
+						return -1;
+					if (Day < 1 || Day > 31)
+						return -1;
+
+					boost::int64_t daysFrom1900 = boost::gregorian::date_duration(boost::gregorian::date(Year, Month, Day) - boost::gregorian::date(1900, 1, 1)).days() + 1;
+
+					if (Year <= 1900 &&
+						Month <= 2 &&
+						Day <= 29)
+					{
+						Value = daysFrom1900;
+					}
+					else
+					{
+						Value = daysFrom1900 + 1;
+					}
+
+					if (Hours > 0 || Sec > 0 || Minutes > 0)
+					{
+						boost::posix_time::time_duration t(Hours, Minutes, 0);
+						t += boost::posix_time::millisec(static_cast<boost::uint32_t>(Sec * 1000));
+						boost::posix_time::time_duration day(24, 0, 0);
+
+						const boost::uint64_t m1 = t.total_milliseconds();
+						const boost::uint64_t m2 = day.total_milliseconds();
+						Value += 1.0 * m1 / m2;						
+					}
+
+					return true;
+				}
+			}
+			catch (...)
+			{
+			}
+			return false;
+		}
+//-----------------------------------------------------------------------------------------------------
 	class r1c1_formula_convert
 	{
 	public:
@@ -743,6 +815,7 @@ namespace OOX
 		}
 		void CRowXLSB::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
+			bool hasHt = false;
 			WritingElement_ReadAttributes_StartChar( oReader )
 
 			if ( strcmp("r", wsName) == 0 )\
@@ -759,6 +832,7 @@ namespace OOX
 			}
 			else if ( strcmp("ht", wsName) == 0 )\
 			{
+				hasHt = true;
 				m_dHt = atof(oReader.GetTextChar());
 			}
 			else if ( strcmp("hidden", wsName) == 0 )\
@@ -794,6 +868,12 @@ namespace OOX
 				m_oPh.FromStringA(oReader.GetTextChar());
 			}
 			WritingElement_ReadAttributes_EndChar( oReader )
+
+			//invalid combination for xlsb, in this case in xlsx ht is calculated by content
+			if (m_oCustomHeight.ToBool() && !hasHt)
+			{
+				m_oCustomHeight.FromBool(false);
+			}
 		}
 
 		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -886,6 +966,8 @@ namespace OOX
 			{
 				m_oSi.Init();
 				m_oSi->SetValue(oStream.GetULong());
+				m_oT.Init();
+				m_oT->SetValue(SimpleTypes::Spreadsheet::cellformulatypeShared);
 			}
 		}
 
@@ -902,6 +984,7 @@ namespace OOX
                         m_sText = formula->formula.getAssembledFormula();
                         //m_oCa.Init();
                         //m_oCa = formula->grbitFlags.fAlwaysCalc;
+						m_oT.reset();
                     }
                     break;
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
@@ -1159,6 +1242,15 @@ namespace OOX
 			if(SimpleTypes::Spreadsheet::celltypeStr != m_oType->GetValue())
 			{
 				m_oValue = oReader;
+				if (SimpleTypes::Spreadsheet::celltypeDate == m_oType->GetValue())
+				{
+					double value = 0;
+					if (parseDate(m_oValue->m_sText, value))
+					{
+						m_oValue->m_sText = std::to_wstring(value);
+						m_oType.reset(); // по стилю
+					}
+				}
 				return;
 			}
 			fromXML2(oReader);
@@ -1451,6 +1543,8 @@ namespace OOX
 							sheet->m_oSheetData->m_arrItems.back()->m_arrItems.push_back(pCell);
 						}
 					}
+					else
+						xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
 				}
 				else
 					xlsx_flat->m_nLastReadCol += iAcross.get_value_or(0);
@@ -1776,9 +1870,13 @@ namespace OOX
                         if(pFMLACELL->m_source != nullptr)
                         {
                             m_oFormula.Init();
-                            if(pFMLACELL->isShared)
-                                m_oFormula->m_oSi = pFMLACELL->m_sharedIndex;
                             m_oFormula->fromBin(pFMLACELL->m_source, SimpleTypes::Spreadsheet::cellformulatypeNormal);
+							if (pFMLACELL->isShared)
+							{
+								m_oFormula->m_oSi = pFMLACELL->m_sharedIndex;
+								m_oFormula->m_oT.Init();
+								m_oFormula->m_oT->SetValue(SimpleTypes::Spreadsheet::cellformulatypeShared);
+							}
                         }
 
                         if(pSHRFMLACELL != nullptr)
@@ -2331,49 +2429,52 @@ namespace OOX
 						}
 					}
 				}
-				if (xlsx_flat)
-				{
-					CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
-					pWorksheet->m_oSheetFormatPr.Init();
-					
-					if (m_dDefaultColumnWidth.IsInit())
-					{
-						double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-						double maxDigitSize = 4.1;
-
-						m_dDefaultColumnWidth = (int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9;
-					}
-
-					pWorksheet->m_oSheetFormatPr->m_oDefaultColWidth = m_dDefaultColumnWidth;
-					pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = m_dDefaultRowHeight;
-
-					if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
-					{
-						pWorksheet->m_oCols.Init();
-						
-						CCol *pColumn = new CCol(m_pMainDocument);
-
-						pColumn->m_oMin = 1;
-						pColumn->m_oMax = 16384;
-
-						pColumn->m_oWidth.Init();
-						pColumn->m_oWidth->SetValue(*m_dDefaultColumnWidth);
-
-						pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
-					}
-					for (std::map<int, std::map<int, unsigned int>>::iterator it = m_mapStyleMerges2003.begin(); it != m_mapStyleMerges2003.end(); ++it)
-					{
-						xlsx_flat->m_nLastReadRow = it->first;
-
-						CRow *pRow = new CRow(m_pMainDocument);
-						pRow->m_oR = xlsx_flat->m_nLastReadRow;
-
-						pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
-						StyleFromMapStyleMerges2003(it->second);
-					}
-					m_mapStyleMerges2003.clear();
-				}
 			}
+		}
+		void CSheetData::AfterRead()
+		{
+			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+			if (!xlsx_flat) return;
+			
+			CWorksheet* pWorksheet = xlsx_flat->m_arWorksheets.back();
+			pWorksheet->m_oSheetFormatPr.Init();
+
+			if (m_dDefaultColumnWidth.IsInit())
+			{
+				double pixDpi = *m_dDefaultColumnWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
+				double maxDigitSize = xlsx_flat->getMaxDigitSize().first;
+
+				m_dDefaultColumnWidth = ((int)((pixDpi + 5) / maxDigitSize * 100. + 0.5)) / 100.;
+			}
+
+			pWorksheet->m_oSheetFormatPr->m_oDefaultColWidth = m_dDefaultColumnWidth;
+			pWorksheet->m_oSheetFormatPr->m_oDefaultRowHeight = m_dDefaultRowHeight;
+
+			if (false == pWorksheet->m_oCols.IsInit() && m_dDefaultColumnWidth.IsInit())
+			{
+				pWorksheet->m_oCols.Init();
+
+				CCol *pColumn = new CCol(m_pMainDocument);
+
+				pColumn->m_oMin = 1;
+				pColumn->m_oMax = 16384;
+
+				pColumn->m_oWidth.Init();
+				pColumn->m_oWidth->SetValue(*m_dDefaultColumnWidth);
+
+				pWorksheet->m_oCols->m_arrItems.push_back(pColumn);
+			}
+			for (std::map<int, std::map<int, unsigned int>>::iterator it = m_mapStyleMerges2003.begin(); it != m_mapStyleMerges2003.end(); ++it)
+			{
+				xlsx_flat->m_nLastReadRow = it->first;
+
+				CRow *pRow = new CRow(m_pMainDocument);
+				pRow->m_oR = xlsx_flat->m_nLastReadRow;
+
+				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+				StyleFromMapStyleMerges2003(it->second);
+			}
+			m_mapStyleMerges2003.clear();
 		}
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
@@ -2772,6 +2873,9 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 		}
 		else if (L"Print" == sName)
 		{
+			if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+			if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();			
+
 			int nDocumentDepth1 = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
 			{
@@ -2787,7 +2891,6 @@ void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
 				}
 				else if (L"Gridlines" == sName1)
 				{
-					if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();
 					m_oPrintOptions->m_oGridLines = true;
 				}
 				else if (L"Scale" == sName1)

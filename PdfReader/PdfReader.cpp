@@ -56,6 +56,7 @@
 #include "lib/xpdf/Parser.h"
 #include "lib/xpdf/AcroForm.h"
 #include "Src/RendererOutputDev.h"
+#include "Src/Adaptors.h"
 
 #ifdef BUILDING_WASM_MODULE
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
@@ -112,6 +113,10 @@ namespace PdfReader
     #ifndef BUILDING_WASM_MODULE
         globalParams->setupBaseFonts(NULL);
     #endif
+
+#ifdef CMAP_USE_MEMORY
+		SetCMapMemory();
+#endif
 
         m_eError = errNone;
 	}
@@ -432,27 +437,31 @@ return 0;
         if (globalParams)
 			((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(m_pInternal->m_wsCMapFolder.c_str());
 	}
+	void CPdfReader::SetCMapMemory()
+	{
+		if (globalParams)
+			((GlobalParamsAdaptor*)globalParams)->SetCMapMemory();
+	}
     NSFonts::IFontManager* CPdfReader::GetFontManager()
 	{
         return m_pInternal->m_pFontManager;
 	}
-	std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath)
+	std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath, bool isPrintStream)
 	{
-        //todo
-//		std::wstring wsXml = m_pInternal->m_pPDFDocument->ToXml();
-//
-//		if (wsFilePath != L"")
-//		{
-//			NSFile::CFileBinary oFile;
-//			if (!oFile.CreateFileW(wsFilePath))
-//				return wsXml;
-//
-//			oFile.WriteStringUTF8(wsXml);
-//			oFile.CloseFile();
-//		}
-//
-//		return wsXml;
-        return L"";
+		XMLConverter oConverter(m_pInternal->m_pPDFDocument->getXRef(), isPrintStream);
+		std::wstring wsXml = oConverter.GetXml();
+
+		if (wsFilePath != L"")
+		{
+			NSFile::CFileBinary oFile;
+			if (!oFile.CreateFileW(wsFilePath))
+				return wsXml;
+
+			oFile.WriteStringUTF8(wsXml);
+			oFile.CloseFile();
+		}
+
+		return wsXml;
 	}
     PDFDoc* CPdfReader::GetPDFDocument()
     {

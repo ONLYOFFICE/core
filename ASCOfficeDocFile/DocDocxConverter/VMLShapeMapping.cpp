@@ -482,9 +482,10 @@ namespace DocFileFormat
 			// LINE
 			case ODRAW::lineColor:
 			{
-				RGBColor lineColor((int)iter->op, RedFirst);
-				if (!pShape->fBackground)
-					m_pXmlWriter->WriteAttribute(L"strokecolor", (std::wstring(L"#") + lineColor.SixDigitHexCode));
+				ODRAW::OfficeArtCOLORREF lineColor((_UINT32)iter->op);
+				m_context->_doc->CorrectColor(lineColor);
+				if (false == lineColor.sColorRGB.empty() && !pShape->fBackground)
+					m_pXmlWriter->WriteAttribute(L"strokecolor", (std::wstring(L"#") + lineColor.sColorRGB));
 			}break;
 			case ODRAW::lineWidth:
 			{
@@ -544,13 +545,18 @@ namespace DocFileFormat
 	// FILL
 			case ODRAW::fillColor:
 			{
-				RGBColor fillColor((int)iter->op, RedFirst);
-				m_pXmlWriter->WriteAttribute(L"fillcolor", (std::wstring(L"#") + fillColor.SixDigitHexCode));
+				ODRAW::OfficeArtCOLORREF fillColor((_UINT32)iter->op);
+				m_context->_doc->CorrectColor(fillColor);
+				if (false == fillColor.sColorRGB.empty())
+					m_pXmlWriter->WriteAttribute(L"fillcolor", (std::wstring(L"#") + fillColor.sColorRGB));
 			}break;
 			case ODRAW::fillBackColor:
 			{
-				RGBColor fillBackColor((int)iter->op, RedFirst);
-				appendValueAttribute(&m_fill, L"color2", (std::wstring(L"#") + fillBackColor.SixDigitHexCode));
+				ODRAW::OfficeArtCOLORREF fillBackColor((_UINT32)iter->op);
+				m_context->_doc->CorrectColor(fillBackColor);
+
+				if (false == fillBackColor.sColorRGB.empty())
+					appendValueAttribute(&m_fill, L"color2", (std::wstring(L"#") + fillBackColor.sColorRGB));
 			}break;
 			case ODRAW::fillAngle:
 			{
@@ -623,8 +629,10 @@ namespace DocFileFormat
 
 			case ODRAW::shadowColor:
 			{
-				RGBColor shadowColor((int)iter->op, RedFirst);
-				appendValueAttribute(&m_shadow, L"color", (std::wstring(L"#") + shadowColor.SixDigitHexCode));
+				ODRAW::OfficeArtCOLORREF shadowColor((_UINT32)iter->op);
+				m_context->_doc->CorrectColor(shadowColor);
+				if (false == shadowColor.sColorRGB.empty())
+					appendValueAttribute(&m_shadow, L"color", (std::wstring(L"#") + shadowColor.sColorRGB));
 			}break;
 			case ODRAW::shadowOffsetX:
 			{

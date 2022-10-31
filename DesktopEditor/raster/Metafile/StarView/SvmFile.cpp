@@ -232,6 +232,8 @@ void CSvmFile::PlayMetaFile()
  }
 	if (m_pOutput)
 		m_pOutput->End();
+
+	ClearFile();
 }
 
 void CSvmFile::Read_META_LAYOUTMODE()

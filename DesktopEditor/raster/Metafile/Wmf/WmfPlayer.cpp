@@ -150,12 +150,9 @@ namespace MetaFile
 		}
 
 		CWmfObjectMap::const_iterator oPos = m_mObjects.find(ushIndex);
+
 		if (m_mObjects.end() != oPos)
-		{
-			CWmfObjectBase* pOldObject = oPos->second;
-			delete pOldObject;
-			m_mObjects.erase(ushIndex);
-		}
+			DeleteObject(ushIndex);
 
 		m_mObjects.insert(std::pair<unsigned int, CWmfObjectBase*>(ushIndex, pObject));
 
@@ -233,7 +230,7 @@ namespace MetaFile
 
 //---------------------------------------------------------------------------------------------------------------
 	CWmfDC::CWmfDC()
-	{				   
+	{
 		m_pBrush       = &m_oDefaultBrush;
 		m_pPen         = &m_oDefaultPen;
 		m_pPalette     = NULL;
@@ -291,6 +288,7 @@ namespace MetaFile
 		pNewDC->m_oTransform.Init();
 		pNewDC->m_oClip             = m_oClip;
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
+		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
 
 		return pNewDC;
 	}
@@ -566,8 +564,11 @@ namespace MetaFile
 		TWmfWindow* pWindow   = GetWindow();
 		TWmfWindow* pViewPort = GetViewport();
 
-		TXForm oWindowXForm(1, 0, 0, 1, -pWindow->x, -pWindow->y);
-		TXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->x, pViewPort->y);
+		double dM11 = (pViewPort->w >= 0) ? 1 : -1;
+		double dM22 = (pViewPort->h >= 0) ? 1 : -1;
+
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->x * GetPixelWidth() * dM11), -(pWindow->y * GetPixelHeight() * dM22));
+		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->x, pViewPort->y);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);

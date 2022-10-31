@@ -937,11 +937,11 @@ namespace OOX
 			}
 			if(m_oTextHAlign.IsInit())
 			{
-				sResult += std::wstring(L"<x:TextHAlign>") + m_oTextHAlign->ToString() + L"</x:TextHAlign>";
+				sResult += std::wstring(L"<x:TextHAlign>") + m_oTextHAlign->ToVmlString() + L"</x:TextHAlign>";
 			}
 			if(m_oTextVAlign.IsInit())
 			{
-				sResult += std::wstring(L"<x:TextVAlign>") + m_oTextVAlign->ToString() + L"</x:TextVAlign>";
+				sResult += std::wstring(L"<x:TextVAlign>") + m_oTextVAlign->ToVmlString() + L"</x:TextVAlign>";
 			}
 			if(m_oLockText.IsInit())
 			{
@@ -1009,7 +1009,7 @@ namespace OOX
 			}
 			if (m_oSelType.IsInit())
 			{
-                sResult += L"<x:SelType>" + m_oSelType->ToString() + L"</x:SelType>";
+                sResult += L"<x:SelType>" + m_oSelType->ToVmlString() + L"</x:SelType>";
 			}			
 			if (m_oDx.IsInit())
 			{
@@ -1017,7 +1017,7 @@ namespace OOX
 			}
 			if (m_oDropStyle.IsInit())
 			{
-				sResult += L"<x:DropStyle>" + m_oDropStyle->ToString() + L"</x:DropStyle>";
+				sResult += L"<x:DropStyle>" + m_oDropStyle->ToVmlString() + L"</x:DropStyle>";
 			}
 			if (m_oDropLines.IsInit())
 			{

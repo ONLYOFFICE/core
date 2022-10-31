@@ -1,9 +1,9 @@
 ﻿#pragma once
 #include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "ElementOldShape.h"
-#include "ElementParagraph.h"
-#include "ElementImage.h"
-#include "ElementShape.h"
+#include "elements/OldShape.h"
+#include "elements/Paragraph.h"
+#include "elements/Shape.h"
+#include "managers/StyleManager.h"
 
 namespace NSDocxRenderer
 {
@@ -18,6 +18,8 @@ namespace NSDocxRenderer
 
         Aggplus::CMatrix*			m_pTransform {nullptr};
         Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter {nullptr};
+
+        CStyleManager*              m_pStyleManager {nullptr};
 
         CVectorGraphics				m_oVector;
 
@@ -34,8 +36,8 @@ namespace NSDocxRenderer
 
         CTextLine* m_pCurrentLine {nullptr};
 
-        CFontManager		m_oManager;
-        CFontManagerLight	m_oManagerLight;
+        CFontManager		m_oFontManager;
+        CFontManagerLight	m_oFontManagerLight;
 
         TextAssociationType m_eTextAssociationType {tatPlainLine};
 
@@ -49,7 +51,8 @@ namespace NSDocxRenderer
         CPage(NSFonts::IApplicationFonts* pFonts);
         ~CPage();
         void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
-            NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix, Aggplus::CGraphicsPathSimpleConverter* pSimple);
+            NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
+            Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager);
 
         void Clear();
         void ClearImages();
@@ -64,7 +67,7 @@ namespace NSDocxRenderer
 
         // image commands
         //набивается содержимым вектор m_arImages
-        void WriteImage(CImageInfo* pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
+        void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
         // path commands
         void MoveTo(double& dX, double& dY);
@@ -74,7 +77,7 @@ namespace NSDocxRenderer
         void End();
         void Close();
         //набивается содержимым вектор m_arShapes
-        void DrawPath(LONG lType, CImageInfo* pInfo);
+        void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
         //набивается содержимым вектор m_arTextData
         void CollectTextData(const PUINT pUnicodes, const PUINT pGids, const UINT& nCount,
@@ -82,8 +85,6 @@ namespace NSDocxRenderer
                              const double& fBaseLineOffset, const bool& bIsPDFAnalyzer);
 
         void AnalyzeCollectedShapes();
-        void RemoveSubstratesUnderPictures();
-        void CorrelateContWithShape();
         void DetermineLinesType();
 
         //Собранные для текущей страницы данные нужно проанализировать и сгруппировать, лишнее удалить
@@ -91,11 +92,12 @@ namespace NSDocxRenderer
         void DetermineStrikeoutsUnderlinesHighlights();
         bool IsLineCrossingText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
         bool IsLineBelowText(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
-        bool IsItHighlightingBackground(const CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
+        bool IsItHighlightingBackground(CShape* pGraphicItem, CContText* pCont, const eHorizontalCrossingType& eHType);
 
         //набивается содержимым вектор m_arTextLine
         void AnalyzeLines();
         void BuildLines();
+        void CollectDublicateLines(const CContText *pCont);
         void MergeLinesByVertAlignType();
         void DetermineDominantGraphics();
 
@@ -118,9 +120,9 @@ namespace NSDocxRenderer
         void CreateSingleLineOldShape(CTextLine *pLine);
         void CreateSingleLineShape(CTextLine *pLine);
 
-        bool IsShadingPresent(const CTextLine *pLine1, const CTextLine *pLine2);
+        bool IsShadingPresent(const CTextLine* pLine1, const CTextLine* pLine2);
 
     private:
-        CTextLine* GetNextTextLine(size_t& nCurrentIndex);
+        CTextLine* GetNextTextLine(size_t& nCurrentIndex, size_t* pIndexForCheking = nullptr);
     };
 }

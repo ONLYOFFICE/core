@@ -120,7 +120,7 @@ namespace OLEPS
 				CP_XML_ATTR(L"xmlns:vt", L"http://schemas.openxmlformats.org/officeDocument/2006/docPropsVTypes");
 
 				prop = GetProperty(TEMPLATE);
-				if (prop)
+				if ((prop) && (false == prop->IsEmpty()))
 				{
 					CP_XML_NODE(L"Template")
 					{
@@ -128,7 +128,7 @@ namespace OLEPS
 					}
 				}
 				prop = GetProperty(MANAGER);
-				if (prop)
+				if ((prop) && (false == prop->IsEmpty()))
 				{
 					CP_XML_NODE(L"Manager")
 					{
@@ -136,7 +136,7 @@ namespace OLEPS
 					}
 				}
 				prop = GetProperty(COMPANY);
-				if (prop)
+				if ((prop) && (false == prop->IsEmpty()))
 				{
 					CP_XML_NODE(L"Company")
 					{
@@ -176,7 +176,7 @@ namespace OLEPS
 					}
 				}
 				prop = GetProperty(PRESFORMAT);
-				if (prop)
+				if ((prop) && (false == prop->IsEmpty()))
 				{
 					CP_XML_NODE(L"PresentationFormat")
 					{
@@ -304,7 +304,7 @@ namespace OLEPS
 						sApplication = NSSystemUtils::gc_EnvApplicationNameDefault;
 
 					prop = GetProperty(APPNAME);
-					if (prop)
+					if ((prop) && (false == prop->IsEmpty()))
 					{
                         CP_XML_STREAM() << (prop->toString() + L"/" + sApplication);
 					}
@@ -318,7 +318,7 @@ namespace OLEPS
 					}
 				}
 				prop = GetProperty(DOCVERSION);
-				if (prop)
+				if ((prop) && (false == prop->IsEmpty()))
 				{
 					CP_XML_NODE(L"AppVersion")
 					{

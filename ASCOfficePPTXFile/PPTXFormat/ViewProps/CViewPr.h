@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_COMMON_VIEW_PROPERTIES_INCLUDE_H_
-#define PPTX_VIEWPROPS_COMMON_VIEW_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Origin.h"
@@ -45,27 +43,25 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(CViewPr)
-
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
                 XmlMacroReadAttributeBase(node, L"varScale", attrVarScale);
 
-				Scale	= node.ReadNode(_T("p:scale"));
-				Origin	= node.ReadNode(_T("p:origin"));
+				Scale	= node.ReadNode(L"p:scale");
+				Origin	= node.ReadNode(L"p:origin");
 
 				FillParentPointersForChilds();
 			}
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("varScale"), attrVarScale);
+				oAttr.Write(L"varScale", attrVarScale);
 
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(Scale);
 				oValue.Write(Origin);
 
-				return XmlUtils::CreateNode(_T("p:cViewPr"), oAttr, oValue);
+				return XmlUtils::CreateNode(L"p:cViewPr", oAttr, oValue);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -77,21 +73,64 @@ namespace PPTX
 				pWriter->WriteRecord1(0, Origin);
 				pWriter->WriteRecord1(1, Scale);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							attrVarScale = pReader->GetBool();
+						}break;
+						default:
+							break;
+					}
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 0:
+						{
+							Origin.fromPPTY(pReader);
+						}break;
+						case 1:
+						{
+							Scale.fromPPTY(pReader);
+						}break;
+						default:
+						{
+							pReader->SkipRecord();
+						}break;
+					}
+				}
+				pReader->Seek(_end_rec);
+			}
+
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:cViewPr"));
+				pWriter->StartNode(L"p:cViewPr");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("varScale"), attrVarScale);
+				pWriter->WriteAttribute(L"varScale", attrVarScale);
 				pWriter->EndAttributes();
 
 				Scale.toXmlWriter(pWriter);
 				Origin.toXmlWriter(pWriter);				
 				
-				pWriter->EndNode(_T("p:cViewPr"));
+				pWriter->EndNode(L"p:cViewPr");
 			}
-
-		public:
 			nullable_bool			attrVarScale;
 			nsViewProps::Origin		Origin;
 			nsViewProps::Scale		Scale;
@@ -104,5 +143,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_COMMON_VIEW_PROPERTIES_INCLUDE_H_

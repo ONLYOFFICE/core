@@ -230,6 +230,10 @@ public:
 					{
 						result += L"'"; pos += 8;
 					}
+					else if ((pos + 8 <= size) && (expr.substr(pos, 8) == L"APERSAND"))
+					{
+						result += L"&"; pos += 8;
+					}
 					else
 					{
 						result += expr[pos++];
@@ -321,6 +325,10 @@ public:
 				case '\"':
 				{
 					result += L"KAVYCHKA";
+				}break;
+				case '&':
+				{
+					result += L"APERSAND";
 				}break;
 				default:
 				{
@@ -782,7 +790,6 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 			boost::match_default | boost::format_all);
 	}
 
-	XmlUtils::replace_all(res, L"&", L"&amp;");
 	oox_replace_tmp_back(res);
 
 	replace_vertical(res);   
@@ -821,6 +828,7 @@ std::wstring oox2odf_converter::Impl::convert_conditional_formula(const std::wst
 	     
 	}
 
+	XmlUtils::replace_all(res, L"&", L"&amp;");
     oox_replace_tmp_back( res);
 
 	replace_vertical(res);

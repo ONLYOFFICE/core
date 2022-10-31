@@ -1156,6 +1156,8 @@ HRESULT CGraphicsRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
     if (c_nDarkMode == lType && m_pRenderer)
         m_pRenderer->m_bIsDarkMode = (1 == lCommand);
+	if (c_nUseDictionaryFonts == lType && m_pFontManager)
+		m_pFontManager->SetUseCorrentFontByName((1 == lCommand) ? true : false);
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dCommand)
@@ -1441,4 +1443,11 @@ void CGraphicsRenderer::Restore()
     }
 
     RELEASEOBJECT(pState);
+}
+void CGraphicsRenderer::put_BlendMode(const unsigned int nBlendMode)
+{
+    if (NULL != m_pRenderer)
+    {
+        m_pRenderer->m_nBlendMode = nBlendMode;
+    }
 }

@@ -157,10 +157,10 @@ class table_table_protection : public office_element_impl<table_table_protection
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableProtection;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	table_table_protection() : select_protected_cells(true), select_unprotected_cells(true) {}
 
@@ -188,10 +188,10 @@ class table_table_source : public office_element_impl<table_table_source>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableSource;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
     table_table_source_attlist table_table_source_attlist_;
     table_linked_source_attlist table_linked_source_attlist_;
@@ -221,19 +221,14 @@ public:
 };
 
 //-----------------------------------------------------------------------------------------------------
-class table_columns_no_group: public office_element
+class table_columns_no_group : public office_element_impl<table_columns_no_group>
 {
 public:
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
-    const wchar_t * ns;
-    const wchar_t * name;
-    xml::NodeType xml_type;
-    ElementType type;
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const ElementType type = typeTableTableColumnNoGroup;
 
- 	CPDOCCORE_DEFINE_VISITABLE();
-
-public:
-    table_columns_no_group(odf_conversion_context * _Context);
+	table_columns_no_group(odf_conversion_context * _Context);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name/*, odf_conversion_context * Context*/);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -250,8 +245,7 @@ public:
     table_columns table_columns_2_;
 
 private:
-	odf_conversion_context * Context;
-    
+	odf_conversion_context * Context;    
 };
 
 //-----------------------------------------------------------------------------------------------------
@@ -292,10 +286,10 @@ class table_table_column : public office_element_impl<table_table_column>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableColumn;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
  
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -315,10 +309,10 @@ class table_table_columns : public office_element_impl<table_table_columns>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableColumns;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -337,10 +331,10 @@ class table_table_header_columns : public office_element_impl<table_table_header
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableHeaderColumns;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -370,10 +364,8 @@ class table_table_column_group : public office_element_impl<table_table_column_g
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeTableTableColumnGroup;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    static const ElementType type = typeTableTableColumnGroup;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -397,10 +389,10 @@ class table_table_row : public office_element_impl<table_table_row>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableRow;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -413,34 +405,16 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row);
-
-//-----------------------------------------------------------------------------------------------------
-class table_table_cell_content
-{
-public:
-	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name, odf_conversion_context * Context);
-    virtual void add_child_element( const office_element_ptr & child_element);
-
-    virtual void serialize(std::wostream & _Wostream);
-private:
-    // TODO table-cell-range-source
-    // TODO office-annotation
-    // TODO table-detective
-    office_element_ptr_array text_content_; // text-content
-};
-
 //-----------------------------------------------------------------------------------------------------
 class table_table_cell : public office_element_impl<table_table_cell>
 {
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableCell;
 
-    CPDOCCORE_DEFINE_VISITABLE();
-
-    table_table_cell() { }
+	table_table_cell() { }
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -449,10 +423,9 @@ public:
 
     table_table_cell_attlist		attlist_;
     table_table_cell_attlist_extra	attlist_extra_;
-    table_table_cell_content		content_;
 
+	office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(table_table_cell);
 
 //-----------------------------------------------------------------------------------------------------
@@ -461,10 +434,8 @@ class table_covered_table_cell : public office_element_impl<table_covered_table_
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeTableCoveredTableCell;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    static const ElementType type = typeTableCoveredTableCell;
 
     table_covered_table_cell() {empty_ = true; }
 
@@ -475,7 +446,7 @@ public:
 
 	bool empty_;
     table_table_cell_attlist attlist_;
-    table_table_cell_content content_;
+	office_element_ptr_array content_;
 
 };
 
@@ -487,10 +458,10 @@ class table_table_rows : public office_element_impl<table_table_rows>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableRows;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
   
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -513,10 +484,10 @@ class table_table_header_rows : public office_element_impl<table_table_header_ro
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableHeaderRows;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -543,20 +514,16 @@ public:
 };
 
 //-----------------------------------------------------------------------------------------------------
-class table_rows_no_group : public office_element
+class table_rows_no_group : public office_element_impl<table_rows_no_group>
 {
 public:
-    CPDOCCORE_OFFICE_DOCUMENT_IMPL_NAME_FUNCS_;
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableRowNoGroup;
 
     static _CP_PTR(table_rows_no_group) create(odf_conversion_context * Context);
 
-    CPDOCCORE_DEFINE_VISITABLE();
-
-public:
     table_rows_no_group(odf_conversion_context * Context);
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -609,10 +576,10 @@ class table_table_row_group : public office_element_impl<table_table_row_group>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTableRowGroup;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
     
     table_table_row_group() 
 	{
@@ -635,10 +602,10 @@ class table_table : public office_element_impl<table_table>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableTable;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -669,10 +636,10 @@ class table_shapes : public office_element_impl<table_shapes>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableShapes;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -690,10 +657,10 @@ class table_content_validations : public office_element_impl<table_content_valid
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableContentValidations;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -711,10 +678,10 @@ class table_content_validation : public office_element_impl<table_content_valida
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableContentValidation;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -737,10 +704,10 @@ class table_error_message : public office_element_impl<table_error_message>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableErrorMassage;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -761,10 +728,10 @@ class table_help_message : public office_element_impl<table_help_message>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeTableHelpMassage;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

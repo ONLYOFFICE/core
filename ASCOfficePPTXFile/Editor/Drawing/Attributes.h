@@ -82,32 +82,26 @@ public:
         eftAudio	= 2,
         eftHyperlink    = 3,
         eftObject	= 4,
-        eftSlide        = 5/*,
-        eftFile         = 6*/
+        eftSlide        = 5,
+        eftFile         = 6
     };
 
-    ExFilesType     m_type;
-    _UINT32	    m_dwID;
-    std::wstring    m_strFilePath;
+    ExFilesType     m_type = eftNone;
+    _UINT32	    m_dwID = 0;
+    std::wstring    m_strFilePath = L"";
     std::wstring    m_name;
 
     // clip
-    double			m_dStartTime;
-    double			m_dEndTime;
+    double			m_dStartTime = 0.0;
+    double			m_dEndTime = 1.0;
 
     // loop
-    bool			m_bLoop;
+    bool			m_bLoop = false;
+    bool                        m_fNarration = false; // isNarration pptx
+    bool                        m_fRewind = false;
 
     CExFilesInfo()
     {
-        m_type = eftNone;
-        m_dwID = 0;
-        m_strFilePath = _T("");
-
-        m_dStartTime = 0.0;
-        m_dEndTime = -1.0;
-
-        m_bLoop	= false;
     }
     CExFilesInfo(const CExFilesInfo& oSrc)
     {

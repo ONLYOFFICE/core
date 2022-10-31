@@ -404,6 +404,11 @@ namespace OOX
 					}
 				}
 			}
+
+			if (m_oSheetData.IsInit())
+			{
+				m_oSheetData->AfterRead();
+			}
 		}
 
 
@@ -629,7 +634,7 @@ namespace OOX
 							int nCol = pClientData->m_oColumn->GetValue();
 							std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
 
-							boost::unordered_map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+							std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
 							if(pPair != m_mapComments.end())
 							{
 								CCommentItem* pCommentItem = pPair->second;
@@ -899,7 +904,7 @@ mc:Ignorable=\"x14ac\">");
 		}
 		void CWorksheet::ClearItems()
 		{
-			for (boost::unordered_map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
+			for (std::map<std::wstring, CCommentItem*>::const_iterator it = m_mapComments.begin(); it != m_mapComments.end(); ++it)
 			{
 				delete it->second;
 			}
@@ -960,12 +965,13 @@ mc:Ignorable=\"x14ac\">");
 				WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:StyleID"), sStyleID)
 				WritingElement_ReadAttributes_End(oReader)
 
-				if (ptWidth.IsInit())
+				if (ptWidth.IsInit() && xlsx_flat)
 				{
 					m_oWidth.Init();
 					double pixDpi = *ptWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-					double maxDigitSize = 4.25;
-					m_oWidth->SetValue((int((pixDpi /*/ 0.75*/ - 5) / maxDigitSize * 100. + 0.5)) / 100. * 0.9);
+					double maxDigitSize = xlsx_flat->getMaxDigitSize().first;
+
+					m_oWidth->SetValue(((int)((pixDpi + 5) / maxDigitSize * 100. + 0.5)) / 100.);
 
 					m_oCustomWidth.Init();
 					m_oCustomWidth->FromBool(true);

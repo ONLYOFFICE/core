@@ -334,6 +334,8 @@ namespace OOX
 
 			std::wstring sExt = XmlUtils::GetLower(sExtension);
 
+			if (sExt[0] == L'.') sExt = sExt.substr(1);
+
 			if (m_mapDefaults.find (sExt) == m_mapDefaults.end())
 			{
 				m_mapDefaults [sExt] = ContentTypes::CDefault( sExt );

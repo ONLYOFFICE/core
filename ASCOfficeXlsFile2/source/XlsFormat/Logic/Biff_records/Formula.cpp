@@ -62,18 +62,40 @@ void Formula::readFields(CFRecord& record)
 	fClearErrors	= GETBIT(flags, 5);
 	
 	_UINT32 chn = 0;
-	record >> chn;
+	record >> chn; // cache
 	
 	formula.load(record);
 }
-
 
 const CellRef Formula::getLocation() const
 {
 	return cell.getLocation();
 }
 
+Formula_BIFF3::Formula_BIFF3()
+{
+	bBiff_3_4 = true;
+}
 
+Formula_BIFF3::~Formula_BIFF3()
+{}
+
+BaseObjectPtr Formula_BIFF3::clone()
+{
+	return BaseObjectPtr(new Formula_BIFF3(*this));
+}
+Formula_BIFF4::Formula_BIFF4()
+{
+	bBiff_3_4 = true;
+}
+
+Formula_BIFF4::~Formula_BIFF4()
+{}
+
+BaseObjectPtr Formula_BIFF4::clone()
+{
+	return BaseObjectPtr(new Formula_BIFF4(*this));
+}
 
 } // namespace XLS
 

@@ -41,7 +41,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsbFormatLib", "..\..\..\C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C53A1E0-F93F-4E32-88B5-6274AF921ABE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VbaFormat", "..\..\..\ASCOfficeXlsFile2\source\win32\VbaFormat.vcxproj", "{041DD428-2D5C-4D97-8AB7-7207F3D5B801}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VbaFormatLib", "..\..\..\ASCOfficeXlsFile2\source\win32\VbaFormat.vcxproj", "{041DD428-2D5C-4D97-8AB7-7207F3D5B801}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CompoundFileLib", "..\..\..\Common\cfcpp\CompoundFileLib.vcxproj", "{FA22BAB4-E93E-459D-8A5F-16764FBBED40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -434,6 +436,26 @@ Global
 		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
 		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
 		{041DD428-2D5C-4D97-8AB7-7207F3D5B801}.ReleaseOpenSource|x64.Build.0 = Release|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Debug|Win32.Build.0 = Debug|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Debug|x64.ActiveCfg = Debug|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Debug|x64.Build.0 = Debug|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Debug|Win32.ActiveCfg = Debug|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Debug|Win32.Build.0 = Debug|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Debug|x64.ActiveCfg = Debug|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Debug|x64.Build.0 = Debug|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Release|Win32.ActiveCfg = Release|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Release|Win32.Build.0 = Release|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Release|x64.ActiveCfg = Release|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.DLL-Import Release|x64.Build.0 = Release|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Release|Win32.ActiveCfg = Release|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Release|Win32.Build.0 = Release|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Release|x64.ActiveCfg = Release|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.Release|x64.Build.0 = Release|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.ReleaseOpenSource|x64.ActiveCfg = Release|x64
+		{FA22BAB4-E93E-459D-8A5F-16764FBBED40}.ReleaseOpenSource|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

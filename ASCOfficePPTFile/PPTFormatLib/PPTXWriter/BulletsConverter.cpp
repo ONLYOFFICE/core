@@ -92,10 +92,10 @@ void BulletsConverter::ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, CTextPFR
         LONG val = pPF->spaceAfter.get();
         auto pSpcAft = new PPTX::Logic::TextSpacing;
         pSpcAft->m_name = L"a:spcAft";
-        if (val > 0)
+        if (val > 0)                        // Spacing Points
             pSpcAft->spcPts = round(12.5 * pPF->spaceAfter.get());
-        else if (val < 0 && val > -13200)
-            pSpcAft->spcPts = val * -1000;
+        else if (val < 0 && val > -13200)   // Spacing Percent
+            pSpcAft->spcPct = val * -1000;
 
         oPPr.spcAft = pSpcAft;
     }
@@ -189,9 +189,9 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
         pBuFont->m_name = L"a:buFont";
         pBuFont->typeface = pPF->bulletFontProperties->Name;
 
-        if ( pPF->bulletFontProperties->PitchFamily > 0)
+        if ( CFontProperty::IsValidPitchFamily(pPF->bulletFontProperties->PitchFamily))
             pBuFont->pitchFamily = std::to_wstring(pPF->bulletFontProperties->PitchFamily);
-        if ( pPF->bulletFontProperties->Charset > 0)
+        if ( CFontProperty::IsValidCharset(pPF->bulletFontProperties->Charset))
             pBuFont->charset = std::to_wstring(pPF->bulletFontProperties->Charset);
 
         oPPr.buTypeface.m_Typeface.reset(pBuFont);

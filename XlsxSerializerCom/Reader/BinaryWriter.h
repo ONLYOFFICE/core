@@ -259,7 +259,7 @@ namespace BinXlsxRW
 		void WritePos(const OOX::Spreadsheet::CPos& oPos);
 		void WriteExt(const OOX::Spreadsheet::CExt& oExt);
 		void WriteClientData(const OOX::Spreadsheet::CClientData& oClientData);
-        void WriteComments(boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments);
+        void WriteComments(std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments);
 		void getSavedComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aDatas);
 		void WriteComment(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);
 		void WriteCommentData(OOX::Spreadsheet::CCommentItem& oComment, std::vector<SerializeCommon::CommentData*>& aCommentDatas);

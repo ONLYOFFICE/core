@@ -268,7 +268,7 @@ namespace MetaFile
 			}
 
 			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
-				m_pRenderer->CommandDrawText(std::wstring(1, wsString[unIndex]), arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
+				m_pRenderer->CommandDrawTextCHAR(wsString[unIndex], arGlyphPoint[unIndex].x, arGlyphPoint[unIndex].y, 0, 0);
 
 		}
 
@@ -314,7 +314,7 @@ namespace MetaFile
 			double dM11, dM12, dM21, dM22, dRx, dRy;
 			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-			if (dM11 * dM22 > 0)
+			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
@@ -465,7 +465,7 @@ namespace MetaFile
 				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 				if (dXScale < -0.00001)
 				{
-					dX -= fabs(fW);
+					dX += fabs(fW);
 
 					if (m_pFile->IsWindowFlippedX())
 					{
@@ -481,16 +481,9 @@ namespace MetaFile
 
 				if (dYScale < -0.00001)
 				{
-					dY -= fabs(fH);
+					dY += fabs(fH);
 
-					if (m_pFile->IsWindowFlippedY())
-					{
-						dShiftY = (2 * dY - fabs(fH)) * dM22;
-					}
-					else
-					{
-						dShiftY = (2 * dY + fabs(fH)) * dM22;
-					}
+					dShiftY = (2 * dY - fabs(fH)) * dM22;
 
 					dM22 = fabs(dM22);
 				}
@@ -574,8 +567,7 @@ namespace MetaFile
 					double dKoefX = m_dScaleX;
 					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
 					{
-						std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32(&*(pUnicode + unCharIndex), 1);
-						m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
+						m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
 						dOffset += (pDx[unCharIndex] * dKoefX);
 					}
 
@@ -849,6 +841,12 @@ namespace MetaFile
 				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
 			}
+			else if (BS_PATTERN == unBrushStyle)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypePattern);
+				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTileCenter);
+				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
+			}
 			else if (BS_HATCHED == unBrushStyle)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeHatch1);
@@ -856,12 +854,66 @@ namespace MetaFile
 
 				switch (pBrush->GetHatch())
 				{
-				case HS_HORIZONTAL: wsBrushType = L"horz"; break;
-				case HS_VERTICAL:   wsBrushType = L"vert"; break;
-				case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
-				case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
-				case HS_CROSS:      wsBrushType = L"cross"; break;
-				case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+					case HS_HORIZONTAL: wsBrushType = L"horz"; break;
+					case HS_VERTICAL:   wsBrushType = L"vert"; break;
+					case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
+					case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
+					case HS_CROSS:      wsBrushType = L"cross"; break;
+					case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+
+					case HS_05Percent:	wsBrushType = L"pct5"; break;
+					case HS_10Percent:	wsBrushType = L"pct10"; break;
+					case HS_20Percent:	wsBrushType = L"pct20"; break;
+					case HS_25Percent:	wsBrushType = L"pct25"; break;
+					case HS_30Percent:	wsBrushType = L"pct30"; break;
+					case HS_40Percent:	wsBrushType = L"pct40"; break;
+					case HS_50Percent:	wsBrushType = L"pct50"; break;
+					case HS_60Percent:	wsBrushType = L"pct60"; break;
+					case HS_70Percent:	wsBrushType = L"pct70"; break;
+					case HS_75Percent:	wsBrushType = L"pct75"; break;
+					case HS_80Percent:	wsBrushType = L"pct80"; break;
+					case HS_90Percent:	wsBrushType = L"pct90"; break;
+
+					case HS_LTDOWNWARDDIAG:	wsBrushType = L"ltDnDiag"; break;
+					case HS_LTUPWARDDIAG:	wsBrushType = L"ltUpDiag"; break;
+					case HS_DNDOWNWARDDIAG:	wsBrushType = L"dkDnDiag"; break;
+					case HS_DNUPWARDDIAG:	wsBrushType = L"dkUpDiag"; break;
+					case HS_WDOWNWARDDIAG:	wsBrushType = L"wdDnDiag"; break;
+					case HS_WUPWARDDIAG:	wsBrushType = L"wdUpDiag"; break;
+
+					case HS_LTVERTICAL:		wsBrushType = L"ltVert"; break;
+					case HS_LTHORIZONTAL:	wsBrushType = L"ltHorz"; break;
+					case HS_NVERTICAL:		wsBrushType = L"narVert"; break;
+					case HS_NHORIZONTAL:	wsBrushType = L"narHorz"; break;
+					case HS_DNVERTICAL:		wsBrushType = L"dkVert"; break;
+					case HS_DNHORIZONTAL:	wsBrushType = L"dkHorz"; break;
+
+					case HS_DASHDOWNWARDDIAG:	wsBrushType = L"dashDnDiag"; break;
+					case HS_DASHUPWARDDIAG:		wsBrushType = L"dashUpDiag"; break;
+					case HS_DASHHORIZONTAL:		wsBrushType = L"dashHorz"; break;
+					case HS_DASHVERTICAL:		wsBrushType = L"dashVert"; break;
+
+					case HS_SMALLCONFETTI:		wsBrushType = L"smConfetti"; break;
+					case HS_LARGECONFETTI:		wsBrushType = L"lgConfetti"; break;
+					case HS_ZIGZAG:				wsBrushType = L"zigZag"; break;
+					case HS_WAVE:				wsBrushType = L"wave"; break;
+					case HS_DIAGBRICK:			wsBrushType = L"diagBrick"; break;
+					case HS_HORIZBRICK:			wsBrushType = L"horzBrick"; break;
+					case HS_WEAVE:				wsBrushType = L"weave"; break;
+					case HS_PLAID:				wsBrushType = L"plaid"; break;
+					case HS_DIVOT:				wsBrushType = L"divot"; break;
+					case HS_DOTGRID:			wsBrushType = L"dotGrid"; break;
+					case HS_DOTDIAMOND:			wsBrushType = L"dotDmnd"; break;
+					case HS_SHINGLE:			wsBrushType = L"shingle"; break;
+					case HS_TRELLIS:			wsBrushType = L"trellis"; break;
+					case HS_SPHERE:				wsBrushType = L"sphere"; break;
+					case HS_SGRID:				wsBrushType = L"smGrid"; break;
+					case HS_SCHECHERBOARD:		wsBrushType = L"smCheck"; break;
+					case HS_LCHECHERBOARD:		wsBrushType = L"lgCheck"; break;
+					case HS_OUTLINEDDIAMOND:	wsBrushType = L"openDmnd"; break;
+					case HS_SOLIDDIAMOND:		wsBrushType = L"solidDmnd"; break;
+
+					default: break;
 				}
 
 				// TODO: Непонятно почему, но в Hatch все цвета идут не как RGB, а как BGR
@@ -922,8 +974,8 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
 				long Colors[2];
-				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
-				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
+				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
 				double Position[2] = {0, 1};
 				
 				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
@@ -964,10 +1016,20 @@ namespace MetaFile
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
-			double dWidth = pPen->GetWidth() * m_dScaleX;
+			double dWidth = pPen->GetWidth();
 
-			if (dWidth == 0)
-				dWidth = 25.4 / 96;
+			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
+			{
+				TRectD oRect(*m_pFile->GetDCBounds());
+
+				double dScale = m_pFile->GetScale();
+
+				oRect *= dScale;
+
+				dWidth = std::fabs(m_dW / (oRect.dRight - oRect.dLeft) / m_pFile->GetPixelWidth());
+			}
+			else
+				dWidth *= m_dScaleX;
 
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)

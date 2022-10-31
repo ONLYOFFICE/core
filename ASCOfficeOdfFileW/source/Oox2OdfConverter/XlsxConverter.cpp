@@ -164,7 +164,7 @@ bool XlsxConverter::convertDocument()
 	if (xlsx_flat_document) delete xlsx_flat_document;	xlsx_flat_document = NULL;
 
 	ods_context->end_document();
-
+	
 	return true;
 }
 
@@ -316,7 +316,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		convert(oox_sheet->m_oHyperlinks->m_arrItems[hyp],oox_sheet);
 	}
 	//комментарии
-    boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
+	std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::iterator pos = oox_sheet->m_mapComments.begin();
 	while ( oox_sheet->m_mapComments.end() != pos )
 	{
 		convert(pos->second);
@@ -1678,7 +1678,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorkbookView *oox_book_views)
 		if (table_id >= 0 && table_id < (int)Workbook->m_oSheets->m_arrItems.size())
 		{
 			ods_context->settings_context()->add_property(L"ActiveTable", L"string", 
-				*Workbook->m_oSheets->m_arrItems[table_id]->m_oName);
+				XmlUtils::EncodeXmlString(*Workbook->m_oSheets->m_arrItems[table_id]->m_oName));
 		}
 	}
 	if (oox_book_views->m_oShowSheetTabs.IsInit())
@@ -2850,7 +2850,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 		}
 		if (oox_sheet->m_oControls.IsInit() && oox_anchor->m_nId.IsInit())
 		{
-            std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
+            std::map<unsigned int, nullable<OOX::Spreadsheet::CControl>>::const_iterator pFind = oox_sheet->m_oControls->m_mapControls.find(oox_anchor->m_nId.get());
 			if (pFind != oox_sheet->m_oControls->m_mapControls.end())
 			{
 				//??? перенести даные привязки 
@@ -2996,9 +2996,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 {
 	if (!oox_controls) return;
 
-    for (std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator it = oox_controls->m_mapControls.begin(); it != oox_controls->m_mapControls.end(); ++it)
+    for (std::map<unsigned int, nullable<OOX::Spreadsheet::CControl>>::const_iterator it = oox_controls->m_mapControls.begin(); it != oox_controls->m_mapControls.end(); ++it)
 	{
-		OOX::Spreadsheet::CControl* pControl = it->second;
+		OOX::Spreadsheet::CControl* pControl = it->second.GetPointer();
 		if (!pControl) continue;
 	
 		OOX::WritingElement* pShapeElem	= NULL;
@@ -3057,9 +3057,9 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if(oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if(oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);

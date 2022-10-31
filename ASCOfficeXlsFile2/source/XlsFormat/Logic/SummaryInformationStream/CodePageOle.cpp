@@ -85,6 +85,10 @@ std::wstring PropertyString::toString()
 {
 	return value;
 }
+bool PropertyString::IsEmpty()
+{
+	return value.empty();
+}
 //-------------------------------------------------------------------
 bool PropertyWString::Read(XLS::CFStreamPtr stream)
 {
@@ -124,6 +128,11 @@ bool PropertyDTM::Read (XLS::CFStreamPtr stream)
 		*stream >> dwLowDateTime >> dwHighDateTime;
 	}
 	return true;
+}
+bool PropertyDTM::IsEmpty()
+{
+	std::wstring value = toString();
+	return value.empty();
 }
 std::wstring PropertyDTM::toString()
 {

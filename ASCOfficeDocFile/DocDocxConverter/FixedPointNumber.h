@@ -53,14 +53,12 @@ namespace DocFileFormat
 			this->Fractional = fractional;
 		}
 
-		FixedPointNumber( unsigned int value )
+		FixedPointNumber( _UINT32 value )
 		{
-			unsigned char* bytes = FormatUtils::GetBytes( value );
+			unsigned short* bytes = (unsigned short*)(&value);
 
-			this->Integral = FormatUtils::BytesToUInt16( bytes, 0, sizeof(value) );
-			this->Fractional = FormatUtils::BytesToUInt16( bytes, 2, sizeof(value) );
-
-			RELEASEARRAYOBJECTS( bytes );
+			this->Integral = bytes[0];
+			this->Fractional = bytes[1];
 		}
 
 		FixedPointNumber( const unsigned char* bytes, unsigned int size )

@@ -1978,8 +1978,15 @@ void xlsx_drawing_context::clear_fill()
 {
 	if (!current_drawing_states) return;
 	if (current_drawing_states->empty()) return;
-	
+
 	current_drawing_states->back()->clear_fill();
+}
+int xlsx_drawing_context::get_fill_type()
+{
+	if (!current_drawing_states) return 0;
+	if (current_drawing_states->empty()) return 0;
+
+	return current_drawing_states->back()->fill.type;
 }
 void xlsx_drawing_context::serialize_fill(std::wostream & stream)
 {
@@ -2091,6 +2098,9 @@ void xlsx_drawing_context::serialize_anchor (std::wostream & stream, _drawing_st
 	{
 		if (drawing_state->type_anchor == 1)
 		{
+			if (drawing_state->sheet_anchor.colFrom < 0) drawing_state->sheet_anchor.colFrom = 0;
+			if (drawing_state->sheet_anchor.rwFrom < 0) drawing_state->sheet_anchor.rwFrom = 0;
+
 			CP_XML_NODE(ns + L"from")
 			{ 
 				CP_XML_NODE(L"xdr:col")		{ CP_XML_CONTENT (drawing_state->sheet_anchor.colFrom);	}
@@ -2589,6 +2599,8 @@ void xlsx_drawing_context::serialize_control(std::wostream & strm, _drawing_stat
 				{
 					CP_XML_ATTR(L"listFillRange", drawing_state->object.fmlaRange);
 				}				
+				if (!drawing_state->fill.picture_target.empty())
+					drawing_state->fill.texture_target = drawing_state->fill.picture_target;
 				if (!drawing_state->fill.texture_target.empty())
 				{
 					bool isIternal = false;
@@ -2807,7 +2819,7 @@ void xlsx_drawing_context::set_sheet_anchor(int colFrom, int xFrom, int rwFrom, 
 {
 	if (current_drawing_states == NULL) return;	
 	
-	if (colTo > 0 || rwTo > 0)
+	if (colTo > 0 || xTo > 0 || rwTo > 0 || yTo > 0)
 	{//  0  in comment old versions
 		current_drawing_states->back()->sheet_anchor.colFrom = colFrom;
 		current_drawing_states->back()->sheet_anchor.colTo = colTo;

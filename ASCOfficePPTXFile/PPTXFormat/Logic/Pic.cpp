@@ -204,13 +204,24 @@ namespace PPTX
 						pWriter->WriteString1(7, L"maskFile." + sExt); //OleObject Binary FileName Extension (bin, xls, doc, ... other stream file)
 				}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			
+			if (m_oMoveWithCells.IsInit())
+			{
+				pWriter->StartRecord(5);
+				pWriter->WriteBYTE(*m_oMoveWithCells);
+				pWriter->EndRecord();
+			}
+			if (m_oSizeWithCells.IsInit())
+			{
+				pWriter->StartRecord(6);
+				pWriter->WriteBYTE(*m_oSizeWithCells);
+				pWriter->EndRecord();
+			}
 			if (ole_file.IsInit() == false) return;
 
 			if (ole_file->isMsPackage())
 			{
 				OOX::CPath oox_file		= ole_file->filename();
-				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp";
+				OOX::CPath oox_unpacked = oox_file.GetDirectory(true) + L"Temp_" + oox_file.GetFilename();
 				
 				if (true == NSDirectory::CreateDirectory(oox_unpacked.GetPath()))
 				{
@@ -331,7 +342,6 @@ namespace PPTX
 					oReader.Parse();
 				pWriter->EndRecord();
 			}
-
 		}
 
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -552,11 +562,20 @@ namespace PPTX
 						}
 						pReader->Seek(_end_embed_data);
 					}break;
-					
+					case 5:
+					{
+						pReader->GetLong(); //skip size
+						m_oMoveWithCells = (0 != pReader->GetUChar());
+					}break;
+					case 6:
+					{
+						pReader->GetLong(); //skip size
+						m_oSizeWithCells = (0 != pReader->GetUChar());
+					}break;
 				}
 			}
 			pReader->Seek(_end_rec);
-		}
+		}  
 		void COLEObject::FillParentPointersForChilds()
 		{
 		}
@@ -1465,14 +1484,8 @@ namespace PPTX
 				pWriter->WriteAttribute(L"o:spid", strSpid);
 			}
 			pWriter->WriteAttribute(L"type", L"#_x0000_t75");
-			if (oStylesWriter.GetSize() == 0)
-			{
-				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain);
-			}
-			else
-			{
-				pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
-			}
+			
+			pWriter->WriteAttribute(L"style", pWriter->m_strStyleMain + pWriter->m_strStyleWrap + oStylesWriter.GetXmlString());
 
 			if (!pWriter->m_strAttributesMain.empty())
 			{
@@ -1505,6 +1518,9 @@ namespace PPTX
 			pWriter->EndAttributes();
 			pWriter->EndNode(L"v:path");
 
+			pWriter->WriteString(pWriter->m_strNodes);
+			pWriter->m_strNodes.clear();
+			
 			if (blipFill.blip.is_init() && blipFill.blip->embed.is_init())
 			{
 				pWriter->StartNode(L"v:imagedata");
@@ -1528,8 +1544,9 @@ namespace PPTX
 			pWriter->EndNode(L"v:shape");
 
 			pWriter->m_strStyleMain.clear();
+			pWriter->m_strStyleWrap.clear();
 
-			if(bOle)
+			if (bOle)
 			{
 				oleObject->m_sObjectId = strObjectid;
 				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)

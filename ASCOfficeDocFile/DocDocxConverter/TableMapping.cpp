@@ -321,16 +321,26 @@ namespace DocFileFormat
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
 		if (fc < 0) return false;
 
-		ParagraphPropertyExceptions* papx = NULL;
-
-		papx = documentMapping->findValidPapx(fc);
+		ParagraphPropertyExceptions* papx = documentMapping->findValidPapx(fc);
 
 		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
-		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) && 
-			( !tai.fTtp ) ) ||
-			( ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 
-			( tai.fInnerTableCell ) && ( !tai.fInnerTtp ) ) ) );
+		bool bCell = tai.fInTable && (documentMapping->m_document->Text->at(_cp) == 0x0007) && (tai.iTap <= 1) && (!tai.fTtp);
+		if (bCell) return true;
+
+		bCell = (documentMapping->m_document->Text->at(_cp) == 0x000D) && (tai.iTap > 1) && tai.fInnerTableCell && !tai.fInnerTtp;
+		if (bCell)
+		{
+			int fc_1 = documentMapping->m_document->FindFileCharPos(_cp - 1);
+			int fc_2 = documentMapping->m_document->FindFileCharPos(_cp + 1);
+			
+			ParagraphPropertyExceptions* papx_1 = documentMapping->findValidPapx(fc_1);
+			ParagraphPropertyExceptions* papx_2 = documentMapping->findValidPapx(fc_2);
+			
+			return (papx_1 != papx_2);
+		}
+
+		return false;
 	}
 
 	bool Table::IsRowMarker( int _cp )
@@ -346,10 +356,13 @@ namespace DocFileFormat
 
 		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
-		return ( ( tai.fInTable ) && ( ( ( documentMapping->m_document->Text->at( _cp ) == 0x0007 ) && ( tai.iTap <= 1 ) &&
-			( tai.fTtp ) ) ||
-			( ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && ( tai.iTap > 1 ) && 
-			( tai.fInnerTtp ) ) ) );
+		bool bRow = tai.fInTable && (documentMapping->m_document->Text->at(_cp) == 0x0007) && (tai.iTap <= 1) && tai.fTtp;
+		if (bRow) return true;
+
+		bRow = (documentMapping->m_document->Text->at( _cp ) == 0x000D) && ( tai.iTap > 1 ) && tai.fInnerTtp;
+		if (bRow) return true;
+		
+		return false;
 	}
 
 	bool Table::IsParagraphMarker( int _cp )

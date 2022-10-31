@@ -191,10 +191,12 @@ namespace NSJSBase
 
         virtual int getCount()
         {
+            int nCount = 0;
             JSValue* _ret = [value valueForProperty:@"length"];
             if (nil != _ret && NO == [_ret isUndefined])
-                return [_ret toInt32];
-            return 0;
+                nCount = [_ret toInt32];
+            _ret = nil;
+            return nCount;
         }
 
         virtual JSSmart<CJSValue> get(const int& index)
@@ -332,10 +334,12 @@ namespace NSJSBase
                 JSObjectRef obj = JSValueToObject(context.JSGlobalContextRef, value.JSValueRef, NULL);
                 return (int)JSObjectGetTypedArrayByteLength(context.JSGlobalContextRef, obj, NULL);
             }
+            int nCount = 0;
             JSValue* _ret = [value valueForProperty:@"length"];
             if (nil != _ret && NO == [_ret isUndefined])
-                return [_ret toInt32];
-            return 0;
+                nCount = [_ret toInt32];
+            _ret = nil;
+            return nCount;
         }
 
         virtual CJSDataBuffer getData()
@@ -356,6 +360,7 @@ namespace NSJSBase
 
             JSValue* dataBase64 = [context[@"jsc_toBase64"] callWithArguments:arr];
             std::string sBase64Data = [[dataBase64 toString] stdstring];
+            dataBase64 = nil;
 
             buffer.IsExternalize = true;
 

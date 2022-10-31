@@ -99,6 +99,45 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:wRule", m_oWRule )
 			WritingElement_ReadAttributes_End( oReader )
 		}
+//----------------------------------------------------------------------------------------------------
+		void CTextFormFormat::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase(oNode, L"w:type", m_oType);
+			XmlMacroReadAttributeBase(oNode, L"w:val", m_oVal);
+			XmlMacroReadAttributeBase(oNode, L"w:symbols", m_oSymbols);
+		}
+		void CTextFormFormat::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
+		}
+		std::wstring CTextFormFormat::ToString() const
+		{
+			std::wstring sResult;
+			if (m_oType.IsInit())
+			{
+				sResult += L"w:type=\"" + m_oType->ToString() + L"\" ";
+			}
+			if (m_oVal.IsInit())
+			{
+				sResult += L"w:val=\"" + XmlUtils::EncodeXmlString(m_oVal.get()) + L"\" ";
+			}
+			if (m_oSymbols.IsInit())
+			{
+				sResult += L"w:symbols=\"" + XmlUtils::EncodeXmlString(m_oSymbols.get()) + L"\" ";
+			}
+			return sResult;
+		}
+		void CTextFormFormat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"w:type", m_oType)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:val", m_oVal)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:symbols", m_oSymbols)
+			WritingElement_ReadAttributes_End(oReader)
+		}
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -403,6 +442,7 @@ namespace OOX
 			WritingElement_ReadNode( oNode, oChild, L"w:comb", m_oComb );
 			WritingElement_ReadNode( oNode, oChild, L"w:maxCharacters", m_oMaxCharacters );
 			WritingElement_ReadNode( oNode, oChild, L"w:combBorder", m_oCombBorder );
+			WritingElement_ReadNode( oNode, oChild, L"w:format", m_oFormat);
 		}
 		void CTextFormPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -421,6 +461,8 @@ namespace OOX
 					m_oMaxCharacters = oReader;
 				else if ( L"w:combBorder" == sName )
 					m_oCombBorder = oReader;
+				else if (L"w:format" == sName)
+					m_oFormat = oReader;
 			}
 		}
 		std::wstring CTextFormPr::toXML() const
@@ -438,7 +480,7 @@ namespace OOX
 			WritingElement_WriteNode_1( L"<w:comb ", m_oComb );
 			WritingElement_WriteNode_1( L"<w:maxCharacters ", m_oMaxCharacters );
 			WritingElement_WriteNode_1( L"<w:combBorder ", m_oCombBorder );
-
+			WritingElement_WriteNode_1( L"<w:format ", m_oFormat);
 			sResult += L"</w:textFormPr>";
 
 			return sResult;
@@ -452,6 +494,35 @@ namespace OOX
 			WritingElement_ReadAttributes_Start(oReader)
 				WritingElement_ReadAttributes_Read_if(oReader, L"w:autoFit", m_oAutoFit)
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:multiLine", m_oMultiLine)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		void CComplexFormPr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		void CComplexFormPr::fromXML(XmlUtils::CXmlLiteReader &oReader)
+		{
+			ReadAttributes(oReader);
+		}
+		std::wstring CComplexFormPr::toXML() const
+		{
+			std::wstring sResult= L"<w:complexFormPr";
+
+			if (m_oType.IsInit() && !m_oType->IsDefaultValue())
+			{
+				sResult += L" w:type=\"" + m_oType->ToString() + L"\"";
+			}
+			sResult += L"/>";
+			return sResult;
+		}
+		EElementType CComplexFormPr::getType() const
+		{
+			return et_w_complexFormPr;
+		}
+		void CComplexFormPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"w:type", m_oType)
 			WritingElement_ReadAttributes_End(oReader)
 		}
 //-----------------------------------------------------------------------------------------------------------------------------
@@ -565,6 +636,9 @@ namespace OOX
 				m_oCheckbox = oChild;
 				m_eType = sdttypeCheckBox;
 			}
+
+			if (oNode.GetNode(L"w:complexFormPr", oChild))
+				m_oComplexFormPr = oChild;
 		}
 		void CSdtPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -664,6 +738,8 @@ namespace OOX
 					m_oCheckbox = oReader;
 					m_eType = sdttypeCheckBox;
 				}
+				else if (L"w:complexFormPr" == sName)
+					m_oComplexFormPr = oReader;
 			}
 		}
 		std::wstring CSdtPr::toXMLStart() const
@@ -772,6 +848,7 @@ namespace OOX
 			}
 			WritingElement_WriteNode_2(m_oFormPr);
 			WritingElement_WriteNode_2(m_oTextFormPr);
+			WritingElement_WriteNode_2(m_oComplexFormPr);
 
 			return sResult;
 		}

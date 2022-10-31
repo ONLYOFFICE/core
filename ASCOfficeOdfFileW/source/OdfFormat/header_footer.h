@@ -71,9 +71,9 @@ class style_header_footer_properties : public office_element_impl<style_header_f
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeStyleHeaderFooterProperties;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child)

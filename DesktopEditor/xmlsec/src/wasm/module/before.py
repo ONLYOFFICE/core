@@ -4,6 +4,7 @@ sys.path.append("../../../../../Common/js")
 import base
 import os
 import codecs
+import common
 
 def run_as_bash(file, commands):
   if base.is_file(file):
@@ -26,6 +27,7 @@ if not base.is_dir("openssl"):
   base.cmd("git", ["clone",  "--depth=1", "--branch", "OpenSSL_1_1_1f", "https://github.com/openssl/openssl.git"])
   # correct for wasm builds
   common.apply_patch("./openssl/crypto/rand/rand_lib.c", "./patches/openssl1.patch")
+  base.copy_file("../../../../../Common/3dParty/openssl/openssl/apps/progs.h", "./openssl/apps/progs.h")
 
 if not base.is_dir("xml"):
   base.print_info("Copy xml...")
@@ -34,11 +36,12 @@ if not base.is_dir("xml"):
   base.replaceInFile("./xml/libxml2/xmlIO.c", "xmlNop(void)", "xmlNop(void* context, char* buffer, int len)")
   base.replaceInFile("./xml/src/xmllight_private.h", "#include \"../../common/", "#include \"../../../../../../common/")
   base.replaceInFile("./xml/include/xmlutils.h", "#include \"../../common/", "#include \"../../../../../../common/")
+  base.replaceInFile("./xml/include/xmlwriter.h", "#include \"../../common/", "#include \"../../../../../../common/")
 
 # compile openssl
 if not base.is_file("./openssl/libcrypto.a"):  
   base.print_info("Compile openssl...")
   os.chdir("./openssl")
   #run_as_bash("./compile_openssl.sh", ["./config no-shared no-asm no-ssl2 no-ssl3", "source ./../emsdk/emsdk_env.sh", "export CC=emcc", "export CXX=emcc", "make"])
-  run_as_bash("./compile_openssl.sh", ["source ./../emsdk/emsdk_env.sh", "emconfigure ./config no-shared no-asm no-threads", "sed -i 's|^CROSS_COMPILE.*$|CROSS_COMPILE=|g' Makefile", "emmake make build_generated libssl.a libcrypto.a"])
+  run_as_bash("./compile_openssl.sh", ["source ./../../../../../../Common/js/emsdk/emsdk_env.sh", "emconfigure ./config no-shared no-asm no-threads", "sed -i 's|^CROSS_COMPILE.*$|CROSS_COMPILE=|g' Makefile", "emmake make build_generated libssl.a libcrypto.a"])
   os.chdir("../")

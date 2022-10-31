@@ -236,6 +236,7 @@ namespace DocFileFormat
 		Plex<EmptyStructure>				*AutoTextPlex;		
 		
 		AnnotationReferenceExDescriptors	*AnnotationsReferencesEx;
-		
+//------------------------------------------------------------------------------
+		void CorrectColor(ODRAW::OfficeArtCOLORREF & color);
 	};
 }

@@ -1854,6 +1854,8 @@ HRESULT CPdfRenderer::AddFormField(const CFormFieldInfo &oInfo)
 
 			pField->SetPlaceHolderText(wsPlaceHolder, oNormalColor, oPlaceHolderColor);
 		}
+
+		pField->SetFormat(pPr->GetFormatPr());
 	}
 	else if (oInfo.IsDropDownList())
 	{

@@ -198,18 +198,39 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 
 	pCell->m_oCacheValue = sText; // как есть 
 
-	WCHAR *pEndPtr;
+	wchar_t *pEndPtr;
 	double dValue = wcstod(sText.c_str(), &pEndPtr);
+
+	if (std::isnan(dValue) || std::isinf(dValue))
+		pEndPtr = (wchar_t *)sText.c_str();
 	
-	if ((0 == *pEndPtr) || (0 == *(pEndPtr + 1) && length > 1))
+	if ((0 == *pEndPtr) || (pEndPtr != sText.c_str() && (sText.c_str() + length  - pEndPtr) < 3))
 	{
 		std::wstring data_format;
+		std::wstring postfix;
+
+		if (0 != *pEndPtr)
+		{
+			size_t sz = length - (pEndPtr - sText.c_str());
+
+			while (sz > 0)
+			{
+				if (pEndPtr[sz - 1] != L' ')
+					break;
+				sz--;
+			}
+
+			if (sz > 0)
+			{
+				postfix = std::wstring(pEndPtr, sz);
+			}
+		}
 
 		size_t pos = sText.find(L".");
 		if (pos != std::wstring::npos)
 		{
 			size_t fraction = sText.length() - pos - ((0 != *pEndPtr) ? 2 : 1);
-			for (size_t i = 0; i < fraction; ++i)
+			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
 				data_format += L"0";
 		}
 		if (false == data_format.empty()) data_format = L"." + data_format;
@@ -218,15 +239,22 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 		
 		if (0 != *pEndPtr)
 		{
-			wchar_t postfix = *pEndPtr;
-			data_format += postfix;
-
-			if (postfix == L'%')
+			if (false == postfix.empty())
 			{
-				pCell->m_oValue->m_sText = std::to_wstring(dValue / 100.);
-			}
-			else 
-				pCell->m_oValue->m_sText = sText.substr(0, length - 1);
+				if (postfix[0] == L'%')
+				{
+					pCell->m_oValue->m_sText = std::to_wstring(dValue / 100.);
+				}
+				else
+				{
+					pCell->m_oValue->m_sText = sText.substr(0, length - 1);
+
+					for (size_t i = 0; i < postfix.size(); ++i)
+					{
+						data_format += std::wstring(L"\\") + postfix[i];
+					}
+				}
+			}	
 		}
 		else
 			pCell->m_oValue->m_sText = sText;
@@ -439,11 +467,11 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 				pRow = NULL;
 			}
 
-			if (nIndex + nDelimiterSize > 1000000)
+			if (nIndex + nDelimiterSize > 500000)
 			{
 				nStartCell = 0;
 				sFileDataW.erase(0, nIndex + nDelimiterSize);
-				nIndex = 0; nSize -= (nIndex + nDelimiterSize);
+				nSize -= (nIndex + nDelimiterSize); nIndex = 0; 
 				pTemp = sFileDataW.c_str();
 			}
 			else
@@ -471,11 +499,11 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 				++nIndex;
 			}
 
-			if (nIndex + 1 > 1000000)
+			if (nIndex + 1 > 500000)
 			{
 				nStartCell = 0;
 				sFileDataW.erase(0, nIndex + 1);
-				nIndex = 0; nSize -= (nIndex + 1);
+				nSize -= (nIndex + 1); nIndex = 0; 
 				pTemp = sFileDataW.c_str();
 			}
 			else

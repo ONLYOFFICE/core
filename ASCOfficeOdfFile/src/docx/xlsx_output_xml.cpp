@@ -45,6 +45,29 @@ public:
     std::wstring name_;
 	bool hidden_;
   
+	void clear()
+	{
+		cols_.clear();
+		sheetFormat_.clear();
+		sheetData_.clear();
+		mergeCells_.clear();
+		hyperlinks_.clear();
+		comments_.clear();
+		sort_.clear();
+		tableParts_.clear();
+		autofilter_.clear();
+		conditionalFormatting_.clear();
+		picture_background_.clear();
+		dataValidations_.clear();
+		dataValidationsX14_.clear();
+		ole_objects_.clear();
+		page_props_.clear();
+		header_footer_.clear();
+		controls_.clear();
+		protection_.clear();
+		breaks_.clear();
+	}
+
 	std::wstringstream  cols_;
     std::wstringstream  sheetFormat_;
     std::wstringstream  sheetData_;
@@ -202,11 +225,16 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 
             CP_XML_NODE(L"sheetData")
             {
-                CP_XML_STREAM() << impl_->sheetData_.str();
+				if (impl_->sheetData_.rdbuf()->in_avail() != 0)
+				{
+					impl_->sheetData_.flush();
+					CP_XML_STREAM() << impl_->sheetData_.rdbuf();
+				}
             }
-			if (!impl_->protection_.str().empty())
+			std::wstring protect = impl_->protection_.str();
+			if (false == protect.empty())
             {
-				CP_XML_STREAM() << impl_->protection_.str();
+				CP_XML_STREAM() << protect;
 			}
 			//оказывается порядок нахождения элементов важен !!! (для office 2010)
 			//объединенные ячейки раньше чем гиперлинки !!!
@@ -220,11 +248,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			CP_XML_STREAM() << impl_->conditionalFormatting_.str();
 
 			CP_XML_STREAM() << impl_->dataValidations_.str();
-			if (!impl_->hyperlinks_.str().empty())
+			
+			std::wstring hyperlinks = impl_->hyperlinks_.str();
+			if (false == hyperlinks.empty())
             {
                 CP_XML_NODE(L"hyperlinks")
                 {
-                    CP_XML_STREAM() << impl_->hyperlinks_.str();
+                    CP_XML_STREAM() << hyperlinks;
                 }
             }
 			CP_XML_STREAM() << impl_->page_props_.str();
@@ -248,30 +278,34 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					CP_XML_ATTR(L"r:id", impl_->vml_drawingId_);
 				}
 			}
-			if (false == impl_->ole_objects_.str().empty())
+			std::wstring oleObjects = impl_->ole_objects_.str();
+			if (false == oleObjects.empty())
             {
                 CP_XML_NODE(L"oleObjects")
                 {
-					CP_XML_STREAM() << impl_->ole_objects_.str();
+					CP_XML_STREAM() << oleObjects;
                 }
             }
+			std::wstring controls = impl_->controls_.str();
 			if (false == impl_->controls_.str().empty())
             {
                 CP_XML_NODE(L"controls")
                 {
-					CP_XML_STREAM() << impl_->controls_.str();
+					CP_XML_STREAM() << controls;
                 }
             }
-			if (false == impl_->tableParts_.str().empty())
+			std::wstring tableParts = impl_->tableParts_.str();
+			if (false == tableParts.empty())
             {
                 CP_XML_NODE(L"tableParts")
                 {
-					CP_XML_STREAM() << impl_->tableParts_.str();
+					CP_XML_STREAM() << tableParts;
 				}
 			}
 			CP_XML_STREAM() << impl_->picture_background_.str();
 
-			if (false == impl_->dataValidationsX14_.str().empty())
+			std::wstring dataValidations14 = impl_->dataValidationsX14_.str();
+			if (false == dataValidations14.empty())
 			{
 				CP_XML_NODE(L"extLst")
 				{
@@ -280,12 +314,13 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 						CP_XML_ATTR(L"uri", L"{CCE6A557-97BC-4b89-ADB6-D9C93CAAB3DF}");
 						CP_XML_ATTR(L"xmlns:x14", L"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main");
 
-						CP_XML_STREAM() << impl_->dataValidationsX14_.str();
+						CP_XML_STREAM() << dataValidations14;
 					}
 				}
 			}
 		}
     }
+	impl_->clear();
 }
 
 void xlsx_xml_worksheet::set_drawing_link(std::wstring const & fileName, std::wstring const & id)

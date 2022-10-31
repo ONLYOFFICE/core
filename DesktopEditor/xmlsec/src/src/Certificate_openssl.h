@@ -48,6 +48,11 @@ const EVP_MD* Get_EVP_MD(int nAlg)
             {
                 return EVP_sha512();
             }
+            case OOXML_HASH_ALG_ED25519:
+            case OOXML_HASH_ALG_ED448:
+            {
+                return NULL;
+            }
         default:
             break;
         }
@@ -304,8 +309,36 @@ public:
 public:
     std::string Sign(unsigned char* pData, unsigned int nSize)
     {
+        int nHashAlg = this->GetHashAlg();
+        if (OOXML_HASH_ALG_ED25519 == nHashAlg ||
+            OOXML_HASH_ALG_ED448 == nHashAlg)
+        {
+            //https://www.openssl.org/docs/manmaster/man7/Ed25519.html
+            size_t nSignatureLen = 0;
+            unsigned char* pSignature = NULL;
+            EVP_MD_CTX* pCtx = EVP_MD_CTX_new();
+            EVP_DigestSignInit(pCtx, NULL, NULL, NULL, m_key);
+
+            /* Calculate the requires size for the signature by passing a NULL buffer */
+            EVP_DigestSign(pCtx, NULL, &nSignatureLen, pData, (size_t)nSize);
+            pSignature = (unsigned char*)OPENSSL_zalloc(nSignatureLen);
+            EVP_DigestSign(pCtx, pSignature, &nSignatureLen,  pData, (size_t)nSize);
+
+            char* pBase64 = NULL;
+            int nBase64Len = 0;
+            NSFile::CBase64Converter::Encode(pSignature, (int)nSignatureLen, pBase64, nBase64Len, NSBase64::B64_BASE64_FLAG_NONE);
+
+            std::string sReturn(pBase64, nBase64Len);
+            delete[] pBase64;
+
+            OPENSSL_free(pSignature);
+            EVP_MD_CTX_free(pCtx);
+
+            return sReturn;
+        }
+
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
-        const EVP_MD* pDigest = Get_EVP_MD(this->GetHashAlg());
+        const EVP_MD* pDigest = Get_EVP_MD(nHashAlg);
 
         int nError = EVP_SignInit(pCtx, pDigest);
         nError = EVP_SignUpdate(pCtx, pData, nSize);
@@ -400,6 +433,8 @@ public:
                 break;
             }
             case OOXML_HASH_ALG_SHA512:
+            case OOXML_HASH_ALG_ED25519:
+            case OOXML_HASH_ALG_ED448:
             {
                 nBufLen = 64;
                 pBufData = new unsigned char[nBufLen];
@@ -447,23 +482,47 @@ public:
 
     virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)
     {
+        int nCertAlg = GetHashAlg();
+        if (nAlg == OOXML_HASH_ALG_SHA512 &&
+            (OOXML_HASH_ALG_ED25519 == nCertAlg || OOXML_HASH_ALG_ED448 == nCertAlg))
+        {
+            //https://www.openssl.org/docs/manmaster/man7/Ed25519.html
+            size_t nSignatureLen = 0;
+            unsigned char* pSignature = NULL;
+
+            EVP_PKEY* pubkey = X509_get_pubkey(m_cert);
+            EVP_MD_CTX* pCtx = EVP_MD_CTX_new();
+            EVP_DigestVerifyInit(pCtx, NULL, NULL, NULL, pubkey);
+
+            BYTE* pDigestValue = NULL;
+            int nDigestLen = 0;
+            NSFile::CBase64Converter::Decode(sXmlSignature.c_str(), (int)sXmlSignature.length(), pDigestValue, nDigestLen);
+
+            /* Calculate the requires size for the signature by passing a NULL buffer */
+            int nVer = EVP_DigestVerify(pCtx, pDigestValue, nDigestLen, (BYTE*)sXml.c_str(), (size_t)sXml.length());
+
+            EVP_MD_CTX_free(pCtx);
+            EVP_PKEY_FREE(pubkey);
+
+            RELEASEARRAYOBJECTS(pDigestValue);
+
+            return (1 == nVer) ? true : false;
+        }
+
         EVP_MD_CTX* pCtx = EVP_MD_CTX_create();
         const EVP_MD* pDigest = Get_EVP_MD(nAlg);
 
         int n1 = EVP_VerifyInit(pCtx, pDigest);
-        n1 = n1;
 
         BYTE* pDigestValue = NULL;
         int nDigestLen = 0;
         NSFile::CBase64Converter::Decode(sXmlSignature.c_str(), (int)sXmlSignature.length(), pDigestValue, nDigestLen);
 
         int n2 = EVP_VerifyUpdate(pCtx, (BYTE*)sXml.c_str(), (size_t)sXml.length());
-        n2 = n2;
 
         EVP_PKEY* pubkey = X509_get_pubkey(m_cert);
 
         int n3 = EVP_VerifyFinal(pCtx, pDigestValue, (unsigned int)nDigestLen, pubkey);
-        n3 = n3;
 
         EVP_MD_CTX_destroy(pCtx);
         EVP_PKEY_FREE(pubkey);
@@ -531,6 +590,12 @@ public:
         case NID_sha512:
         case NID_sha512WithRSAEncryption:
             algs.push_back(OOXML_HASH_ALG_SHA512);
+            break;
+        case NID_ED25519:
+            algs.push_back(OOXML_HASH_ALG_ED25519);
+            break;
+        case NID_ED448:
+            algs.push_back(OOXML_HASH_ALG_ED448);
             break;
         default:
             break;

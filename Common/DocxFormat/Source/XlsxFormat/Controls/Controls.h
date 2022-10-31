@@ -66,7 +66,7 @@ namespace OOX
 			nullable_string	m_oVal;
 		};
 //-----------------------------------------------------------------------------------------------------------------------------
-		class CListItems : public WritingElementWithChilds<CListItem>
+		class CListItems : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CListItems)
@@ -89,6 +89,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader){}
 			
+			std::vector<nullable<CListItem>> m_arrItems;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
 //-------------------------------------------------------------------------------------------------------------------------------
@@ -211,7 +212,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CControl)
-                        WritingElement_XlsbConstructors(CControl)
+			WritingElement_XlsbConstructors(CControl)
 			CControl()
 			{
 			}
@@ -236,7 +237,7 @@ namespace OOX
 			}
 
 		private:
-                        void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable_string										m_oName;
@@ -256,7 +257,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CControls)
-                        WritingElement_XlsbConstructors(CControls)
+			WritingElement_XlsbConstructors(CControls)
 			CControls()
 			{
 			}
@@ -272,7 +273,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			
 			void read(XmlUtils::CXmlLiteReader& oReader, bool bOldVersion = false);
-                        void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const
 			{
 				return et_x_Controls;
@@ -282,8 +283,8 @@ namespace OOX
 			{
 			}
 		public:
-			std::map<unsigned int, CControl*> m_mapControls;
-			std::map<unsigned int, CControl*> m_mapControlsAlternative;
+			std::map<unsigned int, nullable<CControl>> m_mapControls;
+			std::map<unsigned int, nullable<CControl>> m_mapControlsAlternative;
 		};
 //------------------------------------------------------------------------------------------------------------------------
 		class CCtrlPropFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer

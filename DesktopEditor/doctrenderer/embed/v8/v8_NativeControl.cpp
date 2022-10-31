@@ -29,6 +29,7 @@ namespace NSNativeControl
     FUNCTION_WRAPPER_V8_1(_zipGetFileAsBinary, zipGetFileAsBinary)
     FUNCTION_WRAPPER_V8(_zipCloseFile, zipCloseFile)
     FUNCTION_WRAPPER_V8_1(_GetImageUrl, GetImageUrl)
+    FUNCTION_WRAPPER_V8_1(_GetImageOriginalSize, GetImageOriginalSize)
     FUNCTION_WRAPPER_V8(_GetImagesPath, GetImagesPath)
 
     v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
@@ -63,6 +64,7 @@ namespace NSNativeControl
         NSV8Objects::Template_Set(result, "ZipClose",           _zipCloseFile);
         NSV8Objects::Template_Set(result, "getImageUrl",        _GetImageUrl);
         NSV8Objects::Template_Set(result, "getImagesDirectory", _GetImagesPath);
+        NSV8Objects::Template_Set(result, "GetImageOriginalSize", _GetImageOriginalSize);
 
         return handle_scope.Escape(result);
     }
@@ -99,6 +101,7 @@ namespace NSNativeControl
         NSV8Objects::Template_Set(result, "ZipClose",           _zipCloseFile);
         NSV8Objects::Template_Set(result, "getImageUrl",        _GetImageUrl);
         NSV8Objects::Template_Set(result, "getImagesDirectory", _GetImagesPath);
+        NSV8Objects::Template_Set(result, "GetImageOriginalSize", _GetImageOriginalSize);
 
         return handle_scope.Escape(result);
     }

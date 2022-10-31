@@ -114,7 +114,7 @@ namespace PPTX
 				pWriter->StartNode(sNodeNamespace + L"lightRig");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"crig", rig.get());
+				pWriter->WriteAttribute(sAttrNamespace + L"rig", rig.get());
 				pWriter->WriteAttribute(sAttrNamespace + L"dir", dir.get());
 				pWriter->EndAttributes();
 

@@ -634,6 +634,7 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 	//	sCellValue = *pCell->m_oCacheValue;
 	//}
 	//else 
+	bool bString = false;
 	if (pCell->m_oValue.IsInit())
 	{
 		sCellValue = pCell->m_oValue->ToString();
@@ -648,42 +649,47 @@ void CSVWriter::Impl::WriteCell(OOX::Spreadsheet::CCell *pCell)
 				if (NULL != pSi)
 				{
 					sCellValue = pSi->ToString();
+					bString = true;
 				}
 			}
 		}
-		std::wstring format_code;
-
-		if (pCell->m_oStyle.IsInit() && m_oXlsx.m_pStyles)
+		if (!bString)
 		{
-			OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[*pCell->m_oStyle];
-			if (xfs)
+			std::wstring format_code;
+
+			if (pCell->m_oStyle.IsInit() && m_oXlsx.m_pStyles)
 			{
-				if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()) || !xfs->m_oApplyNumberFormat.IsInit())
+				OOX::Spreadsheet::CXfs* xfs = m_oXlsx.m_pStyles->m_oCellXfs->m_arrItems[*pCell->m_oStyle];
+				if (xfs)
 				{
-					if ((xfs->m_oNumFmtId.IsInit()) /*&& (xfs->m_oNumFmtId->GetValue() != 0*/)
+					if ((xfs->m_oApplyNumberFormat.IsInit()) && (xfs->m_oApplyNumberFormat->ToBool()) || !xfs->m_oApplyNumberFormat.IsInit())
 					{
-						int numFmt = xfs->m_oNumFmtId->GetValue();
-
-						GetDefaultFormatCode(numFmt, format_code, format_type);
-
-						if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
+						if ((xfs->m_oNumFmtId.IsInit()) /*&& (xfs->m_oNumFmtId->GetValue() != 0*/)
 						{
-							std::map<unsigned int, size_t>::iterator pFind = m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.find(numFmt);
-							if (pFind != m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.end())
+							int numFmt = xfs->m_oNumFmtId->GetValue();
+
+							GetDefaultFormatCode(numFmt, format_code, format_type);
+
+							if (m_oXlsx.m_pStyles->m_oNumFmts.IsInit())
 							{
-								OOX::Spreadsheet::CNumFmt *fmt = m_oXlsx.m_pStyles->m_oNumFmts->m_arrItems[pFind->second];
-								if (fmt)
+								std::map<unsigned int, size_t>::iterator pFind = m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.find(numFmt);
+								if (pFind != m_oXlsx.m_pStyles->m_oNumFmts->m_mapNumFmtIndex.end())
 								{
-									if (fmt->m_oFormatCode.IsInit())
-										format_code = *fmt->m_oFormatCode;
+									OOX::Spreadsheet::CNumFmt *fmt = m_oXlsx.m_pStyles->m_oNumFmts->m_arrItems[pFind->second];
+									if (fmt)
+									{
+										if (fmt->m_oFormatCode.IsInit())
+											format_code = *fmt->m_oFormatCode;
+									}
 								}
 							}
 						}
 					}
 				}
 			}
+			sCellValue = ConvertValueCellToString(sCellValue, format_type, format_code);
+
 		}
-		sCellValue = ConvertValueCellToString(sCellValue, format_type, format_code);
 	}
 
 	// Escape cell value
@@ -837,10 +843,9 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 			try
 			{
 				std::wstring format_code_tmp;
-				double dValue = XmlUtils::GetDouble(value);
 
 				int count_d = 0;
-				bool bFloat = false, bStart = true, bEnd = false;
+				bool bFloat = false, bStart = true, bEnd = false, bPercent = false;
 
 				size_t pos_skip = format_code.rfind(L"#");
 				if (pos_skip == std::wstring::npos) pos_skip = 0;
@@ -886,7 +891,7 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 							{
 								if (format_code[i] == L'%')
 								{
-									dValue *= 100.;
+									bPercent = true;
 									format_code_tmp += (std::wstring(L"%") + format_code[i]);
 								}
 								else
@@ -906,10 +911,26 @@ std::wstring CSVWriter::Impl::ConvertValueCellToString(const std::wstring &value
 					bStart = false;
 
 				}
-				if (!bStart && !bEnd) format_code_tmp += bFloat ? L"f" : L"d";
+				else
+					format_code_tmp += L"%";
+				if (!bStart && !bEnd) format_code_tmp += bFloat ? L"f" : L"ld";
+
+
+				double dValue = XmlUtils::GetDouble(value);
+				if (bPercent)
+					dValue *= 100.;
 
 				std::wstringstream stream;
-				stream << boost::wformat(format_code_tmp) % dValue;
+
+				if (bFloat)
+				{
+					stream << boost::wformat(format_code_tmp) % dValue;
+				}
+				else
+				{
+					_INT64 iValue = dValue;
+					stream << boost::wformat(format_code_tmp) % iValue;
+				}
 
 				return stream.str();
 			}

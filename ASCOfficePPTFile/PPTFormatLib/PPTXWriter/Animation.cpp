@@ -52,6 +52,7 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
 {
     if (m_pPPT10)
     {
+        m_isPPT10Broken = false;
         // It must be first to write some reference from ExtTimeNodeContainer
         if (m_pPPT10->m_haveBuildList && !m_pPPT10->m_pBuildListContainer->n_arrRgChildRec.empty())
         {
@@ -66,7 +67,7 @@ void Animation::Convert(PPTX::Logic::Timing &oTiming)
             FillTnLst(m_pPPT10->m_pExtTimeNodeContainer, *(oTiming.tnLst));
         }
     }
-    if (!m_arrOldAnim.empty() || m_isPPT10Broken)
+    if (!m_arrOldAnim.empty() && m_isPPT10Broken)
     {
         oTiming = PPTX::Logic::Timing();
         InitTimingTags(oTiming);
@@ -162,8 +163,8 @@ void Animation::FillAnim(
             }
 
         auto tavTime = animValue->m_oTimeAnimationValueAtom.m_nTime;
-        if (tavTime < 1000 && tavTime >= 0)
-                tav.tm = std::to_wstring((1000 - tavTime) * 100);
+        if (tavTime <= 1000 && tavTime >= 0)    // todo check
+                tav.tm = std::to_wstring((/*1000 - */tavTime) * 100);
 
         if (!animValue->m_VarFormula.m_Value.empty())
         {
@@ -424,6 +425,8 @@ void Animation::FillAudio(CRecordExtTimeNodeContainer *pETNC,
         {
             oAudio.cMediaNode.tgtEl.spTgt = new PPTX::Logic::SpTgt;
             oAudio.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+//            oAudio.isNarration = true;
+//            oAudio.cMediaNode.showWhenStopped = false;
         } else
             return;
         FillCTn(pETNC, oAudio.cMediaNode.cTn);
@@ -634,7 +637,6 @@ void Animation::FillCBhvr(
     // accumulate   - MUST be 0
     // xfrmType     - MUST be 0
 
-
     if (pBhvr->m_haveStringList)
     {
         if (!pBhvr->m_pStringList->m_arrRgChildRec.empty())
@@ -676,6 +678,46 @@ void Animation::FillCBhvr(
             oBhvr.tgtEl.spTgt->txEl->charRg = false;
             oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
             oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
+        }
+    }
+
+
+    if (pBhvr->m_pPropertyList == nullptr)
+        return;
+
+    for (const auto prop : pBhvr->m_pPropertyList->m_arRecords)
+    {
+        if (prop == nullptr)
+            continue;
+
+        switch (prop->m_oHeader.RecInstance)
+        {
+        case TL_TBPID_RuntimeContext:
+            break;
+        case TL_TBPID_MotionPathEditRelative:
+            break;
+        case TL_TBPID_ColorColorModel:
+            break;
+        case TL_TBPID_ColorDirection:
+            break;
+        case TL_TBPID_Override:
+        {
+            auto override_ = new PPTX::Limit::TLOverride;
+            override_->set(L"childStyle");
+            oBhvr.override_= override_;
+            break;
+        }
+        case TL_TBPID_PathEditRotationAngle:
+            break;
+        case TL_TBPID_PathEditRotationX:
+            break;
+        case TL_TBPID_PathEditRotationY:
+            break;
+        case TL_TBPID_PointsTypes:
+            break;
+        case TL_TBPID_UnknownPropertyList:
+        default:
+            break;
         }
     }
 }
@@ -780,6 +822,9 @@ void Animation::FillCond(
         cond.tgtEl->spTgt = new PPTX::Logic::SpTgt;
         cond.tgtEl->spTgt->spid = std::to_wstring(
                     oldCond->m_oVisualElement.m_oVisualShapeAtom.m_nObjectIdRef);
+    } else if (oldCond->m_oVisualElement.m_bVisualPageAtom)
+    {
+        cond.tgtEl = new PPTX::Logic::TgtEl;
     }
 }
 
@@ -873,12 +918,15 @@ void Animation::FillCTn(
         if (iter->m_fIterateDirectionPropertyUsed)
             oCTn.iterate->backwards = (bool)iter->m_nIterateDirection;
 
-        if (iter->m_fIterateIntervalTypePropertyUsed)
-            oCTn.iterate->tmPct = iter->m_nIterateInterval;
+        int intervalType = iter->m_fIterateIntervalTypePropertyUsed ?
+                    iter->m_nIterateIntervalType : 0;
+        unsigned int iterateInterval = iter->m_fIterateIntervalPropertyUsed ?
+                    iter->m_nIterateInterval : 0;
 
-        if (iter->m_fIterateIntervalPropertyUsed)
-            oCTn.iterate->tmAbs = std::to_wstring(iter->m_nIterateIntervalType);
-
+        if (intervalType)
+            oCTn.iterate->tmPct = iterateInterval > 1000 ? 10000 : iterateInterval * 10;
+        else
+            oCTn.iterate->tmAbs = std::to_wstring(iterateInterval);
     }
 
 
@@ -1437,6 +1485,9 @@ void Animation::SplitAnim(std::list<std::list<SOldAnimation*> >& arrClickPar)
 
     for (auto& oldAnim : m_arrOldAnim)
     {
+        if (isSpidReal(oldAnim.shapeId) == false)
+            continue;
+
         if (arrClickPar.empty())
         {
             std::list<SOldAnimation*> clickPar;
@@ -1670,6 +1721,7 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
     const UINT effect = pOldAnim->anim->m_AnimationAtom.m_AnimEffect;
     const UINT direct = pOldAnim->anim->m_AnimationAtom.m_AnimEffectDirection;
 
+    // Todo 4, 7. 0x11 - 0x1B
     switch (effect)
     {
     case 0x00:
@@ -1700,6 +1752,12 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
     {
         oCTN.presetID = 9;
         ConvertDissolveIn(oCTN.childTnLst.get2(), pOldAnim);
+        break;
+    }
+    case 0x06:
+    {
+        oCTN.presetID = 10;
+        ConvertFade(oCTN.childTnLst.get2(), pOldAnim);
         break;
     }
     case 0x08:
@@ -1771,6 +1829,11 @@ void Animation::FillCTnAnimation  (PPTX::Logic::CTn &oCTN, SOldAnimation *pOldAn
         ConvertFlashOnce(oCTN.childTnLst.get2(), pOldAnim, presetSub);
         break;
     }
+    default:
+        oCTN.presetID = 1;
+        ConvertAppear(oCTN.childTnLst.get2(), pOldAnim);
+        std::wcout << "Error: Unknown old animation id: " << std::to_wstring(effect) << L"\n";
+
     }
 
     if (presetSub != -1)
@@ -1968,6 +2031,12 @@ void Animation::ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, SOldAnimatio
 {
     PushSet(oParent, pOldAnim);
     PushAnimEffect(oParent, pOldAnim, L"dissolve", L"in");
+}
+
+void Animation::ConvertFade(PPTX::Logic::ChildTnLst &oParent, SOldAnimation *pOldAnim)
+{
+    PushSet(oParent, pOldAnim);
+    PushAnimEffect(oParent, pOldAnim, L"fade", L"in");
 }
 
 void Animation::ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAnim, int& presetSub)
@@ -2389,14 +2458,19 @@ void Animation::PushSet(PPTX::Logic::ChildTnLst& oParent, SOldAnimation *pOldAni
 
 bool Animation::isSpidReal(const UINT spid)
 {
-    if (m_arrOldAnim.empty())
+    if (m_realShapesId.find(spid) == m_realShapesId.end())
+        return false;
+    else
         return true;
 
-    for (const auto& oldAnim : m_arrOldAnim)
-        if (oldAnim.shapeId == spid)
-            return true;
+//    if (m_arrOldAnim.empty())
+//        return true;
 
-    return false;
+//    for (const auto& oldAnim : m_arrOldAnim)
+//        if (oldAnim.shapeId == spid)
+//            return true;
+
+//    return false;
 }
 
 

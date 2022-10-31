@@ -250,7 +250,7 @@ namespace PPTX
 							{
 								pReader->Skip(1); // type
 								Paragrs.push_back(Paragraph());
-								Paragrs[Paragrs.size() - 1].fromPPTY(pReader);								
+								Paragrs.back().fromPPTY(pReader);
 							}
 							break;
 						}

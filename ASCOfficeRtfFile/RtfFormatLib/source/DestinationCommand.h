@@ -2266,7 +2266,8 @@ public:
 					}
 					else
 					{
-						return RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &oReader.m_oState->m_oCharProp  );
+						bool res = RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &m_oListLevelProp.m_oCharProp);
+						oReader.m_nDefFont = PROP_DEF;
 					}
 					return true;
 				}

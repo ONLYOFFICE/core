@@ -89,10 +89,18 @@ odf_conversion_context::odf_conversion_context(_office_type_document type_, pack
 }
 odf_conversion_context::~odf_conversion_context()
 {
+	output_document_ = NULL;
+
     if (applicationFonts_)
         delete applicationFonts_;
+	
+	for (size_t i = 0; i < objects_.size(); ++i)
+	{
+		if (objects_[i]) delete objects_[i];
+		objects_[i] = NULL;
+	}
+	objects_.clear();
 }
-
 void odf_conversion_context::set_fonts_directory(std::wstring pathFonts)
 {
     if (applicationFonts_)
@@ -130,14 +138,14 @@ double odf_conversion_context::convert_symbol_width(double val)
 odf_style_context* odf_conversion_context::styles_context()
 {
 	if (!objects_.empty())
-		return objects_[current_object_].style_context.get();
+		return objects_[current_object_]->style_context.get();
 	else
 		return NULL;
 }
 odf_settings_context* odf_conversion_context::settings_context()
 {
 	if (!objects_.empty())
-		return objects_[current_object_].settings_context.get();
+		return objects_[current_object_]->settings_context.get();
 	else
 		return NULL;
 }
@@ -159,22 +167,22 @@ odf_math_context* odf_conversion_context::math_context()
 
 odf_number_styles_context* odf_conversion_context::numbers_styles_context()	
 {
-	if (objects_.size() > 0 && objects_[current_object_].style_context)
-			return &(objects_[current_object_].style_context->numbers_styles());
+	if (objects_.size() > 0 && objects_[current_object_]->style_context)
+			return &(objects_[current_object_]->style_context->numbers_styles());
 	else return NULL;
 }
 
 _mediaitems* odf_conversion_context::mediaitems()				
 {
-	return &objects_[current_object_].mediaitems;
+	return &objects_[current_object_]->mediaitems;
 }
 
 void odf_conversion_context::end_document()
 {
-	rels	rels_;
+	rels rels_;
 	for (size_t i = 0; i < objects_.size(); i++)
 	{
-		_object & object = objects_[i];
+		_object & object = *objects_[i];
 		bool isRoot = (i == 0 ? true : false);
 	
 		if (object.content == NULL)continue;
@@ -184,8 +192,8 @@ void odf_conversion_context::end_document()
 
 		package::content_content_ptr content_root_ = package::content_content::create();		
 
-		if (objects_.back().scripts)
-			objects_.back().scripts->serialize(content_root_->styles());	
+		if (objects_.back()->scripts)
+			objects_.back()->scripts->serialize(content_root_->styles());	
 
 		object.content->serialize(content_root_->content());	
 
@@ -245,15 +253,13 @@ void odf_conversion_context::end_document()
 
 			output_document_->add_object(package::element_ptr(object_files), isRoot);
 		}
-
 	}
-
 	output_document_->set_rels(rels_);
 }
 void odf_conversion_context::start_chart()
 {
 	create_object();
-	create_element(L"office", L"chart", objects_.back().content, this, true);
+	create_element(L"office", L"chart", objects_.back()->content, this, true);
 
 	chart_context_.set_styles_context(odf_conversion_context::styles_context());
 	chart_context_.start_chart(get_current_object_element());
@@ -261,36 +267,39 @@ void odf_conversion_context::start_chart()
 void odf_conversion_context::start_spreadsheet()
 {
 	create_object();
-	create_element(L"office", L"spreadsheet", objects_.back().content, this, true);
+	create_element(L"office", L"spreadsheet", objects_.back()->content, this, true);
 }
 void odf_conversion_context::start_text()
 {
 	create_object();
-	create_element(L"office", L"text", objects_.back().content, this, true);
+	create_element(L"office", L"text", objects_.back()->content, this, true);
 }
 void odf_conversion_context::start_presentation()
 {
 	create_object();
-	create_element(L"office", L"presentation", objects_.back().content, this, true);
+	create_element(L"office", L"presentation", objects_.back()->content, this, true);
 
-	create_element(L"office", L"scripts", objects_.back().scripts, this);
+	create_element(L"office", L"scripts", objects_.back()->scripts, this);
 }
 void odf_conversion_context::create_object(bool bAddContentExt)
 {
-	_object obj;
-	
-	obj.content_ext			= bAddContentExt;
-	obj.style_context		= boost::make_shared<odf_style_context>();
-	obj.settings_context	= boost::make_shared<odf_settings_context>();
-	
-	obj.name = get_next_name_object();
-	
-	obj.style_context->set_odf_context(this);
-	obj.settings_context->set_odf_context(this);
-	
-	objects_.push_back(obj);
+	_object *obj = new _object();
 
-	current_object_ = objects_.size() - 1;
+	if (obj)
+	{
+		obj->content_ext = bAddContentExt;
+		obj->style_context = boost::make_shared<odf_style_context>();
+		obj->settings_context = boost::make_shared<odf_settings_context>();
+
+		obj->name = get_next_name_object();
+
+		obj->style_context->set_odf_context(this);
+		obj->settings_context->set_odf_context(this);
+
+		objects_.push_back(obj);
+
+		current_object_ = objects_.size() - 1;
+	}
 }
 void odf_conversion_context::end_chart()
 {
@@ -312,7 +321,7 @@ bool odf_conversion_context::start_math()
 			//имитация рисованного объекта - высота-ширина ????
 
 	create_object(false);
-	create_element(L"math", L"math", objects_.back().content, this, true);
+	create_element(L"math", L"math", objects_.back()->content, this, true);
 	
 	math_context_.set_styles_context(odf_conversion_context::styles_context());
 	math_context_.start_math(get_current_object_element());
@@ -368,7 +377,7 @@ office_element_ptr & odf_conversion_context::get_current_object_element()
 		create_object();
 	}
 
-	return objects_[current_object_].content;
+	return objects_[current_object_]->content;
 }
 
 std::wstring odf_conversion_context::get_next_name_object()
@@ -535,13 +544,13 @@ void odf_conversion_context::add_font(const std::wstring& font_name)
 {
 	if (objects_.empty())return;
 
-	if (objects_[current_object_].mapFonts.find(font_name) == objects_[current_object_].mapFonts.end())
+	if (objects_[current_object_]->mapFonts.find(font_name) == objects_[current_object_]->mapFonts.end())
 	{
-		objects_[current_object_].mapFonts.insert(std::make_pair(font_name, 1));
+		objects_[current_object_]->mapFonts.insert(std::make_pair(font_name, 1));
 	}
 	else
 	{
-		objects_[current_object_].mapFonts[font_name]++;
+		objects_[current_object_]->mapFonts[font_name]++;
 	}
 }
 }

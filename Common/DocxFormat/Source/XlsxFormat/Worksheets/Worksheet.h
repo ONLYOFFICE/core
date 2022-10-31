@@ -148,7 +148,6 @@ namespace OOX
 			nullable<OOX::Spreadsheet::CLegacyDrawingWorksheet>		m_oLegacyDrawing;
 			nullable<OOX::Spreadsheet::COleObjects>					m_oOleObjects;
 			nullable<OOX::Spreadsheet::CControls>					m_oControls;
-            boost::unordered_map<std::wstring, CCommentItem*>       m_mapComments;
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 			nullable<OOX::Spreadsheet::CSheetPr>					m_oSheetPr;
 			nullable<OOX::Spreadsheet::CHeaderFooter>				m_oHeaderFooter;
@@ -171,6 +170,7 @@ namespace OOX
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
 //--------------------------------------------------------------------------------------------
+			std::map<std::wstring, CCommentItem*> m_mapComments;
 			std::map<std::wstring, unsigned int> m_mapStyleMerges2003;
 		private:
 			void PrepareDataValidations();

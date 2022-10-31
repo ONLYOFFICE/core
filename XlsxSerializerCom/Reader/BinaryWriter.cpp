@@ -3473,7 +3473,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
 		bool bIsEmpty = true;
 		int nCurPos = 0;
 
-        for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = oWorksheet.m_mapComments.begin(); it != oWorksheet.m_mapComments.end(); ++it)
+        for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = oWorksheet.m_mapComments.begin(); it != oWorksheet.m_mapComments.end(); ++it)
 		{
 			if(it->second->IsValid())
 			{
@@ -4706,9 +4706,9 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if (oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if (oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if (oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if (oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
@@ -4735,6 +4735,12 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 		if (pOleObject->m_oProgId.IsInit())
 			olePic->oleObject->m_sProgId = pOleObject->m_oProgId.get();
+		
+		if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit())
+		{
+			olePic->oleObject->m_oMoveWithCells = pOleObject->m_oObjectPr->m_oAnchor->m_oMoveWithCells;
+			olePic->oleObject->m_oSizeWithCells = pOleObject->m_oObjectPr->m_oAnchor->m_oSizeWithCells;
+		}
 
 		olePic->oleObject->m_oId = pRId;
 		olePic->oleObject->m_OleObjectFile = pFileOleObject;
@@ -4761,6 +4767,9 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 					pClientData->toCellAnchor(oCellAnchor.GetPointer());
+
+					olePic->oleObject->m_oMoveWithCells = pClientData->m_oMoveWithCells;
+					olePic->oleObject->m_oSizeWithCells = pClientData->m_oSizeWithCells;
 				}
 				if (OOX::et_v_imagedata == pChildElemShape->getType())
 				{
@@ -4824,13 +4833,13 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 
 	int nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Controls);
 
-	for (std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator it = oWorksheet.m_oControls->m_mapControls.begin(); it != oWorksheet.m_oControls->m_mapControls.end(); ++it)
+	for (std::map<unsigned int, nullable<OOX::Spreadsheet::CControl>>::const_iterator it = oWorksheet.m_oControls->m_mapControls.begin(); it != oWorksheet.m_oControls->m_mapControls.end(); ++it)
 	{
-		OOX::Spreadsheet::CControl* pControl = it->second;
+		OOX::Spreadsheet::CControl* pControl = it->second.GetPointer();
 		
 		if (!pControl) continue;
 		
-		nullable<OOX::Spreadsheet::CCellAnchor>		oCellAnchor;
+		nullable<OOX::Spreadsheet::CCellAnchor> oCellAnchor;
 		OOX::Spreadsheet::CFormControlPr oFormControlPr;
 		OOX::Spreadsheet::CFormControlPr* pFormControlPr = &oFormControlPr;
         
@@ -4893,9 +4902,9 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 			
 			if (oAnchor.m_oFrom.IsInit() && oAnchor.m_oTo.IsInit())
 			{
-				if(oAnchor.m_oMoveWithCells.IsInit() && oAnchor.m_oMoveWithCells->ToBool())
+				if(oAnchor.m_oMoveWithCells.IsInit() && *oAnchor.m_oMoveWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-				else if(oAnchor.m_oSizeWithCells.IsInit() && oAnchor.m_oSizeWithCells->ToBool())
+				else if(oAnchor.m_oSizeWithCells.IsInit() && *oAnchor.m_oSizeWithCells)
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 				else
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
@@ -5217,7 +5226,7 @@ void BinaryWorksheetTableWriter::WriteControlPr(OOX::Spreadsheet::CControlPr* pC
 		nCurPos = m_oBcw.WriteItemStart(c_oSerControlTypes::ItemLst);
 		for (size_t i = 0; i < pFormControlPr->m_oItemLst->m_arrItems.size(); ++i)
 		{
-			if((pFormControlPr->m_oItemLst->m_arrItems[i]) && 
+			if((pFormControlPr->m_oItemLst->m_arrItems[i].IsInit()) && 
 				(pFormControlPr->m_oItemLst->m_arrItems[i]->m_oVal.IsInit()))
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerControlTypes::Item);
@@ -5249,7 +5258,7 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 			}
 			if(oWorksheet.m_oControls.IsInit() && pCellAnchor->m_nId.IsInit())
 			{
-                std::map<unsigned int, OOX::Spreadsheet::CControl*>::const_iterator pFind = oWorksheet.m_oControls->m_mapControls.find(pCellAnchor->m_nId.get());
+                std::map<unsigned int, nullable<OOX::Spreadsheet::CControl>>::const_iterator pFind = oWorksheet.m_oControls->m_mapControls.find(pCellAnchor->m_nId.get());
 				if (pFind != oWorksheet.m_oControls->m_mapControls.end())
 				{
 					pCellAnchor->m_bShapeControl = true;
@@ -5678,11 +5687,11 @@ void BinaryWorksheetTableWriter::WriteExt(const OOX::Spreadsheet::CExt& oExt)
 		m_oBcw.m_oStream.WriteDoubleReal(oExt.m_oCy->ToMm());
 	}
 }
-void BinaryWorksheetTableWriter::WriteComments(boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments)
+void BinaryWorksheetTableWriter::WriteComments(std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>& mapComments)
 {
 	int nCurPos = 0;
 
-    for (boost::unordered_map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = mapComments.begin(); it != mapComments.end(); ++it)
+    for (std::map<std::wstring, OOX::Spreadsheet::CCommentItem*>::const_iterator it = mapComments.begin(); it != mapComments.end(); ++it)
 	{
 		if(it->second->IsValid())
 		{

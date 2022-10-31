@@ -160,9 +160,6 @@ ods_table_state::ods_table_state(odf_conversion_context * Context, office_elemen
 
 	defaut_row_height_ = 9;
 	defaut_column_width_ = 28.34467120181406 * 1.674;// 
-
-
-	cells_size_ = 0;
 }
 
 void ods_table_state::set_table_name(std::wstring name)
@@ -498,17 +495,17 @@ void ods_table_state::set_row_height(double height)
 
 bool ods_table_state::is_cell_hyperlink()
 {
-	if ( cells_size_ < 1 )return false;
+	if (cells_.empty())return false;
 	return cells_.back().hyperlink_idx >= 0 ? true : false;
 }
 bool ods_table_state::is_cell_comment()
 {
-	if ( cells_size_ < 1 )return false;
+	if (cells_.empty())return false;
 	return cells_.back().comment_idx >= 0 ? true : false;
 }
 bool ods_table_state::is_cell_data_validation()
 {
-	if ( cells_size_ < 1 ) return false;
+	if (cells_.empty()) return false;
 	return cells_.back().data_validation_name.empty() ? true : false;
 }
 int ods_table_state::is_cell_hyperlink(int col, int row)
@@ -607,14 +604,14 @@ office_element_ptr  & ods_table_state::current_row_element()
 }
 office_element_ptr  & ods_table_state::current_cell_element()
 {
-	if (cells_size_ > 0)
+	if (false == cells_.empty())
 		return cells_.back().elm;
 	else
 		throw;
 }
 ods_hyperlink_state & ods_table_state::current_hyperlink()
 {
-	if ((cells_size_ > 0 && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
+	if ((false == cells_.empty() && !hyperlinks_.empty()) && (cells_.back().hyperlink_idx >= 0) )
 	{
 		return hyperlinks_[cells_.back().hyperlink_idx];
 	}
@@ -657,7 +654,6 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 
 	current_table_column_ +=  state.repeated;  
     cells_.push_back(state);
-	cells_size_++;
 	
 	if (current_covered_cols_ > 0 && covered_cell)
 		current_covered_cols_--;
@@ -665,7 +661,7 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 
 void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 {
-	if (cells_size_  < 1)return;
+	if (cells_.empty())return;
 	if (value_type == office_value_type::Custom)return;	//general .. need detect
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
@@ -679,7 +675,7 @@ void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 }
 void ods_table_state::set_cell_type(int type)
 {
-	if (cells_size_  < 1)return;
+	if (cells_.empty())return;
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -1270,7 +1266,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 }
 void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 {
-	if (cells_size_  < 1)return;
+	if (cells_.empty())return;
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -1416,7 +1412,7 @@ void ods_table_state::end_cell_text()
 }
 void ods_table_state::end_cell()
 {
-	if ( cells_size_  < 1)return;
+	if (cells_.empty())return;
 
     if (cells_.back().comment_idx >= 0)
 	{
@@ -1433,6 +1429,10 @@ void ods_table_state::end_cell()
 	{
 		table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 		if (cell)cell->attlist_.common_value_and_type_attlist_ = boost::none;
+	}
+	if (map_merged_cells.empty())
+	{
+		cells_.pop_back();
 	}
 }
 
@@ -1565,7 +1565,6 @@ void ods_table_state::add_default_cell( int repeated)
 	state.comment_idx			= comment_idx;
 	
 	cells_.push_back(state);
-	cells_size_++;
 	
 	current_table_column_ += state.repeated;
 
@@ -1667,6 +1666,13 @@ void ods_table_state::start_conditional_rule(int rule_type, _CP_OPT(unsigned int
 				if (col.empty()) col = L".A";
 				if (row.empty()) row = L"1";
 
+				if (std::wstring::npos != table.find(L" "))
+				{
+					if (table[0] != L'\'')
+					{
+						table = L"'" + table + L"'";
+					}
+				}
 				condition->attr_.calcext_base_cell_address_ = table + col + row;
 			}
 			switch(rule_type)

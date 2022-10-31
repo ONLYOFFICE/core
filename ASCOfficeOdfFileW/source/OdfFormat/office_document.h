@@ -51,9 +51,9 @@ class manifest_encryption_data : public office_element_impl<manifest_encryption_
 public:
 	static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeManifestEncryptionData;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child_element);
@@ -76,9 +76,9 @@ class manifest_algorithm : public office_element_impl<manifest_algorithm>
 public:
 	static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeManifestAlgorithm;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -96,9 +96,9 @@ class manifest_key_derivation : public office_element_impl<manifest_key_derivati
 public:
 	static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeManifestKeyDerivation;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
@@ -118,9 +118,9 @@ class manifest_start_key_generation : public office_element_impl<manifest_start_
 public:
 	static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeManifestStartKeyGeneration;
-    CPDOCCORE_DEFINE_VISITABLE();
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}

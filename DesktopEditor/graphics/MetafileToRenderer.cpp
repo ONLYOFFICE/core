@@ -140,6 +140,8 @@ public:
 		m_pRenderer->CommandDrawText(bsText, x, y, w, h);
 		m_pRenderer->put_FontName(sName);
 		m_pRenderer->put_FontStyle(nStyle);
+
+		RELEASEINTERFACE(pFileNew);
 	}
 
 	void SetRenderer(IRenderer* pRenderer)
@@ -473,6 +475,9 @@ namespace NSOnlineOfficeBinToPdf
 		LONG lRendererType = 0;
 		pRenderer->get_Type(&lRendererType);
 
+		// из команд js - точные имена
+		pRenderer->CommandLong(c_nUseDictionaryFonts, 0);
+
 		CommandType eCommand = ctError;
 
 		bool bIsPathOpened = false;
@@ -623,6 +628,15 @@ namespace NSOnlineOfficeBinToPdf
 
 				current += 1;
 				curindex += 1;
+				break;
+			}
+			case ctBrushTexturePathOld:
+			{
+				int nLen = 2 * ReadUSHORT(current, curindex);
+				std::wstring sTempPath = ReadString16(current, curindex, nLen);
+
+				std::wstring sImagePath = pCorrector->GetImagePath(sTempPath);
+				pRenderer->put_BrushTexturePath(sImagePath);
 				break;
 			}
 			case ctBrushTexturePath:
@@ -1103,6 +1117,20 @@ namespace NSOnlineOfficeBinToPdf
 
 					if (nFlags & (1 << 25))
 						pPr->SetPlaceHolder(ReadString(current, curindex));
+
+					if (nFlags & (1 << 26))
+					{
+						CFormFieldInfo::CTextFormFormat* pFormat = pPr->GetFormat();
+						pFormat->SetType((CFormFieldInfo::EFormatType)ReadByte(current, curindex));
+
+						unsigned int unSymbolsCount = ReadInt(current, curindex);
+						for (unsigned int unSymbolIndex = 0; unSymbolIndex < unSymbolsCount; ++unSymbolIndex)
+						{
+							pFormat->AddSymbol(ReadInt(current, curindex));
+						}
+
+						pFormat->SetValue(ReadString(current, curindex));
+					}
 				}
 				else if (oInfo.IsDropDownList())
 				{
@@ -1315,6 +1343,12 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				current += 1;
 				curindex += 1;
+				break;
+			}
+			case ctBrushTexturePathOld:
+			{
+				int nLen = 2 * ReadUSHORT(current, curindex);
+				SkipString16(current, curindex, nLen);
 				break;
 			}
 			case ctBrushTexturePath:

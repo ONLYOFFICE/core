@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_RATIO_INCLUDE_H_
-#define PPTX_VIEWPROPS_RATIO_INCLUDE_H_
-
 #include "./../WrapperWritingElement.h"
 
 namespace PPTX
@@ -56,18 +53,45 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("n"), n);
-				oAttr.Write(_T("d"), d);
+				oAttr.Write(L"n", n);
+				oAttr.Write(L"d", d);
 
-				return XmlUtils::CreateNode(_T("a:") + name, oAttr);
+				return XmlUtils::CreateNode(L"a:" + name, oAttr);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteINT(d);
-				pWriter->WriteINT(n);
+				pWriter->WriteInt1(0, d);
+				pWriter->WriteInt1(1, n);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							d = pReader->GetLong();
+						}break;
+						case 1:
+						{
+							n = pReader->GetLong();
+						}break;
+						default:
+							break;
+					}
+				}
+				pReader->Seek(_end_rec);
 			}
 
 			int				d;
@@ -86,5 +110,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_RATIO_INCLUDE_H_

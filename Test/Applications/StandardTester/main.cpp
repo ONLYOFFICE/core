@@ -1,23 +1,19 @@
 #include <iostream>
 
+#include "../../../X2tConverter/src/run.h"
+
 #include "../../../Common/OfficeFileFormats.h"
 #include "../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../../DesktopEditor/graphics/Timer.h"
 #include "../../../DesktopEditor/graphics/TemporaryCS.h"
+
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/common/StringBuilder.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-
-#ifdef LINUX
-#include <unistd.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#endif
 
 #include <map>
 
@@ -28,6 +24,8 @@ enum CheckResultCode
 	crcPageSize  = 2,
 	crcPageDiffs = 4
 };
+
+bool g_save_x2t_xml = false;
 
 class CConverter;
 class CInternalWorker
@@ -94,6 +92,10 @@ public:
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS, true));
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV, true));
 
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU, true));
+
 		m_nCount = 0;
 		m_nCurrent = 0;
 		m_nCurrentComplete = 0;
@@ -125,8 +127,9 @@ public:
 			std::wstring sExt = NSFile::GetFileExtention(*iter);
 
 			if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" || sExt == L"docxf" || sExt == L"oform" ||
-					sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
-					sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods")
+				sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
+				sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods" ||
+				sExt == L"pdf" || sExt == L"xps" || sExt == L"djvu")
 			{
 				m_files.push_back(*iter);
 			}
@@ -267,141 +270,6 @@ public:
 	}
 };
 
-namespace NSX2T
-{
-	int Convert(const std::wstring& sConverterPath, const std::wstring sXmlPath)
-	{
-		int nReturnCode = 0;
-		std::wstring sConverterExe = sConverterPath;
-
-#ifdef WIN32
-		NSStringUtils::string_replace(sConverterExe, L"/", L"\\");
-
-		sConverterExe += L".exe";
-		std::wstring sApp = L"x2t ";
-
-		STARTUPINFO sturtupinfo;
-		ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
-		sturtupinfo.cb = sizeof(STARTUPINFO);
-
-		sApp += (L"\"" + sXmlPath + L"\"");
-		wchar_t* pCommandLine = NULL;
-		if (true)
-		{
-			pCommandLine = new wchar_t[sApp.length() + 1];
-			memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
-			pCommandLine[sApp.length()] = (wchar_t)'\0';
-		}
-
-		HANDLE ghJob = CreateJobObject(NULL, NULL);
-
-		if (ghJob)
-		{
-			JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-
-			// Configure all child processes associated with the job to terminate when the
-			jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-			if ( 0 == SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
-			{
-				CloseHandle(ghJob);
-				ghJob = NULL;
-			}
-		}
-
-		PROCESS_INFORMATION processinfo;
-		ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
-		BOOL bResult = CreateProcessW(sConverterExe.c_str(), pCommandLine,
-									  NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
-
-		if (bResult && ghJob)
-		{
-			AssignProcessToJobObject(ghJob, processinfo.hProcess);
-		}
-
-		::WaitForSingleObject(processinfo.hProcess, INFINITE);
-
-		RELEASEARRAYOBJECTS(pCommandLine);
-
-		//get exit code
-		DWORD dwExitCode = 0;
-		if (GetExitCodeProcess(processinfo.hProcess, &dwExitCode))
-		{
-			nReturnCode = (int)dwExitCode;
-		}
-
-		CloseHandle(processinfo.hProcess);
-		CloseHandle(processinfo.hThread);
-
-		if (ghJob)
-		{
-			CloseHandle(ghJob);
-			ghJob = NULL;
-		}
-
-#endif
-
-#ifdef LINUX
-		pid_t pid = fork(); // create child process
-		int status;
-
-		std::string sProgramm = U_TO_UTF8(sConverterExe);
-		std::string sXmlA = U_TO_UTF8(sXmlPath);
-
-		switch (pid)
-		{
-		case -1: // error
-			break;
-
-		case 0: // child process
-		{
-			std::string sLibraryDir = sProgramm;
-			std::string sPATH = sProgramm;
-			if (std::string::npos != sProgramm.find_last_of('/'))
-			{
-				sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
-				sPATH = "PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
-			}
-
-#ifdef _MAC
-			sLibraryDir = "DY" + sLibraryDir;
-#endif
-
-			const char* nargs[3];
-			nargs[0] = sProgramm.c_str();
-			nargs[1] = sXmlA.c_str();
-			nargs[2] = NULL;
-
-#ifndef _MAC
-			const char* nenv[2];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = NULL;
-#else
-			const char* nenv[3];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = sPATH.c_str();
-			nenv[2] = NULL;
-#endif
-
-			execve(sProgramm.c_str(),
-				   (char * const *)nargs,
-				   (char * const *)nenv);
-			exit(EXIT_SUCCESS);
-			break;
-		}
-		default: // parent process, pid now contains the child pid
-			while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-			if (WIFEXITED(status))
-			{
-				nReturnCode =  WEXITSTATUS(status);
-			}
-			break;
-		}
-#endif
-
-		return nReturnCode;
-	}
-}
-
 class CConverter : public NSThreads::CBaseThread
 {
 public:
@@ -502,8 +370,7 @@ public:
 		if (NSDirectory::Exists(sProcess + L"/converter"))
 			sProcess += L"/converter";
 
-		std::wstring sExe = sProcess + L"/x2t";
-		int nReturnCode = NSX2T::Convert(sExe, sTempFileForParams);
+		int nReturnCode = NSX2T::Convert(sProcess, sTempFileForParams);
 
 		if (0 != nReturnCode)
 		{
@@ -512,7 +379,8 @@ public:
 			return 0;
 		}
 
-		NSFile::CFileBinary::Remove(sTempFileForParams);
+		if (g_save_x2t_xml != true)
+			NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();
 
@@ -963,6 +831,10 @@ int main(int argc, char** argv)
 			else if (sKey == L"--additional-params")
 			{
 				strAdditionalParams = sValue;
+			}
+			else if (sKey == L"--x2t-debug")
+			{
+				g_save_x2t_xml = true;
 			}
 		}
 	}

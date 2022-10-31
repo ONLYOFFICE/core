@@ -231,26 +231,16 @@ namespace Spreadsheet
 	}
 	CControls::~CControls()
 	{
-		for(std::map<unsigned int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
-		{
-			delete it->second;
-		}		
-		m_mapControls.clear();
-
-		for(std::map<unsigned int, CControl*>::const_iterator it = m_mapControlsAlternative.begin(); it != m_mapControlsAlternative.end(); it++)
-		{
-			delete it->second;
-		}
-		m_mapControlsAlternative.clear();
 	}
 	void CControls::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		if(m_mapControls.empty()) return;
 		
 		writer.WriteString(L"<controls>");
-		for(std::map<unsigned int, CControl*>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
+		for(std::map<unsigned int, nullable<CControl>>::const_iterator it = m_mapControls.begin(); it != m_mapControls.end(); it++)
 		{
-			it->second->toXML(writer);
+			if (it->second.IsInit())
+				it->second->toXML(writer);
 		}
 		writer.WriteString(L"</controls>");
 	}
@@ -268,7 +258,8 @@ namespace Spreadsheet
 
 			if ( L"control" == sName )
 			{
-				CControl* pControl = new CControl(oReader);
+				nullable<CControl> pControl(oReader);
+
 				if(pControl->m_oShapeId.IsInit())
 				{
 					if (bOldVersion)
@@ -279,10 +270,6 @@ namespace Spreadsheet
 					{
 						m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
 					}
-				}
-				else
-				{
-					delete pControl;
 				}
 			}
 			else if ( L"AlternateContent" == sName )
@@ -314,14 +301,11 @@ namespace Spreadsheet
         {
             for(auto &activeX: ptr->m_arBrtActiveX)
             {
-                CControl* pControl = new CControl(activeX);
+                nullable<CControl> pControl(activeX);
+
                 if(pControl->m_oShapeId.IsInit())
                 {
                     m_mapControls[pControl->m_oShapeId->GetValue()] = pControl;
-                }
-                else
-                {
-                    delete pControl;
                 }
             }
         }
@@ -355,7 +339,7 @@ namespace Spreadsheet
 		
         for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
-            if (  m_arrItems[i] )
+            if (  m_arrItems[i].IsInit() )
             {
                 m_arrItems[i]->toXML(writer);
             }
@@ -378,8 +362,13 @@ namespace Spreadsheet
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( L"item" == sName )
-				m_arrItems.push_back(new CListItem(oReader));
+			if (L"item" == sName)
+			{
+				nullable<CListItem> oItem(oReader);
+				
+				if (oItem.IsInit())
+					m_arrItems.push_back(oItem);
+			}
 			else if ( L"extLst" == sName )
 				m_oExtLst = oReader;
 		}

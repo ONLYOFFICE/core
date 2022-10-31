@@ -1325,7 +1325,8 @@ int odt_conversion_context::start_comment(int oox_comm_id)
 		create_element(L"office", L"annotation", comm_elm, this);
 
 		comment_context_.start_comment(comm_elm, oox_comm_id);
-		
+	
+		comm_state = 1;
 		if (text_context()->current_level_.empty())
 		{
 			comm_state = 2;
@@ -1339,8 +1340,10 @@ int odt_conversion_context::start_comment(int oox_comm_id)
 
 		odf_element_state state(comm_elm, L"", office_element_ptr(), text_context()->current_level_.size());
 		text_context()->current_level_.push_back(state);
+	
+		return comm_state; 
 	}
-	return comm_state; 
+	else return 0;
 }
 void odt_conversion_context::start_comment_content()
 {

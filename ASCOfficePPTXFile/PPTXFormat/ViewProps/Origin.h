@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_VIEWPROPS_ORIGIN_INCLUDE_H_
-#define PPTX_VIEWPROPS_ORIGIN_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 
@@ -44,7 +42,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Origin)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				x = node.ReadAttributeInt(L"x");
@@ -53,32 +50,56 @@ namespace PPTX
 			virtual std::wstring toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("x"), x);
-				oAttr.Write(_T("y"), y);
+				oAttr.Write(L"x", x);
+				oAttr.Write(L"y", y);
 
-				return XmlUtils::CreateNode(_T("p:origin"), oAttr);
+				return XmlUtils::CreateNode(L"p:origin", oAttr);
 			}
-
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteINT(x);
-				pWriter->WriteINT(y);
+				pWriter->WriteInt1(0, x);
+				pWriter->WriteInt1(1, y);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+					case 0:
+					{
+						x = pReader->GetLong();
+					}break;
+					case 1:
+					{
+						y = pReader->GetLong();
+					}break;
+					default:
+						break;
+					}
+				}
+				pReader->Seek(_end_rec);
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:origin"));
+				pWriter->StartNode(L"p:origin");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x);
-				pWriter->WriteAttribute(_T("y"), y);
+				pWriter->WriteAttribute(L"x", x);
+				pWriter->WriteAttribute(L"y", y);
 				pWriter->EndAttributes();
 
-				pWriter->EndNode(_T("p:origin"));
+				pWriter->EndNode(L"p:origin");
 			}
-
-		public:
 			int x;
 			int y;
 		protected:
@@ -86,5 +107,3 @@ namespace PPTX
 		};
 	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_VIEWPROPS_ORIGIN_INCLUDE_H_

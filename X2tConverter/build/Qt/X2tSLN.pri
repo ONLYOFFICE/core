@@ -18,11 +18,7 @@ SUBDIRS = \
     OdfFileReaderLib \
     OdfFileWriterLib \
     XlsFormatLib \
-    kernel \
-    HtmlFile2 \
-    EpubFile \
-    XpsFile \
-    doctrenderer \
+    CompoundFileLib \
     X2tConverter
 
 XlsbFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/XlsbFormatLib.pro
@@ -37,11 +33,7 @@ OdfFileReaderLib.file = ../../../ASCOfficeOdfFile/linux/OdfFileReaderLib.pro
 OdfFileWriterLib.file = ../../../ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro
 XlsFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro
 VbaFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/VbaFormatLib.pro
-HtmlFile2.file = ../../../HtmlFile2/HtmlFile2.pro
-EpubFile.file = ../../../EpubFile/CEpubFile.pro
-XpsFile.file = ../../../XpsFile/XpsFile.pro
-kernel.file = ../../../Common/kernel.pro
-doctrenderer.file = ../../../DesktopEditor/doctrenderer/doctrenderer.pro
+CompoundFileLib.file = ../../../Common/cfcpp/cfcpp.pro
 
 X2tConverter.depends = \
     XlsbFormatLib \
@@ -56,11 +48,7 @@ X2tConverter.depends = \
     OdfFileWriterLib \
     VbaFormatLib \
     XlsFormatLib \
-    kernel.pro \
-    HtmlFile2 \
-    EpubFile \
-    XpsFile \
-    doctrenderer
+    CompoundFileLib
 
 # build the project sequentially as listed in SUBDIRS !
 CONFIG += ordered

@@ -70,15 +70,25 @@ const bool FORMULA::loadContent(BinProcessor& proc)
 
 	proc.optional<Uncalced>();
 
-	Formula *formula = NULL;
-	if(!proc.mandatory<Formula>())
+	if  (proc.optional<Formula>())
 	{
-		return false;
+		m_Formula = elements_.back();
+		elements_.pop_back();
 	}
-	m_Formula = elements_.back();
-	elements_.pop_back();
-
-	formula = dynamic_cast<Formula *>(m_Formula.get());
+	else if (proc.optional<Formula_BIFF3>())
+	{
+		m_Formula = elements_.back();
+		elements_.pop_back();
+	}
+	else if (proc.optional<Formula_BIFF4>())
+	{
+		m_Formula = elements_.back();
+		elements_.pop_back();
+	}
+//-----------------------------------------------------------------------------
+	Formula *formula = dynamic_cast<Formula *>(m_Formula.get());
+	if (!formula)
+		return false;
 
 	location = formula->getLocation();
 

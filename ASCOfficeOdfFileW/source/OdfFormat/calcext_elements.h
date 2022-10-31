@@ -94,9 +94,9 @@ class calcext_color_scale_entry : public office_element_impl<calcext_color_scale
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextColorScaleEntry;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
@@ -116,9 +116,9 @@ class calcext_formatting_entry : public office_element_impl<calcext_formatting_e
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextFormattingEntry;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
@@ -137,9 +137,9 @@ class calcext_icon_set : public office_element_impl<calcext_icon_set>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextIconSet;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -158,9 +158,9 @@ class calcext_data_bar: public office_element_impl<calcext_data_bar>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextDataBar;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -178,9 +178,9 @@ class calcext_color_scale: public office_element_impl<calcext_color_scale>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextColorScale;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -197,9 +197,9 @@ class calcext_date_is: public office_element_impl<calcext_date_is>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextDateIs;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
@@ -216,9 +216,9 @@ class calcext_condition: public office_element_impl<calcext_condition>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextCondition;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
     virtual void add_child_element( const office_element_ptr & child_element){}
@@ -235,9 +235,9 @@ class calcext_conditional_format: public office_element_impl<calcext_conditional
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextConditionalFormat;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
@@ -258,9 +258,9 @@ class calcext_conditional_formats: public office_element_impl<calcext_conditiona
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
+
     static const ElementType type = typeCalcextConditionalFormats;
-    CPDOCCORE_DEFINE_VISITABLE()
+    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);

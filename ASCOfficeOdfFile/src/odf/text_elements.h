@@ -864,16 +864,18 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
 
 private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	virtual void add_text(const std::wstring & Text);
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
 	virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name){}
 
-	odf_types::common_value_and_type_attlist	office_value_;
-	_CP_OPT(std::wstring)						office_formula_;
+	odf_types::common_value_and_type_attlist office_value_;
+	_CP_OPT(std::wstring) office_formula_;
 
-	_CP_OPT(std::wstring)			style_data_style_name_;
-	_CP_OPT(std::wstring)			display_;
-	_CP_OPT(std::wstring)			name_;
+	_CP_OPT(std::wstring) style_data_style_name_;
+	_CP_OPT(std::wstring) display_;
+	_CP_OPT(std::wstring) name_;
 
+	office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(variable_set);
 //---------------------------------------------------------------------------------------------------

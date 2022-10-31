@@ -210,7 +210,7 @@ namespace DocFileFormat
 		}
 		if (brcBottom)
 		{
-			XMLTools::XMLElement border(L"w:left");
+			XMLTools::XMLElement border(L"w:bottom");
 			appendBorderAttributes(brcBottom.get(), &border);
 			addOrSetBorder(_tblBorders, &border);
 		}

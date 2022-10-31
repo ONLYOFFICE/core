@@ -38,7 +38,7 @@
 
 namespace CFCPP
 {
-enum StgType : int
+enum StgType : _INT32
 {
     StgInvalid = 0,
     StgStorage = 1,
@@ -48,13 +48,13 @@ enum StgType : int
     StgRoot = 5
 };
 
-enum StgColor : int
+enum StgColor : _INT32
 {
     Red = 0,
     Black = 1
 };
 
-enum CFSVersion : int
+enum CFSVersion : _INT32
 {
     // Sector size 512 - default and very common
     Ver_3 = 3,
@@ -65,32 +65,32 @@ enum CFSVersion : int
 class IDirectoryEntry : public RedBlackTree::IRBNode
 {
 public:
-    virtual int getChild() const = 0;
-    virtual void setChild(int value) = 0;
-    virtual int getLeftSibling() const = 0;
-    virtual void setLeftSibling(int value) = 0;
-    virtual int getRightSibling() const = 0;
-    virtual void setRightSibling(int value) = 0;
-    virtual std::streamsize getSize() const = 0;
-    virtual void setSize(std::streamsize value) = 0;
-    virtual int getStateBits() const = 0;
-    virtual void setStateBits(int value) = 0;
+    virtual _INT32 getChild() const = 0;
+    virtual void setChild(_INT32 value) = 0;
+    virtual _INT32 getLeftSibling() const = 0;
+    virtual void setLeftSibling(_INT32 value) = 0;
+    virtual _INT32 getRightSibling() const = 0;
+    virtual void setRightSibling(_INT32 value) = 0;
+    virtual _INT64 getSize() const = 0;
+    virtual void setSize(_INT64 value) = 0;
+    virtual _INT32 getStateBits() const = 0;
+    virtual void setStateBits(_INT32 value) = 0;
 
 
-    virtual UINT64 getCreationDate() const = 0;
-    virtual void setCreationDate(const UINT64& value) = 0;
-    virtual UINT64 getModifyDate() const = 0;
-    virtual void setModifyDate(const UINT64& value) = 0;
+    virtual _UINT64 getCreationDate() const = 0;
+    virtual void setCreationDate(const _UINT64& value) = 0;
+    virtual _UINT64 getModifyDate() const = 0;
+    virtual void setModifyDate(const _UINT64& value) = 0;
 
-    virtual int getSid() const = 0;
-    virtual void setSid(int newSid) = 0;
+    virtual _INT32 getSid() const = 0;
+    virtual void setSid(_INT32 newSid) = 0;
 
     virtual std::wstring GetEntryName() const = 0;
     virtual void SetEntryName(const std::wstring &entryName) = 0;
-    virtual unsigned short getNameLength() const = 0;
+    virtual _UINT16 getNameLength() const = 0;
 
-    virtual void setStartSetc(int value) = 0;
-    virtual int getStartSetc() const = 0;
+    virtual void setStartSetc(_INT32 value) = 0;
+    virtual _INT32 getStartSetc() const = 0;
 
     virtual void Read(Stream stream, CFSVersion ver = CFSVersion::Ver_3) = 0;
     virtual void Write(Stream stream) const = 0;
@@ -100,6 +100,6 @@ public:
     virtual void setStgType(StgType value) = 0;
     virtual _GUID_ getStorageCLSID() const = 0;
     virtual void setStorageCLSID(_GUID_ value) = 0;
-    virtual int GetHashCode() const = 0;
+    virtual _INT32 GetHashCode() const = 0;
 };
 }

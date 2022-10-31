@@ -53,18 +53,18 @@ void CFStream::SetData(const std::vector<BYTE> &data)
     compoundFile->WriteData(shared_from_this(), data);
 }
 
-void CFStream::Write(const std::vector<BYTE> &data, std::streamsize position)
+void CFStream::Write(const std::vector<BYTE> &data, _INT64 position)
 {
     Write(data, position, 0, data.size());
 }
 
-void CFStream::Write(const std::vector<BYTE> &data, std::streamsize position, int offset, int count)
+void CFStream::Write(const std::vector<BYTE> &data, _INT64 position, _INT32 offset, _INT32 count)
 {
     CheckDisposed();
     compoundFile->WriteData(shared_from_this(), data, position, offset, count);
 }
 
-void CFStream::Write(const char *data, std::streamsize position, int count)
+void CFStream::Write(const char *data, _INT64 position, _INT32 count)
 {
     CheckDisposed();
     compoundFile->WriteData(shared_from_this(), data, position, count);
@@ -90,13 +90,13 @@ std::vector<BYTE> CFStream::getData() const
     return compoundFile->GetData(this);
 }
 
-int CFStream::Read(std::vector<BYTE> &buffer, std::streamsize position, int count)
+_INT32 CFStream::Read(std::vector<BYTE> &buffer, _INT64 position, _INT32 count)
 {
     CheckDisposed();
     return compoundFile->ReadData(this, position, buffer, 0, count);
 }
 
-int CFStream::Read(std::vector<BYTE> &buffer, std::streamsize position, int offset, int count)
+_INT32 CFStream::Read(std::vector<BYTE> &buffer, _INT64 position, _INT32 offset, _INT32 count)
 {
     CheckDisposed();
     return compoundFile->ReadData(this, position, buffer, offset, count);
@@ -117,7 +117,7 @@ void CFStream::CopyFrom(const Stream &input)
     SetData(buffer);
 }
 
-void CFStream::Resize(std::streamsize length)
+void CFStream::Resize(_INT64 length)
 {
     compoundFile->SetStreamLength(shared_from_this(), length);
 }

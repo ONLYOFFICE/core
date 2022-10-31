@@ -67,31 +67,31 @@ public:
     bool IsClosed()const;
     void Close();
 
-    std::vector<BYTE> GetDataBySID(int sid);
-	_GUID_ getGuidBySID(int sid);
-	_GUID_ getGuidForStream(int sid);
+    std::vector<BYTE> GetDataBySID(_INT32 sid);
+    _GUID_ getGuidBySID(_INT32 sid);
+    _GUID_ getGuidForStream(_INT32 sid);
 
     // internal methods
     static std::shared_ptr<RedBlackTree::RBTree> CreateNewTree();
-    std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(int sid);
+    std::shared_ptr<RedBlackTree::RBTree> GetChildrenTree(_INT32 sid);
     SVector<IDirectoryEntry> &GetDirectories();
-    void ResetDirectoryEntry(int sid);
-    void InvalidateDirectoryEntry(int sid);
-    void FreeAssociatedData(int sid);
+    void ResetDirectoryEntry(_INT32 sid);
+    void InvalidateDirectoryEntry(_INT32 sid);
+    void FreeAssociatedData(_INT32 sid);
     void FreeData(CFStream* stream);
-    void WriteData(std::shared_ptr<CFItem> cfItem, const char* data, std::streamsize position, int count);
-    void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);
-    void WriteData(std::shared_ptr<CFItem> cfItem, std::streamsize position, const std::vector<BYTE>& buffer);
+    void WriteData(std::shared_ptr<CFItem> cfItem, const char* data, _INT64 position, _INT32 count);
+    void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer, _INT64 position, _INT32 offset, _INT32 count);
+    void WriteData(std::shared_ptr<CFItem> cfItem, _INT64 position, const std::vector<BYTE>& buffer);
     void WriteData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer);
     void AppendData(std::shared_ptr<CFItem> cfItem, const std::vector<BYTE>& buffer);
-    void SetStreamLength(std::shared_ptr<CFItem> cfItem, std::streamsize length);
+    void SetStreamLength(std::shared_ptr<CFItem> cfItem, _INT64 length);
     SList<Sector> FindFreeSectors(SectorType sType);
     std::vector<BYTE> GetData(const CFStream *cFStream);
-    int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int count);
-    int ReadData(CFStream* cFStream, std::streamsize position, std::vector<BYTE>& buffer, int offset, int count);
+    _INT32 ReadData(CFStream* cFStream, _INT64 position, std::vector<BYTE>& buffer, _INT32 count);
+    _INT32 ReadData(CFStream* cFStream, _INT64 position, std::vector<BYTE>& buffer, _INT32 offset, _INT32 count);
 
 protected:
-    int GetSectorSize();
+    _INT32 GetSectorSize();
     void Dispose(bool disposing);
 
 private:
@@ -104,10 +104,10 @@ private:
 
     SVector<Sector> GetFatSectorChain();
     SVector<Sector> GetDifatSectorChain();
-    SVector<Sector> GetNormalSectorChain(int sectorID);
-    SVector<Sector> GetMiniSectorChain(int sectorID);
-    SVector<Sector> GetSectorChain(int sectorID, SectorType chainType);
-    void EnsureUniqueSectorIndex(int nextsectorID, std::unordered_set<int> &processedSectors);
+    SVector<Sector> GetNormalSectorChain(_INT32 sectorID);
+    SVector<Sector> GetMiniSectorChain(_INT32 sectorID);
+    SVector<Sector> GetSectorChain(_INT32 sectorID, SectorType chainType);
+    void EnsureUniqueSectorIndex(_INT32 nextsectorID, std::unordered_set<_INT32>  &processedSectors);
     void CommitDirectory();
     void Close(bool closeStream);
 
@@ -119,12 +119,12 @@ private:
     void NullifyChildNodes(std::shared_ptr<IDirectoryEntry> de);
     void LoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
     void DoLoadSiblings(std::shared_ptr<RedBlackTree::RBTree> bst, std::shared_ptr<IDirectoryEntry> de);
-    bool ValidateSibling(int sid);
+    bool ValidateSibling(_INT32 sid);
     void LoadDirectories();
 
     void FreeMiniChain(SVector<Sector>& sectorChain, bool zeroSector);
-    void FreeMiniChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
-    void FreeChain(SVector<Sector>& sectorChain, int nth_sector_to_remove, bool zeroSector);
+    void FreeMiniChain(SVector<Sector>& sectorChain, _INT32 nth_sector_to_remove, bool zeroSector);
+    void FreeChain(SVector<Sector>& sectorChain, _INT32 nth_sector_to_remove, bool zeroSector);
     void FreeChain(SVector<Sector>& sectorChain, bool zeroSector);
 
     void AllocateSectorChain(SVector<Sector>& sectorChain);
@@ -132,7 +132,7 @@ private:
     void AllocateDIFATSectorChain(SVector<Sector>& FATsectorChain);
     void AllocateMiniSectorChain(SVector<Sector>& sectorChain);
     void PersistMiniStreamToStream(const SVector<Sector>& miniSectorChain);
-    static int LowSaturation(int x);
+    static _INT32 LowSaturation(_INT32 x);
     void SetSectorChain(SVector<Sector> sectorChain);
 
     CFSVersion getVersion() const;
@@ -143,14 +143,14 @@ public:
     Stream sourceStream;
 
 private:
-    const int HEADER_DIFAT_ENTRIES_COUNT = 109;
-    int DIFAT_SECTOR_FAT_ENTRIES_COUNT = 127;
-    int FAT_SECTOR_ENTRIES_COUNT = 128;
-    const int SIZE_OF_SID = 4;
+    const _INT32 HEADER_DIFAT_ENTRIES_COUNT = 109;
+    _INT32 DIFAT_SECTOR_FAT_ENTRIES_COUNT = 127;
+    _INT32 FAT_SECTOR_ENTRIES_COUNT = 128;
+    const _INT32 SIZE_OF_SID = 4;
     bool sectorRecycle = false;
     bool eraseFreeSectors = false;
-    static constexpr int FLUSHING_QUEUE_SIZE = 6000;
-    static constexpr int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
+    static constexpr _INT32 FLUSHING_QUEUE_SIZE = 6000;
+    static constexpr _INT32 FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
 
 
     SectorCollection sectors;
@@ -160,14 +160,14 @@ private:
 
     bool closeStream = true;
     bool transactionLockAdded = false;
-    int lockSectorId = -1;
+    _INT32 lockSectorId = -1;
     bool isTransactionLockAllocated = false;
     bool isValidationExceptionEnabled = true;
     bool isDisposed = false;
 
     CFSUpdateMode updateMode;
     SVector<IDirectoryEntry> directoryEntries;
-    std::list<int> levelSIDs;
+    std::list<_INT32>  levelSIDs;
     std::mutex lockObject;
 };
 }

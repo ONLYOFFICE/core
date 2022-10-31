@@ -15,7 +15,7 @@
  * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
  * street, Riga, Latvia, EU, LV-1050.
  *
- * The  interactive user interfaces in modified source and object code versions
+ * The  _INT32eractive user _INT32erfaces in modified source and object code versions
  * of the Program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU AGPL version 3.
  *
@@ -25,7 +25,7 @@
  *
  * All the Product's GUI elements, including illustrations and icon sets, as
  * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * Creative Commons Attribution-ShareAlike 4.0 _INT32ernational. See the License
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
@@ -35,7 +35,7 @@
 #include <vector>
 #include <mutex>
 #include "stream.h"
-#include "../../DesktopEditor/common/Types.h"
+#include "../DocxFormat/Source/Base/Types_32.h"
 
 
 namespace CFCPP
@@ -54,9 +54,9 @@ enum SectorType
 class Sector
 {
 public:
-    Sector(int size, const Stream stream);
-    Sector(int size, const std::vector<BYTE> &data);
-    Sector(int size);
+    Sector(_INT32 size, const Stream stream);
+    Sector(_INT32 size, const std::vector<BYTE> &data);
+    Sector(_INT32 size);
 
     bool IsStreamed();
     void ZeroData();
@@ -67,20 +67,20 @@ public:
     std::vector<BYTE> &GetData();
 
 public:
-    static int MINISECTOR_SIZE;
-    const static int FREESECT = 0xFFFFFFFF;
-    const static int ENDOFCHAIN = 0xFFFFFFFE;
-    const static int FATSECT = 0xFFFFFFFD;
-    const static int DIFSECT = 0xFFFFFFFC;
+    static _INT32 MINISECTOR_SIZE;
+    const static _INT32 FREESECT = 0xFFFFFFFF;
+    const static _INT32 ENDOFCHAIN = 0xFFFFFFFE;
+    const static _INT32 FATSECT = 0xFFFFFFFD;
+    const static _INT32 DIFSECT = 0xFFFFFFFC;
 
-    int getSize() const;
+    _INT32 getSize() const;
 
     SectorType type = Normal;
     bool dirtyFlag = false;
-    int id = -1;
+    _INT32 id = -1;
 
 private:
-    int size = 0;
+    _INT32 size = 0;
     Stream stream;
     std::vector<BYTE> data;
     std::mutex lockObject;

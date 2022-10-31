@@ -16,7 +16,7 @@ using namespace CFCPP;
 
 
 constexpr int _70MBLen = 1024 * 1024 * 70;
-const vector<unsigned char> _8ByteData = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
+const vector<BYTE> _8ByteData = {0x28, 0xFF, 0x28, 0x1D, 0x4C, 0xFA, 0x00, 0x79};
 const vector<BYTE> _70MBVector(_70MBLen, 0x90);
 
 const wstring testDataPath = L"../../../data/";

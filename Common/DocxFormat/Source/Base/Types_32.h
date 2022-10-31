@@ -39,6 +39,7 @@
 	typedef unsigned __int32	_UINT32;
 	typedef unsigned __int64	_UINT64;
 #elif __linux__
+#include "stdint.h"
         typedef int16_t             _INT16;
         typedef int32_t             _INT32;
         typedef int64_t             _INT64;

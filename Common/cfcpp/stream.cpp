@@ -34,7 +34,7 @@
 #include <algorithm>
 
 
-std::streamsize CFCPP::Length(const CFCPP::Stream& st)
+_INT64 CFCPP::Length(const CFCPP::Stream& st)
 {
     if (st.get() == nullptr)
         return 0;
@@ -95,7 +95,7 @@ std::string CFCPP::CorrectUnixPath(const std::string original)
     #endif
 }
 
-int CFCPP::FileLenght(std::wstring filename)
+_INT64 CFCPP::FileLenght(std::wstring filename)
 {
     auto stream = OpenFileStream(filename);
     auto lenght = Length(stream);
@@ -104,7 +104,7 @@ int CFCPP::FileLenght(std::wstring filename)
     return lenght;
 }
 
-ULONG64 CFCPP::FileFNVHash(std::wstring filename, int len, int offset)
+ULONG64 CFCPP::FileFNVHash(std::wstring filename, _INT64 len, _INT64 offset)
 {
 
     auto stream = OpenFileStream(filename);
@@ -117,14 +117,14 @@ ULONG64 CFCPP::FileFNVHash(std::wstring filename, int len, int offset)
     stream->seek(offset);
 
     ULONG64 h = 2166136261;
-    constexpr int bufLen = 0x2000;
+    constexpr _INT64 bufLen = 0x2000;
     char buffer[bufLen];
     while (len > 0)
     {
         memset(buffer, 0, bufLen);
-        int readLen = std::min(bufLen, len);
+        _INT64 readLen = std::min(bufLen, len);
         stream->read(buffer, readLen);
-        int i;
+        _INT64 i;
 
         for (i = 0; i < readLen; i++)
             h = (h * 16777619) ^ buffer[i];

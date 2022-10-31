@@ -40,33 +40,33 @@ StreamRW::StreamRW(CFCPP::Stream stream)
 {
 }
 
-T_LONG64 StreamRW::Seek(T_LONG64 offset)
+_INT64 StreamRW::Seek(_INT64 offset)
 {
     stream->seek(offset, std::ios::beg);
     return stream->tell();
 }
 
-T_LONG64 CFCPP::StreamRW::Tell()
+_INT64 CFCPP::StreamRW::Tell()
 {
     return stream->tell();
 }
 
-void StreamRW::ReadArray(char *data, int lenght)
+void StreamRW::ReadArray(char *data, _INT32 lenght)
 {
     stream->read(data, lenght);
 }
 
-void StreamRW::ReadArray(BYTE* data, int lenght)
+void StreamRW::ReadArray(BYTE* data, _INT32 lenght)
 {
     stream->read(reinterpret_cast<char*>(data), lenght);
 }
 
-void StreamRW::WriteArray(const BYTE *arr, int lenght)
+void StreamRW::WriteArray(const BYTE *arr, _INT32 lenght)
 {
     stream->write(reinterpret_cast<const char*>(arr), lenght);
 }
 
-void StreamRW::WriteArray(const char *arr, int lenght)
+void StreamRW::WriteArray(const char *arr, _INT32 lenght)
 {
     stream->write(arr, lenght);
 }

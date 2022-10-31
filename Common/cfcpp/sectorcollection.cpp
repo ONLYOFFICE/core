@@ -58,8 +58,8 @@ void SectorCollection::Clear()
 
 std::shared_ptr<Sector>& SectorCollection::operator[](size_t index)
 {
-    int itemIndex = index / SLICE_SIZE;
-    int itemOffset = index % SLICE_SIZE;
+    _INT32 itemIndex = index / SLICE_SIZE;
+    _INT32 itemOffset = index % SLICE_SIZE;
 
     return largeArraySlices[itemIndex][itemOffset];
 }
@@ -73,9 +73,9 @@ void SectorCollection::DoCheckSizeLimitReached()
     }
 }
 
-int SectorCollection::add(std::shared_ptr<Sector> item)
+_INT32 SectorCollection::add(std::shared_ptr<Sector> item)
 {
-    unsigned itemIndex = count / SLICE_SIZE;
+    _UINT32 itemIndex = count / SLICE_SIZE;
 
     if (itemIndex < largeArraySlices.size())
     {

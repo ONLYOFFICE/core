@@ -37,7 +37,7 @@
 
 using namespace CFCPP;
 
-int CFItem::CompareTo(const CFItem &other) const
+_INT32 CFItem::CompareTo(const CFItem &other) const
 {
     return dirEntry.lock()->CompareTo(std::dynamic_pointer_cast<RedBlackTree::IRBNode>(other.dirEntry.lock()));
 }
@@ -52,7 +52,7 @@ bool CFItem::operator!=(const CFItem &rightItem) const
     return CompareTo(rightItem) != 0;
 }
 
-int CFItem::GetHashCode() const
+_INT32 CFItem::GetHashCode() const
 {
     return dirEntry.lock()->GetHashCode();
 }
@@ -71,7 +71,7 @@ std::wstring CFItem::Name() const
         return L"";
 }
 
-std::streamsize CFItem::size() const
+_INT64 CFItem::size() const
 {
     return dirEntry.lock()->getSize();
 }
@@ -150,14 +150,14 @@ void CFItem::CheckDisposed() const
 }
 
 
-DataTime::DataTime(unsigned long long time)
+DataTime::DataTime(_UINT64 time)
 {
     memcpy(data, reinterpret_cast<char*>(&time), 8);
 }
 
-unsigned long long DataTime::getUINT64()const
+_UINT64 DataTime::getUINT64()const
 {
-    unsigned long long timeStamp(0);
+    _UINT64 timeStamp(0);
     memcpy(reinterpret_cast<char*>(&timeStamp), data, 8);
 
     return timeStamp;

@@ -37,6 +37,7 @@
 #include <algorithm>
 #include <iosfwd>
 
+#include "../DocxFormat/Source/Base/Types_32.h"
 #include "../../DesktopEditor/common/Types.h"
 
 namespace CFCPP
@@ -44,10 +45,10 @@ namespace CFCPP
     class IStream
     {
     public:
-        virtual std::streamsize tell() = 0;
-        virtual std::streamsize seek(std::streamsize offset, std::ios_base::seekdir mode = std::ios::beg) = 0;
-        virtual std::streamsize read(char* buffer, std::streamsize len) = 0;
-        virtual void write (const char* buffer, std::streamsize len) = 0;
+        virtual _INT64 tell() = 0;
+        virtual _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) = 0;
+        virtual _INT64 read(char* buffer, _INT64 len) = 0;
+        virtual void write (const char* buffer, _INT64 len) = 0;
         virtual void flush() = 0;
         virtual void close() = 0;
     };
@@ -61,19 +62,19 @@ namespace CFCPP
         FStreamWrapper(std::string filename, std::ios_base::openmode openmode) :
             std::fstream(filename, openmode) {}
 
-        inline std::streamsize tell() override {
+        inline _INT64 tell() override {
             return std::fstream::tellg();
         }
-        inline std::streamsize seek(std::streamsize offset, std::ios_base::seekdir mode = std::ios::beg) override {
+        inline _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override {
             std::fstream::seekp(offset, mode);
             std::fstream::seekg(offset, mode);
             return tell();
         }
-        inline std::streamsize read(char* buffer, std::streamsize len) override {
+        inline _INT64 read(char* buffer, _INT64 len) override {
             std::fstream::read(buffer, len);
             return tell();
         }
-        inline void write (const char* buffer, std::streamsize len) override {
+        inline void write (const char* buffer, _INT64 len) override {
             std::fstream::write(buffer, len);
         }
         inline void flush() override {
@@ -90,9 +91,9 @@ namespace CFCPP
     Stream OpenFileStream(std::string filename, bool bRewrite = false, bool trunc = false);
 
     bool IsOpen(const Stream& st);
-    std::streamsize Length(const Stream& st);
-    int FileLenght(std::wstring filename);
+    _INT64 Length(const Stream& st);
+    _INT64 FileLenght(std::wstring filename);
 
-    ULONG64 FileFNVHash(std::wstring filename, int len = -1, int offset = 0);
+    ULONG64 FileFNVHash(std::wstring filename, _INT64 len = -1, _INT64 offset = 0);
 
 }

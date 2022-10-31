@@ -45,8 +45,8 @@ public:
     StreamRW(Stream stream);
 
 
-    T_LONG64 Seek(T_LONG64 offset);
-    T_LONG64 Tell();
+    _INT64 Seek(_INT64 offset);
+    _INT64 Tell();
 
     template <class T>
     T Read()
@@ -64,10 +64,10 @@ public:
         stream->write(asByteArr, sizeof (T));
     }
 
-    void ReadArray(char* data, int lenght);
-    void ReadArray(BYTE* data, int lenght);
-    void WriteArray(const BYTE *arr, int lenght);
-    void WriteArray(const char *arr, int lenght);
+    void ReadArray(char* data, _INT32 lenght);
+    void ReadArray(BYTE* data, _INT32 lenght);
+    void WriteArray(const BYTE *arr, _INT32 lenght);
+    void WriteArray(const char *arr, _INT32 lenght);
 
     inline void Close(){return;}
 

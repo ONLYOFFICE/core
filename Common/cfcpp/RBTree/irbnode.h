@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include "../DocxFormat/Source/Base/Types_32.h"
 
 
 namespace RedBlackTree
@@ -36,7 +37,7 @@ public:
 
     virtual void AssignValueTo(PIRBNode other) = 0;
 
-    virtual int CompareTo(const PIRBNode& other) const = 0;
+    virtual _INT32 CompareTo(const PIRBNode& other) const = 0;
     virtual std::wstring ToString() const = 0;
 };
 }

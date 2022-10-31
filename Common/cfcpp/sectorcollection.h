@@ -48,19 +48,19 @@ public:
     SectorCollection();
     void Add(std::shared_ptr<Sector> item);
     void Clear();
-    inline int Count()const {return count;}
+    inline _INT32 Count()const {return count;}
     std::shared_ptr<Sector>& operator[](size_t index);
     Event<Ver3SizeLimitReached> OnVer3SizeLimitReached;
 
 private:
     void DoCheckSizeLimitReached();
-    int add(std::shared_ptr<Sector> item);
+    _INT32 add(std::shared_ptr<Sector> item);
 
 private:
-    const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; // 0x7FFFFF00 for Version 4
-    const int SLICE_SIZE = 4096;
+    const _INT32 MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; // 0x7FFFFF00 for Version 4
+    const _INT32 SLICE_SIZE = 4096;
     bool sizeLimitReached = false;
 
-    int count = 0;
+    _INT32 count = 0;
 };
 }

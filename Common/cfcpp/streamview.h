@@ -42,41 +42,41 @@ namespace CFCPP
 class StreamView : public IStream
 {
 public:
-    StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream);
-    StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
+    StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, Stream stream);
+    StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, _INT64 length,
                SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
 
 
-    std::streamsize tell() override;
-    std::streamsize seek(std::streamsize offset, std::ios_base::seekdir mode = std::ios::beg) override;
-    std::streamsize read(char *buffer, std::streamsize count) override;
-    void write(const char *buffer, std::streamsize count) override;
+    _INT64 tell() override;
+    _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override;
+    _INT64 read(char *buffer, _INT64 count) override;
+    void write(const char *buffer, _INT64 count) override;
     void flush() override {}
     void close() override;
 
 
-    std::streamsize getPosition() const;
-    void SetLength(std::streamsize value);
-    std::streamsize getLength() const;
+    _INT64 getPosition() const;
+    void SetLength(_INT64 value);
+    _INT64 getLength() const;
     SVector<Sector>& BaseSectorChain();
 
-    int ReadInt32();
-    void WriteInt32(int val);
+    _INT32 ReadInt32();
+    void WriteInt32(_INT32 val);
 
 private:
-    void adjustLength(std::streamsize value);
-    void adjustLength(std::streamsize value, SList<Sector> &availableSectors);
+    void adjustLength(_INT64 value);
+    void adjustLength(_INT64 value, SList<Sector> &availableSectors);
 
 private:
-    int sectorSize = 0;
-    std::streamsize length = 0;
+    _INT32 sectorSize = 0;
+    _INT64 length = 0;
 
     SVector<Sector> sectorChain;
     bool isFatStream = false;
-    int buf = 0;
+    _INT32 buf = 0;
 
     Stream stream;
-    std::streamsize position = 0;
+    _INT64 position = 0;
     SList<Sector> freeSectors;
 };
 }

@@ -72,9 +72,9 @@ public:
     bool IsClosed()const;
     void Close();
 
-    std::vector<BYTE> GetDataBySID(int sid);
-	_GUID_ getGuidBySID(int sid);
-    _GUID_ getGuidForStream(int sid);
+    std::vector<BYTE> GetDataBySID(_INT32 sid);
+    _GUID_ getGuidBySID(_INT32 sid);
+    _GUID_ getGuidForStream(_INT32 sid);
 
 private:
     std::shared_ptr<CompoundFile_impl> _impl;

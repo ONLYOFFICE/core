@@ -365,7 +365,7 @@ void CFStorage::RenameItem(const std::wstring &oldItemName, const std::wstring &
     }
 }
 
-std::shared_ptr<RBTree> CFStorage::LoadChildren(int SID)
+std::shared_ptr<RBTree> CFStorage::LoadChildren(_INT32 SID)
 {
     std::shared_ptr<RBTree> childrenTree = compoundFile->GetChildrenTree(SID);
 

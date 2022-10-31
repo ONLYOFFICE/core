@@ -3,18 +3,18 @@ import argparse
 import shutil
 
 solution_name = 'docbuilder.net.sln'
-
 deploy_directory = 'deploy'
-
-help_platform = 'set a platform. win_64 or win_32. default: win_64'
-help_docbuilder = 'set path to DocumentBuilder. default: C:/Program Files/ONLYOFFICE/DocumentBuilder'
-help_msbuild = 'set path to MSBuild. default: C:/Program Files/Microsoft Visual Studio/2019/Community/Msbuild/Current/Bin'
-help_out = 'set output path. default: out'
 
 default_platform = 'win_64'
 default_docbuilder = 'C:/Program Files/ONLYOFFICE/DocumentBuilder'
 default_msbuild = 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Msbuild/Current/Bin'
 default_out = 'out'
+
+help_platform = 'set a platform. win_64 or win_32. default: ' + default_platform
+help_docbuilder = 'set path to DocumentBuilder. default: '+ default_docbuilder
+help_msbuild = 'set path to MSBuild. default: '+ default_msbuild
+help_out = 'set output path. default: ' + default_out
+
 
 def createParser ():
     parser = argparse.ArgumentParser()

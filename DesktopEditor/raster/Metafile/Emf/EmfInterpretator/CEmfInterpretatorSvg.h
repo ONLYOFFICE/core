@@ -238,6 +238,8 @@ namespace MetaFile
 		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, const TPointD& oTranslate);
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
+		void WriteNodeBegin(const std::wstring& wsNodeName, const NodeAttributes& arAttributes);
+		void WriteNodeEnd(const std::wstring& wsNodeName);
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale);
 
 		void AddStroke(NodeAttributes &arAttributes);

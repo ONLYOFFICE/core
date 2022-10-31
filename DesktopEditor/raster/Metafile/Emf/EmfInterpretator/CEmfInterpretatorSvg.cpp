@@ -1532,6 +1532,24 @@ namespace MetaFile
 		}
 	}
 
+	void CEmfInterpretatorSvg::WriteNodeBegin(const std::wstring &wsNodeName, const NodeAttributes &arAttributes)
+	{
+		m_oXmlWriter.WriteNodeBegin(wsNodeName, !arAttributes.empty());
+
+		if (!arAttributes.empty())
+		{
+			for (const NodeAttribute& oAttribute : arAttributes)
+				m_oXmlWriter.WriteAttribute(oAttribute.first, oAttribute.second);
+
+			m_oXmlWriter.WriteNodeEnd(wsNodeName, true, false);
+		}
+	}
+
+	void CEmfInterpretatorSvg::WriteNodeEnd(const std::wstring &wsNodeName)
+	{
+		m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
+	}
+
 	void CEmfInterpretatorSvg::WriteText(const std::wstring &wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale)
 	{
 		NodeAttributes arNodeAttributes;
@@ -1544,124 +1562,151 @@ namespace MetaFile
 
 		bool bWriteG = false;
 
-		if (NULL != m_pParser && NULL != m_pParser->GetFont())
+		if (NULL == m_pParser || NULL == m_pParser->GetFont())
+			return;
+
+		if (OPAQUE == m_pParser->GetTextBgMode())
 		{
-			if (OPAQUE == m_pParser->GetTextBgMode())
-			{
-				std::wstring wsFillRect = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L", 255)";
+			std::wstring wsFillRect = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L", 255)";
 
-				m_oXmlWriter.WriteNodeBegin(L"g");
-				bWriteG = true;
+			m_oXmlWriter.WriteNodeBegin(L"g");
+			bWriteG = true;
 
-				WriteNode(L"rect", {{L"x",      ConvertToWString(oBounds.lLeft)},
-									{L"y",      ConvertToWString(oBounds.lTop)},
-									{L"width",  ConvertToWString(oBounds.lRight - oBounds.lLeft)},
-									{L"height", ConvertToWString(oBounds.lBottom - oBounds.lTop)},
-									{L"fill", wsFillRect},
-									{L"stroke", L"none"}});
-			}
+			WriteNode(L"rect", {{L"x",      ConvertToWString(oBounds.lLeft)},
+			                    {L"y",      ConvertToWString(oBounds.lTop)},
+			                    {L"width",  ConvertToWString(oBounds.lRight - oBounds.lLeft)},
+			                    {L"height", ConvertToWString(oBounds.lBottom - oBounds.lTop)},
+			                    {L"fill", wsFillRect},
+			                    {L"stroke", L"none"}});
+		}
 
-			TEmfColor oColor = m_pParser->GetDC()->GetTextColor();
+		TEmfColor oColor = m_pParser->GetDC()->GetTextColor();
 
-			if (0 != oColor.r || 0 != oColor.g || 0 != oColor.b)
-				arNodeAttributes.push_back({L"fill", L"rgba(" + ConvertToWString(oColor.r, 0) + L", " + ConvertToWString(oColor.g, 0) + L", " + ConvertToWString(oColor.b, 0) + L", 255)"});
+		if (0 != oColor.r || 0 != oColor.g || 0 != oColor.b)
+			arNodeAttributes.push_back({L"fill", L"rgba(" + ConvertToWString(oColor.r, 0) + L", " + ConvertToWString(oColor.g, 0) + L", " + ConvertToWString(oColor.b, 0) + L", 255)"});
 
-			IFont *pFont = m_pParser->GetFont();
+		IFont *pFont = m_pParser->GetFont();
 
-			double dFontHeight = std::fabs(pFont->GetHeight());
+		double dFontHeight = std::fabs(pFont->GetHeight());
 
-			if (dFontHeight < 0.01)
-				dFontHeight = 18;
+		if (dFontHeight < 0.01)
+			dFontHeight = 18;
 
-			arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
+		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
-			std::wstring wsFaceName = pFont->GetFaceName();
+		std::wstring wsFaceName = pFont->GetFaceName();
 
-			if (!wsFaceName.empty())
-				arNodeAttributes.push_back({L"font-family", wsFaceName});
+		if (!wsFaceName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFaceName});
 
-			if (pFont->GetWeight() > 550)
-				arNodeAttributes.push_back({L"font-weight", L"bold"});
+		if (pFont->GetWeight() > 550)
+			arNodeAttributes.push_back({L"font-weight", L"bold"});
 
-			if (pFont->IsItalic())
-				arNodeAttributes.push_back({L"font-style", L"italic"});
+		if (pFont->IsItalic())
+			arNodeAttributes.push_back({L"font-style", L"italic"});
 
-			if (pFont->IsUnderline() && pFont->IsStrikeOut())
-				arNodeAttributes.push_back({L"text-decoration", L"underline line-through"});
-			else if (pFont->IsUnderline())
-				arNodeAttributes.push_back({L"text-decoration", L"underline"});
-			else if (pFont->IsStrikeOut())
-				arNodeAttributes.push_back({L"text-decoration", L"line-through"});
+		if (pFont->IsUnderline() && pFont->IsStrikeOut())
+			arNodeAttributes.push_back({L"text-decoration", L"underline line-through"});
+		else if (pFont->IsUnderline())
+			arNodeAttributes.push_back({L"text-decoration", L"underline"});
+		else if (pFont->IsStrikeOut())
+			arNodeAttributes.push_back({L"text-decoration", L"line-through"});
 
-			//TODO:: разобраться для корректной работы
-			//                        double dFontCharSpace = pFont->GetCharSet();
+		//TODO:: разобраться для корректной работы
+		//                        double dFontCharSpace = pFont->GetCharSet();
 
-			//                        if (dFontCharSpace > 1)
-			//                                arNodeAttributes.push_back({L"letter-spacing", ConvertToWString(dFontCharSpace)});
+		//                        if (dFontCharSpace > 1)
+		//                                arNodeAttributes.push_back({L"letter-spacing", ConvertToWString(dFontCharSpace)});
 
-			unsigned int ulTextAlign  = m_pParser->GetTextAlign() & TA_MASK;
-			unsigned int ulVTextAlign = m_pParser->GetTextAlign() >> 8;
+		unsigned int ulTextAlign  = m_pParser->GetTextAlign() & TA_MASK;
+		unsigned int ulVTextAlign = m_pParser->GetTextAlign() >> 8;
 
-			if (ulTextAlign & TA_BASELINE)
-			{
-				ulTextAlign -= TA_BASELINE;
-				// Ничего не делаем
-			}
-			else if (ulTextAlign & TA_BOTTOM || ulVTextAlign == VTA_BOTTOM)
-			{
-				arNodeAttributes.push_back({L"dominant-baseline", L"auto"});
+		if (ulTextAlign & TA_BASELINE)
+		{
+			ulTextAlign -= TA_BASELINE;
+			// Ничего не делаем
+		}
+		else if (ulTextAlign & TA_BOTTOM || ulVTextAlign == VTA_BOTTOM)
+		{
+			arNodeAttributes.push_back({L"dominant-baseline", L"auto"});
 
-				if (ulVTextAlign != VTA_BOTTOM)
-					ulTextAlign -= TA_BOTTOM;
-			}
-			else if (ulVTextAlign == VTA_CENTER)
-			{
-				arNodeAttributes.push_back({L"dominant-baseline", L"middle"});
-			}
-			else // if (ulTextAlign & TA_TOP)
-			{
-				arNodeAttributes.push_back({L"dominant-baseline", L"hanging"});
-			}
+			if (ulVTextAlign != VTA_BOTTOM)
+				ulTextAlign -= TA_BOTTOM;
+		}
+		else if (ulVTextAlign == VTA_CENTER)
+		{
+			arNodeAttributes.push_back({L"dominant-baseline", L"middle"});
+		}
+		else // if (ulTextAlign & TA_TOP)
+		{
+			arNodeAttributes.push_back({L"dominant-baseline", L"hanging"});
+		}
 
-			if (ulTextAlign == TA_RIGHT)
-			{
-				arNodeAttributes.push_back({L"text-anchor", L"end"});
-			}
-			else if (ulTextAlign == TA_CENTER)
-			{
-				arNodeAttributes.push_back({L"text-anchor", L"middle"});
-			}
-			else //if (ulTextAlign & TA_LEFT)
-			{
-				// Ничего не делаем
-			}
+		if (ulTextAlign == TA_RIGHT)
+		{
+			arNodeAttributes.push_back({L"text-anchor", L"end"});
+		}
+		else if (ulTextAlign == TA_CENTER)
+		{
+			arNodeAttributes.push_back({L"text-anchor", L"middle"});
+		}
+		else //if (ulTextAlign & TA_LEFT)
+		{
+			// Ничего не делаем
+		}
 
-			if (dYScale < -0.00001) //TODO::Тоже нужно и для dXScale
-			{
-				dYCoord += dFontHeight;
+		if (dYScale < -0.00001) //TODO::Тоже нужно и для dXScale
+		{
+			dYCoord += dFontHeight;
 
-				oTransform.Dy += (2 * dYCoord - dFontHeight) * oTransform.M22;
+			oTransform.Dy += (2 * dYCoord - dFontHeight) * oTransform.M22;
 
-				oTransform.M22 = fabs(oTransform.M22);
-			}
+			oTransform.M22 = fabs(oTransform.M22);
+		}
 
-			if (0 != pFont->GetEscapement())
-			{
-				double dEscapement = pFont->GetEscapement() / -10;
+		if (0 != pFont->GetEscapement())
+		{
+			double dEscapement = pFont->GetEscapement() / -10;
 
-				if (m_pParser->GetTransform()->M22 < 0)
-					dEscapement = -dEscapement;
+			if (m_pParser->GetTransform()->M22 < 0)
+				dEscapement = -dEscapement;
 
-				arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
-			}
+			arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
 		}
 
 		AddTransform(arNodeAttributes, &oTransform);
 
-		arNodeAttributes.push_back({L"x", ConvertToWString(dXCoord)});
-		arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
+		size_t unPosLineBreak = wsText.find(L"\n");
 
-		WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
+		if (std::wstring::npos == unPosLineBreak)
+		{
+			arNodeAttributes.push_back({L"x", ConvertToWString(dXCoord)});
+			arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
+
+			WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
+		}
+		else
+		{
+			size_t unStart = 0;
+			double dYNewCoord = dYCoord;
+
+			WriteNodeBegin(L"text", arNodeAttributes);
+
+			do
+			{
+				std::wstring wsTemp = StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart));
+
+				WriteNode(L"tspan", {{L"x", ConvertToWString(dXCoord)},
+				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
+
+				dYNewCoord += dFontHeight * 1.5;
+				unStart = wsText.find_first_not_of(L"\n", unPosLineBreak);
+				unPosLineBreak = wsText.find(L"\n", unStart);
+			}
+			while(unStart != std::wstring::npos);
+
+			WriteNodeEnd(L"text");
+		}
 
 		if (bWriteG)
 			m_oXmlWriter.WriteNodeEnd(L"g");

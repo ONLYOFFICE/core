@@ -490,16 +490,18 @@ return 0;
     if (info.dictLookup(sName, &obj1)->isString())\
     {\
         char* str = obj1.getString()->getCString();\
-        int length = obj1.getString()->getLength();\
-        if (str && length > 21)\
+        if (str)\
         {\
             TextString* s = new TextString(obj1.getString());\
             std::wstring sNoDate = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
-            if (sNoDate.length() > 21)\
+            if (sNoDate.length() > 16)\
             {\
                 std::wstring sDate = sNoDate.substr(2,  4) + L'-' + sNoDate.substr(6,  2) + L'-' + sNoDate.substr(8,  2) + L'T' +\
-                                     sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2) + L".000+" +\
-                                     sNoDate.substr(17, 2) + L':' + sNoDate.substr(20, 2);\
+                                     sNoDate.substr(10, 2) + L':' + sNoDate.substr(12, 2) + L':' + sNoDate.substr(14, 2);\
+                if (sNoDate.length() > 21)\
+                    sDate += (L".000" + sNoDate.substr(16, 3) + L':' + sNoDate.substr(20, 2));\
+                else\
+                    sDate += L"Z";\
                 NSStringExt::Replace(sDate, L"\"", L"\\\"");\
                 sRes += L"\"";\
                 sRes += wsName;\

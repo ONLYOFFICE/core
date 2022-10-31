@@ -82,9 +82,20 @@ int main()
 
     if (true)
     {
+        double dPageDpiX, dPageDpiY, dWidth, dHeight;
+        pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+        dWidth  *= 25.4 / dPageDpiX;
+        dHeight *= 25.4 / dPageDpiY;
+
         for (int i = 0; i < pdfFile.GetPagesCount(); i++)
         {
+            pdfFile.NewPage();
+            pdfFile.BeginCommand(c_nPageType);
+            pdfFile.put_Width(dWidth);
+            pdfFile.put_Height(dHeight);
             pdfFile.DrawPageOnRenderer(&pdfFile, i, NULL);
+            pdfFile.EndCommand(c_nPageType);
         }
         pdfFile.SaveToFile(wsDstFile);
 

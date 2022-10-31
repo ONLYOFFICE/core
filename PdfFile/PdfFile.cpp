@@ -128,6 +128,7 @@ public:
     PdfReader::CPdfReader* pReader;
     std::wstring wsSrcFile;
     std::wstring wsPassword;
+    bool bEdit;
 
     void GetPageTree(XRef* xref, Object* pPagesRefObj)
     {

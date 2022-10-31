@@ -74,7 +74,7 @@ public:
 
     std::vector<BYTE> GetDataBySID(int sid);
 	_GUID_ getGuidBySID(int sid);
-	_GUID_ getGuidForStream(int sid);
+    _GUID_ getGuidForStream(int sid);
 
 private:
     std::shared_ptr<CompoundFile_impl> _impl;

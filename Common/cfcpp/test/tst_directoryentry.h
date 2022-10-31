@@ -36,7 +36,7 @@ void test_dirEntry_read(const DirectoryEntry& de)
     EXPECT_EQ(de.rightSibling, 0xFFFFFFFF);
     EXPECT_EQ(de.child, 1);
 
-    GUID storageCLSID;
+    _GUID_ storageCLSID;
     storageCLSID.Data1 = 0x64818D10;
     storageCLSID.Data2 = 0x4F9B;
     storageCLSID.Data3 = 0x11CF;

@@ -79,7 +79,7 @@ void RBTree::Insert(PIRBNode newNode)
         PIRBNode node = getRoot();
         while (true)
         {
-            int compResult = newNode->CompareTo(node);
+            auto compResult = newNode->CompareTo(node);
             if (compResult == 0)
             {
                 throw RBTreeDuplicatedItemException(L"RBNode " + newNode->ToString() + L" already exists in tree");
@@ -178,7 +178,7 @@ PIRBNode RBTree::LookupNode(PIRBNode pattern)
 
     while (node != nullptr)
     {
-        int compResult = pattern->CompareTo(node);
+        auto compResult = pattern->CompareTo(node);
 
         if (compResult == 0)
         {

@@ -30,15 +30,19 @@
     <ClInclude Include="guid.h" />
     <ClInclude Include="header.h" />
     <ClInclude Include="idirectoryentry.h" />
+    <ClInclude Include="RBTree\action.h" />
     <ClInclude Include="RBTree\irbnode.h" />
     <ClInclude Include="RBTree\rbtree.h" />
     <ClInclude Include="RBTree\rbtreeexception.h" />
     <ClInclude Include="sector.h" />
     <ClInclude Include="sectorcollection.h" />
     <ClInclude Include="slist.h" />
-    <ClInclude Include="stream.h" />
     <ClInclude Include="streamrw.h" />
     <ClInclude Include="streamview.h" />
+    <ClInclude Include="Stream\fstream_utils.h" />
+    <ClInclude Include="Stream\fstream_wrapper.h" />
+    <ClInclude Include="Stream\stream.h" />
+    <ClInclude Include="Stream\stream_utils.h" />
     <ClInclude Include="svector.h" />
   </ItemGroup>
   <ItemGroup>
@@ -51,9 +55,10 @@
     <ClCompile Include="RBTree\rbtree.cpp" />
     <ClCompile Include="sector.cpp" />
     <ClCompile Include="sectorcollection.cpp" />
-    <ClCompile Include="stream.cpp" />
     <ClCompile Include="streamrw.cpp" />
     <ClCompile Include="streamview.cpp" />
+    <ClCompile Include="Stream\fstream_utils.cpp" />
+    <ClCompile Include="Stream\stream_utils.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FA22BAB4-E93E-459D-8A5F-16764FBBED40}</ProjectGuid>

@@ -219,6 +219,8 @@ namespace XmlUtils
         catch(...)
         {
         }
+
+		return 0;
     }
     AVSINLINE static double  GetDouble  (const std::wstring& string)
 	{

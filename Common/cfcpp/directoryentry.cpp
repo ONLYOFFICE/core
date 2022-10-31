@@ -30,6 +30,7 @@
  *
  */
 #include "directoryentry.h"
+#include <sstream>
 #include "cfexception.h"
 #include "streamrw.h"
 #include <stdexcept>
@@ -82,12 +83,12 @@ DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType) :
     }
 }
 
-int DirectoryEntry::getSid() const
+_INT32 DirectoryEntry::getSid() const
 {
     return sid;
 }
 
-void DirectoryEntry::setSid(int newSid)
+void DirectoryEntry::setSid(_INT32 newSid)
 {
     sid = newSid;
 }
@@ -97,7 +98,7 @@ std::wstring DirectoryEntry::GetEntryName() const
     if (entryName[0] != '\0' && nameLength > 0)
     {
         wchar_t name[32];
-        for (int i = 0; i < 32; i++)
+        for (_INT32 i = 0; i < 32; i++)
         {
             name[i] = entryName[2*i] + (entryName[2*i+1] << 8);
         }
@@ -136,11 +137,11 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
             this->entryName[i*2+1] = sym / 256;
         }
 
-        this->nameLength = (unsigned short)entryName.size() * 2 + 2;
+        this->nameLength = (_UINT16)entryName.size() * 2 + 2;
     }
 }
 
-int DirectoryEntry::GetHashCode() const
+_INT32 DirectoryEntry::GetHashCode() const
 {
     return (int)fnv_hash(entryName, nameLength);
 }
@@ -192,8 +193,8 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
 
     if (ver == CFSVersion::Ver_3)
     {
-        size = rw.Read<int>();
-        rw.Read<INT>();
+        size = rw.Read<_INT32> ();
+        rw.Read<_INT32>();
     }
     else
     {
@@ -273,7 +274,7 @@ void DirectoryEntry::AssignValueTo(RedBlackTree::PIRBNode other)
     d->child = this->child;
 }
 
-int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
+_INT32 DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
 {
     IDirectoryEntry* otherDir = dynamic_cast<IDirectoryEntry*>(other.get());
 
@@ -293,7 +294,7 @@ int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
         std::wstring thisName = GetEntryName();
         std::wstring otherName = otherDir->GetEntryName();
 
-        for (int z = 0; z < (int)thisName.size(); z++)
+        for (_INT32 z = 0; z < (int)thisName.size(); z++)
         {
             char thisChar = toupper(thisName[z]);
             char otherChar = toupper(otherName[z]);
@@ -309,10 +310,10 @@ int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
     }
 }
 
-ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
+_UINT64 DirectoryEntry::fnv_hash(const char *buffer, _INT64 lenght)
 {
-    ULONG64 h = 2166136261;
-    int i;
+    _UINT64 h = 2166136261;
+    _INT64 i;
 
     for (i = 0; i < lenght; i++)
         h = (h * 16777619) ^ buffer[i];
@@ -341,7 +342,7 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgTy
 
     if (de != nullptr)
     {
-        for (int i = 0; i < (int)dirRepository.size(); i++)
+        for (_INT32 i = 0; i < (int)dirRepository.size(); i++)
         {
             if (dirRepository[i]->getStgType() == StgType::StgInvalid)
             {

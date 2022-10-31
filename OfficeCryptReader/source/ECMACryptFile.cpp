@@ -117,7 +117,7 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
         {
         }
 		res = std::wstring(ptr, length);
-		delete ptr;
+		delete []ptr;
 	}
 	else
 		res = std::wstring((wchar_t*)Data, length);

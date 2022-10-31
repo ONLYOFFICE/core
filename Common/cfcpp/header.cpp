@@ -42,7 +42,7 @@ Header::Header() :
 
 }
 
-Header::Header(unsigned short version)
+Header::Header(_UINT16 version)
 {
     switch (version)
     {
@@ -62,7 +62,7 @@ Header::Header(unsigned short version)
 
     }
 
-    for (int i = 0; i < 109; i++)
+    for (_INT32 i = 0; i < 109; i++)
     {
         difat[i] = Sector::FREESECT;
     }
@@ -89,7 +89,7 @@ void Header::Write(CFCPP::Stream &stream) const
     rw.Write(firstDIFATSectorID);
     rw.Write(difatSectorsNumber);
 
-    for (int i : difat)
+    for (_INT32 i : difat)
     {
         rw.Write(i);
     }
@@ -125,9 +125,9 @@ void Header::Read(CFCPP::Stream &stream)
     firstDIFATSectorID = rw.Read<decltype(firstDIFATSectorID)>();
     difatSectorsNumber = rw.Read<decltype(difatSectorsNumber)>();
 
-    for (int i = 0; i < 109; i++)
+    for (_INT32 i = 0; i < 109; i++)
     {
-        difat[i] = rw.Read<int>();
+        difat[i] = rw.Read<_INT32>();
     }
 }
 

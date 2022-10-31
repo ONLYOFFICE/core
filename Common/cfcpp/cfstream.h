@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "stream.h"
+#include "Stream/stream.h"
 #include "cfitem.h"
 #include <vector>
 
@@ -44,20 +44,20 @@ public:
     CFStream(CompoundFile_impl* compFile, std::weak_ptr<IDirectoryEntry> dirEntry);
 
     void Append(const std::vector<BYTE>& data);
-    void Write(const std::vector<BYTE>& data, std::streamsize position);
-    void Write(const std::vector<BYTE>& data, std::streamsize position, int offset, int count);
-    void Write(const char *data, std::streamsize position, int count);
+    void Write(const std::vector<BYTE>& data, _INT64 position);
+    void Write(const std::vector<BYTE>& data, _INT64 position, _INT32 offset, _INT32 count);
+    void Write(const char *data, _INT64 position, _INT32 count);
 
-    int Read(std::vector<BYTE>& buffer, std::streamsize position, int count);
-    int Read(std::vector<BYTE>& buffer, std::streamsize position, int offset, int count);
+    _INT32 Read(std::vector<BYTE>& buffer, _INT64 position, _INT32 count);
+    _INT32 Read(std::vector<BYTE>& buffer, _INT64 position, _INT32 offset, _INT32 count);
 
     void SetData(const std::vector<BYTE>& data);    // set hard
     std::vector<BYTE> getData() const;
 
     void CopyFrom(const Stream& input);
-    void Resize(std::streamsize length);
+    void Resize(_INT64 length);
 
-    std::streamsize size() const
+    _INT64 size() const
         {return CFItem::size();}
 };
 }

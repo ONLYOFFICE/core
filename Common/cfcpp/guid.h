@@ -31,16 +31,19 @@
  */
 #pragma once
 
+#include "../DocxFormat/Source/Base/Types_32.h"
+#include "../../DesktopEditor/common/Types.h"
+
 struct _GUID_
 {
-    unsigned int Data1 = 0;
-    unsigned short Data2 = 0;
-    unsigned short Data3 = 0;
-    unsigned long long Data4 = 0;
+    _UINT32 Data1 = 0;
+    _UINT16 Data2 = 0;
+    _UINT16 Data3 = 0;
+    _UINT64 Data4 = 0;
 
-    unsigned char* getData4()
+    BYTE* getData4()
     {
-        return reinterpret_cast<unsigned char*>(&Data4);
+        return reinterpret_cast<BYTE*>(&Data4);
     }
 
 	_GUID_(const _GUID_& o) : Data1(o.Data1), Data2(o.Data2), Data3(o.Data3)

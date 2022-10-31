@@ -31,10 +31,13 @@
  */
 #pragma once
 
-#include "RBTree/rbtree.h"
-#include "idirectoryentry.h"
+#include "RBTree/action.h"
 #include "cfstream.h"
 
+namespace RedBlackTree
+{
+class RBTree;
+}
 
 namespace CFCPP
 {
@@ -60,10 +63,10 @@ public:
     void Delete(const std::wstring& entryName);
     void RenameItem(const std::wstring& oldItemName, const std::wstring& newItemName);
 
-    std::streamsize size() const {return CFItem::size();}
+    _INT64 size() const {return CFItem::size();}
 
 private:
-    std::shared_ptr<RedBlackTree::RBTree> LoadChildren(int SID);
+    std::shared_ptr<RedBlackTree::RBTree> LoadChildren(_INT32 SID);
 
 private:
     std::shared_ptr<RedBlackTree::RBTree> children;

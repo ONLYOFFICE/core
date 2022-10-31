@@ -29,38 +29,30 @@
 * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
 *
 */
-#pragma once
-
-#include <exception>
-#include <string>
+#include "stream_utils.h"
+#include "fstream_wrapper.h"
 
 
-namespace RedBlackTree
+using namespace CFCPP;
+
+
+_INT64 CFCPP::Length(const CFCPP::Stream& st)
 {
-class RBTreeException : virtual public std::exception
+    if (st.get() == nullptr)
+        return 0;
+
+    auto curPos = st->tell();
+    st->seek(0, std::ios_base::end);
+    auto ssize = st->tell();
+    st->seek(curPos);
+
+    return ssize;
+}
+
+bool CFCPP::IsOpen(const Stream &st)
 {
-public:
-    RBTreeException() {}
-    RBTreeException(std::wstring message) : errorMessage(message) {}
-    RBTreeException(std::wstring message, std::exception& ex) :
-        std::exception(ex),
-        errorMessage(message)
-    {}
-    virtual ~RBTreeException() throw () {}
+    if (std::dynamic_pointer_cast<FStreamWrapper>(st))
+        return std::static_pointer_cast<FStreamWrapper>(st)->is_open();
 
-    virtual const wchar_t* what_w() const throw () {
-        return errorMessage.c_str();
-    }
-
-protected:
-    std::wstring errorMessage;
-};
-
-class RBTreeDuplicatedItemException : public RBTreeException
-{
-public:
-    RBTreeDuplicatedItemException(std::wstring msg)
-    : RBTreeException(msg)
-    {}
-};
+    return false;
 }

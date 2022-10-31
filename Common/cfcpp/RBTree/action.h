@@ -31,52 +31,10 @@
  */
 #pragma once
 
-#include <iostream>
-#include <list>
-#include "sector.h"
-#include "slist.h"
-#include "svector.h"
+#include <functional>
 
-namespace CFCPP
+namespace RedBlackTree
 {
-class StreamView : public IStream
-{
-public:
-    StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, Stream stream);
-    StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, _INT64 length,
-               SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
-
-
-    _INT64 tell() override;
-    _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override;
-    _INT64 read(char *buffer, _INT64 count) override;
-    void write(const char *buffer, _INT64 count) override;
-    void flush() override {}
-    void close() override;
-
-
-    _INT64 getPosition() const;
-    void SetLength(_INT64 value);
-    _INT64 getLength() const;
-    SVector<Sector>& BaseSectorChain();
-
-    _INT32 ReadInt32();
-    void WriteInt32(_INT32 val);
-
-private:
-    void adjustLength(_INT64 value);
-    void adjustLength(_INT64 value, SList<Sector> &availableSectors);
-
-private:
-    _INT32 sectorSize = 0;
-    _INT64 length = 0;
-
-    SVector<Sector> sectorChain;
-    bool isFatStream = false;
-    _INT32 buf = 0;
-
-    Stream stream;
-    _INT64 position = 0;
-    SList<Sector> freeSectors;
-};
+template  <class T>
+using Action = std::function<void(T)>;
 }

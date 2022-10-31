@@ -40,7 +40,7 @@ class Header
 {
 public:
     Header();
-    Header(unsigned short version);
+    Header(_UINT16 version);
     void Write(Stream& stream) const;
     void Read(Stream& stream);
 
@@ -51,22 +51,22 @@ private:
 public:
     BYTE headerSignature[8] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
     BYTE clsid[16];
-    USHORT minorVersion = 0x003E;
-    USHORT majorVersion = 0x0003;
-    USHORT byteOrder = 0xFFFE;
-    USHORT sectorShift = 9;
-    USHORT miniSectorShift = 6;
+    _UINT16 minorVersion = 0x003E;
+    _UINT16 majorVersion = 0x0003;
+    _UINT16 byteOrder = 0xFFFE;
+    _UINT16 sectorShift = 9;
+    _UINT16 miniSectorShift = 6;
     BYTE unUsed[6] = {0,0,0,0,0,0};
-    INT directorySectorsNumber = 0;
-    INT fatSectorsNumber = 0;
-    INT firstDirectorySectorID = Sector::ENDOFCHAIN;
-    unsigned int unUsed2 = 0;
-    unsigned int minSizeStandardStream = 4096;
-    INT firstMiniFATSectorID = 0xFFFFFFFE;
-    unsigned int miniFATSectorsNumber = 0;
-    INT firstDIFATSectorID = Sector::ENDOFCHAIN;
-    unsigned int difatSectorsNumber = 0;
-    INT difat[109];
+    _INT32 directorySectorsNumber = 0;
+    _INT32 fatSectorsNumber = 0;
+    _INT32 firstDirectorySectorID = Sector::ENDOFCHAIN;
+    _UINT32 unUsed2 = 0;
+    _UINT32 minSizeStandardStream = 4096;
+    _INT32 firstMiniFATSectorID = 0xFFFFFFFE;
+    _UINT32 miniFATSectorsNumber = 0;
+    _INT32 firstDIFATSectorID = Sector::ENDOFCHAIN;
+    _UINT32 difatSectorsNumber = 0;
+    _INT32 difat[109];
 };
 
 }

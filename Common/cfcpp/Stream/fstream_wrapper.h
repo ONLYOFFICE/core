@@ -31,52 +31,39 @@
  */
 #pragma once
 
-#include <iostream>
-#include <list>
-#include "sector.h"
-#include "slist.h"
-#include "svector.h"
+#include <fstream>
+#include "stream.h"
+
 
 namespace CFCPP
 {
-class StreamView : public IStream
+class FStreamWrapper : public IStream, public std::fstream
 {
 public:
-    StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, Stream stream);
-    StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, _INT64 length,
-               SList<Sector> &availableSectors, Stream stream, bool isFatStream = false);
+    FStreamWrapper(std::string filename, std::ios_base::openmode openmode) :
+        std::fstream(filename, openmode) {}
 
-
-    _INT64 tell() override;
-    _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override;
-    _INT64 read(char *buffer, _INT64 count) override;
-    void write(const char *buffer, _INT64 count) override;
-    void flush() override {}
-    void close() override;
-
-
-    _INT64 getPosition() const;
-    void SetLength(_INT64 value);
-    _INT64 getLength() const;
-    SVector<Sector>& BaseSectorChain();
-
-    _INT32 ReadInt32();
-    void WriteInt32(_INT32 val);
-
-private:
-    void adjustLength(_INT64 value);
-    void adjustLength(_INT64 value, SList<Sector> &availableSectors);
-
-private:
-    _INT32 sectorSize = 0;
-    _INT64 length = 0;
-
-    SVector<Sector> sectorChain;
-    bool isFatStream = false;
-    _INT32 buf = 0;
-
-    Stream stream;
-    _INT64 position = 0;
-    SList<Sector> freeSectors;
+    inline _INT64 tell() override {
+        return std::fstream::tellg();
+    }
+    inline _INT64 seek(_INT64 offset, std::ios_base::seekdir mode = std::ios::beg) override {
+        std::fstream::seekp(offset, mode);
+        std::fstream::seekg(offset, mode);
+        return tell();
+    }
+    inline _INT64 read(char* buffer, _INT64 len) override {
+        std::fstream::read(buffer, len);
+        return tell();
+    }
+    inline void write (const char* buffer, _INT64 len) override {
+        std::fstream::write(buffer, len);
+    }
+    inline void flush() override {
+        std::fstream::flush();
+    }
+    inline void close() override {
+        std::fstream::close();
+    }
 };
+
 }

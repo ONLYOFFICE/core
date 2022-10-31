@@ -30,19 +30,18 @@
  *
  */
 #pragma once
+
 #include "guid.h"
 #include "cfexception.h" // Used by heirs
 #include <memory>
 #include <string>
-#include <ios>
-#include "../../DesktopEditor/common/Types.h"
 
 namespace CFCPP
 {
 struct DataTime
 {
-    DataTime(unsigned long long time);
-    unsigned long long getUINT64()const;
+    DataTime(_UINT64 time);
+    _UINT64 getUINT64()const;
     char data[8] = {0,0,0,0,0,0,0,0};
 };
 
@@ -52,12 +51,12 @@ class IDirectoryEntry;
 class CFItem : public std::enable_shared_from_this<CFItem>
 {
 public:
-    int CompareTo(const CFItem& other) const;
+    _INT32 CompareTo(const CFItem& other) const;
     bool operator==(const CFItem &rightItem) const;
     bool operator!=(const CFItem &rightItem) const;
-    int GetHashCode() const;
+    _INT32 GetHashCode() const;
     std::wstring Name() const;
-    std::streamsize size() const;
+    _INT64 size() const;
     bool IsStorage() const;
     bool IsStream() const;
     bool ISRoot() const;
@@ -68,7 +67,7 @@ public:
 	_GUID_ getStorageCLSID() const;
     void setStorageCLSID(_GUID_ value);
 
-    int CompareTo(const CFItem& other);
+    _INT32 CompareTo(const CFItem& other);
     std::wstring ToString() const;
 
     void setDirEntry(const std::weak_ptr<IDirectoryEntry> &newDirEntry);

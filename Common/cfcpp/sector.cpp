@@ -30,21 +30,23 @@
  *
  */
 #include "sector.h"
+#include "Stream/stream_utils.h"
+
 
 using namespace CFCPP;
 
-int Sector::MINISECTOR_SIZE = 64;
+_INT32 Sector::MINISECTOR_SIZE = 64;
 
-Sector::Sector(int size, const Stream stream) :
+Sector::Sector(_INT32 size, const Stream stream) :
     size(size),
     stream(stream)
 {}
 
-Sector::Sector(int size, const std::vector<BYTE>& data) :
+Sector::Sector(_INT32 size, const std::vector<BYTE>& data) :
     size(size), data(data)
 {}
 
-Sector::Sector(int size) :
+Sector::Sector(_INT32 size) :
     size(size)
 {}
 
@@ -110,7 +112,7 @@ std::vector<BYTE> &Sector::GetData()
     return data;
 }
 
-int Sector::getSize() const
+_INT32 Sector::getSize() const
 {
     return size;
 }

@@ -35,7 +35,10 @@
 #include "../../../../DesktopEditor/common/File.h"
 #include <locale>
 
-namespace NSAnsi
+#include "../../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
+
+namespace NSEncoding
 {
 	std::wstring ansi2unicode(const std::string& line)
 	{
@@ -66,6 +69,53 @@ namespace NSAnsi
 		facet.narrow(line.c_str(), line.c_str() + line.size(), '?', &result[0]);
 		return result;
 	}
+
+	std::vector<std::wstring> transformToUnicode(const std::vector<std::string>& lines, int code_page)
+	{
+		std::vector<std::wstring> result;
+
+		if (-1 == code_page)
+		{
+			for (std::vector<std::string>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+			{
+				result.push_back(ansi2unicode(*iter));
+			}
+		}
+		else
+		{
+			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
+			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+
+			for (std::vector<std::string>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+			{
+				result.push_back(oUnicodeConverter.toUnicode(*iter, oEncodindId.Name));
+			}
+		}
+		return result;
+	}
+	std::vector<std::string> transformFromUnicode(const std::vector<std::wstring>& lines, int code_page)
+	{
+		std::vector<std::string> result;
+
+		if (-1 == code_page)
+		{
+			for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+			{
+				result.push_back(unicode2ansi(*iter));
+			}
+		}
+		else
+		{
+			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
+			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+
+			for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+			{
+				result.push_back(oUnicodeConverter.fromUnicode(*iter, oEncodindId.Name));
+			}
+		}
+		return result;
+	}
 }
 
 namespace Txt
@@ -87,12 +137,15 @@ namespace Txt
 
 		TxtFile file(filename);
 
-		std::vector<std::string> codePageContent	= file.readAnsiOrCodePage();
-		m_listContentSize						= file.getLinesCount();
+		std::vector<std::string> codePageContent = file.readAnsiOrCodePage();
+		m_listContentSize = file.getLinesCount();
+
+		const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
+		NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
 
 		for (std::vector<std::string>::const_iterator iter = codePageContent.begin(); iter != codePageContent.end(); ++iter)
 		{
-			m_listContent.push_back(Encoding::cp2unicode(*iter, code_page));
+			m_listContent.push_back(oUnicodeConverter.toUnicode(*iter, oEncodindId.Name));
 		}
 		codePageContent.clear();
 	}
@@ -109,7 +162,7 @@ namespace Txt
 
 		if (file.isUtf8())
 		{
-			m_listContent = _transform(file.readUtf8(), Encoding::utf82unicode);
+			m_listContent = NSEncoding::transformToUnicode(file.readUtf8(), 65001);
 		}
 		else if (file.isUnicode())
 		{
@@ -126,43 +179,33 @@ namespace Txt
 		//	listContentUnicode = file.readUnicodeWithOutBOM();
 		else
 		{
-			if (-1 == m_nEncoding)
-				m_listContent = _transform(file.readAnsiOrCodePage(), Encoding::utf82unicode);
-			else if (1000 == m_nEncoding)
-				m_listContent = _transform(file.readAnsiOrCodePage(), Encoding::ansi2unicode);
-			else
-				m_listContent = _transform2(file.readAnsiOrCodePage(), m_nEncoding, Encoding::cp2unicode);
+			int nCodePage = m_nEncoding;
+			if (-1 == nCodePage) nCodePage = 65001;
+			else if (1000 == nCodePage) nCodePage = -1;
+
+			m_listContent = NSEncoding::transformToUnicode(file.readAnsiOrCodePage(), nCodePage);
 		}
 		
 		m_listContentSize = file.getLinesCount();
 	}
 
-
 	void File::write(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUtf8(_transform(m_listContent, Encoding::unicode2utf8));
+		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 65001));
 	}
 
 	void File::writeCodePage(const std::wstring& filename, int code_page) const
 	{
 		TxtFile file(filename);
-		
-		std::vector<std::string> result;
-		for (std::vector<std::wstring>::const_iterator iter = m_listContent.begin(); iter != m_listContent.end(); ++iter)
-		{
-			result.push_back(Encoding::unicode2cp(*iter,code_page));
-		}
-
-		file.writeAnsiOrCodePage(result);
+		file.writeAnsiOrCodePage(NSEncoding::transformFromUnicode(m_listContent, code_page));
 	}
 
 	void File::writeUtf8(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUtf8(_transform(m_listContent, Encoding::unicode2utf8));
+		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 65001));
 	}
-
 
 	void File::writeUnicode(const std::wstring& filename) const
 	{
@@ -170,20 +213,17 @@ namespace Txt
 		file.writeUnicode(m_listContent);
 	}
 
-
 	void File::writeBigEndian(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
 		file.writeBigEndian(m_listContent);
 	}
 
-
 	void File::writeAnsi(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeAnsiOrCodePage(_transform(m_listContent, Encoding::unicode2ansi));
+		file.writeAnsiOrCodePage(NSEncoding::transformFromUnicode(m_listContent, -1));
 	}
-
 
 	const bool File::isValid(const std::wstring& filename) const
 	{

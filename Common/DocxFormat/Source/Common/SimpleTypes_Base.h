@@ -31,115 +31,42 @@
  */
 #pragma once
 
-#include "math.h"
-
-#include "../../../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../XML/Utils.h"
-#include "../Common/Unit.h"
+#include <string>
 
 namespace SimpleTypes
 {
-	// TO DO: В будущем надо улучшить функции FromString. Надо отказаться от сравнения
-	//        строк, вместо этого высчитываем хэш и сравниваем по его значению.
-
-#define SimpleType_FromString(Enum) \
-	virtual Enum FromString(const wchar_t* cwsStr)\
-	{\
-        std::wstring wsTemp(cwsStr);\
-        return FromString( wsTemp );\
-    }\
-    virtual Enum FromString(const std::wstring& wsStr)\
-    {\
-        std::wstring wsTemp (wsStr.c_str());\
-        return FromString( wsTemp );\
-    }
-
-#define SimpleType_FromString2(Enum) \
-	Enum FromString(const wchar_t* cwsStr)\
-	{\
-        std::wstring wsTemp (cwsStr);\
-        return FromString( wsTemp );\
-    }\
-    Enum FromString(const std::wstring& wsStr)\
-    {\
-        std::wstring wsTemp (wsStr.c_str());\
-        return FromString( wsTemp );\
-    }
-
-#define SimpleTypes_AdditionalOpearators(Class) \
-	const bool operator==(const Class& oOther) const\
-	{\
-        if ( this->m_eValue == oOther.m_eValue )\
-			return true;\
-		return false;\
-	}
-
-#define UniversalMeasure_AdditionalOpearators(Class) \
-	const bool operator==(const Class& oOther) const\
-	{\
-		if ( m_dValue == oOther.m_dValue )\
-			return true;\
-		return false;\
-	}
-
-#define SimpleType_Operator_Equal(Class) \
-    Class(std::wstring &sValue)\
-    {\
-        FromString( sValue );\
-    }\
-    Class(const wchar_t* cwsValue)\
-    {\
-        FromString( cwsValue );\
-    }\
-    Class(const std::wstring& wsStr)\
-    {\
-        FromString( wsStr.c_str() );\
-    }\
-    const Class &operator =(std::wstring &sValue)\
-    {\
-        FromString( sValue );\
-        return *this;\
-    }\
-    const Class &operator =(const wchar_t* cwsString)\
-    {\
-        FromString( cwsString );\
-        return *this;\
-    }\
-    const Class &operator =(const std::wstring& wsStr)\
-    {\
-        FromString( wsStr.c_str() );\
-        return *this;\
-    }
+#define SimpleTypes_Default(Class)                                                                                    \
+	const bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }   \
+	Class(const std::wstring &sValue) { FromString(sValue); }                                                         \
+	Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }
 
 	template<typename E, E DefValue = 0>
 	class CSimpleType
 	{
 	public:
-
 		CSimpleType()
 		{
 			m_eValue = DefValue;
 		}
-        virtual ~CSimpleType() {}
+		virtual ~CSimpleType() {}
 
 		virtual E GetValue () const
 		{
 			return m_eValue;
 		}
-		void SetValueFromByte(BYTE value)
+		void SetValueFromByte(unsigned char value)
 		{
 			m_eValue = (E)value;
 		}
-		virtual void SetValue (E eValue)
+		virtual void SetValue(E eValue)
 		{
 			m_eValue = eValue;
 		}
 
-        virtual E               FromString(std::wstring &sValue)    = 0;
-        virtual std::wstring    ToString  () const                  = 0;
+		virtual E            FromString(const std::wstring &sValue) = 0;
+		virtual std::wstring ToString  () const                     = 0;
 
-    protected:
+	protected:
 
 		E m_eValue;
 	};
@@ -147,420 +74,148 @@ namespace SimpleTypes
 	class CUniversalMeasure
 	{
 	public:
+		CUniversalMeasure();
+		virtual ~CUniversalMeasure();
 
-		CUniversalMeasure() {}
-        virtual ~CUniversalMeasure() {}
+		virtual double FromString(const std::wstring &sValue)	= 0;
+		virtual std::wstring ToString() const					= 0;
 
-        virtual double  FromString(std::wstring &sValue)	= 0;
-        virtual std::wstring ToString  () const				= 0;
-		virtual void SetValue(double val)					= 0;
+		virtual void SetValue(double val)						= 0;
+		double GetValue() const;
 
-		double GetValue() const
-		{
-			return m_dValue;
-		}
-		double ToPoints() const
-		{
-			return m_dValue;
-		}
-		double ToInches() const
-		{
-			return m_dValue / 72.0;
-		}
-		double ToMm() const
-		{
-			return m_dValue * 25.4 / 72;
-		}
-		long ToTwips() const
-		{
-			return (long)Pt_To_Dx(m_dValue);
-		}
-		long ToHps() const
-		{
-			return (long)(m_dValue * 2);
-		}
-		unsigned long ToUnsignedTwips() const
-		{
-			return (unsigned long)Pt_To_Dx(m_dValue);
-		}
-		virtual double FromHps(double dValue)
-		{
-			m_dValue = (dValue / 2);
-			return m_dValue;
-		}
-		virtual double FromPoints(double dValue)
-		{
-			m_dValue = dValue;
-			return m_dValue;
-		}
-		virtual double FromTwips(double dValue)
-		{
-			m_dValue = Dx_To_Pt(dValue);
-			return m_dValue;
-		}
-		virtual double FromMm(double dValue)
-		{
-			m_dValue = Mm_To_Pt(dValue);
-			return m_dValue;
-		}
-		virtual double FromInches(double dValue)
-		{
-			m_dValue = Inch_To_Pt( dValue );
-			return m_dValue;
-		}
-		virtual double FromEmu   (double dValue)
-		{
-			m_dValue = Emu_To_Pt( dValue );
-			return m_dValue;
-		}
+		double ToPoints() const;
+		double ToInches() const;
+		double ToMm() const;
+		long ToTwips() const;
+		long ToHps() const;
+		unsigned long ToUnsignedTwips() const;
 
-		bool IsUnits() const
-		{
-			return m_bUnit;
-		}
-	protected:
+		virtual double FromHps(double dValue);
+		virtual double FromPoints(double dValue);
+		virtual double FromTwips(double dValue);
+		virtual double FromMm(double dValue);
+		virtual double FromInches(double dValue);
+		virtual double FromEmu(double dValue);
 
-        void Parse(std::wstring &sValue, double dKoef)
-		{
-            m_bUnit = false;
-            m_dValue = 0;
-
-            if (sValue.empty()) return;
-
-            if ( sValue.length() <= 2 )
-			{
-				m_dValue = XmlUtils::GetDouble( sValue.c_str() ) / dKoef;
-
-				return;
-			}
-
-			// Проверим последние два символа
-            std::wstring sUnit = sValue.substr( sValue.length() - 2, 2 );
-			m_bUnit = true;
-
-			if ( _T("cm") == sUnit )
-			{
-                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
-				m_dValue = Cm_To_Pt( dValue );
-			}
-			else if ( _T("mm") == sUnit )
-			{
-                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
-				m_dValue = Mm_To_Pt( dValue );
-			}
-			else if ( _T("in") == sUnit )
-			{
-                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
-				m_dValue = Inch_To_Pt( dValue );
-			}
-			else if ( _T("pt") == sUnit )
-			{
-                m_dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
-			}
-			else if ( _T("pc") == sUnit )
-			{
-                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
-				m_dValue = dValue * 12.0;
-			}
-			else if ( _T("pi") == sUnit )
-			{
-                double dValue = XmlUtils::GetDouble( sValue.substr( 0, sValue.length() - 2 ).c_str() );
-				m_dValue = dValue * 12.0;
-			}
-			else
-			{
-				m_bUnit = false;
-				m_dValue = XmlUtils::GetDouble( sValue.c_str() ) / dKoef;
-
-				return;
-			}
-		}
-
+		bool IsUnits() const;
 
 	protected:
+		void Parse(const std::wstring &sValue, double dKoef);
 
-		bool   m_bUnit = false;;
+	protected:
+		bool   m_bUnit = false;
 		double m_dValue = 0; // Значение в пунктах
 	};
 
 	class CUniversalMeasureOrPercent : public CUniversalMeasure
 	{
 	public:
-
-		CUniversalMeasureOrPercent() {}
-        virtual ~CUniversalMeasureOrPercent() {}
+		CUniversalMeasureOrPercent();
+		virtual ~CUniversalMeasureOrPercent();
 		
-		virtual void SetValue(double dValue)
-		{
-			m_bUnit = false;
-			m_dValue = dValue;
-		}
-		virtual double  FromString(std::wstring &sValue)
-		{
-			m_bUnit = false;
-			m_bTrailingPercentSign = false;
-			if ( sValue.empty() )
-			{
-				m_dValue = 0;
-				return m_dValue;
-			}
-			if('%' == sValue[sValue.length() - 1])
-			{
-				m_bTrailingPercentSign = true;
-				m_dValue = XmlUtils::GetDouble( sValue.substr(0, sValue.length() - 1).c_str() );
-			}
-			else
-			{
-				Parse(sValue, 1);
-			}
-			return m_dValue;
-		}
-		virtual std::wstring ToString  () const
-		{
-			std::wstring sResult;
+		virtual void SetValue(double dValue);
+		virtual double FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
 
-			if ( m_bUnit )
-				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
-			else if ( m_bTrailingPercentSign )
-				sResult = boost::lexical_cast<std::wstring>(m_dValue) + L"%";
-			else
-				sResult = std::to_wstring( (int)(m_dValue) );
-
-			return sResult;
-		}
-		bool IsPercent() const
-		{
-			return m_bTrailingPercentSign;
-		}
+		bool IsPercent() const;
 	protected:
-		bool   m_bTrailingPercentSign;
+		bool m_bTrailingPercentSign;
 	};
 
 	//--------------------------------------------------------------------------------
 	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - пункты.
-	//--------------------------------------------------------------------------------	
+	//--------------------------------------------------------------------------------
 	class CPoint : public CUniversalMeasure
 	{
 	public:
-		CPoint() {}
+		CPoint();
 
-        virtual double  FromString(std::wstring &sValue)
-		{
-			Parse(sValue, 1);
-			return m_dValue;
-		}
-		virtual void SetValue(double dValue)
-		{
-			m_bUnit = false;
-			m_dValue = dValue;
-		}
-        virtual std::wstring ToString () const
-		{
-            return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
-		}
+		virtual double FromString(const std::wstring &sValue);
+		virtual void SetValue(double dValue);
+		virtual std::wstring ToString () const;
 
-		virtual double FromPoints(double dValue)
-		{
-			m_dValue = dValue;
-			return m_dValue;
-		}
-		virtual double FromInches(double dValue)
-		{
-			m_dValue = dValue * 72;
-			return m_dValue;
-		}  
-		double GetValue () const
-		{
-			return m_dValue;
-		}
-		SimpleType_FromString          (double)
-		SimpleType_Operator_Equal      (CPoint)
-		UniversalMeasure_AdditionalOpearators(CPoint)
+		virtual double FromPoints(double dValue);
+		virtual double FromInches(double dValue);
+
+		SimpleTypes_Default(CPoint)
 	};
 
 	class CInch : public CUniversalMeasure
 	{
 	public:
-		CInch() {}
+		CInch();
 
-        virtual double  FromString(std::wstring &sValue)
-		{
-			Parse(sValue, 1.0 / 72);
-			return m_dValue;
-		}
-		virtual void SetValue(double dValue)
-		{
-			m_bUnit = false;
-			m_dValue = FromInches(dValue);
-		}
-        virtual std::wstring ToString  () const
-		{
-            return boost::lexical_cast<std::wstring>(ToInches()) + L"in";
-        }
+		virtual double FromString(const std::wstring &sValue);
+		virtual void SetValue(double dValue);
+		virtual std::wstring ToString() const;
 
-		SimpleType_FromString          (double)
-		SimpleType_Operator_Equal      (CInch)
-		UniversalMeasure_AdditionalOpearators(CInch)
+		SimpleTypes_Default(CInch)
 	};
 
 
 	//--------------------------------------------------------------------------------
 	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - emu.
-	//--------------------------------------------------------------------------------	
+	//--------------------------------------------------------------------------------
 	class CEmu : public CUniversalMeasure
 	{
 	public:
-		CEmu() {}
+		CEmu();
 
-        virtual double  FromString(std::wstring &sValue)
-		{
-			Parse(sValue, 12700);
-			return m_dValue;
-		}
-		virtual void SetValue(double dValue)
-		{
-			m_bUnit = false;
-			m_dValue = FromEmu(dValue);
-		}
-        virtual std::wstring ToString  () const
-		{
-            return boost::lexical_cast<std::wstring>(m_dValue) + L"pt";
-		}
+		virtual double FromString(const std::wstring &sValue);
+		virtual void SetValue(double dValue);
+		virtual std::wstring ToString() const;
 
-		virtual double FromPoints(double dValue)
-		{
-			m_dValue = dValue;
-			return m_dValue;
-		}
-		virtual double FromInches(double dValue)
-		{
-			m_dValue = dValue * 72;
-			return m_dValue;
-		}
+		virtual double FromPoints(double dValue);
+		virtual double FromInches(double dValue);
 
-		virtual double FromEmu(double dValue)
-		{
-			m_dValue = Emu_To_Pt(dValue);
-			return  m_dValue;
-		}
-		virtual double FromPx(double dValue)
-		{
-			m_dValue = Px_To_Pt(dValue);
-			return  m_dValue;
-		}
-  		virtual double ToMm()
-		{
-			return  Pt_To_Mm(m_dValue);
-		}
-		virtual __int64 ToEmu()
-		{
-			return  (__int64)Pt_To_Emu(m_dValue);
-		}
-		virtual long ToPx()
-		{
-			return  (long)Pt_To_Px(m_dValue);
-		}
-		double GetValue () const
-		{
-			return m_dValue;
-		}
-		SimpleType_FromString (double)
-		SimpleType_Operator_Equal (CEmu)
-		UniversalMeasure_AdditionalOpearators(CEmu)
+		virtual double FromEmu(double dValue);
+		virtual double FromPx(double dValue);
+		virtual double ToMm();
+		virtual __int64 ToEmu();
+		virtual long ToPx();
+		double GetValue () const;
+
+		SimpleTypes_Default(CEmu)
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// Класс читающий double
-	//--------------------------------------------------------------------------------	
+	//--------------------------------------------------------------------------------
 	class CDouble
 	{
 	public:
-		CDouble() {}
-        virtual ~CDouble() {}
+		CDouble();
+		virtual ~CDouble();
 
-        CDouble(const double& val)
-        {
-            this->m_dValue = (double)val;
-        }
+		CDouble(const double& val);
 
-        virtual double FromString(std::wstring &sValue)
-		{
-            m_dValue = XmlUtils::GetDouble( sValue );
-			return m_dValue;
-		}
+		virtual double FromString(const std::wstring &sValue);
 
-        virtual std::wstring ToString  () const
-		{
-			if (std::isnan(m_dValue)) return L"NaN";
-			else if (std::isinf(m_dValue)) return L"INF";
-			else return boost::lexical_cast<std::wstring>(m_dValue);
-		}
-		virtual std::wstring ToString2() const
-		{
-			return boost::lexical_cast<std::wstring>(m_dValue);
-		}
+		virtual std::wstring ToString  () const;
+		virtual std::wstring ToString2() const;
 
-		void SetValue(double dValue)
-		{
-			m_dValue = dValue;
-		}
-		double GetValue () const
-		{
-			return m_dValue;
-		}
-		SimpleType_FromString          (double)
-		SimpleType_Operator_Equal      (CDouble)
+		void SetValue(double dValue);
+		double GetValue () const;
+
+		SimpleTypes_Default(CDouble)
 
 	private:
-
 		double m_dValue;
 	};
 
 	//--------------------------------------------------------------------------------
 	// DecimalNumber 17.18.10 (Part 1)
-	//--------------------------------------------------------------------------------		
-
+	//--------------------------------------------------------------------------------
 	template<int nDefValue = 0>
 	class CDecimalNumber : public CSimpleType<int, nDefValue>
 	{
 	public:
-		CDecimalNumber() {}
+		CDecimalNumber();
+		CDecimalNumber(const unsigned int& val);
 
-                CDecimalNumber(const _UINT32& val)
-                {
-                    this->m_eValue = (int)val;
-                }
+		virtual int FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual int FromString(std::wstring &sValue)
-		{
-			try
-			{
-				this->m_eValue = _wtoi(sValue.c_str());
-				return this->m_eValue;
-			}
-			catch (...)
-			{
-			}
-
-			try
-			{
-				this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
-			}
-			catch (...)
-			{
-				this->m_eValue = 0;
-			}
-
-			return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const
-		{
-			return std::to_wstring(this->m_eValue);
-		}
-        SimpleType_FromString(int)
-		SimpleType_Operator_Equal(CDecimalNumber)
-		SimpleTypes_AdditionalOpearators(CDecimalNumber)
+		SimpleTypes_Default(CDecimalNumber)
 	};
 } // SimpleTypes

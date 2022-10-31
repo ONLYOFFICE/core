@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../../../DesktopEditor/common/StringBuilder.h"
-#include <string>
 
 namespace Txt2Docx
 {

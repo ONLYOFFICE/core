@@ -32,11 +32,8 @@
 
 #include "ConvertDocx2Txt.h"
 
-#include "Common/Encoding.h"
+#include "TxtFormat/File.h"
 
-#include "TxtFormat/TxtFormat.h"
-
-#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
 //#include "../../../Common/DocxFormat/Source/DocxFormat/Comments.h"
@@ -45,115 +42,101 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
 
-#include "Common/ToString.h"
 #include <map>
 
 namespace Docx2Txt
 {
-    static bool IsUnicodeSymbol( const wchar_t & symbol )
+	class Converter_Impl
 	{
-		bool result = false;
-
-		if ( ( 0x0009 == symbol ) || ( 0x000A == symbol ) || ( 0x000D == symbol ) ||
-			( ( 0x0020 <= symbol ) && ( 0xD7FF >= symbol ) ) || ( ( 0xE000 <= symbol ) && ( symbol <= 0xFFFD ) ) ||
-			( ( 0x10000 <= symbol ) && symbol ) )
-		{
-			result = true;
-		}
-
-		return result;		  
-	}
-	class Converter_Impl 
-    {
-    public:
-        Converter_Impl();
-        ~Converter_Impl();
+	public:
+		Converter_Impl();
+		~Converter_Impl();
 
 		void convert();
 
-        void writeUtf8		(const std::wstring& path) const;
-        void writeUnicode	(const std::wstring& path) const;
-        void writeBigEndian	(const std::wstring& path) const;
-        void writeAnsi		(const std::wstring& path) const;
+		void writeUtf8		(const std::wstring& path) const;
+		void writeUnicode	(const std::wstring& path) const;
+		void writeBigEndian	(const std::wstring& path) const;
+		void writeAnsi		(const std::wstring& path) const;
 
 		Txt::File		m_outputFile;
 		OOX::CDocx		m_inputFile;
 
-    private:
-        void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, bool bEnter,
-							 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
-       
+	private:
+		void convert(std::vector<OOX::WritingElement *> & items, std::vector<std::wstring>& textOut, bool bEnter,
+					 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
+
 		void convert(OOX::WritingElement *pItem, std::vector<std::wstring>& textOut, bool bEnter,
-			OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
+					 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 		
 		void convert(OOX::Logic::CParagraph *pParagraph, std::vector<std::wstring>& textOut, bool bEnter,
-			OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
+					 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles);
 
 		std::wstring convert( OOX::Logic::CRun *pRun, OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles);
 		
 		std::vector<bool> m_Field;
 
-        int ListCount;
-        std::vector<int> Lists;
+		int ListCount;
+		std::vector<int> Lists;
 		
 		std::vector<int> levelPrev;
 		int listNumPrev;
 
 
-        size_t NoteCount;
-        std::map<std::wstring, std::vector<std::wstring>> Notes;
+		size_t NoteCount;
+		std::map<std::wstring, std::vector<std::wstring>> Notes;
 
-        static std::wstring IntToLowerLetter	(int number);
-        static std::wstring IntToUpperLetter	(int number);
-        static std::wstring IntToLowerRoman		(int number);
-        static std::wstring IntToUpperRoman		(int number);
+		static std::wstring IntToLowerLetter	(int number);
+		static std::wstring IntToUpperLetter	(int number);
+		static std::wstring IntToLowerRoman		(int number);
+		static std::wstring IntToUpperRoman		(int number);
 
-        static const std::wstring m_letters;
-    };
+		static const std::wstring m_letters;
+	};
 
-    Converter::Converter() : converter_(new Converter_Impl)
-    {}
+	Converter::Converter() : converter_(new Converter_Impl)
+	{}
 
 	Converter::~Converter()
-    {
-        delete converter_;
-    }
+	{
+		delete converter_;
+	}
 
-    void Converter::convert()
-    {
-        return converter_->convert();
-    }
+	void Converter::convert()
+	{
+		return converter_->convert();
+	}
 
-    void Converter::read(const std::wstring & path)
-    {
-        bool res =  converter_->m_inputFile.Read(path);
+	void Converter::read(const std::wstring & path)
+	{
+		bool res =  converter_->m_inputFile.Read(path);
 		return;
-    }
+	}
 
-    void Converter::write(const std::wstring & path)
-    {
-        return converter_->m_outputFile.write(path);
-    }
+	void Converter::write(const std::wstring & path)
+	{
+		return converter_->m_outputFile.write(path);
+	}
 
-    void Converter::writeUtf8(const std::wstring & path) const
-    {
-        return converter_->writeUtf8(path);
-    }
+	void Converter::writeUtf8(const std::wstring & path) const
+	{
+		return converter_->writeUtf8(path);
+	}
 
-    void Converter::writeUnicode(const std::wstring & path) const
-    {
-        return converter_->writeUnicode(path);
-    }
+	void Converter::writeUnicode(const std::wstring & path) const
+	{
+		return converter_->writeUnicode(path);
+	}
 
-    void Converter::writeBigEndian(const std::wstring & path) const
-    {
-        return converter_->writeBigEndian(path);
-    }
+	void Converter::writeBigEndian(const std::wstring & path) const
+	{
+		return converter_->writeBigEndian(path);
+	}
 
-    void Converter::writeAnsi(const std::wstring & path) const
-    {
-        return converter_->writeAnsi(path);
-    }
+	void Converter::writeAnsi(const std::wstring & path) const
+	{
+		return converter_->writeAnsi(path);
+	}
 
 
 	const std::wstring Converter_Impl::m_letters = _T("abcdefghijklmnopqrstuvwxyz");
@@ -170,10 +153,10 @@ namespace Docx2Txt
 
 	void Converter_Impl::convert()
 	{
-		OOX::CDocument	*pDocument	= m_inputFile.m_oMain.document; 
+		OOX::CDocument	*pDocument	= m_inputFile.m_oMain.document;
 		OOX::CStyles	*pStyles	= m_inputFile.m_oMain.styles;
 		OOX::CNumbering *pNumbering = m_inputFile.m_oMain.numbering;
-	
+
 		if (pNumbering)
 		{
 			ListCount = (int)pNumbering->m_arrNum.size();
@@ -197,11 +180,11 @@ namespace Docx2Txt
 			m_outputFile.m_listContent.push_back(L"");
 			m_outputFile.m_listContent.push_back(L"---------------------------");
 			
-            for(std::map<std::wstring, std::vector<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
+			for(std::map<std::wstring, std::vector<std::wstring>>::const_iterator iter_map = Notes.begin(); iter_map != Notes.end(); iter_map++)
 			{
 				bool bFirst = true;
 				
-                for(std::vector<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
+				for(std::vector<std::wstring>::const_iterator iter = iter_map->second.begin(); iter != iter_map->second.end(); iter++)
 				{
 					if (bFirst) m_outputFile.m_listContent.push_back(iter_map->first + L" " + *iter);
 					else		m_outputFile.m_listContent.push_back(*iter);
@@ -213,35 +196,93 @@ namespace Docx2Txt
 	}
 
 
-    void Converter_Impl::writeUtf8(const std::wstring& path) const
+	void Converter_Impl::writeUtf8(const std::wstring& path) const
 	{
 		m_outputFile.writeUtf8(path);
 	}
 
 
-    void Converter_Impl::writeUnicode(const std::wstring& path) const
+	void Converter_Impl::writeUnicode(const std::wstring& path) const
 	{
 		m_outputFile.writeUnicode(path);
 	}
 
 
-    void Converter_Impl::writeBigEndian(const std::wstring& path) const
+	void Converter_Impl::writeBigEndian(const std::wstring& path) const
 	{
 		m_outputFile.writeBigEndian(path);
 	}
 
 
-    void Converter_Impl::writeAnsi(const std::wstring& path) const
+	void Converter_Impl::writeAnsi(const std::wstring& path) const
 	{
 		m_outputFile.writeAnsi(path);
 	}
 	void Converter_Impl::convert(OOX::WritingElement* item, std::vector<std::wstring>& textOut, bool bEnter,
-		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
+								 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
 	{
 		if (!item) return;
 
 		switch (item->getType())
 		{
+		case OOX::et_w_p:
+		{
+			convert(dynamic_cast<OOX::Logic::CParagraph*>(item), textOut, bEnter, pDocument, pNumbering, pStyles);
+		}break;
+		case OOX::et_w_r:
+		{
+			textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), pDocument, pNumbering, pStyles));
+		}break;
+		case OOX::et_w_sdt:
+		{
+			OOX::Logic::CSdt *sdt = dynamic_cast<OOX::Logic::CSdt*>(item);
+			if (sdt)
+				convert(sdt->m_oSdtContent.GetPointer(), textOut, bEnter, pDocument, pNumbering, pStyles);
+		}break;
+		default:
+		{
+			OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
+
+			if (item_with_items)
+			{
+				convert(item_with_items->m_arrItems, textOut, bEnter, pDocument, pNumbering, pStyles);
+			}
+		}break;
+		}
+	}
+
+	void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, bool bEnter,
+								 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
+	{
+		if (items.empty()) return;
+
+		for (size_t i = 0; i < items.size(); ++i)
+		{
+			OOX::WritingElement* item = items[i];
+
+			if (!item)continue;
+
+			switch (item->getType())
+			{
+			case OOX::et_w_tc:
+			{
+				OOX::Logic::CTc *cell = dynamic_cast<OOX::Logic::CTc*>(item);
+				for (size_t j = 0; cell && j < cell->m_arrItems.size(); ++j)
+				{
+					convert(cell->m_arrItems[j], textOut, false, pDocument, pNumbering, pStyles);
+					if (textOut.empty()) textOut.push_back(L"");
+
+					textOut.back() += L" |";
+				}
+			}break;
+			case OOX::et_w_tr:
+			{
+				textOut.push_back(L"---------------------------------------------");
+				textOut.push_back(L"|");
+
+				OOX::Logic::CTr *row = dynamic_cast<OOX::Logic::CTr*>(item);
+				convert(row->m_arrItems, textOut, false, pDocument, pNumbering, pStyles);
+			}break;
 			case OOX::et_w_p:
 			{
 				convert(dynamic_cast<OOX::Logic::CParagraph*>(item), textOut, bEnter, pDocument, pNumbering, pStyles);
@@ -264,74 +305,16 @@ namespace Docx2Txt
 				{
 					convert(item_with_items->m_arrItems, textOut, bEnter, pDocument, pNumbering, pStyles);
 				}
+				else
+				{
+					convert(item, textOut, bEnter, pDocument, pNumbering, pStyles);
+				}
 			}break;
-		}
-	}
-
-	void Converter_Impl::convert(std::vector<OOX::WritingElement*> & items, std::vector<std::wstring>& textOut, bool bEnter,
-		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles *pStyles)
-	{
-		if (items.empty()) return;
-			
-        for (size_t i = 0; i < items.size(); ++i)
-		{
-			OOX::WritingElement* item = items[i];
-
-			if (!item)continue;
-
-			switch (item->getType())
-			{
-				case OOX::et_w_tc:
-				{
-					OOX::Logic::CTc *cell = dynamic_cast<OOX::Logic::CTc*>(item);
-					for (size_t j = 0; cell && j < cell->m_arrItems.size(); ++j)
-					{
-						convert(cell->m_arrItems[j], textOut, false, pDocument, pNumbering, pStyles);
-						if (textOut.empty()) textOut.push_back(L"");
-						
-						textOut.back() += L" |";
-					}
-				}break;
-				case OOX::et_w_tr:
-				{
-					textOut.push_back(L"---------------------------------------------");
-					textOut.push_back(L"|");
-					
-					OOX::Logic::CTr *row = dynamic_cast<OOX::Logic::CTr*>(item);
-					convert(row->m_arrItems, textOut, false, pDocument, pNumbering, pStyles);
-				}break;
-				case OOX::et_w_p:
-				{
-					convert(dynamic_cast<OOX::Logic::CParagraph*>(item), textOut, bEnter, pDocument, pNumbering, pStyles);
-				}break;
-				case OOX::et_w_r:
-				{
-					textOut.push_back(convert((dynamic_cast<OOX::Logic::CRun*>(item)), pDocument, pNumbering, pStyles));
-				}break;
-				case OOX::et_w_sdt:
-				{
-					OOX::Logic::CSdt *sdt = dynamic_cast<OOX::Logic::CSdt*>(item);
-					if (sdt)
-						convert(sdt->m_oSdtContent.GetPointer(), textOut, bEnter, pDocument, pNumbering, pStyles);
-				}break;
-				default:
-				{
-					OOX::WritingElementWithChilds<OOX::WritingElement> *item_with_items = dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(item);
-
-					if (item_with_items)
-					{
-						convert(item_with_items->m_arrItems, textOut, bEnter, pDocument, pNumbering, pStyles);
-					}
-					else
-					{
-						convert(item, textOut, bEnter, pDocument, pNumbering, pStyles);
-					}
-				}break;
 			}
 		}
 	}
 	std::wstring Converter_Impl::convert(OOX::Logic::CRun* pRun,
-		OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
+										 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
 		if (pRun == NULL) return L"";
 		
@@ -356,67 +339,67 @@ namespace Docx2Txt
 			{
 				bool caps = false;
 				//
-				//if ((pRun->m_oRunProperty) && (pRun->m_oRunProperty->m_oCaps.Init()) && (pRun->m_oRunProperty->m_oCaps->m_oVal.ToBool()))	
+				//if ((pRun->m_oRunProperty) && (pRun->m_oRunProperty->m_oCaps.Init()) && (pRun->m_oRunProperty->m_oCaps->m_oVal.ToBool()))
 				//	caps = true;
 
 				std::wstring wstr;
 
 				switch (pRun->m_arrItems[j]->getType())
 				{
-					case OOX::et_w_tab:
+				case OOX::et_w_tab:
+				{
+					wstr = L"\x09";
+				}break;
+				case  OOX::et_w_br:
+				{
+					wstr = L"\x0A";
+				}break;
+				case OOX::et_w_t:
+				{
+					OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(pRun->m_arrItems[j]);
+					wstr = text->m_sText;
+					if (caps)
 					{
-						wstr = L"\x09";
-					}break;
-					case  OOX::et_w_br:
-					{
-						wstr = L"\x0A";
-					}break;
-					case OOX::et_w_t:
-					{
-						OOX::Logic::CText* text = dynamic_cast<OOX::Logic::CText*>(pRun->m_arrItems[j]);
-						wstr = text->m_sText;
-						if (caps)
-						{
-							wstr = XmlUtils::GetUpper(wstr);
-						}
-					}break;
-					case OOX::et_w_footnoteReference:
-					case OOX::et_w_endnoteReference:
-					{
-						OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(pRun->m_arrItems[j]);
-						OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(pRun->m_arrItems[j]);
-
-						std::vector<std::wstring> notes_content;
-
-						if (footnote_ref && m_inputFile.m_oMain.footnotes)
-						{
-							for (size_t r = 0; r < m_inputFile.m_oMain.footnotes->m_arrFootnote.size(); r++)
-							{
-								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]);
-
-								if (note && note->m_oId == footnote_ref->m_oId)
-								{
-									convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, true, pDocument, pNumbering, pStyles);
-								}
-							}
-							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
-							wstr += L"[" + ToWString(NoteCount) + L"]";
-						}
-						if (endnote_ref && m_inputFile.m_oMain.endnotes)
-						{
-							for (size_t r = 0; r < m_inputFile.m_oMain.endnotes->m_arrEndnote.size(); r++)
-							{
-								OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]);
-
-								if (note && note->m_oId == endnote_ref->m_oId)
-								{
-									convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, true, pDocument, pNumbering, pStyles);
-								}
-							}
-							Notes.insert(std::make_pair(ToWString(++NoteCount), notes_content));
-							wstr += L"[" + ToWString(NoteCount) + L"]";
-						}break;
+						wstr = XmlUtils::GetUpper(wstr);
 					}
+				}break;
+				case OOX::et_w_footnoteReference:
+				case OOX::et_w_endnoteReference:
+				{
+					OOX::Logic::CFootnoteReference* footnote_ref = dynamic_cast<OOX::Logic::CFootnoteReference*>(pRun->m_arrItems[j]);
+					OOX::Logic::CEndnoteReference* endnote_ref = dynamic_cast<OOX::Logic::CEndnoteReference*>(pRun->m_arrItems[j]);
+
+					std::vector<std::wstring> notes_content;
+
+					if (footnote_ref && m_inputFile.m_oMain.footnotes)
+					{
+						for (size_t r = 0; r < m_inputFile.m_oMain.footnotes->m_arrFootnote.size(); r++)
+						{
+							OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]);
+
+							if (note && note->m_oId == footnote_ref->m_oId)
+							{
+								convert(m_inputFile.m_oMain.footnotes->m_arrFootnote[r]->m_arrItems, notes_content, true, pDocument, pNumbering, pStyles);
+							}
+						}
+						Notes.insert(std::make_pair(std::to_wstring(++NoteCount), notes_content));
+						wstr += L"[" + std::to_wstring(NoteCount) + L"]";
+					}
+					if (endnote_ref && m_inputFile.m_oMain.endnotes)
+					{
+						for (size_t r = 0; r < m_inputFile.m_oMain.endnotes->m_arrEndnote.size(); r++)
+						{
+							OOX::CFtnEdn* note = dynamic_cast<OOX::CFtnEdn*>(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]);
+
+							if (note && note->m_oId == endnote_ref->m_oId)
+							{
+								convert(m_inputFile.m_oMain.endnotes->m_arrEndnote[r]->m_arrItems, notes_content, true, pDocument, pNumbering, pStyles);
+							}
+						}
+						Notes.insert(std::make_pair(std::to_wstring(++NoteCount), notes_content));
+						wstr += L"[" + std::to_wstring(NoteCount) + L"]";
+					}break;
+				}
 				}
 				line += wstr;
 			}
@@ -425,7 +408,7 @@ namespace Docx2Txt
 	}
 
 	void Converter_Impl::convert(OOX::Logic::CParagraph* pParagraph, std::vector<std::wstring>& textOut, bool bEnter,
-										  OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
+								 OOX::CDocument *pDocument, OOX::CNumbering* pNumbering, OOX::CStyles* pStyles)
 	{
 		if (pParagraph == NULL) return;
 
@@ -443,12 +426,12 @@ namespace Docx2Txt
 			}
 			if (false == styleName.empty() && pStyles)
 			{
-                std::map<std::wstring, size_t>::iterator pFind = pStyles->m_mapStyleNames.find(styleName);
+				std::map<std::wstring, size_t>::iterator pFind = pStyles->m_mapStyleNames.find(styleName);
 
 				if (pFind != pStyles->m_mapStyleNames.end())
 				{
 					OOX::CStyle* style = pStyles->m_arrStyle[pFind->second];
-			
+
 					if ((style) && (style->m_oParPr.IsInit()) && (style->m_oParPr->m_oNumPr.IsInit()))
 					{
 						if (false == pParagraph->m_oParagraphProperty->m_oNumPr.IsInit())
@@ -466,20 +449,20 @@ namespace Docx2Txt
 			{
 				if (true == pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit())
 				{
-					level = pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit() ? 
-						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
+					level = pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit() ?
+								*pParagraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal + 1 : 0;
 				}
 				if (true == pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID.IsInit())
 				{
-					listNum = pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit() ? 
-						*pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal : 1;
+					listNum = pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal.IsInit() ?
+								*pParagraph->m_oParagraphProperty->m_oNumPr->m_oNumID->m_oVal : 1;
 
 					listNumPrev = listNum;
 				}
 				else listNum = listNumPrev;
 			}
 		}
-	
+
 		if (listNum > 0 && pNumbering)
 		{
 			std::map<int, std::pair<int,size_t>>::iterator pFindNum = pNumbering->m_mapNum.find(listNum);
@@ -521,7 +504,7 @@ namespace Docx2Txt
 				OOX::Numbering::CAbstractNum* abstractNum = NULL;
 				
 				std::map<int, size_t>::iterator pFindAbstract = pNumbering->m_mapAbstractNum.find(abstractNumId);
-					
+
 				if (pFindAbstract != pNumbering->m_mapAbstractNum.end())
 					abstractNum = pNumbering->m_arrAbstractNum[pFindAbstract->second];
 
@@ -568,13 +551,10 @@ namespace Docx2Txt
 							if ((abstractNum->m_arrLvl[ind_level]->m_oLvlText.IsInit()) &&  (abstractNum->m_arrLvl[ind_level]->m_oLvlText->m_sVal.IsInit()))
 							{
 								strLevelText =  abstractNum->m_arrLvl[ind_level]->m_oLvlText->m_sVal.get();
-							}	
+							}
 
 							if (abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue() == SimpleTypes::numberformatBullet)
 							{
-								////всли символ более-менее корректный 
-								//if ((strLevelText.length() > 0) && (IsUnicodeSymbol(strLevelText[0]))) line += strLevelText + L" ";
-								//else 
 								line += L"* ";
 							}
 							else
@@ -598,7 +578,7 @@ namespace Docx2Txt
 										Lists[start + i] = startLvl.IsInit() ? *startLvl : 1;
 									}
 
-									std::wstring num = L"%" + ToWString(i + 1);
+									std::wstring num = L"%" + std::to_wstring(i + 1);
 									while(example.find(num) != example.npos)
 									{
 										switch(abstractNum->m_arrLvl[ind_level]->m_oNumFmt->m_oVal->GetValue())
@@ -616,7 +596,7 @@ namespace Docx2Txt
 											example.replace(example.find(num), 2, IntToUpperRoman(Lists[start + i]));
 											break;
 										default:
-											example.replace(example.find(num), 2, ToWString(Lists[start + i]));
+											example.replace(example.find(num), 2, std::to_wstring(Lists[start + i]));
 											break;
 										}
 									}
@@ -629,59 +609,59 @@ namespace Docx2Txt
 			}
 		}
 
-        for (size_t	i = 0; i < pParagraph->m_arrItems.size(); ++i)
+		for (size_t	i = 0; i < pParagraph->m_arrItems.size(); ++i)
 		{
 			if (pParagraph->m_arrItems[i] == NULL) continue;
 
 			switch (pParagraph->m_arrItems[i]->getType())
 			{
-				case OOX::et_w_r:
+			case OOX::et_w_r:
+			{
+				OOX::Logic::CRun *pRun = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
+				line += convert(pRun, pDocument, pNumbering, pStyles);
+			}break;
+			case OOX::et_w_sdt:
+			{
+				convert(pParagraph->m_arrItems[i], textOut, bEnter, pDocument, pNumbering, pStyles);
+			}break;
+			case OOX::et_w_hyperlink:
+			{
+				OOX::Logic::CHyperlink *pHyperlink = dynamic_cast<OOX::Logic::CHyperlink*>(pParagraph->m_arrItems[i]);
+				if (pHyperlink)
 				{
-					OOX::Logic::CRun *pRun = dynamic_cast<OOX::Logic::CRun*>(pParagraph->m_arrItems[i]);
-					line += convert(pRun, pDocument, pNumbering, pStyles);
-				}break;
-				case OOX::et_w_sdt:
-				{
-					convert(pParagraph->m_arrItems[i], textOut, bEnter, pDocument, pNumbering, pStyles);
-				}break;
-				case OOX::et_w_hyperlink:
-				{
-					OOX::Logic::CHyperlink *pHyperlink = dynamic_cast<OOX::Logic::CHyperlink*>(pParagraph->m_arrItems[i]);
-					if (pHyperlink)
-					{
-						std::wstring sTarget;
-						std::vector<std::wstring> arDisplay;
+					std::wstring sTarget;
+					std::vector<std::wstring> arDisplay;
 
-						if ((pHyperlink) && (pHyperlink->m_oId.IsInit()))
+					if ((pHyperlink) && (pHyperlink->m_oId.IsInit()))
+					{
+						if (pDocument) //todooo - >+headers/footers ->container
 						{
-							if (pDocument) //todooo - >+headers/footers ->container
+							smart_ptr<OOX::File> oFile = pDocument->Find(pHyperlink->m_oId->GetValue());
+							if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
 							{
-								smart_ptr<OOX::File> oFile = pDocument->Find(pHyperlink->m_oId->GetValue());
-								if ((oFile.IsInit()) && (OOX::FileTypes::HyperLink == oFile->type()))
-								{
-									OOX::HyperLink* pH = (OOX::HyperLink*)oFile.GetPointer();
-									sTarget = pH->Uri().GetPath();
-								}
+								OOX::HyperLink* pH = (OOX::HyperLink*)oFile.GetPointer();
+								sTarget = pH->Uri().GetPath();
 							}
 						}
-						if (pHyperlink->m_sAnchor.IsInit())
-						{
-							sTarget += L"#" + *pHyperlink->m_sAnchor;
-						}
-
-						for (size_t j = 0; j < pHyperlink->m_arrItems.size(); ++j)
-						{
-							convert(pHyperlink->m_arrItems, arDisplay, true, pDocument, pNumbering, pStyles);
-						}
-						for (size_t j = 0; j < arDisplay.size(); ++j)
-							line += arDisplay[j];
-
-						if (false == sTarget.empty())
-						{
-							line += L"(" + sTarget + L")";
-						}				
 					}
-				}break;
+					if (pHyperlink->m_sAnchor.IsInit())
+					{
+						sTarget += L"#" + *pHyperlink->m_sAnchor;
+					}
+
+					for (size_t j = 0; j < pHyperlink->m_arrItems.size(); ++j)
+					{
+						convert(pHyperlink->m_arrItems, arDisplay, true, pDocument, pNumbering, pStyles);
+					}
+					for (size_t j = 0; j < arDisplay.size(); ++j)
+						line += arDisplay[j];
+
+					if (false == sTarget.empty())
+					{
+						line += L"(" + sTarget + L")";
+					}
+				}
+			}break;
 			}
 		}
 		if (bEnter || textOut.empty())
@@ -699,14 +679,14 @@ namespace Docx2Txt
 		number--;
 		if (number < 0) return L"";
 
-        static const size_t r = (L'z' - L'a' + 1);
+		static const size_t r = (L'z' - L'a' + 1);
 		std::wstring res;
 		size_t r0 = number / r;
 
 		if (r0 > 0)
 		{
 			std::wstring rest = IntToLowerLetter(number - r * r0 + 1);
-            std::wstring res	= IntToLowerLetter(r0 - 1 + 1) + rest;
+			std::wstring res	= IntToLowerLetter(r0 - 1 + 1) + rest;
 			return res;
 		}
 		else
@@ -727,7 +707,7 @@ namespace Docx2Txt
 		if (r0 > 0)
 		{
 			std::wstring rest = IntToUpperLetter(number - r * r0 + 1);
-            std::wstring res = IntToUpperLetter(r0 - 1 + 1) + rest;
+			std::wstring res = IntToUpperLetter(r0 - 1 + 1) + rest;
 			return res;
 		}
 		else
@@ -743,7 +723,7 @@ namespace Docx2Txt
 		const std::wstring vxlcdm	= _T("vxlcdm");
 		const std::wstring vld		= _T("vld");
 
-		std::wstring str_num = ToWString(number);
+		std::wstring str_num = std::to_wstring(number);
 		size_t len = str_num.size();
 		int digit;
 		for(size_t i = 0; i < len; i++)

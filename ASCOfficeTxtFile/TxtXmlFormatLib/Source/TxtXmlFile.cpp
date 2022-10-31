@@ -34,8 +34,6 @@
 #include "ConvertDocx2Txt.h"
 #include "ConvertTxt2Docx.h"
 
-#include "Common/StlUtils.h"
-
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
@@ -56,6 +54,17 @@ namespace NSBinPptxRW
 
 #include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
 
+namespace NSConvert
+{
+	int ToInteger(const std::wstring& strValue)
+	{
+	#if defined(_WIN32) || defined(_WIN64)
+		return _wtoi(strValue.c_str());
+	#else
+		return std::stoi(strValue);
+	#endif
+	}
+}
 
 CTxtXmlFile::CTxtXmlFile()
 {
@@ -85,7 +94,7 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 					if (sName1 == _T("Encoding"))
 					{
                         std::wstring strValue = xmlReader.GetText2();
-						encoding = StlUtils::ToInteger(strValue);
+						encoding = NSConvert::ToInteger(strValue);
 					}
 				}
 			}

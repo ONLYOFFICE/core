@@ -30,8 +30,7 @@
  *
  */
 #include "ConvertTxt2Docx.h"
-
-#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "TxtFormat/File.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
 //#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
@@ -40,8 +39,6 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
-
-#include "TxtFormat/TxtFormat.h"
 
 namespace Txt2Docx
 {

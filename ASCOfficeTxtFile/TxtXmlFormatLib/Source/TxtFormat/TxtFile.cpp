@@ -32,7 +32,6 @@
 
 #include "TxtFile.h"
 
-#include "../Common/Encoding.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "../../../../DesktopEditor/common/File.h"
 

@@ -34,6 +34,7 @@
 #include "cfexception.h" // Used by heirs
 #include <memory>
 #include <string>
+#include <ios>
 #include "../../DesktopEditor/common/Types.h"
 
 namespace CFCPP

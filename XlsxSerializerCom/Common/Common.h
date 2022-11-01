@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../Common/DocxFormat/Source/Base/Unit.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 
 #include <string>

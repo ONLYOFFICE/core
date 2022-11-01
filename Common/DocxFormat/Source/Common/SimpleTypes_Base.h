@@ -51,18 +51,27 @@ namespace SimpleTypes
 	const bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }   \
 	SimpleTypes_DefaultString(Class)
 
-	/*
-	#define DEFINE_SIMPLE_TYPE(Class, Enum, Default) \
-	class Class
-	{
-	public:
-		Class() { m_eValue = Default; }
-		Class(const std::wstring &sValue) { FromString(sValue); }
-		Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }
-		bool operator==(const Class& oOther) const { return (m_eValue == oOther.m_eValue) ? true : false; }
+	#define DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                      \
+	class Class                                                                                                 \
+	{                                                                                                           \
+	public:                                                                                                     \
+		Class() { m_eValue = Default; }                                                                         \
+		Class(const std::wstring& sValue) { m_eValue = Default; FromString(sValue); }                           \
+		Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }                      \
+		Class(const Type& sValue) { m_eValue = sValue; }                                                        \
+		Class& operator=(const Type& sValue) { m_eValue = sValue; return *this; }                               \
+		bool operator==(const Class& oOther) const { return (m_eValue == oOther.m_eValue) ? true : false; }     \
+		Type GetValue() { return m_eValue; }                                                                    \
+		void SetValue(const Type& value) { m_eValue = value; }                                                  \
+		void SetValueFromByte(const unsigned char& value) { m_eValue = (Type)value; }                           \
+		Type FromString(const std::wstring &sValue);                                                            \
+		std::wstring ToString() const;                                                                          \
+	public:                                                                                                     \
+		Type m_eValue;
 
+	#define DEFINE_SIMPLE_TYPE(Class, Type, Default)                                                            \
+	DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                              \
 	};
-	*/
 
 	template<typename E, E DefValue = 0>
 	class CSimpleType
@@ -176,7 +185,6 @@ namespace SimpleTypes
 		SimpleTypes_DefaultD(CInch)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - emu.
 	//--------------------------------------------------------------------------------
@@ -230,6 +238,8 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// DecimalNumber 17.18.10 (Part 1)
 	//--------------------------------------------------------------------------------
+
+	//DEFINE_SIMPLE_TYPE(CDecimalNumber, int, 0)
 	template<int nDefValue = 0>
 	class CDecimalNumber : public CSimpleType<int, nDefValue>
 	{
@@ -242,4 +252,5 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CDecimalNumber)
 	};
+
 } // SimpleTypes

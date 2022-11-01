@@ -31,8 +31,7 @@
  */
 #pragma once
 #include "../Common/ComplexTypes.h"
-
-#include "SimpleTypes_Spreadsheet.h"
+#include "../Common/SimpleTypes_Spreadsheet.h"
 
 namespace ComplexTypes
 {

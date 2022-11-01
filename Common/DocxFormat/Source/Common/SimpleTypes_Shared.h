@@ -205,7 +205,7 @@ namespace SimpleTypes
 	//	}
 
 
-	//       std::wstring FromString(std::wstring &sValue)
+	//       std::wstring FromString(const std::wstring &sValue)
 	//	{
 	//		m_sValue = sValue;
 
@@ -218,7 +218,7 @@ namespace SimpleTypes
 	//	}
 
 	//       SimpleType_FromString2    (std::wstring)
-	//	SimpleType_Operator_Equal (CLang)
+	//	SimpleTypes_Default(CLang)
 
 	//private:
 

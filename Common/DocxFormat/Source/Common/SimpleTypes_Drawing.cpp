@@ -4229,7 +4229,7 @@ namespace SimpleTypes
 	//        }
 	//
 	//        SimpleType_FromString     (__int64)
-	//        SimpleType_Operator_Equal (TextPoint)
+	//        SimpleTypes_Default(TextPoint)
 	//
 	//        double ToPoints()
 	//        {

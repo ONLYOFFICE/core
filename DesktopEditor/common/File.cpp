@@ -1090,6 +1090,18 @@ namespace NSFile
 		m_lFilePosition = fseek(m_pFile, lFilePosition, nSeekMode);
 		return true;
 	}
+	bool CFileBinary::SetPosition(int lFilePosition)
+	{
+		return SeekFile(lFilePosition, SEEK_SET);
+	}
+	bool CFileBinary::ReadFile(BYTE* pData, DWORD nBytesToRead)
+	{
+		if (!m_pFile)
+			return false;
+
+		DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
+		return (dwSizeRead == nBytesToRead) ? true : false;
+	}
 	bool CFileBinary::ReadFile(BYTE* pData, DWORD nBytesToRead, DWORD& dwSizeRead)
 	{
 		if (!m_pFile)

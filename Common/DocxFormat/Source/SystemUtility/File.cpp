@@ -203,8 +203,28 @@ namespace StreamUtils
 	}
 }
 
+#ifdef CopyFile
+#undef CopyFile
+#endif
+
 namespace CDirectory
 {
+	void SaveToFile(const std::wstring& strFileName, const std::wstring& strXml)
+	{
+		NSFile::CFileBinary file;
+		file.CreateFileW(strFileName);
+		file.WriteStringUTF8(strXml);
+		file.CloseFile();
+	}
+	bool DeleteFile (const std::wstring& strFileName)
+	{
+		return NSFile::CFileBinary::Remove(strFileName);
+	}
+	bool CopyFile(const std::wstring& strExists, const std::wstring& strNew)
+	{
+		return NSFile::CFileBinary::Copy(strExists, strNew);
+	}
+
 	void WriteValueToNode(std::wstring strName, DWORD value, XmlUtils::CXmlWriter* pWriter)
 	{
 		pWriter->WriteNodeBegin(strName);

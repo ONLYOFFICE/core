@@ -198,3 +198,7 @@ namespace NSCommon
 			value = max;
 	}
 }
+
+#ifndef _USE_NULLABLE_PROPERTY_
+using namespace NSCommon;
+#endif

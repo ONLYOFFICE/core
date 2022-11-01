@@ -174,48 +174,27 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 
 	template<>
-	CFillType<filltypeSolid>::CFillType() { m_nType = 0; }
+	CFillType<filltypeSolid>::CFillType() { }
 
 	template<>
 	void    CFillType<filltypeSolid>::SetValue  (EFillType eValue)
 	{
-		if ( 0 == m_nType )
-		{
-			if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
-				 filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
-				this->m_eValue = eValue;
-			else
-				this->m_eValue = filltypeSolid;
-		}
-		else
+		if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
+			 filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
 			this->m_eValue = eValue;
+		else
+			this->m_eValue = filltypeSolid;
 	}
 	template<>
 	EFillType CFillType<filltypeSolid>::FromString(const std::wstring &sValue)
 	{
-		if ( 0 == m_nType )
-		{
-			if      (L"frame"			== sValue)	this->m_eValue = filltypeFrame;
-			else if (L"gradient"		== sValue)	this->m_eValue = filltypeGradient;
-			else if (L"gradientRadial"	== sValue)	this->m_eValue = filltypeGradientRadial;
-			else if (L"pattern"			== sValue)	this->m_eValue = filltypePattern;
-			else if (L"solid"			== sValue)	this->m_eValue = filltypeSolid;
-			else if (L"tile"			== sValue)	this->m_eValue = filltypeTile;
-			else						this->m_eValue = filltypeSolid;
-		}
-		else
-		{
-			if      (L"background"		== sValue)	this->m_eValue = filltypeBackground;
-			else if (L"frame"			== sValue)	this->m_eValue = filltypeFrame;
-			else if (L"gradient"		== sValue)	this->m_eValue = filltypeGradient;
-			else if (L"gradientCenter"  == sValue)	this->m_eValue = filltypeGradientCenter;
-			else if (L"gradientRadial"	== sValue)	this->m_eValue = filltypeGradientRadial;
-			else if (L"gradientUnscaled" == sValue)	this->m_eValue = filltypeGradientUnscaled;
-			else if (L"pattern"			== sValue)	this->m_eValue = filltypePattern;
-			else if (L"solid"			== sValue)	this->m_eValue = filltypeSolid;
-			else if (L"tile"			== sValue)	this->m_eValue = filltypeTile;
-			else						this->m_eValue = filltypeSolid;
-		}
+		if      (L"frame"			== sValue)	this->m_eValue = filltypeFrame;
+		else if (L"gradient"		== sValue)	this->m_eValue = filltypeGradient;
+		else if (L"gradientRadial"	== sValue)	this->m_eValue = filltypeGradientRadial;
+		else if (L"pattern"			== sValue)	this->m_eValue = filltypePattern;
+		else if (L"solid"			== sValue)	this->m_eValue = filltypeSolid;
+		else if (L"tile"			== sValue)	this->m_eValue = filltypeTile;
+		else						this->m_eValue = filltypeSolid;
 
 		return this->m_eValue;
 	}
@@ -223,34 +202,58 @@ namespace SimpleTypes
 	template<>
 	std::wstring CFillType<filltypeSolid>::ToString() const
 	{
-		if ( 0 == m_nType )
+		switch (this->m_eValue)
 		{
-			switch (this->m_eValue)
-			{
-			case filltypeFrame			: return L"frame";
-			case filltypeGradient		: return L"gradient";
-			case filltypeGradientRadial	: return L"gradientRadial";
-			case filltypePattern		: return L"pattern";
-			case filltypeSolid			: return L"solid";
-			case filltypeTile			: return L"tile";
-			default						: return L"solid";
-			}
+		case filltypeFrame			: return L"frame";
+		case filltypeGradient		: return L"gradient";
+		case filltypeGradientRadial	: return L"gradientRadial";
+		case filltypePattern		: return L"pattern";
+		case filltypeSolid			: return L"solid";
+		case filltypeTile			: return L"tile";
+		default						: return L"solid";
 		}
-		else
+	}
+
+	template<>
+	CFillType1<filltypeSolid>::CFillType1() { }
+
+	template<>
+	void CFillType1<filltypeSolid>::SetValue  (EFillType eValue)
+	{
+		this->m_eValue = eValue;
+	}
+	template<>
+	EFillType CFillType1<filltypeSolid>::FromString(const std::wstring &sValue)
+	{
+		if      (L"background"		== sValue)	this->m_eValue = filltypeBackground;
+		else if (L"frame"			== sValue)	this->m_eValue = filltypeFrame;
+		else if (L"gradient"		== sValue)	this->m_eValue = filltypeGradient;
+		else if (L"gradientCenter"  == sValue)	this->m_eValue = filltypeGradientCenter;
+		else if (L"gradientRadial"	== sValue)	this->m_eValue = filltypeGradientRadial;
+		else if (L"gradientUnscaled" == sValue)	this->m_eValue = filltypeGradientUnscaled;
+		else if (L"pattern"			== sValue)	this->m_eValue = filltypePattern;
+		else if (L"solid"			== sValue)	this->m_eValue = filltypeSolid;
+		else if (L"tile"			== sValue)	this->m_eValue = filltypeTile;
+		else						this->m_eValue = filltypeSolid;
+
+		return this->m_eValue;
+	}
+
+	template<>
+	std::wstring CFillType1<filltypeSolid>::ToString() const
+	{
+		switch (this->m_eValue)
 		{
-			switch (this->m_eValue)
-			{
-			case filltypeBackground		  : return L"background";
-			case filltypeFrame			  : return L"frame";
-			case filltypeGradient		  : return L"gradient";
-			case filltypeGradientCenter	  : return L"gradientCenter";
-			case filltypeGradientRadial	  : return L"gradientRadial";
-			case filltypeGradientUnscaled : return L"gradientUnscaled";
-			case filltypePattern		  : return L"pattern";
-			case filltypeSolid			  : return L"solid";
-			case filltypeTile			  : return L"tile";
-			default						: return L"solid";
-			}
+		case filltypeBackground		  : return L"background";
+		case filltypeFrame			  : return L"frame";
+		case filltypeGradient		  : return L"gradient";
+		case filltypeGradientCenter	  : return L"gradientCenter";
+		case filltypeGradientRadial	  : return L"gradientRadial";
+		case filltypeGradientUnscaled : return L"gradientUnscaled";
+		case filltypePattern		  : return L"pattern";
+		case filltypeSolid			  : return L"solid";
+		case filltypeTile			  : return L"tile";
+		default						: return L"solid";
 		}
 	}
 

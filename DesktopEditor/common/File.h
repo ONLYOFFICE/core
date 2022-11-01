@@ -155,7 +155,9 @@ namespace NSFile
 		bool CreateFileW(const std::wstring& sFileName);
 
 		bool CreateTempFile();
+		bool SetPosition(int lFilePosition);
 		bool SeekFile(int lFilePosition, int nSeekMode = 0);
+		bool ReadFile(BYTE* pData, DWORD nBytesToRead);
 		bool ReadFile(BYTE* pData, DWORD nBytesToRead, DWORD& dwSizeRead);
 		bool WriteFile(const BYTE* pData, DWORD nBytesCount);
 		bool WriteFile2(const BYTE* pData, DWORD nBytesCount);

@@ -34,7 +34,7 @@
 #define OOX_RID_INCLUDE_H_
 
 #include "../Base/Base.h"
-#include "../XML/Utils.h"
+#include "../Base/Unit.h"
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace OOX

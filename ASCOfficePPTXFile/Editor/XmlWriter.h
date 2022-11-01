@@ -358,7 +358,7 @@ namespace NSBinPptxRW
         }
 		AVSINLINE void WriteDWORD_hex(const DWORD& val)
         {
-            m_oWriter.WriteString(XmlUtils::IntToString(val, L"%x"));
+			m_oWriter.WriteString(XmlUtils::ToString(val, L"%x"));
         }
         AVSINLINE void WriteBool(const bool& val)
         {
@@ -606,17 +606,15 @@ namespace NSBinPptxRW
             std::wstring strData = m_oWriter.GetData();
             if (!bEncodingToUTF8)
             {
-                CFile oFile;
-                oFile.CreateFile(strFilePath);
-                oFile.WriteFile((void*)strData.c_str(), (DWORD)strData.length());
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(strFilePath);
+				oFile.WriteFile((BYTE*)strData.c_str(), (DWORD)(strData.length() * sizeof(wchar_t)));
                 oFile.CloseFile();
             }
             else
             {
-                CDirectory::SaveToFile(strFilePath, strData);
-
-                CFile oFile;
-                oFile.CreateFile(strFilePath);
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(strFilePath);
                 std::wstring strHead = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
                 oFile.WriteStringUTF8(strHead);
                 oFile.WriteStringUTF8(strData);

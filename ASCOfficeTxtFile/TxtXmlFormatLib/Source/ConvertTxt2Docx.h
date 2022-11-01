@@ -35,20 +35,20 @@
 
 namespace Txt2Docx
 {
-    class Converter_Impl;
+	class Converter_Impl;
 
 	class Converter
 	{
 	public:
 		Converter	(int encoding);
-        ~Converter	();
+		~Converter	();
 		
 		void convert();
-        void read	(const std::wstring& path);
-        void write	(NSStringUtils::CStringBuilder & stringWriter/*const std::wstring& path*/);
+		void read	(const std::wstring& path);
+		void write	(NSStringUtils::CStringBuilder & stringWriter/*const std::wstring& path*/);
 
-    private:
-        Converter_Impl * converter_;
+	private:
+		Converter_Impl * converter_;
 	};
 
 } // namespace Txt2Docx

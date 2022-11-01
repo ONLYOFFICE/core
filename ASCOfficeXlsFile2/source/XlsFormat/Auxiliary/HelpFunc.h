@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifndef _GUID_TYPEDEF_GUID_
 #define _GUID_TYPEDEF_GUID_

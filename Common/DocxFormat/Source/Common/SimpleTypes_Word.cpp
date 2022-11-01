@@ -1377,13 +1377,13 @@ namespace SimpleTypes
 	template<>
 	int CEighthPointMeasure<0>::FromPoints(double dValue)
 	{
-		this->m_eValue = dValue * 8;
+		this->m_eValue = (int)(dValue * 8);
 		return this->m_eValue;
 	}
 	template<>
 	int CEighthPointMeasure<0>::FromInches(double dValue)
 	{
-		this->m_eValue = dValue * 576;
+		this->m_eValue = (int)(dValue * 576);
 		return this->m_eValue;
 	}
 
@@ -1967,7 +1967,7 @@ namespace SimpleTypes
 	}
 
 	template<>
-	EHexColor CHexColor<EHexColor::hexcolorAuto>::FromString(const std::wstring &sValueSrc)
+	EHexColor CHexColor<hexcolorAuto>::FromString(const std::wstring &sValueSrc)
 	{
 		if ( L"auto" == sValueSrc || L"none" == sValueSrc )
 			this->m_eValue = hexcolorAuto;
@@ -3427,12 +3427,12 @@ namespace SimpleTypes
 	template<>
 	void CPointMeasure<0>::FromPoints(double dValue)
 	{
-		this->m_eValue = dValue;
+		this->m_eValue = (int)dValue;
 	}
 	template<>
 	void CPointMeasure<0>::FromInches(double dValue)
 	{
-		this->m_eValue = dValue * 72.0;
+		this->m_eValue = (int)(dValue * 72.0);
 	}
 
 	//--------------------------------------------------------------------------------
@@ -5373,9 +5373,9 @@ namespace SimpleTypes
 	{
 		switch(this->m_eValue)
 		{
-		case cryptalgoritmnameMD2       : return (L"ltr");
-		case cryptalgoritmnameMD4       : return (L"rtl");
-		default                         : return (L"ltr");
+		case dirLtr       : return (L"ltr");
+		case dirRtl       : return (L"rtl");
+		default           : return (L"ltr");
 		}
 	}
 

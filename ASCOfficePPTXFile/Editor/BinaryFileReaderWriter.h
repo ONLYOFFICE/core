@@ -37,7 +37,7 @@
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #include <vector>
 #include <map>

@@ -39,57 +39,31 @@ namespace Presentation
 {
 	namespace FileTypes
 	{
-		const FileType Presentation		(L"ppt", L"presentation.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+		extern const FileType Presentation;
 
-		const FileType PresentationMacro(L"ppt", L"presentation.xml",
-												L"application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+		extern const FileType PresentationMacro;
 
-		const FileType Slide			(L"slides", L"slide.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.slide+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
+		extern const FileType Slide;
 
-		const FileType SlideLayout		(L"slideLayouts", L"slideLayout.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout");
+		extern const FileType SlideLayout;
 
-		const FileType SlideComments	(L"comments", L"comment.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.comment+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments");
+		extern const FileType SlideComments;
 
-		const FileType CommentAuthors	(L"", L"commentAuthors.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors.main+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors");
+		extern const FileType CommentAuthors;
 
-		const FileType SlideMaster		(L"slideMasters", L"slideMaster.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster");
+		extern const FileType SlideMaster;
 
-		const FileType NotesSlide		(L"notesSlides", L"notesSlide.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide");
+		extern const FileType NotesSlide;
 
-		const FileType NotesMaster		(L"notesMasters", L"notesMaster.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster");
+		extern const FileType NotesMaster;
 
-		const FileType HandoutMaster	(L"handoutMasters", L"handoutMaster.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.handoutMaster+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/handoutMaster");
+		extern const FileType HandoutMaster;
 
-		const FileType PresProps		(L"", L"presProps.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/presProps");
+		extern const FileType PresProps;
 
-		const FileType TableStyles		(L"", L"tableStyles.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableStyles");
+		extern const FileType TableStyles;
 
-		const FileType ViewProps		(L"", L"viewProps.xml",
-												L"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/viewProps");
+		extern const FileType ViewProps;
 	} // namespace FileTypes
 	} //Presentation
 } // namespace OOX

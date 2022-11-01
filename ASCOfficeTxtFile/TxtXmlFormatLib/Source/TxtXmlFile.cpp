@@ -34,37 +34,22 @@
 #include "ConvertDocx2Txt.h"
 #include "ConvertTxt2Docx.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../Common/OfficeFileErrorDescription.h"
+
+#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
+
 namespace NSBinPptxRW
 {
 	class  CDrawingConverter;
 }
 
-#include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../../Common/OfficeDefines.h"
-
-#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
-
-#include "../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
-
 #include "../../../ASCOfficeDocxFile2/BinReader/FileWriter.h"
-
-namespace NSConvert
-{
-	int ToInteger(const std::wstring& strValue)
-	{
-	#if defined(_WIN32) || defined(_WIN64)
-		return _wtoi(strValue.c_str());
-	#else
-		return std::stoi(strValue);
-	#endif
-	}
-}
 
 CTxtXmlFile::CTxtXmlFile()
 {
@@ -83,18 +68,18 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 		int nCurDepth = xmlReader.GetDepth();
 		while ( xmlReader.ReadNextSiblingNode( nCurDepth ) )
 		{
-            std::wstring sName = xmlReader.GetName();
+			std::wstring sName = xmlReader.GetName();
 
 			if (sName == _T("TXTOptions"))
 			{
 				int nCurDepth1 = xmlReader.GetDepth();
 				while ( xmlReader.ReadNextSiblingNode( nCurDepth1 ) )
 				{
-                    std::wstring sName1 = xmlReader.GetName();
+					std::wstring sName1 = xmlReader.GetName();
 					if (sName1 == _T("Encoding"))
 					{
-                        std::wstring strValue = xmlReader.GetText2();
-						encoding = NSConvert::ToInteger(strValue);
+						std::wstring strValue = xmlReader.GetText2();
+						encoding = XmlUtils::GetInteger(strValue);
 					}
 				}
 			}
@@ -106,17 +91,17 @@ static int ParseTxtOptions(const std::wstring & sXmlOptions)
 
 _UINT32 CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, NULL, L"");
+	Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, L"", true, 1, NULL, L"");
 	if (pDocxWriter == NULL) return AVS_FILEUTILS_ERROR_CONVERT;
 
-    CreateDocxEmpty(sDstPath, pDocxWriter);
+	CreateDocxEmpty(sDstPath, pDocxWriter);
 
 	try
 	{
 		int encoding  = ParseTxtOptions(sXMLOptions);
 
 		Txt2Docx::Converter converter( encoding);
-        converter.read(sSrcFileName);
+		converter.read(sSrcFileName);
 		converter.convert();
 		converter.write(pDocxWriter->get_document_writer().m_oContent);
 	}
@@ -139,73 +124,73 @@ _UINT32 CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std
 	try
 	{
 		Docx2Txt::Converter converter;
-        converter.read(sSrcPath);
+		converter.read(sSrcPath);
 		converter.convert();
 
 		int encoding  = ParseTxtOptions(sXMLOptions);
 		
 		if (encoding == EncodingType::Utf8)
-            converter.writeUtf8(sDstFileName);
+			converter.writeUtf8(sDstFileName);
 		else if (encoding == EncodingType::Unicode)
-            converter.writeUnicode(sDstFileName);
+			converter.writeUnicode(sDstFileName);
 		else if (encoding == EncodingType::Ansi)
-            converter.writeAnsi(sDstFileName);
+			converter.writeAnsi(sDstFileName);
 		else if (encoding == EncodingType::BigEndian)
-            converter.writeBigEndian(sDstFileName);
+			converter.writeBigEndian(sDstFileName);
 		else if (encoding > 0) //code page
 		{
-            converter.write(sDstFileName);
+			converter.write(sDstFileName);
 		}
 		else //auto define
-            converter.write(sDstFileName);
+			converter.write(sDstFileName);
 	}
 	catch(...)
 	{
 		return AVS_FILEUTILS_ERROR_CONVERT;
 	}
 
-  return 0;
+	return 0;
 }
 
 
 void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::FileWriter * pDocxWriter)
 {
-    std::wstring strDirectory = _strDirectory;
+	std::wstring strDirectory = _strDirectory;
 	// rels
-    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR +L"_rels";
-    NSDirectory::CreateDirectory(pathRels.GetPath());
+	OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR +L"_rels";
+	NSDirectory::CreateDirectory(pathRels.GetPath());
 
 	// word
-    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + L"word";
-    NSDirectory::CreateDirectory(pathWord.GetPath());
+	OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + L"word";
+	NSDirectory::CreateDirectory(pathWord.GetPath());
 
 	// documentRels
-    OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
-    NSDirectory::CreateDirectory(pathWordRels.GetPath());
+	OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
+	NSDirectory::CreateDirectory(pathWordRels.GetPath());
 
 	//media
-    OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
-    std::wstring sMediaPath = pathMedia.GetPath();
+	OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
+	std::wstring sMediaPath = pathMedia.GetPath();
 
 	// theme
-    OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-    NSDirectory::CreateDirectory(pathTheme.GetPath());
+	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
+	NSDirectory::CreateDirectory(pathTheme.GetPath());
 
-    OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
-    NSDirectory::CreateDirectory(pathThemeRels.GetPath());
+	OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
+	NSDirectory::CreateDirectory(pathThemeRels.GetPath());
 	
-    pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
+	pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 
-//default files
+	//default files
 
 	pDocxWriter->m_oTheme.Write(pathTheme.GetPath());
 
 	OOX::CContentTypes oContentTypes;
 	//docProps
-    OOX::CPath pathDocProps = strDirectory + FILE_SEPARATOR_STR + _T("docProps");
-    NSDirectory::CreateDirectory(pathDocProps.GetPath());
+	OOX::CPath pathDocProps = strDirectory + FILE_SEPARATOR_STR + _T("docProps");
+	NSDirectory::CreateDirectory(pathDocProps.GetPath());
 	
-    OOX::CPath DocProps = std::wstring(_T("docProps"));
+	OOX::CPath DocProps = std::wstring(_T("docProps"));
 
 	OOX::CApp* pApp = new OOX::CApp(NULL);
 	if (pApp)
@@ -222,7 +207,7 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 		
 		pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
 		delete pApp;
-	}				
+	}
 	OOX::CCore* pCore = new OOX::CCore(NULL);
 	if (pCore)
 	{
@@ -230,8 +215,8 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 		pCore->SetLastModifiedBy(_T(""));
 		pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
 		delete pCore;
-	} 
-/////////////////////////////////////////////////////////////////////////////////////
+	}
+	/////////////////////////////////////////////////////////////////////////////////////
 	pDocxWriter->m_oTheme.Write(strDirectory);
 	pDocxWriter->get_style_writers().Write();
 	pDocxWriter->get_font_table_writer().Write();
@@ -252,4 +237,3 @@ void CTxtXmlFile::CreateDocxEmpty(const std::wstring & _strDirectory, Writers::F
 
 	oContentTypes.Write(strDirectory);
 }
-

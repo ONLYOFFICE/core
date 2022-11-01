@@ -38,7 +38,8 @@ HEADERS += \
 	$$BASE_DIR/Common/SimpleTypes_Drawing.h \
 	$$BASE_DIR/Common/SimpleTypes_Vml.h \
 	$$BASE_DIR/Common/SimpleTypes_Shared.h \
-	$$BASE_DIR/Common/SimpleTypes_Word.h
+	$$BASE_DIR/Common/SimpleTypes_Word.h \
+	$$BASE_DIR/Common/SimpleTypes_Spreadsheet.h
 
 SOURCES += \
     $$BASE_DIR/Common/SimpleTypes_Base.cpp \
@@ -46,5 +47,11 @@ SOURCES += \
 	$$BASE_DIR/Common/SimpleTypes_Drawing.cpp \
 	$$BASE_DIR/Common/SimpleTypes_Vml.cpp \
 	$$BASE_DIR/Common/SimpleTypes_Shared.cpp \
-	$$BASE_DIR/Common/SimpleTypes_Word.cpp
+	$$BASE_DIR/Common/SimpleTypes_Word.cpp \
+	$$BASE_DIR/Common/SimpleTypes_Spreadsheet.cpp
 
+HEADERS += \
+    $$BASE_DIR/DocxFormat/FileTypes.h
+
+SOURCES += \
+    $$BASE_DIR/DocxFormat/FileTypes.cpp

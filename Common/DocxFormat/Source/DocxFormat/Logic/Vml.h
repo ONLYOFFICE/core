@@ -464,7 +464,7 @@ namespace OOX
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>						m_oSize;
 			nullable_string														m_sSrc;
 			nullable_string														m_sTitle;
-			SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>				m_oType;
+			SimpleTypes::CFillType<>											m_oType;
 
 			nullable<OOX::VmlOffice::CFill>										m_oFill;
 
@@ -1623,7 +1623,7 @@ namespace OOX
 			nullable<SimpleTypes::CStrokeArrowLength<SimpleTypes::strokearrowlengthMedium>>m_oEndArrowLength;
 			nullable<SimpleTypes::CStrokeArrowWidth<SimpleTypes::strokearrowwidthMedium>>m_oEndArrowWidth;
 			nullable<SimpleTypes::CStrokeEndCap<SimpleTypes::strokeendcapFlat>>			m_oEndCap;
-			nullable<SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 0>>				m_oFillType;
+			nullable<SimpleTypes::CFillType<>>											m_oFillType;
 			nullable<SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>>					m_oForceDash;
 			nullable_string																m_sHref;
 			nullable<SimpleTypes::CRelationshipId>										m_rId;

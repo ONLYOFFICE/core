@@ -56,6 +56,10 @@ namespace StreamUtils
 
 namespace CDirectory
 {
+	void SaveToFile(const std::wstring& strFileName, const std::wstring& strXml);
+	bool DeleteFile(const std::wstring& strFileName);
+	bool CopyFile(const std::wstring& strExists, const std::wstring& strNew);
+
 	void WriteValueToNode(std::wstring strName, DWORD value, XmlUtils::CXmlWriter* pWriter);
 	void WriteValueToNode(std::wstring strName, LONG value, XmlUtils::CXmlWriter* pWriter);
 	void WriteValueToNode(std::wstring strName, std::wstring value, XmlUtils::CXmlWriter* pWriter);

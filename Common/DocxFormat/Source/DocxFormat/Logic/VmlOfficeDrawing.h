@@ -1229,7 +1229,7 @@ namespace OOX
 
 		public:
 			nullable<SimpleTypes::CExt<>> m_oExt;
-			nullable<SimpleTypes::CFillType<SimpleTypes::filltypeSolid, 1>> m_oType;
+			nullable<SimpleTypes::CFillType1<>> m_oType;
 		};
 		//--------------------------------------------------------------------------------
 		// CIdMap 14.2.2.14 (Part 4)

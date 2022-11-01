@@ -349,6 +349,37 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// DecimalNumber 17.18.10 (Part 1)
 	//--------------------------------------------------------------------------------
+
+	/*
+	int CDecimalNumber::FromString(const std::wstring &sValue)
+	{
+		try
+		{
+			this->m_eValue = _wtoi(sValue.c_str());
+			return this->m_eValue;
+		}
+		catch (...)
+		{
+		}
+
+		try
+		{
+			this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
+		}
+		catch (...)
+		{
+			this->m_eValue = 0;
+		}
+
+		return this->m_eValue;
+	}
+
+	std::wstring CDecimalNumber::ToString() const
+	{
+		return std::to_wstring(this->m_eValue);
+	}
+	*/
+
 	template<>
 	CDecimalNumber<0>::CDecimalNumber() {}
 
@@ -387,4 +418,5 @@ namespace SimpleTypes
 	{
 		return std::to_wstring(this->m_eValue);
 	}
+
 } // SimpleTypes

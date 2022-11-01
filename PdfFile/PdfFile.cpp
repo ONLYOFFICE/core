@@ -1,4 +1,7 @@
 #include "PdfFile.h"
+#include "../PdfWriter/PdfRenderer.h"
+#include "../PdfReader/PdfReader.h"
+
 #include "../PdfReader/Src/Adaptors.h"
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Path.h"
@@ -197,60 +200,6 @@ public:
     }
 };
 
-/*
-
-int CPdfFile2::GetError()
-{
-    return m_pInternal->pReader->GetError();
-}
-
-void CPdfFile2::ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW, const int nRasterH,
-                               bool bIsFlip, NSFonts::IFontManager* pFonts, int nBackgroundColor, bool bIsDarkMode)
-{
-    m_pInternal->pReader->ConvertToRaster(nPageIndex, path, nImageType, nRasterW, nRasterH, bIsFlip, pFonts, nBackgroundColor, bIsDarkMode);
-}
-
-void CPdfFile2::SetPassword(const std::wstring& wsPassword)
-{
-    m_pInternal->pWriter->SetPassword(wsPassword);
-}
-
-void CPdfFile2::SetDocumentID(const std::wstring& wsDocumentID)
-{
-    m_pInternal->pWriter->SetPassword(wsDocumentID);
-}
-
-int  CPdfFile2::SavePdfToFile(const std::wstring& wsPath)
-{
-    int nPagesCount = m_pInternal->pReader->GetPagesCount();
-    for (int i = 0; i < nPagesCount; ++i)
-    {
-        m_pInternal->pWriter->NewPage();
-        m_pInternal->pWriter->BeginCommand(c_nPageType);
-
-        double dPageDpiX, dPageDpiY;
-        double dWidth, dHeight;
-        m_pInternal->pReader->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-        dWidth  *= 25.4 / dPageDpiX;
-        dHeight *= 25.4 / dPageDpiY;
-
-        m_pInternal->pWriter->put_Width(dWidth);
-        m_pInternal->pWriter->put_Height(dHeight);
-
-        m_pInternal->pReader->DrawPageOnRenderer(m_pInternal->pWriter, i, NULL);
-
-        m_pInternal->pWriter->EndCommand(c_nPageType);
-    }
-    return m_pInternal->pWriter->SaveToFile(wsPath);
-}
-
-HRESULT CPdfFile2::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
-{
-    return m_pInternal->pWriter->DrawImageWith1bppMask(pImage, pMaskBuffer, unMaskWidth, unMaskHeight, dX, dY, dW, dH);
-}
-*/
-
 // ------------------------------------------------------------------------
 
 CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA)
@@ -259,6 +208,17 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA)
 
     m_pInternal->pWriter = new CPdfRenderer (pAppFonts, isPDFA);
     m_pInternal->pReader = new PdfReader::CPdfReader(pAppFonts);
+    m_pInternal->wsPassword = L"";
+}
+// nMode = 1/2/3, 01 - reader, 10 - writer, 11 - editer
+CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, int nMode, bool isPDFA)
+{
+    m_pInternal = new CPdfFile_Private();
+
+    if (nMode & 1)
+        m_pInternal->pReader = new PdfReader::CPdfReader(pAppFonts);
+    if (nMode & 2)
+        m_pInternal->pWriter = new CPdfRenderer (pAppFonts, isPDFA);
     m_pInternal->wsPassword = L"";
 }
 CPdfFile::~CPdfFile()
@@ -635,6 +595,11 @@ void CPdfFile::PageRotate(int nRotate)
 
 // ------------------------------------------------------------------------
 
+int CPdfFile::GetError()
+{
+    return m_pInternal->pReader->GetError();
+}
+
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
     m_pInternal->wsSrcFile  = file;
@@ -700,6 +665,18 @@ int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
     return m_pInternal->pWriter->SaveToFile(wsPath);
 }
+void CPdfFile::SetPassword(const std::wstring& wsPassword)
+{
+    m_pInternal->pWriter->SetPassword(wsPassword);
+}
+void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
+{
+    m_pInternal->pWriter->SetDocumentID(wsDocumentID);
+}
+void CPdfFile::SetTempFolder(const std::wstring& wsPath)
+{
+    m_pInternal->pWriter->SetTempFolder(wsPath);
+}
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
     return m_pInternal->pWriter->OnlineWordToPdf(wsSrcFile, wsDstFile, pParams);
@@ -708,6 +685,23 @@ HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const
 {
     return m_pInternal->pWriter->OnlineWordToPdfFromBinary(wsSrcFile, wsDstFile, pParams);
 }
+HRESULT CPdfFile::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->DrawImageWith1bppMask(pImage, pMaskBuffer, unMaskWidth, unMaskHeight, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+    return m_pInternal->pWriter->DrawImage1bpp(pImageBuffer, unWidth, unHeight, dX, dY, dW, dH);
+}
+HRESULT CPdfFile::SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2)
+{
+    return m_pInternal->pWriter->SetLinearGradient(dX1, dY1, dX2, dY2);
+}
+HRESULT CPdfFile::SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2)
+{
+    return m_pInternal->pWriter->SetRadialGradient(dX1, dY1, dR1, dX2, dY2, dR2);
+}
+
 
 HRESULT CPdfFile::get_Type(LONG* lType)
 {

@@ -34,7 +34,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 
-#include "../PdfWriter/PdfRenderer.h"
+#include "../PdfFile/PdfFile.h"
 
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
@@ -235,7 +235,7 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 }
 void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
-    CPdfRenderer oPdf(m_pApplicationFonts);
+    CPdfFile oPdf(m_pApplicationFonts, 2);
 	
 	bool bBreak = false;
 	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)
@@ -642,7 +642,7 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 	LONG lImageWidth  = pPage->get_real_width();
 	LONG lImageHeight = pPage->get_real_height();
 
-	CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+	CPdfFile* pPdf = (CPdfFile*)pRenderer;
 
 	if (pPage->is_legal_photo())
 	{

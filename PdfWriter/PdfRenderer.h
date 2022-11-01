@@ -32,6 +32,8 @@
 #ifndef _PDF_WRITER_PDFRENDERER_H
 #define _PDF_WRITER_PDFRENDERER_H
 
+#include "../PdfFile/PdfFile.h"
+
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Image.h"
@@ -68,21 +70,6 @@ namespace Aggplus
 
 class CRendererCommandBase;
 class CRendererTextCommand;
-
-class CConvertFromBinParams
-{
-public:
-	std::wstring m_sMediaDirectory;
-	std::wstring m_sInternalMediaDirectory;
-	std::wstring m_sThemesDirectory;
-	bool m_bIsUsePicker;
-
-public:
-	CConvertFromBinParams()
-	{
-		m_bIsUsePicker = false;
-	}
-};
 
 class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {

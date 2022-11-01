@@ -31,8 +31,6 @@
  */
 
 #include "ASCConverters.h"
-//todo убрать ошибки компиляции если переместить include ниже
-#include "../../PdfWriter/OnlineOfficeBinToPdf.h"
 #include "cextracttools.h"
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
@@ -56,7 +54,7 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/MetafileToGraphicsRenderer.h"
 
-#include "../../PdfReader/PdfReader.h"
+#include "../../PdfFile/PdfFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../DocxRenderer/DocxRenderer.h"
@@ -1613,7 +1611,7 @@ namespace NExtractTools
         NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
         
-		CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());		
+		CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
 		pdfWriter.SetTempFolder(sTemp);
 
 		CConvertFromBinParams oBufferParams;
@@ -1867,7 +1865,7 @@ namespace NExtractTools
 			NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
 			initApplicationFonts(pApplicationFonts, params);
 
-			CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
+			CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
 			pdfWriter.SetTempFolder(sTemp);
 
 			CConvertFromBinParams oBufferParams;
@@ -3539,7 +3537,7 @@ namespace NExtractTools
 
                                NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
                                initApplicationFonts(pApplicationFonts, params);
-							   CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
+							   CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
                                pdfWriter.SetTempFolder(sTemp);
 
 							   CConvertFromBinParams oBufferParams;
@@ -3581,7 +3579,7 @@ namespace NExtractTools
        IOfficeDrawingFile* pReader = NULL;
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
        {
-           pReader = new PdfReader::CPdfReader(pApplicationFonts);
+           pReader = new CPdfFile(pApplicationFonts, 1);
        }
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
        {
@@ -3630,8 +3628,8 @@ namespace NExtractTools
                nRes = AVS_FILEUTILS_ERROR_CONVERT;
                if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
                {
-                   PdfReader::CPdfReader* pPdfReader = static_cast<PdfReader::CPdfReader*>(pReader);
-                   if(PdfReader::errorEncrypted == pPdfReader->GetError())
+                   CPdfFile* pPdfReader = static_cast<CPdfFile*>(pReader);
+                   if(PdfFile::errorEncrypted == pPdfReader->GetError())
                    {
                        if(sPassword.empty())
                        {
@@ -3658,7 +3656,7 @@ namespace NExtractTools
 		IOfficeDrawingFile* pReader = NULL;
 		if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
 		{
-			pReader = new PdfReader::CPdfReader(pApplicationFonts);
+			pReader = new CPdfFile(pApplicationFonts, 1);
 		}
 		else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
 		{
@@ -3768,8 +3766,8 @@ namespace NExtractTools
 				nRes = AVS_FILEUTILS_ERROR_CONVERT;
 				if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
 				{
-					PdfReader::CPdfReader* pPdfReader = static_cast<PdfReader::CPdfReader*>(pReader);
-					if(PdfReader::errorEncrypted == pPdfReader->GetError())
+					CPdfFile* pPdfReader = static_cast<CPdfFile*>(pReader);
+					if(PdfFile::errorEncrypted == pPdfReader->GetError())
 					{
 						if(sPassword.empty())
 						{
@@ -4726,7 +4724,7 @@ namespace NExtractTools
            }
            else
            {
-				CPdfRenderer pdfWriter(pApplicationFonts, params.getIsPDFA());
+				CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
 				pdfWriter.SetTempFolder(sTemp);
 				pdfWriter.SetTempFolder(sTemp);
 
@@ -4778,7 +4776,7 @@ namespace NExtractTools
            switch (nFormatFrom)
            {
            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-               pReader = new PdfReader::CPdfReader(pApplicationFonts);
+               pReader = new CPdfFile(pApplicationFonts, 1);
                break;
            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
                pReader = new CXpsFile(pApplicationFonts);

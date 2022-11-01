@@ -9,28 +9,53 @@
 #endif
 
 #include "../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../DesktopEditor/graphics/IRenderer.h"
 
-#include "../PdfWriter/PdfRenderer.h"
-#include "../PdfReader/PdfReader.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/Image.h"
 #include "../DesktopEditor/xmlsec/src/include/Certificate.h"
 
 class CPdfFile_Private;
-/*
-    int  GetError();
-    void ConvertToRaster(int nPageIndex, const std::wstring& path, int nImageType, const int nRasterW = -1, const int nRasterH = -1,
-                         bool bIsFlip = false, NSFonts::IFontManager* pFonts = NULL, int nBackgroundColor = 0xFFFFFF, bool bIsDarkMode = false);
-    int  SavePdfToFile(const std::wstring& wsPath);
+class CConvertFromBinParams
+{
+public:
+    std::wstring m_sMediaDirectory;
+    std::wstring m_sInternalMediaDirectory;
+    std::wstring m_sThemesDirectory;
+    bool m_bIsUsePicker;
 
-    void SetPassword  (const std::wstring& wsPassword);
-    void SetDocumentID(const std::wstring& wsDocumentID);
-    HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
-*/
+public:
+    CConvertFromBinParams()
+    {
+        m_bIsUsePicker = false;
+    }
+};
+
+namespace PdfFile
+{
+    typedef enum
+    {
+        errorNone          = 0, // Нет ошибок
+        errorOpenFile      = 1, // Ошибка при открытии PDF файла
+        errorBadCatalog    = 2, // couldn't read the page catalog
+        errorDamaged       = 3, // PDF файл был поврежден и его невозможно восстановить
+        errorEncrypted     = 4, // Файл зашифрован, авторизация не пройдена
+        errorHighlightFile = 5, // nonexistent or invalid highlight file
+        errorBadPrinter    = 6, // плохой принтер
+        errorPrinting      = 7, // ошибка во время печати
+        errorPermission    = 8, // Ошибка связанная с ограничениями наложенными на файл
+        errorBadPageNum    = 9, // Неверное количество страниц
+        errorFileIO        = 10, // Ошибка при чтении/записи
+        errorMemory        = 11  // Memory exceed
+    } EError;
+}
 
 class PDFFILE_DECL_EXPORT CPdfFile : public IOfficeDrawingFile, public IRenderer
 {
 public:
     CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false);
+    // nMode = 1/2/3, 1 - reader, 2 - writer, 3 - editer
+    CPdfFile(NSFonts::IApplicationFonts* pAppFonts, int nMode, bool isPDFA = false);
     virtual ~CPdfFile();
 
     void SetTemp(const std::wstring& wsPath);
@@ -45,6 +70,9 @@ public:
     void PageRotate(int nRotate);
 
     // --- READER ---
+
+    int GetError();
+
 
     virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
     virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
@@ -70,9 +98,17 @@ public:
 
     // --- WRITER ---
 
-    int SaveToFile(const std::wstring& wsPath);
+    int  SaveToFile   (const std::wstring& wsPath);
+    void SetPassword  (const std::wstring& wsPassword);
+    void SetDocumentID(const std::wstring& wsDocumentID);
+    void SetTempFolder(const std::wstring& wsPath);
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
+    HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+    HRESULT DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+    HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
+    HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
+
 
     //----------------------------------------------------------------------------------------
     // Тип рендерера

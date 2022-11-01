@@ -38,7 +38,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 
 #ifndef DISABLE_PDF_CONVERTATION
-#include "../PdfWriter/PdfRenderer.h"
+#include "../PdfFile/PdfFile.h"
 #endif
 
 #include "../OfficeUtils/src/OfficeUtils.h"
@@ -188,7 +188,7 @@ std::wstring CXpsFile::GetInfo()
 #ifndef DISABLE_PDF_CONVERTATION
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 {
-    CPdfRenderer oPdf(m_pInternal->m_pAppFonts);
+    CPdfFile oPdf(m_pInternal->m_pAppFonts, 2);
 	bool bBreak = false;
 
 	int nPagesCount = GetPagesCount();

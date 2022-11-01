@@ -95,9 +95,9 @@ const DateTime DateTime::Parse     (const std::wstring &sValue, const std::wstri
 
 const int      DateTime::ParseValue(const std::wstring &sValue, const std::wstring &sPattern, const std::wstring &sElement)
 {
-	const int nPos = sPattern.find( sElement );
+	const std::wstring::size_type nPos = sPattern.find( sElement );
 
-	if ( -1 != nPos )
+	if (  std::wstring::npos != nPos )
 	{
 		int nSepCount = 0;
 		for ( int nIndex = 0; nIndex < nPos; nIndex++ )

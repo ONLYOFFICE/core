@@ -37,7 +37,7 @@
 namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
-	// BreakBin 22.1.3.1 (Break Binary Operators) 
+	// BreakBin 22.1.3.1 (Break Binary Operators)
 	//--------------------------------------------------------------------------------
 
 	enum EBreakBin
@@ -51,35 +51,16 @@ namespace SimpleTypes
 	class CBreakBin : public CSimpleType<EBreakBin, eDefValue>
 	{
 	public:
+		CBreakBin();
 
-		CBreakBin() {} 
+		virtual EBreakBin FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EBreakBin FromString(std::wstring &sValue)
-		{
-            if       ( _T("after")  == sValue ) this->m_eValue = breakBinAfter;
-            else if  ( _T("before") == sValue ) this->m_eValue = breakBinBefore;
-            else								this->m_eValue = breakBinRepeat;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case breakBinAfter   : return _T("after");
-			case breakBinBefore  : return _T("before");
-			case breakBinRepeat  : return _T("repeat");
-			default              : return _T("repeat");
-			}
-		}
-
-		SimpleType_FromString     (EBreakBin)
-		SimpleType_Operator_Equal (CBreakBin)
-	};	
+		SimpleTypes_Default(CBreakBin)
+	};
 
 	//--------------------------------------------------------------------------------
-	// BreakBinSub 22.1.3.2 (Break Binary Subtraction Operators) 
+	// BreakBinSub 22.1.3.2 (Break Binary Subtraction Operators)
 	//--------------------------------------------------------------------------------
 
 	enum EBreakBinSub
@@ -93,72 +74,33 @@ namespace SimpleTypes
 	class CBreakBinSub : public CSimpleType<EBreakBinSub, eDefValue>
 	{
 	public:
+		CBreakBinSub();
 
-		CBreakBinSub() {} 
+		virtual EBreakBinSub FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EBreakBinSub FromString(std::wstring &sValue)
-		{
-            if       ( _T("+-")  == sValue )	this->m_eValue = breakBinPlusMinus;
-            else if  ( _T("-+")  == sValue )	this->m_eValue = breakBinMinusPlus;
-            else								this->m_eValue = breakBinMinusMinus;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case breakBinPlusMinus  : return _T("+-");
-			case breakBinMinusPlus  : return _T("-+");
-			case breakBinMinusMinus : return _T("--");
-			default					: return _T("--");
-			}
-		}
-
-		SimpleType_FromString     (EBreakBinSub)
-		SimpleType_Operator_Equal (CBreakBinSub)
-	};	
+		SimpleTypes_Default(CBreakBinSub)
+	};
 
 	//--------------------------------------------------------------------------------
-	// CMChar 22.1.3.3 (Character)  
+	// CMChar 22.1.3.3 (Character)
 	//--------------------------------------------------------------------------------
 
-    class CMChar
-    {
-    public:
-        CMChar() {}
+	class CMChar
+	{
+	public:
+		CMChar();
 
-        std::wstring GetValue() const
-		{
-			return m_sValue;
-		}
+		std::wstring GetValue() const;
+		void    SetValue(const std::wstring &sValue);
 
-		void    SetValue(std::wstring &sValue)
-		{
-			m_sValue = sValue;
-		}
+		std::wstring FromString(const std::wstring &sValue);
+		std::wstring ToString  () const;
 
-
-		std::wstring FromString(std::wstring &sValue)
-		{
-			m_sValue = sValue;
-
-			return m_sValue;
-		}
-
-		std::wstring ToString  () const 
-		{
-			return m_sValue;
-		}
-
-        SimpleType_FromString     (std::wstring)
-        SimpleType_Operator_Equal (CMChar)
-
+		SimpleTypes_DefaultS(CMChar)
 	private:
-
 		std::wstring m_sValue;
-    };
+	};
 
 	//--------------------------------------------------------------------------------
 	// CFType 22.1.3.4 (Fraction Type)
@@ -176,34 +118,13 @@ namespace SimpleTypes
 	class CFType : public CSimpleType<EFType, eDefValue>
 	{
 	public:
+		CFType();
 
-		CFType() {} 
+		virtual EFType FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EFType FromString(std::wstring &sValue)
-		{
-            if       ( _T("bar")	== sValue )	this->m_eValue = fTypeBar;
-            else if  ( _T("lin")	== sValue )	this->m_eValue = fTypeLin;
-            else if  ( _T("noBar")  == sValue )	this->m_eValue = fTypeNoBar;
-            else								this->m_eValue = fTypeSkw;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case fTypeBar	: return _T("bar");
-			case fTypeLin	: return _T("lin");
-			case fTypeNoBar : return _T("noBar");
-			case fTypeSkw	: return _T("skw");
-			default			: return _T("bar");
-			}
-		}
-
-		SimpleType_FromString     (EFType)
-		SimpleType_Operator_Equal (CFType)
-	};	
+		SimpleTypes_Default(CFType)
+	};
 
 	//--------------------------------------------------------------------------------
 	// CInteger2 22.1.3.5
@@ -213,32 +134,14 @@ namespace SimpleTypes
 	class CInteger2 : public CSimpleType<int, nDefValue>
 	{
 	public:
-		CInteger2() {}
+		CInteger2();
 
-		virtual int FromString(std::wstring &sValue)
-		{
-            this->m_eValue = _wtoi( sValue.c_str() );
+		virtual int FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-            if (this->m_eValue < -2)
-                this->m_eValue = -2;
-            if (this->m_eValue > 2)
-                this->m_eValue = 2;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString  () const 
-		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
-
-			return sResult;
-		}
-
-		SimpleType_FromString     (int)
-		SimpleType_Operator_Equal (CInteger2)
-
+		SimpleTypes_Default(CInteger2)
 	};
-	 
+
 	//--------------------------------------------------------------------------------
 	// CInteger255 22.1.3.6 (Integer value (1 to 255))
 	//--------------------------------------------------------------------------------
@@ -247,34 +150,16 @@ namespace SimpleTypes
 	class CInteger255 : public CSimpleType<int, nDefValue>
 	{
 	public:
-		CInteger255() {}
+		CInteger255();
 
-		virtual int FromString(std::wstring &sValue)
-		{
-            this->m_eValue = _wtoi( sValue.c_str() );
+		virtual int FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-            if (this->m_eValue < 1)
-                this->m_eValue = 1;
-            if (this->m_eValue > 255)
-                this->m_eValue = 255;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString  () const 
-		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
-
-			return sResult;
-		}
-
-		SimpleType_FromString     (int)
-		SimpleType_Operator_Equal (CInteger255)
-
+		SimpleTypes_Default(CInteger255)
 	};
 
 	//--------------------------------------------------------------------------------
-	// CMJc 22.1.3.7  (Justification Math) 
+	// CMJc 22.1.3.7  (Justification Math)
 	//--------------------------------------------------------------------------------
 
 	enum EMJc
@@ -289,37 +174,16 @@ namespace SimpleTypes
 	class CMJc : public CSimpleType<EMJc, eDefValue>
 	{
 	public:
+		CMJc();
 
-		CMJc() {} 
+		virtual EMJc FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EMJc FromString(std::wstring &sValue)
-		{
-            if       ( _T("center")		 == sValue ) this->m_eValue = mjcCenter;
-            else if  ( _T("centerGroup") == sValue ) this->m_eValue = mjcCenterGroup;
-            else if  ( _T("left")		 == sValue ) this->m_eValue = mjcLeft;
-            else									 this->m_eValue = mjcRight;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case mjcCenter		: return _T("center");
-			case mjcCenterGroup : return _T("centerGroup");
-			case mjcLeft		: return _T("left");
-			case mjcRight		: return _T("right");
-			default             : return _T("centerGroup");
-			}
-		}
-
-		SimpleType_FromString     (EMJc)
-		SimpleType_Operator_Equal (CMJc)
+		SimpleTypes_Default(CMJc)
 	};
 	
 	//--------------------------------------------------------------------------------
-	// CLimLoc 22.1.3.8 (Limit Location)  
+	// CLimLoc 22.1.3.8 (Limit Location)
 	//--------------------------------------------------------------------------------
 
 	enum ELimLoc
@@ -332,31 +196,14 @@ namespace SimpleTypes
 	class CLimLoc : public CSimpleType<ELimLoc, eDefValue>
 	{
 	public:
+		CLimLoc();
 
-		CLimLoc() {} 
+		virtual ELimLoc FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual ELimLoc FromString(std::wstring &sValue)
-		{
-            if       ( _T("subSup")		 == sValue ) this->m_eValue = limLocSubSup;
-            else									 this->m_eValue = limLocUndOvr;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case limLocSubSup		: return _T("subSup");
-			case limLocUndOvr		: return _T("undOvr");
-			default					: return _T("subSup");
-			}
-		}
-
-		SimpleType_FromString     (ELimLoc)
-		SimpleType_Operator_Equal (CLimLoc)
+		SimpleTypes_Default(CLimLoc)
 	};
-	 
+
 	//--------------------------------------------------------------------------------
 	// CScript 22.1.3.9 (Script)
 	//--------------------------------------------------------------------------------
@@ -375,41 +222,16 @@ namespace SimpleTypes
 	class CScript : public CSimpleType<EScript, eDefValue>
 	{
 	public:
+		CScript();
 
-		CScript() {} 
+		virtual EScript FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EScript FromString(std::wstring &sValue)
-		{
-            if       ( _T("double-struck")		== sValue ) this->m_eValue = scriptDoubleStruck;
-            else if  ( _T("fraktur")			== sValue ) this->m_eValue = scriptFraktur;
-            else if  ( _T("monospace")			== sValue ) this->m_eValue = scriptMonospace;
-            else if  ( _T("roman")				== sValue ) this->m_eValue = scriptRoman;
-            else if  ( _T("sans-serif")			== sValue ) this->m_eValue = scriptSansSerif;
-            else											this->m_eValue = scriptScript;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case scriptDoubleStruck	: return _T("double-struck");
-			case scriptFraktur		: return _T("fraktur");
-			case scriptMonospace	: return _T("monospace");	
-			case scriptRoman		: return _T("roman");
-			case scriptSansSerif	: return _T("sans-serif");
-			case scriptScript		: return _T("script");
-			default					: return _T("roman");
-			}
-		}
-
-		SimpleType_FromString     (EScript)
-		SimpleType_Operator_Equal (CScript)
+		SimpleTypes_Default(CScript)
 	};
 	
 	//--------------------------------------------------------------------------------
-	// CShp 22.1.3.10 (Shape (Delimiters)) 
+	// CShp 22.1.3.10 (Shape (Delimiters))
 	//--------------------------------------------------------------------------------
 
 	enum EShp
@@ -422,62 +244,28 @@ namespace SimpleTypes
 	class CShp : public CSimpleType<EShp, eDefValue>
 	{
 	public:
+		CShp();
 
-		CShp() {} 
+		virtual EShp FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EShp FromString(std::wstring &sValue)
-		{
-            if       ( _T("centered")	== sValue )	 this->m_eValue = shpCentered;
-            else									 this->m_eValue = shpMatch;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case shpCentered		: return _T("centered");
-			case shpMatch			: return _T("match");
-			default					: return _T("centered");
-			}
-		}
-
-		SimpleType_FromString     (EShp)
-		SimpleType_Operator_Equal (CShp)
+		SimpleTypes_Default(CShp)
 	};
 	
 	//--------------------------------------------------------------------------------
-	// CSpacingRule 22.1.3.11 (Spacing Rule) 
-	//--------------------------------------------------------------------------------		
+	// CSpacingRule 22.1.3.11 (Spacing Rule)
+	//--------------------------------------------------------------------------------
 
 	template<int unDefValue = 0>
 	class CSpacingRule : public CSimpleType<int, unDefValue>
 	{
 	public:
-		CSpacingRule() {}
+		CSpacingRule();
 
-		virtual int FromString(std::wstring &sValue)
-		{
-            this->m_eValue = _wtoi( sValue.c_str() );
+		virtual int FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
 
-            if (this->m_eValue < 0)
-                this->m_eValue = 0;
-            if (this->m_eValue > 4)
-                this->m_eValue = 4;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString  () const 
-		{
-            std::wstring sResult = std::to_wstring( this->m_eValue);
-
-			return sResult;
-		}
-
-		SimpleType_FromString     (int)
-		SimpleType_Operator_Equal (CSpacingRule)
+		SimpleTypes_Default(CSpacingRule)
 	};
 	
 	//--------------------------------------------------------------------------------
@@ -496,37 +284,16 @@ namespace SimpleTypes
 	class CStyle : public CSimpleType<EStyle, eDefValue>
 	{
 	public:
+		CStyle();
 
-		CStyle() {} 
+		virtual EStyle FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-		virtual EStyle FromString(std::wstring &sValue)
-		{
-            if       ( _T("b")			== sValue ) this->m_eValue = styleBold;
-            else if  ( _T("bi")			== sValue ) this->m_eValue = styleBoldItalic;
-            else if  ( _T("i")			== sValue ) this->m_eValue = styleItalic;
-            else									this->m_eValue = stylePlain;
-
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case styleBold			: return _T("b");
-			case styleBoldItalic	: return _T("bi");
-			case styleItalic		: return _T("i");	
-			case stylePlain			: return _T("p");
-			default					: return _T("i");
-			}
-		}
-
-		SimpleType_FromString     (EStyle)
-		SimpleType_Operator_Equal (CStyle)
+		SimpleTypes_Default(CStyle)
 	};
 	
 	//--------------------------------------------------------------------------------
-	// CTopBot 22.1.3.13 (Top-Bottom) 
+	// CTopBot 22.1.3.13 (Top-Bottom)
 	//--------------------------------------------------------------------------------
 
 	enum ETopBot
@@ -540,54 +307,27 @@ namespace SimpleTypes
 	{
 	public:
 
-		CTopBot() {} 
+		CTopBot();
 
-		virtual ETopBot FromString(std::wstring &sValue)
-		{
-            if       ( _T("bot")	== sValue )	this->m_eValue = tbBot;
-			else if  ( _T("bottom")	== sValue )	this->m_eValue = tbBot;
-            else								this->m_eValue = tbTop;
+		virtual ETopBot FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString() const 
-		{
-            switch(this->m_eValue)
-			{
-			case tbBot		: return _T("bot");
-			case tbTop		: return _T("top");
-			default			: return _T("bot");
-			}
-		}
-
-		SimpleType_FromString     (ETopBot)
-		SimpleType_Operator_Equal (CTopBot)
+		SimpleTypes_Default(CTopBot)
 	};
 
 	//--------------------------------------------------------------------------------
 	// CUnSignedInteger 22.1.3.14 (Part 1)
-	//--------------------------------------------------------------------------------		
+	//--------------------------------------------------------------------------------
 
 	template<unsigned int unDefValue = 0>
 	class CUnSignedInteger : public CSimpleType<unsigned int, unDefValue>
 	{
 	public:
-		CUnSignedInteger() {}
+		CUnSignedInteger();
 
-		virtual unsigned int FromString(std::wstring &sValue)
-		{
-            this->m_eValue = _wtoi( sValue.c_str() );
+		virtual unsigned int FromString(const std::wstring &sValue);
+		virtual std::wstring ToString() const;
 
-            return this->m_eValue;
-		}
-
-		virtual std::wstring ToString  () const 
-		{
-			return std::to_wstring( this->m_eValue);
-		}
-
-		SimpleType_FromString     (unsigned int)
-		SimpleType_Operator_Equal (CUnSignedInteger)
+		SimpleTypes_Default(CUnSignedInteger)
 	};
 }

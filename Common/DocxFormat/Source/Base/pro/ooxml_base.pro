@@ -18,3 +18,7 @@ include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 include($$PWD/ooxml_base.pri)
 
 ADD_DEPENDENCY(UnicodeConverter, kernel)
+
+core_windows {
+    LIBS += -lUser32
+}

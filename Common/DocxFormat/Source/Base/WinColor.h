@@ -185,6 +185,7 @@ DWORD GetSysColor(const int nIndex);
 
 #else
 #include <windows.h>
+#include <winuser.h>
 
 #ifndef COLOR_HOTLIGHT
 #define COLOR_HOTLIGHT          26

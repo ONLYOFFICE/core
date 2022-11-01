@@ -35,10 +35,34 @@
 
 namespace SimpleTypes
 {
-#define SimpleTypes_Default(Class)                                                                                    \
-	const bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }   \
+#define SimpleTypes_DefaultString(Class)                                                                              \
 	Class(const std::wstring &sValue) { FromString(sValue); }                                                         \
 	Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }
+
+#define SimpleTypes_Default(Class)                                                                                    \
+	const bool operator==(const Class& oOther) const { return (this->m_eValue == oOther.m_eValue) ? true : false; }   \
+	SimpleTypes_DefaultString(Class)
+
+#define SimpleTypes_DefaultD(Class)                                                                                   \
+	const bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }   \
+	SimpleTypes_DefaultString(Class)
+
+#define SimpleTypes_DefaultS(Class)                                                                                   \
+	const bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }   \
+	SimpleTypes_DefaultString(Class)
+
+	/*
+	#define DEFINE_SIMPLE_TYPE(Class, Enum, Default) \
+	class Class
+	{
+	public:
+		Class() { m_eValue = Default; }
+		Class(const std::wstring &sValue) { FromString(sValue); }
+		Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }
+		bool operator==(const Class& oOther) const { return (m_eValue == oOther.m_eValue) ? true : false; }
+
+	};
+	*/
 
 	template<typename E, E DefValue = 0>
 	class CSimpleType
@@ -137,7 +161,7 @@ namespace SimpleTypes
 		virtual double FromPoints(double dValue);
 		virtual double FromInches(double dValue);
 
-		SimpleTypes_Default(CPoint)
+		SimpleTypes_DefaultD(CPoint)
 	};
 
 	class CInch : public CUniversalMeasure
@@ -149,7 +173,7 @@ namespace SimpleTypes
 		virtual void SetValue(double dValue);
 		virtual std::wstring ToString() const;
 
-		SimpleTypes_Default(CInch)
+		SimpleTypes_DefaultD(CInch)
 	};
 
 
@@ -175,7 +199,7 @@ namespace SimpleTypes
 		virtual long ToPx();
 		double GetValue () const;
 
-		SimpleTypes_Default(CEmu)
+		SimpleTypes_DefaultD(CEmu)
 	};
 
 	//--------------------------------------------------------------------------------
@@ -197,7 +221,7 @@ namespace SimpleTypes
 		void SetValue(double dValue);
 		double GetValue () const;
 
-		SimpleTypes_Default(CDouble)
+		SimpleTypes_DefaultD(CDouble)
 
 	private:
 		double m_dValue;

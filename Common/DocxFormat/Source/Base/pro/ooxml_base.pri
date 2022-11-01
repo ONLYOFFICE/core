@@ -33,7 +33,18 @@ SOURCES += \
 
 HEADERS += \
     $$BASE_DIR/Common/ComplexTypes.h \
-	$$BASE_DIR/Common/SimpleTypes_Base.h
+	$$BASE_DIR/Common/SimpleTypes_Base.h \
+	$$BASE_DIR/Common/SimpleTypes_OMath.h \
+	$$BASE_DIR/Common/SimpleTypes_Drawing.h \
+	$$BASE_DIR/Common/SimpleTypes_Vml.h \
+	$$BASE_DIR/Common/SimpleTypes_Shared.h \
+	$$BASE_DIR/Common/SimpleTypes_Word.h
 
 SOURCES += \
-    $$BASE_DIR/Common/SimpleTypes_Base.cpp
+    $$BASE_DIR/Common/SimpleTypes_Base.cpp \
+	$$BASE_DIR/Common/SimpleTypes_OMath.cpp \
+	$$BASE_DIR/Common/SimpleTypes_Drawing.cpp \
+	$$BASE_DIR/Common/SimpleTypes_Vml.cpp \
+	$$BASE_DIR/Common/SimpleTypes_Shared.cpp \
+	$$BASE_DIR/Common/SimpleTypes_Word.cpp
+

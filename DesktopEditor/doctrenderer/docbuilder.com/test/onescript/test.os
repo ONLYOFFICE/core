@@ -17,7 +17,7 @@ oDocument = oApi.Call("GetDocument",,,,,,);
 oParagraph = oApi.Call("CreateParagraph",,,,,,);
 oContent = oContext.CreateArray(1);
 
-oParagraph.Call("SetSpacingAfter", 10, Ложь,,,,); // err?
+oParagraph.Call("SetSpacingAfter",1000,false,,,,);
 oParagraph.Call("AddText", "Hello from COM -> OS!",,,,,);
 oContent.Set(0, oParagraph);
 oDocument.Call("InsertContent", oContent,,,,,);

@@ -169,6 +169,21 @@ static CStringW GetCurrentDllDirPath()
 	}	
 	return thisPath;
 }
+STDAPI MyVarI8FromCy(CY cyIn, __int64* pi64Out)
+{
+	LONG64 lVal = cyIn.int64 / 10000;
+	LONG64 lDif = cyIn.int64 % 10000;
+
+	if (lDif + (lVal & 1) > 5000) // IEEE rounding
+	{
+		if (cyIn.Hi >= 0)
+			lVal++;
+		else
+			lVal--;
+	}
+	*pi64Out = lVal;
+	return NOERROR;
+}
 
 // CONLYOFFICEDocBuilderValue
 [coclass, uuid("85C41585-25D7-40F1-9CC6-FA17052650F4"), threading(apartment), vi_progid("ONLYOFFICE.BuilderValue"), progid("ONLYOFFICE.BuilderValue.1"), version(1.0)]
@@ -203,7 +218,7 @@ public:
 			m_pValue = NULL;
 		}
 
-		if (value.vt == VT_ERROR)
+		if (value.vt == VT_ERROR || value.vt == VT_EMPTY || value.vt == VT_NULL)
 			m_pValue = new NSDoctRenderer::CDocBuilderValue();
 
 		if(value.vt == VT_I4)
@@ -218,6 +233,44 @@ public:
 		if (value.vt == VT_R8)
 			m_pValue = new NSDoctRenderer::CDocBuilderValue(value.dblVal);
 
+		if (value.vt == VT_I1)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue(value.cVal);
+
+		if (value.vt == VT_UI1)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue(value.bVal);
+
+		if (value.vt == VT_UI2)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue(value.uiVal);
+
+		if (value.vt == VT_UI4)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue((long)value.ulVal);
+
+		if (value.vt == VT_UI8)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue((long)value.ullVal);
+
+		if (value.vt == VT_INT)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue((long)value.intVal);
+
+		if (value.vt == VT_UINT)
+			m_pValue = new NSDoctRenderer::CDocBuilderValue((long)value.uintVal);
+
+		if (value.vt == VT_CY)
+		{
+			__int64 t = 0;
+			MyVarI8FromCy(value.cyVal, &t);
+			m_pValue = new NSDoctRenderer::CDocBuilderValue((long)t);
+		}
+
+		// OneScript uses this thing
+		if (value.vt == VT_DECIMAL)
+		{
+			VARIANT t;
+			VariantInit(&t);
+			VariantChangeType(&t, &value, NULL, VT_I4);
+			m_pValue = new NSDoctRenderer::CDocBuilderValue(t.lVal);
+			VariantClear(&t);
+		}
+		
 		if (value.vt == VT_BOOL)
 			m_pValue = new NSDoctRenderer::CDocBuilderValue(value.boolVal);
 
@@ -228,6 +281,13 @@ public:
 		{	
 			IONLYOFFICEDocBuilderValue* val = NULL;
 			value.pdispVal->QueryInterface(__uuidof(IONLYOFFICEDocBuilderValue), (void**)&val);
+			m_pValue = new NSDoctRenderer::CDocBuilderValue(VALUE(val));
+			RELEASEINTERFACE(val);
+		}
+		else if (value.vt == VT_UNKNOWN)
+		{
+			IONLYOFFICEDocBuilderValue* val = NULL;
+			value.punkVal->QueryInterface(__uuidof(IONLYOFFICEDocBuilderValue), (void**)&val);
 			m_pValue = new NSDoctRenderer::CDocBuilderValue(VALUE(val));
 			RELEASEINTERFACE(val);
 		}

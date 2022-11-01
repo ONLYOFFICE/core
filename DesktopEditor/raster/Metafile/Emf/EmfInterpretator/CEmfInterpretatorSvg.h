@@ -243,7 +243,7 @@ namespace MetaFile
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale);
 
 		void AddStroke(NodeAttributes &arAttributes);
-		void AddFill(NodeAttributes &arAttributes);
+		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
 
 		void AddNoneFill(NodeAttributes &arAttributes);
@@ -253,7 +253,7 @@ namespace MetaFile
 		TPointD GetCutPos() const;
 
 		std::wstring CreatePath(const CEmfPath* pPath = NULL) const;
-		std::wstring CreateHatchStyle(unsigned int unHatchStyle);
+		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 		std::wstring CreateGradient(IBrush *pBrush);
 	};

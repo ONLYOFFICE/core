@@ -117,9 +117,7 @@ void CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, PPT_F
         }
         else
         {
-            std::wstring color = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06x");
-            std::transform(color.begin(), color.end(), color.begin(), std::towupper);
-
+            std::wstring color = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06X");
             oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + color + L"\"/></a:solidFill>");
         }
     }
@@ -522,14 +520,12 @@ std::wstring PPT_FORMAT::CShapeWriter::ConvertColor(CColor & color, long alpha)
         if (255 == alpha)
         {
             auto strColor = XmlUtils::IntToString(color.GetLONG_RGB(), L"%06X");
-            std::transform(strColor.begin(), strColor.end(), strColor.begin(), std::towupper);
             color_writer.WriteString(L"<a:srgbClr val=\"" + strColor + L"\"/>");
         }
         else
         {
             auto strColor = XmlUtils::IntToString(color.GetLONG_RGB(), L"%06X");
-            std::transform(strColor.begin(), strColor.end(), strColor.begin(), std::towupper);
-            color_writer.WriteString(L"<a:srgbClr val=\"" + strColor + L"\">" +
+			color_writer.WriteString(L"<a:srgbClr val=\"" + strColor + L"\">" +
                                      L"<a:alpha val=\"" + std::to_wstring((int)(alpha * 100000 / 255)) + L"\"/></a:srgbClr>");
         }
     }
@@ -1311,9 +1307,7 @@ void PPT_FORMAT::CShapeWriter::WriteTextInfo(PPT_FORMAT::CTextCFRun* pLastCF)
                     }
                     else
                     {
-                        std::wstring strColor = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06x");
-
-                        std::transform(strColor.begin(), strColor.end(), strColor.begin(), std::towupper);
+                        std::wstring strColor = XmlUtils::IntToString(pCF->Color->GetLONG_RGB(), L"%06X");
                         m_oWriter.WriteString(L"<a:solidFill><a:srgbClr val=\"" + strColor + L"\"/></a:solidFill>");
                     }
                 }

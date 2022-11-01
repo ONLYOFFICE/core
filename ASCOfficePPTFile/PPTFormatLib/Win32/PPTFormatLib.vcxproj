@@ -264,7 +264,7 @@
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextAttributesEx.h" />
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextStructures.h" />
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Theme.h" />
-    <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\XmlWriter.h" />
+    <ClInclude Include="..\Converter\transition.h" />
     <ClInclude Include="..\PPTFormatLib.h" />
     <ClInclude Include="..\PPTXWriter\Animation.h" />
     <ClInclude Include="..\PPTXWriter\Converter.h" />
@@ -420,12 +420,7 @@
     <ClInclude Include="..\Records\ProgStringTagContainer.h" />
     <ClInclude Include="..\Records\RecordsIncluder.h" />
     <ClInclude Include="..\Records\RoundTrip.h" />
-    <ClInclude Include="..\Records\RoundTripColorMappingAtom.h" />
-    <ClInclude Include="..\Records\RoundTripCompositeMainMasterId12Atom.h" />
-    <ClInclude Include="..\Records\RoundTripNewPlaceholderId12Atom.h" />
     <ClInclude Include="..\Records\RoundTripNotesMasterTextStyles12Atom.h" />
-    <ClInclude Include="..\Records\RoundTripOriginalMainMasterId12Atom.h" />
-    <ClInclude Include="..\Records\RoundTripThemeAtom.h" />
     <ClInclude Include="..\Records\ShapeFlags10Atom.h" />
     <ClInclude Include="..\Records\ShapeFlagsAtom.h" />
     <ClInclude Include="..\Records\ShapeProgBinaryTagSubContainerOrAtom.h" />
@@ -438,12 +433,6 @@
     <ClInclude Include="..\Records\SlideProgTagsContainer.h" />
     <ClInclude Include="..\Records\SlideTime10Atom.h" />
     <ClInclude Include="..\Records\SlideViewInfoAtom.h" />
-    <ClInclude Include="..\Records\Slide\Comment10Container.h" />
-    <ClInclude Include="..\Records\Slide\LinkedShape10Atom.h" />
-    <ClInclude Include="..\Records\Slide\LinkedSlide10Atom.h" />
-    <ClInclude Include="..\Records\Slide\SlideFlags10Atom.h" />
-    <ClInclude Include="..\Records\Slide\SlideProgTagsContainer.h" />
-    <ClInclude Include="..\Records\Slide\SlideTime10Atom.h" />
     <ClInclude Include="..\Records\SoundCollAtom.h" />
     <ClInclude Include="..\Records\SoundCollectionContainer.h" />
     <ClInclude Include="..\Records\SoundContainer.h" />
@@ -495,6 +484,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Elements.cpp" />
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\TextAttributesEx.cpp" />
+    <ClCompile Include="..\Converter\transition.cpp" />
     <ClCompile Include="..\PPTFormatLib.cpp" />
     <ClCompile Include="..\PPTXWriter\Animation.cpp" />
     <ClCompile Include="..\PPTXWriter\BulletsConverter.cpp" />

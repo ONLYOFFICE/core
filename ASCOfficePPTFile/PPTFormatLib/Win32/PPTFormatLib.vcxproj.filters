@@ -22,9 +22,6 @@
     <Filter Include="OOXWriter">
       <UniqueIdentifier>{41fc709e-386b-4e1e-80c0-546932a2a480}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Records\Slide">
-      <UniqueIdentifier>{0ddad310-407e-4d05-be91-fc3f3ec4161e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Records\Text">
       <UniqueIdentifier>{23c362a7-0224-4e72-b344-6a6b1263dc7a}</UniqueIdentifier>
     </Filter>
@@ -193,21 +190,6 @@
       <Filter>Records</Filter>
     </ClInclude>
     <ClInclude Include="..\Records\RecordsIncluder.h">
-      <Filter>Records</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\RoundTripColorMappingAtom.h">
-      <Filter>Records</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\RoundTripCompositeMainMasterId12Atom.h">
-      <Filter>Records</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\RoundTripNewPlaceholderId12Atom.h">
-      <Filter>Records</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\RoundTripOriginalMainMasterId12Atom.h">
-      <Filter>Records</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\RoundTripThemeAtom.h">
       <Filter>Records</Filter>
     </ClInclude>
     <ClInclude Include="..\Records\ShapeFlags10Atom.h">
@@ -397,9 +379,6 @@
       <Filter>OOXElements</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Theme.h">
-      <Filter>OOXElements</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\XmlWriter.h">
       <Filter>OOXElements</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\Editor\Drawing\Shapes\BaseShape\PPTShape\customgeomshape.h">
@@ -634,24 +613,6 @@
     <ClInclude Include="..\Records\Animations\VisualSoundAtom.h">
       <Filter>Records\Animations</Filter>
     </ClInclude>
-    <ClInclude Include="..\Records\Slide\Comment10Container.h">
-      <Filter>Records\Slide</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Slide\LinkedShape10Atom.h">
-      <Filter>Records\Slide</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Slide\LinkedSlide10Atom.h">
-      <Filter>Records\Slide</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Slide\SlideFlags10Atom.h">
-      <Filter>Records\Slide</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Slide\SlideProgTagsContainer.h">
-      <Filter>Records\Slide</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Records\Slide\SlideTime10Atom.h">
-      <Filter>Records\Slide</Filter>
-    </ClInclude>
     <ClInclude Include="..\Reader\Slide.h">
       <Filter>Reader</Filter>
     </ClInclude>
@@ -805,6 +766,9 @@
     <ClInclude Include="..\Records\SlideTime10Atom.h">
       <Filter>Records</Filter>
     </ClInclude>
+    <ClInclude Include="..\Converter\transition.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Reader\PPTDocumentInfoOneUser.cpp">
@@ -860,6 +824,9 @@
       <Filter>Records</Filter>
     </ClCompile>
     <ClCompile Include="..\PPTXWriter\BulletsConverter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Converter\transition.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
   </ItemGroup>

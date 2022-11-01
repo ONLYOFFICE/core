@@ -27,12 +27,15 @@ DEFINES +=  UNICODE \
         #DISABLE_FILE_DOWNLOADER
 
 HEADERS += \
+    ../Converter/Animation/animation.h \
+    ../Converter/Animation/animationparser.h \
+    ../Converter/Animation/intermediate_anim.h \
+    ../Converter/timing.h \
     ../Converter/transition.h \
     ../Enums/RecordType.h \
     ../Enums/_includer.h \
     ../Enums/enums.h \
     ../PPTFormatLib.h \
-    ../PPTXWriter/Animation.h \
     ../PPTXWriter/BulletsConverter.h \
     ../PPTXWriter/TableWriter.h \
     ../PPTXWriter/TxBodyConverter.h \
@@ -275,6 +278,7 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
+    ../Converter/Animation/animation.cpp \
     ../Enums/RecordType.cpp \
     ../PPTFormatLib.cpp \
     ../Reader/ReadStructures.cpp \
@@ -285,7 +289,6 @@ SOURCES += \
     ../Reader/SlidePersist.cpp \
     ../PPTXWriter/Converter.cpp \
     ../PPTXWriter/ShapeWriter.cpp \
-    ../PPTXWriter/Animation.cpp \
     ../PPTXWriter/TableWriter.cpp \
     ../PPTXWriter/TxBodyConverter.cpp \
     ../Records/Drawing/ArtBlip.cpp \
@@ -298,6 +301,9 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
+    ../Converter/Animation/animationparser.cpp \
+    ../Converter/Animation/intermediate_anim.cpp \
+    ../Converter/timing.cpp \
     ../Converter/transition.cpp \
     ../PPTXWriter/BulletsConverter.cpp
 

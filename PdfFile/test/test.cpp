@@ -80,7 +80,7 @@ int main()
         return 0;
     }
 
-    if (true)
+    if (false)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);

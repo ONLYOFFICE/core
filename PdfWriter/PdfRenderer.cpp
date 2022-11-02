@@ -2704,6 +2704,7 @@ void CPdfRenderer::Reset()
 
 	m_lClipDepth = 0;
 }
+/*
 HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
 	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))
@@ -2718,6 +2719,7 @@ HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, c
 
 	return S_OK;
 }
+*/
 
 static inline void UpdateMaxMinPoints(double& dMinX, double& dMinY, double& dMaxX, double& dMaxY, const double& dX, const double& dY)
 {

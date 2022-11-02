@@ -1,6 +1,38 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2019
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include "PdfFile.h"
-#include "../PdfWriter/PdfRenderer.h"
-#include "../PdfReader/PdfReader.h"
+#include "Src/PdfWriter.h"
+#include "Src/OnlineOfficeBinToPdf.h"
+#include "Src/PdfReader.h"
 
 #include "../PdfReader/Src/Adaptors.h"
 #include "../DesktopEditor/common/File.h"
@@ -127,11 +159,12 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 class CPdfFile_Private
 {
 public:
-    CPdfRenderer* pWriter;
+    CPdfWriter* pWriter;
     PdfReader::CPdfReader* pReader;
     std::wstring wsSrcFile;
     std::wstring wsPassword;
     bool bEdit;
+    bool bEditPage;
 
     void GetPageTree(XRef* xref, Object* pPagesRefObj)
     {
@@ -206,9 +239,11 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA)
 {
     m_pInternal = new CPdfFile_Private();
 
-    m_pInternal->pWriter = new CPdfRenderer (pAppFonts, isPDFA);
+    m_pInternal->pWriter = new CPdfWriter(pAppFonts, isPDFA);
     m_pInternal->pReader = new PdfReader::CPdfReader(pAppFonts);
     m_pInternal->wsPassword = L"";
+    m_pInternal->bEdit     = false;
+    m_pInternal->bEditPage = false;
 }
 // nMode = 1/2/3, 01 - reader, 10 - writer, 11 - editer
 CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, int nMode, bool isPDFA)
@@ -218,8 +253,10 @@ CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, int nMode, bool isPDFA
     if (nMode & 1)
         m_pInternal->pReader = new PdfReader::CPdfReader(pAppFonts);
     if (nMode & 2)
-        m_pInternal->pWriter = new CPdfRenderer (pAppFonts, isPDFA);
+        m_pInternal->pWriter = new CPdfWriter(pAppFonts, isPDFA);
     m_pInternal->wsPassword = L"";
+    m_pInternal->bEdit     = false;
+    m_pInternal->bEditPage = false;
 }
 CPdfFile::~CPdfFile()
 {
@@ -401,7 +438,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     if (bRes)
     {
         m_pInternal->GetPageTree(xref, &pagesRefObj);
-        m_pInternal->pWriter->EditPdf();
+        m_pInternal->bEdit = true;
     }
     pagesRefObj.free();
     return bRes;
@@ -410,7 +447,7 @@ bool CPdfFile::EditClose()
 {
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
     PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
-    if (!pPDFDocument || !pDoc)
+    if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
         return false;
 
     XRef* xref = pPDFDocument->getXRef();
@@ -499,13 +536,15 @@ bool CPdfFile::EditClose()
         }
     }
 
+    m_pInternal->bEdit     = false;
+    m_pInternal->bEditPage = false;
     return bRes;
 }
 bool CPdfFile::EditPage(int nPageIndex)
 {
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
     PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
-    if (!pPDFDocument || !pDoc)
+    if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
         return false;
 
     XRef* xref = pPDFDocument->getXRef();
@@ -557,6 +596,7 @@ bool CPdfFile::EditPage(int nPageIndex)
     pNewPage->Fix();
     pageObj.free();
 
+    m_pInternal->bEditPage = true;
     if (m_pInternal->pWriter->EditPage(pNewPage) && pDoc->EditPage(pXref, pNewPage))
         return true;
 
@@ -565,10 +605,14 @@ bool CPdfFile::EditPage(int nPageIndex)
 }
 bool CPdfFile::DeletePage(int nPageIndex)
 {
+    if (!m_pInternal->bEdit)
+        return false;
     return m_pInternal->pWriter->DeletePage(nPageIndex);
 }
 bool CPdfFile::AddPage(int nPageIndex)
 {
+    if (!m_pInternal->bEdit)
+        return false;
     bool bRes = m_pInternal->pWriter->AddPage(nPageIndex);
     if (bRes)
     {
@@ -581,15 +625,20 @@ bool CPdfFile::AddPage(int nPageIndex)
 
         m_pInternal->pWriter->put_Width(dWidth);
         m_pInternal->pWriter->put_Height(dHeight);
+        m_pInternal->bEditPage = true;
     }
     return bRes;
 }
 void CPdfFile::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate)
 {
+    if (!m_pInternal->bEdit)
+        return;
     m_pInternal->pWriter->Sign(dX, dY, dW, dH, wsPicturePath, pCertificate);
 }
 void CPdfFile::PageRotate(int nRotate)
 {
+    if (!m_pInternal->bEdit)
+        return;
     m_pInternal->pWriter->PageRotate(nRotate);
 }
 
@@ -642,7 +691,7 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 }
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
-    m_pInternal->pReader->DrawPageOnRenderer((pRenderer == this ? m_pInternal->pWriter : pRenderer), nPageIndex, pBreak);
+    m_pInternal->pReader->DrawPageOnRenderer(this, nPageIndex, pBreak);
 }
 std::wstring CPdfFile::GetInfo()
 {
@@ -679,11 +728,17 @@ void CPdfFile::SetTempFolder(const std::wstring& wsPath)
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-    return m_pInternal->pWriter->OnlineWordToPdf(wsSrcFile, wsDstFile, pParams);
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))
+        return S_FALSE;
+
+    return S_OK;
 }
 HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-    return m_pInternal->pWriter->OnlineWordToPdfFromBinary(wsSrcFile, wsDstFile, pParams);
+    if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
+        return S_FALSE;
+
+    return S_OK;
 }
 HRESULT CPdfFile::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -701,7 +756,10 @@ HRESULT CPdfFile::SetRadialGradient(const double& dX1, const double& dY1, const 
 {
     return m_pInternal->pWriter->SetRadialGradient(dX1, dY1, dR1, dX2, dY2, dR2);
 }
-
+NSFonts::IApplicationFonts* CPdfFile::GetApplicationFonts()
+{
+    return m_pInternal->pWriter->GetApplicationFonts();
+}
 
 HRESULT CPdfFile::get_Type(LONG* lType)
 {
@@ -709,6 +767,8 @@ HRESULT CPdfFile::get_Type(LONG* lType)
 }
 HRESULT CPdfFile::NewPage()
 {
+    if (m_pInternal->bEdit)
+        return S_FALSE;
     return m_pInternal->pWriter->NewPage();
 }
 HRESULT CPdfFile::get_Height(double* dHeight)
@@ -717,6 +777,8 @@ HRESULT CPdfFile::get_Height(double* dHeight)
 }
 HRESULT CPdfFile::put_Height(const double& dHeight)
 {
+    if (m_pInternal->bEdit && m_pInternal->bEditPage)
+        return S_OK;
     return m_pInternal->pWriter->put_Height(dHeight);
 }
 HRESULT CPdfFile::get_Width(double* dWidth)
@@ -725,6 +787,8 @@ HRESULT CPdfFile::get_Width(double* dWidth)
 }
 HRESULT CPdfFile::put_Width(const double& dWidth)
 {
+    if (m_pInternal->bEdit && m_pInternal->bEditPage)
+        return S_OK;
     return m_pInternal->pWriter->put_Width(dWidth);
 }
 HRESULT CPdfFile::get_DpiX(double* dDpiX)

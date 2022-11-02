@@ -56,15 +56,13 @@ SOURCES -= \
 SOURCES += \
     $$PDFREADER_ROOT_DIR/Src/RendererOutputDev.cpp \
     $$PDFREADER_ROOT_DIR/Src/Adaptors.cpp \
-    $$PDFREADER_ROOT_DIR/Src/GfxClip.cpp \
-    $$PDFREADER_ROOT_DIR/PdfReader.cpp
+    $$PDFREADER_ROOT_DIR/Src/GfxClip.cpp
 
 HEADERS += \
     $$PDFREADER_ROOT_DIR/Src/RendererOutputDev.h \
     $$PDFREADER_ROOT_DIR/Src/Adaptors.h \
     $$PDFREADER_ROOT_DIR/Src/MemoryUtils.h \
-    $$PDFREADER_ROOT_DIR/Src/GfxClip.h \
-    $$PDFREADER_ROOT_DIR/PdfReader.h
+    $$PDFREADER_ROOT_DIR/Src/GfxClip.h
 
 # Base fonts
 HEADERS += \
@@ -165,8 +163,6 @@ HEADERS += \
     $$PDFWRITER_ROOT_DIR/Src/Streams.h \
     $$PDFWRITER_ROOT_DIR/Src/Types.h \
     $$PDFWRITER_ROOT_DIR/Src/Utils.h \
-    $$PDFWRITER_ROOT_DIR/OnlineOfficeBinToPdf.h \
-    $$PDFWRITER_ROOT_DIR/PdfRenderer.h \
     $$PDFWRITER_ROOT_DIR/Src/Metadata.h \
     $$PDFWRITER_ROOT_DIR/Src/ICCProfile.h
 
@@ -195,11 +191,16 @@ SOURCES += \
     $$PDFWRITER_ROOT_DIR/Src/Shading.cpp \
     $$PDFWRITER_ROOT_DIR/Src/Streams.cpp \
     $$PDFWRITER_ROOT_DIR/Src/Utils.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Metadata.cpp \
-    $$PDFWRITER_ROOT_DIR/OnlineOfficeBinToPdf.cpp \
-    $$PDFWRITER_ROOT_DIR/PdfRenderer.cpp
+    $$PDFWRITER_ROOT_DIR/Src/Metadata.cpp
 
 # PdfFile
 
-HEADERS += PdfFile.h
-SOURCES += PdfFile.cpp
+HEADERS += PdfFile.h \
+           Src/PdfWriter.h \
+           Src/PdfReader.h \
+           Src/OnlineOfficeBinToPdf.h
+
+SOURCES += PdfFile.cpp \
+           Src/PdfWriter.cpp \
+           Src/PdfReader.cpp \
+           Src/OnlineOfficeBinToPdf.cpp

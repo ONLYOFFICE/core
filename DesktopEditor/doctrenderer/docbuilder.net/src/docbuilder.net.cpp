@@ -32,14 +32,9 @@
 // This is the main DLL file.
 
 #include "docbuilder.net.h"
+
 #include <vcclr.h>
 #include <cstring>
-
-#ifdef _WIN64
-#pragma comment(lib, "../../../../build/lib/win_64/doctrenderer.lib")
-#else
-#pragma comment(lib, "../../../../build/lib/win_32/doctrenderer.lib")
-#endif
 
 namespace docbuilder_net
 {

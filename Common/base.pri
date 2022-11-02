@@ -273,7 +273,7 @@ core_ios {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
             core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
 
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
             }
         } else {
@@ -284,7 +284,7 @@ core_ios {
 
         core_ios_nomain_arch {
             QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
             }
         }

@@ -6,6 +6,7 @@
 #include "../PPTXWriter/ImageManager.h"
 #include "../Records/Animations/AnimationInfoContainer.h"
 #include <unordered_set>
+#include "TimeNode.h"
 
 
 namespace PPT {
@@ -17,13 +18,20 @@ struct Animation
     CRecordExtTimeNodeContainer* pETNCIC = nullptr;     // new animation records
 };
 
-// todo not correct (for example: triggers)!!!
-using ParallelTimeNodes = std::list<Animation>;
-using SequenceTimeNodes = std::list<ParallelTimeNodes>;
+
+struct SimpleBuildNode
+{
+    _INT32 spid = -1;
+    bool grpId = false;
+    bool animBg = false;
+};
+using SimpleBuildList = std::vector<SimpleBuildNode>;
+
 
 struct SlideAnimation
 {
-    SequenceTimeNodes sequences;
+    std::unique_ptr<TimeNode> rootNode;
+    SimpleBuildList oldBuildList;
     CRecordBuildListContainer* pBLC = nullptr;
     std::unordered_set<_INT32> realShapesIds;
 };

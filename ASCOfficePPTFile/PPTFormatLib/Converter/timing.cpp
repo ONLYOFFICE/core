@@ -1,7 +1,6 @@
 #include "timing.h"
 
 #include "Animation/intermediate_anim.h"
-#include "Animation/ppt10ext_animation.h"
 
 
 using namespace PPT::Converter;

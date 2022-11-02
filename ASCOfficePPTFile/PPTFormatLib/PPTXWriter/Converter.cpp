@@ -48,7 +48,7 @@
 
 #include "Converter.h"
 #include "../Converter/timing.h"
-#include "../Converter/Animation/animationparser.h"
+#include "../Converter/Animation/AnimationParser.h"
 #include "../Converter/transition.h"
 
 #include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"

@@ -27,8 +27,10 @@ DEFINES +=  UNICODE \
         #DISABLE_FILE_DOWNLOADER
 
 HEADERS += \
+    ../Converter/Animation/AnimationParser.h \
+    ../Converter/Animation/OldAnimationParser.h \
+    ../Converter/Animation/TimeNode.h \
     ../Converter/Animation/animation.h \
-    ../Converter/Animation/animationparser.h \
     ../Converter/Animation/intermediate_anim.h \
     ../Converter/timing.h \
     ../Converter/transition.h \
@@ -301,8 +303,8 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/Elements.cpp \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
-    ../Converter/Animation/animationparser.cpp \
-    ../Converter/Animation/intermediate_anim.cpp \
+    ../Converter/Animation/AnimationParser.cpp \
+    ../Converter/Animation/OldAnimationParser.cpp \
     ../Converter/timing.cpp \
     ../Converter/transition.cpp \
     ../PPTXWriter/BulletsConverter.cpp

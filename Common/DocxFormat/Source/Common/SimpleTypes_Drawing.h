@@ -413,7 +413,7 @@ namespace SimpleTypes
 
 		virtual std::wstring ToString  () const;
 
-        _INT64 ToEmu() const;
+		_INT64 ToEmu() const;
 		double ToCm() const;
 
 		SimpleTypes_DefaultD(CCoordinate)
@@ -422,7 +422,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// Coordinate32 20.1.10.17 (Part 1)
 	//--------------------------------------------------------------------------------
-	#define	CCoordinate32 CCoordinate
+#define	CCoordinate32 CCoordinate
 	//--------------------------------------------------------------------------------
 	// DrawingElementId 20.1.10.21 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -495,9 +495,9 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CFixedPercentage)
 
-	private:
+		private:
 
-		double m_dValue;
+			double m_dValue;
 	};
 	//--------------------------------------------------------------------------------
 	// FontCollectionIndex 20.1.10.25 (Part 1)
@@ -557,8 +557,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultS(CGeomGuideFormula)
 
-	private:
-		void Parse();
+		private:
+			void Parse();
 
 	private:
 		std::wstring m_sValue;
@@ -579,9 +579,9 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultS(CGeomGuideName)
 
-	private:
+		private:
 
-		std::wstring m_sValue;
+			std::wstring m_sValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -751,13 +751,13 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// LineWidth 20.1.10.35 (Part 1)
 	//--------------------------------------------------------------------------------
-    template<_INT64 nDefValue = 0>
-    class CLineWidth : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CLineWidth : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CLineWidth();
 
-        virtual _INT64 FromString(const std::wstring &sValue);
+		virtual _INT64 FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default(CLineWidth)
@@ -765,7 +765,7 @@ namespace SimpleTypes
 		double ToPoints();
 		double ToInches();
 
-        double FromEmu(const _INT64 nEmu);
+		double FromEmu(const _INT64 nEmu);
 	};
 	//--------------------------------------------------------------------------------
 	// PathFillMode 20.1.10.37 (Part 1)
@@ -853,19 +853,19 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CPercentage)
 
-	private:
+		private:
 
-		double m_dValue;
+			double m_dValue;
 	};
 	//--------------------------------------------------------------------------------
 	// PositiveCoordinate 20.1.10.42 (Part 1)
 	//--------------------------------------------------------------------------------
-    template<_INT64 nDefValue = 0>
-    class CPositiveCoordinate : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CPositiveCoordinate : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CPositiveCoordinate();
-        virtual _INT64 FromString(const std::wstring &sValue);
+		virtual _INT64 FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default(CPositiveCoordinate)
@@ -875,7 +875,7 @@ namespace SimpleTypes
 
 		double ToInches();
 		double ToTwips();
-        double FromEmu(const _INT64& nEmu);
+		double FromEmu(const _INT64& nEmu);
 	};
 	//--------------------------------------------------------------------------------
 	// PositiveCoordinate32 20.1.10.43 (Part 1)
@@ -916,8 +916,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CPositiveFixedPercentage)
 
-	private:
-		double m_dValue;
+		private:
+			double m_dValue;
 	};
 	//--------------------------------------------------------------------------------
 	// PositivePercentage 20.1.10.46 (Part 1) + 12.1.2.4 (Part4)
@@ -935,8 +935,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CPositivePercentage)
 
-	private:
-		double m_dValue;
+		private:
+			double m_dValue;
 	};
 	//--------------------------------------------------------------------------------
 	// PresetCameraType 20.1.10.47 (Part 1)
@@ -1898,9 +1898,9 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CTextFontScalePercentOrPercentString)
 
-	private:
+		private:
 
-		double m_dValue;
+			double m_dValue;
 	};
 	//--------------------------------------------------------------------------------
 	// TextHorzOverflowType 20.1.10.69 (Part 1)
@@ -1927,13 +1927,13 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// 20.1.10.70 ST_TextIndent (Text Indentation)
 	//--------------------------------------------------------------------------------
-    template<_INT64 nDefValue = 0>
-    class CTextIndent : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CTextIndent : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CTextIndent();
 
-        virtual _INT64 FromString(const std::wstring &sValue);
+		virtual _INT64 FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default (CTextIndent)
@@ -1945,13 +1945,13 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// 20.1.10.72 ST_TextMargin (Text Margin)
 	//--------------------------------------------------------------------------------
-    template<_INT64 nDefValue = 0>
-    class CTextMargin : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CTextMargin : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CTextMargin();
 
-        virtual _INT64 FromString(const std::wstring &sValue);
+		virtual _INT64 FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default (CTextMargin)
@@ -2083,26 +2083,26 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CTextSpacingPercentOrPercentString)
 
-	private:
-		double m_dValue;
+		private:
+			double m_dValue;
 	};
 	//--------------------------------------------------------------------------------
 	// 20.1.10.78 ST_TextSpacingPoint (Text Spacing Point)
 	//--------------------------------------------------------------------------------
-    template<_INT64 nDefValue = 0>
-    class CTextSpacingPoint : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CTextSpacingPoint : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CTextSpacingPoint();
 
-        virtual _INT64 FromString(const std::wstring &sValue);
-        virtual std::wstring ToString  () const;
+		virtual _INT64 FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
 
-        SimpleTypes_Default(CTextSpacingPoint)
+		SimpleTypes_Default(CTextSpacingPoint)
 
-        double ToPoints();
-        double ToInches();
-        double ToCm();
+		double ToPoints();
+		double ToInches();
+		double ToCm();
 	};
 	//--------------------------------------------------------------------------------
 	// TextTypeface 20.1.10.81 (Part 1)
@@ -2120,8 +2120,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultS(CTextTypeface)
 
-	private:
-		std::wstring m_sValue;
+		private:
+			std::wstring m_sValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -2285,13 +2285,13 @@ namespace SimpleTypes
 	// PositionOffset 10.4.3.3 (Part 1)
 	//--------------------------------------------------------------------------------
 
-    template<_INT64 nDefValue = 0>
-    class CPositionOffset : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CPositionOffset : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CPositionOffset();
 
-        virtual _INT64 FromString(const std::wstring &sValue);
+		virtual _INT64 FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default (CPositionOffset)
@@ -2413,13 +2413,13 @@ namespace SimpleTypes
 	// WrapDistance 10.4.3.6 (Part 1)
 	//--------------------------------------------------------------------------------
 
-    template<_INT64 nDefValue = 0>
-    class CWrapDistance : public CSimpleType<_INT64, nDefValue>
+	template<_INT64 nDefValue = 0>
+	class CWrapDistance : public CSimpleType<_INT64, nDefValue>
 	{
 	public:
 		CWrapDistance();
 
-        virtual _INT64 FromString(const std::wstring &sValue);
+		virtual _INT64 FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default (CWrapDistance)

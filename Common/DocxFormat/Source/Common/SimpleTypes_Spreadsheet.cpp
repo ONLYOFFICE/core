@@ -364,7 +364,7 @@ namespace SimpleTypes
 		template<>
 		EFontCharset CFontCharset<fontcharsetANSI>::FromString(const std::wstring &sValue)
 		{
-            int nCharset = XmlUtils::GetInteger(sValue.c_str());
+			int nCharset = XmlUtils::GetInteger(sValue.c_str());
 			switch(nCharset)
 			{
 			case 0: this->m_eValue = fontcharsetANSI;break;
@@ -436,7 +436,7 @@ namespace SimpleTypes
 		template<>
 		EThemeColor CThemeColor<themecolorDark1>::FromString(const std::wstring &sValue)
 		{
-            int nThemeColor = XmlUtils::GetInteger(sValue);
+			int nThemeColor = XmlUtils::GetInteger(sValue);
 			switch(nThemeColor)
 			{
 			case 0:this->m_eValue = themecolorLight1;break;
@@ -622,7 +622,7 @@ namespace SimpleTypes
 		template<>
 		EFontFamily CFontFamily<fontfamilyNotApplicable>::FromString(const std::wstring &sValue)
 		{
-            int nFontFamily = XmlUtils::GetInteger(sValue);
+			int nFontFamily = XmlUtils::GetInteger(sValue);
 			switch(nFontFamily)
 			{
 			case 0:this->m_eValue = fontfamilyNotApplicable;break;
@@ -1613,7 +1613,7 @@ namespace SimpleTypes
 		template<>
 		EPageSize CPageSize<pagesizeA4Paper>::FromString(const std::wstring &sValue)
 		{
-            int nCharset = XmlUtils::GetInteger(sValue);
+			int nCharset = XmlUtils::GetInteger(sValue);
 			this->m_eValue = (EPageSize)nCharset;
 			return this->m_eValue;
 		}
@@ -2285,16 +2285,16 @@ namespace SimpleTypes
 		template<>
 		ETimePeriod ST_TimePeriod<last7Days>::FromString(const std::wstring &sValue)
 		{
-            if(L"last7Days" == sValue)			this->m_eValue = last7Days;
-            else if(L"lastMonth" == sValue)		this->m_eValue = lastMonth;
-            else if(L"lastWeek" == sValue)		this->m_eValue = lastWeek;
-            else if(L"nextMonth" == sValue)		this->m_eValue = nextMonth;
-            else if(L"nextWeek" == sValue)               this->m_eValue = nextWeek;
-            else if(L"thisMonth" == sValue)              this->m_eValue = thisMonth;
-            else if(L"thisWeek" == sValue)               this->m_eValue = thisWeek;
-            else if(L"today" == sValue)                  this->m_eValue = today;
-            else if(L"tomorrow" == sValue)               this->m_eValue = tomorrow;
-            else if(L"yesterday" == sValue)              this->m_eValue = yesterday;
+			if(L"last7Days" == sValue)			this->m_eValue = last7Days;
+			else if(L"lastMonth" == sValue)		this->m_eValue = lastMonth;
+			else if(L"lastWeek" == sValue)		this->m_eValue = lastWeek;
+			else if(L"nextMonth" == sValue)		this->m_eValue = nextMonth;
+			else if(L"nextWeek" == sValue)               this->m_eValue = nextWeek;
+			else if(L"thisMonth" == sValue)              this->m_eValue = thisMonth;
+			else if(L"thisWeek" == sValue)               this->m_eValue = thisWeek;
+			else if(L"today" == sValue)                  this->m_eValue = today;
+			else if(L"tomorrow" == sValue)               this->m_eValue = tomorrow;
+			else if(L"yesterday" == sValue)              this->m_eValue = yesterday;
 			else 								this->m_eValue = last7Days;
 			return this->m_eValue;
 		}
@@ -2304,17 +2304,17 @@ namespace SimpleTypes
 		{
 			switch(this->m_eValue)
 			{
-            case last7Days:	return L"last7Days";
-            case lastMonth:	return L"lastMonth";
-            case lastWeek:	return L"lastWeek";
-            case nextMonth:	return L"nextMonth";
-            case nextWeek:	return L"nextWeek";
-            case thisMonth: return L"thisMonth";
-            case thisWeek:	return L"thisWeek";
-            case today:	return L"today";
-            case tomorrow:	return L"tomorrow";
-            case yesterday:	return L"yesterday";
-            default		:	return L"num";
+			case last7Days:	return L"last7Days";
+			case lastMonth:	return L"lastMonth";
+			case lastWeek:	return L"lastWeek";
+			case nextMonth:	return L"nextMonth";
+			case nextWeek:	return L"nextWeek";
+			case thisMonth: return L"thisMonth";
+			case thisWeek:	return L"thisWeek";
+			case today:	return L"today";
+			case tomorrow:	return L"tomorrow";
+			case yesterday:	return L"yesterday";
+			default		:	return L"num";
 			}
 		}
 

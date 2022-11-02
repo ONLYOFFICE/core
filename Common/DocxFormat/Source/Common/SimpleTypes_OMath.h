@@ -98,8 +98,8 @@ namespace SimpleTypes
 		std::wstring ToString  () const;
 
 		SimpleTypes_DefaultS(CMChar)
-	private:
-		std::wstring m_sValue;
+		private:
+			std::wstring m_sValue;
 	};
 
 	//--------------------------------------------------------------------------------

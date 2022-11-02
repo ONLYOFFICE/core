@@ -363,8 +363,8 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CFillType1)
 
-	private:
-		bool m_nType;
+		private:
+			bool m_nType;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -722,8 +722,8 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultS(CContentType)
 
-	private:
-		std::wstring m_sValue;
+		private:
+			std::wstring m_sValue;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1241,8 +1241,8 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultS(CVmlPath)
 
-		private:
-			std::wstring m_sValue;
+			private:
+				std::wstring m_sValue;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1275,9 +1275,9 @@ namespace SimpleTypes
 			virtual std::wstring ToString  () const;
 			SimpleTypes_Default(CVmlDashStyle)
 
-		private:
+			private:
 
-			double  m_arrValues[32];
+				double  m_arrValues[32];
 			int     m_nCount;
 		};
 
@@ -1302,8 +1302,8 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultD(CVml_1_65536)
 
-		private:
-			double m_dValue;
+			private:
+				double m_dValue;
 		};
 		//--------------------------------------------------------------------------------
 		// Vml_Vector3D_65536 14.2.2.11 (lightposition)
@@ -1326,9 +1326,9 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultString(CVml_Vector3D_65536)
 
-		private:
+			private:
 
-			int m_nX;
+				int m_nX;
 			int m_nY;
 			int m_nZ;
 		};
@@ -1352,8 +1352,8 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultString(CVml_Vector3D)
 
-		private:
-			int m_nX;
+			private:
+				int m_nX;
 			int m_nY;
 			int m_nZ;
 		};
@@ -1375,8 +1375,8 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultString(CVml_Vector2D)
 
-		private:
-			int m_nX;
+			private:
+				int m_nX;
 			int m_nY;
 		};
 		//--------------------------------------------------------------------------------
@@ -1398,8 +1398,8 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultString(CVml_Vector2D_F)
 
-		private:
-			double m_dX;
+			private:
+				double m_dX;
 			double m_dY;
 		};
 		//--------------------------------------------------------------------------------
@@ -1421,680 +1421,680 @@ namespace SimpleTypes
 
 			SimpleTypes_DefaultString(CVml_Polygon2D)
 
-		private:
+			private:
 
-			struct TPoint
+				struct TPoint
 			{
-				int nX;
-				int nY;
+						   int nX;
+			int nY;
 
-				TPoint( int n_X, int n_Y )
-				{
-					nX = n_X;
-					nY = n_Y;
-				}
-			};
-
-			std::vector<TPoint> m_arrPoints;
+			TPoint( int n_X, int n_Y )
+			{
+				nX = n_X;
+				nY = n_Y;
+			}
 		};
-		//------------------------------------------------------------------------------------------
-		// CCssProperty
-		//------------------------------------------------------------------------------------------
+
+		std::vector<TPoint> m_arrPoints;
+	};
+	//------------------------------------------------------------------------------------------
+	// CCssProperty
+	//------------------------------------------------------------------------------------------
 
 #define CSS_MAX_NAME_LEN 127
 
-		std::wstring RemoveWhiteSpaces(const std::wstring &sText);
+	std::wstring RemoveWhiteSpaces(const std::wstring &sText);
 
-		enum ECssPropertyType
-		{
-			cssptUnknown						= 0000,
+	enum ECssPropertyType
+	{
+		cssptUnknown						= 0000,
 
-			cssptFlip							= 1000,
-			cssptHeight							= 1001,
-			cssptLeft							= 1002,
-			cssptMarginBottom					= 1003,
-			cssptMarginLeft						= 1004,
-			cssptMarginRight					= 1005,
-			cssptMarginTop						= 1006,
-			cssptMsoPositionHorizontal          = 1007,
-			cssptMsoPositionHorizontalRelative	= 1008,
-			cssptMsoPositionVertical			= 1009,
-			cssptMsoPositionVerticalRelative	= 1010,
-			cssptMsoWrapDistanceBottom			= 1011,
-			cssptMsoWrapDistanceLeft			= 1012,
-			cssptMsoWrapDistanceRight			= 1013,
-			cssptMsoWrapDistanceTop				= 1014,
-			cssptMsoWrapEdited					= 1015,
-			cssptMsoWrapStyle					= 1016,
-			cssptPosition				= 1017,
-			cssptRotation				= 1018,
-			cssptTop					= 1019,
-			cssptVisibility				= 1020,
-			cssptWidth					= 1021,
-			cssptZIndex					= 1022,
-			csspctMsoWidthPercent		= 1023,
-			csspctMsoHeightPercent		= 1024,
-			csspctMsoTopPercent			= 1025,
-			csspctMsoLeftPercent		= 1026,
+		cssptFlip							= 1000,
+		cssptHeight							= 1001,
+		cssptLeft							= 1002,
+		cssptMarginBottom					= 1003,
+		cssptMarginLeft						= 1004,
+		cssptMarginRight					= 1005,
+		cssptMarginTop						= 1006,
+		cssptMsoPositionHorizontal          = 1007,
+		cssptMsoPositionHorizontalRelative	= 1008,
+		cssptMsoPositionVertical			= 1009,
+		cssptMsoPositionVerticalRelative	= 1010,
+		cssptMsoWrapDistanceBottom			= 1011,
+		cssptMsoWrapDistanceLeft			= 1012,
+		cssptMsoWrapDistanceRight			= 1013,
+		cssptMsoWrapDistanceTop				= 1014,
+		cssptMsoWrapEdited					= 1015,
+		cssptMsoWrapStyle					= 1016,
+		cssptPosition				= 1017,
+		cssptRotation				= 1018,
+		cssptTop					= 1019,
+		cssptVisibility				= 1020,
+		cssptWidth					= 1021,
+		cssptZIndex					= 1022,
+		csspctMsoWidthPercent		= 1023,
+		csspctMsoHeightPercent		= 1024,
+		csspctMsoTopPercent			= 1025,
+		csspctMsoLeftPercent		= 1026,
 
-			//  Для элемента Textbox 14.1.2.22
-			cssptDirection				= 1100,
-			cssptLayoutFlow				= 1101,
-			cssptMsoDirectionAlt		= 1102,
-			cssptMsoFitShapeToText		= 1103,
-			cssptMsoFitTextToShape		= 1104,
-			cssptMsoLayoutFlowAlt		= 1105,
-			cssptMsoNextTextbox			= 1106,
-			cssptMsoRotate				= 1107,
-			cssptMsoTextScale			= 1108,
-			cssptVTextAnchor			= 1109,
+		//  Для элемента Textbox 14.1.2.22
+		cssptDirection				= 1100,
+		cssptLayoutFlow				= 1101,
+		cssptMsoDirectionAlt		= 1102,
+		cssptMsoFitShapeToText		= 1103,
+		cssptMsoFitTextToShape		= 1104,
+		cssptMsoLayoutFlowAlt		= 1105,
+		cssptMsoNextTextbox			= 1106,
+		cssptMsoRotate				= 1107,
+		cssptMsoTextScale			= 1108,
+		cssptVTextAnchor			= 1109,
 
-			// Для элемента Textpath 14.1.2.23
-			cssptFont					= 1200,
-			cssptFontFamily				= 1201,
-			cssptFontSize				= 1202,
-			cssptFontStyle				= 1203,
-			cssptFontVariant			= 1204,
-			cssptFontWeight				= 1205,
-			cssptMsoTextShadow			= 1206,
-			cssptTextDecoration			= 1207,
-			cssptVRotateLetters			= 1208,
-			cssptVSameLetterHeights		= 1209,
-			cssptVTextAlign				= 1210,
-			cssptVTextKern				= 1211,
-			cssptVTextReverse			= 1212,
-			cssptVTextSpacingMode		= 1213,
-			cssptVTextSpacing			= 1214,
-			cssptHTextAlign				= 1215,
-		};
+		// Для элемента Textpath 14.1.2.23
+		cssptFont					= 1200,
+		cssptFontFamily				= 1201,
+		cssptFontSize				= 1202,
+		cssptFontStyle				= 1203,
+		cssptFontVariant			= 1204,
+		cssptFontWeight				= 1205,
+		cssptMsoTextShadow			= 1206,
+		cssptTextDecoration			= 1207,
+		cssptVRotateLetters			= 1208,
+		cssptVSameLetterHeights		= 1209,
+		cssptVTextAlign				= 1210,
+		cssptVTextKern				= 1211,
+		cssptVTextReverse			= 1212,
+		cssptVTextSpacingMode		= 1213,
+		cssptVTextSpacing			= 1214,
+		cssptHTextAlign				= 1215,
+	};
 
-		enum ECssFlip
-		{
-			cssflipX  = 0,
-			cssflipY  = 1,
-			cssflipXY = 2,
-			cssflipYX = 3,
-		};
-		enum ECssUnitsType
-		{
-			cssunitstypeAuto		= 0,
-			cssunitstypeUnits		= 1,
-			cssunitstypePerc		= 2,
-			cssunitstypeAbsolute	= 3
-		};
-		struct TCssUnitsValue
-		{
-			ECssUnitsType eType;
-			double        dValue; // значение в пунктах
-		};
-		enum ECssMsoPosHor
-		{
-			cssmsoposhorAbsolute = 0,
-			cssmsoposhorLeft     = 1,
-			cssmsoposhorCenter   = 2,
-			cssmsoposhorRight    = 3,
-			cssmsoposhorInside   = 4,
-			cssmsoposhorOutside  = 5,
-		};
-		enum ECssMsoPosHorRel
-		{
-			cssmsoposhorrelMargin		= 0,
-			cssmsoposhorrelPage			= 1,
-			cssmsoposhorrelText			= 2,
-			cssmsoposhorrelChar			= 3,
-			cssmsoposhorrelLeftMargin	= 4,
-			cssmsoposhorrelRightMargin	= 5
-		};
-		enum ECssMsoPosVer
-		{
-			cssmsoposverAbsolute = 0,
-			cssmsoposverTop      = 1,
-			cssmsoposverCenter   = 2,
-			cssmsoposverBottom   = 3,
-			cssmsoposverInside   = 4,
-			cssmsoposverOutside  = 5,
-		};
-		enum ECssMsoPosVerRel
-		{
-			cssmsoposverrelMargin		= 0,
-			cssmsoposverrelPage			= 1,
-			cssmsoposverrelText			= 2,
-			cssmsoposverrelLine			= 3,
-			cssmsoposverrelTopMargin	= 4,
-			cssmsoposverrelBottomMargin	= 5
-		};
-		enum ECssMsoWrapStyle
-		{
-			cssmsowrapstyleSqaure = 0,
-			cssmsowrapstyleNone   = 1,
-		};
-		enum ECssPosition
-		{
-			csspositionStatic   = 0,
-			csspositionAbsolute = 1,
-			csspositionRelative = 2,
-		};
-		enum ECssVisibility
-		{
-			cssvisibilityHidden  = 0,
-			cssvisibilityInherit = 1,
-		};
-		enum ECssZIndexType
-		{
-			csszindextypeAuto  = 0,
-			csszindextypeOrder = 1,
-		};
-		struct TCssZIndexValue
-		{
-			ECssZIndexType eType;
-			int            nOrder;
-		};
-		enum ECssDirection
-		{
-			cssdirectionLTR = 0,
-			cssdirectionRTL = 1,
-		};
-		enum ECssLayoutFlow
-		{
-			csslayoutflowHorizontal				= 0,
-			csslayoutflowVertical				= 1,
-			csslayoutflowVerticalIdeographic	= 2,
-			csslayoutflowHorizontalIdeographic	= 3,
-		};
-		enum ECssDirectionAlt
-		{
-			cssdirectionaltContext = 0,
-		};
-		enum ECssLayoutFlowAlt
-		{
-			csslayoutflowaltBottomToTop = 0,
-		};
+	enum ECssFlip
+	{
+		cssflipX  = 0,
+		cssflipY  = 1,
+		cssflipXY = 2,
+		cssflipYX = 3,
+	};
+	enum ECssUnitsType
+	{
+		cssunitstypeAuto		= 0,
+		cssunitstypeUnits		= 1,
+		cssunitstypePerc		= 2,
+		cssunitstypeAbsolute	= 3
+	};
+	struct TCssUnitsValue
+	{
+		ECssUnitsType eType;
+		double        dValue; // значение в пунктах
+	};
+	enum ECssMsoPosHor
+	{
+		cssmsoposhorAbsolute = 0,
+		cssmsoposhorLeft     = 1,
+		cssmsoposhorCenter   = 2,
+		cssmsoposhorRight    = 3,
+		cssmsoposhorInside   = 4,
+		cssmsoposhorOutside  = 5,
+	};
+	enum ECssMsoPosHorRel
+	{
+		cssmsoposhorrelMargin		= 0,
+		cssmsoposhorrelPage			= 1,
+		cssmsoposhorrelText			= 2,
+		cssmsoposhorrelChar			= 3,
+		cssmsoposhorrelLeftMargin	= 4,
+		cssmsoposhorrelRightMargin	= 5
+	};
+	enum ECssMsoPosVer
+	{
+		cssmsoposverAbsolute = 0,
+		cssmsoposverTop      = 1,
+		cssmsoposverCenter   = 2,
+		cssmsoposverBottom   = 3,
+		cssmsoposverInside   = 4,
+		cssmsoposverOutside  = 5,
+	};
+	enum ECssMsoPosVerRel
+	{
+		cssmsoposverrelMargin		= 0,
+		cssmsoposverrelPage			= 1,
+		cssmsoposverrelText			= 2,
+		cssmsoposverrelLine			= 3,
+		cssmsoposverrelTopMargin	= 4,
+		cssmsoposverrelBottomMargin	= 5
+	};
+	enum ECssMsoWrapStyle
+	{
+		cssmsowrapstyleSqaure = 0,
+		cssmsowrapstyleNone   = 1,
+	};
+	enum ECssPosition
+	{
+		csspositionStatic   = 0,
+		csspositionAbsolute = 1,
+		csspositionRelative = 2,
+	};
+	enum ECssVisibility
+	{
+		cssvisibilityHidden  = 0,
+		cssvisibilityInherit = 1,
+	};
+	enum ECssZIndexType
+	{
+		csszindextypeAuto  = 0,
+		csszindextypeOrder = 1,
+	};
+	struct TCssZIndexValue
+	{
+		ECssZIndexType eType;
+		int            nOrder;
+	};
+	enum ECssDirection
+	{
+		cssdirectionLTR = 0,
+		cssdirectionRTL = 1,
+	};
+	enum ECssLayoutFlow
+	{
+		csslayoutflowHorizontal				= 0,
+		csslayoutflowVertical				= 1,
+		csslayoutflowVerticalIdeographic	= 2,
+		csslayoutflowHorizontalIdeographic	= 3,
+	};
+	enum ECssDirectionAlt
+	{
+		cssdirectionaltContext = 0,
+	};
+	enum ECssLayoutFlowAlt
+	{
+		csslayoutflowaltBottomToTop = 0,
+	};
 
-		enum ECssMsoRotate
-		{
-			cssmsorotate0   =   0,
-			cssmsorotate90  =  90,
-			cssmsorotate180 = 180,
-			cssmsorotate270 = -90,
-		};
-		enum ECssVTextAnchor
-		{
-			cssvtextanchorTop					 = 0,
-			cssvtextanchorMiddle					= 1,
-			cssvtextanchorBottom					= 2,
-			cssvtextanchorTopCenter            = 3,
-			cssvtextanchorMiddleCenter         = 4,
-			cssvtextanchorBottomCenter         = 5,
-			cssvtextanchorTopBaseline          = 6,
-			cssvtextanchorBottomBaseline       = 7,
-			cssvtextanchorTopCenterBaseline    = 8,
-			cssvtextanchorBottomCenterBaseline = 9,
-		};
-		enum ECssFontStyle
-		{
-			cssfontstyleNormal  = 0,
-			cssfontstyleItalic  = 1,
-			cssfontstyleOblique = 2,
-		};
-		enum ECssFontVarian
-		{
-			cssfontvariantNormal    = 0,
-			cssfontvariantSmallCaps = 1,
-		};
-		enum ECssFontWeight
-		{
-			cssfontweightNormal  = 0,
-			cssfontweightLighter = 1,
-			cssfontweight100     = 100,
-			cssfontweight200     = 200,
-			cssfontweight300     = 300,
-			cssfontweight400     = 400,
-			cssfontweightBold    = 550,
-			cssfontweightBolder  = 750,
-			cssfontweight500     = 500,
-			cssfontweight600     = 600,
-			cssfontweight700     = 700,
-			cssfontweight800     = 800,
-			cssfontweight900     = 900
-		};
-		enum ECssTextDecoration
-		{
-			csstextdecorationNone        = 0,
-			csstextdecorationUnderline   = 1,
-			csstextdecorationOverline    = 2,
-			csstextdecorationLineThrough = 3,
-			csstextdecorationBlink       = 4,
-		};
-		enum ECssVTextAlign
-		{
-			cssvtextalignLeft           = 0,
-			cssvtextalignRight          = 1,
-			cssvtextalignCenter         = 2,
-			cssvtextalignJustify        = 3,
-			cssvtextalignLetterJustify  = 4,
-			cssvtextalignStretchJustify = 5,
-		};
-		enum ECssVTextSpacingMode
-		{
-			cssvtextspacingmodeTightening = 0,
-			cssvtextspacingmodeTracking   = 1
-		};
-
-
-		union UCssValue
-		{
-			ECssFlip			eFlip;
-			TCssUnitsValue		oValue;
-			ECssMsoPosHor		eMsoPosHor;
-			ECssMsoPosHorRel	eMsoPosHorRel;
-			ECssMsoPosVer		eMsoPosVer;
-			ECssMsoPosVerRel	eMsoPosVerRel;
-			bool				bValue;
-			ECssMsoWrapStyle	eMsoWrapStyle;
-			ECssPosition		ePosition;
-			ECssVisibility		eVisibility;
-			TCssZIndexValue		oZIndex;
-			ECssDirection		eDirection;
-			ECssLayoutFlow		eLayoutFlow;
-			ECssDirectionAlt	eDirectionAlt;
-			ECssLayoutFlowAlt	eLayoutFlowAlt;
-			wchar_t				wsValue[CSS_MAX_NAME_LEN + 1];
-			ECssMsoRotate        eRotate;
-			ECssVTextAnchor      eVTextAnchor;
-			ECssFontStyle        eFontStyle;
-			ECssFontVarian       eFontVariant;
-			ECssFontWeight       eFontWeight;
-			ECssTextDecoration   eTextDecoration;
-			ECssVTextAlign       eVTextAlign;
-			ECssVTextSpacingMode eVTextSpacingMode;
-			ECssVTextAlign       eHTextAlign;
-		};
-		class CCssProperty
-		{
-		public:
-
-			CCssProperty();
-
-			CCssProperty(std::wstring sBuffer);
-			~CCssProperty();
+	enum ECssMsoRotate
+	{
+		cssmsorotate0   =   0,
+		cssmsorotate90  =  90,
+		cssmsorotate180 = 180,
+		cssmsorotate270 = -90,
+	};
+	enum ECssVTextAnchor
+	{
+		cssvtextanchorTop					 = 0,
+		cssvtextanchorMiddle					= 1,
+		cssvtextanchorBottom					= 2,
+		cssvtextanchorTopCenter            = 3,
+		cssvtextanchorMiddleCenter         = 4,
+		cssvtextanchorBottomCenter         = 5,
+		cssvtextanchorTopBaseline          = 6,
+		cssvtextanchorBottomBaseline       = 7,
+		cssvtextanchorTopCenterBaseline    = 8,
+		cssvtextanchorBottomCenterBaseline = 9,
+	};
+	enum ECssFontStyle
+	{
+		cssfontstyleNormal  = 0,
+		cssfontstyleItalic  = 1,
+		cssfontstyleOblique = 2,
+	};
+	enum ECssFontVarian
+	{
+		cssfontvariantNormal    = 0,
+		cssfontvariantSmallCaps = 1,
+	};
+	enum ECssFontWeight
+	{
+		cssfontweightNormal  = 0,
+		cssfontweightLighter = 1,
+		cssfontweight100     = 100,
+		cssfontweight200     = 200,
+		cssfontweight300     = 300,
+		cssfontweight400     = 400,
+		cssfontweightBold    = 550,
+		cssfontweightBolder  = 750,
+		cssfontweight500     = 500,
+		cssfontweight600     = 600,
+		cssfontweight700     = 700,
+		cssfontweight800     = 800,
+		cssfontweight900     = 900
+	};
+	enum ECssTextDecoration
+	{
+		csstextdecorationNone        = 0,
+		csstextdecorationUnderline   = 1,
+		csstextdecorationOverline    = 2,
+		csstextdecorationLineThrough = 3,
+		csstextdecorationBlink       = 4,
+	};
+	enum ECssVTextAlign
+	{
+		cssvtextalignLeft           = 0,
+		cssvtextalignRight          = 1,
+		cssvtextalignCenter         = 2,
+		cssvtextalignJustify        = 3,
+		cssvtextalignLetterJustify  = 4,
+		cssvtextalignStretchJustify = 5,
+	};
+	enum ECssVTextSpacingMode
+	{
+		cssvtextspacingmodeTightening = 0,
+		cssvtextspacingmodeTracking   = 1
+	};
 
 
-			const UCssValue &get_Value() const;
+	union UCssValue
+	{
+		ECssFlip			eFlip;
+		TCssUnitsValue		oValue;
+		ECssMsoPosHor		eMsoPosHor;
+		ECssMsoPosHorRel	eMsoPosHorRel;
+		ECssMsoPosVer		eMsoPosVer;
+		ECssMsoPosVerRel	eMsoPosVerRel;
+		bool				bValue;
+		ECssMsoWrapStyle	eMsoWrapStyle;
+		ECssPosition		ePosition;
+		ECssVisibility		eVisibility;
+		TCssZIndexValue		oZIndex;
+		ECssDirection		eDirection;
+		ECssLayoutFlow		eLayoutFlow;
+		ECssDirectionAlt	eDirectionAlt;
+		ECssLayoutFlowAlt	eLayoutFlowAlt;
+		wchar_t				wsValue[CSS_MAX_NAME_LEN + 1];
+		ECssMsoRotate        eRotate;
+		ECssVTextAnchor      eVTextAnchor;
+		ECssFontStyle        eFontStyle;
+		ECssFontVarian       eFontVariant;
+		ECssFontWeight       eFontWeight;
+		ECssTextDecoration   eTextDecoration;
+		ECssVTextAlign       eVTextAlign;
+		ECssVTextSpacingMode eVTextSpacingMode;
+		ECssVTextAlign       eHTextAlign;
+	};
+	class CCssProperty
+	{
+	public:
 
-			const ECssPropertyType &get_Type() const;
+		CCssProperty();
+
+		CCssProperty(std::wstring sBuffer);
+		~CCssProperty();
+
+
+		const UCssValue &get_Value() const;
+
+		const ECssPropertyType &get_Type() const;
+
+	private:
+
+		void Parse(const std::wstring &sBuffer);
+
+	private:
+
+		void ReadValue_Unknown(std::wstring& sValue);
+		void ReadValue_Flip(std::wstring& sValue);
+		void ReadValue_Units(std::wstring& sValue);
+
+		void ReadValue_MsoPosHor(std::wstring& sValue);
+		void ReadValue_MsoPosHorRel(std::wstring& sValue);
+		void ReadValue_MsoPosVer(std::wstring& sValue);
+		void ReadValue_MsoPosVerRel(std::wstring& sValue);
+
+		void ReadValue_Rotation(std::wstring& sValue);
+		void ReadValue_Boolean(std::wstring& sValue);
+		void ReadValue_MsoWrapStyle(std::wstring& sValue);
+		void ReadValue_Position(std::wstring& sValue);
+		void ReadValue_Visibility(std::wstring& sValue);
+		void ReadValue_ZIndex(std::wstring& sValue);
+		void ReadValue_Direction(std::wstring& sValue);
+		void ReadValue_LayoutFlow(std::wstring& sValue);
+		void ReadValue_DirectionAlt(std::wstring& sValue);
+		void ReadValue_LayoutFlowAlt(std::wstring& sValue);
+		void ReadValue_String(std::wstring& sValue);
+
+		void ReadValue_MsoRotate(std::wstring& sValue);
+		void ReadValue_VTextAnchor(std::wstring& sValue);
+		void ReadValue_FontStyle(std::wstring& sValue);
+		void ReadValue_FontVariant(std::wstring& sValue);
+		void ReadValue_FontWeight(std::wstring& sValue);
+		void ReadValue_TextDecoration(std::wstring& sValue);
+		void ReadValue_VTextAlign(std::wstring& sValue);
+		void ReadValue_VTextSpacingMode(std::wstring& sValue);
+
+	private:
+		ECssPropertyType  m_eType;
+		UCssValue         m_oValue;
+
+	};
+
+	//--------------------------------------------------------------------------------
+	// CCssStyle 14.1.2.1 (style) (Part 1)
+	//--------------------------------------------------------------------------------
+
+	typedef boost::shared_ptr<CCssProperty>	CCssPropertyPtr;
+
+	class CCssStyle
+	{
+	public:
+		CCssStyle();
+		~CCssStyle();
+		void Clear();
+
+		std::wstring FromString(const std::wstring &sValue);
+		std::wstring ToString  () const;
+
+		void mergeFrom(CCssStyle* parent);
+
+		SimpleTypes_DefaultString(CCssStyle)
+
+		private:
+
+			bool ParseProperties();
+
+	public:
+		std::map<ECssPropertyType, size_t>	m_mapProperties;
+		std::vector<CCssPropertyPtr>		m_arrProperties;
+		std::wstring 						m_sCss;
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Vector2D_Units 14.1.2.3 (from, control1, control2, to)
+	//--------------------------------------------------------------------------------
+	class CVml_Vector2D_Units
+	{
+	public:
+		CVml_Vector2D_Units();
+
+		double GetX() const;
+		double GetY() const;
+
+		void   SetValue(double dX, double dY);
+
+		virtual double FromString(const std::wstring &sValue);
+
+		virtual std::wstring ToString  () const;
+
+		SimpleTypes_DefaultString(CVml_Vector2D_Units)
 
 		private:
 
-			void Parse(const std::wstring &sBuffer);
+			double m_dX; // В пунктах
+		double m_dY; // В пунктах
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Vector2D_Percentage
+	//--------------------------------------------------------------------------------
+	class CVml_Vector2D_Percentage
+	{
+	public:
+		CVml_Vector2D_Percentage();
 
-		private:
+		double GetX() const;
+		double GetY() const;
 
-			void ReadValue_Unknown(std::wstring& sValue);
-			void ReadValue_Flip(std::wstring& sValue);
-			void ReadValue_Units(std::wstring& sValue);
+		void   SetValue(double dX, double dY);
 
-			void ReadValue_MsoPosHor(std::wstring& sValue);
-			void ReadValue_MsoPosHorRel(std::wstring& sValue);
-			void ReadValue_MsoPosVer(std::wstring& sValue);
-			void ReadValue_MsoPosVerRel(std::wstring& sValue);
+		virtual double FromString(const std::wstring &sValue);
 
-			void ReadValue_Rotation(std::wstring& sValue);
-			void ReadValue_Boolean(std::wstring& sValue);
-			void ReadValue_MsoWrapStyle(std::wstring& sValue);
-			void ReadValue_Position(std::wstring& sValue);
-			void ReadValue_Visibility(std::wstring& sValue);
-			void ReadValue_ZIndex(std::wstring& sValue);
-			void ReadValue_Direction(std::wstring& sValue);
-			void ReadValue_LayoutFlow(std::wstring& sValue);
-			void ReadValue_DirectionAlt(std::wstring& sValue);
-			void ReadValue_LayoutFlowAlt(std::wstring& sValue);
-			void ReadValue_String(std::wstring& sValue);
+		virtual std::wstring ToString  () const;
 
-			void ReadValue_MsoRotate(std::wstring& sValue);
-			void ReadValue_VTextAnchor(std::wstring& sValue);
-			void ReadValue_FontStyle(std::wstring& sValue);
-			void ReadValue_FontVariant(std::wstring& sValue);
-			void ReadValue_FontWeight(std::wstring& sValue);
-			void ReadValue_TextDecoration(std::wstring& sValue);
-			void ReadValue_VTextAlign(std::wstring& sValue);
-			void ReadValue_VTextSpacingMode(std::wstring& sValue);
-
-		private:
-			ECssPropertyType  m_eType;
-			UCssValue         m_oValue;
-
-		};
-
-		//--------------------------------------------------------------------------------
-		// CCssStyle 14.1.2.1 (style) (Part 1)
-		//--------------------------------------------------------------------------------
-
-		typedef boost::shared_ptr<CCssProperty>	CCssPropertyPtr;
-
-		class CCssStyle
-		{
-		public:
-			CCssStyle();
-			~CCssStyle();
-			void Clear();
-
-			std::wstring FromString(const std::wstring &sValue);
-			std::wstring ToString  () const;
-
-			void mergeFrom(CCssStyle* parent);
-
-			SimpleTypes_DefaultString(CCssStyle)
-
-			private:
-
-				bool ParseProperties();
-
-		public:
-			std::map<ECssPropertyType, size_t>	m_mapProperties;
-			std::vector<CCssPropertyPtr>		m_arrProperties;
-			std::wstring 						m_sCss;
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Vector2D_Units 14.1.2.3 (from, control1, control2, to)
-		//--------------------------------------------------------------------------------
-		class CVml_Vector2D_Units
-		{
-		public:
-			CVml_Vector2D_Units();
-
-			double GetX() const;
-			double GetY() const;
-
-			void   SetValue(double dX, double dY);
-
-			virtual double FromString(const std::wstring &sValue);
-
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_DefaultString(CVml_Vector2D_Units)
-
-			private:
-
-				double m_dX; // В пунктах
-			double m_dY; // В пунктах
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Vector2D_Percentage
-		//--------------------------------------------------------------------------------
-		class CVml_Vector2D_Percentage
-		{
-		public:
-			CVml_Vector2D_Percentage();
-
-			double GetX() const;
-			double GetY() const;
-
-			void   SetValue(double dX, double dY);
-
-			virtual double FromString(const std::wstring &sValue);
-
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_DefaultString(CVml_Vector2D_Percentage)
-
-		private:
-			double m_dX; //
-			double m_dY; //
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Vector2D_1_65536
-		//--------------------------------------------------------------------------------
-		class CVml_Vector2D_1_65536
-		{
-		public:
-			CVml_Vector2D_1_65536();
-
-			double GetX() const;
-			double GetY() const;
-
-			void   SetValue(double dX, double dY);
-
-			virtual double FromString(const std::wstring &sValue);
-
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_DefaultString(CVml_Vector2D_1_65536)
+		SimpleTypes_DefaultString(CVml_Vector2D_Percentage)
 
 		private:
 			double m_dX; //
-			double m_dY; //
-		};
-		//--------------------------------------------------------------------------------
-		// CVml_TableLimits
-		//--------------------------------------------------------------------------------
-		class CVml_TableLimits
-		{
-		public:
-			CVml_TableLimits();
+		double m_dY; //
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Vector2D_1_65536
+	//--------------------------------------------------------------------------------
+	class CVml_Vector2D_1_65536
+	{
+	public:
+		CVml_Vector2D_1_65536();
 
-			unsigned int GetSize() const;
-			double GetAt(int nIndex) const;
+		double GetX() const;
+		double GetY() const;
 
-			void AddValue(double dValue);
+		void   SetValue(double dX, double dY);
 
-			int FromString(const std::wstring &sValue);
+		virtual double FromString(const std::wstring &sValue);
 
-			std::wstring ToString  () const;
+		virtual std::wstring ToString  () const;
 
-			SimpleTypes_DefaultString(CVml_TableLimits)
+		SimpleTypes_DefaultString(CVml_Vector2D_1_65536)
+
+		private:
+			double m_dX; //
+		double m_dY; //
+	};
+	//--------------------------------------------------------------------------------
+	// CVml_TableLimits
+	//--------------------------------------------------------------------------------
+	class CVml_TableLimits
+	{
+	public:
+		CVml_TableLimits();
+
+		unsigned int GetSize() const;
+		double GetAt(int nIndex) const;
+
+		void AddValue(double dValue);
+
+		int FromString(const std::wstring &sValue);
+
+		std::wstring ToString  () const;
+
+		SimpleTypes_DefaultString(CVml_TableLimits)
 
 		private:
 			std::vector<double> m_arrLimits;
-		};
+	};
 
-		//--------------------------------------------------------------------------------
-		// CVml_TableProperties
-		//--------------------------------------------------------------------------------
-		template<int nDefValue = 0>
-		class CVml_TableProperties : public CSimpleType<int, nDefValue>
-		{
-		public:
-			CVml_TableProperties();
+	//--------------------------------------------------------------------------------
+	// CVml_TableProperties
+	//--------------------------------------------------------------------------------
+	template<int nDefValue = 0>
+	class CVml_TableProperties : public CSimpleType<int, nDefValue>
+	{
+	public:
+		CVml_TableProperties();
 
-			virtual int     FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		virtual int     FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
 
-			bool IsTable() const;
-			bool IsPlaceholder() const;
-			bool IsBiDirectionalText() const;
+		bool IsTable() const;
+		bool IsPlaceholder() const;
+		bool IsBiDirectionalText() const;
 
-			SimpleTypes_Default(CVml_TableProperties)
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Vector2D_Position 14.1.2.8 (position)
-		//--------------------------------------------------------------------------------
-		enum EVml_Vector2D_Position
-		{
-			vmlvector2dposConstant    = 0,
-			vmlvector2dposFormula     = 1,
-			vmlvector2dposAdjValue    = 2,
-			vmlvector2dposCenter      = 3,
-			vmlvector2dposTopLeft     = 4,
-			vmlvector2dposBottomRight = 5,
-		};
+		SimpleTypes_Default(CVml_TableProperties)
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Vector2D_Position 14.1.2.8 (position)
+	//--------------------------------------------------------------------------------
+	enum EVml_Vector2D_Position
+	{
+		vmlvector2dposConstant    = 0,
+		vmlvector2dposFormula     = 1,
+		vmlvector2dposAdjValue    = 2,
+		vmlvector2dposCenter      = 3,
+		vmlvector2dposTopLeft     = 4,
+		vmlvector2dposBottomRight = 5,
+	};
 
-		class CVml_Vector2D_Position
-		{
-		public:
-			CVml_Vector2D_Position();
+	class CVml_Vector2D_Position
+	{
+	public:
+		CVml_Vector2D_Position();
 
-			EVml_Vector2D_Position GetTypeX() const;
-			EVml_Vector2D_Position GetTypeY() const;
-			std::wstring GetIdX() const;
-			std::wstring GetIdY() const;
-			double					GetX() const;
-			double					GetY() const;
-			void   SetConstantX(double dX);
-			void   SetConstantY(double dY);
+		EVml_Vector2D_Position GetTypeX() const;
+		EVml_Vector2D_Position GetTypeY() const;
+		std::wstring GetIdX() const;
+		std::wstring GetIdY() const;
+		double					GetX() const;
+		double					GetY() const;
+		void   SetConstantX(double dX);
+		void   SetConstantY(double dY);
 
-			double FromString(const std::wstring &sValue);
+		double FromString(const std::wstring &sValue);
 
-			std::wstring ToString  () const;
+		std::wstring ToString  () const;
 
-			SimpleTypes_DefaultString(CVml_Vector2D_Position)
+		SimpleTypes_DefaultString(CVml_Vector2D_Position)
 
 		private:
 			void Parse(std::wstring &sValue, bool bFirst);
 
-		private:
+	private:
 
-			EVml_Vector2D_Position m_eTypeX;
-			EVml_Vector2D_Position m_eTypeY;
+		EVml_Vector2D_Position m_eTypeX;
+		EVml_Vector2D_Position m_eTypeY;
 
-			std::wstring m_sIdX;  // Значение для типа Formula иди AdjValue
-			std::wstring m_sIdY;  //
+		std::wstring m_sIdX;  // Значение для типа Formula иди AdjValue
+		std::wstring m_sIdY;  //
 
-			double					m_dX;    // Значение для типа Constant
-			double					m_dY;    //
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Polygon2D_Units 14.1.2.15 (points)
-		//--------------------------------------------------------------------------------
-		class CVml_Polygon2D_Units
+		double					m_dX;    // Значение для типа Constant
+		double					m_dY;    //
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Polygon2D_Units 14.1.2.15 (points)
+	//--------------------------------------------------------------------------------
+	class CVml_Polygon2D_Units
+	{
+	public:
+		CVml_Polygon2D_Units();
+		CVml_Polygon2D_Units(const CVml_Polygon2D_Units &oOther);
+		CVml_Polygon2D_Units(const std::wstring& wsStr);
+		CVml_Polygon2D_Units &operator =(const std::wstring& wsStr);
+
+		void SetDelimiter(wchar_t wcNew);
+		double GetX(int nIndex) const;
+		double GetY(int nIndex) const;
+
+		void   AddPoint(double dX, double dY);
+
+		virtual double FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
+
+	private:
+
+		struct TPoint
 		{
-		public:
-			CVml_Polygon2D_Units();
-			CVml_Polygon2D_Units(const CVml_Polygon2D_Units &oOther);
-			CVml_Polygon2D_Units(const std::wstring& wsStr);
-			CVml_Polygon2D_Units &operator =(const std::wstring& wsStr);
+			double dX;
+			double dY;
 
-			void SetDelimiter(wchar_t wcNew);
-			double GetX(int nIndex) const;
-			double GetY(int nIndex) const;
-
-			void   AddPoint(double dX, double dY);
-
-			virtual double FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-		private:
-
-			struct TPoint
+			TPoint(double d_X, double d_Y )
 			{
-				double dX;
-				double dY;
-
-				TPoint(double d_X, double d_Y )
-				{
-					dX = d_X;
-					dY = d_Y;
-				}
-			};
-
-			std::vector<TPoint> m_arrPoints;
-			wchar_t	m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
+				dX = d_X;
+				dY = d_Y;
+			}
 		};
-		//--------------------------------------------------------------------------------
-		// Vml_1_65536_Or_Percentage 14.2.2.11 (brightness)
-		//--------------------------------------------------------------------------------
-		class CVml_1_65536_Or_Percentage
-		{
-		public:
-			CVml_1_65536_Or_Percentage();
 
-			double GetValue() const;
+		std::vector<TPoint> m_arrPoints;
+		wchar_t	m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_1_65536_Or_Percentage 14.2.2.11 (brightness)
+	//--------------------------------------------------------------------------------
+	class CVml_1_65536_Or_Percentage
+	{
+	public:
+		CVml_1_65536_Or_Percentage();
 
-			void   SetValue(double dValue);
-			void   SetValue(int nValue);
-			void   SetPercentage(double dValue);
+		double GetValue() const;
 
-			virtual double FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		void   SetValue(double dValue);
+		void   SetValue(int nValue);
+		void   SetPercentage(double dValue);
 
-			SimpleTypes_DefaultD(CVml_1_65536_Or_Percentage)
+		virtual double FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
+
+		SimpleTypes_DefaultD(CVml_1_65536_Or_Percentage)
 
 		private:
 			double m_dValue;
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Matrix 14.1.2.18 (matrix)
-		//--------------------------------------------------------------------------------
-		class CVml_Matrix
-		{
-		public:
-			CVml_Matrix();
-			CVml_Matrix(const CVml_Matrix &oOther);
-			CVml_Matrix(const std::wstring& wsStr);
-			CVml_Matrix &operator =(const std::wstring& wsStr);
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Matrix 14.1.2.18 (matrix)
+	//--------------------------------------------------------------------------------
+	class CVml_Matrix
+	{
+	public:
+		CVml_Matrix();
+		CVml_Matrix(const CVml_Matrix &oOther);
+		CVml_Matrix(const std::wstring& wsStr);
+		CVml_Matrix &operator =(const std::wstring& wsStr);
 
-			void ResetMatrix();
-			void SetMatrix(double dSxx, double dSxy, double dSyx, double dSyy, double dPx, double dPy);
+		void ResetMatrix();
+		void SetMatrix(double dSxx, double dSxy, double dSyx, double dSyy, double dPx, double dPy);
 
-			double Get_Sxx() const;
-			double Get_Sxy() const;
-			double Get_Syx() const;
-			double Get_Syy() const;
+		double Get_Sxx() const;
+		double Get_Sxy() const;
+		double Get_Syx() const;
+		double Get_Syy() const;
 
-			double Get_Px() const;
-			double Get_Py() const;
+		double Get_Px() const;
+		double Get_Py() const;
 
-			virtual double FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		virtual double FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
 
-		private:
-			double m_dSxx;
-			double m_dSxy;
-			double m_dSyx;
-			double m_dSyy;
-			double m_dPx;
-			double m_dPy;
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_Vector2D_Units_Or_Percentage
-		//--------------------------------------------------------------------------------
-		class CVml_Vector2D_Units_Or_Percentage
-		{
-		public:
-			CVml_Vector2D_Units_Or_Percentage();
+	private:
+		double m_dSxx;
+		double m_dSxy;
+		double m_dSyx;
+		double m_dSyy;
+		double m_dPx;
+		double m_dPy;
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_Vector2D_Units_Or_Percentage
+	//--------------------------------------------------------------------------------
+	class CVml_Vector2D_Units_Or_Percentage
+	{
+	public:
+		CVml_Vector2D_Units_Or_Percentage();
 
-			double GetX() const;
-			double GetY() const;
-			bool IsXinPoints() const;
-			bool IsYinPoints() const;
-			void SetValue_Points(double dX, double dY);
+		double GetX() const;
+		double GetY() const;
+		bool IsXinPoints() const;
+		bool IsYinPoints() const;
+		void SetValue_Points(double dX, double dY);
 
-			virtual double FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		virtual double FromString(const std::wstring &sValue);
+		virtual std::wstring ToString  () const;
 
-			SimpleTypes_DefaultString(CVml_Vector2D_Units_Or_Percentage)
+		SimpleTypes_DefaultString(CVml_Vector2D_Units_Or_Percentage)
 
 		private:
 			double m_dX; //
-			double m_dY; //
+		double m_dY; //
 
-			bool   m_bUnitsX;
-			bool   m_bUnitsY;
-		};
-		//--------------------------------------------------------------------------------
-		// Vml_TextBoxInset 14.1.2.22 (inset)
-		//--------------------------------------------------------------------------------
-		class CVml_TextBoxInset
-		{
-		public:
-			CVml_TextBoxInset();
-			double GetLeft(int nIndex) const;
-			double GetTop(int nIndex) const;
-			double GetRight(int nIndex) const;
-			double GetBottom(int nIndex) const;
+		bool   m_bUnitsX;
+		bool   m_bUnitsY;
+	};
+	//--------------------------------------------------------------------------------
+	// Vml_TextBoxInset 14.1.2.22 (inset)
+	//--------------------------------------------------------------------------------
+	class CVml_TextBoxInset
+	{
+	public:
+		CVml_TextBoxInset();
+		double GetLeft(int nIndex) const;
+		double GetTop(int nIndex) const;
+		double GetRight(int nIndex) const;
+		double GetBottom(int nIndex) const;
 
-			void Set(double dL, double dT, double dR, double dB);
+		void Set(double dL, double dT, double dR, double dB);
 
-			double FromString(const std::wstring &sValue);
-			std::wstring ToString  () const;
+		double FromString(const std::wstring &sValue);
+		std::wstring ToString  () const;
 
-			SimpleTypes_DefaultString(CVml_TextBoxInset)
+		SimpleTypes_DefaultString(CVml_TextBoxInset)
 
-			private:
-				double m_dLeft;
-			double m_dTop;
-			double m_dRight;
-			double m_dBottom;
-		};
-	} // Vml
+		private:
+			double m_dLeft;
+		double m_dTop;
+		double m_dRight;
+		double m_dBottom;
+	};
+} // Vml
 } // SimpleTypes
 

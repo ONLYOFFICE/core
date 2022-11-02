@@ -158,7 +158,7 @@ namespace SimpleTypes
 	template<>
 	int CInteger2<0>::FromString(const std::wstring &sValue)
 	{
-        this->m_eValue = XmlUtils::GetInteger( sValue );
+		this->m_eValue = XmlUtils::GetInteger( sValue );
 
 		if (this->m_eValue < -2)
 			this->m_eValue = -2;
@@ -186,7 +186,7 @@ namespace SimpleTypes
 	template<>
 	int CInteger255<1>::FromString(const std::wstring &sValue)
 	{
-        this->m_eValue = XmlUtils::GetInteger64( sValue.c_str() );
+		this->m_eValue = XmlUtils::GetInteger64( sValue.c_str() );
 
 		if (this->m_eValue < 1)
 			this->m_eValue = 1;
@@ -334,7 +334,7 @@ namespace SimpleTypes
 	template<>
 	int CSpacingRule<0>::FromString(const std::wstring &sValue)
 	{
-        this->m_eValue = XmlUtils::GetInteger( sValue );
+		this->m_eValue = XmlUtils::GetInteger( sValue );
 
 		if (this->m_eValue < 0)
 			this->m_eValue = 0;
@@ -421,7 +421,7 @@ namespace SimpleTypes
 	template<>
 	unsigned int CUnSignedInteger<0>::FromString(const std::wstring &sValue)
 	{
-        this->m_eValue = XmlUtils::GetUInteger( sValue );
+		this->m_eValue = XmlUtils::GetUInteger( sValue );
 
 		return this->m_eValue;
 	}

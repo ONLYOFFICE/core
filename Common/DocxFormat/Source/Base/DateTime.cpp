@@ -100,7 +100,7 @@ const int      DateTime::ParseValue(const std::wstring &sValue, const std::wstri
 	if (  std::wstring::npos != nPos )
 	{
 		int nSepCount = 0;
-        for ( std::wstring::size_type nIndex = 0; nIndex < nPos; nIndex++ )
+		for ( std::wstring::size_type nIndex = 0; nIndex < nPos; nIndex++ )
 		{
 			if ( '%' == sPattern[nIndex] )
 				nSepCount++;
@@ -108,7 +108,7 @@ const int      DateTime::ParseValue(const std::wstring &sValue, const std::wstri
 
 		const std::wstring sNumeric = sValue.substr( nPos - nSepCount , sElement.length() - 1 );
 
-        return XmlUtils::GetInteger( sNumeric );
+		return XmlUtils::GetInteger( sNumeric );
 	}
 	return 0;
 }

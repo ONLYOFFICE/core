@@ -2138,7 +2138,7 @@ namespace SimpleTypes
 			if ( bFraction )
 			{
 				std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                int nValue = strValue.empty() ? 0 : XmlUtils::GetInteger(strValue);
+				int nValue = strValue.empty() ? 0 : XmlUtils::GetInteger(strValue);
 
 				SetValue( nValue );
 			}
@@ -2213,7 +2213,7 @@ namespace SimpleTypes
 			std::wstring strX = sValue.substr( 0, nPos );
 			XmlUtils::replace_all(strX, L"@", L"");
 
-            m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
+			m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
 
 			int nPos2 = (int)sValue.find( L",", nPos + 1 );
 			if ( -1 == nPos2 )
@@ -2225,8 +2225,8 @@ namespace SimpleTypes
 			XmlUtils::replace_all(strY, L"@", L"");
 			XmlUtils::replace_all(strZ, L"@", L"");
 
-            m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
-            m_nZ = strZ.empty() ? 0 : XmlUtils::GetInteger(strZ);
+			m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
+			m_nZ = strZ.empty() ? 0 : XmlUtils::GetInteger(strZ);
 
 			return 0;
 		}
@@ -2283,20 +2283,20 @@ namespace SimpleTypes
 				std::wstring strX = sValue;
 				XmlUtils::replace_all(strX, L"@", L"");
 
-                m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
+				m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
 				return 0;
 			}
 			std::wstring strX = sValue.substr( 0, nPos );
 			XmlUtils::replace_all(strX, L"@", L"");
 
-            m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
+			m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
 
 			int nPos2 = (int)sValue.find( L",", nPos + 1 );
 			if ( -1 == nPos2 )
 			{// only x, y position
 				std::wstring strY = sValue.substr( nPos + 1);
 				XmlUtils::replace_all(strY, L"@", L"");
-                m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
+				m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
 				return 0;
 			}
 
@@ -2306,8 +2306,8 @@ namespace SimpleTypes
 			XmlUtils::replace_all(strY, L"@", L"");
 			XmlUtils::replace_all(strZ, L"@", L"");
 
-            m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
-            m_nZ = strZ.empty() ? 0 : XmlUtils::GetInteger(strZ);
+			m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
+			m_nZ = strZ.empty() ? 0 : XmlUtils::GetInteger(strZ);
 
 			return 0;
 		}
@@ -2366,8 +2366,8 @@ namespace SimpleTypes
 			XmlUtils::replace_all(strY, L"@", L"");
 			XmlUtils::replace_all(strX, L"@", L"");
 
-            m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
-            m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
+			m_nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
+			m_nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
 
 			return 0;
 		}
@@ -2494,8 +2494,8 @@ namespace SimpleTypes
 				XmlUtils::replace_all(strX, L"@", L"");
 				XmlUtils::replace_all(strY, L"@", L"");
 
-                int nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
-                int nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
+				int nX = strX.empty() ? 0 : XmlUtils::GetInteger(strX);
+				int nY = strY.empty() ? 0 : XmlUtils::GetInteger(strY);
 
 				m_arrPoints.push_back( TPoint( nX, nY ) );
 
@@ -2972,7 +2972,7 @@ namespace SimpleTypes
 			{
 				m_oValue.oValue.dValue /= 6000.;
 			}
-				else if (sValue.find(L"f") == sValue.length() - 1)
+			else if (sValue.find(L"f") == sValue.length() - 1)
 			{
 				m_oValue.oValue.dValue /= 65536.;
 			}
@@ -2980,7 +2980,7 @@ namespace SimpleTypes
 		void CCssProperty::ReadValue_Boolean(std::wstring& sValue)
 		{
 			if ( L"true" == sValue || L"t" == sValue || L"1" == sValue )
-					m_oValue.bValue = true;
+				m_oValue.bValue = true;
 			else
 				m_oValue.bValue = false;
 		}
@@ -3012,7 +3012,7 @@ namespace SimpleTypes
 			else
 			{
 				m_oValue.oZIndex.eType  = csszindextypeOrder;
-                m_oValue.oZIndex.nOrder = XmlUtils::GetInteger(sValue);
+				m_oValue.oZIndex.nOrder = XmlUtils::GetInteger(sValue);
 
 			}
 		}
@@ -3477,7 +3477,7 @@ namespace SimpleTypes
 		template<>
 		int CVml_TableProperties<0>::FromString(const std::wstring &sValue)
 		{
-            this->m_eValue = XmlUtils::GetInteger(sValue);
+			this->m_eValue = XmlUtils::GetInteger(sValue);
 
 			return this->m_eValue;
 		}
@@ -3640,21 +3640,21 @@ namespace SimpleTypes
 				case 'c':
 
 					if ( L"center" == sValue )
-							eValue = vmlvector2dposCenter;
+						eValue = vmlvector2dposCenter;
 
 					break;
 
 				case 't':
 
 					if ( L"topleft" == sValue )
-							eValue = vmlvector2dposTopLeft;
+						eValue = vmlvector2dposTopLeft;
 
 					break;
 
 				case 'b':
 
 					if ( L"bottomright" == sValue )
-							eValue = vmlvector2dposBottomRight;
+						eValue = vmlvector2dposBottomRight;
 
 					break;
 
@@ -3827,7 +3827,7 @@ namespace SimpleTypes
 			if ( bFraction )
 			{
 				std::wstring strValue = sValue.substr( 0, nLen - 1 );
-                int nValue = strValue.empty() ? 0 : XmlUtils::GetInteger(strValue);
+				int nValue = strValue.empty() ? 0 : XmlUtils::GetInteger(strValue);
 
 				SetValue( nValue );
 			}
@@ -4059,7 +4059,7 @@ namespace SimpleTypes
 				return 0;
 
 			std::wstring sTemp = sValue.substr( 0, nPos );
-            if ( std::wstring::npos != sTemp.find( '%' ) )
+			if ( std::wstring::npos != sTemp.find( '%' ) )
 			{
 				SimpleTypes::CPercentage oPerc = sTemp;
 				m_dX = oPerc.GetValue();
@@ -4073,7 +4073,7 @@ namespace SimpleTypes
 			}
 
 			sTemp = sValue.substr( nPos + 1, nLen - nPos - 1 );
-            if ( std::wstring::npos != sTemp.find( '%' ) )
+			if ( std::wstring::npos != sTemp.find( '%' ) )
 			{
 				SimpleTypes::CPercentage oPerc = sTemp;
 				m_dY = oPerc.GetValue();

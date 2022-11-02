@@ -393,7 +393,7 @@ namespace SimpleTypes
 	{
 		try
 		{
-            this->m_eValue = XmlUtils::GetInteger(sValue.c_str());
+			this->m_eValue = XmlUtils::GetInteger(sValue.c_str());
 			return this->m_eValue;
 		}
 		catch (...)
@@ -402,7 +402,7 @@ namespace SimpleTypes
 
 		try
 		{
-            this->m_eValue = XmlUtils::GetInteger64(sValue);
+			this->m_eValue = XmlUtils::GetInteger64(sValue);
 		}
 		catch (...)
 		{

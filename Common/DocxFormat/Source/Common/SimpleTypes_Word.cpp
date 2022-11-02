@@ -1344,7 +1344,7 @@ namespace SimpleTypes
 		}
 		else
 		{
-			this->m_eValue = sValue.empty() ? 0 : _wtoi( sValue.c_str() );
+            this->m_eValue = sValue.empty() ? 0 : XmlUtils::GetInteger(sValue);
 		}
 
 		return this->m_eValue;
@@ -3372,7 +3372,7 @@ namespace SimpleTypes
 	template<>
 	int CPixelsMeasure<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger(sValue);
 
 		return this->m_eValue;
 	}
@@ -3395,7 +3395,7 @@ namespace SimpleTypes
 	template<>
 	int CPointMeasure<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger(sValue);
 
 		return this->m_eValue;
 	}
@@ -4468,7 +4468,7 @@ namespace SimpleTypes
 	template<>
 	int CTextScale<100>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger(sValue);
 
 		this->m_eValue = (std::min)( 600, (std::max)( 0, this->m_eValue ) );
 

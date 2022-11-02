@@ -30,6 +30,7 @@
  *
  */
 #include "Unit.h"
+#include <cwchar>
 
 
 double Cm_To_Mm     (const double &dValue)
@@ -537,7 +538,7 @@ namespace XmlUtils
 
 		try
 		{
-			return _wtoi64(string.c_str());
+            return std::wcstoll(string.c_str(), NULL, 10);
 		}
 		catch(...)
 		{
@@ -548,33 +549,28 @@ namespace XmlUtils
 	{
 		if (string.empty()) return 0;
 
+        int iVal = 0;
 		try
 		{
-			return _wtoi(string.c_str());
+            iVal = std::stod(string);
 		}
 		catch(...)
 		{
+            try
+            {
+                iVal = std::wcstoll(string.c_str(), NULL, 10);
+            }
+            catch(...)
+            {
+                return 0;
+            }
 		}
 
-		try
-		{
-			return static_cast<int>(_wtoi64(string.c_str()));
-		}
-		catch(...)
-		{
-			return 0;
-		}
+        return iVal;
 	}
 	unsigned int GetUInteger(const std::wstring& string)
 	{
-		if (string.empty()) return 0;
-		try
-		{
-			return (unsigned int) _wtoi64(string.c_str());
-		}
-		catch(...)
-		{
-		}
+        return (unsigned int)GetInteger(string);
 	}
 	double GetDouble(const std::wstring& string)
 	{

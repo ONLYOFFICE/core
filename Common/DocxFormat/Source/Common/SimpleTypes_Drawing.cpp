@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
 #include "SimpleTypes_Drawing.h"
 #include "../Base/WinColor.h"  // GetSysColor
@@ -66,7 +65,7 @@ namespace SimpleTypes
 		if ( bAngleValue )
 		{
 			this->m_eValue = adjangleAngle;
-			m_nAngle = _wtoi( sValue.c_str() );
+            m_nAngle = XmlUtils::GetInteger( sValue );
 		}
 		else
 		{
@@ -218,7 +217,7 @@ namespace SimpleTypes
 	template<>
 	int CAngle<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger(sValue);
 
 		return this->m_eValue;
 	}
@@ -722,7 +721,7 @@ namespace SimpleTypes
 	template<>
 	int CDrawingElementId<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger(sValue);
 
 		return this->m_eValue;
 	}
@@ -791,7 +790,7 @@ namespace SimpleTypes
 	template<>
 	int CFixedAngle<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = (std::min)( 5400000, (std::max)( -5400000, _wtoi( sValue.c_str() ) ) );
+        this->m_eValue = (std::min)( 5400000, (std::max)( -5400000, XmlUtils::GetInteger(sValue) ) );
 
 		return this->m_eValue;
 	}
@@ -837,7 +836,7 @@ namespace SimpleTypes
 			if ( -1 == nPos && nLen > 0)
 			{
 				// Поправка 12.1.2.1 Part4
-				int nValue = (std::min)( 100000, (std::max)( -100000, _wtoi( sValue.c_str() ) ) );
+                int nValue = (std::min)( 100000, (std::max)( -100000, XmlUtils::GetInteger(sValue)) );
 				m_dValue = nValue / 1000.0;
 			}
 			else
@@ -912,7 +911,7 @@ namespace SimpleTypes
 	template<>
 	int  CFOVAngle<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = (std::min)( 10800000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
+        this->m_eValue = (std::min)( 10800000, (std::max)( 0, XmlUtils::GetInteger(sValue) ) );
 
 		return this->m_eValue;
 	}
@@ -1351,7 +1350,7 @@ namespace SimpleTypes
 	template<>
 	__int64 CLineWidth<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi64( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger64( sValue );
 		if (this->m_eValue < 0)
 			this->m_eValue = 0;
 		if (this->m_eValue > 20116800)
@@ -1594,7 +1593,7 @@ namespace SimpleTypes
 	template<>
 	__int64 CPositiveCoordinate<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = sValue.empty() ? 0 : _wtoi64( sValue.c_str() );
+        this->m_eValue = sValue.empty() ? 0 : XmlUtils::GetInteger64( sValue );
 
 		if (this->m_eValue < 0)
 			this->m_eValue = 0;
@@ -1660,7 +1659,7 @@ namespace SimpleTypes
 	template<>
 	int CPositiveFixedAngle<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = (std::min)( 21600000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
+        this->m_eValue = (std::min)( 21600000, (std::max)( 0, XmlUtils::GetInteger(sValue) ) );
 
 		return this->m_eValue;
 	}
@@ -1703,7 +1702,7 @@ namespace SimpleTypes
 			if ( -1 == nPos && nLen > 0)
 			{
 				// Поправка 12.1.2.3 (Part4)
-				int nValue = (std::max)( 0, (std::min)( 100000, _wtoi( sValue.c_str() ) ) );
+                int nValue = (std::max)( 0, (std::min)( 100000, XmlUtils::GetInteger(sValue) ) );
 				m_dValue = nValue / 1000.0;
 			}
 			else
@@ -1745,7 +1744,7 @@ namespace SimpleTypes
 			if ( -1 == nPos && nLen > 0)
 			{
 				// Поправка 12.1.2.4 (Part4)
-				int nValue = (std::max)( 0, _wtoi( sValue.c_str() ) );
+                int nValue = (std::max)( 0, XmlUtils::GetInteger(sValue) );
 				m_dValue = nValue / 1000.0;
 			}
 			return
@@ -3959,7 +3958,7 @@ namespace SimpleTypes
 	template<>
 	unsigned char CTextColumnCount<1>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = (unsigned char)_wtoi( sValue.c_str() );
+        this->m_eValue = (unsigned char)XmlUtils::GetInteger(sValue);
 
 		if (this->m_eValue < 1)
 			this->m_eValue = 1;
@@ -4055,7 +4054,7 @@ namespace SimpleTypes
 			if ( -1 == nPos && nLen > 0)
 			{
 				// Поправка 12.1.2.5 (Part4)
-				int nValue = (std::min)( 100000, (std::max)( 1000, _wtoi( sValue.c_str() ) ) );
+                int nValue = (std::min)( 100000, (std::max)( 1000, XmlUtils::GetInteger(sValue) ) );
 				m_dValue = nValue / 1000.0;
 			}
 			return
@@ -4122,7 +4121,7 @@ namespace SimpleTypes
 	template<>
 	__int64 CTextIndent<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi64( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger64( sValue );
 		if (this->m_eValue < -51206400)
 			this->m_eValue = -51206400;
 		if (this->m_eValue > 51206400)
@@ -4164,9 +4163,9 @@ namespace SimpleTypes
 	CTextMargin<0>::CTextMargin() {}
 
 	template<>
-	__int64 CTextMargin<0>::FromString(const std::wstring &sValue)
+    _INT64 CTextMargin<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi64( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger64(sValue);
 		if (this->m_eValue < 0)
 			this->m_eValue = 0;
 		if (this->m_eValue > 51206400)
@@ -4431,7 +4430,7 @@ namespace SimpleTypes
 			if ( -1 == nPos && nLen > 0)
 			{
 				// Поправка 12.1.2.7 (Part4)
-				int nValue = (std::min)( 13200000, (std::max)( 0, _wtoi( sValue.c_str() ) ) );
+                int nValue = (std::min)( 13200000, (std::max)( 0, XmlUtils::GetInteger(sValue) ) );
 				m_dValue = nValue / 1000.0;
 			}
 			return m_dValue;
@@ -4455,9 +4454,9 @@ namespace SimpleTypes
 	CTextSpacingPoint<0>::CTextSpacingPoint() {}
 
 	template<>
-	__int64 CTextSpacingPoint<0>::FromString(const std::wstring &sValue)
+    _INT64 CTextSpacingPoint<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi64( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger64(sValue);
 		if (this->m_eValue < 0)
 			this->m_eValue = 0;
 		if (this->m_eValue > 158400)
@@ -4774,7 +4773,7 @@ namespace SimpleTypes
 	template<>
 	__int64 CPositionOffset<0>::FromString(const std::wstring &sValue)
 	{
-		this->m_eValue = _wtoi64( sValue.c_str() );
+        this->m_eValue = XmlUtils::GetInteger64( sValue );
 
 		return this->m_eValue;
 	}

@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
 #include "math.h"
 #include "../Base/Unit.h"
@@ -394,7 +393,7 @@ namespace SimpleTypes
 	{
 		try
 		{
-			this->m_eValue = _wtoi(sValue.c_str());
+            this->m_eValue = XmlUtils::GetInteger(sValue.c_str());
 			return this->m_eValue;
 		}
 		catch (...)
@@ -403,7 +402,7 @@ namespace SimpleTypes
 
 		try
 		{
-			this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
+            this->m_eValue = XmlUtils::GetInteger64(sValue);
 		}
 		catch (...)
 		{

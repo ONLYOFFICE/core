@@ -29,7 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
 #include "SimpleTypes_Shared.h"
 #include "SimpleTypes_Word.h"
@@ -446,10 +445,10 @@ namespace SimpleTypes
 	// OnOff 22.9.2.7 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	// Согласно части 4 стр. 1459, значений "on" и "off" быть не должно
+    // Согласно части 4 стр. 1459, значений "on" и "off" быть не должно
 
 	template<>
-	COnOff<onoffFalse>::COnOff() {}
+    COnOff<onoffFalse>::COnOff() {}
 
 	template<>
 	COnOff<onoffFalse>::COnOff(const bool & bVal)
@@ -585,6 +584,8 @@ namespace SimpleTypes
 		}
 		return L"false";
 	}
+
+
 	template<>
 	bool COnOff<onoffFalse>::ToBool()
 	{
@@ -596,25 +597,25 @@ namespace SimpleTypes
 		this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
 	}
 
-	CBool::CBool() {}
+    CBool::CBool() {}
 
-	CBool::CBool(const bool & bVal)
-	{
-		this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
-	}
-	std::wstring CBool::ToString() const
-	{
-		switch (m_eValue)
-		{
-		case onoffTrue: return L"1";
-		case onoffFalse:
-		default:		return L"0";
-		}
-	}
-	EOnOff CBool::FromString(const std::wstring &sValue)
-	{
-		return COnOff<>::FromString(sValue);
-	}
+    CBool::CBool(const bool & bVal)
+    {
+        this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
+    }
+    std::wstring CBool::ToString() const
+    {
+        switch (m_eValue)
+        {
+        case onoffTrue: return L"1";
+        case onoffFalse:
+        default:		return L"0";
+        }
+    }
+    EOnOff CBool::FromString(const std::wstring &sValue)
+    {
+        return COnOff<>::FromString(sValue);
+    }
 
 	//--------------------------------------------------------------------------------
 	// Panose 22.9.2.8 (Part 1)
@@ -747,7 +748,7 @@ namespace SimpleTypes
 	{
 		try
 		{
-			this->m_eValue = _wtoi( sValue.c_str() );
+            this->m_eValue = XmlUtils::GetInteger(sValue);
 			return this->m_eValue;
 		}
 		catch(...)
@@ -756,7 +757,7 @@ namespace SimpleTypes
 
 		try
 		{
-			this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
+            this->m_eValue = static_cast<int>(XmlUtils::GetInteger64(sValue));
 		}
 		catch(...)
 		{
@@ -1073,7 +1074,7 @@ namespace SimpleTypes
 			wsFirstChar = sValue[0];
 
 		m_sValue = sValue;
-		if (wsFirstChar == _T('#'))
+        if (wsFirstChar == '#')
 		{
 			std::wstring sHexColor = sValue.substr(1);
 			ByHexColor(sHexColor);

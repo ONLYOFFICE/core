@@ -32,6 +32,7 @@
 #pragma once
 
 #include <string>
+#include "../Base/Base.h"
 
 namespace SimpleTypes
 {
@@ -40,15 +41,15 @@ namespace SimpleTypes
 	Class& operator=(const std::wstring& sValue) { FromString(sValue); return *this; }
 
 #define SimpleTypes_Default(Class)                                                                                    \
-	const bool operator==(const Class& oOther) const { return (this->m_eValue == oOther.m_eValue) ? true : false; }   \
+    bool operator==(const Class& oOther) const { return (this->m_eValue == oOther.m_eValue) ? true : false; }         \
 	SimpleTypes_DefaultString(Class)
 
 #define SimpleTypes_DefaultD(Class)                                                                                   \
-	const bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }   \
+    bool operator==(const Class& oOther) const { return (this->m_dValue == oOther.m_dValue) ? true : false; }         \
 	SimpleTypes_DefaultString(Class)
 
 #define SimpleTypes_DefaultS(Class)                                                                                   \
-	const bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }   \
+    bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }         \
 	SimpleTypes_DefaultString(Class)
 
 	#define DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                      \
@@ -203,7 +204,7 @@ namespace SimpleTypes
 		virtual double FromEmu(double dValue);
 		virtual double FromPx(double dValue);
 		virtual double ToMm();
-		virtual __int64 ToEmu();
+        virtual _INT64 ToEmu();
 		virtual long ToPx();
 		double GetValue () const;
 

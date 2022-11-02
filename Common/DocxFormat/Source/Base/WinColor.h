@@ -181,7 +181,7 @@
 #define COLOR_WINDOWTEXT        8
 #endif
 
-DWORD GetSysColor(const int nIndex);
+unsigned int GetSysColor(const int nIndex);
 
 #else
 #include <windows.h>

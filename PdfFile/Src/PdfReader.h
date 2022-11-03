@@ -34,76 +34,47 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../PdfReader/Src/RendererOutputDev.h"
 
 class PDFDoc;
-namespace PdfReader
+class CPdfReader
 {
-    typedef enum
-    {
-        errorNone          = 0, // Нет ошибок
-        errorOpenFile      = 1, // Ошибка при открытии PDF файла
-        errorBadCatalog    = 2, // couldn't read the page catalog
-        errorDamaged       = 3, // PDF файл был поврежден и его невозможно восстановить
-        errorEncrypted     = 4, // Файл зашифрован, авторизация не пройдена
-        errorHighlightFile = 5, // nonexistent or invalid highlight file
-        errorBadPrinter    = 6, // плохой принтер
-        errorPrinting      = 7, // ошибка во время печати
-        errorPermission    = 8, // Ошибка связанная с ограничениями наложенными на файл
-        errorBadPageNum    = 9, // Неверное количество страниц
-        errorFileIO        = 10, // Ошибка при чтении/записи
-        errorMemory        = 11  // Memory exceed
-    } EError;
+public:
 
-    class CPdfReader_Private;
-    class CPdfReader
-    {
-    public:
+    CPdfReader(NSFonts::IApplicationFonts* pAppFonts);
+    ~CPdfReader();
 
-        CPdfReader(NSFonts::IApplicationFonts* fonts);
-        ~CPdfReader();
+    bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+    bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
-        bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
-                                const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
-        bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"",
-                                const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+    void Close();
 
-        void Close();
+    std::wstring GetTempDirectory();
+    void SetTempDirectory(const std::wstring& directory);
 
-        NSFonts::IApplicationFonts* GetFonts();
+    int GetPagesCount();
+    void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
+    void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+    std::wstring GetInfo();
 
-        std::wstring GetTempDirectory();
-        void SetTempDirectory(const std::wstring& directory);
+    int          GetError();
+    double       GetVersion();
 
-        int GetPagesCount();
-        void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
-        void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
-        std::wstring GetInfo();
+    NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
+    PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
+    void ChangeLength(DWORD nLength);
 
-        int          GetError();
-        double       GetVersion();
-        int          GetPermissions();
-        std::wstring GetPageLabel(int nPageIndex);
+    BYTE* GetStructure();
+    BYTE* GetLinks(int nPageIndex);
 
-        bool         ExtractAllImages(const wchar_t* wsDstPath, const wchar_t* wsPrefix = 0);
-        int          GetImagesCount();
-
-        void         SetCMapFolder(const wchar_t* wsCMapFolder);
-        void         SetCMapMemory();
-        NSFonts::IFontManager* GetFontManager();
-
-		std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
-        PDFDoc* GetPDFDocument();
-        void ChangeLength(DWORD nLength);
-
-    #ifdef BUILDING_WASM_MODULE
-        BYTE* GetStructure();
-        BYTE* GetLinks(int nPageIndex);
-    #endif
-
-    private:
-        CPdfReader_Private* m_pInternal;
-        int                 m_eError;
-    };
-}
+private:
+    PDFDoc*            m_pPDFDocument;
+    std::wstring       m_wsTempFolder;
+    std::wstring       m_wsSrcPath;
+    NSFonts::IFontManager* m_pFontManager;
+    PdfReader::CFontList* m_pFontList;
+    DWORD              m_nFileLength;
+    int                m_eError;
+};
 
 #endif // _PDF_READER_H

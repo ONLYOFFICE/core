@@ -493,15 +493,13 @@ void CPdfWriter::CCommandManager::SetTransform(const double& m11, const double& 
 //----------------------------------------------------------------------------------------
 CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_oCommandManager(this)
 {
-	m_pAppFonts = pAppFonts;
-
-	// Создаем менеджер шрифтов с собственным кэшем
-	m_pFontManager = pAppFonts->GenerateFontManager();
+    // Создаем менеджер шрифтов с собственным кэшем
+    m_pFontManager = pAppFonts->GenerateFontManager();
     NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-	m_pFontManager->SetOwnerCache(pMeasurerCache);
+    pMeasurerCache->SetStreams(pAppFonts->GetStreams());
+    m_pFontManager->SetOwnerCache(pMeasurerCache);
 
-	m_pDocument = new CDocument();
+    m_pDocument = new CDocument();
 
 	if (isPDFA)
 		m_pDocument->SetPDFAConformanceMode(true);
@@ -532,7 +530,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_o
 CPdfWriter::~CPdfWriter()
 {
 	RELEASEOBJECT(m_pDocument);
-	RELEASEINTERFACE(m_pFontManager);
+    RELEASEINTERFACE(m_pFontManager);
 
 	if (L"" != m_wsTempFolder)
 		NSDirectory::DeleteDirectory(m_wsTempFolder);
@@ -1105,7 +1103,7 @@ HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const u
 			return S_FALSE;
 	}
 
-	unsigned char* pCodes = EncodeString(pUnicodes,  unLen, pGids);
+    unsigned char* pCodes = EncodeString(pUnicodes,  unLen, pGids);
 	RELEASEARRAYOBJECTS(pUnicodes);
 	return DrawText(pCodes, unLen * 2, dX, dY) ? S_OK : S_FALSE;
 }
@@ -1182,7 +1180,7 @@ HRESULT CPdfWriter::PathCommandEnd()
 	m_oPath.Clear();
 	return S_OK;
 }
-HRESULT CPdfWriter::DrawPath(const LONG& lType)
+HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const LONG& lType)
 {
 	m_oCommandManager.Flush();
 
@@ -1213,7 +1211,7 @@ HRESULT CPdfWriter::DrawPath(const LONG& lType)
 				m_oBrush.SetTexturePath(sTextureTmpPath);
 		}
 
-		UpdateBrush();
+        UpdateBrush(pAppFonts);
 	}
 
 	if (!m_pShading)
@@ -1318,7 +1316,7 @@ HRESULT CPdfWriter::PathCommandGetCurrentPoint(double* dX, double* dY)
 HRESULT CPdfWriter::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	unsigned int unUnicode = lUnicode;
-	bool bRes = PathCommandDrawText(&unUnicode, 1, dX, dY, NULL);
+    bool bRes = PathCommandDrawText(&unUnicode, 1, dX, dY, NULL);
 	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -1328,7 +1326,7 @@ HRESULT CPdfWriter::PathCommandText(const std::wstring& wsUnicodeText, const dou
 	if (!pUnicodes)
 		return S_FALSE;
 
-	PathCommandDrawText(pUnicodes, unLen, dX, dY, NULL);
+    PathCommandDrawText(pUnicodes, unLen, dX, dY, NULL);
 	delete[] pUnicodes;
 
 	return S_OK;
@@ -1337,7 +1335,7 @@ HRESULT CPdfWriter::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid
 {
 	unsigned int unUnicode = lUnicode;
 	unsigned int unGid     = lGid;
-	bool bRes = PathCommandDrawText(&unUnicode, 1, dX, dY, &unGid);
+    bool bRes = PathCommandDrawText(&unUnicode, 1, dX, dY, &unGid);
 	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::PathCommandTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -1375,7 +1373,7 @@ HRESULT CPdfWriter::PathCommandTextEx(const std::wstring& wsUnicodeText, const u
 			return S_FALSE;
 	}
 
-	bool bRes = PathCommandDrawText(pUnicodes, unLen, dX, dY, pGids);
+    bool bRes = PathCommandDrawText(pUnicodes, unLen, dX, dY, pGids);
 	RELEASEARRAYOBJECTS(pUnicodes);
 
 	return bRes ? S_OK : S_FALSE;
@@ -1395,7 +1393,7 @@ HRESULT CPdfWriter::DrawImage(IGrObject* pImage, const double& dX, const double&
 
 	return S_OK;
 }
-HRESULT CPdfWriter::DrawImageFromFile(const std::wstring& wsImagePathSrc, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
+HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsImagePathSrc, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
 {
 	m_oCommandManager.Flush();
 
@@ -1414,7 +1412,7 @@ HRESULT CPdfWriter::DrawImageFromFile(const std::wstring& wsImagePathSrc, const 
             _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 	{
 		// TODO: Реализовать отрисовку метафайлов по-нормальному
-        MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
+        MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
         pMeta->LoadFromFile(wsImagePath.c_str());
 
 		double dNewW = std::max(10.0, dW) / 25.4 * 300;
@@ -1520,14 +1518,14 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddFormField(const CFormFieldInfo &oInfo)
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CFormFieldInfo &oInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
 	if (!m_pDocument || 0 == unPagesCount)
 		return S_OK;
 
 	if (m_bNeedUpdateTextFont)
-		UpdateFont();
+        UpdateFont();
 
 	if (!m_pFont)
 		return S_OK;
@@ -1651,8 +1649,8 @@ HRESULT CPdfWriter::AddFormField(const CFormFieldInfo &oInfo)
 
 			if (!m_pFont->HaveChar(unUnicode))
 			{
-				std::wstring wsFontFamily   = m_pAppFonts->GetFontBySymbol(unUnicode);
-				CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
+                std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
+                CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
 				if (pTempFont)
 				{
 					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
@@ -1863,8 +1861,8 @@ HRESULT CPdfWriter::AddFormField(const CFormFieldInfo &oInfo)
 
 			if (!m_pFont->HaveChar(unUnicode))
 			{
-				std::wstring wsFontFamily   = m_pAppFonts->GetFontBySymbol(unUnicode);
-				CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
+                std::wstring wsFontFamily   = pAppFonts->GetFontBySymbol(unUnicode);
+                CFontCidTrueType* pTempFont = GetFont(wsFontFamily, isBold, isItalic);
 				if (pTempFont)
 				{
 					pCodes[unIndex]  = pTempFont->EncodeUnicode(unUnicode);
@@ -1944,8 +1942,8 @@ HRESULT CPdfWriter::AddFormField(const CFormFieldInfo &oInfo)
 		pFieldBase->AddPageRect(m_pPage, TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)));
 		pField->SetValue(pPr->IsChecked());
 
-		CFontCidTrueType* pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
-		CFontCidTrueType* pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
+        CFontCidTrueType* pCheckedFont   = GetFont(pPr->GetCheckedFontName(), false, false);
+        CFontCidTrueType* pUncheckedFont = GetFont(pPr->GetUncheckedFontName(), false, false);
 		if (!pCheckedFont)
 			pCheckedFont = m_pFont;
 
@@ -2166,11 +2164,6 @@ std::wstring CPdfWriter::GetEditPdfPath()
 {
 	return m_pDocument->GetEditPdfPath();
 }
-
-NSFonts::IApplicationFonts* CPdfWriter::GetApplicationFonts()
-{
-    return m_pAppFonts;
-}
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
@@ -2302,7 +2295,7 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
-	unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
+    unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
 	if (!pCodes)
 		return false;
 
@@ -2315,7 +2308,7 @@ void CPdfWriter::UpdateFont()
     std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
-		GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex);
+        GetFontPath(m_oFont.GetName(), m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex);
 
 	m_oFont.SetNeedDoBold(false);
 	m_oFont.SetNeedDoItalic(false);
@@ -2323,7 +2316,7 @@ void CPdfWriter::UpdateFont()
 	m_pFont = NULL;
 	if (L"" != wsFontPath)
 	{
-		m_pFont = GetFont(wsFontPath, lFaceIndex);
+        m_pFont = GetFont(wsFontPath, lFaceIndex);
 		if (m_pFont)
 		{
 			if (m_oFont.IsItalic() && !m_pFont->IsItalic())
@@ -2355,7 +2348,7 @@ void CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 		oFontSelect.wsName  = new std::wstring(wsFontName);
 		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);
 		oFontSelect.bBold   = new INT(bBold ? 1 : 0);
-		NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+        NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 		if (!NSFonts::CFontInfo::CanEmbedForPreviewAndPrint(pFontInfo->m_usType))
 		{
 			oFontSelect.Fill(pFontInfo);
@@ -2364,7 +2357,7 @@ void CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 			else
 				oFontSelect.usType = new USHORT(NSFONTS_EMBEDDING_RIGHTS_PRINT_AND_PREVIEW);
 
-			pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
+            pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 		}
 
 		wsFontPath = pFontInfo->m_wsFontPath;
@@ -2383,13 +2376,13 @@ PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontPath,
 			return pFont;
 
 		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
-		if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
+        if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72))
 		{
 			std::wcout << L"PDF Writer: Can't load fontfile " << wsFontPath.c_str() << "\n";
 			return NULL;
 		}
 
-		std::wstring wsFontType = m_pFontManager->GetFontType();
+        std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
 			pFont = m_pDocument->CreateCidTrueTypeFont(wsFontPath, lFaceIndex);
 	}
@@ -2401,8 +2394,8 @@ PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontName,
 	std::wstring wsFontPath;
 	LONG lFaceIndex;
 
-	GetFontPath(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex);
-	return GetFont(wsFontPath, lFaceIndex);
+    GetFontPath(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex);
+    return GetFont(wsFontPath, lFaceIndex);
 }
 void CPdfWriter::UpdateTransform()
 {
@@ -2469,7 +2462,7 @@ void CPdfWriter::UpdatePen()
 	else
 		m_pPage->SetLineJoin(linejoin_Round);
 }
-void CPdfWriter::UpdateBrush()
+void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts)
 {
 	m_pShading = NULL;
 	m_pShadingExtGrState = NULL;
@@ -2505,7 +2498,7 @@ void CPdfWriter::UpdateBrush()
                  _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
-            MetaFile::IMetaFile* pMeta = MetaFile::Create(m_pAppFonts);
+            MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
             pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
@@ -2858,7 +2851,7 @@ void CPdfWriter::SetError()
 unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const unsigned int& unCount, const unsigned int *pGIDs)
 {
 	if (m_bNeedUpdateTextFont)
-		UpdateFont();
+        UpdateFont();
 
 	if (!m_pFont)
 		return NULL;
@@ -2884,7 +2877,7 @@ unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const uns
 unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount)
 {
 	if (m_bNeedUpdateTextFont)
-		UpdateFont();
+        UpdateFont();
 
 	if (!m_pFont)
 		return NULL;

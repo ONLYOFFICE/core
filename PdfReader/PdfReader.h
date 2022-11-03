@@ -103,10 +103,8 @@ namespace PdfReader
         PDFDoc* GetPDFDocument();
         void ChangeLength(DWORD nLength);
 
-    #ifdef BUILDING_WASM_MODULE
         virtual BYTE* GetStructure();
         virtual BYTE* GetLinks(int nPageIndex);
-    #endif
 
     private:
         CPdfReader_Private* m_pInternal;

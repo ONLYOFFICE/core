@@ -47,9 +47,10 @@
 
 #include <vector>
 
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+
 #ifdef BUILDING_WASM_MODULE
 #define DISABLE_TEMP_DIRECTORY
-#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #endif
 
 namespace NSDjvu
@@ -277,7 +278,6 @@ std::wstring CDjVuFileImplementation::GetInfo()
     return sRes;
 }
 
-#ifdef BUILDING_WASM_MODULE
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
@@ -422,7 +422,6 @@ BYTE* CDjVuFileImplementation::GetPageLinks(int nPageIndex)
     catch (...) {}
     return NULL;
 }
-#endif
 
 void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {

@@ -58,14 +58,12 @@
 #include "Src/RendererOutputDev.h"
 #include "Src/Adaptors.h"
 
-#ifdef BUILDING_WASM_MODULE
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #include "lib/xpdf/Outline.h"
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/goo/GList.h"
 #include <vector>
-#endif
 
 namespace PdfReader
 {
@@ -613,7 +611,6 @@ return 0;
 
         return sRes;
     }
-#ifdef BUILDING_WASM_MODULE    
     void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
     {
         int nLengthTitle = pOutlineItem->getTitleLength();
@@ -787,5 +784,4 @@ return 0;
 
         return oLinks.Serialize();
     }
-#endif
 }

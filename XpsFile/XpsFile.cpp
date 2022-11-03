@@ -220,7 +220,6 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 }
 #endif
 
-#ifdef BUILDING_WASM_MODULE
 BYTE* CXpsFile::GetStructure()
 {
 	return m_pInternal->m_pDocument->GetStructure();
@@ -229,4 +228,3 @@ BYTE* CXpsFile::GetLinks (int nPageIndex)
 {
 	return m_pInternal->m_pDocument->GetPageLinks(nPageIndex);
 }
-#endif

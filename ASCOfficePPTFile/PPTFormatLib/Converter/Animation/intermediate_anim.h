@@ -6,33 +6,22 @@
 #include "../PPTXWriter/ImageManager.h"
 #include "../Records/Animations/AnimationInfoContainer.h"
 #include <unordered_set>
-#include "TimeNode.h"
 
 
 namespace PPT {
 namespace Intermediate {
-struct Animation
+struct SOldAnimation
 {
-    _INT32 shapeId = -1;
-    CRecordAnimationInfoContainer* pAnimIC = nullptr;   // old animation records
-    CRecordExtTimeNodeContainer* pETNCIC = nullptr;     // new animation records
+    _INT32 shapeId;
+    CRecordAnimationInfoContainer* anim;
+
+    _UINT32 getAnimDur() const;
 };
-
-
-struct SimpleBuildNode
-{
-    _INT32 spid = -1;
-    bool grpId = false;
-    bool animBg = false;
-};
-using SimpleBuildList = std::vector<SimpleBuildNode>;
-
 
 struct SlideAnimation
 {
-    std::unique_ptr<TimeNode> rootNode;
-    SimpleBuildList oldBuildList;
-    CRecordBuildListContainer* pBLC = nullptr;
+    CRecordPP10SlideBinaryTagExtension* pAnim_2010 = nullptr;
+    std::vector<SOldAnimation> arrAnim_1995;
     std::unordered_set<_INT32> realShapesIds;
 };
 }

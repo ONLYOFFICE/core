@@ -1863,8 +1863,9 @@ void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator
 {
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
     auto intermediateSlideAnimation = PPT::Intermediate::ParseSlideAnimation(slide_iter->second);
-    PPT::Converter::Timing animConverter(intermediateSlideAnimation, &(m_pUserInfo->m_oExMedia), &oRels);
-    auto timing = animConverter.Convert();
+    auto timing =
+            PPT::Converter::Timing(intermediateSlideAnimation).
+            Convert(&(m_pUserInfo->m_oExMedia), &oRels);
     oWriter.WriteString(timing.toXML());
 }
 

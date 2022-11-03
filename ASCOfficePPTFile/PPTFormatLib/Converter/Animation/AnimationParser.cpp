@@ -1,83 +1,46 @@
 #include "AnimationParser.h"
 #include "../../Records/Drawing/ShapeContainer.h"
-#include "OldAnimationParser.h"
+#include "Animation_1995.h"
 
 namespace PPT {
 namespace Intermediate {
 
-class AnimationParser
+
+CRecordPP10SlideBinaryTagExtension* getPP10SlideBinaryTagExtension(CRecordSlide *pSlide)
 {
-public:
-    AnimationParser(CRecordSlide *pSlide) :
-        pSlide(pSlide)
-    {
-        InitListOfRawAnimIC();
-        InitPP10SlideBinaryTagExtension();
-    }
-    SlideAnimation Parse()
-    {
-        if(HasAnySlideAnimation() == false)
-            return {};
+    CRecordSlideProgTagsContainer* progTag = pSlide->m_pSlideProgTagsContainer;
+    return progTag ? progTag->getPP10SlideBinaryTagExtension() : nullptr;
+}
 
-        InitAnimationTree();
-        return std::move(slideAnim);
-    }
+std::vector<SOldAnimation> getOldSlideAnimation(CRecordSlide *pSlide)
+{
+    std::vector<CRecordShapeContainer*> arrShapeCont;
+    pSlide->GetRecordsByType(&arrShapeCont, true);
 
-private:
-    void InitPP10SlideBinaryTagExtension()
+     std::vector<SOldAnimation> listOfRawAnimIC;
+    for (auto* pShapeCont : arrShapeCont)
     {
-        CRecordSlideProgTagsContainer* progTag = pSlide->m_pSlideProgTagsContainer;
-        pAnimExt = progTag ? progTag->getPP10SlideBinaryTagExtension() : nullptr;
-    }
-    void InitListOfRawAnimIC()
-    {
-        std::vector<CRecordShapeContainer*> arrShapeCont;
-        pSlide->GetRecordsByType(&arrShapeCont, true);
-
-        for (auto* pShapeCont : arrShapeCont)
+        std::vector<CRecordShape* > shape;
+        pShapeCont->GetRecordsByType(&shape, true);
+        std::vector<CRecordAnimationInfoContainer* > anim;
+        pShapeCont->GetRecordsByType(&anim, true);
+        SOldAnimation animIC;
+        if (!anim.empty() && !shape.empty())
         {
-            std::vector<CRecordShape* > shape;
-            pShapeCont->GetRecordsByType(&shape, true);
-            std::vector<CRecordAnimationInfoContainer* > anim;
-            pShapeCont->GetRecordsByType(&anim, true);
-            Animation animIC;
-            if (!anim.empty() && !shape.empty())
-            {
-                animIC.shapeId = shape[0]->m_nID;
-                animIC.pAnimIC = anim[0];
-                listOfOldAnim.push_back(animIC);
-            }
+            animIC.shapeId = shape[0]->m_nID;
+            animIC.anim = anim[0];
+            listOfRawAnimIC.push_back(animIC);
         }
     }
-    bool HasAnySlideAnimation() const
-    {
-        return listOfOldAnim.size() || pAnimExt;
-    }
-    void InitAnimationTree()
-    {
-        InitOldAnimationTree();
-        if (pAnimExt == nullptr)
-            return;
-        // todo modern animation
-    }
-    void InitOldAnimationTree()
-    {
-        OldAnimationParser parser(slideAnim, listOfOldAnim);
-        // todo parser
-        parser.Parse();
-    };
 
-private:
-    CRecordSlide* pSlide;
-    SlideAnimation slideAnim;
-    std::list<Animation> listOfOldAnim;
-    CRecordPP10SlideBinaryTagExtension* pAnimExt = nullptr;
-};
-
+    return listOfRawAnimIC;
+}
 SlideAnimation ParseSlideAnimation(CRecordSlide *pSlide)
 {
-    AnimationParser parser(pSlide);
-    auto slideAnim= parser.Parse();
+    SlideAnimation slideAnim;
+    slideAnim.arrAnim_1995 = getOldSlideAnimation(pSlide);
+    slideAnim.pAnim_2010 = getPP10SlideBinaryTagExtension(pSlide);
+
     return slideAnim;
 }
 }

@@ -10,17 +10,16 @@ namespace Converter {
 class Timing
 {
 public:
-    Timing(const PPT::Intermediate::SlideAnimation& slideAnim, const CExMedia* pExMedia, const CRelsGenerator* pRels);
-    PPTX::Logic::Timing Convert();
+    Timing(const Intermediate::SlideAnimation& slideAnim);
+    PPTX::Logic::Timing Convert(CExMedia* pExMedia, CRelsGenerator *pRels);
 
     bool HasAnimation() const;
 
 private:
-    const PPT::Intermediate::SlideAnimation& slideAnim;
-    const CExMedia* pExMedia;
-    const CRelsGenerator* pRels;
+    const Intermediate::SlideAnimation& slideAnim;
+//    CExMedia* pExMedia;
+//    CRelsGenerator* pRels;
 
-    bool isPPT10Broken = true;
     PPTX::Logic::Timing timing;
 };
 }

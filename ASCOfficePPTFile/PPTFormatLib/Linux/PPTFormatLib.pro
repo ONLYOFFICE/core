@@ -28,8 +28,7 @@ DEFINES +=  UNICODE \
 
 HEADERS += \
     ../Converter/Animation/AnimationParser.h \
-    ../Converter/Animation/OldAnimationParser.h \
-    ../Converter/Animation/TimeNode.h \
+    ../Converter/Animation/Animation_1995.h \
     ../Converter/Animation/animation.h \
     ../Converter/Animation/intermediate_anim.h \
     ../Converter/timing.h \
@@ -304,7 +303,7 @@ SOURCES += \
     ../../../ASCOfficePPTXFile/Editor/Drawing/TextAttributesEx.cpp \
     ../../../Common/3dParty/pole/pole.cpp \
     ../Converter/Animation/AnimationParser.cpp \
-    ../Converter/Animation/OldAnimationParser.cpp \
+    ../Converter/Animation/Animation_1995.cpp \
     ../Converter/timing.cpp \
     ../Converter/transition.cpp \
     ../PPTXWriter/BulletsConverter.cpp

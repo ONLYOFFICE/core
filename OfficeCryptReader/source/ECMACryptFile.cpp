@@ -34,7 +34,7 @@
 #include "CryptTransform.h"
 
 #include "../../Common/3dParty/pole/pole.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/SystemUtils.h"

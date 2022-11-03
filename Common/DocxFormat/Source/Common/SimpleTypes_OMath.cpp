@@ -33,7 +33,7 @@
 #include "SimpleTypes_OMath.h"
 #include "../Base/Unit.h"
 
-// «десь представлены все простые типы Drawing-Main из спецификации Office Open Xml (22.1.3)
+// Здесь представлены все простые типы Drawing-Main из спецификации Office Open Xml (22.1.3)
 namespace SimpleTypes
 {
 	template<>

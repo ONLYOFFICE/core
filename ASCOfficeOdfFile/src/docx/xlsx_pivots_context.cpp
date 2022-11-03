@@ -38,7 +38,7 @@
 
 #include "../../include/xml/simple_xml_writer.h"
 #include"../../../Common/DocxFormat/Source/XML/Utils.h"
-#include"../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include"../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include <map>
 

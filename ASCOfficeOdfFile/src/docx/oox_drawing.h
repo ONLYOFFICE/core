@@ -39,7 +39,7 @@
 
 #include "../odf/svg_parser.h"
 
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace cpdoccore {
 namespace oox {

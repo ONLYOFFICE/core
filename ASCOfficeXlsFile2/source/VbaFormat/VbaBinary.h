@@ -32,7 +32,7 @@
 #pragma once
 
 #include "../../../Common/3dParty/pole/pole.h"
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include <map>
 #include <string>

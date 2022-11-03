@@ -36,7 +36,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
 
-#include "../SimpleTypes_Spreadsheet.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace OOX
 {

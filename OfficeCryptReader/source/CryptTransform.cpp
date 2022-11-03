@@ -52,7 +52,7 @@
 #include "../../Common/3dParty/cryptopp/zdeflate.h"
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/XML/Utils.h"
 
 #include "../../DesktopEditor/common/File.h"

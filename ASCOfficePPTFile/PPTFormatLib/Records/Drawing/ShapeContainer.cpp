@@ -36,7 +36,7 @@
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/PPTShape/ElementSettings.h"
 
 #include "../../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #include <fstream>

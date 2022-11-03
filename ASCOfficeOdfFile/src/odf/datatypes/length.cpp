@@ -31,7 +31,7 @@
  */
 
 #include "length.h"
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../Common/DocxFormat/Source/Base/Base.h"
 
 #include <iostream>
 #include <sstream>

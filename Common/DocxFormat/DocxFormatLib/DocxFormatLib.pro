@@ -102,8 +102,8 @@ SOURCES += \
 
 
 SOURCES += docxformatlib.cpp \
-    ../Source/Utility/codecvt.cpp \
-    ../Source/Utility/DateTime.cpp \
+    ../Source/Base/codecvt.cpp \
+    ../Source/Base/DateTime.cpp \
     ../Source/Utility/TxtFile.cpp \
     ../Source/Base/unicode_util.cpp \
     ../../3dParty/pole/pole.cpp \

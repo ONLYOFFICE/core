@@ -24,10 +24,10 @@ DEFINES += UNICODE \
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 HEADERS += \
-	../Source/TxtFormat/File.h \
+    ../Source/TxtFormat/File.h \
     ../Source/TxtFormat/TxtFile.h \
-	../Source/TxtXmlFile.h \
-	../Source/ConvertDocx2Txt.h \
+    ../Source/TxtXmlFile.h \
+    ../Source/ConvertDocx2Txt.h \
     ../Source/ConvertTxt2Docx.h
 
 SOURCES += \

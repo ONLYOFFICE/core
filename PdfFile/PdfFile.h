@@ -134,7 +134,6 @@ public:
     HRESULT DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
     HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
     HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
-    NSFonts::IApplicationFonts* GetApplicationFonts();
 
     //----------------------------------------------------------------------------------------
     // Тип рендерера

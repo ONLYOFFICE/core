@@ -60,19 +60,19 @@ namespace NSOnlineOfficeBinToPdf
     static bool ConvertBufferToPdf(CPdfFile* pPdf, BYTE* pBuffer, LONG lBufferLen, CConvertFromBinParams* pParams)
     {
         CMetafileToRenderterPDF oCorrector(pPdf);
-		oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
-		if (pParams)
-		{
-			oCorrector.SetMediaDirectory(pParams->m_sMediaDirectory);
-			oCorrector.SetInternalMediaDirectory(pParams->m_sInternalMediaDirectory);
-			oCorrector.SetThemesDirectory(pParams->m_sThemesDirectory);
+        oCorrector.SetTempDirectory(pPdf->GetTempDirectory());
+        if (pParams)
+        {
+            oCorrector.SetMediaDirectory(pParams->m_sMediaDirectory);
+            oCorrector.SetInternalMediaDirectory(pParams->m_sInternalMediaDirectory);
+            oCorrector.SetThemesDirectory(pParams->m_sThemesDirectory);
 
-			if (pParams->m_bIsUsePicker)
-				oCorrector.InitPicker(pPdf->GetApplicationFonts());
-		}
-		NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBuffer, lBufferLen, &oCorrector);
+            if (pParams->m_bIsUsePicker)
+                oCorrector.InitPicker(pPdf->GetFonts());
+        }
+        NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBuffer, lBufferLen, &oCorrector);
 
-		return true;
+        return true;
     }
     bool ConvertBinToPdf(CPdfFile* pPdf, const std::wstring& wsSrcFile, const std::wstring& wsDstFile, bool bBinary, CConvertFromBinParams* pParams)
 	{

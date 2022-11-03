@@ -757,10 +757,6 @@ HRESULT CPdfFile::SetRadialGradient(const double& dX1, const double& dY1, const 
 {
     return m_pInternal->pWriter->SetRadialGradient(dX1, dY1, dR1, dX2, dY2, dR2);
 }
-NSFonts::IApplicationFonts* CPdfFile::GetApplicationFonts()
-{
-    return m_pInternal->pWriter->GetApplicationFonts();
-}
 
 HRESULT CPdfFile::get_Type(LONG* lType)
 {

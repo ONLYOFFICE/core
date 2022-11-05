@@ -306,6 +306,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CBrClear)
 	};
+
 	//--------------------------------------------------------------------------------
 	// BrType 17.18.4 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -352,6 +353,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCaptionPos)
 	};
+
 	//--------------------------------------------------------------------------------
 	// ChapterSep 17.18.6 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -376,6 +378,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CChapterSep)
 	};
+
 	//--------------------------------------------------------------------------------
 	// CharacterSpacing 17.18.7 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -398,6 +401,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCharacterSpacing)
 	};
+
 	//--------------------------------------------------------------------------------
 	// CombineBrackets 17.18.8 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -422,7 +426,6 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCombineBrackets)
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// DateTime 17.18.9 (Part 1)
@@ -717,7 +720,6 @@ namespace SimpleTypes
 		SimpleTypes_Default(CDropCap)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// EdGrp 17.18.21 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -745,7 +747,6 @@ namespace SimpleTypes
 		SimpleTypes_Default(CEdGrp)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// EdnPos 17.18.22 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -767,7 +768,6 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CEdnPos)
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// EighthPointMeasure 17.18.23 (Part 1)
@@ -791,7 +791,6 @@ namespace SimpleTypes
 		int    FromPoints(double dValue);
 		int    FromInches(double dValue);
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// Em 17.18.24 (Part 1)
@@ -907,8 +906,6 @@ namespace SimpleTypes
 		SimpleTypes_Default(CFFTextType)
 	};
 
-
-
 	//--------------------------------------------------------------------------------
 	// FldCharType 17.18.29 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -957,6 +954,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CFontFamily)
 	};
+
 	//--------------------------------------------------------------------------------
 	// FrameLayout 17.18.31 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -1119,6 +1117,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CHeightRule)
 	};
+
 	//--------------------------------------------------------------------------------
 	// TextFormFormatType
 	//--------------------------------------------------------------------------------
@@ -1144,6 +1143,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CTextFormFormatType)
 	};
 
+	//--------------------------------------------------------------------------------
+	// ComplexFormType
+	//--------------------------------------------------------------------------------
+
 	enum EComplexFormType
 	{
 		complexFormTypeCustom    = 0,
@@ -1162,6 +1165,7 @@ namespace SimpleTypes
 		bool IsDefaultValue() const;
 		SimpleTypes_Default(CComplexFormType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// HexColor 17.18.38 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -1377,6 +1381,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CJc)
 	};
+
 	//--------------------------------------------------------------------------------
 	// JcTable 17.18.45 (Part 1) + 9.10.3 (Part 4)
 	//--------------------------------------------------------------------------------
@@ -1401,6 +1406,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CJcTable)
 	};
+
 	//--------------------------------------------------------------------------------
 	// LevelSuffix 17.18.46 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -1497,6 +1503,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// LongHexNumber 17.18.50 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<unsigned int nDefValue = 0>
 	class CLongHexNumber : public CSimpleType<int, nDefValue>
 	{
@@ -1532,6 +1539,7 @@ namespace SimpleTypes
 	private:
 		std::wstring m_sValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// MailMergeDataType 17.18.52 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2078,6 +2086,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CPTabLeader)
 	};
+
 	//--------------------------------------------------------------------------------
 	// PTabRelativeTo 17.18.73 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2254,6 +2263,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CShd)
 	};
+
 	//--------------------------------------------------------------------------------
 	// ShortHexNumber 17.18.79 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2304,7 +2314,6 @@ namespace SimpleTypes
 		SimpleTypes_DefaultD(CSignedTwipsMeasure)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// StyleSort 17.18.82 (Part 1) + 9.10.4 (Part 4)
 	//--------------------------------------------------------------------------------
@@ -2334,6 +2343,7 @@ namespace SimpleTypes
 	private:
 		bool m_bNames;
 	};
+
 	//--------------------------------------------------------------------------------
 	// StyleType 17.18.83 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2596,6 +2606,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CTextboxTightWrap)
 	};
+
 	//--------------------------------------------------------------------------------
 	// TextDirection 17.18.93 (Part 1) + 9.10.6 (Part 4)
 	//--------------------------------------------------------------------------------
@@ -2734,6 +2745,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// UcharHexNumber 17.18.98 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<unsigned char unDefValue = 0>
 	class CUcharHexNumber : public CSimpleType<unsigned char, unDefValue>
 	{
@@ -3029,6 +3041,7 @@ namespace SimpleTypes
 		xmlspaceDefault  = 0,
 		xmlspacePreserve = 1
 	};
+
 	template<EXmlSpace eDefValue = xmlspaceDefault>
 	class CXmlSpace : public CSimpleType<EXmlSpace, eDefValue>
 	{
@@ -3040,12 +3053,17 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CXmlSpace)
 	};
-	//---------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// CryptAlgClass
+	//--------------------------------------------------------------------------------
+
 	enum ECryptAlgClass
 	{
 		AlgClassCustom = 0,
 		AlgClassHash = 1
 	};
+
 	template<ECryptAlgClass eDefValue = AlgClassCustom>
 	class CCryptAlgClass : public CSimpleType<ECryptAlgClass, eDefValue>
 	{
@@ -3057,12 +3075,17 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCryptAlgClass)
 	};
-	//---------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// CryptAlgType
+	//--------------------------------------------------------------------------------
+
 	enum ECryptAlgType
 	{
 		AlgTypeCustom = 0,
 		AlgTypeTypeAny = 1
 	};
+
 	template<ECryptAlgType eDefValue = AlgTypeCustom>
 	class CCryptAlgType : public CSimpleType<ECryptAlgType, eDefValue>
 	{
@@ -3075,13 +3098,18 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCryptAlgType)
 	};
-	//---------------------------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// CryptProv
+	//--------------------------------------------------------------------------------
+
 	enum ECryptProv
 	{
 		CryptProvCustom = 0,
 		CryptProvRsaAES = 1,
 		CryptProvRsaFull = 2
 	};
+
 	template<ECryptProv eDefValue = CryptProvCustom>
 	class CCryptProv : public CSimpleType<ECryptProv, eDefValue>
 	{
@@ -3093,9 +3121,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCryptProv)
 	};
+
 	//--------------------------------------------------------------------------------
 	// CryptAlgoritmName
 	//--------------------------------------------------------------------------------
+
 	enum ECryptAlgoritmName
 	{
 		cryptalgoritmnameUnknown    = 0,
@@ -3110,6 +3140,7 @@ namespace SimpleTypes
 		cryptalgoritmnameSHA512     = 9,
 		cryptalgoritmnameWHIRLPOOL  = 10,
 	};
+
 	template<ECryptAlgoritmName eDefValue = cryptalgoritmnameUnknown>
 	class CCryptAlgoritmName : public CSimpleType<ECryptAlgoritmName, eDefValue>
 	{
@@ -3125,6 +3156,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// PitchFamily
 	//--------------------------------------------------------------------------------
+
 	enum EPitchFamily
 	{
 		pitchfamilyDefUnk = 0x00,
@@ -3161,9 +3193,11 @@ namespace SimpleTypes
 		unsigned char GetPitch();
 		unsigned char GetFamily();
 	};
+
 	//--------------------------------------------------------------------------------
-	// CryptAlgoritmName
+	// DirVal
 	//--------------------------------------------------------------------------------
+
 	enum EDirVal
 	{
 		dirLtr    = 0,
@@ -3179,6 +3213,10 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CDirVal)
 	};
+
+	//--------------------------------------------------------------------------------
+	// Ligatures
+	//--------------------------------------------------------------------------------
 
 	enum ELigaturesFlags
 	{
@@ -3218,12 +3256,18 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CLigatures)
 	};
+
+	//--------------------------------------------------------------------------------
+	// NumForm
+	//--------------------------------------------------------------------------------
+
 	enum ENumForm
 	{
 		numFormDefault = 0,
 		numFormLining = 1,
 		numFormOldStyle = 2
 	};
+
 	template<ENumForm eDefValue = numFormDefault>
 	class CNumForm : public CSimpleType<ENumForm, eDefValue>
 	{
@@ -3234,12 +3278,18 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CNumForm)
 	};
+
+	//--------------------------------------------------------------------------------
+	// NumSpacing
+	//--------------------------------------------------------------------------------
+
 	enum ENumSpacing
 	{
 		numSpacingDefault = 0,
 		numSpacingProportional = 1,
 		numSpacingTabular = 2
 	};
+
 	template<ENumSpacing eDefValue = numSpacingDefault>
 	class CNumSpacing : public CSimpleType<ENumSpacing, eDefValue>
 	{

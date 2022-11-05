@@ -94,6 +94,10 @@ namespace ComplexTypes
 		sResult += L"\" ";\
 	}
 
+	//--------------------------------------------------------------------------------
+	// ComplexType
+	//--------------------------------------------------------------------------------
+
 	class ComplexType
 	{
 	public:
@@ -109,6 +113,7 @@ namespace ComplexTypes
 	//--------------------------------------------------------------------------------
 	// DecimalNumber 17.3.1.10 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	class CDecimalNumber : public ComplexType
 	{
 	public:
@@ -132,6 +137,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Border 17.3.4 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CBorder : public ComplexType
 		{
 		public:
@@ -161,6 +167,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// rFonts (Fonts) 17.3.2.20 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CFonts : public ComplexType
 		{
 		public:
@@ -190,6 +197,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Lang (Language) 17.3.2.20 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CLanguage : public ComplexType
 		{
 		public:
@@ -212,6 +220,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Lang (Language) 17.3.3.14 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CLang : public ComplexType
 		{
 		public:
@@ -233,6 +242,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Shading 17.3.5 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CShading : public ComplexType
 		{
 		public:
@@ -259,10 +269,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CShd<>                > m_oVal;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// TblWidth 17.4.88 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTblWidth : public ComplexType
 		{
 		public:
@@ -282,10 +292,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CDecimalNumberOrPercent> m_oW;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// OnOff 17.17.4 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class COnOff : public ComplexType
 		{
 		public:
@@ -304,6 +314,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::COnOff<>> m_oVal;
 		};
 
+		//--------------------------------------------------------------------------------
+		// OnOff2
+		//--------------------------------------------------------------------------------
+
 		template<SimpleTypes::EOnOff eDefValue = SimpleTypes::onoffTrue>
 		class COnOff2 : public ComplexType
 		{
@@ -315,16 +329,18 @@ namespace ComplexTypes
 			virtual void FromXML(XmlUtils::CXmlNode& oNode);
 			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring ToString() const;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring ValNode(const std::wstring &node_name);
+			virtual inline std::wstring ValNode(const std::wstring &node_name);
 
 		public:
-			SimpleTypes::COnOff<eDefValue> m_oVal;
+			SimpleTypes::COnOff<> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
 		// String 17.3.1.27  (Part 1)
 		//--------------------------------------------------------------------------------
+
         class String : public ComplexType
 		{
 		public:
@@ -339,12 +355,7 @@ namespace ComplexTypes
 			std::wstring ToString2() const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"val", m_sVal )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
             nullable_string m_sVal;
@@ -353,6 +364,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Spacing (SignedTwipsMeasure) 17.3.2.19 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CSignedTwipsMeasure : public ComplexType
 		{
 		public:
@@ -374,6 +386,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Kern (HpsMeasure) 17.3.2.19 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CHpsMeasure : public ComplexType
 		{
 		public:
@@ -395,6 +408,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Border 17.3.2.6 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CColor : public ComplexType
 		{
 		public:
@@ -419,6 +433,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Position (HpsMeasure) 17.3.2.19 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CSignedHpsMeasure : public ComplexType
 		{
 		public:
@@ -441,6 +456,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// NumFmt 17.11.17 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CNumFmt : public ComplexType
 		{
 		public:
@@ -463,6 +479,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// NumFmt 17.11.19 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CNumRestart : public ComplexType
 		{
 		public:
@@ -484,6 +501,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// DecimalNumber 17.3.1.10 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CDecimalNumber : public ComplexTypes::CDecimalNumber
 		{
 		public:
@@ -499,6 +517,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// DecimalNumberOrPrecent 17.3.1.10 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CDecimalNumberOrPrecent : public ComplexType
 		{
 		public:
@@ -520,6 +539,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Rel 17.6.14 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CRel : public ComplexType
 		{
 		public:
@@ -541,6 +561,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TextDirection 17.6.14 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTextDirection : public ComplexType
 		{
 		public:
@@ -562,6 +583,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// VerticalJc 17.6.23 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CVerticalJc : public ComplexType
 		{
 		public:
@@ -583,6 +605,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// cnfStyle (Cnf) 17.3.1.8 (Part 1) + 9.2.1.1 (Part 4)
 		//--------------------------------------------------------------------------------
+
 		class CCnf : public ComplexType
 		{
 		public:
@@ -616,6 +639,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// jc (Jc) 17.3.1.13 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CJc : public ComplexType
 		{
 		public:
@@ -637,6 +661,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TrackChange 17.13.5.19 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTrackChange : public ComplexType
 		{
 		public:
@@ -661,6 +686,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// LongHexNumber 17.9.30 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CLongHexNumber : public ComplexType
 		{
 		public:
@@ -683,6 +709,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// UnsignedDecimalNumber 17.16.32 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CUnsignedDecimalNumber : public ComplexType
 		{
 		public:
@@ -704,6 +731,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TwipsMeasure 17.15.1.25 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTwipsMeasure : public ComplexType
 		{
 		public:
@@ -725,6 +753,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Empty 17.15.1.48 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CEmpty : public ComplexType
 		{
 		public:
@@ -740,6 +769,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// MatchSrc 17.17.2.3 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CMatchSrc : public ComplexType
 		{
 		public:
@@ -761,6 +791,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// EdnPos 17.11.22 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CEdnPos : public ComplexType
 		{
 		public:
@@ -782,6 +813,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// FtnPos 17.11.21 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CFtnPos : public ComplexType
 		{
 		public:
@@ -800,6 +832,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CFtnPos<> > m_oVal;
 		};
 
+		//--------------------------------------------------------------------------------
+		// DocPartGallery
+		//--------------------------------------------------------------------------------
+
 		class CDocPartGallery : public ComplexType
 		{
 		public:
@@ -817,6 +853,10 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CDocPartGallery<>> m_oVal;
 		};
+
+		//--------------------------------------------------------------------------------
+		// DocPartBehavior
+		//--------------------------------------------------------------------------------
 
 		class CDocPartBehavior : public ComplexType
 		{
@@ -840,6 +880,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// EastAsianLayout 17.3.2.10 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CEastAsianLayout : public ComplexType
 		{
 		public:
@@ -865,6 +906,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Effect 17.3.2.11 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTextEffect : public ComplexType
 		{
 		public:
@@ -883,10 +925,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CTextEffect<>> m_oVal;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// Em 17.3.2.12 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CEm : public ComplexType
 		{
 		public:
@@ -905,10 +947,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CEm<>> m_oVal;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// FitText 17.3.2.14 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CFitText : public ComplexType
 		{
 		public:
@@ -931,6 +973,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Highlight 17.3.2.14 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CHighlight : public ComplexType
 		{
 		public:
@@ -952,6 +995,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// u (Underline) 17.3.2.40 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CUnderline : public ComplexType
 		{
 		public:
@@ -977,6 +1021,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// vertAlign (VerticalAlignRun) 17.3.2.40 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CVerticalAlignRun : public ComplexType
 		{
 		public:
@@ -998,6 +1043,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// w (TextScale) 17.3.2.40 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTextScale : public ComplexType
 		{
 		public:
@@ -1019,6 +1065,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// framePr (FramePr) 17.3.1.11 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CFramePr : public ComplexType
 		{
 		public:
@@ -1054,6 +1101,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// ind (Ind) 17.3.1.12 (Part 1) + 9.2.1.2 (Part 4)
 		//--------------------------------------------------------------------------------
+
 		class CInd : public ComplexType
 		{
 		public:
@@ -1109,6 +1157,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// Spacing 17.3.1.33 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CSpacing : public ComplexType
 		{
 		public:
@@ -1164,6 +1213,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TabStop 17.3.1.37 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTabStop : public ComplexType
 		{
 		public:
@@ -1187,6 +1237,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TextAlignment 17.3.1.39 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTextAlignment : public ComplexType
 		{
 		public:
@@ -1208,6 +1259,7 @@ namespace ComplexTypes
 		//--------------------------------------------------------------------------------
 		// TextboxTightWrap 17.3.1.40 (Part 1)
 		//--------------------------------------------------------------------------------
+
 		class CTextboxTightWrap : public ComplexType
 		{
 		public:
@@ -1225,6 +1277,10 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CTextboxTightWrap<>> m_oVal;
 		};
+
+		//--------------------------------------------------------------------------------
+		// Ligatures
+		//--------------------------------------------------------------------------------
 
 		class CLigatures : public ComplexType
 		{
@@ -1245,6 +1301,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CLigatures<>> m_oVal;
 		};
 
+		//--------------------------------------------------------------------------------
+		// NumSpacing
+		//--------------------------------------------------------------------------------
+
 		class CNumSpacing : public ComplexType
 		{
 		public:
@@ -1263,6 +1323,10 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CNumSpacing<>> m_oVal;
 		};
+
+		//--------------------------------------------------------------------------------
+		// NumForm
+		//--------------------------------------------------------------------------------
 
 		class CNumForm : public ComplexType
 		{
@@ -1283,6 +1347,10 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CNumForm<>> m_oVal;
 		};
 
+		//--------------------------------------------------------------------------------
+		// StylisticSet
+		//--------------------------------------------------------------------------------
+
 		class CStylisticSet : public ComplexType
 		{
 		public:
@@ -1302,6 +1370,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oId;
 			nullable<SimpleTypes::COnOff<>>					m_oVal;
 		};
+
 	} // Word
 //-------------------------------------------------------------------------------------------------------------------------
 
@@ -1310,6 +1379,7 @@ namespace ComplexTypes
         // ---------------------------------------------------------------------------
         // Offset (Point2D) 20.1.7.4
         // ---------------------------------------------------------------------------
+
         class CPoint2D : public ComplexType
 		{
 		public:
@@ -1332,6 +1402,7 @@ namespace ComplexTypes
         // -----------------------------------------------------------------------
         // Extent (PositiveSize2D) 20.4.2.7
         // -----------------------------------------------------------------------
+
         class CPositiveSize2D : public ComplexType
 		{
 		public:
@@ -1350,5 +1421,6 @@ namespace ComplexTypes
 			SimpleTypes::CPositiveCoordinate<> m_oCx;
 			SimpleTypes::CPositiveCoordinate<> m_oCy;
 		};
+
     } // Drawing
 } // ComplexTypes

@@ -74,6 +74,10 @@ namespace SimpleTypes
 	DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                              \
 	};
 
+	//--------------------------------------------------------------------------------
+	// SimpleType
+	//--------------------------------------------------------------------------------
+
 	template<typename E, E DefValue = 0>
 	class CSimpleType
 	{
@@ -104,6 +108,10 @@ namespace SimpleTypes
 
 		E m_eValue;
 	};
+
+	//--------------------------------------------------------------------------------
+	// UniversalMeasure
+	//--------------------------------------------------------------------------------
 
 	class CUniversalMeasure
 	{
@@ -141,6 +149,10 @@ namespace SimpleTypes
 		double m_dValue = 0; // Значение в пунктах
 	};
 
+	//--------------------------------------------------------------------------------
+	// UniversalMeasureOrPercent
+	//--------------------------------------------------------------------------------
+
 	class CUniversalMeasureOrPercent : public CUniversalMeasure
 	{
 	public:
@@ -152,6 +164,7 @@ namespace SimpleTypes
 		virtual std::wstring ToString  () const;
 
 		bool IsPercent() const;
+
 	protected:
 		bool m_bTrailingPercentSign;
 	};
@@ -159,6 +172,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - пункты.
 	//--------------------------------------------------------------------------------
+
 	class CPoint : public CUniversalMeasure
 	{
 	public:
@@ -173,6 +187,10 @@ namespace SimpleTypes
 
 		SimpleTypes_DefaultD(CPoint)
 	};
+
+	//--------------------------------------------------------------------------------
+	// Inch
+	//--------------------------------------------------------------------------------
 
 	class CInch : public CUniversalMeasure
 	{
@@ -189,6 +207,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// Класс наследуемый от CUniversalMeasure, для которого обычные значения - emu.
 	//--------------------------------------------------------------------------------
+
 	class CEmu : public CUniversalMeasure
 	{
 	public:
@@ -214,6 +233,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// Класс читающий double
 	//--------------------------------------------------------------------------------
+
 	class CDouble
 	{
 	public:

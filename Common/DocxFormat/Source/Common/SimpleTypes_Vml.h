@@ -252,9 +252,11 @@ namespace SimpleTypes
 			sptNil = 0x0FFF
 		};
 	}
+
 	//--------------------------------------------------------------------------------
 	// EditAs 14.1.3.1 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EEditAs
 	{
 		editasBullseye = 0,
@@ -271,16 +273,17 @@ namespace SimpleTypes
 	{
 	public:
 		CEditAs();
+
 		virtual EEditAs FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default(CEditAs)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// Ext 14.1.3.2 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EExt
 	{
 		extBackwardCompatible = 0,
@@ -293,16 +296,17 @@ namespace SimpleTypes
 	{
 	public:
 		CExt();
+
 		virtual EExt    FromString(const std::wstring &sValue);
 		virtual std::wstring ToString  () const;
 
 		SimpleTypes_Default(CExt)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// FillMethod 14.1.3.3 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EFillMethod
 	{
 		fillmethodAny,
@@ -311,6 +315,7 @@ namespace SimpleTypes
 		fillmethodSigma,
 		fillmethodNone
 	};
+
 	template<EFillMethod eDefValue = fillmethodNone>
 	class CFillMethod : public CSimpleType<EFillMethod, eDefValue>
 	{
@@ -322,9 +327,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CFillMethod)
 	};
+
 	//--------------------------------------------------------------------------------
 	// FillType 14.1.3.4;14.2.3.14 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EFillType
 	{
 		filltypeBackground       = 0,
@@ -337,6 +344,7 @@ namespace SimpleTypes
 		filltypeSolid            = 7,
 		filltypeTile             = 8
 	};
+
 	// Тут разделяем два типа 14.13.4 - m_nType = 0 и 14.2.3.14 - m_nType != 0
 	template<EFillType eDefValue = filltypeSolid>
 	class CFillType : public CSimpleType<EFillType, eDefValue>
@@ -350,6 +358,10 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CFillType)
 	};
+
+	//--------------------------------------------------------------------------------
+	//
+	//--------------------------------------------------------------------------------
 
 	template<EFillType eDefValue = filltypeSolid>
 	class CFillType1 : public CSimpleType<EFillType, eDefValue>
@@ -370,6 +382,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// ImageAspect 14.1.3.5 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EImageAspect
 	{
 		imageaspectAtLeast = 0,
@@ -388,10 +401,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CImageAspect)
 	};
 
-
 	// -------------------------------------------------------------------------------
 	// ShadowType 14.1.3.6 (Part 4)
 	// -------------------------------------------------------------------------------
+
 	enum EShadowType
 	{
 		shadowtypeDouble,
@@ -399,6 +412,7 @@ namespace SimpleTypes
 		shadowtypePerspective,
 		shadowtypeSingle,
 	};
+
 	template<EShadowType eDefValue = shadowtypeSingle>
 	class CShadowType : public CSimpleType<EShadowType, eDefValue>
 	{
@@ -410,9 +424,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CShadowType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// StrokeArrowLength 14.1.3.7 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EStrokeArrowLength
 	{
 		strokearrowlengthLong   = 0,
@@ -431,10 +447,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CStrokeArrowLength)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// StrokeArrowType 14.1.3.8 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EStrokeArrowType
 	{
 		strokearrowtypeBlock   = 0,
@@ -456,10 +472,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CStrokeArrowType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// StrokeArrowWidth 14.1.3.9 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EStrokeArrowWidth
 	{
 		strokearrowwidthMedium = 0,
@@ -477,10 +493,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CStrokeArrowWidth)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// StrokeEndCap 14.1.3.10 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EStrokeEndCap
 	{
 		strokeendcapFlat   = 0,
@@ -498,10 +514,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CStrokeEndCap)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// StrokeJoinStyle 14.1.3.11 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EStrokeJoinStyle
 	{
 		strokejoinstyleBevel,
@@ -518,9 +534,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CStrokeJoinStyle)
 	};
+
 	//--------------------------------------------------------------------------------
 	// StrokeLineStyle 14.1.3.12 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EStrokeLineStyle
 	{
 		strokelinestyleSingle           = 0,
@@ -545,6 +563,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// AlternateMathContentType 14.2.3.1 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EAlternateMathContentType
 	{
 		alternatemathcontenttypeOfficeOpenXmlMath = 0,
@@ -562,10 +581,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CAlternateMathContentType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// VmlAngle 14.2.3.2 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EVmlAngle
 	{
 		vmlangle30   = 0,
@@ -587,10 +606,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CVmlAngle)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// BWMode 14.2.3.3 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EBWMode
 	{
 		bwmodeAuto					= 0,
@@ -618,10 +637,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CBWMode)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// CalloutDrop 14.2.3.4 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	class CCalloutDrop
 	{
 	public:
@@ -643,6 +662,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// ColorMode 14.2.3.6 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EColorMode
 	{
 		colormodeAuto   = 0,
@@ -660,10 +680,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CColorMode)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ConnectorType 14.2.3.7 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EConnectorType
 	{
 		connectortypeCurved   = 0,
@@ -683,10 +703,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CConnectorType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ConnectType 14.2.3.8 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EConnectType
 	{
 		connecttypeCustom   = 0,
@@ -705,10 +725,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CConnectType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ContentType 14.2.3.9 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	class CContentType
 	{
 	public:
@@ -729,6 +749,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// DiagramLayout 14.2.3.10 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EDiagramLayout
 	{
 		diagramlayout0 = 0,
@@ -748,10 +769,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CDiagramLayout)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ExtrusionPlane 14.2.3.11 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EExtrusionPlane
 	{
 		extrusionplaneXY = 0,
@@ -770,10 +791,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CExtrusionPlane)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ExtrusionRender 14.2.3.12 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EExtrusionRender
 	{
 		extrusionrenderBoundingCube = 0,
@@ -791,10 +812,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CExtrusionRender)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ExtructionType 14.2.3.13 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EExtrusionType
 	{
 		extrusiontypeParallel,
@@ -809,9 +830,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CExtrusionType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// How 14.2.3.15 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EHow
 	{
 		howBottom = 0,
@@ -832,10 +855,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CHow)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// HrAlign 14.2.3.16 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EHrAlign
 	{
 		hralignCenter = 0,
@@ -854,10 +877,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CHrAlign)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// InsetMode 14.2.3.17 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EInsetMode
 	{
 		insetmodeAuto   = 0,
@@ -875,10 +898,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CInsetMode)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// OLEDrawAspect 14.2.3.18 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EOLEDrawAspect
 	{
 		oledrawaspectContent = 0,
@@ -897,6 +920,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// OLELinkType 14.2.3.19 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EOLELinkType
 	{
 		olelinktypeBitmap  = 0,
@@ -916,10 +940,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(COLELinkType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// OleType 14.2.3.20 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EOLEType
 	{
 		oletypeEmbed = 0,
@@ -935,9 +959,11 @@ namespace SimpleTypes
 		virtual std::wstring  ToString() const;
 		SimpleTypes_Default(COLEType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// OLEUpdateMode 14.2.3.21 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EOLEUpdateMode
 	{
 		oleupdatemodeAlways = 0,
@@ -953,9 +979,11 @@ namespace SimpleTypes
 		virtual std::wstring        ToString() const;
 		SimpleTypes_Default(COLEUpdateMode)
 	};
+
 	//--------------------------------------------------------------------------------
 	// RType 14.2.3.22 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum ERType
 	{
 		rtypeAlign     = 0,
@@ -975,10 +1003,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CRType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ScreenSize 14.2.3.23 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EScreenSize
 	{
 		screensize1024x768 = 0,
@@ -999,7 +1027,6 @@ namespace SimpleTypes
 		SimpleTypes_Default(CScreenSize)
 	};
 
-
 } // SimpleTypes
 
 
@@ -1008,6 +1035,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// BorderShadow 14.3.3.1 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EBorderShadow
 	{
 		bordershadowFalse = 0,
@@ -1025,10 +1053,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CBorderShadow)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// BorderType 14.3.3.2 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EBorderType
 	{
 		bordertypeDash = 0, // (pecifies a line border consisting of a dashed line around the parent object.)
@@ -1071,10 +1099,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CBorderType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// HorizontalAnchor 14.3.3.3 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EHorizontalAnchor
 	{
 		horizontalanchorChar   = 0,
@@ -1094,10 +1122,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CHorizontalAnchor)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// VerticalAnchor 14.3.3.4 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EVerticalAnchor
 	{
 		verticalanchorLine   = 0,
@@ -1116,10 +1144,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CVerticalAnchor)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// WrapSide 14.3.3.5 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EWrapSide
 	{
 		wrapsideBoth    = 0,
@@ -1139,10 +1167,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CWrapSide)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// WrapType 14.3.3.6 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EWrapType
 	{
 		wraptypeNone         = 0,
@@ -1163,7 +1191,6 @@ namespace SimpleTypes
 		SimpleTypes_Default(CWrapType)
 	};
 
-
 } // SimpleTypes
 
 // Дополнительные простые типы, не входящие в спецификацю
@@ -1171,6 +1198,11 @@ namespace SimpleTypes
 {
 	namespace Vml
 	{
+
+		//--------------------------------------------------------------------------------
+		// VmlClientDataObjectType
+		//--------------------------------------------------------------------------------
+
 		enum EVmlClientDataObjectType
 		{
 			vmlclientdataobjecttypeButton		= 0,
@@ -1193,6 +1225,7 @@ namespace SimpleTypes
 			vmlclientdataobjecttypeShape		= 17,
 			vmlclientdataobjecttypeSpin			= 18
 		};
+
 		template<EVmlClientDataObjectType eDefValue = vmlclientdataobjecttypeButton>
 		class CVmlClientDataObjectType : public CSimpleType<EVmlClientDataObjectType, eDefValue>
 		{
@@ -1203,9 +1236,11 @@ namespace SimpleTypes
 			virtual std::wstring         ToString  () const;
 			SimpleTypes_Default(CVmlClientDataObjectType)
 		};
+
 		//--------------------------------------------------------------------------------
 		// VmlCalloutType 14.2.2.2 (type) (Part 4)
 		//--------------------------------------------------------------------------------
+
 		enum EVmlCalloutType
 		{
 			vmlcallouttypeRectangle      = 0,
@@ -1228,6 +1263,7 @@ namespace SimpleTypes
 		//--------------------------------------------------------------------------------
 		// VmlPath 14.2.2.3 (v) (Part 4)
 		//--------------------------------------------------------------------------------
+
 		class CVmlPath
 		{
 		public:
@@ -1248,6 +1284,7 @@ namespace SimpleTypes
 		//--------------------------------------------------------------------------------
 		// VmlDashStyle 14.2.2.1 (dashstyle) (Part 4)
 		//--------------------------------------------------------------------------------
+
 		enum EVmlDashStyle
 		{
 			vmldashstyleSolid           = 0,
@@ -1281,10 +1318,10 @@ namespace SimpleTypes
 			int     m_nCount;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// Vml_1_65536 14.2.2.11 (brightness)
 		//--------------------------------------------------------------------------------
+
 		class CVml_1_65536
 		{
 		public:
@@ -1305,9 +1342,11 @@ namespace SimpleTypes
 			private:
 				double m_dValue;
 		};
+
 		//--------------------------------------------------------------------------------
 		// Vml_Vector3D_65536 14.2.2.11 (lightposition)
 		//--------------------------------------------------------------------------------
+
 		class CVml_Vector3D_65536
 		{
 		public:
@@ -1332,9 +1371,11 @@ namespace SimpleTypes
 			int m_nY;
 			int m_nZ;
 		};
+
 		//--------------------------------------------------------------------------------
 		// Vml_Vector3D 14.2.2.11 (orientation)
 		//--------------------------------------------------------------------------------
+
 		class CVml_Vector3D
 		{
 		public:
@@ -1357,9 +1398,11 @@ namespace SimpleTypes
 			int m_nY;
 			int m_nZ;
 		};
+
 		//--------------------------------------------------------------------------------
 		// Vml_Vector2D 14.2.2.11 (rotationangle)
 		//--------------------------------------------------------------------------------
+
 		class CVml_Vector2D
 		{
 		public:
@@ -1379,9 +1422,11 @@ namespace SimpleTypes
 				int m_nX;
 			int m_nY;
 		};
+
 		//--------------------------------------------------------------------------------
 		// Vml_Vector2D_F 14.2.2.11 (viewpointorigin)
 		//--------------------------------------------------------------------------------
+
 		class CVml_Vector2D_F
 		{
 		public:
@@ -1402,9 +1447,11 @@ namespace SimpleTypes
 				double m_dX;
 			double m_dY;
 		};
+
 		//--------------------------------------------------------------------------------
 		// Vml_Polygon2D 14.1.2.1 (wrapcoords)
 		//--------------------------------------------------------------------------------
+
 		class CVml_Polygon2D
 		{
 		public:
@@ -1437,6 +1484,7 @@ namespace SimpleTypes
 
 		std::vector<TPoint> m_arrPoints;
 	};
+
 	//------------------------------------------------------------------------------------------
 	// CCssProperty
 	//------------------------------------------------------------------------------------------
@@ -1709,6 +1757,7 @@ namespace SimpleTypes
 		ECssVTextSpacingMode eVTextSpacingMode;
 		ECssVTextAlign       eHTextAlign;
 	};
+
 	class CCssProperty
 	{
 	public:
@@ -1794,9 +1843,11 @@ namespace SimpleTypes
 		std::vector<CCssPropertyPtr>		m_arrProperties;
 		std::wstring 						m_sCss;
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Vector2D_Units 14.1.2.3 (from, control1, control2, to)
 	//--------------------------------------------------------------------------------
+
 	class CVml_Vector2D_Units
 	{
 	public:
@@ -1818,9 +1869,11 @@ namespace SimpleTypes
 			double m_dX; // В пунктах
 		double m_dY; // В пунктах
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Vector2D_Percentage
 	//--------------------------------------------------------------------------------
+
 	class CVml_Vector2D_Percentage
 	{
 	public:
@@ -1841,9 +1894,11 @@ namespace SimpleTypes
 			double m_dX; //
 		double m_dY; //
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Vector2D_1_65536
 	//--------------------------------------------------------------------------------
+
 	class CVml_Vector2D_1_65536
 	{
 	public:
@@ -1864,9 +1919,11 @@ namespace SimpleTypes
 			double m_dX; //
 		double m_dY; //
 	};
+
 	//--------------------------------------------------------------------------------
 	// CVml_TableLimits
 	//--------------------------------------------------------------------------------
+
 	class CVml_TableLimits
 	{
 	public:
@@ -1890,6 +1947,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// CVml_TableProperties
 	//--------------------------------------------------------------------------------
+
 	template<int nDefValue = 0>
 	class CVml_TableProperties : public CSimpleType<int, nDefValue>
 	{
@@ -1905,9 +1963,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CVml_TableProperties)
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Vector2D_Position 14.1.2.8 (position)
 	//--------------------------------------------------------------------------------
+
 	enum EVml_Vector2D_Position
 	{
 		vmlvector2dposConstant    = 0,
@@ -1952,9 +2012,11 @@ namespace SimpleTypes
 		double					m_dX;    // Значение для типа Constant
 		double					m_dY;    //
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Polygon2D_Units 14.1.2.15 (points)
 	//--------------------------------------------------------------------------------
+
 	class CVml_Polygon2D_Units
 	{
 	public:
@@ -1989,9 +2051,11 @@ namespace SimpleTypes
 		std::vector<TPoint> m_arrPoints;
 		wchar_t	m_wcDelimiter; // Разделитель, по умолчнию пробел ' '
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_1_65536_Or_Percentage 14.2.2.11 (brightness)
 	//--------------------------------------------------------------------------------
+
 	class CVml_1_65536_Or_Percentage
 	{
 	public:
@@ -2011,9 +2075,11 @@ namespace SimpleTypes
 		private:
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Matrix 14.1.2.18 (matrix)
 	//--------------------------------------------------------------------------------
+
 	class CVml_Matrix
 	{
 	public:
@@ -2044,9 +2110,11 @@ namespace SimpleTypes
 		double m_dPx;
 		double m_dPy;
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_Vector2D_Units_Or_Percentage
 	//--------------------------------------------------------------------------------
+
 	class CVml_Vector2D_Units_Or_Percentage
 	{
 	public:
@@ -2070,9 +2138,11 @@ namespace SimpleTypes
 		bool   m_bUnitsX;
 		bool   m_bUnitsY;
 	};
+
 	//--------------------------------------------------------------------------------
 	// Vml_TextBoxInset 14.1.2.22 (inset)
 	//--------------------------------------------------------------------------------
+
 	class CVml_TextBoxInset
 	{
 	public:
@@ -2095,6 +2165,7 @@ namespace SimpleTypes
 		double m_dRight;
 		double m_dBottom;
 	};
+
 } // Vml
 } // SimpleTypes
 

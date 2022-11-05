@@ -32,6 +32,7 @@
 #pragma once
 
 #include "SimpleTypes_Base.h"
+
 // Здесь представлены все простые типы Drawing-Main из спецификации Office Open Xml (20.1.10)
 namespace SimpleTypes
 {
@@ -81,8 +82,8 @@ namespace SimpleTypes
 	class CAdjCoordinate : public CUniversalMeasure
 	{
 	public:
-
 		CAdjCoordinate();
+
 		virtual void SetValue(double dValue);
 		virtual double  FromString(const std::wstring &sValue);
 		virtual std::wstring ToString() const;
@@ -98,7 +99,6 @@ namespace SimpleTypes
 		EAdjCoordinate      m_eValue;
 		std::wstring        m_sGuide;
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// Angle 20.1.10.3 (Part 1)
@@ -163,6 +163,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CAnimationChartBuildType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// AnimationChartOnlyBuildType 20.1.10.6 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -233,6 +234,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CAnimationDgmOnlyBuildType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// BevelPresetType 20.1.10.9 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -321,10 +323,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CBlendMode)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// BlipCompression 20.1.10.12 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EBlipCompression
 	{
 		blipcompressionEmail   = 0,
@@ -349,6 +351,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// ColorSchemeIndex 20.1.10.14 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EColorSchemeIndex
 	{
 		colorschemeindexAccent1  = 0,
@@ -376,9 +379,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CColorSchemeIndex)
 	};
+
 	//--------------------------------------------------------------------------------
 	// CompoundLine 20.1.10.15 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ECompoundLine
 	{
 		compoundlineDbl       = 0,
@@ -399,9 +404,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CCompoundLine)
 	};
+
 	//--------------------------------------------------------------------------------
 	// Coordinate 20.1.10.16 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	class CCoordinate : public CUniversalMeasure
 	{
 	public:
@@ -422,10 +429,13 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// Coordinate32 20.1.10.17 (Part 1)
 	//--------------------------------------------------------------------------------
+
 #define	CCoordinate32 CCoordinate
+
 	//--------------------------------------------------------------------------------
 	// DrawingElementId 20.1.10.21 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<int nDefValue = 0>
 	class CDrawingElementId : public CSimpleType<int, nDefValue>
 	{
@@ -441,6 +451,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// EffectContainerType 20.1.10.22 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EEffectContainerType
 	{
 		effectcontainertypeSib  = 0,
@@ -459,10 +470,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CEffectContainerType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// FixedAngle 20.1.10.23 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<int nDefValue = 0>
 	class CFixedAngle : public CSimpleType<int, nDefValue>
 	{
@@ -482,6 +493,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// FixedPercentage 20.1.10.24 (Part 1) + 12.1.2.1 (Part4)
 	//--------------------------------------------------------------------------------
+
 	class CFixedPercentage
 	{
 	public:
@@ -499,9 +511,11 @@ namespace SimpleTypes
 
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// FontCollectionIndex 20.1.10.25 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EFontCollectionIndex
 	{
 		fontcollectionindexMajor = 0,
@@ -521,10 +535,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CFontCollectionIndex)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// FOVAngle 20.1.10.26 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<int nDefValue = 0>
 	class CFOVAngle : public CSimpleType<int, nDefValue>
 	{
@@ -544,6 +558,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// GeomGuideFormula 20.1.10.27 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	class CGeomGuideFormula
 	{
 	public:
@@ -563,9 +578,11 @@ namespace SimpleTypes
 	private:
 		std::wstring m_sValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// GeomGuideName 20.1.10.28 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	class CGeomGuideName
 	{
 	public:
@@ -587,6 +604,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// LightRigDirection 20.1.10.29 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ELightRigDirection
 	{
 		lightrigdirectionB  = 0,
@@ -610,9 +628,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CLightRigDirection)
 	};
+
 	//--------------------------------------------------------------------------------
 	// LightRigType 20.1.10.30 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ELightRigType
 	{
 		lightrigtypeBalanced      = 0,
@@ -655,9 +675,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CLightRigType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// LineCap 20.1.10.31 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ELineCap
 	{
 		linecapFlat = 0,
@@ -676,9 +698,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CLineCap)
 	};
+
 	//--------------------------------------------------------------------------------
 	// LineEndLength 20.1.10.32 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ELineEndLength
 	{
 		lineendlengthLarge  = 0,
@@ -698,10 +722,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CLineEndLength)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// LineEndType 20.1.10.33 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ELineEndType
 	{
 		lineendtypeArrow    = 0,
@@ -724,10 +748,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CLineEndType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// LineEndWidth 20.1.10.34 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ELineEndWidth
 	{
 		lineendwidthLarge  = 0,
@@ -747,10 +771,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CLineEndWidth)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// LineWidth 20.1.10.35 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<_INT64 nDefValue = 0>
 	class CLineWidth : public CSimpleType<_INT64, nDefValue>
 	{
@@ -767,9 +791,11 @@ namespace SimpleTypes
 
 		double FromEmu(const _INT64 nEmu);
 	};
+
 	//--------------------------------------------------------------------------------
 	// PathFillMode 20.1.10.37 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPathFillMode
 	{
 		pathfillmodeDarken      = 0,
@@ -792,10 +818,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CPathFillMode)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// PathShadeType 20.1.10.38 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPathShadeType
 	{
 		pathshadetypeCircle = 0,
@@ -815,10 +841,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CPathShadeType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// PenAlignment 20.1.10.39 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPenAlignment
 	{
 		penalignmentCtr = 0,
@@ -836,9 +862,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CPenAlignment)
 	};
+
 	//--------------------------------------------------------------------------------
 	// Percentage 20.1.10.40 (Part 1) + 12.1.2.2 (Part4)
 	//--------------------------------------------------------------------------------
+
 	class CPercentage
 	{
 	public:
@@ -857,9 +885,11 @@ namespace SimpleTypes
 
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// PositiveCoordinate 20.1.10.42 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<_INT64 nDefValue = 0>
 	class CPositiveCoordinate : public CSimpleType<_INT64, nDefValue>
 	{
@@ -877,13 +907,17 @@ namespace SimpleTypes
 		double ToTwips();
 		double FromEmu(const _INT64& nEmu);
 	};
+
 	//--------------------------------------------------------------------------------
 	// PositiveCoordinate32 20.1.10.43 (Part 1)
 	//--------------------------------------------------------------------------------
+
 #define CPositiveCoordinate32 CPositiveCoordinate
+
 	//--------------------------------------------------------------------------------
 	// PositiveFixedAngle 20.1.10.44 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<int nDefValue = 0>
 	class CPositiveFixedAngle : public CSimpleType<int, nDefValue>
 	{
@@ -903,6 +937,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// PositiveFixedPercentage 20.1.10.45 (Part 1) + 12.1.2.3 (Part4)
 	//--------------------------------------------------------------------------------
+
 	class CPositiveFixedPercentage
 	{
 	public:
@@ -919,9 +954,11 @@ namespace SimpleTypes
 		private:
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// PositivePercentage 20.1.10.46 (Part 1) + 12.1.2.4 (Part4)
 	//--------------------------------------------------------------------------------
+
 	class CPositivePercentage
 	{
 	public:
@@ -938,9 +975,11 @@ namespace SimpleTypes
 		private:
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// PresetCameraType 20.1.10.47 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPresetCameraType
 	{
 		presetcameratypeIsometricBottomDown, // (Isometric Bottom Down)
@@ -1019,10 +1058,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CPresetCameraType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// PresetColorVal 20.1.10.48 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPresetColorVal
 	{
 		presetcolorvalAliceBlue = 0, // (Alice Blue Preset Color)
@@ -1244,10 +1283,10 @@ namespace SimpleTypes
 		unsigned char m_unA;
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// PresetLineDashVal 20.1.10.49 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPresetLineDashVal
 	{
 		presetlinedashvalDash          = 0,
@@ -1275,10 +1314,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CPresetLineDashVal)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// PresetMaterialType 20.1.10.50 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPresetMaterialType
 	{
 		presetmaterialtypeClear             = 0,
@@ -1309,9 +1348,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CPresetMaterialType)
 	};
+
 	//--------------------------------------------------------------------------------
 	// PresetPatternVal 20.1.10.51 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPresetPatternVal
 	{
 		presetpatternvalCross = 0, // (Cross)
@@ -1381,10 +1422,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CPresetPatternVal)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// PresetShadowVal 20.1.10.52 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EPresetShadowVal
 	{
 		presetshadowvalShdw1  = 1,
@@ -1420,10 +1461,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CPresetShadowVal)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// RectAlignment 20.1.10.53 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ERectAlignment
 	{
 		rectalignmentB   = 0,
@@ -1449,10 +1490,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CRectAlignment)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ShemeColorVal 20.1.10.54 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EShemeColorVal
 	{
 		shemecolorvalAccent1  = 0,
@@ -1486,10 +1527,10 @@ namespace SimpleTypes
 		SimpleTypes_Default(CShemeColorVal)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// ShapeType 20.1.10.56 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EShapeType
 	{
 		shapetypeAccentBorderCallout1 = 0,
@@ -1725,12 +1766,9 @@ namespace SimpleTypes
 		EShapeType GetValue() const;
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// SystemColorVal 20.1.10.58 (Part 1) (included from ASCWinAPI.h)
 	//--------------------------------------------------------------------------------
-
-
 
 	enum ESystemColorVal
 	{
@@ -1796,6 +1834,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// TextAlignmentType 20.1.10.59 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextAlignmentType
 	{
 		textalignmenttypeL    = 0,
@@ -1815,11 +1854,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default (CTextAlignmentType)
 	};
-
 	
 	//--------------------------------------------------------------------------------
 	// TextAnchoringType 20.1.10.60 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextAnchoringType
 	{
 		textanchoringtypeB    = 0,
@@ -1841,10 +1880,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CTextAnchoringType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// TextColumnCount 20.1.10.65 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<unsigned char unDefValue = 1>
 	class CTextColumnCount : public CSimpleType<unsigned char, unDefValue>
 	{
@@ -1861,6 +1900,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// 20.1.10.66 TextFontAlignType (Font Alignment Types)
 	//--------------------------------------------------------------------------------
+
 	enum ETextFontAlignType
 	{
 		textfontaligntypeAuto   = 0,
@@ -1880,11 +1920,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default (CTextFontAlignType)
 	};
-
 	
 	//--------------------------------------------------------------------------------
 	// TextFontScalePercentOrPercentString 20.1.10.67 (Part 1) + 12.1.2.5 (Part4)
 	//--------------------------------------------------------------------------------
+
 	class CTextFontScalePercentOrPercentString
 	{
 	public:
@@ -1902,9 +1942,11 @@ namespace SimpleTypes
 
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// TextHorzOverflowType 20.1.10.69 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextHorzOverflowType
 	{
 		texthorzoverflowtypeClip     = 0,
@@ -1923,10 +1965,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CTextHorzOverflowType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// 20.1.10.70 ST_TextIndent (Text Indentation)
 	//--------------------------------------------------------------------------------
+
 	template<_INT64 nDefValue = 0>
 	class CTextIndent : public CSimpleType<_INT64, nDefValue>
 	{
@@ -1942,9 +1984,11 @@ namespace SimpleTypes
 		double ToInches();
 		double ToCm();
 	};
+
 	//--------------------------------------------------------------------------------
 	// 20.1.10.72 ST_TextMargin (Text Margin)
 	//--------------------------------------------------------------------------------
+
 	template<_INT64 nDefValue = 0>
 	class CTextMargin : public CSimpleType<_INT64, nDefValue>
 	{
@@ -1960,6 +2004,7 @@ namespace SimpleTypes
 		double ToInches();
 		double ToCm();
 	};
+
 	//	//--------------------------------------------------------------------------------
 	//    // 20.1.10.74 ST_TextPoint (Text Point)
 	//	//--------------------------------------------------------------------------------
@@ -1967,8 +2012,8 @@ namespace SimpleTypes
 	//    class CTextPoint : public CSimpleType<__int64, nDefValue>
 	//    {
 	//    public:
-	///*	The ST_TextPointUnqualified simple type (§20.1.10.75).
-	//	The ST_UniversalMeasure simple type (§22.9.2.15). */
+	//	The ST_TextPointUnqualified simple type (§20.1.10.75).
+	//	The ST_UniversalMeasure simple type (§22.9.2.15).
 	//	CTextPoint();
 	//
 	//        virtual __int64 FromString(const std::wstring &sValue)
@@ -2006,9 +2051,11 @@ namespace SimpleTypes
 	//            return Emu_To_Cm( this->m_eValue );
 	//        }
 	//    };
+
 	//--------------------------------------------------------------------------------
 	// TextShapeType 20.1.10.76 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextShapeType
 	{
 		textshapetypeTextArchDown = 0,
@@ -2066,10 +2113,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CTextShapeType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// TextSpacingPercentOrPercentString 20.1.10.77 (Part 1) + 12.1.2.7 (Part4)
 	//--------------------------------------------------------------------------------
+
 	class CTextSpacingPercentOrPercentString
 	{
 	public:
@@ -2086,9 +2133,11 @@ namespace SimpleTypes
 		private:
 			double m_dValue;
 	};
+
 	//--------------------------------------------------------------------------------
 	// 20.1.10.78 ST_TextSpacingPoint (Text Spacing Point)
 	//--------------------------------------------------------------------------------
+
 	template<_INT64 nDefValue = 0>
 	class CTextSpacingPoint : public CSimpleType<_INT64, nDefValue>
 	{
@@ -2104,9 +2153,11 @@ namespace SimpleTypes
 		double ToInches();
 		double ToCm();
 	};
+
 	//--------------------------------------------------------------------------------
 	// TextTypeface 20.1.10.81 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	class CTextTypeface
 	{
 	public:
@@ -2127,6 +2178,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// TextVerticalType 20.1.10.83 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextVerticalType
 	{
 		textverticaltypeEaVert         = 0,
@@ -2150,10 +2202,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CTextVerticalType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// TextVertOverflowType 20.1.10.84 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextVertOverflowType
 	{
 		textvertoverflowtypeClip     = 0,
@@ -2173,10 +2225,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CTextVertOverflowType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// TextWrappingType 20.1.10.85 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETextWrappingType
 	{
 		textwrappingtypeNone   = 0,
@@ -2195,10 +2247,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CTextWrappingType)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// TileFlipMode 20.1.10.86 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ETileFlipMode
 	{
 		tileflipmodeNone = 0,
@@ -2218,7 +2270,6 @@ namespace SimpleTypes
 
 		SimpleTypes_Default (CTileFlipMode)
 	};
-
 
 } // SimpleTypes
 
@@ -2251,8 +2302,6 @@ namespace SimpleTypes
 		SimpleTypes_Default (CAlignH)
 	};
 
-
-
 	//--------------------------------------------------------------------------------
 	// AlignV 20.4.3.2 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2278,8 +2327,6 @@ namespace SimpleTypes
 
 		SimpleTypes_Default (CAlignV)
 	};
-
-
 
 	//--------------------------------------------------------------------------------
 	// PositionOffset 10.4.3.3 (Part 1)
@@ -2331,9 +2378,6 @@ namespace SimpleTypes
 		SimpleTypes_Default (CRelFromH)
 	};
 
-
-
-
 	//--------------------------------------------------------------------------------
 	// RelFromV 20.4.3.5 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2363,6 +2407,10 @@ namespace SimpleTypes
 		SimpleTypes_Default (CRelFromV)
 	};
 
+	//--------------------------------------------------------------------------------
+	// SizeRelFromH
+	//--------------------------------------------------------------------------------
+
 	enum ESizeRelFromH
 	{
 		sizerelfromhMargin     = 0,
@@ -2385,6 +2433,10 @@ namespace SimpleTypes
 
 		SimpleTypes_Default (CSizeRelFromH)
 	};
+
+	//--------------------------------------------------------------------------------
+	// SizeRelFromV
+	//--------------------------------------------------------------------------------
 
 	enum ESizeRelFromV
 	{
@@ -2430,7 +2482,6 @@ namespace SimpleTypes
 		double ToTwips();
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// WrapText 20.4.3.7 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -2454,6 +2505,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default (CWrapText)
 	};
+
 } // SimpleTypes
 
 // Здесь представлены все простые типы Drawing-Spreadsheet из спецификации Office Open Xml (20.5.3)
@@ -2471,6 +2523,10 @@ namespace SimpleTypes
 // Здесь представлены все простые типы Drawing-Diagrams из спецификации Office Open Xml (21.4.7)
 namespace SimpleTypes
 {
+	//--------------------------------------------------------------------------------
+	// HueDirType
+	//--------------------------------------------------------------------------------
+
 	enum EHueDirType
 	{
 		hueDirCCw = 0,
@@ -2488,7 +2544,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CHueDirType)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ColorMethod
+	//--------------------------------------------------------------------------------
+
 	enum EColorMethod
 	{
 		colorMethodCycle = 0,
@@ -2507,12 +2567,17 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CColorMethod)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ChOrder
+	//--------------------------------------------------------------------------------
+
 	enum EChOrder
 	{
 		chOrderB = 0,
 		chOrderT = 1
 	};
+
 	template<EChOrder eDefValue = chOrderB>
 	class CChOrder : public CSimpleType<EChOrder, eDefValue>
 	{
@@ -2524,7 +2589,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CChOrder)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// AxisTypes
+	//--------------------------------------------------------------------------------
+
 	enum EAxisTypes
 	{
 		axisTypes_none = 0,
@@ -2541,6 +2610,7 @@ namespace SimpleTypes
 		axisTypes_preced = 11,
 		axisTypes_root = 12
 	};
+
 	template<EAxisTypes eDefValue = axisTypes_none>
 	class CAxisTypes : public CSimpleType<EAxisTypes, eDefValue>
 	{
@@ -2552,7 +2622,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CAxisTypes)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ParameterId
+	//--------------------------------------------------------------------------------
+
 	enum EParameterId
 	{
 		parameterId_horzAlign = 0,
@@ -2611,6 +2685,7 @@ namespace SimpleTypes
 		parameterId_begPts = 53,
 		parameterId_endPts = 54
 	};
+
 	template<EParameterId eDefValue = parameterId_horzAlign>
 	class CParameterId : public CSimpleType<EParameterId, eDefValue>
 	{
@@ -2622,13 +2697,18 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CParameterId)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ConstraintRelationship
+	//--------------------------------------------------------------------------------
+
 	enum EConstraintRelationship
 	{
 		constraintRels_self = 0,
 		constraintRels_ch = 1,
 		constraintRels_des = 2
 	};
+
 	template<EConstraintRelationship eDefValue = constraintRels_self>
 	class CConstraintRelationship : public CSimpleType<EConstraintRelationship, eDefValue>
 	{
@@ -2640,7 +2720,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CConstraintRelationship)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ConstraintType
+	//--------------------------------------------------------------------------------
+
 	enum EConstraintType
 	{
 		constraintType_none = 0,
@@ -2707,6 +2791,7 @@ namespace SimpleTypes
 		constraintType_wArH = 61,
 		constraintType_wOff = 62
 	};
+
 	template<EConstraintType eDefValue = constraintType_none>
 	class CConstraintType : public CSimpleType<EConstraintType, eDefValue>
 	{
@@ -2718,7 +2803,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CConstraintType)
 	};
-	//------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// BoolOperator
+	//--------------------------------------------------------------------------------
+
 	enum EBoolOperator
 	{
 		boolOperator_none = 0,
@@ -2726,6 +2815,7 @@ namespace SimpleTypes
 		boolOperator_gte = 2,
 		boolOperator_lte = 3
 	};
+
 	template<EBoolOperator eDefValue = boolOperator_none>
 	class CBoolOperator : public CSimpleType<EBoolOperator, eDefValue>
 	{
@@ -2735,7 +2825,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CBoolOperator)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ElementTypes
+	//--------------------------------------------------------------------------------
+
 	enum EElementTypes
 	{
 		elementTypes_all = 0,
@@ -2749,6 +2843,7 @@ namespace SimpleTypes
 		elementTypes_pres = 8,
 		elementTypes_sibTrans = 9
 	};
+
 	template<EElementTypes eDefValue = elementTypes_all>
 	class CElementTypes : public CSimpleType<EElementTypes, eDefValue>
 	{
@@ -2758,7 +2853,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CElementTypes)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// AlgorithmType
+	//--------------------------------------------------------------------------------
+
 	enum EAlgorithmType
 	{
 		algorithmType_composite = 0,
@@ -2772,6 +2871,7 @@ namespace SimpleTypes
 		algorithmType_tx = 8,
 		algorithmType_snake = 9
 	};
+
 	template<EAlgorithmType eDefValue = algorithmType_composite>
 	class CAlgorithmType : public CSimpleType<EAlgorithmType, eDefValue>
 	{
@@ -2781,7 +2881,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CAlgorithmType)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// FunctionType
+	//--------------------------------------------------------------------------------
+
 	enum EFunctionType
 	{
 		functionType_cnt = 0,
@@ -2793,6 +2897,7 @@ namespace SimpleTypes
 		functionType_depth = 6,
 		functionType_maxDepth = 7
 	};
+
 	template<EFunctionType eDefValue = functionType_cnt>
 	class CFunctionType : public CSimpleType<EFunctionType, eDefValue>
 	{
@@ -2802,7 +2907,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CFunctionType)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// FunctionOperator
+	//--------------------------------------------------------------------------------
+
 	enum EFunctionOperator
 	{
 		functionOperator_equ = 0,
@@ -2812,6 +2921,7 @@ namespace SimpleTypes
 		functionOperator_gte = 4,
 		functionOperator_lte = 5
 	};
+
 	template<EFunctionOperator eDefValue = functionOperator_equ>
 	class CFunctionOperator : public CSimpleType<EFunctionOperator, eDefValue>
 	{
@@ -2821,13 +2931,18 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CFunctionOperator)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// AnimLvlStr
+	//--------------------------------------------------------------------------------
+
 	enum EAnimLvlStr
 	{
 		animLvlStr_none = 0,
 		animLvlStr_ctr = 1,
 		animLvlStr_lvl = 2
 	};
+
 	template<EAnimLvlStr eDefValue = animLvlStr_none>
 	class CAnimLvlStr : public CSimpleType<EAnimLvlStr, eDefValue>
 	{
@@ -2837,13 +2952,18 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CAnimLvlStr)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// AnimOneStr
+	//--------------------------------------------------------------------------------
+
 	enum EAnimOneStr
 	{
 		animOneStr_none = 0,
 		animOneStr_branch = 1,
 		animOneStr_one = 2
 	};
+
 	template<EAnimOneStr eDefValue = animOneStr_none>
 	class CAnimOneStr : public CSimpleType<EAnimOneStr, eDefValue>
 	{
@@ -2853,12 +2973,17 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CAnimOneStr)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// DirectionDraw
+	//--------------------------------------------------------------------------------
+
 	enum EDirectionDraw
 	{
 		direction_norm = 0,
 		direction_rev = 1
 	};
+
 	template<EDirectionDraw eDefValue = direction_norm>
 	class CDirectionDraw : public CSimpleType<EDirectionDraw, eDefValue>
 	{
@@ -2868,7 +2993,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CDirectionDraw)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// HierBranch
+	//--------------------------------------------------------------------------------
+
 	enum EHierBranch
 	{
 		hierBranch_hang = 0,
@@ -2877,6 +3006,7 @@ namespace SimpleTypes
 		hierBranch_r = 3,
 		hierBranch_std = 4
 	};
+
 	template<EHierBranch eDefValue = hierBranch_hang>
 	class CHierBranch : public CSimpleType<EHierBranch, eDefValue>
 	{
@@ -2886,12 +3016,17 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CHierBranch)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// ResizeHandles
+	//--------------------------------------------------------------------------------
+
 	enum EResizeHandles
 	{
 		resizeHandles_exact = 0,
 		resizeHandles_rel = 1
 	};
+
 	template<EResizeHandles eDefValue = resizeHandles_exact>
 	class CResizeHandles : public CSimpleType<EResizeHandles, eDefValue>
 	{
@@ -2901,7 +3036,11 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CResizeHandles)
 	};
-	//---------------------------------------------------------------------------
+
+	//--------------------------------------------------------------------------------
+	// PtTypes
+	//--------------------------------------------------------------------------------
+
 	enum EPtTypes
 	{
 		ptTypes_node = 0,
@@ -2911,6 +3050,7 @@ namespace SimpleTypes
 		ptTypes_parTrans = 4,
 		ptTypes_sibTrans = 5
 	};
+
 	template<EPtTypes eDefValue = ptTypes_node>
 	class CPtTypes : public CSimpleType<EPtTypes, eDefValue>
 	{
@@ -2920,5 +3060,6 @@ namespace SimpleTypes
 		virtual std::wstring ToString() const;
 		SimpleTypes_Default(CPtTypes)
 	};
+
 } // SimpleTypes
 

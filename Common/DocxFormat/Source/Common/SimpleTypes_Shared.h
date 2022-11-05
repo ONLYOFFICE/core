@@ -64,6 +64,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// CalendarType 22.9.2.1 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum ECalendarType
 	{
 		calendartypeGregorian            =  0,
@@ -97,6 +98,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// ConformanceClass 22.9.2.2 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	enum EConformanceClass
 	{
 		conformanceclassStrict       = 0,
@@ -114,6 +116,7 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CConformanceClass)
 	};
+
 	//--------------------------------------------------------------------------------
 	// Guid 22.9.2.4 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -151,9 +154,11 @@ namespace SimpleTypes
 			unsigned char  k;
 		} m_oGUID;
 	};
+
 	//--------------------------------------------------------------------------------
 	// HexColorRGB 22.9.2.5 (Part 1)
 	//--------------------------------------------------------------------------------
+
 	template<int nDefValue = 0>
 	class CHexColorRGB : public CSimpleType<int, nDefValue>
 	{
@@ -243,6 +248,7 @@ namespace SimpleTypes
 		onofftostringOn     = 2,
 		onofftostring1      = 3
 	};
+
 	template<EOnOff eDefValue = onoffFalse>
 	class COnOff : public CSimpleType<EOnOff, eDefValue>
 	{
@@ -261,6 +267,10 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(COnOff)
 	};
+
+	//--------------------------------------------------------------------------------
+	// Bool
+	//--------------------------------------------------------------------------------
 
 	class CBool : public COnOff<>
 	{
@@ -296,7 +306,6 @@ namespace SimpleTypes
 	private:
 		std::wstring m_sValue;
 	};
-
 
 	//--------------------------------------------------------------------------------
 	// String 22.9.2.13 (Part 1)
@@ -365,7 +374,6 @@ namespace SimpleTypes
 		SimpleTypes_Default(CVerticalAlignRun)
 	};
 
-
 	//--------------------------------------------------------------------------------
 	// XAlign 22.9.2.18 (Part 1)
 	//--------------------------------------------------------------------------------
@@ -424,6 +432,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// ColorType 15.1.2.3 (Part 4)
 	//--------------------------------------------------------------------------------
+
 	enum EColorType
 	{
 		colortypeNone,
@@ -445,6 +454,7 @@ namespace SimpleTypes
 		colortypeWhite,
 		colortypeYellow,
 	};
+
 	template<EColorType eDefValue = colortypeNone>
 	class CColorType : public CSimpleType<EColorType, eDefValue>
 	{
@@ -475,6 +485,7 @@ namespace SimpleTypes
 		unsigned char m_unG;
 		unsigned char m_unB;
 	};
+
 	//--------------------------------------------------------------------------------
 	// CTrueFalse 15.1.2.5 - 15.1.2.6 (Part 4)
 	//--------------------------------------------------------------------------------
@@ -497,6 +508,11 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CTrueFalse)
 	};
+
+	//--------------------------------------------------------------------------------
+	// SdtAppearance
+	//--------------------------------------------------------------------------------
+
 	enum ESdtAppearance
 	{
 		sdtappearenceTags = 0,
@@ -515,4 +531,5 @@ namespace SimpleTypes
 
 		SimpleTypes_Default(CSdtAppearance)
 	};
+
 } // SimpleTypes

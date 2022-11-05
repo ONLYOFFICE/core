@@ -42,7 +42,8 @@ HEADERS += \
 	$$BASE_DIR/Common/SimpleTypes_Spreadsheet.h
 
 SOURCES += \
-    $$BASE_DIR/Common/SimpleTypes_Base.cpp \
+	$$BASE_DIR/Common/ComplexTypes.cpp \
+	$$BASE_DIR/Common/SimpleTypes_Base.cpp \
 	$$BASE_DIR/Common/SimpleTypes_OMath.cpp \
 	$$BASE_DIR/Common/SimpleTypes_Drawing.cpp \
 	$$BASE_DIR/Common/SimpleTypes_Vml.cpp \

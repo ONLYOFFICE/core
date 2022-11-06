@@ -37,11 +37,7 @@
 // Here are simple types Vml from spec Office Open Xml Part4 14
 namespace SimpleTypes
 {
-	template<>
-	CEditAs<editasCanvas>::CEditAs() {}
-
-	template<>
-	EEditAs CEditAs<editasCanvas>::FromString(const std::wstring &sValue)
+	EEditAs CEditAs::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = editasCanvas;
 
@@ -75,8 +71,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CEditAs<editasCanvas>::ToString() const
+	std::wstring CEditAs::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -95,11 +90,7 @@ namespace SimpleTypes
 	// Ext 14.1.3.2 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CExt<extView>::CExt() {}
-
-	template<>
-	EExt CExt<extView>::FromString(const std::wstring &sValue)
+	EExt CExt::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = extView;
 
@@ -123,8 +114,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CExt<extView>::ToString  () const
+	std::wstring CExt::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -139,11 +129,7 @@ namespace SimpleTypes
 	// FillMethod 14.1.3.3 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CFillMethod<fillmethodNone>::CFillMethod() {}
-
-	template<>
-	EFillMethod CFillMethod<fillmethodNone>::FromString(const std::wstring& sValue)
+	EFillMethod CFillMethod::FromString(const std::wstring& sValue)
 	{
 		if		(L"any"		== sValue)	this->m_eValue = fillmethodAny;
 		else if	(L"linear"	== sValue)	this->m_eValue = fillmethodLinear;
@@ -155,8 +141,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CFillMethod<fillmethodNone>::ToString() const
+	std::wstring CFillMethod::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -261,11 +246,7 @@ namespace SimpleTypes
 	// ImageAspect 14.1.3.5 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CImageAspect<imageaspectIgnore>::CImageAspect() {}
-
-	template<>
-	EImageAspect CImageAspect<imageaspectIgnore>::FromString(const std::wstring &sValue)
+	EImageAspect CImageAspect::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = imageaspectIgnore;
 
@@ -287,8 +268,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring  CImageAspect<imageaspectIgnore>::ToString  () const
+	std::wstring  CImageAspect::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -303,11 +283,7 @@ namespace SimpleTypes
 	// ShadowType 14.1.3.6 (Part 4)
 	// -------------------------------------------------------------------------------
 
-	template<>
-	CShadowType<shadowtypeSingle>::CShadowType() {}
-
-	template<>
-	EShadowType CShadowType<shadowtypeSingle>::FromString(const std::wstring &sValue)
+	EShadowType CShadowType::FromString(const std::wstring &sValue)
 	{
 		if      (L"double"		== sValue)	this->m_eValue = shadowtypeDouble;
 		else if (L"emboss"		== sValue)	this->m_eValue = shadowtypeEmboss;
@@ -318,8 +294,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CShadowType<shadowtypeSingle>::ToString() const
+	std::wstring CShadowType::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -335,11 +310,7 @@ namespace SimpleTypes
 	// StrokeArrowLength 14.1.3.7 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStrokeArrowLength<strokearrowlengthMedium>::CStrokeArrowLength() {}
-
-	template<>
-	EStrokeArrowLength CStrokeArrowLength<strokearrowlengthMedium>::FromString(const std::wstring &sValue)
+	EStrokeArrowLength CStrokeArrowLength::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = strokearrowlengthMedium;
 
@@ -363,8 +334,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStrokeArrowLength<strokearrowlengthMedium>::ToString() const
+	std::wstring CStrokeArrowLength::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -379,11 +349,7 @@ namespace SimpleTypes
 	// StrokeArrowType 14.1.3.8 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStrokeArrowType<strokearrowtypeNone>::CStrokeArrowType() {}
-
-	template<>
-	EStrokeArrowType CStrokeArrowType<strokearrowtypeNone>::FromString(const std::wstring &sValue)
+	EStrokeArrowType CStrokeArrowType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = strokearrowtypeNone;
 
@@ -414,8 +380,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStrokeArrowType<strokearrowtypeNone>::ToString  () const
+	std::wstring CStrokeArrowType::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -433,11 +398,7 @@ namespace SimpleTypes
 	// StrokeArrowWidth 14.1.3.9 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStrokeArrowWidth<strokearrowwidthMedium>::CStrokeArrowWidth() {}
-
-	template<>
-	EStrokeArrowWidth CStrokeArrowWidth<strokearrowwidthMedium>::FromString(const std::wstring &sValue)
+	EStrokeArrowWidth CStrokeArrowWidth::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = strokearrowwidthMedium;
 
@@ -461,8 +422,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStrokeArrowWidth<strokearrowwidthMedium>::ToString() const
+	std::wstring CStrokeArrowWidth::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -477,11 +437,7 @@ namespace SimpleTypes
 	// StrokeEndCap 14.1.3.10 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStrokeEndCap<strokeendcapRound>::CStrokeEndCap() {}
-
-	template<>
-	EStrokeEndCap CStrokeEndCap<strokeendcapRound>::FromString(const std::wstring &sValue)
+	EStrokeEndCap CStrokeEndCap::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = strokeendcapRound;
 
@@ -505,8 +461,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStrokeEndCap<strokeendcapRound>::ToString  () const
+	std::wstring CStrokeEndCap::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -521,11 +476,7 @@ namespace SimpleTypes
 	// StrokeJoinStyle 14.1.3.11 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStrokeJoinStyle<strokejoinstyleRound>::CStrokeJoinStyle() {}
-
-	template<>
-	EStrokeJoinStyle CStrokeJoinStyle<strokejoinstyleRound>::FromString(const std::wstring &sValue)
+	EStrokeJoinStyle CStrokeJoinStyle::FromString(const std::wstring &sValue)
 	{
 		if      (L"round"	== sValue)	this->m_eValue = strokejoinstyleRound;
 		else if (L"miter"	== sValue)	this->m_eValue = strokejoinstyleMiter;
@@ -535,8 +486,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStrokeJoinStyle<strokejoinstyleRound>::ToString() const
+	std::wstring CStrokeJoinStyle::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -551,11 +501,7 @@ namespace SimpleTypes
 	// StrokeLineStyle 14.1.3.12 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStrokeLineStyle<strokelinestyleSingle>::CStrokeLineStyle() {}
-
-	template<>
-	EStrokeLineStyle CStrokeLineStyle<strokelinestyleSingle>::FromString(const std::wstring &sValue)
+	EStrokeLineStyle CStrokeLineStyle::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = strokelinestyleSingle;
 
@@ -579,8 +525,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStrokeLineStyle<strokelinestyleSingle>::ToString  () const
+	std::wstring CStrokeLineStyle::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -599,11 +544,7 @@ namespace SimpleTypes
 	// AlternateMathContentType 14.2.3.1 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CAlternateMathContentType<alternatemathcontenttypeOfficeOpenXmlMath>::CAlternateMathContentType() {}
-
-	template<>
-	EAlternateMathContentType CAlternateMathContentType<alternatemathcontenttypeOfficeOpenXmlMath>::FromString(const std::wstring &sValue)
+	EAlternateMathContentType CAlternateMathContentType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = alternatemathcontenttypeOfficeOpenXmlMath;
 
@@ -624,8 +565,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CAlternateMathContentType<alternatemathcontenttypeOfficeOpenXmlMath>::ToString  () const
+	std::wstring CAlternateMathContentType::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -639,11 +579,7 @@ namespace SimpleTypes
 	// VmlAngle 14.2.3.2 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CVmlAngle<vmlangleAuto>::CVmlAngle() {}
-
-	template<>
-	EVmlAngle CVmlAngle<vmlangleAuto>::FromString(const std::wstring &sValue)
+	EVmlAngle CVmlAngle::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = vmlangleAuto;
 
@@ -675,8 +611,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CVmlAngle<vmlangleAuto>::ToString() const
+	std::wstring CVmlAngle::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -694,11 +629,7 @@ namespace SimpleTypes
 	// BWMode 14.2.3.3 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CBWMode<bwmodeAuto>::CBWMode() {}
-
-	template<>
-	EBWMode CBWMode<bwmodeAuto>::FromString(const std::wstring &sValue)
+	EBWMode CBWMode::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = bwmodeAuto;
 
@@ -744,8 +675,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CBWMode<bwmodeAuto>::ToString() const
+	std::wstring CBWMode::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -798,11 +728,7 @@ namespace SimpleTypes
 	// ColorMode 14.2.3.6 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CColorMode<colormodeAuto>::CColorMode() {}
-
-	template<>
-	EColorMode CColorMode<colormodeAuto>::FromString(const std::wstring &sValue)
+	EColorMode CColorMode::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = colormodeAuto;
 
@@ -823,8 +749,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CColorMode<colormodeAuto>::ToString  () const
+	std::wstring CColorMode::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -838,11 +763,7 @@ namespace SimpleTypes
 	// ConnectorType 14.2.3.7 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CConnectorType<connectortypeNone>::CConnectorType() {}
-
-	template<>
-	EConnectorType CConnectorType<connectortypeNone>::FromString(const std::wstring &sValue)
+	EConnectorType CConnectorType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = connectortypeNone;
 
@@ -869,8 +790,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CConnectorType<connectortypeNone>::ToString() const
+	std::wstring CConnectorType::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -886,11 +806,7 @@ namespace SimpleTypes
 	// ConnectType 14.2.3.8 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CConnectType<connecttypeNone>::CConnectType() {}
-
-	template<>
-	EConnectType CConnectType<connecttypeNone>::FromString(const std::wstring &sValue)
+	EConnectType CConnectType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = connecttypeNone;
 
@@ -917,8 +833,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CConnectType<connecttypeNone>::ToString  () const
+	std::wstring CConnectType::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -962,11 +877,7 @@ namespace SimpleTypes
 	// DiagramLayout 14.2.3.10 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CDiagramLayout<diagramlayout0>::CDiagramLayout() {}
-
-	template<>
-	EDiagramLayout CDiagramLayout<diagramlayout0>::FromString(const std::wstring &sValue)
+	EDiagramLayout CDiagramLayout::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = diagramlayout0;
 
@@ -993,8 +904,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CDiagramLayout<diagramlayout0>::ToString  () const
+	std::wstring CDiagramLayout::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1010,11 +920,7 @@ namespace SimpleTypes
 	// ExtrusionPlane 14.2.3.11 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CExtrusionPlane<extrusionplaneXY>::CExtrusionPlane() {}
-
-	template<>
-	EExtrusionPlane CExtrusionPlane<extrusionplaneXY>::FromString(const std::wstring &sValue)
+	EExtrusionPlane CExtrusionPlane::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = extrusionplaneXY;
 
@@ -1047,8 +953,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CExtrusionPlane<extrusionplaneXY>::ToString  () const
+	std::wstring CExtrusionPlane::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1063,11 +968,7 @@ namespace SimpleTypes
 	// ExtrusionRender 14.2.3.12 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CExtrusionRender<extrusionrenderSolid>::CExtrusionRender() {}
-
-	template<>
-	EExtrusionRender CExtrusionRender<extrusionrenderSolid>::FromString(const std::wstring &sValue)
+	EExtrusionRender CExtrusionRender::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = extrusionrenderSolid;
 
@@ -1091,8 +992,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CExtrusionRender<extrusionrenderSolid>::ToString  () const
+	std::wstring CExtrusionRender::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1107,11 +1007,7 @@ namespace SimpleTypes
 	// ExtructionType 14.2.3.13 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CExtrusionType<extrusiontypeParallel>::CExtrusionType() {}
-
-	template<>
-	EExtrusionType CExtrusionType<extrusiontypeParallel>::FromString(const std::wstring& sValue)
+	EExtrusionType CExtrusionType::FromString(const std::wstring& sValue)
 	{
 		if		(L"parallel"    == sValue ) this->m_eValue = extrusiontypeParallel;
 		else if	(L"perspective" == sValue ) this->m_eValue = extrusiontypePerspective;
@@ -1120,8 +1016,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CExtrusionType<extrusiontypeParallel>::ToString() const
+	std::wstring CExtrusionType::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -1135,11 +1030,7 @@ namespace SimpleTypes
 	// How 14.2.3.15 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CHow<howTop>::CHow() {}
-
-	template<>
-	EHow CHow<howTop>::FromString(const std::wstring &sValue)
+	EHow CHow::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = howTop;
 
@@ -1172,8 +1063,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CHow<howTop>::ToString  () const
+	std::wstring CHow::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1191,11 +1081,7 @@ namespace SimpleTypes
 	// HrAlign 14.2.3.16 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CHrAlign<hralignLeft>::CHrAlign() {}
-
-	template<>
-	EHrAlign CHrAlign<hralignLeft>::FromString(const std::wstring &sValue)
+	EHrAlign CHrAlign::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = hralignLeft;
 
@@ -1219,8 +1105,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CHrAlign<hralignLeft>::ToString  () const
+	std::wstring CHrAlign::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1235,11 +1120,7 @@ namespace SimpleTypes
 	// InsetMode 14.2.3.17 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CInsetMode<insetmodeAuto>::CInsetMode() {}
-
-	template<>
-	EInsetMode CInsetMode<insetmodeAuto>::FromString(const std::wstring &sValue)
+	EInsetMode CInsetMode::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = insetmodeAuto;
 
@@ -1260,8 +1141,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring  CInsetMode<insetmodeAuto>::ToString  () const
+	std::wstring CInsetMode::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1275,11 +1155,7 @@ namespace SimpleTypes
 	// OLEDrawAspect 14.2.3.18 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	COLEDrawAspect<oledrawaspectIcon>::COLEDrawAspect() {}
-
-	template<>
-	EOLEDrawAspect COLEDrawAspect<oledrawaspectIcon>::FromString(const std::wstring &sValue)
+	EOLEDrawAspect COLEDrawAspect::FromString(const std::wstring &sValue)
 	{
 		if      (L"Content"	== sValue)	this->m_eValue = oledrawaspectContent;
 		else if (L"Icon"	== sValue)	this->m_eValue = oledrawaspectIcon;
@@ -1288,8 +1164,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring COLEDrawAspect<oledrawaspectIcon>::ToString() const
+	std::wstring COLEDrawAspect::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -1302,11 +1177,7 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 	// OLELinkType 14.2.3.19 (Part 4)
 
-	template<>
-	COLELinkType<olelinktypeBitmap>::COLELinkType() {}
-
-	template<>
-	EOLELinkType COLELinkType<olelinktypeBitmap>::FromString(const std::wstring &sValue)
+	EOLELinkType COLELinkType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = olelinktypeBitmap;
 
@@ -1334,8 +1205,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring COLELinkType<olelinktypeBitmap>::ToString() const
+	std::wstring COLELinkType::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -1352,11 +1222,7 @@ namespace SimpleTypes
 	// OleType 14.2.3.20 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	COLEType<oletypeEmbed>::COLEType() {}
-
-	template<>
-	EOLEType COLEType<oletypeEmbed>::FromString(const std::wstring &sValue)
+	EOLEType COLEType::FromString(const std::wstring &sValue)
 	{
 		if      (L"embed"	== sValue)	this->m_eValue = oletypeEmbed;
 		else if (L"link"	== sValue)	this->m_eValue = oletypeLink;
@@ -1365,8 +1231,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring COLEType<oletypeEmbed>::ToString() const
+	std::wstring COLEType::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -1380,11 +1245,7 @@ namespace SimpleTypes
 	// OLEUpdateMode 14.2.3.21 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	COLEUpdateMode<oleupdatemodeAlways>::COLEUpdateMode() {}
-
-	template<>
-	EOLEUpdateMode COLEUpdateMode<oleupdatemodeAlways>::FromString(const std::wstring &sValue)
+	EOLEUpdateMode COLEUpdateMode::FromString(const std::wstring &sValue)
 	{
 		if      (L"Always"	== sValue)	this->m_eValue = oleupdatemodeAlways;
 		else if (L"OnCall"	== sValue)	this->m_eValue = oleupdatemodeOnCall;
@@ -1393,8 +1254,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring COLEUpdateMode<oleupdatemodeAlways>::ToString() const
+	std::wstring COLEUpdateMode::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -1408,11 +1268,7 @@ namespace SimpleTypes
 	// RType 14.2.3.22 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CRType<rtypeAlign>::CRType() {}
-
-	template<>
-	ERType CRType<rtypeAlign>::FromString(const std::wstring &sValue)
+	ERType CRType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = rtypeAlign;
 
@@ -1435,8 +1291,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CRType<rtypeAlign>::ToString() const
+	std::wstring CRType::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -1452,11 +1307,7 @@ namespace SimpleTypes
 	// ScreenSize 14.2.3.23 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CScreenSize<screensize640x480>::CScreenSize() {}
-
-	template<>
-	EScreenSize CScreenSize<screensize640x480>::FromString(const std::wstring &sValue)
+	EScreenSize CScreenSize::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = screensize640x480;
 
@@ -1487,8 +1338,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CScreenSize<screensize640x480>::ToString  () const
+	std::wstring CScreenSize::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1511,11 +1361,7 @@ namespace SimpleTypes
 	// BorderShadow 14.3.3.1 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CBorderShadow<bordershadowFalse>::CBorderShadow() {}
-
-	template<>
-	EBorderShadow CBorderShadow<bordershadowFalse>::FromString(const std::wstring &sValue)
+	EBorderShadow CBorderShadow::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = bordershadowFalse;
 
@@ -1536,8 +1382,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CBorderShadow<bordershadowFalse>::ToString  () const
+	std::wstring CBorderShadow::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1551,11 +1396,7 @@ namespace SimpleTypes
 	// BorderType 14.3.3.2 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CBorderType<bordertypeNone>::CBorderType() {}
-
-	template<>
-	EBorderType CBorderType<bordertypeNone>::FromString(const std::wstring &sValue)
+	EBorderType CBorderType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = bordertypeNone;
 
@@ -1616,8 +1457,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CBorderType<bordertypeNone>::ToString  () const
+	std::wstring CBorderType::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1656,11 +1496,7 @@ namespace SimpleTypes
 	// HorizontalAnchor 14.3.3.3 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CHorizontalAnchor<horizontalanchorChar>::CHorizontalAnchor() {}
-
-	template<>
-	EHorizontalAnchor CHorizontalAnchor<horizontalanchorChar>::FromString(const std::wstring &sValue)
+	EHorizontalAnchor CHorizontalAnchor::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = horizontalanchorChar;
 
@@ -1689,8 +1525,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CHorizontalAnchor<horizontalanchorChar>::ToString  () const
+	std::wstring CHorizontalAnchor::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1706,11 +1541,7 @@ namespace SimpleTypes
 	// VerticalAnchor 14.3.3.4 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CVerticalAnchor<verticalanchorLine>::CVerticalAnchor() {}
-
-	template<>
-	EVerticalAnchor CVerticalAnchor<verticalanchorLine>::FromString(const std::wstring &sValue)
+	EVerticalAnchor CVerticalAnchor::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = verticalanchorLine;
 
@@ -1739,8 +1570,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CVerticalAnchor<verticalanchorLine>::ToString  () const
+	std::wstring CVerticalAnchor::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1756,11 +1586,7 @@ namespace SimpleTypes
 	// WrapSide 14.3.3.5 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CWrapSide<wrapsideBoth>::CWrapSide() {}
-
-	template<>
-	EWrapSide CWrapSide<wrapsideBoth>::FromString(const std::wstring &sValue)
+	EWrapSide CWrapSide::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = wrapsideBoth;
 
@@ -1787,8 +1613,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CWrapSide<wrapsideBoth>::ToString  () const
+	std::wstring CWrapSide::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1804,11 +1629,7 @@ namespace SimpleTypes
 	// WrapType 14.3.3.6 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CWrapType<wraptypeNone>::CWrapType() {}
-
-	template<>
-	EWrapType CWrapType<wraptypeNone>::FromString(const std::wstring &sValue)
+	EWrapType CWrapType::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = wraptypeNone;
 
@@ -1836,8 +1657,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CWrapType<wraptypeNone>::ToString  () const
+	std::wstring CWrapType::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1852,16 +1672,12 @@ namespace SimpleTypes
 
 } // SimpleTypes
 
-// Дополнительные простые типы, не входящие в спецификацю
+// Дополнительные простые типы, не входящие в спецификацию
 namespace SimpleTypes
 {
 	namespace Vml
 	{
-		template<>
-		CVmlClientDataObjectType<vmlclientdataobjecttypeButton>::CVmlClientDataObjectType() {}
-
-		template<>
-		EVmlClientDataObjectType CVmlClientDataObjectType<vmlclientdataobjecttypeButton>::FromString(const std::wstring &sValue)
+		EVmlClientDataObjectType CVmlClientDataObjectType::FromString(const std::wstring &sValue)
 		{
 			this->m_eValue = vmlclientdataobjecttypeButton;
 
@@ -1890,8 +1706,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CVmlClientDataObjectType<vmlclientdataobjecttypeButton>::ToString  () const
+		std::wstring CVmlClientDataObjectType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1922,11 +1737,7 @@ namespace SimpleTypes
 		// VmlCalloutType 14.2.2.2 (type) (Part 4)
 		//--------------------------------------------------------------------------------
 
-		template<>
-		CVmlCalloutType<vmlcallouttypeRectangle>::CVmlCalloutType() {}
-
-		template<>
-		EVmlCalloutType CVmlCalloutType<vmlcallouttypeRectangle>::FromString(const std::wstring &sValue)
+		EVmlCalloutType CVmlCalloutType::FromString(const std::wstring &sValue)
 		{
 			this->m_eValue = vmlcallouttypeRectangle;
 
@@ -1951,8 +1762,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CVmlCalloutType<vmlcallouttypeRectangle>::ToString  () const
+		std::wstring CVmlCalloutType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{

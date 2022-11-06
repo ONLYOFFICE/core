@@ -277,6 +277,7 @@ namespace SimpleTypes
 	public:
 		CBool();
 		CBool(const bool & bVal);
+
 		virtual std::wstring ToString() const;
 		virtual EOnOff FromString(const std::wstring &sValue);
 		
@@ -294,7 +295,6 @@ namespace SimpleTypes
 
 		std::wstring GetValue() const;
 		void    SetValue(std::wstring &sValue);
-
 
 		std::wstring FromString(const std::wstring &sValue);
 		std::wstring ToString  () const;

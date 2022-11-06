@@ -106,13 +106,9 @@ namespace SimpleTypes
 {
 	//--------------------------------------------------------------------------------
 	// CalendarType 22.9.2.1 (Part 1)
-	//--------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------	
 
-	template<>
-	CCalendarType<calendartypeNone>::CCalendarType() {}
-
-	template<>
-	ECalendarType CCalendarType<calendartypeNone>::FromString(const std::wstring &sValue)
+	ECalendarType CCalendarType::FromString(const std::wstring &sValue)
 	{
 		if      ( L"gregorian"            == sValue ) this->m_eValue = calendartypeGregorian;
 		else if ( L"gregorianArabic"      == sValue ) this->m_eValue = calendartypeGregorianArabic;
@@ -133,8 +129,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CCalendarType<calendartypeNone>::ToString  () const
+	std::wstring CCalendarType::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -160,11 +155,7 @@ namespace SimpleTypes
 	// ConformanceClass 22.9.2.2 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CConformanceClass<conformanceclassTransitional>::CConformanceClass() {}
-
-	template<>
-	EConformanceClass CConformanceClass<conformanceclassTransitional>::FromString(const std::wstring &sValue)
+	EConformanceClass CConformanceClass::FromString(const std::wstring &sValue)
 	{
 		if      ( L"strict"       == sValue )	this->m_eValue = conformanceclassStrict;
 		else if ( L"transitional" == sValue )	this->m_eValue = conformanceclassTransitional;
@@ -173,8 +164,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CConformanceClass<conformanceclassTransitional>::ToString  () const
+	std::wstring CConformanceClass::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -776,11 +766,7 @@ namespace SimpleTypes
 	// VerticalAlignRun 22.9.2.17 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CVerticalAlignRun<verticalalignrunBaseline>::CVerticalAlignRun() {}
-
-	template<>
-	EVerticalAlignRun CVerticalAlignRun<verticalalignrunBaseline>::FromString(const std::wstring &sValue)
+	EVerticalAlignRun CVerticalAlignRun::FromString(const std::wstring &sValue)
 	{
 		if      ( L"baseline"    == sValue || L"None" == sValue)		this->m_eValue = verticalalignrunBaseline;
 		else if ( L"subscript"   == sValue || L"Subscript" == sValue)	this->m_eValue = verticalalignrunSubscript;
@@ -790,8 +776,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CVerticalAlignRun<verticalalignrunBaseline>::ToString() const
+	std::wstring CVerticalAlignRun::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -806,11 +791,7 @@ namespace SimpleTypes
 	// XAlign 22.9.2.18 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CXAlign<xalignLeft>::CXAlign() {}
-
-	template<>
-	EXAlign CXAlign<xalignLeft>::FromString(const std::wstring &sValue)
+	EXAlign CXAlign::FromString(const std::wstring &sValue)
 	{
 		if      ( L"center"  == sValue )	this->m_eValue = xalignCenter;
 		else if ( L"inside"  == sValue )	this->m_eValue = xalignInside;
@@ -822,8 +803,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CXAlign<xalignLeft>::ToString  () const
+	std::wstring CXAlign::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -840,11 +820,7 @@ namespace SimpleTypes
 	// YAlign 22.9.2.20 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CYAlign<yalignTop>::CYAlign() {}
-
-	template<>
-	EYAlign CYAlign<yalignTop>::FromString(const std::wstring &sValue)
+	EYAlign CYAlign::FromString(const std::wstring &sValue)
 	{
 		if      ( L"bottom"		== sValue ) this->m_eValue = yalignBottom;
 		else if ( L"bot"		== sValue ) this->m_eValue = yalignBottom;
@@ -858,8 +834,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CYAlign<yalignTop>::ToString  () const
+	std::wstring CYAlign::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1130,9 +1105,6 @@ namespace SimpleTypes
 	//--------------------------------------------------------------------------------
 
 	template<>
-	CTrueFalse<booleanFalse>::CTrueFalse() {}
-
-	template<>
 	ETrueFalse CTrueFalse<booleanFalse>::FromString(const std::wstring &sValue)
 	{
 		if      ( L"t"     == sValue )	this->m_eValue = booleanTrue;
@@ -1164,11 +1136,11 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	CSdtAppearance<sdtappearenceBoundingBox>::CSdtAppearance() {}
+	//--------------------------------------------------------------------------------
+	// CSdtAppearance
+	//--------------------------------------------------------------------------------
 
-	template<>
-	ESdtAppearance CSdtAppearance<sdtappearenceBoundingBox>::FromString(const std::wstring &sValue)
+	ESdtAppearance CSdtAppearance::FromString(const std::wstring &sValue)
 	{
 		if      ( L"boundingBox"     == sValue )	this->m_eValue = sdtappearenceBoundingBox;
 		else if ( L"tags"  == sValue )	this->m_eValue = sdtappearenceTags;
@@ -1177,8 +1149,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CSdtAppearance<sdtappearenceBoundingBox>::ToString  () const
+	std::wstring CSdtAppearance::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1187,4 +1158,5 @@ namespace SimpleTypes
 		default           : return L"boundingBox";
 		}
 	}
+
 } // SimpleTypes

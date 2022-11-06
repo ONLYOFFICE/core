@@ -1037,7 +1037,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CVerticalAlignRun<>> m_oVal;
+			nullable<SimpleTypes::CVerticalAlignRun> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1093,9 +1093,9 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CTwipsMeasure       > m_oW;
 			nullable<SimpleTypes::CWrap<>             > m_oWrap;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oX;
-			nullable<SimpleTypes::CXAlign<>           > m_oXAlign;
+			nullable<SimpleTypes::CXAlign             > m_oXAlign;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oY;
-			nullable<SimpleTypes::CYAlign<>           > m_oYAlign;
+			nullable<SimpleTypes::CYAlign             > m_oYAlign;
 		};
 
 		//--------------------------------------------------------------------------------

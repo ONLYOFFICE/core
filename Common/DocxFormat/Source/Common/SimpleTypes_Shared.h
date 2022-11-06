@@ -83,17 +83,7 @@ namespace SimpleTypes
 		calendartypeThai                 = 13
 	};
 
-	template<ECalendarType eDefValue = calendartypeNone>
-	class CCalendarType : public CSimpleType<ECalendarType, eDefValue>
-	{
-	public:
-		CCalendarType();
-
-		virtual ECalendarType FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CCalendarType)
-	};
+	DEFINE_SIMPLE_TYPE(CCalendarType, ECalendarType, calendartypeNone)
 
 	//--------------------------------------------------------------------------------
 	// ConformanceClass 22.9.2.2 (Part 1)
@@ -105,17 +95,7 @@ namespace SimpleTypes
 		conformanceclassTransitional = 1
 	};
 
-	template<EConformanceClass eDefValue = conformanceclassTransitional>
-	class CConformanceClass : public CSimpleType<EConformanceClass, conformanceclassTransitional>
-	{
-	public:
-		CConformanceClass();
-
-		virtual EConformanceClass FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CConformanceClass)
-	};
+	DEFINE_SIMPLE_TYPE(CConformanceClass, EConformanceClass, conformanceclassTransitional)
 
 	//--------------------------------------------------------------------------------
 	// Guid 22.9.2.4 (Part 1)
@@ -362,17 +342,7 @@ namespace SimpleTypes
 		verticalalignrunSuperscript = 2
 	};
 
-	template<EVerticalAlignRun eDefValue = verticalalignrunBaseline>
-	class CVerticalAlignRun : public CSimpleType<EVerticalAlignRun, eDefValue>
-	{
-	public:
-		CVerticalAlignRun();
-
-		virtual EVerticalAlignRun FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CVerticalAlignRun)
-	};
+	DEFINE_SIMPLE_TYPE(CVerticalAlignRun, EVerticalAlignRun, verticalalignrunBaseline)
 
 	//--------------------------------------------------------------------------------
 	// XAlign 22.9.2.18 (Part 1)
@@ -387,17 +357,7 @@ namespace SimpleTypes
 		xalignRight   = 4
 	};
 
-	template<EXAlign eDefValue = xalignLeft>
-	class CXAlign : public CSimpleType<EXAlign, eDefValue>
-	{
-	public:
-		CXAlign();
-
-		virtual EXAlign FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CXAlign)
-	};
+	DEFINE_SIMPLE_TYPE(CXAlign, EXAlign, xalignLeft)
 
 	//--------------------------------------------------------------------------------
 	// YAlign 22.9.2.20 (Part 1)
@@ -413,17 +373,8 @@ namespace SimpleTypes
 		yalignTop     = 5
 	};
 
-	template<EYAlign eDefValue = yalignTop>
-	class CYAlign : public CSimpleType<EYAlign, eDefValue>
-	{
-	public:
-		CYAlign();
+	DEFINE_SIMPLE_TYPE(CYAlign, EYAlign, yalignTop)
 
-		virtual EYAlign FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CYAlign)
-	};
 } // SimpleTypes
 
 // Здесь представлены все простые типы SharedML из спецификации Office Open Xml (15.1.2 - part 4)
@@ -520,16 +471,6 @@ namespace SimpleTypes
 		sdtappearenceHidden = 2
 	};
 
-	template<ESdtAppearance eDefValue = sdtappearenceBoundingBox>
-	class CSdtAppearance : public CSimpleType<ESdtAppearance, eDefValue>
-	{
-	public:
-		CSdtAppearance();
-
-		virtual ESdtAppearance FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CSdtAppearance)
-	};
+	DEFINE_SIMPLE_TYPE(CSdtAppearance, ESdtAppearance, sdtappearenceBoundingBox)
 
 } // SimpleTypes

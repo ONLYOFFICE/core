@@ -349,7 +349,6 @@ namespace SimpleTypes
 	// DecimalNumber 17.18.10 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	/*
 	int CDecimalNumber::FromString(const std::wstring &sValue)
 	{
 		try
@@ -374,46 +373,6 @@ namespace SimpleTypes
 	}
 
 	std::wstring CDecimalNumber::ToString() const
-	{
-		return std::to_wstring(this->m_eValue);
-	}
-	*/
-
-	template<>
-	CDecimalNumber<0>::CDecimalNumber() {}
-
-	template<>
-	CDecimalNumber<0>::CDecimalNumber(const _UINT32& val)
-	{
-		this->m_eValue = (int)val;
-	}
-
-	template<>
-	int CDecimalNumber<0>::FromString(const std::wstring &sValue)
-	{
-		try
-		{
-			this->m_eValue = XmlUtils::GetInteger(sValue.c_str());
-			return this->m_eValue;
-		}
-		catch (...)
-		{
-		}
-
-		try
-		{
-			this->m_eValue = XmlUtils::GetInteger64(sValue);
-		}
-		catch (...)
-		{
-			this->m_eValue = 0;
-		}
-
-		return this->m_eValue;
-	}
-
-	template<>
-	std::wstring CDecimalNumber<0>::ToString() const
 	{
 		return std::to_wstring(this->m_eValue);
 	}

@@ -36,11 +36,7 @@
 // Здесь представлены все простые типы Drawing-Main из спецификации Office Open Xml (22.1.3)
 namespace SimpleTypes
 {
-	template<>
-	CBreakBin<breakBinRepeat>::CBreakBin() {}
-
-	template<>
-	EBreakBin CBreakBin<breakBinRepeat>::FromString(const std::wstring &sValue)
+	EBreakBin CBreakBin::FromString(const std::wstring &sValue)
 	{
 		if       ( L"after"  == sValue ) this->m_eValue = breakBinAfter;
 		else if  ( L"before" == sValue ) this->m_eValue = breakBinBefore;
@@ -49,8 +45,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CBreakBin<breakBinRepeat>::ToString() const
+	std::wstring CBreakBin::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -65,11 +60,7 @@ namespace SimpleTypes
 	// BreakBinSub 22.1.3.2 (Break Binary Subtraction Operators)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CBreakBinSub<breakBinMinusMinus>::CBreakBinSub() {}
-
-	template<>
-	EBreakBinSub CBreakBinSub<breakBinMinusMinus>::FromString(const std::wstring &sValue)
+	EBreakBinSub CBreakBinSub::FromString(const std::wstring &sValue)
 	{
 		if       ( L"+-"  == sValue )	this->m_eValue = breakBinPlusMinus;
 		else if  ( L"-+"  == sValue )	this->m_eValue = breakBinMinusPlus;
@@ -78,8 +69,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CBreakBinSub<breakBinMinusMinus>::ToString() const
+	std::wstring CBreakBinSub::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -121,11 +111,7 @@ namespace SimpleTypes
 	// CFType 22.1.3.4 (Fraction Type)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CFType<fTypeBar>::CFType() {}
-
-	template<>
-	EFType CFType<fTypeBar>::FromString(const std::wstring &sValue)
+	EFType CFType::FromString(const std::wstring &sValue)
 	{
 		if       ( L"bar"	== sValue )	this->m_eValue = fTypeBar;
 		else if  ( L"lin"	== sValue )	this->m_eValue = fTypeLin;
@@ -135,8 +121,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CFType<fTypeBar>::ToString() const
+	std::wstring CFType::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -152,11 +137,7 @@ namespace SimpleTypes
 	// CInteger2 22.1.3.5
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CInteger2<0>::CInteger2() {}
-
-	template<>
-	int CInteger2<0>::FromString(const std::wstring &sValue)
+	int CInteger2::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = XmlUtils::GetInteger( sValue );
 
@@ -168,8 +149,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CInteger2<0>::ToString() const
+	std::wstring CInteger2::ToString() const
 	{
 		std::wstring sResult = std::to_wstring( this->m_eValue);
 
@@ -180,11 +160,7 @@ namespace SimpleTypes
 	// CInteger255 22.1.3.6 (Integer value (1 to 255))
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CInteger255<1>::CInteger255() {}
-
-	template<>
-	int CInteger255<1>::FromString(const std::wstring &sValue)
+	int CInteger255::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = XmlUtils::GetInteger64( sValue.c_str() );
 
@@ -196,8 +172,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CInteger255<1>::ToString() const
+	std::wstring CInteger255::ToString() const
 	{
 		std::wstring sResult = std::to_wstring( this->m_eValue);
 
@@ -206,13 +181,9 @@ namespace SimpleTypes
 
 	//--------------------------------------------------------------------------------
 	// CMJc 22.1.3.7  (Justification Math)
-	//--------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------	
 
-	template<>
-	CMJc<mjcCenterGroup>::CMJc() {}
-
-	template<>
-	EMJc CMJc<mjcCenterGroup>::FromString(const std::wstring &sValue)
+	EMJc CMJc::FromString(const std::wstring &sValue)
 	{
 		if       ( L"center"	  == sValue ) this->m_eValue = mjcCenter;
 		else if  ( L"centerGroup" == sValue ) this->m_eValue = mjcCenterGroup;
@@ -222,8 +193,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CMJc<mjcCenterGroup>::ToString() const
+	std::wstring CMJc::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -239,11 +209,7 @@ namespace SimpleTypes
 	// CLimLoc 22.1.3.8 (Limit Location)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CLimLoc<limLocSubSup>::CLimLoc() {}
-
-	template<>
-	ELimLoc CLimLoc<limLocSubSup>::FromString(const std::wstring &sValue)
+	ELimLoc CLimLoc::FromString(const std::wstring &sValue)
 	{
 		if       ( L"subSup"		 == sValue ) this->m_eValue = limLocSubSup;
 		else									 this->m_eValue = limLocUndOvr;
@@ -251,8 +217,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CLimLoc<limLocSubSup>::ToString() const
+	std::wstring CLimLoc::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -266,11 +231,7 @@ namespace SimpleTypes
 	// CScript 22.1.3.9 (Script)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CScript<scriptRoman>::CScript() {}
-
-	template<>
-	EScript CScript<scriptRoman>::FromString(const std::wstring &sValue)
+	EScript CScript::FromString(const std::wstring &sValue)
 	{
 		if       ( L"double-struck"		== sValue ) this->m_eValue = scriptDoubleStruck;
 		else if  ( L"fraktur"			== sValue ) this->m_eValue = scriptFraktur;
@@ -282,8 +243,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CScript<scriptRoman>::ToString() const
+	std::wstring CScript::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -301,11 +261,7 @@ namespace SimpleTypes
 	// CShp 22.1.3.10 (Shape (Delimiters))
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CShp<shpCentered>::CShp() {}
-
-	template<>
-	EShp CShp<shpCentered>::FromString(const std::wstring &sValue)
+	EShp CShp::FromString(const std::wstring &sValue)
 	{
 		if       ( L"centered"	== sValue )	this->m_eValue = shpCentered;
 		else								this->m_eValue = shpMatch;
@@ -313,8 +269,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CShp<shpCentered>::ToString() const
+	std::wstring CShp::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -328,11 +283,7 @@ namespace SimpleTypes
 	// CSpacingRule 22.1.3.11 (Spacing Rule)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CSpacingRule<0>::CSpacingRule() {}
-
-	template<>
-	int CSpacingRule<0>::FromString(const std::wstring &sValue)
+	int CSpacingRule::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = XmlUtils::GetInteger( sValue );
 
@@ -344,8 +295,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CSpacingRule<0>::ToString() const
+	std::wstring CSpacingRule::ToString() const
 	{
 		std::wstring sResult = std::to_wstring( this->m_eValue);
 
@@ -356,11 +306,7 @@ namespace SimpleTypes
 	// CStyle 22.1.3.12 (Style)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CStyle<styleBoldItalic>::CStyle() {}
-
-	template<>
-	EStyle CStyle<styleBoldItalic>::FromString(const std::wstring &sValue)
+	EStyle CStyle::FromString(const std::wstring &sValue)
 	{
 		if       ( L"b"			== sValue ) this->m_eValue = styleBold;
 		else if  ( L"bi"		== sValue ) this->m_eValue = styleBoldItalic;
@@ -370,8 +316,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CStyle<styleBoldItalic>::ToString() const
+	std::wstring CStyle::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -387,11 +332,7 @@ namespace SimpleTypes
 	// CTopBot 22.1.3.13 (Top-Bottom)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CTopBot<tbBot>::CTopBot() {}
-
-	template<>
-	ETopBot CTopBot<tbBot>::FromString(const std::wstring &sValue)
+	ETopBot CTopBot::FromString(const std::wstring &sValue)
 	{
 		if       ( L"bot"	== sValue )	this->m_eValue = tbBot;
 		else if  ( L"bottom"== sValue )	this->m_eValue = tbBot;
@@ -400,8 +341,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CTopBot<tbBot>::ToString() const
+	std::wstring CTopBot::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -415,19 +355,14 @@ namespace SimpleTypes
 	// CUnSignedInteger 22.1.3.14 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CUnSignedInteger<0>::CUnSignedInteger() {}
-
-	template<>
-	unsigned int CUnSignedInteger<0>::FromString(const std::wstring &sValue)
+	unsigned int CUnSignedInteger::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = XmlUtils::GetUInteger( sValue );
 
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CUnSignedInteger<0>::ToString() const
+	std::wstring CUnSignedInteger::ToString() const
 	{
 		return std::to_wstring( this->m_eValue);
 	}

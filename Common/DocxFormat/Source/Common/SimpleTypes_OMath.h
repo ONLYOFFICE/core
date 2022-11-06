@@ -47,17 +47,7 @@ namespace SimpleTypes
 		breakBinRepeat = 2
 	};
 
-	template<EBreakBin eDefValue = breakBinRepeat>
-	class CBreakBin : public CSimpleType<EBreakBin, eDefValue>
-	{
-	public:
-		CBreakBin();
-
-		virtual EBreakBin FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CBreakBin)
-	};
+	DEFINE_SIMPLE_TYPE(CBreakBin, EBreakBin, breakBinRepeat)
 
 	//--------------------------------------------------------------------------------
 	// BreakBinSub 22.1.3.2 (Break Binary Subtraction Operators)
@@ -70,17 +60,7 @@ namespace SimpleTypes
 		breakBinMinusMinus = 2
 	};
 
-	template<EBreakBinSub eDefValue = breakBinMinusMinus>
-	class CBreakBinSub : public CSimpleType<EBreakBinSub, eDefValue>
-	{
-	public:
-		CBreakBinSub();
-
-		virtual EBreakBinSub FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CBreakBinSub)
-	};
+	DEFINE_SIMPLE_TYPE(CBreakBinSub, EBreakBinSub, breakBinMinusMinus)
 
 	//--------------------------------------------------------------------------------
 	// CMChar 22.1.3.3 (Character)
@@ -98,6 +78,7 @@ namespace SimpleTypes
 		std::wstring ToString  () const;
 
 		SimpleTypes_DefaultS(CMChar)
+
 		private:
 			std::wstring m_sValue;
 	};
@@ -114,49 +95,19 @@ namespace SimpleTypes
 		fTypeSkw	= 3
 	};
 
-	template<EFType eDefValue = fTypeBar>
-	class CFType : public CSimpleType<EFType, eDefValue>
-	{
-	public:
-		CFType();
-
-		virtual EFType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CFType)
-	};
+	DEFINE_SIMPLE_TYPE(CFType, EFType, fTypeBar)
 
 	//--------------------------------------------------------------------------------
 	// CInteger2 22.1.3.5
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CInteger2 : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CInteger2();
-
-		virtual int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CInteger2)
-	};
+	DEFINE_SIMPLE_TYPE(CInteger2, int, 0)
 
 	//--------------------------------------------------------------------------------
 	// CInteger255 22.1.3.6 (Integer value (1 to 255))
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 1>
-	class CInteger255 : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CInteger255();
-
-		virtual int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CInteger255)
-	};
+	DEFINE_SIMPLE_TYPE(CInteger255, int, 1)
 
 	//--------------------------------------------------------------------------------
 	// CMJc 22.1.3.7  (Justification Math)
@@ -170,17 +121,7 @@ namespace SimpleTypes
 		mjcRight = 3
 	};
 
-	template<EMJc eDefValue = mjcCenterGroup>
-	class CMJc : public CSimpleType<EMJc, eDefValue>
-	{
-	public:
-		CMJc();
-
-		virtual EMJc FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CMJc)
-	};
+	DEFINE_SIMPLE_TYPE(CMJc, EMJc, mjcCenterGroup)
 	
 	//--------------------------------------------------------------------------------
 	// CLimLoc 22.1.3.8 (Limit Location)
@@ -192,17 +133,7 @@ namespace SimpleTypes
 		limLocUndOvr  = 1
 	};
 
-	template<ELimLoc eDefValue = limLocSubSup>
-	class CLimLoc : public CSimpleType<ELimLoc, eDefValue>
-	{
-	public:
-		CLimLoc();
-
-		virtual ELimLoc FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CLimLoc)
-	};
+	DEFINE_SIMPLE_TYPE(CLimLoc, ELimLoc, limLocSubSup)
 
 	//--------------------------------------------------------------------------------
 	// CScript 22.1.3.9 (Script)
@@ -218,17 +149,7 @@ namespace SimpleTypes
 		scriptScript		= 5
 	};
 
-	template<EScript eDefValue = scriptRoman>
-	class CScript : public CSimpleType<EScript, eDefValue>
-	{
-	public:
-		CScript();
-
-		virtual EScript FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CScript)
-	};
+	DEFINE_SIMPLE_TYPE(CScript, EScript, scriptRoman)
 	
 	//--------------------------------------------------------------------------------
 	// CShp 22.1.3.10 (Shape (Delimiters))
@@ -240,33 +161,13 @@ namespace SimpleTypes
 		shpMatch	 = 1
 	};
 
-	template<EShp eDefValue = shpCentered>
-	class CShp : public CSimpleType<EShp, eDefValue>
-	{
-	public:
-		CShp();
-
-		virtual EShp FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CShp)
-	};
+	DEFINE_SIMPLE_TYPE(CShp, EShp, shpCentered)
 	
 	//--------------------------------------------------------------------------------
 	// CSpacingRule 22.1.3.11 (Spacing Rule)
 	//--------------------------------------------------------------------------------
 
-	template<int unDefValue = 0>
-	class CSpacingRule : public CSimpleType<int, unDefValue>
-	{
-	public:
-		CSpacingRule();
-
-		virtual int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CSpacingRule)
-	};
+	DEFINE_SIMPLE_TYPE(CSpacingRule, int, 0)
 	
 	//--------------------------------------------------------------------------------
 	// CStyle 22.1.3.12 (Style)
@@ -280,17 +181,7 @@ namespace SimpleTypes
 		stylePlain		= 3
 	};
 
-	template<EStyle eDefValue = styleBoldItalic>
-	class CStyle : public CSimpleType<EStyle, eDefValue>
-	{
-	public:
-		CStyle();
-
-		virtual EStyle FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CStyle)
-	};
+	DEFINE_SIMPLE_TYPE(CStyle, EStyle, styleBoldItalic)
 	
 	//--------------------------------------------------------------------------------
 	// CTopBot 22.1.3.13 (Top-Bottom)
@@ -302,32 +193,11 @@ namespace SimpleTypes
 		tbTop	 = 1
 	};
 
-	template<ETopBot eDefValue = tbBot>
-	class CTopBot : public CSimpleType<ETopBot, eDefValue>
-	{
-	public:
-
-		CTopBot();
-
-		virtual ETopBot FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CTopBot)
-	};
+	DEFINE_SIMPLE_TYPE(CTopBot, ETopBot, tbBot)
 
 	//--------------------------------------------------------------------------------
 	// CUnSignedInteger 22.1.3.14 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<unsigned int unDefValue = 0>
-	class CUnSignedInteger : public CSimpleType<unsigned int, unDefValue>
-	{
-	public:
-		CUnSignedInteger();
-
-		virtual unsigned int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CUnSignedInteger)
-	};
+	DEFINE_SIMPLE_TYPE(CUnSignedInteger, unsigned int, 0)
 }

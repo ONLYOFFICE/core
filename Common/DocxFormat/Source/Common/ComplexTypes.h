@@ -679,7 +679,7 @@ namespace ComplexTypes
 		public:
             nullable<std::wstring> m_sAuthor;
 			nullable<SimpleTypes::CDateTime> m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
             nullable<std::wstring> m_sUserId;
 		};
 
@@ -898,7 +898,7 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::COnOff<>           > m_oCombine;
 			nullable<SimpleTypes::CCombineBrackets<> > m_oCombineBrackets;
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oID;
+			nullable<SimpleTypes::CDecimalNumber	 > m_oID;
 			nullable<SimpleTypes::COnOff<>           > m_oVert;
 			nullable<SimpleTypes::COnOff<>           > m_oVertCompress;
 		};
@@ -966,7 +966,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CDecimalNumber<>> m_oID;
+			nullable<SimpleTypes::CDecimalNumber  > m_oID;
 			nullable<SimpleTypes::CTwipsMeasure   > m_oVal;
 		};
 
@@ -1087,7 +1087,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CHAnchor<>          > m_oHAnchor;
 			nullable<SimpleTypes::CHeightRule<>       > m_oHRule;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oHSpace;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oLines;
+			nullable<SimpleTypes::CDecimalNumber      > m_oLines;
 			nullable<SimpleTypes::CVAnchor<>          > m_oVAnchor;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oVSpace;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oW;
@@ -1145,13 +1145,13 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oEnd;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oEndChars;
+			nullable<SimpleTypes::CDecimalNumber      > m_oEndChars;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oFirstLine;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oFirstLineChars;
+			nullable<SimpleTypes::CDecimalNumber      > m_oFirstLineChars;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oHanging;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oHangingChars;
+			nullable<SimpleTypes::CDecimalNumber      > m_oHangingChars;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oStart;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oStartChars;
+			nullable<SimpleTypes::CDecimalNumber      > m_oStartChars;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1202,10 +1202,10 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CTwipsMeasure       > m_oAfter;
 			nullable<SimpleTypes::COnOff<>            > m_oAfterAutospacing;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oAfterLines;
+			nullable<SimpleTypes::CDecimalNumber      > m_oAfterLines;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oBefore;
 			nullable<SimpleTypes::COnOff<>            > m_oBeforeAutospacing;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oBeforeLines;
+			nullable<SimpleTypes::CDecimalNumber      > m_oBeforeLines;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oLine;
 			nullable<SimpleTypes::CLineSpacingRule<>  > m_oLineRule;
 		};

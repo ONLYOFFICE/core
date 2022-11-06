@@ -260,18 +260,6 @@ namespace SimpleTypes
 	// DecimalNumber 17.18.10 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	//DEFINE_SIMPLE_TYPE(CDecimalNumber, int, 0)
-	template<int nDefValue = 0>
-	class CDecimalNumber : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CDecimalNumber();
-		CDecimalNumber(const unsigned int& val);
-
-		virtual int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CDecimalNumber)
-	};
+	DEFINE_SIMPLE_TYPE(CDecimalNumber, int, 0)
 
 } // SimpleTypes

@@ -656,6 +656,8 @@ public:
 
 		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
 		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
+
+		std::wstring GetImageIdFromVmlShape(OOX::Vml::CVmlCommonElements* pShape);
 //math............................................................................................................................
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();

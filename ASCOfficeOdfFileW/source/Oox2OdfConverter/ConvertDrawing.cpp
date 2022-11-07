@@ -250,6 +250,30 @@ void OoxConverter::convert(PPTX::Logic::Xfrm *oox_txbx, PPTX::Logic::Xfrm *oox_x
 
 	convert(oox_txbx);
 }
+std::wstring OoxConverter::GetImageIdFromVmlShape(OOX::Vml::CVmlCommonElements* pShape)
+{
+	if (!pShape) return L"";
+
+	std::wstring sIdImageFileCache;
+
+	for (size_t i = 0; i < pShape->m_arrItems.size(); ++i)
+	{
+		OOX::WritingElement* pChildElemShape = pShape->m_arrItems[i];
+
+		if (OOX::et_v_imagedata == pChildElemShape->getType())
+		{
+			OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);
+
+			if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
+			else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
+			else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
+
+			if (!sIdImageFileCache.empty())
+				break;
+		}
+	}
+	return sIdImageFileCache;
+}
 void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 {
 	if (!oox_picture)return;
@@ -386,35 +410,18 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 					{
 						OOX::Vml::CVmlCommonElements* pShape = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pFind->second.pElement);
 
-						if (pShape)
-						{						
-                            for(size_t i = 0; i < pShape->m_arrItems.size(); ++i)
+						std::wstring sIdImageFileCache = GetImageIdFromVmlShape(pShape);
+	
+						if (!sIdImageFileCache.empty())
+						{
+							//ищем физический файл ( rId относительно vml_drawing)									
+							smart_ptr<OOX::File> pFile = pVml->Find(sIdImageFileCache);
+
+							if (pFile.IsInit() && (OOX::FileTypes::Image == pFile->type()))
 							{
-                                OOX::WritingElement* pChildElemShape = pShape->m_arrItems[i];
+								OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
 
-								if(OOX::et_v_imagedata == pChildElemShape->getType())
-								{
-									OOX::Vml::CImageData* pImageData = static_cast<OOX::Vml::CImageData*>(pChildElemShape);									
-														
-									std::wstring sIdImageFileCache;
-
-									if (pImageData->m_oRelId.IsInit())		sIdImageFileCache = pImageData->m_oRelId->GetValue();
-									else if (pImageData->m_rId.IsInit())	sIdImageFileCache = pImageData->m_rId->GetValue();
-									else if (pImageData->m_rPict.IsInit())	sIdImageFileCache = pImageData->m_rPict->GetValue();
-																		
-									if (!sIdImageFileCache.empty())
-									{
-										//ищем физический файл ( rId относительно vml_drawing)									
-										smart_ptr<OOX::File> pFile = pVml->Find(sIdImageFileCache);
-										
-										if (pFile.IsInit() && (	OOX::FileTypes::Image == pFile->type()))
-										{
-											OOX::Image*	pImageFileCache = static_cast<OOX::Image*>(pFile.GetPointer());
-											
-											pathImage = pImageFileCache->filename().GetPath();
-										}
-									}
-								}
+								pathImage = pImageFileCache->filename().GetPath();
 							}
 						}
 					}

@@ -227,6 +227,14 @@ namespace MetaFile
 		m_pInterpretator = pInterpretator;
 	}
 
+	double CEmfParser::GetPixWidth(double dScaleX)
+	{
+		if (NULL != m_pEmfPlusParser)
+			return m_pEmfPlusParser->GetPixWidth(dScaleX);
+
+		return CEmfParserBase::GetPixWidth(dScaleX);
+	}
+
 	EmfParserType CEmfParser::GetType()
 	{
 		return EmfParserType::EmfParser;

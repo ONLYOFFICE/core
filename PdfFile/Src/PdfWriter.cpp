@@ -50,6 +50,7 @@
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/pro/Image.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -85,63 +86,6 @@
 #define LO_SURROGATE_END    0xDFFF
 
 using namespace PdfWriter;
-
-static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned int& unLen)
-{
-	if (wsUnicodeText.size() <= 0)
-		return NULL;
-
-	unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
-	if (!pUnicodes)
-		return NULL;
-
-	unLen = 0;
-	if (2 == sizeof(wchar_t))
-	{
-		const wchar_t* wsEnd = wsUnicodeText.c_str() + wsUnicodeText.size();
-		wchar_t* wsInput = (wchar_t*)wsUnicodeText.c_str();
-
-		wchar_t wLeading, wTrailing;
-		unsigned int unCode;
-		while (wsInput < wsEnd)
-		{
-			wLeading = *wsInput++;
-			if (wLeading < 0xD800 || wLeading > 0xDFFF)
-			{
-				pUnicodes[unLen++] = (unsigned int)wLeading;
-			}
-			else if (wLeading >= 0xDC00)
-			{
-				// Такого не должно быть
-				continue;
-			}
-			else
-			{
-				unCode = (wLeading & 0x3FF) << 10;
-				wTrailing = *wsInput++;
-				if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
-				{
-					// Такого не должно быть
-					continue;
-				}
-				else
-				{
-                    pUnicodes[unLen++] = ((unCode | (wTrailing & 0x3FF)) + 0x10000);
-				}
-			}
-		}
-	}
-	else
-	{
-		unLen = wsUnicodeText.size();
-		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-		{
-			pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);
-		}
-	}
-
-	return pUnicodes;
-}
 
 // Этих типов браша нет в рендерере, мы их используем, когда конвертим из веба
 static const long c_BrushTypeLinearGradient = 8001;
@@ -657,16 +601,6 @@ HRESULT CPdfWriter::put_Width(const double& dWidth)
 	m_pPage->SetWidth(MM_2_PT(dWidth));
 	return S_OK;
 }
-HRESULT CPdfWriter::get_DpiX(double* dDpiX)
-{
-	*dDpiX = 72;
-	return S_OK;
-}
-HRESULT CPdfWriter::get_DpiY(double* dDpiY)
-{
-	*dDpiY = 72;
-	return S_OK;
-}
 //----------------------------------------------------------------------------------------
 // Функции для работы с Pen
 //----------------------------------------------------------------------------------------
@@ -1011,7 +945,7 @@ HRESULT CPdfWriter::CommandDrawText(const std::wstring& wsUnicodeText, const dou
 		return S_FALSE;
 
 	unsigned int unLen;
-	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+    unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, unLen);
 	if (!pUnicodes)
 		return S_FALSE;
 
@@ -1081,7 +1015,7 @@ HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const u
 		if (wsUnicodeText.size())
 		{
 			unsigned int unUnicodeLen;
-			pUnicodes = WStringToUtf32(wsUnicodeText, unUnicodeLen);
+            pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, unUnicodeLen);
 			if (!pUnicodes || unUnicodeLen != unLen)
 				RELEASEARRAYOBJECTS(pUnicodes);
 		}
@@ -1098,7 +1032,7 @@ HRESULT CPdfWriter::CommandDrawTextEx(const std::wstring& wsUnicodeText, const u
 	}
 	else
 	{
-		pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+        pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, unLen);
 		if (!pUnicodes)
 			return S_FALSE;
 	}
@@ -1322,7 +1256,7 @@ HRESULT CPdfWriter::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, 
 HRESULT CPdfWriter::PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	unsigned int unLen;
-	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+    unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, unLen);
 	if (!pUnicodes)
 		return S_FALSE;
 
@@ -1351,7 +1285,7 @@ HRESULT CPdfWriter::PathCommandTextEx(const std::wstring& wsUnicodeText, const u
 		if (wsUnicodeText.size())
 		{
 			unsigned int unUnicodeLen;
-			pUnicodes = WStringToUtf32(wsUnicodeText, unUnicodeLen);
+            pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, unUnicodeLen);
 			if (!pUnicodes || unUnicodeLen != unLen)
 				RELEASEARRAYOBJECTS(pUnicodes);
 		}
@@ -1368,7 +1302,7 @@ HRESULT CPdfWriter::PathCommandTextEx(const std::wstring& wsUnicodeText, const u
 	}
 	else
 	{
-		pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+        pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeText, unLen);
 		if (!pUnicodes)
 			return S_FALSE;
 	}
@@ -1624,7 +1558,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CF
 		std::wstring wsValue = pPr->GetTextValue();
 
 		unsigned int unLen;
-		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+        unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
 		if (!pUnicodes)
 			return S_FALSE;
 
@@ -1836,7 +1770,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CF
 		std::wstring wsValue = pPr->GetTextValue();
 
 		unsigned int unLen;
-		unsigned int* pUnicodes = WStringToUtf32(wsValue, unLen);
+        unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsValue, unLen);
 		if (!pUnicodes)
 			return S_FALSE;
 
@@ -2835,7 +2769,7 @@ void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double
 }
 bool CPdfWriter::IsValid()
 {
-        return m_bValid;
+    return m_bValid;
 }
 bool CPdfWriter::IsPageValid()
 {

@@ -86,8 +86,6 @@ public:
     HRESULT put_Height(const double& dHeight);
     HRESULT get_Width(double* dWidth);
     HRESULT put_Width(const double& dWidth);
-    HRESULT get_DpiX(double* dDpiX);
-    HRESULT get_DpiY(double* dDpiY);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы с Pen
 	//----------------------------------------------------------------------------------------

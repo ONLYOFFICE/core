@@ -83,7 +83,7 @@ namespace OOX
 
 		nullable<std::wstring > m_oAuthor;
 		nullable<SimpleTypes::CDateTime > m_oDate;
-		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+		nullable<SimpleTypes::CDecimalNumber > m_oId;
 		nullable<std::wstring > m_oInitials;
 
 		//teamlab editor information!!!

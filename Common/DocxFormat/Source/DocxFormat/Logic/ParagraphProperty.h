@@ -318,12 +318,12 @@ namespace OOX
 
 		public:
 
-			nullable<std::wstring                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring                       > m_sUserId;
+			nullable<std::wstring>						m_sAuthor;
+			nullable<SimpleTypes::CDateTime>			m_oDate;
+			nullable<SimpleTypes::CDecimalNumber>		m_oId;
+			nullable<std::wstring>						m_sUserId;
 
-			nullable<OOX::Logic::CParagraphProperty> m_pParPr;
+			nullable<OOX::Logic::CParagraphProperty>	m_pParPr;
 
 		};
 		//--------------------------------------------------------------------------------

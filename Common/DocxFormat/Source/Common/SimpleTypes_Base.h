@@ -62,7 +62,7 @@ namespace SimpleTypes
 		Class(const Type& sValue) { m_eValue = sValue; }                                                        \
 		Class& operator=(const Type& sValue) { m_eValue = sValue; return *this; }                               \
 		bool operator==(const Class& oOther) const { return (m_eValue == oOther.m_eValue) ? true : false; }     \
-		Type GetValue() { return m_eValue; }                                                                    \
+		Type GetValue() const { return m_eValue; }                                                              \
 		void SetValue(const Type& value) { m_eValue = value; }                                                  \
 		void SetValueFromByte(const unsigned char& value) { m_eValue = (Type)value; }                           \
 		Type FromString(const std::wstring &sValue);                                                            \

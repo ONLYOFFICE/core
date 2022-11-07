@@ -605,7 +605,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CInteger255<>> m_alnAt;
+			nullable<SimpleTypes::CInteger255> m_alnAt;
 		};
 		//--------------------------------------------------------------------------------
 		// CBoxPr 22.1.2.14 (Box Properties)
@@ -2928,12 +2928,13 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<std::wstring>				m_sAuthor;
-			nullable<SimpleTypes::CDateTime>	m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring>				m_sUserId;
-	// Childs
-			nullable<CMRun>						m_oRun;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
+
+			// Childs
+			nullable<CMRun>							m_oRun;
 		};
 		class CMIns : public WritingElement
 		{
@@ -3022,8 +3023,9 @@ namespace OOX
 		public:
 			nullable<std::wstring                  >	m_sAuthor;
 			nullable<SimpleTypes::CDateTime        >	m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> >	m_oId;
+			nullable<SimpleTypes::CDecimalNumber   >	m_oId;
 			nullable<std::wstring                  >	m_sUserId;
+
 			// Childs
 			nullable<CMRun>								m_oRun;
 		};

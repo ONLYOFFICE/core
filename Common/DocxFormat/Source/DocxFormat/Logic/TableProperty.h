@@ -586,9 +586,9 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CTwipsMeasure       > m_oLeftFromText;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oRightFromText;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTblpX;
-			nullable<SimpleTypes::CXAlign<>           > m_oTblpXSpec;
+			nullable<SimpleTypes::CXAlign             > m_oTblpXSpec;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTblpY;
-			nullable<SimpleTypes::CYAlign<>           > m_oTblpYSpec;
+			nullable<SimpleTypes::CYAlign             > m_oTblpYSpec;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oTopFromText;
 			nullable<SimpleTypes::CVAnchor<>          > m_oVertAnchor;
 
@@ -917,12 +917,12 @@ namespace OOX
 
 		public:
 
-			nullable<std::wstring                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring                       > m_sUserId;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
 
-			nullable<CTableProperty>				 m_pTblPr;
+			nullable<CTableProperty>				m_pTblPr;
 		};
 		//--------------------------------------------------------------------------------
 		// CTableProperty
@@ -1222,13 +1222,13 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring                      > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring                       > m_sUserId;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
 
 			// Childs
-			nullable<CTableRowProperties>            m_pTrPr;
+			nullable<CTableRowProperties>           m_pTrPr;
 		};
 		//--------------------------------------------------------------------------------
 		// CTableRowProperties
@@ -1489,12 +1489,12 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<std::wstring                          > m_sAuthor;
+			nullable<std::wstring                     > m_sAuthor;
 			nullable<SimpleTypes::CDateTime           > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oId;
+			nullable<SimpleTypes::CDecimalNumber      > m_oId;
 			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMerge;
 			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMergeOrig;
-			nullable<std::wstring                          > m_sUserId;
+			nullable<std::wstring                     > m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1925,8 +1925,8 @@ namespace OOX
 
 			nullable<std::wstring>					m_sAuthor;
 			nullable<SimpleTypes::CDateTime>		m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring> m_sUserId;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
 
 			nullable<CTableCellProperties>			m_pTcPr;
 		};

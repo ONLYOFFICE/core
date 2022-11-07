@@ -208,6 +208,8 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oVal.SetValue(SimpleTypes::calendartypeGregorian);
+
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -215,7 +217,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::CCalendarType<SimpleTypes::calendartypeGregorian> m_oVal;
+			SimpleTypes::CCalendarType m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -401,7 +403,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CSdtAppearance<>> m_oVal;
+			nullable<SimpleTypes::CSdtAppearance> m_oVal;
 		};
 
 		//Not from specification

@@ -1172,6 +1172,8 @@ namespace OOX
 		void CTextbox::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Выставляем значения по умолчанию
+			m_oInsetMode.SetValue(SimpleTypes::insetmodeCustom);
+
 			m_oInset.Init();
 			m_oInset->Set(7.2, 3.6, 7.2, 3.6 );
 			
@@ -1211,7 +1213,11 @@ namespace OOX
 		void CFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sColors;
+
 			// Читаем атрибуты
+			m_oMethod.Init();
+			m_oMethod->SetValue(SimpleTypes::fillmethodSigma);
+
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -1365,6 +1371,12 @@ namespace OOX
 		}
 		void CStroke::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_oEndCap.Init();
+			m_oEndCap->SetValue(SimpleTypes::strokeendcapFlat);
+
+			m_oMiterLimit.Init();
+			m_oMiterLimit->SetValue(8);
+
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			

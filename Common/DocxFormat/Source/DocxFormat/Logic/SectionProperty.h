@@ -157,8 +157,8 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CDecimalNumber<>>	m_oCharSpace;
-			nullable<SimpleTypes::CDecimalNumber<>>	m_oLinePitch;
+			nullable<SimpleTypes::CDecimalNumber>	m_oCharSpace;
+			nullable<SimpleTypes::CDecimalNumber>	m_oLinePitch;
 			nullable<SimpleTypes::CDocGrid<>>		m_oType;
 		};
 
@@ -301,10 +301,10 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oCountBy;
+			nullable<SimpleTypes::CDecimalNumber      > m_oCountBy;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oDistance;
 			nullable<SimpleTypes::CLineNumberRestart<>> m_oRestart;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oStart;
+			nullable<SimpleTypes::CDecimalNumber      > m_oStart;
 		};
 
 
@@ -367,8 +367,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oFirst;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oOther;
+			nullable<SimpleTypes::CDecimalNumber> m_oFirst;
+			nullable<SimpleTypes::CDecimalNumber> m_oOther;
 		};
 
 
@@ -1001,9 +1001,9 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::CChapterSep<>    > m_oChapSep;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;
+			nullable<SimpleTypes::CDecimalNumber   > m_oChapStyle;
 			nullable<SimpleTypes::CNumberFormat<>  > m_oFmt;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oStart;
+			nullable<SimpleTypes::CDecimalNumber   > m_oStart;
 		};
 
 
@@ -1083,7 +1083,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oCode;
+			nullable<SimpleTypes::CDecimalNumber     > m_oCode;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oH;
 			nullable<SimpleTypes::CPageOrientation<> > m_oOrient;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oW;
@@ -1280,7 +1280,7 @@ namespace OOX
 		public:
 
 			nullable<SimpleTypes::COnOff<>           > m_oEqualWidth;
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oNum;
+			nullable<SimpleTypes::CDecimalNumber     > m_oNum;
 			nullable<SimpleTypes::COnOff<>           > m_oSep;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oSpace;
 
@@ -1657,10 +1657,10 @@ namespace OOX
 		public:
 
 			// Attributes
-            nullable<std::wstring                       > m_sAuthor;
+			nullable<std::wstring                  > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-            nullable<std::wstring                       > m_sUserId;
+			nullable<SimpleTypes::CDecimalNumber   > m_oId;
+			nullable<std::wstring                  > m_sUserId;
 
 			// Childs
 			nullable<CSectionProperty>               m_pSecPr;

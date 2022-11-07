@@ -316,24 +316,14 @@ namespace SimpleTypes
 	};
 
 	// Тут разделяем два типа 14.13.4 - m_nType = 0 и 14.2.3.14 - m_nType != 0
-	template<EFillType eDefValue = filltypeSolid>
-	class CFillType : public CSimpleType<EFillType, eDefValue>
-	{
-	public:
-		CFillType();
 
-		virtual void    SetValue  (EFillType eValue);
-		virtual EFillType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CFillType)
-	};
+	DEFINE_SIMPLE_TYPE(CFillType, EFillType, filltypeSolid)
 
 	//--------------------------------------------------------------------------------
 	//
 	//--------------------------------------------------------------------------------
 
-	template<EFillType eDefValue = filltypeSolid>
+	/*template<EFillType eDefValue = filltypeSolid>
 	class CFillType1 : public CSimpleType<EFillType, eDefValue>
 	{
 	public:
@@ -347,6 +337,11 @@ namespace SimpleTypes
 
 		private:
 			bool m_nType;
+	};*/
+
+	DEFINE_SIMPLE_TYPE_START(CFillType1, EFillType, filltypeSolid)
+	private:
+		bool m_nType;
 	};
 
 	//--------------------------------------------------------------------------------

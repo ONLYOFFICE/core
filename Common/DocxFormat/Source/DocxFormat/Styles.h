@@ -113,7 +113,7 @@ namespace ComplexTypes
 			nullable<std::wstring                         > m_sName;
 			nullable<SimpleTypes::COnOff<>           > m_oQFormat;
 			nullable<SimpleTypes::COnOff<>           > m_oSemiHidden;
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oUiPriority;
+			nullable<SimpleTypes::CDecimalNumber     > m_oUiPriority;
 			nullable<SimpleTypes::COnOff<>           > m_oUnhideWhenUsed;
 		};
 
@@ -486,6 +486,8 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_oDefUiPriority.SetValue(99);
+
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:count",             m_oCount )
 			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:defLockedState",    m_oDefLockedState )
@@ -496,11 +498,11 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 	public:
-		SimpleTypes::CDecimalNumber<0>                  m_oCount;
+		SimpleTypes::CDecimalNumber		                m_oCount;
 		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefLockedState;
 		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefQFormat;
 		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefSemiHidden;
-		SimpleTypes::CDecimalNumber<99>                 m_oDefUiPriority;
+		SimpleTypes::CDecimalNumber                     m_oDefUiPriority;
 		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefUnhideWhenUsed;
 
 		std::vector<ComplexTypes::Word::CLsdException*> m_arrLsdException;

@@ -92,7 +92,7 @@ namespace OOX
 
             nullable<std::wstring>					m_sAuthor;
             nullable<SimpleTypes::CDateTime>		m_oDate;
-            nullable<SimpleTypes::CDecimalNumber<>>	m_oId;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
             nullable<std::wstring>					m_sUserId;
 
             nullable<CRunProperty>					m_pRunPr;

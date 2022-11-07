@@ -194,7 +194,7 @@ namespace OOX
 		CPath									m_oReadPath;
 		unsigned int							m_nDrawingMaxZIndex = 0;
 
-		SimpleTypes::CConformanceClass<SimpleTypes::conformanceclassTransitional> m_oConformance;
+		SimpleTypes::CConformanceClass			m_oConformance;
 
 		nullable<SimpleTypes::CXmlSpace<>>		m_oSpace;
 

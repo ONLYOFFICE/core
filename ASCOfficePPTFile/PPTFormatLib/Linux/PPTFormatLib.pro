@@ -29,7 +29,7 @@ DEFINES +=  UNICODE \
 HEADERS += \
     ../Converter/Animation/AnimationParser.h \
     ../Converter/Animation/Animation_1995.h \
-    ../Converter/Animation/animation.h \
+    ../Converter/Animation/Timing_1995.h \
     ../Converter/Animation/intermediate_anim.h \
     ../Converter/timing.h \
     ../Converter/transition.h \
@@ -279,7 +279,6 @@ SOURCES += \
 
 core_debug {
 SOURCES += \
-    ../Converter/Animation/animation.cpp \
     ../Enums/RecordType.cpp \
     ../PPTFormatLib.cpp \
     ../Reader/ReadStructures.cpp \
@@ -304,6 +303,7 @@ SOURCES += \
     ../../../Common/3dParty/pole/pole.cpp \
     ../Converter/Animation/AnimationParser.cpp \
     ../Converter/Animation/Animation_1995.cpp \
+    ../Converter/Animation/Timing_1995.cpp \
     ../Converter/timing.cpp \
     ../Converter/transition.cpp \
     ../PPTXWriter/BulletsConverter.cpp

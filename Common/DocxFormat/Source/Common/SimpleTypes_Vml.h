@@ -323,22 +323,6 @@ namespace SimpleTypes
 	//
 	//--------------------------------------------------------------------------------
 
-	/*template<EFillType eDefValue = filltypeSolid>
-	class CFillType1 : public CSimpleType<EFillType, eDefValue>
-	{
-	public:
-		CFillType1();
-
-		virtual void    SetValue(EFillType eValue);
-		virtual EFillType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CFillType1)
-
-		private:
-			bool m_nType;
-	};*/
-
 	DEFINE_SIMPLE_TYPE_START(CFillType1, EFillType, filltypeSolid)
 	private:
 		bool m_nType;

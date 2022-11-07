@@ -44,20 +44,9 @@ namespace SimpleTypes
 	{
 		annotvmergeCont = 0,
 		annotvmergeRest = 1
-	};
+	};	
 
-	template<EAnnotationVMerge eDefValue = annotvmergeCont>
-	class CAnnotationVMerge : public CSimpleType<EAnnotationVMerge, eDefValue>
-	{
-	public:
-
-		CAnnotationVMerge();
-
-		virtual EAnnotationVMerge FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString() const;
-
-		SimpleTypes_Default(CAnnotationVMerge)
-	};
+	DEFINE_SIMPLE_TYPE(CAnnotationVMerge, EAnnotationVMerge, annotvmergeCont)
 
 	//--------------------------------------------------------------------------------
 	// Border 17.18.2 (Part 1)
@@ -266,18 +255,9 @@ namespace SimpleTypes
 		bordervalueZigZagStitch              = 266
 	};
 
-	template<EBorder eDefValue = bordervalueNone>
-	class CBorder : public CSimpleType<EBorder, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CBorder, EBorder, bordervalueNone)
+
 	public:
-
-		CBorder();
-
-		virtual EBorder FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CBorder)
-
 		bool IsArtBorder () const;
 		bool IsLineBorder() const;
 		bool IsNoBorder  () const;
@@ -295,17 +275,7 @@ namespace SimpleTypes
 		brclearRight = 3
 	};
 
-	template<EBrClear eDefValue = brclearAll>
-	class CBrClear : public CSimpleType<EBrClear, eDefValue>
-	{
-	public:
-		CBrClear();
-
-		virtual EBrClear FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CBrClear)
-	};
+	DEFINE_SIMPLE_TYPE(CBrClear, EBrClear, brclearAll)
 
 	//--------------------------------------------------------------------------------
 	// BrType 17.18.4 (Part 1)
@@ -318,17 +288,7 @@ namespace SimpleTypes
 		brtypeTextWrapping = 2
 	};
 
-	template<EBrType eDefValue = brtypePage>
-	class CBrType : public CSimpleType<EBrType, eDefValue>
-	{
-	public:
-		CBrType();
-
-		virtual EBrType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CBrType)
-	};
+	DEFINE_SIMPLE_TYPE(CBrType, EBrType, brtypePage)
 
 	//--------------------------------------------------------------------------------
 	// CaptionPos 17.18.5 (Part 1)
@@ -342,17 +302,7 @@ namespace SimpleTypes
 		captionposRight = 3
 	};
 
-	template<ECaptionPos eDefValue = captionposAbove>
-	class CCaptionPos : public CSimpleType<ECaptionPos, eDefValue>
-	{
-	public:
-		CCaptionPos();
-
-		virtual ECaptionPos FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CCaptionPos)
-	};
+	DEFINE_SIMPLE_TYPE(CCaptionPos, ECaptionPos, captionposAbove)
 
 	//--------------------------------------------------------------------------------
 	// ChapterSep 17.18.6 (Part 1)
@@ -367,17 +317,7 @@ namespace SimpleTypes
 		chaptersepPeriod = 4
 	};
 
-	template<EChapterSep eDefValue = chaptersepColon>
-	class CChapterSep : public CSimpleType<EChapterSep, eDefValue>
-	{
-	public:
-		CChapterSep();
-
-		virtual EChapterSep FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CChapterSep)
-	};
+	DEFINE_SIMPLE_TYPE(CChapterSep, EChapterSep, chaptersepColon)
 
 	//--------------------------------------------------------------------------------
 	// CharacterSpacing 17.18.7 (Part 1)
@@ -390,17 +330,7 @@ namespace SimpleTypes
 		charspacingDoNotCompress                      = 2
 	};
 
-	template<ECharacterSpacing eDefValue = charspacingDoNotCompress>
-	class CCharacterSpacing : public CSimpleType<ECharacterSpacing, eDefValue>
-	{
-	public:
-		CCharacterSpacing();
-
-		virtual ECharacterSpacing FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CCharacterSpacing)
-	};
+	DEFINE_SIMPLE_TYPE(CCharacterSpacing, ECharacterSpacing, charspacingDoNotCompress)
 
 	//--------------------------------------------------------------------------------
 	// CombineBrackets 17.18.8 (Part 1)
@@ -415,17 +345,7 @@ namespace SimpleTypes
 		combinebracketsSquare = 4
 	};
 
-	template<ECombineBrackets eDefValue = combinebracketsNone>
-	class CCombineBrackets : public CSimpleType<ECombineBrackets, eDefValue>
-	{
-	public:
-		CCombineBrackets();
-
-		virtual ECombineBrackets FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CCombineBrackets)
-	};
+	DEFINE_SIMPLE_TYPE(CCombineBrackets, ECombineBrackets, combinebracketsNone)
 
 	//--------------------------------------------------------------------------------
 	// DateTime 17.18.9 (Part 1)
@@ -483,17 +403,7 @@ namespace SimpleTypes
 		directionRTL = 1
 	};
 
-	template<EDirection eDefValue = directionLTR>
-	class CDirection : public CSimpleType<EDirection, eDefValue>
-	{
-	public:
-		CDirection();
-
-		virtual EDirection FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CDirection)
-	};
+	DEFINE_SIMPLE_TYPE(CDirection, EDirection, directionLTR)
 
 	//--------------------------------------------------------------------------------
 	// DisplacedByCustomXml 17.18.13 (Part 1)
@@ -505,17 +415,7 @@ namespace SimpleTypes
 		displacedbycustomxmlPrev = 1
 	};
 
-	template<EDisplacedByCustomXml eDefValue = displacedbycustomxmlNext>
-	class CDisplacedByCustomXml : public CSimpleType<EDisplacedByCustomXml, eDefValue>
-	{
-	public:
-		CDisplacedByCustomXml();
-
-		virtual EDisplacedByCustomXml FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CDisplacedByCustomXml)
-	};
+	DEFINE_SIMPLE_TYPE(CDisplacedByCustomXml, EDisplacedByCustomXml, displacedbycustomxmlNext)
 
 	//--------------------------------------------------------------------------------
 	// DocGrid 17.18.14 (Part 1)
@@ -529,17 +429,7 @@ namespace SimpleTypes
 		docgridSnapToChars   = 3,
 	};
 
-	template<EDocGrid eDefValue = docgridDefault>
-	class CDocGrid : public CSimpleType<EDocGrid, eDefValue>
-	{
-	public:
-		CDocGrid();
-
-		virtual EDocGrid FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CDocGrid)
-	};
+	DEFINE_SIMPLE_TYPE(CDocGrid, EDocGrid, docgridDefault)
 
 	//--------------------------------------------------------------------------------
 	// DocPartBehavior 17.18.15 (Part 1)
@@ -552,17 +442,7 @@ namespace SimpleTypes
 		docpartbehaviorPg      = 2
 	};
 
-	template<EDocPartBehavior eDefValue = docpartbehaviorContent>
-	class CDocPartBehavior : public CSimpleType<EDocPartBehavior, eDefValue>
-	{
-	public:
-		CDocPartBehavior();
-
-		virtual EDocPartBehavior FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CDocPartBehavior)
-	};
+	DEFINE_SIMPLE_TYPE(CDocPartBehavior, EDocPartBehavior, docpartbehaviorContent)
 
 	//--------------------------------------------------------------------------------
 	// DocPartGallery 17.18.16 (Part 1)
@@ -610,17 +490,7 @@ namespace SimpleTypes
 		docpartgalleryWatermarks        = 37
 	};
 
-	template<EDocPartGallery eDefValue = docpartgalleryDefault>
-	class CDocPartGallery : public CSimpleType<EDocPartGallery, eDefValue>
-	{
-	public:
-		CDocPartGallery();
-
-		virtual EDocPartGallery FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CDocPartGallery)
-	};
+	DEFINE_SIMPLE_TYPE(CDocPartGallery, EDocPartGallery, docpartgalleryDefault)
 
 	//--------------------------------------------------------------------------------
 	// DocPartType 17.18.17 (Part 1)
@@ -637,17 +507,7 @@ namespace SimpleTypes
 		docparttypeToolbar  = 6
 	};
 
-	template<EDocPartType eDefValue = docparttypeNone>
-	class CDocPartType : public CSimpleType<EDocPartType, eDefValue>
-	{
-	public:
-		CDocPartType();
-
-		virtual EDocPartType FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CDocPartType)
-	};
+	DEFINE_SIMPLE_TYPE(CDocPartType, EDocPartType, docparttypeNone)
 
 	//--------------------------------------------------------------------------------
 	// DocProtect 17.18.18 (Part 1)
@@ -662,17 +522,7 @@ namespace SimpleTypes
 		docprotectTrackedChanges = 4
 	};
 
-	template<EDocProtect eDefValue = docprotectNone>
-	class CDocProtect : public CSimpleType<EDocProtect, eDefValue>
-	{
-	public:
-		CDocProtect();
-
-		virtual EDocProtect FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CDocProtect)
-	};
+	DEFINE_SIMPLE_TYPE(CDocProtect, EDocProtect, docprotectNone)
 
 	//--------------------------------------------------------------------------------
 	// DocType 17.18.19 (Part 1)
@@ -685,17 +535,7 @@ namespace SimpleTypes
 		doctypeNotSpecified = 2
 	};
 
-	template<EDocType eDefValue = doctypeNotSpecified>
-	class CDocType : public CSimpleType<EDocType, eDefValue>
-	{
-	public:
-		CDocType();
-
-		virtual EDocType FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CDocType)
-	};
+	DEFINE_SIMPLE_TYPE(CDocType, EDocType, doctypeNotSpecified)
 
 	//--------------------------------------------------------------------------------
 	// DropCap 17.18.20 (Part 1)
@@ -708,17 +548,7 @@ namespace SimpleTypes
 		dropcapMargin = 2
 	};
 
-	template<EDropCap eDefValue = dropcapNone>
-	class CDropCap : public CSimpleType<EDropCap, eDefValue>
-	{
-	public:
-		CDropCap();
-
-		virtual EDropCap FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CDropCap)
-	};
+	DEFINE_SIMPLE_TYPE(CDropCap, EDropCap, dropcapNone)
 
 	//--------------------------------------------------------------------------------
 	// EdGrp 17.18.21 (Part 1)
@@ -735,17 +565,7 @@ namespace SimpleTypes
 		edgrpOwners         = 6
 	};
 
-	template<EEdGrp eDefValue = edgrpEveryone>
-	class CEdGrp : public CSimpleType<EEdGrp, eDefValue>
-	{
-	public:
-		CEdGrp();
-
-		virtual EEdGrp  FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CEdGrp)
-	};
+	DEFINE_SIMPLE_TYPE(CEdGrp, EEdGrp, edgrpEveryone)
 
 	//--------------------------------------------------------------------------------
 	// EdnPos 17.18.22 (Part 1)
@@ -757,33 +577,14 @@ namespace SimpleTypes
 		ednposSectEnd = 1
 	};
 
-	template<EEdnPos eDefValue = ednposSectEnd>
-	class CEdnPos : public CSimpleType<EEdnPos, eDefValue>
-	{
-	public:
-		CEdnPos();
-
-		virtual EEdnPos FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CEdnPos)
-	};
+	DEFINE_SIMPLE_TYPE(CEdnPos, EEdnPos, ednposSectEnd)
 
 	//--------------------------------------------------------------------------------
 	// EighthPointMeasure 17.18.23 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CEighthPointMeasure : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CEighthPointMeasure, int, 0)
 	public:
-		CEighthPointMeasure();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CEighthPointMeasure)
-
 		double ToPoints();
 		double ToMM();
 		double ToInches();
@@ -805,17 +606,7 @@ namespace SimpleTypes
 		emUnderDot = 4
 	};
 
-	template<EEm eDefValue = emNone>
-	class CEm : public CSimpleType<EEm, eDefValue>
-	{
-	public:
-		CEm();
-
-		virtual EEm     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CEm)
-	};
+	DEFINE_SIMPLE_TYPE(CEm, EEm, emNone)
 
 	//--------------------------------------------------------------------------------
 	// FFHelpTextVal 17.18.25 (Part 1)
@@ -894,17 +685,7 @@ namespace SimpleTypes
 		fftexttypeRegular     = 5
 	};
 
-	template<EFFTextType eDefValue = fftexttypeRegular>
-	class CFFTextType : public CSimpleType<EFFTextType, eDefValue>
-	{
-	public:
-		CFFTextType();
-
-		virtual EFFTextType FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CFFTextType)
-	};
+	DEFINE_SIMPLE_TYPE(CFFTextType, EFFTextType, fftexttypeRegular)
 
 	//--------------------------------------------------------------------------------
 	// FldCharType 17.18.29 (Part 1)
@@ -917,17 +698,7 @@ namespace SimpleTypes
 		fldchartypeEnd      = 2
 	};
 
-	template<EFldCharType eDefVal = fldchartypeBegin>
-	class CFldCharType : public CSimpleType<EFldCharType, eDefVal>
-	{
-	public:
-		CFldCharType();
-
-		virtual EFldCharType FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CFldCharType)
-	};
+	DEFINE_SIMPLE_TYPE(CFldCharType, EFldCharType, fldchartypeBegin)
 
 	//--------------------------------------------------------------------------------
 	// FontFamily 17.18.30 (Part 1)
@@ -943,17 +714,7 @@ namespace SimpleTypes
 		fontfamilySwiss      = 5
 	};
 
-	template<EFontFamily eDefValue = fontfamilyAuto>
-	class CFontFamily : public CSimpleType<EFontFamily, eDefValue>
-	{
-	public:
-		CFontFamily();
-
-		virtual EFontFamily FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CFontFamily)
-	};
+	DEFINE_SIMPLE_TYPE(CFontFamily, EFontFamily, fontfamilyAuto)
 
 	//--------------------------------------------------------------------------------
 	// FrameLayout 17.18.31 (Part 1)
@@ -966,17 +727,7 @@ namespace SimpleTypes
 		framelayoutRows = 2
 	};
 
-	template<EFrameLayout eDefValue = framelayoutNone>
-	class CFrameLayout : public CSimpleType<EFrameLayout, eDefValue>
-	{
-	public:
-		CFrameLayout();
-
-		virtual EFrameLayout FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CFrameLayout)
-	};
+	DEFINE_SIMPLE_TYPE(CFrameLayout, EFrameLayout, framelayoutNone)
 
 	//--------------------------------------------------------------------------------
 	// FrameScrollbar 17.18.32 (Part 1)
@@ -989,17 +740,7 @@ namespace SimpleTypes
 		framescrollbarOn   = 2
 	};
 
-	template<EFrameScrollbar eDefValue = framescrollbarAuto>
-	class CFrameScrollbar : public CSimpleType<EFrameScrollbar, eDefValue>
-	{
-	public:
-		CFrameScrollbar();
-
-		virtual EFrameScrollbar FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CFrameScrollbar)
-	};
+	DEFINE_SIMPLE_TYPE(CFrameScrollbar, EFrameScrollbar, framescrollbarAuto)
 
 	//--------------------------------------------------------------------------------
 	// FtnEdn 17.18.33 (Part 1)
@@ -1013,17 +754,7 @@ namespace SimpleTypes
 		ftnednSeparator             = 3
 	};
 
-	template<EFtnEdn eDefValue = ftnednNormal>
-	class CFtnEdn : public CSimpleType<EFtnEdn, eDefValue>
-	{
-	public:
-		CFtnEdn();
-
-		virtual EFtnEdn FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CFtnEdn)
-	};
+	DEFINE_SIMPLE_TYPE(CFtnEdn, EFtnEdn, ftnednNormal)
 
 	//--------------------------------------------------------------------------------
 	// FtnPos 17.18.34 (Part 1)
@@ -1037,17 +768,7 @@ namespace SimpleTypes
 		ftnposSectEnd     = 3
 	};
 
-	template<EFtnPos eDefValue = ftnposSectEnd>
-	class CFtnPos : public CSimpleType<EFtnPos, eDefValue>
-	{
-	public:
-		CFtnPos();
-
-		virtual EFtnPos FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CFtnPos)
-	};
+	DEFINE_SIMPLE_TYPE(CFtnPos, EFtnPos, ftnposSectEnd)
 
 	//--------------------------------------------------------------------------------
 	// HAnchor 17.18.35 (Part 1)
@@ -1060,17 +781,7 @@ namespace SimpleTypes
 		hanchorText   = 2
 	};
 
-	template<EHAnchor eDefValue = hanchorText>
-	class CHAnchor : public CSimpleType<EHAnchor, eDefValue>
-	{
-	public:
-		CHAnchor();
-
-		virtual EHAnchor FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CHAnchor)
-	};
+	DEFINE_SIMPLE_TYPE(CHAnchor, EHAnchor, hanchorText)
 
 	//--------------------------------------------------------------------------------
 	// HdrFtr 17.18.36 (Part 1)
@@ -1083,17 +794,7 @@ namespace SimpleTypes
 		hdrftrFirst   = 2
 	};
 
-	template<EHdrFtr eDefValue = hdrftrDefault>
-	class CHdrFtr : public CSimpleType<EHdrFtr, eDefValue>
-	{
-	public:
-		CHdrFtr();
-
-		virtual EHdrFtr FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CHdrFtr)
-	};
+	DEFINE_SIMPLE_TYPE(CHdrFtr, EHdrFtr, hdrftrDefault)
 
 	//--------------------------------------------------------------------------------
 	// HeightRule 17.18.37 (Part 1)
@@ -1106,17 +807,7 @@ namespace SimpleTypes
 		heightruleExact   = 2
 	};
 
-	template<EHeightRule eDefValue = heightruleAuto>
-	class CHeightRule : public CSimpleType<EHeightRule, eDefValue>
-	{
-	public:
-		CHeightRule();
-
-		virtual EHeightRule FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CHeightRule)
-	};
+	DEFINE_SIMPLE_TYPE(CHeightRule, EHeightRule, heightruleAuto)
 
 	//--------------------------------------------------------------------------------
 	// TextFormFormatType
@@ -1131,17 +822,7 @@ namespace SimpleTypes
 		textFormFormatTypeRegExp = 4
 	};
 
-	template<ETextFormFormatType eDefValue = textFormFormatTypeNone>
-	class CTextFormFormatType : public CSimpleType<ETextFormFormatType, eDefValue>
-	{
-	public:
-		CTextFormFormatType();
-
-		virtual ETextFormFormatType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CTextFormFormatType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextFormFormatType, ETextFormFormatType, textFormFormatTypeNone)
 
 	//--------------------------------------------------------------------------------
 	// ComplexFormType
@@ -1152,18 +833,11 @@ namespace SimpleTypes
 		complexFormTypeCustom    = 0,
 		complexFormTypeTelephone = 1,
 		complexFormTypeEmail     = 2
-	};
+	};	
 
-	template<EComplexFormType eDefValue = complexFormTypeCustom>
-	class CComplexFormType : public CSimpleType<EComplexFormType, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CComplexFormType, EComplexFormType, complexFormTypeCustom)
 	public:
-		CComplexFormType();
-
-		virtual EComplexFormType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
 		bool IsDefaultValue() const;
-		SimpleTypes_Default(CComplexFormType)
 	};
 
 	//--------------------------------------------------------------------------------
@@ -1245,17 +919,7 @@ namespace SimpleTypes
 		hexcolorautoAuto = 0
 	};
 
-	template<EHexColorAuto eDefValue = hexcolorautoAuto>
-	class CHexColorAuto : public CSimpleType<EHexColorAuto, eDefValue>
-	{
-	public:
-		CHexColorAuto();
-
-		virtual EHexColorAuto FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CHexColorAuto)
-	};
+	DEFINE_SIMPLE_TYPE(CHexColorAuto, EHexColorAuto, hexcolorautoAuto)
 
 	//--------------------------------------------------------------------------------
 	// HighlightColor 17.18.40 (Part 1)
@@ -1296,17 +960,7 @@ namespace SimpleTypes
 		hintEastAsia = 2
 	};
 
-	template<EHint eDefValue = hintDefault>
-	class CHint : public CSimpleType<EHint, eDefValue>
-	{
-	public:
-		CHint();
-
-		virtual EHint   FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CHint)
-	};
+	DEFINE_SIMPLE_TYPE(CHint, EHint, hintDefault)
 
 	//--------------------------------------------------------------------------------
 	// HpsMeasure 17.18.42 (Part 1)
@@ -1338,17 +992,7 @@ namespace SimpleTypes
 		infotexttypeText     = 1
 	};
 
-	template<EInfoTextType eDefValue = infotexttypeText>
-	class CInfoTextType : public CSimpleType<EInfoTextType, eDefValue>
-	{
-	public:
-		CInfoTextType();
-
-		virtual EInfoTextType FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CInfoTextType)
-	};
+	DEFINE_SIMPLE_TYPE(CInfoTextType, EInfoTextType, infotexttypeText)
 
 	//--------------------------------------------------------------------------------
 	// Jc 17.18.44 (Part 1) + 9.10.2 (Part 4)
@@ -1370,17 +1014,7 @@ namespace SimpleTypes
 		jcRight           = 11
 	};
 
-	template<EJc eDefValue = jcLeft>
-	class CJc : public CSimpleType<EJc, eDefValue>
-	{
-	public:
-		CJc();
-
-		virtual EJc     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CJc)
-	};
+	DEFINE_SIMPLE_TYPE(CJc, EJc, jcLeft)
 
 	//--------------------------------------------------------------------------------
 	// JcTable 17.18.45 (Part 1) + 9.10.3 (Part 4)
@@ -1395,17 +1029,7 @@ namespace SimpleTypes
 		jctableRight  = 4
 	};
 
-	template<EJcTable eDefValue = jctableLeft>
-	class CJcTable : public CSimpleType<EJcTable, eDefValue>
-	{
-	public:
-		CJcTable();
-
-		virtual EJcTable FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CJcTable)
-	};
+	DEFINE_SIMPLE_TYPE(CJcTable, EJcTable, jctableLeft)
 
 	//--------------------------------------------------------------------------------
 	// LevelSuffix 17.18.46 (Part 1)
@@ -1418,17 +1042,7 @@ namespace SimpleTypes
 		levelsuffixTab     = 2
 	};
 
-	template<ELevelSuffix eDefValue = levelsuffixNothing>
-	class CLevelSuffix : public CSimpleType<ELevelSuffix, eDefValue>
-	{
-	public:
-		CLevelSuffix();
-
-		virtual ELevelSuffix FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CLevelSuffix)
-	};
+	DEFINE_SIMPLE_TYPE(CLevelSuffix, ELevelSuffix, levelsuffixNothing)
 
 	//--------------------------------------------------------------------------------
 	// LineNumberRestart 17.18.47 (Part 1)
@@ -1441,17 +1055,7 @@ namespace SimpleTypes
 		linenumberrestartNewSection = 3
 	};
 
-	template<ELineNumberRestart eDefValue = linenumberrestartNewPage>
-	class CLineNumberRestart : public CSimpleType<ELineNumberRestart, eDefValue>
-	{
-	public:
-		CLineNumberRestart();
-
-		virtual ELineNumberRestart FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default(CLineNumberRestart)
-	};
+	DEFINE_SIMPLE_TYPE(CLineNumberRestart, ELineNumberRestart, linenumberrestartNewPage)
 
 	//--------------------------------------------------------------------------------
 	// LineSpacingRule 17.18.48 (Part 1)
@@ -1464,17 +1068,7 @@ namespace SimpleTypes
 		linespacingruleExact   = 2
 	};
 
-	template<ELineSpacingRule eDefValue = linespacingruleAuto>
-	class CLineSpacingRule : public CSimpleType<ELineSpacingRule, eDefValue>
-	{
-	public:
-		CLineSpacingRule();
-
-		virtual ELineSpacingRule FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CLineSpacingRule)
-	};
+	DEFINE_SIMPLE_TYPE(CLineSpacingRule, ELineSpacingRule, linespacingruleAuto)
 
 	//--------------------------------------------------------------------------------
 	// Lock 17.18.49 (Part 1)
@@ -1488,33 +1082,13 @@ namespace SimpleTypes
 		lockUnlocked         = 3
 	};
 
-	template<ELock eDefValue = lockUnlocked>
-	class CLock : public CSimpleType<ELock, eDefValue>
-	{
-	public:
-		CLock();
-
-		virtual ELock   FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CLock)
-	};
+	DEFINE_SIMPLE_TYPE(CLock, ELock, lockUnlocked)
 
 	//--------------------------------------------------------------------------------
 	// LongHexNumber 17.18.50 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<unsigned int nDefValue = 0>
-	class CLongHexNumber : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CLongHexNumber();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CLongHexNumber)
-
+	DEFINE_SIMPLE_TYPE_START(CLongHexNumber, unsigned int, 0)
 	private:
 		bool Parse(const std::wstring &sValue);
 		int	HexToInt(int nHex, bool &bResult);
@@ -1556,17 +1130,7 @@ namespace SimpleTypes
 		mailmergeddatatypeXmlFile     = 7
 	};
 
-	template<EMailMergeDataType eDefValue = mailmergeddatatypeTextFile>
-	class CMailMergeDataType : public CSimpleType<EMailMergeDataType, eDefValue>
-	{
-	public:
-		CMailMergeDataType();
-
-		virtual EMailMergeDataType FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default(CMailMergeDataType)
-	};
+	DEFINE_SIMPLE_TYPE(CMailMergeDataType, EMailMergeDataType, mailmergeddatatypeTextFile)
 
 	//--------------------------------------------------------------------------------
 	// MailMergeDest 17.18.53 (Part 1)
@@ -1580,17 +1144,7 @@ namespace SimpleTypes
 		mailmergeddestPrinter     = 3
 	};
 
-	template<EMailMergeDest eDefValue = mailmergeddestEmail>
-	class CMailMergeDest : public CSimpleType<EMailMergeDest, eDefValue>
-	{
-	public:
-		CMailMergeDest();
-
-		virtual EMailMergeDest FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CMailMergeDest)
-	};
+	DEFINE_SIMPLE_TYPE(CMailMergeDest, EMailMergeDest, mailmergeddestEmail)
 
 	//--------------------------------------------------------------------------------
 	// MailMergeDocType 17.18.54 (Part 1)
@@ -1606,17 +1160,7 @@ namespace SimpleTypes
 		mailmergeddoctypeMailingLabels = 5
 	};
 
-	template<EMailMergeDocType eDefValue = mailmergeddoctypeEmail>
-	class CMailMergeDocType : public CSimpleType<EMailMergeDocType, eDefValue>
-	{
-	public:
-		CMailMergeDocType();
-
-		virtual EMailMergeDocType FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CMailMergeDocType)
-	};
+	DEFINE_SIMPLE_TYPE(CMailMergeDocType, EMailMergeDocType, mailmergeddoctypeEmail)
 
 	//--------------------------------------------------------------------------------
 	// MailMergeOdsoFMDFieldType 17.18.55 (Part 1)
@@ -1628,17 +1172,7 @@ namespace SimpleTypes
 		mailmergeodsofmdfieldtypeNull     = 1
 	};
 
-	template<EMailMergeOdsoFMDFieldType eDefValue = mailmergeodsofmdfieldtypeNull>
-	class CMailMergeOdsoFMDFieldType : public CSimpleType<EMailMergeOdsoFMDFieldType, eDefValue>
-	{
-	public:
-		CMailMergeOdsoFMDFieldType();
-
-		virtual EMailMergeOdsoFMDFieldType FromString(const std::wstring &sValue);
-		virtual std::wstring                    ToString  () const;
-
-		SimpleTypes_Default(CMailMergeOdsoFMDFieldType)
-	};
+	DEFINE_SIMPLE_TYPE(CMailMergeOdsoFMDFieldType, EMailMergeOdsoFMDFieldType, mailmergeodsofmdfieldtypeNull)
 
 	//--------------------------------------------------------------------------------
 	// MailMergeSourceType 17.18.56 (Part 1)
@@ -1657,17 +1191,7 @@ namespace SimpleTypes
 		mailmergesourcetypeText        = 8,
 	};
 
-	template<EMailMergeSourceType eDefValue = mailmergesourcetypeText>
-	class CMailMergeSourceType : public CSimpleType<EMailMergeSourceType, eDefValue>
-	{
-	public:
-		CMailMergeSourceType();
-
-		virtual EMailMergeSourceType FromString(const std::wstring &sValue);
-		virtual std::wstring              ToString  () const;
-
-		SimpleTypes_Default(CMailMergeSourceType)
-	};
+	DEFINE_SIMPLE_TYPE(CMailMergeSourceType, EMailMergeSourceType, mailmergesourcetypeText)
 
 	//--------------------------------------------------------------------------------
 	// Merge 17.18.57 (Part 1)
@@ -1679,17 +1203,7 @@ namespace SimpleTypes
 		mergeRestart  = 1
 	};
 
-	template<EMerge eDefValue = mergeContinue>
-	class CMerge : public CSimpleType<EMerge, eDefValue>
-	{
-	public:
-		CMerge();
-
-		virtual EMerge  FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CMerge)
-	};
+	DEFINE_SIMPLE_TYPE(CMerge, EMerge, mergeContinue)
 
 	//--------------------------------------------------------------------------------
 	// MultiLevelType 17.18.58 (Part 1)
@@ -1702,17 +1216,7 @@ namespace SimpleTypes
 		emultileveltypeSingleLevel      = 2
 	};
 
-	template<EMultiLevelType eDefValue = emultileveltypeSingleLevel>
-	class CMultiLevelType : public CSimpleType<EMultiLevelType, eDefValue>
-	{
-	public:
-		CMultiLevelType();
-
-		virtual EMultiLevelType FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CMultiLevelType)
-	};
+	DEFINE_SIMPLE_TYPE(CMultiLevelType, EMultiLevelType, emultileveltypeSingleLevel)
 
 	//--------------------------------------------------------------------------------
 	// NumberFormat 17.18.59 (Part 1)
@@ -1808,17 +1312,7 @@ namespace SimpleTypes
 		objectdrawaspectIcon    = 1
 	};
 
-	template<EObjectDrawAspect eDefValue = objectdrawaspectContent>
-	class CObjectDrawAspect : public CSimpleType<EObjectDrawAspect, eDefValue>
-	{
-	public:
-		CObjectDrawAspect();
-
-		virtual EObjectDrawAspect FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CObjectDrawAspect)
-	};
+	DEFINE_SIMPLE_TYPE(CObjectDrawAspect, EObjectDrawAspect, objectdrawaspectContent)
 
 	//--------------------------------------------------------------------------------
 	// ObjectUpdateMode 17.18.61 (Part 1)
@@ -1830,17 +1324,7 @@ namespace SimpleTypes
 		objectupdatemodeOnCall = 1
 	};
 
-	template<EObjectUpdateMode eDefValue = objectupdatemodeAlways>
-	class CObjectUpdateMode : public CSimpleType<EObjectUpdateMode, eDefValue>
-	{
-	public:
-		CObjectUpdateMode();
-
-		virtual EObjectUpdateMode FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CObjectUpdateMode)
-	};
+	DEFINE_SIMPLE_TYPE(CObjectUpdateMode, EObjectUpdateMode, objectupdatemodeAlways)
 
 	//--------------------------------------------------------------------------------
 	// PageBorderDisplay 17.18.62 (Part 1)
@@ -1853,17 +1337,7 @@ namespace SimpleTypes
 		pageborderdisplayNotFirstPage = 2
 	};
 
-	template<EPageBorderDisplay eDefValue = pageborderdisplayAllPages>
-	class CPageBorderDisplay : public CSimpleType<EPageBorderDisplay, eDefValue>
-	{
-	public:
-		CPageBorderDisplay();
-
-		virtual EPageBorderDisplay FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default(CPageBorderDisplay)
-	};
+	DEFINE_SIMPLE_TYPE(CPageBorderDisplay, EPageBorderDisplay, pageborderdisplayAllPages)
 
 	//--------------------------------------------------------------------------------
 	// PageBorderOffset 17.18.63 (Part1)
@@ -1875,17 +1349,7 @@ namespace SimpleTypes
 		pageborderoffsetText = 1
 	};
 
-	template<EPageBorderOffset eDefValue = pageborderoffsetPage>
-	class CPageBorderOffset : public CSimpleType<EPageBorderOffset, eDefValue>
-	{
-	public:
-		CPageBorderOffset();
-
-		virtual EPageBorderOffset FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CPageBorderOffset)
-	};
+	DEFINE_SIMPLE_TYPE(CPageBorderOffset, EPageBorderOffset, pageborderoffsetPage)
 
 	//--------------------------------------------------------------------------------
 	// PageBorderZOrder 17.18.64 (Part 1)
@@ -1897,17 +1361,7 @@ namespace SimpleTypes
 		pageborderzorderFront = 1
 	};
 
-	template<EPageBorderZOrder eDefValue = pageborderzorderBack>
-	class CPageBorderZOrder : public CSimpleType<EPageBorderZOrder, eDefValue>
-	{
-	public:
-		CPageBorderZOrder();
-
-		virtual EPageBorderZOrder FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CPageBorderZOrder)
-	};
+	DEFINE_SIMPLE_TYPE(CPageBorderZOrder, EPageBorderZOrder, pageborderzorderBack)
 
 	//--------------------------------------------------------------------------------
 	// PageOrientation 17.18.65 (Part 1)
@@ -1942,49 +1396,20 @@ namespace SimpleTypes
 		pitchVariable = 2
 	};
 
-	template<EPitch eDefValue = pitchDefault>
-	class CPitch : public CSimpleType<EPitch, eDefValue>
-	{
-	public:
-		CPitch();
-
-		virtual EPitch  FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CPitch)
-	};
+	DEFINE_SIMPLE_TYPE(CPitch, EPitch, pitchDefault)
 
 	//--------------------------------------------------------------------------------
 	// PixelsMeasure 17.18.67 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CPixelsMeasure : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CPixelsMeasure();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CPixelsMeasure)
-	};
+	DEFINE_SIMPLE_TYPE(CPixelsMeasure, int, 0)
 
 	//--------------------------------------------------------------------------------
 	// PointMeasure 17.18.68 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CPointMeasure : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CPointMeasure, int, 0)
 	public:
-		CPointMeasure();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CPointMeasure)
-
 		double ToPoints() const;
 		double ToMM() const;
 		double ToInches() const;
@@ -2003,17 +1428,7 @@ namespace SimpleTypes
 		proofDirty = 1
 	};
 
-	template<EProof eDefValue = proofDirty>
-	class CProof : public CSimpleType<EProof, eDefValue>
-	{
-	public:
-		CProof();
-
-		virtual EProof  FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CProof)
-	};
+	DEFINE_SIMPLE_TYPE(CProof, EProof, proofDirty)
 
 	//--------------------------------------------------------------------------------
 	// ProofErr 17.18.70 (Part 1)
@@ -2027,17 +1442,7 @@ namespace SimpleTypes
 		prooferrSpellStart = 3
 	};
 
-	template<EProofErr eDefValue = prooferrSpellStart>
-	class CProofErr : public CSimpleType<EProofErr, eDefValue>
-	{
-	public:
-		CProofErr();
-
-		virtual EProofErr FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString  () const;
-
-		SimpleTypes_Default(CProofErr)
-	};
+	DEFINE_SIMPLE_TYPE(CProofErr, EProofErr, prooferrSpellStart)
 
 	//--------------------------------------------------------------------------------
 	// PTabAlignment 17.18.71 (Part 1)
@@ -2050,17 +1455,7 @@ namespace SimpleTypes
 		ptabalignmentRight  = 2
 	};
 
-	template<EPTabAlignment eDefValue = ptabalignmentLeft>
-	class CPTabAlignment : public CSimpleType<EPTabAlignment, eDefValue>
-	{
-	public:
-		CPTabAlignment();
-
-		virtual EPTabAlignment FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CPTabAlignment)
-	};
+	DEFINE_SIMPLE_TYPE(CPTabAlignment, EPTabAlignment, ptabalignmentLeft)
 
 	//--------------------------------------------------------------------------------
 	// PTabLeader 17.18.72 (Part 1)
@@ -2075,17 +1470,7 @@ namespace SimpleTypes
 		ptableaderUnderscore = 4
 	};
 
-	template<EPTabLeader eDefValue = ptableaderNone>
-	class CPTabLeader : public CSimpleType<EPTabLeader, eDefValue>
-	{
-	public:
-		CPTabLeader();
-
-		virtual EPTabLeader FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CPTabLeader)
-	};
+	DEFINE_SIMPLE_TYPE(CPTabLeader, EPTabLeader, ptableaderNone)
 
 	//--------------------------------------------------------------------------------
 	// PTabRelativeTo 17.18.73 (Part 1)
@@ -2097,17 +1482,7 @@ namespace SimpleTypes
 		ptabrelativetoMargin = 1
 	};
 
-	template<EPTabRelativeTo eDefValue = ptabrelativetoIndent>
-	class CPTabRelativeTo : public CSimpleType<EPTabRelativeTo, eDefValue>
-	{
-	public:
-		CPTabRelativeTo();
-
-		virtual EPTabRelativeTo FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CPTabRelativeTo)
-	};
+	DEFINE_SIMPLE_TYPE(CPTabRelativeTo, EPTabRelativeTo, ptabrelativetoIndent)
 
 	//--------------------------------------------------------------------------------
 	// RestartNumber 17.18.74 (Part 1)
@@ -2120,17 +1495,7 @@ namespace SimpleTypes
 		restartnumberEachPage   = 2
 	};
 
-	template<ERestartNumber eDefValue = restartnumberContinious>
-	class CRestartNumber : public CSimpleType<ERestartNumber, eDefValue>
-	{
-	public:
-		CRestartNumber();
-
-		virtual ERestartNumber FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CRestartNumber)
-	};
+	DEFINE_SIMPLE_TYPE(CRestartNumber, ERestartNumber, restartnumberContinious)
 
 	//--------------------------------------------------------------------------------
 	// RubyAlign 17.18.75 (Part 1)
@@ -2146,17 +1511,7 @@ namespace SimpleTypes
 		erubyalignRightVertical    = 5
 	};
 
-	template<ERubyAlign eDefValue = erubyalignLeft>
-	class CRubyAlign : public CSimpleType<ERubyAlign, eDefValue>
-	{
-	public:
-		CRubyAlign();
-
-		virtual ERubyAlign FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CRubyAlign)
-	};
+	DEFINE_SIMPLE_TYPE(CRubyAlign, ERubyAlign, erubyalignLeft)
 
 	//--------------------------------------------------------------------------------
 	// SdtDateMappingType 17.18.76 (Part 1)
@@ -2169,17 +1524,7 @@ namespace SimpleTypes
 		sdtdatemappingtypeText     = 2
 	};
 
-	template<ESdtDateMappingType eDefValue = sdtdatemappingtypeText>
-	class CSdtDateMappingType : public CSimpleType<ESdtDateMappingType, eDefValue>
-	{
-	public:
-		CSdtDateMappingType();
-
-		virtual ESdtDateMappingType FromString(const std::wstring &sValue);
-		virtual std::wstring             ToString  () const;
-
-		SimpleTypes_Default(CSdtDateMappingType)
-	};
+	DEFINE_SIMPLE_TYPE(CSdtDateMappingType, ESdtDateMappingType, sdtdatemappingtypeText)
 
 	//--------------------------------------------------------------------------------
 	// SectionMark 17.18.77 (Part 1)
@@ -2194,17 +1539,7 @@ namespace SimpleTypes
 		sectionmarkOddPage    = 4
 	};
 
-	template<ESectionMark eDefValue = sectionmarkNextPage>
-	class CSectionMark : public CSimpleType<ESectionMark, eDefValue>
-	{
-	public:
-		CSectionMark();
-
-		virtual ESectionMark FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CSectionMark)
-	};
+	DEFINE_SIMPLE_TYPE(CSectionMark, ESectionMark, sectionmarkNextPage)
 
 	//--------------------------------------------------------------------------------
 	// Shd 17.18.78 (Part 1)
@@ -2252,33 +1587,14 @@ namespace SimpleTypes
 		shdVertStripe            = 37
 	};
 
-	template<EShd eDefValue = shdSolid>
-	class CShd : public CSimpleType<EShd, eDefValue>
-	{
-	public:
-		CShd();
-
-		virtual EShd    FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CShd)
-	};
+	DEFINE_SIMPLE_TYPE(CShd, EShd, shdSolid)
 
 	//--------------------------------------------------------------------------------
 	// ShortHexNumber 17.18.79 (Part 1)
 	//--------------------------------------------------------------------------------
-	template<int nDefValue = 0>
-	class CShortHexNumber : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CShortHexNumber();
 
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CShortHexNumber)
+	DEFINE_SIMPLE_TYPE_START(CShortHexNumber, int, 0)
 	private:
-
 		bool Parse(const std::wstring &sValue);
 		int	HexToInt(int nHex, bool &bResult);
 	};
@@ -2328,17 +1644,8 @@ namespace SimpleTypes
 		stylesortType     = 5
 	};
 
-	template<EStyleSort eDefValue = stylesortName>
-	class CStyleSort : public CSimpleType<EStyleSort, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CStyleSort, EStyleSort, stylesortName)
 	public:
-		CStyleSort();
-
-		virtual EStyleSort FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CStyleSort)
-
 		void WriteNames(bool bNames);
 	private:
 		bool m_bNames;
@@ -2356,17 +1663,7 @@ namespace SimpleTypes
 		styletypeTable     = 3
 	};
 
-	template<EStyleType eDefValue = styletypeParagraph>
-	class CStyleType : public CSimpleType<EStyleType, eDefValue>
-	{
-	public:
-		CStyleType();
-
-		virtual EStyleType FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CStyleType)
-	};
+	DEFINE_SIMPLE_TYPE(CStyleType, EStyleType, styletypeParagraph)
 
 	//--------------------------------------------------------------------------------
 	// TabJc 17.18.84 (Part 1) + 9.10.5 (Part 4)
@@ -2413,17 +1710,7 @@ namespace SimpleTypes
 		tabtlcUnderscore = 5
 	};
 
-	template<ETabTlc eDefValue = tabtlcNone>
-	class CTabTlc : public CSimpleType<ETabTlc, eDefValue>
-	{
-	public:
-		CTabTlc();
-
-		virtual ETabTlc FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CTabTlc)
-	};
+	DEFINE_SIMPLE_TYPE(CTabTlc, ETabTlc, tabtlcNone)
 
 	//--------------------------------------------------------------------------------
 	// TargetScreenSz 17.18.86 (Part 1)
@@ -2444,17 +1731,7 @@ namespace SimpleTypes
 		targetscreensz800x600   = 11
 	};
 
-	template<ETargetScreenSz eDefValue = targetscreensz1280x1024>
-	class CTargetScreenSz : public CSimpleType<ETargetScreenSz, eDefValue>
-	{
-	public:
-		CTargetScreenSz();
-
-		virtual ETargetScreenSz FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CTargetScreenSz)
-	};
+	DEFINE_SIMPLE_TYPE(CTargetScreenSz, ETargetScreenSz, targetscreensz1280x1024)
 
 	//--------------------------------------------------------------------------------
 	// TblLayoutType 17.18.87 (Part 1)
@@ -2466,17 +1743,7 @@ namespace SimpleTypes
 		tbllayouttypeFixed   = 2
 	};
 
-	template<ETblLayoutType eDefValue = tbllayouttypeAutofit>
-	class CTblLayoutType : public CSimpleType<ETblLayoutType, eDefValue>
-	{
-	public:
-		CTblLayoutType();
-
-		virtual ETblLayoutType FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CTblLayoutType)
-	};
+	DEFINE_SIMPLE_TYPE(CTblLayoutType, ETblLayoutType, tbllayouttypeAutofit)
 
 	//--------------------------------------------------------------------------------
 	// TblOverlap 17.18.88 (Part 1)
@@ -2488,17 +1755,7 @@ namespace SimpleTypes
 		tbloverlapOverlap = 2
 	};
 
-	template<ETblOverlap eDefValue = tbloverlapOverlap>
-	class CTblOverlap : public CSimpleType<ETblOverlap, eDefValue>
-	{
-	public:
-		CTblOverlap();
-
-		virtual ETblOverlap FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CTblOverlap)
-	};
+	DEFINE_SIMPLE_TYPE(CTblOverlap, ETblOverlap, tbloverlapOverlap)
 
 	//--------------------------------------------------------------------------------
 	// TblStyleOverrideType 17.18.89 (Part 1)
@@ -2521,17 +1778,7 @@ namespace SimpleTypes
 		tblstyleoverridetypeWholeTable = 12
 	};
 
-	template<ETblStyleOverrideType eDefValue = tblstyleoverridetypeWholeTable>
-	class CTblStyleOverrideType : public CSimpleType<ETblStyleOverrideType, eDefValue>
-	{
-	public:
-		CTblStyleOverrideType();
-
-		virtual ETblStyleOverrideType FromString(const std::wstring &sValue);
-		virtual std::wstring               ToString  () const;
-
-		SimpleTypes_Default(CTblStyleOverrideType)
-	};
+	DEFINE_SIMPLE_TYPE(CTblStyleOverrideType, ETblStyleOverrideType, tblstyleoverridetypeWholeTable)
 
 	//--------------------------------------------------------------------------------
 	// TblWidth 17.18.90 (Part 1)
@@ -2545,17 +1792,7 @@ namespace SimpleTypes
 		tblwidthPct  = 3
 	};
 
-	template<ETblWidth eDefValue = tblwidthAuto>
-	class CTblWidth : public CSimpleType<ETblWidth, eDefValue>
-	{
-	public:
-		CTblWidth();
-
-		virtual ETblWidth FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString  () const;
-
-		SimpleTypes_Default(CTblWidth)
-	};
+	DEFINE_SIMPLE_TYPE(CTblWidth, ETblWidth, tblwidthAuto)
 
 	//--------------------------------------------------------------------------------
 	// TextAlignment 17.18.91 (Part 1)
@@ -2570,17 +1807,7 @@ namespace SimpleTypes
 		textalignTop      = 4,
 	};
 
-	template<ETextAlignment eDefValue = textalignAuto>
-	class CTextAlignment : public CSimpleType<ETextAlignment, eDefValue>
-	{
-	public:
-		CTextAlignment();
-
-		virtual ETextAlignment FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CTextAlignment)
-	};
+	DEFINE_SIMPLE_TYPE(CTextAlignment, ETextAlignment, textalignAuto)
 
 	//--------------------------------------------------------------------------------
 	// TextboxTightWrap 17.18.92 (Part 1)
@@ -2595,17 +1822,7 @@ namespace SimpleTypes
 		textboxtightwrapNone             = 4
 	};
 
-	template<ETextboxTightWrap eDefValue = textboxtightwrapNone>
-	class CTextboxTightWrap : public CSimpleType<ETextboxTightWrap, eDefValue>
-	{
-	public:
-		CTextboxTightWrap();
-
-		virtual ETextboxTightWrap FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CTextboxTightWrap)
-	};
+	DEFINE_SIMPLE_TYPE(CTextboxTightWrap, ETextboxTightWrap, textboxtightwrapNone)
 
 	//--------------------------------------------------------------------------------
 	// TextDirection 17.18.93 (Part 1) + 9.10.6 (Part 4)
@@ -2621,17 +1838,7 @@ namespace SimpleTypes
 		textdirectionLrV  = 5
 	};
 
-	template<ETextDirection eDefValue = textdirectionTb>
-	class CTextDirection : public CSimpleType<ETextDirection, eDefValue>
-	{
-	public:
-		CTextDirection();
-
-		virtual ETextDirection FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CTextDirection)
-	};
+	DEFINE_SIMPLE_TYPE(CTextDirection, ETextDirection, textdirectionTb)
 
 	//--------------------------------------------------------------------------------
 	// TextEffect 17.18.94 (Part 1)
@@ -2648,17 +1855,7 @@ namespace SimpleTypes
 		texteffectSparkle         = 6
 	};
 
-	template<ETextEffect eDefValue = texteffectNone>
-	class CTextEffect : public CSimpleType<ETextEffect, eDefValue>
-	{
-	public:
-		CTextEffect();
-
-		virtual ETextEffect FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CTextEffect)
-	};
+	DEFINE_SIMPLE_TYPE(CTextEffect, ETextEffect, texteffectNone)
 
 	//--------------------------------------------------------------------------------
 	// TextScale 17.18.95 (Part 1)
@@ -2693,17 +1890,7 @@ namespace SimpleTypes
 		themeMinorHAnsi    = 7
 	};
 
-	template<ETheme eDefValue = themeMajorAscii>
-	class CTheme : public CSimpleType<ETheme, eDefValue>
-	{
-	public:
-		CTheme();
-
-		virtual ETheme  FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CTheme)
-	};
+	DEFINE_SIMPLE_TYPE(CTheme, ETheme, themeMajorAscii)
 
 	//--------------------------------------------------------------------------------
 	// ThemeColor 17.18.97 (Part 1)
@@ -2730,33 +1917,13 @@ namespace SimpleTypes
 		themecolorText2             = 16
 	};
 
-	template<EThemeColor eDefValue = themecolorNone>
-	class CThemeColor : public CSimpleType<EThemeColor, eDefValue>
-	{
-	public:
-		CThemeColor();
-
-		virtual EThemeColor FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CThemeColor)
-	};
+	DEFINE_SIMPLE_TYPE(CThemeColor, EThemeColor, themecolorNone)
 
 	//--------------------------------------------------------------------------------
 	// UcharHexNumber 17.18.98 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<unsigned char unDefValue = 0>
-	class CUcharHexNumber : public CSimpleType<unsigned char, unDefValue>
-	{
-	public:
-		CUcharHexNumber();
-
-		virtual unsigned char FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CUcharHexNumber)
-
+	DEFINE_SIMPLE_TYPE_START(CUcharHexNumber, unsigned char, 0)
 	private:
 		bool Parse(const std::wstring &sValue);
 		int	HexToInt(int nHex, bool &bResult);
@@ -2788,17 +1955,7 @@ namespace SimpleTypes
 		underlineWords           = 17
 	};
 
-	template<EUnderline eDefValue = underlineNone>
-	class CUnderline : public CSimpleType<EUnderline, eDefValue>
-	{
-	public:
-		CUnderline();
-
-		virtual EUnderline FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CUnderline)
-	};
+	DEFINE_SIMPLE_TYPE(CUnderline, EUnderline, underlineNone)
 
 	//--------------------------------------------------------------------------------
 	// VAnchor 17.18.100 (Part 1)
@@ -2811,17 +1968,7 @@ namespace SimpleTypes
 		vanchorText   = 2
 	};
 
-	template<EVAnchor eDefValue = vanchorText>
-	class CVAnchor : public CSimpleType<EVAnchor, eDefValue>
-	{
-	public:
-		CVAnchor();
-
-		virtual EVAnchor FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CVAnchor)
-	};
+	DEFINE_SIMPLE_TYPE(CVAnchor, EVAnchor, vanchorText)
 
 	//--------------------------------------------------------------------------------
 	// VerticalJc 17.18.101 (Part 1)
@@ -2835,17 +1982,7 @@ namespace SimpleTypes
 		verticaljcTop    = 3
 	};
 
-	template<EVerticalJc eDefValue = verticaljcTop>
-	class CVerticalJc : public CSimpleType<EVerticalJc, eDefValue>
-	{
-	public:
-		CVerticalJc();
-
-		virtual EVerticalJc FromString(const std::wstring &sValue);
-		virtual std::wstring     ToString  () const;
-
-		SimpleTypes_Default(CVerticalJc)
-	};
+	DEFINE_SIMPLE_TYPE(CVerticalJc, EVerticalJc, verticaljcTop)
 
 	//--------------------------------------------------------------------------------
 	// View 17.18.102 (Part 1)
@@ -2861,17 +1998,7 @@ namespace SimpleTypes
 		viewWeb         = 5
 	};
 
-	template<EView eDefValue = viewNone>
-	class CView : public CSimpleType<EView, eDefValue>
-	{
-	public:
-		CView();
-
-		virtual EView   FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CView)
-	};
+	DEFINE_SIMPLE_TYPE(CView, EView, viewNone)
 
 	//--------------------------------------------------------------------------------
 	// WmlColorSchemeIndex 17.18.103 (Part 1)
@@ -2893,17 +2020,7 @@ namespace SimpleTypes
 		wmlcolorschemeindexLight2            = 11
 	};
 
-	template<EWmlColorSchemeIndex eDefValue = wmlcolorschemeindexAccent1>
-	class CWmlColorSchemeIndex : public CSimpleType<EWmlColorSchemeIndex, eDefValue>
-	{
-	public:
-		CWmlColorSchemeIndex();
-
-		virtual EWmlColorSchemeIndex FromString(const std::wstring &sValue);
-		virtual std::wstring              ToString  () const;
-
-		SimpleTypes_Default(CWmlColorSchemeIndex)
-	};
+	DEFINE_SIMPLE_TYPE(CWmlColorSchemeIndex, EWmlColorSchemeIndex, wmlcolorschemeindexAccent1)
 
 	//--------------------------------------------------------------------------------
 	// Wrap 17.18.104 (Part 1)
@@ -2919,17 +2036,7 @@ namespace SimpleTypes
 		wrapTight     = 5
 	};
 
-	template<EWrap eDefValue = wrapAuto>
-	class CWrap : public CSimpleType<EWrap, eDefValue>
-	{
-	public:
-		CWrap();
-
-		virtual EWrap   FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CWrap)
-	};
+	DEFINE_SIMPLE_TYPE(CWrap, EWrap, wrapAuto)
 
 	//--------------------------------------------------------------------------------
 	// Zoom 17.18.105 (Part 1)
@@ -2941,22 +2048,11 @@ namespace SimpleTypes
 		zoomFullPage = 1,
 		zoomNone     = 2,
 		zoomTextFit  = 3
-	};
+	};	
 
-	template<EZoom eDefValue = zoomNone>
-	class CZoom : public CSimpleType<EZoom, eDefValue>
-	{
-	public:
-		CZoom();
+	DEFINE_SIMPLE_TYPE(CZoom, EZoom, zoomNone)
 
-		virtual EZoom   FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CZoom)
-	};
 }; // SimpleTypes
-
-
 
 // Дополнительные типы
 namespace SimpleTypes
@@ -2988,33 +2084,14 @@ namespace SimpleTypes
 		fontcharsetOEM         = 255, // FF
 	};
 
-	template<EFontCharset eDefValue = fontcharsetANSI>
-	class CFontCharset : public CSimpleType<EFontCharset, eDefValue>
-	{
-	public:
-		CFontCharset();
-
-		virtual EFontCharset FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CFontCharset)
-	};
+	DEFINE_SIMPLE_TYPE(CFontCharset, EFontCharset, fontcharsetANSI)
 
 	//--------------------------------------------------------------------------------
 	// CCnf 9.10.7 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<unsigned short eDefValue = 0>
-	class CCnf : public CSimpleType<unsigned short, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CCnf, unsigned short, 0)
 	public:
-		CCnf();
-
-		virtual unsigned short FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CCnf)
-
 		bool IsFirstRow       () const;
 		bool IsLastRow        () const;
 		bool IsFirstColumn    () const;
@@ -3141,17 +2218,7 @@ namespace SimpleTypes
 		cryptalgoritmnameWHIRLPOOL  = 10,
 	};
 
-	template<ECryptAlgoritmName eDefValue = cryptalgoritmnameUnknown>
-	class CCryptAlgoritmName : public CSimpleType<ECryptAlgoritmName, eDefValue>
-	{
-	public:
-		CCryptAlgoritmName();
-
-		virtual ECryptAlgoritmName FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CCryptAlgoritmName)
-	};
+	DEFINE_SIMPLE_TYPE(CCryptAlgoritmName, ECryptAlgoritmName, cryptalgoritmnameUnknown)
 
 	//--------------------------------------------------------------------------------
 	// PitchFamily
@@ -3179,17 +2246,8 @@ namespace SimpleTypes
 		pitchfamilyVarDec = 0x52,
 	};
 
-	template<EPitchFamily eDefValue = pitchfamilyDefUnk>
-	class CPitchFamily : public CSimpleType<EPitchFamily, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CPitchFamily, EPitchFamily, pitchfamilyDefUnk)
 	public:
-		CPitchFamily();
-
-		virtual EPitchFamily FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CPitchFamily)
-
 		unsigned char GetPitch();
 		unsigned char GetFamily();
 	};
@@ -3203,16 +2261,8 @@ namespace SimpleTypes
 		dirLtr    = 0,
 		dirRtl    = 1
 	};
-	template<EDirVal eDefValue = dirLtr>
-	class CDirVal : public CSimpleType<EDirVal, eDefValue>
-	{
-	public:
-		CDirVal();
-		virtual EDirVal FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
 
-		SimpleTypes_Default(CDirVal)
-	};
+	DEFINE_SIMPLE_TYPE(CDirVal, EDirVal, dirLtr)
 
 	//--------------------------------------------------------------------------------
 	// Ligatures
@@ -3246,16 +2296,7 @@ namespace SimpleTypes
 		ligatureAll                              = ligaturesFlagStandard | ligaturesFlagContextual | ligaturesFlagHistorical | ligaturesFlagDiscretional
 	};
 
-	template<ELigatures eDefValue = ligatureStandard>
-	class CLigatures : public CSimpleType<ELigatures, eDefValue>
-	{
-	public:
-		CLigatures();
-		virtual ELigatures FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CLigatures)
-	};
+	DEFINE_SIMPLE_TYPE(CLigatures, ELigatures, ligatureStandard)
 
 	//--------------------------------------------------------------------------------
 	// NumForm
@@ -3268,16 +2309,7 @@ namespace SimpleTypes
 		numFormOldStyle = 2
 	};
 
-	template<ENumForm eDefValue = numFormDefault>
-	class CNumForm : public CSimpleType<ENumForm, eDefValue>
-	{
-	public:
-		CNumForm();
-		virtual ENumForm FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CNumForm)
-	};
+	DEFINE_SIMPLE_TYPE(CNumForm, ENumForm, numFormDefault)
 
 	//--------------------------------------------------------------------------------
 	// NumSpacing
@@ -3290,14 +2322,6 @@ namespace SimpleTypes
 		numSpacingTabular = 2
 	};
 
-	template<ENumSpacing eDefValue = numSpacingDefault>
-	class CNumSpacing : public CSimpleType<ENumSpacing, eDefValue>
-	{
-	public:
-		CNumSpacing();
-		virtual ENumSpacing FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
+	DEFINE_SIMPLE_TYPE(CNumSpacing, ENumSpacing, numSpacingDefault)
 
-		SimpleTypes_Default(CNumSpacing)
-	};
 } // SimpleTypes

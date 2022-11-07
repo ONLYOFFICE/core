@@ -317,7 +317,14 @@ namespace SimpleTypes
 
 	// Тут разделяем два типа 14.13.4 - m_nType = 0 и 14.2.3.14 - m_nType != 0
 
-	DEFINE_SIMPLE_TYPE(CFillType, EFillType, filltypeSolid)
+	DEFINE_SIMPLE_TYPE_START(CFillType, EFillType, filltypeSolid)
+	public:
+
+		// Пока использовать эту функцию, т.к. переопределение
+		// TODO: доработать макрос из Base
+
+		void    SetValue2  (EFillType eValue);
+	};
 
 	//--------------------------------------------------------------------------------
 	//

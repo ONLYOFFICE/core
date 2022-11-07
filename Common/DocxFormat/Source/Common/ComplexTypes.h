@@ -156,12 +156,12 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CHexColor<>>			m_oColor;
 			nullable<SimpleTypes::COnOff<>>				m_oFrame;
 			nullable<SimpleTypes::COnOff<>>				m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>>		m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<>> m_oSz;
-			nullable<SimpleTypes::CThemeColor<>>		m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>>	m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>>	m_oThemeTint;
-			nullable<SimpleTypes::CBorder<>>			m_oVal;
+			nullable<SimpleTypes::CPointMeasure>		m_oSpace;
+			nullable<SimpleTypes::CEighthPointMeasure>	m_oSz;
+			nullable<SimpleTypes::CThemeColor>			m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber>		m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber>		m_oThemeTint;
+			nullable<SimpleTypes::CBorder>				m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -184,14 +184,14 @@ namespace ComplexTypes
 
 		public:
 			nullable<std::wstring>			m_sAscii;
-			nullable<SimpleTypes::CTheme<>> m_oAsciiTheme;
+			nullable<SimpleTypes::CTheme>	m_oAsciiTheme;
 			nullable<std::wstring>			m_sCs;
-			nullable<SimpleTypes::CTheme<>> m_oCsTheme;
+			nullable<SimpleTypes::CTheme>	m_oCsTheme;
 			nullable<std::wstring>			m_sEastAsia;
-			nullable<SimpleTypes::CTheme<>> m_oEastAsiaTheme;
+			nullable<SimpleTypes::CTheme>	m_oEastAsiaTheme;
 			nullable<std::wstring>			m_sHAnsi;
-			nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
-			nullable<SimpleTypes::CHint<> > m_oHint;
+			nullable<SimpleTypes::CTheme>	m_oHAnsiTheme;
+			nullable<SimpleTypes::CHint>	m_oHint;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -260,13 +260,13 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CHexColor<>           > m_oColor;
 			nullable<SimpleTypes::CHexColor<>           > m_oFill;
-			nullable<SimpleTypes::CThemeColor<>         > m_oThemeColor;
-			nullable<SimpleTypes::CThemeColor<>         > m_oThemeFill;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeFillShade;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeFillTint;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeTint;
-			nullable<SimpleTypes::CShd<>                > m_oVal;
+			nullable<SimpleTypes::CThemeColor           > m_oThemeColor;
+			nullable<SimpleTypes::CThemeColor           > m_oThemeFill;
+			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeFillShade;
+			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeFillTint;
+			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeTint;
+			nullable<SimpleTypes::CShd                  > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -288,8 +288,8 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTblWidth<>> m_oType;
-			nullable<SimpleTypes::CDecimalNumberOrPercent> m_oW;
+			nullable<SimpleTypes::CTblWidth>				m_oType;
+			nullable<SimpleTypes::CDecimalNumberOrPercent>	m_oW;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -424,9 +424,9 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CThemeColor<>         > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>     > m_oThemeTint;
+			nullable<SimpleTypes::CThemeColor           > m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeTint;
 			nullable<SimpleTypes::CHexColor<>           > m_oVal;
 		};
 
@@ -495,7 +495,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CRestartNumber<> > m_oVal;
+			nullable<SimpleTypes::CRestartNumber> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -577,7 +577,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextDirection<> > m_oVal;
+			nullable<SimpleTypes::CTextDirection> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -599,7 +599,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CVerticalJc<> > m_oVal;
+			nullable<SimpleTypes::CVerticalJc> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -633,7 +633,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::COnOff<> > m_oLastRowLastColumn;
 			nullable<SimpleTypes::COnOff<> > m_oOddHBand;
 			nullable<SimpleTypes::COnOff<> > m_oOddVBand;
-			nullable<SimpleTypes::CCnf<>   > m_oVal;
+			nullable<SimpleTypes::CCnf     > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -655,7 +655,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CJc<> > m_oVal;
+			nullable<SimpleTypes::CJc> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -702,7 +702,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CLongHexNumber<>> m_oVal;
+			nullable<SimpleTypes::CLongHexNumber> m_oVal;
 
 		};
 
@@ -807,7 +807,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CEdnPos<> > m_oVal;
+			nullable<SimpleTypes::CEdnPos> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -829,7 +829,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CFtnPos<> > m_oVal;
+			nullable<SimpleTypes::CFtnPos> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -851,7 +851,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CDocPartGallery<>> m_oVal;
+			nullable<SimpleTypes::CDocPartGallery> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -874,7 +874,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CDocPartBehavior<>> m_oVal;
+			nullable<SimpleTypes::CDocPartBehavior> m_oVal;
 		};	
 
 		//--------------------------------------------------------------------------------
@@ -897,7 +897,7 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::COnOff<>           > m_oCombine;
-			nullable<SimpleTypes::CCombineBrackets<> > m_oCombineBrackets;
+			nullable<SimpleTypes::CCombineBrackets   > m_oCombineBrackets;
 			nullable<SimpleTypes::CDecimalNumber	 > m_oID;
 			nullable<SimpleTypes::COnOff<>           > m_oVert;
 			nullable<SimpleTypes::COnOff<>           > m_oVertCompress;
@@ -922,7 +922,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextEffect<>> m_oVal;
+			nullable<SimpleTypes::CTextEffect> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -944,7 +944,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CEm<>> m_oVal;
+			nullable<SimpleTypes::CEm> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1012,10 +1012,10 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::CHexColor<>       > m_oColor;
-			nullable<SimpleTypes::CThemeColor<>     > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<> > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<> > m_oThemeTint;
-			nullable<SimpleTypes::CUnderline<>      > m_oVal;
+			nullable<SimpleTypes::CThemeColor       > m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber   > m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber   > m_oThemeTint;
+			nullable<SimpleTypes::CUnderline        > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1082,16 +1082,16 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::COnOff<>            > m_oAnchorLock;
-			nullable<SimpleTypes::CDropCap<>          > m_oDropCap;
+			nullable<SimpleTypes::CDropCap            > m_oDropCap;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oH;
-			nullable<SimpleTypes::CHAnchor<>          > m_oHAnchor;
-			nullable<SimpleTypes::CHeightRule<>       > m_oHRule;
+			nullable<SimpleTypes::CHAnchor            > m_oHAnchor;
+			nullable<SimpleTypes::CHeightRule         > m_oHRule;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oHSpace;
 			nullable<SimpleTypes::CDecimalNumber      > m_oLines;
-			nullable<SimpleTypes::CVAnchor<>          > m_oVAnchor;
+			nullable<SimpleTypes::CVAnchor            > m_oVAnchor;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oVSpace;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oW;
-			nullable<SimpleTypes::CWrap<>             > m_oWrap;
+			nullable<SimpleTypes::CWrap               > m_oWrap;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oX;
 			nullable<SimpleTypes::CXAlign             > m_oXAlign;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oY;
@@ -1207,7 +1207,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::COnOff<>            > m_oBeforeAutospacing;
 			nullable<SimpleTypes::CDecimalNumber      > m_oBeforeLines;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oLine;
-			nullable<SimpleTypes::CLineSpacingRule<>  > m_oLineRule;
+			nullable<SimpleTypes::CLineSpacingRule    > m_oLineRule;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1229,7 +1229,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTabTlc<>           > m_oLeader;
+			nullable<SimpleTypes::CTabTlc             > m_oLeader;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oPos;
 			nullable<SimpleTypes::CTabJc<>            > m_oVal;
 		};
@@ -1253,7 +1253,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextAlignment<>> m_oVal;
+			nullable<SimpleTypes::CTextAlignment> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1275,7 +1275,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextboxTightWrap<>> m_oVal;
+			nullable<SimpleTypes::CTextboxTightWrap> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1298,7 +1298,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CLigatures<>> m_oVal;
+			nullable<SimpleTypes::CLigatures> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1321,7 +1321,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CNumSpacing<>> m_oVal;
+			nullable<SimpleTypes::CNumSpacing> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1344,7 +1344,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CNumForm<>> m_oVal;
+			nullable<SimpleTypes::CNumForm> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------

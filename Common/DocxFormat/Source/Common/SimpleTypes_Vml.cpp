@@ -158,11 +158,7 @@ namespace SimpleTypes
 	// FillType 14.1.3.4;14.2.3.14 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CFillType<filltypeSolid>::CFillType() { }
-
-	template<>
-	void    CFillType<filltypeSolid>::SetValue  (EFillType eValue)
+	void    CFillType::SetValue2  (EFillType eValue)
 	{
 		if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
 			 filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )
@@ -170,8 +166,8 @@ namespace SimpleTypes
 		else
 			this->m_eValue = filltypeSolid;
 	}
-	template<>
-	EFillType CFillType<filltypeSolid>::FromString(const std::wstring &sValue)
+
+	EFillType CFillType::FromString(const std::wstring &sValue)
 	{
 		if      (L"frame"			== sValue)	this->m_eValue = filltypeFrame;
 		else if (L"gradient"		== sValue)	this->m_eValue = filltypeGradient;
@@ -184,8 +180,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CFillType<filltypeSolid>::ToString() const
+	std::wstring CFillType::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -199,16 +194,11 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	CFillType1<filltypeSolid>::CFillType1() { }
+	//--------------------------------------------------------------------------------
+	//
+	//--------------------------------------------------------------------------------
 
-	template<>
-	void CFillType1<filltypeSolid>::SetValue  (EFillType eValue)
-	{
-		this->m_eValue = eValue;
-	}
-	template<>
-	EFillType CFillType1<filltypeSolid>::FromString(const std::wstring &sValue)
+	EFillType CFillType1::FromString(const std::wstring &sValue)
 	{
 		if      (L"background"		== sValue)	this->m_eValue = filltypeBackground;
 		else if (L"frame"			== sValue)	this->m_eValue = filltypeFrame;
@@ -224,8 +214,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CFillType1<filltypeSolid>::ToString() const
+	std::wstring CFillType1::ToString() const
 	{
 		switch (this->m_eValue)
 		{

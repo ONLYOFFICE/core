@@ -274,7 +274,6 @@ void CPdfWriter::CCommandManager::Add(CRendererCommandBase* pCommand)
 	{
 		if (m_vCommands.size() > 0 && pCommand->GetType() != m_vCommands.at(0)->GetType())
 			Flush();
-
 		m_vCommands.push_back(pCommand);
 	}
 }
@@ -422,14 +421,6 @@ void CPdfWriter::CCommandManager::Clear()
 	}
 	m_vCommands.clear();
 }
-void CPdfWriter::CCommandManager::SetTransform(const CTransform& oTransform)
-{
-	m_oTransform = oTransform;
-}
-void CPdfWriter::CCommandManager::SetTransform(const double& m11, const double& m12, const double& m21, const double& m22, const double& dx, const double& dy)
-{
-	m_oTransform.Set(m11, m12, m21, m22, dx, dy);
-}
 //----------------------------------------------------------------------------------------
 //
 // CPdfRenderer
@@ -486,7 +477,6 @@ void CPdfWriter::SetPassword(const std::wstring& wsPassword)
 
     m_pDocument->SetPasswords(wsPassword, wsPassword);
 }
-
 void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID)
 {
     if (!IsValid())
@@ -535,18 +525,6 @@ void CPdfWriter::SetTempFolder(const std::wstring& wsPath)
 std::wstring CPdfWriter::GetTempFile()
 {
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(m_wsTempFolder, L"PDF");
-}
-std::wstring CPdfWriter::GetTempDirectory()
-{
-	return m_wsTempFolder;
-}
-//----------------------------------------------------------------------------------------
-// Тип рендерера
-//----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::get_Type(LONG* lType)
-{
-	*lType = c_nPDFWriter;
-	return S_OK;
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы со страницей
@@ -818,11 +796,6 @@ HRESULT CPdfWriter::BrushRect(const INT& nVal, const double& dLeft, const double
     m_oBrush.EnableBrushRect(1 == nVal ? true : false);
 	return S_OK;
 }
-HRESULT CPdfWriter::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
-{
-	// TODO: Пока определяется все по границам пата
-	return S_OK;
-}
 HRESULT CPdfWriter::put_BrushGradientColors(LONG* lColors, double* pPositions, LONG lCount)
 {
 	m_oBrush.SetGradientColors(lColors, pPositions, lCount);
@@ -1052,12 +1025,7 @@ HRESULT CPdfWriter::CommandDrawTextCHAR2(unsigned int* pUnicodes, const unsigned
 //----------------------------------------------------------------------------------------
 // Маркеры команд
 //----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::BeginCommand(const DWORD& dwType)
-{
-	// Здесь мы ничего не делаем
-	return S_OK;
-}
-HRESULT CPdfWriter::EndCommand(const DWORD& dwType)
+HRESULT CPdfWriter::EndCommand(const DWORD& dwType, const LONG& lClipMode)
 {
 	if (!IsPageValid())
 		return S_FALSE;
@@ -1070,10 +1038,7 @@ HRESULT CPdfWriter::EndCommand(const DWORD& dwType)
 		m_lClipDepth++;
 		UpdateTransform();
 
-		if (c_nClipRegionTypeEvenOdd & m_lClipMode)
-			m_oPath.Clip(m_pPage, true);
-		else
-			m_oPath.Clip(m_pPage, false);
+        m_oPath.Clip(m_pPage, c_nClipRegionTypeEvenOdd & lClipMode);
 	}
 	else if (c_nResetClipType == dwType)
 	{
@@ -1400,33 +1365,8 @@ HRESULT CPdfWriter::ResetTransform()
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Тип клипа
-//----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::get_ClipMode(LONG* lMode)
-{
-	*lMode = m_lClipMode;
-	return S_OK;
-}
-HRESULT CPdfWriter::put_ClipMode(const LONG& lMode)
-{
-	m_lClipMode = lMode;
-	return S_OK;
-}
-//----------------------------------------------------------------------------------------
 // Дополнительные функции
 //----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::CommandLong(const LONG& lType, const LONG& lCommand)
-{
-	return S_OK;
-}
-HRESULT CPdfWriter::CommandDouble(const LONG& lType, const double& dCommand)
-{
-	return S_OK;
-}
-HRESULT CPdfWriter::CommandString(const LONG& lType, const std::wstring& sCommand)
-{
-	return S_OK;
-}
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
 {
 	NSUnicodeConverter::CUnicodeConverter conv;
@@ -1959,14 +1899,6 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CF
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
-HRESULT CPdfWriter::CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH)
-{
-	return S_OK;
-}
-HRESULT CPdfWriter::PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH)
-{
-	return S_OK;
-}
 HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	m_oCommandManager.Flush();
@@ -2016,10 +1948,6 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	m_pPage->GrRestore();
 	return S_OK;
 }
-std::pair<int, int> CPdfWriter::GetPageRef(int nPageIndex)
-{
-	return m_pDocument->GetPageRef(nPageIndex);
-}
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
     if (!IsValid())
@@ -2051,10 +1979,6 @@ bool CPdfWriter::AddPage(int nPageIndex)
 		return true;
 	}
 	return false;
-}
-bool CPdfWriter::DeletePage(int nPageIndex)
-{
-	return m_pDocument->DeletePage(nPageIndex);
 }
 bool CPdfWriter::EditClose()
 {
@@ -2093,10 +2017,6 @@ void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, cons
 
 	m_pDocument->Sign(TRect(MM_2_PT(dX), m_pPage->GetHeight() - MM_2_PT(dY), MM_2_PT(dX + dW), m_pPage->GetHeight() - MM_2_PT(dY + dH)),
 		pImage, pCertificate);
-}
-std::wstring CPdfWriter::GetEditPdfPath()
-{
-	return m_pDocument->GetEditPdfPath();
 }
 //----------------------------------------------------------------------------------------
 // Внутренние функции

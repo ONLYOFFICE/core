@@ -72,12 +72,7 @@ public:
 	void         SetPassword(const std::wstring& wsPassword);
 	void		 SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetTempFolder(const std::wstring& wsPath);
-	std::wstring GetTempDirectory();
 	std::wstring GetTempFile();	
-	//----------------------------------------------------------------------------------------
-	// Тип рендерера
-	//----------------------------------------------------------------------------------------
-    HRESULT get_Type(LONG* lType);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со страницей
 	//----------------------------------------------------------------------------------------
@@ -132,7 +127,6 @@ public:
     HRESULT get_BrushLinearAngle(double* dAngle);
     HRESULT put_BrushLinearAngle(const double& dAngle);
     HRESULT BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
-    HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
     HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
@@ -162,8 +156,7 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Маркеры команд
 	//----------------------------------------------------------------------------------------
-    HRESULT BeginCommand(const DWORD& lType);
-    HRESULT EndCommand(const DWORD& lType);
+    HRESULT EndCommand(const DWORD& lType, const LONG& lClipMode);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы с патом
 	//----------------------------------------------------------------------------------------
@@ -194,25 +187,15 @@ public:
     HRESULT GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY);
     HRESULT ResetTransform();
 	//----------------------------------------------------------------------------------------
-	// Тип клипа
-	//----------------------------------------------------------------------------------------
-    HRESULT get_ClipMode(LONG* lMode);
-    HRESULT put_ClipMode(const LONG& lMode);
-	//----------------------------------------------------------------------------------------
 	// Дополнительные функции
 	//----------------------------------------------------------------------------------------
-    HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
-    HRESULT CommandDouble(const LONG& lType, const double& dCommand);
-    HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
     HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
     HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
     HRESULT AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CFormFieldInfo& oInfo);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
-	HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
-	HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
-	HRESULT DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+    HRESULT DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
     HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
@@ -221,15 +204,14 @@ public:
     //----------------------------------------------------------------------------------------
     // Дополнительные функции для дозаписи Pdf
     //----------------------------------------------------------------------------------------
-    std::pair<int, int> GetPageRef(int nPageIndex);
     bool EditPage(PdfWriter::CPage* pNewPage);
     bool AddPage(int nPageIndex);
-    bool DeletePage(int nPageIndex);
     bool EditClose();
     void PageRotate(int nRotate);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
-    std::wstring GetEditPdfPath();
-    PdfWriter::CDocument* GetPDFDocument() { return m_pDocument; }
+
+
+    PdfWriter::CDocument* m_pDocument;
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
@@ -1523,8 +1505,8 @@ private:
 		~CCommandManager();
 		CRendererTextCommand* AddText(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY);
 		void Flush();
-		void SetTransform(const CTransform& oTransform);
-		void SetTransform(const double& m11, const double& m12, const double& m21, const double& m22, const double& dx, const double& dy);
+        void SetTransform(const CTransform& oTransform) { m_oTransform = oTransform; }
+        void SetTransform(const double& m11, const double& m12, const double& m21, const double& m22, const double& dx, const double& dy) { m_oTransform.Set(m11, m12, m21, m22, dx, dy); }
 	private:
 		void Add(CRendererCommandBase* pCommand);		
 		void Clear();
@@ -1824,7 +1806,6 @@ private:
     NSFonts::IFontManager*       m_pFontManager;
 	std::wstring                 m_wsTempFolder;
 								 
-	PdfWriter::CDocument*        m_pDocument;
 	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
 	PdfWriter::CShading*         m_pShading;
@@ -1843,7 +1824,6 @@ private:
 	CFontState                   m_oFont;
 	CPath                        m_oPath;
 	CTransform                   m_oTransform;
-	LONG                         m_lClipMode;
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;

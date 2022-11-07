@@ -159,17 +159,20 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
 class CPdfFile_Private
 {
 public:
-    CPdfWriter* pWriter;
-    CPdfReader* pReader;
     std::wstring wsSrcFile;
     std::wstring wsPassword;
+    NSFonts::IApplicationFonts* pAppFonts;
+
+    CPdfReader* pReader;
+
+    CPdfWriter* pWriter;
+    LONG lClipMode;
     bool bEdit;
     bool bEditPage;
-    NSFonts::IApplicationFonts* pAppFonts;
 
     void GetPageTree(XRef* xref, Object* pPagesRefObj)
     {
-        PdfWriter::CDocument* pDoc = pWriter->GetPDFDocument();
+        PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
         if (!pPagesRefObj || !xref || !pDoc)
             return;
 
@@ -312,7 +315,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     }
 
     XRef* xref = pPDFDocument->getXRef();
-    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
     if (!xref || !pDoc)
         return false;
 
@@ -457,7 +460,7 @@ bool CPdfFile::EditClose()
     if (!m_pInternal->pWriter || !m_pInternal->pReader)
         return false;
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
-    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
     if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
         return false;
 
@@ -528,7 +531,7 @@ bool CPdfFile::EditClose()
     if (!bRes)
         return false;
 
-    std::wstring wsPath = m_pInternal->pWriter->GetEditPdfPath();
+    std::wstring wsPath = pDoc->GetEditPdfPath();
     std::string sPathUtf8New = U_TO_UTF8(wsPath);
     std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->wsSrcFile);
     if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
@@ -556,7 +559,7 @@ bool CPdfFile::EditPage(int nPageIndex)
     if (!m_pInternal->pWriter || !m_pInternal->pReader)
         return false;
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
-    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->GetPDFDocument();
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
     if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
         return false;
 
@@ -564,7 +567,7 @@ bool CPdfFile::EditPage(int nPageIndex)
     Catalog* pCatalog = pPDFDocument->getCatalog();
     if (!xref || !pCatalog)
         return false;
-    std::pair<int, int> pPageRef = m_pInternal->pWriter->GetPageRef(nPageIndex);
+    std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
     if (pPageRef.first == 0)
         return false;
 
@@ -618,9 +621,9 @@ bool CPdfFile::EditPage(int nPageIndex)
 }
 bool CPdfFile::DeletePage(int nPageIndex)
 {
-    if (!m_pInternal->pWriter || !m_pInternal->bEdit)
+    if (!m_pInternal->pWriter || !m_pInternal->pWriter->m_pDocument || !m_pInternal->bEdit)
         return false;
-    return m_pInternal->pWriter->DeletePage(nPageIndex);
+    return m_pInternal->pWriter->m_pDocument->DeletePage(nPageIndex);
 }
 bool CPdfFile::AddPage(int nPageIndex)
 {
@@ -812,7 +815,8 @@ HRESULT CPdfFile::get_Type(LONG* lType)
 {
     if (!m_pInternal->pWriter)
         return S_FALSE;
-    return m_pInternal->pWriter->get_Type(lType);
+    *lType = c_nPDFWriter;
+    return S_OK;
 }
 HRESULT CPdfFile::NewPage()
 {
@@ -1104,9 +1108,7 @@ HRESULT CPdfFile::BrushRect(const INT& nVal, const double& dLeft, const double& 
 }
 HRESULT CPdfFile::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->BrushBounds(dLeft, dTop, dWidth, dHeight);
+    return m_pInternal ? S_OK : S_FALSE;
 }
 HRESULT CPdfFile::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
 {
@@ -1230,15 +1232,13 @@ HRESULT CPdfFile::CommandDrawTextCHAR2(unsigned int* unUnicode, const unsigned i
 }
 HRESULT CPdfFile::BeginCommand(const DWORD& lType)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->BeginCommand(lType);
+    return m_pInternal->pWriter ? S_OK : S_FALSE;
 }
 HRESULT CPdfFile::EndCommand(const DWORD& lType)
 {
     if (!m_pInternal->pWriter)
         return S_FALSE;
-    return m_pInternal->pWriter->EndCommand(lType);
+    return m_pInternal->pWriter->EndCommand(lType, m_pInternal->lClipMode);
 }
 HRESULT CPdfFile::PathCommandMoveTo(const double& dX, const double& dY)
 {
@@ -1362,33 +1362,25 @@ HRESULT CPdfFile::ResetTransform()
 }
 HRESULT CPdfFile::get_ClipMode(LONG* lMode)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->get_ClipMode(lMode);
+    *lMode = m_pInternal->lClipMode;
+    return S_OK;
 }
 HRESULT CPdfFile::put_ClipMode(const LONG& lMode)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->put_ClipMode(lMode);
+    m_pInternal->lClipMode = lMode;
+    return S_OK;
 }
 HRESULT CPdfFile::CommandLong(const LONG& lType, const LONG& lCommand)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->CommandLong(lType, lCommand);
+    return m_pInternal->pWriter ? S_OK : S_FALSE;
 }
 HRESULT CPdfFile::CommandDouble(const LONG& lType, const double& dCommand)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->CommandDouble(lType, dCommand);
+    return m_pInternal->pWriter ? S_OK : S_FALSE;
 }
 HRESULT CPdfFile::CommandString(const LONG& lType, const std::wstring& sCommand)
 {
-    if (!m_pInternal->pWriter)
-        return S_FALSE;
-    return m_pInternal->pWriter->CommandString(lType, sCommand);
+    return m_pInternal->pWriter ? S_OK : S_FALSE;
 }
 HRESULT CPdfFile::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip)
 {

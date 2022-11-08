@@ -1597,20 +1597,11 @@ namespace SimpleTypes
 	// CVml_TableProperties
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CVml_TableProperties : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CVml_TableProperties, int, 0)
 	public:
-		CVml_TableProperties();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
 		bool IsTable() const;
 		bool IsPlaceholder() const;
 		bool IsBiDirectionalText() const;
-
-		SimpleTypes_Default(CVml_TableProperties)
 	};
 
 	//--------------------------------------------------------------------------------

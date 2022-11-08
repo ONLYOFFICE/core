@@ -104,11 +104,11 @@ namespace OOX
 
 		public:
 
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_oDirty;
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_oFldLock;
+			SimpleTypes::COnOff								m_oDirty;
+			SimpleTypes::COnOff								m_oFldLock;
 			nullable<std::wstring>							m_sInstr;
 
-			nullable<OOX::Logic::CFFData> m_oFFData;
+			nullable<OOX::Logic::CFFData>					m_oFFData;
 		};
 
 	} // namespace Logic

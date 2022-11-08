@@ -365,9 +365,9 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>						m_oEqualAverage;
 			nullable<SimpleTypes::Spreadsheet::ST_CfOperator<>>	m_oOperator;	
 			nullable<SimpleTypes::COnOff<>>						m_oPercent;
-			nullable<SimpleTypes::CDecimalNumber<>>				m_oPriority;
+			nullable<SimpleTypes::CDecimalNumber>				m_oPriority;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRank;
-			nullable<SimpleTypes::CDecimalNumber<>>				m_oStdDev;
+			nullable<SimpleTypes::CDecimalNumber>				m_oStdDev;
 			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
 			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;

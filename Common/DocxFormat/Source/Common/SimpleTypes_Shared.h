@@ -227,32 +227,26 @@ namespace SimpleTypes
 		onofftostringT      = 1,
 		onofftostringOn     = 2,
 		onofftostring1      = 3
-	};
+	};	
 
-	template<EOnOff eDefValue = onoffFalse>
-	class COnOff : public CSimpleType<EOnOff, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(COnOff, EOnOff, onoffFalse)
 	public:
-		COnOff();
 		COnOff(const bool & bVal);
 
-		virtual EOnOff FromString(const std::wstring &sValue);
-		virtual EOnOff FromStringA(const std::string& sValue);
+		EOnOff FromStringA(const std::string& sValue);
 
-		virtual std::wstring ToString  () const;
 		std::wstring ToString2(EOnOffToString eType) const;
 		std::wstring ToString3(EOnOffToString eType) const;
+
 		bool ToBool();
 		void FromBool(bool bVal);
-
-		SimpleTypes_Default(COnOff)
 	};
 
 	//--------------------------------------------------------------------------------
 	// Bool
 	//--------------------------------------------------------------------------------
 
-	class CBool : public COnOff<>
+	class CBool : public COnOff
 	{
 	public:
 		CBool();
@@ -316,19 +310,10 @@ namespace SimpleTypes
 	// UnsignedDecimalNumber 22.9.2.16 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<unsigned int unDefValue = 0>
-	class CUnsignedDecimalNumber : public CSimpleType<unsigned int, unDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CUnsignedDecimalNumber, unsigned int, 0)
 	public:
-		CUnsignedDecimalNumber();
 		CUnsignedDecimalNumber(const CUnsignedDecimalNumber& obj);
-		CUnsignedDecimalNumber(const unsigned int& val);
 		CUnsignedDecimalNumber(const int& val);
-
-		virtual unsigned int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CUnsignedDecimalNumber)
 	};
 
 	//--------------------------------------------------------------------------------
@@ -445,19 +430,11 @@ namespace SimpleTypes
 	{
 		booleanFalse = 0,
 		booleanTrue  = 1
-	};
+	};	
 
-	template<ETrueFalse eDefValue = booleanFalse>
-	class CTrueFalse : public CSimpleType<ETrueFalse, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CTrueFalse, ETrueFalse, booleanFalse)
 	public:
-		CTrueFalse();
-
-		virtual ETrueFalse FromString(const std::wstring &sValue);
 		bool GetBool();
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CTrueFalse)
 	};
 
 	//--------------------------------------------------------------------------------

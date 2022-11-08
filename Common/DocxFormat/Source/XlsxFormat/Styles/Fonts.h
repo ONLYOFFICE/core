@@ -201,7 +201,7 @@ namespace OOX
 				nullable<SimpleTypes::Spreadsheet::CFontFamily<>> oFamily;
 				nullable<SimpleTypes::Spreadsheet::CUnderline<>> oUnderline;
 				nullable<SimpleTypes::Spreadsheet::CFontCharset<>> oCharset;
-				nullable<SimpleTypes::CVerticalAlignRun<>> oVerticalAlignment;
+				nullable<SimpleTypes::CVerticalAlignRun> oVerticalAlignment;
 				nullable_double dSz;
 
 				WritingElement_ReadAttributes_Start( oReader )

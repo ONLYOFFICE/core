@@ -149,13 +149,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable_bool         m_oChapNum;
-			nullable<SimpleTypes::CDecimalNumber<>> m_oHeading;
-            std::wstring                                 m_sName;
-			nullable_bool         m_oNoLabel;
-			nullable<SimpleTypes::CNumberFormat<>>  m_oNumFmt;
-			nullable<SimpleTypes::CCaptionPos<>>    m_oPos;
-			nullable<SimpleTypes::CChapterSep<>>    m_oSep;
+			nullable_bool							m_oChapNum;
+			nullable<SimpleTypes::CDecimalNumber>	m_oHeading;
+			std::wstring							m_sName;
+			nullable_bool							m_oNoLabel;
+			nullable<SimpleTypes::CNumberFormat>	m_oNumFmt;
+			nullable<SimpleTypes::CCaptionPos>		m_oPos;
+			nullable<SimpleTypes::CChapterSep>		m_oSep;
 		};
 		//--------------------------------------------------------------------------------
 		// CCaptions 17.15.1.17 (Part 1)
@@ -210,7 +210,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			SimpleTypes::CCharacterSpacing<> m_oVal;
+			SimpleTypes::CCharacterSpacing m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// CCompatSetting 17.15.3.4 (Part 1)
@@ -359,8 +359,8 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CCryptAlgoritmName<>> m_oAlgorithmName;
-			nullable<SimpleTypes::CDocProtect<>>        m_oEdit;
+			nullable<SimpleTypes::CCryptAlgoritmName>	m_oAlgorithmName;
+			nullable<SimpleTypes::CDocProtect>	        m_oEdit;
 			nullable_bool								m_oEnforcment;
 			nullable_bool								m_oFormatting;
             nullable_string								m_sHashValue;
@@ -369,11 +369,11 @@ namespace OOX
 //ext
 			nullable_string								m_oAlgIdExt; //long hex
 			nullable_string								m_oAlgIdExtSource;
-			nullable<SimpleTypes::CCryptAlgClass<>>		m_oCryptAlgorithmClass;
+			nullable<SimpleTypes::CCryptAlgClass>		m_oCryptAlgorithmClass;
 			nullable_int								m_oCryptAlgorithmSid;
-			nullable<SimpleTypes::CCryptAlgType<>>		m_oCryptAlgorithmType;
+			nullable<SimpleTypes::CCryptAlgType>		m_oCryptAlgorithmType;
 			nullable_string								m_oCryptProvider;
-			nullable<SimpleTypes::CCryptProv<>>			m_oCryptProviderType;
+			nullable<SimpleTypes::CCryptProv>			m_oCryptProviderType;
 			nullable_string								m_oCryptProviderTypeExt; //long hex
 			nullable_string								m_oCryptProviderTypeExtSource;
 		};
@@ -446,7 +446,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CDocType<> m_oVal;
+			SimpleTypes::CDocType m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// CDocVar 17.15.1.31 (Part 1)
@@ -751,8 +751,8 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 		public:
-			nullable<SimpleTypes::CProof<>> m_oGrammar;
-			nullable<SimpleTypes::CProof<>> m_oSpelling;
+			nullable<SimpleTypes::CProof> m_oGrammar;
+			nullable<SimpleTypes::CProof> m_oSpelling;
 		};
 		//--------------------------------------------------------------------------------
 		// CReadingModeInkLockDown 17.15.1.66 (Part 1)
@@ -789,10 +789,10 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oActualPg;
-			SimpleTypes::CDecimalNumberOrPercent         m_oFontSz;
-			SimpleTypes::CPixelsMeasure<>                m_oH;
-			SimpleTypes::CPixelsMeasure<>                m_oW;
+			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_oActualPg;
+			SimpleTypes::CDecimalNumberOrPercent			m_oFontSz;
+			SimpleTypes::CPixelsMeasure						m_oH;
+			SimpleTypes::CPixelsMeasure						m_oW;
 		};
 		//--------------------------------------------------------------------------------
 		// CTrackChangesView 17.15.1.69 (Part 1)
@@ -1131,7 +1131,7 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 		public:
-			SimpleTypes::CStyleSort<> m_oVal;
+			SimpleTypes::CStyleSort m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// CView 17.15.1.92 (Part 1)
@@ -1189,7 +1189,7 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 		public:
-			SimpleTypes::CView<> m_oVal;
+			SimpleTypes::CView m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// CWriteProtection 17.15.1.93 (Part 1)
@@ -1223,7 +1223,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CCryptAlgoritmName<>> m_oAlgorithmName;
+			nullable<SimpleTypes::CCryptAlgoritmName>	m_oAlgorithmName;
 			nullable_string								m_sHashValue;
 			nullable_bool								m_oRecommended;
 			nullable_string								m_sSaltValue;
@@ -1231,11 +1231,11 @@ namespace OOX
 //ext
 			nullable_string								m_oAlgIdExt; //long hex
 			nullable_string								m_oAlgIdExtSource;
-			nullable<SimpleTypes::CCryptAlgClass<>>		m_oCryptAlgorithmClass;
+			nullable<SimpleTypes::CCryptAlgClass>		m_oCryptAlgorithmClass;
 			nullable_int								m_oCryptAlgorithmSid;
-			nullable<SimpleTypes::CCryptAlgType<>>		m_oCryptAlgorithmType;
+			nullable<SimpleTypes::CCryptAlgType>		m_oCryptAlgorithmType;
 			nullable_string								m_oCryptProvider;
-			nullable<SimpleTypes::CCryptProv<>>			m_oCryptProviderType;
+			nullable<SimpleTypes::CCryptProv>			m_oCryptProviderType;
 			nullable_string								m_oCryptProviderTypeExt; //long hex
 			nullable_string								m_oCryptProviderTypeExtSource;
 		};
@@ -1315,8 +1315,8 @@ namespace OOX
 
 			}
 		public:
-			SimpleTypes::CDecimalNumberOrPercent m_oPercent;
-			nullable<SimpleTypes::CZoom<>>       m_oVal;
+			SimpleTypes::CDecimalNumberOrPercent	m_oPercent;
+			nullable<SimpleTypes::CZoom>			m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// CEdnDocProps 17.11.4 (Part 1)

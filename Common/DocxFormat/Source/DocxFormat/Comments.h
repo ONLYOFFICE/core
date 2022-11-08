@@ -171,7 +171,7 @@ namespace OOX
 	public:
 		nullable<SimpleTypes::CLongHexNumber>	m_oParaId;
 		nullable<SimpleTypes::CLongHexNumber>	m_oParaIdParent;
-		nullable<SimpleTypes::COnOff<> >		m_oDone;
+		nullable<SimpleTypes::COnOff>			m_oDone;
 	};
 
 	class CCommentsExt : public OOX::File//, public OOX::IFileContainer
@@ -246,7 +246,7 @@ namespace OOX
 	public:
 		nullable<SimpleTypes::CLongHexNumber >		m_oDurableId;
 		nullable<SimpleTypes::CDateTime >			m_oDateUtc;
-		nullable<SimpleTypes::COnOff<> >			m_oIntelligentPlaceholder;
+		nullable<SimpleTypes::COnOff>				m_oIntelligentPlaceholder;
 
 		nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 	};

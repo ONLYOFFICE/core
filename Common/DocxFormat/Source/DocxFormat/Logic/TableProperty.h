@@ -362,12 +362,12 @@ namespace ComplexTypes
 			}
 		public:
 
-			nullable<SimpleTypes::COnOff<>          > m_oFirstColumn;
-			nullable<SimpleTypes::COnOff<>          > m_oFirstRow;
-			nullable<SimpleTypes::COnOff<>          > m_oLastColumn;
-			nullable<SimpleTypes::COnOff<>          > m_oLastRow;
-			nullable<SimpleTypes::COnOff<>          > m_oNoHBand;
-			nullable<SimpleTypes::COnOff<>          > m_oNoVBand;
+			nullable<SimpleTypes::COnOff            > m_oFirstColumn;
+			nullable<SimpleTypes::COnOff            > m_oFirstRow;
+			nullable<SimpleTypes::COnOff            > m_oLastColumn;
+			nullable<SimpleTypes::COnOff            > m_oLastRow;
+			nullable<SimpleTypes::COnOff            > m_oNoHBand;
+			nullable<SimpleTypes::COnOff            > m_oNoVBand;
 			nullable<SimpleTypes::CShortHexNumber   > m_oVal;
 		};
 		//--------------------------------------------------------------------------------

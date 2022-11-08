@@ -220,10 +220,10 @@ namespace OOX
 
 			bool										m_bAlign; // используем Align или (PosOffset или PctOffset)
 
-			nullable<SimpleTypes::CRelFromH<>>			m_oRelativeFrom;
+			nullable<SimpleTypes::CRelFromH>			m_oRelativeFrom;
 
-			nullable<SimpleTypes::CAlignH<>>			m_oAlign;
-			nullable<SimpleTypes::CPositionOffset<>>	m_oPosOffset;
+			nullable<SimpleTypes::CAlignH>				m_oAlign;
+			nullable<SimpleTypes::CPositionOffset>		m_oPosOffset;
 			nullable<SimpleTypes::CPercentage>			m_oPctOffset;
 		};
 		//--------------------------------------------------------------------------------
@@ -341,10 +341,10 @@ namespace OOX
 
 			bool										m_bAlign; // используем Align или PosOffset
 
-			nullable<SimpleTypes::CRelFromV<>>			m_oRelativeFrom;
+			nullable<SimpleTypes::CRelFromV>			m_oRelativeFrom;
 
-			nullable<SimpleTypes::CAlignV<>>			m_oAlign;
-			nullable<SimpleTypes::CPositionOffset<>>	m_oPosOffset;
+			nullable<SimpleTypes::CAlignV>				m_oAlign;
+			nullable<SimpleTypes::CPositionOffset>		m_oPosOffset;
 			nullable<SimpleTypes::CPercentage>			m_oPctOffset;
 		};
 
@@ -429,7 +429,7 @@ namespace OOX
 			}
 		public:
 	// Attributes
-			nullable<SimpleTypes::CSizeRelFromH<>>	m_oRelativeFrom;
+			nullable<SimpleTypes::CSizeRelFromH>	m_oRelativeFrom;
 	// Childs
 			nullable<SimpleTypes::CPercentage>		m_oPctWidth;
 		};
@@ -512,7 +512,7 @@ namespace OOX
 			}
 		public:
 	// Attributes
-			nullable<SimpleTypes::CSizeRelFromV<>>	m_oRelativeFrom;
+			nullable<SimpleTypes::CSizeRelFromV>	m_oRelativeFrom;
 	// Childs
 			nullable<SimpleTypes::CPercentage>		m_oPctHeight;
 		};
@@ -570,13 +570,13 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CWrapDistance<>> m_oDistB;
-			nullable<SimpleTypes::CWrapDistance<>> m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<>> m_oDistR;
-			nullable<SimpleTypes::CWrapDistance<>> m_oDistT;
-			nullable<SimpleTypes::CWrapText<>>     m_oWrapText;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistB;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistL;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistR;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistT;
+			nullable<SimpleTypes::CWrapText>		m_oWrapText;
 
-			nullable<OOX::Drawing::CEffectExtent>  m_oEffectExtent;
+			nullable<OOX::Drawing::CEffectExtent>	m_oEffectExtent;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrapPath 20.4.2.16 (Part 1)
@@ -607,7 +607,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::COnOff<> >				m_oEdited;
+			nullable<SimpleTypes::COnOff >					m_oEdited;
 
 			nullable<ComplexTypes::Drawing::CPoint2D>       m_oStart;
 			std::vector<ComplexTypes::Drawing::CPoint2D*>	m_arrLineTo;
@@ -635,9 +635,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CWrapDistance<>>  m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<>>	m_oDistR;
-			nullable<SimpleTypes::CWrapText<>>		m_oWrapText;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistL;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistR;
+			nullable<SimpleTypes::CWrapText>		m_oWrapText;
 
 			nullable<OOX::Drawing::CWrapPath>		m_oWrapPolygon;
 		};
@@ -664,9 +664,9 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-            nullable<SimpleTypes::CWrapDistance<>>	m_oDistL;
-            nullable<SimpleTypes::CWrapDistance<>>	m_oDistR;
-            nullable<SimpleTypes::CWrapText<>>		m_oWrapText;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistL;
+			nullable<SimpleTypes::CWrapDistance>	m_oDistR;
+			nullable<SimpleTypes::CWrapText>		m_oWrapText;
 
             nullable<OOX::Drawing::CWrapPath>		m_oWrapPolygon;
 		};
@@ -693,8 +693,8 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CWrapDistance<>> m_oDistB;
-			nullable<SimpleTypes::CWrapDistance<>> m_oDistT;
+			nullable<SimpleTypes::CWrapDistance> m_oDistB;
+			nullable<SimpleTypes::CWrapDistance> m_oDistT;
 
 			nullable<OOX::Drawing::CEffectExtent>  m_oEffectExtent;
 		};
@@ -734,17 +734,17 @@ namespace OOX
 		public:
 			nullable<EAnchorWrapType>								m_eWrapType;
 
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oAllowOverlap;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oBehindDoc;
-			nullable<SimpleTypes::CWrapDistance<>>					m_oDistB;
-			nullable<SimpleTypes::CWrapDistance<>>					m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<>>					m_oDistR;
-			nullable<SimpleTypes::CWrapDistance<>>					m_oDistT;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oHidden;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oLayoutInCell;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oLocked;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<0> >		m_oRelativeHeight;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_bSimplePos;
+			nullable<SimpleTypes::COnOff>							m_oAllowOverlap;
+			nullable<SimpleTypes::COnOff>							m_oBehindDoc;
+			nullable<SimpleTypes::CWrapDistance>					m_oDistB;
+			nullable<SimpleTypes::CWrapDistance>					m_oDistL;
+			nullable<SimpleTypes::CWrapDistance>					m_oDistR;
+			nullable<SimpleTypes::CWrapDistance>					m_oDistT;
+			nullable<SimpleTypes::COnOff>							m_oHidden;
+			nullable<SimpleTypes::COnOff>							m_oLayoutInCell;
+			nullable<SimpleTypes::COnOff>							m_oLocked;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oRelativeHeight;
+			nullable<SimpleTypes::COnOff>							m_bSimplePos;
 
 			nullable<PPTX::Logic::CNvPr>						m_oDocPr;			
 			nullable<OOX::Drawing::CEffectExtent>				m_oEffectExtent;
@@ -787,10 +787,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 	// Attributes
-			nullable<SimpleTypes::CWrapDistance<>>				m_oDistB;
-			nullable<SimpleTypes::CWrapDistance<>>				m_oDistL;
-			nullable<SimpleTypes::CWrapDistance<>>				m_oDistR;
-			nullable<SimpleTypes::CWrapDistance<>>				m_oDistT;
+			nullable<SimpleTypes::CWrapDistance>				m_oDistB;
+			nullable<SimpleTypes::CWrapDistance>				m_oDistL;
+			nullable<SimpleTypes::CWrapDistance>				m_oDistR;
+			nullable<SimpleTypes::CWrapDistance>				m_oDistT;
 	// Childs
 			nullable<PPTX::Logic::CNvPr>						m_oDocPr;
 			nullable<OOX::Drawing::CEffectExtent>				m_oEffectExtent;

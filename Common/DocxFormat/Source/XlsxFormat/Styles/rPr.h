@@ -680,7 +680,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CVerticalAlignRun<>>	m_oVerticalAlign;
+			nullable<SimpleTypes::CVerticalAlignRun>	m_oVerticalAlign;
 		};
 		class CFontFamily : public WritingElement
 		{
@@ -978,7 +978,7 @@ namespace OOX
             nullable<CVerticalAlign>                                                m_oVertAlign;
 
             //////
-            nullable<SimpleTypes::CDecimalNumber<>>                                 m_nFontIndex;
+			nullable<SimpleTypes::CDecimalNumber>									m_nFontIndex;
 		};
 	} //Spreadsheet
 } // namespace OOX

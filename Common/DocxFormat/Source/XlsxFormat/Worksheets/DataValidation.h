@@ -156,8 +156,8 @@ namespace OOX
 		public:
 			mutable nullable_int							m_oCount;
 			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oXWindow;
-			nullable<SimpleTypes::CDecimalNumber<>>			m_oYWindow;
+			nullable<SimpleTypes::CDecimalNumber>			m_oXWindow;
+			nullable<SimpleTypes::CDecimalNumber>			m_oYWindow;
 		};
 	} //Spreadsheet
 } // namespace OOX

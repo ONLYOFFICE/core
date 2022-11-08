@@ -109,12 +109,12 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>           > m_oLocked;
-			nullable<std::wstring                         > m_sName;
-			nullable<SimpleTypes::COnOff<>           > m_oQFormat;
-			nullable<SimpleTypes::COnOff<>           > m_oSemiHidden;
+			nullable<SimpleTypes::COnOff             > m_oLocked;
+			nullable<std::wstring                    > m_sName;
+			nullable<SimpleTypes::COnOff             > m_oQFormat;
+			nullable<SimpleTypes::COnOff             > m_oSemiHidden;
 			nullable<SimpleTypes::CDecimalNumber     > m_oUiPriority;
-			nullable<SimpleTypes::COnOff<>           > m_oUnhideWhenUsed;
+			nullable<SimpleTypes::COnOff             > m_oUnhideWhenUsed;
 		};
 
 	} // Word
@@ -499,11 +499,11 @@ namespace OOX
 		}
 	public:
 		SimpleTypes::CDecimalNumber		                m_oCount;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefLockedState;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefQFormat;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefSemiHidden;
+		SimpleTypes::COnOff								m_oDefLockedState;
+		SimpleTypes::COnOff								m_oDefQFormat;
+		SimpleTypes::COnOff							    m_oDefSemiHidden;
 		SimpleTypes::CDecimalNumber                     m_oDefUiPriority;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefUnhideWhenUsed;
+		SimpleTypes::COnOff							    m_oDefUnhideWhenUsed;
 
 		std::vector<ComplexTypes::Word::CLsdException*> m_arrLsdException;
 	};
@@ -706,8 +706,8 @@ namespace OOX
 
 	public:
 
-		nullable<SimpleTypes::COnOff<>>		m_oCustomStyle;
-		nullable<SimpleTypes::COnOff<>>		m_oDefault;
+		nullable<SimpleTypes::COnOff>		m_oCustomStyle;
+		nullable<SimpleTypes::COnOff>		m_oDefault;
 		nullable_string						m_sStyleId;
 		nullable<SimpleTypes::CStyleType>	m_oType;
 

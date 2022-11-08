@@ -1226,7 +1226,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>        > m_oCustomMarkFollows;
+			nullable<SimpleTypes::COnOff>			m_oCustomMarkFollows;
 			nullable<SimpleTypes::CDecimalNumber>	m_oId;
 
 		};
@@ -1335,7 +1335,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>        > m_oCustomMarkFollows;
+			nullable<SimpleTypes::COnOff>			m_oCustomMarkFollows;
 			nullable<SimpleTypes::CDecimalNumber>	m_oId;
 
 		};

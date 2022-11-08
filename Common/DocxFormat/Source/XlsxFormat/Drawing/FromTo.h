@@ -115,9 +115,9 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCol;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCol;
 			nullable<SimpleTypes::CEmu> m_oColOff;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRow;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oRow;
 			nullable<SimpleTypes::CEmu> m_oRowOff;
 		};
 		class CExt : public WritingElement

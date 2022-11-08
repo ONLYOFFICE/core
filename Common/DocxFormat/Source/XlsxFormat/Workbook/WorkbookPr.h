@@ -279,14 +279,14 @@ namespace OOX
 			nullable<SimpleTypes::COnOff<>>		m_oLockStructure;
 			nullable<SimpleTypes::COnOff<>>		m_oLockWindows;
 
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oWorkbookAlgorithmName;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oWorkbookAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oWorkbookSpinCount;
 			nullable_string									m_oWorkbookHashValue;
 			nullable_string									m_oWorkbookSaltValue;
 
 			nullable_string									m_oPassword; //for old wrike protection
 			
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oRevisionsAlgorithmName;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oRevisionsAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRevisionsSpinCount;
 			nullable_string									m_oRevisionsHashValue;
 			nullable_string									m_oRevisionsSaltValue;			

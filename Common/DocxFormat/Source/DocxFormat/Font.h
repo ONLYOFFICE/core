@@ -241,21 +241,21 @@ namespace OOX
 
 	public:
 
-		std::wstring														m_sName;           
-		nullable<SimpleTypes::CFontCharset<SimpleTypes::fontcharsetANSI>>	m_oCharset;  
-		nullable<SimpleTypes::CFontFamily<SimpleTypes::fontfamilyAuto>>		m_oFamily;
-		nullable<SimpleTypes::CPitch<SimpleTypes::pitchDefault>>			m_oPitch;
+		std::wstring										m_sName;
+		nullable<SimpleTypes::CFontCharset>					m_oCharset;
+		nullable<SimpleTypes::CFontFamily>					m_oFamily;
+		nullable<SimpleTypes::CPitch>						m_oPitch;
 
-		nullable<std::wstring>									m_oAltName;        
-		nullable<SimpleTypes::COnOff<>>							m_oNotTrueType;
-		nullable<SimpleTypes::CPanose >							m_oPanose;
+		nullable<std::wstring>								m_oAltName;
+		nullable<SimpleTypes::COnOff<>>						m_oNotTrueType;
+		nullable<SimpleTypes::CPanose >						m_oPanose;
 
-		nullable<SimpleTypes::CLongHexNumber<>>                 m_oCsb0;
-		nullable<SimpleTypes::CLongHexNumber<>>                 m_oCsb1;
-		nullable<SimpleTypes::CLongHexNumber<>>                 m_oUsb0;
-		nullable<SimpleTypes::CLongHexNumber<>>                 m_oUsb1;
-		nullable<SimpleTypes::CLongHexNumber<>>                 m_oUsb2;
-		nullable<SimpleTypes::CLongHexNumber<>>                 m_oUsb3;
+		nullable<SimpleTypes::CLongHexNumber>				m_oCsb0;
+		nullable<SimpleTypes::CLongHexNumber>				m_oCsb1;
+		nullable<SimpleTypes::CLongHexNumber>				m_oUsb0;
+		nullable<SimpleTypes::CLongHexNumber>				m_oUsb1;
+		nullable<SimpleTypes::CLongHexNumber>				m_oUsb2;
+		nullable<SimpleTypes::CLongHexNumber>				m_oUsb3;
 	};
 
 }

@@ -150,8 +150,8 @@ namespace OOX
 				nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oVisibility;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowHeight;
 				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowWidth;
-				nullable<SimpleTypes::CDecimalNumber<>>				m_oXWindow;
-				nullable<SimpleTypes::CDecimalNumber<>>				m_oYWindow;
+				nullable<SimpleTypes::CDecimalNumber>				m_oXWindow;
+				nullable<SimpleTypes::CDecimalNumber>				m_oYWindow;
 		};
 
 		class CBookViews : public WritingElementWithChilds<CWorkbookView>

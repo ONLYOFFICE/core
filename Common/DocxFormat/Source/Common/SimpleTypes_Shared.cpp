@@ -437,17 +437,12 @@ namespace SimpleTypes
 
 	// Согласно части 4 стр. 1459, значений "on" и "off" быть не должно
 
-	template<>
-	COnOff<onoffFalse>::COnOff() {}
-
-	template<>
-	COnOff<onoffFalse>::COnOff(const bool & bVal)
+	COnOff::COnOff(const bool & bVal)
 	{
 		this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
 	}
 
-	template<>
-	EOnOff COnOff<onoffFalse>::FromString(const std::wstring &sValue)
+	EOnOff COnOff::FromString(const std::wstring &sValue)
 	{
 		if      ( L"true"  == sValue ) this->m_eValue = onoffTrue;
 		else if ( L"True"  == sValue ) this->m_eValue = onoffTrue;
@@ -463,8 +458,8 @@ namespace SimpleTypes
 
 		return this->m_eValue;
 	}
-	template<>
-	EOnOff COnOff<onoffFalse>::FromStringA(const std::string& sValue)
+
+	EOnOff COnOff::FromStringA(const std::string& sValue)
 	{
 		if		("1" == sValue) this->m_eValue = onoffTrue;
 		else if	("0" == sValue) this->m_eValue = onoffFalse;
@@ -481,8 +476,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring COnOff<onoffFalse>::ToString  () const
+	std::wstring COnOff::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -492,8 +486,7 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	std::wstring COnOff<onoffFalse>::ToString2(EOnOffToString eType) const
+	std::wstring COnOff::ToString2(EOnOffToString eType) const
 	{
 		if (onofftostringTrue == eType)
 		{
@@ -533,8 +526,8 @@ namespace SimpleTypes
 		}
 		return L"false";
 	}
-	template<>
-	std::wstring COnOff<onoffFalse>::ToString3(EOnOffToString eType) const
+
+	std::wstring COnOff::ToString3(EOnOffToString eType) const
 	{
 		if(onofftostringTrue == eType)
 		{
@@ -575,14 +568,12 @@ namespace SimpleTypes
 		return L"false";
 	}
 
-
-	template<>
-	bool COnOff<onoffFalse>::ToBool()
+	bool COnOff::ToBool()
 	{
 		return onoffTrue == this->m_eValue;
 	}
-	template<>
-	void COnOff<onoffFalse>::FromBool(bool bVal)
+
+	void COnOff::FromBool(bool bVal)
 	{
 		this->m_eValue = (false != bVal) ? onoffTrue : onoffFalse;
 	}
@@ -604,7 +595,7 @@ namespace SimpleTypes
 	}
 	EOnOff CBool::FromString(const std::wstring &sValue)
 	{
-		return COnOff<>::FromString(sValue);
+		return COnOff::FromString(sValue);
 	}
 
 	//--------------------------------------------------------------------------------
@@ -715,26 +706,17 @@ namespace SimpleTypes
 	// UnsignedDecimalNumber 22.9.2.16 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CUnsignedDecimalNumber<0>::CUnsignedDecimalNumber() {}
-
-	template<>
-	CUnsignedDecimalNumber<0>::CUnsignedDecimalNumber(const CUnsignedDecimalNumber& obj)
+	CUnsignedDecimalNumber::CUnsignedDecimalNumber(const CUnsignedDecimalNumber& obj)
 	{
 		this->m_eValue = obj.m_eValue;
-	}
-	template<>
-	CUnsignedDecimalNumber<0>::CUnsignedDecimalNumber(const unsigned int& val)
-	{
-		this->m_eValue = val;
-	}
-	template<>
-	CUnsignedDecimalNumber<0>::CUnsignedDecimalNumber(const int& val)
+	}	
+
+	CUnsignedDecimalNumber::CUnsignedDecimalNumber(const int& val)
 	{
 		this->m_eValue = (unsigned int)val;
 	}
-	template<>
-	unsigned int CUnsignedDecimalNumber<0>::FromString(const std::wstring &sValue)
+
+	unsigned int CUnsignedDecimalNumber::FromString(const std::wstring &sValue)
 	{
 		try
 		{
@@ -756,8 +738,8 @@ namespace SimpleTypes
 
 		return this->m_eValue;
 	}
-	template<>
-	std::wstring CUnsignedDecimalNumber<0>::ToString() const
+
+	std::wstring CUnsignedDecimalNumber::ToString() const
 	{
 		return std::to_wstring( this->m_eValue);
 	}
@@ -1104,8 +1086,7 @@ namespace SimpleTypes
 	// CTrueFalse 15.1.2.5 - 15.1.2.6 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	ETrueFalse CTrueFalse<booleanFalse>::FromString(const std::wstring &sValue)
+	ETrueFalse CTrueFalse::FromString(const std::wstring &sValue)
 	{
 		if      ( L"t"     == sValue )	this->m_eValue = booleanTrue;
 		else if ( L"true"  == sValue )	this->m_eValue = booleanTrue;
@@ -1119,14 +1100,12 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	bool CTrueFalse<booleanFalse>::GetBool()
+	bool CTrueFalse::GetBool()
 	{
 		return this->m_eValue == booleanTrue;
 	}
 
-	template<>
-	std::wstring CTrueFalse<booleanFalse>::ToString  () const
+	std::wstring CTrueFalse::ToString  () const
 	{
 		switch(this->m_eValue)
 		{

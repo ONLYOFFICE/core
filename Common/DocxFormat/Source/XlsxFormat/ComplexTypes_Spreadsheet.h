@@ -52,8 +52,10 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(COnOff2)
-				COnOff2()
+
+			COnOff2()
 			{
+				m_oVal.SetValue(eDefValue);
 			}
 			virtual ~COnOff2()
 			{
@@ -79,17 +81,21 @@ namespace ComplexTypes
 
 				return sResult;
 			}
+
 			void FromBool(bool bVal)
 			{
 				m_oVal.FromBool(bVal);
 			}
+
 			bool ToBool()
 			{
 				return m_oVal.ToBool();
 			}
-			SimpleTypes::COnOff<eDefValue> m_oVal;
+
+			SimpleTypes::COnOff m_oVal;
 
 		};
+
         class String : public ComplexType
 		{
 		public:

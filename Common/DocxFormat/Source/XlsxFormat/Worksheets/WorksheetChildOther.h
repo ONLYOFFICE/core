@@ -190,7 +190,7 @@ namespace OOX
 				if (desc.IsInit())
 					m_arSecurityDescriptors.push_back(*desc);
 			}
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
 			nullable_string				m_oHashValue;
 			nullable_string				m_oSaltValue;
@@ -634,7 +634,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToWidth;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oHorizontalDpi;
 			nullable<SimpleTypes::CRelationshipId>					m_oRId;
-			nullable<SimpleTypes::CPageOrientation<>>				m_oOrientation;
+			nullable<SimpleTypes::CPageOrientation>					m_oOrientation;
 			nullable<SimpleTypes::Spreadsheet::CPageOrder<>>		m_oPageOrder;
 			nullable<SimpleTypes::CDouble>							m_oPaperHeight;
 			nullable<SimpleTypes::Spreadsheet::CPageSize<>>			m_oPaperSize;
@@ -2393,7 +2393,7 @@ namespace OOX
 
             }
 
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oAlgorithmName;
 			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
 			nullable_string		m_oHashValue;
 			nullable_string		m_oSaltValue;

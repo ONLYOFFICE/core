@@ -355,7 +355,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oMultiLine;
+			nullable<SimpleTypes::COnOff> m_oMultiLine;
 		};
 		//--------------------------------------------------------------------------------
 		// SdtAppearance 2.5.4.2 ([MS-DOCX])

@@ -508,9 +508,9 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
+			nullable<SimpleTypes::COnOff                          > m_oFrame;
 			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
+			nullable<SimpleTypes::COnOff                          > m_oShadow;
 			nullable<SimpleTypes::CPointMeasure                   > m_oSpace;
 			nullable<SimpleTypes::CEighthPointMeasure             > m_oSz;
 			nullable<SimpleTypes::CThemeColor                     > m_oThemeColor;
@@ -1279,9 +1279,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>           > m_oEqualWidth;
+			nullable<SimpleTypes::COnOff             > m_oEqualWidth;
 			nullable<SimpleTypes::CDecimalNumber     > m_oNum;
-			nullable<SimpleTypes::COnOff<>           > m_oSep;
+			nullable<SimpleTypes::COnOff             > m_oSep;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oSpace;
 
 			std::vector<ComplexTypes::Word::CColumn *> m_arrColumns;

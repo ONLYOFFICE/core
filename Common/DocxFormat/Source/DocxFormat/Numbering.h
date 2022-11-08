@@ -91,7 +91,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>             > m_oLegacy;
+			nullable<SimpleTypes::COnOff               > m_oLegacy;
 			nullable<SimpleTypes::CSignedTwipsMeasure  > m_oLegacyIndent;
 			nullable<SimpleTypes::CTwipsMeasure        > m_oLegacySpace;
 		};
@@ -146,7 +146,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable< SimpleTypes::COnOff<> >	m_oNull;
+			nullable< SimpleTypes::COnOff>	m_oNull;
             nullable_string						m_sVal;
 		};
 
@@ -417,7 +417,7 @@ namespace OOX
 		public:
 
 			nullable_int								m_oIlvl;
-			nullable<SimpleTypes::COnOff<> >			m_oTentative;
+			nullable<SimpleTypes::COnOff>				m_oTentative;
 			nullable<SimpleTypes::CLongHexNumber>		m_oTplc;
 
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oIsLgl;

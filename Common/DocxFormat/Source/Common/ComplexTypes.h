@@ -154,8 +154,8 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::CHexColor<>>			m_oColor;
-			nullable<SimpleTypes::COnOff<>>				m_oFrame;
-			nullable<SimpleTypes::COnOff<>>				m_oShadow;
+			nullable<SimpleTypes::COnOff>				m_oFrame;
+			nullable<SimpleTypes::COnOff>				m_oShadow;
 			nullable<SimpleTypes::CPointMeasure>		m_oSpace;
 			nullable<SimpleTypes::CEighthPointMeasure>	m_oSz;
 			nullable<SimpleTypes::CThemeColor>			m_oThemeColor;
@@ -300,6 +300,7 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(COnOff)
+
 			COnOff();
 			virtual ~COnOff();
 
@@ -311,7 +312,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff<>> m_oVal;
+			nullable<SimpleTypes::COnOff> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -334,7 +335,7 @@ namespace ComplexTypes
 			virtual inline std::wstring ValNode(const std::wstring &node_name);
 
 		public:
-			SimpleTypes::COnOff<> m_oVal;
+			SimpleTypes::COnOff m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -621,19 +622,19 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:			
-			nullable<SimpleTypes::COnOff<> > m_oEvenHBand;
-			nullable<SimpleTypes::COnOff<> > m_oEvenVBand;
-			nullable<SimpleTypes::COnOff<> > m_oFirstColumn;
-			nullable<SimpleTypes::COnOff<> > m_oFirstRow;
-			nullable<SimpleTypes::COnOff<> > m_oFirstRowFirstColumn;
-			nullable<SimpleTypes::COnOff<> > m_oFirstRowLastColumn;
-			nullable<SimpleTypes::COnOff<> > m_oLastColumn;
-			nullable<SimpleTypes::COnOff<> > m_oLastRow;
-			nullable<SimpleTypes::COnOff<> > m_oLastRowFirstColumn;
-			nullable<SimpleTypes::COnOff<> > m_oLastRowLastColumn;
-			nullable<SimpleTypes::COnOff<> > m_oOddHBand;
-			nullable<SimpleTypes::COnOff<> > m_oOddVBand;
-			nullable<SimpleTypes::CCnf     > m_oVal;
+			nullable<SimpleTypes::COnOff> m_oEvenHBand;
+			nullable<SimpleTypes::COnOff> m_oEvenVBand;
+			nullable<SimpleTypes::COnOff> m_oFirstColumn;
+			nullable<SimpleTypes::COnOff> m_oFirstRow;
+			nullable<SimpleTypes::COnOff> m_oFirstRowFirstColumn;
+			nullable<SimpleTypes::COnOff> m_oFirstRowLastColumn;
+			nullable<SimpleTypes::COnOff> m_oLastColumn;
+			nullable<SimpleTypes::COnOff> m_oLastRow;
+			nullable<SimpleTypes::COnOff> m_oLastRowFirstColumn;
+			nullable<SimpleTypes::COnOff> m_oLastRowLastColumn;
+			nullable<SimpleTypes::COnOff> m_oOddHBand;
+			nullable<SimpleTypes::COnOff> m_oOddVBand;
+			nullable<SimpleTypes::CCnf  > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -725,7 +726,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oVal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -785,7 +786,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff<>> m_oVal;
+			nullable<SimpleTypes::COnOff> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -896,11 +897,11 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff<>           > m_oCombine;
+			nullable<SimpleTypes::COnOff             > m_oCombine;
 			nullable<SimpleTypes::CCombineBrackets   > m_oCombineBrackets;
 			nullable<SimpleTypes::CDecimalNumber	 > m_oID;
-			nullable<SimpleTypes::COnOff<>           > m_oVert;
-			nullable<SimpleTypes::COnOff<>           > m_oVertCompress;
+			nullable<SimpleTypes::COnOff             > m_oVert;
+			nullable<SimpleTypes::COnOff             > m_oVertCompress;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1081,7 +1082,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff<>            > m_oAnchorLock;
+			nullable<SimpleTypes::COnOff              > m_oAnchorLock;
 			nullable<SimpleTypes::CDropCap            > m_oDropCap;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oH;
 			nullable<SimpleTypes::CHAnchor            > m_oHAnchor;
@@ -1201,10 +1202,10 @@ namespace ComplexTypes
 
 		public:
 			nullable<SimpleTypes::CTwipsMeasure       > m_oAfter;
-			nullable<SimpleTypes::COnOff<>            > m_oAfterAutospacing;
+			nullable<SimpleTypes::COnOff              > m_oAfterAutospacing;
 			nullable<SimpleTypes::CDecimalNumber      > m_oAfterLines;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oBefore;
-			nullable<SimpleTypes::COnOff<>            > m_oBeforeAutospacing;
+			nullable<SimpleTypes::COnOff              > m_oBeforeAutospacing;
 			nullable<SimpleTypes::CDecimalNumber      > m_oBeforeLines;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oLine;
 			nullable<SimpleTypes::CLineSpacingRule    > m_oLineRule;
@@ -1367,8 +1368,8 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oId;
-			nullable<SimpleTypes::COnOff<>>					m_oVal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oId;
+			nullable<SimpleTypes::COnOff>					m_oVal;
 		};
 
 	} // Word
@@ -1418,8 +1419,8 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:			
-			SimpleTypes::CPositiveCoordinate<> m_oCx;
-			SimpleTypes::CPositiveCoordinate<> m_oCy;
+			SimpleTypes::CPositiveCoordinate m_oCx;
+			SimpleTypes::CPositiveCoordinate m_oCy;
 		};
 
     } // Drawing

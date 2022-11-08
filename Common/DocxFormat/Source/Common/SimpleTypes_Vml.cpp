@@ -3270,39 +3270,31 @@ namespace SimpleTypes
 		// CVml_TableProperties
 		//--------------------------------------------------------------------------------
 
-		template<>
-		CVml_TableProperties<0>::CVml_TableProperties() {}
-
-		template<>
-		int CVml_TableProperties<0>::FromString(const std::wstring &sValue)
+		int CVml_TableProperties::FromString(const std::wstring &sValue)
 		{
 			this->m_eValue = XmlUtils::GetInteger(sValue);
 
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CVml_TableProperties<0>::ToString  () const
+		std::wstring CVml_TableProperties::ToString  () const
 		{
 			std::wstring sResult = std::to_wstring( this->m_eValue);
 
 			return sResult;
 		}
 
-		template<>
-		bool CVml_TableProperties<0>::IsTable() const
+		bool CVml_TableProperties::IsTable() const
 		{
 			return ( this->m_eValue & 1 ? true : false );
 		}
 
-		template<>
-		bool CVml_TableProperties<0>::IsPlaceholder() const
+		bool CVml_TableProperties::IsPlaceholder() const
 		{
 			return ( this->m_eValue & 2 ? true : false );
 		}
 
-		template<>
-		bool CVml_TableProperties<0>::IsBiDirectionalText() const
+		bool CVml_TableProperties::IsBiDirectionalText() const
 		{
 			return ( this->m_eValue & 4 ? true : false );
 		}
@@ -3906,6 +3898,7 @@ namespace SimpleTypes
 		//--------------------------------------------------------------------------------
 		// Vml_TextBoxInset 14.1.2.22 (inset)
 		//--------------------------------------------------------------------------------
+
 		CVml_TextBoxInset::CVml_TextBoxInset()
 		{
 			Set( 0, 0, 0, 0 );

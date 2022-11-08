@@ -104,17 +104,8 @@ namespace SimpleTypes
 	// Angle 20.1.10.3 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CAngle : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CAngle, int, 0)
 	public:
-		CAngle();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CAngle)
-
 		double  GetAngle() const;
 	};
 
@@ -127,17 +118,7 @@ namespace SimpleTypes
 		animationbuildtypeAllAtOnce = 0
 	};
 
-	template<EAnimationBuildType eDefValue = animationbuildtypeAllAtOnce>
-	class CAnimationBuildType : public CSimpleType<EAnimationBuildType, eDefValue>
-	{
-	public:
-		CAnimationBuildType();
-
-		virtual EAnimationBuildType FromString(const std::wstring &sValue);
-		virtual std::wstring             ToString  () const;
-
-		SimpleTypes_Default(CAnimationBuildType)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimationBuildType, EAnimationBuildType, animationbuildtypeAllAtOnce)
 
 	//--------------------------------------------------------------------------------
 	// AnimationChartBuildType 20.1.10.5 (Part 1)
@@ -152,17 +133,7 @@ namespace SimpleTypes
 		animationchartbuildtypeSeriesEl   = 4
 	};
 
-	template<EAnimationChartBuildType eDefValue = animationchartbuildtypeAllAtOnce>
-	class CAnimationChartBuildType : public CSimpleType<EAnimationChartBuildType, eDefValue>
-	{
-	public:
-		CAnimationChartBuildType();
-
-		virtual EAnimationChartBuildType FromString(const std::wstring &sValue);
-		virtual std::wstring                  ToString  () const;
-
-		SimpleTypes_Default(CAnimationChartBuildType)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimationChartBuildType, EAnimationChartBuildType, animationchartbuildtypeAllAtOnce)
 
 	//--------------------------------------------------------------------------------
 	// AnimationChartOnlyBuildType 20.1.10.6 (Part 1)
@@ -176,17 +147,7 @@ namespace SimpleTypes
 		animationchartonlybuildtypeSeriesEl   = 3
 	};
 
-	template<EAnimationChartOnlyBuildType eDefValue = animationchartonlybuildtypeCategory>
-	class CAnimationChartOnlyBuildType : public CSimpleType<EAnimationChartOnlyBuildType, eDefValue>
-	{
-	public:
-		CAnimationChartOnlyBuildType();
-
-		virtual EAnimationChartOnlyBuildType FromString(const std::wstring &sValue);
-		virtual std::wstring                      ToString  () const;
-
-		SimpleTypes_Default(CAnimationChartOnlyBuildType)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimationChartOnlyBuildType, EAnimationChartOnlyBuildType, animationchartonlybuildtypeCategory)
 
 	//--------------------------------------------------------------------------------
 	// AnimationDgmBuildType 20.1.10.7 (Part 1)
@@ -200,17 +161,7 @@ namespace SimpleTypes
 		animationdgmbuildtypeOne       = 3
 	};
 
-	template<EAnimationDgmBuildType eDefValue = animationdgmbuildtypeAllAtOnce>
-	class CAnimationDgmBuildType : public CSimpleType<EAnimationDgmBuildType, eDefValue>
-	{
-	public:
-		CAnimationDgmBuildType();
-
-		virtual EAnimationDgmBuildType FromString(const std::wstring &sValue);
-		virtual std::wstring                ToString  () const;
-
-		SimpleTypes_Default(CAnimationDgmBuildType)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimationDgmBuildType, EAnimationDgmBuildType, animationdgmbuildtypeAllAtOnce)
 
 	//--------------------------------------------------------------------------------
 	// AnimationDgmOnlyBuildType 20.1.10.8 (Part 1)
@@ -223,17 +174,7 @@ namespace SimpleTypes
 		animationdgmonlybuildtypeOne       = 2
 	};
 
-	template<EAnimationDgmOnlyBuildType eDefValue = animationdgmonlybuildtypeOne>
-	class CAnimationDgmOnlyBuildType : public CSimpleType<EAnimationDgmOnlyBuildType, eDefValue>
-	{
-	public:
-		CAnimationDgmOnlyBuildType();
-
-		virtual EAnimationDgmOnlyBuildType FromString(const std::wstring &sValue);
-		virtual std::wstring                    ToString  () const;
-
-		SimpleTypes_Default(CAnimationDgmOnlyBuildType)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimationDgmOnlyBuildType, EAnimationDgmOnlyBuildType, animationdgmonlybuildtypeOne)
 
 	//--------------------------------------------------------------------------------
 	// BevelPresetType 20.1.10.9 (Part 1)
@@ -255,17 +196,7 @@ namespace SimpleTypes
 		bevelpresettypeSoftRound    = 11
 	};
 
-	template<EBevelPresetType eDefValue = bevelpresettypeAngle>
-	class CBevelPresetType : public CSimpleType<EBevelPresetType, eDefValue>
-	{
-	public:
-		CBevelPresetType();
-
-		virtual EBevelPresetType FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CBevelPresetType)
-	};
+	DEFINE_SIMPLE_TYPE(CBevelPresetType, EBevelPresetType, bevelpresettypeAngle)
 
 	//--------------------------------------------------------------------------------
 	// BlackWhiteMode 20.1.10.10 (Part 1)
@@ -286,17 +217,7 @@ namespace SimpleTypes
 		blackwhitemodeWhite      = 10
 	};
 
-	template<EBlackWhiteMode eDefValue = blackwhitemodeAuto>
-	class CBlackWhiteMode : public CSimpleType<EBlackWhiteMode, eDefValue>
-	{
-	public:
-		CBlackWhiteMode();
-
-		virtual EBlackWhiteMode FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CBlackWhiteMode)
-	};
+	DEFINE_SIMPLE_TYPE(CBlackWhiteMode, EBlackWhiteMode, blackwhitemodeAuto)
 
 	//--------------------------------------------------------------------------------
 	// BlendMode 20.1.10.11 (Part 1)
@@ -311,17 +232,7 @@ namespace SimpleTypes
 		blendmodeScreen  = 4
 	};
 
-	template<EBlendMode eDefValue = blendmodeMult>
-	class CBlendMode : public CSimpleType<EBlendMode, eDefValue>
-	{
-	public:
-		CBlendMode();
-
-		virtual EBlendMode FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CBlendMode)
-	};
+	DEFINE_SIMPLE_TYPE(CBlendMode, EBlendMode, blendmodeMult)
 
 	//--------------------------------------------------------------------------------
 	// BlipCompression 20.1.10.12 (Part 1)
@@ -336,17 +247,7 @@ namespace SimpleTypes
 		blipcompressionScreen  = 4
 	};
 
-	template<EBlipCompression eDefValue = blipcompressionNone>
-	class CBlipCompression : public CSimpleType<EBlipCompression, eDefValue>
-	{
-	public:
-		CBlipCompression();
-
-		virtual EBlipCompression FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CBlipCompression)
-	};
+	DEFINE_SIMPLE_TYPE(CBlipCompression, EBlipCompression, blipcompressionNone)
 
 	//--------------------------------------------------------------------------------
 	// ColorSchemeIndex 20.1.10.14 (Part 1)
@@ -368,17 +269,7 @@ namespace SimpleTypes
 		colorschemeindexLt2      = 11,
 	};
 
-	template<EColorSchemeIndex eDefValue = colorschemeindexAccent1>
-	class CColorSchemeIndex : public CSimpleType<EColorSchemeIndex, eDefValue>
-	{
-	public:
-		CColorSchemeIndex();
-
-		virtual EColorSchemeIndex FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CColorSchemeIndex)
-	};
+	DEFINE_SIMPLE_TYPE(CColorSchemeIndex, EColorSchemeIndex, colorschemeindexAccent1)
 
 	//--------------------------------------------------------------------------------
 	// CompoundLine 20.1.10.15 (Part 1)
@@ -393,17 +284,7 @@ namespace SimpleTypes
 		compoundlineTri       = 4,
 	};
 
-	template<ECompoundLine eDefValue = compoundlineSng>
-	class CCompoundLine : public CSimpleType<ECompoundLine, eDefValue>
-	{
-	public:
-		CCompoundLine();
-
-		virtual ECompoundLine FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CCompoundLine)
-	};
+	DEFINE_SIMPLE_TYPE(CCompoundLine, ECompoundLine, compoundlineSng)
 
 	//--------------------------------------------------------------------------------
 	// Coordinate 20.1.10.16 (Part 1)
@@ -436,17 +317,7 @@ namespace SimpleTypes
 	// DrawingElementId 20.1.10.21 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CDrawingElementId : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CDrawingElementId();
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CDrawingElementId)
-	};
+	DEFINE_SIMPLE_TYPE(CDrawingElementId, int, 0)
 
 	//--------------------------------------------------------------------------------
 	// EffectContainerType 20.1.10.22 (Part 1)
@@ -458,35 +329,14 @@ namespace SimpleTypes
 		effectcontainertypeTree = 1,
 	};
 
-	template<EEffectContainerType eDefValue = effectcontainertypeSib>
-	class CEffectContainerType : public CSimpleType<EEffectContainerType, eDefValue>
-	{
-	public:
-		CEffectContainerType();
-
-		virtual EEffectContainerType FromString(const std::wstring &sValue);
-		virtual std::wstring              ToString  () const;
-
-		SimpleTypes_Default(CEffectContainerType)
-	};
+	DEFINE_SIMPLE_TYPE(CEffectContainerType, EEffectContainerType, effectcontainertypeSib)
 
 	//--------------------------------------------------------------------------------
 	// FixedAngle 20.1.10.23 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CFixedAngle : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START_NSV(CFixedAngle, int, 0)
 	public:
-
-		CFixedAngle();
-
-		void SetValue(int nValue);
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CFixedAngle)
-
 		double  GetAngle() const;
 	};
 
@@ -523,35 +373,14 @@ namespace SimpleTypes
 		fontcollectionindexNone  = 2,
 	};
 
-	template<EFontCollectionIndex eDefValue = fontcollectionindexNone>
-	class CFontCollectionIndex : public CSimpleType<EFontCollectionIndex, eDefValue>
-	{
-	public:
-		CFontCollectionIndex();
-
-		virtual EFontCollectionIndex FromString(const std::wstring &sValue);
-		virtual std::wstring              ToString  () const;
-
-		SimpleTypes_Default(CFontCollectionIndex)
-	};
+	DEFINE_SIMPLE_TYPE(CFontCollectionIndex, EFontCollectionIndex, fontcollectionindexNone)
 
 	//--------------------------------------------------------------------------------
 	// FOVAngle 20.1.10.26 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CFOVAngle : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START_NSV(CFOVAngle, int, 0)
 	public:
-
-		CFOVAngle();
-		void SetValue(int nValue);
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CFOVAngle)
-
 		double  GetAngle() const;
 	};
 
@@ -617,17 +446,7 @@ namespace SimpleTypes
 		lightrigdirectionTR = 7,
 	};
 
-	template<ELightRigDirection eDefValue = lightrigdirectionTR>
-	class CLightRigDirection : public CSimpleType<ELightRigDirection, eDefValue>
-	{
-	public:
-		CLightRigDirection();
-
-		virtual ELightRigDirection FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default(CLightRigDirection)
-	};
+	DEFINE_SIMPLE_TYPE(CLightRigDirection, ELightRigDirection, lightrigdirectionTR)
 
 	//--------------------------------------------------------------------------------
 	// LightRigType 20.1.10.30 (Part 1)
@@ -664,17 +483,7 @@ namespace SimpleTypes
 		lightrigtypeTwoPt         = 26,
 	};
 
-	template<ELightRigType eDefValue = lightrigtypeBalanced>
-	class CLightRigType : public CSimpleType<ELightRigType, eDefValue>
-	{
-	public:
-		CLightRigType();
-
-		virtual ELightRigType FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CLightRigType)
-	};
+	DEFINE_SIMPLE_TYPE(CLightRigType, ELightRigType, lightrigtypeBalanced)
 
 	//--------------------------------------------------------------------------------
 	// LineCap 20.1.10.31 (Part 1)
@@ -687,17 +496,7 @@ namespace SimpleTypes
 		linecapSq   = 2,
 	};
 
-	template<ELineCap eDefValue = linecapRnd>
-	class CLineCap : public CSimpleType<ELineCap, eDefValue>
-	{
-	public:
-		CLineCap();
-
-		virtual ELineCap FromString(const std::wstring &sValue);
-		virtual std::wstring  ToString  () const;
-
-		SimpleTypes_Default(CLineCap)
-	};
+	DEFINE_SIMPLE_TYPE(CLineCap, ELineCap, linecapRnd)
 
 	//--------------------------------------------------------------------------------
 	// LineEndLength 20.1.10.32 (Part 1)
@@ -710,17 +509,7 @@ namespace SimpleTypes
 		lineendlengthSmall  = 2,
 	};
 
-	template<ELineEndLength eDefValue = lineendlengthMedium>
-	class CLineEndLength : public CSimpleType<ELineEndLength, eDefValue>
-	{
-	public:
-		CLineEndLength();
-
-		virtual ELineEndLength FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CLineEndLength)
-	};
+	DEFINE_SIMPLE_TYPE(CLineEndLength, ELineEndLength, lineendlengthMedium)
 
 	//--------------------------------------------------------------------------------
 	// LineEndType 20.1.10.33 (Part 1)
@@ -736,17 +525,7 @@ namespace SimpleTypes
 		lineendtypeTriangle = 5,
 	};
 
-	template<ELineEndType eDefValue = lineendtypeNone>
-	class CLineEndType : public CSimpleType<ELineEndType, eDefValue>
-	{
-	public:
-		CLineEndType();
-
-		virtual ELineEndType FromString(const std::wstring &sValue);
-		virtual std::wstring      ToString  () const;
-
-		SimpleTypes_Default(CLineEndType)
-	};
+	DEFINE_SIMPLE_TYPE(CLineEndType, ELineEndType, lineendtypeNone)
 
 	//--------------------------------------------------------------------------------
 	// LineEndWidth 20.1.10.34 (Part 1)
@@ -759,33 +538,14 @@ namespace SimpleTypes
 		lineendwidthSmall  = 2,
 	};
 
-	template<ELineEndWidth eDefValue = lineendwidthMedium>
-	class CLineEndWidth : public CSimpleType<ELineEndWidth, eDefValue>
-	{
-	public:
-		CLineEndWidth();
-
-		virtual ELineEndWidth FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CLineEndWidth)
-	};
+	DEFINE_SIMPLE_TYPE(CLineEndWidth, ELineEndWidth, lineendwidthMedium)
 
 	//--------------------------------------------------------------------------------
 	// LineWidth 20.1.10.35 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CLineWidth : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CLineWidth, _INT64, 0)
 	public:
-		CLineWidth();
-
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CLineWidth)
-
 		double ToPoints();
 		double ToInches();
 
@@ -806,17 +566,7 @@ namespace SimpleTypes
 		pathfillmodeNorm        = 5,
 	};
 
-	template<EPathFillMode eDefValue = pathfillmodeNone>
-	class CPathFillMode : public CSimpleType<EPathFillMode, eDefValue>
-	{
-	public:
-		CPathFillMode();
-
-		virtual EPathFillMode FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CPathFillMode)
-	};
+	DEFINE_SIMPLE_TYPE(CPathFillMode, EPathFillMode, pathfillmodeNone)
 
 	//--------------------------------------------------------------------------------
 	// PathShadeType 20.1.10.38 (Part 1)
@@ -829,17 +579,7 @@ namespace SimpleTypes
 		pathshadetypeShape  = 2,
 	};
 
-	template<EPathShadeType eDefValue = pathshadetypeRect>
-	class CPathShadeType : public CSimpleType<EPathShadeType, eDefValue>
-	{
-	public:
-		CPathShadeType();
-
-		virtual EPathShadeType FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CPathShadeType)
-	};
+	DEFINE_SIMPLE_TYPE(CPathShadeType, EPathShadeType, pathshadetypeRect)
 
 	//--------------------------------------------------------------------------------
 	// PenAlignment 20.1.10.39 (Part 1)
@@ -851,17 +591,7 @@ namespace SimpleTypes
 		penalignmentIn  = 1,
 	};
 
-	template<EPenAlignment eDefValue = penalignmentCtr>
-	class CPenAlignment : public CSimpleType<EPenAlignment, eDefValue>
-	{
-	public:
-		CPenAlignment();
-
-		virtual EPenAlignment FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CPenAlignment)
-	};
+	DEFINE_SIMPLE_TYPE(CPenAlignment, EPenAlignment, penalignmentCtr)
 
 	//--------------------------------------------------------------------------------
 	// Percentage 20.1.10.40 (Part 1) + 12.1.2.2 (Part4)
@@ -890,16 +620,8 @@ namespace SimpleTypes
 	// PositiveCoordinate 20.1.10.42 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CPositiveCoordinate : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CPositiveCoordinate, _INT64, 0)
 	public:
-		CPositiveCoordinate();
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CPositiveCoordinate)
-
 		double ToPoints() const;
 		double ToMM() const;
 
@@ -918,19 +640,8 @@ namespace SimpleTypes
 	// PositiveFixedAngle 20.1.10.44 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CPositiveFixedAngle : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START_NSV(CPositiveFixedAngle, int, 0)
 	public:
-		CPositiveFixedAngle();
-
-		void SetValue(int nValue);
-
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CPositiveFixedAngle)
-
 		double  GetAngle() const;
 	};
 
@@ -1046,17 +757,7 @@ namespace SimpleTypes
 		presetcameratypePerspectiveRight, // (Perspective Right)
 	};
 
-	template<EPresetCameraType eDefValue = presetcameratypePerspectiveFront>
-	class CPresetCameraType : public CSimpleType<EPresetCameraType, eDefValue>
-	{
-	public:
-		CPresetCameraType();
-
-		virtual EPresetCameraType FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CPresetCameraType)
-	};
+	DEFINE_SIMPLE_TYPE(CPresetCameraType, EPresetCameraType, presetcameratypePerspectiveFront)
 
 	//--------------------------------------------------------------------------------
 	// PresetColorVal 20.1.10.48 (Part 1)
@@ -1256,19 +957,9 @@ namespace SimpleTypes
 		presetcolorvalYellowGreen, // (Yellow Green Preset Color)
 	};
 
-	template<EPresetColorVal eDefValue = presetcolorvalBlack>
-	class CPresetColorVal : public CSimpleType<EPresetColorVal, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CPresetColorVal, EPresetColorVal, presetcolorvalBlack)
 	public:
-		CPresetColorVal();
-
-		virtual EPresetColorVal FromString(const std::wstring &sValue);
 		bool FromStringIgnoreCase(const std::wstring &sValue);
-
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default (CPresetColorVal)
-
 		unsigned char Get_R() const;
 		unsigned char Get_G() const;
 		unsigned char Get_B() const;
@@ -1302,17 +993,7 @@ namespace SimpleTypes
 		presetlinedashvalSysDot        = 10,
 	};
 
-	template<EPresetLineDashVal eDefValue = presetlinedashvalSolid>
-	class CPresetLineDashVal : public CSimpleType<EPresetLineDashVal, eDefValue>
-	{
-	public:
-		CPresetLineDashVal();
-
-		virtual EPresetLineDashVal FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default(CPresetLineDashVal)
-	};
+	DEFINE_SIMPLE_TYPE(CPresetLineDashVal, EPresetLineDashVal, presetlinedashvalSolid)
 
 	//--------------------------------------------------------------------------------
 	// PresetMaterialType 20.1.10.50 (Part 1)
@@ -1337,17 +1018,7 @@ namespace SimpleTypes
 		presetmaterialtypeWarmMatte         = 14,
 	};
 
-	template<EPresetMaterialType eDefValue = presetmaterialtypeClear>
-	class CPresetMaterialType : public CSimpleType<EPresetMaterialType, eDefValue>
-	{
-	public:
-		CPresetMaterialType();
-
-		virtual EPresetMaterialType FromString(const std::wstring &sValue);
-		virtual std::wstring             ToString  () const;
-
-		SimpleTypes_Default(CPresetMaterialType)
-	};
+	DEFINE_SIMPLE_TYPE(CPresetMaterialType, EPresetMaterialType, presetmaterialtypeClear)
 
 	//--------------------------------------------------------------------------------
 	// PresetPatternVal 20.1.10.51 (Part 1)
@@ -1411,16 +1082,7 @@ namespace SimpleTypes
 		presetpatternvalZigZag, // (Zig Zag)
 	};
 
-	template<EPresetPatternVal eDefValue = presetpatternvalPct10>
-	class CPresetPatternVal : public CSimpleType<EPresetPatternVal, eDefValue>
-	{
-	public:
-		CPresetPatternVal();
-		virtual EPresetPatternVal FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default(CPresetPatternVal)
-	};
+	DEFINE_SIMPLE_TYPE(CPresetPatternVal, EPresetPatternVal, presetpatternvalPct10)
 
 	//--------------------------------------------------------------------------------
 	// PresetShadowVal 20.1.10.52 (Part 1)
@@ -1450,16 +1112,7 @@ namespace SimpleTypes
 		presetshadowvalShdw9  = 9,
 	};
 
-	template<EPresetShadowVal eDefValue = presetshadowvalShdw14>
-	class CPresetShadowVal : public CSimpleType<EPresetShadowVal, eDefValue>
-	{
-	public:
-		CPresetShadowVal();
-		virtual EPresetShadowVal FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CPresetShadowVal)
-	};
+	DEFINE_SIMPLE_TYPE(CPresetShadowVal, EPresetShadowVal, presetshadowvalShdw14)
 
 	//--------------------------------------------------------------------------------
 	// RectAlignment 20.1.10.53 (Part 1)
@@ -1478,17 +1131,7 @@ namespace SimpleTypes
 		rectalignmentTR  = 8,
 	};
 
-	template<ERectAlignment eDefValue = rectalignmentBL>
-	class CRectAlignment : public CSimpleType<ERectAlignment, eDefValue>
-	{
-	public:
-		CRectAlignment();
-
-		virtual ERectAlignment FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CRectAlignment)
-	};
+	DEFINE_SIMPLE_TYPE(CRectAlignment, ERectAlignment, rectalignmentBL)
 
 	//--------------------------------------------------------------------------------
 	// ShemeColorVal 20.1.10.54 (Part 1)
@@ -1515,17 +1158,7 @@ namespace SimpleTypes
 		shemecolorvalTx2      = 16,
 	};
 
-	template<EShemeColorVal eDefValue = shemecolorvalAccent1>
-	class CShemeColorVal : public CSimpleType<EShemeColorVal, eDefValue>
-	{
-	public:
-		CShemeColorVal();
-
-		virtual EShemeColorVal FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default(CShemeColorVal)
-	};
+	DEFINE_SIMPLE_TYPE(CShemeColorVal, EShemeColorVal, shemecolorvalAccent1)
 
 	//--------------------------------------------------------------------------------
 	// ShapeType 20.1.10.56 (Part 1)
@@ -1752,19 +1385,7 @@ namespace SimpleTypes
 
 	};
 
-	template<EShapeType eDefValue = shapetypeRect>
-	class CShapeType : public CSimpleType<EShapeType, eDefValue>
-	{
-	public:
-		CShapeType();
-
-		virtual EShapeType FromString(const std::wstring &sValue);
-		virtual std::wstring    ToString  () const;
-
-		SimpleTypes_Default(CShapeType)
-		
-		EShapeType GetValue() const;
-	};
+	DEFINE_SIMPLE_TYPE(CShapeType, EShapeType, shapetypeRect)
 
 	//--------------------------------------------------------------------------------
 	// SystemColorVal 20.1.10.58 (Part 1) (included from ASCWinAPI.h)
@@ -1804,17 +1425,8 @@ namespace SimpleTypes
 		systemcolorvalWindowText, // (Window Text System Color)
 	};
 
-	template<ESystemColorVal eDefValue = systemcolorvalWindow>
-	class CSystemColorVal : public CSimpleType<ESystemColorVal, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CSystemColorVal, ESystemColorVal, systemcolorvalWindow)
 	public:
-		CSystemColorVal();
-
-		virtual ESystemColorVal FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CSystemColorVal)
-
 		unsigned char Get_R() const;
 		unsigned char Get_G() const;
 		unsigned char Get_B() const;
@@ -1843,17 +1455,8 @@ namespace SimpleTypes
 		textalignmenttypeJust = 3,
 		textalignmenttypeR    = 4,
 	};
-	template<ETextAlignmentType eDefValue = textalignmenttypeL>
-	class CTextAlignmentType : public CSimpleType<ETextAlignmentType, eDefValue>
-	{
-	public:
-		CTextAlignmentType();
 
-		virtual ETextAlignmentType FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default (CTextAlignmentType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextAlignmentType, ETextAlignmentType, textalignmenttypeL)
 	
 	//--------------------------------------------------------------------------------
 	// TextAnchoringType 20.1.10.60 (Part 1)
@@ -1868,34 +1471,13 @@ namespace SimpleTypes
 		textanchoringtypeT    = 4,
 	};
 
-	template<ETextAnchoringType eDefValue = textanchoringtypeT>
-	class CTextAnchoringType : public CSimpleType<ETextAnchoringType, eDefValue>
-	{
-	public:
-		CTextAnchoringType();
-
-		virtual ETextAnchoringType FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default (CTextAnchoringType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextAnchoringType, ETextAnchoringType, textanchoringtypeT)
 
 	//--------------------------------------------------------------------------------
 	// TextColumnCount 20.1.10.65 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<unsigned char unDefValue = 1>
-	class CTextColumnCount : public CSimpleType<unsigned char, unDefValue>
-	{
-	public:
-		CTextColumnCount();
-
-		virtual void    SetValue  (unsigned char unValue);
-		virtual unsigned char FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default (CTextColumnCount)
-	};
+	DEFINE_SIMPLE_TYPE_NSV(CTextColumnCount, unsigned char, 1)
 	
 	//--------------------------------------------------------------------------------
 	// 20.1.10.66 TextFontAlignType (Font Alignment Types)
@@ -1909,17 +1491,8 @@ namespace SimpleTypes
 		textfontaligntypeT		= 3,
 		textfontaligntypeB		= 4,
 	};
-	template<ETextFontAlignType eDefValue = textfontaligntypeAuto>
-	class CTextFontAlignType : public CSimpleType<ETextFontAlignType, eDefValue>
-	{
-	public:
-		CTextFontAlignType();
 
-		virtual ETextFontAlignType FromString(const std::wstring &sValue);
-		virtual std::wstring            ToString  () const;
-
-		SimpleTypes_Default (CTextFontAlignType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextFontAlignType, ETextFontAlignType, textfontaligntypeAuto)
 	
 	//--------------------------------------------------------------------------------
 	// TextFontScalePercentOrPercentString 20.1.10.67 (Part 1) + 12.1.2.5 (Part4)
@@ -1953,33 +1526,14 @@ namespace SimpleTypes
 		texthorzoverflowtypeOverflow = 1,
 	};
 
-	template<ETextHorzOverflowType eDefValue = texthorzoverflowtypeOverflow>
-	class CTextHorzOverflowType : public CSimpleType<ETextHorzOverflowType, eDefValue>
-	{
-	public:
-		CTextHorzOverflowType();
-
-		virtual ETextHorzOverflowType FromString(const std::wstring &sValue);
-		virtual std::wstring               ToString  () const;
-
-		SimpleTypes_Default (CTextHorzOverflowType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextHorzOverflowType, ETextHorzOverflowType, texthorzoverflowtypeOverflow)
 
 	//--------------------------------------------------------------------------------
 	// 20.1.10.70 ST_TextIndent (Text Indentation)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CTextIndent : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CTextIndent, _INT64, 0)
 	public:
-		CTextIndent();
-
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default (CTextIndent)
-
 		double ToPoints();
 		double ToInches();
 		double ToCm();
@@ -1989,17 +1543,8 @@ namespace SimpleTypes
 	// 20.1.10.72 ST_TextMargin (Text Margin)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CTextMargin : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CTextMargin, _INT64, 0)
 	public:
-		CTextMargin();
-
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default (CTextMargin)
-
 		double ToPoints();
 		double ToInches();
 		double ToCm();
@@ -2101,17 +1646,7 @@ namespace SimpleTypes
 		textshapetypeTextWave4,
 	};
 
-	template<ETextShapeType eDefValue = textshapetypeTextPlain>
-	class CTextShapeType : public CSimpleType<ETextShapeType, eDefValue>
-	{
-	public:
-		CTextShapeType();
-
-		virtual ETextShapeType FromString(const std::wstring &sValue);
-		virtual std::wstring        ToString  () const;
-
-		SimpleTypes_Default (CTextShapeType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextShapeType, ETextShapeType, textshapetypeTextPlain)
 
 	//--------------------------------------------------------------------------------
 	// TextSpacingPercentOrPercentString 20.1.10.77 (Part 1) + 12.1.2.7 (Part4)
@@ -2138,17 +1673,8 @@ namespace SimpleTypes
 	// 20.1.10.78 ST_TextSpacingPoint (Text Spacing Point)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CTextSpacingPoint : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CTextSpacingPoint, _INT64, 0)
 	public:
-		CTextSpacingPoint();
-
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CTextSpacingPoint)
-
 		double ToPoints();
 		double ToInches();
 		double ToCm();
@@ -2190,17 +1716,7 @@ namespace SimpleTypes
 		textverticaltypeWordArtVertRtl = 6,
 	};
 
-	template<ETextVerticalType eDefValue = textverticaltypeHorz>
-	class CTextVerticalType : public CSimpleType<ETextVerticalType, eDefValue>
-	{
-	public:
-		CTextVerticalType();
-
-		virtual ETextVerticalType FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default (CTextVerticalType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextVerticalType, ETextVerticalType, textverticaltypeHorz)
 
 	//--------------------------------------------------------------------------------
 	// TextVertOverflowType 20.1.10.84 (Part 1)
@@ -2213,17 +1729,7 @@ namespace SimpleTypes
 		textvertoverflowtypeOverflow = 2,
 	};
 
-	template<ETextVertOverflowType eDefValue = textvertoverflowtypeOverflow>
-	class CTextVertOverflowType : public CSimpleType<ETextVertOverflowType, eDefValue>
-	{
-	public:
-		CTextVertOverflowType();
-
-		virtual ETextVertOverflowType FromString(const std::wstring &sValue);
-		virtual std::wstring              ToString  () const;
-
-		SimpleTypes_Default (CTextVertOverflowType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextVertOverflowType, ETextVertOverflowType, textvertoverflowtypeOverflow)
 
 	//--------------------------------------------------------------------------------
 	// TextWrappingType 20.1.10.85 (Part 1)
@@ -2235,17 +1741,7 @@ namespace SimpleTypes
 		textwrappingtypeSquare = 1,
 	};
 
-	template<ETextWrappingType eDefValue = textwrappingtypeNone>
-	class CTextWrappingType : public CSimpleType<ETextWrappingType, eDefValue>
-	{
-	public:
-		CTextWrappingType();
-
-		virtual ETextWrappingType FromString(const std::wstring &sValue);
-		virtual std::wstring           ToString  () const;
-
-		SimpleTypes_Default (CTextWrappingType)
-	};
+	DEFINE_SIMPLE_TYPE(CTextWrappingType, ETextWrappingType, textwrappingtypeNone)
 
 	//--------------------------------------------------------------------------------
 	// TileFlipMode 20.1.10.86 (Part 1)
@@ -2259,17 +1755,7 @@ namespace SimpleTypes
 		tileflipmodeY    = 3,
 	};
 
-	template<ETileFlipMode eDefValue = tileflipmodeNone>
-	class CTileFlipMode : public CSimpleType<ETileFlipMode, eDefValue>
-	{
-	public:
-		CTileFlipMode();
-
-		virtual ETileFlipMode FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default (CTileFlipMode)
-	};
+	DEFINE_SIMPLE_TYPE(CTileFlipMode, ETileFlipMode, tileflipmodeNone)
 
 } // SimpleTypes
 
@@ -2289,18 +1775,7 @@ namespace SimpleTypes
 		alignhRight   = 4
 	};
 
-	template<EAlignH eDefValue = alignhLeft>
-	class CAlignH : public CSimpleType<EAlignH, eDefValue>
-	{
-	public:
-
-		CAlignH();
-
-		virtual EAlignH FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default (CAlignH)
-	};
+	DEFINE_SIMPLE_TYPE(CAlignH, EAlignH, alignhLeft)
 
 	//--------------------------------------------------------------------------------
 	// AlignV 20.4.3.2 (Part 1)
@@ -2315,34 +1790,14 @@ namespace SimpleTypes
 		alignvTop     = 4
 	};
 
-	template<EAlignV eDefValue = alignvTop>
-	class CAlignV : public CSimpleType<EAlignV, eDefValue>
-	{
-	public:
-
-		CAlignV();
-
-		virtual EAlignV FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default (CAlignV)
-	};
+	DEFINE_SIMPLE_TYPE(CAlignV, EAlignV, alignvTop)
 
 	//--------------------------------------------------------------------------------
 	// PositionOffset 10.4.3.3 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CPositionOffset : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CPositionOffset, _INT64, 0)
 	public:
-		CPositionOffset();
-
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default (CPositionOffset)
-
 		double ToPoints();
 		double ToMM() const;
 		double ToInches();
@@ -2365,18 +1820,7 @@ namespace SimpleTypes
 		relfromhRightMargin   = 7
 	};
 
-	template<ERelFromH eDefValue = relfromhPage>
-	class CRelFromH : public CSimpleType<ERelFromH, eDefValue>
-	{
-	public:
-
-		CRelFromH();
-
-		virtual ERelFromH FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString() const;
-
-		SimpleTypes_Default (CRelFromH)
-	};
+	DEFINE_SIMPLE_TYPE(CRelFromH, ERelFromH, relfromhPage)
 
 	//--------------------------------------------------------------------------------
 	// RelFromV 20.4.3.5 (Part 1)
@@ -2394,18 +1838,7 @@ namespace SimpleTypes
 		relfromvTopMargin     = 7
 	};
 
-	template<ERelFromV eDefValue = relfromvPage>
-	class CRelFromV : public CSimpleType<ERelFromV, eDefValue>
-	{
-	public:
-
-		CRelFromV();
-
-		virtual ERelFromV FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString() const;
-
-		SimpleTypes_Default (CRelFromV)
-	};
+	DEFINE_SIMPLE_TYPE(CRelFromV, ERelFromV, relfromvPage)
 
 	//--------------------------------------------------------------------------------
 	// SizeRelFromH
@@ -2421,18 +1854,7 @@ namespace SimpleTypes
 		sizerelfromhOutsideMargin = 5
 	};
 
-	template<ESizeRelFromH eDefValue = sizerelfromhPage>
-	class CSizeRelFromH : public CSimpleType<ESizeRelFromH, eDefValue>
-	{
-	public:
-
-		CSizeRelFromH();
-
-		virtual ESizeRelFromH FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString() const;
-
-		SimpleTypes_Default (CSizeRelFromH)
-	};
+	DEFINE_SIMPLE_TYPE(CSizeRelFromH, ESizeRelFromH, sizerelfromhPage)
 
 	//--------------------------------------------------------------------------------
 	// SizeRelFromV
@@ -2448,34 +1870,14 @@ namespace SimpleTypes
 		sizerelfromvOutsideMargin	= 5
 	};
 
-	template<ESizeRelFromV eDefValue = sizerelfromvPage>
-	class CSizeRelFromV : public CSimpleType<ESizeRelFromV, eDefValue>
-	{
-	public:
-
-		CSizeRelFromV();
-
-		virtual ESizeRelFromV FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString() const;
-
-		SimpleTypes_Default (CSizeRelFromV)
-	};
+	DEFINE_SIMPLE_TYPE(CSizeRelFromV, ESizeRelFromV, sizerelfromvPage)
 
 	//--------------------------------------------------------------------------------
 	// WrapDistance 10.4.3.6 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<_INT64 nDefValue = 0>
-	class CWrapDistance : public CSimpleType<_INT64, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CWrapDistance, _INT64, 0)
 	public:
-		CWrapDistance();
-
-		virtual _INT64 FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default (CWrapDistance)
-
 		double ToPoints();
 		double ToMM() const;
 		double ToInches();
@@ -2494,17 +1896,7 @@ namespace SimpleTypes
 		wraptextRight     = 3
 	};
 
-	template<EWrapText eDefValue = wraptextLeft>
-	class CWrapText : public CSimpleType<EWrapText, eDefValue>
-	{
-	public:
-		CWrapText();
-
-		virtual EWrapText FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default (CWrapText)
-	};
+	DEFINE_SIMPLE_TYPE(CWrapText, EWrapText, wraptextLeft)
 
 } // SimpleTypes
 
@@ -2533,17 +1925,7 @@ namespace SimpleTypes
 		hueDirCw = 1
 	};
 
-	template<EHueDirType eDefValue = hueDirCw>
-	class CHueDirType : public CSimpleType<EHueDirType, eDefValue>
-	{
-	public:
-		CHueDirType();
-
-		virtual EHueDirType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CHueDirType)
-	};
+	DEFINE_SIMPLE_TYPE(CHueDirType, EHueDirType, hueDirCw)
 
 	//--------------------------------------------------------------------------------
 	// ColorMethod
@@ -2556,17 +1938,7 @@ namespace SimpleTypes
 		colorMethodSpan = 2
 	};
 
-	template<EColorMethod eDefValue = colorMethodSpan>
-	class CColorMethod : public CSimpleType<EColorMethod, eDefValue>
-	{
-	public:
-		CColorMethod();
-
-		virtual EColorMethod FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CColorMethod)
-	};
+	DEFINE_SIMPLE_TYPE(CColorMethod, EColorMethod, colorMethodSpan)
 
 	//--------------------------------------------------------------------------------
 	// ChOrder
@@ -2578,17 +1950,7 @@ namespace SimpleTypes
 		chOrderT = 1
 	};
 
-	template<EChOrder eDefValue = chOrderB>
-	class CChOrder : public CSimpleType<EChOrder, eDefValue>
-	{
-	public:
-		CChOrder();
-
-		virtual EChOrder FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CChOrder)
-	};
+	DEFINE_SIMPLE_TYPE(CChOrder, EChOrder, chOrderB)
 
 	//--------------------------------------------------------------------------------
 	// AxisTypes
@@ -2611,17 +1973,7 @@ namespace SimpleTypes
 		axisTypes_root = 12
 	};
 
-	template<EAxisTypes eDefValue = axisTypes_none>
-	class CAxisTypes : public CSimpleType<EAxisTypes, eDefValue>
-	{
-	public:
-		CAxisTypes();
-
-		virtual EAxisTypes FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CAxisTypes)
-	};
+	DEFINE_SIMPLE_TYPE(CAxisTypes, EAxisTypes, axisTypes_none)
 
 	//--------------------------------------------------------------------------------
 	// ParameterId
@@ -2686,17 +2038,7 @@ namespace SimpleTypes
 		parameterId_endPts = 54
 	};
 
-	template<EParameterId eDefValue = parameterId_horzAlign>
-	class CParameterId : public CSimpleType<EParameterId, eDefValue>
-	{
-	public:
-		CParameterId();
-
-		virtual EParameterId FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CParameterId)
-	};
+	DEFINE_SIMPLE_TYPE(CParameterId, EParameterId, parameterId_horzAlign)
 
 	//--------------------------------------------------------------------------------
 	// ConstraintRelationship
@@ -2709,17 +2051,7 @@ namespace SimpleTypes
 		constraintRels_des = 2
 	};
 
-	template<EConstraintRelationship eDefValue = constraintRels_self>
-	class CConstraintRelationship : public CSimpleType<EConstraintRelationship, eDefValue>
-	{
-	public:
-		CConstraintRelationship();
-
-		virtual EConstraintRelationship FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CConstraintRelationship)
-	};
+	DEFINE_SIMPLE_TYPE(CConstraintRelationship, EConstraintRelationship, constraintRels_self)
 
 	//--------------------------------------------------------------------------------
 	// ConstraintType
@@ -2792,17 +2124,7 @@ namespace SimpleTypes
 		constraintType_wOff = 62
 	};
 
-	template<EConstraintType eDefValue = constraintType_none>
-	class CConstraintType : public CSimpleType<EConstraintType, eDefValue>
-	{
-	public:
-		CConstraintType();
-
-		virtual EConstraintType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CConstraintType)
-	};
+	DEFINE_SIMPLE_TYPE(CConstraintType, EConstraintType, constraintType_none)
 
 	//--------------------------------------------------------------------------------
 	// BoolOperator
@@ -2816,15 +2138,7 @@ namespace SimpleTypes
 		boolOperator_lte = 3
 	};
 
-	template<EBoolOperator eDefValue = boolOperator_none>
-	class CBoolOperator : public CSimpleType<EBoolOperator, eDefValue>
-	{
-	public:
-		CBoolOperator();
-		virtual EBoolOperator FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CBoolOperator)
-	};
+	DEFINE_SIMPLE_TYPE(CBoolOperator, EBoolOperator, boolOperator_none)
 
 	//--------------------------------------------------------------------------------
 	// ElementTypes
@@ -2844,15 +2158,7 @@ namespace SimpleTypes
 		elementTypes_sibTrans = 9
 	};
 
-	template<EElementTypes eDefValue = elementTypes_all>
-	class CElementTypes : public CSimpleType<EElementTypes, eDefValue>
-	{
-	public:
-		CElementTypes();
-		virtual EElementTypes FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CElementTypes)
-	};
+	DEFINE_SIMPLE_TYPE(CElementTypes, EElementTypes, elementTypes_all)
 
 	//--------------------------------------------------------------------------------
 	// AlgorithmType
@@ -2872,15 +2178,7 @@ namespace SimpleTypes
 		algorithmType_snake = 9
 	};
 
-	template<EAlgorithmType eDefValue = algorithmType_composite>
-	class CAlgorithmType : public CSimpleType<EAlgorithmType, eDefValue>
-	{
-	public:
-		CAlgorithmType();
-		virtual EAlgorithmType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CAlgorithmType)
-	};
+	DEFINE_SIMPLE_TYPE(CAlgorithmType, EAlgorithmType, algorithmType_composite)
 
 	//--------------------------------------------------------------------------------
 	// FunctionType
@@ -2898,15 +2196,7 @@ namespace SimpleTypes
 		functionType_maxDepth = 7
 	};
 
-	template<EFunctionType eDefValue = functionType_cnt>
-	class CFunctionType : public CSimpleType<EFunctionType, eDefValue>
-	{
-	public:
-		CFunctionType();
-		virtual EFunctionType FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CFunctionType)
-	};
+	DEFINE_SIMPLE_TYPE(CFunctionType, EFunctionType, functionType_cnt)
 
 	//--------------------------------------------------------------------------------
 	// FunctionOperator
@@ -2922,15 +2212,7 @@ namespace SimpleTypes
 		functionOperator_lte = 5
 	};
 
-	template<EFunctionOperator eDefValue = functionOperator_equ>
-	class CFunctionOperator : public CSimpleType<EFunctionOperator, eDefValue>
-	{
-	public:
-		CFunctionOperator();
-		virtual EFunctionOperator FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CFunctionOperator)
-	};
+	DEFINE_SIMPLE_TYPE(CFunctionOperator, EFunctionOperator, functionOperator_equ)
 
 	//--------------------------------------------------------------------------------
 	// AnimLvlStr
@@ -2943,15 +2225,7 @@ namespace SimpleTypes
 		animLvlStr_lvl = 2
 	};
 
-	template<EAnimLvlStr eDefValue = animLvlStr_none>
-	class CAnimLvlStr : public CSimpleType<EAnimLvlStr, eDefValue>
-	{
-	public:
-		CAnimLvlStr();
-		virtual EAnimLvlStr FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CAnimLvlStr)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimLvlStr, EAnimLvlStr, animLvlStr_none)
 
 	//--------------------------------------------------------------------------------
 	// AnimOneStr
@@ -2964,15 +2238,7 @@ namespace SimpleTypes
 		animOneStr_one = 2
 	};
 
-	template<EAnimOneStr eDefValue = animOneStr_none>
-	class CAnimOneStr : public CSimpleType<EAnimOneStr, eDefValue>
-	{
-	public:
-		CAnimOneStr();
-		virtual EAnimOneStr FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CAnimOneStr)
-	};
+	DEFINE_SIMPLE_TYPE(CAnimOneStr, EAnimOneStr, animOneStr_none)
 
 	//--------------------------------------------------------------------------------
 	// DirectionDraw
@@ -2984,15 +2250,7 @@ namespace SimpleTypes
 		direction_rev = 1
 	};
 
-	template<EDirectionDraw eDefValue = direction_norm>
-	class CDirectionDraw : public CSimpleType<EDirectionDraw, eDefValue>
-	{
-	public:
-		CDirectionDraw();
-		virtual EDirectionDraw FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CDirectionDraw)
-	};
+	DEFINE_SIMPLE_TYPE(CDirectionDraw, EDirectionDraw, direction_norm)
 
 	//--------------------------------------------------------------------------------
 	// HierBranch
@@ -3007,15 +2265,7 @@ namespace SimpleTypes
 		hierBranch_std = 4
 	};
 
-	template<EHierBranch eDefValue = hierBranch_hang>
-	class CHierBranch : public CSimpleType<EHierBranch, eDefValue>
-	{
-	public:
-		CHierBranch();
-		virtual EHierBranch FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CHierBranch)
-	};
+	DEFINE_SIMPLE_TYPE(CHierBranch, EHierBranch, hierBranch_hang)
 
 	//--------------------------------------------------------------------------------
 	// ResizeHandles
@@ -3027,15 +2277,7 @@ namespace SimpleTypes
 		resizeHandles_rel = 1
 	};
 
-	template<EResizeHandles eDefValue = resizeHandles_exact>
-	class CResizeHandles : public CSimpleType<EResizeHandles, eDefValue>
-	{
-	public:
-		CResizeHandles();
-		virtual EResizeHandles FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CResizeHandles)
-	};
+	DEFINE_SIMPLE_TYPE(CResizeHandles, EResizeHandles, resizeHandles_exact)
 
 	//--------------------------------------------------------------------------------
 	// PtTypes
@@ -3051,15 +2293,7 @@ namespace SimpleTypes
 		ptTypes_sibTrans = 5
 	};
 
-	template<EPtTypes eDefValue = ptTypes_node>
-	class CPtTypes : public CSimpleType<EPtTypes, eDefValue>
-	{
-	public:
-		CPtTypes();
-		virtual EPtTypes FromString(const std::wstring &sValue);
-		virtual std::wstring ToString() const;
-		SimpleTypes_Default(CPtTypes)
-	};
+	DEFINE_SIMPLE_TYPE(CPtTypes, EPtTypes, ptTypes_node)
 
 } // SimpleTypes
 

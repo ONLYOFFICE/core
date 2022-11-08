@@ -195,16 +195,16 @@ namespace OOX
 			nullable<SimpleTypes::CStrokeEndCap>		m_oEndCap;
 			nullable<SimpleTypes::CExt>					m_oExt;
 			nullable<SimpleTypes::CFillType>		    m_oFillType;
-			nullable<SimpleTypes::CTrueFalse<>>         m_oForceDash;
+			nullable<SimpleTypes::CTrueFalse>		    m_oForceDash;
 			nullable<std::wstring>						m_sHref;
-			nullable<SimpleTypes::CTrueFalse<>>         m_oImageAlignShape;
+			nullable<SimpleTypes::CTrueFalse>           m_oImageAlignShape;
 			nullable<SimpleTypes::CImageAspect>			m_oImageAspect;
 			nullable<std::wstring>						m_sImageSize;
-			nullable<SimpleTypes::CTrueFalse<>>         m_oInsetPen;
+			nullable<SimpleTypes::CTrueFalse>           m_oInsetPen;
 			nullable<SimpleTypes::CStrokeJoinStyle>		m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle>		m_oLineStyle;
 			nullable<SimpleTypes::CDecimalNumber>	    m_oMiterLimit;
-			nullable<SimpleTypes::CTrueFalse<>>         m_oOn;
+			nullable<SimpleTypes::CTrueFalse>           m_oOn;
 			nullable<std::wstring>						m_sOpacity;
 			nullable<std::wstring>						m_sSrc;
 			nullable<SimpleTypes::CStrokeArrowType>		m_oStartArrow;
@@ -290,19 +290,19 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CTrueFalse<>>           m_oAccentbar;
+			nullable<SimpleTypes::CTrueFalse>             m_oAccentbar;
 			nullable<SimpleTypes::CVmlAngle>	          m_oAngle;
 			nullable<SimpleTypes::CCoordinate>            m_oDistance;
 			nullable<SimpleTypes::CCalloutDrop>           m_oDrop;
-			nullable<SimpleTypes::CTrueFalse<>>           m_oDropAuto;
+			nullable<SimpleTypes::CTrueFalse>             m_oDropAuto;
 			nullable<SimpleTypes::CExt>                   m_oExt;
 			nullable<SimpleTypes::CCoordinate>            m_oGap;
 			nullable<SimpleTypes::CCoordinate>            m_oLength;
-			nullable<SimpleTypes::CTrueFalse<>>           m_oLengthSpecified;
-			nullable<SimpleTypes::CTrueFalse<>>           m_oMinusX;
-			nullable<SimpleTypes::CTrueFalse<>>           m_oMinusY;
-			nullable<SimpleTypes::CTrueFalse<>>           m_oOn;
-			nullable<SimpleTypes::CTrueFalse<>>           m_oTextBorder;
+			nullable<SimpleTypes::CTrueFalse>             m_oLengthSpecified;
+			nullable<SimpleTypes::CTrueFalse>             m_oMinusX;
+			nullable<SimpleTypes::CTrueFalse>             m_oMinusY;
+			nullable<SimpleTypes::CTrueFalse>             m_oOn;
+			nullable<SimpleTypes::CTrueFalse>             m_oTextBorder;
 			nullable<SimpleTypes::Vml::CVmlCalloutType>   m_oType;
 		};
 		//--------------------------------------------------------------------------------
@@ -786,8 +786,8 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoFormat;
-			nullable<SimpleTypes::CTrueFalse<>>     m_oAutoLayout;
+			nullable<SimpleTypes::CTrueFalse>		m_oAutoFormat;
+			nullable<SimpleTypes::CTrueFalse>		m_oAutoLayout;
 			nullable<std::wstring>					m_sConstrainbounds;
 			nullable<SimpleTypes::CDecimalNumber>	m_oDmgBaseTextScale;
 			nullable<SimpleTypes::CDecimalNumber>	m_oDmgFontSize;
@@ -795,7 +795,7 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber>	m_oDmgScaleY;
 			nullable<SimpleTypes::CDecimalNumber>	m_oDmgStyle;
 			nullable<SimpleTypes::CExt>				m_oExt;
-			nullable<SimpleTypes::CTrueFalse<>>		m_oReverse;
+			nullable<SimpleTypes::CTrueFalse>		m_oReverse;
 
 			nullable<OOX::VmlOffice::CRelationTable>      m_oRelationTable;
 		};
@@ -1054,6 +1054,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				// Устанавливаем значения по умолчанию
+
 				m_oBackDepth.SetValue( 36 );
 				m_oBrightness.SetValue( 0.3 );
 				m_oDiffusity.SetValue( (double)1.0 );
@@ -1074,6 +1075,10 @@ namespace OOX
 				m_oFacet.SetValue(30000);
 				m_oShininess.SetValue(5);
 				m_oSkewAngle.SetValue(225);
+
+				m_oLightFace.SetValue(SimpleTypes::booleanTrue);
+				m_oLightHarsh.SetValue(SimpleTypes::booleanTrue);
+				m_oLockRotationCenter.SetValue(SimpleTypes::booleanTrue);
 
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"autorotationcenter", m_oAutoRotationCenter )
@@ -1113,7 +1118,7 @@ namespace OOX
 			}
 
 		public:
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oAutoRotationCenter;
+			SimpleTypes::CTrueFalse                                          m_oAutoRotationCenter;
 			SimpleTypes::CPoint                                              m_oBackDepth;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oBrightness;
 			nullable<SimpleTypes::CColorType<>>                              m_oColor;
@@ -1123,16 +1128,16 @@ namespace OOX
 			nullable<SimpleTypes::CExt>                                      m_oExt;
 			SimpleTypes::CDecimalNumber                                      m_oFacet;
 			SimpleTypes::CPoint                                              m_oForeDepth;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                m_oLightFace;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                m_oLightHarsh;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oLightHarsh2;
+			SimpleTypes::CTrueFalse                                          m_oLightFace;
+			SimpleTypes::CTrueFalse                                          m_oLightHarsh;
+			SimpleTypes::CTrueFalse                                          m_oLightHarsh2;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oLightLevel;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oLightLevel2;
 			SimpleTypes::Vml::CVml_Vector3D_65536                            m_oLightPosition;
 			SimpleTypes::Vml::CVml_Vector3D_65536                            m_oLightPosition2;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanTrue>                m_oLockRotationCenter;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oMetal;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oOn;
+			SimpleTypes::CTrueFalse                                          m_oLockRotationCenter;
+			SimpleTypes::CTrueFalse                                          m_oMetal;
+			SimpleTypes::CTrueFalse                                          m_oOn;
 			SimpleTypes::Vml::CVml_Vector3D                                  m_oOrientation;
 			SimpleTypes::CDecimalNumber                                      m_oOrientationAngle;
 			SimpleTypes::CExtrusionPlane                                     m_oPlane;
@@ -1345,8 +1350,8 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CTrueFalse<>> m_oAnnotation;
-			nullable<SimpleTypes::CContentType> m_oContentType;
+			nullable<SimpleTypes::CTrueFalse>	m_oAnnotation;
+			nullable<SimpleTypes::CContentType>	m_oContentType;
 			nullable<std::wstring>				m_sI;
 		};
 		//--------------------------------------------------------------------------------
@@ -1481,18 +1486,18 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oAdjustHandles;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oAspectRatio;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oCropping;
-			nullable<SimpleTypes::CExt>                                      m_oExt;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oGrouping;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oPosition;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oRotation;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oSelection;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oShapeType;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oText;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oUnGrouping;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>               m_oVerticies;
+			SimpleTypes::CTrueFalse               m_oAdjustHandles;
+			SimpleTypes::CTrueFalse               m_oAspectRatio;
+			SimpleTypes::CTrueFalse               m_oCropping;
+			nullable<SimpleTypes::CExt>           m_oExt;
+			SimpleTypes::CTrueFalse               m_oGrouping;
+			SimpleTypes::CTrueFalse               m_oPosition;
+			SimpleTypes::CTrueFalse               m_oRotation;
+			SimpleTypes::CTrueFalse               m_oSelection;
+			SimpleTypes::CTrueFalse               m_oShapeType;
+			SimpleTypes::CTrueFalse               m_oText;
+			SimpleTypes::CTrueFalse               m_oUnGrouping;
+			SimpleTypes::CTrueFalse               m_oVerticies;
 		};
 		//--------------------------------------------------------------------------------
 		// CLockedField 14.2.2.19 (Part 4)
@@ -1529,7 +1534,7 @@ namespace OOX
 				return OOX::et_o_LockedField;
 			}
 
-			SimpleTypes::CTrueFalse<> m_oValue;
+			SimpleTypes::CTrueFalse m_oValue;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1707,9 +1712,9 @@ namespace OOX
 		public:
 
 			SimpleTypes::CDecimalNumber							m_oConnectLoc;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oEnd;
+			SimpleTypes::CTrueFalse								m_oEnd;
 			std::wstring										m_sIdRef;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oStart;
+			SimpleTypes::CTrueFalse								m_oStart;
 		};
 		//--------------------------------------------------------------------------------
 		// CR 14.2.2.22 (Part 4)
@@ -2281,14 +2286,14 @@ namespace OOX
 
 			// Attributes
 			nullable<std::wstring>				m_sAddXml;
-			nullable<SimpleTypes::COnOff<>>		m_oAllowComments;
+			nullable<SimpleTypes::COnOff>		m_oAllowComments;
 			nullable<SimpleTypes::CExt>			m_oExt;
 			nullable<SimpleTypes::CGuid>		m_oId;
-			nullable<SimpleTypes::COnOff<>>		m_oIsSignatureLine;
+			nullable<SimpleTypes::COnOff>		m_oIsSignatureLine;
 			nullable<SimpleTypes::CGuid>		m_oProvId;
-			nullable<SimpleTypes::COnOff<>>		m_oShowSignDate;
+			nullable<SimpleTypes::COnOff>		m_oShowSignDate;
 			nullable<std::wstring>				m_sSigningInstructions;
-			nullable<SimpleTypes::COnOff<>>		m_oSigningInstructionsSet;
+			nullable<SimpleTypes::COnOff>		m_oSigningInstructionsSet;
 			nullable<std::wstring>				m_sSigProvUrl;
 			nullable<std::wstring>				m_sSuggestedSigner;
 			nullable<std::wstring>				m_sSuggestedSigner2;
@@ -2365,7 +2370,7 @@ namespace OOX
 			nullable<std::wstring>								m_sId;
 			nullable<std::wstring>								m_sMatrix;
 			nullable<std::wstring>								m_sOffset;
-			SimpleTypes::CTrueFalse<SimpleTypes::booleanFalse>	m_oOn;
+			SimpleTypes::CTrueFalse								m_oOn;
 			nullable<std::wstring>								m_sOrigin;
 		};
 	} // namespace Vml

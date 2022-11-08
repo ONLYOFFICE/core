@@ -810,9 +810,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>       > m_oDirty;
+			nullable<SimpleTypes::COnOff         > m_oDirty;
 			nullable<SimpleTypes::CFldCharType   > m_oFldCharType;
-			nullable<SimpleTypes::COnOff<>       > m_oFldLock;
+			nullable<SimpleTypes::COnOff         > m_oFldLock;
 
 			nullable<OOX::Logic::CFFData         > m_oFFData;
 		};

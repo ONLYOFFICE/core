@@ -158,7 +158,7 @@ namespace SimpleTypes
 	// FillType 14.1.3.4;14.2.3.14 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	void    CFillType::SetValue2  (EFillType eValue)
+	void    CFillType::SetValue  (EFillType eValue)
 	{
 		if ( filltypeFrame == eValue || filltypeGradient == eValue || eValue == filltypeGradientRadial ||
 			 filltypePattern == eValue || filltypeSolid == eValue || filltypeTile == eValue )

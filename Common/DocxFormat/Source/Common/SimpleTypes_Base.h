@@ -52,7 +52,7 @@ namespace SimpleTypes
     bool operator==(const Class& oOther) const { return (this->m_sValue == oOther.m_sValue) ? true : false; }         \
 	SimpleTypes_DefaultString(Class)
 
-	#define DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                      \
+	#define DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)														\
 	class Class                                                                                                 \
 	{                                                                                                           \
 	public:                                                                                                     \
@@ -63,15 +63,28 @@ namespace SimpleTypes
 		Class& operator=(const Type& sValue) { m_eValue = sValue; return *this; }                               \
 		bool operator==(const Class& oOther) const { return (m_eValue == oOther.m_eValue) ? true : false; }     \
 		Type GetValue() const { return m_eValue; }                                                              \
-		void SetValue(const Type& value) { m_eValue = value; }                                                  \
 		void SetValueFromByte(const unsigned char& value) { m_eValue = (Type)value; }                           \
 		Type FromString(const std::wstring &sValue);                                                            \
 		std::wstring ToString() const;                                                                          \
 	public:                                                                                                     \
 		Type m_eValue;
 
+	#define DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                      \
+	DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)                                                               \
+	public:                                                                                                     \
+		void SetValue(const Type& value) { m_eValue = value; }
+
+	#define DEFINE_SIMPLE_TYPE_START_NSV(Class, Type, Default)                                                  \
+	DEFINE_SIMPLE_TYPE_BASE(Class, Type, Default)                                                               \
+	public:                                                                                                     \
+		void SetValue(const Type value);
+
 	#define DEFINE_SIMPLE_TYPE(Class, Type, Default)                                                            \
 	DEFINE_SIMPLE_TYPE_START(Class, Type, Default)                                                              \
+	};
+
+	#define DEFINE_SIMPLE_TYPE_NSV(Class, Type, Default)                                                        \
+	DEFINE_SIMPLE_TYPE_START_NSV(Class, Type, Default)                                                          \
 	};
 
 	//--------------------------------------------------------------------------------

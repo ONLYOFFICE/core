@@ -250,7 +250,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CTblStyleOverrideType<>> m_oType;
+			nullable<SimpleTypes::CTblStyleOverrideType> m_oType;
 
 			nullable<OOX::Logic::CParagraphProperty> m_oParPr;
 			nullable<OOX::Logic::CRunProperty> m_oRunPr;
@@ -709,7 +709,7 @@ namespace OOX
 		nullable<SimpleTypes::COnOff<>>		m_oCustomStyle;
 		nullable<SimpleTypes::COnOff<>>		m_oDefault;
 		nullable_string						m_sStyleId;
-		nullable<SimpleTypes::CStyleType<>> m_oType;
+		nullable<SimpleTypes::CStyleType>	m_oType;
 
 		nullable<ComplexTypes::Word::String>							m_oAliases;
 		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oAutoRedefine;

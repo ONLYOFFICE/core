@@ -123,14 +123,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CLongHexNumber<> > m_oParaId;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oTextId;
+			nullable<SimpleTypes::CLongHexNumber> m_oParaId;
+			nullable<SimpleTypes::CLongHexNumber> m_oTextId;
 
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidP;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRDefault;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidP;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidRDefault;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidRPr;
 
 			CParagraphProperty *m_oParagraphProperty; // копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Paragraph - то есть единственные подобъекты вынести отдельно

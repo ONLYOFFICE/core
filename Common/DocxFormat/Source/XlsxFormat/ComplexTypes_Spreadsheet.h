@@ -241,7 +241,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CPointMeasure<> > m_oVal;
+			nullable<SimpleTypes::CPointMeasure> m_oVal;
 		};
 		class CChartLayoutTarget : public ComplexType
 		{

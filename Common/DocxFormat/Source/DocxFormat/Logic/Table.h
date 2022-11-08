@@ -527,10 +527,10 @@ namespace OOX
 		public:
 			int										m_nCountCell;
 
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidTr;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidTr;
 
 			// Childs
 			OOX::Logic::CTableRowProperties*	m_pTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>

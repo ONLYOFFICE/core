@@ -109,7 +109,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 		};
 
@@ -169,7 +169,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 		};
 
@@ -795,7 +795,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 		};
 
@@ -895,7 +895,7 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColLast;
 			nullable<SimpleTypes::CDateTime>				m_oDate;
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 			nullable<std::wstring>							m_sName;
 			nullable<std::wstring>							m_sUserId;
@@ -955,7 +955,7 @@ namespace OOX
 			}
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 		};
 
@@ -1054,7 +1054,7 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColLast;
 			nullable<SimpleTypes::CDateTime>				m_oDate;
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
             nullable<std::wstring>							m_sName;
             nullable<std::wstring>							m_sUserId;
@@ -1212,7 +1212,7 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 		};
 
@@ -1293,7 +1293,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColLast;
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
             nullable<std::wstring>							m_sName;
 		};
@@ -1362,7 +1362,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
             nullable<std::wstring>							m_sId;
 		};
 
@@ -1434,9 +1434,9 @@ namespace OOX
 
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColLast;
-			nullable<SimpleTypes::CDisplacedByCustomXml<>>	m_oDisplacedByCustomXml;
+			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
             nullable<std::wstring>							m_sEd;
-			nullable<SimpleTypes::CEdGrp<>>					m_oEdGrp;
+			nullable<SimpleTypes::CEdGrp>					m_oEdGrp;
             nullable<std::wstring>							m_sId;
 		};
 
@@ -1499,7 +1499,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CProofErr<>> m_oType;
+			nullable<SimpleTypes::CProofErr> m_oType;
 		};
 
 		class CIns : public WritingElementWithChilds<>

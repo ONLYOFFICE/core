@@ -85,9 +85,9 @@ namespace OOX
 		public:
 
 			nullable<SimpleTypes::CHexColor<>        >	m_oColor;
-			nullable<SimpleTypes::CThemeColor<>      >	m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeTint;
+			nullable<SimpleTypes::CThemeColor        >	m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeTint;
 
 			nullable<OOX::Logic::CDrawing            >	m_oDrawing;
 			nullable<OOX::Vml::CBackground>				m_oBackground;

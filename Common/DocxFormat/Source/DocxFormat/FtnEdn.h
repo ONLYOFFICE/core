@@ -300,7 +300,7 @@ namespace OOX
 		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
 
 		nullable<SimpleTypes::CDecimalNumber>	m_oId;
-		nullable<SimpleTypes::CFtnEdn<>>		m_oType;
+		nullable<SimpleTypes::CFtnEdn>			m_oType;
 	};
 
 	//--------------------------------------------------------------------------------

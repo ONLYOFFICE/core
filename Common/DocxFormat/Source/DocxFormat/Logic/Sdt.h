@@ -261,7 +261,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::CSdtDateMappingType<SimpleTypes::sdtdatemappingtypeText> m_oVal;
+			SimpleTypes::CSdtDateMappingType m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -306,7 +306,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::CLock<SimpleTypes::lockUnlocked> m_oVal;
+			SimpleTypes::CLock m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -426,7 +426,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHeightRule<>>	m_oWRule;
+			nullable<SimpleTypes::CHeightRule>		m_oWRule;
 			nullable_int							m_oWidth;
 			nullable_string							m_oSym;
 			nullable_string							m_oFont;
@@ -451,7 +451,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextFormFormatType<>> m_oType;
+			nullable<SimpleTypes::CTextFormFormatType> m_oType;
 			nullable_string m_oVal;
 			nullable_string m_oSymbols;
 		};
@@ -533,7 +533,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CComplexFormType<>> m_oType;
+			nullable<SimpleTypes::CComplexFormType> m_oType;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1078,8 +1078,8 @@ namespace OOX
 			}
 		public:
 
-			nullable<SimpleTypes::CShortHexNumber<> >   m_oVal;
-			nullable<std::wstring>                      m_oFont;
+			nullable<SimpleTypes::CShortHexNumber>		m_oVal;
+			nullable<std::wstring>						m_oFont;
 		};
 
 		class CSdtCheckBox : public WritingElement

@@ -94,6 +94,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oClear.SetValue(SimpleTypes::brclearNone);
+				m_oType.SetValue(SimpleTypes::brtypeTextWrapping);
+
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 
@@ -119,8 +122,8 @@ namespace OOX
 
 		public:
 
-			SimpleTypes::CBrClear<SimpleTypes::brclearNone      > m_oClear;
-			SimpleTypes::CBrType<SimpleTypes::brtypeTextWrapping> m_oType;
+			SimpleTypes::CBrClear m_oClear;
+			SimpleTypes::CBrType m_oType;
 
 		};
 
@@ -576,9 +579,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CPTabAlignment<> > m_oAlignment;
-			nullable<SimpleTypes::CPTabLeader<>    > m_oLeader;
-			nullable<SimpleTypes::CPTabRelativeTo<>> m_oRelativeTo;
+			nullable<SimpleTypes::CPTabAlignment > m_oAlignment;
+			nullable<SimpleTypes::CPTabLeader    > m_oLeader;
+			nullable<SimpleTypes::CPTabRelativeTo> m_oRelativeTo;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -719,8 +722,8 @@ namespace OOX
 
 		public:
 
-            nullable<SimpleTypes::CShortHexNumber<> >   m_oChar;
-            nullable<std::wstring>                      m_oFont;
+			nullable<SimpleTypes::CShortHexNumber>		m_oChar;
+			nullable<std::wstring>						m_oFont;
 
 		};
 

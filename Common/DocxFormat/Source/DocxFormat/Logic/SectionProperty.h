@@ -159,7 +159,7 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CDecimalNumber>	m_oCharSpace;
 			nullable<SimpleTypes::CDecimalNumber>	m_oLinePitch;
-			nullable<SimpleTypes::CDocGrid<>>		m_oType;
+			nullable<SimpleTypes::CDocGrid>			m_oType;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -219,8 +219,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CRelationshipId> m_oId;
-			nullable<SimpleTypes::CHdrFtr<>> m_oType;
+			nullable<SimpleTypes::CRelationshipId>		m_oId;
+			nullable<SimpleTypes::CHdrFtr>				m_oType;
 		};
 
 
@@ -303,7 +303,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CDecimalNumber      > m_oCountBy;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oDistance;
-			nullable<SimpleTypes::CLineNumberRestart<>> m_oRestart;
+			nullable<SimpleTypes::CLineNumberRestart  > m_oRestart;
 			nullable<SimpleTypes::CDecimalNumber      > m_oStart;
 		};
 
@@ -511,12 +511,12 @@ namespace ComplexTypes
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
 			nullable<SimpleTypes::CRelationshipId                 > m_oId;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>                 > m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<>           > m_oSz;
-			nullable<SimpleTypes::CThemeColor<>                   > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeTint;
-			nullable<SimpleTypes::CBorder<>                       > m_oVal;
+			nullable<SimpleTypes::CPointMeasure                   > m_oSpace;
+			nullable<SimpleTypes::CEighthPointMeasure             > m_oSz;
+			nullable<SimpleTypes::CThemeColor                     > m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber                 > m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber                 > m_oThemeTint;
+			nullable<SimpleTypes::CBorder                         > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1000,7 +1000,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CChapterSep<>    > m_oChapSep;
+			nullable<SimpleTypes::CChapterSep      > m_oChapSep;
 			nullable<SimpleTypes::CDecimalNumber   > m_oChapStyle;
 			nullable<SimpleTypes::CNumberFormat<>  > m_oFmt;
 			nullable<SimpleTypes::CDecimalNumber   > m_oStart;
@@ -1141,7 +1141,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CSectionMark<> > m_oVal;
+			nullable<SimpleTypes::CSectionMark> m_oVal;
 		};
 
 
@@ -1622,9 +1622,9 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CPageBorderDisplay<> > m_oDisplay;
-			nullable<SimpleTypes::CPageBorderOffset<>  > m_oOffsetFrom;
-			nullable<SimpleTypes::CPageBorderZOrder<>  > m_oZOrder;
+			nullable<SimpleTypes::CPageBorderDisplay > m_oDisplay;
+			nullable<SimpleTypes::CPageBorderOffset  > m_oOffsetFrom;
+			nullable<SimpleTypes::CPageBorderZOrder  > m_oZOrder;
 
 			// Childs
 			nullable<ComplexTypes::Word::CBottomPageBorder > m_oBottom;
@@ -1738,10 +1738,10 @@ namespace OOX
 		public:
 			bool m_bSectPrChange;
 
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidRPr;
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidSect;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidSect;
 
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oBidi;
 			nullable<OOX::Logic::CColumns>										m_oCols;

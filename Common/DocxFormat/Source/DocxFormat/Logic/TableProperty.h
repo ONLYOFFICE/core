@@ -92,7 +92,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CJcTable<> > m_oVal;
+			nullable<SimpleTypes::CJcTable> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// TblLayoutType 17.4.54 (Part 1)
@@ -144,7 +144,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CTblLayoutType<> > m_oType;
+			nullable<SimpleTypes::CTblLayoutType> m_oType;
 		};
 		//--------------------------------------------------------------------------------
 		// TblLook 17.4.56 (Part 1) + 9.3.11 (Part 4)
@@ -368,7 +368,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::COnOff<>          > m_oLastRow;
 			nullable<SimpleTypes::COnOff<>          > m_oNoHBand;
 			nullable<SimpleTypes::COnOff<>          > m_oNoVBand;
-			nullable<SimpleTypes::CShortHexNumber<> > m_oVal;
+			nullable<SimpleTypes::CShortHexNumber   > m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// TblOverlap 17.4.56 (Part 1)
@@ -411,7 +411,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CTblOverlap<> > m_oVal;
+			nullable<SimpleTypes::CTblOverlap> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// TblPPr 17.4.58 (Part 1)
@@ -582,7 +582,7 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::CTwipsMeasure       > m_oBottomFromText;
-			nullable<SimpleTypes::CHAnchor<>          > m_oHorzAnchor;
+			nullable<SimpleTypes::CHAnchor            > m_oHorzAnchor;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oLeftFromText;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oRightFromText;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTblpX;
@@ -590,7 +590,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTblpY;
 			nullable<SimpleTypes::CYAlign             > m_oTblpYSpec;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oTopFromText;
-			nullable<SimpleTypes::CVAnchor<>          > m_oVertAnchor;
+			nullable<SimpleTypes::CVAnchor            > m_oVertAnchor;
 
 		};
 	} // Word
@@ -1184,8 +1184,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CHeightRule<> > m_oHRule;
-			nullable<SimpleTypes::CTwipsMeasure > m_oVal;
+			nullable<SimpleTypes::CHeightRule >		m_oHRule;
+			nullable<SimpleTypes::CTwipsMeasure >	m_oVal;
 		};
 
 	} // Word
@@ -1492,8 +1492,8 @@ namespace ComplexTypes
 			nullable<std::wstring                     > m_sAuthor;
 			nullable<SimpleTypes::CDateTime           > m_oDate;
 			nullable<SimpleTypes::CDecimalNumber      > m_oId;
-			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMerge;
-			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMergeOrig;
+			nullable<SimpleTypes::CAnnotationVMerge   > m_oVMerge;
+			nullable<SimpleTypes::CAnnotationVMerge   > m_oVMergeOrig;
 			nullable<std::wstring                     > m_sUserId;
 
 		};
@@ -1542,7 +1542,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CMerge<> > m_oVal;
+			nullable<SimpleTypes::CMerge> m_oVal;
 
 		};
 
@@ -1591,7 +1591,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CMerge<> > m_oVal;
+			nullable<SimpleTypes::CMerge> m_oVal;
 
 		};
 

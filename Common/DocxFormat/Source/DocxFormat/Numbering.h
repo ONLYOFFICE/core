@@ -194,7 +194,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CLevelSuffix<>> m_oVal;
+			nullable<SimpleTypes::CLevelSuffix> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ oReader.ReadTillEnd();
 
 		public:
 
-			nullable<SimpleTypes::CMultiLevelType<>> m_oVal;
+			nullable<SimpleTypes::CMultiLevelType> m_oVal;
 		};
 
 	} // Word
@@ -418,7 +418,7 @@ namespace OOX
 
 			nullable_int								m_oIlvl;
 			nullable<SimpleTypes::COnOff<> >			m_oTentative;
-			nullable<SimpleTypes::CLongHexNumber<>>		m_oTplc;
+			nullable<SimpleTypes::CLongHexNumber>		m_oTplc;
 
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oIsLgl;
 			nullable<ComplexTypes::Word::CLvlLegacy>						m_oLegacy;

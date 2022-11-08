@@ -135,7 +135,7 @@ namespace PdfWriter
 		}
 
 		// Дописываем имя шрифта во все необходимые словари, а также заполняем дескриптор
-		std::string sFontName = std::string(pFace->family_name);
+		std::string sFontName = pFace->family_name ? std::string(pFace->family_name) : std::string();
 		if (pFace->style_flags & FT_STYLE_FLAG_ITALIC)
 			sFontName += "-Italic";
 		if (pFace->style_flags & FT_STYLE_FLAG_BOLD)

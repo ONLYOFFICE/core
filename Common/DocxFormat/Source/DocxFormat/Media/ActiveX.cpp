@@ -675,7 +675,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			unsigned char *buf = stream->ReadBytes(8, true);
 			if (buf)
 			{
-				memcpy(result.Data4, buf, 8);
+				memcpy(result.getData4(), buf, 8);
 				delete[]buf;
 			}
 		}

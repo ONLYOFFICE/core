@@ -33,42 +33,49 @@
 
 #include "../DocxFormat/Source/Base/Types_32.h"
 #include "../../DesktopEditor/common/Types.h"
+#include <string>
 
 struct _GUID_
 {
-    _UINT32 Data1 = 0;
-    _UINT16 Data2 = 0;
-    _UINT16 Data3 = 0;
-    _UINT64 Data4 = 0;
+	_UINT32 Data1 = 0;
+	_UINT16 Data2 = 0;
+	_UINT16 Data3 = 0;
+	_UINT64 Data4 = 0;
 
-    BYTE* getData4()
-    {
-        return reinterpret_cast<BYTE*>(&Data4);
-    }
+	BYTE* getData4()
+	{
+		return reinterpret_cast<BYTE*>(&Data4);
+	}
 
-	_GUID_(const _GUID_& o) : Data1(o.Data1), Data2(o.Data2), Data3(o.Data3)
-    {
-    }
+	_GUID_(const _GUID_& o) : Data1(o.Data1), Data2(o.Data2), Data3(o.Data3), Data4(o.Data4)
+	{
+	}
 
 	_GUID_& operator=(const _GUID_& o)
-    {
-        Data1 = o.Data1;
-        Data2 = o.Data2;
-        Data3 = o.Data3;
-        Data4 = o.Data4;
+	{
+		Data1 = o.Data1;
+		Data2 = o.Data2;
+		Data3 = o.Data3;
+		Data4 = o.Data4;
 
-        return *this;
-    }
+		return *this;
+	}
 
-    bool operator!=(const _GUID_& oth)const
-    {
-        return Data1 != oth.Data1 || Data2 != oth.Data2 || Data3 != oth.Data3 || Data4 != oth.Data4;
-    }
+	bool operator!=(const _GUID_& oth)const
+	{
+		return Data1 != oth.Data1 || Data2 != oth.Data2 || Data3 != oth.Data3 || Data4 != oth.Data4;
+	}
 
-    bool operator==(const _GUID_& oth)const
-    {
-        return !operator!=(oth);
-    }
+	bool operator==(const _GUID_& oth)const
+	{
+		return !operator!=(oth);
+	}
+	_GUID_() {}
 
-	_GUID_(){}
+	_GUID_(_UINT32 _Data1, _UINT16 _Data2, _UINT16 _Data3, _UINT16 _Data4) : Data1(_Data1), Data2(_Data2), Data3(_Data3), Data4(_Data4)
+	{}
+	_GUID_(int _Data1, int _Data2, int _Data3, BYTE _Data4[8]) : Data1(_Data1), Data2(_Data2), Data3(_Data3)
+	{
+		memcpy(getData4(), _Data4, 8);
+	}
 };

@@ -45,7 +45,10 @@
 #include "../source/RtfShape.cpp"
 #include "../source/RtfWriter.cpp"
 #include "../source/RtfMath.cpp"
+#include "../source/RtfTable.cpp"
 
+#include "../source/Reader/OOXDocumentReader.cpp"
+#include "../source/Reader/OOXTextItemReader.cpp"
 #include "../source/Reader/OOXMathReader.cpp"
 #include "../source/Reader/OOXDrawingGraphicReader.cpp"
 #include "../source/Reader/OOXHeaderReader.cpp"

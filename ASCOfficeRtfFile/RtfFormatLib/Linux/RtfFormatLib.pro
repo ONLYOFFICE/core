@@ -48,6 +48,7 @@ SOURCES += \
     ../source/RtfShape.cpp \
     ../source/RtfWriter.cpp \
     ../source/RtfMath.cpp \
+    ../source/RtfTable.cpp \
     ../source/Reader/OOXMathReader.cpp \
     ../source/Reader/OOXDrawingGraphicReader.cpp \
     ../source/Reader/OOXHeaderReader.cpp \
@@ -55,6 +56,8 @@ SOURCES += \
     ../source/Reader/OOXReader.cpp \
     ../source/Reader/OOXShapeReader.cpp \
     ../source/Reader/OOXTableReader.cpp \
+    ../source/Reader/OOXDocumentReader.cpp \
+    ../source/Reader/OOXTextItemReader.cpp \
     ../source/Writer/OOXDocumentWriter.cpp \
     ../source/Writer/OOXWriter.cpp
 }

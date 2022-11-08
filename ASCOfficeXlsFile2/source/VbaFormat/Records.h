@@ -186,7 +186,7 @@ namespace VBA
 		bool fDblClickControlMode;
 	};
 	const std::wstring convert_string_icu(const char* buffer, const unsigned int& size, _UINT32 nCodePage);
-	const std::wstring  guid2bstr(const _GUID_ guid);
+	const std::wstring  guid2bstr(_GUID_ & guid);
 
 	class BaseRecord;
 	typedef boost::shared_ptr<BaseRecord> BaseRecordPtr;

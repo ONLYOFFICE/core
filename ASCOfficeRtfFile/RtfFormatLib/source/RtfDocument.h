@@ -49,9 +49,9 @@ namespace NSFonts
 
 struct _section
 {
-	RtfSectionPtr								props;
-    std::vector<OOX::WritingElement*>::iterator	start_para;
-    std::vector<OOX::WritingElement*>::iterator	end_para;
+	RtfSectionPtr props;
+    size_t	start_para = 0;
+	size_t	end_para = 0;
 };
 
 class RtfDocument : public ItemContainer<_section>

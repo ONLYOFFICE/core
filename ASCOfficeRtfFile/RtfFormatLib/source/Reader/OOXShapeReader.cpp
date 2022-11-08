@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "OOXReader.h"
+#include "OOXPictureReader.h"
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 #include "../Ole1FormatReader.h"
@@ -36,11 +38,13 @@
 
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
+#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 
 #include "../../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
 #include <boost/algorithm/string.hpp>
+#include "../../../../Common/cfcpp/compoundfile.h"
 
 #include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
 #include "../../../../DesktopEditor/graphics/pro/Image.h"
@@ -1546,6 +1550,12 @@ bool OOXShapeReader::ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& pOut
 			OOX::OleObject* pO = (OOX::OleObject*)oFile.GetPointer();
 			sOlePath = pO->filename().m_strFilename;
 		}
+		if ((oFile.IsInit() && (OOX::FileTypes::MicrosoftOfficeUnknown == oFile->type())))
+		{
+			//packet to storage
+			OOX::OleObject* pO = (OOX::OleObject*)oFile.GetPointer();
+			sOlePath = ConvertPackageToStorage(pO->filename().m_strFilename, pOutput->m_pOleObject->m_sOleClass);
+		}
 	}
 	if (pOutput->m_nWidth == PROP_DEF && pOutput->m_nRight != PROP_DEF)
 	{
@@ -2049,7 +2059,10 @@ void OOXShapeReader::ParseAdjustment (RtfShape& oShape, std::wstring sAdjustment
 	}
  }
 
-
+OOXBackgroundReader::OOXBackgroundReader(OOX::Logic::CBackground *oox_background)
+{
+	m_ooxBackground = oox_background;
+}
 bool OOXBackgroundReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 {
 	if (!m_ooxBackground) return false;
@@ -2279,6 +2292,67 @@ void OOXShapeReader::Parse(ReaderParameter oParam, PPTX::Logic::UniFill *uni_fil
 			Parse(oParam, fill->GsLst[0].color.Color.operator ->(), nColor, opacity);
 		}		
 	}
+}
+std::wstring OOXShapeReader::ConvertPackageToStorage(const std::wstring & msPackage, const std::wstring & Program)
+{
+	DWORD size = 0;
+	BYTE* pData = NULL;
+	if (false == NSFile::CFileBinary::ReadAllBytes(msPackage, &pData, size))
+		return L"";
+
+	CFCPP::CompoundFile *pStorage = new CFCPP::CompoundFile(CFCPP::Ver_3, CFCPP::Default);
+
+	std::shared_ptr<CFCPP::CFStream> oPackage = pStorage->RootStorage()->AddStream(L"Package");
+	oPackage->Write((char*)pData, 0, size);
+	delete[]pData;
+//CompObj
+	std::shared_ptr<CFCPP::CFStream> oCompObj = pStorage->RootStorage()->AddStream(L"\001CompObj");
+	_INT64 position = 0;
+	
+	char dataCompObjHeader[28] = { 0x01,0x00,0xfe,0xff,0x03,0x0a,0x00,0x00,0xff,0xff,0xff,0xff,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+	oCompObj->Write(dataCompObjHeader, position, 24); position += 28;
+
+	char last = 0;
+	
+	std::string name = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(Program);
+	XmlUtils::replace_all(name, ".", "");
+
+	//name = "Microsoft Excel Worksheet";
+	_UINT32 name_size = name.length() + 1;
+
+	oCompObj->Write((char*)&name_size, position, 4); position += 4; //AnsiUserType
+	oCompObj->Write((char*)name.c_str(), position, name.length()); position += name.length();
+	oCompObj->Write(&last, position, 1); position += 1;
+
+	//name = "ExcelML12";
+	name_size = name.length() + 1;
+
+	oCompObj->Write((char*)&name_size, position, 4); position += 4; //AnsiClipboardFormat
+	oCompObj->Write((char*)name.c_str(), position, name.length()); position += name.length();
+	oCompObj->Write(&last, position, 1); position += 1;
+
+	_INT32 tmp = 0;
+	oCompObj->Write((char*)&tmp, position, 4); position += 4; // Reserved	
+
+	tmp = 0x71B239F4;
+	oCompObj->Write((char*)&tmp, position, 4); position += 4; // UnicodeMarker
+
+	tmp = 0;
+	oCompObj->Write((char*)&tmp, position, 4); position += 4; // UnicodeUserType
+	oCompObj->Write((char*)&tmp, position, 4); position += 4; // UnicodeClipboardFormat
+	oCompObj->Write((char*)&tmp, position, 4); position += 4; // Reserved	
+
+//ObjInfo
+	char dataObjInfo[] = { 0x00,0x00,0x03,0x00,0x01,0x00 };
+	std::shared_ptr<CFCPP::CFStream> oObjInfo = pStorage->RootStorage()->AddStream(L"\003ObjInfo");
+	oObjInfo->Write(dataObjInfo, 0, 6);
+//-------------------------------------------------------------------------------------------------------------------------------
+	std::wstring sFileStorage = NSDirectory::CreateTempFileWithUniqueName(NSFile::GetDirectoryName(msPackage), L"ole");
+ 	pStorage->Save(sFileStorage);
+	pStorage->Close();
+	delete pStorage;
+
+	return sFileStorage;
 }
 void OOXShapeReader::ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object)
 {

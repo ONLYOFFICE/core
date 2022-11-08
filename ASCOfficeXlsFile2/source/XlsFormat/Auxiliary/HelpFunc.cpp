@@ -261,25 +261,25 @@ const std::string bin2str(const char* buf, const size_t nbuf)
 }
 
 
-const std::wstring  guid2bstr(const _GUID_ guid)
+const std::wstring  guid2bstr(_GUID_ & guid)
 {
 	std::wstring  guid_ret=L"{";
 
 	guid_ret += int2hex_wstr(guid.Data1, 4) + L"-" + 
 				int2hex_wstr(guid.Data2, 2) + L"-" + 
 				int2hex_wstr(guid.Data3, 2) + L"-" +
-				int2hex_wstr(guid.Data4[0], 1) + int2hex_wstr(guid.Data4[1], 1) + L"-" +
-				int2hex_wstr(guid.Data4[2], 1) + int2hex_wstr(guid.Data4[3], 1) +
-				int2hex_wstr(guid.Data4[4], 1) + int2hex_wstr(guid.Data4[5], 1) +
-				int2hex_wstr(guid.Data4[6], 1) + int2hex_wstr(guid.Data4[7], 1);
+				int2hex_wstr((guid.getData4())[0], 1) + int2hex_wstr((guid.getData4())[1], 1) + L"-" +
+				int2hex_wstr((guid.getData4())[2], 1) + int2hex_wstr((guid.getData4())[3], 1) +
+				int2hex_wstr((guid.getData4())[4], 1) + int2hex_wstr((guid.getData4())[5], 1) +
+				int2hex_wstr((guid.getData4())[6], 1) + int2hex_wstr((guid.getData4())[7], 1);
 	return guid_ret + L"}";
 }
 
 
-const std::string guid2str(const _GUID_ guid)
+const std::string guid2str(_GUID_ & guid)
 {
 	std::wstring s = guid2bstr(guid);
-	return std::string(s.begin(),s.end());
+	return std::string(s.begin(), s.end());
 }
 
 const std::wstring guidFromStr(const std::wstring & guid_str)

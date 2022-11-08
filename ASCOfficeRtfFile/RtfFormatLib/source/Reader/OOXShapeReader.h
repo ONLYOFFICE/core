@@ -37,15 +37,18 @@
 
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 
-bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
-
+namespace OOX
+{
+	namespace Logic
+	{
+		class CBackground;
+	}
+}
 class OOXShapeReader
 {
 public: 
 	OOXShapeReader(OOX::Vml::CVmlCommonElements * vmlElem)
 	{
-		m_ooxShape	 = NULL;
-		
 		m_vmlElement = vmlElem;
 		m_arrElement = vmlElem;
 	}
@@ -53,8 +56,6 @@ public:
 	OOXShapeReader(OOX::WritingElement* ooxShape)
 	{
 		m_ooxShape	 = ooxShape;
-		m_vmlElement = NULL;
-		m_arrElement = NULL;
 	}
 
 	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, ReaderParameter& oParam );
@@ -64,16 +65,22 @@ public:
 	bool ParseVmlChild	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool ParseVmlObject	( ReaderParameter oParam , RtfShapePtr& oOutput);
 	
-	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
-	
-	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
-
 	static bool Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BlipFill *oox_bitmap_fill);
 	static void Parse(ReaderParameter oParam, PPTX::Logic::UniFill *fill, unsigned int & nColor, _CP_OPT(double) &opacity);
 	static void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned int & nColor, _CP_OPT(double) &opacity);
+	
+	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
 private:
+	void ParseVmlPath(RtfShapePtr& pShape, const std::wstring &custom_path);
+	bool ParseVmlStyles(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props);
 
+	void ParseAdjustment(RtfShape& oShape, std::wstring sAdjustment);
 	bool ParseShape( ReaderParameter oParam , RtfShapePtr& oOutput);
+
+	void ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object);
+	void ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object);
+	std::wstring ConvertPackageToStorage(const std::wstring & msPackage, const std::wstring & Program);
+
 	bool ParsePic( ReaderParameter oParam , RtfShapePtr& oOutput);
 
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::BodyPr *text_properties);
@@ -90,32 +97,24 @@ private:
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::PattFill	*oox_pattern_fill,	std::wstring *change_sheme_color = NULL);
 	void Parse(ReaderParameter oParam, RtfShapePtr& pOutput, PPTX::Logic::SolidFill	*oox_solid_fill,	std::wstring *change_sheme_color = NULL);
 //---------------------------------------------------------------------------
-	OOX::Vml::CVmlCommonElements						*m_vmlElement;
-	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement;
+	OOX::Vml::CVmlCommonElements						*m_vmlElement = NULL;
+	OOX::WritingElementWithChilds<OOX::WritingElement>  *m_arrElement = NULL;
 
-	OOX::WritingElement									*m_ooxShape;
-
-	void ParseVmlPath	(RtfShapePtr& pShape, const std::wstring &custom_path);
-	bool ParseVmlStyles	(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props);
-
-	void ConvertOle2ToOle1(POLE::Storage *storage, RtfOlePtr object);
-	void ConvertOle2ToOle1(const std::wstring &oleFilePath, RtfOlePtr object);
+	OOX::WritingElement									*m_ooxShape = NULL;
 };
 
 class OOXShapeGroupReader
 {
 private:
-	OOX::Vml::CGroup		*m_vmlGroup;
-	PPTX::Logic::SpTree		*m_ooxGroup;
+	OOX::Vml::CGroup		*m_vmlGroup = NULL;
+	PPTX::Logic::SpTree		*m_ooxGroup = NULL;
 public: 
 	OOXShapeGroupReader(OOX::Vml::CGroup *vmlGroup)
 	{
-		m_ooxGroup = NULL;
 		m_vmlGroup = vmlGroup;
 	}
 	OOXShapeGroupReader(PPTX::Logic::SpTree *ooxGroup)
 	{
-		m_vmlGroup = NULL;
 		m_ooxGroup = ooxGroup;
 	}
 	bool ParseVmlStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
@@ -133,12 +132,9 @@ public:
 class OOXBackgroundReader
 {
 private:
-	OOX::Logic::CBackground *m_ooxBackground;
+	OOX::Logic::CBackground *m_ooxBackground = NULL;
 public: 
-	OOXBackgroundReader(OOX::Logic::CBackground *oox_background)
-	{
-		m_ooxBackground = oox_background;
-	}
+	OOXBackgroundReader(OOX::Logic::CBackground *oox_background);
 
 	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 };

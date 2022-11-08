@@ -34,7 +34,11 @@
 #include "../RtfDocument.h"
 #include "../RtfReader.h"
 
-#include "OOXReader.h"
+namespace OOX
+{
+	class CDocx;
+}
+class OOXReader;
 
 class ReaderParameter
 {

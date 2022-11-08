@@ -165,10 +165,9 @@ namespace Oox2Odf
     private:
 		struct _section
 		{
-            OOX::Logic::CSectionProperty    *props;
-            size_t							start_para;
-            size_t							end_para;
-
+            OOX::Logic::CSectionProperty    *props = NULL;
+            size_t							start_para = 0;
+            size_t							end_para = 0;
 			bool							bContinue = false;
 		}												*current_section_properties;
 		OOX::CDocx										*docx_document;

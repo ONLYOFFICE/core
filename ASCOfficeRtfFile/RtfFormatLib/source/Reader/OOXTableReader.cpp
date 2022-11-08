@@ -33,6 +33,8 @@
 #include "OOXTableRowReader.h"
 #include "OOXTableReader.h"
 
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Table.h"
+
 bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle)
 {
 	if (m_ooxTableRowProps == NULL) return false;

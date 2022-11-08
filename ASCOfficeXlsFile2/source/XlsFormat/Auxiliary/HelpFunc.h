@@ -33,18 +33,7 @@
 
 #include <string>
 #include <vector>
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
-
-#ifndef _GUID_TYPEDEF_GUID_
-#define _GUID_TYPEDEF_GUID_
-typedef struct
-{
-	_UINT32 Data1;
-	_UINT16 Data2;
-	_UINT16 Data3;
-	unsigned char  Data4[8];
-} _GUID_;
-#endif
+#include "../../../../Common/cfcpp/guid.h"
 
 namespace XLS
 {
@@ -72,8 +61,8 @@ namespace STR
 	const std::wstring	int2wstr	(const int val, const int radix = 10);
 	const std::wstring	double2str	(const double val);
 	const std::string	bin2str		(const char* buf, const size_t nbuf);
-	const std::wstring  guid2bstr	(const _GUID_ guid);
-	const std::string	guid2str	(const _GUID_ guid);
+	const std::wstring  guid2bstr	(_GUID_ & guid);
+	const std::string	guid2str	(_GUID_ & guid);
     const std::wstring	guidFromStr	(const std::wstring & guid_str);
 	const bool			bstr2guid	(const std::wstring & guid_str, _GUID_& guid);
 	const std::wstring	int2hex_wstr(const int val, const size_t size_of = 4);

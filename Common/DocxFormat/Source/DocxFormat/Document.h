@@ -201,7 +201,16 @@ namespace OOX
 		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
 		nullable<OOX::Logic::CBackground>		m_oBackground;
 
-        std::vector<WritingElement*>			m_arrItems;
+        std::vector<WritingElement*>			m_arrItems; 
+//---------------------------------------------------------------------------------------------
+		struct _section
+		{
+			size_t start_elm = 0;
+			size_t end_elm = 0;
+			WritingElement* sect = NULL;
+		};
+		std::vector<_section> m_arrSections; // дублирование ... для удобства конвертаций
+
 	};
 } // namespace OOX
 

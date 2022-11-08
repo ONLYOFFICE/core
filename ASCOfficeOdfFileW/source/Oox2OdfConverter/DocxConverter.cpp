@@ -212,47 +212,65 @@ void DocxConverter::convert_document()
 
 	std::vector<_section> sections;
 //----------------------------------------------------------------------------------------------------------
-	//считаем количесво секций и запоминаем их свойства .. 
-	size_t last_section_start = 0;
 
 	OOX::Logic::CSectionProperty* prev = NULL;
 
-    for (size_t i = 0; i < doc->m_arrItems.size(); ++i)
+	if (false == doc->m_arrSections.empty())
 	{
-		if ((doc->m_arrItems[i]) == NULL) continue;
-
-		if (doc->m_arrItems[i]->getType() == OOX::et_w_p)
+		for (size_t i = 0; i < doc->m_arrSections.size(); ++i)
 		{
-			OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(doc->m_arrItems[i]);
-			
-			if ((para) && (para->m_oParagraphProperty))
+			_section section;
+
+			section.props = dynamic_cast<OOX::Logic::CSectionProperty*>(doc->m_arrSections[i].sect);
+			section.start_para = doc->m_arrSections[i].start_elm;
+			section.end_para = doc->m_arrSections[i].end_elm;
+			section.bContinue = compare(prev, section.props);
+
+			sections.push_back(section);
+
+			prev = section.props;
+		}
+	}
+	else
+	{
+		//считаем количесво секций и запоминаем их свойства .. 
+		size_t last_section_start = 0;
+		for (size_t i = 0; i < doc->m_arrItems.size(); ++i)
+		{
+			if ((doc->m_arrItems[i]) == NULL) continue;
+
+			if (doc->m_arrItems[i]->getType() == OOX::et_w_p)
 			{
-				if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
+				OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(doc->m_arrItems[i]);
+
+				if ((para) && (para->m_oParagraphProperty))
 				{
-					_section section;
-					
-					section.props		= para->m_oParagraphProperty->m_oSectPr.GetPointer();
-					section.start_para	= last_section_start;
-					section.end_para	= i + 1; 
-					section.bContinue	= compare (prev, section.props);
-					
-					sections.push_back(section);
-					
-					last_section_start = i + 1;
-					prev = section.props;
+					if (para->m_oParagraphProperty->m_oSectPr.IsInit())
+					{
+						_section section;
+
+						section.props = para->m_oParagraphProperty->m_oSectPr.GetPointer();
+						section.start_para = last_section_start;
+						section.end_para = i + 1;
+						section.bContinue = compare(prev, section.props);
+
+						sections.push_back(section);
+
+						last_section_start = i + 1;
+						prev = section.props;
+					}
 				}
 			}
 		}
-	}
-	_section section;
-	
-	section.props		= doc->m_oSectPr.GetPointer();
-	section.start_para	= last_section_start;
-	section.end_para	= doc->m_arrItems.size(); 
-	section.bContinue	= compare (prev, section.props);
+		_section section;
 
-	sections.push_back(section);
-					
+		section.props = doc->m_oSectPr.GetPointer();
+		section.start_para = last_section_start;
+		section.end_para = doc->m_arrItems.size();
+		section.bContinue = compare(prev, section.props);
+
+		sections.push_back(section);
+	}					
 //----------------------------------------------------------------------------------------------------------
 
 	convert(doc->m_oSectPr.GetPointer(), false, L"Standard", true);

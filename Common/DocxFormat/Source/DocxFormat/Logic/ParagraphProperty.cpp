@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../Document.h"
 #include "ParagraphProperty.h"
 
 namespace OOX
@@ -73,17 +74,17 @@ namespace OOX
 
 		void CPPrChange::fromXML(XmlUtils::CXmlNode& oNode)
 		{
-			if ( _T("w:pPrChange") != oNode.GetName() )
+			if ( L"w:pPrChange" != oNode.GetName() )
 				return;
 
-            XmlMacroReadAttributeBase( oNode, _T("w:author"), m_sAuthor );
-            XmlMacroReadAttributeBase( oNode, _T("w:date"),   m_oDate );
-            XmlMacroReadAttributeBase( oNode, _T("w:id"),     m_oId );
-            XmlMacroReadAttributeBase( oNode, _T("oouserid"), m_sUserId );
+            XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
+            XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
+            XmlMacroReadAttributeBase( oNode, L"w:id",     m_oId );
+            XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
 
 			XmlUtils::CXmlNode oNode_pPr;
 
-			if ( m_pParPr.IsInit() && oNode.GetNode( _T("w:pPr"), oNode_pPr ) )
+			if ( m_pParPr.IsInit() && oNode.GetNode(L"w:pPr", oNode_pPr ) )
 				m_pParPr->fromXML( oNode_pPr );
 		}
 
@@ -98,49 +99,49 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( _T("w:pPr") == sName )
+				if ( L"w:pPr" == sName )
 					m_pParPr->fromXML( oReader );
 			}
 		}
 
 		std::wstring CPPrChange::toXML() const
 		{
-			std::wstring sResult = _T("<w:pPrChange ");
+			std::wstring sResult = L"<w:pPrChange ";
 
 			if ( m_sAuthor.IsInit() )
 			{
-				sResult += _T("w:author=\"");
+				sResult += L"w:author=\"";
                 sResult += m_sAuthor.get2();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
 			if ( m_oDate.IsInit() )
 			{
-				sResult += _T("w:date=\"");
+				sResult += L"w:date=\"";
 				sResult += m_oDate->ToString();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
 			if ( m_oId.IsInit() )
 			{
-				sResult += _T("w:id=\"");
+				sResult += L"w:id=\"";
 				sResult += m_oId->ToString();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
 			if ( m_sUserId.IsInit() )
 			{
-				sResult += _T("oouserid=\"");
+				sResult += L"oouserid=\"";
                 sResult += m_sUserId.get2();
-				sResult += _T("\" ");
+				sResult += L"\" ";
 			}
 
-			sResult += _T(">");
+			sResult += L">";
 
 			if ( m_pParPr.IsInit() )
 				sResult += m_pParPr->toXML();
 
-			sResult += _T("</w:pPrChange>");
+			sResult += L"</w:pPrChange>";
 
 			return sResult;
 		}
@@ -151,129 +152,68 @@ namespace OOX
 		void CPPrChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),	 m_oId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",	 m_oId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void CParagraphProperty::fromXML(XmlUtils::CXmlNode& oNode)
-		{
-			if ( _T("w:pPr") != oNode.GetName() )
+		{//??? где используется ?
+			if ( L"w:pPr" != oNode.GetName() )
 				return;
 
-			XmlUtils::CXmlNode oChild;
+			XmlUtils::CXmlNodes oNodes;
 
-			if ( oNode.GetNode( _T("w:adjustRightInd"), oChild ) )
-				m_oAdjustRightInd = oChild;
+			if (oNode.GetNodes(_T("*"), oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oChild;
+					oNodes.GetAt(i, oChild);
 
-			if ( oNode.GetNode( _T("w:autoSpaceDE"), oChild ) )
-				m_oAutoSpaceDE = oChild;
+					std::wstring strName = oChild.GetName();
 
-			if ( oNode.GetNode( _T("w:autoSpaceDN"), oChild ) )
-				m_oAutoSpaceDN = oChild;
-
-			if ( oNode.GetNode( _T("w:bidi"), oChild ) )
-				m_oBidi = oChild;
-
-			if ( oNode.GetNode( _T("w:cnfStyle"), oChild ) )
-				m_oCnfStyle = oChild;
-
-			if ( oNode.GetNode( _T("w:contextualSpacing"), oChild ) )
-				m_oContextualSpacing = oChild;
-
-			if ( oNode.GetNode( _T("w:divId"), oChild ) )
-				m_oDivID = oChild;
-
-			if ( oNode.GetNode( _T("w:framePr"), oChild ) )
-				m_oFramePr = oChild;
-
-			if ( oNode.GetNode( _T("w:ind"), oChild ) )
-				m_oInd = oChild;
-
-			if ( oNode.GetNode( _T("w:jc"), oChild ) )
-				m_oJc = oChild;
-
-			if ( oNode.GetNode( _T("w:keepLines"), oChild ) )
-				m_oKeepLines = oChild;
-
-			if ( oNode.GetNode( _T("w:keepNext"), oChild ) )
-				m_oKeepNext = oChild;
-
-			if ( oNode.GetNode( _T("w:kinsoku"), oChild ) )
-				m_oKinsoku = oChild;
-
-			if ( oNode.GetNode( _T("w:mirrorIndents"), oChild ) )
-				m_oMirrorIndents = oChild;
-
-			if ( oNode.GetNode( _T("w:numPr"), oChild ) )
-				m_oNumPr = oChild;
-		
-			if ( oNode.GetNode( _T("w:listPr"), oChild ) )
-				m_oNumPr = oChild;
-
-			if ( oNode.GetNode( _T("w:outlineLvl"), oChild ) )
-				m_oOutlineLvl = oChild;
-
-			if ( oNode.GetNode( _T("w:overflowPunct"), oChild ) )
-				m_oOverflowPunct = oChild;
-
-			if ( oNode.GetNode( _T("w:pageBreakBefore"), oChild ) )
-				m_oPageBreakBefore = oChild;
-
-			if ( oNode.GetNode( _T("w:pBdr"), oChild ) )
-				m_oPBdr = oChild;
-
-			if ( !m_bPPrChange && oNode.GetNode( _T("w:pPrChange"), oChild ) )
-				m_oPPrChange = oChild;
-
-			if ( oNode.GetNode( _T("w:pStyle"), oChild ) )
-				m_oPStyle = oChild;
-
-			if ( !m_bPPrChange && oNode.GetNode( _T("w:rPr"), oChild ) )
-				m_oRPr = oChild;
-
-			if ( !m_bPPrChange && oNode.GetNode( _T("w:sectPr"), oChild ) )
-				m_oSectPr = oChild;
-
-			if ( oNode.GetNode( _T("w:shd"), oChild ) )
-				m_oShd = oChild;
-
-			if ( oNode.GetNode( _T("w:snapToGrid"), oChild ) )
-				m_oSnapToGrid = oChild;
-
-			if ( oNode.GetNode( _T("w:spacing"), oChild ) )
-				m_oSpacing = oChild;
-
-			if ( oNode.GetNode( _T("w:suppressAutoHyphens"), oChild ) )
-				m_oSuppressAutoHyphens = oChild;
-
-			if ( oNode.GetNode( _T("w:suppressLineNumbers"), oChild ) )
-				m_oSuppressLineNumbers = oChild;
-
-			if ( oNode.GetNode( _T("w:suppressOverlap"), oChild ) )
-				m_oSuppressOverlap = oChild;
-
-			if ( oNode.GetNode( _T("w:tabs"), oChild ) )
-				m_oTabs = oChild;
-
-			if ( oNode.GetNode( _T("w:textAlignment"), oChild ) )
-				m_oTextAlignment = oChild;
-
-			if ( oNode.GetNode( _T("w:textboxTightWrap"), oChild ) )
-				m_oTextboxTightWrap = oChild;
-
-			if ( oNode.GetNode( _T("w:textDirection"), oChild ) )
-				m_oTextDirection = oChild;
-
-			if ( oNode.GetNode( _T("w:topLinePunct"), oChild ) )
-				m_oTopLinePunct = oChild;
-
-			if ( oNode.GetNode( _T("w:widowControl"), oChild ) )
-				m_oWidowControl = oChild;
-
-			if ( oNode.GetNode( _T("w:wordWrap"), oChild ) )
-				m_oWordWrap = oChild;
+					if (L"w:adjustRightInd" == strName)			m_oAdjustRightInd = oChild;
+					if (L"w:autoSpaceDE" == strName)			m_oAutoSpaceDE = oChild;
+					if (L"w:autoSpaceDN" == strName)			m_oAutoSpaceDN = oChild;
+					if (L"w:bidi" == strName)					m_oBidi = oChild;
+					if (L"w:cnfStyle" == strName)				m_oCnfStyle = oChild;
+					if (L"w:contextualSpacing" == strName)		m_oContextualSpacing = oChild;
+					if (L"w:divId" == strName)					m_oDivID = oChild;
+					if (L"w:framePr" == strName)				m_oFramePr = oChild;
+					if (L"w:ind" == strName)					m_oInd = oChild;
+					if (L"w:jc" == strName)						m_oJc = oChild;
+					if (L"w:keepLines" == strName)				m_oKeepLines = oChild;
+					if (L"w:keepNext" == strName)				m_oKeepNext = oChild;
+					if (L"w:kinsoku" == strName)				m_oKinsoku = oChild;
+					if (L"w:mirrorIndents" == strName)			m_oMirrorIndents = oChild;
+					if (L"w:numPr" == strName)					m_oNumPr = oChild;
+					if (L"w:listPr" == strName)					m_oNumPr = oChild;
+					if (L"w:outlineLvl" == strName)				m_oOutlineLvl = oChild;
+					if (L"w:overflowPunct" == strName)			m_oOverflowPunct = oChild;
+					if (L"w:pageBreakBefore" == strName)		m_oPageBreakBefore = oChild;
+					if (L"w:pBdr" == strName)					m_oPBdr = oChild;
+					if (!m_bPPrChange && L"w:pPrChange" == strName)	m_oPPrChange = oChild;
+					if (L"w:pStyle" == strName)					m_oPStyle = oChild;
+					if (!m_bPPrChange && L"w:rPr" == strName)	m_oRPr = oChild;
+					if (!m_bPPrChange && L"w:sectPr" == strName)m_oSectPr = oChild;
+					if (L"w:shd" == strName)					m_oShd = oChild;
+					if (L"w:snapToGrid" == strName)				m_oSnapToGrid = oChild;
+					if (L"w:spacing" == strName)				m_oSpacing = oChild;
+					if (L"w:suppressAutoHyphens" == strName)	m_oSuppressAutoHyphens = oChild;
+					if (L"w:suppressLineNumbers" == strName)	m_oSuppressLineNumbers = oChild;
+					if (L"w:suppressOverlap" == strName)		m_oSuppressOverlap = oChild;
+					if (L"w:tabs" == strName)					m_oTabs = oChild;
+					if (L"w:textAlignment" == strName)			m_oTextAlignment = oChild;
+					if (L"w:textboxTightWrap" == strName)		m_oTextboxTightWrap = oChild;
+					if (L"w:textDirection" == strName)			m_oTextDirection = oChild;
+					if (L"w:topLinePunct" == strName)			m_oTopLinePunct = oChild;
+					if (L"w:widowControl" == strName)			m_oWidowControl = oChild;
+					if (L"w:wordWrap" == strName)				m_oWordWrap = oChild;
+				}
+			}
 		}
 		void CParagraphProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -287,183 +227,200 @@ namespace OOX
 			{
 				std::wstring sName = oReader.GetName();
 
-				if ( _T("w:adjustRightInd") == sName )
+				if ( L"w:adjustRightInd" == sName )
 					m_oAdjustRightInd = oReader;
-				else if ( _T("w:autoSpaceDE") == sName )
+				else if ( L"w:autoSpaceDE" == sName )
 					m_oAutoSpaceDE = oReader;
-				else if ( _T("w:autoSpaceDN") == sName )
+				else if ( L"w:autoSpaceDN" == sName )
 					m_oAutoSpaceDN = oReader;
-				else if ( _T("w:bidi") == sName )
+				else if ( L"w:bidi" == sName )
 					m_oBidi = oReader;
-				else if ( _T("w:cnfStyle") == sName )
+				else if ( L"w:cnfStyle" == sName )
 					m_oCnfStyle = oReader;
-				else if ( _T("w:contextualSpacing") == sName )
+				else if ( L"w:contextualSpacing" == sName )
 					m_oContextualSpacing = oReader;
-				else if ( _T("w:divId") == sName )
+				else if ( L"w:divId" == sName )
 					m_oDivID = oReader;
-				else if ( _T("w:framePr") == sName )
+				else if ( L"w:framePr" == sName )
 					m_oFramePr = oReader;
-				else if ( _T("w:ind") == sName )
+				else if ( L"w:ind" == sName )
 					m_oInd = oReader;
-				else if ( _T("w:jc") == sName )
+				else if ( L"w:jc" == sName )
 					m_oJc = oReader;
-				else if ( _T("w:keepLines") == sName )
+				else if ( L"w:keepLines" == sName )
 					m_oKeepLines = oReader;
-				else if ( _T("w:keepNext") == sName )
+				else if ( L"w:keepNext" == sName )
 					m_oKeepNext = oReader;
-				else if ( _T("w:kinsoku") == sName )
+				else if ( L"w:kinsoku" == sName )
 					m_oKinsoku = oReader;
-				else if ( _T("w:mirrorIndents") == sName )
+				else if ( L"w:mirrorIndents" == sName )
 					m_oMirrorIndents = oReader;
 				else if ( L"w:numPr" == sName || L"w:listPr" == sName)
 					m_oNumPr = oReader;
-				else if ( _T("w:outlineLvl") == sName )
+				else if ( L"w:outlineLvl" == sName )
 					m_oOutlineLvl = oReader;
-				else if ( _T("w:overflowPunct") == sName )
+				else if ( L"w:overflowPunct" == sName )
 					m_oOverflowPunct = oReader;
-				else if ( _T("w:pageBreakBefore") == sName )
+				else if ( L"w:pageBreakBefore" == sName )
 					m_oPageBreakBefore = oReader;
-				else if ( _T("w:pBdr") == sName )
+				else if ( L"w:pBdr" == sName )
 					m_oPBdr = oReader;
-				else if ( !m_bPPrChange && _T("w:pPrChange") == sName )
+				else if ( !m_bPPrChange && L"w:pPrChange" == sName )
 					m_oPPrChange = oReader;
-				else if ( _T("w:pStyle") == sName )
+				else if ( L"w:pStyle" == sName )
 					m_oPStyle = oReader;
-				else if ( !m_bPPrChange && _T("w:rPr") == sName )
+				else if ( !m_bPPrChange && L"w:rPr" == sName )
 					m_oRPr = oReader;
-				else if ( !m_bPPrChange && _T("w:sectPr") == sName )
+				else if ( !m_bPPrChange && L"w:sectPr" == sName )
 				{
 					m_oSectPr = new CSectionProperty(document);
 					m_oSectPr->fromXML(oReader);
+//------------------------------------------------------------------------------------
+					OOX::CDocx *docx = dynamic_cast<OOX::CDocx*>(document);
+					if (docx)
+					{
+						OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
+
+						OOX::CDocument::_section section;
+						section.sect = m_oSectPr.GetPointer();
+						section.start_elm = doc->m_arrItems.size() + 1; // следующий после текущего
+
+						if (false == doc->m_arrSections.empty())
+						{
+							doc->m_arrSections.back().end_elm = doc->m_arrItems.size() + 1; //активный рутовый еще не добавлен
+						}
+						doc->m_arrSections.push_back(section);
+					}
+//------------------------------------------------------------------------------------
 				}
-				else if ( _T("w:shd") == sName )
+				else if ( L"w:shd" == sName )
 					m_oShd = oReader;
-				else if ( _T("w:snapToGrid") == sName )
+				else if ( L"w:snapToGrid" == sName )
 					m_oSnapToGrid = oReader;
-				else if ( _T("w:spacing") == sName )
+				else if ( L"w:spacing" == sName )
 					m_oSpacing = oReader;
-				else if ( _T("w:suppressAutoHyphens") == sName )
+				else if ( L"w:suppressAutoHyphens" == sName )
 					m_oSuppressAutoHyphens = oReader;
-				else if ( _T("w:suppressLineNumbers") == sName )
+				else if ( L"w:suppressLineNumbers" == sName )
 					m_oSuppressLineNumbers = oReader;
-				else if ( _T("w:suppressOverlap") == sName )
+				else if ( L"w:suppressOverlap" == sName )
 					m_oSuppressOverlap = oReader;
-				else if ( _T("w:tabs") == sName )
+				else if ( L"w:tabs" == sName )
 					m_oTabs = oReader;
-				else if ( _T("w:textAlignment") == sName )
+				else if ( L"w:textAlignment" == sName )
 					m_oTextAlignment = oReader;
-				else if ( _T("w:textboxTightWrap") == sName )
+				else if ( L"w:textboxTightWrap" == sName )
 					m_oTextboxTightWrap = oReader;
-				else if ( _T("w:textDirection") == sName )
+				else if ( L"w:textDirection" == sName )
 					m_oTextDirection = oReader;
-				else if ( _T("w:topLinePunct") == sName )
+				else if ( L"w:topLinePunct" == sName )
 					m_oTopLinePunct = oReader;
-				else if ( _T("w:widowControl") == sName )
+				else if ( L"w:widowControl" == sName )
 					m_oWidowControl = oReader;
-				else if ( _T("w:wordWrap") == sName )
+				else if ( L"w:wordWrap" == sName )
 					m_oWordWrap = oReader;
 			}
 		}
 		std::wstring CParagraphProperty::toXML() const
 		{
-			std::wstring sResult = _T("<w:pPr>");
+			std::wstring sResult = L"<w:pPr>";
 
 			if ( m_oAdjustRightInd.IsInit() ) 
 			{
-				sResult += _T("<w:adjustRightInd ");
+				sResult += L"<w:adjustRightInd ";
 				sResult += m_oAdjustRightInd->ToString();
-				sResult += _T("/>");
+				sResult += L"/>";
 			}
 
 			if ( m_oAutoSpaceDE.IsInit() ) 
 			{ 
-				sResult += _T("<w:autoSpaceDE ");
+				sResult += L"<w:autoSpaceDE ";
 				sResult += m_oAutoSpaceDE->ToString();
-				sResult += _T("/>");				
+				sResult += L"/>";				
 			}
 
 			if ( m_oAutoSpaceDN.IsInit() ) 
 			{ 
-				sResult += _T("<w:autoSpaceDN ");
+				sResult += L"<w:autoSpaceDN ";
 				sResult += m_oAutoSpaceDN->ToString();
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oBidi.IsInit() ) 
 			{ 
-				sResult += _T("<w:bidi ");
+				sResult += L"<w:bidi ";
 				sResult += m_oBidi->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oCnfStyle.IsInit() ) 
 			{ 
-				sResult += _T("<w:cnfStyle "); 
+				sResult += L"<w:cnfStyle "; 
 				sResult += m_oCnfStyle->ToString();
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oContextualSpacing.IsInit() ) 
 			{ 
-				sResult += _T("<w:contextualSpacing ");
+				sResult += L"<w:contextualSpacing ";
 				sResult += m_oContextualSpacing->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oDivID.IsInit() ) 
 			{ 
-				sResult += _T("<w:divId "); 
+				sResult += L"<w:divId "; 
 				sResult += m_oDivID->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oFramePr.IsInit() )
 			{ 
-				sResult += _T("<w:framePr "); 
+				sResult += L"<w:framePr "; 
 				sResult += m_oFramePr->ToString();	
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oInd.IsInit() )
 			{ 
-				sResult += _T("<w:ind "); 
+				sResult += L"<w:ind "; 
 				sResult += m_oInd->ToString();		
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oJc.IsInit() ) 
 			{ 
-				sResult += _T("<w:jc ");
+				sResult += L"<w:jc ";
 				sResult += m_oJc->ToString();		
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oKeepLines.IsInit() )
 			{ 
-				sResult += _T("<w:keepLines ");
+				sResult += L"<w:keepLines ";
 				sResult += m_oKeepLines->ToString();	
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oKeepNext.IsInit() ) 
 			{ 
-				sResult += _T("<w:keepNext "); 
+				sResult += L"<w:keepNext "; 
 				sResult += m_oKeepNext->ToString();
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oKinsoku.IsInit() )
 			{
-				sResult += _T("<w:kinsoku "); 
+				sResult += L"<w:kinsoku "; 
 				sResult += m_oKinsoku->ToString();	
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oMirrorIndents.IsInit() ) 
 			{ 
-				sResult += _T("<w:mirrorIndents "); 
+				sResult += L"<w:mirrorIndents "; 
 				sResult += m_oMirrorIndents->ToString();	
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oNumPr.IsInit() ) 
@@ -471,23 +428,23 @@ namespace OOX
 
 			if ( m_oOutlineLvl.IsInit() ) 
 			{ 
-				sResult += _T("<w:outlineLvl ");
+				sResult += L"<w:outlineLvl ";
 				sResult += m_oOutlineLvl->ToString();		
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oOverflowPunct.IsInit() ) 
 			{ 					
-				sResult += _T("<w:overflowPunct "); 
+				sResult += L"<w:overflowPunct "; 
 				sResult += m_oOverflowPunct->ToString();	
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oPageBreakBefore.IsInit() ) 
 			{ 
-				sResult += _T("<w:pageBreakBefore "); 
+				sResult += L"<w:pageBreakBefore "; 
 				sResult += m_oPageBreakBefore->ToString();
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oPBdr.IsInit() )
@@ -498,9 +455,9 @@ namespace OOX
 
 			if ( m_oPStyle.IsInit() )
 			{
-				sResult += _T("<w:pStyle ");
+				sResult += L"<w:pStyle ";
 				sResult += m_oPStyle->ToString();
-				sResult += _T("/>");
+				sResult += L"/>";
 			}
 
 			if ( !m_bPPrChange && m_oRPr.IsInit() )
@@ -511,44 +468,44 @@ namespace OOX
 
 			if ( m_oShd.IsInit() ) 
 			{ 
-				sResult += _T("<w:shd "); 
+				sResult += L"<w:shd "; 
 				sResult += m_oShd->ToString();		
-				sResult += _T("/>");	
+				sResult += L"/>";	
 			}
 
 			if ( m_oSnapToGrid.IsInit() ) 
 			{ 
-				sResult += _T("<w:snapToGrid ");
+				sResult += L"<w:snapToGrid ";
 				sResult += m_oSnapToGrid->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oSpacing.IsInit() ) 
 			{
-				sResult += _T("<w:spacing "); 
+				sResult += L"<w:spacing "; 
 				sResult += m_oSpacing->ToString();		
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oSuppressAutoHyphens.IsInit() ) 
 			{ 
-				sResult += _T("<w:suppressAutoHyphens ");
+				sResult += L"<w:suppressAutoHyphens ";
 				sResult += m_oSuppressAutoHyphens->ToString();		
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oSuppressLineNumbers.IsInit() ) 
 			{ 
-				sResult += _T("<w:suppressLineNumbers "); 
+				sResult += L"<w:suppressLineNumbers "; 
 				sResult += m_oSuppressLineNumbers->ToString();		
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oSuppressOverlap.IsInit() ) 
 			{ 
-				sResult += _T("<w:suppressOverlap "); 
+				sResult += L"<w:suppressOverlap "; 
 				sResult += m_oSuppressOverlap->ToString();		
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oTabs.IsInit() ) 
@@ -556,47 +513,47 @@ namespace OOX
 
 			if ( m_oTextAlignment.IsInit() ) 
 			{
-				sResult += _T("<w:textAlignment "); 
+				sResult += L"<w:textAlignment "; 
 				sResult += m_oTextAlignment->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oTextboxTightWrap.IsInit() ) 
 			{
-				sResult += _T("<w:textboxTightWrap ");
+				sResult += L"<w:textboxTightWrap ";
 				sResult += m_oTextboxTightWrap->ToString();	
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oTextDirection.IsInit() )
 			{ 
-				sResult += _T("<w:textDirection "); 
+				sResult += L"<w:textDirection "; 
 				sResult += m_oTextDirection->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oTopLinePunct.IsInit() )
 			{ 
-				sResult += _T("<w:topLinePunct ");
+				sResult += L"<w:topLinePunct ";
 				sResult += m_oTopLinePunct->ToString();	
-				sResult += _T("/>");			
+				sResult += L"/>";			
 			}
 
 			if ( m_oWidowControl.IsInit() ) 
 			{ 
-				sResult += _T("<w:widowControl "); 
+				sResult += L"<w:widowControl "; 
 				sResult += m_oWidowControl->ToString();
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
 			if ( m_oWordWrap.IsInit() ) 
 			{
-				sResult += _T("<w:wordWrap "); 
+				sResult += L"<w:wordWrap "; 
 				sResult += m_oWordWrap->ToString();	
-				sResult += _T("/>");		
+				sResult += L"/>";		
 			}
 
-			sResult += _T("</w:pPr>");
+			sResult += L"</w:pPr>";
 
 			return sResult;
 		}

@@ -30,131 +30,15 @@
  *
  */
 #pragma once
-#include "../RtfDocument.h"
-#include "../RtfTable.h"
 
-#include "OOXTableReader.h"
-#include "OOXParagraphReader.h"
+#include "../Basic.h"
+#include "OOXReaderBasic.h"
 
 class OOXTextItemReader
 {
-private:
-//	OOXParagraphReader	m_oParagraphReader; ///?????
-//	OOXTableReader		m_oTableReader;
-
 public: 
 	TextItemContainerPtr m_oTextItems;
 
-	OOXTextItemReader( )
-	{
-		m_oTextItems = TextItemContainerPtr ( new TextItemContainer() );
-	}
-	bool Parse( OOX::WritingElement* ooxElement, ReaderParameter oParam )
-	{
-		switch(ooxElement->getType())
-		{
-			case OOX::et_a_p:
-			{
-				PPTX::Logic::Paragraph * pParagraph = dynamic_cast<PPTX::Logic::Paragraph*>(ooxElement);
-				
-				OOXParagraphReader	oParagraphReader(pParagraph);
-				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );
-				//применяем к новому параграфу default property
-				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
-				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-				oNewParagraph->m_oProperty.m_nItap = 0;
-
-				if( true == oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
-				{
-					m_oTextItems->AddItem( oNewParagraph );
-				}
-			}break;
-			case OOX::et_w_p:
-			{
-				OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(ooxElement);
-				
-				OOXParagraphReader	oParagraphReader(pParagraph);
-				RtfParagraphPtr oNewParagraph ( new RtfParagraph() );
-				//применяем к новому параграфу default property
-				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
-				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-				oNewParagraph->m_oProperty.m_nItap = 0;
-
-				if( true == oParagraphReader.Parse( oParam, (*oNewParagraph), CcnfStyle() ))
-				{
-					m_oTextItems->AddItem( oNewParagraph );
-				}
-			}break;
-			case OOX::et_w_tbl:
-			{
-				OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(ooxElement);
-				RtfTablePtr oNewTable ( new RtfTable() );
-				
-				OOXTableReader oTableReader(pTbl);
-				oParam.oReader->m_nCurItap = 1;
-				if( true == oTableReader.Parse( oParam, (*oNewTable)) )
-				{
-					m_oTextItems->AddItem( oNewTable );
-				}
-				oParam.oReader->m_nCurItap = 0;
-			}break;
-			case OOX::et_w_sdt:
-			{
-				OOX::Logic::CSdt * pSdt = dynamic_cast<OOX::Logic::CSdt*>(ooxElement);
-				if( pSdt->m_oSdtEndPr.IsInit())
-				{
-					//todo
-				}
-				if( pSdt->m_oSdtContent.IsInit() )
-				{
-					Parse( pSdt->m_oSdtContent.GetPointer(), oParam );
-				}
-			}break;
-			case OOX::et_w_sdtContent:
-			{
-				OOX::Logic::CSdtContent * pSdt = dynamic_cast<OOX::Logic::CSdtContent*>(ooxElement);
-
-                for (std::vector<OOX::WritingElement*>::iterator it = pSdt->m_arrItems.begin(); it != pSdt->m_arrItems.end(); ++it)
-				{
-					Parse( *it, oParam );
-				}
-
-			}break;
-			case OOX::et_w_commentRangeStart:
-			case OOX::et_w_commentReference:
-			case OOX::et_w_commentRangeEnd:
-			{
-				OOX::Logic::CParagraph oParagraph;
-				oParagraph.m_oParagraphProperty = new OOX::Logic::CParagraphProperty();
-				oParagraph.m_arrItems.push_back(ooxElement);
-				
-				OOXParagraphReader	oParagraphReader(&oParagraph);
-				RtfParagraphPtr oNewParagraph(new RtfParagraph());
-				
-				oParagraph.m_oParagraphProperty->m_oKeepNext.Init();
-				oParagraph.m_oParagraphProperty->m_oKeepNext->m_oVal.SetValue(SimpleTypes::EOnOff::onoffTrue);
-
-				oParagraph.m_oParagraphProperty->m_oKeepLines.Init();
-				oParagraph.m_oParagraphProperty->m_oKeepLines->m_oVal.SetValue(SimpleTypes::EOnOff::onoffTrue);
-				
-			//применяем к новому параграфу default property
-				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
-				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-				oNewParagraph->m_oProperty.m_nItap = 0;
-
-				if (true == oParagraphReader.Parse(oParam, (*oNewParagraph), CcnfStyle()))
-				{
-					m_oTextItems->AddItem(oNewParagraph);
-				}
-
-				oParagraph.m_arrItems.clear();
-				delete oParagraph.m_oParagraphProperty; oParagraph.m_oParagraphProperty = NULL;
-			}break;
-			default:
-			{
-
-			}break;
-        }
-		return true;
-	}
+	OOXTextItemReader();
+	bool Parse(OOX::WritingElement* ooxElement, ReaderParameter oParam);
 };

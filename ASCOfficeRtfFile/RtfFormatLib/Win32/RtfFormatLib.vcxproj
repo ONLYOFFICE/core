@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="..\source\ConvertationManager.cpp" />
     <ClCompile Include="..\source\DestinationCommand.cpp" />
+    <ClCompile Include="..\source\Reader\OOXDocumentReader.cpp" />
     <ClCompile Include="..\source\Reader\OOXDrawingGraphicReader.cpp" />
     <ClCompile Include="..\source\Reader\OOXHeaderReader.cpp" />
     <ClCompile Include="..\source\Reader\OOXMathReader.cpp" />
@@ -146,6 +147,7 @@
     <ClCompile Include="..\source\Reader\OOXReader.cpp" />
     <ClCompile Include="..\source\Reader\OOXShapeReader.cpp" />
     <ClCompile Include="..\source\Reader\OOXTableReader.cpp" />
+    <ClCompile Include="..\source\Reader\OOXTextItemReader.cpp" />
     <ClCompile Include="..\source\RtfBookmark.cpp" />
     <ClCompile Include="..\source\RtfChar.cpp" />
     <ClCompile Include="..\source\RtfDocument.cpp" />
@@ -160,6 +162,7 @@
     <ClCompile Include="..\source\RtfReader.cpp" />
     <ClCompile Include="..\source\RtfSection.cpp" />
     <ClCompile Include="..\source\RtfShape.cpp" />
+    <ClCompile Include="..\source\RtfTable.cpp" />
     <ClCompile Include="..\source\RtfWriter.cpp" />
     <ClCompile Include="..\source\Writer\OOXDocumentWriter.cpp" />
     <ClCompile Include="..\source\Writer\OOXWriter.cpp" />

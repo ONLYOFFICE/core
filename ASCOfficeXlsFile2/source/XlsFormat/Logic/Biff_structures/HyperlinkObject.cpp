@@ -172,7 +172,7 @@ void HyperlinkObject::load(IBinaryReader* reader)
 		guid_num.Data3 = reader->ReadUInt16();
 	    
 		unsigned char* pData = reader->ReadBytes(8, true);
-		memcpy(guid_num.Data4, pData, 8) ;
+		memcpy(guid_num.getData4(), pData, 8) ;
 		delete pData;
 
 		guid = STR::guid2bstr(guid_num);

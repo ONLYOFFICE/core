@@ -31,105 +31,26 @@
  */
 #pragma once
 
-#include "OOXShapeReader.h"
+//#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
-#include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"
+//#include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"
 
+namespace OOX
+{
+	class CDocument;
+}
 class OOXDocumentReader
 {
 private: 
 	OOXTextItemReader	m_oTextItemReader;
-	OOXReader	*		m_poReader;
-	RtfDocument	*		m_poDocument;
+	OOXReader*			m_poReader = NULL;
+	RtfDocument*		m_poDocument = NULL;
 
-
-	OOX::CDocument* m_ooxDocument;
+	OOX::CDocument* m_ooxDocument = NULL;
 public: 
-	OOXDocumentReader(OOX::CDocument* ooxDocument) 
-	{
-		m_ooxDocument = ooxDocument;
-	}
-	~OOXDocumentReader()
-	{
-	}
+	OOXDocumentReader(OOX::CDocument* ooxDocument);
+	~OOXDocumentReader();
 	
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxDocument == NULL) return false;
-
-		m_poReader		= oParam.oReader;
-		m_poDocument	= oParam.oRtf;
-
-		if ( m_ooxDocument->m_oBackground.IsInit())
-		{
-			m_poDocument->m_pBackground = RtfShapePtr(new RtfShape());
-			OOXBackgroundReader oBackgroundReader(m_ooxDocument->m_oBackground.GetPointer());
-			oBackgroundReader.Parse( oParam, m_poDocument->m_pBackground);
-		}
-		
-        std::vector<OOX::WritingElement*>::iterator last_section_start = m_ooxDocument->m_arrItems.begin();
-		
-		//считаем количесво секций и заполняем их свойства .. 
-        for (std::vector<OOX::WritingElement*>::iterator it = m_ooxDocument->m_arrItems.begin(); it != m_ooxDocument->m_arrItems.end(); ++it)
-		{		
-			if ((*it) == NULL) continue;
-
-			if ((*it)->getType() == OOX::et_w_p)
-			{
-				OOX::Logic::CParagraph * para = dynamic_cast<OOX::Logic::CParagraph *>(*it);
-				
-				if ((para) && (para->m_oParagraphProperty))
-				{
-					if (para->m_oParagraphProperty->m_oSectPr.IsInit() )
-					{
-						_section section;
-                        section.props		= RtfSectionPtr(new RtfSection());
-                        section.start_para	= last_section_start;
-						section.end_para	= it; 
-						section.end_para++;
-
-						last_section_start = it; last_section_start++;
-
-						section.props->m_oProperty.SetDefaultOOX();
-
-						OOXSectionPropertyReader oSectReader(para->m_oParagraphProperty->m_oSectPr.GetPointer());
-						if( true == oSectReader.Parse( oParam, section.props->m_oProperty ) )
-						{
-							m_poDocument->AddItem( section );
-						}
-					}
-				}
-			}
-		}
-//----------------------------------------------------------------------------------------------------------
-		_section section;
-
-        section.props		= RtfSectionPtr(new RtfSection());
-		section.start_para	= last_section_start;
-		section.end_para	= m_ooxDocument->m_arrItems.end();
-       			
-		section.props->m_oProperty.SetDefaultOOX();
-		if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
-		{
-			OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
-			if (oSectReader.Parse( oParam, section.props->m_oProperty ))
-			{
-				m_poDocument->AddItem( section );
-			}
-		}		
-
-		m_poDocument->RemoveItem(0);
-
-		for (int sect = 0 ; sect < m_poDocument->GetCount(); sect++)
-		{
-			m_oTextItemReader.m_oTextItems = m_poDocument->m_aArray[sect].props;
-
-            for (std::vector<OOX::WritingElement*>::iterator it = m_poDocument->m_aArray[sect].start_para; it != m_poDocument->m_aArray[sect].end_para; ++it)
-			{
-				m_oTextItemReader.Parse(*it, oParam );
-			}
-		}
-		return true;
-	}
+	bool Parse(ReaderParameter oParam);
 };

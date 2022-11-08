@@ -32,7 +32,7 @@
 #pragma once
 
 #include "../../../Common/3dParty/pole/pole.h"
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../Common/cfcpp/guid.h"
 
 #include <map>
 #include <string>
@@ -41,17 +41,6 @@
 #include <boost/optional.hpp>
 
 #define _CP_OPT(V1)  boost::optional<V1>
-
-#ifndef _GUID_TYPEDEF_GUID_
-#define _GUID_TYPEDEF_GUID_
-typedef struct
-{
-	_UINT32 Data1;
-	_UINT16 Data2;
-	_UINT16 Data3;
-	unsigned char  Data4[8];
-} _GUID_;
-#endif
 
 typedef struct 
 {

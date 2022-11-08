@@ -999,7 +999,7 @@ void IHlink::load(IBinaryReader* reader)
 	CLSID_StdHlink.Data3 = reader->ReadUInt16();
     
 	unsigned char* pData = reader->ReadBytes(8, true);
-	memcpy(CLSID_StdHlink.Data4, pData, 8) ;
+	memcpy(CLSID_StdHlink.getData4(), pData, 8) ;
 	delete pData;
 
 	hyperlink.load(reader);

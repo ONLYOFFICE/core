@@ -145,6 +145,15 @@
       <Filter>RtfWriter</Filter>
     </ClCompile>
     <ClCompile Include="..\source\ConvertationManager.cpp" />
+    <ClCompile Include="..\source\Reader\OOXDocumentReader.cpp">
+      <Filter>OOMXL\OOXReader\FileReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\Reader\OOXTextItemReader.cpp">
+      <Filter>OOMXL\OOXReader\ComponentReader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\RtfTable.cpp">
+      <Filter>RtfDocument</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\source\Reader\OOXReader.h">

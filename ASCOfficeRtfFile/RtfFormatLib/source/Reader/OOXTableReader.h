@@ -31,9 +31,16 @@
  */
 #pragma once
 
-#include "../../../../Common/DocxFormat/Source/DocxFormat/Logic/Table.h"
 #include "../RtfTable.h"
+#include "../Reader/OOXReaderBasic.h"
 
+namespace OOX
+{
+	namespace Logic
+	{
+		class CTbl;
+	}
+}
 class OOXTableReader
 {
 private:

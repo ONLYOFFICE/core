@@ -300,6 +300,19 @@ namespace OOX
 			{
 				m_oSectPr = new Logic::CSectionProperty( document );
 				m_oSectPr->fromXML(oReader);
+//-------------------------------------------------------------------------
+				OOX::CDocx *docx = dynamic_cast<OOX::CDocx*>(document);
+				if (docx)
+				{
+					OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
+					
+					OOX::CDocument::_section section;
+					section.sect = m_oSectPr.GetPointer();
+					section.end_elm = doc->m_arrItems.size();
+
+					doc->m_arrSections.push_back(section);
+				}
+//-------------------------------------------------------------------------
 			}
 			else if (L"w:tbl" == sName )
 				pItem = new Logic::CTbl( document );
@@ -387,6 +400,8 @@ namespace OOX
             if ( m_arrItems[i] )delete m_arrItems[i];
 		}
 		m_arrItems.clear();
+//----------
+		m_arrSections.clear();
 	}
 	
 	void CDocument::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

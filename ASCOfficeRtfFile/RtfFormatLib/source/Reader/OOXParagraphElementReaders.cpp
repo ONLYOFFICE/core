@@ -30,6 +30,7 @@
  *
  */
 
+#include "OOXTableReader.h"
 #include "OOXParagraphReader.h"
 
 #include "OOXTextItemReader.h"

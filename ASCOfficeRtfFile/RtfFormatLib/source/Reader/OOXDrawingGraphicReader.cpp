@@ -32,6 +32,7 @@
 
 #include "OOXDrawingGraphicReader.h"
 #include "OOXShapeReader.h"
+#include "OOXReader.h"
 
 #include "../../../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"

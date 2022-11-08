@@ -196,7 +196,7 @@ namespace OOX
 
 		SimpleTypes::CConformanceClass			m_oConformance;
 
-		nullable<SimpleTypes::CXmlSpace<>>		m_oSpace;
+		nullable<SimpleTypes::CXmlSpace>		m_oSpace;
 
 		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
 		nullable<OOX::Logic::CBackground>		m_oBackground;

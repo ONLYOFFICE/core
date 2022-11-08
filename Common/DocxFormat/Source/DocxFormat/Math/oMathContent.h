@@ -2565,7 +2565,7 @@ namespace OOX
 				oReader.MoveToElement();
 			}
 		public:
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 			std::wstring m_sText;
 		};		
 		//--------------------------------------------------------------------------------

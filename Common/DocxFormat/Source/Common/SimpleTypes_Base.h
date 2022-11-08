@@ -65,6 +65,7 @@ namespace SimpleTypes
 		Type GetValue() const { return m_eValue; }                                                              \
 		void SetValueFromByte(const unsigned char& value) { m_eValue = (Type)value; }                           \
 		Type FromString(const std::wstring &sValue);                                                            \
+		Type FromStringA(const char* pValue);                                                                   \
 		std::wstring ToString() const;                                                                          \
 	public:                                                                                                     \
 		Type m_eValue;

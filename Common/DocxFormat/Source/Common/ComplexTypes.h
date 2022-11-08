@@ -473,7 +473,7 @@ namespace ComplexTypes
 
 		public:
             nullable<std::wstring> m_sFormat;
-			nullable<SimpleTypes::CNumberFormat<>> m_oVal;
+			nullable<SimpleTypes::CNumberFormat> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1059,7 +1059,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextScale<> > m_oVal;
+			nullable<SimpleTypes::CTextScale> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1231,7 +1231,7 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::CTabTlc             > m_oLeader;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oPos;
-			nullable<SimpleTypes::CTabJc<>            > m_oVal;
+			nullable<SimpleTypes::CTabJc              > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------

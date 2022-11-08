@@ -1002,7 +1002,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CChapterSep      > m_oChapSep;
 			nullable<SimpleTypes::CDecimalNumber   > m_oChapStyle;
-			nullable<SimpleTypes::CNumberFormat<>  > m_oFmt;
+			nullable<SimpleTypes::CNumberFormat    > m_oFmt;
 			nullable<SimpleTypes::CDecimalNumber   > m_oStart;
 		};
 
@@ -1085,7 +1085,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CDecimalNumber     > m_oCode;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oH;
-			nullable<SimpleTypes::CPageOrientation<> > m_oOrient;
+			nullable<SimpleTypes::CPageOrientation   > m_oOrient;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oW;
 		};
 

@@ -351,7 +351,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;
@@ -772,7 +772,7 @@ namespace OOX
 			{
 				return et_w_t;
 			}
-			static void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CXmlSpace<> >& oSpace)
+			static void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CXmlSpace>& oSpace)
 			{
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
@@ -807,7 +807,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;
@@ -1116,7 +1116,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;
@@ -1417,7 +1417,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;

@@ -1289,18 +1289,7 @@ namespace SimpleTypes
 		numberformatVietnameseCounting           = 62
 	};
 
-	template<ENumberFormat eDefValue = numberformatNone>
-	class CNumberFormat : public CSimpleType<ENumberFormat, eDefValue>
-	{
-	public:
-		CNumberFormat();
-
-		virtual ENumberFormat FromString(const std::wstring &sValue);
-		virtual std::wstring       ToString  () const;
-
-		SimpleTypes_Default(CNumberFormat)
-		ENumberFormat GetValue() const;
-	};
+	DEFINE_SIMPLE_TYPE(CNumberFormat, ENumberFormat, numberformatNone)
 
 	//--------------------------------------------------------------------------------
 	// ObjectDrawAspect 17.18.60 (Part 1)
@@ -1373,17 +1362,7 @@ namespace SimpleTypes
 		pageorientPortrait  = 1
 	};
 
-	template<EPageOrientation eDefValue = pageorientPortrait>
-	class CPageOrientation : public CSimpleType<EPageOrientation, eDefValue>
-	{
-	public:
-		CPageOrientation();
-		CPageOrientation(const EPageOrientation & val);
-		virtual EPageOrientation FromString(const std::wstring &sValue);
-		virtual std::wstring          ToString  () const;
-
-		SimpleTypes_Default(CPageOrientation)
-	};
+	DEFINE_SIMPLE_TYPE(CPageOrientation, EPageOrientation, pageorientPortrait)
 
 	//--------------------------------------------------------------------------------
 	// Pitch 17.18.66 (Part 1)
@@ -1682,19 +1661,7 @@ namespace SimpleTypes
 		tabjcLeft    = 8
 	};
 
-	template<ETabJc eDefValue = tabjcLeft>
-	class CTabJc : public CSimpleType<ETabJc, tabjcClear>
-	{
-	public:
-		CTabJc();
-
-		virtual ETabJc  FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CTabJc)
-
-		ETabJc GetValue() const;
-	};
+	DEFINE_SIMPLE_TYPE(CTabJc, ETabJc, tabjcLeft)
 
 	//--------------------------------------------------------------------------------
 	// TabTlc 17.18.85 (Part 1)
@@ -1861,18 +1828,7 @@ namespace SimpleTypes
 	// TextScale 17.18.95 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 100>
-	class CTextScale : public CSimpleType<int, nDefValue>
-	{
-	public:
-		CTextScale();
-
-		virtual void    SetValue(int nValue);
-		virtual int     FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CTextScale)
-	};
+	DEFINE_SIMPLE_TYPE_NSV(CTextScale, int, 100)
 
 	//--------------------------------------------------------------------------------
 	// Theme 17.18.96 (Part 1)
@@ -2119,17 +2075,7 @@ namespace SimpleTypes
 		xmlspacePreserve = 1
 	};
 
-	template<EXmlSpace eDefValue = xmlspaceDefault>
-	class CXmlSpace : public CSimpleType<EXmlSpace, eDefValue>
-	{
-	public:
-		CXmlSpace();
-		virtual EXmlSpace FromString(const std::wstring &sValue);
-		EXmlSpace FromStringA(const char* pValue);
-		virtual std::wstring   ToString  () const;
-
-		SimpleTypes_Default(CXmlSpace)
-	};
+	DEFINE_SIMPLE_TYPE(CXmlSpace, EXmlSpace, xmlspaceDefault)
 
 	//--------------------------------------------------------------------------------
 	// CryptAlgClass
@@ -2141,17 +2087,7 @@ namespace SimpleTypes
 		AlgClassHash = 1
 	};
 
-	template<ECryptAlgClass eDefValue = AlgClassCustom>
-	class CCryptAlgClass : public CSimpleType<ECryptAlgClass, eDefValue>
-	{
-	public:
-		CCryptAlgClass();
-		virtual ECryptAlgClass FromString(const std::wstring &sValue);
-		ECryptAlgClass FromStringA(const char* pValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CCryptAlgClass)
-	};
+	DEFINE_SIMPLE_TYPE(CCryptAlgClass, ECryptAlgClass, AlgClassCustom)
 
 	//--------------------------------------------------------------------------------
 	// CryptAlgType
@@ -2163,18 +2099,7 @@ namespace SimpleTypes
 		AlgTypeTypeAny = 1
 	};
 
-	template<ECryptAlgType eDefValue = AlgTypeCustom>
-	class CCryptAlgType : public CSimpleType<ECryptAlgType, eDefValue>
-	{
-	public:
-		CCryptAlgType();
-
-		virtual ECryptAlgType FromString(const std::wstring &sValue);
-		ECryptAlgType FromStringA(const char* pValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CCryptAlgType)
-	};
+	DEFINE_SIMPLE_TYPE(CCryptAlgType, ECryptAlgType, AlgTypeCustom)
 
 	//--------------------------------------------------------------------------------
 	// CryptProv
@@ -2187,17 +2112,7 @@ namespace SimpleTypes
 		CryptProvRsaFull = 2
 	};
 
-	template<ECryptProv eDefValue = CryptProvCustom>
-	class CCryptProv : public CSimpleType<ECryptProv, eDefValue>
-	{
-	public:
-		CCryptProv();
-		virtual ECryptProv FromString(const std::wstring &sValue);
-		ECryptProv FromStringA(const char* pValue);
-		virtual std::wstring ToString() const;
-
-		SimpleTypes_Default(CCryptProv)
-	};
+	DEFINE_SIMPLE_TYPE(CCryptProv, ECryptProv, CryptProvCustom)
 
 	//--------------------------------------------------------------------------------
 	// CryptAlgoritmName

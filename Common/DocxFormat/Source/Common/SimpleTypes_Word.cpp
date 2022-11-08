@@ -1778,6 +1778,7 @@ namespace SimpleTypes
 
 		return 0;
 	}
+
 	template<>
 	void CHexColor<hexcolorAuto>::Parse()
 	{
@@ -1788,6 +1789,7 @@ namespace SimpleTypes
 		m_unG = HexToInt( (int)m_sValue[3] ) + (unsigned char)(HexToInt( (int)m_sValue[2] ) << 4);
 		m_unB = HexToInt( (int)m_sValue[5] ) + (unsigned char)(HexToInt( (int)m_sValue[4] ) << 4);
 	}
+
 	template<>
 	void CHexColor<hexcolorAuto>::Parse3()
 	{
@@ -2753,11 +2755,7 @@ namespace SimpleTypes
 	// NumberFormat 17.18.59 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CNumberFormat<numberformatNone>::CNumberFormat() {}
-
-	template<>
-	ENumberFormat CNumberFormat<numberformatNone>::FromString(const std::wstring &sValue)
+	ENumberFormat CNumberFormat::FromString(const std::wstring &sValue)
 	{
 		if      ( (L"aiueo")                        == sValue ) this->m_eValue = numberformatAiueo;
 		else if ( (L"aiueoFullWidth")               == sValue ) this->m_eValue = numberformatAiueoFullWidth;
@@ -2827,8 +2825,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CNumberFormat<numberformatNone>::ToString  () const
+	std::wstring CNumberFormat::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -2897,12 +2894,6 @@ namespace SimpleTypes
 		case numberformatVietnameseCounting           : return (L"vietnameseCounting");
 		default                                       : return (L"none");
 		}
-	}
-
-	template<>
-	ENumberFormat CNumberFormat<numberformatNone>::GetValue() const
-	{
-		return this->m_eValue;
 	}
 
 	//--------------------------------------------------------------------------------
@@ -3026,14 +3017,7 @@ namespace SimpleTypes
 	// PageOrientation 17.18.65 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CPageOrientation<pageorientPortrait>::CPageOrientation() {}
-
-	template<>
-	CPageOrientation<pageorientPortrait>::CPageOrientation(const EPageOrientation & val)	{ this->m_eValue = val; }
-
-	template<>
-	EPageOrientation CPageOrientation<pageorientPortrait>::FromString(const std::wstring &sValue)
+	EPageOrientation CPageOrientation::FromString(const std::wstring &sValue)
 	{
 		if      ( (L"landscape") == sValue ) this->m_eValue = pageorientLandscape;
 		else if ( (L"portrait")  == sValue ) this->m_eValue = pageorientPortrait;
@@ -3042,8 +3026,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CPageOrientation<pageorientPortrait>::ToString  () const
+	std::wstring CPageOrientation::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -3672,11 +3655,7 @@ namespace SimpleTypes
 	// TabJc 17.18.84 (Part 1) + 9.10.5 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CTabJc<tabjcLeft>::CTabJc() {}
-
-	template<>
-	ETabJc CTabJc<tabjcLeft>::FromString(const std::wstring &sValue)
+	ETabJc CTabJc::FromString(const std::wstring &sValue)
 	{
 		if      ( (L"bar")     == sValue ) this->m_eValue = tabjcBar;
 		else if ( (L"center")  == sValue ) this->m_eValue = tabjcCenter;
@@ -3692,8 +3671,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CTabJc<tabjcLeft>::ToString  () const
+	std::wstring CTabJc::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -3708,12 +3686,6 @@ namespace SimpleTypes
 		case tabjcLeft    : return (L"left");
 		default           : return (L"clear");
 		}
-	}
-
-	template<>
-	ETabJc CTabJc<tabjcLeft>::GetValue() const
-	{
-		return this->m_eValue;
 	}
 
 	//--------------------------------------------------------------------------------
@@ -4040,17 +4012,12 @@ namespace SimpleTypes
 	// TextScale 17.18.95 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CTextScale<100>::CTextScale() {}
-
-	template<>
-	void CTextScale<100>::SetValue(int nValue)
+	void CTextScale::SetValue(int nValue)
 	{
 		this->m_eValue = (std::min)( 600, (std::max)( 0, nValue ) );
 	}
 
-	template<>
-	int CTextScale<100>::FromString(const std::wstring &sValue)
+	int CTextScale::FromString(const std::wstring &sValue)
 	{
 		this->m_eValue = XmlUtils::GetInteger(sValue);
 
@@ -4059,8 +4026,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CTextScale<100>::ToString  () const
+	std::wstring CTextScale::ToString  () const
 	{
 		std::wstring sResult = std::to_wstring( this->m_eValue);
 
@@ -4612,11 +4578,7 @@ namespace SimpleTypes
 	// XmlSpace
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CXmlSpace<xmlspaceDefault>::CXmlSpace() {}
-
-	template<>
-	EXmlSpace CXmlSpace<xmlspaceDefault>::FromString(const std::wstring &sValue)
+	EXmlSpace CXmlSpace::FromString(const std::wstring &sValue)
 	{
 		if       ( (L"default")  == sValue ) this->m_eValue = xmlspaceDefault;
 		else if  ( (L"preserve") == sValue ) this->m_eValue = xmlspacePreserve;
@@ -4625,8 +4587,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	EXmlSpace CXmlSpace<xmlspaceDefault>::FromStringA(const char* pValue)
+	EXmlSpace CXmlSpace::FromStringA(const char* pValue)
 	{
 		if       ( strcmp("default", pValue)  == 0 ) this->m_eValue = xmlspaceDefault;
 		else if  ( strcmp("preserve", pValue) == 0 ) this->m_eValue = xmlspacePreserve;
@@ -4635,8 +4596,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CXmlSpace<xmlspaceDefault>::ToString  () const
+	std::wstring CXmlSpace::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -4648,11 +4608,7 @@ namespace SimpleTypes
 
 	//---------------------------------------------------------------------------------------------
 
-	template<>
-	CCryptAlgClass<AlgClassCustom>::CCryptAlgClass() {}
-
-	template<>
-	ECryptAlgClass CCryptAlgClass<AlgClassCustom>::FromString(const std::wstring &sValue)
+	ECryptAlgClass CCryptAlgClass::FromString(const std::wstring &sValue)
 	{
 		if (L"custom" == sValue) this->m_eValue = AlgClassCustom;
 		else if (L"hash" == sValue) this->m_eValue = AlgClassHash;
@@ -4661,8 +4617,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	ECryptAlgClass CCryptAlgClass<AlgClassCustom>::FromStringA(const char* pValue)
+	ECryptAlgClass CCryptAlgClass::FromStringA(const char* pValue)
 	{
 		if (strcmp("custom", pValue) == 0) this->m_eValue = AlgClassCustom;
 		else if (strcmp("hash", pValue) == 0) this->m_eValue = AlgClassHash;
@@ -4671,8 +4626,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CCryptAlgClass<AlgClassCustom>::ToString() const
+	std::wstring CCryptAlgClass::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -4684,11 +4638,7 @@ namespace SimpleTypes
 
 	//---------------------------------------------------------------------------------------------
 
-	template<>
-	CCryptAlgType<AlgTypeCustom>::CCryptAlgType() {}
-
-	template<>
-	ECryptAlgType CCryptAlgType<AlgTypeCustom>::FromString(const std::wstring &sValue)
+	ECryptAlgType CCryptAlgType::FromString(const std::wstring &sValue)
 	{
 		if (L"custom" == sValue) this->m_eValue = AlgTypeCustom;
 		else if (L"typeAny" == sValue) this->m_eValue = AlgTypeTypeAny;
@@ -4697,8 +4647,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	ECryptAlgType CCryptAlgType<AlgTypeCustom>::FromStringA(const char* pValue)
+	ECryptAlgType CCryptAlgType::FromStringA(const char* pValue)
 	{
 		if (strcmp("custom", pValue) == 0) this->m_eValue = AlgTypeCustom;
 		else if (strcmp("typeAny", pValue) == 0) this->m_eValue = AlgTypeTypeAny;
@@ -4707,8 +4656,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CCryptAlgType<AlgTypeCustom>::ToString() const
+	std::wstring CCryptAlgType::ToString() const
 	{
 		switch (this->m_eValue)
 		{
@@ -4720,11 +4668,7 @@ namespace SimpleTypes
 
 	//---------------------------------------------------------------------------------------------
 
-	template<>
-	CCryptProv<CryptProvCustom>::CCryptProv() {}
-
-	template<>
-	ECryptProv CCryptProv<CryptProvCustom>::FromString(const std::wstring &sValue)
+	ECryptProv CCryptProv::FromString(const std::wstring &sValue)
 	{
 		if (L"custom" == sValue) this->m_eValue = CryptProvCustom;
 		else if (L"rsaAES" == sValue) this->m_eValue = CryptProvRsaAES;
@@ -4734,8 +4678,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	ECryptProv CCryptProv<CryptProvCustom>::FromStringA(const char* pValue)
+	ECryptProv CCryptProv::FromStringA(const char* pValue)
 	{
 		if (strcmp("custom", pValue) == 0) this->m_eValue = CryptProvCustom;
 		else if (strcmp("rsaAES", pValue) == 0) this->m_eValue = CryptProvRsaAES;
@@ -4745,8 +4688,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CCryptProv<CryptProvCustom>::ToString() const
+	std::wstring CCryptProv::ToString() const
 	{
 		switch (this->m_eValue)
 		{

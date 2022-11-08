@@ -147,6 +147,7 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oMiterLimit.Init();
 				m_oMiterLimit->SetValue(8);
 
 				WritingElement_ReadAttributes_Start( oReader )

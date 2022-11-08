@@ -304,6 +304,7 @@ SOURCES += \
     ../Converter/Animation/AnimationParser.cpp \
     ../Converter/Animation/Animation_1995.cpp \
     ../Converter/Animation/Timing_1995.cpp \
+    ../Converter/Animation/intermediate_anim.cpp \
     ../Converter/timing.cpp \
     ../Converter/transition.cpp \
     ../PPTXWriter/BulletsConverter.cpp

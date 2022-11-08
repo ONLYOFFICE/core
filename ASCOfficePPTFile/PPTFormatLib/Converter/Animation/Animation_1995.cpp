@@ -38,8 +38,16 @@ void Animation_1995::FillCTnAnimation(PPTX::Logic::CTn &oCTN, Intermediate::SOld
     {
     case 0x00:
     {
-        oCTN.presetID = 1;
-        ConvertAppear(oCTN.childTnLst.get2(), pOldAnim);
+        if (direct == 1)
+        {
+            oCTN.presetID = 1;
+            ConvertAppear(oCTN.childTnLst.get2(), pOldAnim);
+        }
+        else
+        {
+            oCTN.presetID = 10;
+            ConvertFade(oCTN.childTnLst.get2(), pOldAnim);
+        }
         break;
     }
     case 0x01:

@@ -1002,7 +1002,7 @@ namespace MetaFile
 		else arAttributes.push_back({L"stroke", L"black"});
 	}
 
-	void CWmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes)
+	void CWmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes, double dWidth, double dHeight)
 	{
 		if (NULL != m_pParser && NULL != m_pParser->GetBrush())
 		{
@@ -1017,7 +1017,7 @@ namespace MetaFile
 				}
 				case BS_HATCHED:
 				{
-					const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch());
+					const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch(), dWidth, dHeight);
 
 					if (!wsStyleId.empty())
 					{
@@ -1145,35 +1145,23 @@ namespace MetaFile
 		return oCurPos;
 	}
 
-	std::wstring CWmfInterpretatorSvg::CreateHatchStyle(unsigned int unHatchStyle)
+	std::wstring CWmfInterpretatorSvg::CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight)
 	{
-		if (NULL == m_pParser || NULL == m_pParser->GetPen() || NULL == m_pParser->GetBrush())
+		if (NULL == m_pParser || NULL == m_pParser->GetBrush())
 			return std::wstring();
 
-		double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
-
-		if (PS_COSMETIC == m_pParser->GetPen())
-		{
-			dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-		}
-		else
-		{
-			double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-
-			if (dStrokeWidth < dMinStrokeWidth)
-				dStrokeWidth = dMinStrokeWidth;
-		}
+		double dStrokeWidth = m_pParser->GetPixWidth(1.0);
 
 		std::wstring wsStrokeWidth = ConvertToWString(dStrokeWidth);
-		std::wstring wsValue = ConvertToWString(dStrokeWidth * 10); //TODO:: определить как вычисляется данный параметр
+		std::wstring wsValue  = ConvertToWString(dStrokeWidth * 8., 6);
+		std::wstring wsValueW = ((0 != dWidth)  ? ConvertToWString((dStrokeWidth * 8.) / dWidth,  6) : L"1");
+		std::wstring wsValueH = ((0 != dHeight) ? ConvertToWString((dStrokeWidth * 8.) / dHeight, 6) : L"1");
+
+		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
 		std::wstring wsBgColor;
 
-		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")";
-
 		if (TRANSPARENT != m_pParser->GetTextBgMode())
-		{
 			wsBgColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L",255)";
-		}
 
 		switch(unHatchStyle)
 		{
@@ -1182,13 +1170,13 @@ namespace MetaFile
 				std::wstring wsId = L"HORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
 
 				if (!wsBgColor.empty())
 					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
 
-				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"</pattern> ";
+				m_wsDefs += L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
 
 				return wsId;
 			}
@@ -1197,14 +1185,13 @@ namespace MetaFile
 				std::wstring wsId = L"VERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
 
 				if (!wsBgColor.empty())
-					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" fill=\"" + wsBgColor + L"\"/>";
 
-				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"</pattern> ";
-
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"0\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
 				return wsId;
 			}
 			case HS_FDIAGONAL:
@@ -1212,13 +1199,20 @@ namespace MetaFile
 				std::wstring wsId = L"FDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(-45)\" patternUnits=\"userSpaceOnUse\">";
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
 
 				if (!wsBgColor.empty())
 					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
 
-				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"</pattern> ";
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
 
 				return wsId;
 			}
@@ -1227,13 +1221,20 @@ namespace MetaFile
 				std::wstring wsId = L"BDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">";
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
 
 				if (!wsBgColor.empty())
 					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
 
-				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"</pattern> ";
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
 
 				return wsId;
 			}
@@ -1242,14 +1243,14 @@ namespace MetaFile
 				std::wstring wsId = L"CROSS_" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternUnits=\"userSpaceOnUse\">";
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
 
 				if (!wsBgColor.empty())
 					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
 
-				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"</pattern> ";
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
 
 				return wsId;
 			}
@@ -1258,17 +1259,1386 @@ namespace MetaFile
 				std::wstring wsId = L"DIAGCROSS" + ConvertToWString(++m_unNumberDefs, 0);
 
 				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
-							L"width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" patternTransform=\"rotate(45)\" patternUnits=\"userSpaceOnUse\">";
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
 
 				if (!wsBgColor.empty())
 					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
 
-				m_wsDefs += L"<line x1=\"0\" y1=\"0\" x2=\"0\" y2=\"" + wsValue + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"<line x1=\"0\" y1=\"0\" x2=\"" + wsValue + L"\" y2=\"0\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
-							L"</pattern> ";
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
 
 				return wsId;
 			}
+
+			case HS_05Percent:
+			{
+				std::wstring wsId = L"05PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_10Percent:
+			{
+				std::wstring wsId = L"10PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_20Percent:
+			{
+				std::wstring wsId = L"20PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_25Percent:
+			{
+				std::wstring wsId = L"25PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_30Percent:
+			{
+				std::wstring wsId = L"30PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_40Percent:
+			{
+				std::wstring wsId = L"40PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_50Percent:
+			{
+				std::wstring wsId = L"50PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_60Percent:
+			{
+				std::wstring wsId = L"60PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_70Percent:
+			{
+				std::wstring wsId = L"70PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_75Percent:
+			{
+				std::wstring wsId = L"75PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_80Percent:
+			{
+				std::wstring wsId = L"80PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_90Percent:
+			{
+				std::wstring wsId = L"90PERCENT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * -0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * -0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.5)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * -0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.5)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * -0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"
+				            L"</pattern> ";
+
+				return wsId;
+			}
+
+			case HS_LTDOWNWARDDIAG:
+			{
+				std::wstring wsId = L"LTDOWNWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_LTUPWARDDIAG:
+			{
+				std::wstring wsId = L"LTUPWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DNDOWNWARDDIAG:
+			{
+				std::wstring wsId = L"DNDOWNWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DNUPWARDDIAG:
+			{
+				std::wstring wsId = L"DNUPWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_WDOWNWARDDIAG:
+			{
+				std::wstring wsId = L"WDOWNWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_WUPWARDDIAG:
+			{
+				std::wstring wsId = L"BDIAGONAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+
+			case HS_LTVERTICAL:
+			{
+				std::wstring wsId = L"LTVERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+				return wsId;
+			}
+			case HS_LTHORIZONTAL:
+			{
+				std::wstring wsId = L"LTHORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_NVERTICAL:
+			{
+				std::wstring wsId = L"NVERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+				return wsId;
+			}
+			case HS_NHORIZONTAL:
+			{
+				std::wstring wsId = L"NHORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DNVERTICAL:
+			{
+				std::wstring wsId = L"DNVERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				wsStrokeWidth = ConvertToWString(dStrokeWidth * 2);
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+				return wsId;
+			}
+			case HS_DNHORIZONTAL:
+			{
+				std::wstring wsId = L"DNHORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				wsStrokeWidth = ConvertToWString(dStrokeWidth * 2);
+
+				m_wsDefs += L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"0\" y1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+
+			case HS_DASHDOWNWARDDIAG:
+			{
+				std::wstring wsId = L"DASHDOWNWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">>";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DASHUPWARDDIAG:
+			{
+				std::wstring wsId = L"DASHUPWARDDIAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">>";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DASHHORIZONTAL:
+			{
+				std::wstring wsId = L"DASHHORIZONTAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">>";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DASHVERTICAL:
+			{
+				std::wstring wsId = L"DASHVERTICAL_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+
+			case HS_SMALLCONFETTI:
+			{
+				std::wstring wsId = L"SMALLCONFETTI_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_LARGECONFETTI:
+			{
+				std::wstring wsId = L"LARGECONFETTI_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				wsStrokeWidth = ConvertToWString(dStrokeWidth * 2);
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_ZIGZAG:
+			{
+				std::wstring wsId = L"ZIGZAG_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_WAVE:
+			{
+				std::wstring wsId = L"WAVE_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DIAGBRICK:
+			{
+				std::wstring wsId = L"DIAGBRICK_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>"  +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_HORIZBRICK:
+			{
+				std::wstring wsId = L"HORIZBRICK_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_WEAVE:
+			{
+				std::wstring wsId = L"WEAVE_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0)  + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5)  + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_PLAID:
+			{
+				std::wstring wsId = L"PLAID_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DIVOT:
+			{
+				std::wstring wsId = L"DIVOT_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DOTGRID:
+			{
+				std::wstring wsId = L"DOTGRID_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_DOTDIAMOND:
+			{
+				std::wstring wsId = L"DOTDIAMOND_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_SHINGLE:
+			{
+				std::wstring wsId = L"SHINGLE_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_TRELLIS:
+			{
+				std::wstring wsId = L"TRELLIS_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_SPHERE:
+			{
+				std::wstring wsId = L"SPHERE_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_SGRID:
+			{
+				std::wstring wsId = L"SGRID_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8)   + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8)   + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8)   + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8)   + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_SCHECHERBOARD:
+			{
+				std::wstring wsId = L"SCHECHERBOARD_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				wsStrokeWidth = ConvertToWString(dStrokeWidth * 2);
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_LCHECHERBOARD:
+			{
+				std::wstring wsId = L"LCHECHERBOARD_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				wsStrokeWidth = ConvertToWString(dStrokeWidth * 4);
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_OUTLINEDDIAMOND:
+			{
+				std::wstring wsId = L"OUTLINEDDIAMOND_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 8.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 7.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+			case HS_SOLIDDIAMOND:
+			{
+				std::wstring wsId = L"SOLIDDIAMOND_" + ConvertToWString(++m_unNumberDefs, 0);
+
+				m_wsDefs += L"<pattern id=\"" + wsId + L"\" " +
+				            L"width=\"" + wsValueW + L"\" height=\"" + wsValueH + L"\" patternUnits=\"objectBoundingBox\" shape-rendering=\"crispEdges\">";
+
+				if (!wsBgColor.empty())
+					m_wsDefs += L"<rect x=\"0\" y=\"0\" width=\"" + wsValue + L"\" height=\"" + wsValue + L"\" fill=\"" + wsBgColor + L"\"/>";
+
+				m_wsDefs += L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 0.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 1.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 2.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 0.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 7.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 3.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 1.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 6.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 4.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 2.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 5.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 5.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"<line x1=\"" + ConvertToWString(dStrokeWidth * 3.0) + L"\" y1=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" x2=\"" + ConvertToWString(dStrokeWidth * 4.0) + L"\" y2=\"" + ConvertToWString(dStrokeWidth * 6.5) + L"\" stroke=\"" + wsStrokeColor + L"\" stroke-width=\"" + wsStrokeWidth + L"\"/>" +
+				            L"</pattern> ";
+
+				return wsId;
+			}
+
 			default: return std::wstring();
 
 		}

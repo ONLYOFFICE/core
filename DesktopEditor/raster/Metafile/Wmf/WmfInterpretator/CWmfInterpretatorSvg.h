@@ -156,7 +156,7 @@ namespace MetaFile
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TWmfRect& oBounds = TWmfRect());
 
 		void AddStroke(NodeAttributes &arAttributes);
-		void AddFill(NodeAttributes &arAttributes);
+		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
 
 		void AddNoneFill(NodeAttributes &arAttributes);
@@ -165,7 +165,7 @@ namespace MetaFile
 
 		TPointD GetCutPos();
 
-		std::wstring CreateHatchStyle(unsigned int unHetchStyle);
+		std::wstring CreateHatchStyle(unsigned int unHetchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 	};
 

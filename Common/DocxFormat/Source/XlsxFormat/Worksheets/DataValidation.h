@@ -102,10 +102,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>					m_oSpinCount;
 
 			nullable<SimpleTypes::Spreadsheet::CDataValidationType<>>		m_oType;
-			nullable<SimpleTypes::COnOff<>>									m_oAllowBlank;
+			nullable<SimpleTypes::COnOff>									m_oAllowBlank;
 			nullable_string													m_oError;
 			nullable_string													m_oErrorTitle;
 			nullable<SimpleTypes::Spreadsheet::CDataValidationErrorStyle<>>	m_oErrorStyle; 
@@ -113,9 +113,9 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::CDataValidationOperator<>>	m_oOperator; 
 			nullable_string													m_oPrompt;
 			nullable_string													m_oPromptTitle;
-			nullable<SimpleTypes::COnOff<>>									m_oShowDropDown;
-			nullable<SimpleTypes::COnOff<>>									m_oShowErrorMessage;
-			nullable<SimpleTypes::COnOff<>>									m_oShowInputMessage;
+			nullable<SimpleTypes::COnOff>									m_oShowDropDown;
+			nullable<SimpleTypes::COnOff>									m_oShowErrorMessage;
+			nullable<SimpleTypes::COnOff>									m_oShowInputMessage;
 
 			nullable_string									m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 
@@ -155,7 +155,7 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			mutable nullable_int							m_oCount;
-			nullable<SimpleTypes::COnOff<>>					m_oDisablePrompts;
+			nullable<SimpleTypes::COnOff>					m_oDisablePrompts;
 			nullable<SimpleTypes::CDecimalNumber>			m_oXWindow;
 			nullable<SimpleTypes::CDecimalNumber>			m_oYWindow;
 		};

@@ -195,13 +195,13 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>		m_oHorizontal;
 			nullable_uint													m_oIndent;
-			nullable<SimpleTypes::COnOff<>>									m_oJustifyLastLine;
+			nullable<SimpleTypes::COnOff>									m_oJustifyLastLine;
 			nullable_uint													m_oReadingOrder; //todooo to simple
 			nullable_int													m_oRelativeIndent;
-			nullable<SimpleTypes::COnOff<>>									m_oShrinkToFit;
+			nullable<SimpleTypes::COnOff>									m_oShrinkToFit;
 			nullable_uint													m_oTextRotation;
 			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>		m_oVertical;
-			nullable<SimpleTypes::COnOff<>>									m_oWrapText;
+			nullable<SimpleTypes::COnOff>									m_oWrapText;
 		};
 		class CProtection : public WritingElement
 		{
@@ -269,8 +269,8 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::COnOff<>> m_oHidden;
-			nullable<SimpleTypes::COnOff<>> m_oLocked;
+			nullable<SimpleTypes::COnOff> m_oHidden;
+			nullable<SimpleTypes::COnOff> m_oLocked;
 		};
 		//нереализован:
 		//<extLst>
@@ -396,20 +396,20 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::COnOff<>>					m_oApplyAlignment;
-			nullable<SimpleTypes::COnOff<>>					m_oApplyBorder;
-			nullable<SimpleTypes::COnOff<>>					m_oApplyFill;
-			nullable<SimpleTypes::COnOff<>>					m_oApplyFont;
-			nullable<SimpleTypes::COnOff<>>					m_oApplyNumberFormat;
-			nullable<SimpleTypes::COnOff<>>					m_oApplyProtection;
+			nullable<SimpleTypes::COnOff>					m_oApplyAlignment;
+			nullable<SimpleTypes::COnOff>					m_oApplyBorder;
+			nullable<SimpleTypes::COnOff>					m_oApplyFill;
+			nullable<SimpleTypes::COnOff>					m_oApplyFont;
+			nullable<SimpleTypes::COnOff>					m_oApplyNumberFormat;
+			nullable<SimpleTypes::COnOff>					m_oApplyProtection;
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBorderId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFillId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFontId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
-			nullable<SimpleTypes::COnOff<>>					m_oPivotButton;
-			nullable<SimpleTypes::COnOff<>>					m_oQuotePrefix;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBorderId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFillId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFontId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oNumFmtId;
+			nullable<SimpleTypes::COnOff>					m_oPivotButton;
+			nullable<SimpleTypes::COnOff>					m_oQuotePrefix;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oXfId;
 
 			nullable<CAligment>								m_oAligment;
 			nullable<CProtection>							m_oProtection;
@@ -497,7 +497,7 @@ namespace OOX
                 m_oCount = (_UINT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 		};
 		class CCellStyleXfs  : public WritingElementWithChilds<CXfs>
 		{
@@ -578,7 +578,7 @@ namespace OOX
                 m_oCount = (_UINT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 		};
 	} //Spreadsheet
 } // namespace OOX

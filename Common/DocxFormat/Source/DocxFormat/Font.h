@@ -247,7 +247,7 @@ namespace OOX
 		nullable<SimpleTypes::CPitch>						m_oPitch;
 
 		nullable<std::wstring>								m_oAltName;
-		nullable<SimpleTypes::COnOff<>>						m_oNotTrueType;
+		nullable<SimpleTypes::COnOff>						m_oNotTrueType;
 		nullable<SimpleTypes::CPanose >						m_oPanose;
 
 		nullable<SimpleTypes::CLongHexNumber>				m_oCsb0;

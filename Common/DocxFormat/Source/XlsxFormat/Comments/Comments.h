@@ -264,7 +264,7 @@ namespace OOX
             }
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oAuthorId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oAuthorId;
 			nullable<SimpleTypes::CGuid > m_oUid;
 
             nullable<CSi> m_oText;

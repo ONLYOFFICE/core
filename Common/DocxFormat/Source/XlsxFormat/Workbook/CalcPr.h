@@ -138,19 +138,19 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCalcId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCalcId;
 			nullable<SimpleTypes::Spreadsheet::CCalcMode<>>		m_oCalcMode;
-			nullable<SimpleTypes::COnOff<>>						m_oFullCalcOnLoad;
+			nullable<SimpleTypes::COnOff>						m_oFullCalcOnLoad;
 			nullable<SimpleTypes::Spreadsheet::CRefMode<>>		m_oRefMode;
-			nullable<SimpleTypes::COnOff<>>						m_oIterate;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIterateCount;
+			nullable<SimpleTypes::COnOff>						m_oIterate;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIterateCount;
 			nullable<SimpleTypes::CDouble>						m_oIterateDelta;
-			nullable<SimpleTypes::COnOff<>>						m_oFullPrecision;
-			nullable<SimpleTypes::COnOff<>>						m_oCalcCompleted;
-			nullable<SimpleTypes::COnOff<>>						m_oCalcOnSave;
-			nullable<SimpleTypes::COnOff<>>						m_oConcurrentCalc;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oConcurrentManualCount;
-			nullable<SimpleTypes::COnOff<>>						m_oForceFullCalc;
+			nullable<SimpleTypes::COnOff>						m_oFullPrecision;
+			nullable<SimpleTypes::COnOff>						m_oCalcCompleted;
+			nullable<SimpleTypes::COnOff>						m_oCalcOnSave;
+			nullable<SimpleTypes::COnOff>						m_oConcurrentCalc;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oConcurrentManualCount;
+			nullable<SimpleTypes::COnOff>						m_oForceFullCalc;
 		};
 
 	} //Spreadsheet

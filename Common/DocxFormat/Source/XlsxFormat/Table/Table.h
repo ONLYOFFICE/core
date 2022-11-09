@@ -105,10 +105,10 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<std::wstring > m_oName;
-			nullable<SimpleTypes::COnOff<> > m_oShowColumnStripes;
-			nullable<SimpleTypes::COnOff<> > m_oShowFirstColumn;
-			nullable<SimpleTypes::COnOff<> > m_oShowLastColumn;
-			nullable<SimpleTypes::COnOff<> > m_oShowRowStripes;
+			nullable<SimpleTypes::COnOff > m_oShowColumnStripes;
+			nullable<SimpleTypes::COnOff > m_oShowFirstColumn;
+			nullable<SimpleTypes::COnOff > m_oShowLastColumn;
+			nullable<SimpleTypes::COnOff > m_oShowRowStripes;
 		};
 		class CTableColumn : public WritingElement
 		{
@@ -141,14 +141,14 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable_string												m_oDataCellStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDataDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oDataDxfId;
 			nullable_string												m_oHeaderRowCellStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oHeaderRowDxfId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oHeaderRowDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oId;
 			nullable_string												m_oName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oQueryTableFieldId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oQueryTableFieldId;
 			nullable_string												m_oTotalsRowCellStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oTotalsRowDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oTotalsRowDxfId;
 			nullable<SimpleTypes::Spreadsheet::CTotalsRowFunction<>>	m_oTotalsRowFunction;
 			nullable_string												m_oTotalsRowLabel;
 			nullable_string												m_oUniqueName;
@@ -191,7 +191,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj);
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CTable : public WritingElement
 		{
@@ -226,26 +226,26 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable_string										m_oComment;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oConnectionId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oConnectionId;
 			nullable_string										m_oDataCellStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDataDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oDataDxfId;
 			nullable_string										m_oDisplayName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oHeaderRowBorderDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oHeaderRowBorderDxfId;
 			nullable_string										m_oHeaderRowCellStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oHeaderRowCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oHeaderRowDxfId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oHeaderRowCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oHeaderRowDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oId;
 			nullable_bool										m_oInsertRow;
 			nullable_bool										m_oInsertRowShift;
 			nullable_string										m_oName;
 			nullable_bool										m_oPublished;
 			nullable<SimpleTypes::CRelationshipId >				m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTableBorderDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTableBorderDxfId;
 			nullable<SimpleTypes::Spreadsheet::CTableType<>>	m_oTableType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTotalsRowBorderDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTotalsRowBorderDxfId;
 			nullable_string										m_oTotalsRowCellStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTotalsRowCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTotalsRowDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTotalsRowCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTotalsRowDxfId;
 			nullable_bool										m_oTotalsRowShown;
 
 			nullable<CAutofilter >								m_oAutoFilter;
@@ -318,7 +318,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		//необработанные child:
 		//<extLst>

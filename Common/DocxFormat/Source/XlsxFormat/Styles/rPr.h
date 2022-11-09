@@ -549,8 +549,8 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::COnOff<>>						m_oAuto;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;
+			nullable<SimpleTypes::COnOff>						m_oAuto;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIndexed;
 			nullable<SimpleTypes::Spreadsheet::CHexColor>		m_oRgb;
 			nullable<SimpleTypes::Spreadsheet::CThemeColor<>>	m_oThemeColor;
 			nullable<SimpleTypes::CDouble>						m_oTint;

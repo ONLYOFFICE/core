@@ -567,7 +567,7 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 			std::map<int, CFill*>								m_mapFills;
 		};
 	} //Spreadsheet

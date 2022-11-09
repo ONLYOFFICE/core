@@ -70,13 +70,13 @@ namespace OOX
 			CStringXLSB m_oRef;
 			CStringXLSB m_oR1;
 			CStringXLSB m_oR2;
-			SimpleTypes::COnOff<> m_oAca;
-			SimpleTypes::COnOff<> m_oBx;
-			SimpleTypes::COnOff<> m_oCa;
-			SimpleTypes::COnOff<> m_oDel1;
-			SimpleTypes::COnOff<> m_oDel2;
-			SimpleTypes::COnOff<> m_oDt2D;
-			SimpleTypes::COnOff<> m_oDtr;
+			SimpleTypes::COnOff m_oAca;
+			SimpleTypes::COnOff m_oBx;
+			SimpleTypes::COnOff m_oCa;
+			SimpleTypes::COnOff m_oDel1;
+			SimpleTypes::COnOff m_oDel2;
+			SimpleTypes::COnOff m_oDt2D;
+			SimpleTypes::COnOff m_oDtr;
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -91,7 +91,7 @@ namespace OOX
 			_UINT32 m_nCol;
 			_UINT32 m_nStyle;
 			SimpleTypes::Spreadsheet::CCellTypeType<SimpleTypes::Spreadsheet::celltypeNumber> m_oType;
-			SimpleTypes::COnOff<> m_oShowPhonetic;
+			SimpleTypes::COnOff m_oShowPhonetic;
 
 			CTextXLSB m_oValue;
 			CFormulaXLSB m_oFormula;
@@ -109,15 +109,15 @@ namespace OOX
 		public:
 			_UINT32 m_nR;
 			_UINT32 m_nS;
-			SimpleTypes::COnOff<> m_oCustomFormat;
+			SimpleTypes::COnOff m_oCustomFormat;
 			double m_dHt;
-			SimpleTypes::COnOff<> m_oHidden;
-			SimpleTypes::COnOff<> m_oCustomHeight;
+			SimpleTypes::COnOff m_oHidden;
+			SimpleTypes::COnOff m_oCustomHeight;
 			BYTE m_nOutlineLevel;
-			SimpleTypes::COnOff<> m_oCollapsed;
-			SimpleTypes::COnOff<> m_oThickBot;
-			SimpleTypes::COnOff<> m_oThickTop;
-			SimpleTypes::COnOff<> m_oPh;
+			SimpleTypes::COnOff m_oCollapsed;
+			SimpleTypes::COnOff m_oThickBot;
+			SimpleTypes::COnOff m_oThickTop;
+			SimpleTypes::COnOff m_oPh;
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
@@ -181,17 +181,16 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::COnOff<>>							m_oAca;
-			nullable<SimpleTypes::COnOff<>>							m_oBx;
-			nullable<SimpleTypes::COnOff<>>							m_oCa;
-			nullable<SimpleTypes::COnOff<>>							m_oDel1;
-			nullable<SimpleTypes::COnOff<>>							m_oDel2;
-			nullable<SimpleTypes::COnOff<>>							m_oDt2D;
-			nullable<SimpleTypes::COnOff<>>							m_oDtr;
+			nullable<SimpleTypes::COnOff>							m_oAca;
+			nullable<SimpleTypes::COnOff>							m_oCa;
+			nullable<SimpleTypes::COnOff>							m_oDel1;
+			nullable<SimpleTypes::COnOff>							m_oDel2;
+			nullable<SimpleTypes::COnOff>							m_oDt2D;
+			nullable<SimpleTypes::COnOff>							m_oDtr;
 			nullable<std::wstring>									m_oR1;
 			nullable<std::wstring>									m_oR2;
 			nullable<std::wstring>									m_oRef;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSi;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oSi;
 			nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
 
 			std::wstring m_sText;
@@ -396,11 +395,11 @@ namespace OOX
 			nullable_int iAcross;
 			nullable_int iDown;
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCellMetadata;
-			nullable<SimpleTypes::COnOff<>>						m_oShowPhonetic;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCellMetadata;
+			nullable<SimpleTypes::COnOff>						m_oShowPhonetic;
 			nullable_uint										m_oStyle;
 			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
 
 			nullable<std::string>	m_oRef;
 			nullable_uint			m_oRow;
@@ -465,17 +464,17 @@ namespace OOX
 			void CheckIndex();
 
 		public:
-			nullable<SimpleTypes::COnOff<>>					m_oCollapsed;
-			nullable<SimpleTypes::COnOff<>>					m_oCustomFormat;
-			nullable<SimpleTypes::COnOff<>>					m_oCustomHeight;
-			nullable<SimpleTypes::COnOff<>>					m_oHidden;
+			nullable<SimpleTypes::COnOff>					m_oCollapsed;
+			nullable<SimpleTypes::COnOff>					m_oCustomFormat;
+			nullable<SimpleTypes::COnOff>					m_oCustomHeight;
+			nullable<SimpleTypes::COnOff>					m_oHidden;
 			nullable<SimpleTypes::CDouble>					m_oHt;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevel;
-			nullable<SimpleTypes::COnOff<>>					m_oPh;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oR;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oS;
-			nullable<SimpleTypes::COnOff<>>					m_oThickBot;
-			nullable<SimpleTypes::COnOff<>>					m_oThickTop;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oOutlineLevel;
+			nullable<SimpleTypes::COnOff>					m_oPh;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oR;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oS;
+			nullable<SimpleTypes::COnOff>					m_oThickBot;
+			nullable<SimpleTypes::COnOff>					m_oThickTop;
 			nullable<SimpleTypes::CDouble>					m_oDyDescent;
 		};
 
@@ -527,7 +526,7 @@ namespace OOX
 				return et_x_SheetData;
 			}
 		
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXlsbPos;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oXlsbPos;
 		
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);

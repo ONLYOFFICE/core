@@ -136,7 +136,7 @@ namespace OOX
             }
 		public:
 				nullable<SimpleTypes::Spreadsheet::CPhoneticAlignment<>>	m_oAlignment;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oFontId;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oFontId;
 				nullable<SimpleTypes::Spreadsheet::CPhoneticType<>>			m_oType;
 		};
 
@@ -213,8 +213,8 @@ namespace OOX
                 }
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oEb;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSb;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oEb;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oSb;
 		};
 	} //Spreadsheet
 } // namespace OOX

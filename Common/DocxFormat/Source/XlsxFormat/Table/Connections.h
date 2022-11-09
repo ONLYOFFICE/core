@@ -1001,7 +1001,7 @@ namespace OOX
 			}
 			nullable_int		m_oType;	//EDatabaseSourceType
 			nullable_string		m_oName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oId;
 			nullable_string		m_oIdExt;
 			nullable_string		m_oUId;
 

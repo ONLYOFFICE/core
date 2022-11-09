@@ -120,7 +120,7 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
-			nullable<SimpleTypes::COnOff<>>						m_oGte;
+			nullable<SimpleTypes::COnOff>						m_oGte;
 			nullable<SimpleTypes::Spreadsheet::ST_CfvoType<>>	m_oType;	
 			nullable<std::wstring>								m_oVal;
 
@@ -160,7 +160,7 @@ namespace OOX
 			}
 
 			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>	m_oIconSet;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oIconId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oIconId;
 		};
 
 		class CColorScale : public WritingElement
@@ -242,9 +242,9 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMaxLength;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinLength;
-			nullable<SimpleTypes::COnOff<>>					m_oShowValue;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMaxLength;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMinLength;
+			nullable<SimpleTypes::COnOff>					m_oShowValue;
 			
 			nullable<CColor>								m_oColor;
 
@@ -253,10 +253,10 @@ namespace OOX
 //---ext-----------
 			nullable<SimpleTypes::Spreadsheet::ST_DataBarAxisPosition<>>	m_oAxisPosition;
 			nullable<SimpleTypes::Spreadsheet::ST_DataBarDirection<>>		m_oDirection;			
-			nullable<SimpleTypes::COnOff<>>									m_oBorder;
-			nullable<SimpleTypes::COnOff<>>									m_oGradient;
-			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarColorSameAsPositive;
-			nullable<SimpleTypes::COnOff<>>									m_oNegativeBarBorderColorSameAsPositive;
+			nullable<SimpleTypes::COnOff>									m_oBorder;
+			nullable<SimpleTypes::COnOff>									m_oGradient;
+			nullable<SimpleTypes::COnOff>									m_oNegativeBarColorSameAsPositive;
+			nullable<SimpleTypes::COnOff>									m_oNegativeBarBorderColorSameAsPositive;
 
 			nullable<CColor>								m_oAxisColor;
 			nullable<CColor>								m_oBorderColor;
@@ -304,15 +304,15 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
-			nullable<SimpleTypes::COnOff<>>						m_oPercent;
-			nullable<SimpleTypes::COnOff<>>						m_oReverse;
-			nullable<SimpleTypes::COnOff<>>						m_oShowValue;
-			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
+			nullable<SimpleTypes::COnOff>							m_oPercent;
+			nullable<SimpleTypes::COnOff>							m_oReverse;
+			nullable<SimpleTypes::COnOff>							m_oShowValue;
+			std::vector<nullable<CConditionalFormatValueObject>>	m_arrValues;
 
-			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>m_oIconSet;
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>	m_oIconSet;
 //---ext-----------
-			nullable<SimpleTypes::COnOff<>>						m_oCustom;
-			std::vector<nullable<CConditionalFormatIconSet>>	m_arrIconSets;
+			nullable<SimpleTypes::COnOff>							m_oCustom;
+			std::vector<nullable<CConditionalFormatIconSet>>		m_arrIconSets;
 		};
 
 		class CConditionalFormattingRule : public WritingElement
@@ -359,16 +359,16 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 			nullable<CDxf>										m_oDxf;
-			nullable<SimpleTypes::COnOff<>>						m_oAboveAverage;
-			nullable<SimpleTypes::COnOff<>>						m_oBottom;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDxfId;
-			nullable<SimpleTypes::COnOff<>>						m_oEqualAverage;
+			nullable<SimpleTypes::COnOff>						m_oAboveAverage;
+			nullable<SimpleTypes::COnOff>						m_oBottom;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oDxfId;
+			nullable<SimpleTypes::COnOff>						m_oEqualAverage;
 			nullable<SimpleTypes::Spreadsheet::ST_CfOperator<>>	m_oOperator;	
-			nullable<SimpleTypes::COnOff<>>						m_oPercent;
+			nullable<SimpleTypes::COnOff>						m_oPercent;
 			nullable<SimpleTypes::CDecimalNumber>				m_oPriority;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRank;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRank;
 			nullable<SimpleTypes::CDecimalNumber>				m_oStdDev;
-			nullable<SimpleTypes::COnOff<>>						m_oStopIfTrue;
+			nullable<SimpleTypes::COnOff>						m_oStopIfTrue;
 			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;
             nullable<SimpleTypes::Spreadsheet::ST_TimePeriod<>>	m_oTimePeriod;
@@ -426,7 +426,7 @@ namespace OOX
 			mutable bool m_bIsValid;
 		public:
 
-			nullable<SimpleTypes::COnOff<>>	m_oPivot;
+			nullable<SimpleTypes::COnOff>	m_oPivot;
 			nullable<std::wstring >			m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
 	} //Spreadsheet

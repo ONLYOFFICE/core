@@ -462,7 +462,7 @@ namespace OOX
                 m_oCount = (_UINT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			std::map<int, CFont*>							m_mapFonts;
 		};
 	} //Spreadsheet

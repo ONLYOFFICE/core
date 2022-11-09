@@ -789,7 +789,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			SimpleTypes::COnOff<SimpleTypes::onoffFalse>	m_oActualPg;
+			SimpleTypes::COnOff								m_oActualPg;
 			SimpleTypes::CDecimalNumberOrPercent			m_oFontSz;
 			SimpleTypes::CPixelsMeasure						m_oH;
 			SimpleTypes::CPixelsMeasure						m_oW;

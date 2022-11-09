@@ -112,12 +112,12 @@ namespace OOX
                 }
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBuiltinId;
-			nullable<SimpleTypes::COnOff<>>					m_oCustomBuiltin;
-			nullable<SimpleTypes::COnOff<>>					m_oHidden;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oILevel;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBuiltinId;
+			nullable<SimpleTypes::COnOff>					m_oCustomBuiltin;
+			nullable<SimpleTypes::COnOff>					m_oHidden;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oILevel;
 			nullable_string									m_oName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oXfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oXfId;
 		};
 
 		class CCellStyles : public WritingElementWithChilds<CCellStyle>
@@ -199,7 +199,7 @@ namespace OOX
                 m_oCount = (_UINT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 		};
 	} //Spreadsheet
 } // namespace OOX

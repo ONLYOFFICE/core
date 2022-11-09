@@ -352,9 +352,9 @@ namespace OOX
 
 
 		public:
-			nullable<SimpleTypes::COnOff<>>	m_oDiagonalDown;
-			nullable<SimpleTypes::COnOff<>>	m_oDiagonalUp;
-			nullable<SimpleTypes::COnOff<>>	m_oOutline;
+			nullable<SimpleTypes::COnOff>	m_oDiagonalDown;
+			nullable<SimpleTypes::COnOff>	m_oDiagonalUp;
+			nullable<SimpleTypes::COnOff>	m_oOutline;
 
 			nullable<CBorderProp>	m_oBottom;
 			nullable<CBorderProp>	m_oDiagonal;
@@ -453,7 +453,7 @@ namespace OOX
                 m_oCount = (_UINT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			std::map<int, CBorder*>							m_mapBorders;
 		};
 	} //Spreadsheet

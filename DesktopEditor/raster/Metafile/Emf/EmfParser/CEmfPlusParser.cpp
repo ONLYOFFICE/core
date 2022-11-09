@@ -154,10 +154,10 @@ namespace MetaFile
 	};
 
 	CEmfPlusParser::CEmfPlusParser(CEmfInterpretatorBase *pEmfInterpretator, const TEmfHeader& oHeader)
-		: m_bBanEmfProcessing(false),
+	    : m_bBanEmfProcessing(false),
 		  m_unLogicalDpiX(96),
 		  m_unLogicalDpiY(96),
-		  m_dUnitKoef(1)
+	      m_dUnitKoef(1)
 	{
 		m_oHeader = oHeader;
 

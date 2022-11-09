@@ -149,7 +149,6 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
 	{
-		std::wcout << oXForm.M11 << L" _ " << oXForm.M22 << L" _ " << oXForm.Dx << L" _ " << oXForm.Dy << L" | " << unMode << std::endl;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETWORLDTRANSFORM(const TXForm &oXForm)
@@ -1122,11 +1121,11 @@ namespace MetaFile
 		{
 			oTempRect = TranslateRect(oRect);
 
-			wsValue +=	L"M "  + ConvertToWString(oTempRect.dLeft)  + L',' + ConvertToWString(oTempRect.dTop) +
-						L" L " + ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
-								 ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
-								 ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
-								 ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dTop) + L' ';
+			wsValue +=	L"M " + ConvertToWString(oTempRect.dLeft)  + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
+			            L"L " + ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
+			                    ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
+			                    ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
+			                    ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dTop) + L' ';
 		}
 
 		NodeAttributes arAttributes = {{L"d", wsValue}};
@@ -1318,7 +1317,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWPIE(short shOgjectIndex, double dStartAngle, double dSweepAngle, const TEmfPlusRectF &oRect)
 	{
-
+		//TODO: Реализовать при встрече
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWRECTS(short shOgjectIndex, const std::vector<TEmfPlusRectF> &arRects)
@@ -1627,7 +1626,7 @@ namespace MetaFile
 
 		if (OPAQUE == m_pParser->GetTextBgMode())
 		{
-			std::wstring wsFillRect = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L", 255)";
+			std::wstring wsFillRect = L"rgb(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L')';
 
 			m_oXmlWriter.WriteNodeBegin(L"g");
 			bWriteG = true;
@@ -1643,7 +1642,7 @@ namespace MetaFile
 		TEmfColor oColor = m_pParser->GetDC()->GetTextColor();
 
 		if (0 != oColor.r || 0 != oColor.g || 0 != oColor.b)
-			arNodeAttributes.push_back({L"fill", L"rgba(" + ConvertToWString(oColor.r, 0) + L", " + ConvertToWString(oColor.g, 0) + L", " + ConvertToWString(oColor.b, 0) + L", 255)"});
+			arNodeAttributes.push_back({L"fill", L"rgb(" + ConvertToWString(oColor.r, 0) + L", " + ConvertToWString(oColor.g, 0) + L", " + ConvertToWString(oColor.b, 0) + L')'});
 
 		IFont *pFont = m_pParser->GetFont();
 
@@ -1774,137 +1773,145 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
 	{
-		if (NULL != m_pParser)
-		{		
-			IPen *pPen = m_pParser->GetPen();
+		if (NULL == m_pParser)
+			return;
 
-			if (NULL == pPen || PS_NULL == pPen->GetStyle())
-				return;
+		IPen *pPen = m_pParser->GetPen();
 
-			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")"});
+		if (NULL == pPen || PS_NULL == pPen->GetStyle())
+			return;
 
-			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+		if (pPen->GetAlpha() != 255)
+			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
 
-			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-				dStrokeWidth = m_pParser->GetPixWidth(1.0 * m_oScale.dX);
+		arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L')'});
 
-			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
+		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			unsigned int unMetaPenStyle = m_pParser->GetPen()->GetStyle();
-			//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
-			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+			dStrokeWidth = m_pParser->GetPixWidth(1.0 * m_oScale.dX);
 
-			double* arDatas = NULL;
-			unsigned int unDataSize = 0;
+		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
-			pPen->GetDashData(arDatas, unDataSize);
+		unsigned int unMetaPenStyle = m_pParser->GetPen()->GetStyle();
+		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
+		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
-			if (NULL != arDatas && 0 != unDataSize)
-			{
-				std::wstring wsDashArray;
+		double* arDatas = NULL;
+		unsigned int unDataSize = 0;
 
-				for (unsigned int unIndex = 0; unIndex < unDataSize; ++unIndex)
-					wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
+		pPen->GetDashData(arDatas, unDataSize);
 
-				wsDashArray.pop_back();
+		if (NULL != arDatas && 0 != unDataSize)
+		{
+			std::wstring wsDashArray;
 
-				arAttributes.push_back({L"stroke-dasharray", wsDashArray});
+			for (unsigned int unIndex = 0; unIndex < unDataSize; ++unIndex)
+				wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
 
-				ulPenStyle = PS_USERSTYLE;
-			}
+			wsDashArray.pop_back();
 
-			if (PS_DASH == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-			else if (PS_DOT == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth)});
-			else if (PS_DASHDOT == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-			else if (PS_DASHDOTDOT == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-			else
-			{
-				unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
-				unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
-				unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+			arAttributes.push_back({L"stroke-dasharray", wsDashArray});
 
-				// svg не поддерживает разные стили для сторон линии
-				if (PS_STARTCAP_FLAT == ulPenStartCap || PS_ENDCAP_FLAT == ulPenEndCap)
-					arAttributes.push_back({L"stroke-linecap", L"butt"});
-				else if (PS_STARTCAP_SQUARE == ulPenStartCap || PS_ENDCAP_SQUARE == ulPenEndCap)
-					arAttributes.push_back({L"stroke-linecap", L"square"});
-				else if (PS_STARTCAP_ROUND == ulPenStartCap || PS_ENDCAP_ROUND == ulPenEndCap)
-					arAttributes.push_back({L"stroke-linecap", L"round"});
-
-				if (PS_JOIN_MITER == ulPenJoin)
-					arAttributes.push_back({L"stroke-linejoin", L"miter"});
-				else if (PS_JOIN_BEVEL == ulPenJoin)
-					arAttributes.push_back({L"stroke-linejoin", L"bevel"});
-				else if (PS_JOIN_ROUND == ulPenJoin)
-					arAttributes.push_back({L"stroke-linejoin", L"round"});
-			}
+			ulPenStyle = PS_USERSTYLE;
 		}
-		else arAttributes.push_back({L"stroke", L"none"});
+
+		if (PS_DASH == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
+		else if (PS_DOT == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth)});
+		else if (PS_DASHDOT == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
+		else if (PS_DASHDOTDOT == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
+		else
+		{
+			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
+			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+
+			// svg не поддерживает разные стили для сторон линии
+			if (PS_STARTCAP_FLAT == ulPenStartCap || PS_ENDCAP_FLAT == ulPenEndCap)
+				arAttributes.push_back({L"stroke-linecap", L"butt"});
+			else if (PS_STARTCAP_SQUARE == ulPenStartCap || PS_ENDCAP_SQUARE == ulPenEndCap)
+				arAttributes.push_back({L"stroke-linecap", L"square"});
+			else if (PS_STARTCAP_ROUND == ulPenStartCap || PS_ENDCAP_ROUND == ulPenEndCap)
+				arAttributes.push_back({L"stroke-linecap", L"round"});
+
+			if (PS_JOIN_MITER == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"miter"});
+			else if (PS_JOIN_BEVEL == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+			else if (PS_JOIN_ROUND == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"round"});
+		}
 	}
 
 	void CEmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes, double dWidth, double dHeight)
 	{
-		if (NULL != m_pParser && NULL != m_pParser->GetBrush())
+		if (NULL == m_pParser)
 		{
-			IBrush *pBrush = m_pParser->GetBrush();
-
-			switch (pBrush->GetStyle())
-			{
-				case BS_SOLID:
-				{
-					arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L"," + ConvertToWString(pBrush->GetAlpha(), 0) + L")"});
-					return;
-				}
-				case BS_HATCHED:
-				{
-					const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch(), dWidth, dHeight);
-
-					if (!wsStyleId.empty())
-					{
-						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-						return;
-					}
-
-					break;
-				}
-				case BS_DIBPATTERN:
-				{
-					const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
-
-					if (!wsStyleId.empty())
-					{
-						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-						return;
-					}
-				}
-				case BS_LINEARGRADIENT:
-				case BS_RECTGRADIENT:
-				case BS_PATHGRADIENT:
-				case BS_RADIALGRADIENT:
-				case BS_AXIALGRADIENT:
-				{
-					const std::wstring wsStyleId = CreateGradient(pBrush);
-
-					if (!wsStyleId.empty())
-					{
-						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-						return;
-					}
-				}
-				case BS_NULL: break;
-				default:
-				{
-					std::wcout << std::endl;
-				break;
-				}
-			}
+			arAttributes.push_back({L"fill", L"none"});
+			return;
 		}
 
-		arAttributes.push_back({L"fill", L"none"});
+		IBrush *pBrush = m_pParser->GetBrush();
+
+		if (NULL == pBrush || BS_NULL == pBrush->GetStyle())
+		{
+			arAttributes.push_back({L"fill", L"none"});
+			return;
+		}
+
+		if (pBrush->GetAlpha() != 255)
+			arAttributes.push_back({L"fill-opacity" , ConvertToWString(pBrush->GetAlpha() / 255., 3)});
+
+		switch (pBrush->GetStyle())
+		{
+			case BS_SOLID:
+			{
+				arAttributes.push_back({L"fill", L"rgb(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L")"});
+				return;
+			}
+			case BS_HATCHED:
+			{
+				const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch(), dWidth, dHeight);
+
+				if (!wsStyleId.empty())
+				{
+					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+					return;
+				}
+
+				break;
+			}
+			case BS_DIBPATTERN:
+			{
+				const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
+
+				if (!wsStyleId.empty())
+				{
+					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+					return;
+				}
+			}
+			case BS_LINEARGRADIENT:
+			case BS_RECTGRADIENT:
+			case BS_PATHGRADIENT:
+			case BS_RADIALGRADIENT:
+			case BS_AXIALGRADIENT:
+			{
+				const std::wstring wsStyleId = CreateGradient(pBrush);
+
+				if (!wsStyleId.empty())
+				{
+					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+					return;
+				}
+			}
+			default:
+				arAttributes.push_back({L"fill", L"none"});
+		}
 	}
 
 	void CEmfInterpretatorSvg::AddTransform(NodeAttributes &arAttributes, TXForm* pTransform)
@@ -2158,7 +2165,7 @@ namespace MetaFile
 		std::wstring wsBgColor;
 
 		if (TRANSPARENT != m_pParser->GetTextBgMode())
-			wsBgColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L",255)";
+			wsBgColor += L"rgb(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor())+ L")";
 
 		switch(unHatchStyle)
 		{
@@ -3726,8 +3733,8 @@ namespace MetaFile
 			wsStyleId = L"LINEARGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
 
 			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">" +
-			            L"<stop offset=\"0%\" stop-color=\"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L", 255)\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor2()) + L", 255)\"/>" +
+			            L"<stop offset=\"0%\" stop-color=\"rgb(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L")\"/>" +
+			            L"<stop offset=\"100%\" stop-color=\"rgb(" + INTCOLOR_TO_RGB(pBrush->GetColor2()) + L")\"/>" +
 			            L"</linearGradient>";
 
 			return wsStyleId;
@@ -3756,8 +3763,8 @@ namespace MetaFile
 			}
 
 			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +
-			            L"<stop offset=\"0%\" stop-color=\"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L", 255)\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor2()) + L", 255)\"/>" +
+			            L"<stop offset=\"0%\" stop-color=\"rgb(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L")\"/>" +
+			            L"<stop offset=\"100%\" stop-color=\"rgb(" + INTCOLOR_TO_RGB(pBrush->GetColor2()) + L")\"/>" +
 			            L"</radialGradient>";
 
 			return wsStyleId;

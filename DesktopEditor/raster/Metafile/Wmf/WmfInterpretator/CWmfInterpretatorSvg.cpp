@@ -958,111 +958,124 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
 	{
-		if (NULL != m_pParser)
+		if (NULL == m_pParser)
 		{
-			IPen* pPen = m_pParser->GetPen();
-
-			if (NULL == pPen || PS_NULL == pPen->GetStyle())
-				return;
-
-			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L"," + ConvertToWString(pPen->GetAlpha(), 0) + L")"});
-
-			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
-
-			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-				dStrokeWidth = m_pParser->GetPixWidth(1.0 / m_dScale);
-
-			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
-
-			unsigned int unMetaPenStyle = pPen->GetStyle();
-
-			//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
-			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
-
-			if (PS_SOLID == ulPenStyle)
-			{
-				unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
-				unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
-				unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
-
-				// svg не поддерживает разные стили для сторон линии
-				if (PS_STARTCAP_ROUND == ulPenStartCap)
-					arAttributes.push_back({L"stroke-linecap", L"round"});
-				else if (PS_STARTCAP_SQUARE == ulPenStartCap)
-					arAttributes.push_back({L"stroke-linecap", L"square"});
-				else if (PS_STARTCAP_FLAT == ulPenStartCap)
-					arAttributes.push_back({L"stroke-linecap", L"butt"});
-				else
-					arAttributes.push_back({L"stroke-linecap", L"round"});
-
-				//                                if (PS_STARTCAP_FLAT == ulPenStartCap /*|| PS_ENDCAP_FLAT == ulPenEndCap*/)
-				//                                        arAttributes.push_back({L"stroke-linecap", L"butt"});
-				//                                else if (PS_STARTCAP_SQUARE == ulPenStartCap /*|| PS_ENDCAP_SQUARE == ulPenEndCap*/)
-				//                                        arAttributes.push_back({L"stroke-linecap", L"square"});
-				//                                else
-				//                                        arAttributes.push_back({L"stroke-linecap", L"round"});
-
-				if (PS_JOIN_MITER == ulPenJoin)
-					arAttributes.push_back({L"stroke-linejoin", L"miter"});
-				else if (PS_JOIN_BEVEL == ulPenJoin)
-					arAttributes.push_back({L"stroke-linejoin", L"bevel"});
-				else if (PS_JOIN_ROUND == ulPenJoin)
-					arAttributes.push_back({L"stroke-linejoin", L"round"});
-			}
-			else if (PS_DASH == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-			else if (PS_DOT == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth)});
-			else if (PS_DASHDOT == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
-			else if (PS_DASHDOTDOT == ulPenStyle)
-				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
+			arAttributes.push_back({L"stroke", L"black"});
+			return;
 		}
-		else arAttributes.push_back({L"stroke", L"black"});
+
+		IPen* pPen = m_pParser->GetPen();
+
+		if (NULL == pPen || PS_NULL == pPen->GetStyle())
+		{
+			arAttributes.push_back({L"stroke", L"black"});
+			return;
+		}
+
+		if (pPen->GetAlpha() != 255)
+			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
+
+		arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'});
+
+		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+
+		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+			dStrokeWidth = m_pParser->GetPixWidth(1.0 / m_dScale);
+
+		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
+
+		unsigned int unMetaPenStyle = pPen->GetStyle();
+
+		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
+		unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+
+		if (PS_SOLID == ulPenStyle)
+		{
+			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
+			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
+			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
+
+			// svg не поддерживает разные стили для сторон линии
+			if (PS_STARTCAP_ROUND == ulPenStartCap)
+				arAttributes.push_back({L"stroke-linecap", L"round"});
+			else if (PS_STARTCAP_SQUARE == ulPenStartCap)
+				arAttributes.push_back({L"stroke-linecap", L"square"});
+			else if (PS_STARTCAP_FLAT == ulPenStartCap)
+				arAttributes.push_back({L"stroke-linecap", L"butt"});
+			else
+				arAttributes.push_back({L"stroke-linecap", L"round"});
+
+			if (PS_JOIN_MITER == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"miter"});
+			else if (PS_JOIN_BEVEL == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"bevel"});
+			else if (PS_JOIN_ROUND == ulPenJoin)
+				arAttributes.push_back({L"stroke-linejoin", L"round"});
+		}
+		else if (PS_DASH == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
+		else if (PS_DOT == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth)});
+		else if (PS_DASHDOT == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
+		else if (PS_DASHDOTDOT == ulPenStyle)
+			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2) + L' ' + ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth * 2)});
 	}
 
 	void CWmfInterpretatorSvg::AddFill(NodeAttributes &arAttributes, double dWidth, double dHeight)
 	{
-		if (NULL != m_pParser && NULL != m_pParser->GetBrush())
+		if (NULL == m_pParser)
 		{
-			IBrush *pBrush = m_pParser->GetBrush();
-
-			switch (pBrush->GetStyle())
-			{
-				case BS_SOLID:
-				{
-					arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L"," + ConvertToWString(pBrush->GetAlpha(), 0) + L")"});
-					return;
-				}
-				case BS_HATCHED:
-				{
-					const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch(), dWidth, dHeight);
-
-					if (!wsStyleId.empty())
-					{
-						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-						return;
-					}
-
-					break;
-				}
-				case BS_DIBPATTERN:
-				{
-					const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
-
-					if (!wsStyleId.empty())
-					{
-						arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
-						return;
-					}
-
-					break;
-				}
-				case BS_NULL: default: break;
-			}
+			AddNoneFill(arAttributes);
+			return;
 		}
 
-		arAttributes.push_back({L"fill", L"none"});
+		IBrush *pBrush = m_pParser->GetBrush();
+
+		if (NULL == pBrush || BS_NULL == pBrush->GetStyle())
+		{
+			AddNoneFill(arAttributes);
+			return;
+		}
+
+		if (pBrush->GetAlpha() != 255)
+			arAttributes.push_back({L"fill-opacity" , ConvertToWString(pBrush->GetAlpha() / 255., 3)});
+
+		switch (pBrush->GetStyle())
+		{
+			case BS_SOLID:
+			{
+				arAttributes.push_back({L"fill", L"rgba(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L"," + ConvertToWString(pBrush->GetAlpha(), 0) + L")"});
+				return;
+			}
+			case BS_HATCHED:
+			{
+				const std::wstring wsStyleId = CreateHatchStyle(pBrush->GetHatch(), dWidth, dHeight);
+
+				if (!wsStyleId.empty())
+				{
+					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+					return;
+				}
+
+				break;
+			}
+			case BS_DIBPATTERN:
+			{
+				const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
+
+				if (!wsStyleId.empty())
+				{
+					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+					return;
+				}
+
+				break;
+			}
+			default: break;
+		}
+
+		AddNoneFill(arAttributes);
 	}
 
 	void CWmfInterpretatorSvg::AddTransform(NodeAttributes &arAttributes, TXForm *pTransform)
@@ -1176,11 +1189,11 @@ namespace MetaFile
 		std::wstring wsValueW = ((0 != dWidth)  ? ConvertToWString((dStrokeWidth * 8.) / dWidth,  6) : L"1");
 		std::wstring wsValueH = ((0 != dHeight) ? ConvertToWString((dStrokeWidth * 8.) / dHeight, 6) : L"1");
 
-		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
+		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L')';
 		std::wstring wsBgColor;
 
 		if (TRANSPARENT != m_pParser->GetTextBgMode())
-			wsBgColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L",255)";
+			wsBgColor = L"rgb(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L')';
 
 		switch(unHatchStyle)
 		{

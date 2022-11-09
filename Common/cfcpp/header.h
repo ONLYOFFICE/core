@@ -50,7 +50,7 @@ private:
 
 public:
     BYTE headerSignature[8] = {0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1};
-    BYTE clsid[16];
+    BYTE clsid[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
     _UINT16 minorVersion = 0x003E;
     _UINT16 majorVersion = 0x0003;
     _UINT16 byteOrder = 0xFFFE;

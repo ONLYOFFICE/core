@@ -1435,8 +1435,6 @@ namespace MetaFile
 
 		pImage->GetData(pBuffer, unSizeBuffer);
 
-		//                CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
-
 		if (NULL == pBuffer || unSizeBuffer == 0 || arPoints.size() != 3)
 			return;
 
@@ -1449,10 +1447,12 @@ namespace MetaFile
 			DrawBitmap(pBuffer, unSizeBuffer, unWidth, unHeigth, oSrcRect, arPoints);
 		}
 		else if (ImageDataTypeMetafile == pImage->GetImageDataType())
-			DrawMetafile(pBuffer, unSizeBuffer, oSrcRect, arPoints, pImage->GetMetafileType());
-	}
+		{
+			DrawMetafile(pBuffer, unSizeBuffer, oSrcRect, arPoints, pImage->GetMetafileType(), unImageAttributeIndex);
+		}
+}
 
-	void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType)
+	void CEmfPlusParser::DrawMetafile(BYTE *pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType, unsigned int unImageAttributeIndex)
 	{
 		if (NULL == pBuffer || 0 == unSize || MetafileDataTypeUnknown == eMetafileType)
 			return;
@@ -1557,9 +1557,14 @@ namespace MetaFile
 
 				TRectD oTempSrcRect = oSrcRect.GetRectD();
 
-				double dTempValue    = oTempSrcRect.dBottom; //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
-				oTempSrcRect.dBottom = oTempSrcRect.dTop;
-				oTempSrcRect.dTop    = dTempValue;
+				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
+
+				if (NULL != pImageAttributes && WrapModeTileFlipY != pImageAttributes->eWrapMode && WrapModeTileFlipXY != pImageAttributes->eWrapMode)
+				{
+					double dTempValue    = oTempSrcRect.dBottom;
+					oTempSrcRect.dBottom = oTempSrcRect.dTop;
+					oTempSrcRect.dTop    = dTempValue;
+				}
 
 				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
 			}

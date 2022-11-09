@@ -216,6 +216,9 @@ namespace MetaFile
 		if (!CheckError())
 			m_oStream.SeekToStart();
 
+		if (!m_bEof)
+			HANDLE_EMR_EOF();
+
 		ClearFile();
 	}
 

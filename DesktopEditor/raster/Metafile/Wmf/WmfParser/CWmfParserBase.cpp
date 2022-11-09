@@ -1048,7 +1048,7 @@ namespace MetaFile
 	void CWmfParserBase::HANDLE_META_PIE(short shXRadial1, short shYRadial1, short shXRadial2, short shYRadial2, short shB, short shR, short shT, short shL)
 	{
 		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_META_PIE(shXRadial1, shYRadial1, shXRadial1, shYRadial2, shB, shR, shT, shL);
+			m_pInterpretator->HANDLE_META_PIE(shXRadial1, shYRadial1, shXRadial2, shYRadial2, shB, shR, shT, shL);
 
 		short shCenterX = (shL + shR) / 2;
 		short shCenterY = (shT + shB) / 2;

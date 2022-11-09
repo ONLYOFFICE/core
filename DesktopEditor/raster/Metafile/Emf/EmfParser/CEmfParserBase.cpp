@@ -1712,9 +1712,6 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL>& arRects)
 	{
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
-
 		for (const TEmfRectL &oRect : arRects)
 		{
 			MoveTo(oRect.lLeft,  oRect.lTop);
@@ -1725,6 +1722,9 @@ namespace MetaFile
 
 		ClosePath();
 		m_oPlayer.SelectObject(unIhBrush);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
 
 		DrawPath(false, true);
 	}

@@ -317,7 +317,7 @@ namespace MetaFile
 			LOGGING(L"Skip: " << nNeedSkip)
 
 			m_ulRecordSize = 0;
-		}while(m_oStream.CanRead() > 12);
+		}while(m_oStream.CanRead() > 12 && !m_bEof);
 
 		if (!CheckError())
 			m_oStream.SeekToStart();
@@ -1458,8 +1458,8 @@ namespace MetaFile
 			return;
 
 		if (MetafileDataTypeEmf == eMetafileType ||
-				MetafileDataTypeEmfPlusOnly == eMetafileType ||
-				MetafileDataTypeEmfPlusDual == eMetafileType)
+		    MetafileDataTypeEmfPlusOnly == eMetafileType ||
+		    MetafileDataTypeEmfPlusDual == eMetafileType)
 		{
 			CEmfParser oEmfParser;
 			oEmfParser.SetStream(pBuffer, unSize);
@@ -1555,7 +1555,13 @@ namespace MetaFile
 				pXForm->Apply(oRect.dLeft,  oRect.dTop);
 				pXForm->Apply(oRect.dRight, oRect.dBottom);
 
-				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oSrcRect.GetRectD(), TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
+				TRectD oTempSrcRect = oSrcRect.GetRectD();
+
+				double dTempValue    = oTempSrcRect.dBottom; //Проверить на примерах, где WrapMode != WrapModeTileFlipXY
+				oTempSrcRect.dBottom = oTempSrcRect.dTop;
+				oTempSrcRect.dTop    = dTempValue;
+
+				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
 			}
 
 		}

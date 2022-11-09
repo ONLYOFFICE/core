@@ -72,6 +72,7 @@ namespace MetaFile
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
+//		m_oXmlWriter.WriteAttribute(L"shape-rendering", L"crispEdges");
 
 		UpdateSize();
 
@@ -148,6 +149,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
 	{
+		std::wcout << oXForm.M11 << L" _ " << oXForm.M22 << L" _ " << oXForm.Dx << L" _ " << oXForm.Dy << L" | " << unMode << std::endl;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETWORLDTRANSFORM(const TXForm &oXForm)
@@ -1137,12 +1139,34 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
 	{
-		std::wcout << L"One" << std::endl;
+		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || arRects.empty())
+			return;
+
+		std::wstring wsValue;
+
+		TRectD oTempRect;
+
+		for (const TEmfRectL& oRect : arRects)
+		{
+			oTempRect = TranslateRect(oRect);
+
+			wsValue +=	L"M " + ConvertToWString(oTempRect.dLeft)  + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
+			            L"L " + ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
+			                    ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
+			                    ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
+			                    ConvertToWString(oTempRect.dLeft)	+ L',' + ConvertToWString(oTempRect.dTop) + L' ';
+		}
+
+		NodeAttributes arAttributes = {{L"d", wsValue}};
+
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
 	{
-		std::wcout << L"Two" << std::endl;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_CLEAR(const TEmfPlusARGB &oARGB)
@@ -1502,13 +1526,6 @@ namespace MetaFile
 		if (wsSvg.empty())
 			return;
 
-		m_oXmlWriter.WriteNodeBegin(L"g", true);
-
-		if (0 != oTranslate.x || 0 != oTranslate.y)
-			m_oXmlWriter.WriteAttribute(L"transform", L"translate(" + ConvertToWString(oTranslate.x) + L',' + ConvertToWString(oTranslate.y) + L')');
-
-		m_oXmlWriter.WriteNodeEnd(L"g", true, false);
-
 		std::wstring wsNewSvg = wsSvg;
 
 		size_t unFirstPos = 83;
@@ -1517,17 +1534,41 @@ namespace MetaFile
 		if (std::wstring::npos == unSecondPos)
 			return;
 
+		NodeAttributes arNodeAttributes;
+
+		double dWidth  = oRect.dRight - oRect.dLeft;
+		double dHeight = oRect.dBottom - oRect.dTop;
+
+		double dWidthVB  = oClipRect.dRight - oClipRect.dLeft;
+		double dHeightVB = oClipRect.dBottom - oClipRect.dTop;
+
+		double dM11 = std::fabs(dWidth  / dWidthVB);
+		double dM22 = std::fabs(dHeight / dHeightVB);
+		double dX   = oTranslate.x + (1. - dM11) * oRect.dLeft;
+		double dY   = oTranslate.y + (1. - dM22) * oRect.dTop;
+
+		if (1. != dM11 || 1. != dM22)
+		{
+			dWidth  = std::fabs(dWidthVB);
+			dHeight = std::fabs(dHeightVB);
+			arNodeAttributes.push_back({L"transform", L"matrix(" + ConvertToWString(dM11) + L",0,0," + ConvertToWString(dM22) + L',' + ConvertToWString(dX) + L',' + ConvertToWString(dY) + L')'});
+		}
+		else if (0. != dX || 0. != dY)
+			arNodeAttributes.push_back({L"transform", L"translate(" + ConvertToWString(dX) + L',' + ConvertToWString(dY) + L')'});
+
+		WriteNodeBegin(L"g", arNodeAttributes);
+
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
-		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
-		                      L"viewBox=\"" + ConvertToWString(oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dTop) + L' ' + ConvertToWString(oClipRect.dRight - oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dBottom - oClipRect.dTop) + L'\"';
+		                      L"width=\"" + ConvertToWString(dWidth) + L"\" height=\"" + ConvertToWString(dHeight) + L"\" " +
+		                      L"viewBox=\"" + ConvertToWString(oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dTop) + L' ' + ConvertToWString(dWidthVB) + L' ' + ConvertToWString(dHeightVB) + L'\"';
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
 		m_oXmlWriter.WriteString(wsNewSvg);
 
-		m_oXmlWriter.WriteNodeEnd(L"g");
+		WriteNodeEnd(L"g");
 	}
 
 	void CEmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
@@ -1571,6 +1612,9 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::WriteText(const std::wstring &wsText, double dX, double dY, const TEmfRectL& oBounds, double dXScale, double dYScale)
 	{
+		if (NULL == m_pParser || NULL == m_pParser->GetFont())
+			return;
+
 		NodeAttributes arNodeAttributes;
 
 		double dXCoord = dX;
@@ -1580,9 +1624,6 @@ namespace MetaFile
 		oTransform.Copy(m_pParser->GetTransform());
 
 		bool bWriteG = false;
-
-		if (NULL == m_pParser || NULL == m_pParser->GetFont())
-			return;
 
 		if (OPAQUE == m_pParser->GetTextBgMode())
 		{
@@ -1595,7 +1636,7 @@ namespace MetaFile
 			                    {L"y",      ConvertToWString(oBounds.lTop)},
 			                    {L"width",  ConvertToWString(oBounds.lRight - oBounds.lLeft)},
 			                    {L"height", ConvertToWString(oBounds.lBottom - oBounds.lTop)},
-			                    {L"fill", wsFillRect},
+			                    {L"fill",   wsFillRect},
 			                    {L"stroke", L"none"}});
 		}
 
@@ -1733,22 +1774,44 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
 	{
-		if (NULL != m_pParser && NULL != m_pParser->GetPen() && PS_NULL != m_pParser->GetPen()->GetStyle())
+		if (NULL != m_pParser)
 		{		
+			IPen *pPen = m_pParser->GetPen();
+
+			if (NULL == pPen || PS_NULL == pPen->GetStyle())
+				return;
+
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetPen()->GetColor()) + L"," + ConvertToWString(m_pParser->GetPen()->GetAlpha(), 0) + L")"});
 
 			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			if (0.0 == dStrokeWidth)
-				dStrokeWidth = m_pParser->GetPixWidth(m_oScale.dX);
-			else if (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
-				dStrokeWidth = m_pParser->GetPixWidth(1.0);
+			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+				dStrokeWidth = m_pParser->GetPixWidth(1.0 * m_oScale.dX);
 
 			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
 			unsigned int unMetaPenStyle = m_pParser->GetPen()->GetStyle();
 			//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
 			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+
+			double* arDatas = NULL;
+			unsigned int unDataSize = 0;
+
+			pPen->GetDashData(arDatas, unDataSize);
+
+			if (NULL != arDatas && 0 != unDataSize)
+			{
+				std::wstring wsDashArray;
+
+				for (unsigned int unIndex = 0; unIndex < unDataSize; ++unIndex)
+					wsDashArray += ConvertToWString(dStrokeWidth * arDatas[unIndex]) + L' ';
+
+				wsDashArray.pop_back();
+
+				arAttributes.push_back({L"stroke-dasharray", wsDashArray});
+
+				ulPenStyle = PS_USERSTYLE;
+			}
 
 			if (PS_DASH == ulPenStyle)
 				arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});

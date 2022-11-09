@@ -798,13 +798,6 @@ namespace MetaFile
 		if (wsSvg.empty())
 			return;
 
-		m_oXmlWriter.WriteNodeBegin(L"g", true);
-
-		if (0 != oTranslate.x || 0 != oTranslate.y)
-			m_oXmlWriter.WriteAttribute(L"transform", L"translate(" + ConvertToWString(oTranslate.x) + L',' + ConvertToWString(oTranslate.y) + L')');
-
-		m_oXmlWriter.WriteNodeEnd(L"g", true, false);
-
 		std::wstring wsNewSvg = wsSvg;
 
 		size_t unFirstPos = 83;
@@ -812,6 +805,13 @@ namespace MetaFile
 
 		if (std::wstring::npos == unSecondPos)
 			return;
+
+		m_oXmlWriter.WriteNodeBegin(L"g", true);
+
+		if (0 != oTranslate.x || 0 != oTranslate.y)
+			m_oXmlWriter.WriteAttribute(L"transform", L"translate(" + ConvertToWString(oTranslate.x) + L',' + ConvertToWString(oTranslate.y) + L')');
+
+		m_oXmlWriter.WriteNodeEnd(L"g", true, false);
 
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
@@ -958,18 +958,19 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
 	{
-		if (NULL != m_pParser && NULL != m_pParser->GetPen() && PS_NULL != m_pParser->GetPen()->GetStyle())
+		if (NULL != m_pParser)
 		{
 			IPen* pPen = m_pParser->GetPen();
-			if (!pPen || PS_NULL == pPen->GetStyle())
+
+			if (NULL == pPen || PS_NULL == pPen->GetStyle())
 				return;
 
 			arAttributes.push_back({L"stroke", L"rgba(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L"," + ConvertToWString(pPen->GetAlpha(), 0) + L")"});
 
 			double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-			if (0 == dStrokeWidth)
-				dStrokeWidth = 1 / std::fabs(m_pParser->GetTransform()->M11);
+			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+				dStrokeWidth = m_pParser->GetPixWidth(1.0 / m_dScale);
 
 			arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

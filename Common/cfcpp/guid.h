@@ -33,7 +33,7 @@
 
 #include "../DocxFormat/Source/Base/Types_32.h"
 #include "../../DesktopEditor/common/Types.h"
-#include <string>
+#include <string.h>
 
 struct _GUID_
 {

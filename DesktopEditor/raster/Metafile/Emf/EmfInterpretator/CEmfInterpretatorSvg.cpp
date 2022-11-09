@@ -586,7 +586,24 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_PIE(const TEmfRectL &oBox, const TEmfPointL &oStart, const TEmfPointL &oEnd)
 	{
+		short shCenterX = (oBox.lLeft + oBox.lRight) / 2;
+		short shCenterY = (oBox.lTop + oBox.lBottom) / 2;
 
+		short shRadiusX = std::abs(oBox.lRight - oBox.lLeft) / 2;
+		short shRadiusY = std::abs(oBox.lBottom - oBox.lTop) / 2;
+
+		std::wstring wsPath = L'M' + ConvertToWString(shCenterX) + L' ' + ConvertToWString(shCenterY) + L' ' +
+		                      L'L' + ConvertToWString(oStart.x)+ L' ' + ConvertToWString(oStart.y)+ L' ' +
+		                      L'A' + ConvertToWString(shRadiusX) + L' ' + ConvertToWString(shRadiusY) + L" 0, 0, 0, " + ConvertToWString(oEnd.x) + L' ' + ConvertToWString(oEnd.y) + L' ' +
+		                      L'L' + ConvertToWString(shCenterX) + L' ' + ConvertToWString(shCenterY) + L" Z";
+
+		NodeAttributes arAttributes = {{L"d", wsPath}};
+
+		AddStroke(arAttributes);
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		WriteNode(L"path", arAttributes);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_POLYBEZIER(const TEmfRectL &oBounds, const std::vector<TEmfPointL> &arPoints)

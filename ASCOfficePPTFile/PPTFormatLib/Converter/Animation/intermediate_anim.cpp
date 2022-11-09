@@ -1,15 +1,14 @@
 #include "intermediate_anim.h"
 
 
-
 _UINT32 PPT::Intermediate::SOldAnimation::getAnimDur() const
 {
     _UINT32 dur = 500;
     if (!anim)
         return 0;
 
-    const UINT effect = anim->m_AnimationAtom.m_AnimEffect;
-    const UINT direct = anim->m_AnimationAtom.m_AnimEffectDirection;
+    const BYTE effect = anim->m_AnimationAtom.m_AnimEffect;
+    const BYTE direct = anim->m_AnimationAtom.m_AnimEffectDirection;
 
     if (effect == 12 && ((direct >= 12 && direct <= 15) || direct == 27))   // Crawl In, Basic Swivel
         dur = 5000;

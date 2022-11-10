@@ -110,9 +110,9 @@ namespace OOX
 			//Attributes
 			nullable_uint m_oTableId;
 			nullable_uint m_oColumn;
-			nullable<SimpleTypes::Spreadsheet::CTabularSlicerCacheSortOrder<>> m_oSortOrder;//ascending
+			nullable<SimpleTypes::Spreadsheet::CTabularSlicerCacheSortOrder> m_oSortOrder;//ascending
 			nullable_bool m_oCustomListSort;//True
-			nullable<SimpleTypes::Spreadsheet::CSlicerCacheCrossFilter<>> m_oCrossFilter;//showItemsWithDataAtTop
+			nullable<SimpleTypes::Spreadsheet::CSlicerCacheCrossFilter> m_oCrossFilter;//showItemsWithDataAtTop
 			//Members
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
@@ -138,7 +138,7 @@ namespace OOX
 				return et_x_SlicerStyleElement;
 			}
 			//Attributes
-			nullable<SimpleTypes::Spreadsheet::CSlicerStyleType<>> m_oType;
+			nullable<SimpleTypes::Spreadsheet::CSlicerStyleType> m_oType;
 			nullable_uint m_oDxfId;
 		};
 		class CSlicerCache : public WritingElement

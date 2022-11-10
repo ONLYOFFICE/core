@@ -42,18 +42,9 @@ namespace SimpleTypes
 			typeWorksheet	=  1,
 			typeXml			=  2,
 		};
-		template<ETableType eDefValue = typeWorksheet>
-		class CTableType : public CSimpleType<ETableType, eDefValue>
-		{
-		public:
-			CTableType();
-			CTableType(const ETableType & val)	{ this->m_eValue = val; }
 
-			virtual ETableType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CTableType, ETableType, typeWorksheet)
 
-			SimpleTypes_Default(CTableType)
-		};
 		enum EDatabaseSourceType
 		{
 			typeODBCBasedSource = 1,
@@ -79,18 +70,9 @@ namespace SimpleTypes
 			extConnTypeSkip		= 8,
 			extConnTypeEMD		= 9
 		};
-		template<EExternalConnectionType eDefValue = extConnTypeGeneral>
-		class CExternalConnectionType : public CSimpleType<EExternalConnectionType, eDefValue>
-		{
-		public:
-			CExternalConnectionType() {}
-			CExternalConnectionType(const EExternalConnectionType & val)	{ this->m_eValue = val; }
 
-			virtual EExternalConnectionType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CExternalConnectionType, EExternalConnectionType, extConnTypeGeneral)
 
-			SimpleTypes_Default(CExternalConnectionType)
-		};
 		enum ECredMethod
 		{
 			integrated_method	= 0,
@@ -98,18 +80,8 @@ namespace SimpleTypes
 			prompt_method		= 2,
 			stored_method		= 3
 		};
-		template<ECredMethod eDefValue = integrated_method>
-		class CCredMethod : public CSimpleType<ECredMethod, eDefValue>
-		{
-		public:
-			CCredMethod() {}
-			CCredMethod(const ECredMethod & val)	{ this->m_eValue = val; }
 
-			virtual ECredMethod FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CCredMethod)
-		};
+		DEFINE_SIMPLE_TYPE(CCredMethod, ECredMethod, integrated_method)
 
 		enum EVisibleType
 		{
@@ -117,75 +89,36 @@ namespace SimpleTypes
 			visibleVeryHidden	=  1,
 			visibleVisible		=  2,
 		};
-		template<EVisibleType eDefValue = visibleVisible>
-		class CVisibleType : public CSimpleType<EVisibleType, eDefValue>
-		{
-		public:
-			CVisibleType() {}
-			CVisibleType(const EVisibleType & val)
-			{
-				this->m_eValue = val;
-			}
 
-			virtual EVisibleType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CVisibleType, EVisibleType, visibleVisible)
 
-			SimpleTypes_Default(CVisibleType)
-		};
 		enum EHtmlFormat
 		{
 			htmlNone =  0,
 			htmlRtf	=  1,
 			htmlAll	=  2
 		};
-		template<EHtmlFormat eDefValue = htmlNone>
-		class CHtmlFormat : public CSimpleType<EHtmlFormat, eDefValue>
-		{
-		public:
-			CHtmlFormat() {}
-			CHtmlFormat(const EHtmlFormat & val)	{ this->m_eValue = val; }
 
-			virtual EHtmlFormat FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CHtmlFormat, EHtmlFormat, htmlNone)
 
-			SimpleTypes_Default(CHtmlFormat)
-		};
 		enum EParameterType
 		{
 			parameterPrompt =  0,
 			parameterValue	=  1,
 			parameterCell	=  2
 		};
-		template<EParameterType eDefValue = parameterPrompt>
-		class CParameterType : public CSimpleType<EParameterType, eDefValue>
-		{
-		public:
-			CParameterType() {}
-			CParameterType(const EParameterType & val)	{ this->m_eValue = val; }
 
-			virtual EParameterType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CParameterType, EParameterType, parameterPrompt)
 
-			SimpleTypes_Default(CParameterType)
-		};
 		enum EQualifier
 		{
 			doubleQuote =  0,
 			singleQuote	=  1,
 			noneQuote	=  2
 		};
-		template<EQualifier eDefValue = doubleQuote>
-		class CQualifier : public CSimpleType<EQualifier, eDefValue>
-		{
-		public:
-			CQualifier() {}
-			CQualifier(const EQualifier & val)	{ this->m_eValue = val; }
 
-			virtual EQualifier FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CQualifier, EQualifier, doubleQuote)
 
-			SimpleTypes_Default(CQualifier)
-		};
 		enum EFileType
 		{
 			fileTypeMac		=  0,
@@ -194,18 +127,9 @@ namespace SimpleTypes
 			fileTypeLin		=  3,
 			fileTypeOther	=  4
 		};
-		template<EFileType eDefValue = fileTypeWin>
-		class CFileType : public CSimpleType<EFileType, eDefValue>
-		{
-		public:
-			CFileType() {}
-			CFileType(const EFileType & val)	{ this->m_eValue = val; }
 
-			virtual EFileType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CFileType, EFileType, fileTypeWin)
 
-			SimpleTypes_Default(CFileType)
-		};
 		enum EPhoneticAlignmentType
 		{
 			phoneticalignmentCenter			=  0,
@@ -214,18 +138,7 @@ namespace SimpleTypes
 			phoneticalignmentNoControl 		=  3,
 		};
 
-		template<EPhoneticAlignmentType eDefValue = phoneticalignmentNoControl>
-		class CPhoneticAlignment : public CSimpleType<EPhoneticAlignmentType, eDefValue>
-		{
-		public:
-			CPhoneticAlignment() {}
-			CPhoneticAlignment(const EPhoneticAlignmentType & val)	{ this->m_eValue = val; }
-
-			virtual EPhoneticAlignmentType FromString(const std::wstring &sValue);
-			virtual std::wstring       ToString  () const;
-
-			SimpleTypes_Default(CPhoneticAlignment)
-		};
+		DEFINE_SIMPLE_TYPE(CPhoneticAlignment, EPhoneticAlignmentType, phoneticalignmentNoControl)
 
 		enum EPhoneticTypeType
 		{
@@ -235,18 +148,7 @@ namespace SimpleTypes
 			phonetictypeNoConversion 				=  3,
 		};
 
-		template<EPhoneticTypeType eDefValue = phonetictypeNoConversion>
-		class CPhoneticType : public CSimpleType<EPhoneticTypeType, eDefValue>
-		{
-		public:
-			CPhoneticType() {}
-			CPhoneticType(const EPhoneticTypeType & val)	{ this->m_eValue = val; }
-
-			virtual EPhoneticTypeType FromString(const std::wstring &sValue);
-			virtual std::wstring       ToString  () const;
-
-			SimpleTypes_Default(CPhoneticType)
-		};
+		DEFINE_SIMPLE_TYPE(CPhoneticType, EPhoneticTypeType, phonetictypeNoConversion)
 
 		enum EFontCharset
 		{
@@ -271,19 +173,9 @@ namespace SimpleTypes
 			fontcharsetOEM         = 255, // FF
 		};
 
-		template<EFontCharset eDefValue = fontcharsetANSI>
-		class CFontCharset : public CSimpleType<EFontCharset, eDefValue>
-		{
+		DEFINE_SIMPLE_TYPE_START(CFontCharset, EFontCharset, fontcharsetANSI)
 		public:
-			CFontCharset() {}
-			CFontCharset(const EFontCharset & val)	{ this->m_eValue = val; }
-
-			virtual EFontCharset FromString(const std::wstring &sValue);
-
-			virtual std::wstring       ToString  () const;
-			virtual std::wstring       ToHexString  () const;
-
-			SimpleTypes_Default(CFontCharset)
+			std::wstring       ToHexString  () const;
 		};
 
 		enum EThemeColor
@@ -302,18 +194,7 @@ namespace SimpleTypes
 			themecolorFollowedHyperlink = 11
 		};
 
-		template<EThemeColor eDefValue = themecolorDark1>
-		class CThemeColor : public CSimpleType<EThemeColor, eDefValue>
-		{
-		public:
-			CThemeColor() {}
-			CThemeColor(const EThemeColor & val)	{ this->m_eValue = val; }
-
-			virtual EThemeColor FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CThemeColor)
-		};
+		DEFINE_SIMPLE_TYPE(CThemeColor, EThemeColor, themecolorDark1)
 
 		class CHexColor
 		{
@@ -358,18 +239,10 @@ namespace SimpleTypes
 			fontfamilyScript			=  4,
 			fontfamilyDecorative		=  5,
 		};
-		template<EFontFamily eDefValue = fontfamilyNotApplicable>
-		class CFontFamily : public CSimpleType<EFontFamily, eDefValue>
-		{
+
+		DEFINE_SIMPLE_TYPE_START(CFontFamily, EFontFamily, fontfamilyNotApplicable)
 		public:
-			CFontFamily() {}
-			CFontFamily(const EFontFamily & val)	{ this->m_eValue = val; }
-
-			virtual EFontFamily FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
 			std::wstring ToStringWord() const;
-
-			SimpleTypes_Default(CFontFamily)
 		};
 
 		enum EFontScheme
@@ -378,18 +251,9 @@ namespace SimpleTypes
 			fontschemeMinor		=  1,
 			fontschemeNone		=  2
 		};
-		template<EFontScheme eDefValue = fontschemeNone>
-		class CFontScheme : public CSimpleType<EFontScheme, eDefValue>
-		{
-		public:
-			CFontScheme() {}
-			CFontScheme(const EFontScheme & val)	{ this->m_eValue = val; }
 
-			virtual EFontScheme FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CFontScheme, EFontScheme, fontschemeNone)
 
-			SimpleTypes_Default(CFontScheme)
-		};
 		enum EUnderline
 		{
 			underlineDouble				=  0,
@@ -398,18 +262,8 @@ namespace SimpleTypes
 			underlineSingle				=  3,
 			underlineSingleAccounting	=  4
 		};
-		template<EUnderline eDefValue = underlineSingle>
-		class CUnderline : public CSimpleType<EUnderline, eDefValue>
-		{
-		public:
-			CUnderline() {}
-			CUnderline(const EUnderline & val)	{ this->m_eValue = val; }
 
-			virtual EUnderline FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(CUnderline)
-		};
+		DEFINE_SIMPLE_TYPE(CUnderline, EUnderline, underlineSingle)
 
 		enum EBorderStyle
 		{
@@ -428,18 +282,8 @@ namespace SimpleTypes
 			borderstyleThick			= 12,
 			borderstyleThin				= 13
 		};
-		template<EBorderStyle eDefValue = borderstyleNone>
-		class CBorderStyle : public CSimpleType<EBorderStyle, eDefValue>
-		{
-		public:
-			CBorderStyle() {}
-			CBorderStyle(const EBorderStyle & val)	{ this->m_eValue = val; }
 
-			virtual EBorderStyle FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(CBorderStyle)
-		};
+		DEFINE_SIMPLE_TYPE(CBorderStyle, EBorderStyle, borderstyleNone)
 
 		enum EHorizontalAlignment
 		{
@@ -453,19 +297,12 @@ namespace SimpleTypes
 			horizontalalignmentRight			=  7,
 			horizontalalignmentCenterContinuous	=  8
 		};
-		template<EHorizontalAlignment eDefValue = horizontalalignmentGeneral>
-		class CHorizontalAlignment : public CSimpleType<EHorizontalAlignment, eDefValue>
-		{
+
+		DEFINE_SIMPLE_TYPE_START(CHorizontalAlignment, EHorizontalAlignment, horizontalalignmentGeneral)
 		public:
-			CHorizontalAlignment() {}
-			CHorizontalAlignment(const EHorizontalAlignment & val)	{ this->m_eValue = val; }
-
-			virtual EHorizontalAlignment FromString(const std::wstring &sValue);
-			virtual std::wstring ToVmlString() const;
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CHorizontalAlignment)
+			std::wstring ToVmlString() const;
 		};
+
 		enum EVerticalAlignment
 		{
 			verticalalignmentBottom				=  0,
@@ -474,36 +311,20 @@ namespace SimpleTypes
 			verticalalignmentJustify			=  3,
 			verticalalignmentTop				=  4
 		};
-		template<EVerticalAlignment eDefValue = verticalalignmentBottom>
-		class CVerticalAlignment : public CSimpleType<EVerticalAlignment, eDefValue>
-		{
+
+		DEFINE_SIMPLE_TYPE_START(CVerticalAlignment, EVerticalAlignment, verticalalignmentBottom)
 		public:
-			CVerticalAlignment() {}
-			CVerticalAlignment(const EVerticalAlignment & val)	{ this->m_eValue = val; }
-
-			virtual EVerticalAlignment FromString(const std::wstring &sValue);
-			virtual std::wstring ToVmlString() const;
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CVerticalAlignment)
+			std::wstring ToVmlString() const;
 		};
+
 		enum EGradientType
 		{
 			gradienttypeLine				=  0,
 			gradienttypePath				=  1
 		};
-		template<EGradientType eDefValue = gradienttypeLine>
-		class CGradientType : public CSimpleType<EGradientType, eDefValue>
-		{
-		public:
-			CGradientType() {}
-			CGradientType(const EGradientType & val)	{ this->m_eValue = val; }
 
-			virtual EGradientType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CGradientType, EGradientType, gradienttypeLine)
 
-			SimpleTypes_Default(CGradientType)
-		};
 		enum EPatternType
 		{
 			patterntypeDarkDown				=  0,
@@ -526,18 +347,8 @@ namespace SimpleTypes
 			patterntypeNone					= 17,
 			patterntypeSolid				= 18
 		};
-		template<EPatternType eDefValue = patterntypeNone>
-		class CPatternType : public CSimpleType<EPatternType, eDefValue>
-		{
-		public:
-			CPatternType() {}
-			CPatternType(const EPatternType & val)	{ this->m_eValue = val; }
 
-			virtual EPatternType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CPatternType)
-		};
+		DEFINE_SIMPLE_TYPE(CPatternType, EPatternType, patterntypeNone)
 
 		enum ETableStyleType
 		{
@@ -570,18 +381,9 @@ namespace SimpleTypes
 			tablestyletypeTotalRow			=  26,
 			tablestyletypeWholeTable			=  27
 		};
-		template<ETableStyleType eDefValue = tablestyletypeBlankRow>
-		class CTableStyleType : public CSimpleType<ETableStyleType, eDefValue>
-		{
-		public:
-			CTableStyleType() {}
-			CTableStyleType(const ETableStyleType & val)	{ this->m_eValue = val; }
 
-			virtual ETableStyleType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CTableStyleType, ETableStyleType, tablestyletypeBlankRow)
 
-			SimpleTypes_Default(CTableStyleType)
-		};
 		enum ECellFormulaType
 		{
 			cellformulatypeArray			=  0,
@@ -589,37 +391,18 @@ namespace SimpleTypes
 			cellformulatypeNormal			=  2,
 			cellformulatypeShared			=  3
 		};
-		template<ECellFormulaType eDefValue = cellformulatypeNormal>
-		class CCellFormulaType : public CSimpleType<ECellFormulaType, eDefValue>
-		{
-		public:
-			CCellFormulaType() {}
-			CCellFormulaType(const ECellFormulaType & val)	{ this->m_eValue = val; }
 
-			virtual ECellFormulaType FromString(const std::wstring &sValue);
-			ECellFormulaType FromStringA(const char* sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CCellFormulaType, ECellFormulaType, cellformulatypeNormal)
 
-			SimpleTypes_Default(CCellFormulaType)
-		};
 		enum EUpdateLinksType
 		{
 			updatelinksAlways			=  0,
 			updatelinksNever			=  1,
 			updatelinksUserSet			=  2
 		};
-		template<EUpdateLinksType eDefValue = updatelinksAlways>
-		class CUpdateLinksType : public CSimpleType<EUpdateLinksType, eDefValue>
-		{
-		public:
-			CUpdateLinksType() {}
-			CUpdateLinksType(const EUpdateLinksType & val)	{ this->m_eValue = val; }
 
-			virtual EUpdateLinksType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CUpdateLinksType, EUpdateLinksType, updatelinksAlways)
 
-			SimpleTypes_Default(CUpdateLinksType)
-		};
 		enum ECellTypeType
 		{
 			celltypeBool			=  0,
@@ -637,37 +420,17 @@ namespace SimpleTypes
 			celltypeCurrency		= 11,
 			celltypeDateTime		= 12
 		};
-		template<ECellTypeType eDefValue = celltypeNumber>
-		class CCellTypeType : public CSimpleType<ECellTypeType, eDefValue>
-		{
-		public:
-			CCellTypeType() {}
-			CCellTypeType(const ECellTypeType & val)	{ this->m_eValue = val; }
 
-			virtual ECellTypeType FromString(const std::wstring &sValue);
-			ECellTypeType FromStringA(const char* sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CCellTypeType, ECellTypeType, celltypeNumber)
 
-			SimpleTypes_Default(CCellTypeType)
-		};
 		enum ECellAnchorType
 		{
 			cellanchorAbsolute			=  0,
 			cellanchorOneCell			=  1,
 			cellanchorTwoCell			=  2
 		};
-		template<ECellAnchorType eDefValue = cellanchorTwoCell>
-		class CCellAnchorType : public CSimpleType<ECellAnchorType, eDefValue>
-		{
-		public:
-			CCellAnchorType() {}
-			CCellAnchorType(const ECellAnchorType & val)	{ this->m_eValue = val; }
 
-			virtual ECellAnchorType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(CCellAnchorType)
-		};
+		DEFINE_SIMPLE_TYPE(CCellAnchorType, ECellAnchorType, cellanchorTwoCell)
 
 		enum ESheetViewType
 		{
@@ -675,18 +438,9 @@ namespace SimpleTypes
 			sheetviewPageBreakPreview	=  1,
 			sheetviewPageLayout			=  2
 		};
-		template<ESheetViewType eDefValue = sheetviewNormal>
-		class CSheetViewType : public CSimpleType<ESheetViewType, eDefValue>
-		{
-		public:
-			CSheetViewType() {}
-			CSheetViewType(const ESheetViewType & val)	{ this->m_eValue = val; }
 
-			virtual ESheetViewType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CSheetViewType, ESheetViewType, sheetviewNormal)
 
-			SimpleTypes_Default(CSheetViewType)
-		};
 		enum EChartLegendPos
 		{
 			chartlegendposLeft		=  0,
@@ -695,52 +449,25 @@ namespace SimpleTypes
 			chartlegendposBottom	=  3,
 			chartlegendposRightTop	=  4
 		};
-		template<EChartLegendPos eDefValue = chartlegendposTop>
-		class CChartLegendPos : public CSimpleType<EChartLegendPos, eDefValue>
-		{
-		public:
-			CChartLegendPos() {}
-			CChartLegendPos(const EChartLegendPos & val)	{ this->m_eValue = val; }
 
-			virtual EChartLegendPos FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartLegendPos, EChartLegendPos, chartlegendposTop)
 
-			SimpleTypes_Default(CChartLegendPos)
-		};
 		enum EChartHMode
 		{
 			charthmodeFactor	=  0,
 			charthmodeEdge		=  1
 		};
-		template<EChartHMode eDefValue = charthmodeFactor>
-		class CChartHMode : public CSimpleType<EChartHMode, eDefValue>
-		{
-		public:
-			CChartHMode() {}
-			CChartHMode(const EChartHMode & val)	{ this->m_eValue = val; }
 
-			virtual EChartHMode FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartHMode, EChartHMode, charthmodeFactor)
 
-			SimpleTypes_Default(CChartHMode)
-		};
 		enum EChartLayoutTarget
 		{
 			chartlayouttargetInner	=  0,
 			chartlayouttargetOuter	=  1
 		};
-		template<EChartLayoutTarget eDefValue = chartlayouttargetInner>
-		class CChartLayoutTarget : public CSimpleType<EChartLayoutTarget, eDefValue>
-		{
-		public:
-			CChartLayoutTarget() {}
-			CChartLayoutTarget(const EChartLayoutTarget & val)	{ this->m_eValue = val; }
 
-			virtual EChartLayoutTarget FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartLayoutTarget, EChartLayoutTarget, chartlayouttargetInner)
 
-			SimpleTypes_Default(CChartLayoutTarget)
-		};
 		enum EChartAxPos
 		{
 			chartaxposLeft	=  0,
@@ -748,18 +475,9 @@ namespace SimpleTypes
 			chartaxposRight	=  2,
 			chartaxposBottom=  3
 		};
-		template<EChartAxPos eDefValue = chartaxposLeft>
-		class CChartAxPos : public CSimpleType<EChartAxPos, eDefValue>
-		{
-		public:
-			CChartAxPos() {}
-			CChartAxPos(const EChartAxPos & val)	{ this->m_eValue = val; }
 
-			virtual EChartAxPos FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartAxPos, EChartAxPos, chartaxposLeft)
 
-			SimpleTypes_Default(CChartAxPos)
-		};
 		enum EChartBarGrouping
 		{
 			chartbargroupingClustered	=  0,
@@ -767,35 +485,17 @@ namespace SimpleTypes
 			chartbargroupingStacked	=  2,
 			chartbargroupingStandard=  3
 		};
-		template<EChartBarGrouping eDefValue = chartbargroupingClustered>
-		class CChartBarGrouping : public CSimpleType<EChartBarGrouping, eDefValue>
-		{
-		public:
-			CChartBarGrouping() {}
-			CChartBarGrouping(const EChartBarGrouping & val)	{ this->m_eValue = val; }
 
-			virtual EChartBarGrouping FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartBarGrouping, EChartBarGrouping, chartbargroupingClustered)
 
-			SimpleTypes_Default(CChartBarGrouping)
-		};
 		enum EChartBarDirection
 		{
 			chartbardirectionBar	=  0,
 			chartbardirectionCol	=  1
 		};
-		template<EChartBarDirection eDefValue = chartbardirectionBar>
-		class CChartBarDirection : public CSimpleType<EChartBarDirection, eDefValue>
-		{
-		public:
-			CChartBarDirection() {}
-			CChartBarDirection(const EChartBarDirection & val)	{ this->m_eValue = val; }
 
-			virtual EChartBarDirection FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartBarDirection, EChartBarDirection, chartbardirectionBar)
 
-			SimpleTypes_Default(CChartBarDirection)
-		};
 		enum EChartSymbol
 		{
 			chartsymbolCircle	=  0,
@@ -811,18 +511,9 @@ namespace SimpleTypes
 			chartsymbolTriangle	=  10,
 			chartsymbolX	=  11
 		};
-		template<EChartSymbol eDefValue = chartsymbolNone>
-		class CChartSymbol : public CSimpleType<EChartSymbol, eDefValue>
-		{
-		public:
-			CChartSymbol() {}
-			CChartSymbol(const EChartSymbol & val)	{ this->m_eValue = val; }
 
-			virtual EChartSymbol FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChartSymbol, EChartSymbol, chartsymbolNone)
 
-			SimpleTypes_Default(CChartSymbol)
-		};
 		enum EPageSize
 		{
 			pagesizeLetterPaper	=  1,
@@ -892,18 +583,8 @@ namespace SimpleTypes
 			pagesizeA3TransversePaper =  67,
 			pagesizeA3ExtraTransversePaper =  68
 		};
-		template<EPageSize eDefValue = pagesizeA4Paper>
-		class CPageSize : public CSimpleType<EPageSize, eDefValue>
-		{
-		public:
-			CPageSize() {}
-			CPageSize(const EPageSize & val)	{ this->m_eValue = val; }
 
-			virtual EPageSize FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CPageSize)
-		};
+		DEFINE_SIMPLE_TYPE(CPageSize, EPageSize, pagesizeA4Paper)
 		
 		enum EPageUnits
 		{
@@ -915,18 +596,8 @@ namespace SimpleTypes
 			emu		= 5
 
 		};
-		template<EPageUnits eDefValue = mm>
-		class CPageUnits : public CSimpleType<EPageUnits, eDefValue>
-		{
-		public:
-			CPageUnits() {}
-			CPageUnits(const EPageUnits & val)	{ this->m_eValue = val; }
 
-			virtual EPageUnits FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CPageUnits)
-		};
+		DEFINE_SIMPLE_TYPE(CPageUnits, EPageUnits, mm)
 
 		enum ECellComments
 		{
@@ -935,17 +606,8 @@ namespace SimpleTypes
 			cellcommentsAtEnd = 2
 		};
 
-		template<ECellComments eDefValue = cellcommentsNone>
-		class CCellComments : public CSimpleType<ECellComments, eDefValue>
-		{
-		public:
-			CCellComments() {}
-			CCellComments(const ECellComments & val)	{ this->m_eValue = val; }
-			virtual ECellComments FromString(const std::wstring &sValue);
-			virtual std::wstring          ToString  () const;
 
-			SimpleTypes_Default(CCellComments)
-		};
+		DEFINE_SIMPLE_TYPE(CCellComments, ECellComments, cellcommentsNone)
 
 		enum EPrintError
 		{
@@ -955,17 +617,7 @@ namespace SimpleTypes
 			printerrorNA  = 3
 		};
 
-		template<EPrintError eDefValue = printerrorDisplayed>
-		class CPrintError : public CSimpleType<EPrintError, eDefValue>
-		{
-		public:
-			CPrintError() {}
-			CPrintError(const EPrintError & val)	{ this->m_eValue = val; }
-			virtual EPrintError FromString(const std::wstring &sValue);
-			virtual std::wstring          ToString  () const;
-
-			SimpleTypes_Default(CPrintError)
-		};
+		DEFINE_SIMPLE_TYPE(CPrintError, EPrintError, printerrorDisplayed)
 
 		enum EPageOrder
 		{
@@ -973,17 +625,8 @@ namespace SimpleTypes
 			pageorderOverThenDown  = 1
 		};
 
-		template<EPageOrder eDefValue = pageorderDownThenOver>
-		class CPageOrder : public CSimpleType<EPageOrder, eDefValue>
-		{
-		public:
-			CPageOrder() {}
-			CPageOrder(const EPageOrder & val)	{ this->m_eValue = val; }
-			virtual EPageOrder FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CPageOrder, EPageOrder, pageorderDownThenOver)
 
-			SimpleTypes_Default(CPageOrder)
-		};
 		enum ETotalsRowFunction
 		{
 			totalrowfunctionAverage		=  1,
@@ -998,18 +641,8 @@ namespace SimpleTypes
 			totalrowfunctionVar			=  10
 		};
 
-		template<ETotalsRowFunction eDefValue = totalrowfunctionNone>
-		class CTotalsRowFunction : public CSimpleType<ETotalsRowFunction, eDefValue>
-		{
-		public:
-			CTotalsRowFunction() {}
-			CTotalsRowFunction(const ETotalsRowFunction & val)	{ this->m_eValue = val; }
+		DEFINE_SIMPLE_TYPE(CTotalsRowFunction, ETotalsRowFunction, totalrowfunctionNone)
 
-			virtual ETotalsRowFunction FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(CTotalsRowFunction)
-		};
 		enum ESortBy
 		{
 			sortbyCellColor	=  1,
@@ -1017,18 +650,9 @@ namespace SimpleTypes
 			sortbyIcon =  3,
 			sortbyValue =  4
 		};
-		template<ESortBy eDefValue = sortbyValue>
-		class CSortBy : public CSimpleType<ESortBy, eDefValue>
-		{
-		public:
-			CSortBy() {}
-			CSortBy(const ESortBy & val)	{ this->m_eValue = val; }
 
-			virtual ESortBy FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CSortBy, ESortBy, sortbyValue)
 
-			SimpleTypes_Default(CSortBy)
-		};
 		enum ECustomFilter
 		{
 			customfilterEqual	=  1,
@@ -1038,18 +662,9 @@ namespace SimpleTypes
 			customfilterLessThanOrEqual =  5,
 			customfilterNotEqual =  6
 		};
-		template<ECustomFilter eDefValue = customfilterEqual>
-		class CCustomFilter : public CSimpleType<ECustomFilter, eDefValue>
-		{
-		public:
-			CCustomFilter() {}
-			CCustomFilter(const ECustomFilter & val)	{ this->m_eValue = val; }
 
-			virtual ECustomFilter FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CCustomFilter, ECustomFilter, customfilterEqual)
 
-			SimpleTypes_Default(CCustomFilter)
-		};
 		enum EDateTimeGroup
 		{
 			datetimegroupDay	=  1,
@@ -1059,36 +674,18 @@ namespace SimpleTypes
 			datetimegroupSecond =  5,
 			datetimegroupYear =  6
 		};
-		template<EDateTimeGroup eDefValue = datetimegroupDay>
-		class CDateTimeGroup : public CSimpleType<EDateTimeGroup, eDefValue>
-		{
-		public:
-			CDateTimeGroup() {}
-			CDateTimeGroup(const EDateTimeGroup & val)	{ this->m_eValue = val; }
 
-			virtual EDateTimeGroup FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDateTimeGroup, EDateTimeGroup, datetimegroupDay)
 
-			SimpleTypes_Default(CDateTimeGroup)
-		};
 		enum ESortMethod
 		{
 			sortmethodNone = 1,
 			sortmethodPinYin = 2,
 			sortmethodStroke = 3,
 		};
-		template<ESortMethod eDefValue = sortmethodNone>
-		class CSortMethod : public CSimpleType<ESortMethod, eDefValue>
-		{
-		public:
-			CSortMethod() {}
-			CSortMethod(const ESortMethod & val)	{ this->m_eValue = val; }
 
-			virtual ESortMethod FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CSortMethod, ESortMethod, sortmethodNone)
 
-			SimpleTypes_Default(CSortMethod)
-		};
 		enum EDynamicFilterType
 		{
 			dynamicfiltertypeAboveAverage = 1,
@@ -1127,18 +724,9 @@ namespace SimpleTypes
 			dynamicfiltertypeYearToDate = 34,
 			dynamicfiltertypeYesterday = 35
 		};
-		template<EDynamicFilterType eDefValue = dynamicfiltertypeNull>
-		class CDynamicFilterType : public CSimpleType<EDynamicFilterType, eDefValue>
-		{
-		public:
-			CDynamicFilterType() {}
-			CDynamicFilterType(const EDynamicFilterType & val)	{ this->m_eValue = val; }
 
-			virtual EDynamicFilterType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDynamicFilterType, EDynamicFilterType, dynamicfiltertypeNull)
 
-			SimpleTypes_Default(CDynamicFilterType)
-		};
 		//--------------------------------------------------------
 		//	ST_IconSetType (18.18.42)
 		//--------------------------------------------------------
@@ -1168,18 +756,8 @@ namespace SimpleTypes
 
 
 		};
-		template<EIconSetType eDefValue = Arrows3>
-		class ST_IconSetType : public CSimpleType<EIconSetType, eDefValue>
-		{
-		public:
-			ST_IconSetType() {}
-			ST_IconSetType(const EIconSetType & val)	{ this->m_eValue = val; }
 
-			virtual EIconSetType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(ST_IconSetType)
-		};
+		DEFINE_SIMPLE_TYPE(ST_IconSetType, EIconSetType, Arrows3)
 		
 		//--------------------------------------------------------
 		//	ST_DataBarAxisPosition
@@ -1190,18 +768,8 @@ namespace SimpleTypes
 			middle_pos		= 1,
 			none_pos		= 2
 		};
-		template<EDataBarAxisPosition eDefValue = automatic_pos>
-		class ST_DataBarAxisPosition : public CSimpleType<EDataBarAxisPosition, eDefValue>
-		{
-		public:
-			ST_DataBarAxisPosition() {}
-			ST_DataBarAxisPosition(const EDataBarAxisPosition & val)	{ this->m_eValue = val; }
 
-			virtual EDataBarAxisPosition FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(ST_DataBarAxisPosition)
-		};
+		DEFINE_SIMPLE_TYPE(ST_DataBarAxisPosition, EDataBarAxisPosition, automatic_pos)
 
 		//--------------------------------------------------------
 		//	ST_DataBarDirection
@@ -1212,18 +780,9 @@ namespace SimpleTypes
 			leftToRight	= 1,
 			rightToLeft	= 2
 		};
-		template<EDataBarDirection eDefValue = context_direction>
-		class ST_DataBarDirection : public CSimpleType<EDataBarDirection, eDefValue>
-		{
-		public:
-			ST_DataBarDirection() {}
-			ST_DataBarDirection(const EDataBarDirection & val)	{ this->m_eValue = val; }
 
-			virtual EDataBarDirection FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(ST_DataBarDirection, EDataBarDirection, context_direction)
 
-			SimpleTypes_Default(ST_DataBarDirection)
-		};
 		//----------------------------------------------------
 		//	18.18.15 ST_CfOperator (Conditional Format Operators)
 		//----------------------------------------------------
@@ -1242,18 +801,8 @@ namespace SimpleTypes
 			Operator_notContains		= 10,
 			Operator_notEqual			= 11
 		};
-		template<ECfOperator eDefValue = Operator_equal>
-		class ST_CfOperator : public CSimpleType<ECfOperator, eDefValue>
-		{
-		public:
-			ST_CfOperator() {}
-			ST_CfOperator(const ECfOperator & val)	{ this->m_eValue = val; }
 
-			virtual ECfOperator FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(ST_CfOperator)
-		};
+		DEFINE_SIMPLE_TYPE(ST_CfOperator, ECfOperator, Operator_equal)
 
 		//----------------------------------------------------
 		//	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
@@ -1271,18 +820,8 @@ namespace SimpleTypes
 			tomorrow                                        = 8,
 			yesterday                                       = 9
 		};
-		template<ETimePeriod eDefValue = last7Days>
-		class ST_TimePeriod : public CSimpleType<ETimePeriod, eDefValue>
-		{
-		public:
-			ST_TimePeriod() {}
-			ST_TimePeriod(const ETimePeriod & val)	{ this->m_eValue = val; }
 
-			virtual ETimePeriod FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(ST_TimePeriod)
-		};
+		DEFINE_SIMPLE_TYPE(ST_TimePeriod, ETimePeriod, last7Days)
 
 		//----------------------------------------------------
 		//	18.18.12 ST_CfType (Conditional Format Type)
@@ -1308,18 +847,8 @@ namespace SimpleTypes
 			uniqueValues			= 16,
 			endsWith				= 17
 		};
-		template<ECfType eDefValue = dataBar>
-		class ST_CfType : public CSimpleType<ECfType, eDefValue>
-		{
-		public:
-			ST_CfType() {}
-			ST_CfType(const ECfType & val)	{ this->m_eValue = val; }
 
-			virtual ECfType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(ST_CfType)
-		};
+		DEFINE_SIMPLE_TYPE(ST_CfType, ECfType, dataBar)
 
 		//----------------------------------------------------
 		//	18.18.13 ST_CfvoType (Conditional Format Value Object Type)
@@ -1335,18 +864,8 @@ namespace SimpleTypes
 			autoMin					= 6,
 			autoMax					= 7
 		};
-		template<ECfvoType eDefValue = Number>
-		class ST_CfvoType : public CSimpleType<ECfvoType, eDefValue>
-		{
-		public:
-			ST_CfvoType() {}
-			ST_CfvoType(const ECfvoType & val)	{ this->m_eValue = val; }
 
-			virtual ECfvoType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(ST_CfvoType)
-		};
+		DEFINE_SIMPLE_TYPE(ST_CfvoType, ECfvoType, Number)
 
 		enum ESparklineType
 		{
@@ -1354,18 +873,8 @@ namespace SimpleTypes
 			Column					= 1,
 			Stacked					= 2
 		};
-		template<ESparklineType eDefValue = Line>
-		class ST_SparklineType : public CSimpleType<ESparklineType, eDefValue>
-		{
-		public:
-			ST_SparklineType() {}
-			ST_SparklineType(const ESparklineType & val)	{ this->m_eValue = val; }
 
-			virtual ESparklineType FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
-
-			SimpleTypes_Default(ST_SparklineType)
-		};
+		DEFINE_SIMPLE_TYPE(ST_SparklineType, ESparklineType, Line)
 
 		enum ESparklineAxisMinMax
 		{
@@ -1373,52 +882,24 @@ namespace SimpleTypes
 			Group					= 1,
 			Custom					= 2
 		};
-		template<ESparklineAxisMinMax eDefValue = Individual>
-		class ST_SparklineAxisMinMax : public CSimpleType<ESparklineAxisMinMax, eDefValue>
-		{
-		public:
-			ST_SparklineAxisMinMax() {}
-			ST_SparklineAxisMinMax(const ESparklineAxisMinMax & val)	{ this->m_eValue = val; }
 
-			virtual ESparklineAxisMinMax FromString(const std::wstring &sValue);
-			virtual std::wstring     ToString  () const;
+		DEFINE_SIMPLE_TYPE(ST_SparklineAxisMinMax, ESparklineAxisMinMax, Individual)
 
-			SimpleTypes_Default(ST_SparklineAxisMinMax)
-		};
 		enum EDvAspect
 		{
 			Content					= 0,
 			Icon					= 1
 		};
-		template<EDvAspect eDefValue = Icon>
-		class ST_DvAspect : public CSimpleType<EDvAspect, eDefValue>
-		{
-		public:
-			ST_DvAspect() {}
-			ST_DvAspect(const EDvAspect & val)	{ this->m_eValue = val; }
 
-			virtual EDvAspect FromString(const std::wstring &sValue);
-			virtual std::wstring	 ToString  () const;
+		DEFINE_SIMPLE_TYPE(ST_DvAspect, EDvAspect, Icon)
 
-			SimpleTypes_Default(ST_DvAspect)
-		};
 		enum EOleUpdate
 		{
 			Always = 0,
 			OnCall = 1
 		};
-		template<EOleUpdate eDefValue = Always>
-		class ST_OleUpdate : public CSimpleType<EOleUpdate, eDefValue>
-		{
-		public:
-			ST_OleUpdate() {}
-			ST_OleUpdate(const EOleUpdate & val)	{ this->m_eValue = val; }
 
-			virtual EOleUpdate FromString(const std::wstring &sValue);
-			virtual std::wstring	 ToString  () const;
-
-			SimpleTypes_Default(ST_OleUpdate)
-		};
+		DEFINE_SIMPLE_TYPE(ST_OleUpdate, EOleUpdate, Always)
 
 		enum EActivePane
 		{
@@ -1428,18 +909,7 @@ namespace SimpleTypes
 			activepaneTopRight = 3
 		};
 
-		template<EActivePane eDefValue = activepaneTopLeft>
-		class CActivePane : public CSimpleType<EActivePane, eDefValue>
-		{
-		public:
-			CActivePane() {}
-			CActivePane(const EActivePane & val)	{ this->m_eValue = val; }
-
-			virtual EActivePane FromString(const std::wstring &sValue);
-			virtual std::wstring          ToString  () const;
-
-			SimpleTypes_Default(CActivePane)
-		};
+		DEFINE_SIMPLE_TYPE(CActivePane, EActivePane, activepaneTopLeft)
 
 		enum EPaneState
 		{
@@ -1448,18 +918,7 @@ namespace SimpleTypes
 			panestateSplit = 2
 		};
 
-		template<EPaneState eDefValue = panestateFrozen>
-		class CPaneState : public CSimpleType<EPaneState, eDefValue>
-		{
-		public:
-			CPaneState() {}
-			CPaneState(const EPaneState & val)	{ this->m_eValue = val; }
-
-			virtual EPaneState FromString(const std::wstring &sValue);
-			virtual std::wstring          ToString  () const;
-
-			SimpleTypes_Default(CPaneState)
-		};
+		DEFINE_SIMPLE_TYPE(CPaneState, EPaneState, panestateFrozen)
 
 		enum EDdeValueType
 		{
@@ -1470,18 +929,7 @@ namespace SimpleTypes
 			ddevaluetypeStr = 4
 		};
 
-		template<EDdeValueType eDefValue = ddevaluetypeNil>
-		class CDdeValueType : public CSimpleType<EDdeValueType, eDefValue>
-		{
-		public:
-			CDdeValueType() {}
-			CDdeValueType(const EDdeValueType & val)	{ this->m_eValue = val; }
-
-			virtual EDdeValueType FromString(const std::wstring &sValue);
-			virtual std::wstring          ToString  () const;
-
-			SimpleTypes_Default(CDdeValueType)
-		};
+		DEFINE_SIMPLE_TYPE(CDdeValueType, EDdeValueType, ddevaluetypeNil)
 
 		enum ECalcMode
 		{
@@ -1490,18 +938,7 @@ namespace SimpleTypes
 			calcmodeManual		=  2,
 		};
 
-		template<ECalcMode eDefValue = calcmodeAuto>
-		class CCalcMode : public CSimpleType<ECalcMode, eDefValue>
-		{
-		public:
-			CCalcMode() {}
-			CCalcMode(const ECalcMode & val)	{ this->m_eValue = val; }
-
-			virtual ECalcMode FromString(const std::wstring &sValue);
-			virtual std::wstring  ToString  () const;
-
-			SimpleTypes_Default(CCalcMode)
-		};
+		DEFINE_SIMPLE_TYPE(CCalcMode, ECalcMode, calcmodeAuto)
 
 		enum ERefMode
 		{
@@ -1509,24 +946,14 @@ namespace SimpleTypes
 			refmodeR1C1	=  1
 		};
 
-		template<ERefMode eDefValue = refmodeA1>
-		class CRefMode : public CSimpleType<ERefMode, eDefValue>
-		{
-		public:
-			CRefMode() {}
-			CRefMode(const ERefMode & val)	{ this->m_eValue = val; }
-
-			virtual ERefMode FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CRefMode)
-		};
+		DEFINE_SIMPLE_TYPE(CRefMode, ERefMode, refmodeA1)
 
 		enum EDoubleOrAutomatic
 		{
 			typeAuto		=  0,
 			typeDouble		=  1
 		};
+
 		template<EDoubleOrAutomatic eDefValue = typeAuto>
 		class CDoubleOrAutomatic : public CSimpleType<EDoubleOrAutomatic, eDefValue>
 		{
@@ -1555,18 +982,9 @@ namespace SimpleTypes
 			typeSeriesLayoutTreemap			=  6,
 			typeSeriesLayoutWaterfall		=  7,
 		};
-		template<ESeriesLayout eDefValue = typeSeriesLayoutBoxWhisker>
-		class CSeriesLayout : public CSimpleType<ESeriesLayout, eDefValue>
-		{
-		public:
-			CSeriesLayout() {}
-			CSeriesLayout(const ESeriesLayout & val)	{ this->m_eValue = val; }
 
-			virtual ESeriesLayout FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
 
-			SimpleTypes_Default(CSeriesLayout)
-		};
+		DEFINE_SIMPLE_TYPE(CSeriesLayout, ESeriesLayout, typeSeriesLayoutBoxWhisker)
 		
 		enum EAxisUnit
 		{
@@ -1582,18 +1000,9 @@ namespace SimpleTypes
 			unitPercentage			=  9
 
 		};
-		template<EAxisUnit eDefValue = unitPercentage>
-		class CAxisUnit : public CSimpleType<EAxisUnit, eDefValue>
-		{
-		public:
-			CAxisUnit() {}
-			CAxisUnit(const EAxisUnit & val)	{ this->m_eValue = val; }
 
-			virtual EAxisUnit FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CAxisUnit, EAxisUnit, unitPercentage)
 
-			SimpleTypes_Default(CAxisUnit)
-		};
 		enum EDimensionType
 		{
 			typeDimensionVal		=  0,
@@ -1604,35 +1013,17 @@ namespace SimpleTypes
 			typeDimensionCat		=  10,
 			typeDimensionColorStr	=  11
 		};
-		template<EDimensionType eDefValue = typeDimensionVal>
-		class CDimensionType : public CSimpleType<EDimensionType, eDefValue>
-		{
-		public:
-			CDimensionType() {}
-			CDimensionType(const EDimensionType & val)	{ this->m_eValue = val; }
 
-			virtual EDimensionType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDimensionType, EDimensionType, typeDimensionVal)
 
-			SimpleTypes_Default(CDimensionType)
-		};
 		enum EFormulaDirection
 		{
 			directionCol		=  0,
 			directionRow		=  1
 		};
-		template<EFormulaDirection eDefValue = directionCol>
-		class CFormulaDirection : public CSimpleType<EFormulaDirection, eDefValue>
-		{
-		public:
-			CFormulaDirection() {}
-			CFormulaDirection(const EFormulaDirection & val)	{ this->m_eValue = val; }
 
-			virtual EFormulaDirection FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CFormulaDirection, EFormulaDirection, directionCol)
 
-			SimpleTypes_Default(CFormulaDirection)
-		};
 		enum ESidePos
 		{
 			sideLeft		=  0,
@@ -1640,90 +1031,43 @@ namespace SimpleTypes
 			sideTop			=  2,
 			sideBottom		=  3
 		};
-		template<ESidePos eDefValue = sideTop>
-		class CSidePos : public CSimpleType<ESidePos, eDefValue>
-		{
-		public:
-			CSidePos() {}
-			CSidePos(const ESidePos & val)	{ this->m_eValue = val; }
 
-			virtual ESidePos FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CSidePos, ESidePos, sideTop)
 
-			SimpleTypes_Default(CSidePos)
-		};
 		enum EPosAlign
 		{
 			posAlignMin		=  0,
 			posAlignCtr		=  1,
 			posAlignMax		=  2
 		};
-		template<EPosAlign eDefValue = posAlignCtr>
-		class CPosAlign : public CSimpleType<EPosAlign, eDefValue>
-		{
-		public:
-			CPosAlign() {}
-			CPosAlign(const EPosAlign & val)	{ this->m_eValue = val; }
 
-			virtual EPosAlign FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CPosAlign, EPosAlign, posAlignCtr)
 
-			SimpleTypes_Default(CPosAlign)
-		};
 		enum ERegionLabelLayout
 		{
 			layoutNone			=  0,
 			layoutBestFitOnly	=  1,
 			layoutShowAll		=  2
 		};
-		template<ERegionLabelLayout eDefValue = layoutNone>
-		class CRegionLabelLayout : public CSimpleType<ERegionLabelLayout, eDefValue>
-		{
-		public:
-			CRegionLabelLayout() {}
-			CRegionLabelLayout(const ERegionLabelLayout & val)	{ this->m_eValue = val; }
 
-			virtual ERegionLabelLayout FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CRegionLabelLayout, ERegionLabelLayout, layoutNone)
 
-			SimpleTypes_Default(CRegionLabelLayout)
-		};
 		enum EParentLabelLayout
 		{
 			layoutNone_			=  0,
 			layoutBanner		=  1,
 			layoutOverlapping	=  2
 		};
-		template<EParentLabelLayout eDefValue = layoutNone_>
-		class CParentLabelLayout : public CSimpleType<EParentLabelLayout, eDefValue>
-		{
-		public:
-			CParentLabelLayout() {}
-			CParentLabelLayout(const EParentLabelLayout & val)	{ this->m_eValue = val; }
 
-			virtual EParentLabelLayout FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CParentLabelLayout)
-		};
+		DEFINE_SIMPLE_TYPE(CParentLabelLayout, EParentLabelLayout, layoutNone_)
 		
 		enum EQuartileMethod
 		{
 			methodInclusive		=  0,
 			methodExclusive		=  1,
 		};
-		template<EQuartileMethod eDefValue = methodInclusive>
-		class CQuartileMethod : public CSimpleType<EQuartileMethod, eDefValue>
-		{
-		public:
-			CQuartileMethod() {}
-			CQuartileMethod(const EQuartileMethod & val)	{ this->m_eValue = val; }
 
-			virtual EQuartileMethod FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CQuartileMethod)
-		};
+		DEFINE_SIMPLE_TYPE(CQuartileMethod, EQuartileMethod, methodInclusive)
 
 		enum EDataLabelPos
 		{
@@ -1738,31 +1082,10 @@ namespace SimpleTypes
 			posTop		=  8
 
 		};
-		template<EDataLabelPos eDefValue = posBestFit>
-		class CDataLabelPos : public CSimpleType<EDataLabelPos, eDefValue>
-		{
-		public:
-			CDataLabelPos() {}
-			CDataLabelPos(const EDataLabelPos & val)	{ this->m_eValue = val; }
 
-			virtual EDataLabelPos FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDataLabelPos, EDataLabelPos, posBestFit)
 
-			SimpleTypes_Default(CDataLabelPos)
-		};
-
-		template<ESidePos eDefValue = sideLeft>
-		class CIntervalClosedSide : public CSimpleType<ESidePos, eDefValue>
-		{
-		public:
-			CIntervalClosedSide() {}
-			CIntervalClosedSide(const ESidePos & val)	{ this->m_eValue = val; }
-
-			virtual ESidePos FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CIntervalClosedSide)
-		};
+		DEFINE_SIMPLE_TYPE(CIntervalClosedSide, ESidePos, sideLeft)
 		
 		enum ETickMarksType
 		{
@@ -1772,18 +1095,9 @@ namespace SimpleTypes
 			marksTypeNone	=  3
 
 		};
-		template<ETickMarksType eDefValue = marksTypeNone>
-		class CTickMarksType : public CSimpleType<ETickMarksType, eDefValue>
-		{
-		public:
-			CTickMarksType() {}
-			CTickMarksType(const ETickMarksType & val)	{ this->m_eValue = val; }
 
-			virtual ETickMarksType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CTickMarksType, ETickMarksType, marksTypeNone)
 
-			SimpleTypes_Default(CTickMarksType)
-		};
 		enum ESourceCacheType
 		{
 			typeSourceConsolidation	=  0,
@@ -1791,18 +1105,9 @@ namespace SimpleTypes
 			typeSourceScenario		=  2,
 			typeSourceWorksheet		=  3,
 		};
-		template<ESourceCacheType eDefValue = typeSourceWorksheet>
-		class CSourceCacheType : public CSimpleType<ESourceCacheType, eDefValue>
-		{
-		public:
-			CSourceCacheType() {}
-			CSourceCacheType(const ESourceCacheType & val)	{ this->m_eValue = val; }
 
-			virtual ESourceCacheType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CSourceCacheType, ESourceCacheType, typeSourceWorksheet)
 
-			SimpleTypes_Default(CSourceCacheType)
-		};
 		enum EValuesGroupBy
 		{
 			groupByDays				=  0,
@@ -1814,18 +1119,9 @@ namespace SimpleTypes
 			groupBySeconds			=  6,
 			groupByYears			=  7
 		};
-		template<EValuesGroupBy eDefValue = groupByMonths>
-		class CValuesGroupBy : public CSimpleType<EValuesGroupBy, eDefValue>
-		{
-		public:
-			CValuesGroupBy() {}
-			CValuesGroupBy(const EValuesGroupBy & val)	{ this->m_eValue = val; }
 
-			virtual EValuesGroupBy FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CValuesGroupBy, EValuesGroupBy, groupByMonths)
 
-			SimpleTypes_Default(CValuesGroupBy)
-		};
 		enum EPivotItemType
 		{
 			typeAverage	=  0,
@@ -1844,36 +1140,17 @@ namespace SimpleTypes
 			typeVar		=  13,
 			typeVarP	=  14
 		};
-		template<EPivotItemType eDefValue = typeSum>
-		class CPivotItemType : public CSimpleType<EPivotItemType, eDefValue>
-		{
-		public:
-			CPivotItemType() {}
-			CPivotItemType(const EPivotItemType & val)	{ this->m_eValue = val; }
 
-			virtual EPivotItemType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CPivotItemType, EPivotItemType, typeSum)
 
-			SimpleTypes_Default(CPivotItemType)
-		};
 		enum EFieldSortType
 		{
 			sortManual		=  0,
 			sortAscending	=  1,
 			sortDescending	=  2
 		};
-		template<EFieldSortType eDefValue = sortManual>
-		class CFieldSortType : public CSimpleType<EFieldSortType, eDefValue>
-		{
-		public:
-			CFieldSortType() {}
-			CFieldSortType(const EFieldSortType & val)	{ this->m_eValue = val; }
 
-			virtual EFieldSortType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CFieldSortType)
-		};
+		DEFINE_SIMPLE_TYPE(CFieldSortType, EFieldSortType, sortManual)
 		
 		enum EPivotAreaType
 		{
@@ -1885,18 +1162,9 @@ namespace SimpleTypes
 			areaOrigin		=  5,
 			areaTopEnd		=  6
 		};
-		template<EPivotAreaType eDefValue = areaNone>
-		class CPivotAreaType : public CSimpleType<EPivotAreaType, eDefValue>
-		{
-		public:
-			CPivotAreaType() {}
-			CPivotAreaType(const EPivotAreaType & val)	{ this->m_eValue = val; }
 
-			virtual EPivotAreaType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CPivotAreaType, EPivotAreaType, areaNone)
 
-			SimpleTypes_Default(CPivotAreaType)
-		};
 		enum EPivotAxisType
 		{
 			axisCol		=  0,
@@ -1904,18 +1172,9 @@ namespace SimpleTypes
 			axisRow		=  2,
 			axisValues	=  3
 		};
-		template<EPivotAxisType eDefValue = axisCol>
-		class CPivotAxisType : public CSimpleType<EPivotAxisType, eDefValue>
-		{
-		public:
-			CPivotAxisType() {}
-			CPivotAxisType(const EPivotAxisType & val)	{ this->m_eValue = val; }
 
-			virtual EPivotAxisType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CPivotAxisType, EPivotAxisType, axisCol)
 
-			SimpleTypes_Default(CPivotAxisType)
-		};
 		enum EFormatAction
 		{
 			actionBlank		=  0,
@@ -1923,18 +1182,9 @@ namespace SimpleTypes
 			actionFormatting=  2,
 			actionFormula	=  3
 		};
-		template<EFormatAction eDefValue = actionBlank>
-		class CFormatAction : public CSimpleType<EFormatAction, eDefValue>
-		{
-		public:
-			CFormatAction() {}
-			CFormatAction(const EFormatAction & val)	{ this->m_eValue = val; }
 
-			virtual EFormatAction FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CFormatAction, EFormatAction, actionBlank)
 
-			SimpleTypes_Default(CFormatAction)
-		};
 		enum EShowDataAs
 		{
 			dataAsDifference	=  0,
@@ -1947,18 +1197,9 @@ namespace SimpleTypes
 			dataAsPercentOfTotal =  7,
 			dataAsRunTotal		=  8
 		};
-		template<EShowDataAs eDefValue = dataAsRunTotal>
-		class CShowDataAs : public CSimpleType<EShowDataAs, eDefValue>
-		{
-		public:
-			CShowDataAs() {}
-			CShowDataAs(const EShowDataAs & val)	{ this->m_eValue = val; }
 
-			virtual EShowDataAs FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CShowDataAs, EShowDataAs, dataAsRunTotal)
 
-			SimpleTypes_Default(CShowDataAs)
-		};
 		enum EDataConsolidateFunction
 		{
 			functionAverage		=  0,
@@ -1973,18 +1214,9 @@ namespace SimpleTypes
 			functionVariance	=  9,
 			functionVarP		=  10
 		};
-		template<EDataConsolidateFunction eDefValue = functionSum>
-		class CDataConsolidateFunction : public CSimpleType<EDataConsolidateFunction, eDefValue>
-		{
-		public:
-			CDataConsolidateFunction() {}
-			CDataConsolidateFunction(const EDataConsolidateFunction & val)	{ this->m_eValue = val; }
 
-			virtual EDataConsolidateFunction FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDataConsolidateFunction, EDataConsolidateFunction, functionSum)
 
-			SimpleTypes_Default(CDataConsolidateFunction)
-		};
 		enum EDataValidationType
 		{
 			validationTypeNone		=  0,
@@ -1996,36 +1228,18 @@ namespace SimpleTypes
 			validationTypeTime		=  6,
 			validationTypeWhole		=  7
 		};
-		template<EDataValidationType eDefValue = validationTypeNone>
-		class CDataValidationType : public CSimpleType<EDataValidationType, eDefValue>
-		{
-		public:
-			CDataValidationType() {}
-			CDataValidationType(const EDataValidationType & val)	{ this->m_eValue = val; }
 
-			virtual EDataValidationType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDataValidationType, EDataValidationType, validationTypeNone)
 
-			SimpleTypes_Default(CDataValidationType)
-		};
 		enum EDataValidationErrorStyle
 		{
 			errorStyleStop			=  0,
 			errorStyleWarning		=  1,
 			errorStyleInformation	=  2
 		};
-		template<EDataValidationErrorStyle eDefValue = errorStyleStop>
-		class CDataValidationErrorStyle : public CSimpleType<EDataValidationErrorStyle, eDefValue>
-		{
-		public:
-			CDataValidationErrorStyle() {}
-			CDataValidationErrorStyle(const EDataValidationErrorStyle & val)	{ this->m_eValue = val; }
 
-			virtual EDataValidationErrorStyle FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDataValidationErrorStyle, EDataValidationErrorStyle, errorStyleStop)
 
-			SimpleTypes_Default(CDataValidationErrorStyle)
-		};
 		enum EDataValidationOperator
 		{
 			operatorBetween				=  0,
@@ -2037,16 +1251,9 @@ namespace SimpleTypes
 			operatorGreaterThan			=  6,
 			operatorGreaterThanOrEqual	=  7
 		};
-		template<EDataValidationOperator eDefValue = operatorBetween>
-		class CDataValidationOperator : public CSimpleType<EDataValidationOperator, eDefValue>
-		{
-		public:
-			CDataValidationOperator() {}
-			CDataValidationOperator(const EDataValidationOperator & val)	{ this->m_eValue = val; }
 
-			virtual EDataValidationOperator FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-		};
+		DEFINE_SIMPLE_TYPE(CDataValidationOperator, EDataValidationOperator, operatorBetween)
+
 		enum EDataValidationImeMode
 		{
 			imeModeNoControl		=  0,
@@ -2061,18 +1268,9 @@ namespace SimpleTypes
 			imeModeFullHangul		=  9,
 			imeModeHalfHangul		=  10
 		};
-		template<EDataValidationImeMode eDefValue = imeModeNoControl>
-		class CDataValidationImeMode : public CSimpleType<EDataValidationImeMode, eDefValue>
-		{
-		public:
-			CDataValidationImeMode() {}
-			CDataValidationImeMode(const EDataValidationImeMode & val)	{ this->m_eValue = val; }
 
-			virtual EDataValidationImeMode FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CDataValidationImeMode, EDataValidationImeMode, imeModeNoControl)
 
-			SimpleTypes_Default(CDataValidationImeMode)
-		};
 		enum EObjectType
 		{
 			objectButton	= 0,
@@ -2090,74 +1288,42 @@ namespace SimpleTypes
 			objectTabStrip = 12,
 			objectImage = 13
 		};
-		template<EObjectType eDefValue = objectButton>
-		class CObjectType : public CSimpleType<EObjectType, eDefValue>
-		{
-		public:
-			CObjectType() {}
-			CObjectType(const EObjectType & val)	{ this->m_eValue = val; }
 
-			virtual EObjectType FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CObjectType, EObjectType, objectButton)
 
-			SimpleTypes_Default(CObjectType)
-		};
 		enum EChecked
 		{
 			valUnchecked	=  0,
 			valChecked		=  1,
 			valMixed		=  2
 		};
-		template<EChecked eDefValue = valUnchecked>
-		class CChecked : public CSimpleType<EChecked, eDefValue>
-		{
-		public:
-			CChecked() {}
-			CChecked(const EChecked & val)	{ this->m_eValue = val; }
 
-			virtual EChecked FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
+		DEFINE_SIMPLE_TYPE(CChecked, EChecked, valUnchecked)
 
-			SimpleTypes_Default(CChecked)
-		};
 		enum EDropStyle
 		{
 			valCombo		=  0,
 			valComboedit	=  1,
 			valSimple		=  2
 		};
-		template<EDropStyle eDefValue = valSimple>
-		class CDropStyle : public CSimpleType<EDropStyle, eDefValue>
-		{
+
+		DEFINE_SIMPLE_TYPE_START(CDropStyle, EDropStyle, valSimple)
 		public:
-			CDropStyle() {}
-			CDropStyle(const EDropStyle & val)	{ this->m_eValue = val; }
-
-			virtual EDropStyle FromString(const std::wstring &sValue);
 			std::wstring ToVmlString() const;
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CDropStyle)
 		};
+
 		enum ESelType
 		{
 			valSingle	=  0,
 			valMulti	=  1,
 			valExtended	=  2
 		};
-		template<ESelType eDefValue = valSingle>
-		class CSelType : public CSimpleType<ESelType, eDefValue>
-		{
+
+		DEFINE_SIMPLE_TYPE_START(CSelType, ESelType, valSingle)
 		public:
-			CSelType() {}
-			CSelType(const ESelType & val)	{ this->m_eValue = val; }
-
-			virtual ESelType FromString(const std::wstring &sValue);
 			std::wstring ToVmlString() const;
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CSelType)
 		};
+
 		enum EEditValidation
 		{
 			editText		=  0,
@@ -2166,18 +1332,8 @@ namespace SimpleTypes
 			editReference	=  3,
 			editFormula		=  4
 		};
-		template<EEditValidation eDefValue = editText>
-		class CEditValidation : public CSimpleType<EEditValidation, eDefValue>
-		{
-		public:
-			CEditValidation() {}
-			CEditValidation(const EEditValidation & val)	{ this->m_eValue = val; }
 
-			virtual EEditValidation FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-
-			SimpleTypes_Default(CEditValidation)
-		};
+		DEFINE_SIMPLE_TYPE(CEditValidation, EEditValidation, editText)
 
 		enum ETabularSlicerCacheSortOrder
 		{
@@ -2185,37 +1341,17 @@ namespace SimpleTypes
 			ctabularslicercachesortorderDescending = 1
 		};
 
-		template<ETabularSlicerCacheSortOrder eDefValue = ctabularslicercachesortorderAscending>
-		class CTabularSlicerCacheSortOrder : public CSimpleType<ETabularSlicerCacheSortOrder, eDefValue>
-		{
-		public:
-			CTabularSlicerCacheSortOrder(){}
-			CTabularSlicerCacheSortOrder(const ETabularSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
-			virtual ETabularSlicerCacheSortOrder FromString(const std::wstring &sValue);
-			ETabularSlicerCacheSortOrder FromStringA(const char* sValue);
-			virtual std::wstring ToString() const;
+		DEFINE_SIMPLE_TYPE(CTabularSlicerCacheSortOrder, ETabularSlicerCacheSortOrder, ctabularslicercachesortorderAscending)
 
-			SimpleTypes_Default(CTabularSlicerCacheSortOrder)
-		};
 		enum ESlicerCacheCrossFilter
 		{
 			cslicercachecrossfilterNone = 0,
 			cslicercachecrossfilterShowItemsWithDataAtTop = 1,
 			cslicercachecrossfilterShowItemsWithNoData = 2
-		};
+		};		
 
-		template<ESlicerCacheCrossFilter eDefValue = cslicercachecrossfilterNone>
-		class CSlicerCacheCrossFilter : public CSimpleType<ESlicerCacheCrossFilter, eDefValue>
-		{
-		public:
-			CSlicerCacheCrossFilter(){}
-			CSlicerCacheCrossFilter(const ESlicerCacheCrossFilter & val)	{ this->m_eValue = val; }
-			virtual ESlicerCacheCrossFilter FromString(const std::wstring &sValue);
-			ESlicerCacheCrossFilter FromStringA(const char* sValue);
-			virtual std::wstring ToString() const;
+		DEFINE_SIMPLE_TYPE(CSlicerCacheCrossFilter, ESlicerCacheCrossFilter, cslicercachecrossfilterNone)
 
-			SimpleTypes_Default(CSlicerCacheCrossFilter)
-		};
 		enum EOlapSlicerCacheSortOrder
 		{
 			colapslicercachesortorderNatural = 0,
@@ -2223,18 +1359,7 @@ namespace SimpleTypes
 			colapslicercachesortorderDescending = 2
 		};
 
-		template<EOlapSlicerCacheSortOrder eDefValue = colapslicercachesortorderNatural>
-		class COlapSlicerCacheSortOrder : public CSimpleType<EOlapSlicerCacheSortOrder, eDefValue>
-		{
-		public:
-			COlapSlicerCacheSortOrder(){}
-			COlapSlicerCacheSortOrder(const EOlapSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
-			virtual EOlapSlicerCacheSortOrder FromString(const std::wstring &sValue);
-			EOlapSlicerCacheSortOrder FromStringA(const char* sValue);
-			virtual std::wstring ToString() const;
-
-			SimpleTypes_Default(COlapSlicerCacheSortOrder)
-		};
+		DEFINE_SIMPLE_TYPE(COlapSlicerCacheSortOrder, EOlapSlicerCacheSortOrder, colapslicercachesortorderNatural)
 
 		enum ESlicerStyleType
 		{
@@ -2248,17 +1373,7 @@ namespace SimpleTypes
 			cslicerstyletypeHoveredSelectedItemWithNoData = 7
 		};
 
-		template<ESlicerStyleType eDefValue = cslicerstyletypeUnselectedItemWithData>
-		class CSlicerStyleType : public CSimpleType<ESlicerStyleType, eDefValue>
-		{
-		public:
-			CSlicerStyleType(){}
-			virtual ESlicerStyleType FromString(const std::wstring &sValue);
-			ESlicerStyleType FromStringA(const char* sValue);
-			virtual std::wstring ToString() const;
-
-			SimpleTypes_Default(CSlicerStyleType)
-		};
+		DEFINE_SIMPLE_TYPE(CSlicerStyleType, ESlicerStyleType, cslicerstyletypeUnselectedItemWithData)
 
 	}// Spreadsheet
 } // SimpleTypes

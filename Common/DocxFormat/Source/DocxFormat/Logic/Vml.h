@@ -1512,7 +1512,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oDropLines;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oSel;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oWidthMin;
-			nullable<SimpleTypes::Spreadsheet::CDropStyle<>>		m_oDropStyle;
+			nullable<SimpleTypes::Spreadsheet::CDropStyle>			m_oDropStyle;
 			nullable_bool											m_oFirstButton;
 			nullable_bool											m_oDefaultSize;
 			nullable_bool											m_oAutoFill;
@@ -1534,12 +1534,12 @@ namespace OOX
 			nullable_string											m_oFmlaTxbx;
 			nullable_string											m_oFmlaGroup;
 			nullable_string											m_oCf;
-			nullable<SimpleTypes::Spreadsheet::CChecked<>>			m_oChecked;
+			nullable<SimpleTypes::Spreadsheet::CChecked>			m_oChecked;
 			nullable_string											m_oMultiSel;
-			nullable<SimpleTypes::Spreadsheet::CSelType<>>			m_oSelType;
+			nullable<SimpleTypes::Spreadsheet::CSelType>			m_oSelType;
 			nullable_int											m_oVal;
-			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>	m_oTextHAlign;
-			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>m_oTextVAlign;
+			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment>m_oTextHAlign;
+			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment>	m_oTextVAlign;
 			nullable_bool											m_oVisible;
 
 //x:Accel

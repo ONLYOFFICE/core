@@ -386,9 +386,9 @@ namespace OOX
 			}
 		public:
 			nullable<std::wstring >								m_oProgId;
-			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
+			nullable<SimpleTypes::Spreadsheet::ST_DvAspect>		m_oDvAspect;
 			nullable<std::wstring >								m_oLink;
-			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
+			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate>	m_oOleUpdate;
 			nullable<SimpleTypes::COnOff>						m_oAutoLoad;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;

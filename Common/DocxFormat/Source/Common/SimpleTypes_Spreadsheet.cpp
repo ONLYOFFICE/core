@@ -36,14 +36,7 @@ namespace SimpleTypes
 {
 	namespace Spreadsheet
 	{
-		template<>
-		CTableType<typeWorksheet>::CTableType() {}
-
-		template<>
-		CTableType<typeWorksheet>::CTableType(const ETableType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ETableType CTableType<typeWorksheet>::FromString(const std::wstring &sValue)
+		ETableType CTableType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"queryTable"	== sValue ) this->m_eValue = typeQueryTable;
 			else if ( L"worksheet"	== sValue ) this->m_eValue = typeWorksheet;
@@ -53,8 +46,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CTableType<typeWorksheet>::ToString  () const
+		std::wstring CTableType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -66,14 +58,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CExternalConnectionType<extConnTypeGeneral>::CExternalConnectionType() {}
-
-		template<>
-		CExternalConnectionType<extConnTypeGeneral>::CExternalConnectionType(const EExternalConnectionType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EExternalConnectionType CExternalConnectionType<extConnTypeGeneral>::FromString(const std::wstring &sValue)
+		EExternalConnectionType CExternalConnectionType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"general"	== sValue ) this->m_eValue = extConnTypeGeneral;
 			else if ( L"text"		== sValue ) this->m_eValue = extConnTypeText;
@@ -90,8 +75,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CExternalConnectionType<extConnTypeGeneral>::ToString  () const
+		std::wstring CExternalConnectionType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -109,14 +93,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CCredMethod<integrated_method>::CCredMethod() {}
-
-		template<>
-		CCredMethod<integrated_method>::CCredMethod(const ECredMethod & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECredMethod CCredMethod<integrated_method>::FromString(const std::wstring &sValue)
+		ECredMethod CCredMethod::FromString(const std::wstring &sValue)
 		{
 			if      ( L"integrated"	== sValue ) this->m_eValue = integrated_method;
 			else if ( L"none"		== sValue ) this->m_eValue = none_method;
@@ -127,8 +104,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCredMethod<integrated_method>::ToString  () const
+		std::wstring CCredMethod::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -141,17 +117,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CVisibleType<visibleVisible>::CVisibleType() {}
-
-		template<>
-		CVisibleType<visibleVisible>::CVisibleType(const EVisibleType & val)
-		{
-			this->m_eValue = val;
-		}
-
-		template<>
-		EVisibleType CVisibleType<visibleVisible>::FromString(const std::wstring &sValue)
+		EVisibleType CVisibleType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"hidden"      == sValue ) this->m_eValue = visibleHidden;
 			else if ( L"veryHidden"  == sValue ) this->m_eValue = visibleVeryHidden;
@@ -161,8 +127,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CVisibleType<visibleVisible>::ToString  () const
+		std::wstring CVisibleType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -173,14 +138,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CHtmlFormat<htmlNone>::CHtmlFormat() {}
-
-		template<>
-		CHtmlFormat<htmlNone>::CHtmlFormat(const EHtmlFormat & val)	{ this->m_eValue = val; }
-
-		template<>
-		EHtmlFormat CHtmlFormat<htmlNone>::FromString(const std::wstring &sValue)
+		EHtmlFormat CHtmlFormat::FromString(const std::wstring &sValue)
 		{
 			if      ( L"none"		== sValue )	this->m_eValue = htmlNone;
 			else if ( L"veryHidden" == sValue )	this->m_eValue = htmlRtf;
@@ -190,8 +148,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CHtmlFormat<htmlNone>::ToString  () const
+		std::wstring CHtmlFormat::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -202,14 +159,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CParameterType<parameterPrompt>::CParameterType() {}
-
-		template<>
-		CParameterType<parameterPrompt>::CParameterType(const EParameterType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EParameterType CParameterType<parameterPrompt>::FromString(const std::wstring &sValue)
+		EParameterType CParameterType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"promt"	== sValue )	this->m_eValue = parameterPrompt;
 			else if ( L"value"	== sValue )	this->m_eValue = parameterValue;
@@ -219,8 +169,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CParameterType<parameterPrompt>::ToString  () const
+		std::wstring CParameterType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -231,14 +180,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CQualifier<doubleQuote>::CQualifier() {}
-
-		template<>
-		CQualifier<doubleQuote>::CQualifier(const EQualifier & val)	{ this->m_eValue = val; }
-
-		template<>
-		EQualifier CQualifier<doubleQuote>::FromString(const std::wstring &sValue)
+		EQualifier CQualifier::FromString(const std::wstring &sValue)
 		{
 			if      ( L"doubleQuote"	== sValue )	this->m_eValue = doubleQuote;
 			else if ( L"singleQuote"	== sValue )	this->m_eValue = singleQuote;
@@ -248,8 +190,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CQualifier<doubleQuote>::ToString  () const
+		std::wstring CQualifier::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -260,14 +201,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CFileType<fileTypeWin>::CFileType() {}
-
-		template<>
-		CFileType<fileTypeWin>::CFileType(const EFileType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFileType CFileType<fileTypeWin>::FromString(const std::wstring &sValue)
+		EFileType CFileType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"win"	== sValue )	this->m_eValue = fileTypeWin;
 			else if ( L"mac"	== sValue )	this->m_eValue = fileTypeMac;
@@ -279,8 +213,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CFileType<fileTypeWin>::ToString  () const
+		std::wstring CFileType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -293,14 +226,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CPhoneticAlignment<phoneticalignmentNoControl>::CPhoneticAlignment() {}
-
-		template<>
-		CPhoneticAlignment<phoneticalignmentNoControl>::CPhoneticAlignment(const EPhoneticAlignmentType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPhoneticAlignmentType CPhoneticAlignment<phoneticalignmentNoControl>::FromString(const std::wstring &sValue)
+		EPhoneticAlignmentType CPhoneticAlignment::FromString(const std::wstring &sValue)
 		{
 			if      ( L"center"		== sValue ) this->m_eValue = phoneticalignmentCenter;
 			else if ( L"distributed"== sValue ) this->m_eValue = phoneticalignmentDistributed;
@@ -311,8 +237,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPhoneticAlignment<phoneticalignmentNoControl>::ToString  () const
+		std::wstring CPhoneticAlignment::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -324,14 +249,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CPhoneticType<phonetictypeNoConversion>::CPhoneticType() {}
-
-		template<>
-		CPhoneticType<phonetictypeNoConversion>::CPhoneticType(const EPhoneticTypeType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPhoneticTypeType CPhoneticType<phonetictypeNoConversion>::FromString(const std::wstring &sValue)
+		EPhoneticTypeType CPhoneticType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"fullwidthKatakana"	== sValue ) this->m_eValue = phonetictypeFullwidthKatakana;
 			else if ( L"halfwidthKatakana"	== sValue ) this->m_eValue = phonetictypeHalfwidthKatakana;
@@ -342,8 +260,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPhoneticType<phonetictypeNoConversion>::ToString  () const
+		std::wstring CPhoneticType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -355,14 +272,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CFontCharset<fontcharsetANSI>::CFontCharset() {}
-
-		template<>
-		CFontCharset<fontcharsetANSI>::CFontCharset(const EFontCharset & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFontCharset CFontCharset<fontcharsetANSI>::FromString(const std::wstring &sValue)
+		EFontCharset CFontCharset::FromString(const std::wstring &sValue)
 		{
 			int nCharset = XmlUtils::GetInteger(sValue.c_str());
 			switch(nCharset)
@@ -392,14 +302,12 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CFontCharset<fontcharsetANSI>::ToString  () const
+		std::wstring CFontCharset::ToString  () const
 		{
 			return std::to_wstring( this->m_eValue);
 		}
 
-		template<>
-		std::wstring CFontCharset<fontcharsetANSI>::ToHexString  () const
+		std::wstring CFontCharset::ToHexString  () const
 		{
 			std::wstring sRes;
 			switch(this->m_eValue)
@@ -427,14 +335,7 @@ namespace SimpleTypes
 			return sRes;
 		}
 
-		template<>
-		CThemeColor<themecolorDark1>::CThemeColor() {}
-
-		template<>
-		CThemeColor<themecolorDark1>::CThemeColor(const EThemeColor & val)	{ this->m_eValue = val; }
-
-		template<>
-		EThemeColor CThemeColor<themecolorDark1>::FromString(const std::wstring &sValue)
+		EThemeColor CThemeColor::FromString(const std::wstring &sValue)
 		{
 			int nThemeColor = XmlUtils::GetInteger(sValue);
 			switch(nThemeColor)
@@ -456,8 +357,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CThemeColor<themecolorDark1>::ToString  () const
+		std::wstring CThemeColor::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -612,15 +512,7 @@ namespace SimpleTypes
 			return 0;
 		}
 
-
-		template<>
-		CFontFamily<fontfamilyNotApplicable>::CFontFamily() {}
-
-		template<>
-		CFontFamily<fontfamilyNotApplicable>::CFontFamily(const EFontFamily & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFontFamily CFontFamily<fontfamilyNotApplicable>::FromString(const std::wstring &sValue)
+		EFontFamily CFontFamily::FromString(const std::wstring &sValue)
 		{
 			int nFontFamily = XmlUtils::GetInteger(sValue);
 			switch(nFontFamily)
@@ -636,14 +528,12 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CFontFamily<fontfamilyNotApplicable>::ToString  () const
+		std::wstring CFontFamily::ToString  () const
 		{
 			return std::to_wstring(this->m_eValue);
 		}
 
-		template<>
-		std::wstring CFontFamily<fontfamilyNotApplicable>::ToStringWord() const
+		std::wstring CFontFamily::ToStringWord() const
 		{
 			std::wstring sRes;
 			switch(this->m_eValue)
@@ -659,14 +549,7 @@ namespace SimpleTypes
 			return sRes;
 		}
 
-		template<>
-		CFontScheme<fontschemeNone>::CFontScheme() {}
-
-		template<>
-		CFontScheme<fontschemeNone>::CFontScheme(const EFontScheme & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFontScheme CFontScheme<fontschemeNone>::FromString(const std::wstring &sValue)
+		EFontScheme CFontScheme::FromString(const std::wstring &sValue)
 		{
 			if(L"major" == sValue)
 				this->m_eValue = fontschemeMajor;
@@ -679,8 +562,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring  CFontScheme<fontschemeNone>::ToString  () const
+		std::wstring  CFontScheme::ToString  () const
 		{
 			std::wstring sRes;
 			switch(this->m_eValue)
@@ -692,14 +574,7 @@ namespace SimpleTypes
 			return sRes;
 		}
 
-		template<>
-		CUnderline<underlineSingle>::CUnderline() {}
-
-		template<>
-		CUnderline<underlineSingle>::CUnderline(const EUnderline & val)	{ this->m_eValue = val; }
-
-		template<>
-		EUnderline CUnderline<underlineSingle>::FromString(const std::wstring &sValue)
+		EUnderline CUnderline::FromString(const std::wstring &sValue)
 		{
 			if(L"double" == sValue)
 				this->m_eValue = underlineDouble;
@@ -716,8 +591,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CUnderline<underlineSingle>::ToString  () const
+		std::wstring CUnderline::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -730,14 +604,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CBorderStyle<borderstyleNone>::CBorderStyle() {}
-
-		template<>
-		CBorderStyle<borderstyleNone>::CBorderStyle(const EBorderStyle & val)	{ this->m_eValue = val; }
-
-		template<>
-		EBorderStyle CBorderStyle<borderstyleNone>::FromString(const std::wstring &sValue)
+		EBorderStyle CBorderStyle::FromString(const std::wstring &sValue)
 		{
 			if(L"dashDot" == sValue)
 				this->m_eValue = borderstyleDashDot;
@@ -772,8 +639,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CBorderStyle<borderstyleNone>::ToString  () const
+		std::wstring CBorderStyle::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -795,14 +661,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CHorizontalAlignment<horizontalalignmentGeneral>::CHorizontalAlignment() {}
-
-		template<>
-		CHorizontalAlignment<horizontalalignmentGeneral>::CHorizontalAlignment(const EHorizontalAlignment & val)	{ this->m_eValue = val; }
-
-		template<>
-		EHorizontalAlignment CHorizontalAlignment<horizontalalignmentGeneral>::FromString(const std::wstring &sValue)
+		EHorizontalAlignment CHorizontalAlignment::FromString(const std::wstring &sValue)
 		{
 			// JustifyDistributed
 			std::wstring sValueL = XmlUtils::GetLower(sValue);
@@ -821,8 +680,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CHorizontalAlignment<horizontalalignmentGeneral>::ToVmlString() const
+		std::wstring CHorizontalAlignment::ToVmlString() const
 		{
 			switch (this->m_eValue)
 			{
@@ -839,8 +697,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		std::wstring CHorizontalAlignment<horizontalalignmentGeneral>::ToString  () const
+		std::wstring CHorizontalAlignment::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -857,15 +714,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CVerticalAlignment<verticalalignmentBottom>::CVerticalAlignment() {}
-
-		template<>
-		CVerticalAlignment<verticalalignmentBottom>::CVerticalAlignment(const EVerticalAlignment & val)	{ this->m_eValue = val; }
-
-		template<>
-		EVerticalAlignment CVerticalAlignment<verticalalignmentBottom>::FromString(const std::wstring &sValue)
+		EVerticalAlignment CVerticalAlignment::FromString(const std::wstring &sValue)
 		{
 			std::wstring sValueL = XmlUtils::GetLower(sValue);
 			//Automatic, JustifyDistributed
@@ -878,8 +727,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CVerticalAlignment<verticalalignmentBottom>::ToVmlString() const
+		std::wstring CVerticalAlignment::ToVmlString() const
 		{
 			switch (this->m_eValue)
 			{
@@ -892,8 +740,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		std::wstring CVerticalAlignment<verticalalignmentBottom>::ToString  () const
+		std::wstring CVerticalAlignment::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -906,15 +753,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CGradientType<gradienttypeLine>::CGradientType() {}
-
-		template<>
-		CGradientType<gradienttypeLine>::CGradientType(const EGradientType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EGradientType CGradientType<gradienttypeLine>::FromString(const std::wstring &sValue)
+		EGradientType CGradientType::FromString(const std::wstring &sValue)
 		{
 			if(L"line" == sValue)
 				this->m_eValue = gradienttypeLine;
@@ -925,8 +764,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CGradientType<gradienttypeLine>::ToString  () const
+		std::wstring CGradientType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -936,15 +774,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPatternType<patterntypeNone>::CPatternType() {}
-
-		template<>
-		CPatternType<patterntypeNone>::CPatternType(const EPatternType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPatternType CPatternType<patterntypeNone>::FromString(const std::wstring &sValue)
+		EPatternType CPatternType::FromString(const std::wstring &sValue)
 		{
 			if(L"darkDown" == sValue)
 				this->m_eValue = patterntypeDarkDown;
@@ -989,8 +819,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPatternType<patterntypeNone>::ToString  () const
+		std::wstring CPatternType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1019,15 +848,7 @@ namespace SimpleTypes
 			return L"none";
 		}
 
-
-		template<>
-		CTableStyleType<tablestyletypeBlankRow>::CTableStyleType() {}
-
-		template<>
-		CTableStyleType<tablestyletypeBlankRow>::CTableStyleType(const ETableStyleType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ETableStyleType CTableStyleType<tablestyletypeBlankRow>::FromString(const std::wstring &sValue)
+		ETableStyleType CTableStyleType::FromString(const std::wstring &sValue)
 		{
 			if(L"blankRow" == sValue)
 				this->m_eValue = tablestyletypeBlankRow;
@@ -1090,8 +911,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring  CTableStyleType<tablestyletypeBlankRow>::ToString  () const
+		std::wstring  CTableStyleType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1128,15 +948,7 @@ namespace SimpleTypes
 			return L"blankRow";
 		}
 
-
-		template<>
-		CCellFormulaType<cellformulatypeNormal>::CCellFormulaType() {}
-
-		template<>
-		CCellFormulaType<cellformulatypeNormal>::CCellFormulaType(const ECellFormulaType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECellFormulaType CCellFormulaType<cellformulatypeNormal>::FromString(const std::wstring &sValue)
+		ECellFormulaType CCellFormulaType::FromString(const std::wstring &sValue)
 		{
 			if(L"array" == sValue)
 				this->m_eValue = cellformulatypeArray;
@@ -1151,8 +963,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		ECellFormulaType CCellFormulaType<cellformulatypeNormal>::FromStringA(const char* sValue)
+		ECellFormulaType CCellFormulaType::FromStringA(const char* sValue)
 		{
 			if(strcmp("array", sValue) == 0)
 				this->m_eValue = cellformulatypeArray;
@@ -1167,8 +978,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCellFormulaType<cellformulatypeNormal>::ToString  () const
+		std::wstring CCellFormulaType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1180,15 +990,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CUpdateLinksType<updatelinksAlways>::CUpdateLinksType() {}
-
-		template<>
-		CUpdateLinksType<updatelinksAlways>::CUpdateLinksType(const EUpdateLinksType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EUpdateLinksType CUpdateLinksType<updatelinksAlways>::FromString(const std::wstring &sValue)
+		EUpdateLinksType CUpdateLinksType::FromString(const std::wstring &sValue)
 		{
 			if(L"always" == sValue)
 				this->m_eValue = updatelinksAlways;
@@ -1201,8 +1003,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CUpdateLinksType<updatelinksAlways>::ToString  () const
+		std::wstring CUpdateLinksType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1213,15 +1014,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CCellTypeType<celltypeNumber>::CCellTypeType() {}
-
-		template<>
-		CCellTypeType<celltypeNumber>::CCellTypeType(const ECellTypeType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECellTypeType CCellTypeType<celltypeNumber>::FromString(const std::wstring &sValue)
+		ECellTypeType CCellTypeType::FromString(const std::wstring &sValue)
 		{
 			if(L"b" == sValue)
 				this->m_eValue = celltypeBool;
@@ -1242,8 +1035,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		ECellTypeType CCellTypeType<celltypeNumber>::FromStringA(const char* sValue)
+		ECellTypeType CCellTypeType::FromStringA(const char* sValue)
 		{
 			if(strcmp("s", sValue) == 0)
 				this->m_eValue = celltypeSharedString;
@@ -1264,8 +1056,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCellTypeType<celltypeNumber>::ToString  () const
+		std::wstring CCellTypeType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1280,15 +1071,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CCellAnchorType<cellanchorTwoCell>::CCellAnchorType() {}
-
-		template<>
-		CCellAnchorType<cellanchorTwoCell>::CCellAnchorType(const ECellAnchorType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECellAnchorType CCellAnchorType<cellanchorTwoCell>::FromString(const std::wstring &sValue)
+		ECellAnchorType CCellAnchorType::FromString(const std::wstring &sValue)
 		{
 			if(L"absolute" == sValue)
 				this->m_eValue = cellanchorAbsolute;
@@ -1301,8 +1084,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCellAnchorType<cellanchorTwoCell>::ToString  () const
+		std::wstring CCellAnchorType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1313,15 +1095,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CSheetViewType<sheetviewNormal>::CSheetViewType() {}
-
-		template<>
-		CSheetViewType<sheetviewNormal>::CSheetViewType(const ESheetViewType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESheetViewType CSheetViewType<sheetviewNormal>::FromString(const std::wstring &sValue)
+		ESheetViewType CSheetViewType::FromString(const std::wstring &sValue)
 		{
 			if(L"normal" == sValue)
 				this->m_eValue = sheetviewNormal;
@@ -1334,8 +1108,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSheetViewType<sheetviewNormal>::ToString  () const
+		std::wstring CSheetViewType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1346,15 +1119,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartLegendPos<chartlegendposTop>::CChartLegendPos() {}
-
-		template<>
-		CChartLegendPos<chartlegendposTop>::CChartLegendPos(const EChartLegendPos & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartLegendPos CChartLegendPos<chartlegendposTop>::FromString(const std::wstring &sValue)
+		EChartLegendPos CChartLegendPos::FromString(const std::wstring &sValue)
 		{
 			if(L"l" == sValue)
 				this->m_eValue = chartlegendposLeft;
@@ -1371,8 +1136,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChartLegendPos<chartlegendposTop>::ToString  () const
+		std::wstring CChartLegendPos::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1385,15 +1149,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartHMode<charthmodeFactor>::CChartHMode() {}
-
-		template<>
-		CChartHMode<charthmodeFactor>::CChartHMode(const EChartHMode & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartHMode CChartHMode<charthmodeFactor>::FromString(const std::wstring &sValue)
+		EChartHMode CChartHMode::FromString(const std::wstring &sValue)
 		{
 			if(L"factor" == sValue)
 				this->m_eValue = charthmodeFactor;
@@ -1404,8 +1160,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChartHMode<charthmodeFactor>::ToString  () const
+		std::wstring CChartHMode::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1415,15 +1170,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartLayoutTarget<chartlayouttargetInner>::CChartLayoutTarget() {}
-
-		template<>
-		CChartLayoutTarget<chartlayouttargetInner>::CChartLayoutTarget(const EChartLayoutTarget & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartLayoutTarget CChartLayoutTarget<chartlayouttargetInner>::FromString(const std::wstring &sValue)
+		EChartLayoutTarget CChartLayoutTarget::FromString(const std::wstring &sValue)
 		{
 			if(L"inner" == sValue)
 				this->m_eValue = chartlayouttargetInner;
@@ -1434,8 +1181,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChartLayoutTarget<chartlayouttargetInner>::ToString  () const
+		std::wstring CChartLayoutTarget::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1445,15 +1191,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartAxPos<chartaxposLeft>::CChartAxPos() {}
-
-		template<>
-		CChartAxPos<chartaxposLeft>::CChartAxPos(const EChartAxPos & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartAxPos CChartAxPos<chartaxposLeft>::FromString(const std::wstring &sValue)
+		EChartAxPos CChartAxPos::FromString(const std::wstring &sValue)
 		{
 			if(L"l" == sValue)
 				this->m_eValue = chartaxposLeft;
@@ -1468,8 +1206,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChartAxPos<chartaxposLeft>::ToString  () const
+		std::wstring CChartAxPos::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1481,15 +1218,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartBarGrouping<chartbargroupingClustered>::CChartBarGrouping() {}
-
-		template<>
-		CChartBarGrouping<chartbargroupingClustered>::CChartBarGrouping(const EChartBarGrouping & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartBarGrouping CChartBarGrouping<chartbargroupingClustered>::FromString(const std::wstring &sValue)
+		EChartBarGrouping CChartBarGrouping::FromString(const std::wstring &sValue)
 		{
 			if(L"clustered" == sValue)
 				this->m_eValue = chartbargroupingClustered;
@@ -1504,8 +1233,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChartBarGrouping<chartbargroupingClustered>::ToString  () const
+		std::wstring CChartBarGrouping::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1517,15 +1245,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartBarDirection<chartbardirectionBar>::CChartBarDirection() {}
-
-		template<>
-		CChartBarDirection<chartbardirectionBar>::CChartBarDirection(const EChartBarDirection & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartBarDirection CChartBarDirection<chartbardirectionBar>::FromString(const std::wstring &sValue)
+		EChartBarDirection CChartBarDirection::FromString(const std::wstring &sValue)
 		{
 			if(L"bar" == sValue)
 				this->m_eValue = chartbardirectionBar;
@@ -1536,8 +1256,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring  CChartBarDirection<chartbardirectionBar>::ToString  () const
+		std::wstring  CChartBarDirection::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1547,15 +1266,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChartSymbol<chartsymbolNone>::CChartSymbol() {}
-
-		template<>
-		CChartSymbol<chartsymbolNone>::CChartSymbol(const EChartSymbol & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChartSymbol CChartSymbol<chartsymbolNone>::FromString(const std::wstring &sValue)
+		EChartSymbol CChartSymbol::FromString(const std::wstring &sValue)
 		{
 			if(L"circle" == sValue)
 				this->m_eValue = chartsymbolCircle;
@@ -1584,8 +1295,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChartSymbol<chartsymbolNone>::ToString  () const
+		std::wstring CChartSymbol::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1604,35 +1314,19 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		CPageSize<pagesizeA4Paper>::CPageSize() {}
-
-		template<>
-		CPageSize<pagesizeA4Paper>::CPageSize(const EPageSize & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPageSize CPageSize<pagesizeA4Paper>::FromString(const std::wstring &sValue)
+		EPageSize CPageSize::FromString(const std::wstring &sValue)
 		{
 			int nCharset = XmlUtils::GetInteger(sValue);
 			this->m_eValue = (EPageSize)nCharset;
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPageSize<pagesizeA4Paper>::ToString  () const
+		std::wstring CPageSize::ToString  () const
 		{
 			return std::to_wstring(this->m_eValue );
 		}
 
-
-		template<>
-		CPageUnits<mm>::CPageUnits() {}
-
-		template<>
-		CPageUnits<mm>::CPageUnits(const EPageUnits & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPageUnits CPageUnits<mm>::FromString(const std::wstring &sValue)
+		EPageUnits CPageUnits::FromString(const std::wstring &sValue)
 		{
 			if	(sValue == L"in")	this->m_eValue = inch;
 			else if (sValue == L"mm")	this->m_eValue = mm;
@@ -1643,8 +1337,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPageUnits<mm>::ToString  () const
+		std::wstring CPageUnits::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -1658,15 +1351,7 @@ namespace SimpleTypes
 			return sResult;
 		}
 
-
-		template<>
-		CCellComments<cellcommentsNone>::CCellComments() {}
-
-		template<>
-		CCellComments<cellcommentsNone>::CCellComments(const ECellComments & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECellComments CCellComments<cellcommentsNone>::FromString(const std::wstring &sValue)
+		ECellComments CCellComments::FromString(const std::wstring &sValue)
 		{
 			if      (L"asDisplayed" == sValue ) this->m_eValue = cellcommentsAsDisplayed;
 			else if (L"atEnd" ==  sValue ) this->m_eValue = cellcommentsAtEnd;
@@ -1676,8 +1361,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCellComments<cellcommentsNone>::ToString  () const
+		std::wstring CCellComments::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1688,15 +1372,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPrintError<printerrorDisplayed>::CPrintError() {}
-
-		template<>
-		CPrintError<printerrorDisplayed>::CPrintError(const EPrintError & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPrintError CPrintError<printerrorDisplayed>::FromString(const std::wstring &sValue)
+		EPrintError CPrintError::FromString(const std::wstring &sValue)
 		{
 			if      (L"blank" == sValue ) this->m_eValue = printerrorBlank;
 			else if (L"dash" ==  sValue ) this->m_eValue = printerrorDash;
@@ -1707,8 +1383,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPrintError<printerrorDisplayed>::ToString  () const
+		std::wstring CPrintError::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1720,15 +1395,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPageOrder<pageorderDownThenOver>::CPageOrder() {}
-
-		template<>
-		CPageOrder<pageorderDownThenOver>::CPageOrder(const EPageOrder & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPageOrder CPageOrder<pageorderDownThenOver>::FromString(const std::wstring &sValue)
+		EPageOrder CPageOrder::FromString(const std::wstring &sValue)
 		{
 			if      (L"downThenOver" == sValue ) this->m_eValue = pageorderDownThenOver;
 			else if (L"overThenDown" ==  sValue ) this->m_eValue = pageorderOverThenDown;
@@ -1737,8 +1404,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPageOrder<pageorderDownThenOver>::ToString  () const
+		std::wstring CPageOrder::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -1748,15 +1414,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CTotalsRowFunction<totalrowfunctionNone>::CTotalsRowFunction() {}
-
-		template<>
-		CTotalsRowFunction<totalrowfunctionNone>::CTotalsRowFunction(const ETotalsRowFunction & val)	{ this->m_eValue = val; }
-
-		template<>
-		ETotalsRowFunction CTotalsRowFunction<totalrowfunctionNone>::FromString(const std::wstring &sValue)
+		ETotalsRowFunction CTotalsRowFunction::FromString(const std::wstring &sValue)
 		{
 			if(L"average" == sValue)
 				this->m_eValue = totalrowfunctionAverage;
@@ -1783,8 +1441,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CTotalsRowFunction<totalrowfunctionNone>::ToString  () const
+		std::wstring CTotalsRowFunction::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -1803,15 +1460,7 @@ namespace SimpleTypes
 			return sResult;
 		}
 
-
-		template<>
-		CSortBy<sortbyValue>::CSortBy() {}
-
-		template<>
-		CSortBy<sortbyValue>::CSortBy(const ESortBy & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESortBy CSortBy<sortbyValue>::FromString(const std::wstring &sValue)
+		ESortBy CSortBy::FromString(const std::wstring &sValue)
 		{
 			if(L"cellColor" == sValue)
 				this->m_eValue = sortbyCellColor;
@@ -1826,8 +1475,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSortBy<sortbyValue>::ToString  () const
+		std::wstring CSortBy::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -1840,15 +1488,7 @@ namespace SimpleTypes
 			return sResult;
 		}
 
-
-		template<>
-		CCustomFilter<customfilterEqual>::CCustomFilter() {}
-
-		template<>
-		CCustomFilter<customfilterEqual>::CCustomFilter(const ECustomFilter & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECustomFilter CCustomFilter<customfilterEqual>::FromString(const std::wstring &sValue)
+		ECustomFilter CCustomFilter::FromString(const std::wstring &sValue)
 		{
 			if(L"equal" == sValue)
 				this->m_eValue = customfilterEqual;
@@ -1867,8 +1507,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCustomFilter<customfilterEqual>::ToString  () const
+		std::wstring CCustomFilter::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -1883,15 +1522,7 @@ namespace SimpleTypes
 			return sResult;
 		}
 
-
-		template<>
-		CDateTimeGroup<datetimegroupDay>::CDateTimeGroup() {}
-
-		template<>
-		CDateTimeGroup<datetimegroupDay>::CDateTimeGroup(const EDateTimeGroup & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDateTimeGroup CDateTimeGroup<datetimegroupDay>::FromString(const std::wstring &sValue)
+		EDateTimeGroup CDateTimeGroup::FromString(const std::wstring &sValue)
 		{
 			if(L"day" == sValue)
 				this->m_eValue = datetimegroupDay;
@@ -1910,8 +1541,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring  CDateTimeGroup<datetimegroupDay>::ToString  () const
+		std::wstring  CDateTimeGroup::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -1926,15 +1556,7 @@ namespace SimpleTypes
 			return sResult;
 		}
 
-
-		template<>
-		CSortMethod<sortmethodNone>::CSortMethod() {}
-
-		template<>
-		CSortMethod<sortmethodNone>::CSortMethod(const ESortMethod & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESortMethod CSortMethod<sortmethodNone>::FromString(const std::wstring &sValue)
+		ESortMethod CSortMethod::FromString(const std::wstring &sValue)
 		{
 			if(L"none" == sValue)
 				this->m_eValue = sortmethodNone;
@@ -1947,8 +1569,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSortMethod<sortmethodNone>::ToString  () const
+		std::wstring CSortMethod::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -1960,15 +1581,7 @@ namespace SimpleTypes
 			return sResult;
 		}
 
-
-		template<>
-		CDynamicFilterType<dynamicfiltertypeNull>::CDynamicFilterType() {}
-
-		template<>
-		CDynamicFilterType<dynamicfiltertypeNull>::CDynamicFilterType(const EDynamicFilterType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDynamicFilterType CDynamicFilterType<dynamicfiltertypeNull>::FromString(const std::wstring &sValue)
+		EDynamicFilterType CDynamicFilterType::FromString(const std::wstring &sValue)
 		{
 			if(L"aboveAverage" == sValue)
 				this->m_eValue = dynamicfiltertypeAboveAverage;
@@ -2045,8 +1658,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDynamicFilterType<dynamicfiltertypeNull>::ToString  () const
+		std::wstring CDynamicFilterType::ToString  () const
 		{
 			std::wstring sResult;
 			switch(this->m_eValue)
@@ -2094,14 +1706,7 @@ namespace SimpleTypes
 		//	ST_IconSetType (18.18.42)
 		//--------------------------------------------------------
 
-		template<>
-		ST_IconSetType<Arrows3>::ST_IconSetType() {}
-
-		template<>
-		ST_IconSetType<Arrows3>::ST_IconSetType(const EIconSetType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EIconSetType ST_IconSetType<Arrows3>::FromString(const std::wstring &sValue)
+		EIconSetType ST_IconSetType::FromString(const std::wstring &sValue)
 		{
 			if(L"3Arrows" == sValue)				this->m_eValue = Arrows3;
 			else if(L"3ArrowsGray" == sValue)		this->m_eValue = Arrows3Gray;
@@ -2129,8 +1734,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_IconSetType<Arrows3>::ToString  () const
+		std::wstring ST_IconSetType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2163,14 +1767,7 @@ namespace SimpleTypes
 		//	ST_DataBarAxisPosition
 		//--------------------------------------------------------
 
-		template<>
-		ST_DataBarAxisPosition<automatic_pos>::ST_DataBarAxisPosition() {}
-
-		template<>
-		ST_DataBarAxisPosition<automatic_pos>::ST_DataBarAxisPosition(const EDataBarAxisPosition & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataBarAxisPosition ST_DataBarAxisPosition<automatic_pos>::FromString(const std::wstring &sValue)
+		EDataBarAxisPosition ST_DataBarAxisPosition::FromString(const std::wstring &sValue)
 		{
 			if(L"automatic" == sValue)		this->m_eValue = automatic_pos;
 			else if(L"middle" == sValue)	this->m_eValue = middle_pos;
@@ -2179,8 +1776,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_DataBarAxisPosition<automatic_pos>::ToString  () const
+		std::wstring ST_DataBarAxisPosition::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2195,14 +1791,7 @@ namespace SimpleTypes
 		//	ST_DataBarDirection
 		//--------------------------------------------------------
 
-		template<>
-		ST_DataBarDirection<context_direction>::ST_DataBarDirection() {}
-
-		template<>
-		ST_DataBarDirection<context_direction>::ST_DataBarDirection(const EDataBarDirection & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataBarDirection ST_DataBarDirection<context_direction>::FromString(const std::wstring &sValue)
+		EDataBarDirection ST_DataBarDirection::FromString(const std::wstring &sValue)
 		{
 			if(L"context"		== sValue)	this->m_eValue = context_direction;
 			else if(L"leftToRight"	== sValue)	this->m_eValue = leftToRight;
@@ -2211,8 +1800,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_DataBarDirection<context_direction>::ToString  () const
+		std::wstring ST_DataBarDirection::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2227,14 +1815,7 @@ namespace SimpleTypes
 		//	18.18.15 ST_CfOperator (Conditional Format Operators)
 		//----------------------------------------------------
 
-		template<>
-		ST_CfOperator<Operator_equal>::ST_CfOperator() {}
-
-		template<>
-		ST_CfOperator<Operator_equal>::ST_CfOperator(const ECfOperator & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECfOperator ST_CfOperator<Operator_equal>::FromString(const std::wstring &sValue)
+		ECfOperator ST_CfOperator::FromString(const std::wstring &sValue)
 		{
 			if(L"beginsWith" == sValue)				this->m_eValue = Operator_beginsWith;
 			else if(L"between" == sValue)			this->m_eValue = Operator_between;
@@ -2251,8 +1832,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_CfOperator<Operator_equal>::ToString  () const
+		std::wstring ST_CfOperator::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2276,14 +1856,7 @@ namespace SimpleTypes
 		//	18.18.82 ST_TimePeriod (Conditional Format Value Object Type)
 		//----------------------------------------------------
 
-		template<>
-		ST_TimePeriod<last7Days>::ST_TimePeriod() {}
-
-		template<>
-		ST_TimePeriod<last7Days>::ST_TimePeriod(const ETimePeriod & val)	{ this->m_eValue = val; }
-
-		template<>
-		ETimePeriod ST_TimePeriod<last7Days>::FromString(const std::wstring &sValue)
+		ETimePeriod ST_TimePeriod::FromString(const std::wstring &sValue)
 		{
 			if(L"last7Days" == sValue)			this->m_eValue = last7Days;
 			else if(L"lastMonth" == sValue)		this->m_eValue = lastMonth;
@@ -2299,8 +1872,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_TimePeriod<last7Days>::ToString  () const
+		std::wstring ST_TimePeriod::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2322,14 +1894,7 @@ namespace SimpleTypes
 		//	18.18.12 ST_CfType (Conditional Format Type)
 		//----------------------------------------------------
 
-		template<>
-		ST_CfType<dataBar>::ST_CfType() {}
-
-		template<>
-		ST_CfType<dataBar>::ST_CfType(const ECfType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECfType ST_CfType<dataBar>::FromString(const std::wstring &sValue)
+		ECfType ST_CfType::FromString(const std::wstring &sValue)
 		{
 			if(L"aboveAverage" == sValue)			this->m_eValue = aboveAverage;
 			else if(L"beginsWith" == sValue)		this->m_eValue = beginsWith;
@@ -2353,8 +1918,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_CfType<dataBar>::ToString  () const
+		std::wstring ST_CfType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2384,14 +1948,7 @@ namespace SimpleTypes
 		//	18.18.13 ST_CfvoType (Conditional Format Value Object Type)
 		//----------------------------------------------------
 
-		template<>
-		ST_CfvoType<Number>::ST_CfvoType() {}
-
-		template<>
-		ST_CfvoType<Number>::ST_CfvoType(const ECfvoType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECfvoType ST_CfvoType<Number>::FromString(const std::wstring &sValue)
+		ECfvoType ST_CfvoType::FromString(const std::wstring &sValue)
 		{
 			if(L"formula" == sValue)		this->m_eValue = Formula;
 			else if(L"max" == sValue)		this->m_eValue = Maximum;
@@ -2405,8 +1962,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_CfvoType<Number>::ToString  () const
+		std::wstring ST_CfvoType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2422,15 +1978,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		ST_SparklineType<Line>::ST_SparklineType() {}
-
-		template<>
-		ST_SparklineType<Line>::ST_SparklineType(const ESparklineType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESparklineType ST_SparklineType<Line>::FromString(const std::wstring &sValue)
+		ESparklineType ST_SparklineType::FromString(const std::wstring &sValue)
 		{
 			if(L"line" == sValue)			this->m_eValue = Line;
 			else if(L"column" == sValue)	this->m_eValue = Column;
@@ -2439,8 +1987,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_SparklineType<Line>::ToString  () const
+		std::wstring ST_SparklineType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2451,15 +1998,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		ST_SparklineAxisMinMax<Individual>::ST_SparklineAxisMinMax() {}
-
-		template<>
-		ST_SparklineAxisMinMax<Individual>::ST_SparklineAxisMinMax(const ESparklineAxisMinMax & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESparklineAxisMinMax ST_SparklineAxisMinMax<Individual>::FromString(const std::wstring &sValue)
+		ESparklineAxisMinMax ST_SparklineAxisMinMax::FromString(const std::wstring &sValue)
 		{
 			if(L"individual" == sValue)			this->m_eValue = Individual;
 			else if(L"group" == sValue)		this->m_eValue = Group;
@@ -2468,8 +2007,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_SparklineAxisMinMax<Individual>::ToString  () const
+		std::wstring ST_SparklineAxisMinMax::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2480,15 +2018,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		ST_DvAspect<Icon>::ST_DvAspect() {}
-
-		template<>
-		ST_DvAspect<Icon>::ST_DvAspect(const EDvAspect & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDvAspect ST_DvAspect<Icon>::FromString(const std::wstring &sValue)
+		EDvAspect ST_DvAspect::FromString(const std::wstring &sValue)
 		{
 			if(L"DVASPECT_CONTENT" == sValue)	this->m_eValue = Content;
 			else if(L"DVASPECT_ICON" == sValue)	this->m_eValue = Icon;
@@ -2496,8 +2026,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_DvAspect<Icon>::ToString  () const
+		std::wstring ST_DvAspect::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2507,15 +2036,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		ST_OleUpdate<Always>::ST_OleUpdate() {}
-
-		template<>
-		ST_OleUpdate<Always>::ST_OleUpdate(const EOleUpdate & val)	{ this->m_eValue = val; }
-
-		template<>
-		EOleUpdate ST_OleUpdate<Always>::FromString(const std::wstring &sValue)
+		EOleUpdate ST_OleUpdate::FromString(const std::wstring &sValue)
 		{
 			if(L"OLEUPDATE_ALWAYS" == sValue) this->m_eValue = Always;
 			else if(L"OLEUPDATE_ONCALL" == sValue) this->m_eValue = OnCall;
@@ -2523,8 +2044,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring ST_OleUpdate<Always>::ToString  () const
+		std::wstring ST_OleUpdate::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2534,15 +2054,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CActivePane<activepaneTopLeft>::CActivePane() {}
-
-		template<>
-		CActivePane<activepaneTopLeft>::CActivePane(const EActivePane & val)	{ this->m_eValue = val; }
-
-		template<>
-		EActivePane CActivePane<activepaneTopLeft>::FromString(const std::wstring &sValue)
+		EActivePane CActivePane::FromString(const std::wstring &sValue)
 		{
 			if      ( L"bottomLeft" == sValue ) this->m_eValue = activepaneBottomLeft;
 			else if ( L"bottomRight" ==  sValue ) this->m_eValue = activepaneBottomRight;
@@ -2553,8 +2065,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring  CActivePane<activepaneTopLeft>::ToString  () const
+		std::wstring  CActivePane::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2566,15 +2077,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPaneState<panestateFrozen>::CPaneState() {}
-
-		template<>
-		CPaneState<panestateFrozen>::CPaneState(const EPaneState & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPaneState CPaneState<panestateFrozen>::FromString(const std::wstring &sValue)
+		EPaneState CPaneState::FromString(const std::wstring &sValue)
 		{
 			if      ( L"frozen" == sValue ) this->m_eValue = panestateFrozen;
 			else if ( L"frozenSplit" ==  sValue ) this->m_eValue = panestateFrozenSplit;
@@ -2584,8 +2087,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPaneState<panestateFrozen>::ToString  () const
+		std::wstring CPaneState::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2596,15 +2098,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDdeValueType<ddevaluetypeNil>::CDdeValueType() {}
-
-		template<>
-		CDdeValueType<ddevaluetypeNil>::CDdeValueType(const EDdeValueType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDdeValueType CDdeValueType<ddevaluetypeNil>::FromString(const std::wstring &sValue)
+		EDdeValueType CDdeValueType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"nil" == sValue ) this->m_eValue = ddevaluetypeNil;
 			else if ( L"b" ==  sValue ) this->m_eValue = ddevaluetypeB;
@@ -2615,8 +2109,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDdeValueType<ddevaluetypeNil>::ToString  () const
+		std::wstring CDdeValueType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2629,15 +2122,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CCalcMode<calcmodeAuto>::CCalcMode() {}
-
-		template<>
-		CCalcMode<calcmodeAuto>::CCalcMode(const ECalcMode & val)	{ this->m_eValue = val; }
-
-		template<>
-		ECalcMode CCalcMode<calcmodeAuto>::FromString(const std::wstring &sValue)
+		ECalcMode CCalcMode::FromString(const std::wstring &sValue)
 		{
 			if      ( L"auto"      == sValue ) this->m_eValue = calcmodeAuto;
 			else if ( L"autoNoTable" ==  sValue ) this->m_eValue = calcmodeAutoNoTable;
@@ -2647,8 +2132,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CCalcMode<calcmodeAuto>::ToString  () const
+		std::wstring CCalcMode::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2660,15 +2144,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CRefMode<refmodeA1>::CRefMode() {}
-
-		template<>
-		CRefMode<refmodeA1>::CRefMode(const ERefMode & val)	{ this->m_eValue = val; }
-
-		template<>
-		ERefMode CRefMode<refmodeA1>::FromString(const std::wstring &sValue)
+		ERefMode CRefMode::FromString(const std::wstring &sValue)
 		{
 			if      ( L"A1"  == sValue ) this->m_eValue = refmodeA1;
 			else if ( L"R1C1" ==  sValue ) this->m_eValue = refmodeR1C1;
@@ -2677,8 +2153,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CRefMode<refmodeA1>::ToString  () const
+		std::wstring CRefMode::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2688,7 +2163,6 @@ namespace SimpleTypes
 
 			}
 		}
-
 
 		template<>
 		CDoubleOrAutomatic<typeAuto>::CDoubleOrAutomatic() : m_dValue(0){}
@@ -2736,14 +2210,7 @@ namespace SimpleTypes
 		}
 		
 
-		template<>
-		CSeriesLayout<typeSeriesLayoutBoxWhisker>::CSeriesLayout() {}
-
-		template<>
-		CSeriesLayout<typeSeriesLayoutBoxWhisker>::CSeriesLayout(const ESeriesLayout & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESeriesLayout CSeriesLayout<typeSeriesLayoutBoxWhisker>::FromString(const std::wstring &sValue)
+		ESeriesLayout CSeriesLayout::FromString(const std::wstring &sValue)
 		{
 			if      ( L"boxWhisker" ==  sValue ) this->m_eValue = typeSeriesLayoutBoxWhisker;
 			else if ( L"clusteredColumn" == sValue ) this->m_eValue = typeSeriesLayoutClusteredColumn;
@@ -2758,8 +2225,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSeriesLayout<typeSeriesLayoutBoxWhisker>::ToString  () const
+		std::wstring CSeriesLayout::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2774,16 +2240,8 @@ namespace SimpleTypes
 			default : return L"auto";
 			}
 		}
-		
 
-		template<>
-		CAxisUnit<unitPercentage>::CAxisUnit() {}
-
-		template<>
-		CAxisUnit<unitPercentage>::CAxisUnit(const EAxisUnit & val)	{ this->m_eValue = val; }
-
-		template<>
-		EAxisUnit CAxisUnit<unitPercentage>::FromString(const std::wstring &sValue)
+		EAxisUnit CAxisUnit::FromString(const std::wstring &sValue)
 		{
 			if      ( L"hundreds" ==  sValue )	this->m_eValue = unitHundreds;
 			else if ( L"thousands" ==  sValue ) this->m_eValue = unitThousands;
@@ -2800,8 +2258,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CAxisUnit<unitPercentage>::ToString  () const
+		std::wstring CAxisUnit::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2819,15 +2276,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDimensionType<typeDimensionVal>::CDimensionType() {}
-
-		template<>
-		CDimensionType<typeDimensionVal>::CDimensionType(const EDimensionType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDimensionType CDimensionType<typeDimensionVal>::FromString(const std::wstring &sValue)
+		EDimensionType CDimensionType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"val" ==  sValue )	this->m_eValue = typeDimensionVal;
 			else if ( L"x" ==  sValue ) this->m_eValue = typeDimensionX;
@@ -2840,8 +2289,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDimensionType<typeDimensionVal>::ToString  () const
+		std::wstring CDimensionType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2856,23 +2304,14 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CFormulaDirection<directionCol>::CFormulaDirection() {}
-
-		template<>
-		CFormulaDirection<directionCol>::CFormulaDirection(const EFormulaDirection & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFormulaDirection CFormulaDirection<directionCol>::FromString(const std::wstring &sValue)
+		EFormulaDirection CFormulaDirection::FromString(const std::wstring &sValue)
 		{
 			if(L"row" == sValue) this->m_eValue = directionRow;
 			else                    this->m_eValue = directionCol;
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CFormulaDirection<directionCol>::ToString  () const
+		std::wstring CFormulaDirection::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2885,15 +2324,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CSidePos<sideTop>::CSidePos() {}
-
-		template<>
-		CSidePos<sideTop>::CSidePos(const ESidePos & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESidePos CSidePos<sideTop>::FromString(const std::wstring &sValue)
+		ESidePos CSidePos::FromString(const std::wstring &sValue)
 		{
 			if      ( L"t" == sValue )	this->m_eValue = sideTop;
 			else if ( L"l" == sValue ) this->m_eValue = sideLeft;
@@ -2903,8 +2334,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSidePos<sideTop>::ToString  () const
+		std::wstring CSidePos::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2916,15 +2346,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPosAlign<posAlignCtr>::CPosAlign() {}
-
-		template<>
-		CPosAlign<posAlignCtr>::CPosAlign(const EPosAlign & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPosAlign CPosAlign<posAlignCtr>::FromString(const std::wstring &sValue)
+		EPosAlign CPosAlign::FromString(const std::wstring &sValue)
 		{
 			if      ( L"min" == sValue )	this->m_eValue = posAlignMin;
 			else if ( L"max" == sValue ) this->m_eValue = posAlignMax;
@@ -2933,8 +2355,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPosAlign<posAlignCtr>::ToString  () const
+		std::wstring CPosAlign::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2945,15 +2366,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CRegionLabelLayout<layoutNone>::CRegionLabelLayout() {}
-
-		template<>
-		CRegionLabelLayout<layoutNone>::CRegionLabelLayout(const ERegionLabelLayout & val)	{ this->m_eValue = val; }
-
-		template<>
-		ERegionLabelLayout CRegionLabelLayout<layoutNone>::FromString(const std::wstring &sValue)
+		ERegionLabelLayout CRegionLabelLayout::FromString(const std::wstring &sValue)
 		{
 			if      ( L"none" ==  sValue )	this->m_eValue = layoutNone;
 			else if ( L"bestFitOnly" == sValue ) this->m_eValue = layoutBestFitOnly;
@@ -2962,8 +2375,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CRegionLabelLayout<layoutNone>::ToString  () const
+		std::wstring CRegionLabelLayout::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -2974,15 +2386,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CParentLabelLayout<layoutNone_>::CParentLabelLayout() {}
-
-		template<>
-		CParentLabelLayout<layoutNone_>::CParentLabelLayout(const EParentLabelLayout & val)	{ this->m_eValue = val; }
-
-		template<>
-		EParentLabelLayout CParentLabelLayout<layoutNone_>::FromString(const std::wstring &sValue)
+		EParentLabelLayout CParentLabelLayout::FromString(const std::wstring &sValue)
 		{
 			if      ( L"none" ==  sValue )	this->m_eValue = layoutNone_;
 			else if ( L"banner" ==  sValue ) this->m_eValue = layoutBanner;
@@ -2991,8 +2395,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CParentLabelLayout<layoutNone_>::ToString  () const
+		std::wstring CParentLabelLayout::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3003,15 +2406,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CQuartileMethod<methodInclusive>::CQuartileMethod() {}
-
-		template<>
-		CQuartileMethod<methodInclusive>::CQuartileMethod(const EQuartileMethod & val)	{ this->m_eValue = val; }
-
-		template<>
-		EQuartileMethod CQuartileMethod<methodInclusive>::FromString(const std::wstring &sValue)
+		EQuartileMethod CQuartileMethod::FromString(const std::wstring &sValue)
 		{
 			if      ( L"inclusive" == sValue )	this->m_eValue = methodInclusive;
 			else if ( L"exclusive" == sValue ) this->m_eValue = methodExclusive;
@@ -3019,8 +2414,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CQuartileMethod<methodInclusive>::ToString  () const
+		std::wstring CQuartileMethod::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3030,15 +2424,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDataLabelPos<posBestFit>::CDataLabelPos() {}
-
-		template<>
-		CDataLabelPos<posBestFit>::CDataLabelPos(const EDataLabelPos & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataLabelPos CDataLabelPos<posBestFit>::FromString(const std::wstring &sValue)
+		EDataLabelPos CDataLabelPos::FromString(const std::wstring &sValue)
 		{
 			if      ( L"bestFit" == sValue )	this->m_eValue = posBestFit;
 			else if ( L"b" ==  sValue ) this->m_eValue = posBottom;
@@ -3053,8 +2439,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDataLabelPos<posBestFit>::ToString  () const
+		std::wstring CDataLabelPos::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3071,15 +2456,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CIntervalClosedSide<sideLeft>::CIntervalClosedSide() {}
-
-		template<>
-		CIntervalClosedSide<sideLeft>::CIntervalClosedSide(const ESidePos & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESidePos CIntervalClosedSide<sideLeft>::FromString(const std::wstring &sValue)
+		ESidePos CIntervalClosedSide::FromString(const std::wstring &sValue)
 		{
 			if      ( L"l" == sValue )	this->m_eValue = sideLeft;
 			else if ( L"r" == sValue ) this->m_eValue = sideRight;
@@ -3087,8 +2464,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CIntervalClosedSide<sideLeft>::ToString  () const
+		std::wstring CIntervalClosedSide::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3097,16 +2473,8 @@ namespace SimpleTypes
 			default :		return L"l";
 			}
 		}
-		
-
-		template<>
-		CTickMarksType<marksTypeNone>::CTickMarksType() {}
-
-		template<>
-		CTickMarksType<marksTypeNone>::CTickMarksType(const ETickMarksType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ETickMarksType CTickMarksType<marksTypeNone>::FromString(const std::wstring &sValue)
+				
+		ETickMarksType CTickMarksType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"none" == sValue )	this->m_eValue = marksTypeNone;
 			else if ( L"out" ==  sValue ) this->m_eValue = marksTypeOut;
@@ -3116,8 +2484,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CTickMarksType<marksTypeNone>::ToString  () const
+		std::wstring CTickMarksType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3129,15 +2496,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CSourceCacheType<typeSourceWorksheet>::CSourceCacheType() {}
-
-		template<>
-		CSourceCacheType<typeSourceWorksheet>::CSourceCacheType(const ESourceCacheType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESourceCacheType CSourceCacheType<typeSourceWorksheet>::FromString(const std::wstring &sValue)
+		ESourceCacheType CSourceCacheType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"consolidation" == sValue )	this->m_eValue = typeSourceConsolidation;
 			else if ( L"external" ==  sValue ) this->m_eValue = typeSourceExternal;
@@ -3147,8 +2506,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSourceCacheType<typeSourceWorksheet>::ToString  () const
+		std::wstring CSourceCacheType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3160,15 +2518,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CValuesGroupBy<groupByMonths>::CValuesGroupBy() {}
-
-		template<>
-		CValuesGroupBy<groupByMonths>::CValuesGroupBy(const EValuesGroupBy & val)	{ this->m_eValue = val; }
-
-		template<>
-		EValuesGroupBy CValuesGroupBy<groupByMonths>::FromString(const std::wstring &sValue)
+		EValuesGroupBy CValuesGroupBy::FromString(const std::wstring &sValue)
 		{
 			if      ( L"days" == sValue )	this->m_eValue = groupByDays;
 			else if ( L"hours" == sValue ) this->m_eValue = groupByHours;
@@ -3182,8 +2532,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CValuesGroupBy<groupByMonths>::ToString  () const
+		std::wstring CValuesGroupBy::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3199,15 +2548,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPivotItemType<typeSum>::CPivotItemType() {}
-
-		template<>
-		CPivotItemType<typeSum>::CPivotItemType(const EPivotItemType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPivotItemType CPivotItemType<typeSum>::FromString(const std::wstring &sValue)
+		EPivotItemType CPivotItemType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"avg" ==  sValue )	this->m_eValue = typeAverage;
 			else if ( L"blank" == sValue ) this->m_eValue = typeBlank;
@@ -3228,8 +2569,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPivotItemType<typeSum>::ToString  () const
+		std::wstring CPivotItemType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3252,15 +2592,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CFieldSortType<sortManual>::CFieldSortType() {}
-
-		template<>
-		CFieldSortType<sortManual>::CFieldSortType(const EFieldSortType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFieldSortType CFieldSortType<sortManual>::FromString(const std::wstring &sValue)
+		EFieldSortType CFieldSortType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"manual" ==  sValue )	this->m_eValue = sortManual;
 			else if ( L"ascending" == sValue ) this->m_eValue = sortAscending;
@@ -3269,8 +2601,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CFieldSortType<sortManual>::ToString  () const
+		std::wstring CFieldSortType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3280,16 +2611,8 @@ namespace SimpleTypes
 			default :				return L"";
 			}
 		}
-		
-
-		template<>
-		CPivotAreaType<areaNone>::CPivotAreaType() {}
-
-		template<>
-		CPivotAreaType<areaNone>::CPivotAreaType(const EPivotAreaType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPivotAreaType CPivotAreaType<areaNone>::FromString(const std::wstring &sValue)
+			
+		EPivotAreaType CPivotAreaType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"all" ==  sValue )	this->m_eValue = areaAll;
 			else if ( L"button" == sValue ) this->m_eValue = areaFieldButton;
@@ -3302,8 +2625,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPivotAreaType<areaNone>::ToString  () const
+		std::wstring CPivotAreaType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3318,15 +2640,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CPivotAxisType<axisCol>::CPivotAxisType() {}
-
-		template<>
-		CPivotAxisType<axisCol>::CPivotAxisType(const EPivotAxisType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EPivotAxisType CPivotAxisType<axisCol>::FromString(const std::wstring &sValue)
+		EPivotAxisType CPivotAxisType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"axisCol" ==  sValue )	this->m_eValue = axisCol;
 			else if ( L"axisPage" == sValue ) this->m_eValue = axisPage;
@@ -3336,8 +2650,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CPivotAxisType<axisCol>::ToString  () const
+		std::wstring CPivotAxisType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3349,15 +2662,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CFormatAction<actionBlank>::CFormatAction() {}
-
-		template<>
-		CFormatAction<actionBlank>::CFormatAction(const EFormatAction & val)	{ this->m_eValue = val; }
-
-		template<>
-		EFormatAction CFormatAction<actionBlank>::FromString(const std::wstring &sValue)
+		EFormatAction CFormatAction::FromString(const std::wstring &sValue)
 		{
 			if      ( L"blank" ==  sValue )	this->m_eValue = actionBlank;
 			else if ( L"drill" ==  sValue ) this->m_eValue = actionDrill;
@@ -3367,8 +2672,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CFormatAction<actionBlank>::ToString  () const
+		std::wstring CFormatAction::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3380,15 +2684,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CShowDataAs<dataAsRunTotal>::CShowDataAs() {}
-
-		template<>
-		CShowDataAs<dataAsRunTotal>::CShowDataAs(const EShowDataAs & val)	{ this->m_eValue = val; }
-
-		template<>
-		EShowDataAs CShowDataAs<dataAsRunTotal>::FromString(const std::wstring &sValue)
+		EShowDataAs CShowDataAs::FromString(const std::wstring &sValue)
 		{
 			if      ( L"difference" ==  sValue )	this->m_eValue = dataAsDifference;
 			else if ( L"index" ==  sValue ) this->m_eValue = dataAsIndex;
@@ -3403,8 +2699,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CShowDataAs<dataAsRunTotal>::ToString  () const
+		std::wstring CShowDataAs::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3421,15 +2716,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDataConsolidateFunction<functionSum>::CDataConsolidateFunction() {}
-
-		template<>
-		CDataConsolidateFunction<functionSum>::CDataConsolidateFunction(const EDataConsolidateFunction & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataConsolidateFunction CDataConsolidateFunction<functionSum>::FromString(const std::wstring &sValue)
+		EDataConsolidateFunction CDataConsolidateFunction::FromString(const std::wstring &sValue)
 		{
 			if      ( L"average" ==  sValue )	this->m_eValue = functionAverage;
 			else if ( L"count" ==  sValue ) this->m_eValue = functionCount;
@@ -3446,8 +2733,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDataConsolidateFunction<functionSum>::ToString  () const
+		std::wstring CDataConsolidateFunction::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3466,15 +2752,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDataValidationType<validationTypeNone>::CDataValidationType() {}
-
-		template<>
-		CDataValidationType<validationTypeNone>::CDataValidationType(const EDataValidationType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataValidationType CDataValidationType<validationTypeNone>::FromString(const std::wstring &sValue)
+		EDataValidationType CDataValidationType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"custom"		== sValue )	this->m_eValue = validationTypeCustom;
 			else if ( L"date"		== sValue ) this->m_eValue = validationTypeDate;
@@ -3489,8 +2767,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDataValidationType<validationTypeNone>::ToString  () const
+		std::wstring CDataValidationType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3506,15 +2783,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDataValidationErrorStyle<errorStyleStop>::CDataValidationErrorStyle() {}
-
-		template<>
-		CDataValidationErrorStyle<errorStyleStop>::CDataValidationErrorStyle(const EDataValidationErrorStyle & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataValidationErrorStyle CDataValidationErrorStyle<errorStyleStop>::FromString(const std::wstring &sValue)
+		EDataValidationErrorStyle CDataValidationErrorStyle::FromString(const std::wstring &sValue)
 		{
 			if      ( L"stop" ==  sValue )	this->m_eValue = errorStyleStop;
 			else if ( L"warning" ==  sValue ) this->m_eValue = errorStyleWarning;
@@ -3523,8 +2792,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDataValidationErrorStyle<errorStyleStop>::ToString  () const
+		std::wstring CDataValidationErrorStyle::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3535,15 +2803,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDataValidationOperator<operatorBetween>::CDataValidationOperator() {}
-
-		template<>
-		CDataValidationOperator<operatorBetween>::CDataValidationOperator(const EDataValidationOperator & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataValidationOperator CDataValidationOperator<operatorBetween>::FromString(const std::wstring &sValue)
+		EDataValidationOperator CDataValidationOperator::FromString(const std::wstring &sValue)
 		{
 			if      ( L"between" ==  sValue )	this->m_eValue = operatorBetween;
 			else if ( L"notBetween" ==  sValue ) this->m_eValue = operatorNotBetween;
@@ -3557,8 +2817,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDataValidationOperator<operatorBetween>::ToString  () const
+		std::wstring CDataValidationOperator::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3574,15 +2833,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDataValidationImeMode<imeModeNoControl>::CDataValidationImeMode() {}
-
-		template<>
-		CDataValidationImeMode<imeModeNoControl>::CDataValidationImeMode(const EDataValidationImeMode & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDataValidationImeMode CDataValidationImeMode<imeModeNoControl>::FromString(const std::wstring &sValue)
+		EDataValidationImeMode CDataValidationImeMode::FromString(const std::wstring &sValue)
 		{
 			if      ( L"noControl" == sValue )	this->m_eValue = imeModeNoControl;
 			else if ( L"off" ==  sValue ) this->m_eValue = imeModeOff;
@@ -3599,8 +2850,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDataValidationImeMode<imeModeNoControl>::ToString  () const
+		std::wstring CDataValidationImeMode::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3619,15 +2869,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CObjectType<objectButton>::CObjectType() {}
-
-		template<>
-		CObjectType<objectButton>::CObjectType(const EObjectType & val)	{ this->m_eValue = val; }
-
-		template<>
-		EObjectType CObjectType<objectButton>::FromString(const std::wstring &sValue)
+		EObjectType CObjectType::FromString(const std::wstring &sValue)
 		{
 			if      ( L"Button" == sValue )		this->m_eValue = objectButton;
 			else if ( L"CheckBox" ==  sValue )	this->m_eValue = objectCheckBox;
@@ -3644,8 +2886,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CObjectType<objectButton>::ToString  () const
+		std::wstring CObjectType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3666,15 +2907,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CChecked<valUnchecked>::CChecked() {}
-
-		template<>
-		CChecked<valUnchecked>::CChecked(const EChecked & val)	{ this->m_eValue = val; }
-
-		template<>
-		EChecked CChecked<valUnchecked>::FromString(const std::wstring &sValue)
+		EChecked CChecked::FromString(const std::wstring &sValue)
 		{
 			if      ( L"Mixed" ==  sValue )	this->m_eValue = valMixed;
 			else if ( L"Checked" ==  sValue ) this->m_eValue = valChecked;
@@ -3685,8 +2918,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CChecked<valUnchecked>::ToString  () const
+		std::wstring CChecked::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3697,15 +2929,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CDropStyle<valSimple>::CDropStyle() {}
-
-		template<>
-		CDropStyle<valSimple>::CDropStyle(const EDropStyle & val)	{ this->m_eValue = val; }
-
-		template<>
-		EDropStyle CDropStyle<valSimple>::FromString(const std::wstring &sValue)
+		EDropStyle CDropStyle::FromString(const std::wstring &sValue)
 		{
 			std::wstring sValueL = XmlUtils::GetLower(sValue);
 
@@ -3716,8 +2940,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CDropStyle<valSimple>::ToVmlString() const
+		std::wstring CDropStyle::ToVmlString() const
 		{
 			switch (this->m_eValue)
 			{
@@ -3728,8 +2951,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		std::wstring CDropStyle<valSimple>::ToString  () const
+		std::wstring CDropStyle::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3740,15 +2962,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CSelType<valSingle>::CSelType() {}
-
-		template<>
-		CSelType<valSingle>::CSelType(const ESelType & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESelType CSelType<valSingle>::FromString(const std::wstring &sValue)
+		ESelType CSelType::FromString(const std::wstring &sValue)
 		{
 			std::wstring sValueL = XmlUtils::GetLower(sValue);
 
@@ -3759,8 +2973,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSelType<valSingle>::ToVmlString() const
+		std::wstring CSelType::ToVmlString() const
 		{
 			switch (this->m_eValue)
 			{
@@ -3771,8 +2984,7 @@ namespace SimpleTypes
 			}
 		}
 
-		template<>
-		std::wstring CSelType<valSingle>::ToString  () const
+		std::wstring CSelType::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3783,15 +2995,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CEditValidation<editText>::CEditValidation() {}
-
-		template<>
-		CEditValidation<editText>::CEditValidation(const EEditValidation & val)	{ this->m_eValue = val; }
-
-		template<>
-		EEditValidation CEditValidation<editText>::FromString(const std::wstring &sValue)
+		EEditValidation CEditValidation::FromString(const std::wstring &sValue)
 		{
 			if      ( L"text" ==  sValue )	this->m_eValue = editText;
 			else if ( L"integer" ==  sValue ) this->m_eValue = editInteger;
@@ -3802,8 +3006,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CEditValidation<editText>::ToString  () const
+		std::wstring CEditValidation::ToString  () const
 		{
 			switch(this->m_eValue)
 			{
@@ -3816,15 +3019,7 @@ namespace SimpleTypes
 			}
 		}
 
-
-		template<>
-		CTabularSlicerCacheSortOrder<ctabularslicercachesortorderAscending>::CTabularSlicerCacheSortOrder(){}
-
-		template<>
-		CTabularSlicerCacheSortOrder<ctabularslicercachesortorderAscending>::CTabularSlicerCacheSortOrder(const ETabularSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
-
-		template<>
-		ETabularSlicerCacheSortOrder CTabularSlicerCacheSortOrder<ctabularslicercachesortorderAscending>::FromString(const std::wstring &sValue)
+		ETabularSlicerCacheSortOrder CTabularSlicerCacheSortOrder::FromString(const std::wstring &sValue)
 		{
 			if(L"ascending" == sValue)
 				this->m_eValue = ctabularslicercachesortorderAscending;
@@ -3835,8 +3030,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		ETabularSlicerCacheSortOrder CTabularSlicerCacheSortOrder<ctabularslicercachesortorderAscending>::FromStringA(const char* sValue)
+		ETabularSlicerCacheSortOrder CTabularSlicerCacheSortOrder::FromStringA(const char* sValue)
 		{
 			if(strcmp("ascending", sValue) == 0)
 				this->m_eValue = ctabularslicercachesortorderAscending;
@@ -3847,8 +3041,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CTabularSlicerCacheSortOrder<ctabularslicercachesortorderAscending>::ToString() const
+		std::wstring CTabularSlicerCacheSortOrder::ToString() const
 		{
 			switch(this->m_eValue)
 			{
@@ -3858,15 +3051,7 @@ namespace SimpleTypes
 			return L"ascending";
 		}
 
-
-		template<>
-		CSlicerCacheCrossFilter<cslicercachecrossfilterNone>::CSlicerCacheCrossFilter(){}
-
-		template<>
-		CSlicerCacheCrossFilter<cslicercachecrossfilterNone>::CSlicerCacheCrossFilter(const ESlicerCacheCrossFilter & val)	{ this->m_eValue = val; }
-
-		template<>
-		ESlicerCacheCrossFilter CSlicerCacheCrossFilter<cslicercachecrossfilterNone>::FromString(const std::wstring &sValue)
+		ESlicerCacheCrossFilter CSlicerCacheCrossFilter::FromString(const std::wstring &sValue)
 		{
 			if(L"none" == sValue)
 				this->m_eValue = cslicercachecrossfilterNone;
@@ -3879,8 +3064,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		ESlicerCacheCrossFilter CSlicerCacheCrossFilter<cslicercachecrossfilterNone>::FromStringA(const char* sValue)
+		ESlicerCacheCrossFilter CSlicerCacheCrossFilter::FromStringA(const char* sValue)
 		{
 			if(strcmp("none", sValue) == 0)
 				this->m_eValue = cslicercachecrossfilterNone;
@@ -3893,8 +3077,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSlicerCacheCrossFilter<cslicercachecrossfilterNone>::ToString() const
+		std::wstring CSlicerCacheCrossFilter::ToString() const
 		{
 			switch(this->m_eValue)
 			{
@@ -3905,15 +3088,7 @@ namespace SimpleTypes
 			return L"none";
 		}
 
-
-		template<>
-		COlapSlicerCacheSortOrder<colapslicercachesortorderNatural>::COlapSlicerCacheSortOrder(){}
-
-		template<>
-		COlapSlicerCacheSortOrder<colapslicercachesortorderNatural>::COlapSlicerCacheSortOrder(const EOlapSlicerCacheSortOrder & val)	{ this->m_eValue = val; }
-
-		template<>
-		EOlapSlicerCacheSortOrder COlapSlicerCacheSortOrder<colapslicercachesortorderNatural>::FromString(const std::wstring &sValue)
+		EOlapSlicerCacheSortOrder COlapSlicerCacheSortOrder::FromString(const std::wstring &sValue)
 		{
 			if(L"natural" == sValue)
 				this->m_eValue = colapslicercachesortorderNatural;
@@ -3926,8 +3101,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		EOlapSlicerCacheSortOrder COlapSlicerCacheSortOrder<colapslicercachesortorderNatural>::FromStringA(const char* sValue)
+		EOlapSlicerCacheSortOrder COlapSlicerCacheSortOrder::FromStringA(const char* sValue)
 		{
 			if(strcmp("natural", sValue) == 0)
 				this->m_eValue = colapslicercachesortorderNatural;
@@ -3940,8 +3114,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring COlapSlicerCacheSortOrder<colapslicercachesortorderNatural>::ToString() const
+		std::wstring COlapSlicerCacheSortOrder::ToString() const
 		{
 			switch(this->m_eValue)
 			{
@@ -3952,12 +3125,7 @@ namespace SimpleTypes
 			return L"natural";
 		}
 
-
-		template<>
-		CSlicerStyleType<cslicerstyletypeUnselectedItemWithData>::CSlicerStyleType(){}
-
-		template<>
-		ESlicerStyleType CSlicerStyleType<cslicerstyletypeUnselectedItemWithData>::FromString(const std::wstring &sValue)
+		ESlicerStyleType CSlicerStyleType::FromString(const std::wstring &sValue)
 		{
 			if(L"unselectedItemWithData" == sValue)
 				this->m_eValue = cslicerstyletypeUnselectedItemWithData;
@@ -3980,8 +3148,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		ESlicerStyleType CSlicerStyleType<cslicerstyletypeUnselectedItemWithData>::FromStringA(const char* sValue)
+		ESlicerStyleType CSlicerStyleType::FromStringA(const char* sValue)
 		{
 			if(strcmp("unselectedItemWithData", sValue) == 0)
 				this->m_eValue = cslicerstyletypeUnselectedItemWithData;
@@ -4004,8 +3171,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CSlicerStyleType<cslicerstyletypeUnselectedItemWithData>::ToString() const
+		std::wstring CSlicerStyleType::ToString() const
 		{
 			switch(this->m_eValue)
 			{

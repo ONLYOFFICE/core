@@ -625,21 +625,21 @@ namespace OOX
                 }
             }
 			nullable<SimpleTypes::COnOff>							m_oBlackAndWhite;
-			nullable<SimpleTypes::Spreadsheet::CCellComments<>>		m_oCellComments;
+			nullable<SimpleTypes::Spreadsheet::CCellComments>		m_oCellComments;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oCopies;
 			nullable<SimpleTypes::COnOff>							m_oDraft;
-			nullable<SimpleTypes::Spreadsheet::CPrintError<>>		m_oErrors;
+			nullable<SimpleTypes::Spreadsheet::CPrintError>			m_oErrors;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oFirstPageNumber;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oFitToHeight;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oFitToWidth;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oHorizontalDpi;
 			nullable<SimpleTypes::CRelationshipId>					m_oRId;
 			nullable<SimpleTypes::CPageOrientation>					m_oOrientation;
-			nullable<SimpleTypes::Spreadsheet::CPageOrder<>>		m_oPageOrder;
+			nullable<SimpleTypes::Spreadsheet::CPageOrder>			m_oPageOrder;
 			nullable<SimpleTypes::CDouble>							m_oPaperHeight;
-			nullable<SimpleTypes::Spreadsheet::CPageSize<>>			m_oPaperSize;
+			nullable<SimpleTypes::Spreadsheet::CPageSize>			m_oPaperSize;
 			nullable<SimpleTypes::CDouble>							m_oPaperWidth;
-			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>		m_oPaperUnits;
+			nullable<SimpleTypes::Spreadsheet::CPageUnits>			m_oPaperUnits;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oScale;
 			nullable<SimpleTypes::COnOff>							m_oUseFirstPageNumber;
 			nullable<SimpleTypes::COnOff>							m_oUsePrinterDefaults;
@@ -964,11 +964,11 @@ namespace OOX
 
 
 		public:
-            nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
-            nullable<SimpleTypes::Spreadsheet::CPaneState<>>    m_oState;
-            nullable_string										m_oTopLeftCell;
-            nullable<SimpleTypes::CDouble>                      m_oXSplit;
-            nullable<SimpleTypes::CDouble>                      m_oYSplit;
+			nullable<SimpleTypes::Spreadsheet::CActivePane>		m_oActivePane;
+			nullable<SimpleTypes::Spreadsheet::CPaneState>		m_oState;
+			nullable_string										m_oTopLeftCell;
+			nullable<SimpleTypes::CDouble>						m_oXSplit;
+			nullable<SimpleTypes::CDouble>						m_oYSplit;
 		};
 		class CSelection : public WritingElement
 		{
@@ -1047,7 +1047,7 @@ namespace OOX
 			nullable_string										m_oActiveCell;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oActiveCellId;
 			nullable_string										m_oSqref;
-			nullable<SimpleTypes::Spreadsheet::CActivePane<>>	m_oPane;
+			nullable<SimpleTypes::Spreadsheet::CActivePane>		m_oPane;
 		};
 
 		//необработано:
@@ -1244,7 +1244,7 @@ namespace OOX
 				nullable<SimpleTypes::COnOff>						m_oShowZeros;
 				nullable<SimpleTypes::COnOff>						m_oTabSelected;
 				nullable_string										m_oTopLeftCell;
-				nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
+				nullable<SimpleTypes::Spreadsheet::CSheetViewType>	m_oView;
 				nullable<SimpleTypes::COnOff>						m_oWindowProtection;
 				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oWorkbookViewId;
 				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScale;
@@ -2646,7 +2646,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"topLabels"),		m_oTopLabels)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction<>>	m_oFunction;
+			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction>	m_oFunction;
 			nullable<SimpleTypes::COnOff>									m_oLink;
 			nullable<SimpleTypes::COnOff>									m_oStartLabels;
 			nullable<SimpleTypes::COnOff>									m_oTopLabels;

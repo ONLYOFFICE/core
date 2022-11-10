@@ -193,14 +193,14 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>		m_oHorizontal;
+			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment>		m_oHorizontal;
 			nullable_uint													m_oIndent;
 			nullable<SimpleTypes::COnOff>									m_oJustifyLastLine;
 			nullable_uint													m_oReadingOrder; //todooo to simple
 			nullable_int													m_oRelativeIndent;
 			nullable<SimpleTypes::COnOff>									m_oShrinkToFit;
 			nullable_uint													m_oTextRotation;
-			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>		m_oVertical;
+			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment>			m_oVertical;
 			nullable<SimpleTypes::COnOff>									m_oWrapText;
 		};
 		class CProtection : public WritingElement

@@ -552,7 +552,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIndexed;
 			nullable<SimpleTypes::Spreadsheet::CHexColor>		m_oRgb;
-			nullable<SimpleTypes::Spreadsheet::CThemeColor<>>	m_oThemeColor;
+			nullable<SimpleTypes::Spreadsheet::CThemeColor>		m_oThemeColor;
 			nullable<SimpleTypes::CDouble>						m_oTint;
 		};
 
@@ -645,7 +645,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CFontCharset<>>	m_oCharset;
+			nullable<SimpleTypes::Spreadsheet::CFontCharset>	m_oCharset;
 		};
 		class CVerticalAlign : public WritingElement
 		{
@@ -715,7 +715,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CFontFamily<>>	m_oFontFamily;
+			nullable<SimpleTypes::Spreadsheet::CFontFamily>	m_oFontFamily;
 		};
 		class CFontScheme : public WritingElement
 		{
@@ -752,7 +752,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CFontScheme<>>	m_oFontScheme;
+			nullable<SimpleTypes::Spreadsheet::CFontScheme>	m_oFontScheme;
 		};
 		class CUnderline : public WritingElement
 		{
@@ -787,7 +787,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CUnderline<>>	m_oUnderline;
+			nullable<SimpleTypes::Spreadsheet::CUnderline>	m_oUnderline;
 		};
 		//необработано:
 		class CRPr : public WritingElement

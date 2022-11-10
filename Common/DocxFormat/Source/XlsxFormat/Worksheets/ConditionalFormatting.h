@@ -121,7 +121,7 @@ namespace OOX
 
 		public:
 			nullable<SimpleTypes::COnOff>						m_oGte;
-			nullable<SimpleTypes::Spreadsheet::ST_CfvoType<>>	m_oType;	
+			nullable<SimpleTypes::Spreadsheet::ST_CfvoType>		m_oType;
 			nullable<std::wstring>								m_oVal;
 
 			nullable<CFormulaCF>								m_oFormula;
@@ -159,7 +159,7 @@ namespace OOX
 				return et_x_ConditionalFormatIconSet;
 			}
 
-			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>	m_oIconSet;
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType>		m_oIconSet;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oIconId;
 		};
 
@@ -251,8 +251,8 @@ namespace OOX
 			std::vector<nullable<CConditionalFormatValueObject>> m_arrValues;
 
 //---ext-----------
-			nullable<SimpleTypes::Spreadsheet::ST_DataBarAxisPosition<>>	m_oAxisPosition;
-			nullable<SimpleTypes::Spreadsheet::ST_DataBarDirection<>>		m_oDirection;			
+			nullable<SimpleTypes::Spreadsheet::ST_DataBarAxisPosition>		m_oAxisPosition;
+			nullable<SimpleTypes::Spreadsheet::ST_DataBarDirection>			m_oDirection;
 			nullable<SimpleTypes::COnOff>									m_oBorder;
 			nullable<SimpleTypes::COnOff>									m_oGradient;
 			nullable<SimpleTypes::COnOff>									m_oNegativeBarColorSameAsPositive;
@@ -309,7 +309,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>							m_oShowValue;
 			std::vector<nullable<CConditionalFormatValueObject>>	m_arrValues;
 
-			nullable<SimpleTypes::Spreadsheet::ST_IconSetType<>>	m_oIconSet;
+			nullable<SimpleTypes::Spreadsheet::ST_IconSetType>		m_oIconSet;
 //---ext-----------
 			nullable<SimpleTypes::COnOff>							m_oCustom;
 			std::vector<nullable<CConditionalFormatIconSet>>		m_arrIconSets;
@@ -363,7 +363,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>						m_oBottom;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oDxfId;
 			nullable<SimpleTypes::COnOff>						m_oEqualAverage;
-			nullable<SimpleTypes::Spreadsheet::ST_CfOperator<>>	m_oOperator;	
+			nullable<SimpleTypes::Spreadsheet::ST_CfOperator>	m_oOperator;
 			nullable<SimpleTypes::COnOff>						m_oPercent;
 			nullable<SimpleTypes::CDecimalNumber>				m_oPriority;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRank;
@@ -371,8 +371,8 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>						m_oStopIfTrue;
 			nullable<std::wstring>								m_oId;
 			nullable<std::wstring>								m_oText;
-            nullable<SimpleTypes::Spreadsheet::ST_TimePeriod<>>	m_oTimePeriod;
-			nullable<SimpleTypes::Spreadsheet::ST_CfType<>>		m_oType;
+			nullable<SimpleTypes::Spreadsheet::ST_TimePeriod>	m_oTimePeriod;
+			nullable<SimpleTypes::Spreadsheet::ST_CfType>		m_oType;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 			nullable<std::wstring>								m_oExtId;

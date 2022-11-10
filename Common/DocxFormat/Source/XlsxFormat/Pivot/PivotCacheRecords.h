@@ -89,7 +89,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
 			std::wstring m_strOutputXml;

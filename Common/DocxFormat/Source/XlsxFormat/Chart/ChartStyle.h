@@ -254,7 +254,7 @@ namespace ChartEx
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"size", m_size)
 			WritingElement_ReadAttributes_End_No_NS(oReader)
 		}
-		nullable<SimpleTypes::Spreadsheet::CChartSymbol<>> m_symbol;
+		nullable<SimpleTypes::Spreadsheet::CChartSymbol> m_symbol;
 		nullable_uint m_size;
 	};
 

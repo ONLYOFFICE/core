@@ -73,9 +73,9 @@ namespace OOX
 			}
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIndexed;
 			nullable_string										m_oRgb;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTheme;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTheme;
 			nullable<SimpleTypes::CDouble>						m_oTint;
 		};
 		//необработано:

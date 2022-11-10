@@ -438,7 +438,7 @@ namespace OOX
 			}
 		public:
 			nullable<std::wstring>								m_oRef;
-			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
 
 			nullable<CText>		m_oValue;
@@ -623,6 +623,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"refreshError"), m_oRefreshError )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oSheetId;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oRefreshError;
@@ -962,7 +963,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CDdeValueType<> > m_oType;
+			nullable<SimpleTypes::Spreadsheet::CDdeValueType > m_oType;
 		};
 
 		class CDdeValues : public WritingElementWithChilds<CDdeValue>
@@ -1403,6 +1404,7 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"preferPic"), m_oPreferPic )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
 		public:
 			nullable<std::wstring > m_oName;
 			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oIcon;

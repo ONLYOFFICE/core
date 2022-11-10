@@ -149,7 +149,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oQueryTableFieldId;
 			nullable_string												m_oTotalsRowCellStyle;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oTotalsRowDxfId;
-			nullable<SimpleTypes::Spreadsheet::CTotalsRowFunction<>>	m_oTotalsRowFunction;
+			nullable<SimpleTypes::Spreadsheet::CTotalsRowFunction>		m_oTotalsRowFunction;
 			nullable_string												m_oTotalsRowLabel;
 			nullable_string												m_oUniqueName;
 			nullable_string												m_oUid;
@@ -241,7 +241,7 @@ namespace OOX
 			nullable_bool										m_oPublished;
 			nullable<SimpleTypes::CRelationshipId >				m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTableBorderDxfId;
-			nullable<SimpleTypes::Spreadsheet::CTableType<>>	m_oTableType;
+			nullable<SimpleTypes::Spreadsheet::CTableType>		m_oTableType;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTotalsRowBorderDxfId;
 			nullable_string										m_oTotalsRowCellStyle;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTotalsRowCount;

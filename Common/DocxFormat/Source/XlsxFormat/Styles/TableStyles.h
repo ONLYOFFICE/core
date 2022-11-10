@@ -180,7 +180,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oDxfId;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oSize;
-			nullable<SimpleTypes::Spreadsheet::CTableStyleType<>>	m_oType;
+			nullable<SimpleTypes::Spreadsheet::CTableStyleType>		m_oType;
 		};
 		class CTableStyle : public WritingElementWithChilds<CTableStyleElement>
 		{

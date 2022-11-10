@@ -139,9 +139,9 @@ namespace OOX
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCalcId;
-			nullable<SimpleTypes::Spreadsheet::CCalcMode<>>		m_oCalcMode;
+			nullable<SimpleTypes::Spreadsheet::CCalcMode>		m_oCalcMode;
 			nullable<SimpleTypes::COnOff>						m_oFullCalcOnLoad;
-			nullable<SimpleTypes::Spreadsheet::CRefMode<>>		m_oRefMode;
+			nullable<SimpleTypes::Spreadsheet::CRefMode>		m_oRefMode;
 			nullable<SimpleTypes::COnOff>						m_oIterate;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIterateCount;
 			nullable<SimpleTypes::CDouble>						m_oIterateDelta;

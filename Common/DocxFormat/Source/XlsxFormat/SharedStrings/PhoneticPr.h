@@ -135,9 +135,9 @@ namespace OOX
                 }
             }
 		public:
-				nullable<SimpleTypes::Spreadsheet::CPhoneticAlignment<>>	m_oAlignment;
+				nullable<SimpleTypes::Spreadsheet::CPhoneticAlignment>		m_oAlignment;
 				nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oFontId;
-				nullable<SimpleTypes::Spreadsheet::CPhoneticType<>>			m_oType;
+				nullable<SimpleTypes::Spreadsheet::CPhoneticType>			m_oType;
 		};
 
 		class CRPh : public WritingElementWithChilds<CText>

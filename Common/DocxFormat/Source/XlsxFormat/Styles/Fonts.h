@@ -198,9 +198,9 @@ namespace OOX
 
 				nullable_bool bItalic, bBold;
 				nullable_string sColor, sFamily, sFont;
-				nullable<SimpleTypes::Spreadsheet::CFontFamily<>> oFamily;
-				nullable<SimpleTypes::Spreadsheet::CUnderline<>> oUnderline;
-				nullable<SimpleTypes::Spreadsheet::CFontCharset<>> oCharset;
+				nullable<SimpleTypes::Spreadsheet::CFontFamily> oFamily;
+				nullable<SimpleTypes::Spreadsheet::CUnderline> oUnderline;
+				nullable<SimpleTypes::Spreadsheet::CFontCharset> oCharset;
 				nullable<SimpleTypes::CVerticalAlignRun> oVerticalAlignment;
 				nullable_double dSz;
 

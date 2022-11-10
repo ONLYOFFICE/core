@@ -76,7 +76,7 @@ namespace OOX
 			nullable_double									m_oMaxValue;
 			nullable<SimpleTypes::CDateTime>				m_oMinDate;
 			nullable<SimpleTypes::CDateTime>				m_oMaxDate;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 		};
 		class COLAPGroupItems : public WritingElementWithChilds<WritingElement>
 		{
@@ -102,7 +102,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CDiscreteGroupingProperties : public WritingElementWithChilds<CSharedItemsIndex>
 		{
@@ -128,7 +128,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CRangeGroupingProperties : public WritingElement
 		{
@@ -155,7 +155,7 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::Spreadsheet::CValuesGroupBy<>> m_oGroupBy;
+			nullable<SimpleTypes::Spreadsheet::CValuesGroupBy> m_oGroupBy;
 
 			nullable_bool						m_oAutoStart;
 			nullable_bool						m_oAutoEnd;
@@ -193,8 +193,8 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBase;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oPar;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBase;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oPar;
 			
 			nullable<CDiscreteGroupingProperties>	m_oDiscretePr;
 			nullable<CRangeGroupingProperties>		m_oRangePr;
@@ -236,9 +236,9 @@ namespace OOX
 			nullable_int		m_oSqlType;
 			nullable_bool		m_oUniqueList;
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oLevel;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMappingCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oLevel;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMappingCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oNumFmtId;
 			
 			nullable<CSharedItems>							m_oSharedItems;
 			//nullable<CMemberPropertiesMap>				m_oMpMap;
@@ -269,7 +269,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CRangeSet : public WritingElement
 		{
@@ -300,10 +300,10 @@ namespace OOX
 			nullable_string	m_oRef;
 			nullable_string	m_oName;
 			nullable<SimpleTypes::CRelationshipId>			m_oRid;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oI1;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oI2;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oI3;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oI4;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oI1;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oI2;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oI3;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oI4;
 		};
 		class CRangeSets : public WritingElementWithChilds<CRangeSet>
 		{
@@ -329,7 +329,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CPageItem : public WritingElement
 		{
@@ -382,7 +382,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CPageItemValues : public WritingElementWithChilds<CPageItems>
 		{
@@ -409,7 +409,7 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 
 		class CConsolidationSource : public WritingElement
@@ -505,8 +505,8 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);		
 	//----------
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oConnectionId;
-			nullable<SimpleTypes::Spreadsheet::CSourceCacheType<>>	m_oType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oConnectionId;
+			nullable<SimpleTypes::Spreadsheet::CSourceCacheType>	m_oType;
 
 			nullable<CConsolidationSource>							m_oConsolidation;
 			nullable<CWorksheetSource>								m_oWorksheetSource;
@@ -545,14 +545,14 @@ namespace OOX
 			nullable_bool									m_oEnableRefresh;
 			nullable<SimpleTypes::CRelationshipId>			m_oRid;
 			nullable_bool									m_oInvalid;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCreatedVersion;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinRefreshableVersion;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMissingItemsLimit;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCreatedVersion;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMinRefreshableVersion;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMissingItemsLimit;
 			nullable_bool									m_oOptimizeMemory;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oRecordCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oRecordCount;
 			nullable_string									m_oRefreshedBy;
 			nullable<SimpleTypes::CDateTime>				m_oRefreshedDateIso;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oRefreshedVersion;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oRefreshedVersion;
 			nullable_bool									m_oRefreshOnLoad;
 			nullable_bool									m_oSaveData;
 			nullable_bool									m_oSupportAdvancedDrill;
@@ -687,15 +687,15 @@ namespace OOX
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
 			nullable_bool									m_oUnderline;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBackColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oForeColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFormatIndex;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBackColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oForeColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
 		};	
@@ -728,7 +728,7 @@ namespace OOX
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 		};		
 		class CPivotNumericValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
@@ -759,15 +759,15 @@ namespace OOX
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
 			nullable_bool									m_oUnderline;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBackColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oForeColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFormatIndex;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBackColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oForeColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
 		};		
@@ -800,7 +800,7 @@ namespace OOX
 			nullable_string						m_oCaption;
 			nullable_bool						m_oCalculated;
 			nullable_bool						m_oUnused;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 		};
 		class CPivotErrorValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
@@ -831,15 +831,15 @@ namespace OOX
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
 			nullable_bool									m_oUnderline;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBackColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oForeColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFormatIndex;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBackColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oForeColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
 		};	
@@ -871,15 +871,15 @@ namespace OOX
 			nullable_string		m_oCaption;
 			nullable_bool		m_oCalculated;
 			nullable_bool		m_oUnused;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			
 			nullable_bool									m_oBold;
 			nullable_bool									m_oItalic;
 			nullable_bool									m_oStrike;
 			nullable_bool									m_oUnderline;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oBackColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oForeColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFormatIndex;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oBackColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oForeColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFormatIndex;
 
 			//tpls
 		};		

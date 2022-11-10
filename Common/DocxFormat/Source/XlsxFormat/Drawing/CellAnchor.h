@@ -101,7 +101,7 @@ namespace OOX
 																							m_bShapeOle(false), m_bShapeControl(false)
 			{
 			}
-			CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType) :	m_oAnchorType(oAnchorType),
+			CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType& oAnchorType) :	m_oAnchorType(oAnchorType),
 																							m_bShapeOle(false), m_bShapeControl(false)
 			{
 			}
@@ -297,8 +297,8 @@ namespace OOX
 			bool											m_bShapeOle;
 			bool											m_bShapeControl;
 
-			SimpleTypes::Spreadsheet::CCellAnchorType<>		m_oAnchorType;
-			nullable<SimpleTypes::Spreadsheet::CCellAnchorType<>> m_oEditAs;
+			SimpleTypes::Spreadsheet::CCellAnchorType		m_oAnchorType;
+			nullable<SimpleTypes::Spreadsheet::CCellAnchorType> m_oEditAs;
 			nullable<OOX::Spreadsheet::CFromTo>				m_oFrom;
 			nullable<OOX::Spreadsheet::CFromTo>				m_oTo;
 			nullable<OOX::Spreadsheet::CPos>				m_oPos;

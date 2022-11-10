@@ -164,14 +164,14 @@ namespace OOX
 				if (sLineStyle.IsInit())
 				{
 					if (*sLineStyle == L"Dot") 
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDotted));
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDotted));
 					else if (*sLineStyle == L"Dash") 
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDashed));
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
 					else if (*sLineStyle == L"Double")
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleDouble));
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
 					else if (*sLineStyle == L"Continuous")
 					{
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThin));
+						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
 						bBorderContinuous = true;
 					}
 				}
@@ -181,11 +181,11 @@ namespace OOX
 					{
 						case 1:	 //Thin
 						{
-							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThin));
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
 						}break;
 						case 3: //Thick
 						{
-							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle<>(SimpleTypes::Spreadsheet::borderstyleThick));
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
 						}break;
 						default://2: //Medium
 						{
@@ -194,7 +194,7 @@ namespace OOX
 				}
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CBorderStyle<>>	m_oStyle;
+			nullable<SimpleTypes::Spreadsheet::CBorderStyle>	m_oStyle;
 			nullable<CColor>									m_oColor;
 			nullable_string										m_oType;
 

@@ -533,23 +533,23 @@ namespace OOX
 
 		public:
 
-				nullable<SimpleTypes::CDouble>						m_oManualMax;
-				nullable<SimpleTypes::CDouble>						m_oManualMin;
-				nullable<SimpleTypes::CDouble>						m_oLineWeight;
-                nullable<SimpleTypes::Spreadsheet::ST_SparklineType<>>			m_oType;
-				nullable<SimpleTypes::COnOff>							m_oDateAxis;
-				nullable<OOX::Spreadsheet::ST_DispBlanksAs>				m_oDisplayEmptyCellsAs;
-				nullable<SimpleTypes::COnOff>							m_oMarkers;
-				nullable<SimpleTypes::COnOff>							m_oHigh;
-				nullable<SimpleTypes::COnOff>							m_oLow;
-				nullable<SimpleTypes::COnOff>							m_oFirst;
-				nullable<SimpleTypes::COnOff>							m_oLast;
-				nullable<SimpleTypes::COnOff>							m_oNegative;
-				nullable<SimpleTypes::COnOff>							m_oDisplayXAxis;
-				nullable<SimpleTypes::COnOff>							m_oDisplayHidden;
-                nullable<SimpleTypes::Spreadsheet::ST_SparklineAxisMinMax<>>			m_oMinAxisType;
-                nullable<SimpleTypes::Spreadsheet::ST_SparklineAxisMinMax<>>			m_oMaxAxisType;
-				nullable<SimpleTypes::COnOff>							m_oRightToLeft;
+				nullable<SimpleTypes::CDouble>									m_oManualMax;
+				nullable<SimpleTypes::CDouble>									m_oManualMin;
+				nullable<SimpleTypes::CDouble>									m_oLineWeight;
+				nullable<SimpleTypes::Spreadsheet::ST_SparklineType>			m_oType;
+				nullable<SimpleTypes::COnOff>									m_oDateAxis;
+				nullable<OOX::Spreadsheet::ST_DispBlanksAs>						m_oDisplayEmptyCellsAs;
+				nullable<SimpleTypes::COnOff>									m_oMarkers;
+				nullable<SimpleTypes::COnOff>									m_oHigh;
+				nullable<SimpleTypes::COnOff>									m_oLow;
+				nullable<SimpleTypes::COnOff>									m_oFirst;
+				nullable<SimpleTypes::COnOff>									m_oLast;
+				nullable<SimpleTypes::COnOff>									m_oNegative;
+				nullable<SimpleTypes::COnOff>									m_oDisplayXAxis;
+				nullable<SimpleTypes::COnOff>									m_oDisplayHidden;
+				nullable<SimpleTypes::Spreadsheet::ST_SparklineAxisMinMax>		m_oMinAxisType;
+				nullable<SimpleTypes::Spreadsheet::ST_SparklineAxisMinMax>		m_oMaxAxisType;
+				nullable<SimpleTypes::COnOff>									m_oRightToLeft;
 
 				nullable<OOX::Spreadsheet::CColor>					m_oColorSeries;
 				nullable<OOX::Spreadsheet::CColor>					m_oColorNegative;

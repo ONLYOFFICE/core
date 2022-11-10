@@ -104,13 +104,13 @@ namespace OOX
 
 			nullable<SimpleTypes::CUnsignedDecimalNumber>					m_oSpinCount;
 
-			nullable<SimpleTypes::Spreadsheet::CDataValidationType<>>		m_oType;
+			nullable<SimpleTypes::Spreadsheet::CDataValidationType>			m_oType;
 			nullable<SimpleTypes::COnOff>									m_oAllowBlank;
 			nullable_string													m_oError;
 			nullable_string													m_oErrorTitle;
-			nullable<SimpleTypes::Spreadsheet::CDataValidationErrorStyle<>>	m_oErrorStyle; 
-			nullable<SimpleTypes::Spreadsheet::CDataValidationImeMode<>>	m_oImeMode; 
-			nullable<SimpleTypes::Spreadsheet::CDataValidationOperator<>>	m_oOperator; 
+			nullable<SimpleTypes::Spreadsheet::CDataValidationErrorStyle>	m_oErrorStyle;
+			nullable<SimpleTypes::Spreadsheet::CDataValidationImeMode>		m_oImeMode;
+			nullable<SimpleTypes::Spreadsheet::CDataValidationOperator>		m_oOperator;
 			nullable_string													m_oPrompt;
 			nullable_string													m_oPromptTitle;
 			nullable<SimpleTypes::COnOff>									m_oShowDropDown;

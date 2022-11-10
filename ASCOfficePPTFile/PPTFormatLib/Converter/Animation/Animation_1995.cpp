@@ -38,7 +38,7 @@ void Animation_1995::FillCTnAnimation(PPTX::Logic::CTn &oCTN, Intermediate::SOld
     {
     case 0x00:
     {
-        if (direct == 1)
+        if (direct != 1)
         {
             oCTN.presetID = 1;
             ConvertAppear(oCTN.childTnLst.get2(), pOldAnim);
@@ -260,7 +260,7 @@ void Animation_1995::FillAnimEffect (PPTX::Logic::AnimEffect& oAnimEffect, Inter
 // This methods fill ChildTnLst with anim nodes
 void Animation_1995::ConvertAppear(PPTX::Logic::ChildTnLst& oParent, Intermediate::SOldAnimation *pOldAnim)
 {
-    PushSet(oParent, pOldAnim, 499);
+    PushSet(oParent, pOldAnim, 0);
 }
 
 void Animation_1995::ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, Intermediate::SOldAnimation *pOldAnim, int& presetSub)
@@ -811,7 +811,7 @@ void Animation_1995::ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, Intermed
 
 void Animation_1995::ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, Intermediate::SOldAnimation* pOldAnim)
 {
-    PushSet(oParent, pOldAnim, 499);
+    PushSet(oParent, pOldAnim, 0);
 
     PPTX::Logic::TimeNodeBase childTimeNode;
 

@@ -57,18 +57,45 @@ void Timing_1995::ConvertBldLst()
 void Timing_1995::ConvertTnLst()
 {
     pTiming->tnLst = new PPTX::Logic::TnLst();
-    SplitRawAnim();
-    auto mainSeq = ConvertMainSeqAnimation();
+    auto clickGroupsAnim = SplitRawAnim();
+    auto mainSeq = ConvertMainSeqAnimation(clickGroupsAnim);
     InsertMainSeqToTnLst(mainSeq);
 }
 
-PPTX::Logic::Seq *Timing_1995::ConvertMainSeqAnimation()
+LstLstAnim Timing_1995::SplitRawAnim()
+{
+    SortAnim();
+
+    LstLstAnim splitedAnim;
+
+    for (auto& oldAnim : arrOldAnim)
+    {
+        if (splitedAnim.empty())
+        {
+            std::list<Intermediate::SOldAnimation*> clickPar;
+            clickPar.push_back(&oldAnim);
+            splitedAnim.push_back(clickPar);
+        } else if (oldAnim.anim->m_AnimationAtom.m_fAutomatic)
+        {
+            splitedAnim.back().push_back(&oldAnim);
+        } else
+        {
+            std::list<Intermediate::SOldAnimation*> clickPar;
+            clickPar.push_back(&oldAnim);
+            splitedAnim.push_back(clickPar);
+        }
+    }
+
+    return splitedAnim;
+}
+
+PPTX::Logic::Seq *Timing_1995::ConvertMainSeqAnimation(LstLstAnim &splitedAnim)
 {
     auto seq2 = InitMainSeq();
-    for (auto& clickPar : splitedAnim)
+    for (auto& clickGroup : splitedAnim)
     {
         PPTX::Logic::TimeNodeBase child;
-        FillClickGroup(clickPar, child);                                      /// TODO next
+        FillClickGroup(clickGroup, child);
         seq2->cTn.childTnLst->list.push_back(child);
     }
     return seq2;
@@ -127,41 +154,12 @@ PPTX::Logic::Seq *Timing_1995::InitMainSeq()
     return seq2;
 }
 
-void Timing_1995::SplitRawAnim()
-{
-    splitedAnim.clear();
-    SortAnim();
-
-    for (auto& oldAnim : arrOldAnim)
-    {
-        if (splitedAnim.empty())
-        {
-            std::list<Intermediate::SOldAnimation*> clickPar;
-            clickPar.push_back(&oldAnim);
-            splitedAnim.push_back(clickPar);
-        } else if (oldAnim.anim->m_AnimationAtom.m_fAutomatic)
-        {
-            splitedAnim.back().push_back(&oldAnim);
-        } else
-        {
-            std::list<Intermediate::SOldAnimation*> clickPar;
-            clickPar.push_back(&oldAnim);
-            splitedAnim.push_back(clickPar);
-        }
-    }
-}
-
 void Timing_1995::SortAnim()
 {
     std::sort(arrOldAnim.begin(), arrOldAnim.end(),
-              []
-              (
-              const Intermediate::SOldAnimation& a1,
-              const Intermediate::SOldAnimation& a2
-              )
+              [] (const Intermediate::SOldAnimation& a1, const Intermediate::SOldAnimation& a2)
     {
-        return
-                a1.anim->m_AnimationAtom.m_OrderID
+        return  a1.anim->m_AnimationAtom.m_OrderID
                 <
                 a2.anim->m_AnimationAtom.m_OrderID;
     }
@@ -176,18 +174,8 @@ void Timing_1995::FillClickGroup(LstAnim &clickGroup, PPTX::Logic::TimeNodeBase 
     auto par3 = new PPTX::Logic::Par;
     FillCTnParams(par3->cTn, L"", L"indefinite", L"hold");
 
-    //todo refactoring: move to fill FirstAutomaticGroup
-    PPTX::Logic::Cond cond;
-    if (animAtom.m_OrderID == 1 &&
-            animAtom.m_fAutomatic)
-    {
-        cond.evt = L"onBegin";
-        cond.delay = L"0";
-        cond.tn = 2;
-        par3->cTn.stCondLst->list.push_back(cond);
-    }
+    FillFirstAutomaticGroup(par3->cTn, animAtom);
 
-    // p:childTnLst
     par3->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     _UINT32 groupDelay = 0;
 
@@ -218,6 +206,19 @@ LstLstAnim Timing_1995::SplitClickGroupByParrallelShow(LstAnim &clickGroup)
     return lstParallelGroups;
 }
 
+void Timing_1995::FillFirstAutomaticGroup(PPTX::Logic::CTn &cTn, const CRecordAnimationInfoAtom &animAtom) const
+{
+    PPTX::Logic::Cond cond;
+    if (animAtom.m_OrderID == arrOldAnim[0].anim->m_AnimationAtom.m_OrderID &&
+            animAtom.m_fAutomatic)
+    {
+        cond.evt = L"onBegin";
+        cond.delay = L"0";
+        cond.tn = 2;
+        cTn.stCondLst->list.push_back(cond);
+    }
+}
+
 void Timing_1995::FillCTnParams(PPTX::Logic::CTn &cTn, std::wstring nodeType, std::wstring condDelay, std::wstring fill, Intermediate::SOldAnimation* pOldAnim)
 {
     cTn.id = cTnId++;
@@ -246,23 +247,8 @@ void Timing_1995::ConvertParallelGroupAnimation(LstAnim &parGroup, PPTX::Logic::
     FillCTnParams(par4->cTn, L"", std::to_wstring(groupDelay));
     groupDelay += GetParallelGroupDuration(parGroup);
 
-    PPTX::Logic::TimeNodeBase childTimeNode;
-    auto* pOldAnimation = parGroup.front();
-    if (pOldAnimation->anim->m_AnimationAtom.m_fAutomatic)
-        FillAfterEffect(pOldAnimation, childTimeNode);
-    else
-        FillClickEffect(pOldAnimation, childTimeNode);
-    parGroup.pop_front();
-    par4->cTn.childTnLst->list.push_back(childTimeNode);
-
-    while (!parGroup.empty())
-    {
-        PPTX::Logic::TimeNodeBase childTimeNode;
-        auto* pOldAnimation = parGroup.front();
-        FillWithEffect(pOldAnimation, childTimeNode);
-        parGroup.pop_front();
-        par4->cTn.childTnLst->list.push_back(childTimeNode);
-    }
+    ConvertHeadEfectInParallelShow(parGroup, par4->cTn);
+    ConvertWithEfectsInParallelShow(parGroup, par4->cTn);
 
     oTimeNodeBase.m_node = par4;
 }
@@ -270,48 +256,56 @@ void Timing_1995::ConvertParallelGroupAnimation(LstAnim &parGroup, PPTX::Logic::
 _INT32 Timing_1995::GetParallelGroupDuration(LstAnim &parGroup)
 {
     auto iterSlowestAnim = std::max_element(parGroup.begin(), parGroup.end(),
-                                    [] (Intermediate::SOldAnimation const* a1, Intermediate::SOldAnimation const* a2)
-        {
+                                            [] (Intermediate::SOldAnimation const* a1, Intermediate::SOldAnimation const* a2)
+    {
             return a1->getAnimDur() < a2->getAnimDur();
-        });
+});
 
     return (*iterSlowestAnim)->getAnimDur();;
 }
 
+void Timing_1995::ConvertHeadEfectInParallelShow(const LstAnim& group, PPTX::Logic::CTn &cTn)
+{
+    PPTX::Logic::TimeNodeBase childTimeNode;
+    auto* pOldAnimation = group.front();
+
+    if (pOldAnimation->anim->m_AnimationAtom.m_fAutomatic)
+        FillAfterEffect(pOldAnimation, childTimeNode);
+    else
+        FillClickEffect(pOldAnimation, childTimeNode);
+    cTn.childTnLst->list.push_back(childTimeNode);
+}
+
+void Timing_1995::ConvertWithEfectsInParallelShow(const LstAnim& group, PPTX::Logic::CTn &cTn)
+{
+    for (auto itAnim = ++group.begin(); itAnim != group.end(); itAnim++)
+    {
+        PPTX::Logic::TimeNodeBase childTimeNode;
+        FillWithEffect(*itAnim, childTimeNode);
+        cTn.childTnLst->list.push_back(childTimeNode);
+    }
+}
+
 void Timing_1995::FillClickEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
-    auto par = new PPTX::Logic::Par;
-
-    FillCTnParams(par->cTn, L"clickEffect", L"0", L"hold", pOldAnim);
-
-    oTimeNodeBase.m_node = par;
+    FillEffectType(pOldAnim, oTimeNodeBase, L"clickEffect");
 }
 
 void Timing_1995::FillAfterEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
-    const auto& anim = pOldAnim->anim->m_AnimationAtom;
-    auto par = new PPTX::Logic::Par;
-
-    auto delay = std::to_wstring(anim.m_DelayTime);
-
-    FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", pOldAnim);
-    //    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst; bug #52374, was fixed
-
-    oTimeNodeBase.m_node = par;
+    FillEffectType(pOldAnim, oTimeNodeBase, L"afterEffect");
 }
 
 void Timing_1995::FillWithEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
-    const auto& anim = pOldAnim->anim->m_AnimationAtom;
+    FillEffectType(pOldAnim, oTimeNodeBase, L"withEffect");
+}
+
+void Timing_1995::FillEffectType(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, std::wstring nodeType)
+{
     auto par = new PPTX::Logic::Par;
-
-    auto delay = std::to_wstring(anim.m_DelayTime);
-
-    FillCTnParams(par->cTn, L"withEffect", delay, L"hold", pOldAnim);
-    //    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst; bug #52374, was fixed
-
+    FillCTnParams(par->cTn, nodeType, L"0", L"hold", pOldAnim);
     oTimeNodeBase.m_node = par;
-
 }
 
 }

@@ -55,7 +55,6 @@ namespace ComplexTypes
 
 			COnOff2()
 			{
-				m_oVal.SetValue(eDefValue);
 			}
 			virtual ~COnOff2()
 			{
@@ -92,7 +91,7 @@ namespace ComplexTypes
 				return m_oVal.ToBool();
 			}
 
-			SimpleTypes::COnOff m_oVal;
+			SimpleTypes::COnOff m_oVal = eDefValue;
 
 		};
 

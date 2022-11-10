@@ -230,7 +230,7 @@ namespace Oox2Odf
 		void convert(OOX::Drawing::CAnchor				*oox_anchor);
 		void convert(OOX::Drawing::CInline				*oox_inline);
 	
-		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
+		void convert(SimpleTypes::CTheme				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
 		void convert(ComplexTypes::Word::CShading		*shading,		_CP_OPT(odf_types::color)			& odf_color);
 		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
@@ -245,9 +245,9 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_cell_properties	*table_cell_properties);
 		//void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_properties			*table_properties);
 
-		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor<>	*theme_color, 
-														SimpleTypes::CUcharHexNumber<>* theme_tint,
-														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf_types::color) & odf_color);
+		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor	*theme_color,
+														SimpleTypes::CUcharHexNumber* theme_tint,
+														SimpleTypes::CUcharHexNumber* theme_shade, _CP_OPT(odf_types::color) & odf_color);
 		void convert(OOX::CDocDefaults					*def_style, OOX::CStyles *styles);
 		void convert(OOX::CStyle						*style);
 		void convert_table_style(OOX::CStyle			*oox_style);

@@ -65,7 +65,7 @@ namespace OOX
 		public:
 			bool m_bIsInit;
 			CStringXLSB m_oFormula;
-			SimpleTypes::Spreadsheet::CCellFormulaType<SimpleTypes::Spreadsheet::cellformulatypeNormal> m_oT;
+			SimpleTypes::Spreadsheet::CCellFormulaType m_oT;
 			_INT32 m_nSi;
 			CStringXLSB m_oRef;
 			CStringXLSB m_oR1;
@@ -90,7 +90,7 @@ namespace OOX
 
 			_UINT32 m_nCol;
 			_UINT32 m_nStyle;
-			SimpleTypes::Spreadsheet::CCellTypeType<SimpleTypes::Spreadsheet::celltypeNumber> m_oType;
+			SimpleTypes::Spreadsheet::CCellTypeType m_oType;
 			SimpleTypes::COnOff m_oShowPhonetic;
 
 			CTextXLSB m_oValue;
@@ -177,11 +177,12 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r2",	m_oR2 )
 					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ref",	m_oRef )
 
-					WritingElement_ReadAttributes_EndChar( oReader )
+				WritingElement_ReadAttributes_EndChar( oReader )
 			}
 
 		public:
 			nullable<SimpleTypes::COnOff>							m_oAca;
+			nullable<SimpleTypes::COnOff>							m_oBx;
 			nullable<SimpleTypes::COnOff>							m_oCa;
 			nullable<SimpleTypes::COnOff>							m_oDel1;
 			nullable<SimpleTypes::COnOff>							m_oDel2;
@@ -191,10 +192,11 @@ namespace OOX
 			nullable<std::wstring>									m_oR2;
 			nullable<std::wstring>									m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oSi;
-			nullable<SimpleTypes::Spreadsheet::CCellFormulaType<>>	m_oT;
+			nullable<SimpleTypes::Spreadsheet::CCellFormulaType>	m_oT;
 
 			std::wstring m_sText;
 		};
+
 		class CData : public WritingElement
 		{
 		public:
@@ -236,7 +238,7 @@ namespace OOX
 
 
 		public:
-			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
 			nullable<CSi>										m_oRichText;
 			nullable<CText>										m_oValue;
 		};
@@ -398,7 +400,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCellMetadata;
 			nullable<SimpleTypes::COnOff>						m_oShowPhonetic;
 			nullable_uint										m_oStyle;
-			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
 
 			nullable<std::string>	m_oRef;

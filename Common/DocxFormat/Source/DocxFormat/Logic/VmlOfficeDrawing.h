@@ -147,9 +147,6 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				m_oMiterLimit.Init();
-				m_oMiterLimit->SetValue(8);
-
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"althref",          m_sAlthref )
 				WritingElement_ReadAttributes_Read_else_if( oReader, L"color",            m_oColor )
@@ -203,7 +200,7 @@ namespace OOX
 			nullable<SimpleTypes::CTrueFalse>           m_oInsetPen;
 			nullable<SimpleTypes::CStrokeJoinStyle>		m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle>		m_oLineStyle;
-			nullable<SimpleTypes::CDecimalNumber>	    m_oMiterLimit;
+			nullable<SimpleTypes::CDecimalNumber>	    m_oMiterLimit = 8;
 			nullable<SimpleTypes::CTrueFalse>           m_oOn;
 			nullable<std::wstring>						m_sOpacity;
 			nullable<std::wstring>						m_sSrc;
@@ -1070,15 +1067,7 @@ namespace OOX
 				m_oSkewAmt.SetValue( 50 );
 				m_oSpecularity.SetValue( 0 );
 				m_oViewPoint.SetValue( 0, 0, 0 );
-				m_oViewPointOrigin.SetValue( 0.5, -0.5 );
-
-				m_oFacet.SetValue(30000);
-				m_oShininess.SetValue(5);
-				m_oSkewAngle.SetValue(225);
-
-				m_oLightFace.SetValue(SimpleTypes::booleanTrue);
-				m_oLightHarsh.SetValue(SimpleTypes::booleanTrue);
-				m_oLockRotationCenter.SetValue(SimpleTypes::booleanTrue);
+				m_oViewPointOrigin.SetValue( 0.5, -0.5 );				
 
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_Read_if     ( oReader, L"autorotationcenter", m_oAutoRotationCenter )
@@ -1126,16 +1115,16 @@ namespace OOX
 			SimpleTypes::Vml::CVml_1_65536                                   m_oDiffusity;
 			SimpleTypes::CPoint                                              m_oEdge;
 			nullable<SimpleTypes::CExt>                                      m_oExt;
-			SimpleTypes::CDecimalNumber                                      m_oFacet;
+			SimpleTypes::CDecimalNumber                                      m_oFacet = 30000;
 			SimpleTypes::CPoint                                              m_oForeDepth;
-			SimpleTypes::CTrueFalse                                          m_oLightFace;
-			SimpleTypes::CTrueFalse                                          m_oLightHarsh;
+			SimpleTypes::CTrueFalse                                          m_oLightFace = SimpleTypes::booleanTrue;
+			SimpleTypes::CTrueFalse                                          m_oLightHarsh = SimpleTypes::booleanTrue;
 			SimpleTypes::CTrueFalse                                          m_oLightHarsh2;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oLightLevel;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oLightLevel2;
 			SimpleTypes::Vml::CVml_Vector3D_65536                            m_oLightPosition;
 			SimpleTypes::Vml::CVml_Vector3D_65536                            m_oLightPosition2;
-			SimpleTypes::CTrueFalse                                          m_oLockRotationCenter;
+			SimpleTypes::CTrueFalse                                          m_oLockRotationCenter = SimpleTypes::booleanTrue;
 			SimpleTypes::CTrueFalse                                          m_oMetal;
 			SimpleTypes::CTrueFalse                                          m_oOn;
 			SimpleTypes::Vml::CVml_Vector3D                                  m_oOrientation;
@@ -1144,9 +1133,9 @@ namespace OOX
 			SimpleTypes::CExtrusionRender                                    m_oRender;
 			SimpleTypes::Vml::CVml_Vector2D                                  m_oRotationAngle;
 			SimpleTypes::Vml::CVml_Vector3D                                  m_oRotationCenter;
-			SimpleTypes::CDecimalNumber                                      m_oShininess;
+			SimpleTypes::CDecimalNumber                                      m_oShininess = 5;
 			SimpleTypes::CPositiveFixedPercentage                            m_oSkewAmt;
-			SimpleTypes::CDecimalNumber                                      m_oSkewAngle;
+			SimpleTypes::CDecimalNumber                                      m_oSkewAngle = 225;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oSpecularity;
 			SimpleTypes::CExtrusionType                                      m_oType;
 			SimpleTypes::Vml::CVml_Vector3D                                  m_oViewPoint;

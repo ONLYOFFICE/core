@@ -1172,8 +1172,6 @@ namespace OOX
 		void CTextbox::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			// Выставляем значения по умолчанию
-			m_oInsetMode.SetValue(SimpleTypes::insetmodeCustom);
-
 			m_oInset.Init();
 			m_oInset->Set(7.2, 3.6, 7.2, 3.6 );
 			
@@ -1215,15 +1213,6 @@ namespace OOX
 			std::wstring sColors;
 
 			// Читаем атрибуты
-			m_oMethod.Init();
-			m_oMethod->SetValue(SimpleTypes::fillmethodSigma);
-
-			m_oAlignShape.Init();
-			m_oAlignShape->SetValue(SimpleTypes::booleanTrue);
-
-			m_oOn.Init();
-			m_oOn->SetValue(SimpleTypes::booleanTrue);
-
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -1377,19 +1366,7 @@ namespace OOX
 		}
 
 		void CStroke::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			m_oEndCap.Init();
-			m_oEndCap->SetValue(SimpleTypes::strokeendcapFlat);
-
-			m_oMiterLimit.Init();
-			m_oMiterLimit->SetValue(8);
-
-			m_oImageAlignShape.Init();
-			m_oImageAlignShape->SetValue(SimpleTypes::booleanTrue);
-
-			m_oOn.Init();
-			m_oOn->SetValue(SimpleTypes::booleanTrue);
-
+		{			
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -1569,18 +1546,6 @@ namespace OOX
 		}
 		void CPath::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			m_oExtrusionOk.Init();
-			m_oExtrusionOk->SetValue(SimpleTypes::booleanTrue);
-
-			m_oFillOk.Init();
-			m_oFillOk->SetValue(SimpleTypes::booleanTrue);
-
-			m_oShadowOk.Init();
-			m_oShadowOk->SetValue(SimpleTypes::booleanTrue);
-
-			m_oStrokeOk.Init();
-			m_oStrokeOk->SetValue(SimpleTypes::booleanTrue);
-
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -2085,9 +2050,6 @@ namespace OOX
 		}
 		void CShapeDefaults::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			m_oFill.SetValue(SimpleTypes::booleanTrue);
-			m_oStroke.SetValue(SimpleTypes::booleanTrue);
-
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			

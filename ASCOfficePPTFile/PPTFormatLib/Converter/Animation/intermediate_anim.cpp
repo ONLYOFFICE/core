@@ -22,7 +22,8 @@ _UINT32 PPT::Intermediate::SOldAnimation::getAnimDur() const
         case 1: dur = 500; break;
         case 2: dur = 1000; break;
         }
-    }
+    } else if (effect == 19 || effect == 26)
+        dur = 2000;
 
     return dur;
 }

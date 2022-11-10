@@ -244,12 +244,14 @@ void Timing_1995::ConvertParallelGroupAnimation(LstAnim &parGroup, PPTX::Logic::
     par4->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
 
     FillCTnParams(par4->cTn, L"", std::to_wstring(groupDelay));
+    groupDelay += GetParallelGroupDuration(parGroup);
+
     PPTX::Logic::TimeNodeBase childTimeNode;
     auto* pOldAnimation = parGroup.front();
     if (pOldAnimation->anim->m_AnimationAtom.m_fAutomatic)
-        FillAfterEffect(pOldAnimation, childTimeNode, groupDelay);
+        FillAfterEffect(pOldAnimation, childTimeNode);
     else
-        FillClickEffect(pOldAnimation, childTimeNode, groupDelay);
+        FillClickEffect(pOldAnimation, childTimeNode);
     parGroup.pop_front();
     par4->cTn.childTnLst->list.push_back(childTimeNode);
 
@@ -257,7 +259,7 @@ void Timing_1995::ConvertParallelGroupAnimation(LstAnim &parGroup, PPTX::Logic::
     {
         PPTX::Logic::TimeNodeBase childTimeNode;
         auto* pOldAnimation = parGroup.front();
-        FillWithEffect(pOldAnimation, childTimeNode, groupDelay);
+        FillWithEffect(pOldAnimation, childTimeNode);
         parGroup.pop_front();
         par4->cTn.childTnLst->list.push_back(childTimeNode);
     }
@@ -267,7 +269,7 @@ void Timing_1995::ConvertParallelGroupAnimation(LstAnim &parGroup, PPTX::Logic::
 
 _INT32 Timing_1995::GetParallelGroupDuration(LstAnim &parGroup)
 {
-    auto iterSlowestAnim = std::max(parGroup.begin(), parGroup.end(),
+    auto iterSlowestAnim = std::max_element(parGroup.begin(), parGroup.end(),
                                     [] (Intermediate::SOldAnimation const* a1, Intermediate::SOldAnimation const* a2)
         {
             return a1->getAnimDur() < a2->getAnimDur();
@@ -276,24 +278,21 @@ _INT32 Timing_1995::GetParallelGroupDuration(LstAnim &parGroup)
     return (*iterSlowestAnim)->getAnimDur();;
 }
 
-void Timing_1995::FillClickEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32 &groupDelay)
+void Timing_1995::FillClickEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
     auto par = new PPTX::Logic::Par;
 
     FillCTnParams(par->cTn, L"clickEffect", L"0", L"hold", pOldAnim);
-    groupDelay += 500; // Effect time // TODO for anim
 
     oTimeNodeBase.m_node = par;
 }
 
-void Timing_1995::FillAfterEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32 &groupDelay)
+void Timing_1995::FillAfterEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
     const auto& anim = pOldAnim->anim->m_AnimationAtom;
     auto par = new PPTX::Logic::Par;
 
-    groupDelay += anim.m_DelayTime;
     auto delay = std::to_wstring(anim.m_DelayTime);
-    groupDelay += pOldAnim->getAnimDur(); // Effect time
 
     FillCTnParams(par->cTn, L"afterEffect", delay, L"hold", pOldAnim);
     //    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst; bug #52374, was fixed
@@ -301,14 +300,12 @@ void Timing_1995::FillAfterEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::L
     oTimeNodeBase.m_node = par;
 }
 
-void Timing_1995::FillWithEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32 &groupDelay)
+void Timing_1995::FillWithEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
     const auto& anim = pOldAnim->anim->m_AnimationAtom;
     auto par = new PPTX::Logic::Par;
 
-    groupDelay += anim.m_DelayTime;
     auto delay = std::to_wstring(anim.m_DelayTime);
-    groupDelay += pOldAnim->getAnimDur(); // Effect time
 
     FillCTnParams(par->cTn, L"withEffect", delay, L"hold", pOldAnim);
     //    par->cTn.childTnLst = new PPTX::Logic::ChildTnLst; bug #52374, was fixed

@@ -33,30 +33,12 @@
 
 //#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
+#include "../../../DesktopEditor/common/StringBuilder.h"
+#include <vector>
 
 namespace NSCustomShapesConvert
 {
-	static int GetInteger (const std::wstring& string)
-	{
-        if (string.length() <1) return 0;
-
-        try
-        {
-            return _ttoi(string.c_str());
-        }
-        catch(...)
-        {
-        }
-
-        try
-        {
-            return static_cast<int>(_wtoi64(string.c_str()));
-        }
-        catch(...)
-        {
-            return 0;
-        }
-    }
     static std::wstring	g_bstr_nodeopen				= L"<";
     static std::wstring	g_bstr_nodeclose			= L">";
     static std::wstring	g_bstr_nodeopen_slash		= L"</";
@@ -74,204 +56,10 @@ namespace NSCustomShapesConvert
 		return (dVal >= 0) ? dVal : -dVal;
 	}
 
-	class CStringWriter
-	{
-	private:
-		wchar_t*	m_pData;
-		size_t		m_lSize;
-
-		wchar_t*	m_pDataCur;
-		size_t		m_lSizeCur;
-
-	public:
-		CStringWriter()
-		{
-			m_pData = NULL;
-			m_lSize = 0;
-
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= m_lSize;
-		}
-		~CStringWriter()
-		{
-			RELEASEMEM(m_pData);
-		}
-        void AddSize(size_t nSize)
-		{
-			if (NULL == m_pData)
-			{
-                m_lSize = (std::max)(nSize, (size_t) 1024);
-                m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t)+64);
-				
-				m_lSizeCur = 0;
-				m_pDataCur = m_pData;
-				return;
-			}
-
-			if ((m_lSizeCur + nSize) > m_lSize)
-			{
-				while ((m_lSizeCur + nSize) > m_lSize)
-				{
-                    //m_lSize *= 2; - бесконтрольно ..
-                    m_lSize += (std::max)(nSize, (size_t) 1024);
-				}
-                int size_alloc = m_lSize * sizeof(wchar_t);
- #if defined(_WIN32) || defined (_WIN64)
-                wchar_t* pRealloc = (wchar_t*)realloc(m_pData, size_alloc );
-				if (NULL != pRealloc)
-				{
-					// реаллок сработал
-					m_pData		= pRealloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-				else
-#endif
-				{
-                    wchar_t* pMalloc = (wchar_t*)malloc(size_alloc );
-					memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
-
-					free(m_pData);
-					m_pData		= pMalloc;
-					m_pDataCur	= m_pData + m_lSizeCur;
-				}
-			}
-		}
-
-	public:
-		
-		void WriteString(const std::wstring & wString)
-		{
-			size_t nLen = wString.length();
-			
-			AddSize(nLen);
-
-			memcpy(m_pDataCur, wString.c_str(), nLen * sizeof(wchar_t));
-
-            m_pDataCur += nLen;
-			m_lSizeCur += nLen;
-		}
-
-		void WriteStringXML(const std::wstring & wString)
-		{
-			std::wstring buffer;
-			buffer.reserve(wString.size());
-			for(size_t pos = 0; pos != wString.size(); ++pos)
-			{
-				switch(wString[pos])
-				{
-				case '&':  buffer.append(_T("&amp;"));      break;
-				case '\"': buffer.append(_T("&quot;"));     break;
-				case '\'': buffer.append(_T("&apos;"));     break;
-				case '<':  buffer.append(_T("&lt;"));       break;
-				case '>':  buffer.append(_T("&gt;"));       break;
-				default:   buffer.append(&wString[pos], 1);	break;
-				}
-			}
-			WriteString(buffer);
-		}
-        size_t GetCurSize()
-		{
-			return m_lSizeCur;
-		}
-
-  //      void Write(CStringWriter& oWriter)
-		//{
-		//	WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-		//}
-
-        void WriteBefore(CStringWriter& oWriter)
-		{
-			size_t nNewS = oWriter.GetCurSize();
-			AddSize(nNewS);
-            memmove(m_pData + nNewS, m_pData, m_lSizeCur * sizeof (wchar_t));
-            memcpy(m_pData, oWriter.m_pData, nNewS * sizeof (wchar_t));
-			m_pDataCur += nNewS;
-			m_lSizeCur += nNewS;
-		}
-
-		inline void Clear()
-		{
-			RELEASEMEM(m_pData);
-			
-			m_pData = NULL;
-			m_lSize = 0;
-
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-		inline void ClearNoAttack()
-		{
-			m_pDataCur	= m_pData;
-			m_lSizeCur	= 0;
-		}
-
-		std::wstring GetData()
-		{
-			if (m_lSizeCur < 1 || !m_pData) return L"";
-
-            std::wstring str(m_pData, (int)m_lSizeCur);
-			return str;
-		}
-
-        void AddCharNoCheck(const WCHAR& wc)
-		{
-			*m_pDataCur++ = wc;
-			++m_lSizeCur;
-		}
-        void AddIntNoCheck(int val)
-		{
-			if (0 == val)
-			{
-				*m_pDataCur++ = (WCHAR)'0';
-				++m_lSizeCur;
-				return;
-			}
-			if (val < 0)
-			{
-				val = -val;
-				*m_pDataCur++ = (WCHAR)'-';
-				++m_lSizeCur;
-			}
-
-			int len = 0;
-			int oval = val;
-			while (oval > 0)
-			{
-				oval /= 10;
-				++len;
-			}
-
-			oval = 1;
-			while (val > 0)
-			{
-				m_pDataCur[len - oval] = (WCHAR)('0' + (val % 10));
-				++oval;
-				val /= 10;
-			}
-
-			m_pDataCur += len;
-			m_lSizeCur += len;
-		}
-
-        void AddStringNoCheck(const wchar_t* pData, const int& len)
-		{
-            memcpy(m_pDataCur, pData, len *sizeof(wchar_t));
-
-            m_pDataCur += len;
-			m_lSizeCur += len;
-		}
-        void AddSpaceNoCheck()
-		{
-			*m_pDataCur = WCHAR(' ');
-			++m_pDataCur;
-			++m_lSizeCur;
-		}
-	};
-
 	class CXmlWriter
 	{
 	public:
-		CStringWriter m_oWriter;
+		NSStringUtils::CStringBuilder m_oWriter;
 
 		CXmlWriter() : m_oWriter()
 		{
@@ -300,35 +88,35 @@ namespace NSCustomShapesConvert
 		}
 		void WriteStringXML(std::wstring strValue)
 		{
-			m_oWriter.WriteStringXML(strValue);
+			m_oWriter.WriteEncodeXmlString(strValue);
 		}
 		void WriteDouble(const double& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));
+			m_oWriter.WriteString(XmlUtils::ToString(val));
 		}
 		void WriteLONG(const long& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));
+			m_oWriter.WriteString(XmlUtils::ToString(val));
 
 		}
 		void WriteINT(const int& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));
+			m_oWriter.WriteString(XmlUtils::ToString(val));
 
 		}
 		void WriteDWORD(const DWORD& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));
+			m_oWriter.WriteString(XmlUtils::ToString(val));
 
 		}
 		void WriteDWORD_hex(const DWORD& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));
+			m_oWriter.WriteString(XmlUtils::ToString(val));
 
 		}		
 		void WriteBool(const bool& val)
 		{
-			m_oWriter.WriteString(boost::lexical_cast<std::wstring>(val));		
+			m_oWriter.WriteString(XmlUtils::ToString(val));
 		}
 		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& val)
 		{
@@ -345,7 +133,7 @@ namespace NSCustomShapesConvert
 			m_oWriter.WriteString(strAttributeName);
 			m_oWriter.WriteString(g_bstr_node_equal);
 			m_oWriter.WriteString(g_bstr_node_quote);
-			m_oWriter.WriteStringXML(val);
+			m_oWriter.WriteEncodeXmlString(val);
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
 		void WriteAttribute(const std::wstring& strAttributeName, const double& val)

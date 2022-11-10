@@ -452,6 +452,8 @@ namespace NSBinPptxRW
 		_UINT32 GetPositionAbsolute();
 		void CloseFile();
 		virtual void Flush();
+
+		void WriteReserved(size_t lCount);
 	};
 	class CXlsbBinaryWriter : public CStreamBinaryWriter
 	{

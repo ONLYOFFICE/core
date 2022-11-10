@@ -2758,7 +2758,7 @@ void BinaryWorkbookTableWriter::WriteConnectionWebPr(const OOX::Spreadsheet::CWe
 			nullable_bool		m_oTextDates;
 			nullable_bool		m_oXl2000;
 			nullable_bool		m_oHtmlTables;
-			nullable<SimpleTypes::Spreadsheet::CHtmlFormat<>> m_oHtmlFormat;
+			nullable<SimpleTypes::Spreadsheet::CHtmlFormat> m_oHtmlFormat;
 }
 void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::CExternalReferences& externalReferences, OOX::Spreadsheet::CWorkbook& workbook)
 {
@@ -4697,7 +4697,7 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				pShapeElem	= pFind->second.pElement;
 			}			
 		}
-		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);		
 		bool bSetAnchor = false;
 		if (pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oAnchor.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
@@ -4893,7 +4893,7 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 				pShape = dynamic_cast<OOX::Vml::CShape*>(pFind->second.pElement);
 			}
 		}
-		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 		
 		if (pControl->m_oControlPr.IsInit() && pControl->m_oControlPr->m_oAnchor.IsInit())
@@ -5292,7 +5292,7 @@ void BinaryWorksheetTableWriter::WriteDrawings(const OOX::Spreadsheet::CWorkshee
 							//преобразуем ClientData в CellAnchor
 							OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElemShape);
 							
-							SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+							SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 							eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 
 							OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);

@@ -403,7 +403,7 @@ namespace OOX
 
 			CText *pText = (CText*)pT;
 			pText->m_sText  = sText;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
+			pText->m_oSpace = new SimpleTypes::CXmlSpace();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 
@@ -426,7 +426,7 @@ namespace OOX
 
 			CText *pText = (CText*)pT;
 			pText->m_sText  = sText;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
+			pText->m_oSpace = new SimpleTypes::CXmlSpace();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 			if ( pProperty )
@@ -521,7 +521,7 @@ namespace OOX
 			std::string s(sString);
 			pText->m_sText = std::wstring(s.begin(), s.end());
 			delete sString;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
+			pText->m_oSpace = new SimpleTypes::CXmlSpace();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 			((CRun*)pR)->m_arrItems.push_back( pT );
@@ -548,7 +548,7 @@ namespace OOX
             std::string s(sString);
             pText->m_sText = std::wstring(s.begin(), s.end());
 			delete sString;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace<>();
+			pText->m_oSpace = new SimpleTypes::CXmlSpace();
 			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
 
 			if ( pProperty )
@@ -566,7 +566,7 @@ namespace OOX
 			if ( !pBS )
 				return;
 
-			((CBookmarkStart*)pBS)->m_oId   = new SimpleTypes::CDecimalNumber<>();
+			((CBookmarkStart*)pBS)->m_oId   = new SimpleTypes::CDecimalNumber();
 			((CBookmarkStart*)pBS)->m_oId->SetValue( nId );
 			((CBookmarkStart*)pBS)->m_sName = sName;
 
@@ -578,7 +578,7 @@ namespace OOX
 			if ( !pBE )
 				return;
 
-			((CBookmarkEnd*)pBE)->m_oId = new SimpleTypes::CDecimalNumber<>();
+			((CBookmarkEnd*)pBE)->m_oId = new SimpleTypes::CDecimalNumber();
 			((CBookmarkEnd*)pBE)->m_oId->SetValue( nId );
 
 			m_arrItems.push_back( pBE );

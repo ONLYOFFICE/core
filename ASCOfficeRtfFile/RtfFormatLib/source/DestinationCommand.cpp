@@ -38,6 +38,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 {

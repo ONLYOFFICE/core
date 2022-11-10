@@ -1733,7 +1733,7 @@ void DocxConverter::convert( ComplexTypes::Word::CShading* shading, _CP_OPT(odf_
 			
 			ucR = (BYTE)(ucR * (kf)); ucB = (BYTE)(ucB * (kf)); ucG = (BYTE)(ucG * (kf));
 		}
-		SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+		SimpleTypes::CHexColor *oRgbColor = new SimpleTypes::CHexColor(ucR, ucG, ucB);
 
 		if (oRgbColor)
 		{
@@ -2865,7 +2865,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			BYTE ucR = oox_run_pr->m_oHighlight->m_oVal->Get_R();
 			BYTE ucB = oox_run_pr->m_oHighlight->m_oVal->Get_B();
 			BYTE ucG = oox_run_pr->m_oHighlight->m_oVal->Get_G();
-			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+			SimpleTypes::CHexColor *oRgbColor = new SimpleTypes::CHexColor(ucR, ucG, ucB);
 
 			if (oRgbColor)
 			{
@@ -2906,7 +2906,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 	}
 }
 
-void DocxConverter::convert(SimpleTypes::CTheme<>* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
+void DocxConverter::convert(SimpleTypes::CTheme* oox_font_theme, _CP_OPT(std::wstring) & odf_font_name)
 {
 	if (oox_font_theme == NULL) return;
 
@@ -3274,10 +3274,10 @@ void DocxConverter::convert(OOX::Drawing::CInline *oox_inline)
 	odf_context()->drawing_context()->end_drawing();
 }
 
-void DocxConverter::convert(SimpleTypes::CHexColor<>		*color, 
-							SimpleTypes::CThemeColor<>		*theme_color, 
-							SimpleTypes::CUcharHexNumber<>	*theme_tint,
-							SimpleTypes::CUcharHexNumber<>	*theme_shade, _CP_OPT(odf_types::color) & odf_color)
+void DocxConverter::convert(SimpleTypes::CHexColor			*color,
+							SimpleTypes::CThemeColor		*theme_color,
+							SimpleTypes::CUcharHexNumber	*theme_tint,
+							SimpleTypes::CUcharHexNumber	*theme_shade, _CP_OPT(odf_types::color) & odf_color)
 {
 	odf_color = boost::none;
 
@@ -3297,7 +3297,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 			ucG = color->Get_G();
 			ucA = color->Get_A();
 
-			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+			SimpleTypes::CHexColor *oRgbColor = new SimpleTypes::CHexColor(ucR, ucG, ucB);
 
 			if ((oRgbColor) && (oRgbColor->GetValue() == SimpleTypes::hexcolorRGB))
 			{
@@ -3352,7 +3352,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor<>		*color,
 				argb = HSL2RGB(dH, dS, dL);
 
 			}
-			std::wstring strColor = XmlUtils::IntToString(argb & 0x00FFFFFF, L"#%06X");
+			std::wstring strColor = XmlUtils::ToString(argb & 0x00FFFFFF, L"#%06X");
 			odf_color = odf_types::color(strColor);
 		}
 	}

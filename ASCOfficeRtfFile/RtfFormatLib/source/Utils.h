@@ -40,7 +40,7 @@
 #endif
 
 #include "../../../Common/FileWriter.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 
@@ -148,7 +148,7 @@ public:
 	}
     static  std::wstring ToStringHex( int i, int nLen )
 	{
-        std::wstring result = XmlUtils::IntToString(i, L"%X");
+		std::wstring result = XmlUtils::ToString(i, L"%X");
 
         for(int i = (int)result.length(); i < nLen; i++ )
             result.insert( result.begin() , '0' );
@@ -314,7 +314,7 @@ public:
     private:
         static void DecodeFromFile( std::wstring& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
          {
-            CFile file;
+			NSFile::CFileBinary file;
 
             if (file.OpenFile(sFilename) != S_OK) return;
 
@@ -451,17 +451,17 @@ public:
 		if( NULL == pbData )
 			return;
 
-		CFile file;
-        if (file.CreateFile(sFilename) != S_OK) return;
+		NSFile::CFileBinary file;
+		if (file.CreateFileW(sFilename) != S_OK) return;
 
 		file.WriteFile(pbData, (DWORD)nLength);	
 		file.CloseFile();
 	}
     static void WriteDataToFile(std::wstring& sFilename, std::wstring& sData)
 	{
-		CFile file;
+		NSFile::CFileBinary file;
 
-        if (file.CreateFile(sFilename) != S_OK) return;
+		if (file.CreateFileW(sFilename) != S_OK) return;
 
         wchar_t * buf  = (wchar_t *)sData.c_str();
         size_t nLengthText	= sData.length();

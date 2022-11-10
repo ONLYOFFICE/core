@@ -932,7 +932,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			sResult += L" strokecolor=\"#" + color.ToHexColor(true) + L"\"";
 		}
 		if (PROP_DEF != m_nLineWidth)
-			sResult += L" strokeweight=\"" + XmlUtils::DoubleToString(RtfUtility::Emu2Pt(m_nLineWidth), L"%.2f") + L"pt\"";
+			sResult += L" strokeweight=\"" + XmlUtils::ToString(RtfUtility::Emu2Pt(m_nLineWidth), L"%.2f") + L"pt\"";
 		//path
 		switch (m_nConnectionType)
 		{
@@ -966,10 +966,10 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
             sStyle += L"position:absolute;";
 			if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 			{
-                sStyle += L"margin-left:"   + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_nLeft), L"%.2f") + L"pt;";
-                sStyle += L"margin-top:"    + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_nTop), L"%.2f") + L"pt;";
-                sStyle += L"margin-bottom:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_nBottom), L"%.2f") + L"pt;";
-                sStyle += L"margin-right:"  + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_nRight), L"%.2f") + L"pt;";
+                sStyle += L"margin-left:"   + XmlUtils::ToString(RtfUtility::Twip2pt(m_nLeft), L"%.2f") + L"pt;";
+                sStyle += L"margin-top:"    + XmlUtils::ToString(RtfUtility::Twip2pt(m_nTop), L"%.2f") + L"pt;";
+                sStyle += L"margin-bottom:" + XmlUtils::ToString(RtfUtility::Twip2pt(m_nBottom), L"%.2f") + L"pt;";
+                sStyle += L"margin-right:"  + XmlUtils::ToString(RtfUtility::Twip2pt(m_nRight), L"%.2f") + L"pt;";
 			}
 		}
 
@@ -977,9 +977,9 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 		int nHeight = m_nBottom - m_nTop;
 		
 		if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
-            sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f");
+            sStyle += L"width:" + XmlUtils::ToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::ToString(RtfUtility::Twip2pt(nHeight), L"%.2f");
 		else
-            sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L"pt;height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L"pt;";
+            sStyle += L"width:" + XmlUtils::ToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L"pt;height:" + XmlUtils::ToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L"pt;";
 	}
 	else if( PROP_DEF != m_nRelLeft &&  PROP_DEF != m_nRelRight && PROP_DEF != m_nRelTop && PROP_DEF != m_nRelBottom  )
 	{
@@ -1011,9 +1011,9 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				nHeight -= m_oPicture->m_nCropB;
 
 			if (oRenderParameter.nType ==  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
-				sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L";";
+				sStyle += L"width:" + XmlUtils::ToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L";height:" + XmlUtils::ToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L";";
 			else
-				sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L"pt;height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L"pt;";
+				sStyle += L"width:" + XmlUtils::ToString(RtfUtility::Twip2pt(nWidth), L"%.2f") + L"pt;height:" + XmlUtils::ToString(RtfUtility::Twip2pt(nHeight), L"%.2f") + L"pt;";
 		}
 		else
 		{			
@@ -1031,7 +1031,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			}
 			if (PROP_DEF != m_oPicture->m_nWidth && PROP_DEF != m_oPicture->m_nHeight)
 			{
-				sStyle += L"width:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_oPicture->m_nWidth), L"%.2f") + L"pt;height:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt(m_oPicture->m_nHeight), L"%.2f") + L"pt;";
+				sStyle += L"width:" + XmlUtils::ToString(RtfUtility::Twip2pt(m_oPicture->m_nWidth), L"%.2f") + L"pt;height:" + XmlUtils::ToString(RtfUtility::Twip2pt(m_oPicture->m_nHeight), L"%.2f") + L"pt;";
 			}
 		}
 	}
@@ -1162,13 +1162,13 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sStyle += L"z-index:" + std::to_wstring(nZIndex) + L";";
 
 	if(  PROP_DEF != m_nWrapDistLeft )
-        sStyle += L"mso-wrap-distance-left:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt( m_nWrapDistLeft ), L"%.2f") + L"pt;";
+        sStyle += L"mso-wrap-distance-left:" + XmlUtils::ToString(RtfUtility::Twip2pt( m_nWrapDistLeft ), L"%.2f") + L"pt;";
 	if(  PROP_DEF != m_nWrapDistTop )
-        sStyle += L"mso-wrap-distance-top:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt( m_nWrapDistTop ), L"%.2f") + L"pt;";
+        sStyle += L"mso-wrap-distance-top:" + XmlUtils::ToString(RtfUtility::Twip2pt( m_nWrapDistTop ), L"%.2f") + L"pt;";
 	if(  PROP_DEF != m_nWrapDistRight ) 
-        sStyle += L"mso-wrap-distance-right:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt( m_nWrapDistRight ), L"%.2f") + L"pt;";
+        sStyle += L"mso-wrap-distance-right:" + XmlUtils::ToString(RtfUtility::Twip2pt( m_nWrapDistRight ), L"%.2f") + L"pt;";
 	if(  PROP_DEF != m_nWrapDistBottom )
-        sStyle += L"mso-wrap-distance-bottom:" + XmlUtils::DoubleToString(RtfUtility::Twip2pt( m_nWrapDistBottom ), L"%.2f") + L"pt;";
+        sStyle += L"mso-wrap-distance-bottom:" + XmlUtils::ToString(RtfUtility::Twip2pt( m_nWrapDistBottom ), L"%.2f") + L"pt;";
 
 	switch( m_nAnchorText)
 	{
@@ -1496,7 +1496,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			std::wstring sColors;
 			for (size_t i = 0; i < m_aFillShadeColors.size(); i++)
 			{
-				sColors += std::to_wstring(m_aFillShadeColors[i].second) + L" #" + XmlUtils::IntToString(m_aFillShadeColors[i].first, L"%06X") + L";";
+				sColors += std::to_wstring(m_aFillShadeColors[i].second) + L" #" + XmlUtils::ToString(m_aFillShadeColors[i].first, L"%06X") + L";";
 			}
 			sResult += L" colors=\"" + sColors.substr(0, sColors.length() - 1) + L"\"";
 		}

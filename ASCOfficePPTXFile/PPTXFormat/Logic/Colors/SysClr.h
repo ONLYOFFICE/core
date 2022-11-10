@@ -33,7 +33,7 @@
 
 #include "ColorBase.h"
 #include "./../../Limit/SysClrVal.h"
-#include "../../../../Common/DocxFormat/Source/Base/ASCWinAPI.h" // GetSysColor
+#include "../../../../Common/DocxFormat/Source/Base/WinColor.h" // GetSysColor
 
 namespace PPTX
 {

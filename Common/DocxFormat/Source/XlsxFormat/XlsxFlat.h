@@ -34,6 +34,7 @@
 #include "../DocxFormat/IFileContainer.h"
 #include "FileTypes_Spreadsheet.h"
 #include "WritingElement.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 namespace OOX
 {

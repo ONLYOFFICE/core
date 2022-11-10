@@ -1156,7 +1156,7 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	{
 		PPTX::Logic::PrstGeom& geometry = ooxShape->spPr.Geometry.as<PPTX::Logic::PrstGeom>();
 		
-		SimpleTypes::CShapeType<> prst_type(geometry.prst.get());		
+		SimpleTypes::CShapeType prst_type(geometry.prst.get());
 		SimpleTypes::EShapeType type = prst_type.GetValue();
 			
 		pOutput->m_nShapeType = OOX::PrstGeom2VmlShapeType(type);
@@ -2163,8 +2163,8 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	else if( RtfPicture::dt_apm ==  pOutput.eDataType )
 	{
 		//убираем заголовок apm (22 byte)
-		CFile file_inp; //mpa
-		CFile file_out;//wmf
+		NSFile::CFileBinary file_inp; //mpa
+		NSFile::CFileBinary file_out;//wmf
 
         std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 

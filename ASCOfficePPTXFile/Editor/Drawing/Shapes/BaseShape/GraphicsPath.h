@@ -34,6 +34,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "../../../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../../Metric.h"
 #include "../../Attributes.h"

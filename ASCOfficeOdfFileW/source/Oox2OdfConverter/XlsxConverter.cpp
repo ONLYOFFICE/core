@@ -2925,7 +2925,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
-					SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+					SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 
 					OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);					
@@ -3048,7 +3048,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 		smart_ptr<OOX::WritingElement> oObjectElement = oox_sheet->FindVmlObject(sShapeId);
 		smart_ptr<OOX::Vml::CShape> oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
 
-		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 		
 		if (pControl->m_oControlPr.IsInit() && pControl->m_oControlPr->m_oAnchor.IsInit())

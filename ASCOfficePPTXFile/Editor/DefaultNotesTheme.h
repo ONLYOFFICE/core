@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace Writers
 {
@@ -328,7 +329,7 @@ namespace Writers
 
             OOX::CPath pathFile= fileName;
 
-            CFile oFile;
+			NSFile::CFileBinary oFile;
             oFile.CreateFile(pathFile.GetPath());
             oFile.WriteStringUTF8(s_Common);
             oFile.CloseFile();

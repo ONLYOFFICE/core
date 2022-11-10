@@ -38,7 +38,7 @@
 #include "../../../Common/simple_xml_writer.h"
 #include "../../../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace OLEPS
 {

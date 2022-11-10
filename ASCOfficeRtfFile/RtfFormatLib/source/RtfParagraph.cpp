@@ -136,7 +136,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		sResult += L"<w:p";
 		if (oRenderParameter.nType == RENDER_TO_OOX_PARAM_COMMENT)
 		{
-			std::wstring sParaId = XmlUtils::IntToString(++pOOXWriter->m_nextParaId, L"%08X");
+			std::wstring sParaId = XmlUtils::ToString(++pOOXWriter->m_nextParaId, L"%08X");
 			sResult += L" w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\"";
 		}
 		sResult += L"><w:pPr>";

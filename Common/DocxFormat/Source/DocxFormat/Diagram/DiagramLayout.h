@@ -101,7 +101,7 @@ namespace OOX
 			nullable_string m_sName;
 			nullable_string m_sStyleLbl;
 			nullable_string m_sMoveWith;
-			nullable<SimpleTypes::CChOrder<>> m_oChOrder;
+			nullable<SimpleTypes::CChOrder> m_oChOrder;
 		};
 		class CForEach : public WritingElementWithChilds<>
 		{
@@ -131,8 +131,8 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			std::vector<SimpleTypes::CAxisTypes<>> m_arAxis;
-			std::vector<SimpleTypes::CElementTypes<>> m_arPtType;
+			std::vector<SimpleTypes::CAxisTypes> m_arAxis;
+			std::vector<SimpleTypes::CElementTypes> m_arPtType;
 			std::vector<int> m_arCnt;
 			std::vector<int> m_arSt;
 			std::vector<int> m_arStep;
@@ -169,11 +169,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<SimpleTypes::CDouble> m_oFact;
-			nullable<SimpleTypes::CConstraintRelationship<>> m_oFor;
+			nullable<SimpleTypes::CConstraintRelationship> m_oFor;
 			nullable_string m_oForName;
 			nullable<SimpleTypes::CDouble> m_oMax;
-			nullable<SimpleTypes::CElementTypes<>> m_oPtType;
-			nullable<SimpleTypes::CConstraintType<>> m_oType;
+			nullable<SimpleTypes::CElementTypes> m_oPtType;
+			nullable<SimpleTypes::CConstraintType> m_oType;
 			nullable<SimpleTypes::CDouble> m_oVal;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
@@ -231,16 +231,16 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CConstraintRelationship<>> m_oFor;
+			nullable<SimpleTypes::CConstraintRelationship> m_oFor;
 			nullable_string m_oForName;
 			nullable_double m_oFact;
-			nullable<SimpleTypes::CBoolOperator<>> m_oOp;
-			nullable<SimpleTypes::CElementTypes<>> m_oPtType;
-			nullable<SimpleTypes::CConstraintRelationship<>> m_oRefFor;
+			nullable<SimpleTypes::CBoolOperator> m_oOp;
+			nullable<SimpleTypes::CElementTypes> m_oPtType;
+			nullable<SimpleTypes::CConstraintRelationship> m_oRefFor;
 			nullable_string m_oRefForName;
-			nullable<SimpleTypes::CElementTypes<>> m_oRefPtType;
-			nullable<SimpleTypes::CConstraintType<>> m_oRefType;
-			nullable<SimpleTypes::CConstraintType<>> m_oType;
+			nullable<SimpleTypes::CElementTypes> m_oRefPtType;
+			nullable<SimpleTypes::CConstraintType> m_oRefType;
+			nullable<SimpleTypes::CConstraintType> m_oType;
 			nullable<SimpleTypes::CDouble> m_oVal;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
@@ -298,7 +298,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CParameterId<>> m_oType;
+			nullable<SimpleTypes::CParameterId> m_oType;
 			nullable_string m_oVal; //union of SimpleTypes ... todooo?
 		};
 		class CAlg : public WritingElementWithChilds<CParam>
@@ -329,7 +329,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CAlgorithmType<>> m_oType;
+			nullable<SimpleTypes::CAlgorithmType> m_oType;
 			nullable_uint m_nRev;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
@@ -363,10 +363,10 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable_string m_sArg; //union of types
-			nullable<SimpleTypes::CFunctionType<>> m_oFunc;
-			nullable<SimpleTypes::CFunctionOperator<>> m_oOp;
-			std::vector<SimpleTypes::CAxisTypes<>> m_arAxis;
-			std::vector<SimpleTypes::CElementTypes<>> m_arPtType;
+			nullable<SimpleTypes::CFunctionType> m_oFunc;
+			nullable<SimpleTypes::CFunctionOperator> m_oOp;
+			std::vector<SimpleTypes::CAxisTypes> m_arAxis;
+			std::vector<SimpleTypes::CElementTypes> m_arPtType;
 			std::vector<int> m_arCnt;
 			std::vector<int> m_arSt;
 			std::vector<int> m_arStep;		
@@ -465,8 +465,8 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			std::vector<SimpleTypes::CAxisTypes<>> m_arAxis;
-			std::vector<SimpleTypes::CElementTypes<>> m_arPtType;
+			std::vector<SimpleTypes::CAxisTypes> m_arAxis;
+			std::vector<SimpleTypes::CElementTypes> m_arPtType;
 			std::vector<int> m_arCnt;
 			std::vector<int> m_arSt;
 			std::vector<int> m_arStep;

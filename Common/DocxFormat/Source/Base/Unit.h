@@ -143,9 +143,12 @@ namespace XmlUtils
 	double GetDouble(const std::wstring& string);
 	float GetFloat(const std::wstring& string);
 
-	std::wstring ToString(const bool & value);
-	std::wstring ToString(const float & value);
+	std::wstring ToString(const bool& value);
+	std::wstring ToString(const float& value);
 	std::wstring ToString(const double& value);
+	std::wstring ToString(const int& value);
+	std::wstring ToString(const long& value);
+	std::wstring ToString(const unsigned long& value);
 	std::wstring ToString(int value, const wchar_t* format);
 	std::string ToString(int value, const char* format);
 

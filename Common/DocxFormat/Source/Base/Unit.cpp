@@ -603,12 +603,23 @@ namespace XmlUtils
 	}
 	std::wstring ToString (const float & value)
 	{
-		return boost::lexical_cast<std::wstring>( value);
+		return boost::lexical_cast<std::wstring>(value);
 	}
-
+	std::wstring ToString(const int& value)
+	{
+		return boost::lexical_cast<std::wstring>(value);
+	}
+	std::wstring ToString(const long& value)
+	{
+		return boost::lexical_cast<std::wstring>(value);
+	}
+	std::wstring ToString(const unsigned long& value)
+	{
+		return boost::lexical_cast<std::wstring>(value);
+	}
 	std::wstring ToString(const double& value)
 	{
-		return boost::lexical_cast<std::wstring>( value);
+		return boost::lexical_cast<std::wstring>(value);
 	}
 
 	std::wstring ToString( int value, const wchar_t* format )

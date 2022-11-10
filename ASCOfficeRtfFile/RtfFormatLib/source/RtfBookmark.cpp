@@ -232,7 +232,7 @@ std::wstring RtfAnnotation::RenderToOOX(RenderParameter oRenderParameter)
 
 		std::wstring content = m_oContent->RenderToOOX(oNewParameter);
 
-		std::wstring sParaId = XmlUtils::IntToString(poOOXWriter->m_nextParaId, L"%08X");//last para id in comment
+		std::wstring sParaId = XmlUtils::ToString(poOOXWriter->m_nextParaId, L"%08X");//last para id in comment
 		
 		poCommentsWriter->AddCommentContent(m_oRef->m_sValue, sParaId, content);
 	}

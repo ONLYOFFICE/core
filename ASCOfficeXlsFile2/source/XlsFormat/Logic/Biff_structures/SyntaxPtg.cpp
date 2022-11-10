@@ -35,7 +35,7 @@
 #include "PtgParen.h"
 
 #include <boost/regex.hpp>
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {

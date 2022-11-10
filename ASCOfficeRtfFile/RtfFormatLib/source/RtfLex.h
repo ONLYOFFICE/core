@@ -63,7 +63,7 @@ public:
 	{
 		Clear();
 
-		CFile srcFile;
+		NSFile::CFileBinary srcFile;
 		
 		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return false;
 

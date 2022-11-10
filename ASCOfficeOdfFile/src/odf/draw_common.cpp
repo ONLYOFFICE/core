@@ -51,7 +51,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/graphics/pro/Image.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace _image_file_
 {

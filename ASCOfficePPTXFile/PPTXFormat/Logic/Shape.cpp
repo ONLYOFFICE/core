@@ -677,7 +677,7 @@ namespace PPTX
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = spPr.Geometry.as<PPTX::Logic::PrstGeom>();
 
-				SimpleTypes::CShapeType<> ooxPrst = SimpleTypes::CShapeType<>(lpGeom.prst.get());
+				SimpleTypes::CShapeType ooxPrst = SimpleTypes::CShapeType(lpGeom.prst.get());
 				vmlPrst = OOX::PrstGeom2VmlShapeType(ooxPrst.GetValue());
 				
 				if (nvSpPr.cNvSpPr.txBox.IsInit() && (*nvSpPr.cNvSpPr.txBox))
@@ -827,8 +827,8 @@ namespace PPTX
 			}
 			if (vmlPrst == SimpleTypes::Vml::sptLine)
 			{
-				pWriter->WriteAttribute(L"from", XmlUtils::DoubleToString(pWriter->m_dX, L"%.1lf") + L"pt," + XmlUtils::DoubleToString(pWriter->m_dY, L"%.1lf") + L"pt");
-				pWriter->WriteAttribute(L"to", XmlUtils::DoubleToString(pWriter->m_dX + pWriter->m_dWidth, L"%.1lf") + L"pt," + XmlUtils::DoubleToString(pWriter->m_dY + pWriter->m_dHeight, L"%.1lf") + L"pt");
+				pWriter->WriteAttribute(L"from", XmlUtils::ToString(pWriter->m_dX, L"%.1lf") + L"pt," + XmlUtils::ToString(pWriter->m_dY, L"%.1lf") + L"pt");
+				pWriter->WriteAttribute(L"to", XmlUtils::ToString(pWriter->m_dX + pWriter->m_dWidth, L"%.1lf") + L"pt," + XmlUtils::ToString(pWriter->m_dY + pWriter->m_dHeight, L"%.1lf") + L"pt");
 			}
 
 			if (false == pWriter->m_strAttributesMain.empty())

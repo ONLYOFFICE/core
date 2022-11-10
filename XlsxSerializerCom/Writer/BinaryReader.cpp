@@ -5237,7 +5237,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 
     if(c_oSerWorksheetsTypes::Drawing == type)
 	{
-		OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType<>());
+		OOX::Spreadsheet::CCellAnchor* pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType());
 		READ1_DEF(length, res, this->ReadDrawing, pCellAnchor);
 		
 		pCellAnchor->m_bShapeOle = false;
@@ -5980,7 +5980,7 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 
 	if (c_oSerControlTypes::ControlAnchor == type)
 	{	
-		OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType<>());
+		OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType());
 		READ1_DEF(length, res, this->ReadCellAnchor, pCellAnchor);		
 
 		pControl->m_oControlPr->m_oAnchor.Init();

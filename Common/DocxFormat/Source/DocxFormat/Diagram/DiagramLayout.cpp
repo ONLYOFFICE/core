@@ -473,12 +473,12 @@ namespace OOX
 			else if (4 == _at)	m_arCnt.push_back(pReader->GetLong());
 			else if (5 == _at)
 			{
-				SimpleTypes::CAxisTypes<> axis; axis.SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CAxisTypes axis; axis.SetValueFromByte(pReader->GetUChar());
 				m_arAxis.push_back(axis);
 			}
 			else if (6 == _at)
 			{
-				SimpleTypes::CElementTypes<> ptType; ptType.SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CElementTypes ptType; ptType.SetValueFromByte(pReader->GetUChar());
 				m_arPtType.push_back(ptType);
 			}
 			else if (7 == _at)	m_sRef = pReader->GetString2();
@@ -580,14 +580,14 @@ namespace OOX
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sAxis, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arAxis.push_back(SimpleTypes::CAxisTypes<>(arStr[i]));
+				m_arAxis.push_back(SimpleTypes::CAxisTypes(arStr[i]));
 		}
 		if (sPtTypes.IsInit())
 		{
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sPtTypes, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arPtType.push_back(SimpleTypes::CElementTypes<>(arStr[i]));
+				m_arPtType.push_back(SimpleTypes::CElementTypes(arStr[i]));
 		}
 		if (sSt.IsInit())
 		{
@@ -615,7 +615,7 @@ namespace OOX
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sHideLastTrans, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arHideLastTrans.push_back(SimpleTypes::COnOff<>(arStr[i]).ToBool());
+				m_arHideLastTrans.push_back(SimpleTypes::COnOff(arStr[i]).ToBool());
 		}
 	}
 //-------------------------------------------------------------------------------------------
@@ -641,12 +641,12 @@ namespace OOX
 			else if (4 == _at)	m_arCnt.push_back(pReader->GetLong());
 			else if (5 == _at)
 			{
-				SimpleTypes::CAxisTypes<> axis; axis.SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CAxisTypes axis; axis.SetValueFromByte(pReader->GetUChar());
 				m_arAxis.push_back(axis);
 			}
 			else if (6 == _at)
 			{
-				SimpleTypes::CElementTypes<> ptType; ptType.SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CElementTypes ptType; ptType.SetValueFromByte(pReader->GetUChar());
 				m_arPtType.push_back(ptType);
 			}
 			else if (7 == _at)	m_sRef = pReader->GetString2();
@@ -771,14 +771,14 @@ namespace OOX
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sAxis, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arAxis.push_back(SimpleTypes::CAxisTypes<>(arStr[i]));
+				m_arAxis.push_back(SimpleTypes::CAxisTypes(arStr[i]));
 		}
 		if (sPtTypes.IsInit())
 		{
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sPtTypes, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arPtType.push_back(SimpleTypes::CElementTypes<>(arStr[i]));
+				m_arPtType.push_back(SimpleTypes::CElementTypes(arStr[i]));
 		}
 		if (sSt.IsInit())
 		{
@@ -806,7 +806,7 @@ namespace OOX
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sHideLastTrans, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arHideLastTrans.push_back(SimpleTypes::COnOff<>(arStr[i]).ToBool());
+				m_arHideLastTrans.push_back(SimpleTypes::COnOff(arStr[i]).ToBool());
 		}
 	}
 //-------------------------------------------------------------------------------------------
@@ -1513,12 +1513,12 @@ namespace OOX
 			else if (4 == _at)	m_arCnt.push_back(pReader->GetLong());
 			else if (5 == _at)
 			{
-				SimpleTypes::CAxisTypes<> axis; axis.SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CAxisTypes axis; axis.SetValueFromByte(pReader->GetUChar());
 				m_arAxis.push_back(axis);
 			}
 			else if (6 == _at)
 			{
-				SimpleTypes::CElementTypes<> ptType; ptType.SetValueFromByte(pReader->GetUChar());
+				SimpleTypes::CElementTypes ptType; ptType.SetValueFromByte(pReader->GetUChar());
 				m_arPtType.push_back(ptType);
 			}
 		}
@@ -1600,14 +1600,14 @@ namespace OOX
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sAxis, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arAxis.push_back(SimpleTypes::CAxisTypes<>(arStr[i]));
+				m_arAxis.push_back(SimpleTypes::CAxisTypes(arStr[i]));
 		}
 		if (sPtTypes.IsInit())
 		{
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sPtTypes, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arPtType.push_back(SimpleTypes::CElementTypes<>(arStr[i]));
+				m_arPtType.push_back(SimpleTypes::CElementTypes(arStr[i]));
 		}
 		if (sSt.IsInit())
 		{
@@ -1635,7 +1635,7 @@ namespace OOX
 			std::vector<std::wstring> arStr;
 			boost::algorithm::split(arStr, *sHideLastTrans, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 			for (size_t i = 0; i < arStr.size(); ++i)
-				m_arHideLastTrans.push_back(SimpleTypes::COnOff<>(arStr[i]).ToBool());
+				m_arHideLastTrans.push_back(SimpleTypes::COnOff(arStr[i]).ToBool());
 		}
 	}
 //-------------------------------------------------------------------------------------------

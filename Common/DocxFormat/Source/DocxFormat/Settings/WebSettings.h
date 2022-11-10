@@ -35,56 +35,7 @@
 
 #include "../File.h"
 #include "../../Common/ComplexTypes.h"
-
-namespace SimpleTypes
-{	
-	//--------------------------------------------------------------------------------
-	// COptimizeForBrowserTarget
-	//--------------------------------------------------------------------------------
-
-	enum EOptimizeForBrowserTarget
-	{
-		optforbrowserXhtmlCSS1 = 0,
-		optforbrowserHtml4CSS1 = 1,
-		optforbrowserXhtmlCSS2 = 2,
-		optforbrowserHtml4CSS2 = 3
-	};
-
-	template<EOptimizeForBrowserTarget eDefValue = optforbrowserHtml4CSS2>
-	class COptimizeForBrowserTarget : public CSimpleType<EOptimizeForBrowserTarget, eDefValue>
-	{
-	public:
-
-		COptimizeForBrowserTarget() {} 
-
-        virtual EOptimizeForBrowserTarget FromString(std::wstring &sValue)
-		{
-            if       ( _T("W3C XHTML+CSS1") == sValue ) this->m_eValue = optforbrowserXhtmlCSS1;
-            else if  ( _T("W3C HTML4+CSS1") == sValue ) this->m_eValue = optforbrowserHtml4CSS1;
-            else if  ( _T("W3C XHTML+CSS2") == sValue ) this->m_eValue = optforbrowserXhtmlCSS2;
-            else if  ( _T("W3C HTML4+CSS2") == sValue ) this->m_eValue = optforbrowserHtml4CSS2;
-            else                                        this->m_eValue = eDefValue;
-
-            return this->m_eValue;
-		}
-
-        virtual std::wstring                   ToString() const
-		{
-            switch(this->m_eValue)
-			{
-			case optforbrowserXhtmlCSS1 : return _T("W3C XHTML+CSS1");
-			case optforbrowserHtml4CSS1 : return _T("W3C HTML4+CSS1 ");
-			case optforbrowserXhtmlCSS2 : return _T("W3C XHTML+CSS2 ");
-			case optforbrowserHtml4CSS2 : return _T("W3C HTML4+CSS2 ");
-			default                     : return _T("W3C HTML4+CSS2 ");
-			}
-		}
-
-		SimpleType_FromString     (EOptimizeForBrowserTarget)
-		SimpleType_Operator_Equal (COptimizeForBrowserTarget)
-	};
-
-} // SimpleTypes
+#include "../../Common/SimpleTypes_Rtf.h"
 
 namespace ComplexTypes
 {
@@ -129,8 +80,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COptimizeForBrowserTarget<>> m_oTarget;
-			nullable<SimpleTypes::COnOff<>                   > m_oVal;
+			nullable<SimpleTypes::COptimizeForBrowserTarget> m_oTarget;
+			nullable<SimpleTypes::COnOff                   > m_oVal;
 		};
 
 	} // Word

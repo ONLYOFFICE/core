@@ -133,7 +133,7 @@ namespace NSShapeImageGen
 		if (strAdditionalFile.empty())
 		{
 			CMediaInfo info;
-			CFile oFile;
+			NSFile::CFileBinary oFile;
 			if (S_OK != oFile.OpenFile(strFile) && std::wstring::npos == strFile.find(L"data:base64,"))
 			{
 				return info;
@@ -419,7 +419,7 @@ namespace NSShapeImageGen
 			
 			strFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + _T(".") + sImageExtension;
 
-            CFile oTempFile;
+			NSFile::CFileBinary oTempFile;
             oTempFile.CreateFile(strFileName);
 			oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 			oTempFile.CloseFile();

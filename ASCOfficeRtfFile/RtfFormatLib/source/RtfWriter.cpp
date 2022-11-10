@@ -213,7 +213,7 @@ bool RtfWriter::SaveByItemEnd()
 		{
 			//свойства секции
 
-			CFile file;
+			NSFile::CFileBinary file;
 			if (file.OpenFile(m_aTempFilesSectPr[i]) == S_OK)
 			{
 				DWORD dwBytesRead = 1;

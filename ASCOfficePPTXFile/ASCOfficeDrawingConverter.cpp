@@ -2124,10 +2124,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 					y2 = tmp;
 				}
 
-                strStyleAdvenced = L";left:"    + XmlUtils::DoubleToString(x1,      L"%.2lf")
-                                 + L";top:"     + XmlUtils::DoubleToString(y1,      L"%.2lf")
-                                 + L";width:"   + XmlUtils::DoubleToString(x2-x1,   L"%.2lf")
-                                 + L";height:"  + XmlUtils::DoubleToString(y2-y1,   L"%.2lf")
+                strStyleAdvenced = L";left:"    + XmlUtils::ToString(x1,      L"%.2lf")
+                                 + L";top:"     + XmlUtils::ToString(y1,      L"%.2lf")
+                                 + L";width:"   + XmlUtils::ToString(x2-x1,   L"%.2lf")
+                                 + L";height:"  + XmlUtils::ToString(y2-y1,   L"%.2lf")
                                  + L";";
 			}
 		}
@@ -2775,7 +2775,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 	case PPTShapes::ShapeType::sptCTextArchDownPour:			eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextArchDownPour; break;
 	default:													eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextNoShape; break;
 	}
-	SimpleTypes::CTextShapeType<> oTextShapeType;
+	SimpleTypes::CTextShapeType oTextShapeType;
 	oTextShapeType.SetValue(eTextShapeType);
 
 	std::wstring strPrstTxWarp = L"<a:prstTxWarp prst=\"" + oTextShapeType.ToString() + L"\"><a:avLst/></a:prstTxWarp>";
@@ -4557,7 +4557,7 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 		nullable_string sTypeBorder;
         XmlMacroReadAttributeBase(oNodeBorder, L"type", sTypeBorder);
 		
-		SimpleTypes::CBorderType<> borderType;
+		SimpleTypes::CBorderType borderType;
 		if (sTypeBorder.IsInit())
 		{
 			borderType.FromString(sTypeBorder.get());

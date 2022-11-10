@@ -949,6 +949,10 @@ namespace NSFile
 	long CFileBinary::GetFilePosition()
 	{
 		return m_lFilePosition;
+	}	
+	unsigned long CFileBinary::GetPosition()
+	{
+		return (unsigned long)m_lFilePosition;
 	}
 
 #ifdef _IOS
@@ -1067,6 +1071,11 @@ namespace NSFile
 		return true;
 	}
 
+	bool CFileBinary::CreateFile(const std::wstring& sFileName)
+	{
+		return CreateFileW(sFileName);
+	}
+
 #endif
 
 	bool CFileBinary::CreateTempFile()
@@ -1110,13 +1119,17 @@ namespace NSFile
 		dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
 		return true;
 	}
-	bool CFileBinary::WriteFile(const BYTE* pData, DWORD nBytesCount)
+	bool CFileBinary::WriteFile(const void* pData, DWORD nBytesCount)
 	{
 		if (!m_pFile)
 			return false;
 
-		size_t nCountWrite = fwrite((const void*)pData, 1, nBytesCount, m_pFile);
+		size_t nCountWrite = fwrite(pData, 1, nBytesCount, m_pFile);
 		return true;
+	}
+	bool CFileBinary::WriteFile(const BYTE* pData, DWORD nBytesCount)
+	{
+		return WriteFile((const void*)pData, nBytesCount);
 	}
 	bool CFileBinary::WriteFile2(const BYTE* pData, DWORD nBytesToWrite)
 	{

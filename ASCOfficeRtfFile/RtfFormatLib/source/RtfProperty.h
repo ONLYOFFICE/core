@@ -331,9 +331,9 @@ public:
 	{
 		if (m_bAuto) return L"auto";
 
-        std::wstring sRed	= XmlUtils::IntToString(m_byteRed,		L"%02X");
-        std::wstring sGreen = XmlUtils::IntToString(m_byteGreen,	L"%02X");;
-        std::wstring sBlue	= XmlUtils::IntToString(m_byteBlue,		L"%02X");
+		std::wstring sRed	= XmlUtils::ToString(m_byteRed,		L"%02X");
+		std::wstring sGreen = XmlUtils::ToString(m_byteGreen,	L"%02X");;
+		std::wstring sBlue	= XmlUtils::ToString(m_byteBlue,	L"%02X");
 
 		if (bBGR)	return sBlue + sGreen + sRed ;
 		else		return sRed + sGreen + sBlue ;

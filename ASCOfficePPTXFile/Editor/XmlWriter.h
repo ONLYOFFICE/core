@@ -38,6 +38,7 @@
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
 
 namespace NSBinPptxRW
 {
@@ -62,205 +63,10 @@ namespace NSBinPptxRW
         return (int)(dVal + 0.5);
     }
 
-    class CStringWriter
-    {
-    private:
-        wchar_t*	m_pData;
-        size_t		m_lSize;
-
-        wchar_t*	m_pDataCur;
-        size_t		m_lSizeCur;
-
-    public:
-        CStringWriter()
-        {
-            m_pData = NULL;
-            m_lSize = 0;
-
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= m_lSize;
-        }
-        ~CStringWriter()
-        {
-            RELEASEMEM(m_pData);
-        }
-
-        AVSINLINE void AddSize(size_t nSize)
-        {
-            if (NULL == m_pData)
-            {
-                m_lSize = (std::max)(nSize, (size_t) 1024);
-                m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t)+64);
-
-                m_lSizeCur = 0;
-                m_pDataCur = m_pData;
-                return;
-            }
-
-            if ((m_lSizeCur + nSize) > m_lSize)
-            {
-                while ((m_lSizeCur + nSize) > m_lSize)
-                {
-                    //m_lSize *= 2; - бесконтрольно ..
-                    m_lSize += (std::max)(nSize, (size_t) 1024);
-                }
-                size_t size_alloc = m_lSize * sizeof(wchar_t);
-#if defined(_WIN32) || defined (_WIN64)
-                wchar_t* pRealloc = (wchar_t*)realloc(m_pData, size_alloc );
-                if (NULL != pRealloc)
-                {
-                    // реаллок сработал
-                    m_pData		= pRealloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
-                }
-                else
-#endif
-                {
-                    wchar_t* pMalloc = (wchar_t*)malloc(size_alloc );
-					if (pMalloc)
-					{
-						memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
-
-						free(m_pData);
-						m_pData = pMalloc;
-						m_pDataCur = m_pData + m_lSizeCur;
-					}
-                }
-            }
-        }
-
-    public:
-
-        AVSINLINE void WriteString(const wchar_t* pString, size_t& nLen)
-        {
-            AddSize(nLen);
-
-            memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-
-            m_pDataCur += nLen;
-            m_lSizeCur += nLen;
-        }
-        AVSINLINE void WriteString(const std::wstring& wString)
-        {
-            size_t nLen = wString.length();
-            WriteString(wString.c_str(), nLen);
-        }
-        AVSINLINE void WriteStringXML(const std::wstring& _strValue)
-        {
-            // можно ускорить (см. как сделано в шейпах)
-			std::wstring strValue = _strValue;
-
-			XmlUtils::replace_all(strValue, L"&",	L"&amp;");
-            XmlUtils::replace_all(strValue, L"'",	L"&apos;");
-            XmlUtils::replace_all(strValue, L"<",	L"&lt;");
-            XmlUtils::replace_all(strValue, L">",	L"&gt;");
-            XmlUtils::replace_all(strValue, L"\"",	L"&quot;");
-            
-			WriteString(strValue);
-        }
-        AVSINLINE size_t GetCurSize()
-        {
-            return m_lSizeCur;
-        }
-
-        AVSINLINE void Write(CStringWriter& oWriter)
-        {
-            WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-        }
-
-        AVSINLINE void WriteBefore(CStringWriter& oWriter)
-        {
-            size_t nNewS = oWriter.GetCurSize();
-            AddSize(nNewS);
-            memmove(m_pData + nNewS, m_pData, m_lSizeCur * sizeof (wchar_t));
-            memcpy(m_pData, oWriter.m_pData, nNewS * sizeof (wchar_t));
-            m_pDataCur += nNewS;
-            m_lSizeCur += nNewS;
-        }
-
-        inline void Clear()
-        {
-            RELEASEMEM(m_pData);
-
-            m_pData = NULL;
-            m_lSize = 0;
-
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= 0;
-        }
-        inline void ClearNoAttack()
-        {
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= 0;
-        }
-
-        std::wstring GetData()
-        {
-			if (m_lSizeCur > 0)
-				return std::wstring(m_pData, m_lSizeCur);
-			else
-				return L"";
-        }
-
-        AVSINLINE void AddCharNoCheck(const WCHAR& wc)
-        {
-            *m_pDataCur++ = wc;
-            ++m_lSizeCur;
-        }
-        AVSINLINE void AddIntNoCheck(int val)
-        {
-            if (0 == val)
-            {
-                *m_pDataCur++ = (WCHAR)'0';
-                ++m_lSizeCur;
-                return;
-            }
-            if (val < 0)
-            {
-                val = -val;
-                *m_pDataCur++ = (WCHAR)'-';
-                ++m_lSizeCur;
-            }
-
-            int len = 0;
-            int oval = val;
-            while (oval > 0)
-            {
-                oval /= 10;
-                ++len;
-            }
-
-            oval = 1;
-            while (val > 0)
-            {
-                m_pDataCur[len - oval] = (WCHAR)('0' + (val % 10));
-                ++oval;
-                val /= 10;
-            }
-
-            m_pDataCur += len;
-            m_lSizeCur += len;
-        }
-
-        AVSINLINE void AddStringNoCheck(const wchar_t* pData, const int& len)
-        {
-            memcpy(m_pDataCur, pData, len *sizeof(wchar_t));
-
-            m_pDataCur += len;
-            m_lSizeCur += len;
-        }
-        AVSINLINE void AddSpaceNoCheck()
-        {
-            *m_pDataCur = WCHAR(' ');
-            ++m_pDataCur;
-            ++m_lSizeCur;
-        }
-    };
-
     class CXmlWriter
     {
     public:
-        CStringWriter m_oWriter;
+		NSStringUtils::CStringBuilder m_oWriter;
 //------------------------------
         BYTE m_lDocType;
 
@@ -447,7 +253,7 @@ namespace NSBinPptxRW
             m_oWriter.WriteString(strAttributeName);
             m_oWriter.WriteString(g_bstr_node_equal);
             m_oWriter.WriteString(g_bstr_node_quote);
-            m_oWriter.WriteStringXML(val);
+			m_oWriter.WriteEncodeXmlString(val);
             m_oWriter.WriteString(g_bstr_node_quote);
         }
         AVSINLINE void WriteAttribute(const std::wstring& strAttributeName, const double& val)

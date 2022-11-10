@@ -60,7 +60,7 @@
 #include "datatypes/borderstyle.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace cpdoccore { 
 

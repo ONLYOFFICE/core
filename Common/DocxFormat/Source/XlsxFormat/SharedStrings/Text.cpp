@@ -169,7 +169,7 @@ namespace OOX
 						}
 						else if(SimpleTypes::Spreadsheet::celltypeBool == eType)
 						{
-							SimpleTypes::COnOff<> oOnOff;
+							SimpleTypes::COnOff oOnOff;
 							oOnOff.FromStringA(pVal);
 							m_nValue = oOnOff.ToBool() ? 1 : 0;
 						}

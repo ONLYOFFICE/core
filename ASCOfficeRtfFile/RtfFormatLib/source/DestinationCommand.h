@@ -701,7 +701,7 @@ class RtfPictureReader :  public RtfAbstractReader
 					for( int i = 0; i < nSize; i++ )
 					{
 						BYTE byteVal = pbData[i];
-                        sResult += XmlUtils::IntToString(byteVal, L"%02X");
+						sResult += XmlUtils::ToString(byteVal, L"%02X");
 					}
 				}
 				else
@@ -709,7 +709,7 @@ class RtfPictureReader :  public RtfAbstractReader
 					for( int i = nSize - 1 ; i >= 0; i-- )
 					{
 						BYTE byteVal = pbData[i];
-                        sResult += XmlUtils::IntToString(byteVal, L"%02X");
+						sResult += XmlUtils::ToString(byteVal, L"%02X");
 					}
 				}
 				return sResult;

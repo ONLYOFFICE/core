@@ -465,7 +465,7 @@ void OOX::Spreadsheet::CXlsx::PrepareWorksheet(CWorksheet* pWorksheet)
 						//обычно пишется 1/0, но встречается, что пишут true/false
 						if(pCell->m_oValue.IsInit())
 						{
-							SimpleTypes::COnOff<> oOnOff;
+							SimpleTypes::COnOff oOnOff;
                             std::wstring sVal = pCell->m_oValue->ToString();
                             oOnOff.FromString(sVal.c_str());
 							pCell->m_oValue.Init();

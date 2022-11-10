@@ -853,8 +853,8 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 		}break;
 		case OOX::et_m_jc:
 		{
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>* ooxElemMJc =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc>* ooxElemMJc =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CMJc>*>(ooxMath);
 
 			if ((ooxElemMJc) && (ooxElemMJc->m_val.IsInit()))
 			{
@@ -873,8 +873,8 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 		}break;
 		default:
 		{
-			OOX::Logic::CMathBottomNodes<SimpleTypes::COnOff<>>* ooxElemBool =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::COnOff<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::COnOff>* ooxElemBool =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::COnOff>*>(ooxMath);
 
 			OOX::Logic::CMathBottomNodes<SimpleTypes::CMChar>* ooxElemChar =
 							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CMChar>*>(ooxMath);
@@ -882,47 +882,47 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::Logic::CMathBottomNodes<SimpleTypes::CTwipsMeasure>* ooxElemMeasure =
 							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CTwipsMeasure>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger255<>>* ooxElemInt255 =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger255<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger255>* ooxElemInt255 =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger255>*>(ooxMath);
 			
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CLimLoc<>>* ooxElemLim =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CLimLoc<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CLimLoc>* ooxElemLim =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CLimLoc>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CUnSignedInteger<>>* ooxElemUnSignInt =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CUnSignedInteger<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CUnSignedInteger>* ooxElemUnSignInt =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CUnSignedInteger>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CTopBot<>>* ooxElemTopBot =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CTopBot<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CTopBot>* ooxElemTopBot =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CTopBot>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CFType<>>* ooxElemFType =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CFType<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CFType>* ooxElemFType =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CFType>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CStyle<>>* ooxElemStyle =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CStyle<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CStyle>* ooxElemStyle =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CStyle>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CShp<>>* ooxElemShp =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CShp<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CShp>* ooxElemShp =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CShp>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CScript<>>* ooxElemScript =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CScript<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CScript>* ooxElemScript =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CScript>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CSpacingRule<>>* ooxElemSpacingRule =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CSpacingRule<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CSpacingRule>* ooxElemSpacingRule =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CSpacingRule>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign<>>* ooxElemXAlign =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign>* ooxElemXAlign =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CXAlign>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2<>>* ooxElemInteger2 =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2>* ooxElemInteger2 =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CInteger2>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CYAlign<>>* ooxElemYAlign =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CYAlign<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CYAlign>* ooxElemYAlign =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CYAlign>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBin<>>* ooxElemBreakBin =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBin<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBin>* ooxElemBreakBin =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBin>*>(ooxMath);
 
-			OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBinSub<>>* ooxElemBreakBinSub =
-							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBinSub<>>*>(ooxMath);
+			OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBinSub>* ooxElemBreakBinSub =
+							dynamic_cast<OOX::Logic::CMathBottomNodes<SimpleTypes::CBreakBinSub>*>(ooxMath);
 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);

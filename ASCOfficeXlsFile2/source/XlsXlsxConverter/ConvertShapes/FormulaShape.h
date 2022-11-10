@@ -42,7 +42,7 @@
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/graphics/aggplustypes.h"
 
-#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace NSCustomShapesConvert
 {

@@ -101,40 +101,40 @@ namespace NSCustomShapesConvert
 	#define GUIDE_PARAM_1(name)																		\
 	{																								\
 		oWriter.m_oWriter.AddSize(g_guide_max_len);													\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);					\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);					\
 		oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);												\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string_##name, g_guide_string_##name##_len);		\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_##name, g_guide_string_##name##_len);	\
 		GetValue(lParam1, eType1, bExtShape1, oWriter);												\
 		++m_lIndexDst;																				\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);					\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);					\
 	}
 
 	#define GUIDE_PARAM_2(name)																		\
 	{																								\
 		oWriter.m_oWriter.AddSize(g_guide_max_len);													\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);					\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);					\
 		oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);												\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string_##name, g_guide_string_##name##_len);		\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_##name, g_guide_string_##name##_len);	\
 		GetValue(lParam1, eType1, bExtShape1, oWriter);												\
 		oWriter.m_oWriter.AddSpaceNoCheck();														\
 		GetValue(lParam2, eType2, bExtShape2, oWriter);												\
 		++m_lIndexDst;																				\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);					\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);					\
 	}
 
 	#define GUIDE_PARAM_3(name)																		\
 	{																								\
 		oWriter.m_oWriter.AddSize(g_guide_max_len);													\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);					\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);					\
 		oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);												\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string_##name, g_guide_string_##name##_len);		\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_##name, g_guide_string_##name##_len);	\
 		GetValue(lParam1, eType1, bExtShape1, oWriter);												\
 		oWriter.m_oWriter.AddSpaceNoCheck();														\
 		GetValue(lParam2, eType2, bExtShape2, oWriter);												\
 		oWriter.m_oWriter.AddSpaceNoCheck();														\
 		GetValue(lParam3, eType3, bExtShape3, oWriter);												\
 		++m_lIndexDst;																				\
-		oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);					\
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);					\
 	}
 
 	struct CFormParam
@@ -912,20 +912,20 @@ namespace NSCustomShapesConvert
 		void ConvertProd(const std::wstring& strParam1, const std::wstring& strParam2, const LONG& lParam3, CXmlWriter& oWriter)
 		{
 			oWriter.m_oWriter.AddSize(g_guide_max_len);
-			oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);
+			oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);
 			oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);	
-			oWriter.m_oWriter.AddStringNoCheck(g_guide_string_prod, g_guide_string_prod_len);
+			oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_prod, g_guide_string_prod_len);
 			oWriter.WriteString(strParam1);
 			oWriter.m_oWriter.AddSpaceNoCheck();
 
 			if ('#' == strParam2[0])
 			{					
-				LONG lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam2.substr(1));
+				LONG lRes = (LONG)XmlUtils::GetInteger(strParam2.substr(1));
 				GetValue(lRes, ptAdjust, false, oWriter);
 			}
 			else if ('@' == strParam2[0])
 			{
-				LONG lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam2.substr(1));
+				LONG lRes = (LONG)XmlUtils::GetInteger(strParam2.substr(1));
 				GetValue(lRes, ptFormula, false, oWriter);
 			}
 			else
@@ -935,7 +935,7 @@ namespace NSCustomShapesConvert
 			GetValue(lParam3, ptValue, false, oWriter);
 
 			++m_lIndexDst;
-			oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);
+			oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);
 		}
 
 		//-------------------------------------
@@ -1083,17 +1083,17 @@ namespace NSCustomShapesConvert
 
 			if ('#' == strParam[0])
 			{					
-				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1));
+				lRes = (LONG)XmlUtils::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptAdjust, false) + L" " + strSize;
 			}
 			else if ('&' == strParam[0])
 			{
-				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1));
+				lRes = (LONG)XmlUtils::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptFormula, true) + L" " + strSize;
 			}
 			else if ('@' == strParam[0])
 			{
-				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1));
+				lRes = (LONG)XmlUtils::GetInteger(strParam.substr(1));
 				strFrmla = GetValue2(lRes, ptFormula, false) + L" " + strSize;
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
@@ -1107,7 +1107,7 @@ namespace NSCustomShapesConvert
 			}	
 			else
 			{
-				lRes = (LONG)NSCustomShapesConvert::GetInteger(strParam.c_str());
+				lRes = (LONG)XmlUtils::GetInteger(strParam.c_str());
 				strFrmla = GetValue2(lRes, ptValue, false) + strSize;
 			}
 
@@ -1135,12 +1135,12 @@ namespace NSCustomShapesConvert
 			if ('#' == strParam[0])
 			{
 				ptType = ptAdjust;
-				return (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1).c_str());
+				return (LONG)XmlUtils::GetInteger(strParam.substr(1).c_str());
 			}
 			else if ('@' == strParam[0])
 			{
 				ptType = ptFormula;
-				return (LONG)NSCustomShapesConvert::GetInteger(strParam.substr(1).c_str());
+				return (LONG)XmlUtils::GetInteger(strParam.substr(1).c_str());
 			}
 			else if (!NSStringUtils::IsNumber(strParam))
 			{
@@ -1155,7 +1155,7 @@ namespace NSCustomShapesConvert
             else
             {
                 ptType = ptValue;
-				return (LONG)NSCustomShapesConvert::GetInteger(strParam.c_str());
+				return (LONG)XmlUtils::GetInteger(strParam.c_str());
             }
 		}
         void ConvertQuadrX(Aggplus::POINT pPoint, SPointType pPointType)

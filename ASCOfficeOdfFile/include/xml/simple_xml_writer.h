@@ -37,7 +37,7 @@
 #include <stack>
 #include <cassert>
 
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace cpdoccore 
 {

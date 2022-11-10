@@ -100,7 +100,7 @@ namespace OOX
 				return et_x_SortRules;
 			}
 			//Attributes
-			nullable<SimpleTypes::Spreadsheet::CSortMethod<>> m_oSortMethod;//none
+			nullable<SimpleTypes::Spreadsheet::CSortMethod> m_oSortMethod;//none
 			nullable_bool m_oCaseSensitive;//False
 			//Members
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;

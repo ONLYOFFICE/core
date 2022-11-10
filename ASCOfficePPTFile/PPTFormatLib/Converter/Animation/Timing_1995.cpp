@@ -5,6 +5,7 @@
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
 #include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
 #include "../../Records/Animations/BuildListContainer.h"
+#include <algorithm>
 
 
 namespace PPT {
@@ -167,9 +168,10 @@ void Timing_1995::SortAnim()
     );
 }
 
-void Timing_1995::FillClickGroup(std::list<Intermediate::SOldAnimation*> &clickGroup, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
+void Timing_1995::FillClickGroup(LstAnim &clickGroup, PPTX::Logic::TimeNodeBase &oTimeNodeBase)
 {
     const auto& animAtom = clickGroup.front()->anim->m_AnimationAtom;
+    auto parGroups = SplitClickGroupByParrallelShow(clickGroup);
 
     auto par3 = new PPTX::Logic::Par;
     FillCTnParams(par3->cTn, L"", L"indefinite", L"hold");
@@ -189,14 +191,31 @@ void Timing_1995::FillClickGroup(std::list<Intermediate::SOldAnimation*> &clickG
     par3->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
     _UINT32 groupDelay = 0;
 
-    while (!clickGroup.empty())
+    for (auto& group : parGroups)
     {
         PPTX::Logic::TimeNodeBase childTimeNode;
-        ConvertParallelGroupAnimation(clickGroup, childTimeNode, groupDelay, L"afterGroup");
+        ConvertParallelGroupAnimation(group, childTimeNode, groupDelay);
         par3->cTn.childTnLst->list.push_back(childTimeNode);
     }
 
     oTimeNodeBase.m_node = par3;
+}
+
+LstLstAnim Timing_1995::SplitClickGroupByParrallelShow(LstAnim &clickGroup)
+{
+    LstLstAnim lstParallelGroups;
+    bool needNewGroup = true;
+    for (auto* anim : clickGroup)
+    {
+        auto& animAtom = anim->anim->m_AnimationAtom;
+        if (needNewGroup)
+            lstParallelGroups.push_back({anim});
+        else
+            lstParallelGroups.back().push_back(anim);
+
+        needNewGroup = animAtom.m_fSynchronous;
+    }
+    return lstParallelGroups;
 }
 
 void Timing_1995::FillCTnParams(PPTX::Logic::CTn &cTn, std::wstring nodeType, std::wstring condDelay, std::wstring fill, Intermediate::SOldAnimation* pOldAnim)
@@ -218,37 +237,43 @@ void Timing_1995::FillCTnParams(PPTX::Logic::CTn &cTn, std::wstring nodeType, st
     cTn.stCondLst->list.push_back(cond);
 }
 
-void Timing_1995::ConvertParallelGroupAnimation(std::list<Intermediate::SOldAnimation*> &clickPar, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32 &groupDelay, std::wstring nodeType)
+void Timing_1995::ConvertParallelGroupAnimation(LstAnim &parGroup, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32 &groupDelay)
 {
     // par4 - 4 level - all 1995 animation level
     auto par4 = new PPTX::Logic::Par;
     par4->cTn.childTnLst = new PPTX::Logic::ChildTnLst;
-    while (clickPar.empty() == false)
+
+    FillCTnParams(par4->cTn, L"", std::to_wstring(groupDelay));
+    PPTX::Logic::TimeNodeBase childTimeNode;
+    auto* pOldAnimation = parGroup.front();
+    if (pOldAnimation->anim->m_AnimationAtom.m_fAutomatic)
+        FillAfterEffect(pOldAnimation, childTimeNode, groupDelay);
+    else
+        FillClickEffect(pOldAnimation, childTimeNode, groupDelay);
+    parGroup.pop_front();
+    par4->cTn.childTnLst->list.push_back(childTimeNode);
+
+    while (!parGroup.empty())
     {
-        auto* pOldAnim = clickPar.front();
-        const auto& anim = pOldAnim->anim->m_AnimationAtom;
-        clickPar.pop_front();
-
-        FillCTnParams(par4->cTn, nodeType, std::to_wstring(groupDelay));
         PPTX::Logic::TimeNodeBase childTimeNode;
-        if (anim.m_fAutomatic && anim.m_fSynchronous) // todo need to connect parallel animatios
-        {
-            FillWithEffect(pOldAnim, childTimeNode, groupDelay);
-        } else if (anim.m_fAutomatic)
-        {
-            FillAfterEffect(pOldAnim, childTimeNode, groupDelay);
-        } else
-        {
-            FillClickEffect(pOldAnim, childTimeNode, groupDelay);
-        }
-
-        if (!clickPar.empty() && clickPar.front()->anim->m_AnimationAtom.m_fSynchronous)
-            break;
-
+        auto* pOldAnimation = parGroup.front();
+        FillWithEffect(pOldAnimation, childTimeNode, groupDelay);
+        parGroup.pop_front();
         par4->cTn.childTnLst->list.push_back(childTimeNode);
     }
 
     oTimeNodeBase.m_node = par4;
+}
+
+_INT32 Timing_1995::GetParallelGroupDuration(LstAnim &parGroup)
+{
+    auto iterSlowestAnim = std::max(parGroup.begin(), parGroup.end(),
+                                    [] (Intermediate::SOldAnimation const* a1, Intermediate::SOldAnimation const* a2)
+        {
+            return a1->getAnimDur() < a2->getAnimDur();
+        });
+
+    return (*iterSlowestAnim)->getAnimDur();;
 }
 
 void Timing_1995::FillClickEffect(Intermediate::SOldAnimation *pOldAnim, PPTX::Logic::TimeNodeBase &oTimeNodeBase, _UINT32 &groupDelay)

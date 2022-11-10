@@ -507,7 +507,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
+			nullable<SimpleTypes::CHexColor                       > m_oColor;
 			nullable<SimpleTypes::COnOff                          > m_oFrame;
 			nullable<SimpleTypes::CRelationshipId                 > m_oId;
 			nullable<SimpleTypes::COnOff                          > m_oShadow;

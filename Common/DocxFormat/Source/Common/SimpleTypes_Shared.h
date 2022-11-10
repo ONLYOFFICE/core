@@ -139,17 +139,8 @@ namespace SimpleTypes
 	// HexColorRGB 22.9.2.5 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<int nDefValue = 0>
-	class CHexColorRGB : public CSimpleType<int, nDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CHexColorRGB, int, 0)
 	public:
-		CHexColorRGB();
-
-		virtual int FromString(const std::wstring &sValue);
-		virtual std::wstring ToString  () const;
-
-		SimpleTypes_Default(CHexColorRGB)
-
 		unsigned char Get_R() const;
 		unsigned char Get_G() const;
 		unsigned char Get_B() const;
@@ -162,11 +153,10 @@ namespace SimpleTypes
 		int	HexToInt(int nHex);
 
 	private:
-
-		unsigned char m_unR;
-		unsigned char m_unG;
-		unsigned char m_unB;
-		unsigned char m_unA;
+		unsigned char m_unR = 0;
+		unsigned char m_unG = 0;
+		unsigned char m_unB = 0;
+		unsigned char m_unA = 255;
 	};
 
 	//--------------------------------------------------------------------------------

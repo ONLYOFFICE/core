@@ -245,7 +245,7 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_cell_properties	*table_cell_properties);
 		//void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_properties			*table_properties);
 
-		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor	*theme_color,
+		void convert(SimpleTypes::CHexColor				*color, SimpleTypes::CThemeColor	*theme_color,
 														SimpleTypes::CUcharHexNumber* theme_tint,
 														SimpleTypes::CUcharHexNumber* theme_shade, _CP_OPT(odf_types::color) & odf_color);
 		void convert(OOX::CDocDefaults					*def_style, OOX::CStyles *styles);

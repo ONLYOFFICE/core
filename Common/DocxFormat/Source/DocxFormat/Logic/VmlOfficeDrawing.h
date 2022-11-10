@@ -185,7 +185,7 @@ namespace OOX
 			nullable<std::wstring>						m_sAlthref;
 			nullable<SimpleTypes::CColorType<>>         m_oColor;
 			nullable<SimpleTypes::CColorType<>>         m_oColor2;
-			nullable<SimpleTypes::Vml::CVmlDashStyle<>> m_oDashStyle;
+			nullable<SimpleTypes::Vml::CVmlDashStyle>	m_oDashStyle;
 			nullable<SimpleTypes::CStrokeArrowType>		m_oEndArrow;
 			nullable<SimpleTypes::CStrokeArrowLength>	m_oEndArrowLength;
 			nullable<SimpleTypes::CStrokeArrowWidth>	m_oEndArrowWidth;
@@ -200,7 +200,7 @@ namespace OOX
 			nullable<SimpleTypes::CTrueFalse>           m_oInsetPen;
 			nullable<SimpleTypes::CStrokeJoinStyle>		m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle>		m_oLineStyle;
-			nullable<SimpleTypes::CDecimalNumber>	    m_oMiterLimit = 8;
+			nullable<SimpleTypes::CDecimalNumber>	    m_oMiterLimit;//xtodo = 8;
 			nullable<SimpleTypes::CTrueFalse>           m_oOn;
 			nullable<std::wstring>						m_sOpacity;
 			nullable<std::wstring>						m_sSrc;

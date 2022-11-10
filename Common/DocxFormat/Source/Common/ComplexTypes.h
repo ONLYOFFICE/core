@@ -153,7 +153,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHexColor<>>			m_oColor;
+			nullable<SimpleTypes::CHexColor>			m_oColor;
 			nullable<SimpleTypes::COnOff>				m_oFrame;
 			nullable<SimpleTypes::COnOff>				m_oShadow;
 			nullable<SimpleTypes::CPointMeasure>		m_oSpace;
@@ -258,8 +258,8 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHexColor<>           > m_oColor;
-			nullable<SimpleTypes::CHexColor<>           > m_oFill;
+			nullable<SimpleTypes::CHexColor             > m_oColor;
+			nullable<SimpleTypes::CHexColor             > m_oFill;
 			nullable<SimpleTypes::CThemeColor           > m_oThemeColor;
 			nullable<SimpleTypes::CThemeColor           > m_oThemeFill;
 			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeFillShade;
@@ -428,7 +428,7 @@ namespace ComplexTypes
 			nullable<SimpleTypes::CThemeColor           > m_oThemeColor;
 			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeShade;
 			nullable<SimpleTypes::CUcharHexNumber       > m_oThemeTint;
-			nullable<SimpleTypes::CHexColor<>           > m_oVal;
+			nullable<SimpleTypes::CHexColor             > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -990,7 +990,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHighlightColor<>> m_oVal;
+			nullable<SimpleTypes::CHighlightColor> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1012,7 +1012,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHexColor<>       > m_oColor;
+			nullable<SimpleTypes::CHexColor         > m_oColor;
 			nullable<SimpleTypes::CThemeColor       > m_oThemeColor;
 			nullable<SimpleTypes::CUcharHexNumber   > m_oThemeShade;
 			nullable<SimpleTypes::CUcharHexNumber   > m_oThemeTint;

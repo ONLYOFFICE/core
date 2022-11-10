@@ -42,14 +42,7 @@ namespace SimpleTypes
 	// AdjAngle 20.1.10.1 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CAdjAngle<adjangleAngle>::CAdjAngle()
-	{
-		m_nAngle = adjangleAngle;
-	}
-
-	template<>
-	void CAdjAngle<adjangleAngle>::Parse(const std::wstring &sValue)
+	void CAdjAngle::Parse(const std::wstring &sValue)
 	{
 		bool bAngleValue = true;
 
@@ -74,8 +67,7 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	EAdjAngle CAdjAngle<adjangleAngle>::FromString(const std::wstring &sValue)
+	EAdjAngle CAdjAngle::FromString(const std::wstring &sValue)
 	{
 		m_nAngle = 0;
 		m_sGuide.clear();
@@ -85,8 +77,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CAdjAngle<adjangleAngle>::ToString() const
+	std::wstring CAdjAngle::ToString() const
 	{
 		if ( adjangleAngle == this->m_eValue )
 		{
@@ -98,14 +89,12 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	double CAdjAngle<adjangleAngle>::GetAngle() const
+	double CAdjAngle::GetAngle() const
 	{
 		return m_nAngle / 60000.0;
 	}
 
-	template<>
-	std::wstring CAdjAngle<adjangleAngle>::GetGuide() const
+	std::wstring CAdjAngle::GetGuide() const
 	{
 		return m_sGuide;
 	}

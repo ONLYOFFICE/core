@@ -1795,16 +1795,8 @@ namespace SimpleTypes
 		//--------------------------------------------------------------------------------
 		// VmlDashStyle 14.2.2.1 (dashstyle) (Part 4)
 		//--------------------------------------------------------------------------------
-		template<>
-		CVmlDashStyle<vmldashstyleSolid>::CVmlDashStyle()
-		{
-			m_nCount    = 0;
-		}
-		template<>
-		CVmlDashStyle<vmldashstyleSolid>::~CVmlDashStyle() {}
 
-		template<>
-		EVmlDashStyle CVmlDashStyle<vmldashstyleSolid>::FromString(const std::wstring &sValueInput)
+		EVmlDashStyle CVmlDashStyle::FromString(const std::wstring &sValueInput)
 		{
 			m_nCount    = 0;
 
@@ -1871,8 +1863,7 @@ namespace SimpleTypes
 			return this->m_eValue;
 		}
 
-		template<>
-		std::wstring CVmlDashStyle<vmldashstyleSolid>::ToString  () const
+		std::wstring CVmlDashStyle::ToString  () const
 		{
 			switch(this->m_eValue)
 			{

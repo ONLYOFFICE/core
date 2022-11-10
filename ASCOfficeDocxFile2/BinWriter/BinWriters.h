@@ -136,8 +136,8 @@ namespace BinDocxRW
 		void WriteTblBorders(const OOX::Logic::CTblBorders& Borders);
 		void WriteTcBorders(const OOX::Logic::CTcBorders& Borders);
 		void WritePBorders(const OOX::Logic::CPBdr& Borders);
-		void WriteColor(BYTE type, const SimpleTypes::CHexColor<>& color);
-		void WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor<>>& oHexColor, const nullable<SimpleTypes::CThemeColor>& oThemeColor,
+		void WriteColor(BYTE type, const SimpleTypes::CHexColor& color);
+		void WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor>& oHexColor, const nullable<SimpleTypes::CThemeColor>& oThemeColor,
 			const nullable<SimpleTypes::CUcharHexNumber>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber>& oThemeShade);
 		void WriteShd(const ComplexTypes::Word::CShading& Shd);
 		void WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,

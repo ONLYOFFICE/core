@@ -873,21 +873,13 @@ namespace SimpleTypes
 		highlightcolorRed         = 14,
 		highlightcolorWhite       = 15,
 		highlightcolorYellow      = 16
-	};
+	};	
 
-	template<EHexColor eDefValue = hexcolorAuto>
-	class CHexColor : public CSimpleType<EHexColor, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CHexColor, EHexColor, hexcolorAuto)
 	public:
-		CHexColor();
 		CHexColor(unsigned char r, unsigned char g, unsigned char b);
 
-		virtual EHexColor FromString(const std::wstring &sValue);
-
-		virtual std::wstring   ToString  () const;
-		virtual std::wstring   ToStringNoAlpha  () const;
-
-		SimpleTypes_Default(CHexColor)
+		std::wstring   ToStringNoAlpha  () const;
 
 		void Set_R(unsigned char R);
 		void Set_G(unsigned char G);
@@ -905,9 +897,9 @@ namespace SimpleTypes
 	private:
 		std::wstring m_sValue;
 
-		unsigned char m_unR;
-		unsigned char m_unG;
-		unsigned char m_unB;
+		unsigned char m_unR = 0;
+		unsigned char m_unG = 0;
+		unsigned char m_unB = 0;
 	};
 
 	//--------------------------------------------------------------------------------
@@ -925,17 +917,9 @@ namespace SimpleTypes
 	// HighlightColor 17.18.40 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<EHighlightColor eDefValue = highlightcolorNone>
-	class CHighlightColor : public CSimpleType<EHighlightColor, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CHighlightColor, EHighlightColor, highlightcolorNone)
 	public:
-		CHighlightColor();
-		CHighlightColor(const CHexColor<>& color);
-
-		virtual EHighlightColor FromString(const std::wstring &sValue);
-		virtual std::wstring         ToString  () const;
-
-		SimpleTypes_Default(CHighlightColor)
+		CHighlightColor(const CHexColor& color);
 
 		unsigned char Get_R() const;
 		unsigned char Get_G() const;
@@ -943,10 +927,10 @@ namespace SimpleTypes
 		unsigned char Get_A() const;
 
 	private:
-		unsigned char m_unR;
-		unsigned char m_unG;
-		unsigned char m_unB;
-		unsigned char m_unA;
+		unsigned char m_unR = 0;
+		unsigned char m_unG = 0;
+		unsigned char m_unB = 0;
+		unsigned char m_unA = 255;
 	};
 
 	//--------------------------------------------------------------------------------

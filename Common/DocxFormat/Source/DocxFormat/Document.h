@@ -84,7 +84,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CHexColor<>        >	m_oColor;
+			nullable<SimpleTypes::CHexColor          >	m_oColor;
 			nullable<SimpleTypes::CThemeColor        >	m_oThemeColor;
 			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeShade;
 			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeTint;
@@ -121,7 +121,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<OOX::Logic::CBinData>		m_oBinData;
-			nullable<SimpleTypes::CHexColor<>>	m_oColor;
+			nullable<SimpleTypes::CHexColor>	m_oColor;
 			nullable_string						m_oBackgroundType;
 			nullable<OOX::Vml::CBackground>		m_oBackground;
 		};

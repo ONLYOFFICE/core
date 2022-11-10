@@ -304,17 +304,7 @@ namespace SimpleTypes
 	// HexColorRGB 22.9.2.5 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CHexColorRGB<0>::CHexColorRGB()
-	{
-		m_unR = 0;
-		m_unG = 0;
-		m_unB = 0;
-		m_unA = 255;
-	}
-
-	template<>
-	int	CHexColorRGB<0>::HexToInt(int nHex)
+	int	CHexColorRGB::HexToInt(int nHex)
 	{
 		if ( nHex >= '0' && nHex <= '9' ) return (nHex - '0');
 		if ( nHex >= 'a' && nHex <= 'f' ) return (nHex - 'a' + 10);
@@ -323,8 +313,7 @@ namespace SimpleTypes
 		return 0;
 	}
 
-	template<>
-	void CHexColorRGB<0>::Parse(const std::wstring& sValue)
+	void CHexColorRGB::Parse(const std::wstring& sValue)
 	{
 		if ( sValue.length() < 6 )
 			return;
@@ -337,8 +326,7 @@ namespace SimpleTypes
 		this->m_eValue = ((int)m_unR << 16) + ((int)m_unG << 8) + m_unB;
 	}
 
-	template<>
-	int CHexColorRGB<0>::FromString(const std::wstring &sValue)
+	int CHexColorRGB::FromString(const std::wstring &sValue)
 	{
 		if ( 6 <= sValue.length() )
 		{
@@ -351,35 +339,32 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CHexColorRGB<0>::ToString  () const
+	std::wstring CHexColorRGB::ToString  () const
 	{
 		return XmlUtils::ToString(this->m_eValue, L"%06X");
 	}
 
-	template<>
-	unsigned char CHexColorRGB<0>::Get_R() const
+	unsigned char CHexColorRGB::Get_R() const
 	{
 		return m_unR;
 	}
-	template<>
-	unsigned char CHexColorRGB<0>::Get_G() const
+
+	unsigned char CHexColorRGB::Get_G() const
 	{
 		return m_unG;
 	}
-	template<>
-	unsigned char CHexColorRGB<0>::Get_B() const
+
+	unsigned char CHexColorRGB::Get_B() const
 	{
 		return m_unB;
 	}
-	template<>
-	unsigned char CHexColorRGB<0>::Get_A() const
+
+	unsigned char CHexColorRGB::Get_A() const
 	{
 		return m_unA;
 	}
 
-	template<>
-	void CHexColorRGB<0>::Set_RGBA(unsigned char unR, unsigned char unG, unsigned char unB, unsigned char unA)
+	void CHexColorRGB::Set_RGBA(unsigned char unR, unsigned char unG, unsigned char unB, unsigned char unA)
 	{
 		m_unR = unR;
 		m_unG = unG;
@@ -966,7 +951,7 @@ namespace SimpleTypes
 	{
 		this->m_eValue = colortypeRGB;
 
-		CHexColor<> hexColor;
+		CHexColor hexColor;
 		hexColor.FromString(sValue);
 
 		m_unR = hexColor.Get_R();

@@ -1753,15 +1753,8 @@ namespace SimpleTypes
 	}
 
 	///
-	template<>
-	CHexColor<hexcolorAuto>::CHexColor()
-	{
-		m_unR = 0;
-		m_unG = 0;
-		m_unB = 0;
-	}
-	template<>
-	CHexColor<hexcolorAuto>::CHexColor(unsigned char r, unsigned char g, unsigned char b)
+
+	CHexColor::CHexColor(unsigned char r, unsigned char g, unsigned char b)
 	{
 		this->m_eValue = hexcolorRGB;
 		m_unR = r;
@@ -1769,8 +1762,7 @@ namespace SimpleTypes
 		m_unB = b;
 	}
 
-	template<>
-	int	CHexColor<hexcolorAuto>::HexToInt(int nHex)
+	int	CHexColor::HexToInt(int nHex)
 	{
 		if ( nHex >= '0' && nHex <= '9' ) return (nHex - '0');
 		if ( nHex >= 'a' && nHex <= 'f' ) return (nHex - 'a' + 10);
@@ -1779,8 +1771,7 @@ namespace SimpleTypes
 		return 0;
 	}
 
-	template<>
-	void CHexColor<hexcolorAuto>::Parse()
+	void CHexColor::Parse()
 	{
 		if ( m_sValue.length() < 6 )
 			return;
@@ -1790,8 +1781,7 @@ namespace SimpleTypes
 		m_unB = HexToInt( (int)m_sValue[5] ) + (unsigned char)(HexToInt( (int)m_sValue[4] ) << 4);
 	}
 
-	template<>
-	void CHexColor<hexcolorAuto>::Parse3()
+	void CHexColor::Parse3()
 	{
 		if ( m_sValue.length() < 3 )
 			return;
@@ -1801,8 +1791,7 @@ namespace SimpleTypes
 		m_unB = HexToInt( (int)m_sValue[2] ) + (unsigned char)(HexToInt( (int)m_sValue[2]) << 4);
 	}
 
-	template<>
-	EHexColor CHexColor<hexcolorAuto>::FromString(const std::wstring &sValueSrc)
+	EHexColor CHexColor::FromString(const std::wstring &sValueSrc)
 	{
 		if ( L"auto" == sValueSrc || L"none" == sValueSrc )
 			this->m_eValue = hexcolorAuto;
@@ -1886,8 +1875,7 @@ namespace SimpleTypes
 	}
 	*/
 
-	template<>
-	std::wstring CHexColor<hexcolorAuto>::ToString  () const
+	std::wstring CHexColor::ToString  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1903,8 +1891,8 @@ namespace SimpleTypes
 			return (L"auto");
 		}
 	}
-	template<>
-	std::wstring CHexColor<hexcolorAuto>::ToStringNoAlpha  () const
+
+	std::wstring CHexColor::ToStringNoAlpha  () const
 	{
 		switch(this->m_eValue)
 		{
@@ -1920,39 +1908,37 @@ namespace SimpleTypes
 			return (L"auto");			}
 	}
 
-	template<>
-	void CHexColor<hexcolorAuto>::Set_R(unsigned char R)
+	void CHexColor::Set_R(unsigned char R)
 	{
 		m_unR = R;
 	}
-	template<>
-	void CHexColor<hexcolorAuto>::Set_G(unsigned char G)
+
+	void CHexColor::Set_G(unsigned char G)
 	{
 		m_unG = G;
 	}
-	template<>
-	void CHexColor<hexcolorAuto>::Set_B(unsigned char B)
+
+	void CHexColor::Set_B(unsigned char B)
 	{
 		m_unB = B;
 	}
-	template<>
-	unsigned char CHexColor<hexcolorAuto>::Get_R() const
+
+	unsigned char CHexColor::Get_R() const
 	{
 		return m_unR;
 	}
-	template<>
-	unsigned char CHexColor<hexcolorAuto>::Get_G() const
+
+	unsigned char CHexColor::Get_G() const
 	{
 		return m_unG;
 	}
 
-	template<>
-	unsigned char CHexColor<hexcolorAuto>::Get_B() const
+	unsigned char CHexColor::Get_B() const
 	{
 		return m_unB;
 	}
-	template<>
-	unsigned char CHexColor<hexcolorAuto>::Get_A() const
+
+	unsigned char CHexColor::Get_A() const
 	{
 		return 255;
 	}
@@ -1977,21 +1963,10 @@ namespace SimpleTypes
 	// HighlightColor 17.18.40 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	CHighlightColor<highlightcolorNone>::CHighlightColor()
-	{
-		m_unR = 0;
-		m_unG = 0;
-		m_unB = 0;
-		m_unA = 255;
-	}
-
-	template<>
-	CHighlightColor<highlightcolorNone>::CHighlightColor(const CHexColor<>& color)
+	CHighlightColor::CHighlightColor(const CHexColor& color)
 		: m_unR(color.Get_R()), m_unG(color.Get_G()), m_unB(color.Get_B()), m_unA(255) {}
 
-	template<>
-	std::wstring CHighlightColor<highlightcolorNone>::ToString() const
+	std::wstring CHighlightColor::ToString() const
 	{
 		switch(this->m_eValue)
 		{
@@ -2016,8 +1991,7 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	EHighlightColor CHighlightColor<highlightcolorNone>::FromString(const std::wstring &sValue)
+	EHighlightColor CHighlightColor::FromString(const std::wstring &sValue)
 	{
 		if      ( (L"black")       == sValue )
 		{
@@ -2167,23 +2141,22 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	unsigned char CHighlightColor<highlightcolorNone>::Get_R() const
+	unsigned char CHighlightColor::Get_R() const
 	{
 		return m_unR;
 	}
-	template<>
-	unsigned char CHighlightColor<highlightcolorNone>::Get_G() const
+
+	unsigned char CHighlightColor::Get_G() const
 	{
 		return m_unG;
 	}
-	template<>
-	unsigned char CHighlightColor<highlightcolorNone>::Get_B() const
+
+	unsigned char CHighlightColor::Get_B() const
 	{
 		return m_unB;
 	}
-	template<>
-	unsigned char CHighlightColor<highlightcolorNone>::Get_A() const
+
+	unsigned char CHighlightColor::Get_A() const
 	{
 		return m_unA;
 	}

@@ -950,21 +950,11 @@ namespace SimpleTypes
 			vmldashstyleCustom          = 11,
 		};
 
-		template<EVmlDashStyle eDefValue = vmldashstyleSolid>
-		class CVmlDashStyle : public CSimpleType<EVmlDashStyle, eDefValue>
-		{
-		public:
-			CVmlDashStyle();
-			virtual ~CVmlDashStyle();
+		DEFINE_SIMPLE_TYPE_START(CVmlDashStyle, EVmlDashStyle, vmldashstyleSolid)
+		private:
 
-			virtual EVmlDashStyle FromString(const std::wstring &sValue);
-			virtual std::wstring ToString  () const;
-			SimpleTypes_Default(CVmlDashStyle)
-
-			private:
-
-				double  m_arrValues[32];
-				int     m_nCount;
+			double  m_arrValues[32];
+			int     m_nCount = 0;
 		};
 
 		//--------------------------------------------------------------------------------

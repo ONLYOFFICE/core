@@ -626,7 +626,7 @@ namespace OOX
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oSheetId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oRefreshError;
+			nullable<SimpleTypes::COnOff> m_oRefreshError;//xtodo = SimpleTypes::onoffTrue;
 		};
 
 		class CExternalSheetDataSet : public WritingElementWithChilds<CExternalSheetData>
@@ -1160,9 +1160,9 @@ namespace OOX
 
 		public:
 			nullable<std::wstring > m_oName;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oOle;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oAdvise;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oPreferPic;
+			nullable<SimpleTypes::COnOff> m_oOle;//xtodo = SimpleTypes::onoffTrue;
+			nullable<SimpleTypes::COnOff> m_oAdvise;//xtodo = SimpleTypes::onoffTrue;
+			nullable<SimpleTypes::COnOff> m_oPreferPic;//xtodo = SimpleTypes::onoffTrue;
 
 			nullable<CDdeValues> m_oDdeValues;
 		};
@@ -1407,9 +1407,9 @@ namespace OOX
 
 		public:
 			nullable<std::wstring > m_oName;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oIcon;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oAdvise;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oPreferPic;
+			nullable<SimpleTypes::COnOff> m_oIcon;//xtodo = SimpleTypes::onoffTrue;
+			nullable<SimpleTypes::COnOff> m_oAdvise;//xtodo = SimpleTypes::onoffTrue;
+			nullable<SimpleTypes::COnOff> m_oPreferPic;//xtodo = SimpleTypes::onoffTrue;
 		};
 
 		class COleItems : public WritingElementWithChilds<COleItem>

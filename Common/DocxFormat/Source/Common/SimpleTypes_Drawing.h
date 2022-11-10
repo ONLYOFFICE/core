@@ -44,27 +44,17 @@ namespace SimpleTypes
 	{
 		adjangleAngle = 0,
 		adjangleGuide = 1
-	};
+	};	
 
-	template<EAdjAngle eDefValue = adjangleAngle>
-	class CAdjAngle : public CSimpleType<EAdjAngle, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START(CAdjAngle, EAdjAngle, adjangleAngle)
 	public:
-
-		CAdjAngle();
-
-		virtual EAdjAngle FromString(const std::wstring &sValue);
-		virtual std::wstring   ToString() const;
-
-		SimpleTypes_Default(CAdjAngle)
-
 		double  GetAngle() const;
 		std::wstring GetGuide() const;
 
 	private:
 		void Parse(const std::wstring &sValue);
 
-		int				m_nAngle;
+		int				m_nAngle = adjangleAngle;
 		std::wstring	m_sGuide;
 	};
 

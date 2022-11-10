@@ -64,7 +64,14 @@ void CondFmt::readFields(CFRecord& record)
 
 const CellRef CondFmt::getLocation() const
 {
-	return sqref.getLocationFirstCell();
+	//if (false == refBound.empty())
+	//{
+	//	CellRef ref(refBound);
+	//	return ref;
+
+	//}
+	//else 
+		return sqref.getLocationFirstCell();
 }
 
 

@@ -55,7 +55,15 @@ void SqRefU::load(CFRecord& record)
 		strValue += std::wstring (ref8.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
 	}
 }
-
+struct refs_sort
+{
+	inline bool operator() (const CellRangeRef& ref1, const CellRangeRef& ref2)
+	{
+		return ((ref1.columnFirst < ref2.columnFirst && ref1.rowFirst < ref2.rowFirst) ||
+			((ref1.columnFirst == ref2.columnFirst && ref1.rowFirst ==ref2.rowFirst) &&
+			(ref1.columnLast < ref2.columnLast && ref1.rowLast < ref2.rowLast)));
+	}
+};
 
 const CellRef SqRefU::getLocationFirstCell() const
 {
@@ -63,12 +71,13 @@ const CellRef SqRefU::getLocationFirstCell() const
 	
 	AUX::str2refs(strValue, refs);
 	
-	if(!refs.size())
+	if(refs.empty())
 	{
 		return CellRef();
 	}
 	else
 	{
+		std::sort(refs.begin(), refs.end(), refs_sort());
 		return refs[0].getTopLeftCell();
 	}
 }

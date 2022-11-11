@@ -111,11 +111,13 @@ namespace MetaFile
 		CWmfParserBase          *m_pParser;
 
 		TSvgViewport            m_oViewport;
-		TEmfSizeL               m_oSizeWindow;
+		TPointL                 m_oSizeWindow;
 
 		unsigned int			m_unNumberDefs;
 		std::wstring			m_wsDefs;
 		double                  m_dScale;
+
+		std::wstring            m_wsLastClipId;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 
@@ -137,8 +139,8 @@ namespace MetaFile
 		void DrawPath(int nType = 0) override {};
 		void EndPath() override {};
 
-		void ResetClip() override {};
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override {};
+		void ResetClip() override;
+		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 
@@ -158,6 +160,7 @@ namespace MetaFile
 		void AddStroke(NodeAttributes &arAttributes);
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
+		void AddClip(NodeAttributes &arAttributes);
 
 		void AddNoneFill(NodeAttributes &arAttributes);
 
@@ -167,6 +170,8 @@ namespace MetaFile
 
 		std::wstring CreateHatchStyle(unsigned int unHetchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
+
+		void UpdateClip();
 	};
 
 }

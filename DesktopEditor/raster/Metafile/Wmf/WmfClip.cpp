@@ -113,13 +113,7 @@ namespace MetaFile
 					{
 						CWmfClipCommandIntersect* pIntersect = (CWmfClipCommandIntersect*)pCommand;
 
-						pOutput->StartClipPath(RGN_AND, ALTERNATE);
-						pOutput->MoveTo(pIntersect->m_dL, pIntersect->m_dT);
-						pOutput->LineTo(pIntersect->m_dR, pIntersect->m_dT);
-						pOutput->LineTo(pIntersect->m_dR, pIntersect->m_dB);
-						pOutput->LineTo(pIntersect->m_dL, pIntersect->m_dB);
-						pOutput->ClosePath();
-						pOutput->EndClipPath(RGN_AND);
+						pOutput->IntersectClip(pIntersect->m_dL, pIntersect->m_dT, pIntersect->m_dR, pIntersect->m_dB);
 
 						break;
 					}

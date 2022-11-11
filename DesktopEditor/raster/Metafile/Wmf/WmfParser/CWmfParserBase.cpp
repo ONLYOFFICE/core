@@ -1345,7 +1345,7 @@ namespace MetaFile
 	void CWmfParserBase::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
 		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shBottom, shRight, shTop, shLeft);
+			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
 
 		double dL, dT, dR, dB;
 		TranslatePoint(shLeft, shTop, dL, dT);

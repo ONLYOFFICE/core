@@ -201,6 +201,8 @@ namespace MetaFile
 		std::wstring			m_wsDefs;
 
 		TEmfScale               m_oScale;
+
+		std::wstring            m_wsLastClipId;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 
@@ -223,7 +225,7 @@ namespace MetaFile
 		void EndPath() override {};
 
 		void ResetClip() override {};
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override {};
+		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 
@@ -245,6 +247,7 @@ namespace MetaFile
 		void AddStroke(NodeAttributes &arAttributes);
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
+		void AddClip(NodeAttributes &arAttributes);
 
 		void AddNoneFill(NodeAttributes &arAttributes);
 
@@ -256,6 +259,8 @@ namespace MetaFile
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 		std::wstring CreateGradient(IBrush *pBrush);
+
+		void UpdateClip();
 	};
 }
 

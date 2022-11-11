@@ -24,22 +24,22 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::SetSize(unsigned int unWidth, unsigned int unHeight)
 	{
-		m_oSizeWindow.cx = unWidth;
-		m_oSizeWindow.cy = unHeight;
+		m_oSizeWindow.x = unWidth;
+		m_oSizeWindow.y = unHeight;
 	}
 
 	void CWmfInterpretatorSvg::GetSize(unsigned int &unWidth, unsigned int &unHeight)
 	{
-		unWidth  = m_oSizeWindow.cx;
-		unHeight = m_oSizeWindow.cy;
+		unWidth  = m_oSizeWindow.x;
+		unHeight = m_oSizeWindow.y;
 	}
 
 	void CWmfInterpretatorSvg::UpdateSize()
 	{
-		if (0 != m_oSizeWindow.cx && 0 == m_oSizeWindow.cy)
-			m_oSizeWindow.cy = m_oSizeWindow.cx * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
-		else if (0 == m_oSizeWindow.cx && 0 != m_oSizeWindow.cy)
-			m_oSizeWindow.cx = m_oSizeWindow.cy * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
+		if (0 != m_oSizeWindow.x && 0 == m_oSizeWindow.y)
+			m_oSizeWindow.y = m_oSizeWindow.x * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
+		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y)
+			m_oSizeWindow.x = m_oSizeWindow.y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader)
@@ -70,18 +70,18 @@ namespace MetaFile
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
-		if (0 != m_oSizeWindow.cx)
+		if (0 != m_oSizeWindow.x)
 		{
-			dXScale = m_oSizeWindow.cx / m_oViewport.GetWidth();
+			dXScale = m_oSizeWindow.x / m_oViewport.GetWidth();
 			dXTranslate = m_oViewport.GetWidth() / 2 * std::abs(dXScale - 1);
 
 			if (dXScale < 1)
 				dXTranslate = -dXTranslate;
 		}
 
-		if (0 != m_oSizeWindow.cy)
+		if (0 != m_oSizeWindow.y)
 		{
-			dYScale = m_oSizeWindow.cy / m_oViewport.GetHeight();
+			dYScale = m_oSizeWindow.y / m_oViewport.GetHeight();
 			dYTranslate = m_oViewport.GetHeight() / 2 * std::abs(dYScale - 1);
 
 			if (dYScale < 1)
@@ -157,6 +157,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -182,6 +183,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -277,6 +279,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -295,8 +298,6 @@ namespace MetaFile
 	{
 		TPointD oCurPos = GetCutPos();
 
-		TPointD oPoint(shX, shY);
-
 		NodeAttributes arAttributes = {{L"x1", ConvertToWString(oCurPos.x)},
 									   {L"y1", ConvertToWString(oCurPos.y)},
 									   {L"x2", ConvertToWString(shX)},
@@ -304,6 +305,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"line", arAttributes);
 	}
@@ -324,6 +326,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -347,6 +350,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -366,6 +370,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -385,6 +390,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -411,6 +417,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -434,6 +441,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -458,6 +466,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -526,7 +535,6 @@ namespace MetaFile
 
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)shStringLength, eCharSet);
 
-
 		WriteText(wsText, shX, shY);
 	}
 
@@ -570,7 +578,8 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_SELECTCLIPREGION(unsigned short ushIndex)
 	{
-
+		m_wsLastClipId.clear();
+		//TODO:: реализовать
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_SELECTOBJECT(unsigned short ushIndex)
@@ -584,12 +593,12 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_MOVETO(short shX, short shY)
@@ -599,7 +608,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_OFFSETVIEWPORTORG(short shXOffset, short shYOffset)
@@ -614,12 +623,11 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_RESTOREDC()
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_SAVEDC()
 	{
-
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum)
@@ -769,12 +777,27 @@ namespace MetaFile
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);
+			AddClip(arAttributes);
 
 			WriteNode(L"image", arAttributes);
 		}
 
 		if (NULL != pNewBuffer)
 			delete [] pNewBuffer;
+	}
+
+	void CWmfInterpretatorSvg::ResetClip()
+	{
+		m_wsLastClipId.clear();
+	}
+
+	void CWmfInterpretatorSvg::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	{
+		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>" +
+		            L"</clipPath>";
 	}
 
 	void CWmfInterpretatorSvg::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
@@ -948,10 +971,10 @@ namespace MetaFile
 		}
 
 		AddTransform(arNodeAttributes, &oTransform);
+		AddClip(arNodeAttributes);
 
 		arNodeAttributes.push_back({L"x", ConvertToWString(dXCoord)});
 		arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
-
 
 		WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
 	}
@@ -959,18 +982,12 @@ namespace MetaFile
 	void CWmfInterpretatorSvg::AddStroke(NodeAttributes &arAttributes)
 	{
 		if (NULL == m_pParser)
-		{
-			arAttributes.push_back({L"stroke", L"black"});
 			return;
-		}
 
 		IPen* pPen = m_pParser->GetPen();
 
 		if (NULL == pPen || PS_NULL == pPen->GetStyle())
-		{
-			arAttributes.push_back({L"stroke", L"black"});
 			return;
-		}
 
 		if (pPen->GetAlpha() != 255)
 			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
@@ -1131,6 +1148,18 @@ namespace MetaFile
 			pFoundTransform->second.insert(0, wsValue + L' ');
 		else
 			arAttributes.push_back({L"transform", wsValue});
+	}
+
+	void CWmfInterpretatorSvg::AddClip(NodeAttributes &arAttributes)
+	{
+		if (NULL == m_pParser)
+			return;
+
+		if (m_wsLastClipId.empty())
+			UpdateClip();
+
+		if (!m_wsLastClipId.empty())
+			arAttributes.push_back({L"clip-path", L"url(#" + m_wsLastClipId + L')'});
 	}
 
 	void CWmfInterpretatorSvg::AddNoneFill(NodeAttributes &arAttributes)
@@ -2729,5 +2758,13 @@ namespace MetaFile
 		}
 
 		return wsStyleId;
+	}
+
+	void CWmfInterpretatorSvg::UpdateClip()
+	{
+		IClip* pClip = m_pParser->GetClip();
+
+		if (NULL != pClip)
+			pClip->ClipOnRenderer(this);
 	}
 }

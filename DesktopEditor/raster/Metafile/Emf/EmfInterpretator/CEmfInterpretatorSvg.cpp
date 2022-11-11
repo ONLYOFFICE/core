@@ -32,6 +32,8 @@ namespace MetaFile
 		CEmfParserBase *pTemp = m_pParser;
 		m_pParser = m_pSecondParser;
 		m_pSecondParser = pTemp;
+
+		m_wsLastClipId.clear();
 	}
 
 	InterpretatorType CEmfInterpretatorSvg::GetType() const
@@ -145,6 +147,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_RESTOREDC(const int &nIndexDC)
 	{
+		m_wsLastClipId.clear();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
@@ -259,6 +262,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -320,7 +324,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETBKCOLOR(const TEmfColor &oColor)
@@ -330,12 +334,12 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
@@ -365,7 +369,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
 	{
-
+		m_wsLastClipId.clear();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETLAYOUT(const unsigned int &unLayoutMode)
@@ -418,6 +422,8 @@ namespace MetaFile
 		}
 		else
 			AddTransform(arAttributes);
+
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -480,6 +486,8 @@ namespace MetaFile
 		else
 			AddTransform(arAttributes);
 
+		AddClip(arAttributes);
+
 		WriteNode(L"path" , arAttributes);
 
 	}
@@ -533,6 +541,8 @@ namespace MetaFile
 		else
 			AddTransform(arAttributes);
 
+		AddClip(arAttributes);
+
 		WriteNode(L"path" , arAttributes);
 	}
 
@@ -552,6 +562,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -581,6 +592,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"line", arAttributes);
 	}
@@ -603,6 +615,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -624,6 +637,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -645,6 +659,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -666,6 +681,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -687,6 +703,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -736,6 +753,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -785,6 +803,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -804,6 +823,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -823,6 +843,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -842,6 +863,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -863,6 +885,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -884,6 +907,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -905,6 +929,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -931,6 +956,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -959,6 +985,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -987,6 +1014,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -1015,6 +1043,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -1033,6 +1062,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes, oNewRect.dRight - oNewRect.dLeft, oNewRect.dBottom - oNewRect.dTop);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -1051,6 +1081,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -1080,6 +1111,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -1099,6 +1131,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -1132,6 +1165,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -1160,6 +1194,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -1213,6 +1248,8 @@ namespace MetaFile
 		else
 			AddTransform(arAttributes);
 
+		AddClip(arAttributes);
+
 		WriteNode(L"path" , arAttributes);
 	}
 
@@ -1233,6 +1270,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -1263,6 +1301,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -1292,6 +1331,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -1311,6 +1351,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -1342,6 +1383,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -1367,6 +1409,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -1387,6 +1430,7 @@ namespace MetaFile
 
 		AddFill(arAttributes, oPathRect.dRight - oPathRect.dLeft, oPathRect.dBottom - oPathRect.dTop);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -1410,6 +1454,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -1435,6 +1480,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
+		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -1496,12 +1542,22 @@ namespace MetaFile
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);
+			AddClip(arAttributes);
 
 			WriteNode(L"image", arAttributes);
 		}
 
 		if (NULL != pNewBuffer)
 			delete [] pNewBuffer;
+	}
+
+	void CEmfInterpretatorSvg::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	{
+		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>" +
+		            L"</clipPath>";
 	}
 
 	void CEmfInterpretatorSvg::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
@@ -1554,6 +1610,8 @@ namespace MetaFile
 		}
 		else if (0. != dX || 0. != dY)
 			arNodeAttributes.push_back({L"transform", L"translate(" + ConvertToWString(dX) + L',' + ConvertToWString(dY) + L')'});
+
+		AddClip(arNodeAttributes);
 
 		WriteNodeBegin(L"g", arNodeAttributes);
 
@@ -1734,6 +1792,7 @@ namespace MetaFile
 		}
 
 		AddTransform(arNodeAttributes, &oTransform);
+		AddClip(arNodeAttributes);
 
 		size_t unPosLineBreak = wsText.find(L"\n");
 
@@ -1789,7 +1848,7 @@ namespace MetaFile
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = m_pParser->GetPixWidth(1.0 * m_oScale.dX);
+			dStrokeWidth = m_pParser->GetPixWidth(1.0 / m_oScale.dX);
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
@@ -1815,8 +1874,7 @@ namespace MetaFile
 
 			ulPenStyle = PS_USERSTYLE;
 		}
-
-		if (PS_DASH == ulPenStyle)
+		else if (PS_DASH == ulPenStyle)
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth * 4) + L' ' + ConvertToWString(dStrokeWidth * 2)});
 		else if (PS_DOT == ulPenStyle)
 			arAttributes.push_back({L"stroke-dasharray", ConvertToWString(dStrokeWidth) + L' ' + ConvertToWString(dStrokeWidth)});
@@ -1967,6 +2025,18 @@ namespace MetaFile
 			pFoundTransform->second.insert(0, wsValue + L' ');
 		else
 			arAttributes.push_back({L"transform", wsValue});
+	}
+
+	void CEmfInterpretatorSvg::AddClip(NodeAttributes &arAttributes)
+	{
+		if (NULL == m_pParser)
+			return;
+
+		if (m_wsLastClipId.empty())
+			UpdateClip();
+
+		if (!m_wsLastClipId.empty())
+			arAttributes.push_back({L"clip-path", L"url(#" + m_wsLastClipId + L')'});
 	}
 
 	void CEmfInterpretatorSvg::AddNoneFill(NodeAttributes &arAttributes)
@@ -3771,6 +3841,14 @@ namespace MetaFile
 		}
 
 		return std::wstring();
+	}
+
+	void CEmfInterpretatorSvg::UpdateClip()
+	{
+		IClip* pClip = m_pParser->GetClip();
+
+		if (NULL != pClip)
+			pClip->ClipOnRenderer(this);
 	}
 }
 

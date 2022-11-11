@@ -69,6 +69,7 @@ namespace DocFileFormat
 			_trPr->AppendChild( del );
 		}
 
+		XMLTools::XMLElement rowHeight(L"w:trHeight");
 		for ( std::list<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); iter++ )
 		{
 			switch ( iter->OpCode )  
@@ -118,7 +119,6 @@ namespace DocFileFormat
 				case sprmOldTDyaRowHeight:
 				case sprmTDyaRowHeight:
 				{ //row height
-                    XMLTools::XMLElement rowHeight( L"w:trHeight" );
                     XMLTools::XMLAttribute rowHeightVal( L"w:val" );
                     XMLTools::XMLAttribute rowHeightRule( L"w:hRule" );
 
@@ -141,16 +141,16 @@ namespace DocFileFormat
 						rowHeightVal.SetValue( FormatUtils::IntToWideString( rH ) );
 						rowHeight.AppendAttribute( rowHeightVal );
 					}
-
 					rowHeight.AppendAttribute( rowHeightRule );
-					_trPr->AppendChild( rowHeight );
 				}
 				break;
 				case sprmOldTFCantSplit:
 				case sprmTFCantSplit:
+					break;
 				case sprmTFCantSplit90:
 				{ //can't split
-					appendFlagElement( _trPr, *iter, L"cantSplit", true );
+					if (iter->argumentsSize > 0 && iter->Arguments[0] != 0)
+						appendFlagElement( _trPr, *iter, L"cantSplit", true );
 				}break;	
 				case sprmTIpgp:// = PGPInfo.ipgpSelf (PGPInfo structure describes the border and margin properties)
 				{	//div id
@@ -192,6 +192,10 @@ namespace DocFileFormat
 				default:
 					break;
 			}
+		}
+		if (rowHeight.GetAttributeCount() > 0)
+		{
+			_trPr->AppendChild(rowHeight);
 		}
 
 		//set borders

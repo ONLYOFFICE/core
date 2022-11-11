@@ -389,6 +389,7 @@ namespace DocFileFormat
 		if ( documentMapping != NULL )
 		{
 			int paragraphBeginCP = _cp;
+			int lastCellCP = _cp;
 
 			ParagraphPropertyExceptions* papxBackup = documentMapping->_lastValidPapx;
 			SectionPropertyExceptions* sepxBackup = documentMapping->_lastValidSepx;
@@ -435,6 +436,7 @@ namespace DocFileFormat
 				{
 					if ( IsCellMarker( _cp ) )
 					{
+						lastCellCP = _cp;
 						tableCell.SetCP( _cp );
 						tableCell.SetDepth( _depth );
 
@@ -446,6 +448,17 @@ namespace DocFileFormat
 					}
 					else if ( IsRowMarker( _cp ) )
 					{
+						if (_cp - lastCellCP > 10) //???
+						{
+							tableCell.SetCP(_cp);
+							tableCell.SetDepth(_depth);
+
+							tableCell.AddItem(DocParagraph(documentMapping, paragraphBeginCP, _cp));
+
+							tableRow.AddCell(tableCell);
+							tableCell.Clear();
+							paragraphBeginCP = _cp;
+						}
 						tableRow.SetCP( _cp );
 						tableRow.SetDepth( _depth );
 						AddRow( tableRow );

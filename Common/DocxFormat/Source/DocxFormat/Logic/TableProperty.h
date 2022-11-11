@@ -1108,7 +1108,7 @@ namespace OOX
 
 			bool                                                           m_bTblPrChange;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidiVisual;
+			nullable<ComplexTypes::Word::COnOff2 > m_oBidiVisual;
 			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 			nullable<ComplexTypes::Word::CShading                        > m_oShade;
 			nullable<OOX::Logic::CTblBorders                             > m_oTblBorders;
@@ -1393,17 +1393,17 @@ namespace OOX
 
 			bool                                                           m_bTrPrChange;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCantSplit;
+			nullable<ComplexTypes::Word::COnOff2 > m_oCantSplit;
 			nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
 			nullable<ComplexTypes::Word::CTrackChange                    > m_oDel;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oDivId;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridAfter;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridBefore;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHidden;
+			nullable<ComplexTypes::Word::COnOff2 > m_oHidden;
 			nullable<ComplexTypes::Word::CTrackChange                    > m_oIns;
 			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTblHeader;
+			nullable<ComplexTypes::Word::COnOff2 > m_oTblHeader;
 			nullable<ComplexTypes::Word::CHeight                         > m_oTblHeight;
 			nullable<OOX::Logic::CTrPrChange                             > m_oTrPrChange;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
@@ -2133,12 +2133,12 @@ namespace OOX
 			nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridSpan;
 			nullable<OOX::Logic::CHeaders                                > m_oHeaders;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHideMark;
+			nullable<ComplexTypes::Word::COnOff2 > m_oHideMark;
 			nullable<ComplexTypes::Word::CHMerge                         > m_oHMerge;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoWrap;
+			nullable<ComplexTypes::Word::COnOff2 > m_oNoWrap;
 			nullable<ComplexTypes::Word::CShading                        > m_oShd;
 			nullable<OOX::Logic::CTcBorders                              > m_oTcBorders;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTcFitText;
+			nullable<ComplexTypes::Word::COnOff2 > m_oTcFitText;
 			nullable<OOX::Logic::CTcMar                                  > m_oTcMar;
 			nullable<OOX::Logic::CTcPrChange                             > m_oTcPrChange;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTcW;

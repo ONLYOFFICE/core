@@ -358,7 +358,7 @@ namespace SimpleTypes
 	{
 		try
 		{
-			this->m_eValue = _wtoi(sValue.c_str());
+            this->m_eValue = XmlUtils::GetInteger(sValue);
 			return this->m_eValue;
 		}
 		catch (...)
@@ -367,7 +367,7 @@ namespace SimpleTypes
 
 		try
 		{
-			this->m_eValue = static_cast<int>(_wtoi64(sValue.c_str()));
+            this->m_eValue = static_cast<int>(XmlUtils::GetInteger64(sValue));
 		}
 		catch (...)
 		{

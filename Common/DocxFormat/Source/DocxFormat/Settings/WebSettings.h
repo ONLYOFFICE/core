@@ -175,7 +175,7 @@ namespace OOX
 	public:
 
 		// Childs
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oAllowPNG;
+		nullable<ComplexTypes::Word::COnOff2 > m_oAllowPNG;
 		nullable<ComplexTypes::Word::COptimizeForBrowser             > m_oOptimizeForBrowser;
 	};
 } // namespace OOX

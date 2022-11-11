@@ -47,7 +47,6 @@ namespace ComplexTypes
 			virtual std::wstring	ToString() const = 0;
 		};
 
-		template<SimpleTypes::EOnOff eDefValue = SimpleTypes::onoffTrue>
 		class COnOff2 : public ComplexType
 		{
 		public:
@@ -91,7 +90,7 @@ namespace ComplexTypes
 				return m_oVal.ToBool();
 			}
 
-			SimpleTypes::COnOff m_oVal = eDefValue;
+            SimpleTypes::COnOff m_oVal = SimpleTypes::onoffTrue;
 
 		};
 

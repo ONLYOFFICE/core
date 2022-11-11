@@ -638,24 +638,20 @@ namespace Word
 // COnOff2
 //--------------------------------------------------------------------------------
 
-	template<>
-	COnOff2<SimpleTypes::onoffTrue>::COnOff2()
+    COnOff2::COnOff2()
 	{
 	}
 
-	template<>
-	COnOff2<SimpleTypes::onoffTrue>::~COnOff2()
+    COnOff2::~COnOff2()
 	{
 	}
 
-	template<>
-	void COnOff2<SimpleTypes::onoffTrue>::FromXML(XmlUtils::CXmlNode& oNode)
+    void COnOff2::FromXML(XmlUtils::CXmlNode& oNode)
 	{
 		XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
 	}
 
-	template<>
-	void    COnOff2<SimpleTypes::onoffTrue>::FromXML(XmlUtils::CXmlLiteReader& oReader)
+    void COnOff2::FromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
 
@@ -663,8 +659,7 @@ namespace Word
 			oReader.ReadTillEnd();
 	}
 
-	template<>
-	std::wstring COnOff2<SimpleTypes::onoffTrue>::ToString() const
+    std::wstring COnOff2::ToString() const
 	{
 		std::wstring sResult;
 
@@ -673,16 +668,14 @@ namespace Word
 		return sResult;
 	}
 
-	template<>
-	void COnOff2<SimpleTypes::onoffTrue>::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+    void COnOff2::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
 		WritingElement_ReadAttributes_ReadSingle( oReader, L"val", m_oVal )
 		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 
-	template<>
-	std::wstring COnOff2<SimpleTypes::onoffTrue>::ValNode(const std::wstring &node_name)
+    std::wstring COnOff2::ValNode(const std::wstring &node_name)
 	{
 		if (m_oVal.ToBool())
 			return L"<" + node_name + L"/>";

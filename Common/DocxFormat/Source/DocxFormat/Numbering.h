@@ -420,7 +420,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>				m_oTentative;
 			nullable<SimpleTypes::CLongHexNumber>		m_oTplc;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oIsLgl;
+			nullable<ComplexTypes::Word::COnOff2>	m_oIsLgl;
 			nullable<ComplexTypes::Word::CLvlLegacy>						m_oLegacy;
 			nullable<ComplexTypes::Word::CJc>								m_oLvlJc;
 			nullable<ComplexTypes::Word::CDecimalNumber>					m_oLvlPicBulletId;

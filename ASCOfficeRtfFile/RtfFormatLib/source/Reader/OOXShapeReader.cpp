@@ -1654,7 +1654,7 @@ bool OOXShapeReader::ParseVml(ReaderParameter oParam, RtfShapePtr& pOutput, bool
 				int pos = (int)shape->m_sType->find(L"#_x0000_t");
 				if (pos >= 0)
 				{
-					pOutput->m_nShapeType = _wtoi(shape->m_sType->substr(pos + 9, shape->m_sType->length() - pos - 9).c_str());
+                    pOutput->m_nShapeType = XmlUtils::GetInteger(shape->m_sType->substr(pos + 9, shape->m_sType->length() - pos - 9));
 				}
 			}
 		}
@@ -2039,7 +2039,7 @@ void OOXShapeReader::ParseAdjustment (RtfShape& oShape, std::wstring sAdjustment
 		{
 			try
 			{
-				oShape.m_nAdjustValue[i] = _wtoi(splitted[i].c_str());
+                oShape.m_nAdjustValue[i] = XmlUtils::GetInteger(splitted[i]);
 			}
 			catch(...)
 			{

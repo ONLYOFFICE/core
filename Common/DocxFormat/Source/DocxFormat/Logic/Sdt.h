@@ -810,7 +810,7 @@ namespace OOX
 
  			nullable<ComplexTypes::Word::String> m_oDocPartCategory;
 			nullable<ComplexTypes::Word::String> m_oDocPartGallery;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDocPartUnique;
+            nullable<ComplexTypes::Word::COnOff2> m_oDocPartUnique;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1102,7 +1102,7 @@ namespace OOX
 			}
 		public:
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oChecked;
+            nullable<ComplexTypes::Word::COnOff2> m_oChecked;
 			nullable<CSdtCheckBoxSymbol> m_oCheckedState;
 			nullable<CSdtCheckBoxSymbol> m_oUncheckedState;
 
@@ -1202,10 +1202,10 @@ namespace OOX
 			nullable<ComplexTypes::Word::CLock> m_oLock;
 			nullable<OOX::Logic::CPlaceHolder> m_oPlaceHolder;
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShowingPlcHdr;
+            nullable<ComplexTypes::Word::COnOff2> m_oShowingPlcHdr;
 			nullable<ComplexTypes::Word::CUnsignedDecimalNumber> m_oTabIndex;
 			nullable<ComplexTypes::Word::String> m_oTag;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oTemporary;
+            nullable<ComplexTypes::Word::COnOff2> m_oTemporary;
 			nullable<ComplexTypes::Word::CSdtText> m_oText;
 			nullable<CSdtCheckBox> m_oCheckbox;
 

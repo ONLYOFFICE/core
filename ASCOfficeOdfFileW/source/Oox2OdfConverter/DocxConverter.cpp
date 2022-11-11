@@ -1977,7 +1977,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		convert(docx_flat_document->m_pBgPict.GetPointer(), 1);
 	}
 			//nullable<ComplexTypes::Word::CTextDirection                  > m_oTextDirection;
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oRtlGutter;
+            //nullable<ComplexTypes::Word::COnOff2 > m_oRtlGutter;
 			//nullable<ComplexTypes::Word::CVerticalJc                     > m_oVAlign;
 
 	if (oox_section_pr->m_oPgNumType.IsInit())
@@ -2113,13 +2113,13 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 //------------------------------------------------------------------------------------------------------------------------------------------		
 	// то что относится собственно к секциям-разделам
 
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidi;
+            //nullable<ComplexTypes::Word::COnOff2 > m_oBidi;
 			//nullable<ComplexTypes::Word::CDocGrid                        > m_oDocGrid;
 			//nullable<OOX::Logic::CEdnProps                               > m_oEndnotePr;
 			//nullable<OOX::Logic::CFtnProps                               > m_oFootnotePr;
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oFormProt;
+            //nullable<ComplexTypes::Word::COnOff2 > m_oFormProt;
 
-			//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoEndnote;
+            //nullable<ComplexTypes::Word::COnOff2 > m_oNoEndnote;
 			//nullable<ComplexTypes::Word::CPaperSource                    > m_oPaperSrc;
 
 			//nullable<ComplexTypes::Word::CRel                            > m_oPrinterSettings;
@@ -3683,7 +3683,7 @@ void DocxConverter::convert(OOX::Numbering::CLvl *oox_num_lvl, OOX::Numbering::C
 
 	//nullable<SimpleTypes::COnOff<>         > m_oTentative;
 	//nullable<SimpleTypes::CLongHexNumber<> > m_oTplc;
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oIsLgl;
+    //nullable<ComplexTypes::Word::COnOff2> m_oIsLgl;
 	//nullable<ComplexTypes::Word::CLvlLegacy> m_oLegacy;
 
 	double  size_bullet_number_marker = 0;
@@ -4063,7 +4063,7 @@ void DocxConverter::convert(OOX::CStyle	*oox_style)
 	if (oox_style->m_oBasedOn.IsInit() && oox_style->m_oBasedOn->m_sVal.IsInit())
 		odt_context->styles_context()->last_state()->set_parent_style_name(*oox_style->m_oBasedOn->m_sVal);
 
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oQFormat;
+    //nullable<ComplexTypes::Word::COnOff2> m_oQFormat;
 	//nullable<ComplexTypes::Word::std::wstring_>					m_oAliases;
 //-------------------------------------------------------------------------------------------------------------------------
 	if (style_name == L"Hyperlink")
@@ -4795,7 +4795,7 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 		default: break;
 		}
 	}
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidiVisual;
+    //nullable<ComplexTypes::Word::COnOff2 > m_oBidiVisual;
 	//nullable<ComplexTypes::Word::CShading                        > m_oShade;
     //nullable<ComplexTypes::Word::std::wstring_                        > m_oTblCaption;
 	//nullable<OOX::Logic::CTblCellMar                             > m_oTblCellMar;
@@ -4913,13 +4913,13 @@ void DocxConverter::convert(OOX::Logic::CTableRowProperties *oox_table_row_pr)
 
 	convert(oox_table_row_pr, table_row_properties);
 
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCantSplit;
+    //nullable<ComplexTypes::Word::COnOff2 > m_oCantSplit;
 	//nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
 	//nullable<ComplexTypes::Word::CTrackChange                    > m_oDel;
 	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oDivId;
 	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridAfter;
 	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridBefore;
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHidden;
+    //nullable<ComplexTypes::Word::COnOff2 > m_oHidden;
 	//nullable<ComplexTypes::Word::CTrackChange                    > m_oIns;
 	//nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 	//nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
@@ -5020,7 +5020,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	
 	
 	//nullable<OOX::Logic::CHeaders                                > m_oHeaders;
-	//nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHideMark;
+    //nullable<ComplexTypes::Word::COnOff2 > m_oHideMark;
 	return true;
 }
 bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr, int col)

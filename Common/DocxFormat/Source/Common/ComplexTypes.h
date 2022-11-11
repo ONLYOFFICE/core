@@ -319,7 +319,6 @@ namespace ComplexTypes
 		// OnOff2
 		//--------------------------------------------------------------------------------
 
-		template<SimpleTypes::EOnOff eDefValue = SimpleTypes::onoffTrue>
 		class COnOff2 : public ComplexType
 		{
 		public:
@@ -328,14 +327,14 @@ namespace ComplexTypes
 			virtual ~COnOff2();
 
 			virtual void FromXML(XmlUtils::CXmlNode& oNode);
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
+            virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring ToString() const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			virtual inline std::wstring ValNode(const std::wstring &node_name);
 
 		public:
-			SimpleTypes::COnOff m_oVal;
+            SimpleTypes::COnOff m_oVal = SimpleTypes::onoffTrue;
 		};
 
 		//--------------------------------------------------------------------------------

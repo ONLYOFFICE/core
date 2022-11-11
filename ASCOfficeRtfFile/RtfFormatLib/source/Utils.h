@@ -124,17 +124,11 @@ namespace Strings
 	}
     static int ToInteger(const std::wstring& strValue)
 	{
-        return _ttoi(strValue.c_str());
+        return XmlUtils::GetInteger(strValue);
 	}
     static double ToDouble(const std::wstring& strValue)
 	{
-		double d = 0;
-#if defined (_WIN32) || defined(_WIN64)
-        _stscanf_s(strValue.c_str(), L" %lf", &d);
-#else
-        _stscanf(strValue.c_str(), L" %lf", &d);
-#endif
-		return d;
+        return XmlUtils::GetDouble(strValue);
 	}
 
 }
@@ -166,11 +160,11 @@ public:
              _stscanf_s(str.c_str(), L"%d", &nResult);
 #else
 		 if(16 == base)
-             _stscanf(str.c_str(), L"%X", &nResult);
+             swscanf(str.c_str(), L"%X", &nResult);
 		 else if(8 == base)
-             _stscanf(str.c_str(), L"%o", &nResult);
+             swscanf(str.c_str(), L"%o", &nResult);
 		 else 
-             _stscanf(str.c_str(), L"%d", &nResult);		 
+             swscanf(str.c_str(), L"%d", &nResult);
 #endif
 		 return nResult;
 	 }

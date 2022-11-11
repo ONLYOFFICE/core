@@ -35,6 +35,7 @@
 #include <memory>
 #include <string>
 #include "../../DesktopEditor/common/Types.h"
+#include <ios>
 
 namespace CFCPP
 {

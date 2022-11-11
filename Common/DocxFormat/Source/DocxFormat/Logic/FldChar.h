@@ -149,8 +149,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CInfoTextType<> > m_oType;
-			nullable<SimpleTypes::CFFHelpTextVal  > m_oVal;
+			nullable<SimpleTypes::CInfoTextType>	m_oType;
+			nullable<SimpleTypes::CFFHelpTextVal>	m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -263,8 +263,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CInfoTextType<> > m_oType;
-			nullable<SimpleTypes::CFFStatusTextVal> m_oVal;
+			nullable<SimpleTypes::CInfoTextType>	m_oType;
+			nullable<SimpleTypes::CFFStatusTextVal>	m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -316,7 +316,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CFFTextType<> > m_oVal;
+			nullable<SimpleTypes::CFFTextType> m_oVal;
 		};
 
 	} // Word
@@ -402,10 +402,10 @@ namespace OOX
 			}
 
 		public:
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oChecked;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oDefault;
+			nullable<ComplexTypes::Word::COnOff2 > m_oChecked;
+			nullable<ComplexTypes::Word::COnOff2 > m_oDefault;
 			nullable<ComplexTypes::Word::CHpsMeasure                     > m_oSize;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oSizeAuto;
+			nullable<ComplexTypes::Word::COnOff2 > m_oSizeAuto;
 
 		};
 
@@ -701,10 +701,10 @@ namespace OOX
 
 		public:
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oCalcOnExit;
+			nullable<ComplexTypes::Word::COnOff2> m_oCalcOnExit;
 			nullable<OOX::Logic::CFFCheckBox> m_oCheckBox;
 			nullable<OOX::Logic::CFFDDList> m_oDDList;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oEnabled;
+			nullable<ComplexTypes::Word::COnOff2> m_oEnabled;
 			nullable<ComplexTypes::Word::CMacroName> m_oEntryMacro;
 			nullable<ComplexTypes::Word::CMacroName> m_oExitMacro;
 			nullable<ComplexTypes::Word::CFFHelpText> m_oHelpText;
@@ -801,18 +801,18 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"w:dirty",       m_oDirty )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldCharType", m_oFldCharType )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldLock",     m_oFldLock )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:dirty",       m_oDirty )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldCharType", m_oFldCharType )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldLock",     m_oFldLock )
 				WritingElement_ReadAttributes_End( oReader )
 			}
 
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>       > m_oDirty;
-			nullable<SimpleTypes::CFldCharType<> > m_oFldCharType;
-			nullable<SimpleTypes::COnOff<>       > m_oFldLock;
+			nullable<SimpleTypes::COnOff         > m_oDirty;
+			nullable<SimpleTypes::CFldCharType   > m_oFldCharType;
+			nullable<SimpleTypes::COnOff         > m_oFldLock;
 
 			nullable<OOX::Logic::CFFData         > m_oFFData;
 		};

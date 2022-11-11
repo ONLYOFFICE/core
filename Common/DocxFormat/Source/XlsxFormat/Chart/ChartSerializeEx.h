@@ -56,7 +56,7 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CFormulaDirection<>>	m_dir;
+		nullable<SimpleTypes::Spreadsheet::CFormulaDirection>	m_dir;
 		std::wstring											m_content;
 	};
 //------------------------------------------------------------------------------------------------------
@@ -115,8 +115,8 @@ namespace ChartEx
 		nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 
 //for chart title only (but not axis title)
-		nullable<SimpleTypes::Spreadsheet::CSidePos<>>		m_pos;
-		nullable<SimpleTypes::Spreadsheet::CPosAlign<>>		m_align;
+		nullable<SimpleTypes::Spreadsheet::CSidePos>		m_pos;
+		nullable<SimpleTypes::Spreadsheet::CPosAlign>		m_align;
 		nullable_bool										m_overlay;
 	};
 //------------------------------------------------------------------------------------------------------
@@ -263,7 +263,7 @@ namespace ChartEx
 		nullable_double		m_binSize;
 		nullable_int		m_binCount;
 
-		nullable<SimpleTypes::Spreadsheet::CIntervalClosedSide<>>	m_intervalClosed;
+		nullable<SimpleTypes::Spreadsheet::CIntervalClosedSide>		m_intervalClosed;
 		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_underflow;
 		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_overflow;
 	};
@@ -283,7 +283,7 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CQuartileMethod<>> m_quartileMethod;
+		nullable<SimpleTypes::Spreadsheet::CQuartileMethod> m_quartileMethod;
 	};
 //------------------------------------------------------------------------------
 	class CSubtotals : public WritingElement
@@ -387,7 +387,7 @@ namespace ChartEx
 		nullable_string										m_separator; //node
 
 		nullable_int										m_idx;
-		nullable<SimpleTypes::Spreadsheet::CDataLabelPos<>>	m_dataLabelPos;
+		nullable<SimpleTypes::Spreadsheet::CDataLabelPos>	m_dataLabelPos;
 	};
 //------------------------------------------------------------------------------
 	class CDataLabels : public WritingElement
@@ -415,7 +415,7 @@ namespace ChartEx
 		std::vector<CDataLabel*>							m_arDataLabel;
 		std::vector<CDataLabelHidden*>						m_arDataLabelHidden;
 		
-		nullable<SimpleTypes::Spreadsheet::CDataLabelPos<>>	m_pos;
+		nullable<SimpleTypes::Spreadsheet::CDataLabelPos>	m_pos;
 	};
 //------------------------------------------------------------------------------
 	class CDataPoint : public WritingElement
@@ -467,7 +467,7 @@ namespace ChartEx
 		nullable<PPTX::Logic::SpPr>						m_oSpPr;
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
-		nullable<SimpleTypes::Spreadsheet::CSeriesLayout<>>	m_oLayoutId;
+		nullable<SimpleTypes::Spreadsheet::CSeriesLayout>	m_oLayoutId;
 		nullable_bool										m_bHidden;
 		nullable_int										m_nOwnerIdx;
 		nullable_string										m_sUniqueId;
@@ -551,7 +551,7 @@ namespace ChartEx
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		nullable<CAxisUnitsLabel>						m_unitsLabel;
 		
-		nullable<SimpleTypes::Spreadsheet::CAxisUnit<>>	m_unit;
+		nullable<SimpleTypes::Spreadsheet::CAxisUnit>	m_unit;
 	};
 //------------------------------------------------------------------------------
 	class CGridlines : public WritingElement
@@ -589,7 +589,7 @@ namespace ChartEx
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;		
-		nullable<SimpleTypes::Spreadsheet::CTickMarksType<>>	m_type;
+		nullable<SimpleTypes::Spreadsheet::CTickMarksType>		m_type;
 		std::wstring											m_name;
 	};
 //------------------------------------------------------------------------------
@@ -705,8 +705,8 @@ namespace ChartEx
 		nullable<PPTX::Logic::TxBody>					m_oTxPr;	
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
-		nullable<SimpleTypes::Spreadsheet::CSidePos<>>	m_pos;
-		nullable<SimpleTypes::Spreadsheet::CPosAlign<>> m_align;
+		nullable<SimpleTypes::Spreadsheet::CSidePos>	m_pos;
+		nullable<SimpleTypes::Spreadsheet::CPosAlign>	m_align;
 		nullable_bool									m_overlay;
 	};
 //------------------------------------------------------------------------------
@@ -745,7 +745,7 @@ namespace ChartEx
 		nullable<CFormula>		m_f;
 		nullable_string 		m_nf;
 
-		nullable<SimpleTypes::Spreadsheet::CDimensionType<>>	m_type;
+		nullable<SimpleTypes::Spreadsheet::CDimensionType>		m_type;
 		nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
 	};
 //------------------------------------------------------------------------------

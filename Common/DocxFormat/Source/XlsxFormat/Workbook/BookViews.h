@@ -139,19 +139,19 @@ namespace OOX
 
 
 		public:
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveTab;
-				nullable<SimpleTypes::COnOff<>>						m_oAutoFilterDateGrouping;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oFirstSheet;
-				nullable<SimpleTypes::COnOff<>>						m_oMinimized;
-				nullable<SimpleTypes::COnOff<>>						m_oShowHorizontalScroll;
-				nullable<SimpleTypes::COnOff<>>						m_oShowSheetTabs;
-				nullable<SimpleTypes::COnOff<>>						m_oShowVerticalScroll;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTabRatio;
-				nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oVisibility;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowHeight;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWindowWidth;
-				nullable<SimpleTypes::CDecimalNumber<>>				m_oXWindow;
-				nullable<SimpleTypes::CDecimalNumber<>>				m_oYWindow;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oActiveTab;
+				nullable<SimpleTypes::COnOff>						m_oAutoFilterDateGrouping;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oFirstSheet;
+				nullable<SimpleTypes::COnOff>						m_oMinimized;
+				nullable<SimpleTypes::COnOff>						m_oShowHorizontalScroll;
+				nullable<SimpleTypes::COnOff>						m_oShowSheetTabs;
+				nullable<SimpleTypes::COnOff>						m_oShowVerticalScroll;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTabRatio;
+				nullable<SimpleTypes::Spreadsheet::CVisibleType>	m_oVisibility;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oWindowHeight;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oWindowWidth;
+				nullable<SimpleTypes::CDecimalNumber>				m_oXWindow;
+				nullable<SimpleTypes::CDecimalNumber>				m_oYWindow;
 		};
 
 		class CBookViews : public WritingElementWithChilds<CWorkbookView>

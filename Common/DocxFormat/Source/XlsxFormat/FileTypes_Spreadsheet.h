@@ -30,9 +30,7 @@
  *
  */
 #pragma once
-
 #include "../DocxFormat/FileType.h"
-
 
 namespace OOX
 {
@@ -40,122 +38,56 @@ namespace OOX
 	{
 		namespace FileTypes
 		{
-			const FileType Workbook			(L"xl", L"workbook.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+			extern const FileType Workbook;
 
-			const FileType WorkbookMacro	(L"xl", L"workbook.xml",
-												L"application/vnd.ms-excel.sheet.macroEnabled.main+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument");
+			extern const FileType WorkbookMacro;
 
-			const FileType SharedStrings	(L"", L"sharedStrings.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings");
+			extern const FileType SharedStrings;
 
-			const FileType Styles			(L"", L"styles.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles");
+			extern const FileType Styles;
 
-			const FileType Worksheet		(L"worksheets", L"sheet.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet",
-												L"worksheets/sheet", true);
+			extern const FileType Worksheet;
 
-			const FileType Chartsheets		(L"chartsheets", L"sheet.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.chartsheet+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chartsheet", 
-												L"chartsheets/sheet", true);
+			extern const FileType Chartsheets;
 
-			const FileType CalcChain		(L"", L"calcChain.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain");
+			extern const FileType CalcChain;
 
-			const FileType ThreadedComments	(L"../threadedComments", L"threadedComment.xml",
-												L"application/vnd.ms-excel.threadedcomments+xml",
-												L"http://schemas.microsoft.com/office/2017/10/relationships/threadedComment", 
-												L"threadedComments/threadedComment", true, true);
+			extern const FileType ThreadedComments;
 
-			const FileType Persons			(L"persons", L"person.xml",
-												L"application/vnd.ms-excel.person+xml",
-												L"http://schemas.microsoft.com/office/2017/10/relationships/person");
+			extern const FileType Persons;
 
-			const FileType Comments			(L"../", L"comments.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", 
-												L"comments", true, true);
+			extern const FileType Comments;
 
-			const FileType Table			(L"../tables", L"table.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.table+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", 
-												L"tables/table", true, true);
+			extern const FileType Table;
 
-			const FileType QueryTable		(L"../queryTables", L"queryTable.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.queryTable+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/queryTable", 
-												L"queryTables/queryTable", true, true);
+			extern const FileType QueryTable;
 
-			const FileType Connections		(L"", L"connections.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.connections+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/connections");
+			extern const FileType Connections;
 
-			const FileType CtrlProp			(L"../ctrlProps", L"ctrlProp.xml",
-												L"application/vnd.ms-excel.controlproperties+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/ctrlProp", 
-												L"ctrlProps/ctrlProp", true, true);
+			extern const FileType CtrlProp;
 
-			const FileType Drawings			(L"../drawings", L"drawing.xml",
-												L"application/vnd.openxmlformats-officedocument.drawing+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing", 
-												L"drawings/drawing", true, true);
+			extern const FileType Drawings;
 
-			const FileType ExternalLinks	(L"externalLinks", L"externalLink.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.externalLink+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/externalLink",
-												L"externalLinks/externalLink", true, true);
+			extern const FileType ExternalLinks;
 
-			const FileType PivotTable		(L"../pivotTables", L"pivotTable.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotTable+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotTable",
-												L"pivotTables/pivotTable", true, true);
+			extern const FileType PivotTable;
 
-			const FileType PivotCacheDefinition(L"pivotCache", L"pivotCacheDefinition.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheDefinition+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheDefinition",
-												L"pivotCache/pivotCacheDefinition", true, true);
+			extern const FileType PivotCacheDefinition;
 
-			const FileType PivotCacheRecords(L"", L"pivotCacheRecords.xml",
-												L"application/vnd.openxmlformats-officedocument.spreadsheetml.pivotCacheRecords+xml",
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/pivotCacheRecords",
-												L"pivotCache/pivotCacheRecords", true, true);
+			extern const FileType PivotCacheRecords;
 
-			const FileType SlicerCache		(L"slicerCaches", L"slicerCache.xml",
-												L"application/vnd.ms-excel.slicerCache+xml",
-												L"http://schemas.microsoft.com/office/2007/relationships/slicerCache",
-												L"slicerCaches/slicerCache", true, true);
+			extern const FileType SlicerCache;
 
-			const FileType Slicer			(L"../slicers", L"slicer.xml",
-												L"application/vnd.ms-excel.slicer+xml",
-												L"http://schemas.microsoft.com/office/2007/relationships/slicer",
-												L"slicers/slicer", true, true);
+			extern const FileType Slicer;
 
-			const FileType NamedSheetView	(L"../namedSheetViews", L"namedSheetView.xml",
-												L"application/vnd.ms-excel.namedsheetviews+xml",
-												L"http://schemas.microsoft.com/office/2019/04/relationships/namedSheetView",
-												L"namedSheetViews/namedSheetView", true, true);
+			extern const FileType NamedSheetView;
 
-			const FileType XlBinaryIndex	(L"worksheets", L"binaryIndex.bin",
-												L"application/vnd.ms-excel.binIndexW",
-												L"http://schemas.microsoft.com/office/2006/relationships/xlBinaryIndex",
-												L"worksheets/binaryIndex", true);
+			extern const FileType XlBinaryIndex;
 
 			//onlyoffice workbook comments
-			const FileType WorkbookComments(L"", L"workbookComments.bin",
-												L"",
-												L"http://schemas.onlyoffice.com/workbookComments");
+			extern const FileType WorkbookComments;
 
-
-			const FileType SpreadsheetFlat(L"", L"", L"", L"");
-		
+			extern const FileType SpreadsheetFlat;
 
 		} // namespace FileTypes
 	}

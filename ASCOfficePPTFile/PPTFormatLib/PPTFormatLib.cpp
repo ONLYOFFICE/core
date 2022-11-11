@@ -38,6 +38,7 @@
 
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 #ifndef READMODE
     #define READMODE 1

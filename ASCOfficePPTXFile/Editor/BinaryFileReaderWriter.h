@@ -37,7 +37,7 @@
 
 #include "../../DesktopEditor/common/Types.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #include <vector>
 #include <map>
@@ -452,6 +452,8 @@ namespace NSBinPptxRW
 		_UINT32 GetPositionAbsolute();
 		void CloseFile();
 		virtual void Flush();
+
+		void WriteReserved(size_t lCount);
 	};
 	class CXlsbBinaryWriter : public CStreamBinaryWriter
 	{

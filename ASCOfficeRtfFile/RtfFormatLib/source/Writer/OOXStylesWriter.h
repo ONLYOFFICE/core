@@ -39,7 +39,7 @@ public:
 	OOXRelsWriterPtr m_oRelsWriter;
 	OOXStylesWriter(OOXWriter& oWriter,RtfDocument& oDocument ):m_oWriter(oWriter)
 	{
-		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( _T("styles.xml"), oDocument ) );
+		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter( L"styles.xml", oDocument ) );
 		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
 	}
 	~OOXStylesWriter()
@@ -52,15 +52,15 @@ public:
 	}
     bool Save( std::wstring sFolder )
 	{
-        std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+		std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + L"word";
 		
 		//if( false == m_sFileXml.empty() ) 
 		{		
-			CFile file;
-            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
+			NSFile::CFileBinary file;
+			if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + L"styles.xml")) return false;
 
-			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml") );
-			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"), _T("/word/styles.xml") );
+			m_oWriter.m_oDocRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" );
+			m_oWriter.m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml", L"/word/styles.xml" );
 
             std::wstring sXml = CreateXml();
             std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
@@ -83,11 +83,11 @@ private:
     std::wstring CreateXml()
 	{
         std::wstring sResult;
-        sResult.append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
-        sResult.append( _T("\n") );
-        sResult.append( _T("<w:styles xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">") );
+		sResult.append( L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>" );
+		sResult.append( L"\n" );
+		sResult.append( L"<w:styles xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">" );
         sResult.append( m_sFileXml );
-        sResult.append( _T("</w:styles>") );
+		sResult.append( L"</w:styles>" );
 		return sResult;
 	}
 };

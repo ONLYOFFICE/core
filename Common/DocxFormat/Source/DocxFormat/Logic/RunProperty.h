@@ -92,7 +92,7 @@ namespace OOX
 
             nullable<std::wstring>					m_sAuthor;
             nullable<SimpleTypes::CDateTime>		m_oDate;
-            nullable<SimpleTypes::CDecimalNumber<>>	m_oId;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
             nullable<std::wstring>					m_sUserId;
 
             nullable<CRunProperty>					m_pRunPr;
@@ -161,50 +161,50 @@ namespace OOX
 
 			bool m_bRPRChange = false; // Является ли данный w:rPr дочерним по отношению к w:rPrChange
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oBold;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oBoldCs;
+			nullable<ComplexTypes::Word::COnOff2>	m_oBold;
+			nullable<ComplexTypes::Word::COnOff2>	m_oBoldCs;
 			nullable<ComplexTypes::Word::CBorder>							m_oBdr;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oCaps;
+			nullable<ComplexTypes::Word::COnOff2>	m_oCaps;
 			nullable<ComplexTypes::Word::CColor>							m_oColor;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oCs;
+			nullable<ComplexTypes::Word::COnOff2>	m_oCs;
 			nullable<ComplexTypes::Word::CTrackChange>						m_oDel;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oDStrike;
+			nullable<ComplexTypes::Word::COnOff2>	m_oDStrike;
 			nullable<ComplexTypes::Word::CEastAsianLayout>					m_oEastAsianLayout;
 			nullable<ComplexTypes::Word::CTextEffect>						m_oEffect;
 			nullable<ComplexTypes::Word::CEm>								m_oEm;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oEmboss;
+			nullable<ComplexTypes::Word::COnOff2>	m_oEmboss;
 			nullable<ComplexTypes::Word::CFitText>							m_oFitText;
 			nullable<ComplexTypes::Word::CHighlight>						m_oHighlight;
 			nullable<ComplexTypes::Word::CTrackChange>						m_oIns;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oItalic;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oItalicCs;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oImprint;
+			nullable<ComplexTypes::Word::COnOff2>	m_oItalic;
+			nullable<ComplexTypes::Word::COnOff2>	m_oItalicCs;
+			nullable<ComplexTypes::Word::COnOff2>	m_oImprint;
 			nullable<ComplexTypes::Word::CHpsMeasure>						m_oKern;
 			nullable<ComplexTypes::Word::CLanguage>							m_oLang;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oNoProof;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oMath;
+			nullable<ComplexTypes::Word::COnOff2>	m_oNoProof;
+			nullable<ComplexTypes::Word::COnOff2>	m_oMath;
 			nullable<ComplexTypes::Word::CTrackChange>						m_oMoveFrom;
 			nullable<ComplexTypes::Word::CTrackChange>						m_oMoveTo;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oOutline;
+			nullable<ComplexTypes::Word::COnOff2>	m_oOutline;
 			nullable<ComplexTypes::Word::CSignedHpsMeasure>					m_oPosition;
 			nullable<ComplexTypes::Word::CFonts>							m_oRFonts;
 			nullable<OOX::Logic::CRPrChange>								m_oRPrChange;
             nullable<ComplexTypes::Word::String>							m_oRStyle;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oRtL;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oShadow;
+			nullable<ComplexTypes::Word::COnOff2>	m_oRtL;
+			nullable<ComplexTypes::Word::COnOff2>	m_oShadow;
 			nullable<ComplexTypes::Word::CShading>							m_oShd;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oSmallCaps;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oSnapToGrid;
+			nullable<ComplexTypes::Word::COnOff2>	m_oSmallCaps;
+			nullable<ComplexTypes::Word::COnOff2>	m_oSnapToGrid;
 			nullable<ComplexTypes::Word::CSignedTwipsMeasure>				m_oSpacing;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oSpecVanish;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oStrike;
+			nullable<ComplexTypes::Word::COnOff2>	m_oSpecVanish;
+			nullable<ComplexTypes::Word::COnOff2>	m_oStrike;
 			nullable<ComplexTypes::Word::CHpsMeasure>						m_oSz;
 			nullable<ComplexTypes::Word::CHpsMeasure>						m_oSzCs;
 			nullable<ComplexTypes::Word::CUnderline>						m_oU;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oVanish;
+			nullable<ComplexTypes::Word::COnOff2>	m_oVanish;
 			nullable<ComplexTypes::Word::CVerticalAlignRun>					m_oVertAlign;
 			nullable<ComplexTypes::Word::CTextScale>						m_oW;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oWebHidden;
+			nullable<ComplexTypes::Word::COnOff2>	m_oWebHidden;
 	//ext		
 			PPTX::Logic::UniFill											m_oTextFill;			
             nullable<PPTX::Logic::Ln>										m_oTextOutline;
@@ -212,7 +212,7 @@ namespace OOX
 			nullable<ComplexTypes::Word::CNumSpacing>						m_oNumSpacing;
 			nullable<ComplexTypes::Word::CNumForm>							m_oNumForm;
 			nullable<CStylisticSets>										m_oStylisticSets;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oCntxtAlts;
+			nullable<ComplexTypes::Word::COnOff2>	m_oCntxtAlts;
 			nullable<PPTX::Logic::Reflection>								m_oReflection;
 			nullable<PPTX::Logic::Glow>										m_oGlow;
 			nullable<PPTX::Logic::OuterShdw>								m_oShadowExt;

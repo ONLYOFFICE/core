@@ -157,9 +157,9 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CDecimalNumber<>>	m_oCharSpace;
-			nullable<SimpleTypes::CDecimalNumber<>>	m_oLinePitch;
-			nullable<SimpleTypes::CDocGrid<>>		m_oType;
+			nullable<SimpleTypes::CDecimalNumber>	m_oCharSpace;
+			nullable<SimpleTypes::CDecimalNumber>	m_oLinePitch;
+			nullable<SimpleTypes::CDocGrid>			m_oType;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -219,8 +219,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CRelationshipId> m_oId;
-			nullable<SimpleTypes::CHdrFtr<>> m_oType;
+			nullable<SimpleTypes::CRelationshipId>		m_oId;
+			nullable<SimpleTypes::CHdrFtr>				m_oType;
 		};
 
 
@@ -301,10 +301,10 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oCountBy;
+			nullable<SimpleTypes::CDecimalNumber      > m_oCountBy;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oDistance;
-			nullable<SimpleTypes::CLineNumberRestart<>> m_oRestart;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oStart;
+			nullable<SimpleTypes::CLineNumberRestart  > m_oRestart;
+			nullable<SimpleTypes::CDecimalNumber      > m_oStart;
 		};
 
 
@@ -367,8 +367,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oFirst;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oOther;
+			nullable<SimpleTypes::CDecimalNumber> m_oFirst;
+			nullable<SimpleTypes::CDecimalNumber> m_oOther;
 		};
 
 
@@ -507,16 +507,16 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CHexColor<>                     > m_oColor;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oFrame;
+			nullable<SimpleTypes::CHexColor                       > m_oColor;
+			nullable<SimpleTypes::COnOff                          > m_oFrame;
 			nullable<SimpleTypes::CRelationshipId                 > m_oId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse> > m_oShadow;
-			nullable<SimpleTypes::CPointMeasure<>                 > m_oSpace;
-			nullable<SimpleTypes::CEighthPointMeasure<>           > m_oSz;
-			nullable<SimpleTypes::CThemeColor<>                   > m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>               > m_oThemeTint;
-			nullable<SimpleTypes::CBorder<>                       > m_oVal;
+			nullable<SimpleTypes::COnOff                          > m_oShadow;
+			nullable<SimpleTypes::CPointMeasure                   > m_oSpace;
+			nullable<SimpleTypes::CEighthPointMeasure             > m_oSz;
+			nullable<SimpleTypes::CThemeColor                     > m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber                 > m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber                 > m_oThemeTint;
+			nullable<SimpleTypes::CBorder                         > m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1000,10 +1000,10 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CChapterSep<>    > m_oChapSep;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;
-			nullable<SimpleTypes::CNumberFormat<>  > m_oFmt;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oStart;
+			nullable<SimpleTypes::CChapterSep      > m_oChapSep;
+			nullable<SimpleTypes::CDecimalNumber   > m_oChapStyle;
+			nullable<SimpleTypes::CNumberFormat    > m_oFmt;
+			nullable<SimpleTypes::CDecimalNumber   > m_oStart;
 		};
 
 
@@ -1083,9 +1083,9 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oCode;
+			nullable<SimpleTypes::CDecimalNumber     > m_oCode;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oH;
-			nullable<SimpleTypes::CPageOrientation<> > m_oOrient;
+			nullable<SimpleTypes::CPageOrientation   > m_oOrient;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oW;
 		};
 
@@ -1141,7 +1141,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CSectionMark<> > m_oVal;
+			nullable<SimpleTypes::CSectionMark> m_oVal;
 		};
 
 
@@ -1279,9 +1279,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>           > m_oEqualWidth;
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oNum;
-			nullable<SimpleTypes::COnOff<>           > m_oSep;
+			nullable<SimpleTypes::COnOff             > m_oEqualWidth;
+			nullable<SimpleTypes::CDecimalNumber     > m_oNum;
+			nullable<SimpleTypes::COnOff             > m_oSep;
 			nullable<SimpleTypes::CTwipsMeasure      > m_oSpace;
 
 			std::vector<ComplexTypes::Word::CColumn *> m_arrColumns;
@@ -1622,9 +1622,9 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CPageBorderDisplay<> > m_oDisplay;
-			nullable<SimpleTypes::CPageBorderOffset<>  > m_oOffsetFrom;
-			nullable<SimpleTypes::CPageBorderZOrder<>  > m_oZOrder;
+			nullable<SimpleTypes::CPageBorderDisplay > m_oDisplay;
+			nullable<SimpleTypes::CPageBorderOffset  > m_oOffsetFrom;
+			nullable<SimpleTypes::CPageBorderZOrder  > m_oZOrder;
 
 			// Childs
 			nullable<ComplexTypes::Word::CBottomPageBorder > m_oBottom;
@@ -1657,10 +1657,10 @@ namespace OOX
 		public:
 
 			// Attributes
-            nullable<std::wstring                       > m_sAuthor;
+			nullable<std::wstring                  > m_sAuthor;
 			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-            nullable<std::wstring                       > m_sUserId;
+			nullable<SimpleTypes::CDecimalNumber   > m_oId;
+			nullable<std::wstring                  > m_sUserId;
 
 			// Childs
 			nullable<CSectionProperty>               m_pSecPr;
@@ -1738,31 +1738,31 @@ namespace OOX
 		public:
 			bool m_bSectPrChange;
 
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidRPr;
-			nullable<SimpleTypes::CLongHexNumber<>                       > m_oRsidSect;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber                       > m_oRsidSect;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oBidi;
+			nullable<ComplexTypes::Word::COnOff2>		m_oBidi;
 			nullable<OOX::Logic::CColumns>										m_oCols;
 			nullable<ComplexTypes::Word::CDocGrid>								m_oDocGrid;
 			nullable<OOX::Logic::CEdnProps>										m_oEndnotePr;
 			std::vector<ComplexTypes::Word::CHdrFtrRef*>						m_arrFooterReference;
 			nullable<OOX::Logic::CFtnProps>										m_oFootnotePr;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oFormProt;
+			nullable<ComplexTypes::Word::COnOff2>		m_oFormProt;
 			std::vector<ComplexTypes::Word::CHdrFtrRef*>						m_arrHeaderReference;
 			nullable<ComplexTypes::Word::CLineNumber>							m_oLnNumType;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oNoEndnote;
+			nullable<ComplexTypes::Word::COnOff2>		m_oNoEndnote;
 			nullable<ComplexTypes::Word::CPaperSource>							m_oPaperSrc;
 			nullable<OOX::Logic::CPageBorders>									m_oPgBorders;
 			nullable<ComplexTypes::Word::CPageMar>								m_oPgMar;
 			nullable<ComplexTypes::Word::CPageNumber>							m_oPgNumType;
 			nullable<ComplexTypes::Word::CPageSz>								m_oPgSz;
 			nullable<ComplexTypes::Word::CRel>									m_oPrinterSettings;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>		m_oRtlGutter;
+			nullable<ComplexTypes::Word::COnOff2>		m_oRtlGutter;
 			nullable<OOX::Logic::CSectPrChange>									m_oSectPrChange;
 			nullable<ComplexTypes::Word::CTextDirection>						m_oTextDirection;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >		m_oTitlePg;
+			nullable<ComplexTypes::Word::COnOff2 >		m_oTitlePg;
 			nullable<ComplexTypes::Word::CSectType>								m_oType;
 			nullable<ComplexTypes::Word::CVerticalJc>							m_oVAlign;
 		};

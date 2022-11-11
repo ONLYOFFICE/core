@@ -2480,7 +2480,7 @@ void XlsConverter::convert(XLS::Obj * obj)
 			if (obj->pictFlags.fDde)	object_stream = L"LNK";
 			else						object_stream = L"MBD";
 		
-			object_stream += XmlUtils::IntToString(obj->pictFmla.lPosInCtlStm, L"%08X") + L"/";
+			object_stream += XmlUtils::ToString(obj->pictFmla.lPosInCtlStm, L"%08X") + L"/";
 			if (xls_file->storage_->isDirectory(object_stream))
 			{
 				xlsx_context->get_mediaitems().create_embeddings_path(xlsx_path);

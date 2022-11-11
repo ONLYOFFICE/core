@@ -172,7 +172,7 @@ std::wstring mediaitems::create_file_name(const std::wstring & uri, _rels_type t
 }
 std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 {
-	CFile file;
+	NSFile::CFileBinary file;
 
 	std::wstring sExt;
 	if (file.OpenFile(fileName) == S_OK)

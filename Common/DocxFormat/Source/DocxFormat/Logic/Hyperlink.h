@@ -102,7 +102,7 @@ namespace OOX
 			nullable_string											m_sAnchor;
 			nullable_string											m_sDestinition;
 			nullable_string											m_sDocLocation;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>>	m_oHistory;
+			nullable<SimpleTypes::COnOff>							m_oHistory;
 			nullable<SimpleTypes::CRelationshipId>					m_oId;
 			nullable_string											m_sTgtFrame;
 			nullable_string											m_sTooltip;

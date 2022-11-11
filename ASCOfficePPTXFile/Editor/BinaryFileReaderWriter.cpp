@@ -1113,7 +1113,7 @@ namespace NSBinPptxRW
 
 	void CBinaryFileWriter::GetBase64File(const std::wstring& sFile, std::string& strDst64)
 	{
-		CFile oFile;
+		NSFile::CFileBinary oFile;
 		HRESULT hr = oFile.OpenFile(sFile);
 
 		if (S_OK != hr)
@@ -1293,6 +1293,10 @@ namespace NSBinPptxRW
 		m_lPositionFlushed += m_lPosition;
 		m_lPosition = 0;
 		m_pStreamCur = m_pStreamData;
+	}
+	void CStreamBinaryWriter::WriteReserved(size_t lCount)
+	{
+		CBinaryFileWriter::WriteReserved(lCount);
 	}
 
 	CXlsbBinaryWriter::CXlsbBinaryWriter(size_t bufferSize) : CStreamBinaryWriter(bufferSize)
@@ -1536,7 +1540,7 @@ namespace NSBinPptxRW
 	}
 	void CRelsGenerator::SaveRels(const std::wstring& strFile)
 	{
-		CFile oFile;
+		NSFile::CFileBinary oFile;
 		oFile.CreateFile(strFile);
 		std::wstring strMem = m_pWriter->GetData();
 		oFile.WriteStringUTF8(strMem);

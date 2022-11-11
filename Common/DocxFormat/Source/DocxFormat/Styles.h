@@ -109,12 +109,12 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>           > m_oLocked;
-			nullable<std::wstring                         > m_sName;
-			nullable<SimpleTypes::COnOff<>           > m_oQFormat;
-			nullable<SimpleTypes::COnOff<>           > m_oSemiHidden;
-			nullable<SimpleTypes::CDecimalNumber<>   > m_oUiPriority;
-			nullable<SimpleTypes::COnOff<>           > m_oUnhideWhenUsed;
+			nullable<SimpleTypes::COnOff             > m_oLocked;
+			nullable<std::wstring                    > m_sName;
+			nullable<SimpleTypes::COnOff             > m_oQFormat;
+			nullable<SimpleTypes::COnOff             > m_oSemiHidden;
+			nullable<SimpleTypes::CDecimalNumber     > m_oUiPriority;
+			nullable<SimpleTypes::COnOff             > m_oUnhideWhenUsed;
 		};
 
 	} // Word
@@ -250,7 +250,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CTblStyleOverrideType<>> m_oType;
+			nullable<SimpleTypes::CTblStyleOverrideType> m_oType;
 
 			nullable<OOX::Logic::CParagraphProperty> m_oParPr;
 			nullable<OOX::Logic::CRunProperty> m_oRunPr;
@@ -486,6 +486,8 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
+			m_oDefUiPriority.SetValue(99);
+
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:count",             m_oCount )
 			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:defLockedState",    m_oDefLockedState )
@@ -496,12 +498,12 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 	public:
-		SimpleTypes::CDecimalNumber<0>                  m_oCount;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefLockedState;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefQFormat;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefSemiHidden;
-		SimpleTypes::CDecimalNumber<99>                 m_oDefUiPriority;
-		SimpleTypes::COnOff<SimpleTypes::onoffFalse>    m_oDefUnhideWhenUsed;
+		SimpleTypes::CDecimalNumber		                m_oCount;
+		SimpleTypes::COnOff								m_oDefLockedState;
+		SimpleTypes::COnOff								m_oDefQFormat;
+		SimpleTypes::COnOff							    m_oDefSemiHidden;
+		SimpleTypes::CDecimalNumber                     m_oDefUiPriority;
+		SimpleTypes::COnOff							    m_oDefUnhideWhenUsed;
 
 		std::vector<ComplexTypes::Word::CLsdException*> m_arrLsdException;
 	};
@@ -704,33 +706,33 @@ namespace OOX
 
 	public:
 
-		nullable<SimpleTypes::COnOff<>>		m_oCustomStyle;
-		nullable<SimpleTypes::COnOff<>>		m_oDefault;
+		nullable<SimpleTypes::COnOff>		m_oCustomStyle;
+		nullable<SimpleTypes::COnOff>		m_oDefault;
 		nullable_string						m_sStyleId;
-		nullable<SimpleTypes::CStyleType<>> m_oType;
+		nullable<SimpleTypes::CStyleType>	m_oType;
 
 		nullable<ComplexTypes::Word::String>							m_oAliases;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oAutoRedefine;
+        nullable<ComplexTypes::Word::COnOff2>	m_oAutoRedefine;
 		nullable<ComplexTypes::Word::String>							m_oBasedOn;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oHidden;
+        nullable<ComplexTypes::Word::COnOff2>	m_oHidden;
 		nullable<ComplexTypes::Word::String>							m_oLink;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oLocked;
+        nullable<ComplexTypes::Word::COnOff2>	m_oLocked;
 		nullable<ComplexTypes::Word::String>							m_oName;
 		nullable<ComplexTypes::Word::String>							m_oNext;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonal;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonalCompose;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oPersonalReply;
+        nullable<ComplexTypes::Word::COnOff2>	m_oPersonal;
+        nullable<ComplexTypes::Word::COnOff2>	m_oPersonalCompose;
+        nullable<ComplexTypes::Word::COnOff2>	m_oPersonalReply;
 		nullable<OOX::Logic::CParagraphProperty>						m_oParPr;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oQFormat;
+        nullable<ComplexTypes::Word::COnOff2>	m_oQFormat;
 		nullable<OOX::Logic::CRunProperty>								m_oRunPr;
 		nullable<ComplexTypes::Word::CLongHexNumber>					m_oRsid;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oSemiHidden;
+        nullable<ComplexTypes::Word::COnOff2>	m_oSemiHidden;
 		nullable<OOX::Logic::CTableProperty>							m_oTblPr;		
 		std::vector<OOX::Logic::CTableStyleProperties*>					m_arrTblStylePr;
 		nullable<OOX::Logic::CTableCellProperties>						m_oTcPr;
 		nullable<OOX::Logic::CTableRowProperties>						m_oTrPr;
 		nullable<ComplexTypes::Word::CDecimalNumber>					m_oUiPriority;
-		nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oUnhideWhenUsed;
+        nullable<ComplexTypes::Word::COnOff2>	m_oUnhideWhenUsed;
 	};
 
 	//--------------------------------------------------------------------------------

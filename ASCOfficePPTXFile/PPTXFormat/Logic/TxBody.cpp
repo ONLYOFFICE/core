@@ -34,6 +34,7 @@
 #include "TxBody.h"
 #include "ClrMap.h"
 #include "../Theme.h"
+#include "boost/format.hpp"
 
 namespace PPTX
 {

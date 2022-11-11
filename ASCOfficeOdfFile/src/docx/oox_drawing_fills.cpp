@@ -285,7 +285,7 @@ void vml_serialize_gradient_fill(std::wostream & strm, const _oox_fill & val)
 				double focus_x = ((val.gradient->rect[2] - val.gradient->rect[0]) /2. + val.gradient->rect[0]) / 100.;
 				double focus_y = ((val.gradient->rect[3] - val.gradient->rect[1]) /2. + val.gradient->rect[1]) / 100.;
 				
-				CP_XML_ATTR(L"focusposition", XmlUtils::DoubleToString(focus_x, L"%.2f") + L"," + XmlUtils::DoubleToString(focus_y, L"%.2f"));
+				CP_XML_ATTR(L"focusposition", XmlUtils::ToString(focus_x, L"%.2f") + L"," + XmlUtils::ToString(focus_y, L"%.2f"));
 			}
 		}
 	}

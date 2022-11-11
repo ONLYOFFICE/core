@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../DesktopEditor/common/Types.h"
 
 #define _USE_STRING_OPERATOR                            \
     virtual void operator=(const std::wstring& value)	\

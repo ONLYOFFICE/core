@@ -122,7 +122,7 @@ namespace OOX
 
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 
 			nullable<CIndexedColors>	m_oIndexedColors;
 			nullable<CMruColors>		m_oMruColors;

@@ -81,6 +81,7 @@ SOURCES += \
     ../../../PPTXFormat/Logic/Controls.cpp \
     ../../../PPTXFormat/Presentation.cpp \
     ../../../PPTXFormat/FileContainer.cpp \
+	../../../PPTXFormat/FileTypes.cpp \
     ../../../PPTXFormat/FileFactory.cpp \
     ../../../PPTXFormat/FileMap.cpp \
     ../../../PPTXFormat/Folder.cpp

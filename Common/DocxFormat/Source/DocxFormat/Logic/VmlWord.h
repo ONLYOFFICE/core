@@ -157,9 +157,9 @@ namespace OOX
 
 			EElementType                            m_eType;
 
-			nullable<SimpleTypes::CBorderShadow<> > m_oShadow;
-			nullable<SimpleTypes::CBorderType<>   > m_oType;
-			nullable<SimpleTypes::CDecimalNumber<>> m_oWidth;
+			nullable<SimpleTypes::CBorderShadow > m_oShadow;
+			nullable<SimpleTypes::CBorderType   > m_oType;
+			nullable<SimpleTypes::CDecimalNumber> m_oWidth;
 		};
 		//--------------------------------------------------------------------------------
 		// CWrap 14.3.2.6 (Part 4)
@@ -221,10 +221,10 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CHorizontalAnchor<> > m_oAnchorX;
-			nullable<SimpleTypes::CVerticalAnchor<>   > m_oAnchorY;
-			nullable<SimpleTypes::CWrapSide<>         > m_oSide;
-			nullable<SimpleTypes::CWrapType<>         > m_oType;
+			nullable<SimpleTypes::CHorizontalAnchor > m_oAnchorX;
+			nullable<SimpleTypes::CVerticalAnchor   > m_oAnchorY;
+			nullable<SimpleTypes::CWrapSide         > m_oSide;
+			nullable<SimpleTypes::CWrapType         > m_oType;
 		};
 	} // namespace Vml
 } // namespace OOX

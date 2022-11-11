@@ -69,7 +69,7 @@ namespace OOX
 		_GUID_ readGUID(MemoryStream *stream);
 		void readStdFont(MemoryStream *stream);
 
-		nullable<SimpleTypes::Spreadsheet::CObjectType<>> m_oObjectType;
+		nullable<SimpleTypes::Spreadsheet::CObjectType> m_oObjectType;
 
 		nullable_uint	m_oForeColor;
 		nullable_uint	m_oBackColor;
@@ -85,7 +85,7 @@ namespace OOX
 		nullable_int	m_oDelay;
 		nullable_string	m_oValue;
 		nullable_bool	m_oPasswordEdit;
-		nullable<SimpleTypes::Spreadsheet::CSelType<>> m_oSelType;
+		nullable<SimpleTypes::Spreadsheet::CSelType> m_oSelType;
 		nullable_int	m_oListRows;
 		nullable_int	m_oScrollBarsType;
 		nullable_bool	m_oLockText;

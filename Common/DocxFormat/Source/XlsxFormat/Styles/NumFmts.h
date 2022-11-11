@@ -120,8 +120,8 @@ namespace OOX
 		public:
 			nullable_string									m_oFormatCode;
 			nullable_string									m_oFormatCode16;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
-			nullable<SimpleTypes::COnOff<>>					m_oSourceLinked;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oNumFmtId;
+			nullable<SimpleTypes::COnOff>					m_oSourceLinked;
 		};
 		class CNumFmts : public WritingElementWithChilds<CNumFmt>
 		{
@@ -224,7 +224,7 @@ namespace OOX
                 m_oCount = (_INT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 
 			std::map<unsigned int, size_t> m_mapNumFmtIndex;
 			std::map<std::wstring, int> m_mapFormatCode;

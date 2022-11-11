@@ -34,7 +34,7 @@
 #define CONNECTIONSTREAM_H
 
 #include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
+#include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
 #include <memory.h>

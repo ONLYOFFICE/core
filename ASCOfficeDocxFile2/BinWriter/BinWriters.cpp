@@ -250,7 +250,7 @@ void BinaryCommonWriter::WritePBorders(const OOX::Logic::CPBdr& Borders)
 		WriteBorder(c_oSerBordersType::between, Borders.m_oBetween.get());
 	}
 }
-void BinaryCommonWriter::WriteColor(BYTE type, const SimpleTypes::CHexColor<>& color)
+void BinaryCommonWriter::WriteColor(BYTE type, const SimpleTypes::CHexColor& color)
 {
 	if(SimpleTypes::hexcolorRGB == color.GetValue())
 	{
@@ -261,8 +261,8 @@ void BinaryCommonWriter::WriteColor(BYTE type, const SimpleTypes::CHexColor<>& c
 		m_oStream.WriteBYTE(color.Get_B());
 	}
 }
-void BinaryCommonWriter::WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor<>>& oHexColor, const nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
-	const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
+void BinaryCommonWriter::WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor>& oHexColor, const nullable<SimpleTypes::CThemeColor>& oThemeColor,
+	const nullable<SimpleTypes::CUcharHexNumber>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber>& oThemeShade)
 {
 	if((oHexColor.IsInit() && SimpleTypes::hexcolorAuto == oHexColor->GetValue()) || oThemeColor.IsInit() || oThemeTint.IsInit() || oThemeShade.IsInit())
 	{
@@ -596,7 +596,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 			const ComplexTypes::Word::CHighlight& oHighlight = rPr->m_oHighlight.get();
 			if(oHighlight.m_oVal.IsInit())
 			{
-				const SimpleTypes::CHighlightColor<>& oHighlightVal = oHighlight.m_oVal.get();
+				const SimpleTypes::CHighlightColor& oHighlightVal = oHighlight.m_oVal.get();
 				if(SimpleTypes::highlightcolorNone == oHighlightVal.GetValue())
 				{
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::HighLightTyped);
@@ -605,7 +605,7 @@ void Binary_rPrWriter::Write_rPr(OOX::Logic::CRunProperty* rPr)
 				}
 				else
 				{
-					SimpleTypes::CHexColor<> oHexColor(oHighlightVal.Get_R(), oHighlightVal.Get_G(), oHighlightVal.Get_B());
+					SimpleTypes::CHexColor oHexColor(oHighlightVal.Get_R(), oHighlightVal.Get_G(), oHighlightVal.Get_B());
 					m_oBcw.WriteColor(c_oSerProp_rPrType::HighLight, oHexColor);
 				}
 			}
@@ -1045,7 +1045,7 @@ void Binary_pPrWriter::Write_pPr(const OOX::Logic::CParagraphProperty& pPr)
 		const ComplexTypes::Word::CJc& oJc = pPr.m_oJc.get();
 		if(oJc.m_oVal.IsInit())
 		{
-			const SimpleTypes::CJc<>& oEJc = oJc.m_oVal.get();
+			const SimpleTypes::CJc& oEJc = oJc.m_oVal.get();
 			m_oBcw.m_oStream.WriteBYTE(c_oSerProp_pPrType::Jc);
 			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 			switch(oEJc.GetValue())
@@ -3948,7 +3948,7 @@ template<typename T> void BinaryDocumentTableWriter::WriteMoveRangeEnd(const T& 
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
-void BinaryDocumentTableWriter::WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber<>>& oId)
+void BinaryDocumentTableWriter::WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber>& oId)
 {
 	int nCurPos = 0;
 	if(oId.IsInit() && (NULL == m_mapIgnoreComments || m_mapIgnoreComments->end() == m_mapIgnoreComments->find(oId->GetValue())))
@@ -6283,7 +6283,7 @@ void BinaryDocumentTableWriter::WriteRunContent(std::vector<OOX::WritingElement*
 		}
 	}
 }
-void BinaryDocumentTableWriter::WriteNoteRef(const nullable<SimpleTypes::COnOff<>>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber<>>& oId)
+void BinaryDocumentTableWriter::WriteNoteRef(const nullable<SimpleTypes::COnOff>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber>& oId)
 {
 	int nCurPos = 0;
 	if (oCustomMarkFollows.IsInit())

@@ -30,6 +30,8 @@
  *
  */
 #include "VmlDrawing.h"
+#include <boost/lexical_cast.hpp>
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX
 {
@@ -290,7 +292,7 @@ namespace OOX
 		
 		//for Comment SpreadsheetML & others vml (hf, objects, ...) !!
 
-		XmlUtils::CStringWriter sXml;
+		NSStringUtils::CStringBuilder sXml;
 		sXml.WriteString(L"<xml \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
 xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
@@ -336,22 +338,22 @@ xmlns:x=\"urn:schemas-microsoft-com:office:excel\">");
 				if(comment->m_dLeftMM.IsInit())
 				{
 					SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dLeftMM.get());
-					sStyle += L"margin-left:" + XmlUtils::DoubleToString(oPoint.ToPoints()) + L"pt;";
+					sStyle += L"margin-left:" + XmlUtils::ToString(oPoint.ToPoints()) + L"pt;";
 				}
 				if(comment->m_dTopMM.IsInit())
 				{
 					SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dTopMM.get());
-					sStyle += L"margin-top:" + XmlUtils::DoubleToString(oPoint.ToPoints()) + L"pt;";
+					sStyle += L"margin-top:" + XmlUtils::ToString(oPoint.ToPoints()) + L"pt;";
 				}
 				if(comment->m_dWidthMM.IsInit())
 				{
 					SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dWidthMM.get());
-					sStyle += L"width:" + XmlUtils::DoubleToString(oPoint.ToPoints()) + L"pt;";
+					sStyle += L"width:" + XmlUtils::ToString(oPoint.ToPoints()) + L"pt;";
 				}
 				if(comment->m_dHeightMM.IsInit())
 				{
 					SimpleTypes::CPoint oPoint; oPoint.FromMm(comment->m_dHeightMM.get());
-					sStyle += L"height:" + XmlUtils::DoubleToString(oPoint.ToPoints()) + L"pt;";
+					sStyle += L"height:" + XmlUtils::ToString(oPoint.ToPoints()) + L"pt;";
 				}
 				std::wstring sClientData = L"<x:ClientData ObjectType=\"Note\">";
 

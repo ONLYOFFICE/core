@@ -185,7 +185,7 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::Spreadsheet::CPatternType<>>	m_oPatternType;
+			nullable<SimpleTypes::Spreadsheet::CPatternType>	m_oPatternType;
 			nullable<CColor>									m_oBgColor;
 			nullable<CColor>									m_oFgColor;
 		};
@@ -374,7 +374,7 @@ namespace OOX
 			nullable<SimpleTypes::CDouble>		m_oLeft;
 			nullable<SimpleTypes::CDouble>		m_oRight;
 			nullable<SimpleTypes::CDouble>		m_oTop;
-			nullable<SimpleTypes::Spreadsheet::CGradientType<>>		m_oType;
+			nullable<SimpleTypes::Spreadsheet::CGradientType>		m_oType;
 		};
 		class CFill : public WritingElement
 		{
@@ -567,7 +567,7 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 			std::map<int, CFill*>								m_mapFills;
 		};
 	} //Spreadsheet

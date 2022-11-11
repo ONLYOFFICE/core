@@ -36,7 +36,7 @@
 #include "BoolErr.h"
 #include "Blank.h"
 #include "Label.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 
 namespace XLS
@@ -82,7 +82,7 @@ int SIIndex::serialize(std::wostream & _stream, int idx, const CellRef & in_ref)
 					CP_XML_NODE(L"c:pt")
 					{
 						CP_XML_ATTR(L"idx", idx++);
-						CP_XML_NODE(L"c:v") { CP_XML_STREAM() << XmlUtils::DoubleToString(number->num.data.value); }
+						CP_XML_NODE(L"c:v") { CP_XML_STREAM() << XmlUtils::ToString(number->num.data.value); }
 					}
 					res = 1;
 				}

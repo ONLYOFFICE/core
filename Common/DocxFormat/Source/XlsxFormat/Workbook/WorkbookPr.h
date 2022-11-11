@@ -154,24 +154,24 @@ namespace OOX
             }
 
 		public:
-				nullable<SimpleTypes::COnOff<>>						m_oAllowRefreshQuery;
-				nullable<SimpleTypes::COnOff<>>						m_oAutoCompressPictures;
-				nullable<SimpleTypes::COnOff<>>						m_oBackupFile;
-				nullable<SimpleTypes::COnOff<>>						m_oCheckCompatibility;
-                nullable<SimpleTypes::COnOff<>>	  					m_oCodeName;
-				nullable<SimpleTypes::COnOff<>>						m_oDate1904;
-				nullable<SimpleTypes::COnOff<>>						m_oDateCompatibility;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oDefaultThemeVersion;
-				nullable<SimpleTypes::COnOff<>>						m_oFilterPrivacy;
-				nullable<SimpleTypes::COnOff<>>						m_oHidePivotFieldList;
-				nullable<SimpleTypes::COnOff<>>						m_oPromptedSolutions;
-				nullable<SimpleTypes::COnOff<>>						m_oPublishItems;
-				nullable<SimpleTypes::COnOff<>>						m_oRefreshAllConnections;
-				nullable<SimpleTypes::COnOff<>>						m_oShowBorderUnselectedTables;
-				nullable<SimpleTypes::COnOff<>>						m_oShowInkAnnotation;
-				nullable<SimpleTypes::COnOff<>>						m_oShowObjects;
-				nullable<SimpleTypes::COnOff<>>						m_oShowPivotChartFilter;
-				nullable<SimpleTypes::Spreadsheet::CUpdateLinksType<>>						m_oUpdateLinks;
+				nullable<SimpleTypes::COnOff>						m_oAllowRefreshQuery;
+				nullable<SimpleTypes::COnOff>						m_oAutoCompressPictures;
+				nullable<SimpleTypes::COnOff>						m_oBackupFile;
+				nullable<SimpleTypes::COnOff>						m_oCheckCompatibility;
+				nullable<SimpleTypes::COnOff>	  					m_oCodeName;
+				nullable<SimpleTypes::COnOff>						m_oDate1904;
+				nullable<SimpleTypes::COnOff>						m_oDateCompatibility;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oDefaultThemeVersion;
+				nullable<SimpleTypes::COnOff>						m_oFilterPrivacy;
+				nullable<SimpleTypes::COnOff>						m_oHidePivotFieldList;
+				nullable<SimpleTypes::COnOff>						m_oPromptedSolutions;
+				nullable<SimpleTypes::COnOff>						m_oPublishItems;
+				nullable<SimpleTypes::COnOff>						m_oRefreshAllConnections;
+				nullable<SimpleTypes::COnOff>						m_oShowBorderUnselectedTables;
+				nullable<SimpleTypes::COnOff>						m_oShowInkAnnotation;
+				nullable<SimpleTypes::COnOff>						m_oShowObjects;
+				nullable<SimpleTypes::COnOff>						m_oShowPivotChartFilter;
+				nullable<SimpleTypes::Spreadsheet::CUpdateLinksType>						m_oUpdateLinks;
 		};
 
 		class CWorkbookProtection : public WritingElement
@@ -275,19 +275,19 @@ namespace OOX
 
             }
 
-			nullable<SimpleTypes::COnOff<>>		m_oLockRevision;
-			nullable<SimpleTypes::COnOff<>>		m_oLockStructure;
-			nullable<SimpleTypes::COnOff<>>		m_oLockWindows;
+			nullable<SimpleTypes::COnOff>		m_oLockRevision;
+			nullable<SimpleTypes::COnOff>		m_oLockStructure;
+			nullable<SimpleTypes::COnOff>		m_oLockWindows;
 
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oWorkbookAlgorithmName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oWorkbookSpinCount;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oWorkbookAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oWorkbookSpinCount;
 			nullable_string									m_oWorkbookHashValue;
 			nullable_string									m_oWorkbookSaltValue;
 
 			nullable_string									m_oPassword; //for old wrike protection
 			
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oRevisionsAlgorithmName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRevisionsSpinCount;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oRevisionsAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oRevisionsSpinCount;
 			nullable_string									m_oRevisionsHashValue;
 			nullable_string									m_oRevisionsSaltValue;			
 		};

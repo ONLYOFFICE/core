@@ -125,8 +125,8 @@ namespace OOX
 		public:
 				nullable<SimpleTypes::CRelationshipId>				m_oRid;
 				nullable_string										m_oName;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oSheetId;
-				nullable<SimpleTypes::Spreadsheet::CVisibleType<>>	m_oState;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oSheetId;
+				nullable<SimpleTypes::Spreadsheet::CVisibleType>	m_oState;
 
 		};
 

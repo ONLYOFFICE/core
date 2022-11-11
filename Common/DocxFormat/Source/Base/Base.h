@@ -35,69 +35,31 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "unicode_util.h"
-
-#include "../../../../DesktopEditor/common/File.h"
+#define VALUE_TO_STRING(x) #x
+#define VALUE2STR(x) VALUE_TO_STRING(x)
 
 #define _T(x)       __T(x)
 #define __T(x)      L##x
 
-#define VALUE_TO_STRING(x) #x
-#define VALUE2STR(x) VALUE_TO_STRING(x)
-
 #if defined(_WIN32) || defined (_WIN64)
-    #include <TCHAR.H>
-    // windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
+#include <TCHAR.H>
+// windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
 
-    #ifndef FILE_SEPARATOR
-	#define FILE_SEPARATOR
-	#define FILE_SEPARATOR_CHAR '\\'
-	#define FILE_SEPARATOR_STR _T("\\")
+#ifndef FILE_SEPARATOR
+#define FILE_SEPARATOR
+#define FILE_SEPARATOR_CHAR '\\'
+#define FILE_SEPARATOR_STR L"\\"
 #endif
-
 #else
-	#include "stdint.h"
+#include "stdint.h"
 
-	// linux-stype separator for paths i.e. '/home/documents/file.ext'
-	#ifndef FILE_SEPARATOR
-	#define FILE_SEPARATOR
-	#define FILE_SEPARATOR_CHAR '/'
-	#define FILE_SEPARATOR_STR _T("/")
+// linux-stype separator for paths i.e. '/home/documents/file.ext'
+#ifndef FILE_SEPARATOR
+#define FILE_SEPARATOR
+#define FILE_SEPARATOR_CHAR '/'
+#define FILE_SEPARATOR_STR L"/"
 #endif
-
-#ifndef _wtof
-    #define _wtof       std::stod
-    #define _wtoi64(p)  std::wcstoll((p),NULL,10)
-
-    static int _wtoi(std::wstring sVal)
-    {
-        int iVal = 0;
-        try
-        {
-            iVal = std::stod(sVal.c_str());
-        }catch(...)
-        {
-            try
-            {
-                iVal = std::wcstoll(sVal.c_str(), NULL, 10);
-            }catch(...)
-            {
-            }
-        }
-        return iVal;
-    }
-    #ifdef UNICODE
-        #define _ttoi _wtoi
-        #define _tstof _wtof
-        #define _stscanf swscanf
-    #else
-        #define _ttoi atoi
-        #define _tstof atof
-        #define _stscanf scanf
-    #endif // #ifdef UNICODE
-#endif // #ifndef _wtof
-
-#endif // #if defined(_WIN32) || defined (_WIN64)
+#endif
 
 #ifndef AVSINLINE
 #if defined(_MSC_VER)
@@ -107,3 +69,18 @@
 #endif
 #endif
 
+#if defined(_WIN32) || defined (_WIN64)
+typedef __int16				_INT16;
+typedef __int32				_INT32;
+typedef __int64				_INT64;
+typedef unsigned __int16	_UINT16;
+typedef unsigned __int32	_UINT32;
+typedef unsigned __int64	_UINT64;
+#else
+typedef int16_t             _INT16;
+typedef int32_t             _INT32;
+typedef int64_t             _INT64;
+typedef uint16_t            _UINT16;
+typedef uint32_t            _UINT32;
+typedef uint64_t            _UINT64;
+#endif

@@ -37,7 +37,7 @@
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include"../../../Common/DocxFormat/Source/XML/Utils.h"
+#include"../../../Common/DocxFormat/Source/Base/Unit.h"
 
 #include "odf_drawing_context.h"
 #include "odf_controls_context.h"

@@ -78,7 +78,7 @@ namespace NFileWriter
 	{
 	private :
 
-		CFile m_oFile;
+		NSFile::CFileBinary m_oFile;
 		//HANDLE m_hFile;									// Хендл на файл, в который идет запись
 
 		LONG64 m_lBufferSize;							// Размер буффера
@@ -92,7 +92,7 @@ namespace NFileWriter
 		// Конструктор ( от имени файла, сам контрол открывает файл )
                 CBufferedFileWriter ( std::wstring & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
 		{
-			if (m_oFile.CreateFile(sFileName) != S_OK)
+			if (m_oFile.CreateFileW(sFileName) != S_OK)
 			// Если не получилось открыть файл
 			{
 				// Выдаем исключение

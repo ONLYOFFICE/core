@@ -104,7 +104,7 @@ public:
 	{
 		if(  m_mapComments.empty() ) return false;
 
-		CFile file;
+		NSFile::CFileBinary file;
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("comments.xml"))) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments"), _T("comments.xml") );

@@ -32,7 +32,7 @@
 #include "Number.h"
 #include "../../Auxiliary/HelpFunc.h"
 
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {
@@ -87,7 +87,7 @@ int Number::serialize(std::wostream & stream)
 			}
 			CP_XML_NODE(L"v")
 			{
-				CP_XML_STREAM() << XmlUtils::DoubleToString(num.data.value);
+				CP_XML_STREAM() << XmlUtils::ToString(num.data.value);
 			}
 		}			
 	}

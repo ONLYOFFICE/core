@@ -821,7 +821,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				{
 					if (dTime)
 					{
-						number_val = XmlUtils::DoubleToString(*dTime + intDate);
+						number_val = XmlUtils::ToString(*dTime + intDate);
 					}
 					else
 					{
@@ -1176,7 +1176,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 				{
 					if (dTime)
 					{
-						number_val = XmlUtils::DoubleToString(*dTime + intDate);
+						number_val = XmlUtils::ToString(*dTime + intDate);
 					}
 					else
 					{

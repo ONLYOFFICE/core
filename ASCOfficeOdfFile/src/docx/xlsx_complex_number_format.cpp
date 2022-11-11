@@ -31,7 +31,7 @@
  */
 
 #include "xlsx_complex_number_format.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace cpdoccore {
 namespace oox {

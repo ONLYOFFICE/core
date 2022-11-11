@@ -34,7 +34,7 @@
 
 #include "../Biff_records/Style.h"
 #include "../Biff_records/StyleExt.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {

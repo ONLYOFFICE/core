@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../../DesktopEditor/common/Types.h"
 
 namespace ODRAW
 {

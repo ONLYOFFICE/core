@@ -119,18 +119,18 @@ namespace OOX
 				nullable_string									m_oComment;
 				nullable_string									m_oCustomMenu;
 				nullable_string									m_oDescription;
-				nullable<SimpleTypes::COnOff<>>					m_oFunction;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFunctionGroupId;
+				nullable<SimpleTypes::COnOff>					m_oFunction;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFunctionGroupId;
 				nullable_string									m_oHelp;
-				nullable<SimpleTypes::COnOff<>>					m_oHidden;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oLocalSheetId;
+				nullable<SimpleTypes::COnOff>					m_oHidden;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oLocalSheetId;
 				nullable_string									m_oName;
-				nullable<SimpleTypes::COnOff<>>					m_oPublishToServer;
+				nullable<SimpleTypes::COnOff>					m_oPublishToServer;
 				nullable_string									m_oShortcutKey;
 				nullable_string									m_oStatusBar;
-				nullable<SimpleTypes::COnOff<>>					m_oVbProcedure;
-				nullable<SimpleTypes::COnOff<>>					m_oWorkbookParameter;
-				nullable<SimpleTypes::COnOff<>>					m_oXlm;
+				nullable<SimpleTypes::COnOff>					m_oVbProcedure;
+				nullable<SimpleTypes::COnOff>					m_oWorkbookParameter;
+				nullable<SimpleTypes::COnOff>					m_oXlm;
 
 				nullable_string									m_oRef;
 		};

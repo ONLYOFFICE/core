@@ -245,8 +245,8 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oUniqueCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oUniqueCount;
             std::vector<CSi*>                               m_arrItems;
 			int												m_nCount;
 

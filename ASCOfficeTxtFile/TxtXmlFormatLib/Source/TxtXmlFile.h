@@ -32,7 +32,6 @@
 #pragma once
 
 #include <string>
-
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
 namespace Writers

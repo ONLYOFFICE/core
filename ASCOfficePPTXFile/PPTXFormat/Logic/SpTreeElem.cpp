@@ -215,7 +215,7 @@ namespace PPTX
 			if (line.w.is_init())
 			{
 				double dW = 72.0 * (*line.w) / (25.4 * 36000);
-				std::wstring s = L" strokeweight=\"" + XmlUtils::DoubleToString(dW, L"%.2lf") + L"pt\"";
+				std::wstring s = L" strokeweight=\"" + XmlUtils::ToString(dW, L"%.2lf") + L"pt\"";
 				strAttr += s;
 			}
 

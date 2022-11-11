@@ -110,7 +110,7 @@ static void GetColorWithEffect(const std::wstring& sColor, const int& R, const i
         return;
 
 	std::wstring s = sColor.substr(pos1 + 1, pos2 - pos1 - 1); 
-	param = _wtoi(s.c_str());
+    param = XmlUtils::GetInteger(s);
     bool isEffect = false;
 
     if (0 == sColor.find(L"darken"))
@@ -2124,10 +2124,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 					y2 = tmp;
 				}
 
-                strStyleAdvenced = L";left:"    + XmlUtils::DoubleToString(x1,      L"%.2lf")
-                                 + L";top:"     + XmlUtils::DoubleToString(y1,      L"%.2lf")
-                                 + L";width:"   + XmlUtils::DoubleToString(x2-x1,   L"%.2lf")
-                                 + L";height:"  + XmlUtils::DoubleToString(y2-y1,   L"%.2lf")
+                strStyleAdvenced = L";left:"    + XmlUtils::ToString(x1,      L"%.2lf")
+                                 + L";top:"     + XmlUtils::ToString(y1,      L"%.2lf")
+                                 + L";width:"   + XmlUtils::ToString(x2-x1,   L"%.2lf")
+                                 + L";height:"  + XmlUtils::ToString(y2-y1,   L"%.2lf")
                                  + L";";
 			}
 		}
@@ -2775,7 +2775,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 	case PPTShapes::ShapeType::sptCTextArchDownPour:			eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextArchDownPour; break;
 	default:													eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextNoShape; break;
 	}
-	SimpleTypes::CTextShapeType<> oTextShapeType;
+	SimpleTypes::CTextShapeType oTextShapeType;
 	oTextShapeType.SetValue(eTextShapeType);
 
 	std::wstring strPrstTxWarp = L"<a:prstTxWarp prst=\"" + oTextShapeType.ToString() + L"\"><a:avLst/></a:prstTxWarp>";
@@ -2967,7 +2967,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 
 				if (sFocus.is_init())
 				{
-					nFocus = _wtoi(sFocus->c_str()) / 100.0;
+                    nFocus = XmlUtils::GetInteger(*sFocus) / 100.0;
 				}
 
 				if (sOpacity.is_init())
@@ -3077,7 +3077,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				}
 				if (sAngle.is_init())
 				{
-					nAngle = _wtoi(sAngle->c_str());
+                    nAngle = XmlUtils::GetInteger(*sAngle);
 					nAngle = (-1) * nAngle + 90;
 				}
 				if (sColors.is_init())
@@ -4557,7 +4557,7 @@ void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 		nullable_string sTypeBorder;
         XmlMacroReadAttributeBase(oNodeBorder, L"type", sTypeBorder);
 		
-		SimpleTypes::CBorderType<> borderType;
+		SimpleTypes::CBorderType borderType;
 		if (sTypeBorder.IsInit())
 		{
 			borderType.FromString(sTypeBorder.get());
@@ -5723,7 +5723,7 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 									}
                                     else if (attNames[r] == L"size")
 									{
-                                        run->rPr->sz = _wtoi(attValues[r].c_str()) * 5;
+                                        run->rPr->sz = XmlUtils::GetInteger(attValues[r]) * 5;
 									}
                                     else if (attNames[r] == L"face")
 									{	

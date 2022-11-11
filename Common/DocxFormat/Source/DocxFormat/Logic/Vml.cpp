@@ -1211,6 +1211,7 @@ namespace OOX
 		void CFill::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sColors;
+
 			// Читаем атрибуты
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
@@ -1363,8 +1364,9 @@ namespace OOX
 
 			return sResult;
 		}
+
 		void CStroke::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
+		{			
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			
@@ -2047,7 +2049,7 @@ namespace OOX
 			}
 		}
 		void CShapeDefaults::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{				
+		{
 			if ( oReader.GetAttributesCount() <= 0 )
 				return;
 			

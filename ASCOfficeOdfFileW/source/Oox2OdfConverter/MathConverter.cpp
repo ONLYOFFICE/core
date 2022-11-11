@@ -1182,7 +1182,7 @@ namespace Oox2Odf
 	void OoxConverter::convert(OOX::Logic::CNary *oox_nary)
 	{
 		if (!oox_nary) return;
-		nullable<SimpleTypes::CHexColor<>>* ref = NULL;
+		nullable<SimpleTypes::CHexColor>* ref = NULL;
 		
 		if (oox_nary->m_oNaryPr->m_oCtrlPr.IsInit() &&
 			oox_nary->m_oNaryPr->m_oCtrlPr->m_oRPr.IsInit() &&

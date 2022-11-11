@@ -268,7 +268,7 @@ _UINT32 CPPTXFile::ConvertPPTYToPPTX(std::wstring bsInput, std::wstring bsOutput
 	NSBinPptxRW::CPPTXWriter oWriter;
 	oWriter.Init(pathLocalTempDirectory.GetPath(), m_bIsMacro);
 
-	CFile oFileBinary;
+	NSFile::CFileBinary oFileBinary;
 	oFileBinary.OpenFile((std::wstring)bsInput);	
 		LONG lFileSize = (LONG)oFileBinary.GetFileSize();
 		BYTE* pSrcBuffer = new BYTE[lFileSize];

@@ -98,7 +98,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			SimpleTypes::CDirection<SimpleTypes::directionLTR> m_oVal;
+			SimpleTypes::CDirection m_oVal;
 
 			// Childs
 		};

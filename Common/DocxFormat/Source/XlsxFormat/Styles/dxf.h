@@ -329,7 +329,7 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
 		};
 	} //Spreadsheet
 } // namespace OOX

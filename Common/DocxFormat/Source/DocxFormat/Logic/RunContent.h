@@ -94,6 +94,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oClear.SetValue(SimpleTypes::brclearNone);
+				m_oType.SetValue(SimpleTypes::brtypeTextWrapping);
+
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
 
@@ -119,8 +122,8 @@ namespace OOX
 
 		public:
 
-			SimpleTypes::CBrClear<SimpleTypes::brclearNone      > m_oClear;
-			SimpleTypes::CBrType<SimpleTypes::brtypeTextWrapping> m_oType;
+			SimpleTypes::CBrClear m_oClear;
+			SimpleTypes::CBrType m_oType;
 
 		};
 
@@ -348,7 +351,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;
@@ -576,9 +579,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CPTabAlignment<> > m_oAlignment;
-			nullable<SimpleTypes::CPTabLeader<>    > m_oLeader;
-			nullable<SimpleTypes::CPTabRelativeTo<>> m_oRelativeTo;
+			nullable<SimpleTypes::CPTabAlignment > m_oAlignment;
+			nullable<SimpleTypes::CPTabLeader    > m_oLeader;
+			nullable<SimpleTypes::CPTabRelativeTo> m_oRelativeTo;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -719,8 +722,8 @@ namespace OOX
 
 		public:
 
-            nullable<SimpleTypes::CShortHexNumber<> >   m_oChar;
-            nullable<std::wstring>                      m_oFont;
+			nullable<SimpleTypes::CShortHexNumber>		m_oChar;
+			nullable<std::wstring>						m_oFont;
 
 		};
 
@@ -769,7 +772,7 @@ namespace OOX
 			{
 				return et_w_t;
 			}
-			static void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CXmlSpace<> >& oSpace)
+			static void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CXmlSpace>& oSpace)
 			{
 				if ( oReader.GetAttributesCount() <= 0 )
 					return;
@@ -804,7 +807,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;
@@ -1002,7 +1005,7 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
 
@@ -1113,7 +1116,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;
@@ -1223,8 +1226,8 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>        > m_oCustomMarkFollows;
-			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+			nullable<SimpleTypes::COnOff>			m_oCustomMarkFollows;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
 
 		};
 
@@ -1332,8 +1335,8 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>        > m_oCustomMarkFollows;
-			nullable<SimpleTypes::CDecimalNumber<>> m_oId;
+			nullable<SimpleTypes::COnOff>			m_oCustomMarkFollows;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
 
 		};
 
@@ -1414,7 +1417,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 			// Value
             std::wstring                             m_sText;

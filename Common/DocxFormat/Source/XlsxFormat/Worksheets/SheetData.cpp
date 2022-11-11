@@ -1647,7 +1647,7 @@ namespace OOX
 					//обычно пишется 1/0, но встречается, что пишут true/false
 					if (m_oValue.IsInit())
 					{
-						SimpleTypes::COnOff<> oOnOff;
+						SimpleTypes::COnOff oOnOff;
 						std::wstring sVal = m_oValue->ToString();
 						oOnOff.FromString(sVal.c_str());
 						m_oValue.Init();

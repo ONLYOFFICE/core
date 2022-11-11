@@ -68,8 +68,8 @@ namespace OOX
 		public:
 			std::wstring node_name;
 
-			nullable<SimpleTypes::CHueDirType<>> m_oHueDir;
-			nullable<SimpleTypes::CColorMethod<>> m_oMeth;
+			nullable<SimpleTypes::CHueDirType> m_oHueDir;
+			nullable<SimpleTypes::CColorMethod> m_oMeth;
 		};
 
 		class CColorStyleLbl : public WritingElement

@@ -63,7 +63,7 @@ public:
 	{
 		Clear();
 
-		CFile srcFile;
+		NSFile::CFileBinary srcFile;
 		
 		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return false;
 
@@ -337,13 +337,13 @@ private:
 			}
 			try
 			{
-				parametroInt = _wtoi(parametroStr.c_str());
+                parametroInt = XmlUtils::GetInteger(parametroStr);
 			}
 			catch (...)
 			{
 				try
 				{
-					parametroInt = (int)_wtoi64(parametroStr.c_str());
+                    parametroInt = (int)XmlUtils::GetInteger64(parametroStr);
 				}
 				catch (...)
 				{

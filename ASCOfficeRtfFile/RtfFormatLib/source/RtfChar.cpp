@@ -249,7 +249,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
                 if (nCharCode == 0x5c || nCharCode == 0x7b || nCharCode == 0x7d || 
 					(0x00 <= nCharCode && nCharCode < 0x20) )
                 {
-                    sResult += L"\\'" + XmlUtils::IntToString( nCharCode, L"%02x");
+					sResult += L"\\'" + XmlUtils::ToString( nCharCode, L"%02x");
                 } 
 				else if ( 0x20 <= nCharCode && nCharCode < 0x80 )
                 {
@@ -257,7 +257,7 @@ std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, int 
                 } 
 				else 
 				{ // 0x80 <= nUnicode <= 0xff
-                    sResult += L"\\'" + XmlUtils::IntToString(nCharCode, L"%x" );
+					sResult += L"\\'" + XmlUtils::ToString(nCharCode, L"%x" );
                 }
             }
         }

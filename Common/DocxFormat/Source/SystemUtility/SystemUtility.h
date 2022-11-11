@@ -45,123 +45,37 @@ namespace OOX
 	public:
 		CPath();
 		CPath(const std::wstring&	sName, bool bIsNorm = true);
-        CPath(const char*&			sName, bool bIsNorm = true);
-        CPath(const wchar_t*&		sName, bool bIsNorm = true);
+		CPath(const char*&			sName, bool bIsNorm = true);
+		CPath(const wchar_t*&		sName, bool bIsNorm = true);
 
 		CPath(const CPath& oSrc);
 
 		CPath& operator=(const	CPath&			oSrc);
 		CPath& operator=(const	std::wstring&	oSrc);
-        CPath& operator=(const  char*			oSrc);
-        CPath& operator=(const  wchar_t*		oSrc);
+		CPath& operator=(const  char*			oSrc);
+		CPath& operator=(const  wchar_t*		oSrc);
 
-		friend CPath operator/(const CPath& path1, const CPath& path2)
-		{
-			CPath path(path1.m_strFilename + FILE_SEPARATOR_STR + path2.m_strFilename);
-			path.Normalize();
+		friend CPath operator/(const CPath& path1, const CPath& path2);
+		friend CPath operator/(const CPath& path1, const std::wstring& path2);
 
-			return path;
-		}
-		friend CPath operator/(const CPath& path1, const std::wstring& path2)
-		{
-            CPath path(path1.m_strFilename + FILE_SEPARATOR_STR + path2);
-			path.Normalize();
-
-			return path;
-		}
-
-		friend CPath operator+(const CPath& path1, const CPath& path2)
-		{
-			CPath path(path1.m_strFilename + path2.m_strFilename);
-			path.Normalize();
-			return path;
-		}
-		friend CPath operator+(const CPath& path1, const std::wstring& path2)
-		{
-			CPath path(path1.m_strFilename + path2);
-			path.Normalize();
-			return path;
-		}
-		friend CPath operator+(const std::wstring& path1, const CPath& path2)
-		{
-			CPath path(path1 + path2.m_strFilename);
-			path.Normalize();
-			return path;
-		}
+		friend CPath operator+(const CPath& path1, const CPath& path2);
+		friend CPath operator+(const CPath& path1, const std::wstring& path2);
+		friend CPath operator+(const std::wstring& path1, const CPath& path2);
 
 		bool FileInDirectoryCorrect();
 
-		AVSINLINE std::wstring GetBasename() const
-		{
-			std::wstring sFilename = GetFilename();
-			std::wstring sExt = GetExtention();
-			return sFilename.substr(0, sFilename.length() - sExt.length());
-		}
-        AVSINLINE std::wstring GetExtention(bool bIsPoint = true) const
-        {
-            int nFind = (int)m_strFilename.rfind('.');
-            if (-1 == nFind)
-                return L"";
+		std::wstring GetBasename() const;
+		std::wstring GetExtention(bool bIsPoint = true) const;
+		std::wstring GetDirectory(bool bIsSlash = true) const;
+		std::wstring GetPath() const;
+		std::wstring GetFilename() const;
 
-            if (!bIsPoint)
-                ++nFind;
+		void Normalize();
 
-            return m_strFilename.substr(nFind);
-        }
-        AVSINLINE std::wstring GetDirectory(bool bIsSlash = true) const
-        {
-            int nPos = (int)m_strFilename.rfind(FILE_SEPARATOR_CHAR);
-            if (-1 == nPos)
-            {
-                return m_strFilename;
-            }
-            else
-            {
-                if (bIsSlash)
-                    ++nPos;
-                return m_strFilename.substr(0, nPos);
-            }
-        }
-        AVSINLINE std::wstring GetPath() const
-        {
-            return m_strFilename;
-        }
-        AVSINLINE std::wstring GetFilename() const
-		{
-            int nPos = (int)m_strFilename.rfind(FILE_SEPARATOR_CHAR);
-			if (-1 == nPos)
-			{
-				return m_strFilename;
-			}
-			else
-			{
-				int nLast = (int) m_strFilename.length();
-				return m_strFilename.substr(nPos + 1, nLast);
-			}
-		}
+		void SetName(std::wstring sName, bool bNormalize);
 
-        void Normalize();
-
-		void CheckIsRoot()
-		{
-			if(m_strFilename.length() > 0 && ( '/' == m_strFilename[0] ))
-				m_bIsRoot = true;
-			else
-				m_bIsRoot = false;
-		}
-
-		void SetName(std::wstring sName, bool bNormalize)
-		{
-			m_strFilename = sName;
-			CheckIsRoot();
-			if(bNormalize)
-				Normalize();
-		}
-
-		bool GetIsRoot()
-		{
-			return m_bIsRoot;
-		}
+		void CheckIsRoot();
+		bool GetIsRoot();
 	};
 
 	class CSystemUtility
@@ -170,7 +84,7 @@ namespace OOX
 		static bool			IsFileExist			(const	std::wstring&	strFileName);
 		static bool			IsFileExist			(const	CPath&			sPath);
 		static std::wstring GetDirectoryName	(const	std::wstring&	strFileName);
-        static int			GetFilesCount		(const	std::wstring&	strDirPath, const bool& bRecursive = false);
+		static int			GetFilesCount		(const	std::wstring&	strDirPath, const bool& bRecursive = false);
 		static std::wstring GetFileExtention	(const	std::wstring&	strFileName);
 		static bool			CreateDirectories	(const	CPath&			oPath);
 		static void			ReplaceExtention	(		std::wstring&	strName, std::wstring& str1, std::wstring& str2);

@@ -41,7 +41,7 @@
 
 #include "../../../DesktopEditor/graphics/IRenderer.h"
 #include "../../../DesktopEditor/graphics/structures.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 #include <boost/algorithm/string.hpp>
 
 static void ReplaceAll(std::wstring & str, const std::wstring& from, const std::wstring& to)

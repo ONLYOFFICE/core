@@ -36,7 +36,7 @@
 #include <vector>
 #include <boost/lexical_cast.hpp>
 #include "../../include/xml/simple_xml_writer.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 #include "../../formulasconvert/formulasconvert.h"
 

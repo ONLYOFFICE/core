@@ -89,12 +89,12 @@ namespace OOX
 					WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::COnOff<>>					m_oArray;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oSheetId;
-			nullable<SimpleTypes::COnOff<>>					m_oDependencyLevel;
+			nullable<SimpleTypes::COnOff>					m_oArray;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oSheetId;
+			nullable<SimpleTypes::COnOff>					m_oDependencyLevel;
 			nullable<std::wstring>							m_oRef;
-			nullable<SimpleTypes::COnOff<>>					m_oChildChain;
-			nullable<SimpleTypes::COnOff<>>					m_oNewThread;
+			nullable<SimpleTypes::COnOff>					m_oChildChain;
+			nullable<SimpleTypes::COnOff>					m_oNewThread;
 		};
 		//необработанные child:
 		//<extLst>

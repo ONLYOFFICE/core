@@ -33,7 +33,7 @@
 
 #include "Record.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 
 namespace DocFileFormat

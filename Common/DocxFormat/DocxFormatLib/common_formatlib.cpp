@@ -37,5 +37,18 @@
 //#include "../Source/Common/Position.cpp"
 //#include "../Source/Common/Wrap.cpp"
 //#include "../Source/Common/ZIndex.cpp"
+//#include "../Source/Common/SimpleTypes_Word.cpp"
+
+#include "../Source/Common/SimpleTypes_Base.cpp"
 #include "../Source/Common/SimpleTypes_Word.cpp"
+#include "../Source/Common/SimpleTypes_Drawing.cpp"
+#include "../Source/Common/SimpleTypes_OMath.cpp"
+#include "../Source/Common/SimpleTypes_Rtf.cpp"
+#include "../Source/Common/SimpleTypes_Shared.cpp"
+#include "../Source/Common/SimpleTypes_Spreadsheet.cpp"
+#include "../Source/Common/SimpleTypes_Vml.cpp"
+#include "../Source/Common/ComplexTypes.cpp"
+
 #include "../Source/SystemUtility/SystemUtility.cpp"
+#include "../Source/SystemUtility/File.cpp"
+#include "../Source/XML/XmlSimple.cpp"

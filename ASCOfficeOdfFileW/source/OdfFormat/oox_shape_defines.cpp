@@ -48,6 +48,7 @@
 #include "Shapes/oox_shapeBents.h"
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace cpdoccore 
 {

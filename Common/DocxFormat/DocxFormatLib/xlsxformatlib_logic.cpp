@@ -36,6 +36,7 @@
 #include "../Source/XlsxFormat/FileFactory_Spreadsheet.cpp"
 #include "../Source/XlsxFormat/Xlsx.cpp"
 #include "../Source/XlsxFormat/XlsxFlat.cpp"
+#include "../Source/XlsxFormat/FileTypes_Spreadsheet.cpp"
 #include "../Source/XlsxFormat/Worksheets/SheetData.cpp"
 #include "../Source/XlsxFormat/Worksheets/Worksheet.cpp"
 #include "../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp"

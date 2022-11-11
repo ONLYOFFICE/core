@@ -87,11 +87,11 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oVal )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CDirVal<>> m_oVal;
+			nullable<SimpleTypes::CDirVal> m_oVal;
 			// Childs
 		};
 	} // namespace Logic

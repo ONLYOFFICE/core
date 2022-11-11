@@ -34,7 +34,7 @@
 
 #include "../../Base/Nullable.h"
 #include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../SimpleTypes_Spreadsheet.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 #include "../WritingElement.h"
 #include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/StyleRef.h"
 #include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/FontRef.h"
@@ -254,7 +254,7 @@ namespace ChartEx
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"size", m_size)
 			WritingElement_ReadAttributes_End_No_NS(oReader)
 		}
-		nullable<SimpleTypes::Spreadsheet::CChartSymbol<>> m_symbol;
+		nullable<SimpleTypes::Spreadsheet::CChartSymbol> m_symbol;
 		nullable_uint m_size;
 	};
 

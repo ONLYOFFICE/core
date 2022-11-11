@@ -36,27 +36,27 @@
 
 namespace Docx2Txt
 {
-    class Converter_Impl;
-    class Converter
-    {
+	class Converter_Impl;
+	class Converter
+	{
 	public:
 		Converter();
 		~Converter();
 
 		void convert();
-    	
-        void read	(const std::wstring& path);
-        void write	(const std::wstring& path);
 
-        void writeUtf8		(const std::wstring& path) const;
-        void writeUnicode	(const std::wstring& path) const;
-        void writeBigEndian	(const std::wstring& path) const;
-        void writeAnsi		(const std::wstring& path) const;
+		void read	(const std::wstring& path);
+		void write	(const std::wstring& path);
 
-    private:
-        Converter_Impl * converter_;
-    
-    };
+		void writeUtf8		(const std::wstring& path) const;
+		void writeUnicode	(const std::wstring& path) const;
+		void writeBigEndian	(const std::wstring& path) const;
+		void writeAnsi		(const std::wstring& path) const;
+
+	private:
+		Converter_Impl * converter_;
+
+	};
 
 	
 } // namespace Docx2Txt

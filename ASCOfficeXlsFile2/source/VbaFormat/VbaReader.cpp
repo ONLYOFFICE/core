@@ -2,7 +2,7 @@
 #include "StreamObjects.h"
 #include "../Common/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/File.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 CVbaReader::CVbaReader(const std::wstring & vbaFileName, const std::wstring & vbaExtractFile)
 {

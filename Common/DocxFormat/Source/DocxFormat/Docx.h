@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include "../Base/SmartPtr.h"
-
 #include "Rels.h"
 #include "IFileContainer.h"
 #include "FileTypes.h"

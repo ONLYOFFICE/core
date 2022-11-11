@@ -31,11 +31,7 @@
  */
 
 #include "TxtFile.h"
-
-#include "../Common/Encoding.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../../../DesktopEditor/common/File.h"
-
 
 static const std::string BadSymbols = "\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19";
 

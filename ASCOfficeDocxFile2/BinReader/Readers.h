@@ -56,7 +56,7 @@ class Binary_CommonReader2 : public Binary_CommonReader
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream);
 	docRGB ReadColor();
-	void ReadHexColor(SimpleTypes::CHexColor<> *pColor);
+	void ReadHexColor(SimpleTypes::CHexColor *pColor);
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
 	int ReadThemeColorContent(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);
@@ -487,8 +487,8 @@ class Binary_NotesTableReader : public Binary_CommonReader
 {
 	Writers::FileWriter&					m_oFileWriter;
 	bool									m_bIsFootnote;
-	nullable<SimpleTypes::CDecimalNumber<>>	m_oId;
-	nullable<SimpleTypes::CFtnEdn<>>		m_oType;
+	nullable<SimpleTypes::CDecimalNumber>	m_oId;
+	nullable<SimpleTypes::CFtnEdn>		m_oType;
 public:
 	Binary_NotesTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, bool bIsFootnote);
 	int Read();

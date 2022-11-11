@@ -127,7 +127,7 @@ namespace DocFileFormat
 						{
 							if ((m_document->AnnotationsReferencesEx) && (index < m_document->AnnotationsReferencesEx->m_ReferencesEx.size()))
 							{
-								_paraId = XmlUtils::IntToString(x++, L"%08X");
+								_paraId = XmlUtils::ToString(x++, L"%08X");
 							}
 							cp = writeParagraph(cp, 0x7fffffff);
 						}

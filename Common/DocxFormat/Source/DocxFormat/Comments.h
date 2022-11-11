@@ -83,7 +83,7 @@ namespace OOX
 
 		nullable<std::wstring > m_oAuthor;
 		nullable<SimpleTypes::CDateTime > m_oDate;
-		nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+		nullable<SimpleTypes::CDecimalNumber > m_oId;
 		nullable<std::wstring > m_oInitials;
 
 		//teamlab editor information!!!
@@ -169,9 +169,9 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 	public:
-		nullable<SimpleTypes::CLongHexNumber<> >	m_oParaId;
-		nullable<SimpleTypes::CLongHexNumber<> >	m_oParaIdParent;
-		nullable<SimpleTypes::COnOff<> >			m_oDone;
+		nullable<SimpleTypes::CLongHexNumber>	m_oParaId;
+		nullable<SimpleTypes::CLongHexNumber>	m_oParaIdParent;
+		nullable<SimpleTypes::COnOff>			m_oDone;
 	};
 
 	class CCommentsExt : public OOX::File//, public OOX::IFileContainer
@@ -244,9 +244,9 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 	public:
-		nullable<SimpleTypes::CLongHexNumber<> >	m_oDurableId;
+		nullable<SimpleTypes::CLongHexNumber >		m_oDurableId;
 		nullable<SimpleTypes::CDateTime >			m_oDateUtc;
-		nullable<SimpleTypes::COnOff<> >			m_oIntelligentPlaceholder;
+		nullable<SimpleTypes::COnOff>				m_oIntelligentPlaceholder;
 
 		nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 	};
@@ -331,8 +331,8 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 	public:
-		nullable<SimpleTypes::CLongHexNumber<> >	m_oParaId;
-		nullable<SimpleTypes::CLongHexNumber<> >	m_oDurableId;
+		nullable<SimpleTypes::CLongHexNumber>	m_oParaId;
+		nullable<SimpleTypes::CLongHexNumber>	m_oDurableId;
 	};
 
 	class CCommentsIds : public OOX::File

@@ -49,7 +49,7 @@ namespace NSShapeImageGen
 {
     static bool _CopyFile(std::wstring strExists, std::wstring strNew, LPVOID lpFunc, LPVOID lpData)
 	{
-        return CDirectory::CopyFile (strExists, strNew);
+		return NSFile::CFileBinary::Copy(strExists, strNew);
 	}
 
 	enum MediaType

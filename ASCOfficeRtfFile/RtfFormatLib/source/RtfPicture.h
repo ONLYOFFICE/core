@@ -120,7 +120,7 @@ public:
 		BYTE	pBuffer[ 100 ];
 		DWORD	dwBytesRead = 0;
 
-        CFile file;
+		NSFile::CFileBinary file;
 		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
 		file.ReadFile(pBuffer, 100);

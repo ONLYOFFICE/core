@@ -33,7 +33,7 @@
 
 #include "HeaderFooterWriter.h"
 
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../Common/DocxFormat/Source/Base/Unit.h"
 #include "../../Common/DocxFormat/Source/DocxFormat/Logic/RunProperty.h"
 #include "../BinWriter/BinReaderWriterDefines.h"
 
@@ -208,7 +208,7 @@ public:
 	}
     std::wstring ToString()
 	{
-        return XmlUtils::IntToString(R, L"%02X") + XmlUtils::IntToString(G, L"%02X") + XmlUtils::IntToString(B, L"%02X");
+		return XmlUtils::ToString(R, L"%02X") + XmlUtils::ToString(G, L"%02X") + XmlUtils::ToString(B, L"%02X");
 	}
 };
 class CThemeColor{
@@ -269,7 +269,7 @@ public:
         std::wstring sRes;
 		if(bTint)
 		{
-            sRes = XmlUtils::IntToString(Tint, L"%02X");
+			sRes = XmlUtils::ToString(Tint, L"%02X");
 		}
 		return sRes;
 	}
@@ -278,14 +278,14 @@ public:
         std::wstring sRes;
 		if(bShade)
 		{
-            sRes = XmlUtils::IntToString(Shade, L"%02X");
+			sRes = XmlUtils::ToString(Shade, L"%02X");
 		}
 		return sRes;
 	}
-	void ToCThemeColor( nullable<SimpleTypes::CHexColor<>>& oColor,
-												nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
-												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint,
-												nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade)
+	void ToCThemeColor( nullable<SimpleTypes::CHexColor>& oColor,
+												nullable<SimpleTypes::CThemeColor>& oThemeColor,
+												nullable<SimpleTypes::CUcharHexNumber>& oThemeTint,
+												nullable<SimpleTypes::CUcharHexNumber>& oThemeShade)
 	{
 		if (Auto)
 		{
@@ -387,7 +387,7 @@ public:
 class Tab
 {
 public:
-	SimpleTypes::CTabJc<> Val;
+	SimpleTypes::CTabJc Val;
 	long Pos;
 	BYTE Leader;
 	bool bLeader;
@@ -1041,7 +1041,7 @@ public:
 		if(bTplc)
 		{
 			oWriter.WriteString(L" w:tplc=\"");
-			oWriter.WriteString(XmlUtils::IntToString(Tplc, L"%08X"));
+			oWriter.WriteString(XmlUtils::ToString(Tplc, L"%08X"));
 			oWriter.WriteString(L"\"");
 		}
 		oWriter.WriteString(L">");
@@ -1071,7 +1071,7 @@ public:
 				Format -= 0x2008;
 				if (Format >= 0)
 				{
-					SimpleTypes::CNumberFormat<> numFormat;
+					SimpleTypes::CNumberFormat numFormat;
 					numFormat.SetValue((SimpleTypes::ENumberFormat)Format);
 
 					sFormat = numFormat.ToString();
@@ -1559,7 +1559,7 @@ public:
 
         int nId = pComment->m_oParaIdCounter.getNextId();
 
-		pComment->sParaId = XmlUtils::IntToString(nId, L"%08X");
+		pComment->sParaId = XmlUtils::ToString(nId, L"%08X");
 		sRes += L"<w:p w14:paraId=\"" + pComment->sParaId + L"\" w14:textId=\"" + pComment->sParaId + L"\">";
         sRes += L"<w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">";
         sRes += sPart;
@@ -1646,7 +1646,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 		std::wstring sRes;
 		if(pComment->bDurableId && !pComment->DateUtc.empty())
 		{
-			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\" w16cex:dateUtc=\"" + pComment->DateUtc + L"\"/>";
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::ToString(pComment->DurableId, L"%08X") + L"\" w16cex:dateUtc=\"" + pComment->DateUtc + L"\"/>";
 		}
 		return sRes;
 	}
@@ -1655,7 +1655,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 		std::wstring sRes;
 		if(pComment->bDurableId && !pComment->UserData.empty())
 		{
-			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\">";
+			sRes += L"<w16cex:commentExtensible w16cex:durableId=\"" + XmlUtils::ToString(pComment->DurableId, L"%08X") + L"\">";
 			sRes += L"<w16cex:extLst><w16cex:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\"><p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\"";
 			sRes += XmlUtils::EncodeXmlStringExtend(pComment->UserData);
 			sRes += L"\" providerId=\"AD\"/></w16cex:ext></w16cex:extLst></w16cex:commentExtensible>";
@@ -1667,7 +1667,7 @@ w15:paraIdParent=\"" + pComment->sParaIdParent + L"\" w15:done=\"" + sDone + L"\
 		std::wstring sRes;
 		if(!pComment->sParaId.empty() && pComment->bDurableId)
 		{
-			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->sParaId + L"\" w16cid:durableId=\"" + XmlUtils::IntToString(pComment->DurableId, L"%08X") + L"\"/>";
+			sRes += L"<w16cid:commentId w16cid:paraId=\"" + pComment->sParaId + L"\" w16cid:durableId=\"" + XmlUtils::ToString(pComment->DurableId, L"%08X") + L"\"/>";
 		}
 		return sRes;
 	}

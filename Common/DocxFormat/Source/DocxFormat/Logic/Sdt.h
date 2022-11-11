@@ -208,6 +208,8 @@ namespace ComplexTypes
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
+				m_oVal.SetValue(SimpleTypes::calendartypeGregorian);
+
 				WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
 				WritingElement_ReadAttributes_End( oReader )
@@ -215,7 +217,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::CCalendarType<SimpleTypes::calendartypeGregorian> m_oVal;
+			SimpleTypes::CCalendarType m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -259,7 +261,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::CSdtDateMappingType<SimpleTypes::sdtdatemappingtypeText> m_oVal;
+			SimpleTypes::CSdtDateMappingType m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -304,7 +306,7 @@ namespace ComplexTypes
 
 		public:
 
-			SimpleTypes::CLock<SimpleTypes::lockUnlocked> m_oVal;
+			SimpleTypes::CLock m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -353,7 +355,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffFalse>> m_oMultiLine;
+			nullable<SimpleTypes::COnOff> m_oMultiLine;
 		};
 		//--------------------------------------------------------------------------------
 		// SdtAppearance 2.5.4.2 ([MS-DOCX])
@@ -401,7 +403,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CSdtAppearance<>> m_oVal;
+			nullable<SimpleTypes::CSdtAppearance> m_oVal;
 		};
 
 		//Not from specification
@@ -424,7 +426,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CHeightRule<>>	m_oWRule;
+			nullable<SimpleTypes::CHeightRule>		m_oWRule;
 			nullable_int							m_oWidth;
 			nullable_string							m_oSym;
 			nullable_string							m_oFont;
@@ -449,7 +451,7 @@ namespace ComplexTypes
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CTextFormFormatType<>> m_oType;
+			nullable<SimpleTypes::CTextFormFormatType> m_oType;
 			nullable_string m_oVal;
 			nullable_string m_oSymbols;
 		};
@@ -531,7 +533,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CComplexFormType<>> m_oType;
+			nullable<SimpleTypes::CComplexFormType> m_oType;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -808,7 +810,7 @@ namespace OOX
 
  			nullable<ComplexTypes::Word::String> m_oDocPartCategory;
 			nullable<ComplexTypes::Word::String> m_oDocPartGallery;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oDocPartUnique;
+            nullable<ComplexTypes::Word::COnOff2> m_oDocPartUnique;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -1076,8 +1078,8 @@ namespace OOX
 			}
 		public:
 
-			nullable<SimpleTypes::CShortHexNumber<> >   m_oVal;
-			nullable<std::wstring>                      m_oFont;
+			nullable<SimpleTypes::CShortHexNumber>		m_oVal;
+			nullable<std::wstring>						m_oFont;
 		};
 
 		class CSdtCheckBox : public WritingElement
@@ -1100,7 +1102,7 @@ namespace OOX
 			}
 		public:
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oChecked;
+            nullable<ComplexTypes::Word::COnOff2> m_oChecked;
 			nullable<CSdtCheckBoxSymbol> m_oCheckedState;
 			nullable<CSdtCheckBoxSymbol> m_oUncheckedState;
 
@@ -1200,10 +1202,10 @@ namespace OOX
 			nullable<ComplexTypes::Word::CLock> m_oLock;
 			nullable<OOX::Logic::CPlaceHolder> m_oPlaceHolder;
 			nullable<OOX::Logic::CRunProperty> m_oRPr;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oShowingPlcHdr;
+            nullable<ComplexTypes::Word::COnOff2> m_oShowingPlcHdr;
 			nullable<ComplexTypes::Word::CUnsignedDecimalNumber> m_oTabIndex;
 			nullable<ComplexTypes::Word::String> m_oTag;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oTemporary;
+            nullable<ComplexTypes::Word::COnOff2> m_oTemporary;
 			nullable<ComplexTypes::Word::CSdtText> m_oText;
 			nullable<CSdtCheckBox> m_oCheckbox;
 

@@ -45,46 +45,24 @@ namespace OOX
     class CDiagramDrawing : public OOX::IFileContainer, public OOX::FileGlobalEnumerated
     {
     public:
-        CDiagramDrawing(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-        {
-        }
-		CDiagramDrawing(OOX::Document* pMain, const CPath& uri) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-		{
-			read(uri.GetDirectory(), uri);
-		}
-		CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-        {
-            read( oRootPath, oPath );
-        }
-        virtual ~CDiagramDrawing()
-        {
-        }
-        virtual void read(const CPath& oFilePath)
-        {
-            //don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-            CPath oRootPath;
-            read(oRootPath, oFilePath);
-        }
+		CDiagramDrawing(OOX::Document* pMain);
+		CDiagramDrawing(OOX::Document* pMain, const CPath& uri);
+		CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+
+		virtual ~CDiagramDrawing();
+
+		virtual void read(const CPath& oFilePath);
 		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-        virtual const OOX::FileType type() const
-        {
-            return FileTypes::DiagramDrawing;
-        }
-        virtual const CPath DefaultDirectory() const
-        {
-            return type().DefaultDirectory();
-        }
-        virtual const CPath DefaultFileName() const
-        {
-            return type().DefaultFileName();
-        }
-		const CPath& GetReadPath()
-		{
-			return m_oReadPath;
-		}
+		virtual const OOX::FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
+		const CPath& GetReadPath();
+
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;

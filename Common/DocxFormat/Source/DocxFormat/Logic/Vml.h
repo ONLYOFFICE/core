@@ -107,22 +107,22 @@ namespace OOX
 			nullable_bool								m_oAllowInCell;
 			nullable_bool								m_oAllowOverlap;
 			nullable_bool								m_oUserDrawn;
-			nullable<SimpleTypes::CColorType<>>			m_oBorderTopColor;
-			nullable<SimpleTypes::CColorType<>>			m_oBorderLeftColor;
-			nullable<SimpleTypes::CColorType<>>			m_oBorderBottomColor;
-			nullable<SimpleTypes::CColorType<>>			m_oBorderRightColor;
+			nullable<SimpleTypes::CColorType>			m_oBorderTopColor;
+			nullable<SimpleTypes::CColorType>			m_oBorderLeftColor;
+			nullable<SimpleTypes::CColorType>			m_oBorderBottomColor;
+			nullable<SimpleTypes::CColorType>			m_oBorderRightColor;
 			nullable<SimpleTypes::CDiagramLayout>		m_oDgmLayout;
 			nullable_string								m_oDgmNodeKind;
 			nullable<SimpleTypes::CDiagramLayout>		m_oDgmLayoutMru;
 			nullable<SimpleTypes::CInsetMode>			m_oInsetMode;
 	// 2 AG_AllShapeAttributes
 	// 2.1 AG_ShapeAttributes
-			nullable<SimpleTypes::CColorType<>>			m_oChromaKey;
+			nullable<SimpleTypes::CColorType>			m_oChromaKey;
 			nullable<SimpleTypes::CTrueFalse>			m_oFilled;
-			nullable<SimpleTypes::CColorType<>>			m_oFillColor;
+			nullable<SimpleTypes::CColorType>			m_oFillColor;
 			nullable<SimpleTypes::Vml::CVml_1_65536>	m_oOpacity;
 			nullable<SimpleTypes::CTrueFalse>			m_oStroked;
-			nullable<SimpleTypes::CColorType<>>			m_oStrokeColor;
+			nullable<SimpleTypes::CColorType>			m_oStrokeColor;
 			nullable<SimpleTypes::CEmu>					m_oStrokeWeight;
 			nullable<SimpleTypes::CTrueFalse>			m_oInsetPen;
 	// 2.2 AG_OfficeShapeAttributes
@@ -435,16 +435,16 @@ namespace OOX
 
 			typedef struct TIntermediateColor
 			{
-				double                    dValue;
-				SimpleTypes::CColorType<> oColor;
+				double						dValue;
+				SimpleTypes::CColorType		oColor;
 			}TIntermediateColor;
 
 			nullable<SimpleTypes::CTrueFalse>									m_oAlignShape;//xtodo = SimpleTypes::booleanTrue;
 			nullable_string														m_sAltHref;
 			nullable<SimpleTypes::CDecimalNumber>								m_oAngle;
 			nullable<SimpleTypes::CImageAspect>									m_oAspect;
-			nullable<SimpleTypes::CColorType<>>									m_oColor;
-			nullable<SimpleTypes::CColorType<>>									m_oColor2;
+			nullable<SimpleTypes::CColorType>									m_oColor;
+			nullable<SimpleTypes::CColorType>									m_oColor2;
 			std::vector<TIntermediateColor*>									m_arrColors;
 			nullable<SimpleTypes::CTrueFalse>									m_oDetectMouseClick;
 			nullable<SimpleTypes::CFixedPercentage >							m_oFocus;
@@ -779,13 +779,13 @@ namespace OOX
 			nullable_string										m_sAltHref;
 			nullable<SimpleTypes::CTrueFalse>					m_oBiLevel;
 			nullable_double										m_oBlackLevel;
-			nullable<SimpleTypes::CColorType<>>					m_oChromaKey;
+			nullable<SimpleTypes::CColorType>					m_oChromaKey;
 			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropLeft;
 			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropTop;
 			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropRight;
 			nullable<SimpleTypes::Vml::CVml_1_65536>			m_oCropBottom;
 			nullable<SimpleTypes::CTrueFalse>					m_oDetectMouseClick;
-			nullable<SimpleTypes::CColorType<>>					m_oEmbossColor;
+			nullable<SimpleTypes::CColorType>					m_oEmbossColor;
 			nullable_double										m_oGain;
 			nullable_double										m_oGamma;
 			nullable<SimpleTypes::CTrueFalse>					m_oGrayscale;
@@ -796,7 +796,7 @@ namespace OOX
 			nullable_double										m_oMovie;
 			nullable_string										m_oOleId;
 			nullable<SimpleTypes::CRelationshipId>				m_rPict;
-			nullable<SimpleTypes::CColorType<>>					m_oRecolorTarget;
+			nullable<SimpleTypes::CColorType>					m_oRecolorTarget;
 			nullable<SimpleTypes::CRelationshipId>				m_oRelId;
 			nullable_string										m_sSrc;
 			nullable_string										m_sTitle;
@@ -1296,8 +1296,8 @@ namespace OOX
 			}
 
 		public:
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB>		m_oColor;
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB>		m_oColor2;
+			SimpleTypes::CColorType									m_oColor = SimpleTypes::colortypeRGB;
+			SimpleTypes::CColorType									m_oColor2 = SimpleTypes::colortypeRGB;
 			nullable_string											m_oId;
 			nullable<SimpleTypes::Vml::CVml_Matrix>					m_oMatrix;
 			SimpleTypes::CTrueFalse									m_oObscured;
@@ -1618,8 +1618,8 @@ namespace OOX
 		public:
 			nullable_string																m_oId;
 			nullable_string																m_sAltHref;
-			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>				m_oColor;
-			nullable<SimpleTypes::CColorType<SimpleTypes::colortypeBlack>>				m_oColor2;
+			nullable<SimpleTypes::CColorType>											m_oColor;//xtodo = SimpleTypes::colortypeBlack;
+			nullable<SimpleTypes::CColorType>											m_oColor2;//xtodo = SimpleTypes::colortypeBlack;
 			nullable<SimpleTypes::Vml::CVmlDashStyle>									m_oDahsStyle;
 			nullable<SimpleTypes::CStrokeArrowType>										m_oEndArrow;
 			nullable<SimpleTypes::CStrokeArrowLength>									m_oEndArrowLength;
@@ -1877,10 +1877,10 @@ namespace OOX
 			SimpleTypes::CTrueFalse									m_oAllowInCell;
 			nullable<SimpleTypes::CExt>								m_oExt;
 			SimpleTypes::CTrueFalse									m_oFill = SimpleTypes::booleanTrue;
-			nullable<SimpleTypes::CColorType<>>						m_oFillColor;
+			nullable<SimpleTypes::CColorType>						m_oFillColor;
 			SimpleTypes::CDecimalNumber								m_oSpIdMax;
 			SimpleTypes::CTrueFalse									m_oStroke = SimpleTypes::booleanTrue;
-			SimpleTypes::CColorType<SimpleTypes::colortypeBlack>	m_oStrokeColor;
+			SimpleTypes::CColorType									m_oStrokeColor;//xtodo = SimpleTypes::colortypeBlack;
 			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
 
 			nullable<OOX::Vml::CFill>								m_oVmlFill;

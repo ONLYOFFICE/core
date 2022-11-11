@@ -65,6 +65,7 @@
 #include "../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp"
 #include "../../../PPTXFormat/Logic/Controls.cpp"
 #include "../../../PPTXFormat/FileContainer.cpp"
+#include "../../../PPTXFormat/FileTypes.cpp"
 #include "../../../PPTXFormat/FileFactory.cpp"
 #include "../../../PPTXFormat/FileMap.cpp"
 #include "../../../PPTXFormat/Folder.cpp"

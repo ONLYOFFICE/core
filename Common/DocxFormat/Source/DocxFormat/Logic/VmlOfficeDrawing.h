@@ -183,8 +183,8 @@ namespace OOX
 			EElementType                                m_eType;
 
 			nullable<std::wstring>						m_sAlthref;
-			nullable<SimpleTypes::CColorType<>>         m_oColor;
-			nullable<SimpleTypes::CColorType<>>         m_oColor2;
+			nullable<SimpleTypes::CColorType>			m_oColor;
+			nullable<SimpleTypes::CColorType>		    m_oColor2;
 			nullable<SimpleTypes::Vml::CVmlDashStyle>	m_oDashStyle;
 			nullable<SimpleTypes::CStrokeArrowType>		m_oEndArrow;
 			nullable<SimpleTypes::CStrokeArrowLength>	m_oEndArrowLength;
@@ -410,11 +410,11 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CExt>	                       m_oExt;
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB> m_oExtrusionColor;
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB> m_oFillColor;
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB> m_oShadowColor;
-			SimpleTypes::CColorType<SimpleTypes::colortypeRGB> m_oStrokeColor;
+			nullable<SimpleTypes::CExt>			m_oExt;
+			SimpleTypes::CColorType				m_oExtrusionColor = SimpleTypes::colortypeRGB;
+			SimpleTypes::CColorType				m_oFillColor = SimpleTypes::colortypeRGB;
+			SimpleTypes::CColorType				m_oShadowColor = SimpleTypes::colortypeRGB;
+			SimpleTypes::CColorType				m_oStrokeColor = SimpleTypes::colortypeRGB;
 		};
 		//--------------------------------------------------------------------------------
 		// CColorMru 14.2.2.5 (Part 4)
@@ -491,7 +491,7 @@ namespace OOX
                     while ( -1 != ( nEndPos =(int)sColors.find( L",", nStartPos )  ) )
 					{
                         sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
-						SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
+						SimpleTypes::CColorType* oColor = new SimpleTypes::CColorType();
 						if (oColor)
 						{
 							oColor->FromString(sColor);
@@ -502,7 +502,7 @@ namespace OOX
 
 					nEndPos = (int)sColors.length();
 					sColor = sColors.substr( nStartPos, nEndPos - nStartPos );
-					SimpleTypes::CColorType<SimpleTypes::colortypeNone>* oColor = new SimpleTypes::CColorType<SimpleTypes::colortypeNone>();
+					SimpleTypes::CColorType* oColor = new SimpleTypes::CColorType();
 					if (oColor )
 					{
 						oColor->FromString(sColor);
@@ -512,8 +512,8 @@ namespace OOX
 			}
 
 		public:
-			std::vector<SimpleTypes::CColorType<SimpleTypes::colortypeNone>*>	m_arrColors;
-			nullable<SimpleTypes::CExt>											m_oExt;
+			std::vector<SimpleTypes::CColorType*>	m_arrColors;
+			nullable<SimpleTypes::CExt>				m_oExt;
 		};
 		//--------------------------------------------------------------------------------
 		// CComplex 14.2.2.7 (Part 4)
@@ -1110,7 +1110,7 @@ namespace OOX
 			SimpleTypes::CTrueFalse                                          m_oAutoRotationCenter;
 			SimpleTypes::CPoint                                              m_oBackDepth;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oBrightness;
-			nullable<SimpleTypes::CColorType<>>                              m_oColor;
+			nullable<SimpleTypes::CColorType>								 m_oColor;
 			SimpleTypes::CColorMode                                          m_oColorMode;
 			SimpleTypes::Vml::CVml_1_65536                                   m_oDiffusity;
 			SimpleTypes::CPoint                                              m_oEdge;

@@ -774,6 +774,8 @@ namespace SimpleTypes
 	// DateTime 17.18.9 (Part 1)
 	//--------------------------------------------------------------------------------
 
+	CDateTime::CDateTime() {}
+
 	std::wstring CDateTime::GetValue() const
 	{
 		return m_sValue;

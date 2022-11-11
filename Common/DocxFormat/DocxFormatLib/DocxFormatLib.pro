@@ -65,6 +65,7 @@ SOURCES += \
     ../Source/XlsxFormat/Common.cpp \
     ../Source/XlsxFormat/Xlsx.cpp \
     ../Source/XlsxFormat/XlsxFlat.cpp \
+	../Source/XlsxFormat/FileTypes_Spreadsheet.cpp \
     ../Source/XlsxFormat/Worksheets/Worksheet.cpp \
     ../Source/XlsxFormat/Worksheets/SheetData.cpp \
     ../Source/XlsxFormat/Worksheets/ConditionalFormatting.cpp \
@@ -75,6 +76,7 @@ SOURCES += \
     ../Source/DocxFormat/App.cpp \
     ../Source/DocxFormat/Core.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
+	../Source/DocxFormat/FileTypes.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
@@ -85,8 +87,18 @@ SOURCES += \
     ../Source/DocxFormat/Diagram/DiagramLayout.cpp \
     ../Source/DocxFormat/Diagram/DiagramQuickStyle.cpp \
     ../Source/DocxFormat/WritingElement.cpp \
-    ../Source/Common/SimpleTypes_Word.cpp \
-    ../Source/SystemUtility/SystemUtility.cpp \
+	../Source/Common/SimpleTypes_Base.cpp \
+	../Source/Common/SimpleTypes_Word.cpp \
+	../Source/Common/SimpleTypes_Drawing.cpp \
+	../Source/Common/SimpleTypes_OMath.cpp \
+	../Source/Common/SimpleTypes_Rtf.cpp \
+	../Source/Common/SimpleTypes_Shared.cpp \
+	../Source/Common/SimpleTypes_Spreadsheet.cpp \
+	../Source/Common/SimpleTypes_Vml.cpp \
+	../Source/Common/ComplexTypes.cpp \	
+	../Source/SystemUtility/SystemUtility.cpp \
+	../Source/SystemUtility/File.cpp \
+	../Source/XML/XmlSimple.cpp \
     ../Source/XlsxFormat/Styles/Styles.cpp \
     ../Source/XlsxFormat/Styles/rPr.cpp \
     ../Source/XlsxFormat/SharedStrings/Si.cpp \
@@ -105,6 +117,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/Base/codecvt.cpp \
     ../Source/Base/DateTime.cpp \
     ../Source/Base/unicode_util.cpp \
+	../Source/Base/Unit.cpp \
     ../../3dParty/pole/pole.cpp \
 
 HEADERS += docxformatlib.h \
@@ -194,10 +207,10 @@ HEADERS += docxformatlib.h \
     ../Source/DocxFormat/UnknowTypeFile.h \
     ../Source/DocxFormat/WritingElement.h \
     ../Source/SystemUtility/SystemUtility.h \
-    ../Source/Utility/codecvt.h \
-    ../Source/Utility/DateTime.h \
+	../Source/Base/codecvt.h \
+	../Source/Base/DateTime.h \
     ../Source/Utility/TxtFile.h \
-    ../Source/Utility/Unit.h \
+	../Source/Base/Unit.h \
     ../Source/Utility/Utility.h \
     ../Source/XlsxFormat/CalcChain/CalcChain.h \
     ../Source/XlsxFormat/Chart/Chart.h \

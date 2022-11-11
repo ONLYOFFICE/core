@@ -444,7 +444,7 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	EOnOff COnOff::FromStringA(const std::string& sValue)
+	/*EOnOff COnOff::FromStringA(const std::string& sValue)
 	{
 		if		("1" == sValue) this->m_eValue = onoffTrue;
 		else if	("0" == sValue) this->m_eValue = onoffFalse;
@@ -456,6 +456,23 @@ namespace SimpleTypes
 		else if	("false" == sValue) this->m_eValue = onoffFalse;
 		else if	("False" == sValue) this->m_eValue = onoffFalse;
 		else if	("off" == sValue) this->m_eValue = onoffFalse;
+		else this->m_eValue = onoffFalse;
+
+		return this->m_eValue;
+	}*/
+
+	EOnOff COnOff::FromStringA(const char* sValue)
+	{
+		if		(strcmp("1",		sValue) == 0) this->m_eValue = onoffTrue;
+		else if	(strcmp("0",		sValue) == 0) this->m_eValue = onoffFalse;
+		else if	(strcmp("true",		sValue) == 0) this->m_eValue = onoffTrue;
+		else if	(strcmp("True",		sValue) == 0) this->m_eValue = onoffTrue;
+		else if	(strcmp("t",		sValue) == 0) this->m_eValue = onoffTrue;
+		else if	(strcmp("on",		sValue) == 0) this->m_eValue = onoffTrue;
+		else if	(strcmp("f",		sValue) == 0) this->m_eValue = onoffFalse;
+		else if	(strcmp("false",	sValue) == 0) this->m_eValue = onoffFalse;
+		else if	(strcmp("False",	sValue) == 0) this->m_eValue = onoffFalse;
+		else if	(strcmp("off",		sValue) == 0) this->m_eValue = onoffFalse;
 		else this->m_eValue = onoffFalse;
 
 		return this->m_eValue;
@@ -823,8 +840,7 @@ namespace SimpleTypes
 	// ColorType 15.1.2.3 (Part 4)
 	//--------------------------------------------------------------------------------
 
-	template<>
-	void CColorType<colortypeNone>::SetRGB()
+	void CColorType::SetRGB()
 	{
 		if (this->m_eValue == colortypeRGB) return;
 
@@ -936,8 +952,7 @@ namespace SimpleTypes
 		}
 	}
 
-	template<>
-	CColorType<colortypeNone>::CColorType()
+	CColorType::CColorType()
 	{
 		SetRGB();
 
@@ -946,8 +961,7 @@ namespace SimpleTypes
 		m_sValue = sstream.str();
 	}
 
-	template<>
-	void CColorType<colortypeNone>::ByHexColor(const std::wstring& sValue)
+	void CColorType::ByHexColor(const std::wstring& sValue)
 	{
 		this->m_eValue = colortypeRGB;
 
@@ -959,8 +973,7 @@ namespace SimpleTypes
 		m_unB = hexColor.Get_B();
 	}
 
-	template<>
-	void CColorType<colortypeNone>::ByColorName(const std::wstring& sValue)
+	void CColorType::ByColorName(const std::wstring& sValue)
 	{
 		this->m_eValue = colortypeNone;
 
@@ -1008,8 +1021,7 @@ namespace SimpleTypes
 		SetRGB();
 	}
 
-	template<>
-	EColorType CColorType<colortypeNone>::FromString(const std::wstring& sValue)
+	EColorType CColorType::FromString(const std::wstring& sValue)
 	{
 		wchar_t wsFirstChar = 0;
 		if (sValue.length() > 0)
@@ -1027,14 +1039,12 @@ namespace SimpleTypes
 		return this->m_eValue;
 	}
 
-	template<>
-	std::wstring CColorType<colortypeNone>::ToString() const
+	std::wstring CColorType::ToString() const
 	{
 		return m_sValue;
 	}
 
-	template<>
-	void CColorType<colortypeNone>::SetRGB(unsigned char unR, unsigned char unG, unsigned char unB)
+	void CColorType::SetRGB(unsigned char unR, unsigned char unG, unsigned char unB)
 	{
 		this->m_eValue = colortypeRGB;
 		m_unR = unR;
@@ -1046,23 +1056,22 @@ namespace SimpleTypes
 		m_sValue = sstream.str();
 	}
 
-	template<>
-	unsigned char CColorType<colortypeNone>::Get_R() const
+	unsigned char CColorType::Get_R() const
 	{
 		return m_unR;
 	}
-	template<>
-	unsigned char CColorType<colortypeNone>::Get_G() const
+
+	unsigned char CColorType::Get_G() const
 	{
 		return m_unG;
 	}
-	template<>
-	unsigned char CColorType<colortypeNone>::Get_B() const
+
+	unsigned char CColorType::Get_B() const
 	{
 		return m_unB;
 	}
-	template<>
-	unsigned char CColorType<colortypeNone>::Get_A() const
+
+	unsigned char CColorType::Get_A() const
 	{
 		return 255;
 	}

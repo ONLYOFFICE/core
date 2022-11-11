@@ -223,7 +223,8 @@ namespace SimpleTypes
 	public:
 		COnOff(const bool & bVal);
 
-		EOnOff FromStringA(const std::string& sValue);
+		//EOnOff FromStringA(const std::string& sValue);
+		//EOnOff FromStringA(const char* sValue);
 
 		std::wstring ToString2(EOnOffToString eType) const;
 		std::wstring ToString3(EOnOffToString eType) const;
@@ -381,18 +382,11 @@ namespace SimpleTypes
 		colortypeYellow,
 	};
 
-	template<EColorType eDefValue = colortypeNone>
-	class CColorType : public CSimpleType<EColorType, eDefValue>
-	{
+	DEFINE_SIMPLE_TYPE_START_NC(CColorType, EColorType, colortypeNone)
 	public:
 		CColorType();
 
-		virtual EColorType FromString(const std::wstring& sValue);
-		virtual std::wstring ToString() const;
-
 		void SetRGB(unsigned char unR, unsigned char unG, unsigned char unB);
-
-		SimpleTypes_Default(CColorType)
 
 		unsigned char Get_R() const;
 		unsigned char Get_G() const;

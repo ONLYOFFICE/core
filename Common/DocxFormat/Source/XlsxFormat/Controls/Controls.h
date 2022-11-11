@@ -155,8 +155,8 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 //---------------------
 			nullable_string									m_oText;
-			nullable<SimpleTypes::CColorType<>>				m_oFillColor;
-			nullable<SimpleTypes::CColorType<>>				m_oBorderColor;
+			nullable<SimpleTypes::CColorType>				m_oFillColor;
+			nullable<SimpleTypes::CColorType>				m_oBorderColor;
 		};
 //------------------------------------------------------------------------------------
 		class CControlPr : public WritingElement

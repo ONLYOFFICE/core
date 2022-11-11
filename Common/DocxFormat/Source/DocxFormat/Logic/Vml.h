@@ -439,7 +439,7 @@ namespace OOX
 				SimpleTypes::CColorType		oColor;
 			}TIntermediateColor;
 
-			nullable<SimpleTypes::CTrueFalse>									m_oAlignShape;//xtodo = SimpleTypes::booleanTrue;
+			nullable<SimpleTypes::CTrueFalse>									m_oAlignShape;
 			nullable_string														m_sAltHref;
 			nullable<SimpleTypes::CDecimalNumber>								m_oAngle;
 			nullable<SimpleTypes::CImageAspect>									m_oAspect;
@@ -453,8 +453,8 @@ namespace OOX
 			nullable_string														m_sHref;
 			nullable<SimpleTypes::CRelationshipId>								m_rId;
 			nullable_string														m_sId;
-			nullable<SimpleTypes::CFillMethod>									m_oMethod;//xtodo = SimpleTypes::fillmethodSigma;
-			nullable<SimpleTypes::CTrueFalse>									m_oOn;//xtodo = SimpleTypes::booleanTrue;
+			nullable<SimpleTypes::CFillMethod>									m_oMethod;
+			nullable<SimpleTypes::CTrueFalse>									m_oOn;
 			nullable<SimpleTypes::Vml::CVml_1_65536>							m_oOpacity;
 			nullable<SimpleTypes::Vml::CVml_1_65536>							m_oOpacity2;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_1_65536>					m_oOrigin;
@@ -967,14 +967,14 @@ namespace OOX
 			nullable_string													m_oConnectAngles;
 			nullable_string													m_oConnectLocs;
 			nullable<SimpleTypes::CConnectType>								m_oConnectType;
-			nullable<SimpleTypes::CTrueFalse>								m_oExtrusionOk;//xtodo = SimpleTypes::booleanTrue;
-			nullable<SimpleTypes::CTrueFalse>								m_oFillOk;//xtodo = SimpleTypes::booleanTrue;
+			nullable<SimpleTypes::CTrueFalse>								m_oExtrusionOk;
+			nullable<SimpleTypes::CTrueFalse>								m_oFillOk;
 			nullable<SimpleTypes::CTrueFalse>								m_oGradientShapeOk;
 			nullable_string													m_oId;
 			nullable<SimpleTypes::CTrueFalse>								m_oInsetPenOk;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>					m_oLimo;
-			nullable<SimpleTypes::CTrueFalse>								m_oShadowOk;//xtodo = SimpleTypes::booleanTrue;
-			nullable<SimpleTypes::CTrueFalse>								m_oStrokeOk;//xtodo = SimpleTypes::booleanTrue;
+			nullable<SimpleTypes::CTrueFalse>								m_oShadowOk;
+			nullable<SimpleTypes::CTrueFalse>								m_oStrokeOk;
 			nullable<SimpleTypes::Vml::CVml_Polygon2D>						m_oTextBoxRect;
 			nullable<SimpleTypes::CTrueFalse>								m_oTextPathOk;
 			nullable<SimpleTypes::Vml::CVmlPath>							m_oV;
@@ -1618,25 +1618,25 @@ namespace OOX
 		public:
 			nullable_string																m_oId;
 			nullable_string																m_sAltHref;
-			nullable<SimpleTypes::CColorType>											m_oColor;//xtodo = SimpleTypes::colortypeBlack;
-			nullable<SimpleTypes::CColorType>											m_oColor2;//xtodo = SimpleTypes::colortypeBlack;
+			nullable<SimpleTypes::CColorType>											m_oColor;
+			nullable<SimpleTypes::CColorType>											m_oColor2;
 			nullable<SimpleTypes::Vml::CVmlDashStyle>									m_oDahsStyle;
 			nullable<SimpleTypes::CStrokeArrowType>										m_oEndArrow;
 			nullable<SimpleTypes::CStrokeArrowLength>									m_oEndArrowLength;
 			nullable<SimpleTypes::CStrokeArrowWidth>									m_oEndArrowWidth;
-			nullable<SimpleTypes::CStrokeEndCap>										m_oEndCap;//xtodo = SimpleTypes::strokeendcapFlat;
+			nullable<SimpleTypes::CStrokeEndCap>										m_oEndCap;
 			nullable<SimpleTypes::CFillType>											m_oFillType;
 			nullable<SimpleTypes::CTrueFalse>											m_oForceDash;
 			nullable_string																m_sHref;
 			nullable<SimpleTypes::CRelationshipId>										m_rId;
-			nullable<SimpleTypes::CTrueFalse>											m_oImageAlignShape;//xtodo = SimpleTypes::booleanTrue;
+			nullable<SimpleTypes::CTrueFalse>											m_oImageAlignShape;
 			nullable<SimpleTypes::CImageAspect>											m_oImageAspect;
 			nullable<SimpleTypes::Vml::CVml_Vector2D_Units>								m_oImageSize; 
 			nullable<SimpleTypes::CTrueFalse>											m_oInsetPen;
 			nullable<SimpleTypes::CStrokeJoinStyle>										m_oJoinStyle;
 			nullable<SimpleTypes::CStrokeLineStyle>										m_oLineStyle;
-			nullable<SimpleTypes::CDecimalNumber>										m_oMiterLimit;//xtodo = 8;
-			nullable<SimpleTypes::CTrueFalse>											m_oOn;//xtodo = SimpleTypes::booleanTrue;
+			nullable<SimpleTypes::CDecimalNumber>										m_oMiterLimit;
+			nullable<SimpleTypes::CTrueFalse>											m_oOn;
 			nullable_double																m_oOpacity;
 			nullable<SimpleTypes::CRelationshipId>										m_oRelId;
 			nullable_string																m_sSrc;
@@ -1880,7 +1880,7 @@ namespace OOX
 			nullable<SimpleTypes::CColorType>						m_oFillColor;
 			SimpleTypes::CDecimalNumber								m_oSpIdMax;
 			SimpleTypes::CTrueFalse									m_oStroke = SimpleTypes::booleanTrue;
-			SimpleTypes::CColorType									m_oStrokeColor;//xtodo = SimpleTypes::colortypeBlack;
+			SimpleTypes::CColorType									m_oStrokeColor;
 			nullable<SimpleTypes::Vml::CCssStyle>					m_oStyle;
 
 			nullable<OOX::Vml::CFill>								m_oVmlFill;

@@ -98,8 +98,8 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				std::wstring sName = oReader.GetName();
-				if ( L"w:pPr" == sName )
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if ( L"pPr" == sName )
 					m_pParPr->fromXML( oReader );
 			}
 		}
@@ -151,12 +151,12 @@ namespace OOX
 		}
 		void CPPrChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",	 m_oId )
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"author", m_sAuthor )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"date",   m_oDate )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"id",	 m_oId )
 			WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-			WritingElement_ReadAttributes_End( oReader )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void CParagraphProperty::fromXML(XmlUtils::CXmlNode& oNode)
 		{//??? где используется ?
@@ -225,53 +225,53 @@ namespace OOX
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if ( L"w:adjustRightInd" == sName )
+				if ( L"adjustRightInd" == sName )
 					m_oAdjustRightInd = oReader;
-				else if ( L"w:autoSpaceDE" == sName )
+				else if ( L"autoSpaceDE" == sName )
 					m_oAutoSpaceDE = oReader;
-				else if ( L"w:autoSpaceDN" == sName )
+				else if ( L"autoSpaceDN" == sName )
 					m_oAutoSpaceDN = oReader;
-				else if ( L"w:bidi" == sName )
+				else if ( L"bidi" == sName )
 					m_oBidi = oReader;
-				else if ( L"w:cnfStyle" == sName )
+				else if ( L"cnfStyle" == sName )
 					m_oCnfStyle = oReader;
-				else if ( L"w:contextualSpacing" == sName )
+				else if ( L"contextualSpacing" == sName )
 					m_oContextualSpacing = oReader;
-				else if ( L"w:divId" == sName )
+				else if ( L"divId" == sName )
 					m_oDivID = oReader;
-				else if ( L"w:framePr" == sName )
+				else if ( L"framePr" == sName )
 					m_oFramePr = oReader;
-				else if ( L"w:ind" == sName )
+				else if ( L"ind" == sName )
 					m_oInd = oReader;
-				else if ( L"w:jc" == sName )
+				else if ( L"jc" == sName )
 					m_oJc = oReader;
-				else if ( L"w:keepLines" == sName )
+				else if ( L"keepLines" == sName )
 					m_oKeepLines = oReader;
-				else if ( L"w:keepNext" == sName )
+				else if ( L"keepNext" == sName )
 					m_oKeepNext = oReader;
-				else if ( L"w:kinsoku" == sName )
+				else if ( L"kinsoku" == sName )
 					m_oKinsoku = oReader;
-				else if ( L"w:mirrorIndents" == sName )
+				else if ( L"mirrorIndents" == sName )
 					m_oMirrorIndents = oReader;
-				else if ( L"w:numPr" == sName || L"w:listPr" == sName)
+				else if ( L"numPr" == sName || L"listPr" == sName)
 					m_oNumPr = oReader;
-				else if ( L"w:outlineLvl" == sName )
+				else if ( L"outlineLvl" == sName )
 					m_oOutlineLvl = oReader;
-				else if ( L"w:overflowPunct" == sName )
+				else if ( L"overflowPunct" == sName )
 					m_oOverflowPunct = oReader;
-				else if ( L"w:pageBreakBefore" == sName )
+				else if ( L"pageBreakBefore" == sName )
 					m_oPageBreakBefore = oReader;
-				else if ( L"w:pBdr" == sName )
+				else if ( L"pBdr" == sName )
 					m_oPBdr = oReader;
-				else if ( !m_bPPrChange && L"w:pPrChange" == sName )
+				else if ( !m_bPPrChange && L"pPrChange" == sName )
 					m_oPPrChange = oReader;
-				else if ( L"w:pStyle" == sName )
+				else if ( L"pStyle" == sName )
 					m_oPStyle = oReader;
-				else if ( !m_bPPrChange && L"w:rPr" == sName )
+				else if ( !m_bPPrChange && L"rPr" == sName )
 					m_oRPr = oReader;
-				else if ( !m_bPPrChange && L"w:sectPr" == sName )
+				else if ( !m_bPPrChange && L"sectPr" == sName )
 				{
 					m_oSectPr = new CSectionProperty(document);
 					m_oSectPr->fromXML(oReader);
@@ -293,31 +293,31 @@ namespace OOX
 					}
 //------------------------------------------------------------------------------------
 				}
-				else if ( L"w:shd" == sName )
+				else if ( L"shd" == sName )
 					m_oShd = oReader;
-				else if ( L"w:snapToGrid" == sName )
+				else if ( L"snapToGrid" == sName )
 					m_oSnapToGrid = oReader;
-				else if ( L"w:spacing" == sName )
+				else if ( L"spacing" == sName )
 					m_oSpacing = oReader;
-				else if ( L"w:suppressAutoHyphens" == sName )
+				else if ( L"suppressAutoHyphens" == sName )
 					m_oSuppressAutoHyphens = oReader;
-				else if ( L"w:suppressLineNumbers" == sName )
+				else if ( L"suppressLineNumbers" == sName )
 					m_oSuppressLineNumbers = oReader;
-				else if ( L"w:suppressOverlap" == sName )
+				else if ( L"suppressOverlap" == sName )
 					m_oSuppressOverlap = oReader;
-				else if ( L"w:tabs" == sName )
+				else if ( L"tabs" == sName )
 					m_oTabs = oReader;
-				else if ( L"w:textAlignment" == sName )
+				else if ( L"textAlignment" == sName )
 					m_oTextAlignment = oReader;
-				else if ( L"w:textboxTightWrap" == sName )
+				else if ( L"textboxTightWrap" == sName )
 					m_oTextboxTightWrap = oReader;
-				else if ( L"w:textDirection" == sName )
+				else if ( L"textDirection" == sName )
 					m_oTextDirection = oReader;
-				else if ( L"w:topLinePunct" == sName )
+				else if ( L"topLinePunct" == sName )
 					m_oTopLinePunct = oReader;
-				else if ( L"w:widowControl" == sName )
+				else if ( L"widowControl" == sName )
 					m_oWidowControl = oReader;
-				else if ( L"w:wordWrap" == sName )
+				else if ( L"wordWrap" == sName )
 					m_oWordWrap = oReader;
 			}
 		}

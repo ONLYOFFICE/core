@@ -215,36 +215,36 @@ namespace OOX
 
 		WritingElement* CRun::fromXMLElem(XmlUtils::CXmlLiteReader& oReader)
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			WritingElement *pItem = NULL;
 
 			OOX::Document* document = WritingElement::m_pMainDocument;
 			
-			if ( L"mc:AlternateContent" == sName )
+			if ( L"AlternateContent" == sName )
 				pItem = new CAlternateContent( document );
-			else if ( L"w:annotationRef" == sName )
+			else if ( L"annotationRef" == sName )
 				pItem = new CAnnotationRef( document );
-			else if ( L"w:br" == sName )
+			else if ( L"br" == sName )
 				pItem = new CBr( document );
-			else if ( L"w:commentReference" == sName )
+			else if ( L"commentReference" == sName )
 				pItem = new CCommentReference( document );
-			else if ( L"w:contentPart" == sName )
+			else if ( L"contentPart" == sName )
 				pItem = new CContentPart( document );
-			else if ( L"w:continuationSeparator" == sName )
+			else if ( L"continuationSeparator" == sName )
 				pItem = new CContinuationSeparator( document );
-			else if ( L"w:cr" == sName )
+			else if ( L"cr" == sName )
 				pItem = new CCr( document );
-			else if ( L"w:dayLong" == sName )
+			else if ( L"dayLong" == sName )
 				pItem = new CDayLong( document );
-			else if ( L"w:dayShort" == sName )
+			else if ( L"dayShort" == sName )
 				pItem = new CDayShort( document );
-			else if ( L"w:delInstrText" == sName )
+			else if ( L"delInstrText" == sName )
 				pItem = new CDelInstrText( document );
-			else if ( L"w:delText" == sName )
+			else if ( L"delText" == sName )
 				pItem = new CDelText( document );
-			else if ( L"w:drawing" == sName ) 
+			else if ( L"drawing" == sName ) 
 				pItem = new CDrawing( document );
-			else if ( L"w:endnote" == sName )
+			else if ( L"endnote" == sName )
 			{
 				CEndnoteReference *pEndRef = new CEndnoteReference(document);
 				CFtnEdn *pEndnote = new CFtnEdn( document );
@@ -266,13 +266,13 @@ namespace OOX
 				}
 				pItem = pEndRef;
 			}
-			else if ( L"w:endnoteRef" == sName )
+			else if ( L"endnoteRef" == sName )
 				pItem = new CEndnoteRef( document );
-			else if ( L"w:endnoteReference" == sName )
+			else if ( L"endnoteReference" == sName )
 				pItem = new CEndnoteReference( document );
-			else if ( L"w:fldChar" == sName )
+			else if ( L"fldChar" == sName )
 				pItem = new CFldChar( document );
-			else if ( L"w:footnote" == sName )
+			else if ( L"footnote" == sName )
 			{
 				CFootnoteReference *pFootRef = new CFootnoteReference(document);
 				CFtnEdn *pFootnote = new CFtnEdn( document );
@@ -292,29 +292,29 @@ namespace OOX
 				}
 				pItem = pFootRef;
 			}
-			else if ( L"w:footnoteRef" == sName )
+			else if ( L"footnoteRef" == sName )
 				pItem = new CFootnoteRef( document );
-			else if ( L"w:footnoteReference" == sName )
+			else if ( L"footnoteReference" == sName )
 				pItem = new CFootnoteReference( document );
-			else if ( L"w:instrText" == sName )
+			else if ( L"instrText" == sName )
 				pItem = new CInstrText( document );
-			else if ( L"w:lastRenderedPageBreak" == sName )
+			else if ( L"lastRenderedPageBreak" == sName )
 				pItem = new CLastRenderedPageBreak( document );
-			else if ( L"w:monthLong" == sName )
+			else if ( L"monthLong" == sName )
 				pItem = new CMonthLong( document );
-			else if ( L"w:monthShort" == sName )
+			else if ( L"monthShort" == sName )
 				pItem = new CMonthShort( document );
-			else if ( L"w:noBreakHyphen" == sName )
+			else if ( L"noBreakHyphen" == sName )
 				pItem = new CNoBreakHyphen( document );
-			else if ( L"w:object" == sName )
+			else if ( L"object" == sName )
 				pItem = new CObject( document );
-			else if ( L"w:pgNum" == sName )
+			else if ( L"pgNum" == sName )
 				pItem = new CPgNum( document );
-			else if ( L"w:pict" == sName )
+			else if ( L"pict" == sName )
 				pItem = new CPicture( document );
-			else if ( L"w:ptab" == sName )
+			else if ( L"ptab" == sName )
 				pItem = new CPTab( document );
-			else if ( L"w:rPr" == sName )
+			else if ( L"rPr" == sName )
 			{
 				if (m_oRunProperty)
 				{
@@ -331,23 +331,23 @@ namespace OOX
 				}
 				return pItem;
 			}
-			else if ( L"w:ruby" == sName )
+			else if ( L"ruby" == sName )
 				pItem = new CRuby( document );
-			else if ( L"w:separator" == sName )
+			else if ( L"separator" == sName )
 				pItem = new CSeparator( document );
-			else if ( L"w:softHyphen" == sName )
+			else if ( L"softHyphen" == sName )
 				pItem = new CSoftHyphen( document );
-			else if ( L"w:sym" == sName )
+			else if ( L"sym" == sName )
 				pItem = new CSym( document );
-			else if ( L"w:t" == sName )
+			else if ( L"t" == sName )
 			{
 				fromXMLText(oReader);
 			}
-			else if ( L"w:tab" == sName )
+			else if ( L"tab" == sName )
 				pItem = new CTab( document );
-			else if ( L"w:yearLong" == sName )
+			else if ( L"yearLong" == sName )
 				pItem = new CYearLong( document );
-			else if ( L"aml:annotation" == sName) //Bookmark 
+			else if ( L"annotation" == sName) //Bookmark 
 			{
 				nullable_string sType;
 				WritingElement_ReadAttributes_ReadSingle2(oReader, L"w:type", sType);
@@ -483,20 +483,20 @@ namespace OOX
 			if ( !oReader.MoveToFirstAttribute() )
 				return;
 
-			std::wstring wsName = oReader.GetName();
+			std::wstring wsName = XmlUtils::GetNameNoNS(oReader.GetName());
 			while( !wsName.empty() )
 			{
-				if ( L"w:rsidDel" == wsName )
+				if ( L"rsidDel" == wsName )
 					m_oRsidDel = oReader.GetText();
-				else if ( L"w:rsidR" == wsName )
+				else if ( L"rsidR" == wsName )
 					m_oRsidR = oReader.GetText();
-				else if ( L"w:rsidRPr" == wsName )
+				else if ( L"rsidRPr" == wsName )
 					m_oRsidRPr = oReader.GetText();
 
 				if ( !oReader.MoveToNextAttribute() )
 					break;
 
-				wsName = oReader.GetName();
+				wsName = XmlUtils::GetNameNoNS(oReader.GetName());
 			}
 
 			oReader.MoveToElement();

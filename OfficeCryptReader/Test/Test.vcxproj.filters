@@ -21,5 +21,8 @@
       <Filter>Common</Filter>
     </ClCompile>
     <ClCompile Include="Test.cpp" />
+    <ClCompile Include="..\..\Common\DocxFormat\Source\Base\Unit.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -31,6 +31,7 @@
  */
 #include <iostream>
 #include <iomanip>
+#include <boost/format.hpp>
 
 #include "CryptTransform.h"
 
@@ -52,7 +53,7 @@
 #include "../../Common/3dParty/cryptopp/zdeflate.h"
 
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../Common/DocxFormat/Source/Base/Unit.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
@@ -899,8 +900,10 @@ bool ECMAWriteProtect::VerifyWrike()
     wPasswordHash ^= (0x8000 | ('N' << 8) | 'K');
     wPasswordHash ^= p.length();
 
-	std::string sPasswordHash = XmlUtils::ToString(wPasswordHash, "%4.4X");
-	
+	std::stringstream sstream;
+	sstream << boost::format("%4.4X") % wPasswordHash;
+	std::string sPasswordHash = sstream.str();
+
 	return data.hashValue == sPasswordHash;
 }
 bool ECMAWriteProtect::Verify()

@@ -53,14 +53,14 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (L"w:drawing" == sName)
+				if (L"drawing" == sName)
 				{
 					m_oDrawing = new OOX::Logic::CDrawing(m_pMainDocument);
 					m_oDrawing->fromXML(oReader);
 				}
-				else if (L"v:background" == sName)
+				else if (L"background" == sName)
 				{
 					m_oBackground = OOX::Vml::CBackground(m_pMainDocument);
 					m_oBackground->fromXML(oReader);
@@ -133,24 +133,24 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				std::wstring sName = oReader.GetName();
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (L"w:background" == sName)
+				if (L"background" == sName)
 				{
 					ReadAttributes(oReader);
 				}
-				else if (L"v:background" == sName)
+				else if (L"background" == sName)
 					m_oBackground = oReader;
-				else if (L"w:binData" == sName)
+				else if (L"binData" == sName)
 					m_oBinData = oReader;
 			}
 		}
 		void CBgPict::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			WritingElement_ReadAttributes_Start(oReader)
-				WritingElement_ReadAttributes_Read_if(oReader, L"w:bgcolor", m_oColor)
-				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:background", m_oBackgroundType)
-			WritingElement_ReadAttributes_End(oReader)
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"bgcolor", m_oColor)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"background", m_oBackgroundType)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
 		}
 	}
 //------------------------------------------------------------------------------------------------------------------------
@@ -234,69 +234,69 @@ namespace OOX
 
 		while ( oReader.ReadNextSiblingNode( Depth ) )
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				
 			WritingElement *pItem = NULL;
 
-			if (L"w:altChunk" == sName )
+			if (L"altChunk" == sName )
 				pItem = new Logic::CAltChunk( document );
-			else if (L"w:bookmarkEnd" == sName )
+			else if (L"bookmarkEnd" == sName )
 				pItem = new Logic::CBookmarkEnd( document );
-			else if (L"w:bookmarkStart" == sName )
+			else if (L"bookmarkStart" == sName )
 				pItem = new Logic::CBookmarkStart( document );
-			else if (L"w:commentRangeEnd" == sName )
+			else if (L"commentRangeEnd" == sName )
 				pItem = new Logic::CCommentRangeEnd( document );
-			else if (L"w:commentRangeStart" == sName )
+			else if (L"commentRangeStart" == sName )
 				pItem = new Logic::CCommentRangeStart( document );
-			//else if (L"w:customXml" == sName )
+			//else if (L"customXml" == sName )
 			//	pItem = new Logic::CCustomXml( document );
-			else if (L"w:customXmlDelRangeEnd" == sName )
+			else if (L"customXmlDelRangeEnd" == sName )
 				pItem = new Logic::CCustomXmlDelRangeEnd( document );
-			else if (L"w:customXmlDelRangeStart" == sName )
+			else if (L"customXmlDelRangeStart" == sName )
 				pItem = new Logic::CCustomXmlDelRangeStart( document );
-			else if (L"w:customXmlInsRangeEnd" == sName )
+			else if (L"customXmlInsRangeEnd" == sName )
 				pItem = new Logic::CCustomXmlInsRangeEnd( document );
-			else if (L"w:customXmlInsRangeStart" == sName )
+			else if (L"customXmlInsRangeStart" == sName )
 				pItem = new Logic::CCustomXmlInsRangeStart( document );
-			else if (L"w:customXmlMoveFromRangeEnd" == sName ) 
+			else if (L"customXmlMoveFromRangeEnd" == sName ) 
 				pItem = new Logic::CCustomXmlMoveFromRangeEnd( document );
-			else if (L"w:customXmlMoveFromRangeStart" == sName )
+			else if (L"customXmlMoveFromRangeStart" == sName )
 				pItem = new Logic::CCustomXmlMoveFromRangeStart( document );
-			else if (L"w:customXmlMoveToRangeEnd" == sName ) 
+			else if (L"customXmlMoveToRangeEnd" == sName ) 
 				pItem = new Logic::CCustomXmlMoveToRangeEnd( document );
-			else if (L"w:customXmlMoveToRangeStart" == sName )
+			else if (L"customXmlMoveToRangeStart" == sName )
 				pItem = new Logic::CCustomXmlMoveToRangeStart( document );
-			else if (L"w:del" == sName )
+			else if (L"del" == sName )
 				pItem = new Logic::CDel( document );
-			else if (L"w:ins" == sName )
+			else if (L"ins" == sName )
 				pItem = new Logic::CIns( document );
-			else if (L"w:moveFrom" == sName )
+			else if (L"moveFrom" == sName )
 				pItem = new Logic::CMoveFrom( document );
-			else if (L"w:moveFromRangeEnd" == sName )
+			else if (L"moveFromRangeEnd" == sName )
 				pItem = new Logic::CMoveFromRangeEnd( document );
-			else if (L"w:moveFromRangeStart" == sName )
+			else if (L"moveFromRangeStart" == sName )
 				pItem = new Logic::CMoveFromRangeStart( document );
-			else if (L"w:moveTo" == sName )
+			else if (L"moveTo" == sName )
 				pItem = new Logic::CMoveTo( document );
-			else if (L"w:moveToRangeEnd" == sName )
+			else if (L"moveToRangeEnd" == sName )
 				pItem = new Logic::CMoveToRangeEnd( document );
-			else if (L"w:moveToRangeStart" == sName )
+			else if (L"moveToRangeStart" == sName )
 				pItem = new Logic::CMoveToRangeStart( document );
 			else if (L"m:oMath" == sName )
 				pItem = new Logic::COMath( document );
 			else if (L"m:oMathPara" == sName )
 				pItem = new Logic::COMathPara( document );
-			else if (L"w:p" == sName )
+			else if (L"p" == sName )
 				pItem = new Logic::CParagraph( document );
-			else if (L"w:permEnd" == sName )
+			else if (L"permEnd" == sName )
 				pItem = new Logic::CPermEnd( document );
-			else if (L"w:permStart" == sName )
+			else if (L"permStart" == sName )
 				pItem = new Logic::CPermStart( document );
-			else if (L"w:proofErr" == sName )
+			else if (L"proofErr" == sName )
 				pItem = new Logic::CProofErr( document );
-			else if (L"w:sdt" == sName )
+			else if (L"sdt" == sName )
 				pItem = new Logic::CSdt( document );
-			else if (L"w:sectPr" == sName )
+			else if (L"sectPr" == sName )
 			{
 				m_oSectPr = new Logic::CSectionProperty( document );
 				m_oSectPr->fromXML(oReader);
@@ -314,34 +314,34 @@ namespace OOX
 				}
 //-------------------------------------------------------------------------
 			}
-			else if (L"w:tbl" == sName )
+			else if (L"tbl" == sName )
 				pItem = new Logic::CTbl( document );
-			else if (L"w:body" == sName && !oReader.IsEmptyNode())
+			else if (L"body" == sName && !oReader.IsEmptyNode())
 			{
 				int nWBodyDepth = oReader.GetDepth();
 				CreateElements(oReader, nWBodyDepth);
 			}
-			else if (L"wx:sect" == sName && !oReader.IsEmptyNode())
+			else if (L"sect" == sName && !oReader.IsEmptyNode())
 			{
 				int nWxSectDepth = oReader.GetDepth();							
 				CreateElements(oReader, nWxSectDepth);
 			}
-			else if (L"wx:sub-section" == sName && !oReader.IsEmptyNode())
+			else if (L"sub-section" == sName && !oReader.IsEmptyNode())
 			{
 				int nWxSubSectDepth = oReader.GetDepth();							
 				CreateElements(oReader, nWxSubSectDepth);
 			}
-			else if (L"wx:pBdrGroup" == sName && !oReader.IsEmptyNode())
+			else if (L"pBdrGroup" == sName && !oReader.IsEmptyNode())
 			{
 				int nWxBdrGroupDepth = oReader.GetDepth();							
 				CreateElements(oReader, nWxBdrGroupDepth);
 			}
-			else if (L"w:background" == sName)
+			else if (L"background" == sName)
 			{
 				m_oBackground = new OOX::Logic::CBackground(WritingElement::m_pMainDocument);
 				m_oBackground->fromXML(oReader);
 			}
-			else if (L"w:docParts" == sName && !oReader.IsEmptyNode())
+			else if (L"docParts" == sName && !oReader.IsEmptyNode())
 			{
 				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
 				m_arrItems.push_back(pItem);
@@ -375,8 +375,8 @@ namespace OOX
 		if ( !oReader.ReadNextNode() )
 			return;
 
-		std::wstring sName = oReader.GetName();
-		if ( L"w:document" == sName || L"w:wordDocument" == sName || L"w:glossaryDocument" == sName)
+		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+		if ( L"document" == sName || L"wordDocument" == sName || L"glossaryDocument" == sName)
 		{
 			fromXML(oReader);
 		}			
@@ -406,10 +406,10 @@ namespace OOX
 	
 	void CDocument::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-		WritingElement_ReadAttributes_Read_if		( oReader, L"w:conformance",	m_oConformance )
-		WritingElement_ReadAttributes_Read_else_if	( oReader, L"xml:space",		m_oSpace )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_if		( oReader, L"conformance",	m_oConformance )
+		WritingElement_ReadAttributes_Read_else_if	( oReader, L"space",		m_oSpace )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 	void CDocument::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
@@ -419,7 +419,7 @@ namespace OOX
 			return;
 
 		int nDocumentDepth = oReader.GetDepth();
-		std::wstring sName = oReader.GetName();
+		//std::wstring sName = oReader.GetName();
 
 		CreateElements(oReader, nDocumentDepth);
 	}

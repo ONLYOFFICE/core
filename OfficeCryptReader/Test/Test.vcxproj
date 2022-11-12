@@ -44,6 +44,7 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
@@ -90,6 +91,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Common\3dParty\pole\pole.cpp" />
     <ClCompile Include="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp" />
+    <ClCompile Include="..\..\Common\DocxFormat\Source\Base\Unit.cpp" />
     <ClCompile Include="..\..\Common\OfficeFileFormatChecker2.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>

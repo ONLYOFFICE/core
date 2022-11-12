@@ -828,7 +828,7 @@ namespace DocFileFormat
 			}
 			else if (TextMark::PageBreakOrSectionMark == code)
 			{
-				if (m_context->_docx->_isSectionPageBreak == 0 || m_context->_docx->_isSectionPageBreak == 2)
+				if (m_context->_docx->_isSectionPageBreak == 0/* || m_context->_docx->_isSectionPageBreak == 2*/)
 				{
 					m_context->_docx->_isSectionPageBreak = -1;
 
@@ -841,6 +841,7 @@ namespace DocFileFormat
 
 					m_pXmlWriter->WriteString(elem.GetXMLString());
 				}
+				m_context->_docx->_isSectionPageBreak = -1;
 			}
 			else if (TextMark::ColumnBreak == code)
 			{

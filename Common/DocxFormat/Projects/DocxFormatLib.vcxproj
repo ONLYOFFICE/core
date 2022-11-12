@@ -270,6 +270,7 @@
     <ClInclude Include="..\Source\DocxFormat\Docx.h" />
     <ClInclude Include="..\Source\DocxFormat\DocxFlat.h" />
     <ClInclude Include="..\Source\DocxFormat\Drawing\Drawing.h" />
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingBody.h" />
     <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingExt.h" />
     <ClInclude Include="..\Source\DocxFormat\Endnote.h" />
     <ClInclude Include="..\Source\DocxFormat\External\External.h" />
@@ -462,6 +463,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Drawing\Drawing.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingExt.cpp" />
     <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>

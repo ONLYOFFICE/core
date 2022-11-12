@@ -68,6 +68,7 @@
 #include "../Source/DocxFormat/FileTypes.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"
 #include "../Source/DocxFormat/Document.cpp"
+#include "../Source/DocxFormat/Drawing/Drawing.cpp"
 #include "../Source/DocxFormat/Drawing/DrawingExt.cpp"
 #include "../Source/DocxFormat/Diagram/DiagramColors.cpp"
 #include "../Source/DocxFormat/Diagram/DiagramData.cpp"

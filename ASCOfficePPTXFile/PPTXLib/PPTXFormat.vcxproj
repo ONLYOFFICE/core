@@ -208,6 +208,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">./StdAfx.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="..\PPTXFormat\FileMap.cpp" />
+    <ClCompile Include="..\PPTXFormat\FileTypes.cpp" />
     <ClCompile Include="..\PPTXFormat\Folder.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">./StdAfx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">./StdAfx.h</PrecompiledHeaderFile>
@@ -392,6 +394,7 @@
     <ClInclude Include="..\PPTXFormat\FileTypes.h" />
     <ClInclude Include="..\PPTXFormat\Folder.h" />
     <ClInclude Include="..\PPTXFormat\HandoutMaster.h" />
+    <ClInclude Include="..\PPTXFormat\LegacyDiagramText.h" />
     <ClInclude Include="..\PPTXFormat\Limit\AlbumLayout.h" />
     <ClInclude Include="..\PPTXFormat\Limit\AnimationDgmBuild.h" />
     <ClInclude Include="..\PPTXFormat\Limit\BaseLimit.h" />
@@ -707,6 +710,7 @@
     <ClInclude Include="..\PPTXFormat\Logic\UniPath2D.h" />
     <ClInclude Include="..\PPTXFormat\Logic\Xfrm.h" />
     <ClInclude Include="..\PPTXFormat\Logic\XmlId.h" />
+    <ClInclude Include="..\PPTXFormat\Namespaces.h" />
     <ClInclude Include="..\PPTXFormat\NotesMaster.h" />
     <ClInclude Include="..\PPTXFormat\NotesSlide.h" />
     <ClInclude Include="..\PPTXFormat\PPTX.h" />
@@ -747,6 +751,8 @@
     <ClInclude Include="..\PPTXFormat\ViewProps\SlideViewPr.h" />
     <ClInclude Include="..\PPTXFormat\ViewProps\SorterViewPr.h" />
     <ClInclude Include="..\PPTXFormat\WrapperFile.h" />
+    <ClInclude Include="..\PPTXFormat\WrapperWritingElement.h" />
+    <ClInclude Include="..\PPTXFormat\WritingVector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

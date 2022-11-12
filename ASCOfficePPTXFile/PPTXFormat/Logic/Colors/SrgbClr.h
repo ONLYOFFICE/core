@@ -33,6 +33,7 @@
 
 #include "ColorBase.h"
 #include <math.h>
+#include "boost/format.hpp"
 
 namespace PPTX
 {

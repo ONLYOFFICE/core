@@ -41,7 +41,7 @@
 #include "../Biff_records/Continue.h"
 
 #include "../../../../source/Common/utils.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {

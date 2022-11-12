@@ -184,8 +184,8 @@ namespace OOX
 			nullable_string m_oUniqueName;
 			nullable_string m_oSourceCaption;
 			nullable_uint m_oCount;
-			nullable<SimpleTypes::Spreadsheet::COlapSlicerCacheSortOrder<>> m_oSortOrder;//natural
-			nullable<SimpleTypes::Spreadsheet::CSlicerCacheCrossFilter<>> m_oCrossFilter;//showItemsWithDataAtTop
+			nullable<SimpleTypes::Spreadsheet::COlapSlicerCacheSortOrder> m_oSortOrder;//natural
+			nullable<SimpleTypes::Spreadsheet::CSlicerCacheCrossFilter> m_oCrossFilter;//showItemsWithDataAtTop
 			//Members
 			std::vector<COlapSlicerCacheRange> m_oRanges;
 		};
@@ -287,10 +287,10 @@ namespace OOX
 			}
 			//Attributes
 			nullable_uint m_oPivotCacheId;
-			nullable<SimpleTypes::Spreadsheet::CTabularSlicerCacheSortOrder<>> m_oSortOrder;//ascending
+			nullable<SimpleTypes::Spreadsheet::CTabularSlicerCacheSortOrder> m_oSortOrder;//ascending
 			nullable_bool m_oCustomListSort;//True
 			nullable_bool m_oShowMissing;//True
-			nullable<SimpleTypes::Spreadsheet::CSlicerCacheCrossFilter<>> m_oCrossFilter;//showItemsWithDataAtTop
+			nullable<SimpleTypes::Spreadsheet::CSlicerCacheCrossFilter> m_oCrossFilter;//showItemsWithDataAtTop
 			//Members
 			nullable<CTabularSlicerCacheItems> m_oItems;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;

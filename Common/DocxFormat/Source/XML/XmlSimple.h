@@ -31,48 +31,23 @@
  */
 #pragma once
 
-#include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../Base/Nullable.h"
-#include "../XML/Utils.h"
-
-#include "../../../../DesktopEditor/common/File.h"
-#include "../../../../DesktopEditor/common/Directory.h"
-#include "../SystemUtility/SystemUtility.h"
 
 namespace XmlUtils
 {
+	using namespace NSCommon;
 	class CAttribute
 	{
 	public:
 		std::wstring m_strValue;
 
-		CAttribute()
-		{
-			m_strValue = L"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const int& value)
-		{
-            m_strValue += L" " + strName + L"=\"" + std::to_wstring(value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const size_t& value)
-		{
-            m_strValue += L" " + strName + L"=\"" + std::to_wstring((unsigned int)value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const double& value)
-		{
-			m_strValue += L" " + strName + L"=\"" + XmlUtils::DoubleToString(value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const std::wstring& value)
-		{
-			m_strValue += (L" ") + strName + L"=\"" + value + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const bool& value)
-		{
-			if (value)
-				m_strValue += (L" ") + strName + L"=\"true\"";
-			else
-				m_strValue += (L" ") + strName + L"=\"false\"";
-		}
+		CAttribute();
+		void Write(const std::wstring& strName, const int& value);
+		void Write(const std::wstring& strName, const size_t& value);
+		void Write(const std::wstring& strName, const double& value);
+		void Write(const std::wstring& strName, const std::wstring& value);
+		void Write(const std::wstring& strName, const bool& value);
+
 		template <typename T>
 		AVSINLINE void WriteLimit(const std::wstring& strName, const T& value)
 		{
@@ -94,51 +69,6 @@ namespace XmlUtils
 		{
 			Write(strName, value.ToString());
 		}
-		
-	public:
-		AVSINLINE void Write(const std::wstring& strName, const nullable_int& value)
-		{
-			if (!value.IsInit())
-				return;
-            m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const nullable_uint& value)
-		{
-			if (!value.IsInit())
-				return;
-			m_strValue += L" " + strName + L"=\"" + std::to_wstring(*value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const nullable_sizet& value)
-		{
-			if (!value.IsInit())
-				return;
-            m_strValue += L" " + strName + L"=\"" + std::to_wstring((unsigned int)*value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const nullable_double& value)
-		{
-			if (!value.IsInit())
-				return;
-			m_strValue += L" " + strName + L"=\"" + XmlUtils::DoubleToString(*value) + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const nullable_string& value)
-		{
-			if (!value.IsInit())
-				return;
-			m_strValue += (L" ") + strName + L"=\"" + *value + L"\"";
-		}
-		AVSINLINE void Write(const std::wstring& strName, const nullable_bool& value)
-		{
-			if (!value.IsInit())
-				return;
-			
-			m_strValue += (L" ") + strName + ((*value) ? L"=\"1\"" : L"=\"0\"");
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const nullable_bool& value)
-		{
-			if (!value.IsInit())
-				return;
-			m_strValue += (L" ") + strName + ((*value) ? L"=\"true\"" : L"=\"false\"");
-		}
 		template <typename T>
 		AVSINLINE void WriteLimitNullable(const std::wstring& strName, const nullable_limit<T>& value)
 		{
@@ -146,17 +76,19 @@ namespace XmlUtils
 				return;
 			Write(strName, value->get());
 		}
+		
+	public:
+		void Write(const std::wstring& strName, const nullable_int& value);
+		void Write(const std::wstring& strName, const nullable_uint& value);
+		void Write(const std::wstring& strName, const nullable_sizet& value);
+		void Write(const std::wstring& strName, const nullable_double& value);
+		void Write(const std::wstring& strName, const nullable_string& value);
+		void Write(const std::wstring& strName, const nullable_bool& value);
+		void Write2(const std::wstring& strName, const nullable_bool& value);
 
 	public:
-		CAttribute(const CAttribute& oSrc)
-		{
-			*this = oSrc;
-		}
-		CAttribute& operator=(const CAttribute& oSrc)
-		{
-			m_strValue = oSrc.m_strValue;
-            return (*this);
-		}
+		CAttribute(const CAttribute& oSrc);
+		CAttribute& operator=(const CAttribute& oSrc);
 	};
 
 	class CNodeValue
@@ -165,10 +97,8 @@ namespace XmlUtils
 		std::wstring m_strValue;
 
 	public:
-		CNodeValue()
-		{
-			m_strValue = L"";
-		}
+		CNodeValue();
+
 		template <typename T>
 		AVSINLINE void Write(T& value)
 		{
@@ -197,111 +127,33 @@ namespace XmlUtils
 			m_strValue += (L"</") + strNodeName + L">";
 		}
 
-        template <typename T>
-        AVSINLINE void WriteArray(const std::vector<T>& oArray)
-        {
-            size_t count = oArray.size();
-            for (size_t i = 0; i < count; ++i)
-                m_strValue += oArray[i].toXML();
-        }
+		template <typename T>
+		AVSINLINE void WriteArray(const std::vector<T>& oArray)
+		{
+			size_t count = oArray.size();
+			for (size_t i = 0; i < count; ++i)
+				m_strValue += oArray[i].toXML();
+		}
 		// --------------------------------------------------------------- //
-		AVSINLINE void Write2(const std::wstring& strName, const int& value)
-		{
-            Write2(strName, std::to_wstring(value));
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const size_t& value)
-		{
-            std::wstring s = L"=\"" + std::to_wstring((unsigned int)value) + L"\"";
-			Write2(strName, s);
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const double& value)
-		{
-			std::wstring s = L"=\"" + XmlUtils::DoubleToString(value) + L"\"";
-			Write2(strName, s);
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const std::wstring& value)
-		{
-			m_strValue += (L"<") + strName + L">" + value + L"</" + strName + L">";
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const bool& value)
-		{
-			if (value)
-				m_strValue += (L"<") + strName + L">true</" + strName + L">";
-			else
-				m_strValue += (L"<") + strName + L">false</" + strName + L">";
-		}
+		void Write2(const std::wstring& strName, const int& value);
+		void Write2(const std::wstring& strName, const size_t& value);
+		void Write2(const std::wstring& strName, const double& value);
+		void Write2(const std::wstring& strName, const std::wstring& value);
+		void Write2(const std::wstring& strName, const bool& value);
 
 		// ---------------------------------------------------------------- //
-		AVSINLINE void Write2(const std::wstring& strName, const nullable_int& value)
-		{
-			if (value.IsInit())
-				Write2(strName, *value);
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const nullable_sizet& value)
-		{
-			if (value.IsInit())
-				Write2(strName, *value);
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const nullable_double& value)
-		{
-			if (value.IsInit())
-				Write2(strName, *value);
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const nullable_string& value)
-		{
-			if (value.IsInit())
-				Write2(strName, *value);
-		}
-		AVSINLINE void Write2(const std::wstring& strName, const nullable_bool& value)
-		{
-			if (value.IsInit())
-				Write2(strName, *value);
-		}
+		void Write2(const std::wstring& strName, const nullable_int& value);
+		void Write2(const std::wstring& strName, const nullable_sizet& value);
+		void Write2(const std::wstring& strName, const nullable_double& value);
+		void Write2(const std::wstring& strName, const nullable_string& value);
+		void Write2(const std::wstring& strName, const nullable_bool& value);
 	};
 
-	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr)
-	{
-		if (strName.empty()) return L"";
+	std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr);
+	std::wstring CreateNode(const std::wstring& strName, const CNodeValue& oNode);
+	std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const CNodeValue& oNode);
+	std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const std::wstring& strXml);
+	std::wstring CreateNode(const std::wstring& strName, const std::wstring& strXml);
 
-		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
-	}
-	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CNodeValue& oNode)
-	{
-		if (strName.empty()) return L"";
-
-		if (oNode.m_strValue.empty())
-			return L"<" + strName + L"/>";
-
-		return L"<" + strName + L">" + oNode.m_strValue + L"</" + strName + L">";
-	}
-	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const CNodeValue& oNode)
-	{
-		if (strName.empty()) return L"";
-
-		if ( oNode.m_strValue.empty())
-			return CreateNode(strName, oAttr);
-		
-		return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + oNode.m_strValue +  L"</" + strName + L">";
-	}
-	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const CAttribute& oAttr, const std::wstring& strXml)
-	{
-		if (strName.empty()) return L"";
-
-		if (strXml.empty())	return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L"/>";
-		else				return L"<" + strName + (oAttr.m_strValue.empty() ? L"" : L" " + oAttr.m_strValue) + L">" + strXml + L"</" + strName + L">";
-		
-		
-	}
-	AVSINLINE std::wstring CreateNode(const std::wstring& strName, const std::wstring& strXml)
-	{
-		if (strName.empty()) return L"";
-
-		if (strXml.empty()) return L"<" + strName + L"/>";
-		else				return L"<" + strName + L">" + strXml + L"</" + strName + L">";
-	}
-
-	AVSINLINE void SaveToFile(const std::wstring& strFile, const std::wstring& strXml)
-	{
-		NSFile::CFileBinary::SaveToFile(strFile, strXml);
-	}
+	void SaveToFile(const std::wstring& strFile, const std::wstring& strXml);
 }

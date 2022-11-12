@@ -237,17 +237,24 @@
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\PPTXFormat\FileTypes.h" />
     <ClInclude Include="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.h" />
     <ClInclude Include="..\Source\Base\Base.h" />
+    <ClInclude Include="..\Source\Base\codecvt.h" />
+    <ClInclude Include="..\Source\Base\DateTime.h" />
     <ClInclude Include="..\Source\Base\Nullable.h" />
     <ClInclude Include="..\Source\Base\SmartPtr.h" />
+    <ClInclude Include="..\Source\Base\strings_hack_printf.h" />
+    <ClInclude Include="..\Source\Base\Types_32.h" />
     <ClInclude Include="..\Source\Base\unicode_util.h" />
+    <ClInclude Include="..\Source\Base\Unit.h" />
+    <ClInclude Include="..\Source\Base\WinColor.h" />
     <ClInclude Include="..\Source\Common\ComplexTypes.h" />
     <ClInclude Include="..\Source\Common\SimpleTypes_Base.h" />
     <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h" />
     <ClInclude Include="..\Source\Common\SimpleTypes_OMath.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Rtf.h" />
     <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h" />
+    <ClInclude Include="..\Source\Common\SimpleTypes_Spreadsheet.h" />
     <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h" />
     <ClInclude Include="..\Source\Common\SimpleTypes_Word.h" />
-    <ClInclude Include="..\Source\Common\Unit.h" />
     <ClInclude Include="..\Source\DocxFormat\App.h" />
     <ClInclude Include="..\Source\DocxFormat\Bibliography.h" />
     <ClInclude Include="..\Source\DocxFormat\Comments.h" />
@@ -316,7 +323,6 @@
     <ClInclude Include="..\Source\DocxFormat\Media\OleObject.h" />
     <ClInclude Include="..\Source\DocxFormat\Media\VbaProject.h" />
     <ClInclude Include="..\Source\DocxFormat\Media\Video.h" />
-    <ClInclude Include="..\Source\DocxFormat\NamespaceOwn.h" />
     <ClInclude Include="..\Source\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\Source\DocxFormat\Numbering.h" />
     <ClInclude Include="..\Source\DocxFormat\Rels.h" />
@@ -369,7 +375,6 @@
     <ClInclude Include="..\Source\XlsxFormat\SharedStrings\SharedStrings.h" />
     <ClInclude Include="..\Source\XlsxFormat\SharedStrings\Si.h" />
     <ClInclude Include="..\Source\XlsxFormat\SharedStrings\Text.h" />
-    <ClInclude Include="..\Source\XlsxFormat\SimpleTypes_Spreadsheet.h" />
     <ClInclude Include="..\Source\XlsxFormat\Slicer\Slicer.h" />
     <ClInclude Include="..\Source\XlsxFormat\Slicer\SlicerCache.h" />
     <ClInclude Include="..\Source\XlsxFormat\Slicer\SlicerCacheExt.h" />
@@ -407,8 +412,6 @@
     <ClInclude Include="..\Source\XlsxFormat\WritingElement.h" />
     <ClInclude Include="..\Source\XlsxFormat\Xlsx.h" />
     <ClInclude Include="..\Source\XlsxFormat\XlsxFlat.h" />
-    <ClInclude Include="..\Source\XML\StringWriter.h" />
-    <ClInclude Include="..\Source\XML\Utils.h" />
     <ClInclude Include="..\Source\XML\XmlSimple.h" />
   </ItemGroup>
   <ItemGroup>
@@ -429,7 +432,19 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.cpp" />
+    <ClCompile Include="..\Source\Base\codecvt.cpp" />
+    <ClCompile Include="..\Source\Base\DateTime.cpp" />
     <ClCompile Include="..\Source\Base\unicode_util.cpp" />
+    <ClCompile Include="..\Source\Base\Unit.cpp" />
+    <ClCompile Include="..\Source\Base\WinColor.cpp" />
+    <ClCompile Include="..\Source\Common\ComplexTypes.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Base.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Drawing.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_OMath.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Rtf.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Shared.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Spreadsheet.cpp" />
+    <ClCompile Include="..\Source\Common\SimpleTypes_Vml.cpp" />
     <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp" />
     <ClCompile Include="..\Source\DocxFormat\App.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Comments.cpp" />
@@ -452,6 +467,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FileTypes.cpp" />
     <ClCompile Include="..\Source\DocxFormat\IFileContainer.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -584,6 +600,7 @@
     <ClCompile Include="..\Source\MathEquation\MathEquation.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Source\SystemUtility\File.cpp" />
     <ClCompile Include="..\Source\SystemUtility\SystemUtility.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Chart\ChartSerialize.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Chart\ChartSerializeEx.cpp" />
@@ -595,6 +612,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\FileTypes_Spreadsheet.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Pivot\Pivots.cpp" />
@@ -613,6 +631,7 @@
     <ClCompile Include="..\Source\XlsxFormat\Worksheets\Worksheet.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\Xlsx.cpp" />
     <ClCompile Include="..\Source\XlsxFormat\XlsxFlat.cpp" />
+    <ClCompile Include="..\Source\XML\XmlSimple.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

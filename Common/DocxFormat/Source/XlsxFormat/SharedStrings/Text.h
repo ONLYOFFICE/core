@@ -65,7 +65,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			bool m_bIsInit;
-			SimpleTypes::CXmlSpace<> m_oSpace;
+			SimpleTypes::CXmlSpace m_oSpace;
 
 			double m_dValue;
 			_UINT32 m_nValue;
@@ -178,7 +178,7 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<SimpleTypes::CXmlSpace<> > m_oSpace;
+			nullable<SimpleTypes::CXmlSpace>		m_oSpace;
 
 			// Value
 			std::wstring                             m_sText;

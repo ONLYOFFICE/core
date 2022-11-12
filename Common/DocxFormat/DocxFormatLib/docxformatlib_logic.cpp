@@ -65,6 +65,7 @@
 #include "../Source/DocxFormat/Core.cpp"
 #include "../Source/DocxFormat/Settings/Settings.cpp"
 #include "../Source/DocxFormat/FileFactory.cpp"
+#include "../Source/DocxFormat/FileTypes.cpp"
 #include "../Source/DocxFormat/IFileContainer.cpp"
 #include "../Source/DocxFormat/Document.cpp"
 #include "../Source/DocxFormat/Drawing/DrawingExt.cpp"

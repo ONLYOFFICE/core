@@ -38,6 +38,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
 
 void ConvertOle1ToOle2(BYTE *pData, int nSize, std::wstring sOle2Name)
 {
@@ -2084,12 +2085,12 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
             int x = 0, y = 0;
             try
             {
-                x = _wtoi(splitted[i].substr(0, pos).c_str());
+                x = XmlUtils::GetInteger(splitted[i].substr(0, pos));
             }
             catch(...){}
             try
             {
-                y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+                y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1));
             }
             catch(...){}
 
@@ -2112,12 +2113,12 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
             int x = 0, y = 0;
             try
             {
-                x = _wtoi(splitted[i].substr(0, pos).c_str());
+                x = XmlUtils::GetInteger(splitted[i].substr(0, pos));
             }
             catch(...){}
             try
             {
-                y = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str());
+                y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1));
             }
             catch(...){}
 
@@ -2135,7 +2136,7 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
             int val = 0;
             try
             {
-                val = _wtoi(splitted[i].c_str());
+                val = XmlUtils::GetInteger(splitted[i]);
             }catch(...){}
 
 			m_oShape.m_aPSegmentInfo.push_back( val );
@@ -2220,12 +2221,12 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
             int col = 0, pos_col = 0;
             try
             {
-				col = _wtoi(splitted[i].substr(0, pos).c_str());
+                col = XmlUtils::GetInteger(splitted[i].substr(0, pos));
             }
             catch(...){}
             try
             {
-                pos_col = _wtoi(splitted[i].substr(pos + 1, splitted[i].length() - 1).c_str()) * 100 / 65536;
+                pos_col = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1)) * 100 / 65536;
             }
             catch(...){}
 

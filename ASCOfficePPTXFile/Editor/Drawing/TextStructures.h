@@ -78,7 +78,7 @@ namespace PPT_FORMAT
 	{
         if (!prop.is_init()) return L"";
 		
-        return _T("<") + strName + _T(">") + XmlUtils::DoubleToString(prop.get()) + _T("</") + strName + _T(">");
+		return _T("<") + strName + _T(">") + XmlUtils::ToString(prop.get()) + _T("</") + strName + _T(">");
 	}
     static std::wstring ToNode(const NSCommon::nullable_base<CColor>& prop, const std::wstring& strName)
 	{

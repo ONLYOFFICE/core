@@ -63,8 +63,8 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
                         void ReadAttributes(XLS::BaseObjectPtr& obj);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oTableColumnId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTableColumnId;
 			nullable<std::wstring>								m_oName;
 			
 			nullable_bool	m_oRowNumbers;
@@ -97,7 +97,7 @@ namespace OOX
 				return et_x_QueryTableFields;
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 
 		class CQueryTableDeletedField : public WritingElement
@@ -151,7 +151,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CQueryTableRefresh : public WritingElement
 		{
@@ -178,13 +178,13 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
                         void ReadAttributes(XLS::BaseObjectPtr& obj);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oNextId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oMinimumVersion;			
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oNextId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oMinimumVersion;
 			nullable_bool										m_FieldIdWrapped;
 			nullable_bool										m_HeadersInLastRefresh;
 			nullable_bool										m_PreserveSortFilterLayout;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_UnboundColumnsLeft;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_UnboundColumnsRight;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_UnboundColumnsLeft;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_UnboundColumnsRight;
 			
 			nullable<CQueryTableFields>						m_oQueryTableFields;
 			nullable<CQueryTableDeletedFields>				m_oQueryTableDeletedFields;
@@ -229,8 +229,8 @@ namespace OOX
 			nullable_bool	m_oApplyWidthHeightFormats;
 			nullable_bool	m_oBackgroundRefresh;
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oAutoFormatId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oConnectionId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oAutoFormatId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oConnectionId;
 			
 			nullable_bool	m_oDisableEdit;
 			nullable_bool	m_oDisableRefresh;

@@ -549,10 +549,10 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::COnOff<>>						m_oAuto;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oIndexed;
+			nullable<SimpleTypes::COnOff>						m_oAuto;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIndexed;
 			nullable<SimpleTypes::Spreadsheet::CHexColor>		m_oRgb;
-			nullable<SimpleTypes::Spreadsheet::CThemeColor<>>	m_oThemeColor;
+			nullable<SimpleTypes::Spreadsheet::CThemeColor>		m_oThemeColor;
 			nullable<SimpleTypes::CDouble>						m_oTint;
 		};
 
@@ -645,7 +645,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CFontCharset<>>	m_oCharset;
+			nullable<SimpleTypes::Spreadsheet::CFontCharset>	m_oCharset;
 		};
 		class CVerticalAlign : public WritingElement
 		{
@@ -680,7 +680,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CVerticalAlignRun<>>	m_oVerticalAlign;
+			nullable<SimpleTypes::CVerticalAlignRun>	m_oVerticalAlign;
 		};
 		class CFontFamily : public WritingElement
 		{
@@ -715,7 +715,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CFontFamily<>>	m_oFontFamily;
+			nullable<SimpleTypes::Spreadsheet::CFontFamily>	m_oFontFamily;
 		};
 		class CFontScheme : public WritingElement
 		{
@@ -752,7 +752,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CFontScheme<>>	m_oFontScheme;
+			nullable<SimpleTypes::Spreadsheet::CFontScheme>	m_oFontScheme;
 		};
 		class CUnderline : public WritingElement
 		{
@@ -787,7 +787,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CUnderline<>>	m_oUnderline;
+			nullable<SimpleTypes::Spreadsheet::CUnderline>	m_oUnderline;
 		};
 		//необработано:
 		class CRPr : public WritingElement
@@ -961,24 +961,24 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oBold;
             nullable<CCharset>                                                      m_oCharset;
             nullable<CColor>                                                        m_oColor;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oCondense;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oExtend;
             nullable<CFontFamily >                                                  m_oFamily;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oItalic;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oOutline;
             nullable<ComplexTypes::Spreadsheet::String >                            m_oRFont;
             nullable<CFontScheme>                                                   m_oScheme;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oShadow;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oStrike;
 			nullable<ComplexTypes::Spreadsheet::CDouble>							m_oSz;
             nullable<CUnderline>                                                    m_oUnderline;
             nullable<CVerticalAlign>                                                m_oVertAlign;
 
             //////
-            nullable<SimpleTypes::CDecimalNumber<>>                                 m_nFontIndex;
+			nullable<SimpleTypes::CDecimalNumber>									m_nFontIndex;
 		};
 	} //Spreadsheet
 } // namespace OOX

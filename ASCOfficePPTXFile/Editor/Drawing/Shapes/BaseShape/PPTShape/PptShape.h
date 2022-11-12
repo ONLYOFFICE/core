@@ -500,8 +500,7 @@ protected:
         if (!NSStringUtils::IsNumber(str))
             return false;
 
-        lValue = 0;
-        lValue = _ttoi(str.c_str());
+        lValue = XmlUtils::GetInteger(str);
 
         if (bFormula)
         {

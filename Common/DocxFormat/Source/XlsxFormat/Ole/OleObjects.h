@@ -117,7 +117,7 @@ namespace OOX
 		public:
 			nullable_bool m_oMoveWithCells;
 			nullable_bool m_oSizeWithCells;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oZOrder;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oZOrder;
 
 			nullable<CFromTo> m_oFrom;
 			nullable<CFromTo> m_oTo;
@@ -207,17 +207,17 @@ namespace OOX
 			}
 		public:
 			nullable<std::wstring>				m_oAltText;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoFill;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoLine;
-			nullable<SimpleTypes::COnOff<>>		m_oAutoPict;
-			nullable<SimpleTypes::COnOff<>>		m_oDde;
-			nullable<SimpleTypes::COnOff<>>		m_oDefaultSize;
-			nullable<SimpleTypes::COnOff<>>		m_oDisabled;
+			nullable<SimpleTypes::COnOff>		m_oAutoFill;
+			nullable<SimpleTypes::COnOff>		m_oAutoLine;
+			nullable<SimpleTypes::COnOff>		m_oAutoPict;
+			nullable<SimpleTypes::COnOff>		m_oDde;
+			nullable<SimpleTypes::COnOff>		m_oDefaultSize;
+			nullable<SimpleTypes::COnOff>		m_oDisabled;
 			nullable<SimpleTypes::CRelationshipId> m_oRid;
-			nullable<SimpleTypes::COnOff<>>		m_oLocked;
+			nullable<SimpleTypes::COnOff>		m_oLocked;
 			nullable<std::wstring>				m_oMacro;
-			nullable<SimpleTypes::COnOff<>>		m_oPrint;
-			nullable<SimpleTypes::COnOff<>>		m_oUiObject;
+			nullable<SimpleTypes::COnOff>		m_oPrint;
+			nullable<SimpleTypes::COnOff>		m_oUiObject;
 
 			nullable<CExtAnchor>			m_oAnchor;
 		};
@@ -386,11 +386,11 @@ namespace OOX
 			}
 		public:
 			nullable<std::wstring >								m_oProgId;
-			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
+			nullable<SimpleTypes::Spreadsheet::ST_DvAspect>		m_oDvAspect;
 			nullable<std::wstring >								m_oLink;
-			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
-			nullable<SimpleTypes::COnOff<>>						m_oAutoLoad;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
+			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate>	m_oOleUpdate;
+			nullable<SimpleTypes::COnOff>						m_oAutoLoad;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
 			nullable<COleObjectPr>								m_oObjectPr;
 	//internal

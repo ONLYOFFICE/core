@@ -39,7 +39,7 @@
 #include "../Biff_records/XCT.h"
 #include "../Biff_records/CRN.h"
 
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {

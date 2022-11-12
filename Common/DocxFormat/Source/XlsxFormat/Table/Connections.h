@@ -106,7 +106,7 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if(oReader, L"position", m_oPosition)
 				WritingElement_ReadAttributes_End(oReader)
 			}
-			nullable<SimpleTypes::Spreadsheet::CExternalConnectionType<>>	m_oType;
+			nullable<SimpleTypes::Spreadsheet::CExternalConnectionType>		m_oType;
 			nullable_int													m_oPosition;
 		};
 		class CTextFields : public WritingElementWithChilds<CTextField>
@@ -232,7 +232,8 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if(oReader, L"double", m_oDouble)
 				WritingElement_ReadAttributes_End(oReader)
 			}
-			nullable<SimpleTypes::Spreadsheet::CParameterType<>> m_oParameterType;
+
+			nullable<SimpleTypes::Spreadsheet::CParameterType> m_oParameterType;
 
 			nullable_string		m_oName;
 			nullable_string		m_oPrompt;
@@ -638,7 +639,7 @@ namespace OOX
 			nullable_bool		m_oTextDates;
 			nullable_bool		m_oXl2000;
 			nullable_bool		m_oHtmlTables;
-			nullable<SimpleTypes::Spreadsheet::CHtmlFormat<>> m_oHtmlFormat;
+			nullable<SimpleTypes::Spreadsheet::CHtmlFormat> m_oHtmlFormat;
 
 			//nullable<CTables>					m_oTables;
 		};
@@ -774,8 +775,8 @@ namespace OOX
 
 			nullable_int			m_oCodePage;
 
-			nullable<SimpleTypes::Spreadsheet::CQualifier<>> m_oQualifier;
-			nullable<SimpleTypes::Spreadsheet::CFileType<>>	m_oFileType;
+			nullable<SimpleTypes::Spreadsheet::CQualifier>	m_oQualifier;
+			nullable<SimpleTypes::Spreadsheet::CFileType>	m_oFileType;
 
 			nullable_bool			m_oPrompt;
 			nullable_bool			m_oDelimited;
@@ -1001,7 +1002,7 @@ namespace OOX
 			}
 			nullable_int		m_oType;	//EDatabaseSourceType
 			nullable_string		m_oName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oId;
 			nullable_string		m_oIdExt;
 			nullable_string		m_oUId;
 
@@ -1012,7 +1013,7 @@ namespace OOX
 			nullable<CRangePr>	m_oRangePr;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 
-			nullable<SimpleTypes::Spreadsheet::CCredMethod<>> m_oCredentials;
+			nullable<SimpleTypes::Spreadsheet::CCredMethod> m_oCredentials;
 			nullable_bool		m_oBackground;
 			nullable_bool		m_oDeleted;
 			nullable_string		m_oDescription;

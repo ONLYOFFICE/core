@@ -31,7 +31,7 @@
  */
 
 #include "../../DesktopEditor/common/Types.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 #include <string>
 
 struct ProgressCallback;

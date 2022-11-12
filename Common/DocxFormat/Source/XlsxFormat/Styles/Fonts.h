@@ -198,10 +198,10 @@ namespace OOX
 
 				nullable_bool bItalic, bBold;
 				nullable_string sColor, sFamily, sFont;
-				nullable<SimpleTypes::Spreadsheet::CFontFamily<>> oFamily;
-				nullable<SimpleTypes::Spreadsheet::CUnderline<>> oUnderline;
-				nullable<SimpleTypes::Spreadsheet::CFontCharset<>> oCharset;
-				nullable<SimpleTypes::CVerticalAlignRun<>> oVerticalAlignment;
+				nullable<SimpleTypes::Spreadsheet::CFontFamily> oFamily;
+				nullable<SimpleTypes::Spreadsheet::CUnderline> oUnderline;
+				nullable<SimpleTypes::Spreadsheet::CFontCharset> oCharset;
+				nullable<SimpleTypes::CVerticalAlignRun> oVerticalAlignment;
 				nullable_double dSz;
 
 				WritingElement_ReadAttributes_Start( oReader )
@@ -352,18 +352,18 @@ namespace OOX
             }
 
 		public:
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oBold;
             nullable<CCharset>														m_oCharset;
 			nullable<CColor>														m_oColor;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oCondense;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oExtend;
 			nullable<CFontFamily >													m_oFamily;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oItalic;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oOutline;
 			nullable<ComplexTypes::Spreadsheet::String>								m_oRFont;
 			nullable<CFontScheme>													m_oScheme;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
-			nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oShadow;
+			nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oStrike;
 			nullable<ComplexTypes::Spreadsheet::CDouble>							m_oSz;
 			nullable<CUnderline>													m_oUnderline;
 			nullable<CVerticalAlign>												m_oVertAlign;
@@ -462,7 +462,7 @@ namespace OOX
                 m_oCount = (_UINT32)obj.size();
             }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			std::map<int, CFont*>							m_mapFonts;
 		};
 	} //Spreadsheet

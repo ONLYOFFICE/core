@@ -1239,7 +1239,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 
 		if (m_content.IsInit())
 		{
-			writer.WriteString(XmlUtils::DoubleToString(*m_content));
+			writer.WriteString(XmlUtils::ToString(*m_content));
 		}
 
 		writer.WriteString(L"</cx:pt>");
@@ -1413,7 +1413,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			if (m_binCount.IsInit())
 			{
 				writer.WriteString(L"<cx:binCount>");
-					writer.WriteString(XmlUtils::DoubleToString(*m_binCount));
+					writer.WriteString(XmlUtils::ToString(*m_binCount));
 				writer.WriteString(L"</cx:binCount>");
 			}
 			else if (m_binSize.IsInit())

@@ -130,9 +130,9 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
 
-			CTblGrid                                *m_pTblGrid;
+			CTblGrid								*m_pTblGrid;
 		};
 		//--------------------------------------------------------------------------------
 		// CTblGrid 17.4.49 (Part 1)
@@ -273,13 +273,13 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring					   > m_sUserId;
+			nullable<std::wstring					> m_sAuthor;
+			nullable<SimpleTypes::CDateTime			> m_oDate;
+			nullable<SimpleTypes::CDecimalNumber	> m_oId;
+			nullable<std::wstring					> m_sUserId;
 
 			// Childs
-			nullable<CTblPrEx                      > m_pTblPrEx;
+			nullable<CTblPrEx						> m_pTblPrEx;
 		};
 		//--------------------------------------------------------------------------------
 		// CTblPrEx 17.4.61 (Part 1)
@@ -527,10 +527,10 @@ namespace OOX
 		public:
 			int										m_nCountCell;
 
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidTr;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber> m_oRsidTr;
 
 			// Childs
 			OOX::Logic::CTableRowProperties*	m_pTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>

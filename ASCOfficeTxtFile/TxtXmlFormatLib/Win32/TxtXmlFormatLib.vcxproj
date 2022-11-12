@@ -146,8 +146,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp" />
-    <ClCompile Include="..\Source\Common\Encoding.cpp" />
-    <ClCompile Include="..\Source\Common\ToString.cpp" />
     <ClCompile Include="..\Source\ConvertDocx2Txt.cpp" />
     <ClCompile Include="..\Source\ConvertTxt2Docx.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
@@ -169,7 +167,6 @@
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriterWin.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h" />
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h" />
@@ -185,7 +182,6 @@
     <ClInclude Include="..\Source\ConvertTxt2Docx.h" />
     <ClInclude Include="..\Source\TxtFormat\File.h" />
     <ClInclude Include="..\Source\TxtFormat\TxtFile.h" />
-    <ClInclude Include="..\Source\TxtFormat\TxtFormat.h" />
     <ClInclude Include="..\Source\TxtXmlFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

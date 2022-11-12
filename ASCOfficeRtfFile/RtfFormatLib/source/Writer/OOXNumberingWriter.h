@@ -52,7 +52,7 @@ public:
 	{
 		if( false == m_sFileXml.empty() )
 		{
-			CFile file;
+			NSFile::CFileBinary file;
 
             if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("numbering.xml")) != S_OK) return false;
 				

@@ -32,7 +32,7 @@
 #pragma once
 
 #include "../../Common/DocxFormat/Source/DocxFormat/File.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #include "Logic/TextParagraphPr.h"
 #include "Logic/Colors/SrgbClr.h"
@@ -71,7 +71,7 @@ namespace PPTX
 			m_Data = NULL;
 			m_DataSize =0;
 
-			CFile file;
+			NSFile::CFileBinary file;
 			if (file.OpenFile(filename.GetPath()) == S_OK)
 			{
 				m_DataSize = (int)file.GetFileSize();

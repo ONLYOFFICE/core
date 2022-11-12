@@ -119,22 +119,22 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDropLines;
-			nullable<SimpleTypes::Spreadsheet::CObjectType<>>			m_oObjectType;
-			nullable<SimpleTypes::Spreadsheet::CChecked<>>				m_oChecked;
-			nullable<SimpleTypes::Spreadsheet::CDropStyle<>>			m_oDropStyle;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oDx;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oInc;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oMin;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oMax;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oPage;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oSel;
-			nullable<SimpleTypes::Spreadsheet::CSelType<>>				m_oSelType;
-			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment<>>	m_oTextHAlign;
-			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment<>>	m_oTextVAlign;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oDropLines;
+			nullable<SimpleTypes::Spreadsheet::CObjectType>				m_oObjectType;
+			nullable<SimpleTypes::Spreadsheet::CChecked>				m_oChecked;
+			nullable<SimpleTypes::Spreadsheet::CDropStyle>				m_oDropStyle;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oDx;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oInc;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oMin;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oMax;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oPage;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oSel;
+			nullable<SimpleTypes::Spreadsheet::CSelType>				m_oSelType;
+			nullable<SimpleTypes::Spreadsheet::CHorizontalAlignment>	m_oTextHAlign;
+			nullable<SimpleTypes::Spreadsheet::CVerticalAlignment>		m_oTextVAlign;
 			nullable_int												m_oVal;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>				m_oWidthMin;
-			nullable<SimpleTypes::Spreadsheet::CEditValidation<>>		m_oEditVal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oWidthMin;
+			nullable<SimpleTypes::Spreadsheet::CEditValidation>			m_oEditVal;
 			nullable_string		m_oFmlaGroup;
 			nullable_string		m_oFmlaLink;
 			nullable_string		m_oFmlaRange;
@@ -155,8 +155,8 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 //---------------------
 			nullable_string									m_oText;
-			nullable<SimpleTypes::CColorType<>>				m_oFillColor;
-			nullable<SimpleTypes::CColorType<>>				m_oBorderColor;
+			nullable<SimpleTypes::CColorType>				m_oFillColor;
+			nullable<SimpleTypes::CColorType>				m_oBorderColor;
 		};
 //------------------------------------------------------------------------------------
 		class CControlPr : public WritingElement
@@ -242,11 +242,11 @@ namespace OOX
 		public:
 			nullable_string										m_oName;
 			nullable_string										m_oProgId;
-			nullable<SimpleTypes::Spreadsheet::ST_DvAspect<>>	m_oDvAspect;
+			nullable<SimpleTypes::Spreadsheet::ST_DvAspect>		m_oDvAspect;
 			nullable_string										m_oLink;
-			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate<>>	m_oOleUpdate;
+			nullable<SimpleTypes::Spreadsheet::ST_OleUpdate>	m_oOleUpdate;
 			nullable_bool										m_oAutoLoad;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oShapeId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oShapeId;
 			nullable<SimpleTypes::CRelationshipId>				m_oRid;
 			nullable<CControlPr>								m_oControlPr;
 //--for-write-from-bin--------------

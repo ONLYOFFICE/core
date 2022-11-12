@@ -36,6 +36,7 @@
 #include "../../Common/DocxFormat/Source/MathEquation/OutputDev.h"
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_OMath.h"
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Shared.h"
+#include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 #include <stack>
 
 namespace MathEquation

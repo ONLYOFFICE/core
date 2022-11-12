@@ -1283,7 +1283,7 @@ std::wstring RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
     //	sResult += L"<w:numStyleLink w:val=\"" + XmlUtils::EncodeXmlString( m_sName) + L"\"/>";
 
 	if( PROP_DEF != m_nTemplateId )
-        sResult += L"<w:tmpl w:val=\"" + XmlUtils::IntToString(m_nTemplateId, L"%x") + L"\"/>";
+		sResult += L"<w:tmpl w:val=\"" + XmlUtils::ToString(m_nTemplateId, L"%x") + L"\"/>";
 
 	RenderParameter oNewParam = oRenderParameter;
 	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;

@@ -63,7 +63,7 @@ namespace Writers
 		{
 			if(IsEmpty()) return false;
 
-			OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("charts");
+			OOX::CPath pathChartDir = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"charts";
            
 			for(size_t i = 0; i < m_aCharts.size(); ++i)
 			{

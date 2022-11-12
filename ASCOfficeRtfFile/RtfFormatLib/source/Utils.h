@@ -40,7 +40,7 @@
 #endif
 
 #include "../../../Common/FileWriter.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 
@@ -124,17 +124,11 @@ namespace Strings
 	}
     static int ToInteger(const std::wstring& strValue)
 	{
-        return _ttoi(strValue.c_str());
+        return XmlUtils::GetInteger(strValue);
 	}
     static double ToDouble(const std::wstring& strValue)
 	{
-		double d = 0;
-#if defined (_WIN32) || defined(_WIN64)
-        _stscanf_s(strValue.c_str(), L" %lf", &d);
-#else
-        _stscanf(strValue.c_str(), L" %lf", &d);
-#endif
-		return d;
+        return XmlUtils::GetDouble(strValue);
 	}
 
 }
@@ -148,7 +142,7 @@ public:
 	}
     static  std::wstring ToStringHex( int i, int nLen )
 	{
-        std::wstring result = XmlUtils::IntToString(i, L"%X");
+		std::wstring result = XmlUtils::ToString(i, L"%X");
 
         for(int i = (int)result.length(); i < nLen; i++ )
             result.insert( result.begin() , '0' );
@@ -166,11 +160,11 @@ public:
              _stscanf_s(str.c_str(), L"%d", &nResult);
 #else
 		 if(16 == base)
-             _stscanf(str.c_str(), L"%X", &nResult);
+             swscanf(str.c_str(), L"%X", &nResult);
 		 else if(8 == base)
-             _stscanf(str.c_str(), L"%o", &nResult);
+             swscanf(str.c_str(), L"%o", &nResult);
 		 else 
-             _stscanf(str.c_str(), L"%d", &nResult);		 
+             swscanf(str.c_str(), L"%d", &nResult);
 #endif
 		 return nResult;
 	 }
@@ -314,7 +308,7 @@ public:
     private:
         static void DecodeFromFile( std::wstring& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
          {
-            CFile file;
+			NSFile::CFileBinary file;
 
             if (file.OpenFile(sFilename) != S_OK) return;
 
@@ -451,17 +445,17 @@ public:
 		if( NULL == pbData )
 			return;
 
-		CFile file;
-        if (file.CreateFile(sFilename) != S_OK) return;
+		NSFile::CFileBinary file;
+		if (file.CreateFileW(sFilename) != S_OK) return;
 
 		file.WriteFile(pbData, (DWORD)nLength);	
 		file.CloseFile();
 	}
     static void WriteDataToFile(std::wstring& sFilename, std::wstring& sData)
 	{
-		CFile file;
+		NSFile::CFileBinary file;
 
-        if (file.CreateFile(sFilename) != S_OK) return;
+		if (file.CreateFileW(sFilename) != S_OK) return;
 
         wchar_t * buf  = (wchar_t *)sData.c_str();
         size_t nLengthText	= sData.length();

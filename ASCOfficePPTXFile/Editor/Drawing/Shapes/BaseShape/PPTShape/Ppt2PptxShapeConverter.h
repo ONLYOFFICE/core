@@ -1810,40 +1810,40 @@ static int		g_guide_string_tag_len	= __wstrlen(g_guide_string_tag);
 #define GUIDE_PARAM_1(name)																		\
 {																								\
     oWriter.m_oWriter.AddSize(g_guide_max_len);													\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);					\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);					\
     oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);												\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string_##name, g_guide_string_##name##_len);		\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_##name, g_guide_string_##name##_len);	\
     GetValue(lParam1, eType1, bExtShape1, oWriter);												\
     ++m_lIndexDst;																				\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);					\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);					\
 }
 
 #define GUIDE_PARAM_2(name)																		\
 {																								\
     oWriter.m_oWriter.AddSize(g_guide_max_len);													\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);					\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);					\
     oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);												\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string_##name, g_guide_string_##name##_len);		\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_##name, g_guide_string_##name##_len);	\
     GetValue(lParam1, eType1, bExtShape1, oWriter);												\
     oWriter.m_oWriter.AddSpaceNoCheck();														\
     GetValue(lParam2, eType2, bExtShape2, oWriter);												\
     ++m_lIndexDst;																				\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);					\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);					\
 }
 
 #define GUIDE_PARAM_3(name)																		\
 {																								\
     oWriter.m_oWriter.AddSize(g_guide_max_len);													\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);					\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);					\
     oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);												\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string_##name, g_guide_string_##name##_len);		\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_##name, g_guide_string_##name##_len);	\
     GetValue(lParam1, eType1, bExtShape1, oWriter);												\
     oWriter.m_oWriter.AddSpaceNoCheck();														\
     GetValue(lParam2, eType2, bExtShape2, oWriter);												\
     oWriter.m_oWriter.AddSpaceNoCheck();														\
     GetValue(lParam3, eType3, bExtShape3, oWriter);												\
     ++m_lIndexDst;																				\
-    oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);					\
+	oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);					\
 }
 
 struct CFormParam
@@ -2675,9 +2675,9 @@ private:
     void ConvertProd(const std::wstring& strParam1, const std::wstring& strParam2, const LONG& lParam3, NSBinPptxRW::CXmlWriter& oWriter)
     {
         oWriter.m_oWriter.AddSize(g_guide_max_len);
-        oWriter.m_oWriter.AddStringNoCheck(g_guide_string1, g_guide_string1_len);
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string1, g_guide_string1_len);
         oWriter.m_oWriter.AddIntNoCheck(m_lIndexDst);
-        oWriter.m_oWriter.AddStringNoCheck(g_guide_string_prod, g_guide_string_prod_len);
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string_prod, g_guide_string_prod_len);
         oWriter.WriteString(strParam1);
         oWriter.m_oWriter.AddSpaceNoCheck();
 
@@ -2698,7 +2698,7 @@ private:
         GetValue(lParam3, ptValue, false, oWriter);
 
         ++m_lIndexDst;
-        oWriter.m_oWriter.AddStringNoCheck(g_guide_string2, g_guide_string2_len);
+		oWriter.m_oWriter.WriteStringNoSafe(g_guide_string2, g_guide_string2_len);
     }
 
     //-------------------------------------

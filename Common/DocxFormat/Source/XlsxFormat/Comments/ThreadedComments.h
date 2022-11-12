@@ -307,8 +307,8 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CGuid>						mentionpersonId;
 			nullable<SimpleTypes::CGuid>						mentionId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		startIndex;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		length;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		startIndex;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		length;
 		};
 		class CThreadedCommentMentions : public WritingElementWithChilds<CThreadedCommentMention>
 		{

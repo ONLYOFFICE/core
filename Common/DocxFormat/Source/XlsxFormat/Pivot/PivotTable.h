@@ -91,7 +91,7 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 		public:
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oV;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oV;
 		};
 
 		class CMemberPropertyIndex : public WritingElement
@@ -207,7 +207,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oCount;
 		};
 		class CDataField : public WritingElement
 		{
@@ -235,12 +235,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
 			nullable_int													m_oBaseField;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oBaseItem;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oFld;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>					m_oBaseItem;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>					m_oFld;
 			nullable_string													m_oName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>					m_oNumFmtId;
-			nullable<SimpleTypes::Spreadsheet::CShowDataAs<>>				m_oShowDataAs;
-			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction<>>	m_oSubtotal;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>					m_oNumFmtId;
+			nullable<SimpleTypes::Spreadsheet::CShowDataAs>					m_oShowDataAs;
+			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction>	m_oSubtotal;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>					m_oExtLst;
 		};
@@ -268,7 +268,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CPageField : public WritingElement
 		{
@@ -297,7 +297,7 @@ namespace OOX
 			
 			nullable_int									m_oFld;
 			nullable_int									m_oHier;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oItem;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oItem;
 			nullable_string									m_oCap;
 			nullable_string									m_oName;
 
@@ -327,7 +327,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CFieldItem : public WritingElement
 		{
@@ -363,8 +363,8 @@ namespace OOX
 			nullable_string	m_oUserCaption;
 			nullable_bool	m_oCharacter;
 			nullable_bool	m_oHideDetails;
-			nullable<SimpleTypes::Spreadsheet::CPivotItemType<>>m_oItemType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oItemIndex;
+			nullable<SimpleTypes::Spreadsheet::CPivotItemType>	m_oItemType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oItemIndex;
 
 		};
 		class CFieldItems : public WritingElementWithChilds<CFieldItem>
@@ -391,7 +391,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CReference : public WritingElement
 		{
@@ -433,8 +433,8 @@ namespace OOX
 			nullable_bool		m_oSumSubtotal;
 			nullable_bool		m_oVarPSubtotal;
 			nullable_bool		m_oVarSubtotal;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oField;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oField;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 
 			nullable<CSharedItemsIndex>	m_oX;
 			nullable<OOX::Drawing::COfficeArtExtensionList>			m_oExtLst;
@@ -463,7 +463,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CPivotArea : public WritingElement
 		{
@@ -490,18 +490,18 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::Spreadsheet::CPivotAxisType<>> m_oAxis;
+			nullable<SimpleTypes::Spreadsheet::CPivotAxisType> m_oAxis;
 			nullable_bool	m_oCacheIndex;
 			nullable_bool	m_oCollapsedLevelsAreSubtotals;
 			nullable_bool	m_oDataOnly;
 			nullable_int	m_oField;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFieldPosition;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFieldPosition;
 			nullable_bool	m_oGrandCol;
 			nullable_bool	m_oGrandRow;
 			nullable_bool	m_oLabelOnly;
 			nullable_string	m_oOffsetRef;
 			nullable_bool	m_oOutline;
-			nullable<SimpleTypes::Spreadsheet::CPivotAreaType<>> m_oType;
+			nullable<SimpleTypes::Spreadsheet::CPivotAreaType> m_oType;
 
 			nullable<CReferences>							m_oReferences;
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
@@ -560,7 +560,7 @@ namespace OOX
 			nullable_bool	m_oAllDrilled;
 			nullable_bool	m_oAutoShow;
 			nullable_bool	m_oAvgSubtotal;
-			nullable<SimpleTypes::Spreadsheet::CPivotAxisType<>> m_oAxis;
+			nullable<SimpleTypes::Spreadsheet::CPivotAxisType> m_oAxis;
 			nullable_bool	m_oCompact;
 			nullable_bool	m_oCountASubtotal;
 			nullable_bool	m_oCountSubtotal;
@@ -578,24 +578,24 @@ namespace OOX
 			nullable_bool	m_oIncludeNewItemsInFilter;
 			nullable_bool	m_oInsertBlankRow;
 			nullable_bool	m_oInsertPageBreak;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oItemPageCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oItemPageCount;
 			nullable_bool	m_oMaxSubtotal;
 			nullable_bool	m_oMeasureFilter;
 			nullable_bool	m_oMinSubtotal;
 			nullable_bool	m_oMultipleItemSelectionAllowed;
 			nullable_string	m_oName;
 			nullable_bool	m_oNonAutoSortDefault;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oNumFmtId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oNumFmtId;
 			nullable_bool	m_oOutline;
 			nullable_bool	m_oProductSubtotal;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oRankBy;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oRankBy;
 			nullable_bool	m_oServerField;
 			nullable_bool	m_oShowAll;
 			nullable_bool	m_oShowDropDowns;
 			nullable_bool	m_oShowPropAsCaption;
 			nullable_bool	m_oShowPropCell;
 			nullable_bool	m_oShowPropTip;
-			nullable<SimpleTypes::Spreadsheet::CFieldSortType<>> m_oSortType;
+			nullable<SimpleTypes::Spreadsheet::CFieldSortType> m_oSortType;
 			nullable_bool	m_oStdDevPSubtotal;
 			nullable_bool	m_oStdDevSubtotal;
 			nullable_string	m_oSubtotalCaption;
@@ -634,7 +634,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CColumnRowItem : public WritingElementWithChilds<CSharedItemsIndex>
 		{
@@ -661,9 +661,9 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oI;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oR;
-			nullable<SimpleTypes::Spreadsheet::CPivotItemType<>>	m_oT;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oI;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oR;
+			nullable<SimpleTypes::Spreadsheet::CPivotItemType>		m_oT;
 		};		
 		class CColumnRowItems : public WritingElementWithChilds<CColumnRowItem>
         {
@@ -690,7 +690,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CPivotTableFormat : public WritingElement
 		{
@@ -717,11 +717,11 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::Spreadsheet::CFormatAction<>> m_oAction;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oDxfId;
+			nullable<SimpleTypes::Spreadsheet::CFormatAction>	m_oAction;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oDxfId;
 			
-			nullable<CPivotArea>							m_oPivotArea;
-			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+			nullable<CPivotArea>								m_oPivotArea;
+			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		};
 		class CPivotTableFormats : public WritingElementWithChilds<CPivotTableFormat>
 		{
@@ -747,7 +747,7 @@ namespace OOX
 			}
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
 		class CPivotTableStyleInfo : public WritingElement
 		{
@@ -822,11 +822,11 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oColPageCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFirstDataCol;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFirstDataRow;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oFirstHeaderRow;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oRowPageCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oColPageCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFirstDataCol;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFirstDataRow;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oFirstHeaderRow;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oRowPageCount;
 			nullable_string									m_oRef;
 		};
 		class CPivotTableDefinition : public WritingElement
@@ -937,16 +937,16 @@ namespace OOX
 			nullable_string	m_oVacatedStyle;
 			nullable_bool	m_oVisualTotals;
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCreatedVersion;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMinRefreshableVersion;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oUpdatedVersion;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCreatedVersion;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMinRefreshableVersion;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oUpdatedVersion;
 			
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oDataPosition;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oAutoFormatId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCacheId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oChartFormat;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oIndent;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oPageWrap;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oDataPosition;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oAutoFormatId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCacheId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oChartFormat;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oIndent;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oPageWrap;
 		};
 
 		class CPivotTableFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer

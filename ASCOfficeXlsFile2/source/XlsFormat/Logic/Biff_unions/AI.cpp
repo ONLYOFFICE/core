@@ -33,7 +33,7 @@
 #include "AI.h"
 #include "../Biff_records/BRAI.h"
 #include "../Biff_records/SeriesText.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {

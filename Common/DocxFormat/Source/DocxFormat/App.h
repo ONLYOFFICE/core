@@ -266,7 +266,7 @@ namespace OOX
 
 			if ( m_nSlides.IsInit() )
 			{
-				SimpleTypes::CDecimalNumber<> oNum;
+				SimpleTypes::CDecimalNumber oNum;
 				oNum.SetValue( m_nSlides.get() );
 
 				sXml += _T("<Slides>");

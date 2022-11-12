@@ -33,7 +33,7 @@
 
 #include <stack>
 #include <string>
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 #include <boost/shared_ptr.hpp>
 

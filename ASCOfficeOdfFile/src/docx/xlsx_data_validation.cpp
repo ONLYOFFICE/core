@@ -43,7 +43,7 @@
 #include <boost/algorithm/string/regex.hpp>
 
 #include "../../formulasconvert/formulasconvert.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace cpdoccore {
 namespace oox {

@@ -190,8 +190,8 @@ namespace OOX
 				if (desc.IsInit())
 					m_arSecurityDescriptors.push_back(*desc);
 			}
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oSpinCount;
 			nullable_string				m_oHashValue;
 			nullable_string				m_oSaltValue;
 			nullable_string				m_oName;
@@ -624,26 +624,26 @@ namespace OOX
                     }
                 }
             }
-			nullable<SimpleTypes::COnOff<>>							m_oBlackAndWhite;
-			nullable<SimpleTypes::Spreadsheet::CCellComments<>>		m_oCellComments;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oCopies;
-			nullable<SimpleTypes::COnOff<>>							m_oDraft;
-			nullable<SimpleTypes::Spreadsheet::CPrintError<>>		m_oErrors;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFirstPageNumber;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToHeight;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oFitToWidth;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oHorizontalDpi;
+			nullable<SimpleTypes::COnOff>							m_oBlackAndWhite;
+			nullable<SimpleTypes::Spreadsheet::CCellComments>		m_oCellComments;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oCopies;
+			nullable<SimpleTypes::COnOff>							m_oDraft;
+			nullable<SimpleTypes::Spreadsheet::CPrintError>			m_oErrors;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oFirstPageNumber;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oFitToHeight;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oFitToWidth;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oHorizontalDpi;
 			nullable<SimpleTypes::CRelationshipId>					m_oRId;
-			nullable<SimpleTypes::CPageOrientation<>>				m_oOrientation;
-			nullable<SimpleTypes::Spreadsheet::CPageOrder<>>		m_oPageOrder;
+			nullable<SimpleTypes::CPageOrientation>					m_oOrientation;
+			nullable<SimpleTypes::Spreadsheet::CPageOrder>			m_oPageOrder;
 			nullable<SimpleTypes::CDouble>							m_oPaperHeight;
-			nullable<SimpleTypes::Spreadsheet::CPageSize<>>			m_oPaperSize;
+			nullable<SimpleTypes::Spreadsheet::CPageSize>			m_oPaperSize;
 			nullable<SimpleTypes::CDouble>							m_oPaperWidth;
-			nullable<SimpleTypes::Spreadsheet::CPageUnits<>>		m_oPaperUnits;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oScale;
-			nullable<SimpleTypes::COnOff<>>							m_oUseFirstPageNumber;
-			nullable<SimpleTypes::COnOff<>>							m_oUsePrinterDefaults;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oVerticalDpi;
+			nullable<SimpleTypes::Spreadsheet::CPageUnits>			m_oPaperUnits;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oScale;
+			nullable<SimpleTypes::COnOff>							m_oUseFirstPageNumber;
+			nullable<SimpleTypes::COnOff>							m_oUsePrinterDefaults;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oVerticalDpi;
 		};
 		class CPrintOptions : public WritingElement
 		{
@@ -716,11 +716,11 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::COnOff<>>	m_oGridLines;
-			nullable<SimpleTypes::COnOff<>>	m_oGridLinesSet;
-			nullable<SimpleTypes::COnOff<>>	m_oHeadings;
-			nullable<SimpleTypes::COnOff<>>	m_oHorizontalCentered;
-			nullable<SimpleTypes::COnOff<>>	m_oVerticalCentered;
+			nullable<SimpleTypes::COnOff>	m_oGridLines;
+			nullable<SimpleTypes::COnOff>	m_oGridLinesSet;
+			nullable<SimpleTypes::COnOff>	m_oHeadings;
+			nullable<SimpleTypes::COnOff>	m_oHorizontalCentered;
+			nullable<SimpleTypes::COnOff>	m_oVerticalCentered;
 		};
 		class CDimension : public WritingElement
 		{
@@ -964,11 +964,11 @@ namespace OOX
 
 
 		public:
-            nullable<SimpleTypes::Spreadsheet::CActivePane<>>   m_oActivePane;
-            nullable<SimpleTypes::Spreadsheet::CPaneState<>>    m_oState;
-            nullable_string										m_oTopLeftCell;
-            nullable<SimpleTypes::CDouble>                      m_oXSplit;
-            nullable<SimpleTypes::CDouble>                      m_oYSplit;
+			nullable<SimpleTypes::Spreadsheet::CActivePane>		m_oActivePane;
+			nullable<SimpleTypes::Spreadsheet::CPaneState>		m_oState;
+			nullable_string										m_oTopLeftCell;
+			nullable<SimpleTypes::CDouble>						m_oXSplit;
+			nullable<SimpleTypes::CDouble>						m_oYSplit;
 		};
 		class CSelection : public WritingElement
 		{
@@ -1045,9 +1045,9 @@ namespace OOX
 
 		public:
 			nullable_string										m_oActiveCell;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oActiveCellId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oActiveCellId;
 			nullable_string										m_oSqref;
-			nullable<SimpleTypes::Spreadsheet::CActivePane<>>	m_oPane;
+			nullable<SimpleTypes::Spreadsheet::CActivePane>		m_oPane;
 		};
 
 		//необработано:
@@ -1232,25 +1232,25 @@ namespace OOX
 		public:
 				nullable<CPane>										m_oPane;
 
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oColorId;
-				nullable<SimpleTypes::COnOff<>>						m_oDefaultGridColor;
-				nullable<SimpleTypes::COnOff<>>						m_oRightToLeft;
-				nullable<SimpleTypes::COnOff<>>						m_oShowFormulas;
-				nullable<SimpleTypes::COnOff<>>						m_oShowGridLines;
-				nullable<SimpleTypes::COnOff<>>						m_oShowOutlineSymbols;
-				nullable<SimpleTypes::COnOff<>>						m_oShowRowColHeaders;
-				nullable<SimpleTypes::COnOff<>>						m_oShowRuler;
-				nullable<SimpleTypes::COnOff<>>						m_oShowWhiteSpace;
-				nullable<SimpleTypes::COnOff<>>						m_oShowZeros;
-				nullable<SimpleTypes::COnOff<>>						m_oTabSelected;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oColorId;
+				nullable<SimpleTypes::COnOff>						m_oDefaultGridColor;
+				nullable<SimpleTypes::COnOff>						m_oRightToLeft;
+				nullable<SimpleTypes::COnOff>						m_oShowFormulas;
+				nullable<SimpleTypes::COnOff>						m_oShowGridLines;
+				nullable<SimpleTypes::COnOff>						m_oShowOutlineSymbols;
+				nullable<SimpleTypes::COnOff>						m_oShowRowColHeaders;
+				nullable<SimpleTypes::COnOff>						m_oShowRuler;
+				nullable<SimpleTypes::COnOff>						m_oShowWhiteSpace;
+				nullable<SimpleTypes::COnOff>						m_oShowZeros;
+				nullable<SimpleTypes::COnOff>						m_oTabSelected;
 				nullable_string										m_oTopLeftCell;
-				nullable<SimpleTypes::Spreadsheet::CSheetViewType<>>m_oView;
-				nullable<SimpleTypes::COnOff<>>						m_oWindowProtection;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oWorkbookViewId;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScale;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleNormal;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScalePageLayoutView;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oZoomScaleSheetLayoutView;
+				nullable<SimpleTypes::Spreadsheet::CSheetViewType>	m_oView;
+				nullable<SimpleTypes::COnOff>						m_oWindowProtection;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oWorkbookViewId;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScale;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScaleNormal;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScalePageLayoutView;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScaleSheetLayoutView;
 		};
 		class CSheetViews : public WritingElementWithChilds<CSheetView>
 		{
@@ -1390,8 +1390,8 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::COnOff<>>		m_oAutoPageBreaks;
-			nullable<SimpleTypes::COnOff<>>		m_oFitToPage;
+			nullable<SimpleTypes::COnOff>		m_oAutoPageBreaks;
+			nullable<SimpleTypes::COnOff>		m_oFitToPage;
 		};
 		class COutlinePr : public WritingElement
 		{
@@ -1460,10 +1460,10 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::COnOff<>>		m_oApplyStyles;
-			nullable<SimpleTypes::COnOff<>>		m_oShowOutlineSymbols;
-			nullable<SimpleTypes::COnOff<>>		m_oSummaryBelow;
-			nullable<SimpleTypes::COnOff<>>		m_oSummaryRight;
+			nullable<SimpleTypes::COnOff>		m_oApplyStyles;
+			nullable<SimpleTypes::COnOff>		m_oShowOutlineSymbols;
+			nullable<SimpleTypes::COnOff>		m_oSummaryBelow;
+			nullable<SimpleTypes::COnOff>		m_oSummaryRight;
 		};
 		class CSheetPr : public WritingElement
 		{
@@ -1609,14 +1609,14 @@ namespace OOX
 			nullable<COutlinePr>				m_oOutlinePr;
 
 			nullable_string						m_oCodeName;
-			nullable<SimpleTypes::COnOff<>>		m_oEnableFormatConditionsCalculation;
-			nullable<SimpleTypes::COnOff<>>		m_oFilterMode;
-			nullable<SimpleTypes::COnOff<>>		m_oPublished;
-			nullable<SimpleTypes::COnOff<>>		m_oSyncHorizontal;
+			nullable<SimpleTypes::COnOff>		m_oEnableFormatConditionsCalculation;
+			nullable<SimpleTypes::COnOff>		m_oFilterMode;
+			nullable<SimpleTypes::COnOff>		m_oPublished;
+			nullable<SimpleTypes::COnOff>		m_oSyncHorizontal;
 			nullable_string						m_oSyncRef;
-			nullable<SimpleTypes::COnOff<>>		m_oSyncVertical;
-			nullable<SimpleTypes::COnOff<>>		m_oTransitionEntry;
-			nullable<SimpleTypes::COnOff<>>		m_oTransitionEvaluation;
+			nullable<SimpleTypes::COnOff>		m_oSyncVertical;
+			nullable<SimpleTypes::COnOff>		m_oTransitionEntry;
+			nullable<SimpleTypes::COnOff>		m_oTransitionEvaluation;
 		};
 		class CHeaderFooterElement : public WritingElement
 		{
@@ -1833,10 +1833,10 @@ namespace OOX
 			nullable<CHeaderFooterElement>		m_oOddFooter;
 			nullable<CHeaderFooterElement>		m_oOddHeader;
 
-			nullable<SimpleTypes::COnOff<>>		m_oAlignWithMargins;
-			nullable<SimpleTypes::COnOff<>>		m_oDifferentFirst;
-			nullable<SimpleTypes::COnOff<>>		m_oDifferentOddEven;
-			nullable<SimpleTypes::COnOff<>>		m_oScaleWithDoc;
+			nullable<SimpleTypes::COnOff>		m_oAlignWithMargins;
+			nullable<SimpleTypes::COnOff>		m_oDifferentFirst;
+			nullable<SimpleTypes::COnOff>		m_oDifferentOddEven;
+			nullable<SimpleTypes::COnOff>		m_oScaleWithDoc;
 
 		};
 
@@ -1935,24 +1935,24 @@ namespace OOX
             }
 		public:
 			nullable<SimpleTypes::CRelationshipId >				m_oId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCfe;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCff;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCfo;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oChe;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oChf;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oCho;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLfe;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLff;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLfo;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLhe;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLhf;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oLho;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRfe;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRff;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRfo;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRhe;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRhf;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oRho;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCfe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCfo;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oChe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oChf;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCho;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oLfe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oLff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oLfo;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oLhe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oLhf;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oLho;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRfe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRff;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRfo;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRhe;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRhf;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oRho;
 		};
 
 		class CPictureWorksheet : public WritingElement
@@ -2091,11 +2091,11 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oId;
-			nullable<SimpleTypes::COnOff<>>					m_oMan;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMax;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMin;
-			nullable<SimpleTypes::COnOff<>>					m_oPt;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oId;
+			nullable<SimpleTypes::COnOff>					m_oMan;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMax;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMin;
+			nullable<SimpleTypes::COnOff>					m_oPt;
 		};
 
 		class CRowColBreaks : public WritingElementWithChilds<CBreak>
@@ -2215,8 +2215,8 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oManualBreakCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oManualBreakCount;
 		};
 		class CSheetProtection : public WritingElement
 		{
@@ -2393,29 +2393,29 @@ namespace OOX
 
             }
 
-			nullable<SimpleTypes::CCryptAlgoritmName<>>		m_oAlgorithmName;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSpinCount;
+			nullable<SimpleTypes::CCryptAlgoritmName>		m_oAlgorithmName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oSpinCount;
 			nullable_string		m_oHashValue;
 			nullable_string		m_oSaltValue;
 			nullable_string		m_oPassword; //for old wrike protection
 
-			nullable<SimpleTypes::COnOff<>>		m_oAutoFilter;
-			nullable<SimpleTypes::COnOff<>>		m_oContent;
-			nullable<SimpleTypes::COnOff<>>		m_oDeleteColumns;
-			nullable<SimpleTypes::COnOff<>>		m_oDeleteRows;
-			nullable<SimpleTypes::COnOff<>>		m_oFormatCells;
-			nullable<SimpleTypes::COnOff<>>		m_oFormatColumns;
-			nullable<SimpleTypes::COnOff<>>		m_oFormatRows;
-			nullable<SimpleTypes::COnOff<>>		m_oInsertColumns;
-			nullable<SimpleTypes::COnOff<>>		m_oInsertHyperlinks;
-			nullable<SimpleTypes::COnOff<>>		m_oInsertRows;
-			nullable<SimpleTypes::COnOff<>>		m_oObjects;
-			nullable<SimpleTypes::COnOff<>>		m_oPivotTables;
-			nullable<SimpleTypes::COnOff<>>		m_oScenarios;
-			nullable<SimpleTypes::COnOff<>>		m_oSelectLockedCells;
-			nullable<SimpleTypes::COnOff<>>		m_oSelectUnlockedCells;
-			nullable<SimpleTypes::COnOff<>>		m_oSheet;
-			nullable<SimpleTypes::COnOff<>>		m_oSort;
+			nullable<SimpleTypes::COnOff>		m_oAutoFilter;
+			nullable<SimpleTypes::COnOff>		m_oContent;
+			nullable<SimpleTypes::COnOff>		m_oDeleteColumns;
+			nullable<SimpleTypes::COnOff>		m_oDeleteRows;
+			nullable<SimpleTypes::COnOff>		m_oFormatCells;
+			nullable<SimpleTypes::COnOff>		m_oFormatColumns;
+			nullable<SimpleTypes::COnOff>		m_oFormatRows;
+			nullable<SimpleTypes::COnOff>		m_oInsertColumns;
+			nullable<SimpleTypes::COnOff>		m_oInsertHyperlinks;
+			nullable<SimpleTypes::COnOff>		m_oInsertRows;
+			nullable<SimpleTypes::COnOff>		m_oObjects;
+			nullable<SimpleTypes::COnOff>		m_oPivotTables;
+			nullable<SimpleTypes::COnOff>		m_oScenarios;
+			nullable<SimpleTypes::COnOff>		m_oSelectLockedCells;
+			nullable<SimpleTypes::COnOff>		m_oSelectUnlockedCells;
+			nullable<SimpleTypes::COnOff>		m_oSheet;
+			nullable<SimpleTypes::COnOff>		m_oSort;
 		};
 		class CDataRef : public WritingElement
 		{
@@ -2565,7 +2565,7 @@ namespace OOX
 			}
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 		};
 		class CDataConsolidate : public WritingElement
 		{
@@ -2646,10 +2646,10 @@ namespace OOX
 					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"topLabels"),		m_oTopLabels)
 				WritingElement_ReadAttributes_End( oReader )
 			}
-			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction<>>	m_oFunction;
-			nullable<SimpleTypes::COnOff<>>									m_oLink; 
-			nullable<SimpleTypes::COnOff<>>									m_oStartLabels;
-			nullable<SimpleTypes::COnOff<>>									m_oTopLabels;
+			nullable<SimpleTypes::Spreadsheet::CDataConsolidateFunction>	m_oFunction;
+			nullable<SimpleTypes::COnOff>									m_oLink;
+			nullable<SimpleTypes::COnOff>									m_oStartLabels;
+			nullable<SimpleTypes::COnOff>									m_oTopLabels;
 
 			nullable<CDataRefs>	m_oDataRefs;
 

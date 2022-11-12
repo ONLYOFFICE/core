@@ -223,7 +223,7 @@ namespace OOX
 		public:
 			nullable<std::wstring> m_oName;
 			nullable<std::wstring> m_oRefersTo;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSheetId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oSheetId;
 		};
 
 		class CExternalDefinedNames : public WritingElementWithChilds<CExternalDefinedName>
@@ -438,8 +438,8 @@ namespace OOX
 			}
 		public:
 			nullable<std::wstring>								m_oRef;
-			nullable<SimpleTypes::Spreadsheet::CCellTypeType<>>	m_oType;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>		m_oValueMetadata;
+			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oValueMetadata;
 
 			nullable<CText>		m_oValue;
 		};
@@ -531,7 +531,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oR;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oR;
 		};
 
 		class CExternalSheetData : public WritingElementWithChilds<CExternalRow>
@@ -623,9 +623,10 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"refreshError"), m_oRefreshError )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oSheetId;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oRefreshError;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oSheetId;
+			nullable<SimpleTypes::COnOff> m_oRefreshError;
 		};
 
 		class CExternalSheetDataSet : public WritingElementWithChilds<CExternalSheetData>
@@ -962,7 +963,7 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::Spreadsheet::CDdeValueType<> > m_oType;
+			nullable<SimpleTypes::Spreadsheet::CDdeValueType > m_oType;
 		};
 
 		class CDdeValues : public WritingElementWithChilds<CDdeValue>
@@ -1055,8 +1056,8 @@ namespace OOX
 				WritingElement_ReadAttributes_End( oReader )
 			}
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oRows;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>> m_oCols;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oRows;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCols;
 		};
 
 		class CDdeItem : public WritingElement
@@ -1156,11 +1157,12 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"preferPic"), m_oPreferPic )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
 		public:
 			nullable<std::wstring > m_oName;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oOle;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oAdvise;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oPreferPic;
+			nullable<SimpleTypes::COnOff> m_oOle;
+			nullable<SimpleTypes::COnOff> m_oAdvise;
+			nullable<SimpleTypes::COnOff> m_oPreferPic;
 
 			nullable<CDdeValues> m_oDdeValues;
 		};
@@ -1402,11 +1404,12 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if( oReader, (L"preferPic"), m_oPreferPic )
 				WritingElement_ReadAttributes_End( oReader )
 			}
+
 		public:
 			nullable<std::wstring > m_oName;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oIcon;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oAdvise;
-			nullable<SimpleTypes::COnOff<SimpleTypes::onoffTrue>> m_oPreferPic;
+			nullable<SimpleTypes::COnOff> m_oIcon;
+			nullable<SimpleTypes::COnOff> m_oAdvise;
+			nullable<SimpleTypes::COnOff> m_oPreferPic;
 		};
 
 		class COleItems : public WritingElementWithChilds<COleItem>

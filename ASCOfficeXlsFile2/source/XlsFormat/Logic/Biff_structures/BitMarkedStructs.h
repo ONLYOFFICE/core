@@ -35,7 +35,7 @@
     #include <inttypes.h>
 #endif
 
-#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 #include "BiffStructure.h"
 #include "BiffAttribute.h"
 #include "../../Auxiliary/HelpFunc.h"

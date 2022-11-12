@@ -32,7 +32,7 @@
 
 #include "DataLabExtContents.h"
 #include "../Biff_structures/FrtHeader.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace XLS
 {

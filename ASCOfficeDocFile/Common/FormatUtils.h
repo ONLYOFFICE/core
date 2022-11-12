@@ -52,10 +52,9 @@
     #include <string.h>
 #endif
 
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../DesktopEditor/common/Types.h"
 #include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
 #include <boost/format.hpp>

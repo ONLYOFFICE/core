@@ -34,7 +34,7 @@
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include"../../Common/DocxFormat/Source/XML/Utils.h"
+#include"../../Common/DocxFormat/Source/Base/Unit.h"
 #include "../src/docx/xlsxconversioncontext.h"
 #include "../src/docx/xlsx_utils.h"
 

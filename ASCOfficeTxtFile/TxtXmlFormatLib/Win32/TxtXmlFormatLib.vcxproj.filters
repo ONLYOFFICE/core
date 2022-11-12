@@ -12,13 +12,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Source\Common\Encoding.cpp">
-      <Filter>TxtFormat</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\TxtFormat\File.cpp">
-      <Filter>TxtFormat</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\Common\ToString.cpp">
       <Filter>TxtFormat</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\TxtFormat\TxtFile.cpp">
@@ -38,9 +32,6 @@
     <ClInclude Include="..\Source\TxtFormat\TxtFile.h">
       <Filter>TxtFormat</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\TxtFormat\TxtFormat.h">
-      <Filter>TxtFormat</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h">
       <Filter>DocxWriters</Filter>
     </ClInclude>
@@ -48,9 +39,6 @@
       <Filter>DocxWriters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h">
-      <Filter>DocxWriters</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriterWin.h">
       <Filter>DocxWriters</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h">

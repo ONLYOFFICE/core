@@ -160,7 +160,7 @@ namespace PPTX
 			pWriter->StartAttributes();
 
 			std::wstring strId = L"group " + std::to_wstring(pWriter->m_lObjectIdVML);
-			std::wstring strSpid = L"_x0000_s" + XmlUtils::IntToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
+			std::wstring strSpid = L"_x0000_s" + XmlUtils::ToString(0xFFFF & (pWriter->m_lObjectIdVML >> 16), L"%04d");
 
 			pWriter->m_lObjectIdVML++;
 

@@ -390,7 +390,7 @@ namespace OOX
 			CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(WritingElement::m_pMainDocument);
 
 			//for <w:t>6<w:cr/>6</w:t>
-			nullable<SimpleTypes::CXmlSpace<>> oSpace;
+			nullable<SimpleTypes::CXmlSpace> oSpace;
 			CText::ReadAttributes(oReader, oSpace);
 
 			if ((docx) && (docx->m_oMain.document))

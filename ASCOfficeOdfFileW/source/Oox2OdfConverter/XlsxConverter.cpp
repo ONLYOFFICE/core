@@ -1307,7 +1307,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 	{	
 		if (value_type == SimpleTypes::Spreadsheet::celltypeSharedString)
 		{
-			convert_sharing_string(_wtoi(oox_cell->m_oValue->m_sText.c_str()));
+            convert_sharing_string(XmlUtils::GetInteger(oox_cell->m_oValue->m_sText));
 		}
 
 		else
@@ -1535,10 +1535,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 	}
 
 			//nullable<CCharset>													m_oCharset;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oCondense;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oExtend;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oOutline;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oShadow;
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CText *oox_text)
@@ -2925,7 +2925,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
 
-					SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+					SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 					eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 
 					OOX::Spreadsheet::CCellAnchor *pCellAnchor = new OOX::Spreadsheet::CCellAnchor(eAnchorType);					
@@ -3048,7 +3048,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 		smart_ptr<OOX::WritingElement> oObjectElement = oox_sheet->FindVmlObject(sShapeId);
 		smart_ptr<OOX::Vml::CShape> oShape = oObjectElement.smart_dynamic_cast<OOX::Vml::CShape>();
 
-		SimpleTypes::Spreadsheet::CCellAnchorType<> eAnchorType;
+		SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 		
 		if (pControl->m_oControlPr.IsInit() && pControl->m_oControlPr->m_oAnchor.IsInit())

@@ -132,7 +132,7 @@ namespace OOX
 
 			}
 	//----------
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCacheId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCacheId;
 			nullable<SimpleTypes::CRelationshipId>			m_oRid;
 		};
 

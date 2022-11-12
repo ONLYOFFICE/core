@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include"../../../Common/DocxFormat/Source/XML/Utils.h"
+#include"../../../Common/DocxFormat/Source/Base/Unit.h"
 
 #include "logging.h"
 

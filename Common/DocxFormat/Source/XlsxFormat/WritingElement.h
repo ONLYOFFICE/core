@@ -49,7 +49,7 @@ namespace Spreadsheet
 //		writer.WriteString(end);
 #define WritingStringCommonDouble(start, val, end) \
         writer.WriteString(start); \
-        writer.WriteString(XmlUtils::DoubleToString(val)); \
+		writer.WriteString(XmlUtils::ToString(val)); \
         writer.WriteString(end);
 
 #define WritingValNode(ns, name, val) \

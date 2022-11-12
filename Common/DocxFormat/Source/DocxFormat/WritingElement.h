@@ -46,186 +46,186 @@ namespace OOX
 #define WritingElement_AdditionConstructors(Class) \
 	explicit Class(XmlUtils::CXmlNode& oNode)\
 	{\
-		m_pMainDocument = NULL;\
-		fromXML( oNode );\
-	}\
+	m_pMainDocument = NULL;\
+	fromXML( oNode );\
+}\
 	explicit Class(const XmlUtils::CXmlNode& node)\
 	{\
-		m_pMainDocument = NULL;\
-		fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
-	}\
+	m_pMainDocument = NULL;\
+	fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
+}\
 	Class(XmlUtils::CXmlLiteReader& oReader)\
 	{\
-		m_pMainDocument = NULL;\
-		fromXML( oReader );\
-	}\
+	m_pMainDocument = NULL;\
+	fromXML( oReader );\
+}\
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
-		m_pMainDocument = NULL;\
-		fromXML( (XmlUtils::CXmlNode &)oNode );\
-		return *this;\
-	}\
+	m_pMainDocument = NULL;\
+	fromXML( (XmlUtils::CXmlNode &)oNode );\
+	return *this;\
+}\
 	const Class& operator =(const XmlUtils::CXmlLiteReader& oReader)\
 	{\
-		m_pMainDocument = NULL;\
-		fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
-		return *this;\
-	}\
-    const Class& operator =(XmlUtils::CXmlNode& node)				\
+	m_pMainDocument = NULL;\
+	fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
+	return *this;\
+}\
+	const Class& operator =(XmlUtils::CXmlNode& node)				\
 	{																\
-		m_pMainDocument = NULL;\
-		fromXML(node);												\
-		return *this;												\
-	}																\
+	m_pMainDocument = NULL;\
+	fromXML(node);												\
+	return *this;												\
+}																\
 
 #define WritingElement_XlsbConstructors(Class) \
-    explicit Class(XLS::BaseObjectPtr& obj)\
-    {\
-        m_pMainDocument = NULL;\
-        fromBin(obj);\
-    }\
-    const Class& operator =(XLS::BaseObjectPtr& obj)\
-    {\
-        m_pMainDocument = NULL;\
-        fromBin(obj);\
-        return *this;\
-    }\
+	explicit Class(XLS::BaseObjectPtr& obj)\
+	{\
+	m_pMainDocument = NULL;\
+	fromBin(obj);\
+}\
+	const Class& operator =(XLS::BaseObjectPtr& obj)\
+	{\
+	m_pMainDocument = NULL;\
+	fromBin(obj);\
+	return *this;\
+}\
 
 #define WritingElement_XlsbVectorConstructors(Class) \
-    explicit Class(std::vector<XLS::BaseObjectPtr>& obj)\
-    {\
-        m_pMainDocument = NULL;\
-        fromBin(obj);\
-    }\
-    const Class& operator =(std::vector<XLS::BaseObjectPtr>& obj)\
-    {\
-        m_pMainDocument = NULL;\
-        fromBin(obj);\
-        return *this;\
-    }\
+	explicit Class(std::vector<XLS::BaseObjectPtr>& obj)\
+	{\
+	m_pMainDocument = NULL;\
+	fromBin(obj);\
+}\
+	const Class& operator =(std::vector<XLS::BaseObjectPtr>& obj)\
+	{\
+	m_pMainDocument = NULL;\
+	fromBin(obj);\
+	return *this;\
+}\
 
 #define WritingElement_ReadNode( oRootNode, oChildNode, sNodeName, oValue ) \
 	if ( oRootNode.GetNode( sNodeName, oChildNode ) )\
-		oValue = oChildNode;
+	oValue = oChildNode;
 
 #define WritingElement_WriteNode_1( sStartNodeString, oValue ) \
 	if ( oValue.IsInit() )\
 	{\
-		sResult += sStartNodeString;\
-		sResult += oValue->ToString();\
-		sResult += _T("/>");\
-	}
+	sResult += sStartNodeString;\
+	sResult += oValue->ToString();\
+	sResult += _T("/>");\
+}
 
 #define WritingElement_WriteNode_2( oValue ) \
 	if ( oValue.IsInit() )\
-		sResult += oValue->toXML();
-//-----------------------------------------------------------------------------------------------
+	sResult += oValue->toXML();
+	//-----------------------------------------------------------------------------------------------
 #define WritingElement_ReadAttributes_ReadSingle2(Reader, AttrName, Value) \
 	if ( Reader.GetAttributesCount() > 0 ){\
 	if ( Reader.MoveToFirstAttribute() ){\
 	std::wstring wsName = Reader.GetName();\
-    while( !wsName.empty() )\
+	while( !wsName.empty() )\
 	{\
-		if ( AttrName == wsName )\
-		{\
-            Value = Reader.GetText();\
-			break;\
-		}\
-		if ( !Reader.MoveToNextAttribute() ) \
-			break;\
-		wsName = Reader.GetName();\
-	}\
+	if ( AttrName == wsName )\
+	{\
+	Value = Reader.GetText();\
+	break;\
+}\
+	if ( !Reader.MoveToNextAttribute() ) \
+	break;\
+	wsName = Reader.GetName();\
+}\
 	Reader.MoveToElement();}}
-// Следующие 3 define используются для чтения аттрибутов через CXmlLiteReader
+	// Следующие 3 define используются для чтения аттрибутов через CXmlLiteReader
 #define WritingElement_ReadAttributes_Start(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
-		return;\
+	return;\
 	if ( !Reader.MoveToFirstAttribute() )\
-		return;\
+	return;\
 	std::wstring wsName = Reader.GetName();\
-    while( !wsName.empty() )\
+	while( !wsName.empty() )\
 	{
 
 #define WritingElement_ReadAttributes_StartChar(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
-		return;\
+	return;\
 	if ( !Reader.MoveToFirstAttribute() )\
-		return;\
+	return;\
 	const char* wsName = Reader.GetNameChar();\
 	while( strlen(wsName) != 0 )\
 	{
 
 #define WritingElement_ReadAttributes_StartChar_No_NS(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
-		return;\
+	return;\
 	if ( !Reader.MoveToFirstAttribute() )\
-		return;\
+	return;\
 	const char* wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
 	while( strlen(wsName) != 0 )\
 	{
 
 #define WritingElement_ReadAttributes_Start_No_NS(Reader) \
 	if ( Reader.GetAttributesCount() <= 0 )\
-		return;\
+	return;\
 	if ( !Reader.MoveToFirstAttribute() )\
-		return;\
+	return;\
 	std::wstring wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
 	while( !wsName.empty() )\
 	{
 
 #define WritingElement_ReadAttributes_Read_if(Reader, AttrName, Value) \
-		if ( AttrName == wsName )\
-        {\
-            Value = Reader.GetText();\
-        }
+	if ( AttrName == wsName )\
+	{\
+	Value = Reader.GetText();\
+}
 
 #define WritingElement_ReadAttributes_Read_ifChar(Reader, AttrName, Value) \
-		if ( strcmp(AttrName, wsName) == 0 )\
-		{\
-			Value = Reader.GetText();\
-		}
+	if ( strcmp(AttrName, wsName) == 0 )\
+	{\
+	Value = Reader.GetText();\
+}
 
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
-		else if ( AttrName == wsName )\
-            Value = Reader.GetText();
+	else if ( AttrName == wsName )\
+	Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_Read_else_ifChar(Reader, AttrName, Value) \
-		else if ( strcmp(AttrName, wsName) == 0 )\
-			Value = Reader.GetText();
+	else if ( strcmp(AttrName, wsName) == 0 )\
+	Value = Reader.GetText();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
-		if ( AttrName == wsName )\
-		{\
-            Value = Reader.GetText();\
-			break;\
-		}
+	if ( AttrName == wsName )\
+	{\
+	Value = Reader.GetText();\
+	break;\
+}
 
 #define WritingElement_ReadAttributes_End(Reader) \
-		if ( !Reader.MoveToNextAttribute() ) \
-			break;\
-		wsName = Reader.GetName();\
-	}\
+	if ( !Reader.MoveToNextAttribute() ) \
+	break;\
+	wsName = Reader.GetName();\
+}\
 	Reader.MoveToElement();
 
 #define WritingElement_ReadAttributes_EndChar(Reader) \
-		if ( !Reader.MoveToNextAttribute() ) \
-			break;\
-		wsName = Reader.GetNameChar();\
-	}\
+	if ( !Reader.MoveToNextAttribute() ) \
+	break;\
+	wsName = Reader.GetNameChar();\
+}\
 	Reader.MoveToElement();
 
 #define WritingElement_ReadAttributes_EndChar_No_NS(Reader) \
-		if ( !Reader.MoveToNextAttribute() ) \
-			break;\
-		wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
-	}\
+	if ( !Reader.MoveToNextAttribute() ) \
+	break;\
+	wsName = XmlUtils::GetNameNoNS(Reader.GetNameChar());\
+}\
 	Reader.MoveToElement();
 
 #define WritingElement_ReadAttributes_End_No_NS(Reader) \
-		if ( !Reader.MoveToNextAttribute() ) \
-			break;\
-		wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
-	}\
+	if ( !Reader.MoveToNextAttribute() ) \
+	break;\
+	wsName = XmlUtils::GetNameNoNS(Reader.GetName());\
+}\
 	Reader.MoveToElement();
 
 	enum EElementType
@@ -430,24 +430,24 @@ namespace OOX
 		et_a_xfrm, // <a:xfrm>
 		et_a_uFillTx,
 		et_a_highlight,
-	
+
 		et_a_groupSpPr,			// <a:groupSpPr>
 		et_a_Shape,				// <a:sp>
 		et_a_GroupShape,		// <a:srpSp>
 		et_a_TextShape,			// <a:txSp>
 		et_a_TextShapeBody,		// <a:txBody>
 		et_a_LockedCanvas,		// <a:LockedCanvas>
-		et_a_GroupShapeNonVisual,	
+		et_a_GroupShapeNonVisual,
 		et_a_ConnectionNonVisualShapeProps,
 		et_a_ShapeNonVisual,
 		et_a_Slicer,
 		
-		et_dgm_DiagrammParts,	// <dgm:relIds> 
-		et_dgm_ptLst,			// <dgm:ptLst> 
-		et_dgm_pt,				// <dgm:pt> 
-		et_dgm_prSet,			// <dgm:prSet> 
-		et_dgm_spPr,			// <dgm:spPr> 
-		et_dgm_t,				// <dgm:t> 
+		et_dgm_DiagrammParts,	// <dgm:relIds>
+		et_dgm_ptLst,			// <dgm:ptLst>
+		et_dgm_pt,				// <dgm:pt>
+		et_dgm_prSet,			// <dgm:prSet>
+		et_dgm_spPr,			// <dgm:spPr>
+		et_dgm_t,				// <dgm:t>
 		et_dgm_cxnLst,
 		et_dgm_cxn,
 		et_dgm_VariableList,
@@ -496,26 +496,26 @@ namespace OOX
 		et_dsp_txXfrm,
 
 
-		et_lc_LockedCanvas,	// <lc:lockedCanvas> 
+		et_lc_LockedCanvas,	// <lc:lockedCanvas>
 
 		et_graphicFrame,	// <...:graphicFrame>
 		et_pic,				// <...:pic>
 		et_cxnSp,			// <...:cxnSp>
 		
-        et_p_cNvPicPr,        // <p:cNvPicPr>
-        et_p_cNvPr,            // <p:cNvPr>
-        et_p_pic,            // <p:pic>
-        et_p_Shape,            // <p:sp>
-        et_p_ShapeTree,        // <p:spTree>
-        et_p_spPr,            // <p:spPr>
-        et_p_style,            // <p:style>
-        et_p_groupSpPr,        // <p:grpSpPr>
-        et_p_NvGrpSpPr,
-        et_p_xfrm,
-        et_p_r,
-        et_p_fld,
-        et_p_br,
-        et_p_MathPara,
+		et_p_cNvPicPr,        // <p:cNvPicPr>
+		et_p_cNvPr,            // <p:cNvPr>
+		et_p_pic,            // <p:pic>
+		et_p_Shape,            // <p:sp>
+		et_p_ShapeTree,        // <p:spTree>
+		et_p_spPr,            // <p:spPr>
+		et_p_style,            // <p:style>
+		et_p_groupSpPr,        // <p:grpSpPr>
+		et_p_NvGrpSpPr,
+		et_p_xfrm,
+		et_p_r,
+		et_p_fld,
+		et_p_br,
+		et_p_MathPara,
 		
 		et_p_EmptyTransition,
 		et_p_OrientationTransition,
@@ -546,44 +546,44 @@ namespace OOX
 		et_p_bldGraphic,
 		et_p_bldOleChart,
 
-        et_a_textFit,
-        et_a_hyperlink,
-        et_a_fld,
-        et_a_p,            // <a:p>
-        et_a_pPr,        // <a:pPr>
-        et_a_r,            // <a:p>
-        et_a_rPr,        // <a:pPr>
-        et_a_t,            // <a:t>
-        et_a_br,        // <a:br>
-        et_a_spcPts,    // <a:spcPts>
-        et_a_spcPct,    // <a:spcPct>
-        et_a_spcAft,    // <a:spcAft>
-        et_a_spcBef,    // <a:spcBef>
-        et_a_lnSpc,        // <a:lnSpc>    
-        et_a_tab,
-        et_a_rtl,
+		et_a_textFit,
+		et_a_hyperlink,
+		et_a_fld,
+		et_a_p,            // <a:p>
+		et_a_pPr,        // <a:pPr>
+		et_a_r,            // <a:p>
+		et_a_rPr,        // <a:pPr>
+		et_a_t,            // <a:t>
+		et_a_br,        // <a:br>
+		et_a_spcPts,    // <a:spcPts>
+		et_a_spcPct,    // <a:spcPct>
+		et_a_spcAft,    // <a:spcAft>
+		et_a_spcBef,    // <a:spcBef>
+		et_a_lnSpc,        // <a:lnSpc>
+		et_a_tab,
+		et_a_rtl,
 
-        et_a_buNone,
-        et_a_buChar,
-        et_a_buAutoNum,
-        et_a_buClr,
-        et_a_buClrTx,
-        et_a_buFontTx,
-        et_a_buBlip,
-        et_a_buSzPct,
-        et_a_buSzPts,
-        et_a_buSzTx,
+		et_a_buNone,
+		et_a_buChar,
+		et_a_buAutoNum,
+		et_a_buClr,
+		et_a_buClrTx,
+		et_a_buFontTx,
+		et_a_buBlip,
+		et_a_buSzPct,
+		et_a_buSzPts,
+		et_a_buSzTx,
 
 		et_ds_customXmlProps,
 		et_ds_schemaRefs, // <ds:shemeRefs>
-        et_ds_schemaRef, // <ds:shemeRef>	
+		et_ds_schemaRef, // <ds:shemeRef>
 		
 		et_m_acc, //m:acc
 		et_m_accPr, //m:accPr
 		et_m_aln, //m:aln
 		et_m_alnScr, //m:alnScr
 		et_m_argPr, //m:argPr
-	    et_m_argSz, //m:argSz
+		et_m_argSz, //m:argSz
 		et_m_bar, //m:bar
 		et_m_barPr, //m:barPr
 		et_m_baseJc, //m:baseJc
@@ -598,8 +598,8 @@ namespace OOX
 		et_m_cGp, //m:cGp
 		et_m_cGpRule, //m:cGpRule
 		et_m_chr, //m:chr
-		et_m_count, //m:count 
-		et_m_cSp, //m:cSp 
+		et_m_count, //m:count
+		et_m_cSp, //m:cSp
 		et_m_ctrlPr, //m:ctrlPr
 		et_m_d, //m:d
 		et_m_defJc, //m:defJc
@@ -626,7 +626,7 @@ namespace OOX
 		et_m_hideRight, //m:hideRight
 		et_m_hideTop, //m:hideTop
 		et_m_interSp, //m:interSp
-		et_m_intLim, //m:intLim		
+		et_m_intLim, //m:intLim
 		et_m_intraSp, //m:intraSp
 		et_m_jc, //m:jc
 		et_m_lim, //m:lim
@@ -699,7 +699,7 @@ namespace OOX
 		et_m_vertJc, //m:vertJc
 		et_m_wrapIndent, //m:wrapIndent
 		et_m_wrapRight, //m:wrapRight
-		et_m_zeroAsc, //m:zeroAsc 
+		et_m_zeroAsc, //m:zeroAsc
 		et_m_zeroDesc, //m:zeroDesc
 		et_m_zeroWid, //m:zeroWid
 
@@ -970,7 +970,7 @@ namespace OOX
 		et_wp_anchor, // <wp:anchor>
 		et_wp_cNvGraphicFramePr, // <wp:cNvGraphicFramePr>
 		et_wp_docPr, // <wp:docPr>
-        et_wp_effectExtent, // <wp:effectExtent>
+		et_wp_effectExtent, // <wp:effectExtent>
 		et_wp_extent, // <wp:extent>
 		et_wp_inline, // <wp:inline>
 		et_wp_positionH, // <wp:positionH>
@@ -978,7 +978,7 @@ namespace OOX
 		et_wp_sizeRelH, // <wp14:sizeRelH>
 		et_wp_sizeRelV, // <wp14:sizeRelV>
 		et_wp_wrapNone, // <wp:wrapNone>
-        et_wp_wrapPolygon, // <wp:wrapPolygon>
+		et_wp_wrapPolygon, // <wp:wrapPolygon>
 		et_wp_wrapSquare, // <wp:wrapSquare>
 		et_wp_wrapThrough, // <wp:wrapThrough>
 		et_wp_wrapTight, // <wp:wrapTight>
@@ -1307,7 +1307,7 @@ namespace OOX
 		et_x_Controls,
 		et_x_Control,
 		et_x_ControlPr,
-		et_x_OcxPr,		
+		et_x_OcxPr,
 		et_x_QueryTable,
 		et_x_QueryTableField,
 		et_x_QueryTableFields,
@@ -1403,7 +1403,7 @@ namespace OOX
 
 		et_x_PivotTableDefinition,
 		et_x_PivotCacheDefinition,
-                et_x_PivotCacheDefinitionExt,
+		et_x_PivotCacheDefinitionExt,
 		et_x_PivotCacheRecords,
 		et_x_ColumnRowFields,
 		et_x_ColumnRowItems,
@@ -1502,7 +1502,6 @@ namespace OOX
 		virtual ~Document() {}
 
 		std::wstring m_sDocumentPath;
-
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapContent;
 	};
 
@@ -1513,25 +1512,23 @@ namespace OOX
 		virtual ~WritingElement() {}
 
 		virtual void			fromXML(XmlUtils::CXmlNode& node)	= 0;
-        virtual std::wstring	toXML()     const					= 0;
-        virtual EElementType    getType()   const
-		{
-			return OOX::et_Unknown;
-		}
+		virtual std::wstring	toXML()     const					= 0;
+		virtual EElementType    getType()   const { return OOX::et_Unknown; }
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
-
-		OOX::Document *m_pMainDocument;
 		
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+	public:
+		OOX::Document *m_pMainDocument;
 	};
 	
 	template<typename ElemType = WritingElement>
 	class WritingElementWithChilds : public WritingElement
 	{
 	public:
-        std::vector<ElemType *>  m_arrItems;
+		std::vector<ElemType *>  m_arrItems;
 
 		WritingElementWithChilds(OOX::Document *pMain = NULL) :  WritingElement(pMain){}
 		

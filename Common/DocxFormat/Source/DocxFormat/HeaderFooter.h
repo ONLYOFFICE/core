@@ -293,13 +293,13 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:type"), m_oType )
+			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:type"), m_oType )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 //--------------------------------------------------------------------------
 		CPath							m_oReadPath;
 		OOX::EElementType				m_eType;
-		nullable<SimpleTypes::CHdrFtr<>>m_oType;
+		nullable<SimpleTypes::CHdrFtr>	m_oType;
 
         std::vector<WritingElement* >	m_arrItems;
 	};

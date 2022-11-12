@@ -39,7 +39,7 @@
 #include "mediaitems_utils.h"
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
 

@@ -32,6 +32,8 @@
 #pragma once
 
 #include "../../XlsxSerializerCom/Common/Common.h"
+#include "../../XlsxSerializerCom/Common/Common.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 namespace Writers
 {

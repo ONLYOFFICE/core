@@ -499,7 +499,7 @@ namespace Oox2Odf
 				| ((unsigned int)((BYTE)(vml_fill->m_oColor->Get_G())) << 8))
 				| (((unsigned int)(BYTE)(vml_fill->m_oColor->Get_R())) << 16)));
 
-			sRgbColor1 = XmlUtils::IntToString(*nRgbColor1, L"%06X");
+			sRgbColor1 = XmlUtils::ToString(*nRgbColor1, L"%06X");
 		}
 
 		if (vml_fill->m_oColor2.IsInit())
@@ -507,7 +507,7 @@ namespace Oox2Odf
 			nRgbColor2 = ((unsigned int)(((BYTE)(vml_fill->m_oColor2->Get_B())
 				| ((unsigned int)((BYTE)(vml_fill->m_oColor2->Get_G())) << 8))
 				| (((unsigned int)(BYTE)(vml_fill->m_oColor2->Get_R())) << 16)));
-			sRgbColor2 = XmlUtils::IntToString(*nRgbColor2, L"%06X");
+			sRgbColor2 = XmlUtils::ToString(*nRgbColor2, L"%06X");
 		}
 
 		std::wstring sID;
@@ -1044,7 +1044,7 @@ namespace Oox2Odf
 					ucB = vml_common->m_oStrokeColor->Get_B();
 					ucG = vml_common->m_oStrokeColor->Get_G();
 
-					SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+					SimpleTypes::CHexColor *oRgbColor = new SimpleTypes::CHexColor(ucR, ucG, ucB);
 					if (oRgbColor)
 					{
 						odf_context()->drawing_context()->set_solid_fill(oRgbColor->ToString().substr(2));//.Right(6));
@@ -1061,7 +1061,7 @@ namespace Oox2Odf
 			ucB = vml_common->m_oFillColor->Get_B();
 			ucG = vml_common->m_oFillColor->Get_G();
 
-			SimpleTypes::CHexColor<> *oRgbColor = new SimpleTypes::CHexColor<>(ucR, ucG, ucB);
+			SimpleTypes::CHexColor *oRgbColor = new SimpleTypes::CHexColor(ucR, ucG, ucB);
 
 			if (oRgbColor)
 			{

@@ -53,7 +53,7 @@
 
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 static int current_id_changes = 0;
 

@@ -91,7 +91,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::COnOff<>             > m_oLegacy;
+			nullable<SimpleTypes::COnOff               > m_oLegacy;
 			nullable<SimpleTypes::CSignedTwipsMeasure  > m_oLegacyIndent;
 			nullable<SimpleTypes::CTwipsMeasure        > m_oLegacySpace;
 		};
@@ -146,7 +146,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable< SimpleTypes::COnOff<> >	m_oNull;
+			nullable< SimpleTypes::COnOff>	m_oNull;
             nullable_string						m_sVal;
 		};
 
@@ -194,7 +194,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CLevelSuffix<>> m_oVal;
+			nullable<SimpleTypes::CLevelSuffix> m_oVal;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ oReader.ReadTillEnd();
 
 		public:
 
-			nullable<SimpleTypes::CMultiLevelType<>> m_oVal;
+			nullable<SimpleTypes::CMultiLevelType> m_oVal;
 		};
 
 	} // Word
@@ -417,10 +417,10 @@ namespace OOX
 		public:
 
 			nullable_int								m_oIlvl;
-			nullable<SimpleTypes::COnOff<> >			m_oTentative;
-			nullable<SimpleTypes::CLongHexNumber<>>		m_oTplc;
+			nullable<SimpleTypes::COnOff>				m_oTentative;
+			nullable<SimpleTypes::CLongHexNumber>		m_oTplc;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>>	m_oIsLgl;
+			nullable<ComplexTypes::Word::COnOff2>	m_oIsLgl;
 			nullable<ComplexTypes::Word::CLvlLegacy>						m_oLegacy;
 			nullable<ComplexTypes::Word::CJc>								m_oLvlJc;
 			nullable<ComplexTypes::Word::CDecimalNumber>					m_oLvlPicBulletId;

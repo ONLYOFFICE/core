@@ -193,10 +193,10 @@ namespace OOX
 
                         }
 		public:
-			nullable<SimpleTypes::COnOff<> > m_oDescending;
-			nullable<SimpleTypes::CRelationshipId > m_oRef;
-			nullable<SimpleTypes::Spreadsheet::CSortBy<> > m_oSortBy;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oDxfId;
+			nullable<SimpleTypes::COnOff>					m_oDescending;
+			nullable<SimpleTypes::CRelationshipId>			m_oRef;
+			nullable<SimpleTypes::Spreadsheet::CSortBy>		m_oSortBy;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oDxfId;
 		};
 		class CSortState : public WritingElementWithChilds<CSortCondition>
 		{
@@ -309,10 +309,10 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::CRelationshipId > m_oRef;
-			nullable<SimpleTypes::COnOff<> > m_oCaseSensitive;
-			nullable<SimpleTypes::COnOff<> > m_oColumnSort;
-			nullable<SimpleTypes::Spreadsheet::CSortMethod<> > m_oSortMethod;
+			nullable<SimpleTypes::CRelationshipId>				m_oRef;
+			nullable<SimpleTypes::COnOff>						m_oCaseSensitive;
+			nullable<SimpleTypes::COnOff>						m_oColumnSort;
+			nullable<SimpleTypes::Spreadsheet::CSortMethod>		m_oSortMethod;
 		};
 
 		//Filters
@@ -388,8 +388,8 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::COnOff<> > m_oCellColor;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oDxfId;
+			nullable<SimpleTypes::COnOff> m_oCellColor;
+			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oDxfId;
 		};
 		class CDynamicFilter : public WritingElement
 		{
@@ -538,7 +538,7 @@ namespace OOX
 
                         }
 		public:
-			nullable<SimpleTypes::Spreadsheet::CDynamicFilterType<> > m_oType;
+			nullable<SimpleTypes::Spreadsheet::CDynamicFilterType > m_oType;
 			nullable<SimpleTypes::CDouble > m_oVal;
 			nullable<SimpleTypes::CDouble > m_oMaxVal;
 		};
@@ -634,7 +634,7 @@ namespace OOX
 
                         }
 		public:
-			nullable<SimpleTypes::Spreadsheet::CCustomFilter<> > m_oOperator;
+			nullable<SimpleTypes::Spreadsheet::CCustomFilter > m_oOperator;
 			nullable<std::wstring > m_oVal;
 		};
 		class CCustomFilters : public WritingElementWithChilds<CCustomFilter>
@@ -732,7 +732,7 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::COnOff<> > m_oAnd;
+			nullable<SimpleTypes::COnOff> m_oAnd;
 		};
 		class CFilter : public WritingElement
 		{
@@ -904,13 +904,13 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::Spreadsheet::CDateTimeGroup<> > m_oDateTimeGrouping;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oDay;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oHour;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oMinute;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oMonth;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oSecond;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oYear;
+			nullable<SimpleTypes::Spreadsheet::CDateTimeGroup > m_oDateTimeGrouping;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oDay;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oHour;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oMinute;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oMonth;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oSecond;
+			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oYear;
 		};
 		class CFilters : public WritingElementWithChilds<>
 		{
@@ -1023,7 +1023,7 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::COnOff<> > m_oBlank;
+			nullable<SimpleTypes::COnOff> m_oBlank;
 		};
 		class CTop10 : public WritingElement
 		{
@@ -1105,10 +1105,10 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::CDouble > m_oFilterVal;
-			nullable<SimpleTypes::COnOff<> > m_oPercent;
-			nullable<SimpleTypes::COnOff<> > m_oTop;
-			nullable<SimpleTypes::CDouble > m_oVal;
+			nullable<SimpleTypes::CDouble>	m_oFilterVal;
+			nullable<SimpleTypes::COnOff>	m_oPercent;
+			nullable<SimpleTypes::COnOff>	m_oTop;
+			nullable<SimpleTypes::CDouble>	m_oVal;
 		};
 		class CFilterColumn : public WritingElement
 		{
@@ -1231,9 +1231,9 @@ namespace OOX
                             }
                         }
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oColId;
-			nullable<SimpleTypes::COnOff<> > m_oHiddenButton;
-			nullable<SimpleTypes::COnOff<> > m_oShowButton;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oColId;
+			nullable<SimpleTypes::COnOff>					m_oHiddenButton;
+			nullable<SimpleTypes::COnOff>					m_oShowButton;
 
 			nullable<CColorFilter > m_oColorFilter;
 			nullable<CDynamicFilter > m_oDynamicFilter;

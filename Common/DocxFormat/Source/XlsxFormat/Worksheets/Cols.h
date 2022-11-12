@@ -116,15 +116,15 @@ namespace OOX
             }
 
 		public:
-				nullable<SimpleTypes::COnOff<>>					m_oBestFit;
-				nullable<SimpleTypes::COnOff<>>					m_oCollapsed;
-				nullable<SimpleTypes::COnOff<>>					m_oCustomWidth;
-				nullable<SimpleTypes::COnOff<>>					m_oHidden;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMax;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oMin;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oOutlineLevel;
-				nullable<SimpleTypes::COnOff<>>					m_oPhonetic;
-				nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oStyle;
+				nullable<SimpleTypes::COnOff>					m_oBestFit;
+				nullable<SimpleTypes::COnOff>					m_oCollapsed;
+				nullable<SimpleTypes::COnOff>					m_oCustomWidth;
+				nullable<SimpleTypes::COnOff>					m_oHidden;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMax;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMin;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oOutlineLevel;
+				nullable<SimpleTypes::COnOff>					m_oPhonetic;
+				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oStyle;
 				nullable<SimpleTypes::CDouble>					m_oWidth;
 		};
 

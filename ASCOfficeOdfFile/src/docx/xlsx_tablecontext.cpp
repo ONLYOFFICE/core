@@ -44,7 +44,7 @@
 #include "../../include/odf/odf_document.h"
 #include "../../include/xml/simple_xml_writer.h"
 
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace cpdoccore {
 namespace oox {

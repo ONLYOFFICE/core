@@ -117,9 +117,9 @@ namespace SerializeCommon
 		sDelimiter = L";"; // default
 		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;// default
 
-		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;
-		nullable<SimpleTypes::CUnsignedDecimalNumber<>> codePage;
-		nullable<SimpleTypes::CUnsignedDecimalNumber<>> saveFileType;
+		nullable<SimpleTypes::CUnsignedDecimalNumber> fileType;
+		nullable<SimpleTypes::CUnsignedDecimalNumber> codePage;
+		nullable<SimpleTypes::CUnsignedDecimalNumber> saveFileType;
         nullable<std::wstring> delimiter;
 
 		// Read options

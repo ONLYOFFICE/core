@@ -103,9 +103,9 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidDel;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidR;
-			nullable<SimpleTypes::CLongHexNumber<> > m_oRsidRPr;
+			nullable<SimpleTypes::CLongHexNumber>	m_oRsidDel;
+			nullable<SimpleTypes::CLongHexNumber>	m_oRsidR;
+			nullable<SimpleTypes::CLongHexNumber>	m_oRsidRPr;
 			OOX::Logic::CRunProperty				*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
 		};

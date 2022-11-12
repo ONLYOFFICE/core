@@ -33,6 +33,7 @@
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 #include "../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
 
 namespace Writers
 {

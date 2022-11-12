@@ -92,7 +92,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CJcTable<> > m_oVal;
+			nullable<SimpleTypes::CJcTable> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// TblLayoutType 17.4.54 (Part 1)
@@ -144,7 +144,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CTblLayoutType<> > m_oType;
+			nullable<SimpleTypes::CTblLayoutType> m_oType;
 		};
 		//--------------------------------------------------------------------------------
 		// TblLook 17.4.56 (Part 1) + 9.3.11 (Part 4)
@@ -362,13 +362,13 @@ namespace ComplexTypes
 			}
 		public:
 
-			nullable<SimpleTypes::COnOff<>          > m_oFirstColumn;
-			nullable<SimpleTypes::COnOff<>          > m_oFirstRow;
-			nullable<SimpleTypes::COnOff<>          > m_oLastColumn;
-			nullable<SimpleTypes::COnOff<>          > m_oLastRow;
-			nullable<SimpleTypes::COnOff<>          > m_oNoHBand;
-			nullable<SimpleTypes::COnOff<>          > m_oNoVBand;
-			nullable<SimpleTypes::CShortHexNumber<> > m_oVal;
+			nullable<SimpleTypes::COnOff            > m_oFirstColumn;
+			nullable<SimpleTypes::COnOff            > m_oFirstRow;
+			nullable<SimpleTypes::COnOff            > m_oLastColumn;
+			nullable<SimpleTypes::COnOff            > m_oLastRow;
+			nullable<SimpleTypes::COnOff            > m_oNoHBand;
+			nullable<SimpleTypes::COnOff            > m_oNoVBand;
+			nullable<SimpleTypes::CShortHexNumber   > m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// TblOverlap 17.4.56 (Part 1)
@@ -411,7 +411,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CTblOverlap<> > m_oVal;
+			nullable<SimpleTypes::CTblOverlap> m_oVal;
 		};
 		//--------------------------------------------------------------------------------
 		// TblPPr 17.4.58 (Part 1)
@@ -582,15 +582,15 @@ namespace ComplexTypes
 		public:
 
 			nullable<SimpleTypes::CTwipsMeasure       > m_oBottomFromText;
-			nullable<SimpleTypes::CHAnchor<>          > m_oHorzAnchor;
+			nullable<SimpleTypes::CHAnchor            > m_oHorzAnchor;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oLeftFromText;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oRightFromText;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTblpX;
-			nullable<SimpleTypes::CXAlign<>           > m_oTblpXSpec;
+			nullable<SimpleTypes::CXAlign             > m_oTblpXSpec;
 			nullable<SimpleTypes::CSignedTwipsMeasure > m_oTblpY;
-			nullable<SimpleTypes::CYAlign<>           > m_oTblpYSpec;
+			nullable<SimpleTypes::CYAlign             > m_oTblpYSpec;
 			nullable<SimpleTypes::CTwipsMeasure       > m_oTopFromText;
-			nullable<SimpleTypes::CVAnchor<>          > m_oVertAnchor;
+			nullable<SimpleTypes::CVAnchor            > m_oVertAnchor;
 
 		};
 	} // Word
@@ -917,12 +917,12 @@ namespace OOX
 
 		public:
 
-			nullable<std::wstring                       > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring                       > m_sUserId;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
 
-			nullable<CTableProperty>				 m_pTblPr;
+			nullable<CTableProperty>				m_pTblPr;
 		};
 		//--------------------------------------------------------------------------------
 		// CTableProperty
@@ -1108,7 +1108,7 @@ namespace OOX
 
 			bool                                                           m_bTblPrChange;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oBidiVisual;
+			nullable<ComplexTypes::Word::COnOff2 > m_oBidiVisual;
 			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 			nullable<ComplexTypes::Word::CShading                        > m_oShade;
 			nullable<OOX::Logic::CTblBorders                             > m_oTblBorders;
@@ -1184,8 +1184,8 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CHeightRule<> > m_oHRule;
-			nullable<SimpleTypes::CTwipsMeasure > m_oVal;
+			nullable<SimpleTypes::CHeightRule >		m_oHRule;
+			nullable<SimpleTypes::CTwipsMeasure >	m_oVal;
 		};
 
 	} // Word
@@ -1222,13 +1222,13 @@ namespace OOX
 		public:
 
 			// Attributes
-			nullable<std::wstring                      > m_sAuthor;
-			nullable<SimpleTypes::CDateTime        > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring                       > m_sUserId;
+			nullable<std::wstring>					m_sAuthor;
+			nullable<SimpleTypes::CDateTime>		m_oDate;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
 
 			// Childs
-			nullable<CTableRowProperties>            m_pTrPr;
+			nullable<CTableRowProperties>           m_pTrPr;
 		};
 		//--------------------------------------------------------------------------------
 		// CTableRowProperties
@@ -1393,17 +1393,17 @@ namespace OOX
 
 			bool                                                           m_bTrPrChange;
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oCantSplit;
+			nullable<ComplexTypes::Word::COnOff2 > m_oCantSplit;
 			nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
 			nullable<ComplexTypes::Word::CTrackChange                    > m_oDel;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oDivId;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridAfter;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridBefore;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHidden;
+			nullable<ComplexTypes::Word::COnOff2 > m_oHidden;
 			nullable<ComplexTypes::Word::CTrackChange                    > m_oIns;
 			nullable<ComplexTypes::Word::CJcTable                        > m_oJc;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTblHeader;
+			nullable<ComplexTypes::Word::COnOff2 > m_oTblHeader;
 			nullable<ComplexTypes::Word::CHeight                         > m_oTblHeight;
 			nullable<OOX::Logic::CTrPrChange                             > m_oTrPrChange;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oWAfter;
@@ -1489,12 +1489,12 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<std::wstring                          > m_sAuthor;
+			nullable<std::wstring                     > m_sAuthor;
 			nullable<SimpleTypes::CDateTime           > m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<>    > m_oId;
-			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMerge;
-			nullable<SimpleTypes::CAnnotationVMerge<> > m_oVMergeOrig;
-			nullable<std::wstring                          > m_sUserId;
+			nullable<SimpleTypes::CDecimalNumber      > m_oId;
+			nullable<SimpleTypes::CAnnotationVMerge   > m_oVMerge;
+			nullable<SimpleTypes::CAnnotationVMerge   > m_oVMergeOrig;
+			nullable<std::wstring                     > m_sUserId;
 
 		};
 		//--------------------------------------------------------------------------------
@@ -1542,7 +1542,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CMerge<> > m_oVal;
+			nullable<SimpleTypes::CMerge> m_oVal;
 
 		};
 
@@ -1591,7 +1591,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable<SimpleTypes::CMerge<> > m_oVal;
+			nullable<SimpleTypes::CMerge> m_oVal;
 
 		};
 
@@ -1925,8 +1925,8 @@ namespace OOX
 
 			nullable<std::wstring>					m_sAuthor;
 			nullable<SimpleTypes::CDateTime>		m_oDate;
-			nullable<SimpleTypes::CDecimalNumber<> > m_oId;
-			nullable<std::wstring> m_sUserId;
+			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<std::wstring>					m_sUserId;
 
 			nullable<CTableCellProperties>			m_pTcPr;
 		};
@@ -2133,12 +2133,12 @@ namespace OOX
 			nullable<ComplexTypes::Word::CCnf                            > m_oCnfStyle;
 			nullable<ComplexTypes::Word::CDecimalNumber                  > m_oGridSpan;
 			nullable<OOX::Logic::CHeaders                                > m_oHeaders;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oHideMark;
+			nullable<ComplexTypes::Word::COnOff2 > m_oHideMark;
 			nullable<ComplexTypes::Word::CHMerge                         > m_oHMerge;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oNoWrap;
+			nullable<ComplexTypes::Word::COnOff2 > m_oNoWrap;
 			nullable<ComplexTypes::Word::CShading                        > m_oShd;
 			nullable<OOX::Logic::CTcBorders                              > m_oTcBorders;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oTcFitText;
+			nullable<ComplexTypes::Word::COnOff2 > m_oTcFitText;
 			nullable<OOX::Logic::CTcMar                                  > m_oTcMar;
 			nullable<OOX::Logic::CTcPrChange                             > m_oTcPrChange;
 			nullable<ComplexTypes::Word::CTblWidth                       > m_oTcW;

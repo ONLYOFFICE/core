@@ -30,8 +30,7 @@
  *
  */
 #include "ConvertTxt2Docx.h"
-
-#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "TxtFormat/File.h"
 
 #include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
 //#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
@@ -40,8 +39,6 @@
 #include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
-
-#include "TxtFormat/TxtFormat.h"
 
 namespace Txt2Docx
 {
@@ -56,35 +53,35 @@ namespace Txt2Docx
 		OOX::CDocument	m_outputFile;
 	};
 
-    Converter::Converter(int encoding) : converter_( new Converter_Impl(encoding) )
-    {    
-    }
-    
-    Converter::~Converter()
-    {
-        delete converter_;
-    }
-    
-    void Converter::convert()
-    {
-        return converter_->convert();    
-    }
+	Converter::Converter(int encoding) : converter_( new Converter_Impl(encoding) )
+	{
+	}
 
-    void Converter::read(const std::wstring& path)
-    {
-        return converter_->m_inputFile.read(path);
-    }
+	Converter::~Converter()
+	{
+		delete converter_;
+	}
 
-    void Converter::write(/*const std::wstring& path*/NSStringUtils::CStringBuilder & stringWriter)
-    {
-        for (size_t	i = 0; i < converter_->m_outputFile.m_arrItems.size(); ++i)
+	void Converter::convert()
+	{
+		return converter_->convert();
+	}
+
+	void Converter::read(const std::wstring& path)
+	{
+		return converter_->m_inputFile.read(path);
+	}
+
+	void Converter::write(/*const std::wstring& path*/NSStringUtils::CStringBuilder & stringWriter)
+	{
+		for (size_t	i = 0; i < converter_->m_outputFile.m_arrItems.size(); ++i)
 		{
 			if ( converter_->m_outputFile.m_arrItems[i] )
 				stringWriter.WriteString(converter_->m_outputFile.m_arrItems[i]->toXML());
 		}
 		//BOOL res = converter_->m_outputFile.Write(std_string2string(path.string()));
 		return;
-    }
+	}
 
 	Converter_Impl::Converter_Impl(int encoding) : m_outputFile(NULL)
 	{
@@ -104,14 +101,14 @@ namespace Txt2Docx
 			ComplexTypes::Word::CFonts		font;
 			
 			space.m_oAfter.Init();		space.m_oAfter->FromString(L"0");
-			space.m_oLine.Init();		space.m_oLine->FromString(L"240");			
-			space.m_oLineRule.Init();	space.m_oLineRule->SetValue(SimpleTypes::linespacingruleAuto);			
+			space.m_oLine.Init();		space.m_oLine->FromString(L"240");
+			space.m_oLineRule.Init();	space.m_oLineRule->SetValue(SimpleTypes::linespacingruleAuto);
 			
-            font.m_sAscii.Init();	*font.m_sAscii	= L"Courier New";
-            font.m_sHAnsi.Init();	*font.m_sHAnsi	= L"Courier New";
-            font.m_sCs.Init();		*font.m_sCs		= L"Courier New";
+			font.m_sAscii.Init();	*font.m_sAscii	= L"Courier New";
+			font.m_sHAnsi.Init();	*font.m_sHAnsi	= L"Courier New";
+			font.m_sCs.Init();		*font.m_sCs		= L"Courier New";
 
-            for (size_t i = 0; i < m_inputFile.m_listContent.size(); ++i)
+			for (size_t i = 0; i < m_inputFile.m_listContent.size(); ++i)
 			{
 				std::wstring & line = m_inputFile.m_listContent[i];
 
@@ -131,7 +128,7 @@ namespace Txt2Docx
 					line.erase(line.find(_T("\x08")), 1);//, "");
 				}
 				while(line.find(_T("\x09")) != line.npos)
-                {
+				{
 					int pos = line.find(_T("\x09"));
 					
 					if (pos > 0)
@@ -141,18 +138,18 @@ namespace Txt2Docx
 						{
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
 							rPr_->m_oRFonts		= font;
-                            std::wstring s_ = XmlUtils::EncodeXmlString(s);
-                            paragraph->AddText(s_, rPr_);
+							std::wstring s_ = XmlUtils::EncodeXmlString(s);
+							paragraph->AddText(s_, rPr_);
 						}
 					}
 					paragraph->AddTab();
 					line.erase(0, pos + 1);
-                }
-			
+				}
+
 				if (!line.empty())
 				{
-                    std::wstring s_ = XmlUtils::EncodeXmlString(line);
-                    paragraph->AddText(s_, rPr);
+					std::wstring s_ = XmlUtils::EncodeXmlString(line);
+					paragraph->AddText(s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);
 			}

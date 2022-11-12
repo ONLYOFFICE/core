@@ -80,7 +80,7 @@ public:
 	{
 		if(  m_sFootnotes.empty() ) return false;
 
-		CFile file;
+		NSFile::CFileBinary file;
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes"), _T("footnotes.xml") );
@@ -160,7 +160,7 @@ public:
 	{
 		if( m_sEndnotes.empty() ) return false;
 
-		CFile file;
+		NSFile::CFileBinary file;
         if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
 
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes"), _T("endnotes.xml") );
@@ -168,7 +168,7 @@ public:
 
         std::string sXml = CreateXml();
 
-        file.WriteFile((void*)sXml.c_str(), (DWORD)sXml.length());
+		file.WriteFile(sXml.c_str(), (DWORD)sXml.length());
 		file.CloseFile();
 		return true;
 	}

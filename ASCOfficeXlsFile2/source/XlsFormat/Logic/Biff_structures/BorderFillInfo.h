@@ -32,7 +32,7 @@
 #pragma once
 
 #include <sstream>
-#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace XLS
 {

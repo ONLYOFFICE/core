@@ -35,7 +35,7 @@
 #include "xlsx_hyperlinks.h"
 #include "oox_rels.h"
 #include "../../formulasconvert/formulasconvert.h"
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 #include "xlsx_utils.h"
 
 namespace cpdoccore {

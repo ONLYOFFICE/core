@@ -84,10 +84,10 @@ namespace OOX
 
 		public:
 
-			nullable<SimpleTypes::CHexColor<>        >	m_oColor;
-			nullable<SimpleTypes::CThemeColor<>      >	m_oThemeColor;
-			nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeShade;
-			nullable<SimpleTypes::CUcharHexNumber<>  >	m_oThemeTint;
+			nullable<SimpleTypes::CHexColor          >	m_oColor;
+			nullable<SimpleTypes::CThemeColor        >	m_oThemeColor;
+			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeShade;
+			nullable<SimpleTypes::CUcharHexNumber    >	m_oThemeTint;
 
 			nullable<OOX::Logic::CDrawing            >	m_oDrawing;
 			nullable<OOX::Vml::CBackground>				m_oBackground;
@@ -121,7 +121,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		public:
 			nullable<OOX::Logic::CBinData>		m_oBinData;
-			nullable<SimpleTypes::CHexColor<>>	m_oColor;
+			nullable<SimpleTypes::CHexColor>	m_oColor;
 			nullable_string						m_oBackgroundType;
 			nullable<OOX::Vml::CBackground>		m_oBackground;
 		};
@@ -194,9 +194,9 @@ namespace OOX
 		CPath									m_oReadPath;
 		unsigned int							m_nDrawingMaxZIndex = 0;
 
-		SimpleTypes::CConformanceClass<SimpleTypes::conformanceclassTransitional> m_oConformance;
+		SimpleTypes::CConformanceClass			m_oConformance;
 
-		nullable<SimpleTypes::CXmlSpace<>>		m_oSpace;
+		nullable<SimpleTypes::CXmlSpace>		m_oSpace;
 
 		nullable<OOX::Logic::CSectionProperty>	m_oSectPr;
 		nullable<OOX::Logic::CBackground>		m_oBackground;

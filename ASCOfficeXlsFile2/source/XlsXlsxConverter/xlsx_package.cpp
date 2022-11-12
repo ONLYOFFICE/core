@@ -35,7 +35,7 @@
 #include <boost/ref.hpp>
 #include <boost/make_shared.hpp>
 
-#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/Base/Unit.h"
 
 namespace oox {
 

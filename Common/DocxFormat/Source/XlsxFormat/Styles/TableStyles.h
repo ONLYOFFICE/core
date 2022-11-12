@@ -178,9 +178,9 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oDxfId;
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>			m_oSize;
-			nullable<SimpleTypes::Spreadsheet::CTableStyleType<>>	m_oType;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oDxfId;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oSize;
+			nullable<SimpleTypes::Spreadsheet::CTableStyleType>		m_oType;
 		};
 		class CTableStyle : public WritingElementWithChilds<CTableStyleElement>
 		{
@@ -285,10 +285,10 @@ namespace OOX
             }
 
 		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber<>>	m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<std::wstring>							m_oName;
-			nullable<SimpleTypes::COnOff<>>					m_oPivot;
-			nullable<SimpleTypes::COnOff<>>					m_oTable;
+			nullable<SimpleTypes::COnOff>					m_oPivot;
+			nullable<SimpleTypes::COnOff>					m_oTable;
 			nullable<std::wstring>							m_oDisplayName; // Используется только для дефалтовых стилей
 		};
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
@@ -392,7 +392,7 @@ namespace OOX
             }
 
 		public:
-            nullable<SimpleTypes::CUnsignedDecimalNumber<>>         m_oCount;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		    m_oCount;
 			nullable<std::wstring>									m_oDefaultPivotStyle;
 			nullable<std::wstring>									m_oDefaultTableStyle;
 		};

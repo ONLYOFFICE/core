@@ -348,9 +348,6 @@
     <ClInclude Include="..\Source\XlsxFormat\FileTypes_Spreadsheet.h">
       <Filter>XlsxFormat</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\XlsxFormat\SimpleTypes_Spreadsheet.h">
-      <Filter>XlsxFormat</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\XlsxFormat\WritingElement.h">
       <Filter>XlsxFormat</Filter>
     </ClInclude>
@@ -552,12 +549,6 @@
     <ClInclude Include="..\Source\Base\unicode_util.h">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\XML\StringWriter.h">
-      <Filter>XML</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Source\XML\Utils.h">
-      <Filter>XML</Filter>
-    </ClInclude>
     <ClInclude Include="..\Source\XML\XmlSimple.h">
       <Filter>XML</Filter>
     </ClInclude>
@@ -614,7 +605,6 @@
     <ClInclude Include="..\Source\DocxFormat\FileTypes.h" />
     <ClInclude Include="..\Source\DocxFormat\IFileBuilder.h" />
     <ClInclude Include="..\Source\DocxFormat\IFileContainer.h" />
-    <ClInclude Include="..\Source\DocxFormat\NamespaceOwn.h" />
     <ClInclude Include="..\Source\DocxFormat\Namespaces.h" />
     <ClInclude Include="..\Source\DocxFormat\RId.h" />
     <ClInclude Include="..\Source\DocxFormat\UnknowTypeFile.h" />
@@ -652,6 +642,9 @@
     <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h">
       <Filter>XlsxFormat\Worksheets</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.h">
+      <Filter>XlsxFormat\Pivots</Filter>
+    </ClInclude>
     <ClInclude Include="..\Source\Common\ComplexTypes.h">
       <Filter>Logic\Common</Filter>
     </ClInclude>
@@ -664,7 +657,13 @@
     <ClInclude Include="..\Source\Common\SimpleTypes_OMath.h">
       <Filter>Logic\Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Rtf.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
     <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
+      <Filter>Logic\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Spreadsheet.h">
       <Filter>Logic\Common</Filter>
     </ClInclude>
     <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
@@ -673,11 +672,23 @@
     <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
       <Filter>Logic\Common</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\Common\Unit.h">
-      <Filter>Logic\Common</Filter>
+    <ClInclude Include="..\Source\Base\codecvt.h">
+      <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\XlsxFormat\Pivot\PivotCacheDefinitionExt.h">
-      <Filter>XlsxFormat\Pivots</Filter>
+    <ClInclude Include="..\Source\Base\DateTime.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\strings_hack_printf.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\Types_32.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\Unit.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\WinColor.h">
+      <Filter>Base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -834,8 +845,6 @@
     <ClCompile Include="..\..\..\ASCOfficePPTXFile\PPTXFormat\Folder.cpp">
       <Filter>PPTX</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\DocxFormat\App.cpp" />
-    <ClCompile Include="..\Source\DocxFormat\Core.cpp" />
     <ClCompile Include="..\Source\DocxFormat\Docx.cpp" />
     <ClCompile Include="..\Source\DocxFormat\DocxFlat.cpp" />
     <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp" />
@@ -865,9 +874,6 @@
     <ClCompile Include="..\Source\DocxFormat\Settings\Settings.cpp">
       <Filter>Settings\DocumentSettings</Filter>
     </ClCompile>
-    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
-      <Filter>Logic\Common</Filter>
-    </ClCompile>
     <ClCompile Include="..\Source\DocxFormat\Media\Media.cpp">
       <Filter>Media</Filter>
     </ClCompile>
@@ -882,6 +888,59 @@
     </ClCompile>
     <ClCompile Include="..\Source\XlsxFormat\Styles\Styles.cpp">
       <Filter>XlsxFormat\Styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\ComplexTypes.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Base.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Drawing.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_OMath.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Rtf.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Shared.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Spreadsheet.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Vml.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
+      <Filter>Logic\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\FileTypes.cpp" />
+    <ClCompile Include="..\Source\XlsxFormat\FileTypes_Spreadsheet.cpp">
+      <Filter>XlsxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Base\codecvt.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Base\DateTime.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Base\Unit.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Base\WinColor.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Core.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\App.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\SystemUtility\File.cpp" />
+    <ClCompile Include="..\Source\XML\XmlSimple.cpp">
+      <Filter>XML</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

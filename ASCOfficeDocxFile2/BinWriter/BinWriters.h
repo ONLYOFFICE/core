@@ -136,9 +136,9 @@ namespace BinDocxRW
 		void WriteTblBorders(const OOX::Logic::CTblBorders& Borders);
 		void WriteTcBorders(const OOX::Logic::CTcBorders& Borders);
 		void WritePBorders(const OOX::Logic::CPBdr& Borders);
-		void WriteColor(BYTE type, const SimpleTypes::CHexColor<>& color);
-		void WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor<>>& oHexColor, const nullable<SimpleTypes::CThemeColor<>>& oThemeColor,
-			const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber<>>& oThemeShade);
+		void WriteColor(BYTE type, const SimpleTypes::CHexColor& color);
+		void WriteThemeColor(BYTE type, const nullable<SimpleTypes::CHexColor>& oHexColor, const nullable<SimpleTypes::CThemeColor>& oThemeColor,
+			const nullable<SimpleTypes::CUcharHexNumber>& oThemeTint, const nullable<SimpleTypes::CUcharHexNumber>& oThemeShade);
 		void WriteShd(const ComplexTypes::Word::CShading& Shd);
 		void WritePaddings(const nullable<SimpleTypes::CTwipsMeasure>& left, const nullable<SimpleTypes::CTwipsMeasure>& top,
 			const nullable<SimpleTypes::CTwipsMeasure>& right, const nullable<SimpleTypes::CTwipsMeasure>& bottom);
@@ -348,7 +348,7 @@ namespace BinDocxRW
 		void WriteMoveTo(const OOX::Logic::CMoveTo& oMoveTo);
 		template<typename T> void WriteMoveRangeStart(const T& elem);
 		template<typename T> void WriteMoveRangeEnd(const T& elem);
-		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber<>>& oId);
+		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber>& oId);
 		void WriteFldChar(OOX::Logic::CFldChar* pFldChar);
 		void WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple);
 		void WriteFldSimpleContent(OOX::Logic::CFldSimple* pFldSimple);
@@ -461,7 +461,7 @@ namespace BinDocxRW
 		void WriteMathZeroWid(const OOX::Logic::CZeroWid &pZeroWid);
 		void WritePreparedRun(OOX::Logic::CRun *pRun, bool bHyperlink, std::vector<OOX::WritingElement*>::iterator &start, std::vector<OOX::WritingElement*>::iterator &end);
 		void WriteRunContent(std::vector<OOX::WritingElement*>::iterator &start, std::vector<OOX::WritingElement*>::iterator &end, bool bHyperlink = false);
-		void WriteNoteRef(const nullable<SimpleTypes::COnOff<>>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber<>>& oId);
+		void WriteNoteRef(const nullable<SimpleTypes::COnOff>& oCustomMarkFollows, const nullable<SimpleTypes::CDecimalNumber>& oId);
 		void WriteText(const std::wstring& text, BYTE type);
 		bool WriteDrawingPptx(OOX::WritingElement* item);
 		void WriteDrawing(std::wstring* pXml, OOX::Logic::CDrawing* pDrawing, PPTX::Logic::GraphicFrame *pGraphic);
@@ -524,7 +524,7 @@ namespace BinDocxRW
 			nullable<bool> bDone;
 			nullable<std::wstring> sUserId;
 			nullable<std::wstring> sProviderId;
-			nullable<SimpleTypes::CLongHexNumber<> > nDurableId;
+			nullable<SimpleTypes::CLongHexNumber> nDurableId;
 			nullable<std::wstring> sDateUtc;
 			nullable<std::wstring> sUserData;
 			std::vector<CCommentWriteTemp*> aReplies;

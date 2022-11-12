@@ -86,7 +86,7 @@ namespace OOX
 		public:
 			nullable<E> m_oVal;
 		};
-		class CAnimLvl : public Diagram::ComplexType<SimpleTypes::CAnimLvlStr<>>
+		class CAnimLvl : public Diagram::ComplexType<SimpleTypes::CAnimLvlStr>
 		{
 		public:
 			WritingElement_AdditionConstructors(CAnimLvl)
@@ -98,11 +98,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const 
 			{
-				return Diagram::ComplexType<SimpleTypes::CAnimLvlStr<>>::toXML(L"dgm:animLvl");
+				return Diagram::ComplexType<SimpleTypes::CAnimLvlStr>::toXML(L"dgm:animLvl");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CAnimLvlStr<>>::toXmlWriter(L"dgm:animLvl", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CAnimLvlStr>::toXmlWriter(L"dgm:animLvl", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -114,7 +114,7 @@ namespace OOX
 				WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CAnimOne : public Diagram::ComplexType<SimpleTypes::CAnimOneStr<>>
+		class CAnimOne : public Diagram::ComplexType<SimpleTypes::CAnimOneStr>
 		{
 		public:
 			WritingElement_AdditionConstructors(CAnimOne)
@@ -126,11 +126,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::CAnimOneStr<>>::toXML(L"dgm:animOne");
+				return Diagram::ComplexType<SimpleTypes::CAnimOneStr>::toXML(L"dgm:animOne");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CAnimOneStr<>>::toXmlWriter(L"dgm:animOne", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CAnimOneStr>::toXmlWriter(L"dgm:animOne", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -170,7 +170,7 @@ namespace OOX
 				WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CChMax : public Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>
+		class CChMax : public Diagram::ComplexType<SimpleTypes::CDecimalNumber>
 		{
 		public:
 			WritingElement_AdditionConstructors(CChMax)
@@ -182,11 +182,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>::toXML(L"dgm:chMax");
+				return Diagram::ComplexType<SimpleTypes::CDecimalNumber>::toXML(L"dgm:chMax");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>::toXmlWriter(L"dgm:chMax", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CDecimalNumber>::toXmlWriter(L"dgm:chMax", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -198,7 +198,7 @@ namespace OOX
 				WriteIntToPPTY(m_oVal.IsInit() ? m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CChPref : public Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>
+		class CChPref : public Diagram::ComplexType<SimpleTypes::CDecimalNumber>
 		{
 		public:
 			WritingElement_AdditionConstructors(CChPref)
@@ -210,11 +210,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>::toXML(L"dgm:chPref");
+				return Diagram::ComplexType<SimpleTypes::CDecimalNumber>::toXML(L"dgm:chPref");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDecimalNumber<>>::toXmlWriter(L"dgm:chPref", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CDecimalNumber>::toXmlWriter(L"dgm:chPref", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -226,7 +226,7 @@ namespace OOX
 				WriteIntToPPTY(m_oVal.IsInit() ? m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CDirection : public Diagram::ComplexType<SimpleTypes::CDirectionDraw<>>
+		class CDirection : public Diagram::ComplexType<SimpleTypes::CDirectionDraw>
 		{
 		public:
 			WritingElement_AdditionConstructors(CDirection)
@@ -238,11 +238,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDirectionDraw<>>::toXML(L"dgm:dir");
+				return Diagram::ComplexType<SimpleTypes::CDirectionDraw>::toXML(L"dgm:dir");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CDirectionDraw<>>::toXmlWriter(L"dgm:dir", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CDirectionDraw>::toXmlWriter(L"dgm:dir", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -254,7 +254,7 @@ namespace OOX
 				WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CHierBranch : public Diagram::ComplexType<SimpleTypes::CHierBranch<>>
+		class CHierBranch : public Diagram::ComplexType<SimpleTypes::CHierBranch>
 		{
 		public:
 			WritingElement_AdditionConstructors(CHierBranch)
@@ -266,11 +266,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::CHierBranch<>>::toXML(L"dgm:hierBranch");
+				return Diagram::ComplexType<SimpleTypes::CHierBranch>::toXML(L"dgm:hierBranch");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CHierBranch<>>::toXmlWriter(L"dgm:hierBranch", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CHierBranch>::toXmlWriter(L"dgm:hierBranch", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -310,7 +310,7 @@ namespace OOX
 				WriteByteToPPTY(m_oVal.IsInit() ? (BYTE)m_oVal->GetValue() : 0, pWriter);
 			}
 		};
-		class CResizeHandles : public Diagram::ComplexType<SimpleTypes::CResizeHandles<>>
+		class CResizeHandles : public Diagram::ComplexType<SimpleTypes::CResizeHandles>
 		{
 		public:
 			WritingElement_AdditionConstructors(CResizeHandles)
@@ -322,11 +322,11 @@ namespace OOX
 			}
 			virtual std::wstring toXML() const
 			{
-				return Diagram::ComplexType<SimpleTypes::CResizeHandles<>>::toXML(L"dgm:resizeHandles");
+				return Diagram::ComplexType<SimpleTypes::CResizeHandles>::toXML(L"dgm:resizeHandles");
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				return Diagram::ComplexType<SimpleTypes::CResizeHandles<>>::toXmlWriter(L"dgm:resizeHandles", pWriter);
+				return Diagram::ComplexType<SimpleTypes::CResizeHandles>::toXmlWriter(L"dgm:resizeHandles", pWriter);
 			}
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			{
@@ -472,7 +472,7 @@ namespace OOX
 			nullable<Diagram::CPropertySet> m_oPrSet;
 			
 			nullable_string m_sModelId;	//guid
-			nullable<SimpleTypes::CPtTypes<>> m_oType;
+			nullable<SimpleTypes::CPtTypes> m_oType;
 			nullable_string m_sCxnId;	//guid
 		};
 		class CPtLst : public WritingElementWithChilds<OOX::Diagram::CPt>

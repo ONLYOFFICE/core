@@ -35,6 +35,7 @@
 #include "IFileContainer.h"
 #include "FileTypes.h"
 #include "../Common/SimpleTypes_Word.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 namespace OOX
 {
@@ -114,7 +115,7 @@ namespace OOX
 		OOX::CHdrFtr *GetHeaderOrFooter(const OOX::RId& rId) const;
 		void ReadDocumentProperties(XmlUtils::CXmlLiteReader& oReader);
 //-----------------------------------------------------------------------
-		nullable<SimpleTypes::CXmlSpace<>> m_oSpace;
+		nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
 		nullable<CDocument>				m_pDocument;
 		nullable<CStyles>				m_pStyles;

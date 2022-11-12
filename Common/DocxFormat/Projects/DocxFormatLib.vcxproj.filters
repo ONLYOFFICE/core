@@ -690,6 +690,9 @@
     <ClInclude Include="..\Source\Base\WinColor.h">
       <Filter>Base</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingBody.h">
+      <Filter>Drawing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
@@ -941,6 +944,9 @@
     <ClCompile Include="..\Source\SystemUtility\File.cpp" />
     <ClCompile Include="..\Source\XML\XmlSimple.cpp">
       <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Drawing\Drawing.cpp">
+      <Filter>Drawing</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

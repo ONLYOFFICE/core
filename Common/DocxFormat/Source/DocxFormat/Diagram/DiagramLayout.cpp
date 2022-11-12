@@ -115,9 +115,29 @@ for (size_t i = 0; i < m_arrItems.size(); ++i)\
 		break;\
 	}\
 }
+
 //------------------------------------------------------------------------------------------------------------------
 namespace OOX
 {
+	CDiagramLayout::CDiagramLayout(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+	}
+	CDiagramLayout::CDiagramLayout(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		read(uri.GetDirectory(), uri);
+	}
+	CDiagramLayout::CDiagramLayout(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		read(oRootPath, oPath);
+	}
+	CDiagramLayout::~CDiagramLayout()
+	{
+	}
+	void CDiagramLayout::read(const CPath& oFilePath)
+	{
+		CPath oRootPath;
+		read(oRootPath, oFilePath);
+	}
 	void CDiagramLayout::read(const CPath& oRootPath, const CPath& oFilePath)
 	{
 		IFileContainer::Read(oRootPath, oFilePath);
@@ -200,6 +220,18 @@ namespace OOX
 
 		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		IFileContainer::Write(oFilePath, oDirectory, oContent);
+	}
+	const OOX::FileType CDiagramLayout::type() const
+	{
+		return FileTypes::DiagramLayout;
+	}
+	const CPath CDiagramLayout::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CDiagramLayout::DefaultFileName() const
+	{
+		return type().DefaultFileName();
 	}
 	void CDiagramLayout::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -307,7 +339,21 @@ namespace OOX
 
 		pWriter->WriteNodeEnd(L"dgm:layoutDef");
 	}
+
 //------------------------------------------------------------------------------------------------
+
+	Diagram::CDiferentData::CDiferentData() {}
+	Diagram::CDiferentData::~CDiferentData() {}
+	std::wstring Diagram::CDiferentData::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CDiferentData::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CDiferentData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -325,6 +371,10 @@ namespace OOX
 			}
 		}
 
+	}
+	EElementType Diagram::CDiferentData::getType() const
+	{
+		return et_dgm_DiferentData;
 	}
 	void Diagram::CDiferentData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -383,10 +433,28 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_if(oReader, L"useDef", m_bUseDef)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CLayoutNode::CLayoutNode() {}
+	Diagram::CLayoutNode::~CLayoutNode() {}
+	std::wstring Diagram::CLayoutNode::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CLayoutNode::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CLayoutNode::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		Diagram_Layout_Read_Xml()
+	}
+	EElementType Diagram::CLayoutNode::getType() const
+	{
+		return et_dgm_LayoutNode;
 	}
 	void Diagram::CLayoutNode::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -450,10 +518,28 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"chOrder", m_oChOrder)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CForEach::CForEach() {}
+	Diagram::CForEach::~CForEach() {}
+	std::wstring Diagram::CForEach::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CForEach::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CForEach::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		Diagram_Layout_Read_Xml()
+	}
+	EElementType Diagram::CForEach::getType() const
+	{
+		return et_dgm_ForEach;
 	}
 	void Diagram::CForEach::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -618,10 +704,28 @@ namespace OOX
 				m_arHideLastTrans.push_back(SimpleTypes::COnOff(arStr[i]).ToBool());
 		}
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CIf::CIf() {}
+	Diagram::CIf::~CIf() {}
+	std::wstring Diagram::CIf::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CIf::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CIf::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		Diagram_Layout_Read_Xml()
+	}
+	EElementType Diagram::CIf::getType() const
+	{
+		return et_dgm_If;
 	}
 	void Diagram::CIf::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -809,10 +913,28 @@ namespace OOX
 				m_arHideLastTrans.push_back(SimpleTypes::COnOff(arStr[i]).ToBool());
 		}
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CElse::CElse() {}
+	Diagram::CElse::~CElse() {}
+	std::wstring Diagram::CElse::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CElse::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CElse::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		Diagram_Layout_Read_Xml()
+	}
+	EElementType Diagram::CElse::getType() const
+	{
+		return et_dgm_Else;
 	}
 	void Diagram::CElse::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -860,7 +982,21 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_if(oReader, L"name", m_sName)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CChoose::CChoose() {}
+	Diagram::CChoose::~CChoose() {}
+	std::wstring Diagram::CChoose::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CChoose::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CChoose::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -883,6 +1019,10 @@ namespace OOX
 				m_oElse = oReader;
 			}
 		}
+	}
+	EElementType Diagram::CChoose::getType() const
+	{
+		return et_dgm_Choose;
 	}
 	void Diagram::CChoose::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -951,7 +1091,21 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_if(oReader, L"name", m_sName)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CAlg::CAlg() {}
+	Diagram::CAlg::~CAlg() {}
+	std::wstring Diagram::CAlg::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CAlg::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CAlg::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -973,6 +1127,10 @@ namespace OOX
 				m_oExtLst = oReader;
 		}
 
+	}
+	EElementType Diagram::CAlg::getType() const
+	{
+		return et_dgm_Alg;
 	}
 	void Diagram::CAlg::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1039,7 +1197,21 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"type", m_oType)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CConstrLst::CConstrLst() {}
+	Diagram::CConstrLst::~CConstrLst() {}
+	std::wstring Diagram::CConstrLst::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CConstrLst::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CConstrLst::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -1056,6 +1228,10 @@ namespace OOX
 					m_arrItems.push_back(pItem);
 			}
 		}
+	}
+	EElementType Diagram::CConstrLst::getType() const
+	{
+		return et_dgm_ConstrLst;
 	}
 	void Diagram::CConstrLst::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1093,7 +1269,21 @@ namespace OOX
 
 		pWriter->WriteNodeEnd(L"dgm:constrLst");
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CRuleLst::CRuleLst() {}
+	Diagram::CRuleLst::~CRuleLst() {}
+	std::wstring Diagram::CRuleLst::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CRuleLst::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CRuleLst::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -1110,6 +1300,10 @@ namespace OOX
 					m_arrItems.push_back(pItem);
 			}
 		}
+	}
+	EElementType Diagram::CRuleLst::getType() const
+	{
+		return et_dgm_RuleLst;
 	}
 	void Diagram::CRuleLst::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1147,7 +1341,21 @@ namespace OOX
 
 		pWriter->WriteNodeEnd(L"dgm:ruleLst");
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CAdjLst::CAdjLst() {}
+	Diagram::CAdjLst::~CAdjLst() {}
+	std::wstring Diagram::CAdjLst::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CAdjLst::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CAdjLst::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -1164,6 +1372,10 @@ namespace OOX
 					m_arrItems.push_back(pItem);
 			}
 		}
+	}
+	EElementType Diagram::CAdjLst::getType() const
+	{
+		return et_dgm_AdjLst;
 	}
 	void Diagram::CAdjLst::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1201,7 +1413,21 @@ namespace OOX
 
 		pWriter->WriteNodeEnd(L"dgm:adjLst");
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CConstraint::CConstraint() {}
+	Diagram::CConstraint::~CConstraint() {}
+	std::wstring Diagram::CConstraint::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CConstraint::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CConstraint::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1217,6 +1443,10 @@ namespace OOX
 				m_oExtLst = oReader;
 		}
 
+	}
+	EElementType Diagram::CConstraint::getType() const
+	{
+		return et_dgm_Constraint;
 	}
 	void Diagram::CConstraint::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1326,7 +1556,21 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"val", m_oVal)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CRule::CRule() {}
+	Diagram::CRule::~CRule() {}
+	std::wstring Diagram::CRule::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CRule::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CRule::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1387,6 +1631,10 @@ namespace OOX
 		}
 		pReader->Seek(end);
 	}
+	EElementType Diagram::CRule::getType() const
+	{
+		return et_dgm_Rule;
+	}
 	void Diagram::CRule::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -1426,13 +1674,31 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"max", m_oMax)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CParam::CParam() {}
+	Diagram::CParam::~CParam() {}
+	std::wstring Diagram::CParam::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CParam::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CParam::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
 
 		if (oReader.IsEmptyNode())
 			return;
+	}
+	EElementType Diagram::CParam::getType() const
+	{
+		return et_dgm_Param;
 	}
 	void Diagram::CParam::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1479,7 +1745,21 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"val", m_oVal)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CPresOf::CPresOf() {}
+	Diagram::CPresOf::~CPresOf() {}
+	std::wstring Diagram::CPresOf::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CPresOf::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CPresOf::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1495,6 +1775,10 @@ namespace OOX
 				m_oExtLst = oReader;
 		}
 
+	}
+	EElementType Diagram::CPresOf::getType() const
+	{
+		return et_dgm_PresOf;
 	}
 	void Diagram::CPresOf::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1638,13 +1922,31 @@ namespace OOX
 				m_arHideLastTrans.push_back(SimpleTypes::COnOff(arStr[i]).ToBool());
 		}
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CShapeAdjust::CShapeAdjust() {}
+	Diagram::CShapeAdjust::~CShapeAdjust() {}
+	std::wstring Diagram::CShapeAdjust::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CShapeAdjust::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CShapeAdjust::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
 
 		if (oReader.IsEmptyNode())
 			return;
+	}
+	EElementType Diagram::CShapeAdjust::getType() const
+	{
+		return et_dgm_ShapeAdjust;
 	}
 	void Diagram::CShapeAdjust::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1687,7 +1989,21 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"val", m_oVal)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CShape::CShape() {}
+	Diagram::CShape::~CShape() {}
+	std::wstring Diagram::CShape::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+	void Diagram::CShape::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
 	void Diagram::CShape::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1704,6 +2020,10 @@ namespace OOX
 			else if (L"dgm:extLst" == sName)
 				m_oExtLst = oReader;
 		}
+	}
+	EElementType Diagram::CShape::getType() const
+	{
+		return et_dgm_Shape;
 	}
 	void Diagram::CShape::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1785,5 +2105,6 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"type", m_oType)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 //-------------------------------------------------------------------------------------------
 } // namespace OOX

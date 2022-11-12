@@ -42,28 +42,23 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CStyleLbl)
 
-			CStyleLbl() {}
-			virtual ~CStyleLbl() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
+			CStyleLbl();
+			virtual ~CStyleLbl();
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_styleLbl;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string m_sName;
 
@@ -75,47 +70,30 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
 	}
+
 	class CDiagramQuickStyle : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CDiagramQuickStyle(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-		}
-		CDiagramQuickStyle(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-			read(uri.GetDirectory(), uri);
-		}
-		CDiagramQuickStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-			read(oRootPath, oPath);
-		}
-		virtual ~CDiagramQuickStyle()
-		{
-		}
-		virtual void read(const CPath& oFilePath)
-		{
-			CPath oRootPath;
-			read(oRootPath, oFilePath);
-		}
+		CDiagramQuickStyle(OOX::Document* pMain);
+		CDiagramQuickStyle(OOX::Document* pMain, const CPath& uri);
+		CDiagramQuickStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+
+		virtual ~CDiagramQuickStyle();
+
+		virtual void read(const CPath& oFilePath);
 		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::DiagramQuickStyle;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
 //--------------------------------------------
+
 		nullable_string m_sUniqueId;
 		nullable_string m_sMinVer;
 
@@ -126,8 +104,9 @@ namespace OOX
 		nullable<PPTX::Logic::Scene3d>	m_oScene3d;
 
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 	};
+
 } // namespace OOX

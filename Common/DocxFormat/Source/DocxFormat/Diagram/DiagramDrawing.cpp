@@ -36,6 +36,31 @@
 
 namespace OOX
 {
+	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+	}
+
+	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain, const CPath& uri) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		read(uri.GetDirectory(), uri);
+	}
+
+	CDiagramDrawing::CDiagramDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		read( oRootPath, oPath );
+	}
+
+	CDiagramDrawing::~CDiagramDrawing()
+	{
+	}
+
+	void CDiagramDrawing::read(const CPath& oFilePath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oFilePath);
+	}
+
     void CDiagramDrawing::read(const CPath& oRootPath, const CPath& oFilePath)
     {
 		m_oReadPath = oFilePath;
@@ -60,6 +85,24 @@ namespace OOX
 		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		IFileContainer::Write(oFilePath, oDirectory, oContent);
 	}
+
+	const OOX::FileType CDiagramDrawing::type() const
+	{
+		return FileTypes::DiagramDrawing;
+	}
+	const CPath CDiagramDrawing::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CDiagramDrawing::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CDiagramDrawing::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+
 	void CDiagramDrawing::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;

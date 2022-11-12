@@ -36,6 +36,30 @@
 
 namespace OOX
 {
+	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+	}
+
+	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		read(uri.GetDirectory(), uri);
+	}
+
+	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		read(oRootPath, oPath);
+	}
+
+	CDiagramQuickStyle::~CDiagramQuickStyle()
+	{
+	}
+
+	void CDiagramQuickStyle::read(const CPath& oFilePath)
+	{
+		CPath oRootPath;
+		read(oRootPath, oFilePath);
+	}
+
 	void CDiagramQuickStyle::read(const CPath& oRootPath, const CPath& oFilePath)
 	{
 		IFileContainer::Read(oRootPath, oFilePath);
@@ -89,6 +113,7 @@ namespace OOX
 			}
 		}
 	}
+
 	void CDiagramQuickStyle::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start(oReader)
@@ -96,6 +121,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if(oReader, L"minVer", m_sMinVer)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 	void CDiagramQuickStyle::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		NSBinPptxRW::CXmlWriter oXmlWriter;
@@ -109,6 +135,22 @@ namespace OOX
 		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 		IFileContainer::Write(oFilePath, oDirectory, oContent);
 	}
+
+	const OOX::FileType CDiagramQuickStyle::type() const
+	{
+		return FileTypes::DiagramQuickStyle;
+	}
+
+	const CPath CDiagramQuickStyle::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+
+	const CPath CDiagramQuickStyle::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+
 	void CDiagramQuickStyle::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -163,6 +205,7 @@ namespace OOX
 		}
 		pReader->Seek(end);
 	}
+
 	void CDiagramQuickStyle::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -178,6 +221,7 @@ namespace OOX
 		for (size_t i = 0; i < m_arStyleLbl.size(); ++i)
 			pWriter->WriteRecord2(4, dynamic_cast<OOX::WritingElement*>(m_arStyleLbl[i]));
 	}
+
 	void CDiagramQuickStyle::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:styleDef");
@@ -200,13 +244,37 @@ namespace OOX
 
 		pWriter->WriteNodeEnd(L"dgm:styleDef");
 	}
+
 //-------------------------------------------------------------------------------------------
+
+	Diagram::CStyleLbl::CStyleLbl() {}
+
+	Diagram::CStyleLbl::~CStyleLbl() {}
+
+	std::wstring Diagram::CStyleLbl::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
+
+		return oWriter.GetXmlString();
+	}
+
+	void Diagram::CStyleLbl::fromXML(XmlUtils::CXmlNode& node)
+	{
+	}
+
+	EElementType Diagram::CStyleLbl::getType() const
+	{
+		return et_dgm_styleLbl;
+	}
+
 	void Diagram::CStyleLbl::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start(oReader)
 			WritingElement_ReadAttributes_Read_if(oReader, L"name", m_sName)
 		WritingElement_ReadAttributes_End(oReader)
 	}
+
 	void Diagram::CStyleLbl::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -237,6 +305,7 @@ namespace OOX
 			}
 		}
 	}
+
 	void Diagram::CStyleLbl::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -281,6 +350,7 @@ namespace OOX
 		}
 		pReader->Seek(end);
 	}
+
 	void Diagram::CStyleLbl::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -292,6 +362,7 @@ namespace OOX
 		pWriter->WriteRecord2(2, m_oStyle);
 		pWriter->WriteRecord2(3, m_oTxPr);
 	}
+
 	void Diagram::CStyleLbl::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"dgm:styleLbl");
@@ -308,4 +379,5 @@ namespace OOX
 			m_oStyle->toXmlWriter(pWriter);
 		pWriter->WriteNodeEnd(L"dgm:styleLbl");
 	}
+
 } // namespace OOX

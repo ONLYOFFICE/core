@@ -31,6 +31,7 @@
  */
 #include <iostream>
 #include <iomanip>
+#include <sstream>
 #include <boost/format.hpp>
 
 #include "CryptTransform.h"
@@ -902,7 +903,7 @@ bool ECMAWriteProtect::VerifyWrike()
 
 	std::stringstream sstream;
 	sstream << boost::format("%4.4X") % wPasswordHash;
-	std::string sPasswordHash = sstream.str();
+	std::string sPasswordHash(sstream.str());
 
 	return data.hashValue == sPasswordHash;
 }

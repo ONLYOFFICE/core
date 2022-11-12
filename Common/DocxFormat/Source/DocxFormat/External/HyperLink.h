@@ -68,6 +68,7 @@ namespace OOX
 
 		bool bHyperlink; // in pptx link to slide perhaps
 	};
+
 } // namespace OOX
 
 #endif // OOX_HYPERLINK_INCLUDE_H_

@@ -41,23 +41,17 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDiferentData)
-			CDiferentData() {}
-			virtual ~CDiferentData() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CDiferentData();
+			virtual ~CDiferentData();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_DiferentData;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
@@ -70,66 +64,57 @@ namespace OOX
 
 			std::wstring node_name;
 		};
+
 		class CLayoutNode : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CLayoutNode)
-			CLayoutNode() {}
-			virtual ~CLayoutNode() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CLayoutNode();
+			virtual ~CLayoutNode();
+
+			virtual std::wstring toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_LayoutNode;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string m_sName;
 			nullable_string m_sStyleLbl;
 			nullable_string m_sMoveWith;
 			nullable<SimpleTypes::CChOrder> m_oChOrder;
 		};
+
 		class CForEach : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CForEach)
-			CForEach() {}
-			virtual ~CForEach() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CForEach();
+			virtual ~CForEach();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_ForEach;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			std::vector<SimpleTypes::CAxisTypes> m_arAxis;
 			std::vector<SimpleTypes::CElementTypes> m_arPtType;
@@ -140,33 +125,29 @@ namespace OOX
 			nullable_string m_sName;
 			nullable_string m_sRef;
 		};
+
 		class CRule : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CRule)
-			CRule() {}
-			virtual ~CRule() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CRule();
+			virtual ~CRule();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Rule;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CDouble> m_oFact;
 			nullable<SimpleTypes::CConstraintRelationship> m_oFor;
@@ -178,58 +159,49 @@ namespace OOX
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
+
 		class CRuleLst : public WritingElementWithChilds<CRule>
 		{
 		public:
 			WritingElement_AdditionConstructors(CRuleLst)
-			CRuleLst() {}
-			virtual ~CRuleLst() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CRuleLst();
+			virtual ~CRuleLst();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_RuleLst;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 		};
+
 		class CConstraint : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CConstraint)
-			CConstraint() {}
-			virtual ~CConstraint() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CConstraint();
+			virtual ~CConstraint();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Constraint;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CConstraintRelationship> m_oFor;
 			nullable_string m_oForName;
@@ -245,122 +217,105 @@ namespace OOX
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
+
 		class CConstrLst : public WritingElementWithChilds<CConstraint>
 		{
 		public:
 			WritingElement_AdditionConstructors(CConstrLst)
-			CConstrLst() {}
-			virtual ~CConstrLst() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CConstrLst();
+			virtual ~CConstrLst();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_ConstrLst;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 		};
+
 		class CParam : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CParam)
-			CParam() {}
-			virtual ~CParam() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CParam();
+			virtual ~CParam();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Param;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CParameterId> m_oType;
 			nullable_string m_oVal; //union of SimpleTypes ... todooo?
 		};
+
 		class CAlg : public WritingElementWithChilds<CParam>
 		{
 		public:
 			WritingElement_AdditionConstructors(CAlg)
-			CAlg() {}
-			virtual ~CAlg() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CAlg();
+			virtual ~CAlg();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Alg;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CAlgorithmType> m_oType;
 			nullable_uint m_nRev;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
+
 		class CIf : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CIf)
-			CIf() {}
-			virtual ~CIf() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CIf();
+			virtual ~CIf();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_If;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string m_sArg; //union of types
 			nullable<SimpleTypes::CFunctionType> m_oFunc;
@@ -376,94 +331,82 @@ namespace OOX
 
 			nullable_string m_sVal;
 		};
+
 		class CElse : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionConstructors(CElse)
-			CElse() {}
-			virtual ~CElse() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CElse();
+			virtual ~CElse();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Else;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string m_sName;
 		};
+
 		class CChoose : public WritingElementWithChilds<CIf>
 		{
 		public:
 			WritingElement_AdditionConstructors(CChoose)
-			CChoose() {}
-			virtual ~CChoose() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CChoose();
+			virtual ~CChoose();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Choose;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string m_sName;
 			nullable<Diagram::CElse> m_oElse;
 		};
+
 		class CPresOf : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CPresOf)
-			CPresOf() {}
-			virtual ~CPresOf() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CPresOf();
+			virtual ~CPresOf();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_PresOf;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			std::vector<SimpleTypes::CAxisTypes> m_arAxis;
 			std::vector<SimpleTypes::CElementTypes> m_arPtType;
@@ -474,89 +417,76 @@ namespace OOX
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
+
 		class CShapeAdjust : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CShapeAdjust)
-			CShapeAdjust() {}
-			virtual ~CShapeAdjust() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CShapeAdjust();
+			virtual ~CShapeAdjust();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_ShapeAdjust;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_uint m_oIdx;
 			nullable_double m_oVal;
 		};
+
 		class CAdjLst : public WritingElementWithChilds<CShapeAdjust>
 		{
 		public:
 			WritingElement_AdditionConstructors(CAdjLst)
-			CAdjLst() {}
-			virtual ~CAdjLst() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CAdjLst();
+			virtual ~CAdjLst();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_AdjLst;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 		};
+
 		class CShape : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CShape)
-			CShape() {}
-			virtual ~CShape() {}
-			virtual std::wstring toXML() const
-			{
-				NSBinPptxRW::CXmlWriter oWriter;
-				toXmlWriter(&oWriter);
 
-				return oWriter.GetXmlString();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			CShape();
+			virtual ~CShape();
+
+			virtual std::wstring toXML() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType() const
-			{
-				return et_dgm_Shape;
-			}
+
+			virtual EElementType getType() const;
+
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string m_sBlip;
 			nullable_bool m_bBlipPhldr;
@@ -570,47 +500,29 @@ namespace OOX
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 		};
 	}
+
 	class CDiagramLayout : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CDiagramLayout(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-		}
-		CDiagramLayout(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-			read(uri.GetDirectory(), uri);
-		}
-		CDiagramLayout(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-			read(oRootPath, oPath);
-		}
-		virtual ~CDiagramLayout()
-		{
-		}
-		virtual void read(const CPath& oFilePath)
-		{
-			CPath oRootPath;
-			read(oRootPath, oFilePath);
-		}
+		CDiagramLayout(OOX::Document* pMain);
+		CDiagramLayout(OOX::Document* pMain, const CPath& uri);
+		CDiagramLayout(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+		virtual ~CDiagramLayout();
+
+		virtual void read(const CPath& oFilePath);
 		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::DiagramLayout;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
 //------------------------------------
+
 		nullable_string m_sUniqueId;
 		nullable_string m_sMinVer;
 		nullable_string m_sDefStyle;
@@ -627,4 +539,5 @@ namespace OOX
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 	};
+
 } // namespace OOX

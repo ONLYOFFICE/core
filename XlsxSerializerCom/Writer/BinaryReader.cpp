@@ -5859,7 +5859,7 @@ int BinaryWorksheetsTableReader::ReadCells(BYTE type, long length, void* poResul
 			}
 			if(bMoveText)
 			{
-				int nValue = _wtoi(oCell.m_oValue->ToString().c_str());
+                int nValue = XmlUtils::GetInteger(oCell.m_oValue->ToString());
 
                 if (nValue >= 0 && nValue < (int)m_pSharedStrings->m_arrItems.size())
 				{

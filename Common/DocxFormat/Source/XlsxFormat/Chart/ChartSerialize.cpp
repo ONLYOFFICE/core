@@ -1308,7 +1308,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_paperSize = new unsigned long;
 			std::wstring s_m_paperSize("1");
 			{
-			*m_paperSize = _ttoi(s_m_paperSize);
+            *m_paperSize = XmlUtils::GetInteger(s_m_paperSize);
 			}*/
 			m_paperSize = NULL;
 			m_paperHeight = NULL;
@@ -1316,7 +1316,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_firstPageNumber = new unsigned long;
 			std::wstring s_m_firstPageNumber("1");
 			{
-			*m_firstPageNumber = _ttoi(s_m_firstPageNumber);
+            *m_firstPageNumber = XmlUtils::GetInteger(s_m_firstPageNumber);
 			}*/
 			m_firstPageNumber = NULL;
 			/*m_orientation = new ST_PageSetupOrientation;
@@ -1355,19 +1355,19 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_horizontalDpi = new long;
 			std::wstring s_m_horizontalDpi("600");
 			{
-			*m_horizontalDpi = _ttoi(s_m_horizontalDpi);
+            *m_horizontalDpi = XmlUtils::GetInteger(s_m_horizontalDpi);
 			}*/
 			m_horizontalDpi = NULL;
 			/*m_verticalDpi = new long;
 			std::wstring s_m_verticalDpi("600");
 			{
-			*m_verticalDpi = _ttoi(s_m_verticalDpi);
+            *m_verticalDpi = XmlUtils::GetInteger(s_m_verticalDpi);
 			}*/
 			m_verticalDpi = NULL;
 			/*m_copies = new unsigned long;
 			std::wstring s_m_copies("1");
 			{
-			*m_copies = _ttoi(s_m_copies);
+            *m_copies = XmlUtils::GetInteger(s_m_copies);
 			}*/
 			m_copies = NULL;
 		}
@@ -1478,7 +1478,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_paperSize = pNewElem;
 				}
 				else if(_T("paperHeight") == wsName)
@@ -1499,7 +1499,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_firstPageNumber = pNewElem;
 				}
 				else if(_T("orientation") == wsName)
@@ -1552,21 +1552,21 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					long* pNewElem = new long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_horizontalDpi = pNewElem;
 				}
 				else if(_T("verticalDpi") == wsName)
 				{
 					long* pNewElem = new long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_verticalDpi = pNewElem;
 				}
 				else if(_T("copies") == wsName)
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_copies = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -1638,42 +1638,42 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_l = pNewElem;
 				}
 				else if(_T("r") == wsName)
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_r = pNewElem;
 				}
 				else if(_T("t") == wsName)
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_t = pNewElem;
 				}
 				else if(_T("b") == wsName)
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_b = pNewElem;
 				}
 				else if(_T("header") == wsName)
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_header = pNewElem;
 				}
 				else if(_T("footer") == wsName)
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_footer = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -2202,7 +2202,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -2780,7 +2780,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
                     *pNewElem = 0;
                     try
                     {
-                        *pNewElem = _tstof(sVal.c_str());
+                        *pNewElem = std::stod(sVal.c_str());
                     }
                     catch(...)
                     {
@@ -3306,7 +3306,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -3777,7 +3777,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_idx = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -4010,7 +4010,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -4483,7 +4483,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -6035,7 +6035,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new unsigned char;
 			std::wstring s_m_val("5");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -6067,7 +6067,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned char* pNewElem = new unsigned char;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -6241,7 +6241,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					double* pNewElem = new double;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _tstof(sVal.c_str());
+                    *pNewElem = std::stod(sVal.c_str());
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -7474,7 +7474,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new unsigned char;
 			std::wstring s_m_val("2");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -7506,7 +7506,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned char* pNewElem = new unsigned char;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -7516,7 +7516,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new unsigned long;
 			std::wstring s_m_val("2");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -7548,7 +7548,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -8134,7 +8134,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_idx = pNewElem;
 				}
 				else if(_T("formatCode") == wsName)
@@ -10530,7 +10530,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new unsigned long;
 			std::wstring s_m_val("0");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -10562,7 +10562,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -13535,7 +13535,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new unsigned char;
 			std::wstring s_m_val("30");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -13567,7 +13567,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned char* pNewElem = new unsigned char;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -13619,7 +13619,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new unsigned long;
 			std::wstring s_m_val("0");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -13651,7 +13651,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned long* pNewElem = new unsigned long;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -13703,7 +13703,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			/*m_val = new char;
 			std::wstring s_m_val("0");
 			{
-			*m_val = _ttoi(s_m_val);
+            *m_val = XmlUtils::GetInteger(s_m_val);
 			}*/
 			m_val = NULL;
 		}
@@ -13735,7 +13735,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					signed char* pNewElem = new signed char;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 				WritingElement_ReadAttributes_End_No_NS( oReader )
@@ -14408,7 +14408,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				{
 					unsigned char* pNewElem = new unsigned char;
                     std::wstring sVal = oReader.GetText();
-                    *pNewElem = _ttoi(sVal.c_str());
+                    *pNewElem = XmlUtils::GetInteger(sVal);
 					m_val = pNewElem;
 				}
 			WritingElement_ReadAttributes_End_No_NS( oReader )

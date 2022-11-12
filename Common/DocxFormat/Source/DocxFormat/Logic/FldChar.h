@@ -402,10 +402,10 @@ namespace OOX
 			}
 
 		public:
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oChecked;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oDefault;
+			nullable<ComplexTypes::Word::COnOff2 > m_oChecked;
+			nullable<ComplexTypes::Word::COnOff2 > m_oDefault;
 			nullable<ComplexTypes::Word::CHpsMeasure                     > m_oSize;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oSizeAuto;
+			nullable<ComplexTypes::Word::COnOff2 > m_oSizeAuto;
 
 		};
 
@@ -701,10 +701,10 @@ namespace OOX
 
 		public:
 
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oCalcOnExit;
+			nullable<ComplexTypes::Word::COnOff2> m_oCalcOnExit;
 			nullable<OOX::Logic::CFFCheckBox> m_oCheckBox;
 			nullable<OOX::Logic::CFFDDList> m_oDDList;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue>> m_oEnabled;
+			nullable<ComplexTypes::Word::COnOff2> m_oEnabled;
 			nullable<ComplexTypes::Word::CMacroName> m_oEntryMacro;
 			nullable<ComplexTypes::Word::CMacroName> m_oExitMacro;
 			nullable<ComplexTypes::Word::CFFHelpText> m_oHelpText;

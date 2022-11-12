@@ -1307,7 +1307,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 	{	
 		if (value_type == SimpleTypes::Spreadsheet::celltypeSharedString)
 		{
-			convert_sharing_string(_wtoi(oox_cell->m_oValue->m_sText.c_str()));
+            convert_sharing_string(XmlUtils::GetInteger(oox_cell->m_oValue->m_sText));
 		}
 
 		else
@@ -1535,10 +1535,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 	}
 
 			//nullable<CCharset>													m_oCharset;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
-			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oCondense;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oExtend;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oOutline;
+            //nullable<ComplexTypes::Spreadsheet::COnOff2 >	m_oShadow;
 
 }
 void XlsxConverter::convert(OOX::Spreadsheet::CText *oox_text)

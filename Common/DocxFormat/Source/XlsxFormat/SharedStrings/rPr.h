@@ -147,18 +147,18 @@ namespace OOX
 			{
 			}
 		public:
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oBold;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oCharset;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oBold;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oCharset;
 			nullable<CColor>												m_oColor;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oExtend;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oCondense;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oExtend;
 			//nullable<SimpleTypes::Spreadsheet::CFontFamily<> >				m_oFamily;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oItalic;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oOutline;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oItalic;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oOutline;
 			nullable<ComplexTypes::Word::String >							m_oRFont;
 			//nullable<SimpleTypes::Spreadsheet::CFontScheme<> >				m_oScheme;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oShadow;
-			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> >	m_oStrike;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oShadow;
+			nullable<ComplexTypes::Word::COnOff2 >	m_oStrike;
 			nullable<ComplexTypes::Word::CDouble2>							m_oSz;
 			nullable<SimpleTypes::Spreadsheet::CUnderline<> >				m_oUnderline;
 			nullable<SimpleTypes::CVerticalAlignRun<> >						m_oVertAlign;

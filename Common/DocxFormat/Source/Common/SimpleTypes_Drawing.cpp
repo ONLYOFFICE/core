@@ -3947,7 +3947,7 @@ namespace SimpleTypes
 	//
 	//        __int64 FromString(const std::wstring &sValue)
 	//        {
-	//            this->m_eValue = _wtoi64( sValue );
+    //            this->m_eValue = XmlUtils::GetInteger64( sValue );
 	//            if (this->m_eValue < 0)
 	//                this->m_eValue = 0;
 	//            if (this->m_eValue > 51206400)

@@ -117,8 +117,10 @@ SOURCES += docxformatlib.cpp \
     ../Source/Base/codecvt.cpp \
     ../Source/Base/DateTime.cpp \
     ../Source/Base/unicode_util.cpp \
-	../Source/Base/Unit.cpp \
-    ../../3dParty/pole/pole.cpp \
+    ../Source/Base/Unit.cpp \
+    ../Source/Base/WinColor.cpp \
+    ../../3dParty/pole/pole.cpp
+
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \

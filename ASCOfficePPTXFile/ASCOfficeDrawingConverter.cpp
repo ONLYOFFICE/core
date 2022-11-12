@@ -110,7 +110,7 @@ static void GetColorWithEffect(const std::wstring& sColor, const int& R, const i
         return;
 
 	std::wstring s = sColor.substr(pos1 + 1, pos2 - pos1 - 1); 
-	param = _wtoi(s.c_str());
+    param = XmlUtils::GetInteger(s);
     bool isEffect = false;
 
     if (0 == sColor.find(L"darken"))
@@ -2967,7 +2967,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 
 				if (sFocus.is_init())
 				{
-					nFocus = _wtoi(sFocus->c_str()) / 100.0;
+                    nFocus = XmlUtils::GetInteger(*sFocus) / 100.0;
 				}
 
 				if (sOpacity.is_init())
@@ -3077,7 +3077,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				}
 				if (sAngle.is_init())
 				{
-					nAngle = _wtoi(sAngle->c_str());
+                    nAngle = XmlUtils::GetInteger(*sAngle);
 					nAngle = (-1) * nAngle + 90;
 				}
 				if (sColors.is_init())
@@ -5723,7 +5723,7 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 									}
                                     else if (attNames[r] == L"size")
 									{
-                                        run->rPr->sz = _wtoi(attValues[r].c_str()) * 5;
+                                        run->rPr->sz = XmlUtils::GetInteger(attValues[r]) * 5;
 									}
                                     else if (attNames[r] == L"face")
 									{	

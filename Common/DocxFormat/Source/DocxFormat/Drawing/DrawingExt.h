@@ -37,6 +37,7 @@
 namespace OOX
 {
 	class CPresenceInfo;
+
 	namespace Spreadsheet
 	{
 		class CSparklineGroups;
@@ -53,125 +54,74 @@ namespace OOX
 		class CConnection;
         class CPivotCacheDefinitionExt;
 	}
+
 	namespace Drawing
 	{
 		class CCompatExt : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CCompatExt)
-			CCompatExt()
-			{
-			}
+
+			CCompatExt();
 			virtual ~CCompatExt();
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-                //todo
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual EElementType getType() const
-			{
-				return OOX::et_a_compatExt;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("spid"), m_sSpId )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
             nullable<std::wstring> m_sSpId;
 		};
+
 		class CDataModelExt : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataModelExt)
-			CDataModelExt()
-			{
-			}
-			virtual ~CDataModelExt()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-                //todo
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			CDataModelExt();
+			virtual ~CDataModelExt();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return OOX::et_a_compatExt;
-			}
+			virtual EElementType getType() const;
 
 		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, _T("relId"), m_oRelId )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
 		public:
             nullable<OOX::RId> m_oRelId;
 		};
 
-
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtension 20.1.2.2.14 (Part 1)
 		//--------------------------------------------------------------------------------	
+
 		class COfficeArtExtension : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(COfficeArtExtension)
-			COfficeArtExtension()
-			{
-			}
+
+			COfficeArtExtension();
 			~COfficeArtExtension();
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, _T("uri"), m_sUri );
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             virtual std::wstring toXML() const;
             std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
-			virtual EElementType getType() const
-			{
-				return OOX::et_a_ext;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-                WritingElement_ReadAttributes_Read_if ( oReader, L"uri", m_sUri )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
             nullable<std::wstring>                                  m_sUri;
             std::wstring                                            m_sAdditionalNamespace;
 
@@ -201,78 +151,32 @@ namespace OOX
 
 			nullable<OOX::CPresenceInfo>		m_oPresenceInfo;
 		};
+
 		//--------------------------------------------------------------------------------
 		// COfficeArtExtensionList 20.1.2.2.15 (Part 1)
 		//--------------------------------------------------------------------------------	
+
 		class COfficeArtExtensionList : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(COfficeArtExtensionList)
-                        WritingElement_XlsbConstructors(COfficeArtExtensionList)
-			COfficeArtExtensionList()
-			{
-			}
-			virtual ~COfficeArtExtensionList()
-			{
-				for ( size_t nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
-				{
-					if ( m_arrExt[nIndex] ) delete m_arrExt[nIndex];
-					m_arrExt[nIndex] = NULL;
-				}
-				m_arrExt.clear();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				// TO DO: Реализовать
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			WritingElement_XlsbConstructors(COfficeArtExtensionList)
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                                        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-                                        if ( _T("ext") == sName )
-					{
-                                                OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
-                                                if (oExt)
-                                                    m_arrExt.push_back( oExt );
-					}
-				}
-			}
+			COfficeArtExtensionList();
+			virtual ~COfficeArtExtensionList();
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual std::wstring toXML() const
-            {
-                return toXMLWithNS(L"a:");
-            }
-            std::wstring toXMLWithNS(const std::wstring& sNamespace) const
-			{
-				if (m_arrExt.empty()) return L"";
-
-                std::wstring sResult = L"<" + sNamespace + L"extLst>";
-				
-                for ( size_t nIndex = 0; nIndex < m_arrExt.size(); nIndex++ )
-				{
-					if (m_arrExt[nIndex])
-                        sResult += m_arrExt[nIndex]->toXMLWithNS(sNamespace);
-				}
-
-                sResult += L"</" + sNamespace + L"extLst>";
-
-				return sResult;
-			}
-
+			virtual std::wstring toXML() const;
+			std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
             void fromBin(XLS::BaseObjectPtr& obj);
-
-			virtual EElementType getType() const
-			{
-				return OOX::et_a_extLst;
-			}
+			virtual EElementType getType() const;
 
             std::vector<OOX::Drawing::COfficeArtExtension*> m_arrExt;
 		};
+
 	} // namespace Drawing
 } // namespace OOX
 

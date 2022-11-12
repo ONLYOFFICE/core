@@ -80,7 +80,8 @@ SOURCES += \
     ../Source/DocxFormat/IFileContainer.cpp \
     ../Source/DocxFormat/Document.cpp \
     ../Source/XlsxFormat/FileFactory_Spreadsheet.cpp \
-    ../Source/DocxFormat/Drawing/DrawingExt.cpp \
+	../Source/DocxFormat/Drawing/Drawing.cpp \
+	../Source/DocxFormat/Drawing/DrawingExt.cpp \
     ../Source/DocxFormat/Diagram/DiagramColors.cpp \
     ../Source/DocxFormat/Diagram/DiagramData.cpp \
     ../Source/DocxFormat/Diagram/DiagramDrawing.cpp \

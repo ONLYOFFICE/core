@@ -1848,7 +1848,7 @@ namespace MetaFile
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = m_pParser->GetPixWidth(1.0 / m_oScale.dX);
+			dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
@@ -1921,14 +1921,15 @@ namespace MetaFile
 			return;
 		}
 
-		if (pBrush->GetAlpha() != 255)
-			arAttributes.push_back({L"fill-opacity" , ConvertToWString(pBrush->GetAlpha() / 255., 3)});
-
 		switch (pBrush->GetStyle())
 		{
 			case BS_SOLID:
 			{
 				arAttributes.push_back({L"fill", L"rgb(" + INTCOLOR_TO_RGB(pBrush->GetColor()) + L")"});
+
+				if (pBrush->GetAlpha() != 255)
+					arAttributes.push_back({L"fill-opacity" , ConvertToWString(pBrush->GetAlpha() / 255., 3)});
+
 				return;
 			}
 			case BS_HATCHED:
@@ -1946,6 +1947,16 @@ namespace MetaFile
 			case BS_DIBPATTERN:
 			{
 				const std::wstring wsStyleId = CreateDibPatternStyle(pBrush);
+
+				if (!wsStyleId.empty())
+				{
+					arAttributes.push_back({L"fill", L"url(#" + wsStyleId + L")"});
+					return;
+				}
+			}
+			case BS_PATTERN:
+			{
+				const std::wstring wsStyleId = CreatePatternStyle(pBrush);
 
 				if (!wsStyleId.empty())
 				{
@@ -1977,17 +1988,25 @@ namespace MetaFile
 		if (NULL == m_pParser)
 			return;
 
-		TXForm* pOldTransform = (NULL != pTransform) ? pTransform : m_pParser->GetTransform();
+		TXForm oOldTransform;
 
-		if (NULL == pOldTransform)
-			return;
+		if (NULL != pTransform)
+			oOldTransform.Copy(pTransform);
+		else
+			oOldTransform.Copy(m_pParser->GetTransform());
+
+		if (std::fabs(oOldTransform.M11) > 100. || std::fabs(oOldTransform.M22) > 100.)
+		{
+			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
+			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
+		}
 
 		bool bScale = false, bTranslate = false;
 
-		if (pOldTransform->M11 != 1 || pOldTransform->M22 != 1)
+		if (oOldTransform.M11 != 1 || oOldTransform.M22 != 1)
 			bScale = true;
 
-		if (pOldTransform->Dx != 0 || pOldTransform->Dy != 0)
+		if (oOldTransform.Dx != 0 || oOldTransform.Dy != 0)
 			bTranslate = true;
 
 		NodeAttribute *pFoundTransform = NULL;
@@ -2005,19 +2024,19 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	std::to_wstring(pOldTransform->M11) + L',' + std::to_wstring(pOldTransform->M22) + L')';
+			wsValue = L"scale(" +	std::to_wstring(oOldTransform.M11) + L',' + std::to_wstring(oOldTransform.M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
-			wsValue = L"translate(" + ConvertToWString(pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
+			wsValue = L"translate(" + ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	std::to_wstring(pOldTransform->M11) + L',' +
-									std::to_wstring(pOldTransform->M12) + L',' +
-									std::to_wstring(pOldTransform->M21) + L',' +
-									std::to_wstring(pOldTransform->M22) + L',' +
-									ConvertToWString(pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
+			wsValue = L"matrix(" +	std::to_wstring(oOldTransform.M11) + L',' +
+			                        std::to_wstring(oOldTransform.M12) + L',' +
+			                        std::to_wstring(oOldTransform.M21) + L',' +
+			                        std::to_wstring(oOldTransform.M22) + L',' +
+			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;
 
@@ -3741,8 +3760,6 @@ namespace MetaFile
 
 		BYTE *pTempBuffer = NULL;
 		int nTempSize;
-		char* pImageData = NULL;
-		int nImageSize = 0;
 		std::wstring wsStyleId;
 
 		oFrame.Encode(pTempBuffer, nTempSize, 4);
@@ -3750,6 +3767,9 @@ namespace MetaFile
 
 		if (NULL == pTempBuffer || 0 == nTempSize)
 			return std::wstring();
+
+		char* pImageData = NULL;
+		int nImageSize = 0;
 
 		NSFile::CBase64Converter::Encode(pTempBuffer, nTempSize, pImageData, nImageSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
@@ -3762,22 +3782,65 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		double dStrokeWidth = std::abs(m_pParser->GetPen()->GetWidth());
+		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-		if (PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK))
-		{
-			dStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-		}
-		else
-		{
-			double dMinStrokeWidth = 1 / std::abs(m_pParser->GetPixelHeight());
-
-			if (dStrokeWidth < dMinStrokeWidth)
-				dStrokeWidth = dMinStrokeWidth;
-		}
+		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+			dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
+
+		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
+		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
+		            L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
+		            L"</pattern> ";
+
+		delete [] pImageData;
+
+		return wsStyleId;
+	}
+
+	std::wstring CEmfInterpretatorSvg::CreatePatternStyle(IBrush *pBrush)
+	{
+		if (NULL == m_pParser || NULL == pBrush)
+			return std::wstring();
+
+		std::wstring wsPatterPath = pBrush->GetDibPatterPath();
+
+		if (wsPatterPath.empty())
+			return std::wstring();
+
+		CBgraFrame oFrame;
+
+		oFrame.OpenFile(wsPatterPath);
+
+		BYTE *pTempBuffer = NULL;
+		int nTempSize;
+		std::wstring wsStyleId;
+
+		oFrame.Encode(pTempBuffer, nTempSize, 4);
+
+		if (NULL == pTempBuffer || 0 == nTempSize)
+			return std::wstring();
+
+		char* pImageData = NULL;
+		int nImageSize = 0;
+
+		NSFile::CBase64Converter::Encode(pTempBuffer, nTempSize, pImageData, nImageSize, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+		delete [] pTempBuffer;
+
+		if (NULL == pImageData || 0 == nImageSize)
+			return std::wstring();
+
+		wsStyleId += L"PATTERN_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
+
+		double dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+
+		std::wstring wsWidth  = ConvertToWString(oFrame.get_Width()  / m_pParser->GetTransform()->M11);
+		std::wstring wsHeight = ConvertToWString(oFrame.get_Height() / m_pParser->GetTransform()->M22);
 
 		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
 		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +

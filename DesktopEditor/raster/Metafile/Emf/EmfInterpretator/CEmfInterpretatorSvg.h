@@ -258,6 +258,7 @@ namespace MetaFile
 		std::wstring CreatePath(const CEmfPath* pPath = NULL) const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
+		std::wstring CreatePatternStyle(IBrush *pBrush);
 		std::wstring CreateGradient(IBrush *pBrush);
 
 		void UpdateClip();

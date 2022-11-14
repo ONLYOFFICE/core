@@ -51,7 +51,7 @@ namespace MetaFile
 		m_dScale = 1;
 
 		if (oPlaceable.Inch != 0)
-			m_dScale = 1440.f / oPlaceable.Inch;
+			m_dScale = 96.f / oPlaceable.Inch;
 
 		TRect *pBounds = m_pParser->GetDCBounds();
 
@@ -63,17 +63,17 @@ namespace MetaFile
 		UpdateSize();
 
 		if (m_oViewport.GetWidth() != 0)
-			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth() * m_dScale));
+			m_oXmlWriter.WriteAttribute(L"width", ConvertToWString(m_oViewport.GetWidth()));
 
 		if (m_oViewport.GetHeight() != 0)
-			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight() * m_dScale));
+			m_oXmlWriter.WriteAttribute(L"height", ConvertToWString(m_oViewport.GetHeight()));
 
 		double dXScale = 1, dYScale = 1, dXTranslate = 0, dYTranslate = 0;
 
 		if (0 != m_oSizeWindow.x)
 		{
 			dXScale = m_oSizeWindow.x / m_oViewport.GetWidth();
-			dXTranslate = m_oViewport.GetWidth() / 2 * std::abs(dXScale - 1);
+			dXTranslate = (m_oViewport.GetWidth()) / 2 * std::abs(dXScale - 1);
 
 			if (dXScale < 1)
 				dXTranslate = -dXTranslate;
@@ -82,7 +82,7 @@ namespace MetaFile
 		if (0 != m_oSizeWindow.y)
 		{
 			dYScale = m_oSizeWindow.y / m_oViewport.GetHeight();
-			dYTranslate = m_oViewport.GetHeight() / 2 * std::abs(dYScale - 1);
+			dYTranslate = (m_oViewport.GetHeight()) / 2 * std::abs(dYScale - 1);
 
 			if (dYScale < 1)
 				dYTranslate = -dYTranslate;
@@ -997,7 +997,7 @@ namespace MetaFile
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = m_pParser->GetPixWidth(1.0 / m_dScale);
+			    dStrokeWidth = 1 / (m_dScale * m_pParser->GetTransform()->M11);
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

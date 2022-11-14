@@ -10,7 +10,7 @@ namespace Converter {
 class Timing
 {
 public:
-    Timing(const Intermediate::SlideAnimation& slideAnim);
+    Timing(const Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int>& shapesID);
     PPTX::Logic::Timing Convert(CExMedia* pExMedia, CRelsGenerator *pRels);
 
     bool HasAnimation() const;
@@ -19,7 +19,7 @@ private:
     const Intermediate::SlideAnimation& slideAnim;
 //    CExMedia* pExMedia;
 //    CRelsGenerator* pRels;
-
+    const std::unordered_set<int> shapesID;
     PPTX::Logic::Timing timing;
 };
 }

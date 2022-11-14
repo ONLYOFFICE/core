@@ -30,6 +30,7 @@ HEADERS += \
     ../Converter/Animation/AnimationParser.h \
     ../Converter/Animation/Animation_1995.h \
     ../Converter/Animation/Timing_1995.h \
+    ../Converter/Animation/Timing_2010.h \
     ../Converter/Animation/intermediate_anim.h \
     ../Converter/timing.h \
     ../Converter/transition.h \
@@ -56,6 +57,7 @@ HEADERS += \
     ../Records/Animations/AnimationInfoContainer.h \
     ../Records/Animations/BuildAtom.h \
     ../Records/Animations/BuildListContainer.h \
+    ../Records/Animations/BuildListSubContainer.h \
     ../Records/Animations/ChartBuildAtom.h \
     ../Records/Animations/ChartBuildContainer.h \
     ../Records/Animations/ClientVisualElementContainer.h \
@@ -304,6 +306,7 @@ SOURCES += \
     ../Converter/Animation/AnimationParser.cpp \
     ../Converter/Animation/Animation_1995.cpp \
     ../Converter/Animation/Timing_1995.cpp \
+    ../Converter/Animation/Timing_2010.cpp \
     ../Converter/Animation/intermediate_anim.cpp \
     ../Converter/timing.cpp \
     ../Converter/transition.cpp \

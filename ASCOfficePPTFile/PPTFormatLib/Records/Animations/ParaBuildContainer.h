@@ -32,14 +32,13 @@
 #pragma once
 
 
-#include "../Reader/Records.h"
+#include "BuildListSubContainer.h"
 #include "ParaBuildLevel.h"
-#include "BuildAtom.h"
 #include "ParaBuildAtom.h"
 
 namespace PPT_FORMAT
 {
-class CRecordParaBuildContainer : public CUnknownRecord
+class CRecordParaBuildContainer : public CRecordBuildListSubContainer
 {
 public:
 
@@ -50,49 +49,38 @@ public:
 
     virtual ~CRecordParaBuildContainer()
     {
-        for ( size_t i = 0; i < m_arrRgParaBuildLevel.size(); ++i )
-            RELEASEOBJECT (m_arrRgParaBuildLevel[i]);
     }
 
-    virtual void ReadFromStream ( SRecordHeader & thisHeader, POLE::Stream* pStream )
+    virtual void ReadFromStream ( SRecordHeader & header, POLE::Stream* pStream ) override
     {
-        m_oHeader			=	thisHeader;
+        CRecordBuildListSubContainer::ReadFromStream(header, pStream);
 
         LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
-        UINT lCurLen = 0;
-        SRecordHeader oHeader;
-//        UINT res = 0;
+        UINT lCurLen = buildAtom.m_oHeader.RecLen + 8;
 
-        if (oHeader.ReadFromStream(pStream)){
-            m_oBuildAtom.ReadFromStream ( oHeader, pStream );
-            lCurLen += oHeader.RecLen + 8;
-        }
 
-        if (oHeader.ReadFromStream(pStream))
+        SRecordHeader paraBuildAtomHeader;
+        if (paraBuildAtomHeader.ReadFromStream(pStream))
         {
-            m_oParaBuildAtom.ReadFromStream ( oHeader, pStream );
-            lCurLen += oHeader.RecLen + 8;
+            m_oParaBuildAtom.ReadFromStream ( paraBuildAtomHeader, pStream );
+            lCurLen += paraBuildAtomHeader.RecLen + 8;
         }
 
-        // TODO may not work
+        while (lCurLen < m_oHeader.RecLen )
+        {
+            CRecordParaBuildLevel buildLevel;
+            buildLevel.ReadFromStream(pStream);
 
+            rgParaBuildLevel.push_back(buildLevel);
 
-        SRecordHeader ReadHeader;
-
-        while ( lCurLen < m_oHeader.RecLen ) {
-            CRecordParaBuildLevel* pLevel = new CRecordParaBuildLevel();
-            pLevel->ReadFromStream(pStream);
-
-            m_arrRgParaBuildLevel.push_back(pLevel);
-
-            lCurLen += pLevel->getRecordLen();
+            lCurLen += buildLevel.getRecordLen();
         }
+
         StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
     }
-public:
-    CRecordBuildAtom		m_oBuildAtom;
-    CRecordParaBuildAtom	m_oParaBuildAtom;
 
-    std::vector <CRecordParaBuildLevel*>	m_arrRgParaBuildLevel;
+public:
+    CRecordParaBuildAtom	m_oParaBuildAtom;
+    std::vector <CRecordParaBuildLevel>	rgParaBuildLevel;
 };
 }

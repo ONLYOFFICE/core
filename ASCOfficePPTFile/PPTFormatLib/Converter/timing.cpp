@@ -6,8 +6,9 @@
 
 using namespace PPT::Converter;
 
-Timing::Timing(const Intermediate::SlideAnimation& slideAnim) :
-    slideAnim(slideAnim)
+Timing::Timing(const Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
+    slideAnim(slideAnim),
+    shapesID(shapesID)
 {}
 
 PPTX::Logic::Timing Timing::Convert(CExMedia *pExMedia, CRelsGenerator *pRels)

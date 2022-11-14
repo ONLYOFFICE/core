@@ -36,7 +36,7 @@ PPTX::Logic::Transition Transition::Convert()
 
 void Transition::ConvertClick()
 {
-    if (slideShowInfo.m_bAdvClick == false)
+    if (slideShowInfo.m_bManulClick == false)
         newTransition.advClick = false;
 }
 

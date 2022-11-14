@@ -34,9 +34,19 @@ private:
     void FillBldOleChart(CRecordChartBuildContainer* pCBC, PPTX::Logic::BldOleChart &oBP);
     void FillBldDgm(CRecordDiagramBuildContainer *pDBC, PPTX::Logic::BldDgm &oBP);
 
+    void ConvertTnLst(PPTX::Logic::TnLst& tnLst, CRecordExtTimeNodeContainer* pETNC);
+    void FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
+    void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq& oSec);
+
+    void FillCTn(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+
 private:
     CRecordPP10SlideBinaryTagExtension* pTagExtAnim = nullptr;
     const std::unordered_set<int> slideShapes;
+    bool isMainSeq = false;
+
+    int m_cTnId = 0;
+    int m_cTnDeep = 0;
 };
 
 }

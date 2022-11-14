@@ -45,158 +45,23 @@ namespace OOX
 	{
 	public:
 
-		CEndnotes(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
-		{
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			
-			if (docx)
-			{
-				if (docx->m_bGlossaryRead)	docx->m_oGlossary.endnotes = this;
-				else						docx->m_oMain.endnotes = this;
-			}
-		}
-		CEndnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain), OOX::IFileContainer(pMain)
-		{
-			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
-			
-			if (docx)
-			{
-				if (docx->m_bGlossaryRead)	docx->m_oGlossary.endnotes = this;
-				else						docx->m_oMain.endnotes = this;
-			}
-			read( oRootPath, oPath );
-		}
-		virtual ~CEndnotes()
-		{
-			for (unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
-			{
-				if ( m_arrEndnote[nIndex] )	delete m_arrEndnote[nIndex]; m_arrEndnote[nIndex] = NULL;
-			}
+		CEndnotes(OOX::Document *pMain);
+		CEndnotes(OOX::Document *pMain, const CPath& oRootPath, const CPath& oPath);
+		virtual ~CEndnotes();
 
-			m_arrEndnote.clear();
-			m_mapEndnote.clear();
-		}
-		virtual void read(const CPath& oPath)
-		{
-			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-			CPath oRootPath;
-			read(oRootPath, oPath);
-		}
-		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
-		{
-			m_oReadPath = oFilePath;
-			IFileContainer::Read( oRootPath, oFilePath );
+		virtual void read(const CPath& oPath);
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 
-			XmlUtils::CXmlLiteReader oReader;
+		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+		virtual const OOX::FileType type() const;
 
-			if ( !oReader.FromFile( oFilePath.GetPath() ) )
-				return;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 
-			if ( !oReader.ReadNextNode() )
-				return;
+		OOX::CFtnEdn *Find(const OOX::Logic::CEndnoteReference& oReference);
+		void Add(OOX::CFtnEdn* pEndnote);
 
-			std::wstring sName = oReader.GetName();
-			if ( _T("w:endnotes") == sName && !oReader.IsEmptyNode() )
-			{
-				int nNumberingDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
-				{
-					sName = oReader.GetName();
-					if ( _T("w:endnote") == sName )
-					{
-						CFtnEdn *pEndnote = new CFtnEdn( oReader );
-						if (pEndnote)
-						{
-							m_arrEndnote.push_back( pEndnote );
-
-							if (pEndnote->m_oId.IsInit())
-							{
-								m_mapEndnote.insert(std::make_pair(pEndnote->m_oId->GetValue(), pEndnote));
-							}
-						}
-
-					}
-				}
-			}
-		}
-		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
-			std::wstring sXml;
-			sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<w:endnotes \
-xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
-xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
-xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
-xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
-xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-mc:Ignorable=\"w14 w15 wp14\">");
-			
-			for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
-			{
-				if ( m_arrEndnote[nIndex] )
-				{
-					sXml += m_arrEndnote[nIndex]->toXML();
-				}
-			}
-			sXml += _T("</w:endnotes>");
-			CDirectory::SaveToFile( oPath.GetPath(), sXml );
-
-			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-			IFileContainer::Write( oPath, oDirectory, oContent );
-		}
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::EndNote;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-
-		OOX::CFtnEdn *Find(const OOX::Logic::CEndnoteReference& oReference)
-		{
-			if ( !oReference.m_oId.IsInit() )
-				return NULL;
-
-			//for ( unsigned int nIndex = 0; nIndex < m_arrEndnote.size(); nIndex++ )
-			//{
-			//	if ( m_arrEndnote[nIndex]->m_oId.IsInit() && ( m_arrEndnote[nIndex]->m_oId == oReference.m_oId ) )
-			//		return m_arrEndnote[nIndex];
-			//}
-			std::map<int, OOX::CFtnEdn*>::iterator pFind = m_mapEndnote.find(oReference.m_oId->GetValue());
-
-			if (pFind != m_mapEndnote.end())	return pFind->second;
-			else								return NULL;
-		}
-        void Add(OOX::CFtnEdn* pEndnote)
-		{
-			if (!pEndnote) return;
-			if (!pEndnote->m_oId.IsInit()) return;
-
-			m_arrEndnote.push_back( pEndnote );
-
-			m_mapEndnote.insert(std::make_pair(pEndnote->m_oId->GetValue(), pEndnote));
-		}		
-		const unsigned int  GetCount() const
-		{
-			return (unsigned int)m_arrEndnote.size();
-		}
+		const unsigned int GetCount() const;
 
 		CPath						m_oReadPath;
         std::vector<OOX::CFtnEdn*>  m_arrEndnote;

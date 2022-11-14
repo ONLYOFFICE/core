@@ -78,3 +78,5 @@
 #include "../Source/MathEquation/MathEquation.cpp"
 #include "../Source/DocxFormat/Logic/DocParts.cpp"
 #include "../Source/DocxFormat/WritingElement.cpp"
+#include "../Source/DocxFormat/HeaderFooter.cpp"
+#include "../Source/DocxFormat/Endnote.cpp"

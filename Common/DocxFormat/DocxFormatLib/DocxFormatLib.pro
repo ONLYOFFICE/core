@@ -88,6 +88,8 @@ SOURCES += \
     ../Source/DocxFormat/Diagram/DiagramLayout.cpp \
     ../Source/DocxFormat/Diagram/DiagramQuickStyle.cpp \
     ../Source/DocxFormat/WritingElement.cpp \
+	../Source/DocxFormat/HeaderFooter.cpp \
+	../Source/DocxFormat/Endnote.cpp \
 	../Source/Common/SimpleTypes_Base.cpp \
 	../Source/Common/SimpleTypes_Word.cpp \
 	../Source/Common/SimpleTypes_Drawing.cpp \

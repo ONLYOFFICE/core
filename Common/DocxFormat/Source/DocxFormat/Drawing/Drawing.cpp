@@ -31,6 +31,8 @@
  */
 
 #include "Drawing.h"
+#include "../DocxFlat.h"
+#include "../Document.h"
 
 namespace OOX
 {

@@ -175,7 +175,7 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 	NSFile::CFileBinary file;
 
 	std::wstring sExt;
-	if (file.OpenFile(fileName) == S_OK)
+	if (true == file.OpenFile(fileName))
 	{
 		BYTE buffer[128];
 		int buffer_size = 128;

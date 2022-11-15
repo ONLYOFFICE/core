@@ -310,7 +310,7 @@ public:
          {
 			NSFile::CFileBinary file;
 
-            if (file.OpenFile(sFilename) != S_OK) return;
+            if (false == file.OpenFile(sFilename)) return;
 
             DWORD dwBytesRead = 0;
             BYTE byteBuffer[ BUF_SIZE ];

@@ -121,7 +121,7 @@ public:
 		DWORD	dwBytesRead = 0;
 
 		NSFile::CFileBinary file;
-		if (file.OpenFile(sFilename) != S_OK) return dt_none;
+		if (file.OpenFile(sFilename) == false) return dt_none;
 
 		file.ReadFile(pBuffer, 100);
 		dwBytesRead = (DWORD)file.GetPosition();

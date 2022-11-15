@@ -1114,9 +1114,9 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::GetBase64File(const std::wstring& sFile, std::string& strDst64)
 	{
 		NSFile::CFileBinary oFile;
-		HRESULT hr = oFile.OpenFile(sFile);
+		bool res = oFile.OpenFile(sFile);
 
-		if (S_OK != hr)
+		if (false == res)
 		{
 			strDst64 = "";
 			return;

@@ -134,7 +134,7 @@ namespace NSShapeImageGen
 		{
 			CMediaInfo info;
 			NSFile::CFileBinary oFile;
-			if (S_OK != oFile.OpenFile(strFile) && std::wstring::npos == strFile.find(L"data:base64,"))
+			if (false == oFile.OpenFile(strFile) && std::wstring::npos == strFile.find(L"data:base64,"))
 			{
 				return info;
 			}

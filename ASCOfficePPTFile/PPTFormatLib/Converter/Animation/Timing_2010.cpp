@@ -1,4 +1,6 @@
 #include "Timing_2010.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
 
 
 namespace PPT {
@@ -11,6 +13,8 @@ Timing_2010::Timing_2010(CRecordPP10SlideBinaryTagExtension *pAnim_2010, const s
 
 void Timing_2010::Convert(PPTX::Logic::Timing &timimg, CExMedia *pExMedia, CRelsGenerator *pRels)
 {
+    m_pExMedia = pExMedia;
+    m_pRels = pRels;
     ConvertBldLst(timimg.bldLst.get2(), pTagExtAnim->m_pBuildListContainer);
 }
 
@@ -276,6 +280,269 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
     }
 }
 
+void Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
+{
+    FillCTn(pETNC, oPar.cTn);
+}
+
+void Timing_2010::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
+{
+    CRecordTimeBehaviorContainer *bhvr = nullptr;
+    if      (pETNC->m_haveSetBehavior)
+        bhvr = &(pETNC->m_pTimeSetBehavior->m_oBehavior);
+    else if (pETNC->m_haveEffectBehavior)
+        bhvr = &(pETNC->m_pTimeEffectBehavior->m_oBehavior);
+    else if (pETNC->m_haveAnimateBehavior)
+        bhvr = &(pETNC->m_pTimeAnimateBehavior->m_oBehavior);
+    else if (pETNC->m_haveColorBehavior)
+        bhvr = &(pETNC->m_pTimeColorBehavior->m_oBehavior);
+    else if (pETNC->m_haveMotionBehavior)
+        bhvr = &(pETNC->m_pTimeMotionBehavior->m_oTimeBehavior);
+    else if (pETNC->m_haveRotationBehavior)
+        bhvr = &(pETNC->m_pTimeRotationBehavior->m_oBehavior);
+    else if (pETNC->m_haveScaleBehavior)
+        bhvr = &(pETNC->m_pTimeScaleBehavior->m_oBehavior);
+    else
+        bhvr = &(pETNC->m_pTimeCommandBehavior->m_oBevavior);
+
+    FillCBhvr(bhvr, oBhvr);
+    FillCTn(pETNC, oBhvr.cTn);
+}
+
+void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CBhvr &oBhvr)
+{
+    //// Atom ////
+
+    // additive
+    if (pBhvr->m_oBehaviorAtom.m_bAdditivePropertyUsed) {
+        oBhvr.additive = new PPTX::Limit::TLAdditive;
+        oBhvr.additive = pBhvr->m_oBehaviorAtom.m_nBehaviorAdditive ?
+                    L"repl" : L"base";
+    }
+
+    // accumulate   - MUST be 0
+    // xfrmType     - MUST be 0
+
+    if (pBhvr->m_haveStringList)
+    {
+        if (!pBhvr->m_pStringList->m_arrRgChildRec.empty())
+        {
+            oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst();
+        }
+        for (const auto &oldAttr : pBhvr->m_pStringList->m_arrRgChildRec)
+        {
+            PPTX::Logic::AttrName addAttr;
+            addAttr.text = oldAttr.m_Value;
+            oBhvr.attrNameLst->list.push_back(addAttr);
+
+        }
+    }
+
+    if (pBhvr->m_oClientVisualElement.m_bVisualShapeAtom)
+    {
+        UINT spid = pBhvr->
+                m_oClientVisualElement.
+                m_oVisualShapeAtom.m_nObjectIdRef;
+
+        //        if (isSpidReal(spid) == false)
+        //        {
+        //            m_isPPT10Broken = true;                                                                   /// TODO Here. Check with 1995 anim
+        //        }
+
+        oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
+        oBhvr.tgtEl.spTgt->spid =
+                std::to_wstring(spid);
+        if (m_currentBldP)
+        {
+            m_currentBldP->spid =
+                    oBhvr.tgtEl.spTgt->spid;
+        }
+        if (pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2 != 0xFFFFFFFF &&
+                pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
+        {
+            oBhvr.tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
+            oBhvr.tgtEl.spTgt->txEl->charRg = false;
+            oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
+            oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
+        }
+    }
+
+
+    if (pBhvr->m_pPropertyList == nullptr)
+        return;
+
+    for (const auto prop : pBhvr->m_pPropertyList->m_arRecords)
+    {
+        if (prop == nullptr)
+            continue;
+
+        switch (prop->m_oHeader.RecInstance)
+        {
+        case TL_TBPID_RuntimeContext:
+            break;
+        case TL_TBPID_MotionPathEditRelative:
+            break;
+        case TL_TBPID_ColorColorModel:
+            break;
+        case TL_TBPID_ColorDirection:
+            break;
+        case TL_TBPID_Override:
+        {
+            auto override_ = new PPTX::Limit::TLOverride;
+            override_->set(L"childStyle");
+            oBhvr.override_= override_;
+            break;
+        }
+        case TL_TBPID_PathEditRotationAngle:
+            break;
+        case TL_TBPID_PathEditRotationX:
+            break;
+        case TL_TBPID_PathEditRotationY:
+            break;
+        case TL_TBPID_PointsTypes:
+            break;
+        case TL_TBPID_UnknownPropertyList:
+        default:
+            break;
+        }
+    }
+}
+
+void Timing_2010::FillCBhvr(PPTX::Logic::CBhvr &oBhvr, int dur, UINT spid, std::wstring attrname, int delay)
+{
+    oBhvr.cTn.id = m_cTnId++;
+    oBhvr.cTn.fill = L"hold";
+    oBhvr.cTn.dur = std::to_wstring(dur);
+    if (delay > -1)
+    {
+        oBhvr.cTn.stCondLst = new PPTX::Logic::CondLst;
+        oBhvr.cTn.stCondLst->node_name = L"stCondLst";
+        PPTX::Logic::Cond cond;
+        cond.delay = std::to_wstring(delay);
+        oBhvr.cTn.stCondLst->list.push_back(cond);
+    }
+
+    oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt;
+    oBhvr.tgtEl.spTgt->spid = std::to_wstring(spid);
+
+    if (!attrname.empty())
+    {
+        oBhvr.attrNameLst = new PPTX::Logic::AttrNameLst;
+        PPTX::Logic::AttrName attrName;
+        attrName.text = attrname;
+        oBhvr.attrNameLst->list.push_back(attrName);
+    }
+}
+
+void Timing_2010::FillSet(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Set &oSet)
+{
+    if (!pETNC->m_haveSetBehavior)
+        return;
+
+    FillCBhvr(pETNC, oSet.cBhvr);
+    oSet.to = new PPTX::Logic::AnimVariant();
+    oSet.to->node_name = L"to";
+    oSet.to->strVal = pETNC->m_pTimeSetBehavior->m_oVarTo.m_Value;
+}
+
+void Timing_2010::FillAnim(CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior, PPTX::Logic::Anim &oAnim)
+{
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bCalcModePropertyUsed)
+    {
+        std::wstring calcmode;
+        switch (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_nCalcMode) {
+        case 0: calcmode = L"discrete"; break;
+        case 1: calcmode = L"lin"; break;
+        case 2: calcmode = L"fmla"; break;
+        }
+        oAnim.calcmode = new PPTX::Limit::TLCalcMode;
+        oAnim.calcmode = calcmode;
+    }
+
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bValueTypePropertyUsed)
+    {
+        std::wstring valueType;
+        switch (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_ValueType) {
+        case TL_TABVT_Color: valueType = L"Color"; break;
+        case TL_TABVT_Number: valueType = L"Number"; break;
+        case TL_TABVT_String: valueType = L"String"; break;
+        }
+        if (!valueType.empty())
+        {
+            oAnim.valueType = new PPTX::Limit::TLValueType;
+            oAnim.valueType = valueType;
+        }
+    }
+
+    // By
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bByPropertyUsed)
+    {
+        oAnim.by = pTimeAnimateBehavior->m_oVarBy.m_Value;
+    }
+    // To
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bToPropertyUsed)
+    {
+        oAnim.to = pTimeAnimateBehavior->m_oVarTo.m_Value;
+    }
+    //From
+    if (pTimeAnimateBehavior->m_oAnimateBehaviorAtom.m_bFromPropertyUsed)
+    {
+        oAnim.from = pTimeAnimateBehavior->m_oVarFrom.m_Value;
+    }
+
+    //// Writing childs
+
+    if (!pTimeAnimateBehavior->m_oAnimateValueList.m_arrEntry.empty())
+        oAnim.tavLst = new PPTX::Logic::TavLst;
+    for (auto &animValue : pTimeAnimateBehavior->m_oAnimateValueList.m_arrEntry)
+    {
+        PPTX::Logic::Tav tav;
+        tav.val = new PPTX::Logic::AnimVariant;
+
+        tav.val->node_name = L"val";
+
+        if (animValue->m_pVarValue.is_init())
+            switch (animValue->m_pVarValue->m_Type) {
+            case TL_TVT_String:
+            {
+                tav.val->strVal = dynamic_cast<const CRecordTimeVariantString&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            case TL_TVT_Bool:
+            {
+                tav.val->boolVal = dynamic_cast<const CRecordTimeVariantBool&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            case TL_TVT_Int:
+            {
+                tav.val->intVal = dynamic_cast<const CRecordTimeVariantInt&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            case TL_TVT_Float:
+            {
+                tav.val->fltVal = dynamic_cast<const CRecordTimeVariantFloat&>
+                        (animValue->m_pVarValue.get()).m_Value;
+                break;
+            }
+            }
+
+        auto tavTime = animValue->m_oTimeAnimationValueAtom.m_nTime;
+        if (tavTime <= 1000 && tavTime >= 0)    // todo check
+            tav.tm = std::to_wstring((/*1000 - */tavTime) * 100);
+
+        if (!animValue->m_VarFormula.m_Value.empty())
+        {
+            tav.fmla = animValue->m_VarFormula.m_Value;
+        }
+
+        oAnim.tavLst->list.push_back(tav);
+    }
+    FillCBhvr(&(pTimeAnimateBehavior->m_oBehavior), oAnim.cBhvr);
+}
+
 void Timing_2010::FillCTn(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
 {
     oCTn.id = m_cTnId++;
@@ -478,7 +745,576 @@ void Timing_2010::FillCTn(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &
     m_cTnDeep--;
 }
 
+void Timing_2010::FillCond(CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond)
+{
+    if (oldCond->m_oTimeConditionAtom.m_nTimeDelay != -1)
+        cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay);
+    else
+        cond.delay = L"indefinite";
 
+    //    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef ||
+    //            oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_TimeNode)
+    //    {
+    //        cond.tn = oldCond->m_oTimeConditionAtom.m_nID;
+    //    }
+
+    if (oldCond->m_oTimeConditionAtom.m_TriggerObject == TL_TOT_RuntimeNodeRef)
+    {
+        cond.rtn = new PPTX::Limit::TLRuntimeTrigger;
+        cond.rtn->SetBYTECode(0);
+    }
+
+    std::wstring str;
+
+    switch (oldCond->m_oTimeConditionAtom.m_nTriggerEvent)
+    {
+    case 1:     str =   L"onBegin"; break;
+    case 3:     str =   L"begin"; break;
+    case 4:     str =   L"end"; break;
+    case 5:     str =   L"onClick"; break;
+    case 7:     str =   L"onMouseOver"; break;
+    case 9:     str =   L"onNext"; break;
+    case 10:    str =   L"onPrev"; break;
+    case 11:    str =   L"onStopAudio"; break;
+    default:    str.clear();
+    }
+
+    if (!str.empty()) cond.evt = str;
+
+    if (oldCond->m_oVisualElement.m_bVisualShapeAtom)
+    {
+        cond.tgtEl = new PPTX::Logic::TgtEl;
+        cond.tgtEl->spTgt = new PPTX::Logic::SpTgt;
+        cond.tgtEl->spTgt->spid = std::to_wstring(
+                    oldCond->m_oVisualElement.m_oVisualShapeAtom.m_nObjectIdRef);
+    } else if (oldCond->m_oVisualElement.m_bVisualPageAtom)
+    {
+        cond.tgtEl = new PPTX::Logic::TgtEl;
+    }
+}
+
+void Timing_2010::FillStCondLst(const std::vector<CRecordTimeConditionContainer *> &timeCondCont, PPTX::Logic::CondLst &stCondLst)
+{
+    for (const auto& pCond : timeCondCont)
+    {
+        int target = -1;
+        if (pCond->m_oVisualElement.m_bVisualShapeAtom)
+            target = pCond->m_oVisualElement.m_oVisualShapeAtom.m_nObjectIdRef;
+
+        PPTX::Logic::Cond cond;
+        FillCond(pCond, cond);
+
+        stCondLst.list.push_back(cond);
+    }
+}
+
+void Timing_2010::FillSubTnLst(std::vector<CRecordSubEffectContainer *> &vecSEC, PPTX::Logic::TnLst &oSubTnLst)
+{
+    for (auto pSEC : vecSEC)
+    {
+        if (pSEC->m_haveClientVisualElement)
+        {
+            PPTX::Logic::TimeNodeBase TNB;
+            auto audio = new PPTX::Logic::Audio;
+
+            FillAudio(pSEC->m_pClientVisualElement, *audio);
+            TNB.m_node = audio;
+            oSubTnLst.list.push_back(TNB);
+
+            // Write endCondLst
+            if (pSEC->m_arrRgEndTimeCondition.empty() == false)
+            {
+                audio->cMediaNode.cTn.endCondLst = new PPTX::Logic::CondLst;
+                audio->cMediaNode.cTn.endCondLst->node_name = L"endCondLst";
+            }
+            FillCondLst(pSEC->m_arrRgEndTimeCondition,
+                        audio->cMediaNode.cTn.endCondLst.get2());
+
+            // Write stCondLst
+            if (pSEC->m_arrRgBeginTimeCondition.empty() == false)
+            {
+                audio->cMediaNode.cTn.stCondLst = new PPTX::Logic::CondLst;
+                audio->cMediaNode.cTn.stCondLst->node_name = L"stCondLst";
+            }
+            FillCondLst(pSEC->m_arrRgBeginTimeCondition,
+                        audio->cMediaNode.cTn.stCondLst.get2());
+            FillCTn(pSEC->m_pTimePropertyList, audio->cMediaNode.cTn);
+        }
+
+        if (pSEC->m_haveColorBehavior)
+        {
+            PPTX::Logic::TimeNodeBase TNB;
+            auto color = new PPTX::Logic::AnimClr;
+
+            FillAnimClr(pSEC->m_pTimeColorBehavior, pSEC->m_pTimePropertyList, *color);
+            TNB.m_node = color;
+            oSubTnLst.list.push_back(TNB);
+        }
+    }
+}
+
+void Timing_2010::FillAudio(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Audio &oAudio)
+{
+    auto* pCVEC = pETNC->m_pClientVisualElement;
+    if (pCVEC->m_bVisualShapeAtom && m_pRels)
+    {
+        CExFilesInfo* pInfo1 = m_pExMedia->LockAudioFromCollection(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+        if (pInfo1)
+        {
+            bool bExternal(false);
+            oAudio.cMediaNode.tgtEl.embed =
+                    new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
+            oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+        } else if (pCVEC->m_oVisualShapeAtom.m_RefType == TL_ET_ShapeType)
+        {
+            oAudio.cMediaNode.tgtEl.spTgt = new PPTX::Logic::SpTgt;
+            oAudio.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+            //            oAudio.isNarration = true;
+            //            oAudio.cMediaNode.showWhenStopped = false;
+        } else
+            return;
+        FillCTn(pETNC, oAudio.cMediaNode.cTn);
+    }
+}
+
+void Timing_2010::FillAudio(CRecordClientVisualElementContainer *pCVEC, PPTX::Logic::Audio &oAudio)
+{
+    if (pCVEC->m_bVisualShapeAtom)
+    {
+        CExFilesInfo* pInfo1 = m_pExMedia->LockAudioFromCollection(pCVEC->m_oVisualShapeAtom.m_nObjectIdRef);
+        if (pInfo1 && m_pRels)
+        {
+            bool bExternal(false);
+            oAudio.cMediaNode.tgtEl.embed =
+                    new OOX::RId(m_pRels->WriteAudio(pInfo1->m_strFilePath, bExternal));
+            oAudio.cMediaNode.tgtEl.name = XmlUtils::EncodeXmlString(pInfo1->m_name);
+        }
+    }
+}
+
+void Timing_2010::FillCmd(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Cmd &oCmd)
+{
+    if (!pETNC || !pETNC->m_pTimeCommandBehavior)
+        return;
+
+    auto pCommand = pETNC->m_pTimeCommandBehavior;
+    auto oAtom =    pCommand->m_oCommandBehaviorAtom;
+
+    FillCBhvr(pETNC, oCmd.cBhvr);
+
+    if (oAtom.m_fTypePropertyUsed)
+    {
+        oCmd.type = new PPTX::Limit::TLCommandType;
+        std::wstring type;
+        switch (oAtom.m_eCommandBehaviorType)
+        {
+        case TL_TCBT_Eventv:    type = L"evt";  break;
+        case TL_TCBT_Call:      type = L"call"; break;
+        case TL_TCBT_OleVerb:   type = L"verb"; break;
+        }
+        oCmd.type->set(type);
+    }
+    if (oAtom.m_fCommandPropertyUsed)
+    {
+        oCmd.cmd = pCommand->m_oVarCommand.m_Value;
+    }
+}
+
+void Timing_2010::FillCondLst(std::vector<CRecordTimeConditionContainer *> &oCondVec, PPTX::Logic::CondLst &oCondLst)
+{
+    for (auto *oldCond : oCondVec) {
+        PPTX::Logic::Cond cond;
+        cond.node_name = L"cond";
+        FillCond(oldCond, cond);
+        oCondLst.list.push_back(cond);
+    }
+}
+
+void Timing_2010::FillEmptyTargetCond(PPTX::Logic::Cond &cond)
+{
+    cond.tgtEl = new PPTX::Logic::TgtEl;
+}
+
+void Timing_2010::FillCTn(CRecordTimePropertyList4TimeNodeContainer *pProp, PPTX::Logic::CTn &oCTn)
+{
+    if (pProp && !pProp->m_bEmtyNode)
+    {
+        for (auto *pRec : pProp->m_arrElements)
+        {
+            TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) pRec->m_oHeader.RecInstance;
+
+            switch ( VariableType )
+            {
+            case TL_TPID_Display:
+            {
+                oCTn.display = !(bool)dynamic_cast<CRecordTimeDisplayType*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_MasterPos:
+            {
+                oCTn.masterRel = new PPTX::Limit::TLMasterRelation;
+                oCTn.masterRel = dynamic_cast<CRecordTimeMasterRelType*>(pRec)->m_Value ?
+                            L"nextClick" : L"sameClick";
+                break;
+            }
+            case TL_TPID_SubType:			break;
+            case TL_TPID_EffectID:
+            {
+                oCTn.presetID = dynamic_cast<CRecordTimeEffectID*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EffectDir:
+            {
+                oCTn.presetSubtype = dynamic_cast<CRecordTimeEffectDir*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EffectType:
+            {
+                // Write presetClass
+                std::wstring presetClass;
+                switch (dynamic_cast<CRecordTimeEffectType*>(pRec)->m_Value) {
+                case 0: break;
+                case 1: presetClass = L"entr";      break;
+                case 2: presetClass = L"exit";      break;
+                case 3: presetClass = L"emph";      break;
+                case 4: presetClass = L"path";      break;
+                case 5: presetClass = L"verb";      break;
+                case 6: presetClass = L"mediacall"; break;
+                }
+                if (!presetClass.empty())
+                {
+                    oCTn.presetClass = new PPTX::Limit::TLPresetClass;
+                    oCTn.presetClass = presetClass;
+                }
+                break;
+            }
+            case TL_TPID_AfterEffect:
+            {
+                oCTn.afterEffect = (bool)dynamic_cast<CRecordTimeAfterEffect*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_SlideCount:		break;
+            case TL_TPID_TimeFilter:
+            {
+                oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EventFilter:
+            {
+                oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_HideWhenStopped:	break;
+            case TL_TPID_GroupID:
+            {
+                oCTn.grpId = dynamic_cast<CRecordTimeGroupID*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_EffectNodeType:
+            {
+                // Write nodeType
+                std::wstring nodeType;
+                switch (dynamic_cast<CRecordTimeEffectNodeType*>(pRec)->m_Value)
+                {
+                case 1: nodeType = L"clickEffect"; break;
+                case 2: nodeType = L"withEffect"; break;
+                case 3: nodeType = L"afterEffect"; break;
+                case 4: nodeType = L"mainSeq"; break;
+                case 5: nodeType = L"interactiveSeq"; break;
+                case 6: nodeType = L"clickPar"; break;
+                case 7: nodeType = L"withGroup"; break;
+                case 8: nodeType = L"afterGroup"; break;
+                case 9: nodeType = L"tmRoot"; break;
+                }
+                if (!nodeType.empty())
+                {
+                    oCTn.nodeType = new PPTX::Limit::TLNodeType;
+                    oCTn.nodeType = nodeType;
+                }
+
+                break;
+            }
+            case TL_TPID_PlaceholderNode:
+            {
+                oCTn.nodePh = (bool)dynamic_cast<CRecordTimePlaceholderNode*>(pRec)->m_Value;
+                break;
+            }
+            case TL_TPID_MediaVolume:		break;
+            case TL_TPID_MediaMute:			break;
+            case TL_TPID_ZoomToFullScreen:	break;
+            default :
+                break;
+            }
+        }
+    }
+}
+
+void Timing_2010::FillAnimClr(
+        CRecordTimeColorBehaviorContainer *pColor,
+        CRecordTimePropertyList4TimeNodeContainer *pProp,
+        PPTX::Logic::AnimClr &oAnimClr)
+{
+    auto &clrAtom = pColor->m_oColorBehaviorAtom;
+
+    FillCBhvr(&(pColor->m_oBehavior), oAnimClr.cBhvr);
+    FillCTn(pProp, oAnimClr.cBhvr.cTn);
+
+    // Write Attributes
+    if (pColor->m_oBehavior.m_havePropertyList){
+        for (auto pRec : pColor->m_oBehavior.m_pPropertyList->m_arRecords)
+        {
+            if (pRec->m_oHeader.RecInstance == TL_TBPID_ColorColorModel)
+            {
+                auto oTimeColorModel = dynamic_cast<CRecordTimeColorModel*>(pRec);
+                oAnimClr.clrSpc = new PPTX::Limit::TLColorSpace;
+                std::wstring clrSpc;
+                if (!clrAtom.m_fColorSpacePropertyUsed) clrSpc = L"rgb";
+                else clrSpc = oTimeColorModel->m_Value ? L"hsl" : L"rgb";
+                oAnimClr.clrSpc = clrSpc;
+            }
+            else if (pRec->m_oHeader.RecInstance == TL_TBPID_ColorDirection)
+            {
+                auto oTimeColorDirection = dynamic_cast<CRecordTimeColorDirection*>(pRec);
+                oAnimClr.dir = new PPTX::Limit::TLColorDirection;
+                std::wstring dir;
+                if (!clrAtom.m_fDirectionPropertyUsed) dir = L"cw";
+                else dir = oTimeColorDirection->m_Value ? L"ccw" : L"cw";
+                oAnimClr.dir = dir;
+            }
+        }
+    }
+
+    if (clrAtom.m_fByPropertyUsed)
+    {
+        if (clrAtom.m_sColorBy.model == 0) // RGB == 0
+        {
+            oAnimClr.byR = clrAtom.m_sColorBy.component0;
+            oAnimClr.byG = clrAtom.m_sColorBy.component1;
+            oAnimClr.byB = clrAtom.m_sColorBy.component2;
+        }
+        else if (clrAtom.m_sColorBy.model == 1) // HSL == 1
+        {
+            oAnimClr.byH = clrAtom.m_sColorBy.component0;
+            oAnimClr.byS = clrAtom.m_sColorBy.component1;
+            oAnimClr.byL = clrAtom.m_sColorBy.component2;
+        }
+    }
+
+    if (clrAtom.m_fFromPropertyUsed)
+    {
+        oAnimClr.from = *new PPTX::Logic::UniColor;
+        if (clrAtom.m_sColorFrom.model == 0)
+        {
+            auto pSrgb = new PPTX::Logic::SrgbClr;
+            pSrgb->red = clrAtom.m_sColorFrom.component0;
+            pSrgb->green = clrAtom.m_sColorFrom.component1;
+            pSrgb->blue = clrAtom.m_sColorFrom.component2;
+            oAnimClr.from.Color = pSrgb;
+        }
+        else
+        {
+            auto pScheme = new PPTX::Logic::SchemeClr;
+            std::wstring strVal;
+            UINT index = clrAtom.m_sColorFrom.component0;
+            if (index >= 4 && index < 10)
+            {
+                strVal = L"accent" + std::to_wstring(index - 3);
+            }
+            pScheme->val = strVal;
+            oAnimClr.from.Color = pScheme;
+        }
+    }
+
+    if (clrAtom.m_fToPropertyUsed)
+    {
+        oAnimClr.to = *new PPTX::Logic::UniColor;
+        if (clrAtom.m_sColorTo.model == 0)
+        {
+            auto pSrgb = new PPTX::Logic::SrgbClr;
+            pSrgb->red = clrAtom.m_sColorTo.component0;
+            pSrgb->green = clrAtom.m_sColorTo.component1;
+            pSrgb->blue = clrAtom.m_sColorTo.component2;
+            oAnimClr.to.Color = pSrgb;
+        }
+        else
+        {
+            auto pScheme = new PPTX::Logic::SchemeClr;
+            std::wstring strVal;
+            UINT index = clrAtom.m_sColorTo.component0;
+            if (index >= 4 && index < 10)
+            {
+                strVal = L"accent" + std::to_wstring(index - 3);
+            }
+            pScheme->val = strVal;
+            oAnimClr.to.Color = pScheme;
+        }
+    }
+}
+
+void Timing_2010::FillAnimEffect(
+        CRecordExtTimeNodeContainer *pETNC,
+        PPTX::Logic::AnimEffect &oAnim)
+{
+    auto *bhvr = pETNC->m_pTimeEffectBehavior;
+    oAnim.filter = bhvr->m_oVarType.m_Value;
+
+    if (bhvr->m_effectBehaviorAtom.m_bProgressPropertyUsed)
+    {
+        if (!oAnim.progress.is_init())
+            oAnim.progress = new PPTX::Logic::AnimVariant;
+        oAnim.progress->fltVal = bhvr->m_oVarProgress.m_Value;
+    }
+
+    if (bhvr->m_effectBehaviorAtom.m_bRuntimeContextObsolete)
+    {
+        if (!oAnim.progress.is_init())
+            oAnim.progress = new PPTX::Logic::AnimVariant;
+        oAnim.progress->strVal = bhvr->m_oVarRuntimeContext.m_Value;
+    }
+
+    if (bhvr->m_effectBehaviorAtom.m_bTransitionPropertyUsed)
+    {
+        oAnim.transition = bhvr->m_effectBehaviorAtom.m_nEffectTransition ?
+                    L"out" : L"in";
+    }
+
+    FillCBhvr(pETNC, oAnim.cBhvr);
+
+}
+
+void Timing_2010::FillAnimMotion(
+        CRecordExtTimeNodeContainer *pETNC,
+        PPTX::Logic::AnimMotion &oAnim)
+{
+    if (!pETNC || !pETNC->m_pTimeMotionBehavior)
+        return;
+
+    auto pMotion = pETNC->m_pTimeMotionBehavior;
+    auto oAtom = pMotion->m_oMotionBehaviorAtom;
+
+    FillCBhvr(pETNC, oAnim.cBhvr);
+
+    if (oAtom.m_bFromPropertyUsed)
+    {
+        oAnim.fromX = oAtom.m_nXFROM;
+        oAnim.fromY = oAtom.m_nYFROM;
+    }
+    if (oAtom.m_bToPropertyUsed)
+    {
+        oAnim.toX   = oAtom.m_nXTO;
+        oAnim.toY   = oAtom.m_nYTO;
+    }
+    if (oAtom.m_bByPropertyUsed)
+    {
+        oAnim.byX   = oAtom.m_nXBY;
+        oAnim.byY   = oAtom.m_nYBY;
+    }
+
+    if (oAtom.m_bOriginPropertyUsed)
+    {
+        oAnim.origin = new PPTX::Limit::TLOrigin;
+        oAnim.origin->set(oAtom.m_nBehaviorOrigin == 2 ?
+                              L"layout" : L"parent");
+    }
+
+    if (!pMotion->m_pVarPath->m_Value.empty())
+        oAnim.path = pMotion->m_pVarPath->m_Value;
+
+    //    oAnim.ptsTypes
+
+
+    oAnim.pathEditMode = new PPTX::Limit::TLPathEditMode;
+    oAnim.pathEditMode->set(oAtom.m_bEditRotationPropertyUsed ? L"fixed" : L"relative");
+}
+
+void Timing_2010::FillAnimRot(
+        CRecordExtTimeNodeContainer *pETNC,
+        PPTX::Logic::AnimRot &oAnim)
+{
+    if (!pETNC || !pETNC->m_pTimeRotationBehavior) return;
+
+    auto pRot = pETNC->m_pTimeRotationBehavior;
+    auto oAtom = pRot->m_oRotationBehaviorAtom;
+
+    FillCBhvr(pETNC, oAnim.cBhvr);
+
+    const auto mult = 60000;
+
+    if (oAtom.m_fByPropertyUsed)
+        oAnim.by = oAtom.m_By  *mult;
+    if (oAtom.m_fToPropertyUsed)
+        oAnim.to = oAtom.m_To  *mult;
+    if (oAtom.m_fFromPropertyUsed)
+        oAnim.from = oAtom.m_From  *mult;
+
+}
+
+void Timing_2010::FillAnimScale(
+        CRecordExtTimeNodeContainer *pETNC,
+        PPTX::Logic::AnimScale &oAnim)
+{
+    if (!pETNC || !pETNC->m_pTimeScaleBehavior) return;
+
+    auto pScale = pETNC->m_pTimeScaleBehavior;
+    auto oAtom =  pScale->m_oScaleBehaviorAtom;
+
+    FillCBhvr(pETNC, oAnim.cBhvr);
+
+    const auto mult = 1000;
+    if (oAtom.m_fByPropertyUsed)
+    {
+        oAnim.byX = oAtom.m_XBy  *mult;
+        oAnim.byY = oAtom.m_YBy  *mult;
+    }
+    if (oAtom.m_fToPropertyUsed)
+    {
+        oAnim.toX = oAtom.m_XTo  *mult;
+        oAnim.toY = oAtom.m_YTo  *mult;
+    }
+    if (oAtom.m_fFromPropertyUsed)
+    {
+        oAnim.fromX = oAtom.m_XFrom  *mult;
+        oAnim.fromY = oAtom.m_YFrom  *mult;
+    }
+
+    if (oAtom.m_fZoomContentsUsed)
+        oAnim.zoomContents = oAtom.m_fZoomContents;
+}
+
+
+
+void Timing_2010::FillVideo(
+        CRecordExtTimeNodeContainer* pETNC,
+        PPTX::Logic::Video& oVideo)
+{
+    auto video = pETNC->m_pClientVisualElement->m_oVisualShapeAtom;
+
+    FillCTn(pETNC, oVideo.cMediaNode.cTn);
+
+    if (pETNC->m_pTimePropertyList->m_arrElements.size() >= 5)
+    {
+        try {
+            oVideo.cMediaNode.vol = (int)(static_cast<CRecordTimeVariantFloat*>
+                                          (pETNC->m_pTimePropertyList->m_arrElements[1])->
+                    m_Value * 100000);
+            oVideo.cMediaNode.mute = static_cast<CRecordTimeVariantBool*>
+                    (pETNC->m_pTimePropertyList->m_arrElements[2])->
+                    m_Value;
+            oVideo.fullScrn = static_cast<CRecordTimeVariantBool*>
+                    (pETNC->m_pTimePropertyList->m_arrElements[3])->
+                    m_Value;
+            oVideo.cMediaNode.showWhenStopped = static_cast<CRecordTimeVariantBool*>
+                    (pETNC->m_pTimePropertyList->m_arrElements[4])->
+                    m_Value;
+        } catch (...) {
+
+        }
+    }
+
+
+    oVideo.cMediaNode.tgtEl.spTgt = PPTX::Logic::SpTgt();
+    oVideo.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(video.m_nObjectIdRef);
+}
 
 
 

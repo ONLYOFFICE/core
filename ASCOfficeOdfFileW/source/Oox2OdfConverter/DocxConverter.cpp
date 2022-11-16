@@ -848,7 +848,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			else
 			{
 				//Thesis.docx
-				//convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
 			}
 		}
 	}
@@ -865,9 +865,9 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 
 	if ((list_present = odt_context->text_context()->get_list_item_state()) == false) odt_context->set_no_list();
 
-	if (oox_paragraph->m_arrItems.size() < 2 && odt_context->text_context()->get_KeepNextParagraph())
+	bool empty_para = !((oox_paragraph->m_oParagraphProperty) && (oox_paragraph->m_oParagraphProperty->m_oRPr.IsInit())) ;
+	if (empty_para && oox_paragraph->m_arrItems.size() < 2 && odt_context->text_context()->get_KeepNextParagraph())
 	{//rapcomnat12.docx - стр 185
-		bool empty_para = true;
 
         for (size_t i = 0; i < oox_paragraph->m_arrItems.size(); ++i)
 		{		
@@ -1852,7 +1852,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 
 	if (oox_section_pr->m_oPgMar.IsInit())
 	{
-		_CP_OPT(odf_types::length) top, left, right, bottom, header, footer, gutter;
+		_CP_OPT(odf_types::length) top, left, right, bottom, header, footer, gutter, header_min, footer_min;
 
 		convert(oox_section_pr->m_oPgMar->m_oBottom.GetPointer(),	bottom);
 		convert(oox_section_pr->m_oPgMar->m_oLeft.GetPointer(),		left);
@@ -1862,18 +1862,24 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		convert(oox_section_pr->m_oPgMar->m_oFooter.GetPointer(),	footer);
 		convert(oox_section_pr->m_oPgMar->m_oGutter.GetPointer(),	gutter);
 		
+		footer_min = footer;
+		header_min = header;
+
 		if (bottom)
 		{
-			double length_cm = bottom->get_value_unit(length::cm) -( footer ? footer->get_value_unit(length::cm) : 0);
+			double bottom_cm = bottom->get_value_unit(length::cm);
+			double footer_cm = footer ? footer->get_value_unit(length::cm) : 0;
+			double length_cm = bottom_cm - footer_cm;
 		
-			if (length_cm > 2.4)
+			if ( length_cm > 2.4 )
 			{
 				bottom = footer;
 				footer = length(fabs(length_cm), length::cm);
 			}
-			else if (-length_cm > 2.4)
+			else if ( length_cm < 0 )
 			{
-				footer = length(-length_cm, length::cm);//fo_min_height_
+				footer_min = length(-length_cm, length::cm);
+				footer.reset();
 			}
 		}
 		else
@@ -1884,14 +1890,15 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		{
 			double length_cm = top->get_value_unit(length::cm) - (header ? header->get_value_unit(length::cm) : 0);
 		
-			if (length_cm > 2.4)
+			if ( length_cm > 2.4 )
 			{
 				top = header;
 				header = length(fabs(length_cm), length::cm);
 			}
-			else if (-length_cm > 2.4)
+			else if ( length_cm < 0 )
 			{
-				header = length(-length_cm, length::cm);//fo_min_height_
+				header_min = length(-length_cm, length::cm);
+				header.reset();
 			}
 		}
 		else
@@ -1900,8 +1907,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool b
 		}
 		odt_context->page_layout_context()->set_page_margin(top, left, bottom, right);
 		odt_context->page_layout_context()->set_page_gutter(gutter);
-		odt_context->page_layout_context()->set_header_size(header);
-		odt_context->page_layout_context()->set_footer_size(footer);
+		odt_context->page_layout_context()->set_header_size(header, header_min);
+		odt_context->page_layout_context()->set_footer_size(footer, footer_min);
 	}
 	if (oox_section_pr->m_oPgBorders.IsInit())
 	{

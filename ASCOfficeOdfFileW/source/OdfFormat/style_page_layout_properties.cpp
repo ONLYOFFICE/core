@@ -130,8 +130,8 @@ void style_page_layout_properties_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT	(L"style:paper-tray-name",		style_paper_tray_name_);
     CP_XML_ATTR_OPT	(L"style:print-orientation",	style_print_orientation_);
     
-	common_horizontal_margin_attlist_.serialize	(CP_GET_XML_NODE());
     common_vertical_margin_attlist_.serialize	(CP_GET_XML_NODE());
+	common_horizontal_margin_attlist_.serialize	(CP_GET_XML_NODE());
     common_margin_attlist_.serialize			(CP_GET_XML_NODE());
     common_border_attlist_.serialize			(CP_GET_XML_NODE());
     common_border_line_width_attlist_.serialize	(CP_GET_XML_NODE());

@@ -255,19 +255,22 @@ void odf_page_layout_context::set_page_gutter(_CP_OPT(length) length_)
 	//	props->attlist_.common_horizontal_margin_attlist_.fo_margin_left_= length(length_->get_value_unit(length::cm),length::cm);
 
 }
-void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_)//тут собственно не footer а размер после колонтитула
+void odf_page_layout_context::set_footer_size(_CP_OPT(length) length_, _CP_OPT(odf_types::length) length_min)
+//тут собственно не footer а размер после колонтитула
 {
 	if (layout_state_list_.size() < 1) return;
 
 	layout_state_list_.back().footer_size_ = length_;
+	layout_state_list_.back().footer_min_size_ = length_min;
 	//собственно в layout встроим позднее - по факту наличия хоть одного колонтитула
 	return;
 }
-void odf_page_layout_context::set_header_size(_CP_OPT(length) length_)
+void odf_page_layout_context::set_header_size(_CP_OPT(length) length_, _CP_OPT(odf_types::length) length_min)
 {
 	if (layout_state_list_.size() < 1) return;
 
 	layout_state_list_.back().header_size_ = length_;
+	layout_state_list_.back().header_min_size_ = length_min;
 
 	return;
 }
@@ -322,20 +325,25 @@ bool odf_page_layout_context::add_footer(int type)
 
 /////////////////////////////////////////////////////////////////////
 //настраить нужно 1 раз
-	if (!layout_state_list_.back().footer_size_) return true;
+	if (!layout_state_list_.back().footer_size_ && !layout_state_list_.back().footer_min_size_) return true;
 
 	style_header_footer_properties *footer_props = get_footer_properties();
-	if (!footer_props)return true;
+	if (!footer_props) return true;
 	style_page_layout_properties *props = get_properties();
-	if (!props)return true;
+	if (!props) return true;
 
-	length length_ = length(layout_state_list_.back().footer_size_->get_value_unit(length::cm), length::cm);
-
-	footer_props->style_header_footer_properties_attlist_.svg_height_ = length_;
-	footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length_;
-
-	layout_state_list_.back().footer_size_ = boost::none;
-
+	if (layout_state_list_.back().footer_size_)
+	{
+		length length_ = length(layout_state_list_.back().footer_size_->get_value_unit(length::cm), length::cm);
+		footer_props->style_header_footer_properties_attlist_.svg_height_ = length_;
+		layout_state_list_.back().footer_size_ = boost::none;
+	}
+	if (layout_state_list_.back().footer_min_size_)
+	{
+		length length_min = length(layout_state_list_.back().footer_min_size_->get_value_unit(length::cm), length::cm);
+		footer_props->style_header_footer_properties_attlist_.fo_min_height_ = length_min;
+		layout_state_list_.back().footer_min_size_ = boost::none;
+	}
 	return true;
 }
 bool odf_page_layout_context::add_header(int type)
@@ -364,7 +372,7 @@ bool odf_page_layout_context::add_header(int type)
 	master_state_list_.back().add_header(root_header_footer_);
 ////////////////////////////////////////////////////////////////////////
 //настроить нужно один раз
-	if (!layout_state_list_.back().header_size_) return true;
+	if (!layout_state_list_.back().header_size_ && !layout_state_list_.back().header_min_size_) return true;
 	
 	style_header_footer_properties *header_props = get_header_properties();
 	if (!header_props)return true;
@@ -372,12 +380,19 @@ bool odf_page_layout_context::add_header(int type)
 	style_page_layout_properties *props = get_properties();
 	if (!props)return true;
 
-	length length_ = length(layout_state_list_.back().header_size_->get_value_unit(length::cm), length::cm);
+	if (layout_state_list_.back().header_size_)
+	{
+		length length_ = length(layout_state_list_.back().header_size_->get_value_unit(length::cm), length::cm);
+		header_props->style_header_footer_properties_attlist_.svg_height_ = length_;
+		layout_state_list_.back().header_size_ = boost::none;
+	}
+	if (layout_state_list_.back().header_min_size_)
+	{
+		length length_min = length(layout_state_list_.back().header_min_size_->get_value_unit(length::cm), length::cm);
+		header_props->style_header_footer_properties_attlist_.fo_min_height_ = length_min;
+		layout_state_list_.back().header_min_size_ = boost::none;
+	}
 
-	header_props->style_header_footer_properties_attlist_.svg_height_ = length_;
-	header_props->style_header_footer_properties_attlist_.fo_min_height_ = length_;
-
-	layout_state_list_.back().header_size_ = boost::none;
 	return true;
 }
 

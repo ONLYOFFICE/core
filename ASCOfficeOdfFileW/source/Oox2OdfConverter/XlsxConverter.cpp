@@ -1984,13 +1984,13 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPageMargins *oox_page)
 	if (oox_page->m_oFooter.IsInit())
 	{
 		other = odf_types::length(oox_page->m_oFooter->GetValue(), odf_types::length::pt);
-		ods_context->page_layout_context()->set_footer_size(other);
+		ods_context->page_layout_context()->set_footer_size(other, other);
 	}
 	
 	if (oox_page->m_oHeader.IsInit())
 	{
 		other = odf_types::length(oox_page->m_oHeader->GetValue(), odf_types::length::pt);
-		ods_context->page_layout_context()->set_header_size(other);
+		ods_context->page_layout_context()->set_header_size(other, other);
 	}
 
 }

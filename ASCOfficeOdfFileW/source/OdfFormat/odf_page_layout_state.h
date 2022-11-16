@@ -114,6 +114,9 @@ public:
 
 	_CP_OPT(odf_types::length) header_size_;
 	_CP_OPT(odf_types::length) footer_size_;
+	
+	_CP_OPT(odf_types::length) header_min_size_;
+	_CP_OPT(odf_types::length) footer_min_size_;
 
 	_CP_OPT(odf_types::style_numformat) page_number_format;
 

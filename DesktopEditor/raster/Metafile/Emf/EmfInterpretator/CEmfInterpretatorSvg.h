@@ -224,8 +224,10 @@ namespace MetaFile
 		void DrawPath(int nType = 0) override {};
 		void EndPath() override {};
 
-		void ResetClip() override {};
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override;
+		void ResetClip() override;
+		void IntersectClip(const TRectD& oClip) override;
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 
@@ -255,7 +257,7 @@ namespace MetaFile
 
 		TPointD GetCutPos() const;
 
-		std::wstring CreatePath(const CEmfPath* pPath = NULL) const;
+		std::wstring CreatePath(const CEmfPath* pPath = NULL, const TXForm* pTransform = NULL) const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(IBrush *pBrush);
 		std::wstring CreatePatternStyle(IBrush *pBrush);

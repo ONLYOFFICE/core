@@ -33,7 +33,9 @@ namespace MetaFile
 		void EndPath() override;
 
 		void ResetClip() override;
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override;
+		void IntersectClip(const TRectD& oClip) override;
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override;
 		void EndClipPath(unsigned int unMode) override;
 

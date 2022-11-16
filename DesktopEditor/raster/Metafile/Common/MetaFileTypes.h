@@ -398,6 +398,10 @@ namespace MetaFile
 			dRight  = 1024;
 			dBottom = 1024;
 		}
+		TRectD(double dNewLeft, double dNewTop, double dNewRight, double dNewBottom)
+		    : dLeft(dNewLeft), dTop(dNewTop), dRight(dNewRight), dBottom(dNewBottom)
+		{}
+
 		TRectD(TRect& oRect)
 		{
 			dLeft   = (double)oRect.nLeft;
@@ -537,7 +541,7 @@ namespace MetaFile
 			Dy  = 0;
 		}
 
-		void Copy(TXForm* pOther)
+		void Copy(const TXForm* pOther)
 		{
 			M11 = pOther->M11;
 			M12	= pOther->M12;

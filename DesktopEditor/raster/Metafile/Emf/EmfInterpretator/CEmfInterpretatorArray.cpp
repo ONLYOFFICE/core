@@ -146,10 +146,22 @@ namespace MetaFile
 			pInterpretator->ResetClip();
 	}
 
-	void CEmfInterpretatorArray::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	void CEmfInterpretatorArray::IntersectClip(const TRectD &oClip)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-			pInterpretator->IntersectClip(dLeft, dTop, dRight, dBottom);
+			pInterpretator->IntersectClip(oClip);
+	}
+
+	void CEmfInterpretatorArray::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->ExcludeClip(oClip, oBB);
+	}
+
+	void CEmfInterpretatorArray::PathClip(IPath* pPath, int nClipMode, TXForm* pTransform)
+	{
+		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
+			pInterpretator->PathClip(pPath, nClipMode, pTransform);
 	}
 
 	void CEmfInterpretatorArray::StartClipPath(unsigned int unMode, int nFillMode)

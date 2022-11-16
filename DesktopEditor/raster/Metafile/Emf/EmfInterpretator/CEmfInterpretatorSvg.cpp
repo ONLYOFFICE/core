@@ -33,7 +33,7 @@ namespace MetaFile
 		m_pParser = m_pSecondParser;
 		m_pSecondParser = pTemp;
 
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	InterpretatorType CEmfInterpretatorSvg::GetType() const
@@ -147,7 +147,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_RESTOREDC(const int &nIndexDC)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_MODIFYWORLDTRANSFORM(const TXForm &oXForm, const unsigned int &unMode)
@@ -324,7 +324,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SELECTCLIPPATH(const unsigned int &unRegionMode)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETBKCOLOR(const TEmfColor &oColor)
@@ -334,12 +334,12 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXCLUDECLIPRECT(const TEmfRectL &oClip)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTSELECTCLIPRGN(const unsigned int &unRgnDataSize, const unsigned int &unRegionMode, CDataStream &oDataStream)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
@@ -369,7 +369,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_SETLAYOUT(const unsigned int &unLayoutMode)
@@ -1469,6 +1469,9 @@ namespace MetaFile
 		{
 			oTempRect = oRect.GetRectD();
 
+			m_pParser->GetTransform()->Apply(oTempRect.dLeft,  oTempRect.dTop);
+			m_pParser->GetTransform()->Apply(oTempRect.dRight, oTempRect.dBottom);
+
 			wsValue +=	L"M "  + ConvertToWString(oTempRect.dLeft)  + L',' + ConvertToWString(oTempRect.dTop) +
 			            L" L " + ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dTop) + L' ' +
 			                     ConvertToWString(oTempRect.dRight) + L',' + ConvertToWString(oTempRect.dBottom) + L' ' +
@@ -1479,7 +1482,6 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddFill(arAttributes);
-		AddTransform(arAttributes);
 		AddClip(arAttributes);
 
 		WriteNode(L"path", arAttributes);
@@ -1551,13 +1553,50 @@ namespace MetaFile
 			delete [] pNewBuffer;
 	}
 
-	void CEmfInterpretatorSvg::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	void CEmfInterpretatorSvg::ResetClip()
+	{
+		m_wsLastClipId.clear();
+	}
+
+	void CEmfInterpretatorSvg::IntersectClip(const TRectD &oClip)
 	{
 		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 
 		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>" +
+		            L"<rect x=\"" + ConvertToWString(oClip.dLeft, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop, 0) + L"\" width=\"" + ConvertToWString(oClip.dRight - oClip.dLeft, 0) + L"\" height=\"" + ConvertToWString(oClip.dBottom - oClip.dTop, 0) + L"\"/>" +
 		            L"</clipPath>";
+	}
+
+	void CEmfInterpretatorSvg::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<path d=\"M" + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dTop) + L", L" + ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dTop) + L", " +
+		            ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dBottom) + L", " + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dBottom) + L", M" +
+		            ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dTop) + L", L" + ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dTop) + L", " +
+		            ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dBottom) + L", " + ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dLeft) + L"\" clip-rule=\"evenodd\"/>" +
+		            L"</clipPath>";
+	}
+
+	void CEmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
+	{
+		if (NULL == pPath)
+			return;
+
+		m_wsLastClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		CEmfPath *pEmfPath = dynamic_cast<CEmfPath*>(pPath);
+
+		if (NULL == pEmfPath)
+			return;
+
+		std::wstring wsPath = CreatePath(pEmfPath);
+
+		if (wsPath.empty())
+			return;
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\"><path d=\"" + wsPath + L"\" clip-rule=\"evenodd\"/></clipPath>";
 	}
 
 	void CEmfInterpretatorSvg::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
@@ -1913,7 +1952,18 @@ namespace MetaFile
 			return;
 		}
 
-		IBrush *pBrush = m_pParser->GetBrush();
+		IBrush *pBrush = NULL;
+
+		if (NULL != m_pParser->GetPen())
+		{
+			CEmfPlusPen *pPen = dynamic_cast<CEmfPlusPen*>(m_pParser->GetPen());
+
+			if (NULL != pPen)
+				pBrush = pPen->Brush;
+		}
+
+		if (NULL == pBrush)
+			pBrush = m_pParser->GetBrush();
 
 		if (NULL == pBrush || BS_NULL == pBrush->GetStyle())
 		{
@@ -2102,7 +2152,7 @@ namespace MetaFile
 		return oCurPos;
 	}
 
-	std::wstring CEmfInterpretatorSvg::CreatePath(const CEmfPath* pPath) const
+	std::wstring CEmfInterpretatorSvg::CreatePath(const CEmfPath* pPath, const TXForm* pTransform) const
 	{
 		if (NULL == m_pParser)
 			return std::wstring();
@@ -2116,7 +2166,12 @@ namespace MetaFile
 		TEmfPointD *pFirstPoint = NULL;
 		BYTE oLastType = 0x00;
 
-		wsValue += L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y) + L' ';
+		TXForm oTransform;
+
+		if (NULL != pTransform)
+			oTransform.Copy(pTransform);
+
+		TPointD oPoint;
 
 		for (const CEmfPathCommandBase* pCommand : pNewPath->m_pCommands)
 		{
@@ -2126,12 +2181,17 @@ namespace MetaFile
 				{
 					CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
 
-					wsValue += L"M " + ConvertToWString(pMoveTo->x) + L',' +  ConvertToWString(pMoveTo->y) + L' ';
+					oPoint.x = pMoveTo->x;
+					oPoint.y = pMoveTo->y;
+
+					oTransform.Apply(oPoint.x, oPoint.y);
+
+					wsValue += L"M " + ConvertToWString(oPoint.x) + L',' +  ConvertToWString(oPoint.y) + L' ';
 
 					RELEASEOBJECT(pFirstPoint);
-					pFirstPoint = new TEmfPointD;
-					pFirstPoint->x = pMoveTo->x;
-					pFirstPoint->y = pMoveTo->y;
+					pFirstPoint = new TEmfPointD();
+					pFirstPoint->x = oPoint.x;
+					pFirstPoint->y = oPoint.y;
 
 					oLastType = EMF_PATHCOMMAND_MOVETO;
 
@@ -2147,13 +2207,18 @@ namespace MetaFile
 						wsValue += L"L ";
 					}
 
-					wsValue += ConvertToWString(pLineTo->x) + L',' +  ConvertToWString(pLineTo->y) + L' ';
+					oPoint.x = pLineTo->x;
+					oPoint.y = pLineTo->y;
+
+					oTransform.Apply(oPoint.x, oPoint.y);
+
+					wsValue += ConvertToWString(oPoint.x) + L',' +  ConvertToWString(oPoint.y) + L' ';
 
 					if (NULL == pFirstPoint)
 					{
 						pFirstPoint = new TEmfPointD;
-						pFirstPoint->x = pLineTo->x;
-						pFirstPoint->y = pLineTo->y;
+						pFirstPoint->x = oPoint.x;
+						pFirstPoint->y = oPoint.y;
 					}
 
 					break;
@@ -2168,15 +2233,24 @@ namespace MetaFile
 						wsValue += L"C ";
 					}
 
-					wsValue +=	ConvertToWString(pCurveTo->x1) + L',' + ConvertToWString(pCurveTo->y1) + L' ' +
-								ConvertToWString(pCurveTo->x2) + L',' + ConvertToWString(pCurveTo->y2) + L' ' +
-								ConvertToWString(pCurveTo->xE) + L',' + ConvertToWString(pCurveTo->yE) + L' ';
+					TPointD oPoint2(pCurveTo->x2, pCurveTo->y2), oPoint3(pCurveTo->xE, pCurveTo->yE);
+
+					oPoint.x = pCurveTo->x1;
+					oPoint.y = pCurveTo->y1;
+
+					oTransform.Apply(oPoint.x,  oPoint.y);
+					oTransform.Apply(oPoint2.x, oPoint2.y);
+					oTransform.Apply(oPoint3.x, oPoint3.y);
+
+					wsValue +=	ConvertToWString(oPoint.x)  + L',' + ConvertToWString(oPoint.y)  + L' ' +
+					            ConvertToWString(oPoint2.x) + L',' + ConvertToWString(oPoint2.y) + L' ' +
+					            ConvertToWString(oPoint3.x) + L',' + ConvertToWString(oPoint3.y) + L' ';
 
 					if (NULL == pFirstPoint)
 					{
 						pFirstPoint = new TEmfPointD;
-						pFirstPoint->x = pCurveTo->x1;
-						pFirstPoint->y = pCurveTo->y1;
+						pFirstPoint->x = oPoint.x;
+						pFirstPoint->y = oPoint.y;
 					}
 
 					break;
@@ -2185,20 +2259,19 @@ namespace MetaFile
 				{
 					CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
 
-//					if (m_pParser->IsWindowFlippedY())
-//					{
-//						dStartAngle *= -1;
-//						dSweepAngle *= -1;
-//					}
+					TPointD oPoint2(pArcTo->right, pArcTo->bottom);
 
-					double dXRadius = std::fabs((pArcTo->right - pArcTo->left)) / 2;
-					double dYRadius = std::fabs((pArcTo->bottom - pArcTo->top)) / 2;
+					oPoint.x = pArcTo->left;
+					oPoint.y = pArcTo->top;
 
-					double dStartX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->start) * M_PI / 180);
-					double dStartY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->start) * M_PI / 180);
+					oTransform.Apply(oPoint.x,  oPoint.y);
+					oTransform.Apply(oPoint2.x, oPoint2.y);
 
-					double dEndX = (pArcTo->right + pArcTo->left) / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
-					double dEndY = (pArcTo->bottom + pArcTo->top) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
+					double dXRadius = std::fabs((oPoint2.x - oPoint.x)) / 2;
+					double dYRadius = std::fabs((oPoint2.y - oPoint.y)) / 2;
+
+					double dEndX = (oPoint2.x + oPoint.x)  / 2 + dXRadius  * cos((pArcTo->sweep) * M_PI / 180);
+					double dEndY = (oPoint2.y + oPoint2.y) / 2 + dYRadius  * sin((pArcTo->sweep) * M_PI / 180);
 
 					wsValue += L"A " + ConvertToWString(dXRadius) + L' ' +
 							ConvertToWString(dYRadius) + L' ' +
@@ -2212,8 +2285,8 @@ namespace MetaFile
 					if (NULL == pFirstPoint)
 					{
 						pFirstPoint = new TEmfPointD;
-						pFirstPoint->x = pArcTo->left;
-						pFirstPoint->y = pArcTo->top;
+						pFirstPoint->x = oPoint.x;
+						pFirstPoint->y = oPoint.y;
 					}
 
 					oLastType = EMF_PATHCOMMAND_ARCTO;
@@ -2232,6 +2305,9 @@ namespace MetaFile
 				}
 			}
 		}
+
+		if (!wsValue.empty() && wsValue[0] != L'M')
+			wsValue.insert(0, L"M " + ConvertToWString(m_pParser->GetCurPos().x) + L',' + ConvertToWString(m_pParser->GetCurPos().y) + L' ');
 
 		RELEASEOBJECT(pFirstPoint);
 

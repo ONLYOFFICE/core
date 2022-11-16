@@ -1304,8 +1304,6 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_EXCLUDECLIPRECT(shBottom, shRight, shTop, shLeft);
 
-		double dL, dT, dR, dB;
-
 		// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
 		// пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
 		if (shLeft < shRight)
@@ -1330,15 +1328,18 @@ namespace MetaFile
 			shBottom--;
 		}
 
-		TranslatePoint(shLeft, shTop, dL, dT);
-		TranslatePoint(shRight, shBottom, dR, dB);
+		TRectD oClip;
+
+		TranslatePoint(shLeft, shTop, oClip.dLeft, oClip.dTop);
+		TranslatePoint(shRight, shBottom, oClip.dRight, oClip.dBottom);
 
 		TWmfWindow* pWindow = m_pDC->GetWindow();
-		double dWindowL, dWindowT, dWindowR, dWindowB;
-		TranslatePoint(pWindow->x, pWindow->y, dWindowL, dWindowT);
-		TranslatePoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h, dWindowR, dWindowB);
+		TRectD oBB;
 
-		m_pDC->GetClip()->Exclude(dL, dT, dR, dB, dWindowL, dWindowT, dWindowR, dWindowB);
+		TranslatePoint(pWindow->x, pWindow->y, oBB.dLeft, oBB.dTop);
+		TranslatePoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h, oBB.dRight, oBB.dBottom);
+
+		m_pDC->GetClip()->Exclude(oClip, oBB);
 		UpdateOutputDC();
 	}
 
@@ -1347,11 +1348,12 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_INTERSECTCLIPRECT(shLeft, shTop, shRight, shBottom);
 
-		double dL, dT, dR, dB;
-		TranslatePoint(shLeft, shTop, dL, dT);
-		TranslatePoint(shRight, shBottom, dR, dB);
+		TRectD oClip;
 
-		m_pDC->GetClip()->Intersect(dL, dT, dR, dB);
+		TranslatePoint(shLeft, shTop, oClip.dLeft, oClip.dTop);
+		TranslatePoint(shRight, shBottom, oClip.dRight, oClip.dBottom);
+
+		m_pDC->GetClip()->Intersect(oClip);
 		UpdateOutputDC();
 	}
 

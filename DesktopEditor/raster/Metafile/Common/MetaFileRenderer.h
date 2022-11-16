@@ -760,7 +760,7 @@ namespace MetaFile
 			m_pRenderer->BeginCommand(c_nResetClipType);
 			m_pRenderer->EndCommand(c_nResetClipType);
 		}
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+		void IntersectClip(const TRectD& oClip)
 		{
 			m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
 
@@ -768,8 +768,8 @@ namespace MetaFile
 			m_pRenderer->BeginCommand(c_nPathType);
 			m_pRenderer->PathCommandStart();
 
-			TPointD oTL = TranslatePoint(dLeft, dTop);
-			TPointD oBR = TranslatePoint(dRight, dBottom);
+			TPointD oTL = TranslatePoint(oClip.dLeft, oClip.dTop);
+			TPointD oBR = TranslatePoint(oClip.dRight, oClip.dBottom);
 
 			m_pRenderer->PathCommandMoveTo(oTL.x, oTL.y);
 			m_pRenderer->PathCommandLineTo(oTL.x, oBR.y);
@@ -780,6 +780,39 @@ namespace MetaFile
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->EndCommand(c_nClipType);
 			m_pRenderer->PathCommandEnd();
+		}
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB)
+		{
+			StartClipPath(RGN_AND, ALTERNATE);
+
+			MoveTo(oClip.dLeft,  oClip.dTop);
+			LineTo(oClip.dRight, oClip.dTop);
+			LineTo(oClip.dRight, oClip.dBottom);
+			LineTo(oClip.dLeft,  oClip.dBottom);
+			ClosePath();
+
+			MoveTo(oBB.dLeft,  oBB.dTop);
+			LineTo(oBB.dRight, oBB.dTop);
+			LineTo(oBB.dRight, oBB.dBottom);
+			LineTo(oBB.dLeft,  oBB.dBottom);
+			ClosePath();
+
+			EndClipPath(RGN_AND);
+		}
+		void PathClip(IPath *pPath, int nClipMode, TXForm* pTransform = NULL)
+		{
+			double dM11, dM12, dM21, dM22, dX, dY;
+
+			if (NULL != pTransform)
+			{
+				GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
+				SetTransform(pTransform->M11, pTransform->M12, pTransform->M21, pTransform->M22, pTransform->Dx, pTransform->Dy);
+			}
+
+			pPath->Draw(this, false, false, nClipMode);
+
+			if (NULL != pTransform)
+				SetTransform(dM11, dM12, dM21, dM22, dX, dY);
 		}
 		void StartClipPath(unsigned int unMode, int nFillMode = -1)
 		{

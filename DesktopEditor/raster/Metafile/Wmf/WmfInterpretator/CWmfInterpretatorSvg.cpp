@@ -38,8 +38,8 @@ namespace MetaFile
 	{
 		if (0 != m_oSizeWindow.x && 0 == m_oSizeWindow.y)
 			m_oSizeWindow.y = m_oSizeWindow.x * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
-		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y)
-			m_oSizeWindow.x = m_oSizeWindow.y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
+		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y);
+		    m_oSizeWindow.x = m_oSizeWindow.y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader)
@@ -578,7 +578,6 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_SELECTCLIPREGION(unsigned short ushIndex)
 	{
-		m_wsLastClipId.clear();
 		//TODO:: реализовать
 	}
 
@@ -593,12 +592,12 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_MOVETO(short shX, short shY)
@@ -608,7 +607,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY)
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_OFFSETVIEWPORTORG(short shXOffset, short shYOffset)
@@ -623,7 +622,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_RESTOREDC()
 	{
-		m_wsLastClipId.clear();
+		ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_SAVEDC()
@@ -791,13 +790,29 @@ namespace MetaFile
 		m_wsLastClipId.clear();
 	}
 
-	void CWmfInterpretatorSvg::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	void CWmfInterpretatorSvg::IntersectClip(const TRectD& oClip)
 	{
 		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
 
 		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>" +
+		            L"<rect x=\"" + ConvertToWString(oClip.dLeft, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop, 0) + L"\" width=\"" + ConvertToWString(oClip.dRight - oClip.dLeft, 0) + L"\" height=\"" + ConvertToWString(oClip.dBottom - oClip.dTop, 0) + L"\"/>" +
 		            L"</clipPath>";
+	}
+
+	void CWmfInterpretatorSvg::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<path d=\"M" + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dTop) + L", L" + ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dTop) + L", " +
+		            ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dBottom) + L", " + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dBottom) + L", M" +
+		            ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dTop) + L", L" + ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dTop) + L", " +
+		            ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dBottom) + L", " + ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dLeft) + L"\" clip-rule=\"evenodd\"/>" +
+		            L"</clipPath>";
+	}
+
+	void CWmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
+	{
 	}
 
 	void CWmfInterpretatorSvg::SetXmlWriter(XmlUtils::CXmlWriter *pXmlWriter)
@@ -997,7 +1012,7 @@ namespace MetaFile
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			    dStrokeWidth = 1 / (m_dScale * m_pParser->GetTransform()->M11);
+			dStrokeWidth = 1. / std::fabs(m_dScale * m_pParser->GetTransform()->M11);
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

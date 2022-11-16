@@ -107,10 +107,22 @@ namespace MetaFile
 			m_pMetaFileRenderer->ResetClip();
 	}
 
-	void CEmfInterpretatorRender::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	void CEmfInterpretatorRender::IntersectClip(const TRectD &oClip)
 	{
 		if (NULL != m_pMetaFileRenderer)
-			m_pMetaFileRenderer->IntersectClip(dLeft, dTop, dRight, dBottom);
+			m_pMetaFileRenderer->IntersectClip(oClip);
+	}
+
+	void CEmfInterpretatorRender::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->ExcludeClip(oClip, oBB);
+	}
+
+	void CEmfInterpretatorRender::PathClip(IPath *pPath, int nClipMode, TXForm* pTransform)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->PathClip(pPath, nClipMode, pTransform);
 	}
 
 	void CEmfInterpretatorRender::StartClipPath(unsigned int unMode, int nFillMode)

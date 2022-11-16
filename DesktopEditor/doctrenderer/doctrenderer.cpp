@@ -1204,6 +1204,9 @@ namespace NSDoctRenderer
 				break;
 			}
 
+			if (NSFile::CFileBinary::Exists(sCachePath))
+				NSFile::CFileBinary::Remove(sCachePath);
+
 			for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
 			{
 				strScript += m_pInternal->ReadScriptFile(*i);

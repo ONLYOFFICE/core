@@ -84,7 +84,7 @@ namespace NSJSBase
 			}
 			else
 			{
-				v8::ScriptCompiler::CachedData* pCacheData = NULL;
+				v8::ScriptCompiler::CachedData* pCacheData = nullptr;
 
 				// save cache to file
 				NSFile::CFileBinary oFileTest;
@@ -93,7 +93,7 @@ namespace NSJSBase
 					// create cache data
 					v8::ScriptCompiler::Source oSource(source);
 					v8::Local<v8::Script> pScriptCache = v8::ScriptCompiler::Compile(_context, &oSource, v8::ScriptCompiler::kNoCompileOptions).ToLocalChecked();
-					v8::ScriptCompiler::CachedData* pCacheData = v8::ScriptCompiler::CreateCodeCache(pScriptCache->GetUnboundScript());
+					pCacheData = v8::ScriptCompiler::CreateCodeCache(pScriptCache->GetUnboundScript());
 
 					if (pCacheData)
 					{
@@ -109,8 +109,9 @@ namespace NSJSBase
 
 				// compile with/without(if pCacheData === NULL) cache data
 				v8::ScriptCompiler::Source oSource2(source, pCacheData);
+				v8::ScriptCompiler::CompileOptions compileOptions = (nullptr == pCacheData) ? v8::ScriptCompiler::kNoCompileOptions : v8::ScriptCompiler::kConsumeCodeCache;
 
-				v8::MaybeLocal<v8::Script> sctiptMB = v8::ScriptCompiler::Compile(_context, &oSource2, v8::ScriptCompiler::kConsumeCodeCache);
+				v8::MaybeLocal<v8::Script> sctiptMB = v8::ScriptCompiler::Compile(_context, &oSource2, compileOptions);
 				if (!sctiptMB.IsEmpty())
 					script = sctiptMB.ToLocalChecked();
 			}

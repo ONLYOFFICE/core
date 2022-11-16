@@ -5611,7 +5611,7 @@ namespace NExtractTools
 		}
 
 		//clean up v8
-        NSDoctRenderer::CDocBuilder::Dispose();
+		NSDoctRenderer::CDocBuilder::Dispose();
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;
@@ -5620,6 +5620,16 @@ namespace NExtractTools
 		{
 			return result;
 		}
+	}
+
+	void createJSCaches()
+	{
+		NSDoctRenderer::CDocBuilder::Initialize();
+
+		NSDoctRenderer::CDoctrenderer oDoctRenderer;
+		oDoctRenderer.CreateCache(L"", L"");
+
+		NSDoctRenderer::CDocBuilder::Dispose();
 	}
 
 	_UINT32 FromFile(const std::wstring& file)

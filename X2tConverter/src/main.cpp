@@ -173,7 +173,7 @@ static std::wstring utf8_to_unicode(const char *src)
 			
 			result = NExtractTools::detectMacroInFile(oInputParams);
 		}
-		else if (sArg1 == L"-create-cache")
+		else if (sArg1 == L"-create-js-cache")
 		{
 			NExtractTools::createJSCaches();
 			return 0;

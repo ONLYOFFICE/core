@@ -99,8 +99,7 @@ namespace NSDoctRenderer
 		std::wstring m_sJsonParams;
 		int m_nLcid;
 
-		int m_nRendererParams;
-		bool m_bIsCachedScripts;
+		std::wstring m_sScriptsCacheDirectory;
 
 		std::vector<int> m_arThemesThumbnailsParams;
 	public:
@@ -124,9 +123,7 @@ namespace NSDoctRenderer
 			m_nMailMergeIndexEnd = -1;
 
 			m_nLcid = -1;
-			m_bIsCachedScripts = true;
-
-			m_nRendererParams = 0;
+			m_sScriptsCacheDirectory = L"";
 		}
 		~CExecuteParams()
 		{
@@ -180,9 +177,7 @@ namespace NSDoctRenderer
 			m_nLcid = oNode.ReadValueInt(L"Lcid", -1);
 			m_sJsonParams = oNode.ReadValueString(L"JsonParams");
 
-			m_nRendererParams = oNode.ReadValueInt(L"DoctParams", 0);
-			if (0x01 == (0x01 & m_nRendererParams))
-				m_bIsCachedScripts = false;
+			m_sScriptsCacheDirectory = oNode.ReadValueString(L"ScriptsCacheDirectory", L"");
 
 			m_arThemesThumbnailsParams.clear();
 			std::wstring sThemesThumbnailsParams = oNode.ReadValueString(L"ThemesThumbnailsParams");
@@ -1099,21 +1094,31 @@ namespace NSDoctRenderer
 		std::string strScript = "";
 		for (size_t i = 0; i < m_pInternal->m_arrFiles.size(); ++i)
 		{
-#if 0
-			if (m_arrFiles[i].find(L"AllFonts.js") != std::wstring::npos)
-				continue;
-#endif
-
 			strScript += m_pInternal->ReadScriptFile(m_pInternal->m_arrFiles[i]);
 			strScript += "\n\n";
 		}
 
 		std::wstring sCachePath = L"";
-		if (NULL != arSdkFiles)
+		if (arSdkFiles && (0 < arSdkFiles->size()))
 		{
-			if (m_pInternal->m_oParams.m_bIsCachedScripts && (0 < arSdkFiles->size()))
+			if (m_pInternal->m_oParams.m_sScriptsCacheDirectory.empty())
 			{
 				sCachePath = NSFile::GetDirectoryName(*arSdkFiles->begin()) + L"/sdk-all.cache";
+			}
+			else if (m_pInternal->m_oParams.m_sScriptsCacheDirectory != L"empty")
+			{
+				sCachePath = m_pInternal->m_oParams.m_sScriptsCacheDirectory;
+				wchar_t lastSymbol = sCachePath.back();
+				if (lastSymbol != '\\' && lastSymbol != '/')
+					sCachePath += L"/";
+
+				wchar_t editorFirst = m_pInternal->m_strEditorType.at(0);
+				if (editorFirst == 'd')
+					sCachePath += L"word";
+				else if (editorFirst == 'p')
+					sCachePath += L"slide";
+				else
+					sCachePath += L"cell";
 			}
 
 			for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)

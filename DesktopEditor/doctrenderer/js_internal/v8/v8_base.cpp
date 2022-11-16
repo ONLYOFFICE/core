@@ -84,19 +84,26 @@ namespace NSJSBase
 			}
 			else
 			{
-				// create cache data
-				v8::ScriptCompiler::Source oSource(source);
-				v8::Local<v8::Script> pScriptCache = v8::ScriptCompiler::Compile(_context, &oSource, v8::ScriptCompiler::kNoCompileOptions).ToLocalChecked();
-				v8::ScriptCompiler::CachedData* pCacheData = v8::ScriptCompiler::CreateCodeCache(pScriptCache->GetUnboundScript());
+				v8::ScriptCompiler::CachedData* pCacheData = NULL;
 
-				if (pCacheData)
+				// save cache to file
+				NSFile::CFileBinary oFileTest;
+				if (oFileTest.CreateFileW(Path))
 				{
-					// save cache to file
-					NSFile::CFileBinary oFileTest;
-					if (oFileTest.CreateFileW(Path))
+					// create cache data
+					v8::ScriptCompiler::Source oSource(source);
+					v8::Local<v8::Script> pScriptCache = v8::ScriptCompiler::Compile(_context, &oSource, v8::ScriptCompiler::kNoCompileOptions).ToLocalChecked();
+					v8::ScriptCompiler::CachedData* pCacheData = v8::ScriptCompiler::CreateCodeCache(pScriptCache->GetUnboundScript());
+
+					if (pCacheData)
 					{
-						oFileTest.WriteFile(pCacheData->data, (DWORD)pCacheData->length);
-						oFileTest.CloseFile();
+						// save cache to file
+						NSFile::CFileBinary oFileTest;
+						if (oFileTest.CreateFileW(Path))
+						{
+							oFileTest.WriteFile(pCacheData->data, (DWORD)pCacheData->length);
+							oFileTest.CloseFile();
+						}
 					}
 				}
 

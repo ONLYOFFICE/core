@@ -1287,7 +1287,58 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWDRIVERSTRING(short shOgjectIndex, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, TXForm *pMatrix, const std::wstring &wsString, const std::vector<TPointD> &arGlyphPos)
 	{
+		if (NULL == m_pParser || wsString.size() != arGlyphPos.size())
+			return;
 
+		IFont *pFont = m_pParser->GetFont();
+
+		if (NULL == pFont)
+			return;
+
+		NodeAttributes arNodeAttributes;
+
+		TXForm oTransform;
+		oTransform.Copy(m_pParser->GetTransform());
+
+		TEmfColor oColor = m_pParser->GetDC()->GetTextColor();
+
+		if (0 != oColor.r || 0 != oColor.g || 0 != oColor.b)
+			arNodeAttributes.push_back({L"fill", L"rgb(" + ConvertToWString(oColor.r, 0) + L", " + ConvertToWString(oColor.g, 0) + L", " + ConvertToWString(oColor.b, 0) + L')'});
+
+		double dFontHeight = std::fabs(pFont->GetHeight());
+
+		if (dFontHeight < 0.01)
+			dFontHeight = 18;
+
+		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
+
+		std::wstring wsFaceName = pFont->GetFaceName();
+
+		if (!wsFaceName.empty())
+			arNodeAttributes.push_back({L"font-family", wsFaceName});
+
+		if (pFont->GetWeight() > 550)
+			arNodeAttributes.push_back({L"font-weight", L"bold"});
+
+		if (pFont->IsItalic())
+			arNodeAttributes.push_back({L"font-style", L"italic"});
+
+		if (pFont->IsUnderline() && pFont->IsStrikeOut())
+			arNodeAttributes.push_back({L"text-decoration", L"underline line-through"});
+		else if (pFont->IsUnderline())
+			arNodeAttributes.push_back({L"text-decoration", L"underline"});
+		else if (pFont->IsStrikeOut())
+			arNodeAttributes.push_back({L"text-decoration", L"line-through"});
+
+		std::wstring wsValue;
+
+		for (unsigned int unIndex = 0; unIndex < arGlyphPos.size(); ++unIndex)
+			wsValue += L"<tspan x=\"" + ConvertToWString(arGlyphPos[unIndex].x) + L"\" y=\"" + ConvertToWString(arGlyphPos[unIndex].y) + L"\">" + StringNormalization(std::wstring(1, wsString[unIndex])) + L"</tspan>";
+
+		AddTransform(arNodeAttributes);
+		AddClip(arNodeAttributes);
+
+		WriteNode(L"text", arNodeAttributes, wsValue);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWELLIPSE(short shOgjectIndex, const TEmfPlusRectF &oRect)

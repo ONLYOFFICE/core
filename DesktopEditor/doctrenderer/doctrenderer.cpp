@@ -1145,6 +1145,90 @@ namespace NSDoctRenderer
 	{
 		return m_pInternal->m_arImagesInChanges;
 	}
+
+	void CDoctrenderer::CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir)
+	{
+#ifndef JS_ENGINE_JAVASCRIPTCORE
+		LoadConfig(NSFile::GetProcessDirectory(), sAllFontsPath);
+
+		std::wstring sCacheDirectory = sCacheDir;
+		if (sCacheDirectory.empty() && m_pInternal->m_arDoctSDK.size() > 0)
+		{
+			sCacheDirectory = NSFile::GetDirectoryName(m_pInternal->m_arDoctSDK[0]);
+			sCacheDirectory = NSFile::GetDirectoryName(sCacheDirectory);
+		}
+
+		if (sCacheDirectory.empty())
+			return;
+
+		std::string strScriptAll = "";
+		for (size_t i = 0; i < m_pInternal->m_arrFiles.size(); ++i)
+		{
+			strScriptAll += m_pInternal->ReadScriptFile(m_pInternal->m_arrFiles[i]);
+			strScriptAll += "\n\n";
+		}
+
+		for (int i = 0; i < 3; ++i)
+		{
+			std::string strScript = strScriptAll;
+			std::wstring sCachePath = sCacheDirectory;
+
+			std::vector<std::wstring>* arSdkFiles = NULL;
+
+			switch (i)
+			{
+			case 0:
+			{
+				arSdkFiles = &m_pInternal->m_arDoctSDK;
+				sCachePath += L"/word/sdk-all.cache";
+				break;
+			}
+			case 1:
+			{
+				arSdkFiles = &m_pInternal->m_arPpttSDK;
+				sCachePath += L"/slide/sdk-all.cache";
+				break;
+			}
+			case 2:
+			{
+				arSdkFiles = &m_pInternal->m_arXlstSDK;
+				sCachePath += L"/cell/sdk-all.cache";
+				break;
+			}
+			default:
+				break;
+			}
+
+			for (std::vector<std::wstring>::iterator i = arSdkFiles->begin(); i != arSdkFiles->end(); i++)
+			{
+				strScript += m_pInternal->ReadScriptFile(*i);
+				strScript += "\n\n";
+			}
+
+			JSSmart<CJSContext> context = new CJSContext();
+			context->Initialize();
+
+			if (true)
+			{
+				JSSmart<CJSIsolateScope> isolate_scope = context->CreateIsolateScope();
+				JSSmart<CJSLocalScope>   handle_scope  = context->CreateLocalScope();
+
+				context->CreateGlobalForContext();
+				CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", context);
+				CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", context);
+				NSJSBase::CreateDefaults(context);
+				context->CreateContext();
+
+				JSSmart<CJSContextScope> context_scope = context->CreateContextScope();
+				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
+
+				context->runScript(strScript, try_catch, sCachePath);
+			}
+
+			context->Dispose();
+		}
+#endif
+	}
 }
 
 bool Doct_renderer_SaveFile_ForBuilder(int nFormat, const std::wstring& strDstFile,

@@ -848,7 +848,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			else
 			{
 				//Thesis.docx
-				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties); 
+				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties, true); 
 			}
 		}
 	}
@@ -2600,7 +2600,7 @@ void DocxConverter::convert(ComplexTypes::Word::CTblWidth *oox_size, _CP_OPT(odf
 	//tblwidthNil  = 2,
 	//tblwidthPct  = 3
 }
-void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties, bool is_list_styles)
+void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::style_text_properties * text_properties, bool is_para_props)
 {
 	if (oox_run_pr		== NULL) return;
 	if (text_properties == NULL) return;
@@ -2836,7 +2836,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 			//nullable<SimpleTypes::CTheme<>> m_oHAnsiTheme;
 			//nullable<SimpleTypes::CHint<> > m_oHint;
 	}
-	if (oox_run_pr->m_oVertAlign.IsInit() && oox_run_pr->m_oVertAlign->m_oVal.IsInit())
+	if (!is_para_props && oox_run_pr->m_oVertAlign.IsInit() && oox_run_pr->m_oVertAlign->m_oVal.IsInit())
 	{ 
 		switch(oox_run_pr->m_oVertAlign->m_oVal->GetValue())
 		{

@@ -129,19 +129,15 @@ void note_body::docx_convert(oox::docx_conversion_context & Context)
 
     Context.set_process_headers_footers(true);
 	
-	bool pState = Context.get_paragraph_state	();
-    bool runState = Context.get_run_state		();
-
-	Context.set_paragraph_state	(false);
-    Context.set_run_state		(false);
+	Context.reset_context_state();
 
  	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);            
     }    
     Context.set_process_headers_footers	(false);
-    Context.set_run_state				(runState);
-	Context.set_paragraph_state			(pState);
+	
+	Context.back_context_state();
 
     const std::wstring & dbgStr = newXml->str();
     Context.get_notes_context().add(dbgStr, Context.get_notes_context().next_id() );

@@ -49,6 +49,7 @@
 #include "../../DesktopEditor/graphics/Image.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../Resources/BaseFonts.h"
@@ -950,6 +951,7 @@ namespace PdfReader
                     pEntry->bAvailable = true;
                     return;
                 }
+                wsTempFileName = UTF8_TO_U(NSSystemPath::NormalizePath(U_TO_UTF8(wsTempFileName)));
             #endif
 
                 Object oReferenceObject, oStreamObject;
@@ -2902,6 +2904,8 @@ namespace PdfReader
             }
 
             // Обрежем индекс у FontName, если он есть
+            if (wsFontName.empty())
+                wsFontName = wsFontBaseName;
             if (wsFontName.length() > 7)
             {
                 bool bIsIndex = true;
@@ -4162,7 +4166,7 @@ namespace PdfReader
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
         pImageStream->reset();
 
-        unsigned char unAlpha = m_bTransparentGroup ? (m_bIsolatedTransparentGroup ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
+        unsigned char unAlpha = m_bTransparentGroup ? ((m_bIsolatedTransparentGroup && m_bTransparentGroupSoftMask) ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
 
         int nStride = pImageStream->getVals();
         int nComps = pImageStream->getComps();

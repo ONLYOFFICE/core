@@ -713,7 +713,8 @@ int CPdfFile::GetPagesCount()
 {
     if (!m_pInternal->pReader)
         return 0;
-    return m_pInternal->pReader->GetPagesCount();
+    PDFDoc* pPdfDoc = m_pInternal->pReader->GetPDFDocument();
+    return pPdfDoc ? pPdfDoc->getNumPages() : 0;
 }
 void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {

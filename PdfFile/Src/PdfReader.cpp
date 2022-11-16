@@ -59,8 +59,6 @@
 CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 {
     m_wsTempFolder = L"";
-    m_wsSrcPath    = L"";
-
     m_pPDFDocument = NULL;
     m_nFileLength  = 0;
 
@@ -116,20 +114,16 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
     pMeasurerCache->SetCacheSize(1);
     ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
 
-    if (m_pPDFDocument)
-        delete m_pPDFDocument;
+    RELEASEOBJECT(m_pPDFDocument);
 
-    if (GetTempDirectory() == L"")
-    {
+    if (m_wsTempFolder == L"")
         SetTempDirectory(NSDirectory::GetTempPath());
-    }
 
     m_eError = errNone;
     GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
-    GString* user_pswd = NSStrings::CreateString(wsUserPassword);
+    GString* user_pswd  = NSStrings::CreateString(wsUserPassword);
 
     // конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
-    m_wsSrcPath = wsSrcPath;
     std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
     m_pPDFDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
 
@@ -143,10 +137,7 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
         oFile.CloseFile();
     }
 
-    if (m_pPDFDocument)
-        m_eError = m_pPDFDocument->getErrorCode();
-    else
-        m_eError = errMemory;
+    m_eError = m_pPDFDocument ? m_pPDFDocument->getErrorCode() : errMemory;
 
     if (!m_pPDFDocument || !m_pPDFDocument->isOk())
     {
@@ -177,7 +168,7 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
     obj.initNull();
     // будет освобожден в деструкторе PDFDoc
     BaseStream *str = new MemStream((char*)data, 0, length, &obj);
-    m_pPDFDocument = new PDFDoc(str, owner_pswd, user_pswd);
+    m_pPDFDocument  = new PDFDoc(str, owner_pswd, user_pswd);
     m_nFileLength = length;
 
     delete owner_pswd;
@@ -210,20 +201,6 @@ int CPdfReader::GetError()
 
     return m_pPDFDocument->getErrorCode();
 }
-int CPdfReader::GetPagesCount()
-{
-    if (!m_pPDFDocument)
-        return 0;
-
-    return m_pPDFDocument->getNumPages();
-}
-double CPdfReader::GetVersion()
-{
-    if (!m_pPDFDocument)
-        return 0;
-
-    return m_pPDFDocument->getPDFVersion();
-}
 void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
     int nPageIndex = _nPageIndex + 1;
@@ -232,26 +209,19 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
         return;
 
     int nRotate = m_pPDFDocument->getPageRotate(nPageIndex);
-
-    while (nRotate >= 360)
-        nRotate -= 360;
-
-    while (nRotate < 0)
-        nRotate += 360;
-
-    if (0 != nRotate && 180 != nRotate)
-    {
-        *pdHeight = m_pPDFDocument->getPageCropWidth(nPageIndex);
-        *pdWidth  = m_pPDFDocument->getPageCropHeight(nPageIndex);
-    }
-    else
+    if (nRotate % 180 == 0)
     {
         *pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
         *pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
     }
+    else
+    {
+        *pdHeight = m_pPDFDocument->getPageCropWidth(nPageIndex);
+        *pdWidth  = m_pPDFDocument->getPageCropHeight(nPageIndex);
+    }
 
-    *pdDpiX   = 72;
-    *pdDpiY   = 72;
+    *pdDpiX = 72.0;
+    *pdDpiY = 72.0;
 }
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
@@ -262,7 +232,7 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
         PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
         oRendererOut.NewPDF(m_pPDFDocument->getXRef());
         oRendererOut.SetBreak(pbBreak);
-        m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, false, true, false);
+        m_pPDFDocument->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
     }
 }
 void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
@@ -275,7 +245,7 @@ void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
 
     if (!wsTempFolder.empty())
     {
-        std::wstring wsFolderName = std::wstring(wsTempFolder) + L"//pdftemp";
+        std::wstring wsFolderName = wsTempFolder + L"/pdftemp";
         std::wstring wsFolder = wsFolderName;
         int nCounter = 0;
         while (NSDirectory::Exists(wsFolder))
@@ -311,7 +281,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
     sRes += L"\":\"";\
     std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
     NSStringExt::Replace(sValue, L"\"", L"\\\"");\
-    sRes += sValue;\
+    sRes += sValue.empty() ? L" " : sValue;\
     sRes += L"\",";\
     delete s;\
 }\
@@ -372,23 +342,23 @@ std::wstring CPdfReader::GetInfo()
     info.free();
     obj1.free();
 
-    std::wstring version = std::to_wstring(GetVersion());
+    std::wstring version = std::to_wstring(m_pPDFDocument->getPDFVersion());
     std::wstring::size_type posDot = version.find('.');
     if (posDot != std::wstring::npos)
         version = version.substr(0, posDot + 2);
+    if (!version.empty())
+        sRes += (L"\"Version\":" + version + L",");
 
-    sRes += L"\"Version\":";
-    sRes += version;
     double nW = 0;
     double nH = 0;
     double nDpi = 0;
     GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
-    sRes += L",\"PageWidth\":";
+    sRes += L"\"PageWidth\":";
     sRes += std::to_wstring((int)(nW * 100));
     sRes += L",\"PageHeight\":";
     sRes += std::to_wstring((int)(nH * 100));
     sRes += L",\"NumberOfPages\":";
-    sRes += std::to_wstring(GetPagesCount());
+    sRes += std::to_wstring(m_pPDFDocument->getNumPages());
     sRes += L",\"FastWebView\":";
 
     Object obj2, obj3, obj4, obj5, obj6;
@@ -425,11 +395,11 @@ std::wstring CPdfReader::GetInfo()
     if (xref->getCatalog(&catDict) && catDict.isDict() && catDict.dictLookup("MarkInfo", &markInfoObj) && markInfoObj.isDict())
     {
         Object marked, suspects;
-        if (markInfoObj.dictLookup("Marked", &marked) && marked.isBool() && marked.getBool())
+        if (markInfoObj.dictLookup("Marked", &marked) && marked.isBool() && marked.getBool() == gTrue)
         {
             bTagged = true;
             // If Suspects is true, the document may not completely conform to Tagged PDF conventions.
-            if (markInfoObj.dictLookup("Suspects", &suspects) && suspects.isBool() && suspects.getBool())
+            if (markInfoObj.dictLookup("Suspects", &suspects) && suspects.isBool() && suspects.getBool() == gTrue)
                 bTagged = false;
         }
         marked.free();
@@ -438,8 +408,7 @@ std::wstring CPdfReader::GetInfo()
     markInfoObj.free();
     catDict.free();
 
-    sRes += bTagged ? L"true" : L"false";
-    sRes += L"}";
+    sRes += bTagged ? L"true}" : L"false}";
 
     return sRes;
 }
@@ -488,8 +457,7 @@ void getBookmars(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, 
     GList* pList = pOutlineItem->getKids();
     if (!pList)
         return;
-    int num = pList->getLength();
-    for (int i = 0; i < num; i++)
+    for (int i = 0, num = pList->getLength(); i < num; i++)
     {
         OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
         if (!pOutlineItemKid)
@@ -588,7 +556,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     TextOutputControl textOutControl;
     textOutControl.mode = textOutReadingOrder;
     TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
-    m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72, 72, 0, gFalse, gTrue, gFalse);
+    m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
     m_pPDFDocument->processLinks(pTextOut, nPageIndex);
     TextWordList* pWordList = pTextOut->makeWordList();
     for (int i = 0; i < pWordList->getLength(); i++)

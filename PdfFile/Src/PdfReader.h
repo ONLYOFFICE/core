@@ -52,13 +52,11 @@ public:
     std::wstring GetTempDirectory();
     void SetTempDirectory(const std::wstring& directory);
 
-    int GetPagesCount();
     void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
     std::wstring GetInfo();
 
     int          GetError();
-    double       GetVersion();
 
     NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
     PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
@@ -70,9 +68,8 @@ public:
 private:
     PDFDoc*            m_pPDFDocument;
     std::wstring       m_wsTempFolder;
-    std::wstring       m_wsSrcPath;
     NSFonts::IFontManager* m_pFontManager;
-    PdfReader::CFontList* m_pFontList;
+    PdfReader::CFontList*  m_pFontList;
     DWORD              m_nFileLength;
     int                m_eError;
 };

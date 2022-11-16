@@ -1033,25 +1033,25 @@ private:
 	{
 	public:
 
-		CFontState() : m_wsPath(L""), m_wsName(L"Arial"), m_lStyle(0), m_bBold(false), m_bItalic(false), m_dCharSpace(0), 
-			m_lFaceIndex(0), m_dSize(10), m_bGid(false), m_bNeedDoBold(false), m_bNeedDoItalic(false)
+        CFontState() : m_wsName(L"Arial"), m_wsPath(L""), m_dSize(10), m_bGid(false), m_lFaceIndex(0), m_lStyle(0),
+            m_bBold(false), m_bItalic(false), m_dCharSpace(0), m_bNeedDoItalic(false), m_bNeedDoBold(false)
 		{
 		}
 
 		void Reset()
 		{
-			m_wsPath     = L"";
 			m_wsName     = L"Arial";
+            m_wsPath     = L"";
+            m_dSize      = 10;
+            m_bGid       = false;
+            m_lFaceIndex = 0;
 			m_lStyle     = 0;
 			m_bBold      = false;
 			m_bItalic    = false;
 			m_dCharSpace = 0;
-			m_lFaceIndex = 0;
-			m_dSize      = 10;
-			m_bGid       = false;
 
+            m_bNeedDoItalic = false;
 			m_bNeedDoBold   = false;
-			m_bNeedDoItalic = false;
 		}
 
 		inline std::wstring GetName()
@@ -1435,16 +1435,13 @@ private:
 			return false;
 		}
 
-
 	public:
 
 		std::vector<CPathCommandBase*> m_vCommands;
 		bool                           m_bIsMoveTo;
 	};
-	class CTransform
+    struct CTransform
 	{
-	public:
-
 		CTransform()
 		{
 			Reset();
@@ -1489,8 +1486,6 @@ private:
 			dy  = dY;
 		}
 
-	public:
-
 		double m11;
 		double m12;
 		double m21;
@@ -1515,14 +1510,6 @@ private:
 		std::vector<CRendererCommandBase*> m_vCommands;
 		CTransform                         m_oTransform;
 	};
-	struct TImageInfo
-	{
-		std::wstring           wsPath;
-		BYTE                   nAlpha;
-		int                    nWidth;
-		int                    nHeight;
-		PdfWriter::CImageDict* pImage;
-	};
 	struct TDestinationInfo
 	{
 		TDestinationInfo(PdfWriter::CPage* page, const double& x, const double& y, const double& w, const double& h, const double& dx, const double& dy, const unsigned int& undpage)
@@ -1546,31 +1533,6 @@ private:
 		double       dDestY;
 		unsigned int unDestPage;
 	};
-	class CFieldsManager
-	{
-	public:
-
-		CFieldsManager()
-		{
-			m_unCounter = 0;
-		}
-
-		std::string GetNewFieldName()
-		{
-			std::string sName("F");
-			sName.append(std::to_string(++m_unCounter));
-			return sName;
-		}
-
-	private:
-
-		unsigned int m_unCounter;
-	};	
-	//----------------------------------------------------------------------------------------
-	//
-	// CMultiLineTextManager
-	//
-	//----------------------------------------------------------------------------------------
 	class CMultiLineTextManager
 	{
 	public:
@@ -1775,9 +1737,7 @@ private:
 			return dWidth;
 		}
 
-
-	private:
-
+    private:
 		inline bool IsSpace(const unsigned int& unPos) const
 		{
 			return (m_pCodes[unPos] == m_ushSpaceCode);
@@ -1788,9 +1748,7 @@ private:
 			return (GetLinesCount() * (m_unLineHeight * dKoef) < (dH - (m_nDescent * dKoef)));
 		}
 
-
-	private:
-
+    private:
 		unsigned short* m_pCodes;
 		unsigned int*   m_pWidths;
 		unsigned int    m_unLen;
@@ -1829,7 +1787,7 @@ private:
 	LONG                         m_lClipDepth;
 	std::vector<TFontInfo>       m_vFonts;
 	std::vector<TDestinationInfo>m_vDestinations;
-	CFieldsManager               m_oFieldsManager;
+    unsigned int                 m_unFieldsCounter;
 	CMultiLineTextManager        m_oLinesManager;
 								 
     bool                         m_bValid;

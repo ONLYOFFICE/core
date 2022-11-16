@@ -453,6 +453,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_o
 	m_pPage       = NULL;
 	m_pFont       = NULL;
 
+    m_unFieldsCounter          = 0;
 	m_bNeedUpdateTextFont      = true;
 	m_bNeedUpdateTextColor     = true;
 	m_bNeedUpdateTextAlpha     = true;
@@ -1891,7 +1892,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CF
 		if (L"" != wsKey)
 			pFieldBase->SetFieldName(wsKey);
 		else
-			pFieldBase->SetFieldName(m_oFieldsManager.GetNewFieldName());
+            pFieldBase->SetFieldName("F" + std::to_string(++m_unFieldsCounter));
 	}
 
 	return S_OK;

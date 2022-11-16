@@ -145,7 +145,7 @@ void Timing_2010::ConvertTnLst(PPTX::Logic::TnLst &tnLst, CRecordExtTimeNodeCont
     if (tnLst.list.empty())
         tnLst.list.push_back(PPTX::Logic::TimeNodeBase());
 
-    FillTnChild(pETNC, tnLst.list.front());
+    FillTnChild(pETNC, tnLst.list.back());
 }
 
 void Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild)
@@ -171,7 +171,7 @@ void Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
         auto& anim = oChild.m_node.as<PPTX::Logic::Anim>();
 
         FillAnim(pETNC->m_pTimeAnimateBehavior, anim);
-        FillCTn(pETNC, anim.cBhvr.cTn);
+        FillCTnRecursive(pETNC, anim.cBhvr.cTn);
     }
     else if (pETNC->m_haveColorBehavior)
     {
@@ -260,7 +260,7 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
         if (pETNC->m_pTimeSequenceDataAtom->m_fPreviousActionPropertyUsed)
             oSec.prevAc = pETNC->m_pTimeSequenceDataAtom->m_nPreviousAction ? L"skipTimed" : L"none";
     }
-    FillCTn(pETNC, oSec.cTn);
+    FillCTnRecursive(pETNC, oSec.cTn);
 
     // Fill cond lists
     if (!pETNC->m_arrRgEndTimeCondition.empty())
@@ -273,7 +273,7 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
         PPTX::Logic::Cond cond;
         cond.node_name = L"cond";
         FillCond(oldCond, cond);
-        if (m_cTnDeep == 1)
+        if (cTNLevel == TimeNodeLevel::root)
             FillEmptyTargetCond(cond);
         oSec.prevCondLst->list.push_back(cond);
     }
@@ -288,7 +288,7 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
         PPTX::Logic::Cond cond;
         cond.node_name = L"cond";
         FillCond(oldCond, cond);
-        if (m_cTnDeep == 1)
+        if (cTNLevel == TimeNodeLevel::root)
             FillEmptyTargetCond(cond);
         oSec.nextCondLst->list.push_back(cond);
     }
@@ -296,7 +296,7 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
 
 void Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
 {
-    FillCTn(pETNC, oPar.cTn);
+    FillCTnRecursive(pETNC, oPar.cTn);
 }
 
 void Timing_2010::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
@@ -320,7 +320,7 @@ void Timing_2010::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBh
         bhvr = &(pETNC->m_pTimeCommandBehavior->m_oBevavior);
 
     FillCBhvr(bhvr, oBhvr);
-    FillCTn(pETNC, oBhvr.cTn);
+    FillCTnRecursive(pETNC, oBhvr.cTn);
 }
 
 void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CBhvr &oBhvr)
@@ -424,7 +424,7 @@ void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CB
 
 void Timing_2010::FillCBhvr(PPTX::Logic::CBhvr &oBhvr, int dur, UINT spid, std::wstring attrname, int delay)
 {
-    oBhvr.cTn.id = m_cTnId++;
+    oBhvr.cTn.id = cTnId++;
     oBhvr.cTn.fill = L"hold";
     oBhvr.cTn.dur = std::to_wstring(dur);
     if (delay > -1)
@@ -557,210 +557,158 @@ void Timing_2010::FillAnim(CRecordTimeAnimateBehaviorContainer *pTimeAnimateBeha
     FillCBhvr(&(pTimeAnimateBehavior->m_oBehavior), oAnim.cBhvr);
 }
 
-void Timing_2010::FillCTn(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+void Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
 {
-    oCTn.id = m_cTnId++;
-    m_cTnDeep++;
+    cTNLevel++;
 
-    // Reading TimeNodeAtom
-    const auto &oTimeNodeAtom = pETNC->m_oTimeNodeAtom;
+    FillCTnHeadArgs(pETNC, oCTn);
 
-    // Write restart
-    if (oTimeNodeAtom.m_fRestartProperty)
-        oCTn.restart = PPTX::Limit::TLRestart(oTimeNodeAtom.m_dwRestart) ;
+    ConvertChildTnLst(pETNC, oCTn);
+    ConvertCTnIterate(pETNC, oCTn);
+    ConvertCTnEndSync(pETNC, oCTn);
+    ConvertCTnIterate(pETNC, oCTn);
+    ConvertCTnStCondLst(pETNC, oCTn);
 
+    cTNLevel--;
+}
 
-    // Write fill
-    if (oTimeNodeAtom.m_fFillProperty)
-        oCTn.fill = PPTX::Limit::TLNodeFillType(oTimeNodeAtom.m_dwFill);
-
-    // Write dur
-    if (oTimeNodeAtom.m_fDurationProperty)
-    {
-        if (oTimeNodeAtom.m_nDuration == -1)
-            oCTn.dur = L"indefinite";
-        else
-            oCTn.dur = std::to_wstring(oTimeNodeAtom.m_nDuration);
-    }
-
-
-    //// Write Children ////
-
-    //Write cTn attr
-    if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
-    {
-        FillCTn(pETNC->m_pTimePropertyList, oCTn);
-    }
-    if (m_cTnDeep == 2)
-        isMainSeq = oCTn.nodeType.get_value_or(L"") == L"mainSeq";
-
-
-    if (!pETNC->m_haveSequenceAtom)
-    {
-        // Write stCondLst
-        if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
-        {
-            oCTn.stCondLst = new PPTX::Logic::CondLst;
-            oCTn.stCondLst->node_name = L"stCondLst";
-        }
-        for (auto *oldCond : pETNC->m_arrRgBeginTimeCondition) {
-            PPTX::Logic::Cond cond;
-            cond.node_name = L"cond";
-            FillCond(oldCond, cond);
-            oCTn.stCondLst->list.push_back(cond);
-        }
-
-
-        // Write endCondLst
-        if (pETNC->m_arrRgEndTimeCondition.empty() == false)
-        {
-            oCTn.endCondLst = new PPTX::Logic::CondLst;
-            oCTn.endCondLst->node_name = L"endCondLst";
-            FillCondLst(pETNC->m_arrRgEndTimeCondition, oCTn.endCondLst.get2());
-        }
-    }
-
-
-    // Write childTnLst
+void Timing_2010::ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+{
     if (pETNC->m_arrRgExtTimeNodeChildren.empty() == false)
-    {
         oCTn.childTnLst = new PPTX::Logic::ChildTnLst;
-    }
-    for (auto *oldChild : pETNC->m_arrRgExtTimeNodeChildren) {
+
+    for (auto *oldChild : pETNC->m_arrRgExtTimeNodeChildren)
+    {
         PPTX::Logic::TimeNodeBase child;
         FillTnChild(oldChild, child);
         oCTn.childTnLst->list.push_back(child);
     }
+}
 
+void Timing_2010::ConvertCTnIterate(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+{
+    if (!pETNC->m_haveIterateDataAtom)
+        return;
 
-    // Write iterate
-    if (pETNC->m_haveIterateDataAtom)
+    auto *iter = pETNC->m_pTimeIterateDataAtom;
+    oCTn.iterate = new PPTX::Logic::Iterate;
+
+    std::wstring type[] = {L"el", L"wd", L"lt"};
+    if (iter->m_fIterateTypePropertyUsed)
+        oCTn.iterate->type = type[iter->m_nIterateType % 3];
+
+    if (iter->m_fIterateDirectionPropertyUsed)
+        oCTn.iterate->backwards = (bool)iter->m_nIterateDirection;
+
+    int intervalType = iter->m_fIterateIntervalTypePropertyUsed ?
+                iter->m_nIterateIntervalType : 0;
+    uint iterateInterval = iter->m_fIterateIntervalPropertyUsed ?
+                iter->m_nIterateInterval : 0;
+
+    if (intervalType)
+        oCTn.iterate->tmPct = iterateInterval > 1000 ? 10000 : iterateInterval * 10;
+    else
+        oCTn.iterate->tmAbs = std::to_wstring(iterateInterval);
+}
+
+void Timing_2010::ConvertCTnEndSync(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+{
+    if (!pETNC->m_haveTimeEndSyncTime)
+        return;
+
+    auto *sync = pETNC->m_pTimeEndSyncTimeCondition;
+    oCTn.endSync = new PPTX::Logic::Cond;
+    oCTn.endSync->node_name = L"endSync";
+    FillCond(sync, *(oCTn.endSync));
+}
+
+void Timing_2010::ConvertCTnSubTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+{
+    if (pETNC->m_arrRgSubEffect.empty())
+        return;
+
+    //        if (
+    //                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
+    //                m_pBldLst &&
+    //                m_pPPT10->m_haveBuildList
+    //           )
+    //        {
+    //            oCTn.grpId = 0;
+    //            auto bldP = new PPTX::Logic::BldP;
+    //            bldP->grpId = 0;
+    //            m_currentBldP = bldP;
+    //        }
+
+    auto sub = new PPTX::Logic::TnLst;
+    sub->node_name = L"subTnLst";
+    FillSubTnLst(pETNC->m_arrRgSubEffect, *sub);
+    oCTn.subTnLst = sub;
+
+    if (m_currentBldP)
     {
-        auto *iter = pETNC->m_pTimeIterateDataAtom;
-        oCTn.iterate = new PPTX::Logic::Iterate;
-
-        std::wstring type[] = {L"el", L"wd", L"lt"};
-        if (iter->m_fIterateTypePropertyUsed)
-            oCTn.iterate->type = type[iter->m_nIterateType % 3];
-
-        if (iter->m_fIterateDirectionPropertyUsed)
-            oCTn.iterate->backwards = (bool)iter->m_nIterateDirection;
-
-        int intervalType = iter->m_fIterateIntervalTypePropertyUsed ?
-                    iter->m_nIterateIntervalType : 0;
-        uint iterateInterval = iter->m_fIterateIntervalPropertyUsed ?
-                    iter->m_nIterateInterval : 0;
-
-        if (intervalType)
-            oCTn.iterate->tmPct = iterateInterval > 1000 ? 10000 : iterateInterval * 10;
-        else
-            oCTn.iterate->tmAbs = std::to_wstring(iterateInterval);
+        PPTX::Logic::BuildNodeBase oBuildNodeBase;
+        oBuildNodeBase.m_node = m_currentBldP;
+        m_pBldLst->list.push_back(oBuildNodeBase);
+        m_currentBldP = nullptr;
     }
 
-
-    // Write endSync
-    if (pETNC->m_haveTimeEndSyncTime)
+    for (auto timeModAtom : pETNC->m_arrRgTimeModifierAtom)
     {
-        auto *sync = pETNC->m_pTimeEndSyncTimeCondition;
-        oCTn.endSync = new PPTX::Logic::Cond;
-        oCTn.endSync->node_name = L"endSync";
-        FillCond(sync, *(oCTn.endSync));
-    }
-
-
-    // Write subTnLst
-    if (pETNC->m_arrRgSubEffect.empty() == false)
-    {
-        //        if (
-        //                pETNC->m_arrRgSubEffect[0]->m_oTimeNodeAtom.m_fGroupingTypeProperty &&
-        //                m_pBldLst &&
-        //                m_pPPT10->m_haveBuildList
-        //           )
-        //        {
-        //            oCTn.grpId = 0;
-        //            auto bldP = new PPTX::Logic::BldP;
-        //            bldP->grpId = 0;
-        //            m_currentBldP = bldP;
-        //        }
-
-        auto sub = new PPTX::Logic::TnLst;
-        sub->node_name = L"subTnLst";
-        FillSubTnLst(pETNC->m_arrRgSubEffect, *sub);
-        oCTn.subTnLst = sub;
-
-        if (m_currentBldP)
+        switch (timeModAtom->m_nType)
         {
-            PPTX::Logic::BuildNodeBase oBuildNodeBase;
-            oBuildNodeBase.m_node = m_currentBldP;
-            m_pBldLst->list.push_back(oBuildNodeBase);
-            m_currentBldP = nullptr;
+        case 0:
+        {
+            oCTn.repeatCount = std::to_wstring((int)
+                                               timeModAtom->m_Value * 1000);
+            break;
+        }
+        case 1:
+        {
+            // Check 1000
+            oCTn.repeatDur = std::to_wstring((int)
+                                             timeModAtom->m_Value * 1000);
+            break;
+        }
+        case 2:
+        {
+            // Check 1000
+            oCTn.spd = std::to_wstring((int)
+                                       timeModAtom->m_Value * 1000);
+            break;
+        }
+        case 3:
+        {
+            // Check 1000
+            oCTn.accel = std::to_wstring((int)
+                                         timeModAtom->m_Value * 1000);
+            break;
+        }
+        case 4:
+        {
+            // Check 1000
+            oCTn.decel = std::to_wstring((int)
+                                         timeModAtom->m_Value * 1000);
+            break;
+        }
+        case 5:
+        {
+            // Check 1000
+            oCTn.autoRev = (bool)timeModAtom->m_Value;
+            break;
         }
 
-        for (auto timeModAtom : pETNC->m_arrRgTimeModifierAtom)
-        {
-            switch (timeModAtom->m_nType)
-            {
-            case 0:
-            {
-                oCTn.repeatCount = std::to_wstring((int)
-                                                   timeModAtom->m_Value * 1000);
-                break;
-            }
-            case 1:
-            {
-                // Check 1000
-                oCTn.repeatDur = std::to_wstring((int)
-                                                 timeModAtom->m_Value * 1000);
-                break;
-            }
-            case 2:
-            {
-                // Check 1000
-                oCTn.spd = std::to_wstring((int)
-                                           timeModAtom->m_Value * 1000);
-                break;
-            }
-            case 3:
-            {
-                // Check 1000
-                oCTn.accel = std::to_wstring((int)
-                                             timeModAtom->m_Value * 1000);
-                break;
-            }
-            case 4:
-            {
-                // Check 1000
-                oCTn.decel = std::to_wstring((int)
-                                             timeModAtom->m_Value * 1000);
-                break;
-            }
-            case 5:
-            {
-                // Check 1000
-                oCTn.autoRev = (bool)timeModAtom->m_Value;
-                break;
-            }
-
-            }
         }
-
     }
+}
 
-    // Write stCondLst
-    if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
-    {
-        oCTn.stCondLst = new PPTX::Logic::CondLst;
-        oCTn.stCondLst->node_name = L"stCondLst";
-        FillStCondLst(pETNC->m_arrRgBeginTimeCondition, oCTn.stCondLst.get2());
-    }
+void Timing_2010::ConvertCTnStCondLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+{
+    if (pETNC->m_arrRgBeginTimeCondition.empty())
+        return;
 
-    if (oCTn.nodeType.IsInit() == false && (m_cTnDeep == 3 || m_cTnDeep == 4))
-    {
-        oCTn.nodeType = new PPTX::Limit::TLNodeType();
-        oCTn.nodeType->set( m_cTnDeep == 3 ? L"clickPar" : L"withGroup");
-    }
-
-    m_cTnDeep--;
+    oCTn.stCondLst = new PPTX::Logic::CondLst;
+    oCTn.stCondLst->node_name = L"stCondLst";
+    FillStCondLst(pETNC->m_arrRgBeginTimeCondition, oCTn.stCondLst.get2());
 }
 
 void Timing_2010::FillCond(CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond)
@@ -856,7 +804,7 @@ void Timing_2010::FillSubTnLst(std::vector<CRecordSubEffectContainer *> &vecSEC,
             }
             FillCondLst(pSEC->m_arrRgBeginTimeCondition,
                         audio->cMediaNode.cTn.stCondLst.get2());
-            FillCTn(pSEC->m_pTimePropertyList, audio->cMediaNode.cTn);
+            FillCTnProps(pSEC->m_pTimePropertyList, audio->cMediaNode.cTn);
         }
 
         if (pSEC->m_haveColorBehavior)
@@ -891,7 +839,7 @@ void Timing_2010::FillAudio(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Aud
             //            oAudio.cMediaNode.showWhenStopped = false;
         } else
             return;
-        FillCTn(pETNC, oAudio.cMediaNode.cTn);
+        FillCTnRecursive(pETNC, oAudio.cMediaNode.cTn);
     }
 }
 
@@ -953,116 +901,182 @@ void Timing_2010::FillEmptyTargetCond(PPTX::Logic::Cond &cond)
     cond.tgtEl = new PPTX::Logic::TgtEl;
 }
 
-void Timing_2010::FillCTn(CRecordTimePropertyList4TimeNodeContainer *pProp, PPTX::Logic::CTn &oCTn)
+void Timing_2010::FillCTnProps(CRecordTimePropertyList4TimeNodeContainer *pProp, PPTX::Logic::CTn &oCTn)
 {
-    if (pProp && !pProp->m_bEmtyNode)
+    if (pProp == nullptr || pProp->m_bEmtyNode)
+        return;
+    for (auto *pRec : pProp->m_arrElements)
     {
-        for (auto *pRec : pProp->m_arrElements)
+        TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) pRec->m_oHeader.RecInstance;
+
+        switch ( VariableType )
         {
-            TimePropertyID4TimeNode VariableType = ( TimePropertyID4TimeNode ) pRec->m_oHeader.RecInstance;
+        case TL_TPID_Display:
+        {
+            oCTn.display = !(bool)dynamic_cast<CRecordTimeDisplayType*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_MasterPos:
+        {
+            oCTn.masterRel = new PPTX::Limit::TLMasterRelation;
+            oCTn.masterRel = dynamic_cast<CRecordTimeMasterRelType*>(pRec)->m_Value ?
+                        L"nextClick" : L"sameClick";
+            break;
+        }
+        case TL_TPID_SubType:			break;
+        case TL_TPID_EffectID:
+        {
+            oCTn.presetID = dynamic_cast<CRecordTimeEffectID*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_EffectDir:
+        {
+            oCTn.presetSubtype = dynamic_cast<CRecordTimeEffectDir*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_EffectType:
+        {
+            // Write presetClass
+            std::wstring presetClass;
+            switch (dynamic_cast<CRecordTimeEffectType*>(pRec)->m_Value) {
+            case 0: break;
+            case 1: presetClass = L"entr";      break;
+            case 2: presetClass = L"exit";      break;
+            case 3: presetClass = L"emph";      break;
+            case 4: presetClass = L"path";      break;
+            case 5: presetClass = L"verb";      break;
+            case 6: presetClass = L"mediacall"; break;
+            }
+            if (!presetClass.empty())
+            {
+                oCTn.presetClass = new PPTX::Limit::TLPresetClass;
+                oCTn.presetClass = presetClass;
+            }
+            break;
+        }
+        case TL_TPID_AfterEffect:
+        {
+            oCTn.afterEffect = (bool)dynamic_cast<CRecordTimeAfterEffect*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_SlideCount:		break;
+        case TL_TPID_TimeFilter:
+        {
+            oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_EventFilter:
+        {
+            oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_HideWhenStopped:
+            break;
+        case TL_TPID_GroupID:
+        {
+            oCTn.grpId = dynamic_cast<CRecordTimeGroupID*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_EffectNodeType:
+        {
+            // Write nodeType
+            std::wstring nodeType;
+            switch (dynamic_cast<CRecordTimeEffectNodeType*>(pRec)->m_Value)
+            {
+            case 1: nodeType = L"clickEffect"; break;
+            case 2: nodeType = L"withEffect"; break;
+            case 3: nodeType = L"afterEffect"; break;
+            case 4: nodeType = L"mainSeq"; break;
+            case 5: nodeType = L"interactiveSeq"; break;
+            case 6: nodeType = L"clickPar"; break;
+            case 7: nodeType = L"withGroup"; break;
+            case 8: nodeType = L"afterGroup"; break;
+            case 9: nodeType = L"tmRoot"; break;
+            }
+            if (!nodeType.empty())
+            {
+                oCTn.nodeType = new PPTX::Limit::TLNodeType;
+                oCTn.nodeType = nodeType;
+            }
 
-            switch ( VariableType )
-            {
-            case TL_TPID_Display:
-            {
-                oCTn.display = !(bool)dynamic_cast<CRecordTimeDisplayType*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_MasterPos:
-            {
-                oCTn.masterRel = new PPTX::Limit::TLMasterRelation;
-                oCTn.masterRel = dynamic_cast<CRecordTimeMasterRelType*>(pRec)->m_Value ?
-                            L"nextClick" : L"sameClick";
-                break;
-            }
-            case TL_TPID_SubType:			break;
-            case TL_TPID_EffectID:
-            {
-                oCTn.presetID = dynamic_cast<CRecordTimeEffectID*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EffectDir:
-            {
-                oCTn.presetSubtype = dynamic_cast<CRecordTimeEffectDir*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EffectType:
-            {
-                // Write presetClass
-                std::wstring presetClass;
-                switch (dynamic_cast<CRecordTimeEffectType*>(pRec)->m_Value) {
-                case 0: break;
-                case 1: presetClass = L"entr";      break;
-                case 2: presetClass = L"exit";      break;
-                case 3: presetClass = L"emph";      break;
-                case 4: presetClass = L"path";      break;
-                case 5: presetClass = L"verb";      break;
-                case 6: presetClass = L"mediacall"; break;
-                }
-                if (!presetClass.empty())
-                {
-                    oCTn.presetClass = new PPTX::Limit::TLPresetClass;
-                    oCTn.presetClass = presetClass;
-                }
-                break;
-            }
-            case TL_TPID_AfterEffect:
-            {
-                oCTn.afterEffect = (bool)dynamic_cast<CRecordTimeAfterEffect*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_SlideCount:		break;
-            case TL_TPID_TimeFilter:
-            {
-                oCTn.tmFilter = dynamic_cast<CRecordTimeNodeTimeFilter*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EventFilter:
-            {
-                oCTn.evtFilter = dynamic_cast<CRecordTimeEventFilter*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_HideWhenStopped:	break;
-            case TL_TPID_GroupID:
-            {
-                oCTn.grpId = dynamic_cast<CRecordTimeGroupID*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_EffectNodeType:
-            {
-                // Write nodeType
-                std::wstring nodeType;
-                switch (dynamic_cast<CRecordTimeEffectNodeType*>(pRec)->m_Value)
-                {
-                case 1: nodeType = L"clickEffect"; break;
-                case 2: nodeType = L"withEffect"; break;
-                case 3: nodeType = L"afterEffect"; break;
-                case 4: nodeType = L"mainSeq"; break;
-                case 5: nodeType = L"interactiveSeq"; break;
-                case 6: nodeType = L"clickPar"; break;
-                case 7: nodeType = L"withGroup"; break;
-                case 8: nodeType = L"afterGroup"; break;
-                case 9: nodeType = L"tmRoot"; break;
-                }
-                if (!nodeType.empty())
-                {
-                    oCTn.nodeType = new PPTX::Limit::TLNodeType;
-                    oCTn.nodeType = nodeType;
-                }
+            break;
+        }
+        case TL_TPID_PlaceholderNode:
+        {
+            oCTn.nodePh = (bool)dynamic_cast<CRecordTimePlaceholderNode*>(pRec)->m_Value;
+            break;
+        }
+        case TL_TPID_MediaVolume:
+            break;
+        case TL_TPID_MediaMute:
+            break;
+        case TL_TPID_ZoomToFullScreen:
+            break;
+        default :
+            break;
+        }
+    }
+}
 
-                break;
-            }
-            case TL_TPID_PlaceholderNode:
-            {
-                oCTn.nodePh = (bool)dynamic_cast<CRecordTimePlaceholderNode*>(pRec)->m_Value;
-                break;
-            }
-            case TL_TPID_MediaVolume:		break;
-            case TL_TPID_MediaMute:			break;
-            case TL_TPID_ZoomToFullScreen:	break;
-            default :
-                break;
-            }
+void Timing_2010::FillCTnHeadArgs(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+{
+    oCTn.id = cTnId++;
+
+    // Reading TimeNodeAtom
+    const auto &oTimeNodeAtom = pETNC->m_oTimeNodeAtom;
+
+    // Write restart
+    if (oTimeNodeAtom.m_fRestartProperty)
+        oCTn.restart = PPTX::Limit::TLRestart(oTimeNodeAtom.m_dwRestart) ;
+
+
+    // Write fill
+    if (oTimeNodeAtom.m_fFillProperty)
+        oCTn.fill = PPTX::Limit::TLNodeFillType(oTimeNodeAtom.m_dwFill);
+
+    // Write dur
+    if (oTimeNodeAtom.m_fDurationProperty)
+    {
+        if (oTimeNodeAtom.m_nDuration == -1)
+            oCTn.dur = L"indefinite";
+        else
+            oCTn.dur = std::to_wstring(oTimeNodeAtom.m_nDuration);
+    }
+
+    if (pETNC->m_haveTimePropertyList && !pETNC->m_pTimePropertyList->m_bEmtyNode)
+        FillCTnProps(pETNC->m_pTimePropertyList, oCTn);
+
+    if (cTNLevel == TimeNodeLevel::mainSeqOrTrigger)
+        isMainSeq = oCTn.nodeType.get_value_or(L"") == L"mainSeq";
+
+    if (oCTn.nodeType.IsInit() == false && (cTNLevel == TimeNodeLevel::eventOrClickGroup || cTNLevel == TimeNodeLevel::parallelShow))
+    {
+        oCTn.nodeType = new PPTX::Limit::TLNodeType();
+        oCTn.nodeType->set( cTNLevel ==  TimeNodeLevel::parallelShow ? L"clickPar" : L"withGroup");
+    }
+
+    if (!pETNC->m_haveSequenceAtom)
+    {
+        // Write stCondLst
+        if (pETNC->m_arrRgBeginTimeCondition.empty() == false)
+        {
+            oCTn.stCondLst = new PPTX::Logic::CondLst;
+            oCTn.stCondLst->node_name = L"stCondLst";
+        }
+        for (auto *oldCond : pETNC->m_arrRgBeginTimeCondition) {
+            PPTX::Logic::Cond cond;
+            cond.node_name = L"cond";
+            FillCond(oldCond, cond);
+            oCTn.stCondLst->list.push_back(cond);
+        }
+
+
+        // Write endCondLst
+        if (pETNC->m_arrRgEndTimeCondition.empty() == false)
+        {
+            oCTn.endCondLst = new PPTX::Logic::CondLst;
+            oCTn.endCondLst->node_name = L"endCondLst";
+            FillCondLst(pETNC->m_arrRgEndTimeCondition, oCTn.endCondLst.get2());
         }
     }
 }
@@ -1075,7 +1089,7 @@ void Timing_2010::FillAnimClr(
     auto &clrAtom = pColor->m_oColorBehaviorAtom;
 
     FillCBhvr(&(pColor->m_oBehavior), oAnimClr.cBhvr);
-    FillCTn(pProp, oAnimClr.cBhvr.cTn);
+    FillCTnProps(pProp, oAnimClr.cBhvr.cTn);
 
     // Write Attributes
     if (pColor->m_oBehavior.m_havePropertyList){
@@ -1307,7 +1321,7 @@ void Timing_2010::FillVideo(
 {
     auto video = pETNC->m_pClientVisualElement->m_oVisualShapeAtom;
 
-    FillCTn(pETNC, oVideo.cMediaNode.cTn);
+    FillCTnRecursive(pETNC, oVideo.cMediaNode.cTn);
 
     if (pETNC->m_pTimePropertyList->m_arrElements.size() >= 5)
     {
@@ -1332,6 +1346,12 @@ void Timing_2010::FillVideo(
 
     oVideo.cMediaNode.tgtEl.spTgt = PPTX::Logic::SpTgt();
     oVideo.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(video.m_nObjectIdRef);
+}
+
+void Timing_2010::FillAnimationPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
+{
+
+
 }
 
 

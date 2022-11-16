@@ -37,6 +37,18 @@ public:
     Timing_2010(CRecordPP10SlideBinaryTagExtension* pAnim_2010, const std::unordered_set<int>& shapesID);
     void Convert(PPTX::Logic::Timing& timimg, CExMedia* pExMedia, CRelsGenerator* pRels);
 
+public:
+    enum TimeNodeLevel {
+        zero,
+        root = 1,
+        mainSeqOrTrigger = 2,
+        eventOrClickGroup = 3,
+        parallelShow = 4,
+        oneAnim = 5,
+        animEffectDescription = 6
+    };
+
+
 private:
     void ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListContainer *pBLC);
     void FillBuildNodeBase(CRecordBuildListSubContainer* pSub, PPTX::Logic::BuildNodeBase oBuildNodeBase);
@@ -66,13 +78,19 @@ private:
             CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
             PPTX::Logic::Anim &oAnim);
 
-    void FillCTn(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void ConvertCTnIterate(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void ConvertCTnEndSync(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void ConvertCTnSubTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void ConvertCTnStCondLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
     void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond);
     void FillStCondLst(const std::vector<CRecordTimeConditionContainer*>& timeCondCont, PPTX::Logic::CondLst& stCondLst);
     void FillSubTnLst (std::vector<CRecordSubEffectContainer*> &vecSEC, PPTX::Logic::TnLst &oSubTnLst);
     void FillCondLst(std::vector<CRecordTimeConditionContainer*>& oCondVec, PPTX::Logic::CondLst &oCondLst);
     void FillEmptyTargetCond(PPTX::Logic::Cond &cond);
-    void FillCTn(CRecordTimePropertyList4TimeNodeContainer *pProp, PPTX::Logic::CTn &oCTn);
+    void FillCTnProps(CRecordTimePropertyList4TimeNodeContainer *pProp, PPTX::Logic::CTn &oCTn);
+    void FillCTnHeadArgs(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
 
 
     void FillAnimClr(
@@ -101,6 +119,9 @@ private:
     void FillVideo(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::Video &oVideo);
+    void FillAnimationPar(                                      // TODO next
+            CRecordExtTimeNodeContainer *pETNC,
+            PPTX::Logic::Par &oPar);
 
 private:
     CRecordPP10SlideBinaryTagExtension* pTagExtAnim = nullptr;
@@ -112,8 +133,8 @@ private:
     PPTX::Logic::BldLst *m_pBldLst = nullptr; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP = nullptr;
 
-    int m_cTnId = 0;
-    int m_cTnDeep = 0;
+    int cTnId = 0;
+    int cTNLevel = TimeNodeLevel::zero;
 };
 
 }

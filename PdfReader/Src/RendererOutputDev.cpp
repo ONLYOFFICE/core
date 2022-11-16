@@ -3677,7 +3677,7 @@ namespace PdfReader
     {
 //        if (NULL != m_pBufferTextClip) tmpchange
 //        {
-           updateClip(pGState);
+//            updateClip(pGState);
 //
 //            RELEASEOBJECT(m_pBufferTextClip);
 //        }
@@ -4758,6 +4758,8 @@ namespace PdfReader
 		if (m_sClip.empty())
 			return;
 
+        //for (int i = m_sClip.size() - 1; i >= 0; i--) {
+        //    GfxClip curClip = m_sClip[i];
         for (GfxClip &curClip : m_sClip) {
             for (int nIndex = 0; nIndex < curClip.GetPathNum(); nIndex++)
             {

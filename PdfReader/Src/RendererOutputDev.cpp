@@ -675,7 +675,6 @@ namespace PdfReader
     }
     void RendererOutputDev::saveState(GfxState *pGState)
     {
-
         m_sClip.push_back(GfxClip());
         m_bClipChanged = true;
         updateAll(pGState);
@@ -3949,7 +3948,7 @@ namespace PdfReader
             {
                 m_sClip.push_back(GfxClip());
             }
-            m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
+            m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
             m_bClipChanged = true;
         }
 
@@ -4758,14 +4757,13 @@ namespace PdfReader
 		if (m_sClip.empty())
 			return;
 
-        //for (int i = m_sClip.size() - 1; i >= 0; i--) {
-        //    GfxClip curClip = m_sClip[i];
-        for (GfxClip &curClip : m_sClip) {
-            for (int nIndex = 0; nIndex < curClip.GetPathNum(); nIndex++)
+        for (int i = m_sClip.size() - 1; i >= 0; i--) {
+        //for (int i = 0; i < m_sClip.size(); i++) {
+            for (int nIndex = 0; nIndex < m_sClip[i].GetPathNum(); nIndex++)
             {
-                GfxPath *pPath   = curClip.GetPath(nIndex);
-                bool    bFlag   = curClip.GetClipEo(nIndex);
-                double *pMatrix = curClip.GetMatrix(nIndex);
+                GfxPath *pPath   = m_sClip[i].GetPath(nIndex);
+                bool    bFlag   = m_sClip[i].GetClipEo(nIndex);
+                double *pMatrix = m_sClip[i].GetMatrix(nIndex);
 
                 int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
                 nClipFlag |= c_nClipRegionIntersect;
@@ -4778,7 +4776,7 @@ namespace PdfReader
                 m_pRenderer->PathCommandEnd();
             }
 
-            int nTextClipCount = curClip.GetTextClip()->GetTextsCount();
+            int nTextClipCount = m_sClip[i].GetTextClip()->GetTextsCount();
             if (nTextClipCount > 0)
             {
                 m_pRenderer->BeginCommand(c_nClipType);
@@ -4790,7 +4788,7 @@ namespace PdfReader
                     wchar_t *wsFontName, *wsFontPath;
                     int lFontStyle;
                     double dFontSize = 10, dX = 0, dY = 0, dWidth = 0, dHeight = 0, dBaseLineOffset = 0;
-                    wchar_t *wsText = curClip.GetTextClip()->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
+                    wchar_t *wsText = m_sClip[i].GetTextClip()->GetText(nIndex, &dX, &dY, &dWidth, &dHeight, &dBaseLineOffset, &wsFontName, &wsFontPath, &dFontSize, &lFontStyle);
 
                     m_pRenderer->put_FontName(wsFontName);
                     m_pRenderer->put_FontPath(wsFontPath);
@@ -4798,7 +4796,7 @@ namespace PdfReader
                     m_pRenderer->put_FontStyle(lFontStyle);
 
                     double dShiftX = 0, dShiftY = 0;
-                    DoTransform(curClip.GetTextClip()->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
+                    DoTransform(m_sClip[i].GetTextClip()->GetMatrix(nIndex), &dShiftX, &dShiftY, true);
 
                     // TODO: нужна нормальная конвертация
                     int nLen = 0;
@@ -4831,6 +4829,9 @@ namespace PdfReader
                 m_pRenderer->PathCommandEnd();
                 m_pRenderer->EndConvertCoordsToIdentity();
             }
+
+            if (m_sClip[i].GetPathNum() > 0 && !m_sClip[i].GetTextClip())
+                break;
         }
 
         m_bClipChanged = false;

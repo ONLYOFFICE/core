@@ -40,8 +40,6 @@ namespace cpdoccore {
 namespace odf_reader {
 namespace text {
 
-
-
 // text:note-citation
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * note_citation::ns = L"text";
@@ -81,7 +79,7 @@ void note_citation::add_space(const std::wstring & Text)
 }
 void note_citation::docx_convert(oox::docx_conversion_context & Context)
 {
- 	for (size_t i = 0; i < content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
         content_[i]->docx_convert(Context);            
     }

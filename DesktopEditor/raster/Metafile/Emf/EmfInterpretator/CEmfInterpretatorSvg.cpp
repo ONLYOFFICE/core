@@ -6,10 +6,12 @@
 
 #include "../../../BgraFrame.h"
 
+#include <algorithm>
+
 namespace MetaFile
 {               
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, double dWidth, double dHeight)
-	    : m_pParser(pParser), m_pSecondParser(NULL), m_unNumberDefs(0), m_oScale(1, 1)
+	    : m_pParser(pParser), m_unNumberDefs(0), m_oScale(1, 1)
 	{
 		SetSize(dWidth, dHeight);
 	}
@@ -21,17 +23,27 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::CreateConditional(IMetaFileBase *pParser)
 	{
-		m_pSecondParser = dynamic_cast<CEmfParserBase*>(pParser);
+		m_oSecondConditional.m_pParser = dynamic_cast<CEmfParserBase*>(pParser);
 	}
 
 	void CEmfInterpretatorSvg::ChangeConditional()
 	{
-		if (NULL == m_pSecondParser)
+		if (NULL == m_oSecondConditional.m_pParser)
 			return;
 
-		CEmfParserBase *pTemp = m_pParser;
-		m_pParser = m_pSecondParser;
-		m_pSecondParser = pTemp;
+		std::swap(m_wsLastClipId, m_oSecondConditional.m_wsLastClipId);
+		std::swap(m_pParser, m_oSecondConditional.m_pParser);
+
+//		CEmfParserBase *pTemp = m_pParser;
+//		m_pParser = m_oSecondConditional.m_pParser;
+//		m_oSecondConditional.m_pParser = pTemp;
+
+//		if (NULL == m_pSecondParser)
+//			return;
+
+//		CEmfParserBase *pTemp = m_pParser;
+//		m_pParser = m_pSecondParser;
+//		m_pSecondParser = pTemp;
 
 		ResetClip();
 	}
@@ -74,7 +86,6 @@ namespace MetaFile
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
-//		m_oXmlWriter.WriteAttribute(L"shape-rendering", L"crispEdges");
 
 		UpdateSize();
 
@@ -1632,7 +1643,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
 	{
-		if (NULL == pPath)
+		if (NULL == pPath || nClipMode != CombineModeIntersect)
 			return;
 
 		m_wsLastClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
@@ -1642,7 +1653,7 @@ namespace MetaFile
 		if (NULL == pEmfPath)
 			return;
 
-		std::wstring wsPath = CreatePath(pEmfPath);
+		std::wstring wsPath = CreatePath(pEmfPath, pTransform);
 
 		if (wsPath.empty())
 			return;
@@ -1700,8 +1711,6 @@ namespace MetaFile
 		}
 		else if (0. != dX || 0. != dY)
 			arNodeAttributes.push_back({L"transform", L"translate(" + ConvertToWString(dX) + L',' + ConvertToWString(dY) + L')'});
-
-		AddClip(arNodeAttributes);
 
 		WriteNodeBegin(L"g", arNodeAttributes);
 
@@ -2154,6 +2163,9 @@ namespace MetaFile
 
 		if (m_wsLastClipId.empty())
 			UpdateClip();
+
+		if (L"PATHCLIP_78" == m_wsLastClipId)
+			std::wcout << L"tyt" << std::endl;
 
 		if (!m_wsLastClipId.empty())
 			arAttributes.push_back({L"clip-path", L"url(#" + m_wsLastClipId + L')'});

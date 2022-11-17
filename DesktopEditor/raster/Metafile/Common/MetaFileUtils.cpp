@@ -960,6 +960,21 @@ namespace MetaFile
 			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
 				pBgra[unIndex] = 0xff;
 		}
+		else if (0x00660046 == unRasterOperation) //SRCINVERT
+		{
+			BYTE* pCur = pBgra;
+
+			for (unsigned int unY = 0; unY < unHeight; unY++)
+			{
+				for (unsigned int unX = 0; unX < unWidth; unX++)
+				{
+					unsigned int unIndex = (unY * unWidth + unX) * 4;
+
+					if (0x00 == pCur[unIndex + 0] && 0x00 == pCur[unIndex + 1] && 0x00 == pCur[unIndex + 2])
+						pCur[unIndex + 3] = 0;
+				}
+			}
+		}
 	}
 
 	std::wstring ascii_to_unicode(const char *src)

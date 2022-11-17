@@ -8,6 +8,12 @@
 
 namespace MetaFile
 {
+	struct TSvgConditional
+	{
+		CEmfParserBase *m_pParser = NULL;
+		std::wstring   m_wsLastClipId;
+	};
+
 	class CEmfInterpretatorSvg : public CEmfInterpretatorBase
 	{
 	public:
@@ -192,7 +198,6 @@ namespace MetaFile
 		XmlUtils::CXmlWriter    m_oXmlWriter;
 
 		CEmfParserBase          *m_pParser;
-		CEmfParserBase			*m_pSecondParser;
 
 		TSvgViewport            m_oViewport;
 		TEmfPointD              m_oSizeWindow;
@@ -203,6 +208,8 @@ namespace MetaFile
 		TEmfScale               m_oScale;
 
 		std::wstring            m_wsLastClipId;
+
+		TSvgConditional         m_oSecondConditional;
 	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
 

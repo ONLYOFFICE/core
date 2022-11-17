@@ -130,7 +130,7 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
-					pOutput->PathClip(&pClipPath->m_oPath, -1, &pClipPath->m_oTransform);
+					pOutput->PathClip(&pClipPath->m_oPath, pClipPath->m_unMode, &pClipPath->m_oTransform);
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:

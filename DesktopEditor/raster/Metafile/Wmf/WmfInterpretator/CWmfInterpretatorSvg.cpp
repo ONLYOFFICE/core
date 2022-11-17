@@ -38,7 +38,7 @@ namespace MetaFile
 	{
 		if (0 != m_oSizeWindow.x && 0 == m_oSizeWindow.y)
 			m_oSizeWindow.y = m_oSizeWindow.x * (m_oViewport.GetHeight() / m_oViewport.GetWidth());
-		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y);
+		else if (0 == m_oSizeWindow.x && 0 != m_oSizeWindow.y)
 		    m_oSizeWindow.x = m_oSizeWindow.y * (m_oViewport.GetWidth() / m_oViewport.GetHeight());
 	}
 
@@ -1012,7 +1012,7 @@ namespace MetaFile
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = 1. / std::fabs(m_dScale * m_pParser->GetTransform()->M11);
+			dStrokeWidth = (m_oViewport.GetWidth() / m_oSizeWindow.x) / std::fabs(m_dScale * m_pParser->GetTransform()->M11);
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

@@ -36,7 +36,7 @@
 #include <boost/ref.hpp>
 #include <boost/make_shared.hpp>
 
-#include "../../../ASCOfficeOdfFile/include/utf8cpp/utf8.h"
+#include "../../../OdfFile/include/utf8cpp/utf8.h"
 #include "../../../OOXML/Base/Base.h"
 
 #include "external_items.h"

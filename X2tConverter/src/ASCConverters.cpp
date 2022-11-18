@@ -44,12 +44,12 @@
 #include "../../OOXML/XlsbFormat/Xlsb.h"
 #include "../../OOXML/PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h"
 
-#include "../../ASCOfficeRtfFile/Format/ConvertationManager.h"
+#include "../../RtfFile/Format/ConvertationManager.h"
 #include "../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
-#include "../../ASCOfficeTxtFile/Source/TxtXmlFile.h"
+#include "../../TxtFile/Source/TxtXmlFile.h"
 #include "../../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
-#include "../../ASCOfficeOdfFile/src/ConvertOO2OOX.h"
-#include "../../ASCOfficeOdfFile/Writer/Converter/Oox2OdfConverter.h"
+#include "../../OdfFile/src/ConvertOO2OOX.h"
+#include "../../OdfFile/Writer/Converter/Oox2OdfConverter.h"
 
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"

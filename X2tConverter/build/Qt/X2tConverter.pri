@@ -84,8 +84,8 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPptFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lRtfFormatLib
 #txt(xml) file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lTxtXmlFormatLib
-#docxfile2
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
+#bin document
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lBinDocument
 #pptxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat

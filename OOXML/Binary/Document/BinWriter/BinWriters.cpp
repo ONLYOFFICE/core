@@ -47,7 +47,7 @@
 	#include "../../../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
 #endif
 #include "../../HtmlFile2/htmlfile2.h"
-#include "../../../../ASCOfficeRtfFile/Format/ConvertationManager.h"
+#include "../../../../RtfFile/Format/ConvertationManager.h"
 
 #include "../../../DocxFormat/CustomXml.h"
 

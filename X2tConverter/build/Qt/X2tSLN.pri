@@ -10,7 +10,7 @@ SUBDIRS = \
     VbaFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
-    ASCOfficeDocxFile2Lib \
+    BinDocument \
     TxtXmlFormatLib \
     RtfFormatLib \
     PptFormatLib \
@@ -20,24 +20,24 @@ SUBDIRS = \
     CompoundFileLib \
     X2tConverter
 
-XlsbFormatLib.file = 			../../../OOXML/Projects/Linux/XlsbFormatLib/XlsbFormatLib.pro
-DocxFormatLib.file = 			../../../OOXML/Projects/Linux/DocxFormatLib/DocxFormatLib.pro
-PPTXFormatLib.file = 			../../../OOXML/Projects/Linux/PPTXFormatLib/PPTXFormatLib.pro
-ASCOfficeDocxFile2Lib.file = 	../../../OOXML/Projects/Linux/ASCOfficeDocxFile2Lib/ASCOfficeDocxFile2Lib.pro
-TxtXmlFormatLib.file = 			../../../ASCOfficeTxtFile/Projects/Linux/TxtXmlFormatLib.pro
-RtfFormatLib.file = 			../../../ASCOfficeRtfFile/Projects/Linux/RtfFormatLib.pro
-PptFormatLib.file = 			../../../MsBinaryFile/Projects/PPTFormatLib/Linux/PPTFormatLib.pro
-DocFormatLib.file = 			../../../MsBinaryFile/Projects/DocFormatLib/Linux/DocFormatLib.pro
-OdfFormatLib.file = 			../../../ASCOfficeOdfFile/Projects/Linux/OdfFormatLib.pro
-XlsFormatLib.file = 			../../../MsBinaryFile/Projects/XlsFormatLib/Linux/XlsFormatLib.pro
-VbaFormatLib.file = 			../../../MsBinaryFile/Projects/VbaFormatLib/Linux/VbaFormatLib.pro
-CompoundFileLib.file = 			../../../Common/cfcpp/cfcpp.pro
+XlsbFormatLib.file =		../../../OOXML/Projects/Linux/XlsbFormatLib/XlsbFormatLib.pro
+DocxFormatLib.file =		../../../OOXML/Projects/Linux/DocxFormatLib/DocxFormatLib.pro
+PPTXFormatLib.file =		../../../OOXML/Projects/Linux/PPTXFormatLib/PPTXFormatLib.pro
+BinDocument.file =			../../../OOXML/Projects/Linux/BinDocument/BinDocument.pro
+TxtXmlFormatLib.file =		../../../TxtFile/Projects/Linux/TxtXmlFormatLib.pro
+RtfFormatLib.file =			../../../RtfFile/Projects/Linux/RtfFormatLib.pro
+PptFormatLib.file =			../../../MsBinaryFile/Projects/PPTFormatLib/Linux/PPTFormatLib.pro
+DocFormatLib.file =			../../../MsBinaryFile/Projects/DocFormatLib/Linux/DocFormatLib.pro
+OdfFormatLib.file =			../../../OdfFile/Projects/Linux/OdfFormatLib.pro
+XlsFormatLib.file =			../../../MsBinaryFile/Projects/XlsFormatLib/Linux/XlsFormatLib.pro
+VbaFormatLib.file =			../../../MsBinaryFile/Projects/VbaFormatLib/Linux/VbaFormatLib.pro
+CompoundFileLib.file =		../../../Common/cfcpp/cfcpp.pro
 
 X2tConverter.depends = \
     XlsbFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
-    ASCOfficeDocxFile2Lib \
+    BinDocument \
     TxtXmlFormatLib \
     RtfFormatLib \
     PptFormatLib \

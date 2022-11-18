@@ -56,7 +56,7 @@ namespace NSJSBase
 			{
 				// no cache
 				v8::ScriptCompiler::Source oSource(source);
-				v8::MaybeLocal<v8::Script> sctiptMB = v8::ScriptCompiler::Compile(_context, &oSource, v8::ScriptCompiler::kConsumeCodeCache);
+				v8::MaybeLocal<v8::Script> sctiptMB = v8::ScriptCompiler::Compile(_context, &oSource, v8::ScriptCompiler::kNoCompileOptions);
 				if (!sctiptMB.IsEmpty())
 					script = sctiptMB.ToLocalChecked();
 
@@ -356,7 +356,7 @@ namespace NSJSBase
 #endif
 		LOGGER_START
 
-				v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
+		v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
 		v8::Local<v8::Script> _script;
 		if(!scriptPath.empty())
 		{
@@ -373,7 +373,7 @@ namespace NSJSBase
 
 		LOGGER_LAP("compile")
 
-				CJSValueV8* _return = new CJSValueV8();
+		CJSValueV8* _return = new CJSValueV8();
 
 		v8::MaybeLocal<v8::Value> retValue;
 		if (exception.is_init())

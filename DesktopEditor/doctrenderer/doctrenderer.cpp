@@ -1213,6 +1213,9 @@ namespace NSDoctRenderer
 				strScript += "\n\n";
 			}
 
+			if (2 == i)
+				strScript += "\n$.ready();";
+
 			JSSmart<CJSContext> context = new CJSContext();
 			context->Initialize();
 

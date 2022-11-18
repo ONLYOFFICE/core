@@ -1012,8 +1012,12 @@ namespace MetaFile
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
 		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = (m_oViewport.GetWidth() / m_oSizeWindow.x) / std::fabs(m_dScale * m_pParser->GetTransform()->M11);
-
+		{
+			if (1 != m_dScale)
+				dStrokeWidth = 1. / std::fabs(m_dScale * m_pParser->GetTransform()->M11);
+			else
+				dStrokeWidth = (m_oViewport.GetWidth() / m_oSizeWindow.x) / std::fabs(m_pParser->GetTransform()->M11);
+		}
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
 		unsigned int unMetaPenStyle = pPen->GetStyle();

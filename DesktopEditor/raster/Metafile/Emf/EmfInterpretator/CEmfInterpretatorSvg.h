@@ -123,11 +123,11 @@ namespace MetaFile
 
 		// Emf+
 		// 2.3.1 Clipping Record Types
-		void HANDLE_EMFPLUS_OFFSETCLIP(double dX, double dY) override {};
-		void HANDLE_EMFPLUS_RESETCLIP() override {};
-		void HANDLE_EMFPLUS_SETCLIPPATH(short unShFlags, const CEmfPlusPath* pPath) override {};
-		void HANDLE_EMFPLUS_SETCLIPRECT(short shCM, const TEmfPlusRectF& oRect) override {};
-		void HANDLE_EMFPLUS_SETCLIPREGION(short shObjectIndex, short shCM, const CEmfPlusRegion* pRegion) override {};
+		void HANDLE_EMFPLUS_OFFSETCLIP(double dX, double dY) override;
+		void HANDLE_EMFPLUS_RESETCLIP() override;
+		void HANDLE_EMFPLUS_SETCLIPPATH(short unShFlags, const CEmfPlusPath* pPath) override;
+		void HANDLE_EMFPLUS_SETCLIPRECT(short shCM, const TEmfPlusRectF& oRect) override;
+		void HANDLE_EMFPLUS_SETCLIPREGION(short shObjectIndex, short shCM, const CEmfPlusRegion* pRegion) override;
 
 		// 2.3.2 Comment Record Types
 		void HANDLE_EMFPLUS_COMMENT(CDataStream& oStream, unsigned int unSize) override {};

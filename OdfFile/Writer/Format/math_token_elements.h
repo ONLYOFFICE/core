@@ -33,7 +33,7 @@
 
 #include "math_elements.h"
 
-#include "../datatypes/common_attlists.h"
+#include "../DataTypes/common_attlists.h"
 
 namespace cpdoccore { 
 	using namespace odf_types;

@@ -33,10 +33,10 @@
 
 #include "math_elements.h"
 
-#include "../datatypes/common_attlists.h"
-#include "../datatypes/fontstyle.h"
-#include "../datatypes/fontweight.h"
-#include "../datatypes/fontsize.h"
+#include "../DataTypes/common_attlists.h"
+#include "../DataTypes/fontstyle.h"
+#include "../DataTypes/fontweight.h"
+#include "../DataTypes/fontsize.h"
 
 namespace cpdoccore {
 

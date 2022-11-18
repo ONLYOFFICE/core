@@ -39,10 +39,10 @@
 
 #include "office_elements_create.h"
 
-#include "../datatypes/color.h"
-#include "../datatypes/iconset_type.h"
-#include "../datatypes/calcext_type.h"
-#include "../datatypes/timeperiod.h"
+#include "../DataTypes/color.h"
+#include "../DataTypes/iconset_type.h"
+#include "../DataTypes/calcext_type.h"
+#include "../DataTypes/timeperiod.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

@@ -523,6 +523,11 @@ void CPdfWriter::SetTempFolder(const std::wstring& wsPath)
 	}
 	NSDirectory::CreateDirectory(m_wsTempFolder);
 }
+void CPdfWriter::SetCore(const std::wstring& wsCoreXml)
+{
+    if (!IsValid())
+        return;
+}
 std::wstring CPdfWriter::GetTempFile()
 {
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(m_wsTempFolder, L"PDF");

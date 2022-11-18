@@ -72,6 +72,7 @@ public:
 	void         SetPassword(const std::wstring& wsPassword);
 	void		 SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetTempFolder(const std::wstring& wsPath);
+    void         SetCore(const std::wstring& wsCoreXml);
 	std::wstring GetTempFile();	
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со страницей

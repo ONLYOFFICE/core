@@ -128,6 +128,7 @@ public:
     void SetPassword  (const std::wstring& wsPassword);
     void SetDocumentID(const std::wstring& wsDocumentID);
     void SetTempFolder(const std::wstring& wsPath);
+    void SetCore      (const std::wstring& wsCoreXml);
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);

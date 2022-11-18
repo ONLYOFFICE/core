@@ -773,6 +773,12 @@ void CPdfFile::SetTempFolder(const std::wstring& wsPath)
         return;
     m_pInternal->pWriter->SetTempFolder(wsPath);
 }
+void CPdfFile::SetCore(const std::wstring& wsCoreXml)
+{
+    if (!m_pInternal->pWriter)
+        return;
+    m_pInternal->pWriter->SetCore(wsCoreXml);
+}
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
     if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))

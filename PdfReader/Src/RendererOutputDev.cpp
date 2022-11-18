@@ -4761,7 +4761,7 @@ namespace PdfReader
         //for (int i = 0; i < m_sClip.size(); i++) {
             for (int nIndex = 0; nIndex < m_sClip[i].GetPathNum(); nIndex++)
             {
-                GfxPath *pPath   = m_sClip[i].GetPath(nIndex);
+                GfxPath *pPath  = m_sClip[i].GetPath(nIndex);
                 bool    bFlag   = m_sClip[i].GetClipEo(nIndex);
                 double *pMatrix = m_sClip[i].GetMatrix(nIndex);
 

@@ -31,8 +31,8 @@
  */
 
 #include "../../include/common/readdocelement.h"
-#include "../../include/xml/attributes.h"
-#include "../../include/xml/sax.h"
+#include <xml/attributes.h>
+#include <xml/sax.h>
 
 namespace cpdoccore { 
 namespace common {

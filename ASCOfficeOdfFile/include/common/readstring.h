@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../CPOptional.h"
+#include <CPOptional.h>
 #include "../logging.h"
 
 namespace cpdoccore { 

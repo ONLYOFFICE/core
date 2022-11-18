@@ -33,13 +33,13 @@
 
 #include "../../Common/OfficeFileErrorDescription.h"
 
-#include "../src/docx/docx_package.h"
-#include "../src/docx/xlsx_package.h"
-#include "../src/docx/pptx_package.h"
+#include "../Reader/Converter/docx_package.h"
+#include "../Reader/Converter/xlsx_package.h"
+#include "../Reader/Converter/pptx_package.h"
 
-#include "../src/docx/docx_conversion_context.h"
-#include "../src/docx/pptx_conversion_context.h"
-#include "../src/docx/xlsxconversioncontext.h"
+#include "../Reader/Converter/docx_conversion_context.h"
+#include "../Reader/Converter/pptx_conversion_context.h"
+#include "../Reader/Converter/xlsxconversioncontext.h"
 
 #include "../include/odf/odf_document.h"
 

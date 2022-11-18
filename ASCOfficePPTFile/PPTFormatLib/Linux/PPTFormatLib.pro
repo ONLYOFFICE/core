@@ -29,6 +29,7 @@ DEFINES +=  UNICODE \
 HEADERS += \
     ../Converter/Animation/AnimationParser.h \
     ../Converter/Animation/Animation_1995.h \
+    ../Converter/Animation/TimingUtils.h \
     ../Converter/Animation/Timing_1995.h \
     ../Converter/Animation/Timing_2010.h \
     ../Converter/Animation/intermediate_anim.h \
@@ -43,6 +44,7 @@ HEADERS += \
     ../PPTXWriter/TxBodyConverter.h \
     ../Reader/ClassesAtom.h \
     ../Reader/CommonZLib.h \
+    ../Reader/ExtXmlUtils.hpp \
     ../Reader/PPTDocumentInfo.h \
     ../Reader/PPTDocumentInfoOneUser.h \
     ../Reader/PPTFileDefines.h \
@@ -305,6 +307,7 @@ SOURCES += \
     ../../../Common/3dParty/pole/pole.cpp \
     ../Converter/Animation/AnimationParser.cpp \
     ../Converter/Animation/Animation_1995.cpp \
+    ../Converter/Animation/TimingUtils.cpp \
     ../Converter/Animation/Timing_1995.cpp \
     ../Converter/Animation/Timing_2010.cpp \
     ../Converter/Animation/intermediate_anim.cpp \

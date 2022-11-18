@@ -57,9 +57,9 @@ private:
     void FillBldDgm(CRecordDiagramBuildContainer *pDBC, PPTX::Logic::BldDgm &oBP);
 
     void ConvertTnLst(PPTX::Logic::TnLst& tnLst, CRecordExtTimeNodeContainer* pETNC);
-    void FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
+    bool FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
     void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq& oSec);
-    void FillPar(
+    bool FillPar(
                 CRecordExtTimeNodeContainer *pETNC,
                 PPTX::Logic::Par &oPar);
     void FillCBhvr(
@@ -78,7 +78,9 @@ private:
             CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
             PPTX::Logic::Anim &oAnim);
 
-    void FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    bool FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    bool CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn) const;
+    bool IsSlideSpId(_INT32 spid) const;
     void ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
     void ConvertCTnIterate(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
     void ConvertCTnEndSync(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
@@ -133,7 +135,7 @@ private:
     PPTX::Logic::BldLst *m_pBldLst = nullptr; // Do not delete
     PPTX::Logic::BldP   *m_currentBldP = nullptr;
 
-    int cTnId = 0;
+    int cTnId = 1;
     int cTNLevel = TimeNodeLevel::zero;
 };
 

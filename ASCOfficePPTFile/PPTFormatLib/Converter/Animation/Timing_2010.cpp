@@ -1,6 +1,7 @@
 #include "Timing_2010.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
+#include "TimingUtils.h"
 
 
 namespace PPT {
@@ -148,7 +149,7 @@ void Timing_2010::ConvertTnLst(PPTX::Logic::TnLst &tnLst, CRecordExtTimeNodeCont
     FillTnChild(pETNC, tnLst.list.back());
 }
 
-void Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild)
+bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild)
 {
     if (pETNC->m_haveSequenceAtom)
     {
@@ -217,10 +218,14 @@ void Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
     }
     else if (pETNC->m_oTimeNodeAtom.m_dwType == TL_TNT_Parallel)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::Par;
+        auto pPar = oChild.m_node.smart_dynamic_cast<PPTX::Logic::Par>();
+        if (!pPar.IsInit())
+            pPar = new PPTX::Logic::Par;
 
-        FillPar(pETNC, oChild.m_node.as<PPTX::Logic::Par>());
+        if(FillPar(pETNC, *pPar))
+            oChild.m_node = pPar.smart_dynamic_cast<PPTX::WrapperWritingElement>();
+        else
+            return false;
     }
     else if (pETNC->m_haveClientVisualElement)
     {
@@ -247,6 +252,8 @@ void Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
             }
         }
     }
+
+    return true;
 }
 
 void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &oSec)
@@ -294,9 +301,9 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
     }
 }
 
-void Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
+bool Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
 {
-    FillCTnRecursive(pETNC, oPar.cTn);
+    return FillCTnRecursive(pETNC, oPar.cTn);
 }
 
 void Timing_2010::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
@@ -557,8 +564,12 @@ void Timing_2010::FillAnim(CRecordTimeAnimateBehaviorContainer *pTimeAnimateBeha
     FillCBhvr(&(pTimeAnimateBehavior->m_oBehavior), oAnim.cBhvr);
 }
 
-void Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+bool Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
 {
+    if (cTNLevel+1 == TimeNodeLevel::oneAnim &&
+            !CheckAnimation5Level(pETNC, oCTn))
+        return false;
+
     cTNLevel++;
 
     FillCTnHeadArgs(pETNC, oCTn);
@@ -570,18 +581,39 @@ void Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Log
     ConvertCTnStCondLst(pETNC, oCTn);
 
     cTNLevel--;
+    return true;
+}
+
+bool Timing_2010::CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn) const
+{
+    auto anim_2010 = Intermediate::ParseExisting5Level_ETNC(pETNC);
+    if (IsSlideSpId(anim_2010.spid) == false)
+        return false;
+    if (isMainSeq == false)
+        return true;
+
+    auto anim_pptx = Intermediate::ParseExisting5Level_CTn(oCTn);
+    return anim_pptx == anim_2010;
+}
+
+bool Timing_2010::IsSlideSpId(_INT32 spid) const
+{
+    return slideShapes.find(spid) != slideShapes.end();
 }
 
 void Timing_2010::ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
 {
-    if (pETNC->m_arrRgExtTimeNodeChildren.empty() == false)
+    if (oCTn.childTnLst.IsInit() == false)
         oCTn.childTnLst = new PPTX::Logic::ChildTnLst;
 
-    for (auto *oldChild : pETNC->m_arrRgExtTimeNodeChildren)
+    for (size_t i = 0; i < pETNC->m_arrRgExtTimeNodeChildren.size(); i++)
     {
-        PPTX::Logic::TimeNodeBase child;
-        FillTnChild(oldChild, child);
-        oCTn.childTnLst->list.push_back(child);
+        auto *pETNC_child = pETNC->m_arrRgExtTimeNodeChildren[i];
+        if (oCTn.childTnLst->list.size() == i)
+            oCTn.childTnLst->list.push_back(PPTX::Logic::TimeNodeBase());
+
+        auto& pptx_child = oCTn.childTnLst->list[i];
+        FillTnChild(pETNC_child, pptx_child);
     }
 }
 

@@ -32,8 +32,8 @@
 #pragma once
 
 #include "../../Sheets/Common/Common.h"
-#include "../../Sheets/Common/Common.h"
-#include "../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace Writers
 {

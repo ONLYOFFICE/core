@@ -37,7 +37,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/File.h"
 
 inline static std::wstring ReplaceString(std::wstring subject, const std::wstring& search, const std::wstring& replace) 
 {

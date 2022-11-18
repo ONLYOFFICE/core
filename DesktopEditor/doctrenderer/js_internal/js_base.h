@@ -3,7 +3,7 @@
 
 #include "../../common/File.h"
 #include "../../common/Array.h"
-#include "../../../Common/DocxFormat/Source/Base/SmartPtr.h"
+#include "../../../OOXML/Base/SmartPtr.h"
 #include "../../graphics/BaseThread.h"
 
 #define JS_VALUE_EXIST(value) (value.is_init() && !value->isNull() && !value->isUndefined())

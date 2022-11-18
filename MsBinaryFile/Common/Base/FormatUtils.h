@@ -53,9 +53,9 @@
 #endif
 
 #include "../../../OOXML/Base/Base.h"
-#include "../../DesktopEditor/common/Types.h"
+#include "../../../DesktopEditor/common/Types.h"
 #include "../../../OOXML/Base/unicode_util.h"
-#include "../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../UnicodeConverter/UnicodeConverter.h"
 
 #include <boost/format.hpp>
 

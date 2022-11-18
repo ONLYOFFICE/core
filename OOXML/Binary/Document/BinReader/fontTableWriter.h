@@ -32,7 +32,8 @@
 #pragma once
 
 #include "../../Sheets/Common/Common.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 #include <boost/unordered_map.hpp>
 
 namespace Writers

@@ -32,8 +32,8 @@
 #pragma once
 
 
-#include "../Reader/Records.h"
-#include "../Enums/_includer.h"
+#include "../../Reader/Records.h"
+#include "../../Enums/_includer.h"
 
 
 #include "TimeAnimateBehaviorContainer.h"

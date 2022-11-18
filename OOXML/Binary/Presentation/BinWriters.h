@@ -33,10 +33,10 @@
 #include "../../Base/Nullable.h"
 #include "BinReaderWriterDefines.h"
 
-#include "../../Common/Base64.h"
+#include "../../../Common/Base64.h"
 #include "imagemanager.h"
 #include "./XmlWriter.h"
-#include "../PPTXFormat/FileContainer.h"
+#include "../../PPTXFormat/FileContainer.h"
 #include "../../DocxFormat/WritingElement.h"
 #include "../Document/DocWrapper/DocxSerializer.h"
 #include "BinaryFileReaderWriter.h"

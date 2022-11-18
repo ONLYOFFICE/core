@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "../Reader/Records.h"
+#include "../../Reader/Records.h"
 #include "TimeEffectBehaviorAtom.h"
 #include "TimeVariant.h"
 #include "TimeBehaviorContainer.h"

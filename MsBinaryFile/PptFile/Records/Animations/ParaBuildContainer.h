@@ -32,7 +32,7 @@
 #pragma once
 
 
-#include "../Reader/Records.h"
+#include "../../Reader/Records.h"
 #include "ParaBuildLevel.h"
 #include "BuildAtom.h"
 #include "ParaBuildAtom.h"

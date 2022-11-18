@@ -32,8 +32,8 @@
 #pragma once
 
 
-#include "../Reader/Records.h"
-#include "../Enums/RecordType.h"
+#include "../../Reader/Records.h"
+#include "../../Enums/RecordType.h"
 #include "TimeBehaviorAtom.h"
 #include "TimeStringListContainer.h"
 #include "TimePropertyList4TimeBehavior.h"

@@ -51,6 +51,7 @@
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/pro/Image.h"
 #include "../../DesktopEditor/common/StringExt.h"
+#include "../../DesktopEditor/graphics/FormField.h"
 
 #include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
@@ -1398,10 +1399,10 @@ HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW
 
 	return S_OK;
 }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CFormFieldInfo &oInfo)
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pFieldInfo)
 {
 	unsigned int  unPagesCount = m_pDocument->GetPagesCount();
-	if (!m_pDocument || 0 == unPagesCount)
+	if (!m_pDocument || 0 == unPagesCount || !pFieldInfo)
 		return S_OK;
 
 	if (m_bNeedUpdateTextFont)
@@ -1413,6 +1414,8 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CF
 	PdfWriter::CFontTrueType* pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 	if (!pFontTT)
 		return S_OK;
+
+	CFormFieldInfo& oInfo = *((CFormFieldInfo*)pFieldInfo);
 
 	double dX, dY, dW, dH;
 	oInfo.GetBounds(dX, dY, dW, dH);

@@ -192,7 +192,7 @@ public:
 	//----------------------------------------------------------------------------------------
     HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
     HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
-    HRESULT AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CFormFieldInfo& oInfo);
+	HRESULT AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pFiledInfo);
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------

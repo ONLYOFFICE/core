@@ -1401,11 +1401,11 @@ HRESULT CPdfFile::AddLink(const double& dX, const double& dY, const double& dW, 
         return S_FALSE;
     return m_pInternal->pWriter->AddLink(dX, dY, dW, dH, dDestX, dDestY, nPage);
 }
-HRESULT CPdfFile::AddFormField(const CFormFieldInfo& oInfo)
+HRESULT CPdfFile::AddFormField(IFormField* pFieldInfo)
 {
     if (!m_pInternal->pWriter)
         return S_FALSE;
-    return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, oInfo);
+	return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, pFieldInfo);
 }
 
 #ifdef BUILDING_WASM_MODULE
@@ -1515,7 +1515,7 @@ HRESULT CPdfWriter::CommandDouble(const LONG& lType, const double& dCommand) { r
 HRESULT CPdfWriter::CommandString(const LONG& lType, const std::wstring& sCommand) { return 0; }
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) { return 0; }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) { return 0; }
-HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, const CFormFieldInfo& oInfo) { return 0; }
+HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pInfo) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }

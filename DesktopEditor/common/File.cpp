@@ -1071,12 +1071,12 @@ namespace NSFile
 		return true;
 	}
 
+#endif
+
 	bool CFileBinary::CreateFile(const std::wstring& sFileName)
 	{
 		return CreateFileW(sFileName);
 	}
-
-#endif
 
 	bool CFileBinary::CreateTempFile()
 	{

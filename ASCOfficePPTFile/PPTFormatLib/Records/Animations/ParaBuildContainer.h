@@ -53,10 +53,10 @@ public:
 
     virtual void ReadFromStream ( SRecordHeader & header, POLE::Stream* pStream ) override
     {
+        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
         CRecordBuildListSubContainer::ReadFromStream(header, pStream);
 
-        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
-        UINT lCurLen = buildAtom.m_oHeader.RecLen + 8;
+        UINT lCurLen = buildAtom.m_oHeader.RecLen + 8 + 24; // BuildAtom - 24
 
 
         SRecordHeader paraBuildAtomHeader;

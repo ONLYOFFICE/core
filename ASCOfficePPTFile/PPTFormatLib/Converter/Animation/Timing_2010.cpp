@@ -45,8 +45,10 @@ void Timing_2010::InsertBuildNode(PPTX::Logic::BldLst &bldLst, PPTX::Logic::Buil
 {
     if (bnb.m_node.is<PPTX::Logic::BldP>())
        InsertBldP(bldLst, bnb);
-    else    // TODO BldOleChart and RT_DiagramBuild. Now it is not support (20.11.22).
+    else if (bnb.m_node.IsInit())     // TODO BldOleChart and RT_DiagramBuild. Now it is not support (20.11.22).
         bldLst.list.push_back(bnb);
+    else
+        return;
 }
 
 void Timing_2010::InsertBldP(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb)
@@ -61,7 +63,7 @@ void Timing_2010::InsertBldP(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNode
         bldLst.list.push_back(bnb);
 }
 
-void Timing_2010::FillBuildNodeBase(CRecordBuildListSubContainer *pSub, PPTX::Logic::BuildNodeBase oBuildNodeBase)
+void Timing_2010::FillBuildNodeBase(CRecordBuildListSubContainer *pSub, PPTX::Logic::BuildNodeBase &oBuildNodeBase)
 {
     switch (pSub->m_oHeader.RecType)
     {

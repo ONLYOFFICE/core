@@ -26,7 +26,8 @@ ShapeAnim ParseExisting4Level_ETNC(const CRecordExtTimeNodeContainer *pETNC);
 ShapeAnim ParseExisting5Level_CTn(const PPTX::Logic::CTn &oCTn);
 ShapeAnim ParseExisting5Level_ETNC(const CRecordExtTimeNodeContainer *pETNC);
 
-
+CRecordTimeBehaviorContainer* GetTimeBehaviorContainer(CRecordExtTimeNodeContainer *pETNC);
+_INT32 GetSpID(CRecordExtTimeNodeContainer *pETNC);
 
 }
 }

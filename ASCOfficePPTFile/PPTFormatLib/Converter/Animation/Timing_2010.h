@@ -51,6 +51,8 @@ public:
 
 private:
     void ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListContainer *pBLC);
+    void InsertBuildNode(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb);
+    void InsertBldP(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb);
     void FillBuildNodeBase(CRecordBuildListSubContainer* pSub, PPTX::Logic::BuildNodeBase oBuildNodeBase);
     void FillBldP(CRecordParaBuildContainer *pPBC, PPTX::Logic::BldP &oBP);
     void FillBldOleChart(CRecordChartBuildContainer* pCBC, PPTX::Logic::BldOleChart &oBP);
@@ -79,8 +81,10 @@ private:
             PPTX::Logic::Anim &oAnim);
 
     bool FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
-    bool CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn) const;
+    bool CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn);
     bool IsSlideSpId(_INT32 spid) const;
+    bool IsCorrectAnimationSpId(_INT32 spid) const;
+    void InsertAnimationSpId(_INT32 spid);
     void ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
     void ConvertCTnIterate(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
     void ConvertCTnEndSync(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
@@ -128,6 +132,7 @@ private:
 private:
     CRecordPP10SlideBinaryTagExtension* pTagExtAnim = nullptr;
     const std::unordered_set<int> slideShapes;
+    std::unordered_set<int> correctAnimatedShapes;
     CExMedia *m_pExMedia = nullptr;
     CRelsGenerator *m_pRels = nullptr;
     bool isMainSeq = false;

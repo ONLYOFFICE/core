@@ -17,14 +17,15 @@ void Timing_2010::Convert(PPTX::Logic::Timing &timimg, CExMedia *pExMedia, CRels
     m_pExMedia = pExMedia;
     m_pRels = pRels;
 
-    ConvertBldLst(timimg.bldLst.get2(), pTagExtAnim->m_pBuildListContainer);
     ConvertTnLst(timimg.tnLst.get2(), pTagExtAnim->m_pExtTimeNodeContainer);
+    ConvertBldLst(timimg.bldLst.get2(), pTagExtAnim->m_pBuildListContainer);
 }
 
 void Timing_2010::ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListContainer *pBLC)
 {
     if (pBLC == nullptr)
         return;
+    bldLst.list.clear();    // It maybe not correct
 
     for (IRecord* pDBC : pBLC->m_arRecords)
     {
@@ -36,7 +37,28 @@ void Timing_2010::ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListCon
             continue;
 
         FillBuildNodeBase(pSub, oBuildNodeBase);
+        InsertBuildNode(bldLst, oBuildNodeBase);
     }
+}
+
+void Timing_2010::InsertBuildNode(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb)
+{
+    if (bnb.m_node.is<PPTX::Logic::BldP>())
+       InsertBldP(bldLst, bnb);
+    else    // TODO BldOleChart and RT_DiagramBuild. Now it is not support (20.11.22).
+        bldLst.list.push_back(bnb);
+}
+
+void Timing_2010::InsertBldP(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb)
+{
+    auto bldP = bnb.m_node.as<PPTX::Logic::BldP>();
+    _INT32 spid = -1;
+    try {
+        spid = std::stoi(bldP.spid);
+    } catch (...) {
+    }
+    if (IsCorrectAnimationSpId(spid))
+        bldLst.list.push_back(bnb);
 }
 
 void Timing_2010::FillBuildNodeBase(CRecordBuildListSubContainer *pSub, PPTX::Logic::BuildNodeBase oBuildNodeBase)
@@ -308,24 +330,7 @@ bool Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &
 
 void Timing_2010::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
 {
-    CRecordTimeBehaviorContainer *bhvr = nullptr;
-    if      (pETNC->m_haveSetBehavior)
-        bhvr = &(pETNC->m_pTimeSetBehavior->m_oBehavior);
-    else if (pETNC->m_haveEffectBehavior)
-        bhvr = &(pETNC->m_pTimeEffectBehavior->m_oBehavior);
-    else if (pETNC->m_haveAnimateBehavior)
-        bhvr = &(pETNC->m_pTimeAnimateBehavior->m_oBehavior);
-    else if (pETNC->m_haveColorBehavior)
-        bhvr = &(pETNC->m_pTimeColorBehavior->m_oBehavior);
-    else if (pETNC->m_haveMotionBehavior)
-        bhvr = &(pETNC->m_pTimeMotionBehavior->m_oTimeBehavior);
-    else if (pETNC->m_haveRotationBehavior)
-        bhvr = &(pETNC->m_pTimeRotationBehavior->m_oBehavior);
-    else if (pETNC->m_haveScaleBehavior)
-        bhvr = &(pETNC->m_pTimeScaleBehavior->m_oBehavior);
-    else
-        bhvr = &(pETNC->m_pTimeCommandBehavior->m_oBevavior);
-
+    auto *bhvr = Intermediate::GetTimeBehaviorContainer(pETNC);
     FillCBhvr(bhvr, oBhvr);
     FillCTnRecursive(pETNC, oBhvr.cTn);
 }
@@ -584,21 +589,42 @@ bool Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Log
     return true;
 }
 
-bool Timing_2010::CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn) const
+bool Timing_2010::CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn)
 {
     auto anim_2010 = Intermediate::ParseExisting5Level_ETNC(pETNC);
     if (IsSlideSpId(anim_2010.spid) == false)
         return false;
     if (isMainSeq == false)
+    {
+        InsertAnimationSpId(anim_2010.spid);
+        return true;
+    }
+    if(IsCorrectAnimationSpId(anim_2010.spid))
         return true;
 
     auto anim_pptx = Intermediate::ParseExisting5Level_CTn(oCTn);
-    return anim_pptx == anim_2010;
+    if (anim_pptx == anim_2010)
+    {
+        correctAnimatedShapes.insert(anim_2010.spid);
+        return true;
+    } else
+        return false;
 }
 
 bool Timing_2010::IsSlideSpId(_INT32 spid) const
 {
     return slideShapes.find(spid) != slideShapes.end();
+}
+
+bool Timing_2010::IsCorrectAnimationSpId(_INT32 spid) const
+{
+    return correctAnimatedShapes.find(spid) != correctAnimatedShapes.end();
+}
+
+void Timing_2010::InsertAnimationSpId(_INT32 spid)
+{
+    if (spid != -1)
+        correctAnimatedShapes.insert(spid);
 }
 
 void Timing_2010::ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)

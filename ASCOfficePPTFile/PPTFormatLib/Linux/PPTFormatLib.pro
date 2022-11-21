@@ -29,6 +29,7 @@ DEFINES +=  UNICODE \
 HEADERS += \
     ../Converter/Animation/AnimationParser.h \
     ../Converter/Animation/Animation_1995.h \
+    ../Converter/Animation/TimingExeption.h \
     ../Converter/Animation/TimingUtils.h \
     ../Converter/Animation/Timing_1995.h \
     ../Converter/Animation/Timing_2010.h \

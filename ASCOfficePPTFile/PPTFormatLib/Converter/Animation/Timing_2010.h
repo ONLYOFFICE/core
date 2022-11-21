@@ -24,7 +24,6 @@
 #include "../../Records/Animations/DiagramBuildContainer.h"
 
 #include "intermediate_anim.h" // it using
-//#include <set>
 
 
 namespace PPT {
@@ -61,7 +60,7 @@ private:
     void ConvertTnLst(PPTX::Logic::TnLst& tnLst, CRecordExtTimeNodeContainer* pETNC);
     bool FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
     void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq& oSec);
-    bool FillPar(
+    void FillPar(
                 CRecordExtTimeNodeContainer *pETNC,
                 PPTX::Logic::Par &oPar);
     void FillCBhvr(
@@ -80,7 +79,7 @@ private:
             CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
             PPTX::Logic::Anim &oAnim);
 
-    bool FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
+    void FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
     bool CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn);
     bool IsSlideSpId(_INT32 spid) const;
     bool IsCorrectAnimationSpId(_INT32 spid) const;

@@ -1,6 +1,7 @@
 #include "Timing_2010.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
+#include "TimingExeption.h"
 #include "TimingUtils.h"
 
 
@@ -242,14 +243,10 @@ bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
     }
     else if (pETNC->m_oTimeNodeAtom.m_dwType == TL_TNT_Parallel)
     {
-        auto pPar = oChild.m_node.smart_dynamic_cast<PPTX::Logic::Par>();
-        if (!pPar.IsInit())
-            pPar = new PPTX::Logic::Par;
+        if (!oChild.m_node.IsInit())
+            oChild.m_node = new PPTX::Logic::Par;
 
-        if(FillPar(pETNC, *pPar))
-            oChild.m_node = pPar.smart_dynamic_cast<PPTX::WrapperWritingElement>();
-        else
-            return false;
+        FillPar(pETNC, oChild.m_node.as<PPTX::Logic::Par>());
     }
     else if (pETNC->m_haveClientVisualElement)
     {
@@ -325,9 +322,9 @@ void Timing_2010::FillSeq(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq &
     }
 }
 
-bool Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
+void Timing_2010::FillPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
 {
-    return FillCTnRecursive(pETNC, oPar.cTn);
+    FillCTnRecursive(pETNC, oPar.cTn);
 }
 
 void Timing_2010::FillCBhvr(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CBhvr &oBhvr)
@@ -571,11 +568,11 @@ void Timing_2010::FillAnim(CRecordTimeAnimateBehaviorContainer *pTimeAnimateBeha
     FillCBhvr(&(pTimeAnimateBehavior->m_oBehavior), oAnim.cBhvr);
 }
 
-bool Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
+void Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn)
 {
     if (cTNLevel+1 == TimeNodeLevel::oneAnim &&
             !CheckAnimation5Level(pETNC, oCTn))
-        return false;
+        throw TimingExeption("Slide was edited without animation 2010 synchronization");
 
     cTNLevel++;
 
@@ -588,7 +585,6 @@ bool Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Log
     ConvertCTnStCondLst(pETNC, oCTn);
 
     cTNLevel--;
-    return true;
 }
 
 bool Timing_2010::CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn)

@@ -34,7 +34,7 @@
 #if defined(_WIN32) || defined (_WIN64)
 #endif
 
-#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../SystemUtility/File.h"
 
 #include <algorithm>
 

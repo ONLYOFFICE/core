@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include "../../Common/DocxFormat/Source/DocxFormat/File.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../DocxFormat/File.h"
+#include "../Base/Base.h"
 
 #include "Logic/TextParagraphPr.h"
 #include "Logic/Colors/SrgbClr.h"

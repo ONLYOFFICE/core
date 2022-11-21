@@ -39,10 +39,10 @@
     #include <windows.h>
 #endif
 
-#include "../../../Common/FileWriter.h"
-#include "../../../Common/DocxFormat/Source/Base/Unit.h"
+#include "../../Common/FileWriter.h"
+#include "../../OOXML/Base/Unit.h"
 
-#include "../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
 
 #include "UniversalConverterUtils.h"
 

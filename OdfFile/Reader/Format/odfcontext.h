@@ -36,8 +36,8 @@
 
 #include <vector>
 #include <boost/unordered_map.hpp>
-#include "datatypes/stylefamily.h"
-#include "datatypes/noteclass.h"
+#include "../../DataTypes/stylefamily.h"
+#include "../../DataTypes/noteclass.h"
 
 #include "styles_lite_container.h"
 

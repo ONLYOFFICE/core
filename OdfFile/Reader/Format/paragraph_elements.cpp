@@ -37,9 +37,9 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "../../include/xml/xmlchar.h"
+#include <xml/xmlchar.h>
 
-#include "../../include/xml/utils.h"
+#include <xml/utils.h>
 #include "../../include/common/readstring.h"
 #include "../../include/odf/odf_document.h"
 
@@ -53,7 +53,7 @@
 
 #include "style_text_properties.h"
 
-#include "datatypes/targetframename.h"
+#include "../../DataTypes/targetframename.h"
 
 namespace cpdoccore { 
 
@@ -544,7 +544,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 					std::wstring parent = styleInst->parent_name();
 
 					if (false == parent.empty())
-					{
+                {
 						text_props->content_.r_style_ = Context.styles_map_.get(parent, styleInst->type());
 					}
                     
@@ -889,7 +889,7 @@ void note::docx_convert(oox::docx_conversion_context & Context)
 	Context.get_notes_context().set_current_note(text_note_class_.get_type(), dynamic_cast<const note_citation *>(text_note_citation_.get()));
 
 	std::wstring sCustom = text_note_citation_ ? L" w:customMarkFollows=\"1\"" : L"";
-	if (text_note_class_.get_type() == noteclass::Footnote)
+    if (text_note_class_.get_type() == noteclass::Footnote)
     {
 	   Context.output_stream() << "<w:footnoteReference" << sCustom << L" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
     }

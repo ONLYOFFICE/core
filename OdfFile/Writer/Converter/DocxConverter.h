@@ -36,8 +36,8 @@
 #include <CPSharedPtr.h>
 #include <CPOptional.h>
 
-#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
+#include "../../../OOXML/Common/SimpleTypes_Word.h"
+#include "../../../OOXML/DocxFormat/Math/oMathContent.h"
 
 namespace OOX 
 {

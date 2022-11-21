@@ -30,40 +30,40 @@
  *
  */
 #include "DocxConverter.h"
-#include "../utils.h"
+#include "../../src/utils.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Document.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Endnote.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Footnote.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/FontTable.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Numbering.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Styles.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Settings/WebSettings.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Settings/Settings.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/HeaderFooter.h"
+#include "../../../OOXML/DocxFormat/Docx.h"
+#include "../../../OOXML/DocxFormat/DocxFlat.h"
+#include "../../../OOXML/DocxFormat/Document.h"
+#include "../../../OOXML/DocxFormat/Endnote.h"
+#include "../../../OOXML/DocxFormat/Footnote.h"
+#include "../../../OOXML/DocxFormat/FontTable.h"
+#include "../../../OOXML/DocxFormat/Numbering.h"
+#include "../../../OOXML/DocxFormat/Styles.h"
+#include "../../../OOXML/DocxFormat/Settings/WebSettings.h"
+#include "../../../OOXML/DocxFormat/Settings/Settings.h"
+#include "../../../OOXML/DocxFormat/External/HyperLink.h"
+#include "../../../OOXML/DocxFormat/HeaderFooter.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Pict.h"
+#include "../../../OOXML/DocxFormat/External/HyperLink.h"
+#include "../../../OOXML/XlsxFormat/Chart/Chart.h"
+#include "../../../OOXML/DocxFormat/Logic/Pict.h"
 
 #include "VmlShapeTypes2Oox.h"
 
-#include "../OdfFormat/odt_conversion_context.h"
+#include "../Format/odt_conversion_context.h"
 
-#include "../OdfFormat/odf_text_context.h"
-#include "../OdfFormat/odf_drawing_context.h"
+#include "../Format/odf_text_context.h"
+#include "../Format/odf_drawing_context.h"
 
-#include "../OdfFormat/styles.h"
+#include "../Format/styles.h"
 
-#include "../OdfFormat/style_page_layout_properties.h"
-#include "../OdfFormat/style_table_properties.h"
-#include "../OdfFormat/style_text_properties.h"
-#include "../OdfFormat/style_paragraph_properties.h"
-#include "../OdfFormat/style_graphic_properties.h"
-#include "../OdfFormat/styles_list.h"
+#include "../Format/style_page_layout_properties.h"
+#include "../Format/style_table_properties.h"
+#include "../Format/style_text_properties.h"
+#include "../Format/style_paragraph_properties.h"
+#include "../Format/style_graphic_properties.h"
+#include "../Format/styles_list.h"
 
 using namespace cpdoccore;
 

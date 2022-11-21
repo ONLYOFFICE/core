@@ -32,28 +32,28 @@
 #include "BinaryFileReaderWriter.h"
 #include "BinReaderWriterDefines.h"
 
-#include "../../Common/DocxFormat/Source/Base/Nullable.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../DocxFormat/WritingElement.h"
 
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/OleObject.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/Video.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/Audio.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/VbaProject.h"
-#include "../../Common/DocxFormat/Source/DocxFormat/Media/JsaProject.h"
+#include "../../DocxFormat/Media/OleObject.h"
+#include "../../DocxFormat/Media/ActiveX.h"
+#include "../../DocxFormat/Media/Video.h"
+#include "../../DocxFormat/Media/Audio.h"
+#include "../../DocxFormat/Media/VbaProject.h"
+#include "../../DocxFormat/Media/JsaProject.h"
 
 #include "../../Common/Base64.h"
 
 #include "./imagemanager.h"
 #include "./XmlWriter.h"
 #include "./FontPicker.h"
-#include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
+#include "../../Binary/Document/DocWrapper/DocxSerializer.h"
 
-#include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
-#include "../PPTXFormat/FileContainer.h"
+#include "../../PPTXFormat/FileContainer.h"
 #include <iostream>
 
 #ifndef DISABLE_FILE_DOWNLOADER
@@ -73,7 +73,7 @@
 #define DOUBLE_MAIN		10000
 
 #if defined(_WIN32) || defined (_WIN64)
-	#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
+	#include "../../Base/unicode_util.h"
 #endif
 
 namespace NSBinPptxRW

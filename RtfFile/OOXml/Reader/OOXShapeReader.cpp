@@ -33,21 +33,21 @@
 #include "OOXPictureReader.h"
 #include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
-#include "../Ole1FormatReader.h"
-#include "../RtfOle.h"
+#include "../../Format/Ole1FormatReader.h"
+#include "../../Format/RtfOle.h"
 
-#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/Shape.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/SpTree.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Pic.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Shape.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "../../../MsBinaryFile/PptFile/Drawing/Shapes/Shape.h"
+#include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
+#include "../../../OOXML/PPTXFormat/Logic/Pic.h"
+#include "../../../OOXML/PPTXFormat/Logic/Shape.h"
+#include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
 
-#include "../../../../ASCOfficeOdfFile/src/odf/svg_parser.h"
+#include "../../../OdfFile/Reader/Format/svg_parser.h"
 #include <boost/algorithm/string.hpp>
-#include "../../../../Common/cfcpp/compoundfile.h"
+#include "../../../Common/cfcpp/compoundfile.h"
 
-#include "../../../../ASCOfficePPTXFile/Editor/Drawing/Shapes/BaseShape/toVmlConvert.h"
-#include "../../../../DesktopEditor/graphics/pro/Image.h"
+#include "../../../MsBinaryFile/Common/Vml/toVmlConvert.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 
 #ifndef RGB
     #define RGB(r,g,b) ((_UINT32)(((BYTE)(r)|((_UINT16)((BYTE)(g))<<8))|(((_UINT32)(BYTE)(b))<<16)))

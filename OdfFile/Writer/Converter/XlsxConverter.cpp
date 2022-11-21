@@ -30,37 +30,37 @@
  *
  */
 #include "XlsxConverter.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/XlsxFlat.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Workbook/Workbook.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Worksheets/Worksheet.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Comments/Comments.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/SharedStrings/SharedStrings.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Styles/Styles.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/CalcChain/CalcChain.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinks.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotTable.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheDefinition.h"
-#include "../../../Common/DocxFormat/Source/XlsxFormat/Pivot/PivotCacheRecords.h"
+#include "../../../OOXML/XlsxFormat/Xlsx.h"
+#include "../../../OOXML/XlsxFormat/XlsxFlat.h"
+#include "../../../OOXML/XlsxFormat/Workbook/Workbook.h"
+#include "../../../OOXML/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../../OOXML/XlsxFormat/Comments/Comments.h"
+#include "../../../OOXML/XlsxFormat/SharedStrings/SharedStrings.h"
+#include "../../../OOXML/XlsxFormat/Styles/Styles.h"
+#include "../../../OOXML/XlsxFormat/CalcChain/CalcChain.h"
+#include "../../../OOXML/XlsxFormat/ExternalLinks/ExternalLinks.h"
+#include "../../../OOXML/XlsxFormat/ExternalLinks/ExternalLinkPath.h"
+#include "../../../OOXML/XlsxFormat/Pivot/PivotTable.h"
+#include "../../../OOXML/XlsxFormat/Pivot/PivotCacheDefinition.h"
+#include "../../../OOXML/XlsxFormat/Pivot/PivotCacheRecords.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/VmlDrawing.h"
-#include "../../../Common/DocxFormat/Source/DocxFormat/Media/ActiveX.h"
+#include "../../../OOXML/DocxFormat/VmlDrawing.h"
+#include "../../../OOXML/DocxFormat/Media/ActiveX.h"
 
-#include "../OdfFormat/ods_conversion_context.h"
+#include "../Format/ods_conversion_context.h"
 
-#include "../OdfFormat/odf_text_context.h"
-#include "../OdfFormat/odf_drawing_context.h"
+#include "../Format/odf_text_context.h"
+#include "../Format/odf_drawing_context.h"
 
-#include "../OdfFormat/styles.h"
+#include "../Format/styles.h"
 
-#include "../OdfFormat/style_table_properties.h"
-#include "../OdfFormat/style_text_properties.h"
-#include "../OdfFormat/style_paragraph_properties.h"
-#include "../OdfFormat/style_graphic_properties.h"
-#include "../OdfFormat/style_page_layout_properties.h"
+#include "../Format/style_table_properties.h"
+#include "../Format/style_text_properties.h"
+#include "../Format/style_paragraph_properties.h"
+#include "../Format/style_graphic_properties.h"
+#include "../Format/style_page_layout_properties.h"
 
-#include "../utils.h"
+#include "../../src/utils.h"
 
 using namespace cpdoccore;
 

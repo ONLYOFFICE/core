@@ -47,8 +47,8 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../DesktopEditor/common/Directory.h"
 
-#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+#include "../../SystemUtility/File.h"
+#include "../../SystemUtility/SystemUtility.h"
 
 
 namespace NSShapeImageGen

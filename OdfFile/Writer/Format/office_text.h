@@ -40,7 +40,7 @@
 
 #include <xml/simple_xml_writer.h>
 
-#include "bool.h"
+#include "../../DataTypes/bool.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

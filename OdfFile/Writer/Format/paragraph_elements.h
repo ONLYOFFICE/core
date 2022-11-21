@@ -39,11 +39,11 @@
 
 #include "office_elements_create.h"
 
-#include "targetframename.h"
-#include "noteclass.h"
-#include "bibliography.h"
+#include "../../DataTypes/targetframename.h"
+#include "../../DataTypes/noteclass.h"
+#include "../../DataTypes/bibliography.h"
 
-#include "common_attlists.h"
+#include "../../DataTypes/common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

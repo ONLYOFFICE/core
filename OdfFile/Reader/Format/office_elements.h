@@ -35,7 +35,7 @@
 
 #include "../../Common/CPSharedPtr.h"
 #include "../../Common/xml/xmlelement.h"
-#include "readdocelement.h"
+#include "../../Common/readdocelement.h"
 
 #include "../../Common/odf_elements_type.h"
 

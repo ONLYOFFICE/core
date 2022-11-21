@@ -39,8 +39,8 @@
 
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
-#include "verticalalign.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/verticalalign.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

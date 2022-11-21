@@ -25,9 +25,6 @@
     <Filter Include="elements">
       <UniqueIdentifier>{67b2bf43-5673-4a6f-82cb-fe4be01aee5f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="common">
-      <UniqueIdentifier>{ecbc1bb6-05af-4043-8b7f-731cde436676}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Reader\Format\abstract_xml.cpp">
@@ -69,9 +66,6 @@
     <ClCompile Include="..\..\Reader\Format\draw_page.cpp">
       <Filter>elements</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Reader\Format\draw_page_pptx.cpp">
-      <Filter>elements</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Reader\Format\draw_shapes.cpp">
       <Filter>elements</Filter>
     </ClCompile>
@@ -91,9 +85,6 @@
       <Filter>elements</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Reader\Format\list.cpp">
-      <Filter>elements</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Reader\Format\logging.cpp">
       <Filter>elements</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Reader\Format\math_elementaries.cpp">
@@ -263,12 +254,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Reader\Format\text_elements.cpp">
       <Filter>elements</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Common\readdocelement.cpp">
-      <Filter>common</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Common\utils.cpp">
-      <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Reader\Converter\docx_content_type.cpp">
       <Filter>oox\docx</Filter>
@@ -697,30 +682,6 @@
     </ClInclude>
     <ClInclude Include="..\..\Reader\Format\visitor.h">
       <Filter>elements</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\logging.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\odf_document.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\odf_elements_type.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\odfformat.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\readdocelement.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\readstring.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\utils.h">
-      <Filter>common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Common\writedocelement.h">
-      <Filter>common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Reader\Converter\docx_content_type.h">
       <Filter>oox\docx</Filter>

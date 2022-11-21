@@ -44,12 +44,12 @@
 
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
+#include "../../DataTypes/common_attlists.h"
 
-#include "tablecentering.h"
-#include "layoutgridmode.h"
-#include "direction.h"
-#include "styleprint.h"
+#include "../../DataTypes/tablecentering.h"
+#include "../../DataTypes/layoutgridmode.h"
+#include "../../DataTypes/direction.h"
+#include "../../DataTypes/styleprint.h"
 
 namespace cpdoccore { 
 namespace odf_writer { 

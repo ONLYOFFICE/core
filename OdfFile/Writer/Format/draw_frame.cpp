@@ -44,10 +44,10 @@
 #include <xml/attributes.h>
 
 #include "style_graphic_properties.h"
-#include "length.h"
-#include "borderstyle.h"
-
 #include "odf_conversion_context.h"
+
+#include "../../DataTypes/length.h"
+#include "../../DataTypes/borderstyle.h"
 
 namespace cpdoccore { 
 

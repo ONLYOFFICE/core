@@ -39,8 +39,8 @@
 
 #include "office_elements_create.h"
 
-#include "bool.h"
-#include "length.h"
+#include "../../DataTypes/bool.h"
+#include "../../DataTypes/length.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

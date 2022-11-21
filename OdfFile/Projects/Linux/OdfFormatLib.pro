@@ -23,7 +23,6 @@ DEFINES +=  UNICODE \
             _UNICODE \
             DONT_WRITE_EMBEDDED_FONTS
 
-INCLUDEPATH += ../../DataTypes
 INCLUDEPATH += ../../Common
 
 CONFIG(debug, debug|release){

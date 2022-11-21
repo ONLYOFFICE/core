@@ -46,16 +46,15 @@
 #include <CPOptional.h>
 #include <CPWeakPtr.h>
 
-#include "targetframename.h"
 #include "styles.h"
 //#include "note.h"
 //#include "ruby.h"
 
 #include "office_elements_create.h"
-
 #include "odf_conversion_context.h"
-
 #include "style_text_properties.h"
+
+#include "../../DataTypes/targetframename.h"
 
 namespace cpdoccore { 
 

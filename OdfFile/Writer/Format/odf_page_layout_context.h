@@ -35,8 +35,8 @@
 
 #include "odf_page_layout_state.h"
 
-#include "length.h"
-#include "color.h"
+#include "../../DataTypes/length.h"
+#include "../../DataTypes/color.h"
 
 namespace cpdoccore {
 namespace odf_writer {

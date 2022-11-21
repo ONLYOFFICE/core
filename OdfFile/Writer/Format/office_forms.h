@@ -39,9 +39,9 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
-#include "commandtype.h"
-#include "tablecentering.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/commandtype.h"
+#include "../../DataTypes/tablecentering.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

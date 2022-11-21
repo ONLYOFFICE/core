@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include "common_attlists.h"
-
 #include <xml/xmlelement.h>
 #include <xml/nodetype.h>
 
@@ -41,9 +39,9 @@
 #include "office_elements_create.h"
 #include "anim_elements.h"
 
-#include "presentationclass.h"
-
-#include "drawfill.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/presentationclass.h"
+#include "../../DataTypes/drawfill.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

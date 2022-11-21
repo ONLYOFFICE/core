@@ -36,8 +36,8 @@
 
 #include "office_elements_create.h"
 
-#include "length.h"
-#include "stylenumformat.h"
+#include "../../DataTypes/length.h"
+#include "../../DataTypes/stylenumformat.h"
 
 namespace cpdoccore {
 namespace odf_writer {

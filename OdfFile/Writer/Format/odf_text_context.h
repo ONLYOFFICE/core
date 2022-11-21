@@ -38,7 +38,7 @@
 
 #include "office_elements_create.h"
 
-#include "fobreak.h"
+#include "../../DataTypes/fobreak.h"
 
 namespace cpdoccore {
 namespace odf_writer

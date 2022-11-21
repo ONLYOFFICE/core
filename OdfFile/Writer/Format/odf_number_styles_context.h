@@ -37,7 +37,7 @@
 
 #include "office_elements_create.h"
 
-#include "officevaluetype.h"
+#include "../../DataTypes/officevaluetype.h"
 
 namespace cpdoccore {
 namespace odf_writer {

@@ -38,15 +38,15 @@
 
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
-#include "bool.h"
-#include "grandtotal.h"
-#include "membertype.h"
-#include "tableorientation.h"
-#include "tabletype.h"
-#include "tablefunction.h"
-#include "tableorder.h"
-#include "dategroup.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/bool.h"
+#include "../../DataTypes/grandtotal.h"
+#include "../../DataTypes/membertype.h"
+#include "../../DataTypes/tableorientation.h"
+#include "../../DataTypes/tabletype.h"
+#include "../../DataTypes/tablefunction.h"
+#include "../../DataTypes/tableorder.h"
+#include "../../DataTypes/dategroup.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

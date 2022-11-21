@@ -355,6 +355,7 @@
     <ClInclude Include="..\..\Common\readstring.h" />
     <ClInclude Include="..\..\Common\utils.h" />
     <ClInclude Include="..\..\Common\writedocelement.h" />
+    <ClInclude Include="..\..\Common\errors.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
@@ -688,5 +689,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Common\readdocelement.cpp" />
     <ClCompile Include="..\..\Common\utils.cpp" />
+    <ClCompile Include="..\..\Common\logging.cpp" />
   </ItemGroup>
 </Project>

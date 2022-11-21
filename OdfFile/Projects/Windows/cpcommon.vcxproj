@@ -171,6 +171,7 @@
     <ClInclude Include="..\..\Common\CPSharedPtr.h" />
     <ClInclude Include="..\..\Common\CPString.h" />
     <ClInclude Include="..\..\Common\CPWeakPtr.h" />
+    <ClInclude Include="..\..\Common\errors.h" />
     <ClInclude Include="..\..\Common\logging.h" />
     <ClInclude Include="..\..\Common\odf_elements_type.h" />
     <ClInclude Include="..\..\Common\readdocelement.h" />
@@ -293,6 +294,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
     <ClCompile Include="..\..\Common\CPString.cpp" />
+    <ClCompile Include="..\..\Common\logging.cpp" />
     <ClCompile Include="..\..\Common\readdocelement.cpp" />
     <ClCompile Include="..\..\Common\utils.cpp" />
     <ClCompile Include="..\..\DataTypes\anchortype.cpp" />

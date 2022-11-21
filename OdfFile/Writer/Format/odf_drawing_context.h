@@ -39,9 +39,9 @@
 
 #include "office_elements_create.h"
 
-#include "stylewrap.h"
-#include "gradientstyle.h"
-#include "common_attlists.h"
+#include "../../DataTypes/stylewrap.h"
+#include "../../DataTypes/gradientstyle.h"
+#include "../../DataTypes/common_attlists.h"
 
 namespace OOX {namespace Vml { class CShapeType; }}
 

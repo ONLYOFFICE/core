@@ -45,7 +45,7 @@
 #include "office_elements_create.h"
 #include "style_graphic_properties.h"
 
-#include "officevaluetype.h"
+#include "../../DataTypes/officevaluetype.h"
 
 
 namespace cpdoccore {

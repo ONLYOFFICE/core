@@ -18,10 +18,29 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Writer\Converter\ConvertDrawing.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\Converter.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\ConverterChart.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\ConvertVml.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\DocxConverter.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\MathConverter.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\PptxConverter.cpp" />
+    <ClCompile Include="..\..\Writer\Converter\XlsxConverter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Writer\Converter\Converter.h" />
+    <ClInclude Include="..\..\Writer\Converter\DocxConverter.h" />
+    <ClInclude Include="..\..\Writer\Converter\Oox2OdfConverter.h" />
+    <ClInclude Include="..\..\Writer\Converter\PptxConverter.h" />
+    <ClInclude Include="..\..\Writer\Converter\VmlShapeTypes2Oox.h" />
+    <ClInclude Include="..\..\Writer\Converter\XlsxConverter.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BEE01B53-244A-44E6-8947-ED9342D9247E}</ProjectGuid>
     <RootNamespace>Oox2OdfConverter</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -66,9 +85,9 @@
     <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <OutDir>$(Configuration)\Writer\</OutDir>
+    <IntDir>$(Configuration)\Writer\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;..\..\Common;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -142,26 +161,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\Oox2OdfConverter\ConvertDrawing.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\Converter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\ConverterChart.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\ConvertVml.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\DocxConverter.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\Oox2OdfConverter\MathConverter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\PptxConverter.cpp" />
-    <ClCompile Include="..\Oox2OdfConverter\XlsxConverter.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\Oox2OdfConverter\Converter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\DocxConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\Oox2OdfConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\PptxConverter.h" />
-    <ClInclude Include="..\Oox2OdfConverter\VmlShapeTypes2Oox.h" />
-    <ClInclude Include="..\Oox2OdfConverter\XlsxConverter.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

@@ -38,7 +38,7 @@
 #include <xml/attributes.h>
 #include <xml/simple_xml_writer.h>
 
-#include "common_attlists.h"
+#include "../../DataTypes/common_attlists.h"
 
 namespace cpdoccore { 
 

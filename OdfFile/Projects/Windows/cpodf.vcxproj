@@ -23,6 +23,7 @@
     <ProjectGuid>{50E20601-4A8D-4AFB-8870-63828D328429}</ProjectGuid>
     <RootNamespace>cpodf</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -67,10 +68,10 @@
     <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <OutDir>$(Configuration)\Reader\</OutDir>
+    <IntDir>$(Configuration)\Reader\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;..\..\Common;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -171,170 +172,456 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Common\readdocelement.cpp" />
-    <ClCompile Include="..\..\Common\utils.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\conversionelement.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\docx_content_type.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\docx_conversion_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\docx_drawing.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\docx_package.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\docx_table_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\headers_footers.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\hyperlinks.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\measuredigits.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\mediaitems.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\namespaces.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_chart_axis.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_chart_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_chart_legend.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_chart_series.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_chart_shape.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_conversion_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_data_labels.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_drawing.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_drawing_fills.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_layout.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_package.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_plot_area.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_rels.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_title.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\oox_types_chart.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_comments.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_comments_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_conversion_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_drawing.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_drawings.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_output_xml.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_package.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_slide_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_table_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\pptx_text_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsxconversioncontext.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_alignment.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_border.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_borders.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_cell_format.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_cell_style.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_cell_styles.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_color.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_comments.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_comments_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_complex_number_format.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_conditionalFormatting.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_data_validation.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_defined_names.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_drawing.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_drawings.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_drawing_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_dxfs.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_fill.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_fills.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_font.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_fonts.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_hyperlinks.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_merge_cells.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_numFmts.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_num_format_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_output_xml.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_package.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_pivots_context.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_protection.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_sharedstrings.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_styles.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_tablecontext.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_table_metrics.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_table_state.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_textcontext.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_utils.cpp" />
-    <ClCompile Include="..\..\Reader\Converter\xlsx_xf.cpp" />
-    <ClCompile Include="..\..\Reader\Format\abstract_xml.cpp" />
-    <ClCompile Include="..\..\Reader\Format\anim_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\calcext_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\calcs_styles.cpp" />
-    <ClCompile Include="..\..\Reader\Format\chart_build_oox.cpp" />
-    <ClCompile Include="..\..\Reader\Format\createandread.cpp" />
-    <ClCompile Include="..\..\Reader\Format\documentcontext.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_common.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_frame.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_frame_docx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_frame_pptx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_frame_xlsx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_page.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_page_pptx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_shapes.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_shapes_docx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_shapes_pptx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\draw_shapes_xlsx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\font_face.cpp" />
-    <ClCompile Include="..\..\Reader\Format\header_footer.cpp" />
-    <ClCompile Include="..\..\Reader\Format\list.cpp" />
-    <ClCompile Include="..\..\Reader\Format\logging.cpp" />
-    <ClCompile Include="..\..\Reader\Format\math_elementaries.cpp" />
-    <ClCompile Include="..\..\Reader\Format\math_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\math_layout_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\math_limit_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\math_table_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\math_token_elements.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\conversionelement.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\docx_content_type.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\docx_conversion_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\docx_drawing.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\docx_package.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\docx_table_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\headers_footers.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\hyperlinks.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\measuredigits.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\mediaitems.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\namespaces.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_chart_axis.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_chart_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_chart_legend.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_chart_series.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_chart_shape.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_conversion_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_data_labels.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_drawing.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_drawing_fills.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_layout.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_package.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_plot_area.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_rels.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_title.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\oox_types_chart.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_comments.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_comments_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_conversion_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_drawing.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_drawings.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_output_xml.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_package.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_slide_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_table_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\pptx_text_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsxconversioncontext.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_alignment.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_border.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_borders.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_cell_format.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_cell_style.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_cell_styles.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_color.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_comments.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_comments_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_complex_number_format.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_conditionalFormatting.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_data_validation.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_defined_names.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_drawing.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_drawings.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_drawing_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_dxfs.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_fill.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_fills.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_font.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_fonts.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_hyperlinks.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_merge_cells.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_numFmts.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_num_format_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_output_xml.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_package.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_pivots_context.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_protection.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_sharedstrings.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_styles.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_tablecontext.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_table_metrics.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_table_state.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_textcontext.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_utils.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\xlsx_xf.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\abstract_xml.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\anim_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\calcext_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\calcs_styles.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\chart_build_oox.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\createandread.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\documentcontext.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_common.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_frame.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_frame_docx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_frame_pptx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_frame_xlsx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_page.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_shapes.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_shapes_docx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_shapes_pptx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\draw_shapes_xlsx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\font_face.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\header_footer.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\list.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\math_elementaries.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\math_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\math_layout_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\math_limit_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\math_table_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\math_token_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="..\..\Reader\Format\note.cpp" />
-    <ClCompile Include="..\..\Reader\Format\number_style.cpp" />
-    <ClCompile Include="..\..\Reader\Format\odfcontext.cpp" />
-    <ClCompile Include="..\..\Reader\Format\odf_content_xml.cpp" />
-    <ClCompile Include="..\..\Reader\Format\odf_document.cpp" />
-    <ClCompile Include="..\..\Reader\Format\odf_document_impl.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_annotation.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_binary_data.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_body.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_chart.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_document.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_elements_create.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_event_listeners.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_forms.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_meta.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_presentation.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_scripts.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_settings.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_spreadsheet.cpp" />
-    <ClCompile Include="..\..\Reader\Format\office_text.cpp" />
-    <ClCompile Include="..\..\Reader\Format\paragraph_elements.cpp" />
-    <ClCompile Include="..\..\Reader\Format\ruby.cpp" />
-    <ClCompile Include="..\..\Reader\Format\search_table_cell.cpp" />
-    <ClCompile Include="..\..\Reader\Format\skipelement.cpp" />
-    <ClCompile Include="..\..\Reader\Format\styles.cpp" />
-    <ClCompile Include="..\..\Reader\Format\styles_list.cpp" />
-    <ClCompile Include="..\..\Reader\Format\styles_lite_container.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_chart_properties.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_graphic_properties.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_map.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_paragraph_properties.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_paragraph_properties_docx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_paragraph_properties_pptx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_presentation.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_properties.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_regions.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_table_properties.cpp" />
-    <ClCompile Include="..\..\Reader\Format\style_text_properties.cpp" />
-    <ClCompile Include="..\..\Reader\Format\svg_parser.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_calculation_settings.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_database_ranges.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_data_pilot_tables.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_docx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_named_expressions.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_pptx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\table_xlsx.cpp" />
-    <ClCompile Include="..\..\Reader\Format\templates.cpp" />
-    <ClCompile Include="..\..\Reader\Format\text_content.cpp" />
-    <ClCompile Include="..\..\Reader\Format\text_elements.cpp" />
+    <ClCompile Include="..\..\Reader\Format\number_style.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\odfcontext.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\odf_content_xml.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\odf_document.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\odf_document_impl.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_annotation.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_binary_data.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_body.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_chart.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_document.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_elements_create.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_event_listeners.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_forms.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_meta.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_presentation.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_scripts.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_settings.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_spreadsheet.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\office_text.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\paragraph_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\ruby.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\search_table_cell.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\skipelement.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\styles.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\styles_list.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\styles_lite_container.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_chart_properties.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_graphic_properties.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_map.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_paragraph_properties.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_paragraph_properties_docx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_paragraph_properties_pptx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_presentation.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_properties.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_regions.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_table_properties.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\style_text_properties.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\svg_parser.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_calculation_settings.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_database_ranges.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_data_pilot_tables.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_docx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_named_expressions.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_pptx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\table_xlsx.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\templates.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\text_content.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Format\text_elements.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Common\logging.h" />
-    <ClInclude Include="..\..\Common\odfformat.h" />
-    <ClInclude Include="..\..\Common\odf_document.h" />
-    <ClInclude Include="..\..\Common\odf_elements_type.h" />
-    <ClInclude Include="..\..\Common\readdocelement.h" />
-    <ClInclude Include="..\..\Common\readstring.h" />
-    <ClInclude Include="..\..\Common\utils.h" />
-    <ClInclude Include="..\..\Common\writedocelement.h" />
     <ClInclude Include="..\..\Reader\Converter\conversionelement.h" />
     <ClInclude Include="..\..\Reader\Converter\docx_content_type.h" />
     <ClInclude Include="..\..\Reader\Converter\docx_conversion_context.h" />

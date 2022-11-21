@@ -32,15 +32,16 @@
 
 
 #include <iostream>
+#include <xml/simple_xml_writer.h>
+#include <logging.h>
+
 #include "style_text_properties.h"
 
 
-#include "fontvariant.h"
-#include "logging.h"
+#include "../../DataTypes/fontvariant.h"
+#include "../../DataTypes/common_attlists.h"
 
-#include "common_attlists.h"
 
-#include <xml/simple_xml_writer.h>
 
 //#include "../docx/oox_drawing_fills.h"
 

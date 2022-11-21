@@ -32,6 +32,18 @@
 
 #include "Shape.h"
 
+#include "Paragraph.h"
+#include "Annotations.h"
+#include "Run.h"
+#include "RunProperty.h"
+#include "ParagraphProperty.h"
+#include "Sdt.h"
+#include "Hyperlink.h"
+#include "Table.h"
+
+#include "../Math/oMathPara.h"
+#include "../Math/OMath.h"
+
 namespace OOX
 {
 	namespace Logic

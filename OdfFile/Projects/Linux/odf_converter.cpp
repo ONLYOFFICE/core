@@ -30,6 +30,8 @@
  *
  */
 
+#include "../../Reader/Converter/ConvertOO2OOX.cpp"
+#include "../../Reader/Converter/conversionelement.cpp"
 #include "../../Reader/Converter/xlsx_conditionalFormatting.cpp"
 #include "../../Reader/Converter/xlsx_dxfs.cpp"
 #include "../../Reader/Converter/docx_content_type.cpp"
@@ -102,4 +104,4 @@
 #include "../../Reader/Converter/xlsx_utils.cpp"
 #include "../../Reader/Converter/xlsx_xf.cpp"
 #include "../../Reader/Converter/xlsx_pivots_context.cpp"
-#include "../../Reader/Converter/xlsx_data_validation.cpp""
+#include "../../Reader/Converter/xlsx_data_validation.cpp"

@@ -283,59 +283,11 @@
     <ClInclude Include="..\..\src\cextracttools.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ASCOfficeDocFile\DocFormatLib\Win32\DocFormatLib.vcxproj">
-      <Project>{c5371405-338f-4b70-83bd-2a5cdf64f383}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFileW\source\win32\OdfFormat.vcxproj">
-      <Project>{e5a67556-44da-4481-8f87-0a3aedbd20dd}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFileW\source\win32\Oox2OdfConverter.vcxproj">
-      <Project>{bee01b53-244a-44e6-8947-ed9342d9247e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\cpcommon.vcxproj">
-      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\cpodf.vcxproj">
-      <Project>{50e20601-4a8d-4afb-8870-63828d328429}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\cpxml.vcxproj">
-      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\formulasconvert.vcxproj">
-      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficePPTFile\PPTFormatLib\Win32\PPTFormatLib.vcxproj">
-      <Project>{7b27e40e-f70a-4a74-a77c-0944d7931d15}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcxproj">
-      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeRtfFile\RtfFormatLib\Win32\RtfFormatLib.vcxproj">
-      <Project>{af2d00a7-a351-4700-ae88-c1d9ade29345}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeTxtFile\TxtXmlFormatLib\Win32\TxtXmlFormatLib.vcxproj">
-      <Project>{dacbe6ca-e089-47d1-8ce7-c7db59c15417}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\VbaFormat.vcxproj">
-      <Project>{041dd428-2d5c-4d97-8ab7-7207f3d5b801}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\XlsFormat.vcxproj">
-      <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\XlsXlsxConverter.vcxproj">
-      <Project>{cbedd0d1-10a8-45c1-af81-8492f40964ca}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
       <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\cfcpp\CompoundFileLib.vcxproj">
       <Project>{fa22bab4-e93e-459d-8a5f-16764fbbed40}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\DocxFormat\Projects\DocxFormatLib.vcxproj">
-      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\DocxFormat\Projects\XlsbFormatLib.vcxproj">
-      <Project>{13e13907-49da-482e-ad58-026d06a5cd11}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
       <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>

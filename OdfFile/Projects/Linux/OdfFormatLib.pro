@@ -41,83 +41,6 @@ SOURCES += \
 
 core_debug {
 SOURCES += \    
-	../../Reader/Format/abstract_xml.cpp \
-	../../Reader/Format/anim_elements.cpp \
-	../../Reader/Format/calcs_styles.cpp \
-	../../Reader/Format/chart_build_oox.cpp \
-	../../Reader/Format/createandread.cpp \
-	../../Reader/Format/documentcontext.cpp \
-	../../Reader/Format/draw_common.cpp \
-	../../Reader/Format/draw_frame.cpp \
-	../../Reader/Format/draw_frame_docx.cpp \
-	../../Reader/Format/draw_frame_pptx.cpp \
-	../../Reader/Format/draw_frame_xlsx.cpp \
-	../../Reader/Format/draw_page.cpp \
-	../../Reader/Format/draw_shapes.cpp \
-	../../Reader/Format/draw_shapes_docx.cpp \
-	../../Reader/Format/draw_shapes_pptx.cpp \
-	../../Reader/Format/draw_shapes_xlsx.cpp \
-	../../Reader/Format/font_face.cpp \
-	../../Reader/Format/header_footer.cpp \
-	../../Reader/Format/list.cpp \
-	../../Reader/Format/logging.cpp \
-	../../Reader/Format/note.cpp \
-	../../Reader/Format/number_style.cpp \
-	../../Reader/Format/odf_content_xml.cpp \
-	../../Reader/Format/odfcontext.cpp \
-	../../Reader/Format/odf_document.cpp \
-	../../Reader/Format/odf_document_impl.cpp \
-	../../Reader/Format/office_annotation.cpp \
-	../../Reader/Format/office_binary_data.cpp \
-	../../Reader/Format/office_body.cpp \
-	../../Reader/Format/office_chart.cpp \
-	../../Reader/Format/office_document.cpp \
-	../../Reader/Format/office_elements_create.cpp \
-	../../Reader/Format/office_event_listeners.cpp \
-	../../Reader/Format/office_presentation.cpp \
-	../../Reader/Format/office_scripts.cpp \
-	../../Reader/Format/office_forms.cpp \
-	../../Reader/Format/office_settings.cpp \
-	../../Reader/Format/office_spreadsheet.cpp \
-	../../Reader/Format/office_text.cpp \
-	../../Reader/Format/office_meta.cpp \
-	../../Reader/Format/paragraph_elements.cpp \
-	../../Reader/Format/ruby.cpp \
-	../../Reader/Format/search_table_cell.cpp \
-	../../Reader/Format/skipelement.cpp \
-	../../Reader/Format/style_chart_properties.cpp \
-	../../Reader/Format/style_graphic_properties.cpp \
-	../../Reader/Format/style_map.cpp \
-	../../Reader/Format/style_properties.cpp \
-	../../Reader/Format/style_paragraph_properties.cpp \
-	../../Reader/Format/style_paragraph_properties_docx.cpp \
-	../../Reader/Format/style_paragraph_properties_pptx.cpp \
-	../../Reader/Format/style_presentation.cpp \
-	../../Reader/Format/style_regions.cpp \
-	../../Reader/Format/styles.cpp \
-	../../Reader/Format/styles_list.cpp \
-	../../Reader/Format/styles_lite_container.cpp \
-	../../Reader/Format/style_table_properties.cpp \
-	../../Reader/Format/style_text_properties.cpp \
-	../../Reader/Format/svg_parser.cpp \
-	../../Reader/Format/table.cpp \
-	../../Reader/Format/table_calculation_settings.cpp \
-	../../Reader/Format/table_docx.cpp \
-	../../Reader/Format/table_named_expressions.cpp \
-	../../Reader/Format/table_data_pilot_tables.cpp \
-	../../Reader/Format/table_pptx.cpp \
-	../../Reader/Format/table_xlsx.cpp \
-	../../Reader/Format/templates.cpp \
-	../../Reader/Format/text_content.cpp \
-	../../Reader/Format/text_elements.cpp \
-	../../Reader/Format/math_elementaries.cpp \
-	../../Reader/Format/math_layout_elements.cpp \
-	../../Reader/Format/math_limit_elements.cpp \
-	../../Reader/Format/math_table_elements.cpp \
-	../../Reader/Format/math_token_elements.cpp \
-	../../Reader/Format/calcext_elements.cpp \
-	../../Reader/Format/table_database_ranges.cpp \
-	../../Reader/Format/math_elements.cpp \
 	../../DataTypes/mathvariant.cpp \
 	../../DataTypes/anchortype.cpp \
 	../../DataTypes/backgroundcolor.cpp \
@@ -227,8 +150,87 @@ SOURCES += \
 	../../DataTypes/timeperiod.cpp \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
+        ../../Reader/Format/abstract_xml.cpp \
+        ../../Reader/Format/anim_elements.cpp \
+        ../../Reader/Format/calcs_styles.cpp \
+        ../../Reader/Format/chart_build_oox.cpp \
+        ../../Reader/Format/createandread.cpp \
+        ../../Reader/Format/documentcontext.cpp \
+        ../../Reader/Format/draw_common.cpp \
+        ../../Reader/Format/draw_frame.cpp \
+        ../../Reader/Format/draw_frame_docx.cpp \
+        ../../Reader/Format/draw_frame_pptx.cpp \
+        ../../Reader/Format/draw_frame_xlsx.cpp \
+        ../../Reader/Format/draw_page.cpp \
+        ../../Reader/Format/draw_shapes.cpp \
+        ../../Reader/Format/draw_shapes_docx.cpp \
+        ../../Reader/Format/draw_shapes_pptx.cpp \
+        ../../Reader/Format/draw_shapes_xlsx.cpp \
+        ../../Reader/Format/font_face.cpp \
+        ../../Reader/Format/header_footer.cpp \
+        ../../Reader/Format/list.cpp \
+        ../../Reader/Format/logging.cpp \
+        ../../Reader/Format/note.cpp \
+        ../../Reader/Format/number_style.cpp \
+        ../../Reader/Format/odf_content_xml.cpp \
+        ../../Reader/Format/odfcontext.cpp \
+        ../../Reader/Format/odf_document.cpp \
+        ../../Reader/Format/odf_document_impl.cpp \
+        ../../Reader/Format/office_annotation.cpp \
+        ../../Reader/Format/office_binary_data.cpp \
+        ../../Reader/Format/office_body.cpp \
+        ../../Reader/Format/office_chart.cpp \
+        ../../Reader/Format/office_document.cpp \
+        ../../Reader/Format/office_elements_create.cpp \
+        ../../Reader/Format/office_event_listeners.cpp \
+        ../../Reader/Format/office_presentation.cpp \
+        ../../Reader/Format/office_scripts.cpp \
+        ../../Reader/Format/office_forms.cpp \
+        ../../Reader/Format/office_settings.cpp \
+        ../../Reader/Format/office_spreadsheet.cpp \
+        ../../Reader/Format/office_text.cpp \
+        ../../Reader/Format/office_meta.cpp \
+        ../../Reader/Format/paragraph_elements.cpp \
+        ../../Reader/Format/ruby.cpp \
+        ../../Reader/Format/search_table_cell.cpp \
+        ../../Reader/Format/skipelement.cpp \
+        ../../Reader/Format/style_chart_properties.cpp \
+        ../../Reader/Format/style_graphic_properties.cpp \
+        ../../Reader/Format/style_map.cpp \
+        ../../Reader/Format/style_properties.cpp \
+        ../../Reader/Format/style_paragraph_properties.cpp \
+        ../../Reader/Format/style_paragraph_properties_docx.cpp \
+        ../../Reader/Format/style_paragraph_properties_pptx.cpp \
+        ../../Reader/Format/style_presentation.cpp \
+        ../../Reader/Format/style_regions.cpp \
+        ../../Reader/Format/styles.cpp \
+        ../../Reader/Format/styles_list.cpp \
+        ../../Reader/Format/styles_lite_container.cpp \
+        ../../Reader/Format/style_table_properties.cpp \
+        ../../Reader/Format/style_text_properties.cpp \
+        ../../Reader/Format/svg_parser.cpp \
+        ../../Reader/Format/table.cpp \
+        ../../Reader/Format/table_calculation_settings.cpp \
+        ../../Reader/Format/table_docx.cpp \
+        ../../Reader/Format/table_named_expressions.cpp \
+        ../../Reader/Format/table_data_pilot_tables.cpp \
+        ../../Reader/Format/table_pptx.cpp \
+        ../../Reader/Format/table_xlsx.cpp \
+        ../../Reader/Format/templates.cpp \
+        ../../Reader/Format/text_content.cpp \
+        ../../Reader/Format/text_elements.cpp \
+        ../../Reader/Format/math_elementaries.cpp \
+        ../../Reader/Format/math_layout_elements.cpp \
+        ../../Reader/Format/math_limit_elements.cpp \
+        ../../Reader/Format/math_table_elements.cpp \
+        ../../Reader/Format/math_token_elements.cpp \
+        ../../Reader/Format/calcext_elements.cpp \
+        ../../Reader/Format/table_database_ranges.cpp \
+        ../../Reader/Format/math_elements.cpp \
 	../../Reader/Converter/xlsx_conditionalFormatting.cpp \
-	../../Reader/Converter/xlsx_dxfs.cpp \
+        ../../Reader/Converter/ConvertOO2OOX.cpp \
+        ../../Reader/Converter/conversionelement.cpp \
+        ../../Reader/Converter/xlsx_dxfs.cpp \
 	../../Reader/Converter/docx_content_type.cpp \
 	../../Reader/Converter/docx_conversion_context.cpp \
 	../../Reader/Converter/docx_drawing.cpp \
@@ -301,8 +303,7 @@ SOURCES += \
 	../../Reader/Converter/xlsx_utils.cpp \
 	../../Reader/Converter/xlsx_xf.cpp \
 	\
-	../../src/utils.cpp \
-	../../Writer/Format/office_document.cpp \
+        ../../Writer/Format/office_document.cpp \
 	../../Writer/Format/office_forms.cpp \
 	../../Writer/Format/abstract_xml.cpp \
 	../../Writer/Format/calcext_elements.cpp \
@@ -388,12 +389,11 @@ SOURCES += \
 	../../Common/xml/sax_xmllite.cpp \
 	../../Common/xml/utils.cpp \
 	../../Common/xml/xmlchar.cpp \
-	../../src/ConvertOO2OOX.cpp \
-	../../src/conversionelement.cpp \
-	../../src/common/CPColorUtils.cpp \
-	../../src/common/CPString.cpp \
-	../../src/common/readdocelement.cpp \
-	\
+        ../../Common/CPColorUtils.cpp \
+        ../../Common/CPString.cpp \
+        ../../Common/readdocelement.cpp \
+        ../../Common/utils.cpp \
+        \
 	../../Writer/Converter/Converter.cpp \
 	../../Writer/Converter/ConverterChart.cpp \
 	../../Writer/Converter/ConvertVml.cpp \
@@ -405,13 +405,8 @@ SOURCES += \
 
 
 HEADERS += \
-	../../Formulas/formulasconvert.h \
-    ../src/conversionelement.h \
-	../../src/progressCallbackR.h \
-	../../src/ConvertOO2OOX.h \
-	../../src/odfcommandtype.h \
-	../../Common/xml/sax_xmllite.h \
-	../../Reader/Format/abstract_xml.h \
+        ../../Reader/Format/odf_document.h \
+        ../../Reader/Format/abstract_xml.h \
 	../../Reader/Format/all_elements.h \
 	../../Reader/Format/anim_elements.h \
 	../../Reader/Format/calcs_styles.h \
@@ -661,23 +656,25 @@ HEADERS += \
 	../../Reader/Converter/xlsx_data_validation.h \
 	../../Reader/Converter/xlsx_utils.h \
 	../../Reader/Converter/xlsx_xf.h \
-	../../include/logging.h \
-	../../include/CPColorUtils.h \
-	../../include/CPNoncopyable.h \
-	../../include/CPOptional.h \
-	../../include/CPScopedPtr.h \
-	../../include/CPSharedPtr.h \
-	../../include/CPString.h \
-	../../include/CPWeakPtr.h \
-	../../include/common/readdocelement.h \
-	../../include/common/readstring.h \
-	../../include/common/writedocelement.h \
-	../../include/odf/odf_document.h \
-	../../include/odf/odfformat.h \
-	../../include/utf8cpp/utf8/checked.h \
-	../../include/utf8cpp/utf8/core.h \
-	../../include/utf8cpp/utf8/unchecked.h \
-	../../include/utf8cpp/utf8.h \
+        ../../Formulas/formulasconvert.h \
+        ../../Reader/Converter/conversionelement.h \
+        ../../Reader/Converter/ConvertOO2OOX.h \
+        ../../Common/xml/sax_xmllite.h \
+        ../../Common/logging.h \
+        ../../Common/CPColorUtils.h \
+        ../../Common/CPNoncopyable.h \
+        ../../Common/CPOptional.h \
+        ../../Common/CPScopedPtr.h \
+        ../../Common/CPSharedPtr.h \
+        ../../Common/CPString.h \
+        ../../Common/CPWeakPtr.h \
+        ../../Common/readdocelement.h \
+        ../../Common/readstring.h \
+        ../../Common/writedocelement.h \
+        ../../Common/utf8cpp/utf8/checked.h \
+        ../../Common/utf8cpp/utf8/core.h \
+        ../../Common/utf8cpp/utf8/unchecked.h \
+        ../../Common/utf8cpp/utf8.h \
 	../../Common/xml/attributes.h \
 	../../Common/xml/nodetype.h \
 	../../Common/xml/sax.h \

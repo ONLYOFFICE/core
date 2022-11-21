@@ -161,32 +161,6 @@
       <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\src\xml\attributes.cpp" />
-    <ClCompile Include="..\src\xml\sax.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\src\xml\sax_xmllite.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\src\xml\utils.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\src\xml\xmlchar.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\xml\attributes.h" />
-    <ClInclude Include="..\include\xml\nodetype.h" />
-    <ClInclude Include="..\include\xml\sax.h" />
-    <ClInclude Include="..\include\xml\simple_xml_writer.h" />
-    <ClInclude Include="..\include\xml\utils.h" />
-    <ClInclude Include="..\include\xml\xmlchar.h" />
-    <ClInclude Include="..\include\xml\xmlelement.h" />
-    <ClInclude Include="..\src\xml\sax_xmllite.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

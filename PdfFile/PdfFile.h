@@ -87,14 +87,15 @@ public:
     NSFonts::IFontManager* GetFontManager();
 
     // --- EDIT ---
-
-    bool EditPdf(const std::wstring& wsDstFile = L"");
     virtual void Close();
+#ifndef BUILDING_WASM_MODULE
+    bool EditPdf(const std::wstring& wsDstFile = L"");
     bool EditPage  (int nPageIndex);
     bool DeletePage(int nPageIndex);
     bool AddPage   (int nPageIndex);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
     void PageRotate(int nRotate);
+#endif
 
     // --- READER ---
 

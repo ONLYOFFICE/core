@@ -31,26 +31,26 @@
  */
 #include "PdfFile.h"
 #include "PdfWriter.h"
-#include "OnlineOfficeBinToPdf.h"
 #include "PdfReader.h"
 
 #include "../DesktopEditor/common/File.h"
+#include "lib/xpdf/PDFDoc.h"
+
+#ifndef BUILDING_WASM_MODULE
+#include "OnlineOfficeBinToPdf.h"
 #include "../DesktopEditor/common/Path.h"
 #include "../DesktopEditor/common/StringExt.h"
 
 #include "SrcReader/Adaptors.h"
-#include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/AcroForm.h"
 #include "lib/xpdf/TextString.h"
 
-#ifndef BUILDING_WASM_MODULE
 #include "SrcWriter/Objects.h"
 #include "SrcWriter/Document.h"
 #include "SrcWriter/Pages.h"
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
 #include "SrcWriter/Info.h"
-#endif
 
 #define AddToObject(oVal)\
 {\
@@ -157,6 +157,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, bool bBinary, 
         break;
     }
 }
+#endif
 
 class CPdfFile_Private
 {
@@ -173,6 +174,7 @@ public:
     bool bEdit;
     bool bEditPage;
 
+#ifndef BUILDING_WASM_MODULE
     void GetPageTree(XRef* xref, Object* pPagesRefObj)
     {
         PdfWriter::CDocument* pDoc = pWriter->m_pDocument;
@@ -238,6 +240,7 @@ public:
         }
         kidsArrObj.free();
     }
+#endif
 };
 
 // ------------------------------------------------------------------------
@@ -265,6 +268,113 @@ NSFonts::IFontManager* CPdfFile::GetFontManager()
     return m_pInternal->pReader->GetFontManager();
 }
 
+void CPdfFile::Close()
+{
+    if (!m_pInternal->bEdit)
+    {
+        if (m_pInternal->pReader)
+            m_pInternal->pReader->Close();
+        return;
+    }
+#ifndef BUILDING_WASM_MODULE
+    if (!m_pInternal->pWriter || !m_pInternal->pReader)
+        return;
+    PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
+    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
+    if (!pPDFDocument || !pDoc)
+        return;
+
+    XRef* xref = pPDFDocument->getXRef();
+    if (!xref)
+        return;
+
+    // Добавляем первый элемент в таблицу xref
+    // он должен иметь вид 0000000000 65535 f
+    PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, 0, 65535);
+    if (!pXref)
+        return;
+
+    PdfWriter::CDictObject* pTrailer = NULL;
+    Object* trailerDict = xref->getTrailerDict();
+    if (trailerDict)
+    {
+        pTrailer = pXref->GetTrailer();
+
+        for (int nIndex = 0; nIndex < trailerDict->dictGetLength(); ++nIndex)
+        {
+            Object oTemp;
+            char* chKey = trailerDict->dictGetKey(nIndex);
+            trailerDict->dictGetValNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pTrailer, true, chKey);
+            oTemp.free();
+        }
+    }
+
+    Object info;
+    pPDFDocument->getDocInfo(&info);
+    PdfWriter::CXref* pInfoXref = NULL;
+    PdfWriter::CInfoDict* pInfoDict = NULL;
+    if (info.isDict())
+    {
+        // Обновление Info
+        PdfWriter::CObjectBase* pInfo = pTrailer->Get("Info");
+        pInfoXref = new PdfWriter::CXref(pDoc, pInfo ? pInfo->GetObjId() : 0);
+        if (!pInfoXref)
+            return;
+        pInfoDict = new PdfWriter::CInfoDict(pInfoXref);
+        if (!pInfoDict)
+        {
+            RELEASEOBJECT(pInfoXref);
+            return;
+        }
+
+        for (int nIndex = 0; nIndex < info.dictGetLength(); ++nIndex)
+        {
+            Object oTemp;
+            char* chKey = info.dictGetKey(nIndex);
+            info.dictGetValNF(nIndex, &oTemp);
+            DictToCDictObject(&oTemp, pInfoDict, true, chKey);
+            oTemp.free();
+        }
+
+        if (pInfo)
+            pInfoDict->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
+        pInfoDict->SetTime(PdfWriter::InfoModaDate);
+    }
+    info.free();
+
+
+    bool bRes = m_pInternal->pWriter->EditClose();
+    if (!bRes)
+        return;
+    bRes = pDoc->AddToFile(pXref, pTrailer, pInfoXref, pInfoDict);
+    if (!bRes)
+        return;
+
+    std::wstring wsPath = pDoc->GetEditPdfPath();
+    std::string sPathUtf8New = U_TO_UTF8(wsPath);
+    std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->wsSrcFile);
+    if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
+    {
+        GString* owner_pswd = NSStrings::CreateString(m_pInternal->wsPassword);
+        GString* user_pswd  = NSStrings::CreateString(m_pInternal->wsPassword);
+        bRes &= (pPDFDocument->makeWritable(false, owner_pswd, user_pswd) != 0);
+        delete owner_pswd;
+        delete user_pswd;
+
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(m_pInternal->wsSrcFile))
+        {
+            m_pInternal->pReader->ChangeLength(oFile.GetFileSize());
+            oFile.CloseFile();
+        }
+    }
+
+    m_pInternal->bEdit     = false;
+    m_pInternal->bEditPage = false;
+#endif
+}
+#ifndef BUILDING_WASM_MODULE
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
     if (!m_pInternal->pWriter || !m_pInternal->pReader)
@@ -437,110 +547,6 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     pagesRefObj.free();
     return bRes;
 }
-void CPdfFile::Close()
-{
-    if (!m_pInternal->bEdit)
-    {
-        if (m_pInternal->pReader)
-            m_pInternal->pReader->Close();
-        return;
-    }
-    if (!m_pInternal->pWriter || !m_pInternal->pReader)
-        return;
-    PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
-    PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
-    if (!pPDFDocument || !pDoc)
-        return;
-
-    XRef* xref = pPDFDocument->getXRef();
-    if (!xref)
-        return;
-
-    // Добавляем первый элемент в таблицу xref
-    // он должен иметь вид 0000000000 65535 f
-    PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, 0, 65535);
-    if (!pXref)
-        return;
-
-    PdfWriter::CDictObject* pTrailer = NULL;
-    Object* trailerDict = xref->getTrailerDict();
-    if (trailerDict)
-    {
-        pTrailer = pXref->GetTrailer();
-
-        for (int nIndex = 0; nIndex < trailerDict->dictGetLength(); ++nIndex)
-        {
-            Object oTemp;
-            char* chKey = trailerDict->dictGetKey(nIndex);
-            trailerDict->dictGetValNF(nIndex, &oTemp);
-            DictToCDictObject(&oTemp, pTrailer, true, chKey);
-            oTemp.free();
-        }
-    }
-
-    Object info;
-    pPDFDocument->getDocInfo(&info);
-    PdfWriter::CXref* pInfoXref = NULL;
-    PdfWriter::CInfoDict* pInfoDict = NULL;
-    if (info.isDict())
-    {
-        // Обновление Info
-        PdfWriter::CObjectBase* pInfo = pTrailer->Get("Info");
-        pInfoXref = new PdfWriter::CXref(pDoc, pInfo ? pInfo->GetObjId() : 0);
-        if (!pInfoXref)
-            return;
-        pInfoDict = new PdfWriter::CInfoDict(pInfoXref);
-        if (!pInfoDict)
-        {
-            RELEASEOBJECT(pInfoXref);
-            return;
-        }
-
-        for (int nIndex = 0; nIndex < info.dictGetLength(); ++nIndex)
-        {
-            Object oTemp;
-            char* chKey = info.dictGetKey(nIndex);
-            info.dictGetValNF(nIndex, &oTemp);
-            DictToCDictObject(&oTemp, pInfoDict, true, chKey);
-            oTemp.free();
-        }
-
-        if (pInfo)
-            pInfoDict->SetRef(pInfo->GetObjId(), pInfo->GetGenNo());
-        pInfoDict->SetTime(PdfWriter::InfoModaDate);
-    }
-    info.free();
-
-
-    bool bRes = m_pInternal->pWriter->EditClose();
-    if (!bRes)
-        return;
-    bRes = pDoc->AddToFile(pXref, pTrailer, pInfoXref, pInfoDict);
-    if (!bRes)
-        return;
-
-    std::wstring wsPath = pDoc->GetEditPdfPath();
-    std::string sPathUtf8New = U_TO_UTF8(wsPath);
-    std::string sPathUtf8Old = U_TO_UTF8(m_pInternal->wsSrcFile);
-    if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
-    {
-        GString* owner_pswd = NSStrings::CreateString(m_pInternal->wsPassword);
-        GString* user_pswd  = NSStrings::CreateString(m_pInternal->wsPassword);
-        bRes &= (pPDFDocument->makeWritable(false, owner_pswd, user_pswd) != 0);
-        delete owner_pswd;
-        delete user_pswd;
-
-        NSFile::CFileBinary oFile;
-        if (oFile.OpenFile(m_pInternal->wsSrcFile))
-        {
-            m_pInternal->pReader->ChangeLength(oFile.GetFileSize());
-            oFile.CloseFile();
-        }
-    }
-
-    m_pInternal->bEdit     = false;
-    m_pInternal->bEditPage = false;
-}
 bool CPdfFile::EditPage(int nPageIndex)
 {
     if (!m_pInternal->pWriter || !m_pInternal->pReader)
@@ -644,6 +650,7 @@ void CPdfFile::PageRotate(int nRotate)
         return;
     m_pInternal->pWriter->PageRotate(nRotate);
 }
+#endif
 
 // ------------------------------------------------------------------------
 
@@ -770,16 +777,18 @@ void CPdfFile::SetCore(const std::wstring& wsCoreXml)
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
+#ifndef BUILDING_WASM_MODULE
     if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))
         return S_FALSE;
-
+#endif
     return S_OK;
 }
 HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
+#ifndef BUILDING_WASM_MODULE
     if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
         return S_FALSE;
-
+#endif
     return S_OK;
 }
 HRESULT CPdfFile::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -1505,8 +1514,9 @@ bool CPdfWriter::AddPage(int nPageIndex) { return false; }
 bool CPdfWriter::EditClose() { return false; }
 void CPdfWriter::PageRotate(int nRotate) {}
 void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate) {}
+//PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha) { return NULL; }
 bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return false; }
-bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
+//bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids) { return false; }
 void CPdfWriter::UpdateFont() {}
 void CPdfWriter::GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex) {}

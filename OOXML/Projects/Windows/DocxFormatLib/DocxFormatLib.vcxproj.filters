@@ -533,6 +533,9 @@
     <ClInclude Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.h">
       <Filter>XlsxFormat\NamedSheetViews</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\DocxFormat\UnknowTypeFile.h" />
+    <ClInclude Include="..\..\..\DocxFormat\VmlDrawing.h" />
+    <ClInclude Include="..\..\..\DocxFormat\WritingElement.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -768,5 +771,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp">
       <Filter>XlsxFormat\NamedSheetViews</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\VmlDrawing.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\WritingElement.cpp" />
   </ItemGroup>
 </Project>

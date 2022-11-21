@@ -323,6 +323,9 @@
     <ClInclude Include="..\..\..\DocxFormat\Settings\Settings.h" />
     <ClInclude Include="..\..\..\DocxFormat\Settings\WebSettings.h" />
     <ClInclude Include="..\..\..\DocxFormat\Styles.h" />
+    <ClInclude Include="..\..\..\DocxFormat\UnknowTypeFile.h" />
+    <ClInclude Include="..\..\..\DocxFormat\VmlDrawing.h" />
+    <ClInclude Include="..\..\..\DocxFormat\WritingElement.h" />
     <ClInclude Include="..\..\..\SystemUtility\File.h" />
     <ClInclude Include="..\..\..\SystemUtility\SystemUtility.h" />
     <ClInclude Include="..\..\..\XlsxFormat\CalcChain\CalcChain.h" />
@@ -457,6 +460,8 @@
     <ClCompile Include="..\..\..\DocxFormat\Media\Media.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\VbaProject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Settings\Settings.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\VmlDrawing.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\WritingElement.cpp" />
     <ClCompile Include="..\..\..\SystemUtility\File.cpp" />
     <ClCompile Include="..\..\..\SystemUtility\SystemUtility.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartSerialize.cpp" />

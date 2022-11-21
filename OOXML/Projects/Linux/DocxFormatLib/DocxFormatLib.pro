@@ -22,13 +22,12 @@ DEFINES +=  UNICODE _UNICODE \
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
-#core_release {
-#SOURCES += \
-#	docx_format_logic.cpp
-#}
+core_release {
+SOURCES += \
+	docx_format_logic.cpp
+}
 
-#core_debug {
-{
+core_debug {
 SOURCES += \
 	../../../DocxFormat/Logic/AlternateContent.cpp \
 	../../../DocxFormat/Logic/Annotations.cpp \

@@ -30,8 +30,9 @@
  *
  */
 #pragma once
-#include "../WritingElement.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
 namespace OOX
 {

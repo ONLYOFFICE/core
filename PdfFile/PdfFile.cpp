@@ -34,21 +34,23 @@
 #include "OnlineOfficeBinToPdf.h"
 #include "PdfReader.h"
 
-#include "SrcReader/Adaptors.h"
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Path.h"
 #include "../DesktopEditor/common/StringExt.h"
 
+#include "SrcReader/Adaptors.h"
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/AcroForm.h"
 #include "lib/xpdf/TextString.h"
 
+#ifndef BUILDING_WASM_MODULE
 #include "SrcWriter/Objects.h"
 #include "SrcWriter/Document.h"
 #include "SrcWriter/Pages.h"
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
 #include "SrcWriter/Info.h"
+#endif
 
 #define AddToObject(oVal)\
 {\
@@ -161,6 +163,7 @@ class CPdfFile_Private
 public:
     std::wstring wsSrcFile;
     std::wstring wsPassword;
+    std::wstring wsTempFolder;
     NSFonts::IApplicationFonts* pAppFonts;
 
     CPdfReader* pReader;
@@ -239,27 +242,13 @@ public:
 
 // ------------------------------------------------------------------------
 
-CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA)
+CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts)
 {
     m_pInternal = new CPdfFile_Private();
 
     m_pInternal->pAppFonts = pAppFonts;
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA);
-    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
-    m_pInternal->wsPassword = L"";
-    m_pInternal->bEdit     = false;
-    m_pInternal->bEditPage = false;
-}
-// nMode = 1/2/3, 01 - reader, 10 - writer, 11 - editer
-CPdfFile::CPdfFile(NSFonts::IApplicationFonts* pAppFonts, int nMode, bool isPDFA)
-{
-    m_pInternal = new CPdfFile_Private();
-
-    m_pInternal->pAppFonts = pAppFonts;
-    if (nMode & 1)
-        m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
-    if (nMode & 2)
-        m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA);
+    m_pInternal->pWriter = NULL;
+    m_pInternal->pReader = NULL;
     m_pInternal->wsPassword = L"";
     m_pInternal->bEdit     = false;
     m_pInternal->bEditPage = false;
@@ -268,13 +257,6 @@ CPdfFile::~CPdfFile()
 {
     RELEASEOBJECT(m_pInternal->pWriter);
     RELEASEOBJECT(m_pInternal->pReader);
-}
-void CPdfFile::SetTemp(const std::wstring& wsPath)
-{
-    if (m_pInternal->pWriter)
-        m_pInternal->pWriter->SetTempFolder   (wsPath);
-    if (m_pInternal->pReader)
-        m_pInternal->pReader->SetTempDirectory(wsPath);
 }
 NSFonts::IFontManager* CPdfFile::GetFontManager()
 {
@@ -455,24 +437,30 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
     pagesRefObj.free();
     return bRes;
 }
-bool CPdfFile::EditClose()
+void CPdfFile::Close()
 {
+    if (!m_pInternal->bEdit)
+    {
+        if (m_pInternal->pReader)
+            m_pInternal->pReader->Close();
+        return;
+    }
     if (!m_pInternal->pWriter || !m_pInternal->pReader)
-        return false;
+        return;
     PDFDoc* pPDFDocument = m_pInternal->pReader->GetPDFDocument();
     PdfWriter::CDocument* pDoc = m_pInternal->pWriter->m_pDocument;
-    if (!pPDFDocument || !pDoc || !m_pInternal->bEdit)
-        return false;
+    if (!pPDFDocument || !pDoc)
+        return;
 
     XRef* xref = pPDFDocument->getXRef();
     if (!xref)
-        return false;
+        return;
 
     // Добавляем первый элемент в таблицу xref
     // он должен иметь вид 0000000000 65535 f
     PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, 0, 65535);
     if (!pXref)
-        return false;
+        return;
 
     PdfWriter::CDictObject* pTrailer = NULL;
     Object* trailerDict = xref->getTrailerDict();
@@ -500,12 +488,12 @@ bool CPdfFile::EditClose()
         PdfWriter::CObjectBase* pInfo = pTrailer->Get("Info");
         pInfoXref = new PdfWriter::CXref(pDoc, pInfo ? pInfo->GetObjId() : 0);
         if (!pInfoXref)
-            return false;
+            return;
         pInfoDict = new PdfWriter::CInfoDict(pInfoXref);
         if (!pInfoDict)
         {
             RELEASEOBJECT(pInfoXref);
-            return false;
+            return;
         }
 
         for (int nIndex = 0; nIndex < info.dictGetLength(); ++nIndex)
@@ -526,10 +514,10 @@ bool CPdfFile::EditClose()
 
     bool bRes = m_pInternal->pWriter->EditClose();
     if (!bRes)
-        return false;
+        return;
     bRes = pDoc->AddToFile(pXref, pTrailer, pInfoXref, pInfoDict);
     if (!bRes)
-        return false;
+        return;
 
     std::wstring wsPath = pDoc->GetEditPdfPath();
     std::string sPathUtf8New = U_TO_UTF8(wsPath);
@@ -552,7 +540,6 @@ bool CPdfFile::EditClose()
 
     m_pInternal->bEdit     = false;
     m_pInternal->bEditPage = false;
-    return bRes;
 }
 bool CPdfFile::EditPage(int nPageIndex)
 {
@@ -669,25 +656,25 @@ int CPdfFile::GetError()
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
+    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
     if (!m_pInternal->pReader)
         return false;
     m_pInternal->wsSrcFile  = file;
     m_pInternal->wsPassword = owner_password;
+    if (!m_pInternal->wsTempFolder.empty())
+        m_pInternal->pReader->SetTempDirectory(m_pInternal->wsTempFolder);
     return m_pInternal->pReader->LoadFromFile(m_pInternal->pAppFonts, file, owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
 }
 bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
+    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
     if (!m_pInternal->pReader)
         return false;
     m_pInternal->wsSrcFile  = L"";
     m_pInternal->wsPassword = owner_password;
+    if (!m_pInternal->wsTempFolder.empty())
+        m_pInternal->pReader->SetTempDirectory(m_pInternal->wsTempFolder);
     return m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, data, length, owner_password, user_password) && (m_pInternal->pReader->GetError() == 0);
-}
-void CPdfFile::Close()
-{
-    if (!m_pInternal->pReader)
-        return;
-    m_pInternal->pReader->Close();
 }
 NSFonts::IApplicationFonts* CPdfFile::GetFonts()
 {
@@ -703,11 +690,13 @@ std::wstring CPdfFile::GetTempDirectory()
         return std::wstring();
     return m_pInternal->pReader->GetTempDirectory();
 }
-void CPdfFile::SetTempDirectory(const std::wstring& directory)
+void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 {
-    if (!m_pInternal->pReader)
-        return;
-    m_pInternal->pReader->SetTempDirectory(directory);
+    m_pInternal->wsTempFolder = wsPath;
+    if (m_pInternal->pReader)
+        m_pInternal->pReader->SetTempDirectory(wsPath);
+    if (m_pInternal->pWriter)
+        m_pInternal->pWriter->SetTempFolder(wsPath);
 }
 int CPdfFile::GetPagesCount()
 {
@@ -749,6 +738,12 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 
 // ------------------------------------------------------------------------
 
+void CPdfFile::CreatePdf(bool isPDFA)
+{
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA);
+    if (!m_pInternal->wsTempFolder.empty())
+        m_pInternal->pWriter->SetTempFolder(m_pInternal->wsTempFolder);
+}
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
     if (!m_pInternal->pWriter)
@@ -766,12 +761,6 @@ void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
     if (!m_pInternal->pWriter)
         return;
     m_pInternal->pWriter->SetDocumentID(wsDocumentID);
-}
-void CPdfFile::SetTempFolder(const std::wstring& wsPath)
-{
-    if (!m_pInternal->pWriter)
-        return;
-    m_pInternal->pWriter->SetTempFolder(wsPath);
 }
 void CPdfFile::SetCore(const std::wstring& wsCoreXml)
 {
@@ -1415,16 +1404,13 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath) { return 0; }
 void CPdfWriter::SetPassword(const std::wstring& wsPassword) {}
 void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID) {}
 void CPdfWriter::SetTempFolder(const std::wstring& wsPath) {}
-std::wstring CPdfWriter::GetTempDirectory() { return std::wstring(); }
+void CPdfWriter::SetCore(const std::wstring& wsCore) {}
 std::wstring CPdfWriter::GetTempFile() { return std::wstring(); }
-HRESULT CPdfWriter::get_Type(LONG* lType) { return 0; }
 HRESULT CPdfWriter::NewPage() { return 0; }
 HRESULT CPdfWriter::get_Height(double* dHeight) { return 0; }
 HRESULT CPdfWriter::put_Height(const double& dHeight) { return 0; }
 HRESULT CPdfWriter::get_Width(double* dWidth) { return 0; }
 HRESULT CPdfWriter::put_Width(const double& dWidth) { return 0; }
-HRESULT CPdfWriter::get_DpiX(double* dDpiX) { return 0; }
-HRESULT CPdfWriter::get_DpiY(double* dDpiY) { return 0; }
 HRESULT CPdfWriter::get_PenColor(LONG* lColor) { return 0; }
 HRESULT CPdfWriter::put_PenColor(const LONG& lColor) { return 0; }
 HRESULT CPdfWriter::get_PenAlpha(LONG* lAlpha) { return 0; }
@@ -1465,7 +1451,6 @@ HRESULT CPdfWriter::put_BrushTextureAlpha(const LONG& lAlpha) { return 0; }
 HRESULT CPdfWriter::get_BrushLinearAngle(double* dAngle) { return 0; }
 HRESULT CPdfWriter::put_BrushLinearAngle(const double& dAngle) { return 0; }
 HRESULT CPdfWriter::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight) { return 0; }
-HRESULT CPdfWriter::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight) { return 0; }
 HRESULT CPdfWriter::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount) { return 0; }
 HRESULT CPdfWriter::get_FontName(std::wstring* wsName) { return 0; }
 HRESULT CPdfWriter::put_FontName(const std::wstring& wsName) { return 0; }
@@ -1486,8 +1471,7 @@ HRESULT CPdfWriter::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid
 HRESULT CPdfWriter::CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::CommandDrawTextCHAR2 (unsigned int* unUnicode, const unsigned int& unUnicodeCount, const unsigned int& unGid, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
-HRESULT CPdfWriter::BeginCommand(const DWORD& lType) { return 0; }
-HRESULT CPdfWriter::EndCommand(const DWORD& lType) { return 0; }
+HRESULT CPdfWriter::EndCommand(const DWORD& lType, const LONG& lClipMode) { return 0; }
 HRESULT CPdfWriter::PathCommandMoveTo(const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::PathCommandLineTo(const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::PathCommandLinesTo(double* pPoints, const int& nCount) { return 0; }
@@ -1508,30 +1492,19 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 HRESULT CPdfWriter::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY) { return 0; }
 HRESULT CPdfWriter::ResetTransform() { return 0; }
-HRESULT CPdfWriter::get_ClipMode(LONG* lMode) { return 0; }
-HRESULT CPdfWriter::put_ClipMode(const LONG& lMode) { return 0; }
-HRESULT CPdfWriter::CommandLong(const LONG& lType, const LONG& lCommand) { return 0; }
-HRESULT CPdfWriter::CommandDouble(const LONG& lType, const double& dCommand) { return 0; }
-HRESULT CPdfWriter::CommandString(const LONG& lType, const std::wstring& sCommand) { return 0; }
 HRESULT CPdfWriter::AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) { return 0; }
 HRESULT CPdfWriter::AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) { return 0; }
 HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, IFormField* pInfo) { return 0; }
-HRESULT CPdfWriter::CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
-HRESULT CPdfWriter::PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::EnableBrushRect(const LONG& lEnable) { return 0; }
 HRESULT CPdfWriter::SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2) { return 0; }
 HRESULT CPdfWriter::SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2) { return 0; }
 HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
-std::pair<int, int> CPdfWriter::GetPageRef(int nPageIndex) { return std::make_pair(0, 0); }
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage) { return false; }
 bool CPdfWriter::AddPage(int nPageIndex) { return false; }
-bool CPdfWriter::DeletePage(int nPageIndex) { return false; }
 bool CPdfWriter::EditClose() { return false; }
 void CPdfWriter::PageRotate(int nRotate) {}
 void CPdfWriter::Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate) {}
-std::wstring CPdfWriter::GetEditPdfPath() { return std::wstring(); }
-PdfWriter::CImageDict* CPdfWriter::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha) { return NULL; }
 bool CPdfWriter::DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return false; }
 bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY) { return false; }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids) { return false; }
@@ -1553,10 +1526,8 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl) { return std:
 
 CPdfWriter::CCommandManager::CCommandManager(CPdfWriter* pRenderer) {}
 CPdfWriter::CCommandManager::~CCommandManager() {}
-CRendererTextCommand* CPdfWriter::CCommandManager::AddText(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY) {}
+CRendererTextCommand* CPdfWriter::CCommandManager::AddText(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY) { return NULL; }
 void CPdfWriter::CCommandManager::Flush() {}
-void CPdfWriter::CCommandManager::SetTransform(const CTransform& oTransform) {}
-void CPdfWriter::CCommandManager::SetTransform(const double& m11, const double& m12, const double& m21, const double& m22, const double& dx, const double& dy) {}
 void CPdfWriter::CCommandManager::Add(CRendererCommandBase* pCommand) {}
 void CPdfWriter::CCommandManager::Clear() {}
 void CPdfWriter::CBrushState::Reset() {}

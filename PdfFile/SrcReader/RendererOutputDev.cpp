@@ -4826,7 +4826,7 @@ namespace PdfReader
                 m_pRenderer->EndConvertCoordsToIdentity();
             }
 
-            if (m_sClip[i].GetPathNum() > 0 && !m_sClip[i].GetTextClip())
+            if (m_sClip[i].GetPathNum() > 0)
                 break;
         }
 

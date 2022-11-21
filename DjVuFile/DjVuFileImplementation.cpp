@@ -236,7 +236,8 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 }
 void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
-    CPdfFile oPdf(m_pApplicationFonts, 2);
+    CPdfFile oPdf(m_pApplicationFonts);
+    oPdf.CreatePdf();
 	
 	bool bBreak = false;
 	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)

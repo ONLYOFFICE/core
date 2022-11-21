@@ -626,7 +626,7 @@ SOURCES += \
     $$PDF_ROOT_DIR/SrcReader/GfxClip.cpp \
     $$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
     $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
-    $$PDF_ROOT_DIR/PdfReader.cpp
+    $$PDF_ROOT_DIR/PdfFile.cpp
 
 HEADERS +=\
     $$PDF_ROOT_DIR/Resources/Fontd050000l.h \
@@ -649,7 +649,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/SrcReader/Adaptors.h \
     $$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
     $$PDF_ROOT_DIR/SrcReader/GfxClip.h \
-    $$PDF_ROOT_DIR/PdfReader.h
+    $$PDF_ROOT_DIR/PdfFile.h
 
 HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
 SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp

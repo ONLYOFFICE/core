@@ -1611,8 +1611,9 @@ namespace NExtractTools
         NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
         initApplicationFonts(pApplicationFonts, params);
         
-		CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
-		pdfWriter.SetTempFolder(sTemp);
+		CPdfFile pdfWriter(pApplicationFonts);
+		pdfWriter.CreatePdf(params.getIsPDFA());
+		pdfWriter.SetTempDirectory(sTemp);
 
 		CConvertFromBinParams oBufferParams;
 		oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -1865,8 +1866,9 @@ namespace NExtractTools
 			NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
 			initApplicationFonts(pApplicationFonts, params);
 
-			CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
-			pdfWriter.SetTempFolder(sTemp);
+			CPdfFile pdfWriter(pApplicationFonts);
+			pdfWriter.CreatePdf(params.getIsPDFA());
+			pdfWriter.SetTempDirectory(sTemp);
 
 			CConvertFromBinParams oBufferParams;
 			oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -3540,8 +3542,9 @@ namespace NExtractTools
 
                                NSFonts::IApplicationFonts* pApplicationFonts = NSFonts::NSApplication::Create();
                                initApplicationFonts(pApplicationFonts, params);
-							   CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
-                               pdfWriter.SetTempFolder(sTemp);
+                               CPdfFile pdfWriter(pApplicationFonts);
+                               pdfWriter.CreatePdf(params.getIsPDFA());
+                               pdfWriter.SetTempDirectory(sTemp);
 
 							   CConvertFromBinParams oBufferParams;
 							   oBufferParams.m_sThemesDirectory = sThemeDir;
@@ -3585,7 +3588,7 @@ namespace NExtractTools
        IOfficeDrawingFile* pReader = NULL;
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
        {
-           pReader = new CPdfFile(pApplicationFonts, 1);
+           pReader = new CPdfFile(pApplicationFonts);
        }
        else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
        {
@@ -3662,7 +3665,7 @@ namespace NExtractTools
 		IOfficeDrawingFile* pReader = NULL;
 		if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatFrom)
 		{
-			pReader = new CPdfFile(pApplicationFonts, 1);
+			pReader = new CPdfFile(pApplicationFonts);
 		}
 		else if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU == nFormatFrom)
 		{
@@ -4730,9 +4733,9 @@ namespace NExtractTools
            }
            else
            {
-				CPdfFile pdfWriter(pApplicationFonts, 2, params.getIsPDFA());
-				pdfWriter.SetTempFolder(sTemp);
-				pdfWriter.SetTempFolder(sTemp);
+				CPdfFile pdfWriter(pApplicationFonts);
+				pdfWriter.CreatePdf(params.getIsPDFA());
+				pdfWriter.SetTempDirectory(sTemp);
 
 				std::wstring documentID = params.getDocumentID();
 				if (false == documentID.empty())
@@ -4782,7 +4785,7 @@ namespace NExtractTools
            switch (nFormatFrom)
            {
            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-               pReader = new CPdfFile(pApplicationFonts, 1);
+               pReader = new CPdfFile(pApplicationFonts);
                break;
            case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
                pReader = new CXpsFile(pApplicationFonts);

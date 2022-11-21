@@ -48,7 +48,7 @@ int main()
         NSDirectory::CreateDirectory(wsTempDir);
 
     CPdfFile pdfFile(pApplicationFonts);
-    pdfFile.SetTemp(wsTempDir);
+    pdfFile.SetTempDirectory(wsTempDir);
 
     std::wstring wsPassword;
     bool bResult = pdfFile.LoadFromFile(wsSrcFile);
@@ -69,7 +69,7 @@ int main()
         pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
     }
 
-    if (false)
+    if (true)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
@@ -134,7 +134,7 @@ int main()
             }
         }
 
-        pdfFile.EditClose();
+        pdfFile.Close();
     }
 
     RELEASEINTERFACE(pApplicationFonts);

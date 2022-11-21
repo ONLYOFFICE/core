@@ -188,7 +188,8 @@ std::wstring CXpsFile::GetInfo()
 #ifndef DISABLE_PDF_CONVERTATION
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 {
-    CPdfFile oPdf(m_pInternal->m_pAppFonts, 2);
+	CPdfFile oPdf(m_pInternal->m_pAppFonts);
+	oPdf.CreatePdf();
 	bool bBreak = false;
 
 	int nPagesCount = GetPagesCount();

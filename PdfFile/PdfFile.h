@@ -82,16 +82,14 @@ namespace PdfFile
 class PDFFILE_DECL_EXPORT CPdfFile : public IOfficeDrawingFile, public IRenderer
 {
 public:
-    CPdfFile(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false);
-    // nMode = 1/2/3, 1 - reader, 2 - writer, 3 - editer
-    CPdfFile(NSFonts::IApplicationFonts* pAppFonts, int nMode, bool isPDFA = false);
+    CPdfFile(NSFonts::IApplicationFonts* pAppFonts);
     virtual ~CPdfFile();
-
-    void SetTemp(const std::wstring& wsPath);
     NSFonts::IFontManager* GetFontManager();
 
+    // --- EDIT ---
+
     bool EditPdf(const std::wstring& wsDstFile = L"");
-    bool EditClose();
+    virtual void Close();
     bool EditPage  (int nPageIndex);
     bool DeletePage(int nPageIndex);
     bool AddPage   (int nPageIndex);
@@ -102,18 +100,14 @@ public:
 
     int GetError();
 
-
     virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
     virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
-
-    virtual void Close();
-
     virtual NSFonts::IApplicationFonts* GetFonts();
 
     virtual OfficeDrawingFileType GetType();
 
     virtual std::wstring GetTempDirectory();
-    virtual void SetTempDirectory(const std::wstring& directory);
+    virtual void SetTempDirectory(const std::wstring& wsPath);
 
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
@@ -124,10 +118,10 @@ public:
 
     // --- WRITER ---
 
+    void CreatePdf    (bool isPDFA = false);
     int  SaveToFile   (const std::wstring& wsPath);
     void SetPassword  (const std::wstring& wsPassword);
     void SetDocumentID(const std::wstring& wsDocumentID);
-    void SetTempFolder(const std::wstring& wsPath);
     void SetCore      (const std::wstring& wsCoreXml);
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);

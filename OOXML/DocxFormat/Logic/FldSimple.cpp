@@ -57,6 +57,40 @@ namespace OOX
 		// CFldSimple 17.16.19 (Part 1)
 		//--------------------------------------------------------------------------------	
 
+		CFldSimple::CFldSimple(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+		}
+		CFldSimple::CFldSimple(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oNode );
+		}
+		CFldSimple::CFldSimple(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oReader );
+		}
+		CFldSimple::~CFldSimple()
+		{
+		}
+		const CFldSimple& CFldSimple::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CFldSimple& CFldSimple::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CFldSimple::ClearItems()
+		{
+			m_oDirty.SetValue( SimpleTypes::onoffFalse );
+			m_oFldLock.SetValue( SimpleTypes::onoffFalse );
+			m_sInstr.reset();
+
+			WritingElementWithChilds::ClearItems();
+		}
 		void CFldSimple::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:dirty"),   m_oDirty );
@@ -151,8 +185,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		void CFldSimple::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -241,8 +273,6 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-
-
 		std::wstring CFldSimple::toXML() const
 		{
 			std::wstring sResult = _T("<w:fldSimple ");
@@ -279,6 +309,18 @@ namespace OOX
 			sResult += _T("</w:fldSimple>");
 
 			return sResult;
+		}
+		EElementType CFldSimple::getType() const
+		{
+			return et_w_fldSimple;
+		}
+		void CFldSimple::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:dirty"),   m_oDirty )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fldLock"), m_oFldLock )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:instr"),   m_sInstr )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	} // namespace Logic

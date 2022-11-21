@@ -46,69 +46,24 @@ namespace OOX
 		class CSmartTag : public WritingElementWithChilds<>
 		{
 		public:
-			CSmartTag(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CSmartTag(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CSmartTag(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CSmartTag()
-			{
-			}
-			const CSmartTag &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CSmartTag &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			CSmartTag(OOX::Document *pMain = NULL);
+			CSmartTag(XmlUtils::CXmlNode &oNode);
+			CSmartTag(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CSmartTag();
+
+			const CSmartTag &operator =(const XmlUtils::CXmlNode& oNode);
+			const CSmartTag &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_smartTag;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-				
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-				
-				std::wstring wsName = oReader.GetName();
-				while( !wsName.empty() )
-				{					
-					if      ( _T("w:element")	== wsName )	m_sElement	= oReader.GetText();
-					else if ( _T("w:uri")		== wsName )	m_sUri		= oReader.GetText();
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = oReader.GetName();
-				}
-				oReader.MoveToElement();
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<std::wstring> m_sElement;
 			nullable<std::wstring> m_sUri;
 

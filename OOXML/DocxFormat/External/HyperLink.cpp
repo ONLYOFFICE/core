@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef OOX_EXTERNAL_INCLUDE_H_
-#define OOX_EXTERNAL_INCLUDE_H_
 
-#include "../File.h"
-#include "../FileTypes.h"
+#include "HyperLink.h"
 
 namespace OOX
 {
-	class External : public File
+	HyperLink::HyperLink(OOX::Document* pMain) : External(pMain)
 	{
-	public:
-		External(OOX::Document* pMain);
-		External(OOX::Document* pMain, const CPath& uri);
-		~External();
-
-		virtual void read(const CPath& uri);
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
-
-		CPath Uri() const;
-		void set_Uri(CPath & file_path);
-
-	protected:
-		CPath m_uri;
-	};
-} // namespace OOX
-
-#endif // OOX_EXTERNAL_INCLUDE_H_
+		bHyperlink = true;
+	}
+	HyperLink::HyperLink(OOX::Document* pMain, const CPath& uri) : External(pMain)
+	{
+		bHyperlink = true;
+		read(uri);
+	}
+	HyperLink::~HyperLink()
+	{
+	}
+	const FileType HyperLink::type() const
+	{
+		return FileTypes::HyperLink;
+	}
+	const CPath HyperLink::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath HyperLink::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+}

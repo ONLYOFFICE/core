@@ -39,8 +39,419 @@ namespace OOX
 	namespace Logic
 	{
 		//--------------------------------------------------------------------------------
-		// SectPrChange 
-		//--------------------------------------------------------------------------------	
+		// Columns 17.6.4 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CColumns::CColumns()
+		{
+		}
+		CColumns::~CColumns()
+		{
+			for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
+			{
+				if ( m_arrColumns[nIndex] )	delete m_arrColumns[nIndex];
+				m_arrColumns[nIndex] = NULL;
+			}
+			m_arrColumns.clear();
+		}
+		void CColumns::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:equalWidth"), m_oEqualWidth );
+			XmlMacroReadAttributeBase( oNode, (L"w:num"),        m_oNum );
+			XmlMacroReadAttributeBase( oNode, (L"w:sep"),        m_oSep );
+			XmlMacroReadAttributeBase( oNode, (L"w:space"),      m_oSpace );
+
+			XmlUtils::CXmlNodes oCols;
+
+			if ( oNode.GetNodes( (L"w:col"), oCols ) )
+			{
+				for ( int nIndex = 0; nIndex < oCols.GetCount(); nIndex++ )
+				{
+					XmlUtils::CXmlNode oCol;
+					if ( oCols.GetAt( nIndex, oCol ) )
+					{
+						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oCol);
+						if (oColumn) m_arrColumns.push_back( oColumn );
+					}
+				}
+			}
+		}
+		void CColumns::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:col" == sName )
+				{
+					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oReader);
+					if (oColumn) m_arrColumns.push_back( oColumn );
+				}
+			}
+		}
+		std::wstring CColumns::toXML() const
+		{
+			std::wstring sResult = L"<w:cols ";
+
+			if ( m_oNum.IsInit() )
+			{
+				sResult += L"w:num=\"";
+				sResult += m_oNum->ToString();
+				sResult += L"\" ";
+			}
+
+			if ( m_oSep.IsInit() )
+			{
+				sResult += L"w:sep=\"";
+				sResult += m_oSep->ToString2(SimpleTypes::onofftostring1);
+				sResult += L"\" ";
+			}
+
+			if ( m_oSpace.IsInit() )
+			{
+				sResult +=L"w:space=\"" + std::to_wstring(m_oSpace->ToTwips()) + L"\" ";
+			}
+
+			if ( m_oEqualWidth.IsInit() )
+			{
+				sResult += L"w:equalWidth=\"";
+				sResult += m_oEqualWidth->ToString2(SimpleTypes::onofftostring1);
+				sResult += L"\" ";
+			}
+
+			sResult += L">";
+
+			for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
+			{
+				sResult += L"<w:col ";
+				if (m_arrColumns[nIndex])
+					sResult += m_arrColumns[nIndex]->ToString();
+				sResult += L"/>";
+			}
+
+			sResult += L"</w:cols>";
+
+			return sResult;
+		}
+		EElementType CColumns::getType () const
+		{
+			return et_w_cols;
+		}
+		void CColumns::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:equalWidth"), m_oEqualWidth )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:num"),        m_oNum )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sep"),        m_oSep )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),      m_oSpace )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// EdnProps 17.11.5 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CEdnProps::CEdnProps()
+		{
+		}
+		CEdnProps::~CEdnProps()
+		{
+		}
+		void CEdnProps::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( (L"w:numFmt"), oChild ) )
+				m_oNumFmt = oChild;
+
+			if ( oNode.GetNode( (L"w:numRestart"), oChild ) )
+				m_oNumRestart = oChild;
+
+			if ( oNode.GetNode( (L"w:numStart"), oChild ) )
+				m_oNumStart = oChild;
+
+			if ( oNode.GetNode( (L"w:pos"), oChild ) )
+				m_oPos = oChild;
+		}
+		void CEdnProps::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( (L"w:numFmt") == sName )
+					m_oNumFmt = oReader;
+				else if ( (L"w:numRestart") == sName )
+					m_oNumRestart = oReader;
+				else if ( (L"w:numStart") == sName )
+					m_oNumStart = oReader;
+				else if ( (L"w:pos") == sName )
+					m_oPos = oReader;
+			}
+		}
+		std::wstring CEdnProps::toXML() const
+		{
+			std::wstring sResult = (L"<w:endnotePr>");
+
+			if ( m_oNumFmt.IsInit() )
+			{
+				sResult += (L"<w:numFmt ");
+				sResult += m_oNumFmt->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oNumRestart.IsInit() )
+			{
+				sResult += (L"<w:numRestart ");
+				sResult += m_oNumRestart->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oNumStart.IsInit() )
+			{
+				sResult += (L"<w:numStart ");
+				sResult += m_oNumStart->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oPos.IsInit() )
+			{
+				sResult += (L"<w:pos ");
+				sResult += m_oPos->ToString();
+				sResult += (L"/>");
+			}
+
+			sResult += (L"</w:endnotePr>");
+
+			return sResult;
+		}
+		EElementType CEdnProps::getType() const
+		{
+			return et_w_endnotePr;
+		}
+
+		//--------------------------------------------------------------------------------
+		// FtnProps 17.11.11 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CFtnProps::CFtnProps()
+		{
+		}
+		CFtnProps::~CFtnProps()
+		{
+		}
+		void CFtnProps::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( (L"w:numFmt"), oChild ) )
+				m_oNumFmt = oChild;
+
+			if ( oNode.GetNode( (L"w:numRestart"), oChild ) )
+				m_oNumRestart = oChild;
+
+			if ( oNode.GetNode( (L"w:numStart"), oChild ) )
+				m_oNumStart = oChild;
+
+			if ( oNode.GetNode( (L"w:pos"), oChild ) )
+				m_oPos = oChild;
+		}
+		void CFtnProps::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( (L"w:numFmt") == sName )
+					m_oNumFmt = oReader;
+				else if ( (L"w:numRestart") == sName )
+					m_oNumRestart = oReader;
+				else if ( (L"w:numStart") == sName )
+					m_oNumStart = oReader;
+				else if ( (L"w:pos") == sName )
+					m_oPos = oReader;
+			}
+		}
+		std::wstring CFtnProps::toXML() const
+		{
+			std::wstring sResult = (L"<w:footnotePr>");
+
+			if ( m_oNumFmt.IsInit() )
+			{
+				sResult += (L"<w:numFmt ");
+				sResult += m_oNumFmt->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oNumRestart.IsInit() )
+			{
+				sResult += (L"<w:numRestart ");
+				sResult += m_oNumRestart->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oNumStart.IsInit() )
+			{
+				sResult += (L"<w:numStart ");
+				sResult += m_oNumStart->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oPos.IsInit() )
+			{
+				sResult += (L"<w:pos ");
+				sResult += m_oPos->ToString();
+				sResult += (L"/>");
+			}
+
+			sResult += (L"</w:footnotePr>");
+
+			return sResult;
+		}
+		EElementType CFtnProps::getType() const
+			{
+				return et_w_footnotePr;
+			}
+
+		//--------------------------------------------------------------------------------
+		// PageBorders 17.6.10 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CPageBorders::CPageBorders()
+		{
+		}
+		CPageBorders::~CPageBorders()
+		{
+		}
+		void CPageBorders::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:display"),    m_oDisplay );
+			XmlMacroReadAttributeBase( oNode, (L"w:offsetFrom"), m_oOffsetFrom );
+			XmlMacroReadAttributeBase( oNode, (L"w:zOrder"),     m_oZOrder );
+
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( (L"w:bottom"), oChild ) )
+				m_oBottom = oChild;
+
+			if ( oNode.GetNode( (L"w:left"), oChild ) )
+				m_oLeft = oChild;
+
+			if ( oNode.GetNode( (L"w:right"), oChild ) )
+				m_oRight = oChild;
+
+			if ( oNode.GetNode( (L"w:top"), oChild ) )
+				m_oTop = oChild;
+		}
+		void CPageBorders::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( (L"w:bottom") == sName )
+					m_oBottom = oReader;
+				else if ( (L"w:left") == sName )
+					m_oLeft = oReader;
+				else if ( (L"w:right") == sName )
+					m_oRight = oReader;
+				else if ( (L"w:top") == sName )
+					m_oTop = oReader;
+			}
+		}
+		std::wstring CPageBorders::toXML() const
+		{
+			std::wstring sResult = (L"<w:pgBorders ");
+
+			if ( m_oDisplay.IsInit() )
+			{
+				sResult += (L"w:display=\"");
+				sResult += m_oDisplay->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oOffsetFrom.IsInit() )
+			{
+				sResult += (L"w:offsetFrom=\"");
+				sResult += m_oOffsetFrom->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oZOrder.IsInit() )
+			{
+				sResult += (L"w:zOrder=\"");
+				sResult += m_oZOrder->ToString();
+				sResult += (L"\" ");
+			}
+
+			sResult += (L">");
+
+			if ( m_oBottom.IsInit() )
+			{
+				sResult += (L"<w:bottom ");
+				sResult += m_oBottom->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oLeft.IsInit() )
+			{
+				sResult += (L"<w:left ");
+				sResult += m_oLeft->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oRight.IsInit() )
+			{
+				sResult += (L"<w:right ");
+				sResult += m_oRight->ToString();
+				sResult += (L"/>");
+			}
+
+			if ( m_oTop.IsInit() )
+			{
+				sResult += (L"<w:top ");
+				sResult += m_oTop->ToString();
+				sResult += (L"/>");
+			}
+
+			sResult += (L"</w:pgBorders>");
+
+			return sResult;
+		}
+		EElementType CPageBorders::getType() const
+		{
+			return et_w_pgBorders;
+		}
+		void CPageBorders::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:display"),    m_oDisplay )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:offsetFrom"), m_oOffsetFrom )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:zOrder"),     m_oZOrder )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// SectPrChange 17.13.5.32 (Part 1)
+		//--------------------------------------------------------------------------------
 
 		CSectPrChange::CSectPrChange()
 		{
@@ -146,6 +557,57 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
+		}
+
+		//--------------------------------------------------------------------------------
+		// SectionProperty
+		//--------------------------------------------------------------------------------
+
+		CSectionProperty::CSectionProperty(OOX::Document *pMain) : WritingElement(pMain)
+		{
+			m_bSectPrChange = false;
+		}
+		CSectionProperty::CSectionProperty(XmlUtils::CXmlNode &oNode)
+		{
+			m_bSectPrChange = false;
+			fromXML( oNode );
+		}
+		CSectionProperty::CSectionProperty(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_bSectPrChange = false;
+			fromXML( oReader );
+		}
+		CSectionProperty::~CSectionProperty()
+		{
+			ClearItems();
+		}
+		void CSectionProperty::ClearItems()
+		{
+			for ( unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
+			{
+				if ( m_arrFooterReference[nIndex] ) delete m_arrFooterReference[nIndex];
+				m_arrFooterReference[nIndex] = NULL;
+			}
+			m_arrFooterReference.clear();
+
+			for ( unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
+			{
+				if ( m_arrHeaderReference[nIndex] ) delete m_arrHeaderReference[nIndex];
+				m_arrHeaderReference[nIndex] = NULL;
+			}
+			m_arrHeaderReference.clear();
+		}
+		const CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode &oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode &)oNode );
+			return *this;
+		}
+		const CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode &)oReader );
+			return *this;
 		}
 		void CSectionProperty::fromXML(XmlUtils::CXmlNode &oNode)
 		{
@@ -489,5 +951,19 @@ namespace OOX
 			sResult += L"</w:sectPr>";
 			return sResult;
 		}
+		EElementType CSectionProperty::getType() const
+		{
+			return et_w_sectPr;
+		}
+		void CSectionProperty::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:rsidDel"),  m_oRsidDel )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidR"),    m_oRsidR )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidRPr"),  m_oRsidRPr )
+			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidSect"), m_oRsidSect )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+
 	} // Logic
 } 

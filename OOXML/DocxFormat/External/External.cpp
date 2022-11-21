@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef OOX_EXTERNAL_INCLUDE_H_
-#define OOX_EXTERNAL_INCLUDE_H_
 
-#include "../File.h"
-#include "../FileTypes.h"
+#include "External.h"
 
 namespace OOX
 {
-	class External : public File
+	External::External(OOX::Document* pMain) : File(pMain)
 	{
-	public:
-		External(OOX::Document* pMain);
-		External(OOX::Document* pMain, const CPath& uri);
-		~External();
-
-		virtual void read(const CPath& uri);
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
-
-		CPath Uri() const;
-		void set_Uri(CPath & file_path);
-
-	protected:
-		CPath m_uri;
-	};
-} // namespace OOX
-
-#endif // OOX_EXTERNAL_INCLUDE_H_
+	}
+	External::External(OOX::Document* pMain, const CPath& uri) : File(pMain)
+	{
+		read(uri);
+	}
+	External::~External()
+	{
+	}
+	void External::read(const CPath& uri)
+	{
+		m_uri = uri;
+	}
+	void External::write(const CPath& filename, const CPath& directory, CContentTypes& content) const
+	{
+	}
+	CPath External::Uri() const
+	{
+		return m_uri;
+	}
+	void External::set_Uri(CPath & file_path)
+	{
+		m_uri				= file_path;
+		m_sOutputFilename	= file_path.GetFilename();
+	}
+}

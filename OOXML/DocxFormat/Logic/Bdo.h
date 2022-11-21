@@ -46,54 +46,21 @@ namespace OOX
 		class CBdo : public WritingElementWithChilds<>
 		{
 		public:
-			CBdo(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CBdo(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CBdo(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CBdo()
-			{
-			}
+			CBdo(OOX::Document *pMain = NULL);
+			CBdo(XmlUtils::CXmlNode &oNode);
+			CBdo(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CBdo();
 
-		public:
+			const CBdo &operator =(const XmlUtils::CXmlNode& oNode);
+			const CBdo &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
-			const CBdo &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CBdo &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-		public:
+			virtual void			fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void			fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring	toXML() const;
+			virtual EElementType	getType() const;
 
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring      toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_bdo;
-			}
-
-		private: 
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 

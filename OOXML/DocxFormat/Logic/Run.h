@@ -53,36 +53,13 @@ namespace OOX
 		class CRun : public WritingElementWithChilds<>
 		{
 		public:
-			CRun(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
-			{
-				m_oRunProperty = NULL;
-			}
-			CRun(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CRun(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CRun()
-			{
-				ClearItems();
-			}
-			const CRun &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CRun &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			CRun(OOX::Document *pMain = NULL);
+			CRun(XmlUtils::CXmlNode &oNode);
+			CRun(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CRun();
+
+			const CRun &operator =(const XmlUtils::CXmlNode& oNode);
+			const CRun &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void ClearItems();
 
@@ -94,14 +71,11 @@ namespace OOX
 			WritingElement* fromXMLElem(XmlUtils::CXmlLiteReader& oReader);
 			void fromXMLText(XmlUtils::CXmlLiteReader& oReader);
 			
-			virtual EElementType getType() const
-			{
-				return et_w_r;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CLongHexNumber>	m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber>	m_oRsidR;

@@ -61,6 +61,48 @@ namespace OOX
 		// CParagraph 17.3.1.22 (Part 1)
 		//--------------------------------------------------------------------------------	
 
+		CParagraph::CParagraph(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+			m_oParagraphProperty = NULL;
+		}
+		CParagraph::CParagraph(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oNode );
+		}
+		CParagraph::CParagraph(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oReader );
+		}
+		CParagraph::~CParagraph()
+		{
+			m_oParagraphProperty = NULL;
+		}
+		const CParagraph& CParagraph::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CParagraph& CParagraph::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CParagraph::ClearItems()
+		{
+			m_oRsidDel.reset();
+			m_oRsidP.reset();
+			m_oRsidR.reset();
+			m_oRsidRDefault.reset();
+			m_oRsidRPr.reset();
+
+			m_oParagraphProperty = NULL;
+
+			WritingElementWithChilds<>::ClearItems();
+		}
 		void CParagraph::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			m_oParagraphProperty = NULL;
@@ -171,7 +213,6 @@ namespace OOX
 				}
 			}
 		}
-
 		void CParagraph::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_oParagraphProperty = NULL;
@@ -369,7 +410,6 @@ namespace OOX
 
 			return sResult;
 		}
-
 		void CParagraph::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -456,8 +496,6 @@ namespace OOX
 
 			m_arrItems.push_back( pR );
 		}
-
-
 		void CParagraph::AddTab(CRunProperty *pProperty)
 		{
 			WritingElement *pR = new CRun();
@@ -477,8 +515,6 @@ namespace OOX
 
 			m_arrItems.push_back( pR );
 		}
-
-
 		void CParagraph::AddBreak(SimpleTypes::EBrType eType)
 		{
 			WritingElement *pR = new CRun();
@@ -498,8 +534,6 @@ namespace OOX
 
 			m_arrItems.push_back( pR );
 		}
-
-
 		void CParagraph::AddSpace(const int nCount)
 		{
 			WritingElement *pR = new CRun();
@@ -558,8 +592,6 @@ namespace OOX
 
 			m_arrItems.push_back( pR );
 		}
-
-
 		void CParagraph::AddBookmarkStart(int nId, std::wstring& sName)
 		{
 			WritingElement *pBS = new CBookmarkStart();
@@ -583,7 +615,10 @@ namespace OOX
 
 			m_arrItems.push_back( pBE );
 		}
-
+		EElementType CParagraph::getType() const
+		{
+			return et_w_p;
+		}
 
 	} // namespace Logic
 } // namespace OOX

@@ -148,6 +148,9 @@ namespace OOX
 //--------------------------------------------------------------------------------
 // CSdtContent
 //--------------------------------------------------------------------------------	
+		CSdtContent::CSdtContent(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+		}
 		void CSdtContent::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			ClearItems();
@@ -355,7 +358,17 @@ namespace OOX
 
 			return sResult;
 		}
-//--------------------------------------------------------------------------------	
+		EElementType CSdtContent::getType() const
+		{
+			return et_w_sdtContent;
+		}
+//--------------------------------------------------------------------------------
+		CFormPr::CFormPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CFormPr::~CFormPr()
+		{
+		}
 		EElementType CFormPr::getType() const
 		{
 			return et_w_formPr;
@@ -435,6 +448,12 @@ namespace OOX
 			WritingElement_ReadAttributes_End_No_NS(oReader)
 		}
 //-----------------------------------------------------------------------------------------------------------------------------
+		CTextFormPr::CTextFormPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CTextFormPr::~CTextFormPr()
+		{
+		}
 		void CTextFormPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlUtils::CXmlNode oChild;
@@ -497,6 +516,12 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 //-----------------------------------------------------------------------------------------------------------------------------
+		CComplexFormPr::CComplexFormPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CComplexFormPr::~CComplexFormPr()
+		{
+		}
 		void CComplexFormPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 		}
@@ -526,6 +551,448 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 //-----------------------------------------------------------------------------------------------------------------------------
+		CSdtComboBox::CSdtComboBox(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtComboBox::~CSdtComboBox()
+		{
+			for ( size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+			{
+				if ( m_arrListItem[nIndex] )
+					delete m_arrListItem[nIndex];
+
+				m_arrListItem[nIndex] = NULL;
+			}
+
+			m_arrListItem.clear();
+		}
+		void CSdtComboBox::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:lastValue", m_sLastValue );
+
+			XmlUtils::CXmlNodes oChilds;
+			if ( oNode.GetNodes( L"w:listItem", oChilds ) )
+			{
+				XmlUtils::CXmlNode oItemNode;
+				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				{
+					if ( oChilds.GetAt( nIndex, oItemNode ) )
+					{
+						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oItemNode);
+						if (oListItem) m_arrListItem.push_back( oListItem );
+					}
+				}
+			}
+			XmlUtils::CXmlNode oChild;
+			if (oNode.GetNode(L"w:format", oChild))
+			{
+				m_oFormat = oChild;
+			}
+		}
+		void CSdtComboBox::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:listItem" == sName )
+				{
+					ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
+					m_arrListItem.push_back( oListItem );
+				}
+				else if (L"w:format" == sName)
+					m_oFormat = oReader;
+			}
+		}
+		std::wstring CSdtComboBox::toXML() const
+		{
+			std::wstring sResult;
+
+			if ( m_sLastValue.IsInit() )
+			{
+				sResult = L"<w:comboBox w:lastValue=\"";
+				sResult += m_sLastValue.get2();
+				sResult += L"\">";
+			}
+			else
+				sResult = L"<w:comboBox>";
+
+			WritingElement_WriteNode_1(L"<w:format ", m_oFormat);
+			for (size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+			{
+				sResult += L"<w:listItem ";
+				if (m_arrListItem[nIndex])
+					sResult += m_arrListItem[nIndex]->ToString();
+				sResult += L"/>";
+			}
+			sResult += L"</w:comboBox>";
+
+			return sResult;
+		}
+		EElementType CSdtComboBox::getType() const
+		{
+			return et_w_comboBox;
+		}
+		void CSdtComboBox::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:lastValue", m_sLastValue )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CDate::CDate(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CDate::~CDate()
+		{
+		}
+		void CDate::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:fullDate", m_oFullDate );
+
+			XmlUtils::CXmlNode oChild;
+
+			WritingElement_ReadNode( oNode, oChild, L"w:calendar",          m_oCalendar );
+			WritingElement_ReadNode( oNode, oChild, L"w:dateFormat",        m_oDateFormat );
+			WritingElement_ReadNode( oNode, oChild, L"w:lid",               m_oLid );
+			WritingElement_ReadNode( oNode, oChild, L"w:storeMappedDateAs", m_oStoreMappedDateAs );
+		}
+		void CDate::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:calendar" == sName )
+					m_oCalendar = oReader;
+				else if ( L"w:dateFormat" == sName )
+					m_oDateFormat = oReader;
+				else if ( L"w:lid" == sName )
+					m_oLid = oReader;
+				else if ( L"w:storeMappedDateAs" == sName )
+					m_oStoreMappedDateAs = oReader;
+			}
+		}
+		std::wstring CDate::toXML() const
+		{
+			std::wstring sResult;
+
+			if ( m_oFullDate.IsInit() )
+			{
+				sResult = L"<w:date w:fullDate=\"";
+				sResult += m_oFullDate->ToString();
+				sResult += L"\">";
+			}
+			else
+				sResult = L"<w:date>";
+
+			WritingElement_WriteNode_1( L"<w:calendar ",          m_oCalendar );
+			WritingElement_WriteNode_1( L"<w:dateFormat ",        m_oDateFormat );
+			WritingElement_WriteNode_1( L"<w:lid ",               m_oLid );
+			WritingElement_WriteNode_1( L"<w:storeMappedDateAs ", m_oStoreMappedDateAs );
+
+			sResult += L"</w:date>";
+
+			return sResult;
+		}
+		EElementType CDate::getType() const
+		{
+			return et_w_date;
+		}
+		void CDate::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:fullDate", m_oFullDate )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CSdtDocPart::CSdtDocPart(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtDocPart::~CSdtDocPart()
+		{
+		}
+		void CSdtDocPart::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			WritingElement_ReadNode( oNode, oChild, L"w:docPartCategory", m_oDocPartCategory );
+			WritingElement_ReadNode( oNode, oChild, L"w:docPartGallery",  m_oDocPartGallery );
+			WritingElement_ReadNode( oNode, oChild, L"w:docPartUnique",   m_oDocPartUnique );
+		}
+		void CSdtDocPart::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:docPartCategory" == sName )
+					m_oDocPartCategory = oReader;
+				else if ( L"w:docPartGallery" == sName )
+					m_oDocPartGallery = oReader;
+				else if ( L"w:docPartUnique" == sName )
+					m_oDocPartUnique = oReader;
+			}
+		}
+		std::wstring CSdtDocPart::toXML() const
+		{
+			std::wstring sResult = L"<w:docPartList>";
+
+			WritingElement_WriteNode_1( L"<w:docPartCategory ", m_oDocPartCategory );
+			WritingElement_WriteNode_1( L"<w:docPartGallery ",  m_oDocPartGallery );
+			WritingElement_WriteNode_1( L"<w:docPartUnique ",   m_oDocPartUnique );
+
+			sResult += L"</w:docPartList>";
+
+			return sResult;
+		}
+		std::wstring CSdtDocPart::toXML2(const std::wstring& sName) const
+		{
+			std::wstring sResult = L"<" + sName + L">";
+
+			WritingElement_WriteNode_1( L"<w:docPartCategory ", m_oDocPartCategory );
+			WritingElement_WriteNode_1( L"<w:docPartGallery ",  m_oDocPartGallery );
+			WritingElement_WriteNode_1( L"<w:docPartUnique ",   m_oDocPartUnique );
+
+			sResult += L"</" + sName + L">";;
+
+			return sResult;
+		}
+		EElementType CSdtDocPart::getType() const
+		{
+			return et_w_docPartList;
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CSdtDropDownList::CSdtDropDownList(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtDropDownList::~CSdtDropDownList()
+		{
+			for ( size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+			{
+				if ( m_arrListItem[nIndex] )
+					delete m_arrListItem[nIndex];
+
+				m_arrListItem[nIndex] = NULL;
+			}
+
+			m_arrListItem.clear();
+		}
+		void CSdtDropDownList::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:lastValue", m_sLastValue );
+
+			XmlUtils::CXmlNodes oChilds;
+			if ( oNode.GetNodes( L"w:listItem", oChilds ) )
+			{
+				XmlUtils::CXmlNode oItemNode;
+				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				{
+					if ( oChilds.GetAt( nIndex, oItemNode ) )
+					{
+						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oItemNode);
+						if (oListItem) m_arrListItem.push_back( oListItem );
+					}
+				}
+			}
+		}
+		void CSdtDropDownList::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:listItem" == sName )
+				{
+					ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
+					if (oListItem)m_arrListItem.push_back( oListItem );
+				}
+			}
+		}
+		std::wstring CSdtDropDownList::toXML() const
+		{
+			std::wstring sResult;
+
+			if ( m_sLastValue.IsInit() )
+			{
+				sResult = L"<w:dropDownList w:lastValue=\"";
+				sResult += *m_sLastValue;
+				sResult += L"\">";
+			}
+			else
+				sResult = L"<w:dropDownList>";
+
+			for (size_t nIndex = 0; nIndex < m_arrListItem.size(); nIndex++ )
+			{
+				sResult += L"<w:listItem ";
+				if (m_arrListItem[nIndex])
+					sResult += m_arrListItem[nIndex]->ToString();
+				sResult += L"/>";
+			}
+
+			sResult += L"</w:dropDownList>";
+
+			return sResult;
+		}
+		EElementType CSdtDropDownList::getType() const
+		{
+			return et_w_dropDownList;
+		}
+		void CSdtDropDownList::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:lastValue", m_sLastValue )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CPlaceHolder::CPlaceHolder(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CPlaceHolder::~CPlaceHolder()
+		{
+		}
+		void CPlaceHolder::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			WritingElement_ReadNode( oNode, oChild, L"w:docPart", m_oDocPart );
+		}
+		void CPlaceHolder::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:docPart" == sName )
+					m_oDocPart = oReader;
+			}
+		}
+		std::wstring CPlaceHolder::toXML() const
+		{
+			std::wstring sResult = L"<w:placeholder>";
+
+			WritingElement_WriteNode_1( L"<w:docPart ", m_oDocPart );
+
+			sResult += L"</w:placeholder>";
+
+			return sResult;
+		}
+		EElementType CPlaceHolder::getType() const
+		{
+			return et_w_placeholder;
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CSdtEndPr::CSdtEndPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtEndPr::~CSdtEndPr()
+		{
+		}
+		void CSdtEndPr::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( L"w:rPr", oChild ) )
+				m_oRPr = oChild;
+		}
+		void CSdtEndPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:rPr" == sName )
+					m_oRPr = oReader;
+			}
+		}
+		std::wstring CSdtEndPr::toXML() const
+		{
+			std::wstring sResult = L"<w:sdtEndPr>";
+
+			if ( m_oRPr.IsInit() )
+				sResult += m_oRPr->toXML();
+
+			sResult += L"</w:sdtEndPr>";
+
+			return sResult;
+		}
+		EElementType CSdtEndPr::getType() const
+		{
+			return et_w_sdtEndPr;
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CSdtCheckBoxSymbol::CSdtCheckBoxSymbol(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtCheckBoxSymbol::~CSdtCheckBoxSymbol()
+		{
+		}
+		void CSdtCheckBoxSymbol::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w14:val", m_oVal );
+			XmlMacroReadAttributeBase( oNode, L"w14:font", m_oFont );
+		}
+		void CSdtCheckBoxSymbol::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CSdtCheckBoxSymbol::toXML() const
+		{
+			return L"<w14:checkedState " + ToString() + L"/>";
+		}
+		std::wstring CSdtCheckBoxSymbol::ToString() const
+		{
+			std::wstring sResult;
+			ComplexTypes_WriteAttribute( L"w14:val=\"", m_oVal );
+			ComplexTypes_WriteAttribute2( L"w14:font=\"", m_oFont );
+			return sResult;
+		}
+		EElementType CSdtCheckBoxSymbol::getType() const
+		{
+			return et_w_sdtCheckboxSymbol;
+		}
+		void CSdtCheckBoxSymbol::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if( oReader, L"w14:val", m_oVal )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w14:font", m_oFont )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CSdtPr::CSdtPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+			m_eType = sdttypeUnknown;
+		}
+		CSdtPr::~CSdtPr()
+		{
+		}
 		void CSdtPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			m_eType = sdttypeUnknown;
@@ -852,7 +1319,25 @@ namespace OOX
 
 			return sResult;
 		}
+		std::wstring CSdtPr::toXMLEnd() const
+		{
+			return L"</w:sdtPr>";
+		}
+		std::wstring CSdtPr::toXML() const
+		{
+			return toXMLStart() + toXMLEnd();
+		}
+		EElementType CSdtPr::getType() const
+		{
+			return et_w_sdtPr;
+		}
 //-----------------------------------------------------------------------------------------------------------------------------
+		CSdtCheckBox::CSdtCheckBox(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtCheckBox::~CSdtCheckBox()
+		{
+		}
 		void CSdtCheckBox::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlUtils::CXmlNode oChild;
@@ -908,7 +1393,17 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CSdtCheckBox::getType() const
+		{
+			return et_w_sdtCheckbox;
+		}
 //-----------------------------------------------------------------------------------------------------------------------------
+		CSdtPicture::CSdtPicture(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdtPicture::~CSdtPicture()
+		{
+		}
 		void CSdtPicture::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase(oNode, L"w:scaleFlag", m_oScaleFlag);
@@ -959,6 +1454,68 @@ namespace OOX
 			}
 			sResult += L"/>";
 			return sResult;
+		}
+		EElementType CSdtPicture::getType() const
+		{
+			return et_w_sdtPicture;
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
+		CSdt::CSdt(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CSdt::~CSdt()
+		{
+		}
+		void CSdt::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNode oChild;
+
+			if ( oNode.GetNode( L"w:sdtContent", oChild ) )
+				m_oSdtContent = oChild;
+
+			if ( oNode.GetNode( L"w:sdtEndPr", oChild ) )
+				m_oSdtEndPr = oChild;
+
+			if ( oNode.GetNode( L"w:sdtPr", oChild ) )
+				m_oSdtPr = oChild;
+		}
+		void CSdt::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				if ( L"w:sdtContent" == sName )
+					m_oSdtContent = oReader;
+				else if ( L"w:sdtEndPr" == sName )
+					m_oSdtEndPr = oReader;
+				else if ( L"w:sdtPr" == sName )
+					m_oSdtPr = oReader;
+			}
+		}
+		std::wstring CSdt::toXML() const
+		{
+			std::wstring sResult = L"<w:sdt>";
+
+			if ( m_oSdtPr.IsInit() )
+				sResult += m_oSdtPr->toXML();
+
+			if ( m_oSdtEndPr.IsInit() )
+				sResult += m_oSdtEndPr->toXML();
+
+			if ( m_oSdtContent.IsInit() )
+				sResult += m_oSdtContent->toXML();
+
+			sResult += L"</w:sdt>";
+
+			return sResult;
+		}
+		EElementType CSdt::getType() const
+		{
+			return et_w_sdt;
 		}
 
 	} // namespace Logic

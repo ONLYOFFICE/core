@@ -22,12 +22,13 @@ DEFINES +=  UNICODE _UNICODE \
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
-core_release {
-SOURCES += \
-	docx_format_logic.cpp
-}
+#core_release {
+#SOURCES += \
+#	docx_format_logic.cpp
+#}
 
-core_debug {
+#core_debug {
+{
 SOURCES += \
 	../../../DocxFormat/Logic/AlternateContent.cpp \
 	../../../DocxFormat/Logic/Annotations.cpp \
@@ -47,6 +48,11 @@ SOURCES += \
 	../../../DocxFormat/Logic/Vml.cpp \
 	../../../DocxFormat/Logic/DocParts.cpp \
 	../../../DocxFormat/Logic/Pict.cpp \
+	../../../DocxFormat/Logic/FldChar.cpp \
+	../../../DocxFormat/Logic/RunContent.cpp \
+	../../../DocxFormat/Logic/VmlOfficeDrawing.cpp \
+	../../../DocxFormat/Logic/VmlWord.cpp \
+	../../../DocxFormat/Logic/Shape.cpp \
 	../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
@@ -87,6 +93,8 @@ SOURCES += \
 	../../../DocxFormat/Diagram/DiagramDrawing.cpp \
 	../../../DocxFormat/Diagram/DiagramLayout.cpp \
 	../../../DocxFormat/Diagram/DiagramQuickStyle.cpp \
+	../../../DocxFormat/External/External.cpp \
+	../../../DocxFormat/External/HyperLink.cpp \
 	../../../DocxFormat/WritingElement.cpp \
 	../../../DocxFormat/HeaderFooter.cpp \
 	../../../DocxFormat/Endnote.cpp \

@@ -33,7 +33,7 @@
 
 #include <sstream>
 
-#include "../Common/Utils/OptPtr.h"
+#include "../../Common/Utils/OptPtr.h"
 #include "external_items.h"
 
 namespace oox {

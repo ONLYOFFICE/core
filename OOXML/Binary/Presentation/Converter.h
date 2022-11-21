@@ -30,7 +30,7 @@
  *
  */
 #pragma once
-#include "../PPTXFormat/PPTX.h"
+#include "../../PPTXFormat/PPTX.h"
 
 #include "BinWriters.h"
 

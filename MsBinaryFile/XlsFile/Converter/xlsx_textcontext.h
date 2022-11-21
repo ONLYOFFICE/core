@@ -35,7 +35,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/scoped_ptr.hpp>
 
-#include "../Common/Utils/OptPtr.h"
+#include "../../Common/Utils/OptPtr.h"
 
 
 namespace oox {

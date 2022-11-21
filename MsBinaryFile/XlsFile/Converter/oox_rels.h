@@ -35,7 +35,7 @@
 #include <vector>
 #include <iosfwd>
 
-#include "../Common/Utils/OptPtr.h"
+#include "../../Common/Utils/OptPtr.h"
 
 namespace  oox
 {

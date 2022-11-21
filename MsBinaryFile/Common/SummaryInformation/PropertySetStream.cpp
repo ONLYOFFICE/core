@@ -29,13 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../../Common/Utils/simple_xml_writer.h"
 
 #include "PropertySetStream.h"
 #include "CodePageOle.h"
 
 #include "../../XlsFile/Format/Binary/CFStream.h"
 #include "../../XlsFile/Format/Auxiliary/HelpFunc.h"
-#include "../Common/Utils/simple_xml_writer.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../OOXML/Base/Base.h"
 #include "../../../OOXML/Base/Unit.h"

@@ -173,6 +173,15 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsFormat.vcxproj">
+      <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\OOXML\Projects\Windows\PPTXFormatLib\PPTXFormat.vcxproj">
+      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\OOXML\Projects\Windows\XlsbFormatLib\XlsbFormatLib.vcxproj">
+      <Project>{13e13907-49da-482e-ad58-026d06a5cd11}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\cpcommon.vcxproj">
       <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
     </ProjectReference>

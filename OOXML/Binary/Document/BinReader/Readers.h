@@ -34,7 +34,7 @@
 #include "FileWriter.h"
 #include "ReaderClasses.h"
 
-#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace OOX
 {

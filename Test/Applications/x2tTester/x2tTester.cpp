@@ -198,6 +198,16 @@ std::vector<int> CFormatsList::allFormats() const
 	return all_formats;
 }
 
+void WaitDirectory(const std::wstring& path, const bool& exist_check = true)
+{
+	while (exist_check != NSDirectory::Exists(path))
+		NSThreads::Sleep(10);
+}
+void WaitFile(const std::wstring& path, const bool& exist_check = true)
+{
+	while (exist_check != NSFile::CFileBinary::Exists(path))
+		NSThreads::Sleep(10);
+}
 
 Cx2tTester::Cx2tTester(const std::wstring& configPath)
 {
@@ -372,14 +382,12 @@ void Cx2tTester::Start()
 	if(NSDirectory::Exists(m_outputDirectory))
 		NSDirectory::DeleteDirectory(m_outputDirectory);
 
-	if(NSDirectory::Exists(m_outputDirectory))
-		NSThreads::Sleep(50);
+	WaitDirectory(m_outputDirectory, false);
 
 	NSDirectory::CreateDirectory(m_outputDirectory);
 
 	// waiting for directory
-	if(!NSDirectory::Exists(m_outputDirectory))
-		NSThreads::Sleep(50);
+	WaitDirectory(m_outputDirectory);
 
 	// setup & clear errors folder
 	if(NSDirectory::Exists(m_errorsXmlDirectory))
@@ -388,8 +396,7 @@ void Cx2tTester::Start()
 	NSDirectory::CreateDirectory(m_errorsXmlDirectory);
 
 	// waiting for directory
-	if(!NSDirectory::Exists(m_errorsXmlDirectory))
-		NSThreads::Sleep(50);
+	WaitDirectory(m_errorsXmlDirectory);
 
 	std::vector<std::wstring> files = NSDirectory::GetFiles(m_inputDirectory, true);
 	for(int i = 0; i < files.size(); i++)
@@ -449,8 +456,7 @@ void Cx2tTester::Start()
 			NSDirectory::CreateDirectory(folder);
 
 			// waiting for directory
-			if(!NSDirectory::Exists(folder))
-				NSThreads::Sleep(30);
+			WaitDirectory(folder);
 		}
 		output_files_directory += L'/' + NSFile::GetFileName(input_file);
 
@@ -493,8 +499,7 @@ void Cx2tTester::Start()
 		NSDirectory::CreateDirectory(output_files_directory);
 
 		// waiting
-		while(!NSDirectory::Exists(output_files_directory))
-			NSThreads::Sleep(30);
+		WaitDirectory(output_files_directory);
 
 		utils_CS.LeaveCS();
 
@@ -759,8 +764,7 @@ DWORD CConverter::ThreadProc()
 		NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
 
 		// waiting
-		while(!NSFile::CFileBinary::Exists(xml_params_file))
-			NSThreads::Sleep(30);
+		WaitFile(xml_params_file);
 
 		// utils_CS end
 		utils_CS.LeaveCS();
@@ -800,8 +804,7 @@ DWORD CConverter::ThreadProc()
 			NSDirectory::CreateDirectory(output_file);
 
 			// waiting
-			while(!NSDirectory::Exists(output_file))
-				NSThreads::Sleep(30);
+			WaitDirectory(output_file);
 
 			COfficeUtils oUtils;
 
@@ -877,8 +880,7 @@ DWORD CConverter::ThreadProc()
 			NSFile::CFileBinary::Remove(output_file);
 
 			// waiting
-			while(NSFile::CFileBinary::Exists(output_file))
-				NSThreads::Sleep(30);
+			WaitFile(output_file, false);
 
 			utils_CS.LeaveCS();
 		}
@@ -891,8 +893,7 @@ DWORD CConverter::ThreadProc()
 		NSDirectory::DeleteDirectory(m_outputFilesDirectory);
 
 		// waiting
-		while(NSDirectory::Exists(m_outputFilesDirectory))
-			NSThreads::Sleep(30);
+		WaitDirectory(m_outputFilesDirectory, false);
 
 		utils_CS.LeaveCS();
 	}

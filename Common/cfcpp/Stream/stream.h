@@ -33,7 +33,7 @@
 
 #include <memory>
 #include <ios>
-#include "../../DocxFormat/Source/Base/Types_32.h"
+#include "../../../OOXML/Base/Types_32.h"
 #include "../../../DesktopEditor/common/Types.h"
 
 

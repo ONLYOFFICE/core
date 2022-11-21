@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "./DocxFormat/Source/SystemUtility/File.h"
+#include "../OOXML/SystemUtility/File.h"
 
 namespace NFileWriter
 {

@@ -34,13 +34,13 @@
 #include "CryptTransform.h"
 
 #include "../../Common/3dParty/pole/pole.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../OOXML/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
-#include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
+#include "../../MsBinaryFile/DocFile/MemoryStream.h"
 #include "simple_xml_writer.h"
 #include "../../Common/cfcpp/compoundfile.h"
 

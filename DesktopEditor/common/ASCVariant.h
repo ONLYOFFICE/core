@@ -32,7 +32,7 @@
 #pragma once
 
 #include "Types.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../OOXML/Base/Base.h"
 
 #include <string>
 

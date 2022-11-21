@@ -29,61 +29,59 @@ LIBS += -lgdi32 \
 
 core_android:DEFINES += ANDROID
 
-PDFREADER_ROOT_DIR = $$PWD/../PdfReader
-
 INCLUDEPATH += \
-    $$PDFREADER_ROOT_DIR/lib/goo \
-    $$PDFREADER_ROOT_DIR/lib/fofi \
-    $$PDFREADER_ROOT_DIR/lib/splash \
-    $$PDFREADER_ROOT_DIR/lib
+    lib/goo \
+    lib/fofi \
+    lib/splash \
+    lib
 
-HEADERS += $$files($$PDFREADER_ROOT_DIR/lib/*.h, true)
-SOURCES += $$files($$PDFREADER_ROOT_DIR/lib/*.c, true)
-SOURCES += $$files($$PDFREADER_ROOT_DIR/lib/*.cc, true)
+HEADERS += $$files(lib/*.h, true)
+SOURCES += $$files(lib/*.c, true)
+SOURCES += $$files(lib/*.cc, true)
 
 SOURCES -= \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/HTMLGen.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdftohtml.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdftopng.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdftoppm.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdftops.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdftotext.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdfdetach.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdffonts.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdfimages.cc \
-    $$PDFREADER_ROOT_DIR/lib/xpdf/pdfinfo.cc
+    lib/xpdf/HTMLGen.cc \
+    lib/xpdf/pdftohtml.cc \
+    lib/xpdf/pdftopng.cc \
+    lib/xpdf/pdftoppm.cc \
+    lib/xpdf/pdftops.cc \
+    lib/xpdf/pdftotext.cc \
+    lib/xpdf/pdfdetach.cc \
+    lib/xpdf/pdffonts.cc \
+    lib/xpdf/pdfimages.cc \
+    lib/xpdf/pdfinfo.cc
 
 SOURCES += \
-    $$PDFREADER_ROOT_DIR/Src/RendererOutputDev.cpp \
-    $$PDFREADER_ROOT_DIR/Src/Adaptors.cpp \
-    $$PDFREADER_ROOT_DIR/Src/GfxClip.cpp
+    SrcReader/RendererOutputDev.cpp \
+    SrcReader/Adaptors.cpp \
+    SrcReader/GfxClip.cpp
 
 HEADERS += \
-    $$PDFREADER_ROOT_DIR/Src/RendererOutputDev.h \
-    $$PDFREADER_ROOT_DIR/Src/Adaptors.h \
-    $$PDFREADER_ROOT_DIR/Src/MemoryUtils.h \
-    $$PDFREADER_ROOT_DIR/Src/GfxClip.h
+    SrcReader/RendererOutputDev.h \
+    SrcReader/Adaptors.h \
+    SrcReader/MemoryUtils.h \
+    SrcReader/GfxClip.h
 
 # Base fonts
 HEADERS += \
-    $$PDFREADER_ROOT_DIR/Resources/Fontd050000l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn019003l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn019004l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn019023l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn019024l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn021003l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn021004l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn021023l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn021024l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn022003l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn022004l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn022023l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fontn022024l.h \
-    $$PDFREADER_ROOT_DIR/Resources/Fonts050000l.h \
-    $$PDFREADER_ROOT_DIR/Resources/BaseFonts.h
+    Resources/Fontd050000l.h \
+    Resources/Fontn019003l.h \
+    Resources/Fontn019004l.h \
+    Resources/Fontn019023l.h \
+    Resources/Fontn019024l.h \
+    Resources/Fontn021003l.h \
+    Resources/Fontn021004l.h \
+    Resources/Fontn021023l.h \
+    Resources/Fontn021024l.h \
+    Resources/Fontn022003l.h \
+    Resources/Fontn022004l.h \
+    Resources/Fontn022023l.h \
+    Resources/Fontn022024l.h \
+    Resources/Fonts050000l.h \
+    Resources/BaseFonts.h
 
 SOURCES += \
-    $$PDFREADER_ROOT_DIR/Resources/BaseFonts.cpp
+    Resources/BaseFonts.cpp
 
 CONFIG += use_external_jpeg2000
 use_external_jpeg2000 {
@@ -94,8 +92,8 @@ use_external_jpeg2000 {
     } else {
         DEFINES += USE_GRAPHICS_JPEG2000
     }
-    HEADERS += $$PDFREADER_ROOT_DIR/Src/JPXStream2.h
-    SOURCES += $$PDFREADER_ROOT_DIR/Src/JPXStream2.cpp
+    HEADERS += SrcReader/JPXStream2.h
+    SOURCES += SrcReader/JPXStream2.cpp
 }
 
 #CONFIG += build_viewer_module
@@ -133,74 +131,72 @@ core_windows {
 
 include($$PWD/../DesktopEditor/graphics/pro/freetype.pri)
 
-PDFWRITER_ROOT_DIR = $$PWD/../PdfWriter
-
 HEADERS += \
-    $$PDFWRITER_ROOT_DIR/Src/AcroForm.h \
-    $$PDFWRITER_ROOT_DIR/Src/Annotation.h \
-    $$PDFWRITER_ROOT_DIR/Src/Catalog.h \
-    $$PDFWRITER_ROOT_DIR/Src/Consts.h \
-    $$PDFWRITER_ROOT_DIR/Src/Destination.h \
-    $$PDFWRITER_ROOT_DIR/Src/Document.h \
-    $$PDFWRITER_ROOT_DIR/Src/Encodings.h \
-    $$PDFWRITER_ROOT_DIR/Src/Encrypt.h \
-    $$PDFWRITER_ROOT_DIR/Src/EncryptDictionary.h \
-    $$PDFWRITER_ROOT_DIR/Src/Field.h \
-    $$PDFWRITER_ROOT_DIR/Src/Font.h \
-    $$PDFWRITER_ROOT_DIR/Src/Font14.h \
-    $$PDFWRITER_ROOT_DIR/Src/FontCidTT.h \
-    $$PDFWRITER_ROOT_DIR/Src/FontTT.h \
-    $$PDFWRITER_ROOT_DIR/Src/FontTTWriter.h \
-    $$PDFWRITER_ROOT_DIR/Src/GState.h \
-    $$PDFWRITER_ROOT_DIR/Src/Image.h \
-    $$PDFWRITER_ROOT_DIR/Src/Info.h \
-    $$PDFWRITER_ROOT_DIR/Src/Objects.h \
-    $$PDFWRITER_ROOT_DIR/Src/Outline.h \
-    $$PDFWRITER_ROOT_DIR/Src/Pages.h \
-    $$PDFWRITER_ROOT_DIR/Src/Pattern.h \
-    $$PDFWRITER_ROOT_DIR/Src/ResourcesDictionary.h \
-    $$PDFWRITER_ROOT_DIR/Src/Shading.h \
-    $$PDFWRITER_ROOT_DIR/Src/Streams.h \
-    $$PDFWRITER_ROOT_DIR/Src/Types.h \
-    $$PDFWRITER_ROOT_DIR/Src/Utils.h \
-    $$PDFWRITER_ROOT_DIR/Src/Metadata.h \
-    $$PDFWRITER_ROOT_DIR/Src/ICCProfile.h
+    SrcWriter/AcroForm.h \
+    SrcWriter/Annotation.h \
+    SrcWriter/Catalog.h \
+    SrcWriter/Consts.h \
+    SrcWriter/Destination.h \
+    SrcWriter/Document.h \
+    SrcWriter/Encodings.h \
+    SrcWriter/Encrypt.h \
+    SrcWriter/EncryptDictionary.h \
+    SrcWriter/Field.h \
+    SrcWriter/Font.h \
+    SrcWriter/Font14.h \
+    SrcWriter/FontCidTT.h \
+    SrcWriter/FontTT.h \
+    SrcWriter/FontTTWriter.h \
+    SrcWriter/GState.h \
+    SrcWriter/Image.h \
+    SrcWriter/Info.h \
+    SrcWriter/Objects.h \
+    SrcWriter/Outline.h \
+    SrcWriter/Pages.h \
+    SrcWriter/Pattern.h \
+    SrcWriter/ResourcesDictionary.h \
+    SrcWriter/Shading.h \
+    SrcWriter/Streams.h \
+    SrcWriter/Types.h \
+    SrcWriter/Utils.h \
+    SrcWriter/Metadata.h \
+    SrcWriter/ICCProfile.h
 
 SOURCES += \
-    $$PDFWRITER_ROOT_DIR/Src/AcroForm.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Annotation.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Catalog.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Destination.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Document.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Encrypt.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/EncryptDictionary.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Field.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Font.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Font14.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/FontCidTT.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/FontTT.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/FontTTWriter.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/GState.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Image.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Info.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Objects.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Outline.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Pages.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Pattern.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/ResourcesDictionary.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Shading.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Streams.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Utils.cpp \
-    $$PDFWRITER_ROOT_DIR/Src/Metadata.cpp
+    SrcWriter/AcroForm.cpp \
+    SrcWriter/Annotation.cpp \
+    SrcWriter/Catalog.cpp \
+    SrcWriter/Destination.cpp \
+    SrcWriter/Document.cpp \
+    SrcWriter/Encrypt.cpp \
+    SrcWriter/EncryptDictionary.cpp \
+    SrcWriter/Field.cpp \
+    SrcWriter/Font.cpp \
+    SrcWriter/Font14.cpp \
+    SrcWriter/FontCidTT.cpp \
+    SrcWriter/FontTT.cpp \
+    SrcWriter/FontTTWriter.cpp \
+    SrcWriter/GState.cpp \
+    SrcWriter/Image.cpp \
+    SrcWriter/Info.cpp \
+    SrcWriter/Objects.cpp \
+    SrcWriter/Outline.cpp \
+    SrcWriter/Pages.cpp \
+    SrcWriter/Pattern.cpp \
+    SrcWriter/ResourcesDictionary.cpp \
+    SrcWriter/Shading.cpp \
+    SrcWriter/Streams.cpp \
+    SrcWriter/Utils.cpp \
+    SrcWriter/Metadata.cpp
 
 # PdfFile
 
 HEADERS += PdfFile.h \
-           Src/PdfWriter.h \
-           Src/PdfReader.h \
-           Src/OnlineOfficeBinToPdf.h
+           PdfWriter.h \
+           PdfReader.h \
+           OnlineOfficeBinToPdf.h
 
 SOURCES += PdfFile.cpp \
-           Src/PdfWriter.cpp \
-           Src/PdfReader.cpp \
-           Src/OnlineOfficeBinToPdf.cpp
+           PdfWriter.cpp \
+           PdfReader.cpp \
+           OnlineOfficeBinToPdf.cpp

@@ -30,25 +30,25 @@
  *
  */
 #include "PdfFile.h"
-#include "Src/PdfWriter.h"
-#include "Src/OnlineOfficeBinToPdf.h"
-#include "Src/PdfReader.h"
+#include "PdfWriter.h"
+#include "OnlineOfficeBinToPdf.h"
+#include "PdfReader.h"
 
-#include "../PdfReader/Src/Adaptors.h"
+#include "SrcReader/Adaptors.h"
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Path.h"
 #include "../DesktopEditor/common/StringExt.h"
 
-#include "../PdfReader/lib/xpdf/PDFDoc.h"
-#include "../PdfReader/lib/xpdf/AcroForm.h"
-#include "../PdfReader/lib/xpdf/TextString.h"
+#include "lib/xpdf/PDFDoc.h"
+#include "lib/xpdf/AcroForm.h"
+#include "lib/xpdf/TextString.h"
 
-#include "../PdfWriter/Src/Objects.h"
-#include "../PdfWriter/Src/Document.h"
-#include "../PdfWriter/Src/Pages.h"
-#include "../PdfWriter/Src/Catalog.h"
-#include "../PdfWriter/Src/EncryptDictionary.h"
-#include "../PdfWriter/Src/Info.h"
+#include "SrcWriter/Objects.h"
+#include "SrcWriter/Document.h"
+#include "SrcWriter/Pages.h"
+#include "SrcWriter/Catalog.h"
+#include "SrcWriter/EncryptDictionary.h"
+#include "SrcWriter/Info.h"
 
 #define AddToObject(oVal)\
 {\

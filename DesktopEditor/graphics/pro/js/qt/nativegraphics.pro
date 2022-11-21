@@ -77,6 +77,7 @@ HEADERS += \
     ../../../MetafileToRenderer.h \
     ../../../MetafileToRendererCheck.h \
     ../../../MetafileToGraphicsRenderer.h \
+    ../../../FormField.h \
     ../../../structures.h \
     ../../../GraphicsRenderer.h \
     \
@@ -108,6 +109,7 @@ SOURCES += \
     ../../../Image.cpp \
     ../../../MetafileToRenderer.cpp \
     ../../../MetafileToGraphicsRenderer.cpp \
+    ../../../FormField.cpp \
     \
     ../../../../fontengine/ApplicationFonts.cpp \
     ../../../../fontengine/FontFile.cpp \
@@ -591,7 +593,7 @@ SOURCES += \
     $$DJVU_WRAPPER/GURL.cpp
 
 # PdfReader
-PDF_ROOT_DIR = $$PWD/../../../../../PdfReader
+PDF_ROOT_DIR = $$PWD/../../../../../PdfFile
 
 INCLUDEPATH += \
     $$PDF_ROOT_DIR/lib/goo \
@@ -619,9 +621,9 @@ SOURCES -= \
     $$PDF_ROOT_DIR/lib/xpdf/pdfinfo.cc
 
 SOURCES += \
-    $$PDF_ROOT_DIR/Src/RendererOutputDev.cpp \
-    $$PDF_ROOT_DIR/Src/Adaptors.cpp \
-    $$PDF_ROOT_DIR/Src/GfxClip.cpp \
+    $$PDF_ROOT_DIR/SrcReader/RendererOutputDev.cpp \
+    $$PDF_ROOT_DIR/SrcReader/Adaptors.cpp \
+    $$PDF_ROOT_DIR/SrcReader/GfxClip.cpp \
     $$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
     $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
     $$PDF_ROOT_DIR/PdfReader.cpp
@@ -643,10 +645,10 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Resources/Fonts050000l.h \
     $$PDF_ROOT_DIR/Resources/BaseFonts.h \
     $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.h \
-    $$PDF_ROOT_DIR/Src/RendererOutputDev.h \
-    $$PDF_ROOT_DIR/Src/Adaptors.h \
-    $$PDF_ROOT_DIR/Src/MemoryUtils.h \
-    $$PDF_ROOT_DIR/Src/GfxClip.h \
+    $$PDF_ROOT_DIR/SrcReader/RendererOutputDev.h \
+    $$PDF_ROOT_DIR/SrcReader/Adaptors.h \
+    $$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
+    $$PDF_ROOT_DIR/SrcReader/GfxClip.h \
     $$PDF_ROOT_DIR/PdfReader.h
 
 HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h

@@ -32,8 +32,8 @@
 #pragma once
 
 #include <string>
-#include "../CPSharedPtr.h"
-#include "../CPScopedPtr.h"
+#include "../../Common/CPSharedPtr.h"
+#include "../../Common/CPScopedPtr.h"
 
 struct ProgressCallback;
 
@@ -57,7 +57,7 @@ class odf_read_context;
 class odf_document
 {
 public:
-    odf_document(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring& Password, const ProgressCallback* CallBack);
+    odf_document(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring& Password);
 	odf_document(xml::sax * Reader, const std::wstring & TempPath);
 	
 	~odf_document();
@@ -77,8 +77,6 @@ public:
 
     class Impl;   
     Impl * get_impl() { return impl_.get(); }
-
-	bool UpdateProgress(long Complete);
 
 private:
     _CP_SCOPED_PTR(Impl) impl_;

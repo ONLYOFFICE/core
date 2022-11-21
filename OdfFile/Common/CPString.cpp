@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../include/CPString.h"
+#include "../../Common/CPString.h"
 #include "../../../DesktopEditor/common/File.h"
 
 namespace cpdoccore {

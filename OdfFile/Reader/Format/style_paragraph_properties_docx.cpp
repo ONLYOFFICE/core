@@ -30,7 +30,7 @@
  *
  */
 
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 #include "odfcontext.h"
 
 #include "style_paragraph_properties.h"

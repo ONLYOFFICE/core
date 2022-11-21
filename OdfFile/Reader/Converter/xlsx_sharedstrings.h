@@ -34,7 +34,7 @@
 #include <string>
 #include <iostream>
 #include <iosfwd>
-#include "../../include/CPScopedPtr.h"
+#include "../../Common/CPScopedPtr.h"
 #include <boost/noncopyable.hpp>
 
 namespace cpdoccore {

@@ -30,7 +30,7 @@
  *
  */
 #include "DocxConverter.h"
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 #include "../../../OOXML/DocxFormat/Docx.h"
 #include "../../../OOXML/DocxFormat/DocxFlat.h"

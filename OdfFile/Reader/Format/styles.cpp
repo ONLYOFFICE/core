@@ -34,7 +34,7 @@
 #include "styles.h"
 
 #include <xml/simple_xml_writer.h>
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "style_properties.h"
 

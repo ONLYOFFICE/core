@@ -38,7 +38,8 @@
 #include <boost/regex.hpp>
 
 #include <xml/xmlchar.h>
-#include "../../include/odf/odf_document.h"
+
+#include "../Format/odf_document.h"
 
 #include "serialize_elements.h"
 #include "calcs_styles.h"

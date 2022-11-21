@@ -60,7 +60,7 @@
 #include "../Format/style_graphic_properties.h"
 #include "../Format/style_page_layout_properties.h"
 
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 using namespace cpdoccore;
 

@@ -41,7 +41,7 @@
 #include <boost/regex.h>
 
 #include <xml/xmlchar.h>
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "serialize_elements.h"
 

@@ -33,7 +33,7 @@
 #include "math_token_elements.h"
 #include "style_text_properties.h"
 
-#include <odf/odf_document.h>
+//#include "odf_document.h"
 
 #include <xml/xmlchar.h>
 #include <xml/attributes.h>

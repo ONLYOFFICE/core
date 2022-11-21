@@ -41,7 +41,7 @@
 
 #include <xml/attributes.h>
 #include <xml/utils.h>
-#include <common/readstring.h>
+#include <readstring.h>
 
 #include <CPOptional.h>
 #include <CPWeakPtr.h>

@@ -35,7 +35,7 @@
 #include <vector>
 #include <iosfwd>
 
-#include "../../include/CPNoncopyable.h"
+#include "../../Common/CPNoncopyable.h"
 
 #include "styles_list.h"
 #include "style_map.h"

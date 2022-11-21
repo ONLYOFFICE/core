@@ -34,9 +34,9 @@
 
 #include <iostream>
 #include <xml/utils.h>
-#include "../../include/odf/odf_document.h"
 #include <xml/simple_xml_writer.h>
 
+#include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 #include "../Format/style_text_properties.h"
 #include "../Format/style_paragraph_properties.h"

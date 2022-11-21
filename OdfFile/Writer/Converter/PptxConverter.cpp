@@ -30,7 +30,7 @@
  *
  */
 #include "PptxConverter.h"
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 #include "../../../OOXML/PPTXFormat/Folder.h"
 #include "../../../OOXML/PPTXFormat/Presentation.h"

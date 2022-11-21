@@ -33,13 +33,13 @@
 #include "math_token_elements.h"
 #include "style_text_properties.h"
 
-#include "../../include/odf/odf_document.h"
-
 #include <xml/xmlchar.h>
 #include <xml/simple_xml_writer.h>
 #include <xml/utils.h>
 
-namespace cpdoccore { 
+#include "../Format/odf_document.h"
+
+namespace cpdoccore {
 
 	using namespace odf_types;
 

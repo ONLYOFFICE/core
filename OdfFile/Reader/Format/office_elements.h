@@ -33,18 +33,18 @@
 
 #include <vector>
 
-#include "../../include/CPSharedPtr.h"
+#include "../../Common/CPSharedPtr.h"
 #include "../../Common/xml/xmlelement.h"
-#include "../../include/common/readdocelement.h"
+#include "readdocelement.h"
 
-#include "../../include/odf/odf_elements_type.h"
+#include "../../Common/odf_elements_type.h"
 
 #include "../../Reader/Converter/docx_conversion_context.h"
 #include "../../Reader/Converter/xlsxconversioncontext.h"
 #include "../../Reader/Converter/pptx_conversion_context.h"
 
 #include "visitor.h"
-#include "../../src/conversionelement.h"
+#include "../Converter/conversionelement.h"
 
 #include "documentcontext.h"
 

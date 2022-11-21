@@ -30,7 +30,7 @@
  *
  */
 
-#include "../include/CPSharedPtr.h"
+#include "../Common/CPSharedPtr.h"
 #include "sax.h"
 #include "sax_xmllite.h"
 #include <sstream>

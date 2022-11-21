@@ -23,7 +23,6 @@ DEFINES +=  UNICODE \
             _UNICODE \
             DONT_WRITE_EMBEDDED_FONTS
 
-INCLUDEPATH += ../../include
 INCLUDEPATH += ../../DataTypes
 INCLUDEPATH += ../../Common
 
@@ -169,7 +168,6 @@ SOURCES += \
         ../../Reader/Format/font_face.cpp \
         ../../Reader/Format/header_footer.cpp \
         ../../Reader/Format/list.cpp \
-        ../../Reader/Format/logging.cpp \
         ../../Reader/Format/note.cpp \
         ../../Reader/Format/number_style.cpp \
         ../../Reader/Format/odf_content_xml.cpp \
@@ -393,6 +391,7 @@ SOURCES += \
         ../../Common/CPString.cpp \
         ../../Common/readdocelement.cpp \
         ../../Common/utils.cpp \
+        ../../Common/logging.cpp \
         \
 	../../Writer/Converter/Converter.cpp \
 	../../Writer/Converter/ConverterChart.cpp \

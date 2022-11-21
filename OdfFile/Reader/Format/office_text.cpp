@@ -35,7 +35,7 @@
 
 #include <xml/xmlchar.h>
 #include <xml/utils.h>
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "serialize_elements.h"
 #include "odfcontext.h"

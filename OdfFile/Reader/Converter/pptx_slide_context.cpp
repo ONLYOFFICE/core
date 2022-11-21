@@ -34,12 +34,12 @@
 
 #include <xml/simple_xml_writer.h>
 #include <xml/utils.h>
-#include "../../include/odf/odf_document.h"
 
 #include "pptx_drawing.h"
 #include "pptx_drawings.h"
 #include "pptx_slide_context.h"
 
+#include "../Format/odf_document.h"
 #include "../Format/draw_common.h"
 
 #include "drawing_object_description.h"

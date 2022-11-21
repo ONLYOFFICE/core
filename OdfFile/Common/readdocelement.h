@@ -33,8 +33,8 @@
 
 #include <string>
 
-#include <CPSharedPtr.h>
-#include <xml/nodetype.h>
+#include "CPSharedPtr.h"
+#include "xml/nodetype.h"
 
 namespace cpdoccore { 
 

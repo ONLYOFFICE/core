@@ -34,7 +34,7 @@
 #include <string>
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
-#include "../../include/CPScopedPtr.h"
+#include "../../Common/CPScopedPtr.h"
 
 #include "../../DataTypes/officevaluetype.h"
 

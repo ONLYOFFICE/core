@@ -31,7 +31,7 @@
  */
 
 #include "Converter.h"
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 #include "XlsxConverter.h"
 #include "DocxConverter.h"

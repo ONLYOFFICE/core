@@ -36,7 +36,7 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "style_table_properties.h"
 #include "style_graphic_properties.h"

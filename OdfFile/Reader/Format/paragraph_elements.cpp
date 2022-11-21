@@ -40,8 +40,8 @@
 #include <xml/xmlchar.h>
 
 #include <xml/utils.h>
-#include "../../include/common/readstring.h"
-#include "../../include/odf/odf_document.h"
+#include "../../Common/readstring.h"
+#include "odf_document.h"
 
 #include "styles.h"
 #include "note.h"

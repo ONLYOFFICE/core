@@ -49,7 +49,6 @@
 #include "../../Reader/Format/font_face.cpp"
 #include "../../Reader/Format/header_footer.cpp"
 #include "../../Reader/Format/list.cpp"
-#include "../../Reader/Format/logging.cpp"
 #include "../../Reader/Format/note.cpp"
 #include "../../Reader/Format/number_style.cpp"
 #include "../../Reader/Format/odf_content_xml.cpp"

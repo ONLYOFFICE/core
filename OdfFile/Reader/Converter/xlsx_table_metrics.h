@@ -32,7 +32,7 @@
 #pragma once
 
 #include <boost/noncopyable.hpp>
-#include "../../include/CPSharedPtr.h"
+#include "../../Common/CPSharedPtr.h"
 
 #include "xlsx_table_position.h"
 

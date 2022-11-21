@@ -34,11 +34,11 @@
 
 #include "pptx_package.h"
 
-#include "../../include/odf/odf_document.h"
 #include <xml/simple_xml_writer.h>
 
 #include <iostream>
 
+#include "../Format/odf_document.h"
 #include "../Format/calcs_styles.h"
 #include "../Format/odfcontext.h"
 #include "../Format/draw_frame.h"

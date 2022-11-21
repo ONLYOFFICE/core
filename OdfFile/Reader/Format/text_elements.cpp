@@ -39,7 +39,7 @@
 #include "serialize_elements.h"
 #include "list.h"
 
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 #include "odfcontext.h"
 #include "style_paragraph_properties.h"
 #include "style_text_properties.h"

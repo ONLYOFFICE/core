@@ -36,7 +36,7 @@
 #include <CPSharedPtr.h>
 #include <logging.h>
 #include <boost/noncopyable.hpp>
-#include <odf/odf_elements_type.h>
+#include <odf_elements_type.h>
 
 namespace cpdoccore {
 namespace odf_writer {

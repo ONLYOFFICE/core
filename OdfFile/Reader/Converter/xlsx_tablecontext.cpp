@@ -36,12 +36,12 @@
 #include "xlsx_table_state.h"
 #include "xlsx_utils.h"
 
+#include "../Format/odf_document.h"
 #include "../../Formulas/formulasconvert.h"
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 
 #include <iostream>
 
-#include "../../include/odf/odf_document.h"
 #include <xml/simple_xml_writer.h>
 
 #include "../../../OOXML/Base/Unit.h"

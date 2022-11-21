@@ -46,7 +46,7 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 namespace cpdoccore { 
 

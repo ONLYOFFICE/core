@@ -35,8 +35,8 @@
 #include <vector>
 #include <iosfwd>
 
-#include "../../include/CPNoncopyable.h"
-#include "../../include/CPWeakPtr.h"
+#include "../../Common/CPNoncopyable.h"
+#include "../../Common/CPWeakPtr.h"
 
 #include "office_elements.h"
 #include "office_elements_create.h"

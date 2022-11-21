@@ -34,7 +34,7 @@
 #include <xml/attributes.h>
 #include <CPOptional.h>
 #include "errors.h"
-#include "../include/logging.h"
+#include "../Common/logging.h"
 
 namespace cpdoccore {
 namespace xml {

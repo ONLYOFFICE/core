@@ -32,7 +32,7 @@
 #pragma once
 
 #include "sax.h"
-#include "../include/CPSharedPtr.h"
+#include "../Common/CPSharedPtr.h"
 
 namespace cpdoccore {
 namespace xml {

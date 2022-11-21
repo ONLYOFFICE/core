@@ -33,14 +33,14 @@
 #include <iostream>
 
 #include <xml/simple_xml_writer.h>
-#include "../../include/odf/odf_document.h"
 
+#include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 #include "../Format/draw_common.h"
 #include "../Format/calcs_styles.h"
 #include "../../DataTypes/borderstyle.h"
 
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 
 #include "pptx_conversion_context.h"
 

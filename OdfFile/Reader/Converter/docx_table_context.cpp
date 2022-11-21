@@ -33,8 +33,8 @@
 
 #include "docx_conversion_context.h"
 
-#include "../../include/logging.h"
-#include "../../include/odf/odf_document.h"
+#include "../../Common/logging.h"
+#include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 
 namespace cpdoccore { 

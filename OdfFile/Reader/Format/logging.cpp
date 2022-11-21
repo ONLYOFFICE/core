@@ -33,7 +33,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "../../include/logging.h"
+#include "logging.h"
 
 namespace cpdoccore
 {

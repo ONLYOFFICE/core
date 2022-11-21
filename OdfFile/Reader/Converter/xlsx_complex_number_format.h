@@ -32,7 +32,7 @@
 #pragma once
 
 #include <string>
-#include "../../include/CPScopedPtr.h"
+#include "../../Common/CPScopedPtr.h"
 
 namespace cpdoccore {
 namespace oox {

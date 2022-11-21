@@ -33,8 +33,6 @@
 #include "xlsxconversioncontext.h"
 
 #include <iostream>
-
-#include "../../include/odf/odf_document.h"
 #include <xml/simple_xml_writer.h>
 
 #include "measuredigits.h"
@@ -42,10 +40,9 @@
 #include "xlsx_utils.h"
 #include "xlsx_cell_format.h"
 
+#include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 #include "../Format/calcs_styles.h"
-
-
 
 namespace cpdoccore { 
 

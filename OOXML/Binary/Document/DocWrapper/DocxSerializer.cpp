@@ -39,7 +39,7 @@
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
 #include "FontProcessor.h"
-#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"
 #include "../../../../DesktopEditor/common/File.h"

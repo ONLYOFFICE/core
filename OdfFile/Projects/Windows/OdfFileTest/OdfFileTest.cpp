@@ -34,11 +34,11 @@
 #include <stdio.h>
 #include <tchar.h>
 
-#include "../../Common/OfficeFileFormatChecker.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
-#include "../../DesktopEditor/common/Directory.h"
-#include "../src/ConvertOO2OOX.h"
-#include "../include/logging.h"
+#include "../../../../Common/OfficeFileFormatChecker.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../Reader/Converter/ConvertOO2OOX.h"
+#include "../../../Common/logging.h"
 
 
 #if defined(_WIN64)
@@ -46,13 +46,13 @@
 #elif defined (_WIN32)
 
 	#if defined(_DEBUG)
-		#pragma comment(lib, "../../build/lib/win_32/DEBUG/graphics.lib")
-		#pragma comment(lib, "../../build/lib/win_32/DEBUG/kernel.lib")
+		#pragma comment(lib, "../../../../build/lib/win_32/DEBUG/graphics.lib")
+		#pragma comment(lib, "../../../../build/lib/win_32/DEBUG/kernel.lib")
 	#else
-		#pragma comment(lib, "../../build/lib/win_32/graphics.lib")
-		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
+		#pragma comment(lib, "../../../../build/lib/win_32/graphics.lib")
+		#pragma comment(lib, "../../../../build/lib/win_32/kernel.lib")
 	#endif
-	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+	#pragma comment(lib, "../../../../build/bin/icu/win_32/icuuc.lib")
 #endif
 
 HRESULT convert_single(std::wstring srcFileName)
@@ -105,7 +105,7 @@ HRESULT convert_single(std::wstring srcFileName)
 	}
     _CP_LOG << L"[info] " << srcFileName << std::endl;
 	
-	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", srcTempPath2, L"", NULL);
+	nResult = ConvertODF2OOXml(srcTempPath, dstTempPath, L"C:\\Windows\\Fonts", srcTempPath2, L"");
 
 	if (srcTempPath != srcFileName)
 	{

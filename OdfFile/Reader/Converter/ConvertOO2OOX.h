@@ -30,8 +30,8 @@
  *
  */
 
-#include "../../DesktopEditor/common/Types.h"
-#include "../../OOXML/Base/Base.h"
+#include "../../../DesktopEditor/common/Types.h"
+#include "../../../OOXML/Base/Base.h"
 #include <string>
 
 struct ProgressCallback;

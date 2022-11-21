@@ -42,7 +42,7 @@
 #include "../../DocxFormat/Media/VbaProject.h"
 #include "../../DocxFormat/Media/JsaProject.h"
 
-#include "../../Common/Base64.h"
+#include "../../../Common/Base64.h"
 
 #include "./imagemanager.h"
 #include "./XmlWriter.h"
@@ -57,7 +57,7 @@
 #include <iostream>
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
+#include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif 
 
 #define BYTE_SIZEOF		sizeof(BYTE)

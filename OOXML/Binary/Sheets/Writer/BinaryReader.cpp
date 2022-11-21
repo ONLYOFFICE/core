@@ -32,12 +32,12 @@
 
 #include "BinaryReader.h"
 
-#include "../../Common/Base64.h"
-#include "../../Common/ATLDefine.h"
-#include "../../Common/OfficeFileErrorDescription.h"
+#include "../../../../Common/Base64.h"
+#include "../../../../Common/ATLDefine.h"
+#include "../../../../Common/OfficeFileErrorDescription.h"
 
-#include "../../DesktopEditor/common/Path.h"
-#include "../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/Path.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 #include "../Writer/CSVWriter.h"
 #include "BinaryCommonReader.h"

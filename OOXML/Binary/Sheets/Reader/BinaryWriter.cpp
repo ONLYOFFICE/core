@@ -34,9 +34,9 @@
 #include "BinaryWriter.h"
 #include "../Writer/BinaryReader.h"
 
-#include "../../Common/OfficeFileFormats.h"
-#include "../../Common/Base64.h"
-#include "../../Common/OfficeFileErrorDescription.h"
+#include "../../../../Common/OfficeFileFormats.h"
+#include "../../../../Common/Base64.h"
+#include "../../../../Common/OfficeFileErrorDescription.h"
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/App.h"

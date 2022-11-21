@@ -32,8 +32,14 @@
     <Filter Include="Crypt\rtl">
       <UniqueIdentifier>{05df05f5-21ee-4959-8959-01f5dd326fbd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ODRAW">
+    <Filter Include="Logic\Biff_structures\ODRAW">
       <UniqueIdentifier>{73faf489-4c86-4f5b-b26b-0d51a50612ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ODraw">
+      <UniqueIdentifier>{d6c091f5-7b3b-44b8-8c5f-4b73b25bae73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ODraw\oldShapes">
+      <UniqueIdentifier>{f9d227eb-a5ca-4b0e-8c98-ecaa07fd996c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -2261,88 +2267,88 @@
       <Filter>Logic\Biff_unions</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\MSOCR.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\MSOSHADECOLOR.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtBlip.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtBStoreContainer.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtBStoreContainerFileBlock.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtClientAnchorChart.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtClientAnchorHF.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtClientAnchorSheet.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtColorMRUContainer.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtCOLORREF.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtContainer.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtDgContainer.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFDG.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFDGGBlock.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFOPT.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFOPTE.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFRIT.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFRITContainer.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFSP.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFSPGR.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtIDCL.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtMetafileHeader.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtRecord.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtRecordHeader.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtRGFOPTE.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtSplitMenuColorContainer.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtTertiaryFOPT.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\SimpleOfficeArtContainers.cpp">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Common\SummaryInformation\CodePageOle.cpp">
       <Filter>SummaryInformationStream</Filter>
@@ -2355,6 +2361,51 @@
     </ClCompile>
     <ClCompile Include="..\..\..\Common\SummaryInformation\PropertySetStream.cpp">
       <Filter>SummaryInformationStream</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\AnyObject.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\AnySubstream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\BinProcessor.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\ChartSheetSubstream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\CommonSubstream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\CompositeObject.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\EncryptionStream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\GlobalsSubstream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\GlobalWorkbookInfo.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\MacroSheetSubstream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\WorkbookStreamObject.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsFile\Format\Logic\WorksheetSubstream.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\ODraw\BaseShape_1.cpp">
+      <Filter>ODraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\ODraw\CustomShape.cpp">
+      <Filter>ODraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\ODraw\FormulaShape.cpp">
+      <Filter>ODraw</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -4606,94 +4657,94 @@
       <Filter>Logic\Biff_unions</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\IMsoArray.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\MSO_enums.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\MSOCR.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\MSOSHADECOLOR.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtBlip.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtBStoreContainer.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtBStoreContainerFileBlock.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtClientAnchorChart.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtClientAnchorHF.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtClientAnchorSheet.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtColorMRUContainer.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtCOLORREF.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtContainer.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtDgContainer.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFDG.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFDGGBlock.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFOPT.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFOPTE.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFRIT.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFRITContainer.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFSP.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtFSPGR.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtIDCL.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtMetafileHeader.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtRecord.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtRecordHeader.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtRGFOPTE.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtSplitMenuColorContainer.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\OfficeArtTertiaryFOPT.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsFile\Format\Logic\Biff_structures\ODRAW\SimpleOfficeArtContainers.h">
-      <Filter>ODRAW</Filter>
+      <Filter>Logic\Biff_structures\ODRAW</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Common\SummaryInformation\CodePageOle.h">
       <Filter>SummaryInformationStream</Filter>
@@ -4709,6 +4760,501 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Common\SummaryInformation\PropertySetStream.h">
       <Filter>SummaryInformationStream</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\AnyObject.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\AnySubstream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\BaseObject.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\BaseObjectDocument.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\BinProcessor.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\ChartSheetSubstream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\CommonSubstream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\CompositeObject.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\EncryptionStream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\GlobalsSubstream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\GlobalWorkbookInfo.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\MacroSheetSubstream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\WorkbookStreamObject.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\WorksheetSubstream.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\XlsFile\Format\Logic\XlsElementsType.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\BaseShape.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\CustomGeomShape.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\CustomShape.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\CustomShapeConvert.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\FormulaShape.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\GraphicsPath.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\PathShape.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\PresetShapesHeader.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\XmlWriter.h">
+      <Filter>ODraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout1type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentBorderCallout2Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout3type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout90type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout1Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout2Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout3Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout90Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBack.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBeginning.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBlank.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonDocument.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonEnd.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonHelp.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonHome.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonInfo.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonMovie.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonNext.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonReturn.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonSound.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\arctype.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentConnector.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentUpArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BevelType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BlockArcType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout1Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout2Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout3Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout90Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BracePairType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BracketPairType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout1Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout2Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout3Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout90Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CanType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ChevronType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CircularArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CloudCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CubeType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedConnector.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedDownArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedLeftArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedRightArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedUpArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DiamondType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DonutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DownArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DownArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseRibbon2Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseRibbonType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartAlternateProcessType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartCollateType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartConnectorType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDecisionType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDelayType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDisplayType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDocumentType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartExtractType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartInputOutputType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartInternalStorageType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticDiskType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticDrumType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticTapeType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartManualInputType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartManualOperationType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMergeType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMultidocumentType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOffpageConnectorType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOnlineStorageType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOrType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPredefinedProcessType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPreparationType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartProcessType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPunchedCardType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPunchedTapeType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartSortType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartSummingJunctionType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartTerminatorType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FoldedCornerType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HeartType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HexagonType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HomePlateType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HorisontalScrollType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IrregularSealOneType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IrregularSealTwo.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IsoscelesTriangleType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftBraceType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftBracketType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightUpArrow.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftUpArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LightningBoltType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LineType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\MoonType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\NoSmokingType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\NotchedRightArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\OctagonType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ParallelogramType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PentagonType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PlaqueType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PlusType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\QuadArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\QuadArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RectangleType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RibbonDownType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RibbonUpType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightBracetype.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightBracketType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightTriangleType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RoundedRectangleType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal4Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal8Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal16Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal24Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal32Type.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\SmileyFaceType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Startype.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\StraightConnectorType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\StripedRightArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\SunType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\TextboxType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\TrapezoidType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpDownArrowCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpDownArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UturnArrowType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\VerticalScrollType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WaveDoubleType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WaveType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeEllipseCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeRectCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeRoundedRectCalloutType.h">
+      <Filter>ODraw\oldShapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

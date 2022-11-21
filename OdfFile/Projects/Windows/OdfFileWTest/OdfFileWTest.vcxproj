@@ -167,6 +167,8 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\Common\3dParty\pole\pole.cpp" />
+    <ClCompile Include="..\..\..\..\Common\OfficeFileFormatChecker2.cpp" />
     <ClCompile Include="OdfFileWTest.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </PrecompiledHeader>
@@ -176,6 +178,12 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     <ProjectReference Include="..\..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsFormat.vcxproj">
       <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\OOXML\Projects\Windows\BinaryFormatLib\BinaryFormatLib.vcxproj">
+      <Project>{cd359215-e183-4ea7-b986-42868b10d8b8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\OOXML\Projects\Windows\DocxFormatLib\DocxFormatLib.vcxproj">
+      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\OOXML\Projects\Windows\PPTXFormatLib\PPTXFormat.vcxproj">
       <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
     </ProjectReference>
@@ -184,6 +192,9 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </ProjectReference>
     <ProjectReference Include="..\cpcommon.vcxproj">
       <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
     </ProjectReference>
     <ProjectReference Include="..\formulasconvert.vcxproj">
       <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>

@@ -33,19 +33,19 @@
 #include "imagemanager.h"
 
 #ifndef DISABLE_FILE_DOWNLOADER
-#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
+#include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif 
 
 #include <list>
 #include "WMFToImageConverter.h"
-#include "../../HtmlRenderer/include/ASCSVGWriter.h"
+#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
 
-#include "../../Common/MediaFormatDefine.h"
-#include "../../DesktopEditor/graphics/pro/Image.h"
-#include "../../DesktopEditor/graphics/Image.h"
-#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
-#include "../../DesktopEditor/common/Directory.h"
+#include "../../../Common/MediaFormatDefine.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
+#include "../../../DesktopEditor/graphics/Image.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #include "../../SystemUtility/File.h"
 #include "../../SystemUtility/SystemUtility.h"

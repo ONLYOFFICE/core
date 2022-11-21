@@ -38,7 +38,7 @@
 #include "../../Sheets/Writer/BinaryReader.h"
 #include "../../Presentation/FontPicker.h"
 
-#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
 #include "ChartWriter.h"
 
 #include "../BinReader/DefaultThemeWriter.h"

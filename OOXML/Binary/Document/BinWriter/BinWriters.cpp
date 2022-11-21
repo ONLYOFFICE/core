@@ -32,8 +32,8 @@
 #include "BinWriters.h"
 
 #include "../DocWrapper/FontProcessor.h"
-#include "../../Common/Base64.h"
-#include "../../Common/OfficeFileFormatChecker.h"
+#include "../../../../Common/Base64.h"
+#include "../../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/App.h"
@@ -46,7 +46,7 @@
 #ifndef _IOS
 	#include "../../../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
 #endif
-#include "../../HtmlFile2/htmlfile2.h"
+#include "../../../../HtmlFile2/htmlfile2.h"
 #include "../../../../RtfFile/Format/ConvertationManager.h"
 
 #include "../../../DocxFormat/CustomXml.h"

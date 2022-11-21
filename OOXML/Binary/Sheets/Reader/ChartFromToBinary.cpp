@@ -41,7 +41,7 @@
 #include "../../../PPTXFormat/Theme.h"
 
 #include "../../Document/DocWrapper/XlsxSerializer.h"
-#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
 
 using namespace OOX::Spreadsheet;
 

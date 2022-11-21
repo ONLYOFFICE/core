@@ -34,7 +34,7 @@
 #include "BinReaderWriterDefines.h"
 #include "../../../XlsxFormat/Xlsx.h"
 #include "../../../Common/SimpleTypes_Shared.h"
-#include "../../Common/Base64.h"
+#include "../../../../Common/Base64.h"
 #include "../../../../DesktopEditor/common/Types.h"
 #include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 

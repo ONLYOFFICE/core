@@ -1,4 +1,4 @@
-#ifdef _WIN32
+#ifdef SUPPORT_MS_CRYPTO
 #include "./Certificate_mscrypto.h"
 #endif
 
@@ -6,9 +6,20 @@
 
 #include "./../include/CertificateCommon.h"
 
+ICertificate::ICertificate()
+{
+}
+
+ICertificate::~ICertificate()
+{
+}
+
+CCertificateInfo::CCertificateInfo() {}
+CCertificateInfo::~CCertificateInfo() {}
+
 namespace NSOpenSSL
 {
-    int LoadKey(std::wstring file, std::string password)
+	int LoadKey(std::wstring file, std::string password)
     {
         return CCertificate_openssl::LoadKey(file, password, NULL);
     }
@@ -34,7 +45,7 @@ namespace NSCertificate
     {
         CCertificateInfo info;
 
-    #ifdef _WIN32
+	#ifdef SUPPORT_MS_CRYPTO
         // detect user name
         std::wstring sUserName;
 
@@ -66,7 +77,7 @@ namespace NSCertificate
     }
     ICertificate* GetById(const std::string& id)
     {
-    #ifdef _WIN32
+	#ifdef SUPPORT_MS_CRYPTO
         HANDLE hStoreHandle = CertOpenSystemStoreA(NULL, "MY");
         if (!hStoreHandle)
             return NULL;
@@ -250,7 +261,7 @@ namespace NSCertificate
         if (typeCreate == CERTIFICATE_ENGINE_TYPE_OPENSSL)
             return new CCertificate_openssl();
 
-#ifdef _WIN32
+#ifdef SUPPORT_MS_CRYPTO
         if (typeCreate == CERTIFICATE_ENGINE_TYPE_MSCRYPTO)
             return new CCertificate_mscrypto();
 #endif

@@ -64,9 +64,6 @@
     <Filter Include="XlsxFormat\Styles">
       <UniqueIdentifier>{ebf55a86-a27b-4d5d-a95b-1f9cbc890855}</UniqueIdentifier>
     </Filter>
-    <Filter Include="XlsxFormat\Controls">
-      <UniqueIdentifier>{f45ba67d-ffc8-49ea-8b3a-a0477f13042e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="XlsxFormat\Ole">
       <UniqueIdentifier>{a1033e33-dded-4f77-9df6-41691b033e41}</UniqueIdentifier>
     </Filter>
@@ -78,6 +75,12 @@
     </Filter>
     <Filter Include="Xml">
       <UniqueIdentifier>{1ac904c5-63f6-4e69-9fa3-8de41ec9abb9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\NamedSheetViews">
+      <UniqueIdentifier>{66b19e49-99dc-4bfe-995b-50e316b05be5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Controls">
+      <UniqueIdentifier>{f45ba67d-ffc8-49ea-8b3a-a0477f13042e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -527,6 +530,9 @@
     <ClInclude Include="..\..\..\XML\XmlSimple.h">
       <Filter>Xml</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.h">
+      <Filter>XlsxFormat\NamedSheetViews</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -758,6 +764,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\XML\XmlSimple.cpp">
       <Filter>Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp">
+      <Filter>XlsxFormat\NamedSheetViews</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -33,7 +33,7 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 
-#include "../../../Common/MS-LCID.h"
+#include "../../Common/MS-LCID.h"
 
 RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocument(oDocument), m_sFilename(sFilename)
 {

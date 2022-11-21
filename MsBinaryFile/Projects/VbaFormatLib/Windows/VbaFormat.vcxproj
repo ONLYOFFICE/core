@@ -19,17 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\VbaFormat\VbaBinary.cpp" />
-    <ClCompile Include="..\VbaFormat\StreamObjects.cpp" />
-    <ClCompile Include="..\VbaFormat\Records.cpp" />
-    <ClCompile Include="..\VbaFormat\VbaReader.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\Records.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\StreamObjects.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\VbaBinary.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\VbaReader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\VbaFormat\VbaBinary.h" />
-    <ClInclude Include="..\VbaFormat\StreamObjects.h" />
-    <ClInclude Include="..\VbaFormat\Records.h" />
-    <ClInclude Include="..\VbaFormat\VbaReader.h" />
-    <ClInclude Include="..\VbaFormat\VbaRecordType.h" />
+    <ClInclude Include="..\..\..\Common\Vba\Records.h" />
+    <ClInclude Include="..\..\..\Common\Vba\StreamObjects.h" />
+    <ClInclude Include="..\..\..\Common\Vba\VbaBinary.h" />
+    <ClInclude Include="..\..\..\Common\Vba\VbaReader.h" />
+    <ClInclude Include="..\..\..\Common\Vba\VbaRecordType.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{041DD428-2D5C-4D97-8AB7-7207F3D5B801}</ProjectGuid>
@@ -84,8 +84,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>..\..\..\Common\3dParty\boost\build\win_64\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>

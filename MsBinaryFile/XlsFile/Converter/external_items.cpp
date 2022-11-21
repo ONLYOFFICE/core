@@ -32,8 +32,8 @@
 
 #include "external_items.h"
 
-#include "../Common/Utils/utils.h"
-#include "../Common/Utils/simple_xml_writer.h"
+#include "../../Common/Utils/utils.h"
+#include "../../Common/Utils/simple_xml_writer.h"
 
 #include "oox_rels.h"
 #include "mediaitems_utils.h"

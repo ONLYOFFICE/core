@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
 
 namespace Txt2Docx
 {

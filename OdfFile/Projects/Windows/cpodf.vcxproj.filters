@@ -477,6 +477,7 @@
     <ClCompile Include="..\..\Reader\Converter\xlsx_numFmts.cpp">
       <Filter>oox\xlsx\styles</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\ConvertOO2OOX.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Format\abstract_xml.h">
@@ -926,5 +927,6 @@
     <ClInclude Include="..\..\Reader\Converter\xlsx_numFmts.h">
       <Filter>oox\xlsx\styles</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\convertoo2oox.h" />
   </ItemGroup>
 </Project>

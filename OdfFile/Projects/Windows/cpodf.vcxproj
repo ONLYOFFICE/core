@@ -175,6 +175,7 @@
     <ClCompile Include="..\..\Reader\Converter\conversionelement.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\ConvertOO2OOX.cpp" />
     <ClCompile Include="..\..\Reader\Converter\docx_content_type.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -623,6 +624,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Converter\conversionelement.h" />
+    <ClInclude Include="..\..\Reader\Converter\convertoo2oox.h" />
     <ClInclude Include="..\..\Reader\Converter\docx_content_type.h" />
     <ClInclude Include="..\..\Reader\Converter\docx_conversion_context.h" />
     <ClInclude Include="..\..\Reader\Converter\docx_drawing.h" />

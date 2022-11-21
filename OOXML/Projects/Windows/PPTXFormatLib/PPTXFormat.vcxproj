@@ -23,8 +23,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\CommentAuthors.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Comments.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Core.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFile.h" />
     <ClInclude Include="..\..\..\PPTXFormat\FileContainer.h" />
     <ClInclude Include="..\..\..\PPTXFormat\FileFactory.h" />
     <ClInclude Include="..\..\..\PPTXFormat\FileMap.h" />
@@ -402,8 +400,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\WritingVector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileFactory.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileMap.cpp" />

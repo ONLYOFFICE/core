@@ -175,8 +175,26 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
+      <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Common\cfcpp\CompoundFileLib.vcxproj">
+      <Project>{fa22bab4-e93e-459d-8a5f-16764fbbed40}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\MsBinaryFile\Projects\DocFormatLib\Windows\DocFormatLib.vcxproj">
+      <Project>{c5371405-338f-4b70-83bd-2a5cdf64f383}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\MsBinaryFile\Projects\PPTFormatLib\Windows\PPTFormatLib.vcxproj">
+      <Project>{7b27e40e-f70a-4a74-a77c-0944d7931d15}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\MsBinaryFile\Projects\VbaFormatLib\Windows\VbaFormat.vcxproj">
+      <Project>{041dd428-2d5c-4d97-8ab7-7207f3d5b801}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsFormat.vcxproj">
       <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
+      <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\OOXML\Projects\Windows\BinaryFormatLib\BinaryFormatLib.vcxproj">
       <Project>{cd359215-e183-4ea7-b986-42868b10d8b8}</Project>
@@ -192,6 +210,9 @@ Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </ProjectReference>
     <ProjectReference Include="..\cpcommon.vcxproj">
       <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\cpodf.vcxproj">
+      <Project>{50e20601-4a8d-4afb-8870-63828d328429}</Project>
     </ProjectReference>
     <ProjectReference Include="..\cpxml.vcxproj">
       <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>

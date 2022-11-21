@@ -28,12 +28,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\WrapperFile.h" />
     <ClInclude Include="..\..\..\PPTXFormat\WrapperWritingElement.h" />
     <ClInclude Include="..\..\..\PPTXFormat\WritingVector.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h">
-      <Filter>DrawingConverter</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFile.h">
-      <Filter>DrawingConverter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Limit\AlbumLayout.h">
       <Filter>Limits</Filter>
     </ClInclude>
@@ -1098,12 +1092,6 @@
     <ClCompile Include="..\..\..\PPTXFormat\FileTypes.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Folder.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Presentation.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp">
-      <Filter>DrawingConverter</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp">
-      <Filter>DrawingConverter</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Bg.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
@@ -1211,9 +1199,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="DrawingConverter">
-      <UniqueIdentifier>{70ccbd8e-ddce-412b-98fc-70e9d23f1dd1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Limits">
       <UniqueIdentifier>{648600b1-5afe-4950-a09b-8b84fc62a32e}</UniqueIdentifier>
     </Filter>

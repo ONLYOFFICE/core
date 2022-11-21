@@ -33,7 +33,7 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "../OOXml/Writer/OOXRelsWriter.h"
 #include "RtfDocument.h"
-#include "../../../Common/OfficeFileFormatChecker.h"
+#include "../../Common/OfficeFileFormatChecker.h"
 
 std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {

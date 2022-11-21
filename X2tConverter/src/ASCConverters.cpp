@@ -48,7 +48,7 @@
 #include "../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
 #include "../../TxtFile/Source/TxtXmlFile.h"
 #include "../../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
-#include "../../OdfFile/src/ConvertOO2OOX.h"
+#include "../../OdfFile/Reader/Converter/ConvertOO2OOX.h"
 #include "../../OdfFile/Writer/Converter/Oox2OdfConverter.h"
 
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"

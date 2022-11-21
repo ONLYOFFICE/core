@@ -69,8 +69,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\ib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\ib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -145,44 +145,18 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp" />
-    <ClCompile Include="..\Source\ConvertDocx2Txt.cpp" />
-    <ClCompile Include="..\Source\ConvertTxt2Docx.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\Source\TxtFormat\File.cpp">
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)%(Filename)1.xdc</XMLDocumentationFileName>
-    </ClCompile>
-    <ClCompile Include="..\Source\TxtFormat\TxtFile.cpp" />
-    <ClCompile Include="..\Source\TxtXmlFile.cpp" />
+    <ClCompile Include="..\..\..\Source\ConvertDocx2Txt.cpp" />
+    <ClCompile Include="..\..\..\Source\ConvertTxt2Docx.cpp" />
+    <ClCompile Include="..\..\..\Source\TxtFormat\File.cpp" />
+    <ClCompile Include="..\..\..\Source\TxtFormat\TxtFile.cpp" />
+    <ClCompile Include="..\..\..\Source\TxtXmlFile.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.h" />
-    <ClInclude Include="..\Source\ConvertDocx2Txt.h" />
-    <ClInclude Include="..\Source\ConvertTxt2Docx.h" />
-    <ClInclude Include="..\Source\TxtFormat\File.h" />
-    <ClInclude Include="..\Source\TxtFormat\TxtFile.h" />
-    <ClInclude Include="..\Source\TxtXmlFile.h" />
+    <ClInclude Include="..\..\..\Source\ConvertDocx2Txt.h" />
+    <ClInclude Include="..\..\..\Source\ConvertTxt2Docx.h" />
+    <ClInclude Include="..\..\..\Source\TxtFormat\File.h" />
+    <ClInclude Include="..\..\..\Source\TxtFormat\TxtFile.h" />
+    <ClInclude Include="..\..\..\Source\TxtXmlFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

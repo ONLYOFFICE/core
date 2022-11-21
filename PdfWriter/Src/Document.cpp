@@ -320,10 +320,34 @@ namespace PdfWriter
 	{
 		return m_pPageTree->GetCount();
 	}
-	void CDocument::SetDocumentID(const std::wstring & documentID)
+    void CDocument::SetDocumentID(const std::wstring& documentID)
 	{
 		m_wsDocumentID = documentID;		
 	}
+    void CDocument::SetTitle(const std::string& sTitle)
+    {
+        if (!m_pInfo)
+            return;
+        m_pInfo->SetInfo(InfoTitle, sTitle.c_str());
+    }
+    void CDocument::SetAuthor(const std::string& sAuthor)
+    {
+        if (!m_pInfo)
+            return;
+        m_pInfo->SetInfo(InfoAuthor, sAuthor.c_str());
+    }
+    void CDocument::SetSubject(const std::string& sSubject)
+    {
+        if (!m_pInfo)
+            return;
+        m_pInfo->SetInfo(InfoSubject, sSubject.c_str());
+    }
+    void CDocument::SetKeywords(const std::string& sKeywords)
+    {
+        if (!m_pInfo)
+            return;
+        m_pInfo->SetInfo(InfoKeyWords, sKeywords.c_str());
+    }
 
     void CDocument::SetPermission(unsigned int unPermission)
 	{

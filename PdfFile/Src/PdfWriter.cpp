@@ -528,6 +528,38 @@ void CPdfWriter::SetCore(const std::wstring& wsCoreXml)
 {
     if (!IsValid())
         return;
+
+    XmlUtils::CXmlLiteReader oCoreReader;
+    oCoreReader.FromString(wsCoreXml);
+    oCoreReader.ReadNextNode();
+
+    std::string sAuthor, sAnnotation, sKeywords, sSubject, sTitle;
+    int nDeath = oCoreReader.GetDepth();
+    while (oCoreReader.ReadNextSiblingNode(nDeath))
+    {
+        std::wstring sName = oCoreReader.GetName();
+        std::string sText = oCoreReader.GetText2A();
+        if (!sText.empty())
+        {
+            if (sName == L"dc:creator")
+                sAuthor = sText;
+            else if (sName == L"dc:title")
+                sTitle = sText;
+            else if (sName == L"dc:subject")
+                sSubject = sText;
+            else if (sName == L"cp:keywords")
+                sKeywords = sText;
+        }
+    }
+
+    if (!sAuthor.empty())
+        m_pDocument->SetAuthor(sAuthor);
+    if (!sTitle.empty())
+        m_pDocument->SetTitle(sTitle);
+    if (!sSubject.empty())
+        m_pDocument->SetSubject(sSubject);
+    if (!sKeywords.empty())
+        m_pDocument->SetKeywords(sKeywords);
 }
 std::wstring CPdfWriter::GetTempFile()
 {

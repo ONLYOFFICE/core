@@ -56,12 +56,12 @@ namespace OOX
 		{
 
 		}
-		const CTxbxContent::CTxbxContent &operator =(const XmlUtils::CXmlNode& oNode)
+		const CTxbxContent& CTxbxContent::operator =(const XmlUtils::CXmlNode& oNode)
 		{
 			fromXML( (XmlUtils::CXmlNode&)oNode );
 			return *this;
 		}
-		const CTxbxContent::CTxbxContent &operator =(const XmlUtils::CXmlLiteReader& oReader)
+		const CTxbxContent& CTxbxContent::operator =(const XmlUtils::CXmlLiteReader& oReader)
 		{
 			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 			return *this;

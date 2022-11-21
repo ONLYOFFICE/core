@@ -31,9 +31,9 @@
  */
 #pragma once
 
-#include <xml/attributes.h>
-#include <CPOptional.h>
-#include "errors.h"
+#include "../Common/xml/attributes.h"
+#include "../Common/CPOptional.h"
+#include "../Common/errors.h"
 #include "../Common/logging.h"
 
 namespace cpdoccore {

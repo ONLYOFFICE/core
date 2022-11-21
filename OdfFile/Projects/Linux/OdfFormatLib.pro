@@ -495,7 +495,6 @@ HEADERS += \
 	../../DataTypes/direction.h \
 	../../DataTypes/drawfill.h \
 	../../DataTypes/dropcaplength.h \
-	../../DataTypes/errors.h \
 	../../DataTypes/fillimagerefpoint.h \
 	../../DataTypes/fobreak.h \
 	../../DataTypes/fontfamilygeneric.h \
@@ -659,6 +658,7 @@ HEADERS += \
         ../../Reader/Converter/conversionelement.h \
         ../../Reader/Converter/ConvertOO2OOX.h \
         ../../Common/xml/sax_xmllite.h \
+        ../../Common/errors.h \
         ../../Common/logging.h \
         ../../Common/CPColorUtils.h \
         ../../Common/CPNoncopyable.h \

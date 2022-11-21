@@ -18,6 +18,13 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Formulas\formulasconvert.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Formulas\formulasconvert_odf.cpp" />
+    <ClCompile Include="..\..\Formulas\formulasconvert_oox.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>OdfFormulasConvert</ProjectName>
     <ProjectGuid>{94954A67-A853-43B1-A727-6EF2774C5A6A}</ProjectGuid>
@@ -146,13 +153,6 @@
       <OutputFile>$(OutDir)$(ProjectName).lib</OutputFile>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClInclude Include="..\formulasconvert\formulasconvert.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\formulasconvert\formulasconvert_odf.cpp" />
-    <ClCompile Include="..\formulasconvert\formulasconvert_oox.cpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

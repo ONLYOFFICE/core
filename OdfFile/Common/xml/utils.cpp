@@ -32,7 +32,7 @@
 #include "utils.h"
 
 #include <boost/regex.hpp>
-#include "../../OOXML/Base/Unit.h"
+#include "../../../OOXML/Base/Unit.h"
 
 namespace cpdoccore {
 namespace xml {

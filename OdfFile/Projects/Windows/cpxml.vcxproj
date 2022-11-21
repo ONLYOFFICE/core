@@ -18,6 +18,23 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Common\xml\attributes.cpp" />
+    <ClCompile Include="..\..\Common\xml\sax.cpp" />
+    <ClCompile Include="..\..\Common\xml\sax_xmllite.cpp" />
+    <ClCompile Include="..\..\Common\xml\utils.cpp" />
+    <ClCompile Include="..\..\Common\xml\xmlchar.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Common\xml\attributes.h" />
+    <ClInclude Include="..\..\Common\xml\nodetype.h" />
+    <ClInclude Include="..\..\Common\xml\sax.h" />
+    <ClInclude Include="..\..\Common\xml\sax_xmllite.h" />
+    <ClInclude Include="..\..\Common\xml\simple_xml_writer.h" />
+    <ClInclude Include="..\..\Common\xml\utils.h" />
+    <ClInclude Include="..\..\Common\xml\xmlchar.h" />
+    <ClInclude Include="..\..\Common\xml\xmlelement.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>xml_wrapper</ProjectName>
     <ProjectGuid>{41BED424-4EAF-4053-8A5F-1E2A387D53D1}</ProjectGuid>
@@ -69,8 +86,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>

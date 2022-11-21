@@ -32,7 +32,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "texttransform.h"
-#include "errors.h"
+#include "../Common/errors.h"
 
 #include <iostream>
 

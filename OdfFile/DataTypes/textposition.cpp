@@ -31,7 +31,7 @@
  */
 
 #include "textposition.h"
-#include "errors.h"
+#include "../Common/errors.h"
 
 #include <boost/algorithm/string.hpp>
 

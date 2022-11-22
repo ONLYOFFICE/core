@@ -1696,7 +1696,6 @@ HEADERS +=  \
 	../../../Common/SummaryInformation/PropertySetStream.h \
 	../../../Common/Utils/OptPtr.h \
 	../../../Common/Utils/simple_xml_writer.h \
-	../../../Common/Utils/utils.h \
 	../../../XlsFile/Converter/ConvertXls2Xlsx.h \
 	../../../XlsFile/Converter/external_items.h \
 	../../../XlsFile/Converter/mediaitems_utils.h \

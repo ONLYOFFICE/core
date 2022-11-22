@@ -735,7 +735,31 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 {
     if (!m_pInternal->pReader)
         return;
-    m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
+#ifndef BUILDING_WASM_MODULE
+    if (m_pInternal->bEdit && m_pInternal->pWriter && m_pInternal->pWriter->m_pDocument)
+    {
+        PdfWriter::CPage* pPage = m_pInternal->pWriter->m_pDocument->GetPage(nPageIndex);
+        if (!pPage)
+            return;
+
+        int nRotate = pPage->GetRotate();
+        if (nRotate % 180 == 0)
+        {
+            *pdWidth  = pPage->GetWidth();
+            *pdHeight = pPage->GetHeight();
+        }
+        else
+        {
+            *pdWidth  = pPage->GetHeight();
+            *pdHeight = pPage->GetWidth();
+        }
+
+        *pdDpiX = 72.0;
+        *pdDpiY = 72.0;
+    }
+    else
+#endif
+        m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
 void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {

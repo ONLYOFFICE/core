@@ -159,7 +159,8 @@ namespace PdfWriter
 		void      AddGroup(CDictObject* pDict);
 
 		void      AddContents(CXref* pXref);
-		void      SetRotate(int nRotate);
+        void      SetRotate(int nRotate);
+        int       GetRotate();
 
 	private:
 
@@ -168,7 +169,7 @@ namespace PdfWriter
 		CArrayObject* GetMediaBoxItem();
 		CDictObject*  GetResourcesItem();
 		CObjectBase*  GetCropBoxItem();
-		CObjectBase*  GetRotateItem();
+        CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();
 		void          SetMediaBoxValue(unsigned int unIndex, double dValue);
 		void          AddResource();

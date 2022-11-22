@@ -482,7 +482,8 @@ namespace PdfWriter
 	}
 	double        CPage::GetWidth()
 	{
-		return GetMediaBox().fRight;
+        TBox oBox = GetMediaBox();
+        return oBox.fRight - oBox.fLeft;
 	}
     void CPage::SetHeight(double dValue)
 	{
@@ -491,7 +492,8 @@ namespace PdfWriter
 	}
 	double        CPage::GetHeight()
 	{
-		return GetMediaBox().fTop;
+        TBox oBox = GetMediaBox();
+        return oBox.fTop - oBox.fBottom;
 	}
 	TBox          CPage::GetMediaBox()
 	{
@@ -1560,7 +1562,12 @@ namespace PdfWriter
 				Add("Rotate", nRotate % 360);
 		}
 	}
-	//----------------------------------------------------------------------------------------
+    int CPage::GetRotate()
+    {
+        CNumberObject* pRotate = (CNumberObject*)GetRotateItem();
+        return pRotate ? pRotate->Get() : 0;
+    }
+    //----------------------------------------------------------------------------------------
 	// CTextWord
 	//----------------------------------------------------------------------------------------
 	CTextWord::CTextWord()

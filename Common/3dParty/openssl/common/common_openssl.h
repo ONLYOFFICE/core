@@ -50,15 +50,31 @@
 
 namespace NSOpenSSL
 {
-    // alloc
+	class OPENSSL_DECL CMemoryData
+	{
+	public:
+		unsigned char* Data;
+		size_t Size;
+
+	public:
+		CMemoryData();
+		~CMemoryData();
+
+	public:
+		std::string Serialize(const int& alg);
+		void Alloc(const size_t& size);
+		void Free();
+	};
+
+	// alloc
 	OPENSSL_DECL unsigned char* openssl_alloc(unsigned int len);
 	OPENSSL_DECL void openssl_free(unsigned char* data);
 
-    // hash
+	// hash
 	OPENSSL_DECL unsigned int GetHashSize(const int& alg);
 	OPENSSL_DECL unsigned char* GetHash(const unsigned char* data, const unsigned int& size, const int& alg, unsigned int& len);
 
-    // rsa
+	// rsa
 	OPENSSL_DECL bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey);
 	OPENSSL_DECL bool RSA_EncryptPublic(const unsigned char* publicKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
 	OPENSSL_DECL bool RSA_DecryptPrivate(const unsigned char* privateKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len);
@@ -66,30 +82,38 @@ namespace NSOpenSSL
 	OPENSSL_DECL bool RSA_EncryptPublic_desktop(const unsigned char* publicKey, const std::string& input, std::string& out);
 	OPENSSL_DECL bool RSA_DecryptPrivate_desktop(const unsigned char* privateKey, const std::string& input, std::string& out);
 
-    // pbkdf2
-    OPENSSL_DECL unsigned char* PBKDF2(const char* pass, int passlen, const unsigned char* salt, int saltlen, int hash_alg, int key_len);
-    OPENSSL_DECL unsigned char* PBKDF2_desktop(const std::string& pass, const std::string& salt = "");
+	// pbkdf2
+	OPENSSL_DECL unsigned char* PBKDF2(const char* pass, int passlen, const unsigned char* salt, int saltlen, int hash_alg, int key_len);
+	OPENSSL_DECL unsigned char* PBKDF2_desktop(const std::string& pass, const std::string& salt = "");
 
-    // aes
-    OPENSSL_DECL int AES_GetKeySize(int type);
-    OPENSSL_DECL int AES_GetIvSize(int type);
-    OPENSSL_DECL bool AES_Encrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
-    OPENSSL_DECL bool AES_Decrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
+	// ed25519/x25519 key pairs in pem format
+	OPENSSL_DECL bool GenerateKeysByAlgs(const std::string& alg, std::string& publicKey, std::string& privateKey);
+	OPENSSL_DECL CMemoryData Sign(const unsigned char* data, const int& len, const std::string& privateKey);
+	OPENSSL_DECL bool Verify(const unsigned char* data, const int& data_len, const std::string& publicKey,
+							 const unsigned char* signature, const int& signature_len);
+	OPENSSL_DECL CMemoryData Enrypt(const unsigned char* data, const int& data_len, const std::string& publicKey);
+	OPENSSL_DECL CMemoryData Decrypt(const unsigned char* data, const int& data_len, const std::string& privateKey);
 
-    OPENSSL_DECL bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
-    OPENSSL_DECL bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
-    OPENSSL_DECL bool AES_Encrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output);
-    OPENSSL_DECL bool AES_Decrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output);
+	// aes
+	OPENSSL_DECL int AES_GetKeySize(int type);
+	OPENSSL_DECL int AES_GetIvSize(int type);
+	OPENSSL_DECL bool AES_Encrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
+	OPENSSL_DECL bool AES_Decrypt(int type, const unsigned char* key, const unsigned char* iv, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
 
-    // serialize
-    OPENSSL_DECL std::string Serialize(const unsigned char* data, const unsigned int& size, const int& alg);
+	OPENSSL_DECL bool AES_Encrypt_desktop(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
+	OPENSSL_DECL bool AES_Decrypt_desktop(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
+	OPENSSL_DECL bool AES_Encrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output);
+	OPENSSL_DECL bool AES_Decrypt_desktop(const unsigned char* key_iv, const std::string& input, std::string& output);
 
-    // GCM
-    OPENSSL_DECL unsigned char* PBKDF2_desktop_GCM(const std::string& pass, const std::string& salt = "");
-    OPENSSL_DECL bool AES_Decrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output, const int header_offset = 0);
-    OPENSSL_DECL bool AES_Decrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "", const int header_offset = 0);
-    OPENSSL_DECL bool AES_Encrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output);
-    OPENSSL_DECL bool AES_Encrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
+	// serialize
+	OPENSSL_DECL std::string Serialize(const unsigned char* data, const unsigned int& size, const int& alg);
+
+	// GCM
+	OPENSSL_DECL unsigned char* PBKDF2_desktop_GCM(const std::string& pass, const std::string& salt = "");
+	OPENSSL_DECL bool AES_Decrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output, const int header_offset = 0);
+	OPENSSL_DECL bool AES_Decrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "", const int header_offset = 0);
+	OPENSSL_DECL bool AES_Encrypt_desktop_GCM(const unsigned char* key, const std::string& input, std::string& output);
+	OPENSSL_DECL bool AES_Encrypt_desktop_GCM(const std::string& pass, const std::string& input, std::string& output, const std::string& salt = "");
 }
 
 #endif // COMMON_OPENSSL_H

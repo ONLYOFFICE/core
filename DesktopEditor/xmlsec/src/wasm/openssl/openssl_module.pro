@@ -20,12 +20,14 @@ SOURCES += \
 
 HEADERS += \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/Certificate.h \
-	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/CertificateCommon.h
+	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/CertificateCommon.h \
+	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/Certificate_openssl.h
 
 SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp
 
 # OPENSSL
+CONFIG += open_ssl_common
 include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)
 
 core_windows {

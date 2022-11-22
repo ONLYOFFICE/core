@@ -33,41 +33,41 @@ public:
 	virtual ~ICertificate();
 
 public:
-    virtual int GetType()                       = 0;
+	virtual int GetType()                       = 0;
 
-    virtual std::string GetNumber()             = 0;
-    virtual std::wstring GetSignerName()        = 0;
-    virtual std::wstring GetIssuerName()        = 0;
+	virtual std::string GetNumber()             = 0;
+	virtual std::wstring GetSignerName()        = 0;
+	virtual std::wstring GetIssuerName()        = 0;
 
-    virtual std::string GetCertificateBase64()  = 0;
-    virtual std::string GetCertificateHash()    = 0;
+	virtual std::string GetCertificateBase64()  = 0;
+	virtual std::string GetCertificateHash()    = 0;
 
-    virtual std::string GetDate()               = 0;
-    virtual std::string GetId()                 = 0;
-    virtual int VerifySelf()                    = 0;
-
-public:
-    virtual std::string Sign(unsigned char* pData, unsigned int nSize)                  = 0;
-    virtual std::string Sign(const std::string& sXml)                                   = 0;
-    virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
-                           unsigned char*& pDataDst, unsigned int& nSizeDst)            = 0;
-
-    virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
-    virtual std::string GetHash(const std::string& sXml, int nAlg)                      = 0;
-    virtual std::string GetHash(const std::wstring& sXmlFile, int nAlg)                 = 0;
-    virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)  = 0;
-
-    virtual bool LoadFromBase64Data(const std::string& data)                            = 0;
-
-    virtual std::vector<int> GetHashAlgs()                                              = 0;
-    virtual int GetHashAlg()                                                            = 0;
-
-    virtual bool IsGOST()                                                               = 0;
+	virtual std::string GetDate()               = 0;
+	virtual std::string GetId()                 = 0;
+	virtual int VerifySelf()                    = 0;
 
 public:
-    virtual int ShowSelectDialog(void* parent = NULL)   = 0;
-    virtual int ShowCertificate(void* parent = NULL)    = 0;
-    virtual std::string Print() = 0;
+	virtual std::string Sign(unsigned char* pData, unsigned int nSize)                  = 0;
+	virtual std::string Sign(const std::string& sXml)                                   = 0;
+	virtual bool SignPKCS7(unsigned char* pData, unsigned int nSize,
+						   unsigned char*& pDataDst, unsigned int& nSizeDst)            = 0;
+
+	virtual std::string GetHash(unsigned char* pData, unsigned int nSize, int nAlg)     = 0;
+	virtual std::string GetHash(const std::string& sXml, int nAlg)                      = 0;
+	virtual std::string GetHash(const std::wstring& sXmlFile, int nAlg)                 = 0;
+	virtual bool Verify(const std::string& sXml, std::string& sXmlSignature, int nAlg)  = 0;
+
+	virtual bool LoadFromBase64Data(const std::string& data)                            = 0;
+
+	virtual std::vector<int> GetHashAlgs()                                              = 0;
+	virtual int GetHashAlg()                                                            = 0;
+
+	virtual bool IsGOST()                                                               = 0;
+
+public:
+	virtual int ShowSelectDialog(void* parent = NULL)   = 0;
+	virtual int ShowCertificate(void* parent = NULL)    = 0;
+	virtual std::string Print() = 0;
 };
 
 #endif // _XML_CERTIFICATE_BASE_H_

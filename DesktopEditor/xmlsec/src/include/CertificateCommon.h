@@ -6,10 +6,10 @@
 class OPENSSL_DECL CCertificateInfo
 {
 public:
-    std::wstring Name;
-    std::string Date;
-    std::string Id;
-    std::string RawData;
+	std::wstring Name;
+	std::string Date;
+	std::string Id;
+	std::string RawData;
 
 public:
 	CCertificateInfo();
@@ -33,7 +33,7 @@ namespace NSCertificate
 
 	OPENSSL_DECL ICertificate* FromFiles(const std::wstring& keyPath, const std::string& keyPassword, const std::wstring& certPath, const std::string& certPassword);
 	OPENSSL_DECL ICertificate* FromFilesRaw(unsigned char* key, unsigned int keyLen, const std::string& keyPassword,
-                                    unsigned char* cert, unsigned int certLen, const std::string& certPassword);
+											unsigned char* cert, unsigned int certLen, const std::string& certPassword);
 
 	OPENSSL_DECL int GetOOXMLHashAlg(const std::string& sAlg);
 	OPENSSL_DECL std::string GetDigestMethodA(const int& nAlg);

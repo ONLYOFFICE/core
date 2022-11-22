@@ -38,9 +38,33 @@
 namespace OOX
 {	
 	namespace Logic
-	{
+	{		
+		CMathArgNodes::CMathArgNodes(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+			m_eType = et_Unknown;
+		}
+		CMathArgNodes::CMathArgNodes(XmlUtils::CXmlNode &oNode)
+		{
+			fromXML( oNode );
+		}
+		CMathArgNodes::CMathArgNodes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( oReader );
+		}
 		CMathArgNodes::~CMathArgNodes()
 		{
+		}
+		const CMathArgNodes& CMathArgNodes::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CMathArgNodes& CMathArgNodes::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
 		}
 		void CMathArgNodes::fromXML(XmlUtils::CXmlNode& oNode)
 		{
@@ -311,5 +335,50 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
+		std::wstring CMathArgNodes::toXML() const
+		{
+			std::wstring sNodeName = m_sNodeName;
+			if (sNodeName.empty())
+				sNodeName = GetMathNodeName(getType());
+
+			if (sNodeName.empty()) return L"";
+
+			std::wstring sResult = _T("<") + sNodeName + _T(">");
+
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					sResult += m_arrItems[i]->toXML();
+				}
+			}
+
+			sResult += _T("</") + sNodeName + _T(">");
+
+			return sResult;
+		}
+		EElementType CMathArgNodes::getType() const
+		{
+			return m_eType;
+		}
+		std::wstring CMathArgNodes::GetMathNodeName(const EElementType & enumType)  const
+		{//todooo вытащить в одно место - пересекается с MathBottomNodes
+			switch(enumType)
+			{
+				case OOX::et_m_deg:		return L"m:deg";
+				case OOX::et_m_den:		return L"m:den";
+				case OOX::et_m_e:		return L"m:e";
+				case OOX::et_m_fName:	return L"m:fName";
+				case OOX::et_m_lim:		return L"m:lim";
+				case OOX::et_m_num:		return L"m:num";
+				case OOX::et_m_oMath:	return L"m:oMath";
+				case OOX::et_m_sub:		return L"m:sub";
+				case OOX::et_m_sup:		return L"m:sup";
+				default:
+					break;
+			}
+			return L"";
+		}
+
 	}//namespace Logic
 }//namespace OOX

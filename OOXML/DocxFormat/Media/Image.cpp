@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,45 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../FileTypes.h"
-#include "../File.h"
+#include "Image.h"
 
 namespace OOX
 {
-	class CDocument;
-
-	class Media : public File
+	Image::Image(OOX::Document* pMain, bool bDocument) : Media (pMain, bDocument)
 	{
-	public:
-		Media(OOX::Document *pMain, bool bDocument = true);
-		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false);
-		virtual ~Media();
-
-		virtual const FileType type() const;
-
-		virtual void read(const CPath& filename);
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
-
-		void set_filename(const std::wstring & file_path, bool bExternal);
-		void set_filename(CPath & file_path, bool bExternal, bool bDefault = false);
-
-		bool IsExist();
-		bool IsExternal();
-		CPath filename();
-
-		virtual void copy_to(const CPath& path) const;
-		virtual const CPath DefaultDirectory() const;
-		virtual const CPath DefaultFileName() const;
-
-		std::vector<BYTE> m_Data;
-
-	protected:
-		CPath	m_filename;
-		bool	m_bExist;
-		bool	m_bExternal;
-		bool	m_bDocument; //for upper/lower level rels (defaultDirectory)
-	};
+	}
+	Image::Image(OOX::Document* pMain, const CPath& filename, bool bExternal) : Media(pMain, filename, bExternal)
+	{
+	}
+	Image::~Image()
+	{
+	}
+	const FileType Image::type() const
+	{
+		return FileTypes::Image;
+	}
+	const CPath Image::DefaultDirectory() const
+	{
+		if (m_bDocument) return type().DefaultDirectory();
+		else	return L"../" + type().DefaultDirectory();
+	}
+	const CPath Image::DefaultFileName() const
+	{
+		return m_filename.GetFilename();
+	}
 } // namespace OOX
-

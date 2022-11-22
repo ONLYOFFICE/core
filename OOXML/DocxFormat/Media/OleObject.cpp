@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,45 +29,53 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../FileTypes.h"
-#include "../File.h"
+#include "OleObject.h"
 
 namespace OOX
 {
-	class CDocument;
-
-	class Media : public File
+	OleObject::OleObject(OOX::Document *pMain, bool bMsPackage, bool bDocument) : Media (pMain, bDocument)
 	{
-	public:
-		Media(OOX::Document *pMain, bool bDocument = true);
-		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false);
-		virtual ~Media();
+		m_bMsPackage = bMsPackage;
+	}
+	OleObject::OleObject(OOX::Document *pMain, const OOX::CPath& filename, bool bMsPackage) : Media (pMain)
+	{
+		m_bMsPackage = bMsPackage;
+		read(filename);
+	}
+	const FileType OleObject::type() const
+	{
+		if (m_bMsPackage)	return OOX::FileTypes::MicrosoftOfficeUnknown;
+		else				return OOX::FileTypes::OleObject;
+	}
+	const CPath OleObject::DefaultDirectory() const
+	{
+		if (m_bDocument) return type().DefaultDirectory();
+		else	return L"../" + type().DefaultDirectory();
+	}
+	const CPath OleObject::DefaultFileName() const
+	{
+		return m_filename.GetFilename();
+	}
+	void OleObject::set_filename_cache(const std::wstring & file_path)
+	{
+		m_filenameCache = file_path;
+	}
+	void OleObject::set_filename_cache(CPath & file_path)
+	{
+		m_filenameCache = file_path;
+	}
+	void OleObject::set_MsPackage(bool val)
+	{
+		m_bMsPackage = val;
+	}
+	CPath OleObject::filename_cache()
+	{
+		return m_filenameCache;
+	}
+	bool OleObject::isMsPackage()
+	{
+		return m_bMsPackage;
+	}
 
-		virtual const FileType type() const;
-
-		virtual void read(const CPath& filename);
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
-
-		void set_filename(const std::wstring & file_path, bool bExternal);
-		void set_filename(CPath & file_path, bool bExternal, bool bDefault = false);
-
-		bool IsExist();
-		bool IsExternal();
-		CPath filename();
-
-		virtual void copy_to(const CPath& path) const;
-		virtual const CPath DefaultDirectory() const;
-		virtual const CPath DefaultFileName() const;
-
-		std::vector<BYTE> m_Data;
-
-	protected:
-		CPath	m_filename;
-		bool	m_bExist;
-		bool	m_bExternal;
-		bool	m_bDocument; //for upper/lower level rels (defaultDirectory)
-	};
 } // namespace OOX
-

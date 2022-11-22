@@ -56,6 +56,10 @@ SOURCES += \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
 	../../../DocxFormat/Media/ActiveX.cpp \
+	../../../DocxFormat/Media/Audio.cpp \
+	../../../DocxFormat/Media/Video.cpp \
+	../../../DocxFormat/Media/Image.cpp \
+	../../../DocxFormat/Media/OleObject.cpp \
 	../../../DocxFormat/Math/oMath.cpp \
 	../../../DocxFormat/Math/oMathContent.cpp \
 	../../../DocxFormat/Math/oMathPara.cpp \
@@ -78,6 +82,7 @@ SOURCES += \
 	../../../XlsxFormat/Table/Tables.cpp \
 	../../../XlsxFormat/Controls/Controls.cpp \
 	../../../DocxFormat/Settings/Settings.cpp \
+	../../../DocxFormat/Settings/WebSettings.cpp \
 	../../../DocxFormat/App.cpp \
 	../../../DocxFormat/Core.cpp \
 	../../../DocxFormat/FileFactory.cpp \

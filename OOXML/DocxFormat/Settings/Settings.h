@@ -63,6 +63,7 @@ namespace OOX
 			}
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
             nullable_string m_sAppName;
 			nullable_bool m_oCheckSyle;
@@ -71,6 +72,7 @@ namespace OOX
 			nullable_bool m_oNlCheck;
             nullable_string m_sVendorID;
 		};
+
 		//--------------------------------------------------------------------------------
 		// CAutoCaption 17.15.1.7 (Part 1)
 		//--------------------------------------------------------------------------------	

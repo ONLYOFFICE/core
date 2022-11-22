@@ -43,85 +43,26 @@ namespace OOX
 		class CMathArgNodes : public WritingElementWithChilds<>
 		{
 		public:
-			CMathArgNodes(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-				m_eType = et_Unknown;
-			}
-			CMathArgNodes(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CMathArgNodes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
+			CMathArgNodes(OOX::Document *pMain = NULL);
+			CMathArgNodes(XmlUtils::CXmlNode &oNode);
+			CMathArgNodes(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CMathArgNodes();
 
-			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CMathArgNodes &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode);
+			const CMathArgNodes &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring toXML() const
-			{
-				std::wstring sNodeName = m_sNodeName;
-				if (sNodeName.empty())
-					sNodeName = GetMathNodeName(getType());
-
-				if (sNodeName.empty()) return L"";
-
-				std::wstring sResult = _T("<") + sNodeName + _T(">");
-
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        sResult += m_arrItems[i]->toXML();
-                    }
-                }
-
-				sResult += _T("</") + sNodeName + _T(">");
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return m_eType;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 			EElementType m_eType;
 			std::wstring m_sNodeName;
+
 		private:
-			std::wstring GetMathNodeName(const EElementType & enumType)  const
-			{//todooo вытащить в одно место - пересекается с MathBottomNodes
-				switch(enumType)
-				{
-					case OOX::et_m_deg:		return L"m:deg";
-					case OOX::et_m_den:		return L"m:den";
-					case OOX::et_m_e:		return L"m:e";
-					case OOX::et_m_fName:	return L"m:fName";
-					case OOX::et_m_lim:		return L"m:lim";
-					case OOX::et_m_num:		return L"m:num";
-					case OOX::et_m_oMath:	return L"m:oMath";
-					case OOX::et_m_sub:		return L"m:sub";
-					case OOX::et_m_sup:		return L"m:sup";
-                    default:
-                        break;
-                }
-				return L"";
-			}
-		};		
+			std::wstring GetMathNodeName(const EElementType & enumType)  const;
+		};
+
 	}//namespace Logic
 }//namespace OOX

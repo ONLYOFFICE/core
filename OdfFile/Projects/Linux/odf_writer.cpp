@@ -30,7 +30,6 @@
  *
  */
 
-#include "../../src/utils.cpp"
 #include "../../Writer/Format/office_document.cpp"
 #include "../../Writer/Format/office_forms.cpp"
 #include "../../Writer/Format/calcext_elements.cpp"

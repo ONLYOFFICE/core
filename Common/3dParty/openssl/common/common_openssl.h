@@ -46,31 +46,25 @@
 
 #define OPENSSL_AES_256_CBC           0
 
-#include "../../../../DesktopEditor/common/File.h"
-
-#ifdef COMMON_OPENSSL_BUILDING
-#define OPENSSL_DECL Q_DECL_EXPORT
-#else
-#define OPENSSL_DECL Q_DECL_IMPORT
-#endif
+#include "../../../../DesktopEditor/xmlsec/src/include/openssl_config.h"
 
 namespace NSOpenSSL
 {
     // alloc
-    OPENSSL_DECL unsigned char* openssl_alloc(unsigned int len);
-    OPENSSL_DECL void openssl_free(unsigned char* data);
+	OPENSSL_DECL unsigned char* openssl_alloc(unsigned int len);
+	OPENSSL_DECL void openssl_free(unsigned char* data);
 
     // hash
-    OPENSSL_DECL unsigned int GetHashSize(const int& alg);
-    OPENSSL_DECL unsigned char* GetHash(const unsigned char* data, const unsigned int& size, const int& alg, unsigned int& len);
+	OPENSSL_DECL unsigned int GetHashSize(const int& alg);
+	OPENSSL_DECL unsigned char* GetHash(const unsigned char* data, const unsigned int& size, const int& alg, unsigned int& len);
 
     // rsa
-    OPENSSL_DECL bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey);
-    OPENSSL_DECL bool RSA_EncryptPublic(const unsigned char* publicKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
-    OPENSSL_DECL bool RSA_DecryptPrivate(const unsigned char* privateKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len);
+	OPENSSL_DECL bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey);
+	OPENSSL_DECL bool RSA_EncryptPublic(const unsigned char* publicKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
+	OPENSSL_DECL bool RSA_DecryptPrivate(const unsigned char* privateKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len);
 
-    OPENSSL_DECL bool RSA_EncryptPublic_desktop(const unsigned char* publicKey, const std::string& input, std::string& out);
-    OPENSSL_DECL bool RSA_DecryptPrivate_desktop(const unsigned char* privateKey, const std::string& input, std::string& out);
+	OPENSSL_DECL bool RSA_EncryptPublic_desktop(const unsigned char* publicKey, const std::string& input, std::string& out);
+	OPENSSL_DECL bool RSA_DecryptPrivate_desktop(const unsigned char* privateKey, const std::string& input, std::string& out);
 
     // pbkdf2
     OPENSSL_DECL unsigned char* PBKDF2(const char* pass, int passlen, const unsigned char* salt, int saltlen, int hash_alg, int key_len);

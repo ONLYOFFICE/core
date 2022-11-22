@@ -3,19 +3,18 @@ import argparse
 import shutil
 
 solution_name = 'docbuilder.net.sln'
-
 deploy_directory = 'deploy'
-tmp_directory = deploy_directory + '/tmp'
-
-help_platform = 'set a platform. win_64 or win_32. default: win_64'
-help_docbuilder = 'set path to DocumentBuilder. default: C:/Program Files/ONLYOFFICE/DocumentBuilder'
-help_msbuild = 'set path to MSBuild. default: C:/Program Files/Microsoft Visual Studio/2022/Community/Msbuild/Current/Bin'
-help_out = 'set output path. default: out'
 
 default_platform = 'win_64'
 default_docbuilder = 'C:/Program Files/ONLYOFFICE/DocumentBuilder'
-default_msbuild = 'C:/Program Files/Microsoft Visual Studio/2022/Community/Msbuild/Current/Bin'
+default_msbuild = 'C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/Msbuild/Current/Bin'
 default_out = 'out'
+
+help_platform = 'set a platform. win_64 or win_32. default: ' + default_platform
+help_docbuilder = 'set path to DocumentBuilder. default: '+ default_docbuilder
+help_msbuild = 'set path to MSBuild. default: '+ default_msbuild
+help_out = 'set output path. default: ' + default_out
+
 
 def createParser ():
     parser = argparse.ArgumentParser()
@@ -54,9 +53,12 @@ if __name__ == "__main__":
     os.system(build_string)
 
     # delete intermediate folder
+    tmp_directory = deploy_directory + "/" + args.platform + '/tmp'
     shutil.rmtree(tmp_directory)
+    
 
     deploy_platform_directory = deploy_directory + '/' + args.platform
+    get_files = os.listdir(deploy_platform_directory)
 
     # replace files into out directory
     if args.out and args.out != deploy_directory:
@@ -64,10 +66,14 @@ if __name__ == "__main__":
             shutil.rmtree(args.out)
 
         os.mkdir(args.out)
-        get_files = os.listdir(deploy_platform_directory)
 
         for g in get_files:
             os.replace(deploy_platform_directory + '/' + g, args.out + '/' + g)
 
-        shutil.rmtree(deploy_directory)
+        shutil.rmtree(deploy_directory)   
+    else:
+        for g in get_files:
+            os.replace(deploy_platform_directory + '/' + g, args.out + '/' + g)
+        shutil.rmtree(deploy_platform_directory)
+        
     

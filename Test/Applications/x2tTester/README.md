@@ -24,8 +24,19 @@ You need to create an xml configuration file. It must contain:
 	# (non-required) reports only errors (default - 0)
 	<errorsOnly> </errorsOnly>
 
+	# (non-required) is delete successful conversions files (default - 0)
+	<deleteOk> </deleteOk>
+
 	# (non-required) timestamp in report file name (default - 1)
 	<timestamp> </timestamp>
+
+	# (non-required) path to xml file with a list of input files
+	<inputFilesList> </inputFilesList>
+
+		# struct of inputFilesList xml file
+		<files>
+			<file> </file>
+		</files>
 
 	# (non-required) fonts settings (default - "1")
 	# you can set "system" param to "0" or "1",
@@ -43,11 +54,11 @@ You need to create an xml configuration file. It must contain:
 	# input & output values example:
 	<input> docx txt pptx xlsx<input>
 	<output> txt doc pdf</output>
-
-
 	
 
-You can use the following template:
+You can use the following templates:
+
+	# main xml config
 
 	<?xml version="1.0" encoding="utf-8"?>
 	<settings>
@@ -57,6 +68,7 @@ You can use the following template:
 		<x2tPath> </x2tPath>
 		<cores> </cores>
 		<errorsOnly> </errorsOnly>
+		<deleteOk> </deleteOk>
 		<timestamp> </timestamp>
 		<fonts system="">
 			<directory> </directory>
@@ -64,6 +76,13 @@ You can use the following template:
 		<input> </input>
 		<output> </output>
 	</settings>
+
+	# inputFilesList xml
+	
+	<?xml version="1.0" encoding="utf-8"?>
+	<files>
+		<file> </file>
+	</files>
 
 USAGE
 =====

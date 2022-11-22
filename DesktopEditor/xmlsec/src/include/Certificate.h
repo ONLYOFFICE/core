@@ -1,9 +1,7 @@
 #ifndef _XML_CERTIFICATE_BASE_H_
 #define _XML_CERTIFICATE_BASE_H_
 
-#include <string>
-#include <vector>
-#include "../../../common/base_export.h"
+#include "./openssl_config.h"
 
 #define OOXML_HASH_ALG_SHA1         0
 #define OOXML_HASH_ALG_INVALID      1
@@ -28,16 +26,11 @@
 #define CERTIFICATE_ENGINE_TYPE_OPENSSL     1
 #define CERTIFICATE_ENGINE_TYPE_MSCRYPTO    2
 
-class Q_DECL_EXPORT ICertificate
+class OPENSSL_DECL ICertificate
 {
 public:
-    ICertificate()
-    {
-    }
-
-    virtual ~ICertificate()
-    {
-    }
+	ICertificate();
+	virtual ~ICertificate();
 
 public:
     virtual int GetType()                       = 0;

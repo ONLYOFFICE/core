@@ -34,13 +34,13 @@
 #include "CryptTransform.h"
 
 #include "../../Common/3dParty/pole/pole.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../OOXML/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
-#include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
+#include "../../MsBinaryFile/DocFile/MemoryStream.h"
 #include "simple_xml_writer.h"
 #include "../../Common/cfcpp/compoundfile.h"
 
@@ -117,7 +117,7 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
         {
         }
 		res = std::wstring(ptr, length);
-		delete ptr;
+		delete []ptr;
 	}
 	else
 		res = std::wstring((wchar_t*)Data, length);

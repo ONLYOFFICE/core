@@ -47,7 +47,7 @@ TEST_F(StreamRWTest, read)
 
     EXPECT_EQ(rw->Seek(0), 0);
     EXPECT_EQ(rw->Read<char>(), symbol);
-    EXPECT_EQ(rw->Read<int>(), integer);
+    EXPECT_EQ(rw->Read<_INT32> (), integer);
 }
 
 TEST_F(StreamRWTest, rw_array)

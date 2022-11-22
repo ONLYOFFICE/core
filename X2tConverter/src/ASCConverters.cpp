@@ -36,18 +36,18 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Common/3dParty/pole/pole.h"
 
-#include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
-#include "../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../OOXML/Binary/Document/DocWrapper/DocxSerializer.h"
+#include "../../OOXML/Binary/Document/DocWrapper/XlsxSerializer.h"
 
-#include "../../Common/DocxFormat/Source/XlsbFormat/Xlsb.h"
-#include "../../ASCOfficePPTXFile/ASCOfficePPTXFile.h"
+#include "../../OOXML/XlsbFormat/Xlsb.h"
+#include "../../OOXML/PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h"
 
-#include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
-#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
-#include "../../ASCOfficeTxtFile/TxtXmlFormatLib/Source/TxtXmlFile.h"
-#include "../../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
-#include "../../ASCOfficeOdfFile/src/ConvertOO2OOX.h"
-#include "../../ASCOfficeOdfFileW/source/Oox2OdfConverter/Oox2OdfConverter.h"
+#include "../../RtfFile/Format/ConvertationManager.h"
+#include "../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
+#include "../../TxtFile/Source/TxtXmlFile.h"
+#include "../../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
+#include "../../OdfFile/Reader/Converter/ConvertOO2OOX.h"
+#include "../../OdfFile/Writer/Converter/Oox2OdfConverter.h"
 
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
@@ -63,13 +63,13 @@
 #include "../../HtmlFile2/htmlfile2.h"
 #include "../../EpubFile/CEpubFile.h"
 
-#include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
-#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
+#include "../../MsBinaryFile/XlsFile/Converter/ConvertXls2Xlsx.h"
+#include "../../MsBinaryFile/Common/Vba/VbaReader.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
-#include "../../XlsxSerializerCom/Common/Common.h"
-#include "../../XlsxSerializerCom/Writer/CSVWriter.h"
-#include "../../XlsxSerializerCom/Reader/CSVReader.h"
+#include "../../OOXML/Binary/Sheets/Common/Common.h"
+#include "../../OOXML/Binary/Sheets/Writer/CSVWriter.h"
+#include "../../OOXML/Binary/Sheets/Reader/CSVReader.h"
 
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -2886,7 +2886,7 @@ namespace NExtractTools
 		{
 			NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-			nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
+            nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword());
 			nRes = processEncryptionError(nRes, sFrom, params);
 			if (SUCCEEDED_X2T(nRes))
 			{
@@ -2985,7 +2985,7 @@ namespace NExtractTools
        COfficeUtils oCOfficeUtils(NULL);
 	   if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
 	   {
-		   nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
+           nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword());
 		   nRes = processEncryptionError(nRes, sFrom, params);
 	   }
 	   else
@@ -3019,7 +3019,7 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
+        _UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword());
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if(SUCCEEDED_X2T(nRes))
 		{
@@ -3047,7 +3047,7 @@ namespace NExtractTools
 	}
 	_UINT32 odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
+        _UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), sTemp, params.getPassword());
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
 	}
@@ -3582,7 +3582,121 @@ namespace NExtractTools
        }
        return nRes;
    }
-    _UINT32 PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, NSFonts::IApplicationFonts* pApplicationFonts)
+
+	std::string checkPrintPages(InputParams& params)
+	{
+		if (NULL == params.m_sJsonParams)
+			return "";
+
+		std::wstring::size_type posNativeOptions = params.m_sJsonParams->find(L"\"nativeOptions\"");
+		if (std::wstring::npos == posNativeOptions)
+			return "";
+
+		std::wstring::size_type posNativePages = params.m_sJsonParams->find(L"\"pages\":\"", posNativeOptions);
+		if (std::wstring::npos == posNativePages)
+			return "";
+
+		posNativePages += 9;
+		std::wstring::size_type posNativePages2 = params.m_sJsonParams->find(L"\"", posNativePages);
+		if (std::wstring::npos == posNativePages2)
+			return "";
+
+		std::wstring sPages = params.m_sJsonParams->substr(posNativePages, posNativePages2 - posNativePages);
+		if (L"all" == sPages)
+			return "";
+
+		if (L"current" == sPages)
+		{
+			std::wstring::size_type posCurrentPage = params.m_sJsonParams->find(L"\"currentPage\":", posNativeOptions);
+			if (std::wstring::npos == posCurrentPage)
+				return "";
+
+			posCurrentPage += 14;
+			std::wstring::size_type posCurrentPage2 = params.m_sJsonParams->find(L",", posCurrentPage);
+			std::wstring::size_type posCurrentPage3 = params.m_sJsonParams->find(L"}", posCurrentPage);
+
+			if (std::wstring::npos == posCurrentPage2)
+			{
+				if (std::wstring::npos == posCurrentPage3)
+					return "";
+				posCurrentPage2 = posCurrentPage3;
+			}
+			else if (std::wstring::npos != posCurrentPage3 && posCurrentPage3 < posCurrentPage2)
+				posCurrentPage2 = posCurrentPage3;
+
+			if (std::wstring::npos == posCurrentPage2)
+				return "";
+
+			sPages = params.m_sJsonParams->substr(posCurrentPage, posCurrentPage2 - posCurrentPage);
+		}
+
+		return U_TO_UTF8(sPages);
+	}
+
+	std::vector<bool> getPrintPages(const std::string& sPages, int nPagesCount)
+	{
+		const char* buffer = sPages.c_str();
+
+		size_t nCur = 0;
+		size_t nLen = sPages.length();
+
+		std::vector<bool> arPages;
+		for (int i = 0; i < nPagesCount; ++i)
+			arPages.push_back(false);
+
+		while (nCur < nLen)
+		{
+			size_t cur = nCur;
+			while (cur < nLen && buffer[cur] != ',')
+				++cur;
+
+			int nStart = 0;
+			int nEnd = 0;
+
+			size_t curRec = nCur;
+			while (curRec < cur)
+			{
+				char c = buffer[curRec++];
+				if (c >= '0' && c <= '9')
+					nStart = 10 * nStart + (c - '0');
+
+				if (c == '-')
+					break;
+			}
+
+			if (nStart == 0)
+				nStart = 1;
+
+			if (curRec == cur)
+				nEnd = nStart;
+			else
+			{
+				while (curRec < cur)
+				{
+					char c = buffer[curRec++];
+					if (c >= '0' && c <= '9')
+						nEnd = 10 * nEnd + (c - '0');
+
+					if (c == '-')
+						break;
+				}
+
+				if (0 == nEnd || nEnd > nPagesCount)
+					nEnd = nPagesCount;
+			}
+
+			for (int i = nStart; i <= nEnd; ++i)
+				arPages[i - 1] = true;
+
+			nCur = cur;
+			if (nCur < nLen)
+				++nCur;
+		}
+
+		return arPages;
+	}
+
+	_UINT32 PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, NSFonts::IApplicationFonts* pApplicationFonts, const std::string& sPages = "")
    {
        _UINT32 nRes = 0;
        IOfficeDrawingFile* pReader = NULL;
@@ -3611,8 +3725,17 @@ namespace NExtractTools
            if(bResult)
            {
                int nPagesCount = pReader->GetPagesCount();
+
+			   bool bIsUsePages = sPages.empty() ? false : true;
+			   std::vector<bool> arPages;
+			   if (bIsUsePages)
+				   arPages = getPrintPages(sPages, nPagesCount);
+
                for (int i = 0; i < nPagesCount; ++i)
                {
+				   if (bIsUsePages && !arPages[i])
+					   continue;
+
                    pRenderer->NewPage();
                    pRenderer->BeginCommand(c_nPageType);
 
@@ -4720,6 +4843,7 @@ namespace NExtractTools
        }
        return nRes;
    }
+
 	_UINT32 fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params)
    {
        _UINT32 nRes = 0;
@@ -4727,7 +4851,9 @@ namespace NExtractTools
        initApplicationFonts(pApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
-           if(nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword())
+		   std::string sPages = checkPrintPages(params);
+
+		   if(nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
            {
                 NSFile::CFileBinary::Copy(sFrom, sTo);
            }
@@ -4746,7 +4872,7 @@ namespace NExtractTools
 					pdfWriter.SetPassword(password);
               
 				IOfficeDrawingFile* pReader = NULL;
-				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
+				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts, sPages);
 				pdfWriter.SaveToFile(sTo);
 				RELEASEOBJECT(pReader);
            }
@@ -5607,7 +5733,7 @@ namespace NExtractTools
 		}
 
 		//clean up v8
-        NSDoctRenderer::CDocBuilder::Dispose();
+		NSDoctRenderer::CDocBuilder::Dispose();
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;
@@ -5616,6 +5742,16 @@ namespace NExtractTools
 		{
 			return result;
 		}
+	}
+
+	void createJSCaches()
+	{
+		NSDoctRenderer::CDocBuilder::Initialize();
+
+		NSDoctRenderer::CDoctrenderer oDoctRenderer;
+		oDoctRenderer.CreateCache(L"", L"");
+
+		NSDoctRenderer::CDocBuilder::Dispose();
 	}
 
 	_UINT32 FromFile(const std::wstring& file)

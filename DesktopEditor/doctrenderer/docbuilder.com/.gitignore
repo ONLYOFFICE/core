@@ -1,0 +1,5 @@
+_*
+*.idl
+dlldata.c
+result.docx
+deploy

@@ -34,7 +34,7 @@
 #include "Info.h"
 
 #include "../../DesktopEditor/common/SystemUtils.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../OOXML/Base/Base.h"
 
 namespace PdfWriter
 {

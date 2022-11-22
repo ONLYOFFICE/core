@@ -44,20 +44,20 @@ core_windows {
 	DEFINES += _RWSTD_NO_SETRLIMIT
 }
 
-INCLUDEPATH += $$PWD/../../../Common/DocxFormat
-DEPENDPATH += $$PWD/../../../Common/DocxFormat
+INCLUDEPATH += $$PWD/../../../OOXML
+DEPENDPATH += $$PWD/../../../OOXML
 
-INCLUDEPATH += $$PWD/../../../ASCOfficePPTXFile/
-DEPENDPATH += $$PWD/../../../ASCOfficePPTXFile/
+INCLUDEPATH += $$PWD/../../../OOXML/PPTXFormat
+DEPENDPATH += $$PWD/../../../OOXML/PPTXFormat
 
-INCLUDEPATH += $$PWD/../../../ASCOfficePPTXFile/Editor/
-DEPENDPATH += $$PWD/../../../ASCOfficePPTXFile/Editor/
+INCLUDEPATH += $$PWD/../../../OOXML/Binary/Presentation
+DEPENDPATH += $$PWD/../../../OOXML/Binary/Presentation
 
 INCLUDEPATH += $$PWD/../../../OfficeUtils/src
 DEPENDPATH += $$PWD/../../../OfficeUtils/src
 
-INCLUDEPATH += $$PWD/../../../ASCOfficeDocxFile2
-DEPENDPATH += $$PWD/../../../ASCOfficeDocxFile2
+INCLUDEPATH += $$PWD/../../../OOXML/Binary/Document
+DEPENDPATH += $$PWD/../../../OOXML/Binary/Document
 
 ##############################################################################################################
 
@@ -73,10 +73,8 @@ HEADERS +=  ../../src/cextracttools.h \
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
 #Xls file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
-# odf format writer
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFileWriterLib
-# odf format reader
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFileReaderLib
+# odf format
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFormatLib
 #doc file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocFormatLib
 # ppt file
@@ -85,8 +83,8 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPptFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lRtfFormatLib
 #txt(xml) file
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lTxtXmlFormatLib
-#docxfile2
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lASCOfficeDocxFile2Lib
+#bin document
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lBinDocument
 #pptxformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 #docxformat

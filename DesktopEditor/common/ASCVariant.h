@@ -32,7 +32,7 @@
 #pragma once
 
 #include "Types.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../OOXML/Base/Base.h"
 
 #include <string>
 
@@ -62,8 +62,8 @@ struct ASC_VARIANT
 
     ASC_VARTYPE     vt;
 
-    _INT64          llVal;
-    _INT32          lVal;
+	_INT64          llVal;
+	_INT32          lVal;
     BYTE            bVal;
     SHORT           iVal;
     FLOAT           fltVal;

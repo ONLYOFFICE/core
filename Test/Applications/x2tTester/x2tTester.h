@@ -65,10 +65,11 @@ public:
 	{
 		std::wstring inputFile;
 		std::wstring outputFile;
-		std::wstring inputExt;
-		std::wstring outputExt;
 		DWORD time;
+		int inputSize;
+		int outputSize;
 		int exitCode;
+		std::wstring log;
 	};
 
 	Cx2tTester(const std::wstring& configPath);
@@ -115,12 +116,15 @@ private:
 	std::vector<int> m_inputFormats;
 	std::vector<int> m_outputFormats;
 
+	std::vector<std::wstring> m_inputFiles;
+
 	// list of formats
 	CFormatsList m_inputFormatsList;
 	CFormatsList m_outputFormatsList;
 
 	bool m_bIsErrorsOnly;
 	bool m_bIsTimestamp;
+	bool m_bIsDeleteOk;
 
 	DWORD m_timeStart;
 };
@@ -139,6 +143,7 @@ public:
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
 	void SetOnlyErrors(bool bIsErrorsOnly);
+	void SetDeleteOk(bool bIsDeleteOk);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 	void SetFilesCount(int totalFiles, int currFile);
 
@@ -160,6 +165,7 @@ private:
 	std::wstring m_errorsXmlDirectory;
 
 	bool m_bIsErrorsOnly;
+	bool m_bIsDeleteOk;
 
 	int m_totalFiles;
 	int m_currFile;

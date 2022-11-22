@@ -1,42 +1,42 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
- *
- * This program is a free software product. You can redistribute it and/or
- * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
- *
- * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
- *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
- * street, Riga, Latvia, EU, LV-1050.
- *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU AGPL version 3.
- *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
- *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
- *
- */
+* (c) Copyright Ascensio System SIA 2010-2019
+*
+* This program is a free software product. You can redistribute it and/or
+* modify it under the terms of the GNU Affero General Public License (AGPL)
+* version 3 as published by the Free Software Foundation. In accordance with
+* Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+* that Ascensio System SIA expressly excludes the warranty of non-infringement
+* of any third-party rights.
+*
+* This program is distributed WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+* details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+*
+* You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+* street, Riga, Latvia, EU, LV-1050.
+*
+* The  interactive user interfaces in modified source and object code versions
+* of the Program must display Appropriate Legal Notices, as required under
+* Section 5 of the GNU AGPL version 3.
+*
+* Pursuant to Section 7(b) of the License you must retain the original Product
+* logo when distributing the program. Pursuant to Section 7(e) we decline to
+* grant you any rights under trademark law for use of our trademarks.
+*
+* All the Product's GUI elements, including illustrations and icon sets, as
+* well as technical writing content are licensed under the terms of the
+* Creative Commons Attribution-ShareAlike 4.0 International. See the License
+* terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+*
+*/
 #include "streamview.h"
 #include "cfexception.h"
 #include <cmath>
-
+#include <algorithm>
 
 using namespace CFCPP;
 
-StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Stream stream)
+StreamView::StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, Stream stream)
     : sectorSize(sectorSize),
       sectorChain(sectorChain),
       stream(stream)
@@ -48,7 +48,7 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, Strea
         throw CFException("Sector size must be greater than zero");
 }
 
-StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::streamsize length,
+StreamView::StreamView(const SVector<Sector> &sectorChain, _INT32 sectorSize, _INT64 length,
                        SList<Sector> &availableSectors, Stream stream, bool isFatStream) :
     StreamView(sectorChain, sectorSize, stream)
 {
@@ -57,26 +57,26 @@ StreamView::StreamView(const SVector<Sector> &sectorChain, int sectorSize, std::
 
 }
 
-std::streamsize StreamView::tell()
+_INT64 StreamView::tell()
 {
     return position;
 }
 
-void StreamView::write(const char *buffer, std::streamsize count)
+void StreamView::write(const char *buffer, _INT64 count)
 {
-    int byteWritten = 0;
-    int roundByteWritten = 0;
-    int offset = 0;
+    _INT32 byteWritten = 0;
+    _INT32 roundByteWritten = 0;
+    _INT32 offset = 0;
 
     if ((position + count) > length)
         adjustLength((position + count));
 
     if (sectorChain.empty() == false)
     {
-        int sectorOffset = (int)(position / (std::streamsize)sectorSize);
-        int sectorShift = (int)(position % sectorSize);
+        _INT32 sectorOffset = (int)(position / (_INT64)sectorSize);
+        _INT32 sectorShift = (int)(position % sectorSize);
 
-        roundByteWritten = (int)(std::min)(sectorSize - (position % (std::streamsize)sectorSize), count);
+        roundByteWritten = (int)(std::min)((_INT64)sectorSize - (position % (_INT64)sectorSize), count);
 
         if (sectorOffset < (int)sectorChain.size())
         {
@@ -124,16 +124,16 @@ void StreamView::close()
         stream->close();
 }
 
-std::streamsize StreamView::read(char *buffer, std::streamsize len)
+_INT64 StreamView::read(char *buffer, _INT64 len)
 {
-    int nRead = 0;
-    int nToRead = 0;
-    int offset = 0;
+    _INT32 nRead = 0;
+    _INT32 nToRead = 0;
+    _INT32 offset = 0;
     if (sectorChain.empty() == false && sectorChain.size() > 0)
     {
-        int sectorIndex = (int)(position / (std::streamsize)sectorSize);
+        _INT32 sectorIndex = (int)(position / (_INT64)sectorSize);
 
-        nToRead = (std::min)((int)sectorChain[0]->GetData().size() - ((int)position % sectorSize), (int)len);
+        nToRead = (std::min)((_INT64)sectorChain[0]->GetData().size() - ((_INT64)position % sectorSize), len);
 
         if (sectorIndex < (int)sectorChain.size())
         {
@@ -177,7 +177,7 @@ std::streamsize StreamView::read(char *buffer, std::streamsize len)
     return 0;
 }
 
-std::streamsize StreamView::seek(std::streamsize offset, std::ios_base::seekdir mode)
+_INT64 StreamView::seek(_INT64 offset, std::ios_base::seekdir mode)
 {
     switch (mode)
     {
@@ -199,38 +199,38 @@ std::streamsize StreamView::seek(std::streamsize offset, std::ios_base::seekdir 
     return position;
 }
 
-void StreamView::SetLength(std::streamsize value)
+void StreamView::SetLength(_INT64 value)
 {
     adjustLength(value);
 }
 
-int StreamView::ReadInt32()
+_INT32 StreamView::ReadInt32()
 {
     read(reinterpret_cast<char*>(&buf), 4);
     return buf;
 }
 
-void StreamView::WriteInt32(int val)
+void StreamView::WriteInt32(_INT32 val)
 {
     buf = ((val & 0xFF) << 24) | ((val & 0x00FF) << 16) | ((val & 0x0000FF) << 8) | (val & 0x000000FF);
     write(reinterpret_cast<char*>(&buf), 4);
 }
 
-void StreamView::adjustLength(std::streamsize value)
+void StreamView::adjustLength(_INT64 value)
 {
     SList<Sector> q;
     adjustLength(value, q);
 }
 
-void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSectors)
+void StreamView::adjustLength(_INT64 value, SList<Sector> &availableSectors)
 {
     this->length = value;
 
-    std::streamsize delta = value - ((std::streamsize)this->sectorChain.size() * (std::streamsize)sectorSize);
+    _INT64 delta = value - ((_INT64)this->sectorChain.size() * (_INT64)sectorSize);
 
     if (delta > 0)
     {
-        int numberSector = (int)std::ceil(((double)delta / sectorSize));
+        _INT32 numberSector = (int)std::ceil(((double)delta / sectorSize));
 
         while (numberSector > 0)
         {
@@ -258,12 +258,12 @@ void StreamView::adjustLength(std::streamsize value, SList<Sector> &availableSec
     }
 }
 
-std::streamsize StreamView::getPosition() const
+_INT64 StreamView::getPosition() const
 {
     return position;
 }
 
-std::streamsize StreamView::getLength() const
+_INT64 StreamView::getLength() const
 {
     return length;
 }

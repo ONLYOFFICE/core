@@ -9,12 +9,11 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="RBTree">
       <UniqueIdentifier>{2e4c5c99-c3a8-43af-8b70-e1527104287a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Stream">
+      <UniqueIdentifier>{2486cb73-0ee3-4336-80d0-0b9b06b62860}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -60,9 +59,6 @@
     <ClInclude Include="slist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="stream.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="streamrw.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -80,6 +76,21 @@
     </ClInclude>
     <ClInclude Include="RBTree\rbtreeexception.h">
       <Filter>RBTree</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTree\action.h">
+      <Filter>RBTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Stream\fstream_utils.h">
+      <Filter>Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="Stream\fstream_wrapper.h">
+      <Filter>Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="Stream\stream.h">
+      <Filter>Stream</Filter>
+    </ClInclude>
+    <ClInclude Include="Stream\stream_utils.h">
+      <Filter>Stream</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -107,9 +118,6 @@
     <ClCompile Include="sectorcollection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="stream.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="streamrw.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -118,6 +126,12 @@
     </ClCompile>
     <ClCompile Include="RBTree\rbtree.cpp">
       <Filter>RBTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Stream\fstream_utils.cpp">
+      <Filter>Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="Stream\stream_utils.cpp">
+      <Filter>Stream</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,0 +1,353 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Common\ODraw\BaseShape_1.cpp" />
+    <ClCompile Include="..\..\..\Common\ODraw\CustomShape.cpp" />
+    <ClCompile Include="..\..\..\Common\ODraw\FormulaShape.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\external_items.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\mediaitems_utils.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\namespaces.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_content_type.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_package.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_rels.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\XlsConverter.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_chart_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawings.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_external_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_output_xml.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_package.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_protection.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_textcontext.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Common\ODraw\BaseShape.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\CustomGeomShape.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\CustomShape.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\CustomShapeConvert.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\FormulaShape.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\GraphicsPath.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout1type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentBorderCallout2Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout3type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout90type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout1Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout2Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout3Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout90Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBack.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBeginning.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBlank.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonDocument.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonEnd.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonHelp.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonHome.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonInfo.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonMovie.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonNext.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonReturn.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonSound.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\arctype.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentConnector.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentUpArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BevelType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BlockArcType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout1Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout2Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout3Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout90Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BracePairType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BracketPairType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout1Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout2Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout3Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout90Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CanType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ChevronType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CircularArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CloudCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CubeType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedConnector.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedDownArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedLeftArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedRightArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedUpArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DiamondType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DonutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DownArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DownArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseRibbon2Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseRibbonType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartAlternateProcessType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartCollateType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartConnectorType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDecisionType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDelayType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDisplayType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDocumentType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartExtractType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartInputOutputType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartInternalStorageType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticDiskType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticDrumType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticTapeType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartManualInputType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartManualOperationType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMergeType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMultidocumentType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOffpageConnectorType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOnlineStorageType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOrType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPredefinedProcessType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPreparationType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartProcessType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPunchedCardType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPunchedTapeType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartSortType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartSummingJunctionType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartTerminatorType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FoldedCornerType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HeartType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HexagonType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HomePlateType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HorisontalScrollType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IrregularSealOneType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IrregularSealTwo.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IsoscelesTriangleType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftBraceType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftBracketType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightUpArrow.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftUpArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LightningBoltType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LineType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\MoonType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\NoSmokingType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\NotchedRightArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\OctagonType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ParallelogramType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PentagonType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PlaqueType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PlusType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\QuadArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\QuadArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RectangleType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RibbonDownType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RibbonUpType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightBracetype.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightBracketType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightTriangleType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RoundedRectangleType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal16Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal24Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal32Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal4Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal8Type.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\SmileyFaceType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Startype.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\StraightConnectorType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\StripedRightArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\SunType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\TextboxType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\TrapezoidType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpDownArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpDownArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UturnArrowType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\VerticalScrollType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WaveDoubleType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WaveType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeEllipseCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeRectCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeRoundedRectCalloutType.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\PathShape.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\PresetShapesHeader.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\XmlWriter.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\external_items.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\mediaitems_utils.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\namespaces.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_content_type.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_package.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_rels.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\progressCallback.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\ShapeType.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\XlsConverter.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_chart_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawings.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_external_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_output_xml.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_package.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_protection.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_textcontext.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CBEDD0D1-10A8-45C1-AF81-8492F40964CA}</ProjectGuid>
+    <RootNamespace>XlsXlsxConverter</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <ProgramDataBaseFileName>$(IntDir)XlsXlsxConverter.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\XlsFormat; ..\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

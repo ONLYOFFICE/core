@@ -619,11 +619,12 @@ namespace Aggplus
 		if (!bIsUseIdentity)
 		{
 			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
+			double dDet = full_trans->determinant();
 
-			if (full_trans->sx < 0.01 && full_trans->sy < 0.01)
+			if (fabs(dDet) < 0.0001)
 			{
 				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
-				dWidth *= sqrt(full_trans->sx * full_trans->sy);
+				dWidth *= sqrt(dDet);
 
 				bIsUseIdentity = true;
 			}

@@ -11,7 +11,7 @@ CORE_ROOT_DIR = $$PWD/../../..
 PWD_ROOT_DIR = $$PWD
 include(../../base.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, cfcpp)
+ADD_DEPENDENCY(UnicodeConverter, kernel, CompoundFileLib)
 
 INCLUDEPATH += $$PWD/../
 

@@ -15,24 +15,6 @@ struct CompoundFileTest : testing::Test
     {
 
     }
-
-    void printDirs()
-    {
-        for (const auto& dir : *cf.GetDirectories())
-        {
-            if (dir == nullptr)
-                continue;
-
-            wcout << left << setw(3) << dir->getSid()
-                  << left << setw(6) << (dir->getColor() ? L"Black" : L"Red")
-                  << left << setw(3) << dir->getLeftSibling()
-                  << left << setw(3) << dir->getRightSibling()
-                  << left << setw(3) << dir->getChild()
-                  << left << dir->GetEntryName()
-                  << endl;
-        }
-        wcout << endl;
-    }
 };
 
 

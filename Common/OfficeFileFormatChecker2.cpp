@@ -35,7 +35,7 @@
 #include "../OfficeUtils/src/OfficeUtils.h"
 
 //#if defined FILE_FORMAT_CHECKER_WITH_MACRO
-//	#include "../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
+//	#include "../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
 //#endif
 
 #include "3dParty/pole/pole.h"

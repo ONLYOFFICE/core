@@ -39,6 +39,8 @@
 #include <openssl/aes.h>
 #include <openssl/rand.h>
 
+#include "../../../../DesktopEditor/common/File.h"
+
 namespace NSOpenSSL
 {
     unsigned char* openssl_alloc(unsigned int len)

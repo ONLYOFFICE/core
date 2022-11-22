@@ -1,35 +1,36 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
- *
- * This program is a free software product. You can redistribute it and/or
- * modify it under the terms of the GNU Affero General Public License (AGPL)
- * version 3 as published by the Free Software Foundation. In accordance with
- * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
- * that Ascensio System SIA expressly excludes the warranty of non-infringement
- * of any third-party rights.
- *
- * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
- * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
- *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
- * street, Riga, Latvia, EU, LV-1050.
- *
- * The  interactive user interfaces in modified source and object code versions
- * of the Program must display Appropriate Legal Notices, as required under
- * Section 5 of the GNU AGPL version 3.
- *
- * Pursuant to Section 7(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section 7(e) we decline to
- * grant you any rights under trademark law for use of our trademarks.
- *
- * All the Product's GUI elements, including illustrations and icon sets, as
- * well as technical writing content are licensed under the terms of the
- * Creative Commons Attribution-ShareAlike 4.0 International. See the License
- * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
- *
- */
+* (c) Copyright Ascensio System SIA 2010-2019
+*
+* This program is a free software product. You can redistribute it and/or
+* modify it under the terms of the GNU Affero General Public License (AGPL)
+* version 3 as published by the Free Software Foundation. In accordance with
+* Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+* that Ascensio System SIA expressly excludes the warranty of non-infringement
+* of any third-party rights.
+*
+* This program is distributed WITHOUT ANY WARRANTY; without even the implied
+* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+* details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+*
+* You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+* street, Riga, Latvia, EU, LV-1050.
+*
+* The  interactive user interfaces in modified source and object code versions
+* of the Program must display Appropriate Legal Notices, as required under
+* Section 5 of the GNU AGPL version 3.
+*
+* Pursuant to Section 7(b) of the License you must retain the original Product
+* logo when distributing the program. Pursuant to Section 7(e) we decline to
+* grant you any rights under trademark law for use of our trademarks.
+*
+* All the Product's GUI elements, including illustrations and icon sets, as
+* well as technical writing content are licensed under the terms of the
+* Creative Commons Attribution-ShareAlike 4.0 International. See the License
+* terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+*
+*/
 #include "directoryentry.h"
+#include <sstream>
 #include "cfexception.h"
 #include "streamrw.h"
 #include <stdexcept>
@@ -82,12 +83,12 @@ DirectoryEntry::DirectoryEntry(std::wstring name, StgType stgType) :
     }
 }
 
-int DirectoryEntry::getSid() const
+_INT32 DirectoryEntry::getSid() const
 {
     return sid;
 }
 
-void DirectoryEntry::setSid(int newSid)
+void DirectoryEntry::setSid(_INT32 newSid)
 {
     sid = newSid;
 }
@@ -97,7 +98,7 @@ std::wstring DirectoryEntry::GetEntryName() const
     if (entryName[0] != '\0' && nameLength > 0)
     {
         wchar_t name[32];
-        for (int i = 0; i < 32; i++)
+        for (_INT32 i = 0; i < 32; i++)
         {
             name[i] = entryName[2*i] + (entryName[2*i+1] << 8);
         }
@@ -136,11 +137,11 @@ void DirectoryEntry::SetEntryName(const std::wstring &entryName)
             this->entryName[i*2+1] = sym / 256;
         }
 
-        this->nameLength = (unsigned short)entryName.size() * 2 + 2;
+        this->nameLength = (_UINT16)entryName.size() * 2 + 2;
     }
 }
 
-int DirectoryEntry::GetHashCode() const
+_INT32 DirectoryEntry::GetHashCode() const
 {
     return (int)fnv_hash(entryName, nameLength);
 }
@@ -192,8 +193,8 @@ void DirectoryEntry::Read(Stream stream, CFSVersion ver)
 
     if (ver == CFSVersion::Ver_3)
     {
-        size = rw.Read<int>();
-        rw.Read<INT>();
+        size = rw.Read<_INT32> ();
+        rw.Read<_INT32>();
     }
     else
     {
@@ -273,7 +274,7 @@ void DirectoryEntry::AssignValueTo(RedBlackTree::PIRBNode other)
     d->child = this->child;
 }
 
-int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
+_INT32 DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
 {
     IDirectoryEntry* otherDir = dynamic_cast<IDirectoryEntry*>(other.get());
 
@@ -293,7 +294,7 @@ int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
         std::wstring thisName = GetEntryName();
         std::wstring otherName = otherDir->GetEntryName();
 
-        for (int z = 0; z < (int)thisName.size(); z++)
+        for (_INT32 z = 0; z < (int)thisName.size(); z++)
         {
             char thisChar = toupper(thisName[z]);
             char otherChar = toupper(otherName[z]);
@@ -309,10 +310,10 @@ int DirectoryEntry::CompareTo(const RedBlackTree::PIRBNode &other) const
     }
 }
 
-ULONG64 DirectoryEntry::fnv_hash(const char *buffer, int lenght)
+_UINT64 DirectoryEntry::fnv_hash(const char *buffer, _INT64 lenght)
 {
-    ULONG64 h = 2166136261;
-    int i;
+    _UINT64 h = 2166136261;
+    _INT64 i;
 
     for (i = 0; i < lenght; i++)
         h = (h * 16777619) ^ buffer[i];
@@ -341,7 +342,7 @@ std::shared_ptr<IDirectoryEntry> DirectoryEntry::TryNew(std::wstring name, StgTy
 
     if (de != nullptr)
     {
-        for (int i = 0; i < (int)dirRepository.size(); i++)
+        for (_INT32 i = 0; i < (int)dirRepository.size(); i++)
         {
             if (dirRepository[i]->getStgType() == StgType::StgInvalid)
             {

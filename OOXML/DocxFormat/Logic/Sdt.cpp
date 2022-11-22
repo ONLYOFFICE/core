@@ -55,6 +55,12 @@ namespace ComplexTypes
 {
 	namespace Word
 	{
+		CComb::CComb()
+		{
+		}
+		CComb::~CComb()
+		{
+		}
 		void CComb::FromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase( oNode, L"w:width", m_oWidth );
@@ -100,6 +106,12 @@ namespace ComplexTypes
 			WritingElement_ReadAttributes_End( oReader )
 		}
 //----------------------------------------------------------------------------------------------------
+		CTextFormFormat::CTextFormFormat()
+		{
+		}
+		CTextFormFormat::~CTextFormFormat()
+		{
+		}
 		void CTextFormFormat::FromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase(oNode, L"w:type", m_oType);
@@ -138,6 +150,267 @@ namespace ComplexTypes
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"w:symbols", m_oSymbols)
 			WritingElement_ReadAttributes_End(oReader)
 		}
+//----------------------------------------------------------------------------------------------------
+		CSdtAppearance::CSdtAppearance()
+		{
+		}
+		CSdtAppearance::~CSdtAppearance()
+		{
+		}
+		void CSdtAppearance::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w15:val", m_oVal );
+		}
+		void CSdtAppearance::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CSdtAppearance::ToString() const
+		{
+			std::wstring sResult;
+			if(m_oVal.IsInit())
+			{
+				sResult = L"w15:val=\"" + m_oVal->ToString() + L"\"";
+			}
+
+			return sResult;
+		}
+		void CSdtAppearance::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w15:val", m_oVal )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+		CSdtText::CSdtText()
+		{
+		}
+		CSdtText::~CSdtText()
+		{
+		}
+		void CSdtText::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:multiLine", m_oMultiLine );
+		}
+		void CSdtText::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CSdtText::ToString() const
+		{
+			std::wstring sResult;
+			if(m_oMultiLine.IsInit())
+			{
+				sResult = L"w:multiLine=\"" + m_oMultiLine->ToString() + L"\"";
+			}
+
+			return sResult;
+		}
+		void CSdtText::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:multiLine", m_oMultiLine )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+		CLock::CLock()
+		{
+		}
+		CLock::~CLock()
+		{
+		}
+		void CLock::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
+		}
+		void CLock::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CLock::ToString() const
+		{
+			std::wstring sResult = L"w:val=\"" + m_oVal.ToString() + L"\"";
+
+			return sResult;
+		}
+		void CLock::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+		CSdtDateMappingType::CSdtDateMappingType()
+		{
+		}
+		CSdtDateMappingType::~CSdtDateMappingType()
+		{
+		}
+		void CSdtDateMappingType::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
+		}
+		void CSdtDateMappingType::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CSdtDateMappingType::ToString() const
+		{
+			std::wstring sResult = L"w:val=\"" + m_oVal.ToString() + L"\"";
+			return sResult;
+		}
+		void CSdtDateMappingType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+		CCalendarType::CCalendarType()
+		{
+		}
+		CCalendarType::~CCalendarType()
+		{
+		}
+		void CCalendarType::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
+		}
+		void CCalendarType::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CCalendarType::ToString() const
+		{
+			std::wstring sResult = L"w:val=\"" + m_oVal.ToString() + L"\"";
+			return sResult;
+		}
+		void CCalendarType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_oVal.SetValue(SimpleTypes::calendartypeGregorian);
+
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+		CDataBinding::CDataBinding()
+		{
+		}
+		CDataBinding::~CDataBinding()
+		{
+		}
+		void CDataBinding::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:prefixMappings", m_sPrefixMappings );
+			XmlMacroReadAttributeBase( oNode, L"w:storeItemID",    m_sStoreItemID );
+			XmlMacroReadAttributeBase( oNode, L"w:xpath",          m_sXPath );
+		}
+		void CDataBinding::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CDataBinding::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_sPrefixMappings.IsInit() )
+			{
+				sResult += L"w:prefixMappings=\"";
+				sResult += m_sPrefixMappings.get2();
+				sResult += L"\" ";
+			}
+
+			if ( m_sXPath.IsInit() )
+			{
+				sResult += L"w:xpath=\"";
+				sResult += m_sXPath.get2();
+				sResult += L"\" ";
+			}
+
+			if ( m_sStoreItemID.IsInit() )
+			{
+				sResult += L"w:storeItemID=\"";
+				sResult += m_sStoreItemID.get2();
+				sResult += L"\" ";
+			}
+			return sResult;
+		}
+		void CDataBinding::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:prefixMappings", m_sPrefixMappings )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:storeItemID",    m_sStoreItemID )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:xpath",          m_sXPath )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+		CSdtListItem::CSdtListItem()
+		{
+		}
+		CSdtListItem::~CSdtListItem()
+		{
+		}
+		void CSdtListItem::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:displayText", m_sDisplayText );
+			XmlMacroReadAttributeBase( oNode, L"w:value",       m_sValue );
+		}
+		void CSdtListItem::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CSdtListItem::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_sDisplayText.IsInit() )
+			{
+				sResult += L"w:displayText=\"";
+				sResult += XmlUtils::EncodeXmlString(*m_sDisplayText);
+				sResult += L"\" ";
+			}
+
+			if ( m_sValue.IsInit() )
+			{
+				sResult += L"w:value=\"";
+				sResult += XmlUtils::EncodeXmlString(*m_sValue);
+				sResult += L"\" ";
+			}
+
+			return sResult;
+		}
+		void CSdtListItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displayText", m_sDisplayText )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:value",       m_sValue )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+//----------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------
 	}
 }
 //-----------------------------------------------------------------------------------------------------------------------------

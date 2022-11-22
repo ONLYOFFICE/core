@@ -34,6 +34,945 @@
 
 #include "SectionProperty.h"
 
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		//--------------------------------------------------------------------------------
+		// Column 17.6.3 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CColumn::CColumn()
+		{
+		}
+		CColumn::~CColumn()
+		{
+		}
+		void CColumn::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:space", m_oSpace );
+			XmlMacroReadAttributeBase( oNode, L"w:w",     m_oW );
+		}
+		void CColumn::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CColumn::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oW.IsInit() )
+			{
+				sResult += L"w:w=\"" + std::to_wstring(m_oW->ToTwips()) + L"\" ";
+			}
+
+			if ( m_oSpace.IsInit() )
+			{
+				sResult += L"w:space=\"" + std::to_wstring(m_oSpace->ToTwips()) + L"\" ";
+			}
+
+			return sResult;
+		}
+		void CColumn::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:space"), m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:w"),     m_oW )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// DocGrid 17.6.5 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CDocGrid::CDocGrid()
+		{
+		}
+		CDocGrid::~CDocGrid()
+		{
+		}
+		void CDocGrid::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:charSpace"), m_oCharSpace );
+			XmlMacroReadAttributeBase( oNode, (L"w:linePitch"), m_oLinePitch );
+			XmlMacroReadAttributeBase( oNode, (L"w:type"),      m_oType );
+		}
+		void CDocGrid::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CDocGrid::ToString() const
+		{
+			std::wstring sResult;
+
+			if (m_oType.IsInit())
+			{
+				sResult += L" w:type=\"" + m_oType->ToString() + L"\"";
+			}
+			if ( m_oLinePitch.IsInit() )
+			{
+				sResult += L" w:linePitch=\"" + m_oLinePitch->ToString() + L"\"";
+			}
+			if (m_oCharSpace.IsInit())
+			{
+				sResult += L" w:charSpace=\"" + m_oCharSpace->ToString() + L"\"";
+			}
+			return sResult;
+		}
+		void CDocGrid::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:charSpace"), m_oCharSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:linePitch"), m_oLinePitch )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:type"),      m_oType )
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"w:line-pitch"), m_oLinePitch)	//2003 xml
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// HdrFtrRef 17.10.5 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CHdrFtrRef::CHdrFtrRef()
+		{
+		}
+		CHdrFtrRef::~CHdrFtrRef()
+		{
+		}
+		void CHdrFtrRef::FromXML(XmlUtils::CXmlNode& oNode)
+		{//todooo переделать на перебор всех и без неймспейсов
+			XmlMacroReadAttributeBase( oNode, L"r:id",   m_oId );
+			XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
+
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+			}
+		}
+		void CHdrFtrRef::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CHdrFtrRef::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oType.IsInit() )
+			{
+				sResult += L" w:type=\"" + m_oType->ToString() + L"\"";
+			}
+			if ( m_oId.IsInit() )
+			{
+				sResult += L" r:id=\"" + m_oId->ToString() + L"\"";
+			}
+			return sResult;
+		}
+		void CHdrFtrRef::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, (L"id"),	m_oId )
+					WritingElement_ReadAttributes_Read_else_if( oReader, (L"type"),	m_oType )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// LineNumber 17.6.8 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CLineNumber::CLineNumber()
+		{
+		}
+		CLineNumber::~CLineNumber()
+		{
+		}
+		void CLineNumber::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:countBy"),  m_oCountBy );
+			XmlMacroReadAttributeBase( oNode, (L"w:distance"), m_oDistance );
+			XmlMacroReadAttributeBase( oNode, (L"w:restart"),  m_oRestart );
+			XmlMacroReadAttributeBase( oNode, (L"w:start"),    m_oStart );
+		}
+		void CLineNumber::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CLineNumber::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oCountBy.IsInit() )
+			{
+				sResult += (L"w:countBy=\"");
+				sResult += m_oCountBy->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oDistance.IsInit() )
+			{
+				sResult += (L"w:distance=\"");
+				sResult += std::to_wstring(m_oDistance->ToTwips());
+				sResult += (L"\" ");
+			}
+
+			if ( m_oRestart.IsInit() )
+			{
+				sResult += (L"w:restart=\"");
+				sResult += m_oRestart->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oStart.IsInit() )
+			{
+				sResult += (L"w:start=\"");
+				sResult += m_oStart->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CLineNumber::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:countBy"),  m_oCountBy )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:distance"), m_oDistance )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:restart"),  m_oRestart )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:start"),    m_oStart )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// PaperSource 17.6.9 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CPaperSource::CPaperSource()
+		{
+		}
+		CPaperSource::~CPaperSource()
+		{
+		}
+		void CPaperSource::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:first"), m_oFirst );
+			XmlMacroReadAttributeBase( oNode, (L"w:other"), m_oOther );
+		}
+		void CPaperSource::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CPaperSource::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oFirst.IsInit() )
+			{
+				sResult += (L"w:first=\"");
+				sResult += m_oFirst->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oOther.IsInit() )
+			{
+				sResult += (L"w:other=\"");
+				sResult += m_oOther->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CPaperSource::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:first"), m_oFirst )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:other"), m_oOther )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// PageBorder 17.6.7 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CPageBorder::CPageBorder()
+		{
+		}
+		CPageBorder::~CPageBorder()
+		{
+		}
+		void CPageBorder::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:color"),       m_oColor );
+			XmlMacroReadAttributeBase( oNode, (L"w:frame"),       m_oFrame );
+			XmlMacroReadAttributeBase( oNode, (L"r:id"),          m_oId );
+			XmlMacroReadAttributeBase( oNode, (L"w:shadow"),      m_oShadow );
+			XmlMacroReadAttributeBase( oNode, (L"w:space"),       m_oSpace );
+			XmlMacroReadAttributeBase( oNode, (L"w:sz"),          m_oSz );
+			XmlMacroReadAttributeBase( oNode, (L"w:themeColor"),  m_oThemeColor );
+			XmlMacroReadAttributeBase( oNode, (L"w:themeShade"),  m_oThemeShade );
+			XmlMacroReadAttributeBase( oNode, (L"w:themeTint"),   m_oThemeTint );
+			XmlMacroReadAttributeBase( oNode, (L"w:val"),         m_oVal );
+
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+			}
+		}
+		void CPageBorder::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CPageBorder::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oColor.IsInit() )
+			{
+				sResult += (L"w:color=\"");
+				sResult += m_oColor->ToStringNoAlpha();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oFrame.IsInit() )
+			{
+				sResult += (L"w:frame=\"");
+				sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
+				sResult += (L"\" ");
+			}
+			if ( m_oId.IsInit() )
+			{
+				sResult += (L"r:id=\"");
+				sResult += m_oId->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oShadow.IsInit() )
+			{
+				sResult += (L"w:shadow=\"");
+				sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
+				sResult += (L"\" ");
+			}
+
+			if ( m_oSpace.IsInit() )
+			{
+				sResult += (L"w:space=\"");
+				sResult += m_oSpace->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oSz.IsInit() )
+			{
+				sResult += (L"w:sz=\"");
+				sResult += m_oSz->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oThemeColor.IsInit() )
+			{
+				sResult += (L"w:themeColor=\"");
+				sResult += m_oThemeColor->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oThemeShade.IsInit() )
+			{
+				sResult += (L"w:themeShade=\"");
+				sResult += m_oThemeShade->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oThemeTint.IsInit() )
+			{
+				sResult += (L"w:themeTint=\"");
+				sResult += m_oThemeTint->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oVal.IsInit() )
+			{
+				sResult += (L"w:val=\"");
+				sResult += m_oVal->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CPageBorder::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),			m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),			m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),				m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),			m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),			m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),				m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),		m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),		m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),		m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),			m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// BottomPageBorder 17.6.2 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CBottomPageBorder::CBottomPageBorder()
+		{
+		}
+		CBottomPageBorder::~CBottomPageBorder()
+		{
+		}
+		void CBottomPageBorder::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"r:bottomLeft",  m_oBottomLeft );
+			XmlMacroReadAttributeBase( oNode, L"r:bottomRight", m_oBottomRight );
+			XmlMacroReadAttributeBase( oNode, L"w:color",       m_oColor );
+			XmlMacroReadAttributeBase( oNode, L"w:frame",       m_oFrame );
+			XmlMacroReadAttributeBase( oNode, L"r:id",          m_oId );
+			XmlMacroReadAttributeBase( oNode, L"w:shadow",      m_oShadow );
+			XmlMacroReadAttributeBase( oNode, L"w:space",       m_oSpace );
+			XmlMacroReadAttributeBase( oNode, L"w:sz",          m_oSz );
+			XmlMacroReadAttributeBase( oNode, L"w:themeColor",  m_oThemeColor );
+			XmlMacroReadAttributeBase( oNode, L"w:themeShade",  m_oThemeShade );
+			XmlMacroReadAttributeBase( oNode, L"w:themeTint",   m_oThemeTint );
+			XmlMacroReadAttributeBase( oNode, L"w:val",         m_oVal );
+
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+			}
+		}
+		void CBottomPageBorder::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CBottomPageBorder::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oBottomLeft.IsInit() )
+			{
+				sResult += (L"r:bottomLeft=\"");
+				sResult += m_oBottomLeft->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oBottomRight.IsInit() )
+			{
+				sResult += (L"r:bottomRight=\"");
+				sResult += m_oBottomRight->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oColor.IsInit() )
+			{
+				sResult += (L"w:color=\"");
+				sResult += m_oColor->ToStringNoAlpha();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oFrame.IsInit() )
+			{
+				sResult += (L"w:frame=\"");
+				sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
+				sResult += (L"\" ");
+			}
+			if ( m_oId.IsInit() )
+			{
+				sResult += (L"r:id=\"");
+				sResult += m_oId->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oShadow.IsInit() )
+			{
+				sResult += (L"w:shadow=\"");
+				sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
+				sResult += (L"\" ");
+			}
+
+			if ( m_oSpace.IsInit() )
+			{
+				sResult += (L"w:space=\"");
+				sResult += m_oSpace->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oSz.IsInit() )
+			{
+				sResult += (L"w:sz=\"");
+				sResult += m_oSz->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oThemeColor.IsInit() )
+			{
+				sResult += (L"w:themeColor=\"");
+				sResult += m_oThemeColor->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oThemeShade.IsInit() )
+			{
+				sResult += (L"w:themeShade=\"");
+				sResult += m_oThemeShade->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oThemeTint.IsInit() )
+			{
+				sResult += (L"w:themeTint=\"");
+				sResult += m_oThemeTint->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oVal.IsInit() )
+			{
+				sResult += (L"w:val=\"");
+				sResult += m_oVal->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CBottomPageBorder::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:bottomLeft"), m_oBottomLeft )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:bottomRight"), m_oBottomRight )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:color"),       m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),  m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),  m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),   m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),         m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// TopPageBorder 17.6.7 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CTopPageBorder::CTopPageBorder()
+		{
+		}
+		CTopPageBorder::~CTopPageBorder()
+		{
+		}
+		void CTopPageBorder::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:color"),       m_oColor );
+			XmlMacroReadAttributeBase( oNode, (L"w:frame"),       m_oFrame );
+			XmlMacroReadAttributeBase( oNode, (L"r:id"),          m_oId );
+			XmlMacroReadAttributeBase( oNode, (L"w:shadow"),      m_oShadow );
+			XmlMacroReadAttributeBase( oNode, (L"w:space"),       m_oSpace );
+			XmlMacroReadAttributeBase( oNode, (L"w:sz"),          m_oSz );
+			XmlMacroReadAttributeBase( oNode, (L"w:themeColor"),  m_oThemeColor );
+			XmlMacroReadAttributeBase( oNode, (L"w:themeShade"),  m_oThemeShade );
+			XmlMacroReadAttributeBase( oNode, (L"w:themeTint"),   m_oThemeTint );
+			XmlMacroReadAttributeBase( oNode, (L"r:topLeft"),     m_oTopLeft );
+			XmlMacroReadAttributeBase( oNode, (L"r:topRight"),    m_oTopRight );
+			XmlMacroReadAttributeBase( oNode, (L"w:val"),         m_oVal );
+
+			if (false == m_oId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_oId );
+			}
+		}
+		void CTopPageBorder::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CTopPageBorder::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oColor.IsInit() )
+			{
+				sResult += (L"w:color=\"");
+				sResult += m_oColor->ToStringNoAlpha();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oFrame.IsInit() )
+			{
+				sResult += (L"w:frame=\"");
+				sResult += m_oFrame->ToString2(SimpleTypes::onofftostring1);
+				sResult += (L"\" ");
+			}
+			if ( m_oId.IsInit() )
+			{
+				sResult += (L"r:id=\"");
+				sResult += m_oId->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oShadow.IsInit() )
+			{
+				sResult += (L"w:shadow=\"");
+				sResult += m_oShadow->ToString2(SimpleTypes::onofftostring1);
+				sResult += (L"\" ");
+			}
+
+			if ( m_oSpace.IsInit() )
+			{
+				sResult += (L"w:space=\"");
+				sResult += m_oSpace->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oSz.IsInit() )
+			{
+				sResult += (L"w:sz=\"");
+				sResult += m_oSz->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oThemeColor.IsInit() )
+			{
+				sResult += (L"w:themeColor=\"");
+				sResult += m_oThemeColor->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oThemeShade.IsInit() )
+			{
+				sResult += (L"w:themeShade=\"");
+				sResult += m_oThemeShade->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oThemeTint.IsInit() )
+			{
+				sResult += (L"w:themeTint=\"");
+				sResult += m_oThemeTint->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oTopLeft.IsInit() )
+			{
+				sResult += (L"r:topLeft=\"");
+				sResult += m_oTopLeft->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oTopRight.IsInit() )
+			{
+				sResult += (L"r:topRight=\"");
+				sResult += m_oTopRight->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oVal.IsInit() )
+			{
+				sResult += (L"w:val=\"");
+				sResult += m_oVal->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CTopPageBorder::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:color"),       m_oColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:frame"),       m_oFrame )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:id"),          m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"), m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:shadow"),      m_oShadow )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:space"),       m_oSpace )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:sz"),          m_oSz )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeColor"),  m_oThemeColor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeShade"),  m_oThemeShade )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:themeTint"),   m_oThemeTint )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:topLeft"),     m_oTopLeft )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"r:topRight"),    m_oTopRight )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:val"),         m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// PageMar 17.6.11 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CPageMar::CPageMar()
+		{
+		}
+		CPageMar::~CPageMar()
+		{
+		}
+		void CPageMar::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:bottom"),  m_oBottom );
+			XmlMacroReadAttributeBase( oNode, (L"w:footer"),  m_oFooter );
+			XmlMacroReadAttributeBase( oNode, (L"w:gutter"),  m_oGutter );
+			XmlMacroReadAttributeBase( oNode, (L"w:header"),  m_oHeader );
+			XmlMacroReadAttributeBase( oNode, (L"w:left"),    m_oLeft   );
+			XmlMacroReadAttributeBase( oNode, (L"w:right"),   m_oRight  );
+			XmlMacroReadAttributeBase( oNode, (L"w:top"),     m_oTop    );
+		}
+		void CPageMar::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CPageMar::ToString() const
+		{
+			std::wstring sResult;
+
+			if (m_oTop.IsInit())
+			{
+				sResult += L" w:top=\"" + m_oTop->ToString() + L"\"";
+			}
+			if (m_oRight.IsInit())
+			{
+				sResult += L" w:right=\"" + m_oRight->ToString() + L"\"";
+			}
+			if ( m_oBottom.IsInit() )
+			{
+				sResult += L" w:bottom=\"" + m_oBottom->ToString() + L"\"";
+			}
+			if (m_oLeft.IsInit())
+			{
+				sResult += L" w:left=\"" + m_oLeft->ToString() + L"\"";
+			}
+			if (m_oHeader.IsInit())
+			{
+				sResult += L" w:header=\"" + m_oHeader->ToString() + L"\"";
+			}
+			if ( m_oFooter.IsInit() )
+			{
+				sResult += L" w:footer=\"" + m_oFooter->ToString() + L"\"";
+			}
+			if ( m_oGutter.IsInit() )
+			{
+				sResult += L" w:gutter=\"" + m_oGutter->ToString() + L"\"";
+			}
+			return sResult;
+		}
+		void CPageMar::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:bottom"), m_oBottom )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:footer"), m_oFooter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:gutter"), m_oGutter )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:header"), m_oHeader )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:left"),   m_oLeft )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:right"),  m_oRight )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:top"),    m_oTop )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// PageNumber 17.6.12 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CPageNumber::CPageNumber()
+		{
+		}
+		CPageNumber::~CPageNumber()
+		{
+		}
+		void CPageNumber::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:chapSep"),   m_oChapSep );
+			XmlMacroReadAttributeBase( oNode, (L"w:chapStyle"), m_oChapStyle );
+			XmlMacroReadAttributeBase( oNode, (L"w:fmt"),       m_oFmt );
+			XmlMacroReadAttributeBase( oNode, (L"w:start"),     m_oStart );
+		}
+		void CPageNumber::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CPageNumber::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oChapSep.IsInit() )
+			{
+				sResult += (L"w:chapSep=\"");
+				sResult += m_oChapSep->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oChapStyle.IsInit() )
+			{
+				sResult += (L"w:chapStyle=\"");
+				sResult += m_oChapStyle->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oFmt.IsInit() )
+			{
+				sResult += (L"w:fmt=\"");
+				sResult += m_oFmt->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oStart.IsInit() )
+			{
+				sResult += (L"w:start=\"");
+				sResult += m_oStart->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CPageNumber::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:chapSep"),   m_oChapSep )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:chapStyle"), m_oChapStyle )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:fmt"),       m_oFmt )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:start"),     m_oStart )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// PageSz 17.6.13 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CPageSz::CPageSz()
+		{
+		}
+		CPageSz::~CPageSz()
+		{
+		}
+		void CPageSz::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:code"),   m_oCode );
+			XmlMacroReadAttributeBase( oNode, (L"w:h"),      m_oH );
+			XmlMacroReadAttributeBase( oNode, (L"w:orient"), m_oOrient );
+			XmlMacroReadAttributeBase( oNode, (L"w:w"),      m_oW );
+		}
+		void CPageSz::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CPageSz::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oCode.IsInit() )
+			{
+				sResult += (L"w:code=\"");
+				sResult += m_oCode->ToString();
+				sResult += (L"\" ");
+			}
+
+			if ( m_oH.IsInit() )
+			{
+				sResult += (L"w:h=\"");
+				sResult += m_oH->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oOrient.IsInit() )
+			{
+				sResult += (L"w:orient=\"");
+				sResult += m_oOrient->ToString();
+				sResult += (L"\" ");
+			}
+			if ( m_oW.IsInit() )
+			{
+				sResult += (L"w:w=\"");
+				sResult += m_oW->ToString();
+				sResult += (L"\" ");
+			}
+
+			return sResult;
+		}
+		void CPageSz::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, (L"w:code"),   m_oCode )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:h"),      m_oH )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:orient"), m_oOrient )
+				WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:w"),      m_oW )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+		//--------------------------------------------------------------------------------
+		// SectType 17.6.22 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CSectType::CSectType()
+		{
+		}
+		CSectType::~CSectType()
+		{
+		}
+		void CSectType::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, (L"w:val"), m_oVal );
+		}
+		void CSectType::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CSectType::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oVal.IsInit() )
+			{
+				sResult += L"w:val=\"";
+				sResult += m_oVal->ToString();
+				sResult += L"\" ";
+			}
+
+			return sResult;
+		}
+		void CSectType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, (L"w:val"), m_oVal )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+	} // Word
+} // ComplexTypes
+
+
 namespace OOX
 {
 	namespace Logic

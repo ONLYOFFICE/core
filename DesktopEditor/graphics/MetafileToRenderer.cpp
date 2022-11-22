@@ -36,6 +36,7 @@
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
+#include "./FormField.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #include "../common/StringExt.h"
@@ -1213,7 +1214,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 
 				if (oInfo.IsValid())
-					pRenderer->AddFormField(oInfo);
+					pRenderer->AddFormField(&oInfo);
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;

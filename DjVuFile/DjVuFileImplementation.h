@@ -51,10 +51,6 @@
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
-#ifdef BUILDING_WASM_MODULE
-#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-#endif
-
 class CDjVuFileImplementation
 {
 private:
@@ -79,11 +75,9 @@ public:
     void         ConvertToPdf(const std::wstring& wsDstPath);
     std::wstring GetInfo();
 
-#ifdef BUILDING_WASM_MODULE
     BYTE*        GetStructure();
     BYTE*        GetPageGlyphs(int nPageIndex);
     BYTE*        GetPageLinks (int nPageIndex);
-#endif
 
 private:
 

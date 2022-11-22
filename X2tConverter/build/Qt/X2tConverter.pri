@@ -29,8 +29,7 @@ DEFINES += UNICODE \
     DONT_WRITE_EMBEDDED_FONTS \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
-DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
-DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
+DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
 DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
@@ -100,7 +99,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfWriter, PdfReader, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
 
 
 #####################################################

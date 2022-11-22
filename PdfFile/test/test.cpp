@@ -63,13 +63,13 @@ int main()
     {
         std::wstring wsCertificateFile = NSFile::GetProcessDirectory() + L"/test.pfx";
         std::wstring wsPrivateKeyFile = L"";
-        std::string sCertificateFilePassword = "test";
+        std::string sCertificateFilePassword = "123456";
         std::string sPrivateFilePassword = "";
 
         pCertificate = NSCertificate::FromFiles(wsPrivateKeyFile, sPrivateFilePassword, wsCertificateFile, sCertificateFilePassword);
     }
 
-    if (true)
+    if (false)
     {
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
@@ -82,6 +82,7 @@ int main()
 
     if (false)
     {
+        pdfFile.CreatePdf();
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
@@ -97,6 +98,8 @@ int main()
             pdfFile.DrawPageOnRenderer(&pdfFile, i, NULL);
             pdfFile.EndCommand(c_nPageType);
         }
+        if (pCertificate)
+            pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
         pdfFile.SaveToFile(wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);
@@ -106,7 +109,7 @@ int main()
 
     if (bResult && pdfFile.EditPdf(wsDstFile))
     {
-        if (false && pCertificate)
+        if (pCertificate)
         {
             if (pdfFile.EditPage(0))
             {

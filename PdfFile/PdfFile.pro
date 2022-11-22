@@ -160,7 +160,8 @@ HEADERS += \
     SrcWriter/Types.h \
     SrcWriter/Utils.h \
     SrcWriter/Metadata.h \
-    SrcWriter/ICCProfile.h
+    SrcWriter/ICCProfile.h \
+    SrcWriter/States.h
 
 SOURCES += \
     SrcWriter/AcroForm.cpp \
@@ -187,7 +188,8 @@ SOURCES += \
     SrcWriter/Shading.cpp \
     SrcWriter/Streams.cpp \
     SrcWriter/Utils.cpp \
-    SrcWriter/Metadata.cpp
+    SrcWriter/Metadata.cpp \
+    SrcWriter/States.cpp
 
 # PdfFile
 
@@ -199,4 +201,5 @@ HEADERS += PdfFile.h \
 SOURCES += PdfFile.cpp \
            PdfWriter.cpp \
            PdfReader.cpp \
-           OnlineOfficeBinToPdf.cpp
+           OnlineOfficeBinToPdf.cpp \
+           PdfWriter_empty.cpp

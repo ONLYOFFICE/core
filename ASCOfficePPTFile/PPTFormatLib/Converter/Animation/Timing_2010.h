@@ -49,7 +49,7 @@ public:
 
 
 private:
-    void ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListContainer *pBLC);
+    void ConvertBldLst(PPTX::Logic::Timing& timimg, CRecordBuildListContainer *pBLC);
     void InsertBuildNode(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb);
     void InsertBldP(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb);
     void FillBuildNodeBase(CRecordBuildListSubContainer* pSub, PPTX::Logic::BuildNodeBase &oBuildNodeBase);
@@ -124,9 +124,6 @@ private:
     void FillVideo(
             CRecordExtTimeNodeContainer *pETNC,
             PPTX::Logic::Video &oVideo);
-    void FillAnimationPar(                                      // TODO next
-            CRecordExtTimeNodeContainer *pETNC,
-            PPTX::Logic::Par &oPar);
 
 private:
     CRecordPP10SlideBinaryTagExtension* pTagExtAnim = nullptr;

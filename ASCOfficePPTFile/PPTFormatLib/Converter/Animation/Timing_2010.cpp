@@ -19,14 +19,20 @@ void Timing_2010::Convert(PPTX::Logic::Timing &timimg, CExMedia *pExMedia, CRels
     m_pRels = pRels;
 
     ConvertTnLst(timimg.tnLst.get2(), pTagExtAnim->m_pExtTimeNodeContainer);
-    ConvertBldLst(timimg.bldLst.get2(), pTagExtAnim->m_pBuildListContainer);
+    ConvertBldLst(timimg, pTagExtAnim->m_pBuildListContainer);
 }
 
-void Timing_2010::ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListContainer *pBLC)
+void Timing_2010::ConvertBldLst(PPTX::Logic::Timing &timimg, CRecordBuildListContainer *pBLC)
 {
     if (pBLC == nullptr)
         return;
-    bldLst.list.clear();    // It maybe not correct
+    if (timimg.bldLst.IsInit())
+        timimg.bldLst->list.clear();
+    if (pBLC->m_arRecords.empty())
+        return;
+    if (!timimg.bldLst.IsInit())
+        timimg.bldLst = new PPTX::Logic::BldLst;
+
 
     for (IRecord* pDBC : pBLC->m_arRecords)
     {
@@ -38,8 +44,11 @@ void Timing_2010::ConvertBldLst(PPTX::Logic::BldLst &bldLst, CRecordBuildListCon
             continue;
 
         FillBuildNodeBase(pSub, oBuildNodeBase);
-        InsertBuildNode(bldLst, oBuildNodeBase);
+        InsertBuildNode(timimg.bldLst.get2(), oBuildNodeBase);
     }
+
+    if (timimg.bldLst->list.empty())    // You can't leave an empty tag <p:bldLst/>
+        timimg.bldLst.reset();
 }
 
 void Timing_2010::InsertBuildNode(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb)
@@ -99,6 +108,9 @@ void Timing_2010::FillBuildNodeBase(CRecordBuildListSubContainer *pSub, PPTX::Lo
 
 void Timing_2010::FillBldP(CRecordParaBuildContainer* pPBC, PPTX::Logic::BldP &oBP)
 {
+    if (pPBC == nullptr)
+        return;
+
     oBP.spid      = std::to_wstring(pPBC->buildAtom.m_nShapeIdRef);
     oBP.grpId     = (int)pPBC->buildAtom.m_nBuildId;
     oBP.uiExpand  = pPBC->buildAtom.m_fExpanded;
@@ -120,6 +132,9 @@ void Timing_2010::FillBldP(CRecordParaBuildContainer* pPBC, PPTX::Logic::BldP &o
 
 void Timing_2010::FillBldOleChart(CRecordChartBuildContainer *pCBC, PPTX::Logic::BldOleChart &oBP)
 {
+    if (pCBC == nullptr)
+        return;
+
     oBP.spid      = std::to_wstring(pCBC->buildAtom.m_nShapeIdRef);
     oBP.grpId     = (int)pCBC->buildAtom.m_nBuildId;
     oBP.uiExpand  = pCBC->buildAtom.m_fExpanded;
@@ -139,6 +154,9 @@ void Timing_2010::FillBldOleChart(CRecordChartBuildContainer *pCBC, PPTX::Logic:
 
 void Timing_2010::FillBldDgm(CRecordDiagramBuildContainer *pDBC, PPTX::Logic::BldDgm &oBP)
 {
+    if (pDBC == nullptr)
+        return;
+
     oBP.spid      = std::to_wstring(pDBC->buildAtom.m_nShapeIdRef);
     oBP.grpId     = (int)pDBC->buildAtom.m_nBuildId;
     oBP.uiExpand  = pDBC->buildAtom.m_fExpanded;
@@ -368,11 +386,6 @@ void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CB
         UINT spid = pBhvr->
                 m_oClientVisualElement.
                 m_oVisualShapeAtom.m_nObjectIdRef;
-
-        //        if (isSpidReal(spid) == false)
-        //        {
-        //            m_isPPT10Broken = true;                                                                   /// TODO Here. Check with 1995 anim
-        //        }
 
         oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
         oBhvr.tgtEl.spTgt->spid =
@@ -920,7 +933,7 @@ void Timing_2010::FillCmd(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Cmd &
         return;
 
     auto pCommand = pETNC->m_pTimeCommandBehavior;
-    auto oAtom =    pCommand->m_oCommandBehaviorAtom;
+    const auto& oAtom =    pCommand->m_oCommandBehaviorAtom;
 
     FillCBhvr(pETNC, oCmd.cBhvr);
 
@@ -1105,12 +1118,6 @@ void Timing_2010::FillCTnHeadArgs(CRecordExtTimeNodeContainer *pETNC, PPTX::Logi
     if (cTNLevel == TimeNodeLevel::mainSeqOrTrigger)
         isMainSeq = oCTn.nodeType.get_value_or(L"") == L"mainSeq";
 
-    if (oCTn.nodeType.IsInit() == false && (cTNLevel == TimeNodeLevel::eventOrClickGroup || cTNLevel == TimeNodeLevel::parallelShow))
-    {
-        oCTn.nodeType = new PPTX::Limit::TLNodeType();
-        oCTn.nodeType->set( cTNLevel ==  TimeNodeLevel::parallelShow ? L"clickPar" : L"withGroup");
-    }
-
     if (!pETNC->m_haveSequenceAtom)
     {
         // Write stCondLst
@@ -1234,7 +1241,7 @@ void Timing_2010::FillAnimClr(
                 strVal = L"accent" + std::to_wstring(index - 3);
             }
             pScheme->val = strVal;
-            oAnimClr.to.Color = pScheme;
+            oAnimClr.to.Color = smart_ptr<PPTX::Logic::ColorBase>(pScheme);
         }
     }
 }
@@ -1278,7 +1285,7 @@ void Timing_2010::FillAnimMotion(
         return;
 
     auto pMotion = pETNC->m_pTimeMotionBehavior;
-    auto oAtom = pMotion->m_oMotionBehaviorAtom;
+    const auto& oAtom = pMotion->m_oMotionBehaviorAtom;
 
     FillCBhvr(pETNC, oAnim.cBhvr);
 
@@ -1322,7 +1329,7 @@ void Timing_2010::FillAnimRot(
     if (!pETNC || !pETNC->m_pTimeRotationBehavior) return;
 
     auto pRot = pETNC->m_pTimeRotationBehavior;
-    auto oAtom = pRot->m_oRotationBehaviorAtom;
+    const auto& oAtom = pRot->m_oRotationBehaviorAtom;
 
     FillCBhvr(pETNC, oAnim.cBhvr);
 
@@ -1344,7 +1351,7 @@ void Timing_2010::FillAnimScale(
     if (!pETNC || !pETNC->m_pTimeScaleBehavior) return;
 
     auto pScale = pETNC->m_pTimeScaleBehavior;
-    auto oAtom =  pScale->m_oScaleBehaviorAtom;
+    const auto& oAtom =  pScale->m_oScaleBehaviorAtom;
 
     FillCBhvr(pETNC, oAnim.cBhvr);
 
@@ -1375,7 +1382,7 @@ void Timing_2010::FillVideo(
         CRecordExtTimeNodeContainer* pETNC,
         PPTX::Logic::Video& oVideo)
 {
-    auto video = pETNC->m_pClientVisualElement->m_oVisualShapeAtom;
+    const auto& video = pETNC->m_pClientVisualElement->m_oVisualShapeAtom;
 
     FillCTnRecursive(pETNC, oVideo.cMediaNode.cTn);
 
@@ -1403,14 +1410,6 @@ void Timing_2010::FillVideo(
     oVideo.cMediaNode.tgtEl.spTgt = PPTX::Logic::SpTgt();
     oVideo.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(video.m_nObjectIdRef);
 }
-
-void Timing_2010::FillAnimationPar(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Par &oPar)
-{
-
-
-}
-
-
 
 }
 }

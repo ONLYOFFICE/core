@@ -34,8 +34,8 @@
 
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/OfficeFileFormatChecker.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/Base/Unit.h"
+#include "../../OOXML/SystemUtility/SystemUtility.h"
+#include "../../OOXML/Base/Unit.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"

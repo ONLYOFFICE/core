@@ -53,8 +53,8 @@
 #include "../../Common/3dParty/cryptopp/zinflate.h"
 #include "../../Common/3dParty/cryptopp/zdeflate.h"
 
-#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../OOXML/Base/unicode_util.h"
+#include "../../OOXML/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };

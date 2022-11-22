@@ -40,7 +40,7 @@
 #endif
 
 #include <string>
-#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../OOXML/Base/Base.h"
 
 namespace NExtractTools
 {

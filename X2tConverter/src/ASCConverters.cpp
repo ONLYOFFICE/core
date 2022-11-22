@@ -38,18 +38,18 @@
 #include "../../OfficeUtils/src/OfficeUtils.h"
 #include "../../Common/3dParty/pole/pole.h"
 
-#include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
-#include "../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
+#include "../../OOXML/Binary/Document/DocWrapper/DocxSerializer.h"
+#include "../../OOXML/Binary/Document/DocWrapper/XlsxSerializer.h"
 
-#include "../../Common/DocxFormat/Source/XlsbFormat/Xlsb.h"
-#include "../../ASCOfficePPTXFile/ASCOfficePPTXFile.h"
+#include "../../OOXML/XlsbFormat/Xlsb.h"
+#include "../../OOXML/PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h"
 
-#include "../../ASCOfficeRtfFile/RtfFormatLib/source/ConvertationManager.h"
-#include "../../ASCOfficeDocFile/DocFormatLib/DocFormatLib.h"
-#include "../../ASCOfficeTxtFile/TxtXmlFormatLib/Source/TxtXmlFile.h"
-#include "../../ASCOfficePPTFile/PPTFormatLib/PPTFormatLib.h"
-#include "../../ASCOfficeOdfFile/src/ConvertOO2OOX.h"
-#include "../../ASCOfficeOdfFileW/source/Oox2OdfConverter/Oox2OdfConverter.h"
+#include "../../RtfFile/Format/ConvertationManager.h"
+#include "../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
+#include "../../TxtFile/Source/TxtXmlFile.h"
+#include "../../MsBinaryFile/PptFile/Main/PPTFormatLib.h"
+#include "../../OdfFile/Reader/Converter/ConvertOO2OOX.h"
+#include "../../OdfFile/Writer/Converter/Oox2OdfConverter.h"
 
 #include "../../DesktopEditor/doctrenderer/doctrenderer.h"
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
@@ -65,13 +65,13 @@
 #include "../../HtmlFile2/htmlfile2.h"
 #include "../../EpubFile/CEpubFile.h"
 
-#include "../../ASCOfficeXlsFile2/source/XlsXlsxConverter/ConvertXls2Xlsx.h"
-#include "../../ASCOfficeXlsFile2/source/VbaFormat/VbaReader.h"
+#include "../../MsBinaryFile/XlsFile/Converter/ConvertXls2Xlsx.h"
+#include "../../MsBinaryFile/Common/Vba/VbaReader.h"
 #include "../../OfficeCryptReader/source/ECMACryptFile.h"
 
-#include "../../XlsxSerializerCom/Common/Common.h"
-#include "../../XlsxSerializerCom/Writer/CSVWriter.h"
-#include "../../XlsxSerializerCom/Reader/CSVReader.h"
+#include "../../OOXML/Binary/Sheets/Common/Common.h"
+#include "../../OOXML/Binary/Sheets/Writer/CSVWriter.h"
+#include "../../OOXML/Binary/Sheets/Reader/CSVReader.h"
 
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Directory.h"
@@ -2883,7 +2883,7 @@ namespace NExtractTools
 		{
 			NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-			nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
+            nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword());
 			nRes = processEncryptionError(nRes, sFrom, params);
 			if (SUCCEEDED_X2T(nRes))
 			{
@@ -2982,7 +2982,7 @@ namespace NExtractTools
        COfficeUtils oCOfficeUtils(NULL);
 	   if (S_OK == oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedOdf, NULL, 0))
 	   {
-		   nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
+           nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), sTemp, params.getPassword());
 		   nRes = processEncryptionError(nRes, sFrom, params);
 	   }
 	   else
@@ -3016,7 +3016,7 @@ namespace NExtractTools
 
        NSDirectory::CreateDirectory(sTempUnpackedOox);
 
-		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword(), NULL);
+        _UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), sTemp, params.getPassword());
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if(SUCCEEDED_X2T(nRes))
 		{
@@ -3044,7 +3044,7 @@ namespace NExtractTools
 	}
 	_UINT32 odf_flat2oox_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring & sTemp, InputParams& params)
 	{
-		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), sTemp, params.getPassword(), NULL);
+        _UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), sTemp, params.getPassword());
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
 	}

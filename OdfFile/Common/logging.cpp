@@ -32,10 +32,14 @@
 
 #include "logging.h"
 #include <iostream>
+#include <sstream>
 
-namespace cpdoccore {
+namespace cpdoccore
+{
+    logging< std::wostream > logging_err(std::wcerr);
+    logging< std::wostream > logging_cout(std::wcout);
 
-logging< std::wostream > logging_err(std::wcerr);
-logging< std::wostream > logging_cout(std::wcout);
+    std::wstringstream              log_stringstream;
+    logging< std::wstringstream >   logging_log (log_stringstream);
 
 }

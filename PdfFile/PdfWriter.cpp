@@ -129,17 +129,11 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA) : m_o
 	m_bNeedUpdateTextAlpha     = true;
 	m_bNeedUpdateTextCharSpace = true;
 	m_bNeedUpdateTextSize      = true;
-
-	m_wsTempFolder = L"";
-	SetTempFolder(NSFile::CFileBinary::GetTempPath());
 }
 CPdfWriter::~CPdfWriter()
 {
 	RELEASEOBJECT(m_pDocument);
     RELEASEINTERFACE(m_pFontManager);
-
-	if (L"" != m_wsTempFolder)
-		NSDirectory::DeleteDirectory(m_wsTempFolder);
 }
 void CPdfWriter::SetPassword(const std::wstring& wsPassword)
 {
@@ -167,31 +161,6 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 		return 1;
 
 	return 0;
-}
-void CPdfWriter::SetTempFolder(const std::wstring& wsPath)
-{
-	if (L"" != m_wsTempFolder)
-		NSDirectory::DeleteDirectory(m_wsTempFolder);
-	
-	int nCounter = 0;
-    m_wsTempFolder = wsPath;
-    int nPathLen = (int)m_wsTempFolder.length();
-    if (nPathLen > 0)
-    {
-        const wchar_t* pData = m_wsTempFolder.c_str();
-        if ((pData[nPathLen - 1] != '/') && (pData[nPathLen - 1] != '\\'))
-            m_wsTempFolder += L"/";
-
-        m_wsTempFolder += L"PDF";
-    }
-
-    std::wstring sTest = m_wsTempFolder;
-	while (NSDirectory::Exists(m_wsTempFolder))
-	{
-        m_wsTempFolder = sTest + L"/PDF_" + std::to_wstring(nCounter);
-		nCounter++;
-	}
-	NSDirectory::CreateDirectory(m_wsTempFolder);
 }
 void CPdfWriter::SetCore(const std::wstring& wsCoreXml)
 {
@@ -230,9 +199,9 @@ void CPdfWriter::SetCore(const std::wstring& wsCoreXml)
     if (!sKeywords.empty())
         m_pDocument->SetKeywords(sKeywords);
 }
-std::wstring CPdfWriter::GetTempFile()
+std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {
-	return NSFile::CFileBinary::CreateTempFileWithUniqueName(m_wsTempFolder, L"PDF");
+    return NSFile::CFileBinary::CreateTempFileWithUniqueName(wsDirectory, L"PDF");
 }
 //----------------------------------------------------------------------------------------
 // Функции для работы со страницей
@@ -787,7 +756,7 @@ HRESULT CPdfWriter::PathCommandEnd()
 	m_oPath.Clear();
 	return S_OK;
 }
-HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const LONG& lType)
+HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType)
 {
 	m_oCommandManager.Flush();
 
@@ -812,13 +781,13 @@ HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const LONG& 
 		if (c_BrushTypeTexture == m_oBrush.GetType())
 		{
 			sTextureOldPath = m_oBrush.GetTexturePath();
-			sTextureTmpPath = GetDownloadFile(sTextureOldPath);
+            sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
 
 			if (!sTextureTmpPath.empty())
 				m_oBrush.SetTexturePath(sTextureTmpPath);
 		}
 
-        UpdateBrush(pAppFonts);
+        UpdateBrush(pAppFonts, wsTempDirectory);
 	}
 
 	if (!m_pShading)
@@ -1000,14 +969,14 @@ HRESULT CPdfWriter::DrawImage(IGrObject* pImage, const double& dX, const double&
 
 	return S_OK;
 }
-HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsImagePathSrc, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
+HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const std::wstring& wsImagePathSrc, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
 {
 	m_oCommandManager.Flush();
 
 	if (!IsPageValid())
 		return S_OK;
 
-	std::wstring sTempImagePath = GetDownloadFile(wsImagePathSrc);
+    std::wstring sTempImagePath = GetDownloadFile(wsImagePathSrc, wsTempDirectory);
 	std::wstring wsImagePath = sTempImagePath.empty() ? wsImagePathSrc : sTempImagePath;
 
 	Aggplus::CImage* pAggImage = NULL;
@@ -1023,7 +992,7 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
         pMeta->LoadFromFile(wsImagePath.c_str());
 
 		double dNewW = std::max(10.0, dW) / 25.4 * 300;
-		std::wstring wsTempFile = GetTempFile();
+        std::wstring wsTempFile = GetTempFile(wsTempDirectory);
         pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
 
         RELEASEOBJECT(pMeta);
@@ -2027,7 +1996,7 @@ void CPdfWriter::UpdatePen()
 	else
         m_pPage->SetLineJoin(PdfWriter::linejoin_Round);
 }
-void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts)
+void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory)
 {
 	m_pShading = NULL;
 	m_pShadingExtGrState = NULL;
@@ -2071,7 +2040,7 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts)
 
 			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
 
-			std::wstring wsTempFile = GetTempFile();
+            std::wstring wsTempFile = GetTempFile(wsTempDirectory);
             pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
 
             RELEASEOBJECT(pMeta);
@@ -2290,7 +2259,7 @@ unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned i
 	pCodes[1] = ushCode & 0xFF;
 	return pCodes;
 }
-std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl)
+std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory)
 {
     std::wstring::size_type n1 = sUrl.find(L"www.");
     std::wstring::size_type n2 = sUrl.find(L"http://");
@@ -2311,7 +2280,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl)
     if (!bIsNeedDownload)
         return L"";
 
-    std::wstring sTempFile = GetTempFile();
+    std::wstring sTempFile = GetTempFile(wsTempDirectory);
     NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
     oDownloader.SetFilePath(sTempFile);
 

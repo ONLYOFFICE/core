@@ -64,10 +64,9 @@ public:
     ~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	void         SetPassword(const std::wstring& wsPassword);
-	void		 SetDocumentID(const std::wstring& wsDocumentID);
-	void         SetTempFolder(const std::wstring& wsPath);
+    void		 SetDocumentID(const std::wstring& wsDocumentID);
     void         SetCore(const std::wstring& wsCoreXml);
-	std::wstring GetTempFile();	
+    std::wstring GetTempFile(const std::wstring& wsDirectory);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со страницей
 	//----------------------------------------------------------------------------------------
@@ -163,7 +162,7 @@ public:
     HRESULT PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle);
     HRESULT PathCommandClose();
     HRESULT PathCommandEnd();
-    HRESULT DrawPath(NSFonts::IApplicationFonts* pAppFonts, const LONG& lType);
+    HRESULT DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType);
     HRESULT PathCommandStart();
     HRESULT PathCommandGetCurrentPoint(double* dX, double* dY);
     HRESULT PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
@@ -174,7 +173,7 @@ public:
 	// Функции для вывода изображений
 	//----------------------------------------------------------------------------------------
     HRESULT DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH);
-    HRESULT DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha = 255);
+    HRESULT DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha = 255);
 	//----------------------------------------------------------------------------------------
 	// Функции для выставления преобразования
 	//----------------------------------------------------------------------------------------
@@ -220,7 +219,7 @@ private:
     PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
 	void UpdateTransform();
 	void UpdatePen();
-    void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts);
+    void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);
 	void Reset();
 	bool IsValid();
 	bool IsPageValid();
@@ -228,11 +227,10 @@ private:
 	void AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage);
     unsigned char* EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs = NULL);
     unsigned char* EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount);
-	std::wstring GetDownloadFile(const std::wstring& sUrl);
+    std::wstring GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory);
 
 private:
     NSFonts::IFontManager*       m_pFontManager;
-	std::wstring                 m_wsTempFolder;
 
 	PdfWriter::CFontCidTrueType* m_pFont;
 	PdfWriter::CShading*         m_pShading;

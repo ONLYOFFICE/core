@@ -66,16 +66,16 @@ namespace PdfFile
     {
         errorNone          = 0, // Нет ошибок
         errorOpenFile      = 1, // Ошибка при открытии PDF файла
-        errorBadCatalog    = 2, // couldn't read the page catalog
+        errorBadCatalog    = 2, // Couldn't read the page catalog
         errorDamaged       = 3, // PDF файл был поврежден и его невозможно восстановить
         errorEncrypted     = 4, // Файл зашифрован, авторизация не пройдена
-        errorHighlightFile = 5, // nonexistent or invalid highlight file
-        errorBadPrinter    = 6, // плохой принтер
-        errorPrinting      = 7, // ошибка во время печати
+        errorHighlightFile = 5, // Nonexistent or invalid highlight file
+        errorBadPrinter    = 6, // Плохой принтер
+        errorPrinting      = 7, // Ошибка во время печати
         errorPermission    = 8, // Ошибка связанная с ограничениями наложенными на файл
         errorBadPageNum    = 9, // Неверное количество страниц
-        errorFileIO        = 10, // Ошибка при чтении/записи
-        errorMemory        = 11  // Memory exceed
+        errorFileIO        = 10,// Ошибка при чтении/записи
+        errorMemory        = 11 // Memory exceed
     } EError;
 }
 
@@ -85,16 +85,18 @@ public:
     CPdfFile(NSFonts::IApplicationFonts* pAppFonts);
     virtual ~CPdfFile();
     NSFonts::IFontManager* GetFontManager();
+    // В режиме для чтения закрытие reader, есть возможность открыть новый
+    // В режиме для редактирования закрытие writer, есть возможность использования reader
+    virtual void Close();
 
     // --- EDIT ---
-    virtual void Close();
 #ifndef BUILDING_WASM_MODULE
+    // Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
     bool EditPdf(const std::wstring& wsDstFile = L"");
+    // Манипуляции со страницами возможны в режиме редактирования
     bool EditPage  (int nPageIndex);
     bool DeletePage(int nPageIndex);
     bool AddPage   (int nPageIndex);
-    void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
-    void PageRotate(int nRotate);
 #endif
 
     // --- READER ---
@@ -121,9 +123,11 @@ public:
 
     void CreatePdf    (bool isPDFA = false);
     int  SaveToFile   (const std::wstring& wsPath);
+    void RotatePage   (int nRotate);
     void SetPassword  (const std::wstring& wsPassword);
     void SetDocumentID(const std::wstring& wsDocumentID);
     void SetCore      (const std::wstring& wsCoreXml);
+    void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);

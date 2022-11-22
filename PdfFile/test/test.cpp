@@ -121,7 +121,7 @@ int main()
             if (pdfFile.EditPage(0))
             {
                 TEST(&pdfFile);
-                pdfFile.PageRotate(90);
+                pdfFile.RotatePage(90);
             }
 
             pdfFile.DeletePage(1);

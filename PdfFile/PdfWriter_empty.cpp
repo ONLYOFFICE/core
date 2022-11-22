@@ -6,9 +6,7 @@ CPdfWriter::~CPdfWriter() {}
 int CPdfWriter::SaveToFile(const std::wstring& wsPath) { return 0; }
 void CPdfWriter::SetPassword(const std::wstring& wsPassword) {}
 void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID) {}
-void CPdfWriter::SetTempFolder(const std::wstring& wsPath) {}
 void CPdfWriter::SetCore(const std::wstring& wsCore) {}
-std::wstring CPdfWriter::GetTempFile() { return std::wstring(); }
 HRESULT CPdfWriter::NewPage() { return 0; }
 HRESULT CPdfWriter::get_Height(double* dHeight) { return 0; }
 HRESULT CPdfWriter::put_Height(const double& dHeight) { return 0; }
@@ -83,7 +81,7 @@ HRESULT CPdfWriter::PathCommandCurvesTo(double* pPoints, const int& nCount) { re
 HRESULT CPdfWriter::PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle) { return 0; }
 HRESULT CPdfWriter::PathCommandClose() { return 0; }
 HRESULT CPdfWriter::PathCommandEnd() { return 0; }
-HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const LONG& lType) { return 0; }
+HRESULT CPdfWriter::DrawPath(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const LONG& lType) { return 0; }
 HRESULT CPdfWriter::PathCommandStart() { return 0; }
 HRESULT CPdfWriter::PathCommandGetCurrentPoint(double* dX, double* dY) { return 0; }
 HRESULT CPdfWriter::PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
@@ -91,7 +89,7 @@ HRESULT CPdfWriter::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid
 HRESULT CPdfWriter::PathCommandText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::PathCommandTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
 HRESULT CPdfWriter::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH) { return 0; }
-HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return 0; }
+HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory, const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha) { return 0; }
 HRESULT CPdfWriter::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY) { return 0; }
 HRESULT CPdfWriter::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY) { return 0; }
 HRESULT CPdfWriter::ResetTransform() { return 0; }
@@ -118,7 +116,7 @@ PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontPath,
 PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic) { return NULL; }
 void CPdfWriter::UpdateTransform() {}
 void CPdfWriter::UpdatePen() {}
-void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts) {}
+void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory) {}
 void CPdfWriter::Reset() {}
 bool CPdfWriter::IsValid() { return false; }
 bool CPdfWriter::IsPageValid() { return false; }
@@ -126,7 +124,7 @@ void CPdfWriter::SetError() {}
 void CPdfWriter::AddLink(PdfWriter::CPage* pPage, const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const unsigned int& unDestPage) {}
 unsigned char* CPdfWriter::EncodeString(const unsigned int* pUnicodes, const unsigned int& unUnicodesCount, const unsigned int* pGIDs) { return NULL; }
 unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unUnicodesCount) { return NULL; }
-std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl) { return std::wstring(); }
+std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::wstring& wsTempDirectory) { return std::wstring(); }
 
 CCommandManager::CCommandManager(CPdfWriter* pRenderer) {}
 CCommandManager::~CCommandManager() {}

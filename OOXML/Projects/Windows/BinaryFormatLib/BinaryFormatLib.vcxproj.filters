@@ -132,6 +132,9 @@
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp">
       <Filter>Presentation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h">

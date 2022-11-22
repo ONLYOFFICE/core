@@ -33,7 +33,7 @@
 #include "xlsx_conversion_context.h"
 
 #include "../../Common/Utils/simple_xml_writer.h"
-#include "../../Common/Utils/utils.h"
+#include "../../../OOXML/Base/Unit.h"
 #include "../Format/Auxiliary/HelpFunc.h"
 
 #include "../../../DesktopEditor/raster/BgraFrame.h"

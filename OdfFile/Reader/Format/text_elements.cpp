@@ -2023,7 +2023,7 @@ void variable_input::add_text(const std::wstring & Text)
 }
 std::wostream & variable_input::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_, bXmlEncode );
+    _Wostream << XmlUtils::EncodeXmlString( text_, bXmlEncode );
     return _Wostream;
 }
 
@@ -2090,7 +2090,7 @@ void variable_set::docx_convert(oox::docx_conversion_context & Context)
 		if (name_)
 		{
 			Context.output_stream() << L"<w:placeholder/>";
-			Context.output_stream() << L"<w:docPart w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+			Context.output_stream() << L"<w:docPart w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 		}
 		Context.output_stream() << L"<w:showingPlcHdr/>";
 		Context.output_stream() << L"<w:text/>";

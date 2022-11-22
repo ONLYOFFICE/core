@@ -32,7 +32,7 @@
 
 #include "DXFN.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -74,7 +74,7 @@ int DXFNum::serialize(std::wostream & stream)
 				CP_XML_ATTR(L"numFmtId", fmt_id.ifmt);
  			
 			if (parent->fIfmtUser)
- 				CP_XML_ATTR(L"formatCode", /*xml::utils::replace_text_to_xml*/(user_defined.fmt.value()));
+ 				CP_XML_ATTR(L"formatCode", /*XmlUtils::EncodeXmlString*/(user_defined.fmt.value()));
 		}
 	}
 	return 0;

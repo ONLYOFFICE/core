@@ -899,7 +899,6 @@ SOURCES +=  \
 	../../../XlsFile/Format/Crypt/XORCrypt.cpp \
 	../../../XlsFile/Format/Logging/Log.cpp \
 	../../../XlsFile/Format/Logging/Logger.cpp \
-	../../../Common/Utils/utils.cpp \
 	../../../Common/ODraw/FormulaShape.cpp \
 	../../../Common/ODraw/CustomShape.cpp \
 	../../../Common/ODraw/BaseShape_1.cpp \

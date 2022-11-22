@@ -34,7 +34,7 @@
 
 #include "Font.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 #include "../../../Converter/XlsConverter.h"
 #include "../../../Converter/xlsx_conversion_context.h"
@@ -248,7 +248,7 @@ int TxO::serialize_vml (std::wostream & _stream)
 
 					std::wstring str_part = str_.substr( run->formatRun.ich, end_string - run->formatRun.ich);
 
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(str_part);
 				}
 			}
 		}
@@ -306,7 +306,7 @@ int TxO::serialize (std::wostream & _stream)
 
 					std::wstring str_part = str_.substr( run->formatRun.ich, end_string - run->formatRun.ich);
 
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(str_part);
 				}
 			}
 		}

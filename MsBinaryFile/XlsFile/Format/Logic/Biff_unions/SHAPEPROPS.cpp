@@ -34,7 +34,7 @@
 #include "../Biff_records/ShapePropsStream.h"
 #include "../Biff_records/ContinueFrt12.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {

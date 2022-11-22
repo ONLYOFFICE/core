@@ -41,7 +41,7 @@
 #include "../Biff_records/StartObject.h"
 #include "../Biff_records/EndObject.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {

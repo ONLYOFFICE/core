@@ -33,7 +33,7 @@
 #include "Pos.h"
 #include "Frame.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {

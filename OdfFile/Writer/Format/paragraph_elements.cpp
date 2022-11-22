@@ -72,14 +72,14 @@ const wchar_t * text_text::name = L"";
 
 std::wostream & text_text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	_Wostream << xml::utils::replace_text_to_xml( text_ );
+	_Wostream << XmlUtils::EncodeXmlString( text_ );
 
 	return _Wostream;
 }
 
 void text_text::serialize(std::wostream & _Wostream) 
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ , true);
+    _Wostream << XmlUtils::EncodeXmlString( text_ , true);
 }
 
 void text_text::add_text(const std::wstring & Text) 

@@ -335,7 +335,7 @@ void number_currency_symbol::oox_convert(oox::num_format_context & Context)
 
 	for (size_t i = 0; i < text_.size(); i++)
     {
-        strm << xml::utils::replace_text_to_xml(text_[i]);
+        strm << XmlUtils::EncodeXmlString(text_[i]);
     }
     strm << L"]";
 }

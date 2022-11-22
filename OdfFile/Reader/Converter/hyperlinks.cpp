@@ -32,7 +32,7 @@
 
 #include "hyperlinks.h"
 
-#include <xml/utils.h>
+#include "../../../OOXML/Base/Unit.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -51,7 +51,7 @@ std::wstring hyperlinks::add(const std::wstring & href, _rels_type_place type_pl
 {
 	std::wstring id = std::wstring(L"rHpId") + std::to_wstring(hrefs_.size() + 1);
 	
-	_ref r = {xml::utils::replace_text_to_xml(href), type_place, drawing, id};
+	_ref r = { XmlUtils::EncodeXmlString(href), type_place, drawing, id } ;
 	
 	hrefs_.push_back(r);
 

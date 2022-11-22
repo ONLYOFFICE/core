@@ -195,6 +195,20 @@
     <ClInclude Include="..\..\Writer\Format\text_elements.h" />
     <ClInclude Include="..\..\Writer\Format\visitor.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
+      <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="cpcommon.vcxproj">
+      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
+    </ProjectReference>
+    <ProjectReference Include="cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="formulasconvert.vcxproj">
+      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectName>OdfFormatWriterLib</ProjectName>
     <ProjectGuid>{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}</ProjectGuid>

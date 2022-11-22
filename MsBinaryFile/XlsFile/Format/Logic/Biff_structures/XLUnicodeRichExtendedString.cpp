@@ -35,7 +35,7 @@
 #include "../GlobalWorkbookInfo.h"
 #include "../Biff_records/Font.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -126,7 +126,7 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 
 					std::wstring str_part = str_.substr( start_string, rgRun[i].ich - start_string );
 					start_string = rgRun[i].ich;
-					CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(str_part));
+					CP_XML_STREAM() << STR::escape_ST_Xstring(XmlUtils::EncodeXmlString(str_part));
 				}
 			}
 		}
@@ -140,7 +140,7 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 				{	
 					CP_XML_ATTR(L"xml:space", L"preserve");
 					std::wstring str_part = str_.substr( start_string, str_.size() - start_string );
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(str_part);
 				}
 			}
 		}

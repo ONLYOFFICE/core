@@ -33,8 +33,7 @@
 #include "CF.h"
 #include "CFEx.h"
 
-#include "../../../../Common/Utils/utils.h"
-
+#include "../../../../../OOXML/Base/Unit.h"
 namespace XLS
 {
 
@@ -135,14 +134,14 @@ int CF::serialize(std::wostream & stream)
 			{
 				CP_XML_NODE(L"formula")
 				{
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s1);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(s1);
 				}
 			}
 			if(!s2.empty()) 
 			{
 				CP_XML_NODE(L"formula")
 				{
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(s2);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(s2);
 				}
 			}
 		}

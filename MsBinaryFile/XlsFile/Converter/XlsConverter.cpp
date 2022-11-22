@@ -97,7 +97,7 @@
 #include "xlsx_package.h"
 
 #include "../../Common/Utils/simple_xml_writer.h"
-#include "../../Common/Utils/utils.h"
+#include "../../../OOXML/Base/Unit.h"
 
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
@@ -2387,7 +2387,7 @@ void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
 					CP_XML_NODE(L"t")
 					{		
 						CP_XML_ATTR(L"xml:space", "preserve");
-						CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(xls_global_info->arAddedSharedStrings[i]));
+						CP_XML_STREAM() << STR::escape_ST_Xstring(XmlUtils::EncodeXmlString(xls_global_info->arAddedSharedStrings[i]));
 					}
 				}
 			}

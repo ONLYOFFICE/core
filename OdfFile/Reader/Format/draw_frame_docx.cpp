@@ -1863,7 +1863,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 			Context.add_new_run(L"");
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-				Context.output_stream() << xml::utils::replace_text_to_xml( text, true );
+				Context.output_stream() << XmlUtils::EncodeXmlString( text, true );
 				Context.output_stream() << L"</w:t>";
 			Context.finish_run();
 		}

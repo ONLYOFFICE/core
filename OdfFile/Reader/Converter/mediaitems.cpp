@@ -307,7 +307,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 			count_shape++;
 		}
 		
-		items_.push_back( item(inputPath, type, xml::utils::replace_text_to_xml(outputPath), isMediaInternal, id, type_place) );
+		items_.push_back( item(inputPath, type, XmlUtils::EncodeXmlString(outputPath), isMediaInternal, id, type_place) );
 	}
 
   	ref = outputPath;

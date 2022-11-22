@@ -466,7 +466,7 @@ void pptx_text_context::Impl::dump_field()
     {
 		CP_XML_NODE(L"a:fld")
 		{
-			std::wstring content = xml::utils::replace_text_to_xml(field_value_.str());
+			std::wstring content = XmlUtils::EncodeXmlString(field_value_.str());
 			std::wstring string_id;
 			std::wstring string_type;
 
@@ -496,7 +496,7 @@ void pptx_text_context::Impl::dump_field()
 #if !defined (_WIN32) &&  !defined (_WIN64)
                     string_id = L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}";
 #endif
-                    if (content.length()<1)content = xml::utils::replace_text_to_xml(L"01.01.2000");
+                    if (content.length()<1)content = XmlUtils::EncodeXmlString(L"01.01.2000");
 				}							
 				break;
 			case time:	
@@ -506,7 +506,7 @@ void pptx_text_context::Impl::dump_field()
 #if !defined (_WIN32) &&  !defined (_WIN64)
                     string_id = L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}";
 #endif
-                    if (content.length()<1)content = xml::utils::replace_text_to_xml(L"00:00:00");
+                    if (content.length()<1)content = XmlUtils::EncodeXmlString(L"00:00:00");
 				}
 				break;
 			case datetime:
@@ -545,7 +545,7 @@ void pptx_text_context::Impl::dump_run()
 	
 	if (process_layouts_) return; 
 	
-	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
+	const std::wstring content = XmlUtils::EncodeXmlString(text_.str());
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
 
 	if (content .length() > 0)

@@ -122,7 +122,7 @@ const wchar_t * text::name = L"";
 
 std::wostream & text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_, true ) : text_);
+	_Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_, true ) : text_);
     return _Wostream;
 }
 void text::add_space(const std::wstring & Text) 
@@ -183,7 +183,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.output_stream() << L" xml:space=\"preserve\"";
 	Context.output_stream() << L">";
 
-	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
+	Context.output_stream() << XmlUtils::EncodeXmlString( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
     Context.output_stream() << L"</" << textNode << L">";
 
 	if (add_del_run)
@@ -1482,7 +1482,7 @@ void expression::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 std::wostream & expression::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
+	_Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_ ) : text_);
     return _Wostream;
 }
 void expression::add_text(const std::wstring & Text)
@@ -1511,7 +1511,7 @@ void text_input::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 std::wostream & text_input::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
+    _Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_ ) : text_);
     return _Wostream;
 }
 void text_input::add_text(const std::wstring & Text)
@@ -1555,7 +1555,7 @@ void text_drop_down::add_text(const std::wstring & Text)
 }
 std::wostream & text_drop_down::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
+    _Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_ ) : text_);
     return _Wostream;
 }
 

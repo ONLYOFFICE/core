@@ -415,7 +415,7 @@ void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 		{
 			if (name_)
 			{
-				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			//<w:lock w:val="sdtLocked"/>
@@ -430,7 +430,7 @@ void form_text::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 			if (current_value_)
 			{
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-				Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_ );
 				Context.output_stream() << L"</w:t>";
 			}
 			Context.finish_run();
@@ -513,7 +513,7 @@ void form_fixed_text::docx_convert_sdt(oox::docx_conversion_context & Context, d
 		{
 			if (name_)
 			{
-				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			//<w:lock w:val="sdtLocked"/>
@@ -528,7 +528,7 @@ void form_fixed_text::docx_convert_sdt(oox::docx_conversion_context & Context, d
 			if (current_value_)
 			{
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-				Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+				Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_ );
 				Context.output_stream() << L"</w:t>";
 			}
 			Context.finish_run();
@@ -616,7 +616,7 @@ void form_checkbox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 		{
 			if (name_)
 			{
-				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			Context.output_stream() << L"<w14:checkbox>";
@@ -643,7 +643,7 @@ void form_checkbox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 	{
 		Context.add_new_run(L"");
 			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << XmlUtils::EncodeXmlString(*label_ );
 			Context.output_stream() << L"</w:t>";
 		Context.finish_run();
 	}
@@ -656,17 +656,17 @@ void form_checkbox::docx_convert_field(oox::docx_conversion_context & Context, d
 	XmlUtils::replace_all( *name_, L" ", L"_");
 
 	Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"begin\"><w:ffData><w:name w:val=\"" << *name_ << L"\"/><w:enabled/>";
-	Context.output_stream() << L"<w:label w:val=\"" << xml::utils::replace_text_to_xml(*label_ ) << L"\"/>";
+	Context.output_stream() << L"<w:label w:val=\"" << XmlUtils::EncodeXmlString(*label_ ) << L"\"/>";
 	Context.output_stream() << L"<w:checkBox><w:default w:val=\"" << std::to_wstring(current_state_) << L"\"/></w:checkBox></w:ffData>";
 	Context.output_stream() << L"</w:fldChar></w:r>";
 	Context.output_stream() << L"<w:r><w:instrText>FORMCHECKBOX</w:instrText></w:r>";
 	//Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>";
-	//Context.output_stream() << L"<w:r><w:t>" << xml::utils::replace_text_to_xml(*label_ ) << L"</w:t></w:r>";
+	//Context.output_stream() << L"<w:r><w:t>" << XmlUtils::EncodeXmlString(*label_ ) << L"</w:t></w:r>";
     Context.output_stream() << L"<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>";
 	
 	Context.add_new_run(L"");
 		Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-		Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+		Context.output_stream() << XmlUtils::EncodeXmlString(*label_ );
 		Context.output_stream() << L"</w:t>";
 	Context.finish_run();	
 }
@@ -816,7 +816,7 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 		{
 			if (name_)
 			{
-				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			
@@ -841,7 +841,7 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
 				if (current_value_)
 				{
-					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+					Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_ );
 				}
 				else
 				{
@@ -857,7 +857,7 @@ void form_combobox::docx_convert_sdt(oox::docx_conversion_context & Context, dra
 	{
 		Context.add_new_run(L"");
 			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << XmlUtils::EncodeXmlString(*label_ );
 			Context.output_stream() << L"</w:t>";
 		Context.finish_run();
 	}
@@ -967,7 +967,7 @@ void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 		{
 			if (name_)
 			{
-				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			
@@ -985,7 +985,7 @@ void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
 				if (current_value_)
 				{
-					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+					Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_ );
 				}
 				else
 				{
@@ -1001,7 +1001,7 @@ void form_date::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 	{
 		Context.add_new_run(L"");
 			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << XmlUtils::EncodeXmlString(*label_ );
 			Context.output_stream() << L"</w:t>";
 		Context.finish_run();
 	}
@@ -1042,7 +1042,7 @@ void form_time::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 		{
 			if (name_)
 			{
-				Context.output_stream() << L"<w:alias w:val=\"" + xml::utils::replace_text_to_xml(*name_) + L"\"/>";
+				Context.output_stream() << L"<w:alias w:val=\"" + XmlUtils::EncodeXmlString(*name_) + L"\"/>";
 			}
 			Context.output_stream() << L"<w:id w:val=\"" + std::to_wstring(Context.get_drawing_context().get_current_shape_id()) + L"\"/>";
 			
@@ -1060,7 +1060,7 @@ void form_time::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
 				if (current_value_)
 				{
-					Context.output_stream() << xml::utils::replace_text_to_xml(*current_value_ );
+					Context.output_stream() << XmlUtils::EncodeXmlString(*current_value_ );
 				}
 				else
 				{
@@ -1076,7 +1076,7 @@ void form_time::docx_convert_sdt(oox::docx_conversion_context & Context, draw_co
 	{
 		Context.add_new_run(L"");
 			Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-			Context.output_stream() << xml::utils::replace_text_to_xml(*label_ );
+			Context.output_stream() << XmlUtils::EncodeXmlString(*label_ );
 			Context.output_stream() << L"</w:t>";
 		Context.finish_run();
 	}

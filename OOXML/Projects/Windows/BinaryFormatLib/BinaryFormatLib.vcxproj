@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptFormula.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShape.cpp" />

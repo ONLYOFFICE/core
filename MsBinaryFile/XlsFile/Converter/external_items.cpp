@@ -32,7 +32,7 @@
 
 #include "external_items.h"
 
-#include "../../Common/Utils/utils.h"
+#include "../../../OOXML/Base/Unit.h"
 #include "../../Common/Utils/simple_xml_writer.h"
 
 #include "oox_rels.h"

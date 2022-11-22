@@ -493,7 +493,7 @@ std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href)
 	++hlinks_size_;
 	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
-	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
+	std::wstring href_correct = XmlUtils::EncodeXmlString(href);
     XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
 	//корректность написания ссылки важна для ms office и не важна для open office ->
@@ -836,7 +836,7 @@ void xlsx_drawing_context::set_link(std::wstring link, _rels_type typeRels)
 	++hlinks_size_;
 	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
-	link = xml::utils::replace_text_to_xml(link);
+	link = XmlUtils::EncodeXmlString(link);
 	
 	if (typeRels == typeHyperlink)
 		XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt

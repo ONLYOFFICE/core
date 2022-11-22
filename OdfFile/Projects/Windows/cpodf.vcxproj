@@ -779,6 +779,9 @@
       <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
+    </ProjectReference>
     <ProjectReference Include="formulasconvert.vcxproj">
       <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>

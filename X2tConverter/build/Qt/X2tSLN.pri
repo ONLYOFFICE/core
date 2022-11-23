@@ -10,57 +10,42 @@ SUBDIRS = \
     VbaFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
-    ASCOfficeDocxFile2Lib \
+    BinDocument \
     TxtXmlFormatLib \
     RtfFormatLib \
     PptFormatLib \
     DocFormatLib \
-    OdfFileReaderLib \
-    OdfFileWriterLib \
+    OdfFormatLib \
     XlsFormatLib \
-    kernel \
-    HtmlFile2 \
-    EpubFile \
-    XpsFile \
-    doctrenderer \
+    CompoundFileLib \
     X2tConverter
 
-XlsbFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/XlsbFormatLib.pro
-DocxFormatLib.file = ../../../Common/DocxFormat/DocxFormatLib/DocxFormatLib.pro
-PPTXFormatLib.file = ../../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/PPTXFormatLib.pro
-ASCOfficeDocxFile2Lib.file = ../../../ASCOfficeDocxFile2/Linux/ASCOfficeDocxFile2Lib.pro
-TxtXmlFormatLib.file = ../../../ASCOfficeTxtFile/TxtXmlFormatLib/Linux/TxtXmlFormatLib.pro
-RtfFormatLib.file = ../../../ASCOfficeRtfFile/RtfFormatLib/Linux/RtfFormatLib.pro
-PptFormatLib.file = ../../../ASCOfficePPTFile/PPTFormatLib/Linux/PPTFormatLib.pro
-DocFormatLib.file = ../../../ASCOfficeDocFile/DocFormatLib/Linux/DocFormatLib.pro
-OdfFileReaderLib.file = ../../../ASCOfficeOdfFile/linux/OdfFileReaderLib.pro
-OdfFileWriterLib.file = ../../../ASCOfficeOdfFileW/linux/OdfFileWriterLib.pro
-XlsFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/XlsFormatLib.pro
-VbaFormatLib.file = ../../../ASCOfficeXlsFile2/source/linux/VbaFormatLib.pro
-HtmlFile2.file = ../../../HtmlFile2/HtmlFile2.pro
-EpubFile.file = ../../../EpubFile/CEpubFile.pro
-XpsFile.file = ../../../XpsFile/XpsFile.pro
-kernel.file = ../../../Common/kernel.pro
-doctrenderer.file = ../../../DesktopEditor/doctrenderer/doctrenderer.pro
+XlsbFormatLib.file =	../../../OOXML/Projects/Linux/XlsbFormatLib/XlsbFormatLib.pro
+DocxFormatLib.file =	../../../OOXML/Projects/Linux/DocxFormatLib/DocxFormatLib.pro
+PPTXFormatLib.file =	../../../OOXML/Projects/Linux/PPTXFormatLib/PPTXFormatLib.pro
+BinDocument.file =	../../../OOXML/Projects/Linux/BinDocument/BinDocument.pro
+TxtXmlFormatLib.file =	../../../TxtFile/Projects/Linux/TxtXmlFormatLib.pro
+RtfFormatLib.file =	../../../RtfFile/Projects/Linux/RtfFormatLib.pro
+PptFormatLib.file =	../../../MsBinaryFile/Projects/PPTFormatLib/Linux/PPTFormatLib.pro
+DocFormatLib.file =	../../../MsBinaryFile/Projects/DocFormatLib/Linux/DocFormatLib.pro
+OdfFormatLib.file =	../../../OdfFile/Projects/Linux/OdfFormatLib.pro
+XlsFormatLib.file =	../../../MsBinaryFile/Projects/XlsFormatLib/Linux/XlsFormatLib.pro
+VbaFormatLib.file =	../../../MsBinaryFile/Projects/VbaFormatLib/Linux/VbaFormatLib.pro
+CompoundFileLib.file =	../../../Common/cfcpp/cfcpp.pro
 
 X2tConverter.depends = \
     XlsbFormatLib \
     DocxFormatLib \
     PPTXFormatLib \
-    ASCOfficeDocxFile2Lib \
+    BinDocument \
     TxtXmlFormatLib \
     RtfFormatLib \
     PptFormatLib \
     DocFormatLib \
-    OdfFileReaderLib \
-    OdfFileWriterLib \
+    OdfFormatLib \
     VbaFormatLib \
     XlsFormatLib \
-    kernel.pro \
-    HtmlFile2 \
-    EpubFile \
-    XpsFile \
-    doctrenderer
+    CompoundFileLib
 
 # build the project sequentially as listed in SUBDIRS !
 CONFIG += ordered

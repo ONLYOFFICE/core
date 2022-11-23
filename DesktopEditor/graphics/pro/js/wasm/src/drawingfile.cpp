@@ -169,6 +169,13 @@ int main()
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
+    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/font_selection.bin", &pPdfData, nPdfBytesCount))
+    {
+        InitializeFontsBin(pPdfData, nPdfBytesCount);
+        RELEASEARRAYOBJECTS(pPdfData);
+        oFile.CloseFile();
+    }
+
     if (!oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/test.pdf", &pPdfData, nPdfBytesCount))
     {
         RELEASEARRAYOBJECTS(pPdfData);

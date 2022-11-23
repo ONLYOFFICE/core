@@ -32,6 +32,7 @@ int main(int argc, char** argv)
 	}
 
 	Cx2tTester tester(config_path);
+	std::cout << "Starting..." << std::endl;
 	tester.Start();
 
 #ifdef _WIN32

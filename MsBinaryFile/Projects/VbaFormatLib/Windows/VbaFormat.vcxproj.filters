@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Common\Vba\Records.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\StreamObjects.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\VbaBinary.cpp" />
+    <ClCompile Include="..\..\..\Common\Vba\VbaReader.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Common\Vba\Records.h" />
+    <ClInclude Include="..\..\..\Common\Vba\StreamObjects.h" />
+    <ClInclude Include="..\..\..\Common\Vba\VbaBinary.h" />
+    <ClInclude Include="..\..\..\Common\Vba\VbaReader.h" />
+    <ClInclude Include="..\..\..\Common\Vba\VbaRecordType.h" />
+  </ItemGroup>
+</Project>

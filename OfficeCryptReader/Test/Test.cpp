@@ -22,11 +22,16 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::wstring password = L"password";
+#define __CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#define new DEBUG_NEW	
+
+	std::wstring password = L"123";
 	ECMACryptFile crypt_file;
 	bool result = false, bDataIntegrity = false;
 
-	std::wstring srcFileName	= L"D:\\test\\_bad_86\\crypt_file_test.docx";
+	std::wstring srcFileName	= L"D:\\tests\\__53\\test123-1.rtf-my.docx";
 	std::wstring dstFileName	= srcFileName + L"-mycrypt.docx";
 	std::wstring dstFileName2	= dstFileName + L".oox";
 	
@@ -40,17 +45,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	//std::wstring dstFileName1	= srcFileName1 + L".oox";
 	//result = crypt_file.DecryptOfficeFile(srcFileName1, dstFileName1, password, bDataIntegrity);
 			
-	//result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
+	result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
 	//result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
 	
-	std::wstring addit_name = L"11111111111111111111111111111";
-		
-	std::string addit_info = crypt_file.ReadAdditional(srcFileName, addit_name);
+	//std::wstring addit_name = L"11111111111111111111111111111";
+	//	
+	//std::string addit_info = crypt_file.ReadAdditional(srcFileName, addit_name);
 
-	std::wstring temp = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
+	//std::wstring temp = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
+	//
+	//addit_info += std::string(temp.begin(), temp.end());
+
+	//crypt_file.WriteAdditional(srcFileName, addit_name, addit_info);
 	
-	addit_info += std::string(temp.begin(), temp.end());
-
-	crypt_file.WriteAdditional(srcFileName, addit_name, addit_info);
+	_CrtDumpMemoryLeaks();
 	return 0;
 }

@@ -37,6 +37,7 @@ SOURCES += \
 	src/OOXMLVerifier.cpp
 
 core_windows {
+    DEFINES += SUPPORT_MS_CRYPTO
     HEADERS += src/Certificate_mscrypto.h
 
     LIBS += -lcrypt32

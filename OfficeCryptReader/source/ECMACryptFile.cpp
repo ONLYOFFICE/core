@@ -34,14 +34,15 @@
 #include "CryptTransform.h"
 
 #include "../../Common/3dParty/pole/pole.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../OOXML/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 
-#include "../../ASCOfficeDocFile/DocDocxConverter/MemoryStream.h"
+#include "../../MsBinaryFile/DocFile/MemoryStream.h"
 #include "simple_xml_writer.h"
+#include "../../Common/cfcpp/compoundfile.h"
 
 //CRYPT::_ecmaCryptData cryptDataGlobal; for Test
 
@@ -116,7 +117,7 @@ std::wstring ReadUnicodeLP(POLE::Stream *pStream)
         {
         }
 		res = std::wstring(ptr, length);
-		delete ptr;
+		delete []ptr;
 	}
 	else
 		res = std::wstring((wchar_t*)Data, length);
@@ -775,41 +776,46 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	{
 		return false;
 	}
-	cryptor.UpdateDataIntegrity(data_out, lengthData);
+	cryptor.UpdateDataIntegrity(data_out, lengthData);	
 	
+	bool bLargeFile = (lengthData > 3 * 1024 * 1024);
+
+	bLargeFile = true; // test ??? 
 
 //-------------------------------------------------------------------
-#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
-	IStorage *winStorage = NULL;
-	StgCreateDocfile(file_name_out.c_str(), STGM_CREATE|STGM_SHARE_EXCLUSIVE|STGM_READWRITE,  0, &winStorage);
-	
-	IStream *winStream = NULL;
-#else
-//-------------------------------------------------------------------
-	POLE::Storage *pStorage = new POLE::Storage(file_name_out.c_str());
-	if (!pStorage)return false;
+	POLE::Storage *pStorage = NULL;
+	CFCPP::CompoundFile *pStorageNew = NULL;
 
-	if (!pStorage->open(true, true))
+	if (bLargeFile)
 	{
-		delete pStorage;
-		return false;
+		pStorageNew = new CFCPP::CompoundFile(CFCPP::Ver_3, CFCPP::Default);
 	}
-	POLE::Stream *pStream = NULL;
-#endif
-//-------------------------------------------------------------------
-#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
-	ULONG nWritten;
-	winStorage->CreateStream(L"EncryptedPackage", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
-	winStream->Write(data_out, lengthData, &nWritten);
-	winStream->Release();
-#else
-	pStream = new POLE::Stream(pStorage, L"EncryptedPackage", true, lengthData);
-	
-	pStream->write(data_out, lengthData);
+	else
+	{
+		pStorage = new POLE::Storage(file_name_out.c_str());
+		if (!pStorage)return false;
 
-	pStream->flush();
-	delete pStream;
-#endif
+		if (!pStorage->open(true, true))
+		{
+			delete pStorage;
+			return false;
+		}
+	}
+//-------------------------------------------------------------------
+	if (bLargeFile)
+	{
+		std::shared_ptr<CFCPP::CFStream> oPackage = pStorageNew->RootStorage()->AddStream(L"EncryptedPackage");
+		oPackage->Write((char*)data_out, 0, lengthData);
+	}
+	else
+	{
+		POLE::Stream *pStream = new POLE::Stream(pStorage, L"EncryptedPackage", true, lengthData);
+
+		pStream->write(data_out, lengthData);
+
+		pStream->flush();
+		delete pStream;
+	}
 //-------------------------------------------------------------------
 
 	if (data_out)
@@ -820,124 +826,133 @@ bool ECMACryptFile::EncryptOfficeFile(const std::wstring &file_name_inp, const s
 	
 	cryptor.GetCryptData(cryptData);
 
-#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
-	winStorage->CreateStream(L"EncryptionInfo", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
-	if (cryptData.bAgile)
+	if (bLargeFile)
 	{
-		_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile
-	
-		winStream->Write((unsigned char*)&VersionInfoMajor, 2, &nWritten);
-		winStream->Write((unsigned char*)&VersionInfoMinor, 2, &nWritten);
-		
-		_UINT32 nEncryptionInfoFlags = 64;
-		winStream->Write((unsigned char*)&nEncryptionInfoFlags, 4, &nWritten); 
-		
-		std::string strXml;
-		WriteXmlEncryptionInfo(cryptData, strXml);
-		
-		winStream->Write((unsigned char*)strXml.c_str(), strXml.length(), &nWritten); 
+		std::shared_ptr<CFCPP::CFStream> oInfo = pStorageNew->RootStorage()->AddStream(L"EncryptionInfo");
+
+		if (cryptData.bAgile)
+		{
+			_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile
+
+			std::streamsize position = 0;
+			oInfo->Write((char*)&VersionInfoMajor, position, 2); position += 2;
+			oInfo->Write((char*)&VersionInfoMinor, position, 2); position += 2;
+
+			_UINT32 nEncryptionInfoFlags = 64;
+			oInfo->Write((char*)&nEncryptionInfoFlags, position, 4); position += 4;
+
+			std::string strXml;
+			WriteXmlEncryptionInfo(cryptData, strXml);
+
+			oInfo->Write(strXml.c_str(), position, strXml.length()); position += strXml.length();
+		}
+		else
+		{
+			_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0002; // standart
+
+			std::streamsize position = 0;
+			oInfo->Write((char*)&VersionInfoMajor, position, 2); position += 2;
+			oInfo->Write((char*)&VersionInfoMinor, position, 2); position += 2;
+
+			_UINT32 nEncryptionInfoFlags = 0;
+			bool fCryptoAPI = true, fDocProps = false, fExternal = false, fAES = cryptData.cipherAlgorithm != CRYPT_METHOD::RC4;
+
+			SETBIT(nEncryptionInfoFlags, 2, fCryptoAPI);
+			SETBIT(nEncryptionInfoFlags, 3, fDocProps);
+			SETBIT(nEncryptionInfoFlags, 4, fExternal);
+			SETBIT(nEncryptionInfoFlags, 5, fAES);
+
+			oInfo->Write((char*)&nEncryptionInfoFlags, position, 4); position += 4;
+
+			int nEncryptionInfoSize = 4096;
+			unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
+
+			WriteStandartEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
+
+			oInfo->Write((char*)byteEncryptionInfo, position, 4); position += nEncryptionInfoSize;
+			delete[]byteEncryptionInfo;
+		}
 	}
 	else
 	{
-		_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0002; // standart
-	
-		winStream->Write((unsigned char*)&VersionInfoMajor, 2, &nWritten);
-		winStream->Write((unsigned char*)&VersionInfoMinor, 2, &nWritten);
+		POLE::Stream *pStream = new POLE::Stream(pStorage, L"EncryptionInfo", true);
 
-		_UINT32 nEncryptionInfoFlags = 0;
-		bool fCryptoAPI = true, fDocProps = false, fExternal = false, fAES = cryptData.cipherAlgorithm != CRYPT_METHOD::RC4;
+		if (cryptData.bAgile)
+		{
+			_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile
 
-		SETBIT(nEncryptionInfoFlags, 2, fCryptoAPI); 
-		SETBIT(nEncryptionInfoFlags, 3, fDocProps);  
-		SETBIT(nEncryptionInfoFlags, 4, fExternal);  
-		SETBIT(nEncryptionInfoFlags, 5, fAES);  
-		
-		winStream->Write((unsigned char*)&nEncryptionInfoFlags, 4, &nWritten);
+			pStream->write((unsigned char*)&VersionInfoMajor, 2);
+			pStream->write((unsigned char*)&VersionInfoMinor, 2);
 
-		int nEncryptionInfoSize = 4096;
-		unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
+			_UINT32 nEncryptionInfoFlags = 64;
+			pStream->write((unsigned char*)&nEncryptionInfoFlags, 4);
 
-		WriteStandartEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
+			std::string strXml;
+			WriteXmlEncryptionInfo(cryptData, strXml);
 
-		winStream->Write(byteEncryptionInfo, nEncryptionInfoSize, &nWritten); 
-		delete []byteEncryptionInfo;
+			pStream->write((unsigned char*)strXml.c_str(), strXml.length());
+		}
+		else
+		{
+			_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0002; // standart
+
+			pStream->write((unsigned char*)&VersionInfoMajor, 2);
+			pStream->write((unsigned char*)&VersionInfoMinor, 2);
+
+			_UINT32 nEncryptionInfoFlags = 0;
+			bool fCryptoAPI = true, fDocProps = false, fExternal = false, fAES = cryptData.cipherAlgorithm != CRYPT_METHOD::RC4;
+
+			SETBIT(nEncryptionInfoFlags, 2, fCryptoAPI);
+			SETBIT(nEncryptionInfoFlags, 3, fDocProps);
+			SETBIT(nEncryptionInfoFlags, 4, fExternal);
+			SETBIT(nEncryptionInfoFlags, 5, fAES);
+
+			pStream->write((unsigned char*)&nEncryptionInfoFlags, 4);
+
+			int nEncryptionInfoSize = 4096;
+			unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
+
+			WriteStandartEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
+
+			pStream->write(byteEncryptionInfo, nEncryptionInfoSize);
+			delete[]byteEncryptionInfo;
+
+		}
+		pStream->flush();
+		delete pStream;
 	}
-	winStream->Release();
-#else
-	pStream = new POLE::Stream(pStorage, L"EncryptionInfo", true);
-
-	if (cryptData.bAgile)
-	{
-		_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0004; //agile
-	
-		pStream->write((unsigned char*)&VersionInfoMajor, 2);
-		pStream->write((unsigned char*)&VersionInfoMinor, 2);
-
-		_UINT32 nEncryptionInfoFlags = 64;
-		pStream->write((unsigned char*)&nEncryptionInfoFlags, 4); 
-		
-		std::string strXml;
-		WriteXmlEncryptionInfo(cryptData, strXml);
-		
-		pStream->write((unsigned char*)strXml.c_str(), strXml.length()); 
-	}
-	else
-	{
-		_UINT16 VersionInfoMajor = 0x0004, VersionInfoMinor = 0x0002; // standart
-	
-		pStream->write((unsigned char*)&VersionInfoMajor, 2);
-		pStream->write((unsigned char*)&VersionInfoMinor, 2);
-
-		_UINT32 nEncryptionInfoFlags = 0;
-		bool fCryptoAPI = true, fDocProps = false, fExternal = false, fAES = cryptData.cipherAlgorithm != CRYPT_METHOD::RC4;
-
-		SETBIT(nEncryptionInfoFlags, 2, fCryptoAPI); 
-		SETBIT(nEncryptionInfoFlags, 3, fDocProps);  
-		SETBIT(nEncryptionInfoFlags, 4, fExternal);  
-		SETBIT(nEncryptionInfoFlags, 5, fAES);  
-		
-		pStream->write((unsigned char*)&nEncryptionInfoFlags, 4); 
-
-		int nEncryptionInfoSize = 4096;
-		unsigned char* byteEncryptionInfo = new unsigned char[nEncryptionInfoSize];
-
-		WriteStandartEncryptionInfo(byteEncryptionInfo, nEncryptionInfoSize, cryptData);
-
-		pStream->write(byteEncryptionInfo, nEncryptionInfoSize); 
-		delete []byteEncryptionInfo;
-		
-	}
-	pStream->flush();
-	delete pStream;
-#endif
 //-------------------------------------------------------------------
 	if (false == documentID.empty())
 	{
 		std::string utfDocumentID = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(documentID);
-#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
-		winStorage->CreateStream(L"DocumentID", STGM_CREATE | STGM_READWRITE | STGM_SHARE_EXCLUSIVE, 0, 0, &winStream);
-		winStream->Write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length(), &nWritten);
-		winStream->Release();
-#else
-		pStream = new POLE::Stream(pStorage, L"DocumentID", true, utfDocumentID.length());
-		
-		pStream->write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length());
+		if (bLargeFile)
+		{
 
-		pStream->flush();
-		delete pStream;
-#endif
+			std::shared_ptr<CFCPP::CFStream> oDocumentID = pStorageNew->RootStorage()->AddStream(L"DocumentID");
+			oDocumentID->Write(utfDocumentID.c_str(), 0, utfDocumentID.length());
+		}
+		else
+		{
+			POLE::Stream *pStream = new POLE::Stream(pStorage, L"DocumentID", true, utfDocumentID.length());
+
+			pStream->write((BYTE*)utfDocumentID.c_str(), utfDocumentID.length());
+
+			pStream->flush();
+			delete pStream;
+		}
 	}
 //-------------------------------------------------------------------
-#if (defined(_WIN32) || defined(_WIN64)) && defined(USE_MSSTORAGE)
-	if (winStorage)
-		winStorage->Release();
-#else
-	pStorage->close();
-	delete pStorage;
-#endif
-
-
-
+	if (bLargeFile)
+	{
+		pStorageNew->Save(file_name_out);
+		pStorageNew->Close();
+		delete pStorageNew;
+	}
+	else
+	{
+		pStorage->close();
+		delete pStorage;
+	}
 //
 ////test back---------------------------------------------------------------------------------test back
 //	ECMADecryptor decryptor;

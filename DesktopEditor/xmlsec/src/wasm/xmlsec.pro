@@ -12,7 +12,9 @@ PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
 DEFINES += KERNEL_NO_USE_DYNAMIC_LIBRARY
-DEFINES += DISABLE_Q_DECL_EXPORT
+DEFINES += COMMON_OPENSSL_BUILDING_INTERNAL
+
+ADD_DEPENDENCY(UnicodeConverter)
 
 # XML
 DEFINES += \
@@ -92,10 +94,9 @@ SOURCES += \
 # SIGN
 SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/XmlTransform.cpp \
-    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/XmlCertificate.cpp \
+	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/OOXMLSigner.cpp \
-    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/OOXMLVerifier.cpp \
-    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/XmlSigner_openssl.cpp
+	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/OOXMLVerifier.cpp
 
 core_windows {
     LIBS += -lcrypt32

@@ -99,6 +99,7 @@ HEADERS += \
 	./../MetafileToRenderer.h \
 	./../MetafileToRendererCheck.h \
 	./../MetafileToGraphicsRenderer.h \
+	./../FormField.h \
 	./../structures.h \
 	./../Graphics.h \
 	./../GraphicsRenderer.h \
@@ -114,6 +115,7 @@ SOURCES += \
 	./../GraphicsRenderer.cpp \
 	./../MetafileToRenderer.cpp \
 	./../MetafileToGraphicsRenderer.cpp \
+	./../FormField.cpp \
 	\
 	./pro_Image.cpp \
 	./pro_Graphics.cpp

@@ -6,9 +6,9 @@ CONFIG -= qt
 TARGET = x2ttester
 
 SOURCES += \
-$$PWD/../../../../core/Common/OfficeFileFormatChecker2.cpp \
+    $$PWD/../../../../core/Common/OfficeFileFormatChecker2.cpp \
     $$PWD/../../../../core/Common/3dParty/pole/pole.cpp \
-    $$PWD/../../../../core/Common/DocxFormat/Source/Base/unicode_util.cpp
+    $$PWD/../../../../core/OOXML/Base/unicode_util.cpp
 
 
 HEADERS += x2tTester.h

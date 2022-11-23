@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <ctime>
 
 #include "../../../Common/OfficeFileFormats.h"
 #include "../../../Common/OfficeFileFormatChecker.h"
@@ -19,10 +20,10 @@
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-class FormatsList
+class CFormatsList
 {
 public:
-	FormatsList();
+	CFormatsList();
 
 	std::vector<int> GetDocuments() const;
 	std::vector<int> GetPresentations() const;
@@ -64,9 +65,11 @@ public:
 	{
 		std::wstring inputFile;
 		std::wstring outputFile;
-		std::wstring inputExt;
-		std::wstring outputExt;
+		DWORD time;
+		int inputSize;
+		int outputSize;
 		int exitCode;
+		std::wstring log;
 	};
 
 	Cx2tTester(const std::wstring& configPath);
@@ -75,8 +78,10 @@ public:
 	void setConfig(const std::wstring& configPath);
 	void Start();
 
+	void writeReportHeader();
 	void writeReport(const Report& report);
 	void writeReports(const std::vector<Report>& reports);
+	void writeTime();
 
 	bool isAllBusy();
 	bool isAllFree();
@@ -84,21 +89,22 @@ public:
 	NSCriticalSection::CRITICAL_SECTION m_coresCS;
 	NSCriticalSection::CRITICAL_SECTION m_reportCS;
 	NSCriticalSection::CRITICAL_SECTION m_outputCS;
+	NSCriticalSection::CRITICAL_SECTION m_utilsCS;
 
 	int m_currentProc;
 	int m_maxProc;
 
 private:
-	void setReportHeader();
-
 	// parse string like "docx txt" into vector of formats
-	std::vector<int> parseExtensionsString(std::wstring extensions, const FormatsList& fl);
+	std::vector<int> parseExtensionsString(std::wstring extensions, const CFormatsList& fl);
 
 	// takes from config
 	std::wstring m_reportFile;
 	std::wstring m_inputDirectory;
 	std::wstring m_outputDirectory;
 	std::wstring m_x2tPath;
+
+	std::wstring m_errorsXmlDirectory;
 
 	// fonts
 	bool m_bIsUseSystemFonts;
@@ -110,11 +116,17 @@ private:
 	std::vector<int> m_inputFormats;
 	std::vector<int> m_outputFormats;
 
+	std::vector<std::wstring> m_inputFiles;
+
 	// list of formats
-	FormatsList m_inputFormatsList;
-	FormatsList m_outputFormatsList;
+	CFormatsList m_inputFormatsList;
+	CFormatsList m_outputFormatsList;
 
 	bool m_bIsErrorsOnly;
+	bool m_bIsTimestamp;
+	bool m_bIsDeleteOk;
+
+	DWORD m_timeStart;
 };
 
 // generates temp xml, convert, calls m_internal->writeReport
@@ -126,14 +138,14 @@ public:
 
 	void SetInputFile(const std::wstring& inputFile);
 	void SetInputFormat(int inputFormat);
-
 	void SetOutputFilesDirectory(const std::wstring& outputFilesDirectory);
 	void SetOutputFormats(const std::vector<int> outputFormats);
-
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
-
 	void SetOnlyErrors(bool bIsErrorsOnly);
+	void SetDeleteOk(bool bIsDeleteOk);
+	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
+	void SetFilesCount(int totalFiles, int currFile);
 
 	virtual DWORD ThreadProc();
 
@@ -150,8 +162,13 @@ private:
 	COfficeFileFormatChecker checker;
 
 	std::wstring m_x2tPath;
+	std::wstring m_errorsXmlDirectory;
 
 	bool m_bIsErrorsOnly;
+	bool m_bIsDeleteOk;
+
+	int m_totalFiles;
+	int m_currFile;
 };
 
 #endif // X2T_TESTER_H

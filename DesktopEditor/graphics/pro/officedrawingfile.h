@@ -86,10 +86,8 @@ public:
 
     // Common methods for viewer
     virtual std::wstring GetInfo() = 0;
-#ifdef BUILDING_WASM_MODULE
     virtual unsigned char* GetStructure() = 0;
     virtual unsigned char* GetLinks(int nPageIndex) = 0;
-#endif
 };
 
 #endif // _OFFICE_DRAWING_FILE_H

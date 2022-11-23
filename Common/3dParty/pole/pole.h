@@ -66,7 +66,7 @@ wide string into utf8 char*:
     #include <string.h>
 #endif
 
-#include "../../DocxFormat/Source/Base/unicode_util.h"
+#include "../../../OOXML/Base/unicode_util.h"
 
 static std::wstring convertUtf16ToWString(const UTF16 * Data, int nLength)
 {

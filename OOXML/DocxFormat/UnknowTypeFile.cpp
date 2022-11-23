@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,48 +29,34 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef OOX_FILE_INCLUDE_H_
-#define OOX_FILE_INCLUDE_H_
 
-#include "../XML/XmlSimple.h"
-
-#include "FileType.h"
-#include "ContentTypes.h"
+#include "UnknowTypeFile.h"
 
 namespace OOX
 {
-	class File
+	UnknowTypeFile::UnknowTypeFile(OOX::Document* pMain): File(pMain)
 	{
-	public:
-		File(OOX::Document *pMain);
-		virtual ~File();
-
-		virtual void read(const CPath& filename)                                                        = 0;
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const = 0;
-
-		virtual const OOX::FileType type()				const	= 0;
-		virtual const CPath			DefaultDirectory()	const	= 0;
-		virtual const CPath			DefaultFileName()	const	= 0;
-		
-		std::wstring	m_sOutputFilename;
-		bool			m_bDoNotAddRels;
-		
-		OOX::Document *m_pMainDocument;
-	};
-
-	class FileGlobalEnumerated : public File
+	}
+	UnknowTypeFile::~UnknowTypeFile()
 	{
-	private:
-		int m_nGlobalNumber;
-
-	public:
-		FileGlobalEnumerated(OOX::Document* pMain);
-
-		int GetGlobalNumber() const;
-		void SetGlobalNumber(int nValue);
-	};
+	}
+	void UnknowTypeFile::read(const CPath& filename)
+	{
+	}
+	void UnknowTypeFile::write(const CPath& filename, const CPath& directory, CContentTypes& content) const
+	{
+	}
+	const FileType UnknowTypeFile::type() const
+	{
+		return FileTypes::Unknow;
+	}
+	const CPath UnknowTypeFile::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath UnknowTypeFile::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
 
 } // namespace OOX
-
-#endif // OOX_FILE_INCLUDE_H_

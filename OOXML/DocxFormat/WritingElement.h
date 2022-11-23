@@ -1498,8 +1498,8 @@ namespace OOX
 	class Document
 	{
 	public:
-		Document() {}
-		virtual ~Document() {}
+		Document();
+		virtual ~Document();
 
 		std::wstring m_sDocumentPath;
 		std::map<std::wstring, NSCommon::smart_ptr<OOX::File>> m_mapContent;
@@ -1508,8 +1508,8 @@ namespace OOX
 	class WritingElement
 	{
 	public:
-		WritingElement(OOX::Document *pMain = NULL) : m_pMainDocument(pMain) {}
-		virtual ~WritingElement() {}
+		WritingElement(OOX::Document *pMain = NULL);
+		virtual ~WritingElement();
 
 		virtual void			fromXML(XmlUtils::CXmlNode& node)	= 0;
 		virtual std::wstring	toXML()     const					= 0;

@@ -85,8 +85,23 @@ SOURCES += \
 	../../../DocxFormat/Settings/WebSettings.cpp \
 	../../../DocxFormat/App.cpp \
 	../../../DocxFormat/Core.cpp \
+	../../../DocxFormat/Bibliography.cpp \
+	../../../DocxFormat/ContentTypes.cpp \
+	../../../DocxFormat/CustomXml.cpp \
+	../../../DocxFormat/File.cpp \
+	../../../DocxFormat/FileType.cpp \
+	../../../DocxFormat/Font.cpp \
+	../../../DocxFormat/FontTable.cpp \
+	../../../DocxFormat/Footnote.cpp \
+	../../../DocxFormat/FtnEdn.cpp \
 	../../../DocxFormat/FileFactory.cpp \
 	../../../DocxFormat/FileTypes.cpp \
+	../../../DocxFormat/Namespaces.cpp \
+	../../../DocxFormat/Numbering.cpp \
+	../../../DocxFormat/Rels.cpp \
+	../../../DocxFormat/RId.cpp \
+	../../../DocxFormat/Styles.cpp \
+	../../../DocxFormat/UnknowTypeFile.cpp \
 	../../../DocxFormat/IFileContainer.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../XlsxFormat/FileFactory_Spreadsheet.cpp \

@@ -45,96 +45,21 @@ namespace OOX
 	class CBibliography : public OOX::File
 	{
 	public:
-		CBibliography(OOX::Document* pMain) : OOX::File(pMain)
-		{
+		CBibliography(OOX::Document* pMain);
+		CBibliography(OOX::Document* pMain, const CPath& oPath);
 
-		}
-		CBibliography(OOX::Document* pMain, const CPath& oPath) : OOX::File(pMain)
-		{
-			read( oPath );
-		}
-
-		virtual void read(const CPath& oFilePath)
-		{
-			XmlUtils::CXmlLiteReader oReader;
-
-			if ( !oReader.FromFile( oFilePath.GetPath() ) )
-				return;
-
-			if ( !oReader.ReadNextNode() )
-				return;
-
-			std::wstring sName = oReader.GetName();
-			if ( _T("b:Sources") == sName && !oReader.IsEmptyNode() )
-			{
-				ReadAttributes( oReader );
-			}
-		}
-		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
-			std::wstring sXml;
-			sXml = _T("<b:Sources");
-			
-			if ( m_sSelectedStyle.IsInit() )
-			{
-				sXml += _T(" SelectedStyle=\"");
-                sXml += m_sSelectedStyle.get2();
-				sXml += _T("\"");
-			}
-
-			if ( m_sStyleName.IsInit() )
-			{
-				sXml += _T(" StyleName=\"");
-                sXml += m_sStyleName.get2();
-				sXml += _T("\"");
-			}
-
-			if ( m_sURI.IsInit() )
-			{
-				sXml += _T(" URI=\"");
-                sXml += m_sURI.get2();
-				sXml += _T("\"");
-			}
-
-			sXml += _T(" xmlns:b=\"http://schemas.openxmlformats.org/officeDocument/2006/bibliography\" xmlns=\"http://schemas.openxmlformats.org/officeDocument/2006/bibliography\">");
-
-
-			sXml += _T("</a:Sources>");
-
-			CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
-			oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
-		}
-
+		virtual void read(const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
 	public:
-
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::Bibliography;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 
 	private:
-
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			// Читаем атрибуты
-			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, _T("SelectedStyle"), m_sSelectedStyle )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("StyleName"),     m_sStyleName )
-			WritingElement_ReadAttributes_Read_else_if( oReader, _T("URI"),           m_sURI )
-			WritingElement_ReadAttributes_End( oReader )
-		}
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 	private:
-
 		// Attributes
 		nullable<std::wstring> m_sSelectedStyle;
 		nullable<std::wstring> m_sStyleName;

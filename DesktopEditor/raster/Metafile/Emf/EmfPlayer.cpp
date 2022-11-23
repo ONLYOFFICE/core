@@ -32,6 +32,8 @@
 #include "EmfPlayer.h"
 #include "EmfParser/CEmfParserBase.h"
 
+#include <cmath>
+
 namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfParserBase* pParser)

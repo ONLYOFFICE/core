@@ -4,6 +4,8 @@
 
 #include "../../../BgraFrame.h"
 
+#include <cmath>
+
 namespace MetaFile
 {
 	CWmfInterpretatorSvg::CWmfInterpretatorSvg(CWmfParserBase *pParser, unsigned int unWidth, unsigned int unHeight)

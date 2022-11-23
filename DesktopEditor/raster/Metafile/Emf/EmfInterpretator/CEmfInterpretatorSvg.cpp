@@ -7,6 +7,13 @@
 #include "../../../BgraFrame.h"
 
 #include <algorithm>
+#include <cmath>
+
+#ifndef MININT8
+#define MAXUINT8    ((unsigned char)~((unsigned char)0))
+#define MAXINT8     ((char)(MAXUINT8 >> 1))
+#define MININT8     ((char)~MAXINT8)
+#endif
 
 namespace MetaFile
 {               

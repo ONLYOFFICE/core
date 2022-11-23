@@ -1798,7 +1798,7 @@ namespace MetaFile
 		AddTransform(arAttributes);
 
 		NodeAttributes arGAttributes;
-		AddClip(arAttributes);
+		AddClip(arGAttributes);
 
 		if (!m_wsLastClipId.empty())
 			WriteNodeBegin(L"g", arGAttributes);

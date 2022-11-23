@@ -1119,17 +1119,25 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetBrush())
 			return;
 
-		TXForm* pOldTransform = (NULL != pTransform) ? pTransform : m_pParser->GetTransform();
+		TXForm oOldTransform;
 
-		if (NULL == pOldTransform)
-			return;
+		if (NULL != pTransform)
+			oOldTransform.Copy(pTransform);
+		else
+			oOldTransform.Copy(m_pParser->GetTransform());
+
+		if (std::fabs(oOldTransform.M11) > 100. || std::fabs(oOldTransform.M22) > 100.)
+		{
+			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
+			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
+		}
 
 		bool bScale = false, bTranslate = false;
 
-		if (pOldTransform->M11 != 1 || pOldTransform->M22 != 1)
+		if (oOldTransform.M11 != 1 || oOldTransform.M22 != 1)
 			bScale = true;
 
-		if (pOldTransform->Dx != 0 || pOldTransform->Dy != 0)
+		if (oOldTransform.Dx != 0 || oOldTransform.Dy != 0)
 			bTranslate = true;
 
 		NodeAttribute *pFoundTransform = NULL;
@@ -1147,19 +1155,19 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	std::to_wstring(pOldTransform->M11) + L',' + std::to_wstring(pOldTransform->M22) + L')';
+			wsValue = L"scale(" +	std::to_wstring(oOldTransform.M11) + L',' + std::to_wstring(oOldTransform.M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
-			wsValue = L"translate(" + ConvertToWString(pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
+			wsValue = L"translate(" + ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	std::to_wstring(pOldTransform->M11) + L',' +
-									std::to_wstring(pOldTransform->M12) + L',' +
-									std::to_wstring(pOldTransform->M21) + L',' +
-									std::to_wstring(pOldTransform->M22) + L',' +
-									ConvertToWString(pOldTransform->Dx) + L',' + ConvertToWString(pOldTransform->Dy) + L')';
+			wsValue = L"matrix(" +	std::to_wstring(oOldTransform.M11) + L',' +
+			                        std::to_wstring(oOldTransform.M12) + L',' +
+			                        std::to_wstring(oOldTransform.M21) + L',' +
+			                        std::to_wstring(oOldTransform.M22) + L',' +
+			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;
 

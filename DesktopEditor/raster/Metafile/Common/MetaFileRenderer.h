@@ -1095,9 +1095,18 @@ namespace MetaFile
 			double dKoefX = m_dScaleX;
 			double dKoefY = m_dScaleY;
 
-			TEmfXForm* pMatrix = m_pFile->GetTransform(iGraphicsMode);
+			TXForm oMatrix;
+
+			oMatrix.Copy(m_pFile->GetTransform(iGraphicsMode));
+
+			if (std::fabs(oMatrix.M11) > 100. || std::fabs(oMatrix.M22) > 100.)
+			{
+				oMatrix.M11 /= std::fabs(oMatrix.M11);
+				oMatrix.M22 /= std::fabs(oMatrix.M22);
+			}
+
 			m_pRenderer->ResetTransform();
-			m_pRenderer->SetTransform(pMatrix->M11, pMatrix->M12 * dKoefY / dKoefX, pMatrix->M21 * dKoefX / dKoefY, pMatrix->M22, pMatrix->Dx * dKoefX, pMatrix->Dy * dKoefY);
+			m_pRenderer->SetTransform(oMatrix.M11, oMatrix.M12 * dKoefY / dKoefX, oMatrix.M21 * dKoefX / dKoefY, oMatrix.M22, oMatrix.Dx * dKoefX, oMatrix.Dy * dKoefY);
 		}
 		bool UpdatePen()
 		{

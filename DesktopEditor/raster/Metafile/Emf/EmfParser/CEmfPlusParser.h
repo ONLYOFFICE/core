@@ -21,11 +21,12 @@ namespace MetaFile
 
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
+		double          GetDpi()                                    override;
 
 		EmfParserType   GetType()				    override;
 
-		void SetStream(BYTE *pBytes, unsigned int unSize);
-		bool GetBanEMFProcesses();
+		void   SetStream(BYTE *pBytes, unsigned int unSize);
+		bool   GetBanEMFProcesses();
 
 	private:
 		void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);
@@ -52,17 +53,17 @@ namespace MetaFile
 		CEmfPlusPath*   ReadPath();
 		CEmfPlusPath*   GetPath(unsigned int unPathIndex);
 
-		CEmfPlusRegion* ReadRegion();
-		CEmfPlusRegionNode* ReadRegionNode(unsigned int& unIndex);
+		CEmfPlusRegion*          ReadRegion();
+		CEmfPlusRegionNode*      ReadRegionNode(unsigned int& unIndex);
 		CEmfPlusRegionNodePath*  ReadRegionNodePath(unsigned int& unIndex);
 		CEmfPlusRegionNodeRectF* ReadRegionNodeRectF(unsigned int& unIndex);
 		CEmfPlusRegionNodeChild* ReadRegionNodeChild(unsigned int& unIndex);
-		CEmfPlusRegion* GetRegion(unsigned int unRegionIndex);
+		CEmfPlusRegion*          GetRegion(unsigned int unRegionIndex);
+
+		CEmfPlusStringFormat*    GetStringFormat(unsigned int unStringFormatIndex);
 
 		CEmfPlusImageAttributes* GetImageAttributes(unsigned int unImageAttributesIndex);
 
-		//                std::vector<TEmfPlusPointF> ReadPointsF(unsigned int unPointCount);
-		//                std::vector<TEmfPlusPoint> ReadPoints(unsigned int unPointCount);
 		template<typename PointType>
 		std::vector<PointType> ReadPoints(unsigned int unPointCount);
 
@@ -73,8 +74,8 @@ namespace MetaFile
 		void DrawLines(std::vector<TEmfPlusPointF> arPoints, bool bCloseFigure);
 
 		void DrawImagePoints(unsigned int unImageIndex, unsigned int unImageAttributeIndex, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
-		void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType);
-		void DrawBitmap(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
+		void DrawMetafile(BYTE* pBuffer, unsigned int unSize, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints, EEmfPlusMetafileDataType eMetafileType, unsigned int unImageAttributeIndex);
+		void DrawBitmap(BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight, const TEmfPlusRectF& oSrcRect, const std::vector<TEmfPlusPointF>& arPoints);
 
 		TEmfPlusARGB ApplyImageAttributes(TEmfPlusRectF& oRectangle, const CEmfPlusImageAttributes& oImageAttributes);
 
@@ -96,7 +97,7 @@ namespace MetaFile
 
 		void Read_EMFPLUS_ENDOFFILE();
 		void Read_EMFPLUS_GETDC();
-		void Read_EMRPLUS_HEADER(unsigned short unShFlags);
+		void Read_EMFPLUS_HEADER(unsigned short unShFlags);
 
 		void Read_EMFPLUS_CLEAR();
 		void Read_EMFPLUS_DRAWARC(unsigned short unShFlags);

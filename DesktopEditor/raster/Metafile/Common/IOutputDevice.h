@@ -36,6 +36,8 @@
 
 namespace MetaFile
 {
+	class IPath;
+
 	class IOutputDevice
 	{
 	public:
@@ -65,7 +67,9 @@ namespace MetaFile
 		virtual void EndPath() = 0;
 
 		virtual void ResetClip() = 0;
-		virtual void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) = 0;
+		virtual void IntersectClip(const TRectD& oClip) = 0;
+		virtual void ExcludeClip(const TRectD& oClip, const TRectD& oBB) = 0;
+		virtual void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) = 0;
 		virtual void StartClipPath(unsigned int unMode, int nFillMode = -1) = 0;
 		virtual void EndClipPath(unsigned int unMode) = 0;
 

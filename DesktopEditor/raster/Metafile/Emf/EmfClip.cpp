@@ -124,45 +124,19 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_INTERSECT:
 				{
 					CEmfClipCommandIntersect* pIntersect = (CEmfClipCommandIntersect*)pCommand;
-					pOutput->IntersectClip(pIntersect->m_oRect.dLeft, pIntersect->m_oRect.dTop, pIntersect->m_oRect.dRight, pIntersect->m_oRect.dBottom);
+					pOutput->IntersectClip(pIntersect->m_oRect);
 					break;
 				}
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
-
-					double dM11, dM12, dM21, dM22, dDx, dDy;
-					pOutput->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
-					pOutput->SetTransform(pClipPath->m_oTransform.M11, pClipPath->m_oTransform.M12, pClipPath->m_oTransform.M21, pClipPath->m_oTransform.M22, pClipPath->m_oTransform.Dx, pClipPath->m_oTransform.Dy);
-
-					pClipPath->m_oPath.Draw(pOutput, false, false, pClipPath->m_unMode);
-
-					pOutput->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
-
+					pOutput->PathClip(&pClipPath->m_oPath, pClipPath->m_unMode, &pClipPath->m_oTransform);
 					break;
 				}
 				case EMF_CLIPCOMMAND_EXCLUDE:
 				{
 					CEmfClipCommandExclude* pExclude = (CEmfClipCommandExclude*)pCommand;
-
-					TRectD& oClip = pExclude->m_oClip;
-					TRectD& oBB = pExclude->m_oBB;
-
-					pOutput->StartClipPath(RGN_AND, ALTERNATE);
-
-					pOutput->MoveTo(oClip.dLeft,  oClip.dTop);
-					pOutput->LineTo(oClip.dRight, oClip.dTop);
-					pOutput->LineTo(oClip.dRight, oClip.dBottom);
-					pOutput->LineTo(oClip.dLeft,  oClip.dBottom);
-					pOutput->ClosePath();
-
-					pOutput->MoveTo(oBB.dLeft,  oBB.dTop);
-					pOutput->LineTo(oBB.dRight, oBB.dTop);
-					pOutput->LineTo(oBB.dRight, oBB.dBottom);
-					pOutput->LineTo(oBB.dLeft,  oBB.dBottom);
-					pOutput->ClosePath();
-
-					pOutput->EndClipPath(RGN_AND);
+					pOutput->ExcludeClip(pExclude->m_oClip, pExclude->m_oBB);
 					break;
 				}
 			}

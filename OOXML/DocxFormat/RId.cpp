@@ -103,12 +103,7 @@ namespace OOX
 	{
 		return m_id >= lhs.m_id;
 	}
-	std::wstring RId::get() const
-	{
-		return ToString();
-	}
-	unsigned int RId::getNumber() const { return m_id; }
-	const RId	RId::next() const
+	const RId  RId::next() const
 	{
 		bNumber	= true;
 		return RId(m_id + 1);

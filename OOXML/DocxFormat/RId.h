@@ -56,8 +56,14 @@ namespace OOX
 		const bool operator >(const RId& lhs) const;
 		const bool operator >=(const RId& lhs) const;
 
-		AVSINLINE std::wstring get() const;
-		AVSINLINE unsigned int getNumber() const;
+		AVSINLINE std::wstring get() const
+		{
+			return ToString();
+		}
+		AVSINLINE unsigned int getNumber() const
+		{
+			return m_id;
+		}
 
 		const RId	next() const;
 

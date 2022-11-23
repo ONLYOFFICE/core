@@ -69,32 +69,5 @@ namespace OOX
 		{
 			return (m_relationType == rhs.m_relationType);
 		}
-		const std::wstring FileType::OverrideType() const
-		{
-			return m_overrideType;
-		}
-		const std::wstring FileType::EnumerateType() const
-		{
-			return m_enumerateType;
-		}
-		const std::wstring FileType::RelationType() const
-		{
-			return m_relationType;
-		}
-		const CPath FileType::DefaultDirectory() const
-		{
-			return m_defaultDirectory;
-		}
-		const CPath FileType::DefaultFileName() const
-		{
-			return m_defaultFileName;
-		}
-		const bool FileType::Enumerated() const
-		{
-			return m_bEnumerated;
-		}
-		const bool FileType::EnumeratedGlobal() const
-		{
-			return m_bEnumeratedGlobal;
-		}
+
 } // namespace OOX

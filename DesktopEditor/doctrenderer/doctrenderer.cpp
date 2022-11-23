@@ -845,7 +845,9 @@ namespace NSDoctRenderer
 				}
 
 				// CORE PARAMS
-				if (!bIsBreak && m_oParams.m_eDstFormat == DoctRendererFormat::HTML && !bIsMailMerge)
+				if (!bIsBreak && !bIsMailMerge &&
+					(m_oParams.m_eDstFormat == DoctRendererFormat::HTML ||
+					 m_oParams.m_eDstFormat == DoctRendererFormat::PDF))
 				{
 					JSSmart<CJSValue> js_objectCoreVal = js_objectApi->call_func("asc_getCoreProps", 1, args);
 					if(try_catch->Check())

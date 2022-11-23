@@ -40,3 +40,6 @@
 #include "../../DocxFormat/WritingElement.h"
 #include "../Document/DocWrapper/DocxSerializer.h"
 #include "BinaryFileReaderWriter.h"
+
+#include "FontPicker.h"
+using namespace NSFontCutter;

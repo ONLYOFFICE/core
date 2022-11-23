@@ -37,12 +37,7 @@
 #endif 
 
 #include <list>
-#include "WMFToImageConverter.h"
-#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
-
-#include "../../../Common/MediaFormatDefine.h"
 #include "../../../DesktopEditor/graphics/pro/Image.h"
-#include "../../../DesktopEditor/graphics/Image.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../../DesktopEditor/common/Directory.h"
@@ -50,6 +45,13 @@
 #include "../../SystemUtility/File.h"
 #include "../../SystemUtility/SystemUtility.h"
 
+#include "../../Base/Unit.h"
+
+// как все протестируем - уберем
+#define SUPPORT_OLD_SVG_CONVERTATION
+#ifdef SUPPORT_OLD_SVG_CONVERTATION
+#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
+#endif
 
 namespace NSShapeImageGen
 {
@@ -66,44 +68,41 @@ namespace NSShapeImageGen
 	{
 		m_pFontManager = NULL;
 	}
-	CMediaInfo CMediaManager::WriteImage(CBgraFrame& punkImage, double& x, double& y, double& width, double& height)
+
+	CMediaInfo CMediaManager::WriteImage(CBgraFrame& oImage, double& x, double& y, double& width, double& height)
 	{
 		CMediaInfo info;
-		//if (NULL == punkImage)
-		//	return info;
 		
 		if (height < 0)
 		{
-			FlipY(punkImage);
+			FlipY(oImage);
 			height = -height;
 			y -= height;
 		}
 		
-        return GenerateImageID(punkImage, (std::max)(1.0, width), (std::max)(1.0, height));
+		return GenerateImageID(oImage, (std::max)(1.0, width), (std::max)(1.0, height));
 	}
 	CMediaInfo CMediaManager::WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 	{
 		bool bIsDownload = false;
-		int n1 = (int)strFile.find (L"www");
-		int n2 = (int)strFile.find (L"http");
-		int n3 = (int)strFile.find (L"ftp");
-		int n4 = (int)strFile.find (L"https");
+		int n1 = (int)strFile.find(L"www");
+		int n2 = (int)strFile.find(L"http");
+		int n3 = (int)strFile.find(L"ftp");
+		int n4 = (int)strFile.find(L"https");
 
-        //если nI сранивать не с 0, то будут проблемы
-        //потому что в инсталяции мы кладем файлы в /var/www...
-        if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
+		//если nI сранивать не с 0, то будут проблемы
+		//потому что в инсталяции мы кладем файлы в /var/www...
+		if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
 			bIsDownload = true;
 
 		if (bIsDownload)
 		{
-
 			std::wstring strFileUrl = strFile;
 			
-			XmlUtils::replace_all(strFileUrl, L"\\",		L"/");
-			XmlUtils::replace_all(strFileUrl, L"http:/",	L"http://");
-			XmlUtils::replace_all(strFileUrl, L"https:/",	L"https://");
+			XmlUtils::replace_all(strFileUrl, L"\\", L"/");
+			XmlUtils::replace_all(strFileUrl, L"http:/", L"http://");
+			XmlUtils::replace_all(strFileUrl, L"https:/", L"https://");
 			XmlUtils::replace_all(strFileUrl, L"ftp:/",	L"ftp://");
-
 
 			CMediaInfo oInfo;
 			std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(strFileUrl);
@@ -114,8 +113,7 @@ namespace NSShapeImageGen
 			std::wstring strDownload;
 
 #ifndef DISABLE_FILE_DOWNLOADER
-
-            NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFileUrl, true);
+			NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFileUrl, true);
 			if (oDownloader.DownloadSync())
 			{
 				strDownload = oDownloader.GetFilePath();
@@ -142,60 +140,60 @@ namespace NSShapeImageGen
 		}
 		
 
-		if (width < 0 && height < 0)	return GenerateImageID(strFile, L"", -1, -1, strAdditionalFile, typeAdditionalFile);
-										return GenerateImageID(strFile, L"", (std::max)(1.0, width), (std::max)(1.0, height), strAdditionalFile, typeAdditionalFile);
+		if (width < 0 && height < 0)
+			return GenerateImageID(strFile, L"", -1, -1, strAdditionalFile, typeAdditionalFile);
+
+		return GenerateImageID(strFile, L"", (std::max)(1.0, width), (std::max)(1.0, height), strAdditionalFile, typeAdditionalFile);
 	}
 	CMediaInfo CMediaManager::WriteMedia(const std::wstring& strFile)
-    {
-        bool bIsDownload = false;
-        int n1 = (int)strFile.find (L"www");
-        int n2 = (int)strFile.find (L"http");
-        int n3 = (int)strFile.find (L"ftp");
-        int n4 = (int)strFile.find (L"https");
-        
-        //если nI сранивать не с 0, то будут проблемы
-        //потому что в инсталяции мы кладем файлы в /var/www...
-        if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
-            bIsDownload = true;
-        
-        if (bIsDownload)
-        {
-            
-            std::wstring strFileUrl = strFile;
-            
-            XmlUtils::replace_all(strFileUrl, L"\\",		L"/");
-            XmlUtils::replace_all(strFileUrl, L"http:/",	L"http://");
-            XmlUtils::replace_all(strFileUrl, L"https:/",	L"https://");
-            XmlUtils::replace_all(strFileUrl, L"ftp:/",	L"ftp://");
-            
-            
-            CMediaInfo oInfo;
-            std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(strFileUrl);
-            
-            if (pPair != m_mapMediaFiles.end())
-                return pPair->second;
-            
-            std::wstring strDownload;
-            
+	{
+		bool bIsDownload = false;
+		int n1 = (int)strFile.find (L"www");
+		int n2 = (int)strFile.find (L"http");
+		int n3 = (int)strFile.find (L"ftp");
+		int n4 = (int)strFile.find (L"https");
+
+		//если nI сранивать не с 0, то будут проблемы
+		//потому что в инсталяции мы кладем файлы в /var/www...
+		if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
+			bIsDownload = true;
+
+		if (bIsDownload)
+		{
+			std::wstring strFileUrl = strFile;
+
+			XmlUtils::replace_all(strFileUrl, L"\\",		L"/");
+			XmlUtils::replace_all(strFileUrl, L"http:/",	L"http://");
+			XmlUtils::replace_all(strFileUrl, L"https:/",	L"https://");
+			XmlUtils::replace_all(strFileUrl, L"ftp:/",	L"ftp://");
+
+
+			CMediaInfo oInfo;
+			std::map<std::wstring, CMediaInfo>::iterator pPair = m_mapMediaFiles.find(strFileUrl);
+
+			if (pPair != m_mapMediaFiles.end())
+				return pPair->second;
+
+			std::wstring strDownload;
+
 #ifndef DISABLE_FILE_DOWNLOADER
-            
-            NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFileUrl, true);
-            if (oDownloader.DownloadSync())
-            {
-                strDownload = oDownloader.GetFilePath();
+			NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFileUrl, true);
+			if (oDownloader.DownloadSync())
+			{
+				strDownload = oDownloader.GetFilePath();
 				
 				CImageFileFormatChecker checker;
 				if (false == checker.isImageFile(strDownload))
 				{
 					strDownload.clear();
-				}           
+				}
 			}
 #endif
-            return GenerateMediaID(strDownload, strFileUrl);
-        }
-        
-        return GenerateMediaID(strFile, L"");
-    }
+			return GenerateMediaID(strDownload, strFileUrl);
+		}
+
+		return GenerateMediaID(strFile, L"");
+	}
 	void CMediaManager::SetFontManager(NSFonts::IFontManager* pFontManager)
 	{
 		m_pFontManager = pFontManager;
@@ -215,7 +213,7 @@ namespace NSShapeImageGen
 		
 		if (false == bIsImage && true == officeUtils.IsArchive(strFileSrc))
 		{
-			sTempUnpacked = m_strTempMedia + FILE_SEPARATOR_STR + L"zip_unpacked";	   
+			sTempUnpacked = m_strTempMedia + FILE_SEPARATOR_STR + L"zip_unpacked";
 			NSDirectory::CreateDirectory(sTempUnpacked);
 
 			if (S_OK == officeUtils.ExtractToDirectory(strFileSrc, sTempUnpacked, NULL, 0))
@@ -227,7 +225,7 @@ namespace NSShapeImageGen
 				}
 			}
 			else
-			{//gzip	
+			{//gzip
 				BYTE *pData = NULL;
 				DWORD nBytesCount = 0;
 
@@ -269,7 +267,7 @@ namespace NSShapeImageGen
 
 				OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
 				CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
-			
+
 				result = true;
 			}
 			else if (checker.eFileType == _CXIMAGE_FORMAT_WMF)
@@ -278,7 +276,7 @@ namespace NSShapeImageGen
 
 				OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
 				CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
-			
+
 				result = true;
 			}
 			else if (checker.eFileType == _CXIMAGE_FORMAT_EMF)
@@ -287,7 +285,7 @@ namespace NSShapeImageGen
 
 				OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
 				CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath());
-			
+
 				result = true;
 			}
 			else
@@ -302,7 +300,6 @@ namespace NSShapeImageGen
 			}
 		}
 
-
 		if (false == result)
 		{
 			//конвертация неудачная - берем оригинальный файл
@@ -316,7 +313,7 @@ namespace NSShapeImageGen
 
 			strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem + pathOriginal.GetExtention();
 
-            CDirectory::CopyFile(strFileSrc, strSaveItem);
+			CDirectory::CopyFile(strFileSrc, strSaveItem);
 		}
 
 		if (false == sTempUnpacked.empty())
@@ -341,12 +338,12 @@ namespace NSShapeImageGen
 		else
 		{
 			oInfo.m_eType = itPNG;
-            strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
-            nOutputFormat = _CXIMAGE_FORMAT_PNG;
+			strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + oInfo.GetPath2();
+			nOutputFormat = _CXIMAGE_FORMAT_PNG;
 		}
-        OOX::CPath pathSaveItem = strSaveItem;
+		OOX::CPath pathSaveItem = strSaveItem;
 
-        LONG lMaxSize = (std::min)((std::max)(lWidth, lHeight), m_lMaxSizeImage);
+		LONG lMaxSize = (std::min)((std::max)(lWidth, lHeight), m_lMaxSizeImage);
 
 		if (!((lWidth <= lMaxSize) && (lHeight <= lMaxSize)))
 		{
@@ -367,7 +364,7 @@ namespace NSShapeImageGen
 
 			oBgraFrame.Resize(lW, lH);
 		}
-        oBgraFrame.SaveFile(std::wstring(pathSaveItem.GetPath()), nOutputFormat);
+		oBgraFrame.SaveFile(std::wstring(pathSaveItem.GetPath()), nOutputFormat);
 	}
 
 	CMediaInfo CMediaManager::GenerateImageID(CBgraFrame& punkData, double dWidth, double dHeight)
@@ -403,29 +400,29 @@ namespace NSShapeImageGen
 
 	CMediaInfo CMediaManager::GenerateImageID(std::wstring strFileName, const std::wstring & strUrl, double dWidth, double dHeight, const std::wstring& strAdditionalFile, int typeAdditionalFile)
 	{
-		if (0 == strFileName.find(_T("data:base64,")))
+		if (0 == strFileName.find(L"data:base64,"))
 		{
-			std::string __s = std::string(strFileName.begin() + 12, strFileName.end());
+			int nHeaderSize = 12;
+			int nBase64DataSize = (int)strFileName.length() - nHeaderSize;
 
-			BYTE* pDstBuffer = NULL;
-			int dstLen = Base64::Base64DecodeGetRequiredLength((int)__s.length());
+			int dstLen = NSBase64::Base64DecodeGetRequiredLength(nBase64DataSize);
+			BYTE* pDstBuffer = new BYTE[dstLen];
+			NSBase64::Base64Decode(strFileName.c_str() + nHeaderSize, nBase64DataSize, pDstBuffer, &dstLen);
 
-			pDstBuffer = new BYTE[dstLen];
-			Base64::Base64Decode(__s.c_str(), (int)__s.length(), pDstBuffer, &dstLen);
-			
 			CImageFileFormatChecker checker;
-			std::wstring sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);								
-            std::wstring tempFilePath = m_strTempMedia + FILE_SEPARATOR_STR;
+			std::wstring sImageExtension = checker.DetectFormatByData(pDstBuffer, dstLen);
+			std::wstring tempFilePath = m_strTempMedia + FILE_SEPARATOR_STR;
 			
-			strFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + _T(".") + sImageExtension;
+			strFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(tempFilePath, L"img") + L"." + sImageExtension;
 
 			NSFile::CFileBinary oTempFile;
-            oTempFile.CreateFile(strFileName);
+			oTempFile.CreateFile(strFileName);
 			oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 			oTempFile.CloseFile();
 			
 			RELEASEARRAYOBJECTS(pDstBuffer);
 		}
+
 		std::wstring sMapKey = strFileName;
 		
 		if(!strUrl.empty())				sMapKey  = strUrl;
@@ -449,7 +446,7 @@ namespace NSShapeImageGen
 			bool bOle	= !strAdditionalFile.empty() && (typeAdditionalFile == 1);
 			bool bMedia = !strAdditionalFile.empty() && (typeAdditionalFile == 2);
 			
-			if(bVector)
+			if (bVector)
 				oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
 
 			oInfo.SetNameModificator(oInfo.m_eType, typeAdditionalFile);
@@ -457,49 +454,67 @@ namespace NSShapeImageGen
 			std::wstring strSaveDir		= m_strDstMedia + FILE_SEPARATOR_STR;
 			std::wstring strSaveItemWE	= strSaveDir	+ oInfo.GetPathWithoutExtension();
 
-			//copy ole bin or media
-			if(bOle || bMedia)
+			// copy ole bin or media
+			if (bOle || bMedia)
 			{
 				std::wstring strExts;
 				int nIndexExt = (int)strAdditionalFile.rfind(wchar_t('.'));
 				if (-1 != nIndexExt)
 					strExts = strAdditionalFile.substr(nIndexExt);
 
-				 if(bOle && strExts.empty()) strExts = L".bin";
+				if(bOle && strExts.empty()) strExts = L".bin";
 
 				std::wstring sCopyOlePath = strSaveItemWE + strExts;
-                CDirectory::CopyFile(strAdditionalFile, sCopyOlePath);
+				CDirectory::CopyFile(strAdditionalFile, sCopyOlePath);
 			}
 
 			if (bVector)
 			{
 				//copy source vector image
 				OOX::CPath pathSaveItem = strSaveDir + oInfo.GetPath2();
-                CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
+				CDirectory::CopyFile(strFileName, pathSaveItem.GetPath());
 
-                ::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
-                if (pMetafile->LoadFromFile(strFileName.c_str()))
+				::MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pFontManager->GetApplication());
+				if (pMetafile->LoadFromFile(strFileName.c_str()))
 				{
+					// пробуем сохранить в svg напрямую из метафайлов
+					std::wstring sInternalSvg = pMetafile->ConvertToSvg();
+
+					if (!sInternalSvg.empty())
+					{
+						// тут размер не проверяем. сохраняем как есть
+						oInfo.m_eType = itSVG;
+
+						NSFile::CFileBinary::SaveToFile(strSaveItemWE + L".svg", sInternalSvg);
+						m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
+
+						RELEASEOBJECT(pMetafile);
+						return oInfo;
+					}
+
 					double x = 0, y = 0, w = 0, h = 0;
-                    pMetafile->GetBounds(&x, &y, &w, &h);
+					pMetafile->GetBounds(&x, &y, &w, &h);
 
-					double _max = (w >= h) ? w : h;
-                    double dKoef = 1000.0 / _max;
+					// ограничиваем размеры
+					int nMaxSize = 1000;
+					int nMinSize = 10;
+					double dKoef = (double)nMaxSize / ((w >= h) ? w : h);
 
-					int WW = (int)(dKoef * w + 0.5);
-					int HH = (int)(dKoef * h + 0.5);
+					int nPixW = (int)(dKoef * w + 0.5);
+					int nPixH = (int)(dKoef * h + 0.5);
 
+				#ifdef SUPPORT_OLD_SVG_CONVERTATION
+					// пробуем сохранить в svg. большие/сложные файлы
+					// сохраняем в растр
 					NSHtmlRenderer::CASCSVGWriter oWriterSVG;
 					oWriterSVG.SetFontManager(m_pFontManager);
-					oWriterSVG.put_Width(WW);
-					oWriterSVG.put_Height(HH);
+					oWriterSVG.put_Width(nPixW);
+					oWriterSVG.put_Height(nPixH);
 
-					bool bRes = true;
-					bool bIsBigestSVG = false;
-					bool bIsRaster = true;
+					bool bRes = true;					
 					try
 					{
-						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, nPixW, nPixH);
 					}
 					catch (...)
 					{
@@ -508,66 +523,67 @@ namespace NSShapeImageGen
 
 					if (bRes)
 					{
-						oWriterSVG.IsRaster(&bIsRaster);
+						bool bIsComplex = false;
 
-						LONG lSvgDataSize = 0;
-						oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+						// растровые - сложные
+						oWriterSVG.IsRaster(&bIsComplex);
 
-						bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
-					}
-
-					if (bIsRaster || bIsBigestSVG || !bRes)
-					{
-						//случай растрового wmf/emf или г...
-						if (lWidth <= 0 || lHeight <= 0)
+						if (!bIsComplex)
 						{
-							int nMaxPixSize = 1000;
-							int nMinPixSize = 10;
-							//usually bound of raster wmf from 0 to 1
-							if ((nMinPixSize <= w && w <= nMaxPixSize) && (nMinPixSize <= h && h <= nMaxPixSize))
-							{
-								lWidth = -1;
-								lHeight = -1;
-							}
-							else
-							{
-								double dKoef = nMaxPixSize / _max;
+							LONG lSvgDataSize = 0;
+							oWriterSVG.GetSVGDataSize(&lSvgDataSize);
 
-								lWidth = (LONG)(dKoef * w + 0.5);
-								lHeight = (LONG)(dKoef * h + 0.5);
-							}
+							// больше 5 метров - сложные
+							bIsComplex = (lSvgDataSize > 5 * 1024 * 1024);
 						}
 
-						std::wstring strSaveItem = strSaveItemWE + L".png";
-                        pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
-
-						bool bIsSuccess = NSFile::CFileBinary::Exists(strSaveItem);
-						if (bIsSuccess)
+						if (!bIsComplex)
 						{
-							oInfo.m_eType = itPNG;
+							oInfo.m_eType = itSVG;
 
+							oWriterSVG.SaveFile(strSaveItemWE + L".svg");
 							m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
-               
+
 							RELEASEOBJECT(pMetafile);
 							return oInfo;
 						}
 					}
-					else
-					{
-						oInfo.m_eType = itSVG;
+				#endif
 
-						oWriterSVG.SaveFile(strSaveItemWE + L".svg");
+					// не смогли (или не захотели? (SUPPORT_OLD_SVG_CONVERTATION)) сконвертировать в svg.
+					// пробуем в png
+					if (lWidth <= 0 || lHeight <= 0)
+					{
+						// ограничиваем размеры в растре.
+						if ((nMinSize <= w && w <= nMaxSize) && (nMinSize <= h && h <= nMaxSize))
+						{
+							lWidth = -1;
+							lHeight = -1;
+						}
+						else
+						{
+							lWidth = nPixW;
+							lHeight = nPixH;
+						}
+					}
+
+					std::wstring strSaveItem = strSaveItemWE + L".png";
+					pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
+
+					if (NSFile::CFileBinary::Exists(strSaveItem))
+					{
+						oInfo.m_eType = itPNG;
+
 						m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
-                
+
 						RELEASEOBJECT(pMetafile);
 						return oInfo;
 					}
 				}
-                RELEASEOBJECT(pMetafile);
+				RELEASEOBJECT(pMetafile);
 			}
 
 			SaveImage(strFileName, oInfo, lWidth, lHeight);
-		
 			m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
 		}
 		else
@@ -578,7 +594,7 @@ namespace NSShapeImageGen
 		return oInfo;
 	}
 
-	CMediaInfo CMediaManager::GenerateMediaID(const std::wstring& strFileName, const std::wstring & strUrl)
+	CMediaInfo CMediaManager::GenerateMediaID(const std::wstring& strFileName, const std::wstring& strUrl)
 	{
 		std::wstring sMapKey;
 		
@@ -603,9 +619,9 @@ namespace NSShapeImageGen
 				oInfo.m_sExt = strFileName.substr(nIndexExt);
 
 			std::wstring strCopyMediaPath = strSaveItemWE + oInfo.m_sExt;
-           
+
 			CDirectory::CopyFile(strFileName, strCopyMediaPath);
-		
+
 			m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
 		}
 		else
@@ -637,9 +653,6 @@ namespace NSShapeImageGen
 	}
 	void CMediaManager::FlipY(CBgraFrame& punkImage)
 	{
-		//if (NULL == punkImage)
-		//	return;
-
 		BYTE* pBuffer	= punkImage.get_Data();
 		LONG lWidth		= punkImage.get_Width();
 		LONG lHeight	= punkImage.get_Height();
@@ -669,14 +682,9 @@ namespace NSShapeImageGen
 
 		RELEASEARRAYOBJECTS(pBufferMem);
 	}
-
 	void CMediaManager::FlipX(CBgraFrame& punkImage)
 	{
-		//if (NULL == punkImage)
-		//	return;
-
-		BYTE* pBuffer	= punkImage.
-				get_Data();
+		BYTE* pBuffer	= punkImage.get_Data();
 		LONG lWidth		= punkImage.get_Width();
 		LONG lHeight	= punkImage.get_Height();
 		LONG lStride	= punkImage.get_Stride();

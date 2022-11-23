@@ -197,9 +197,14 @@ class CSvmFile : virtual public IMetaFileBase
 		return false;
 	}
 
-	double GetScale()
+	unsigned int GetMapMode()
 	{
-		return 1.f;
+		return MM_ANISOTROPIC;
+	}
+
+	double GetDpi()
+	{
+		return 96.;
 	}
 
  private:

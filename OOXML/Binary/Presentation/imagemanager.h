@@ -33,15 +33,9 @@
 
 #include "../../SystemUtility/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "WMFToImageConverter.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "CalculatorCRC32.h"
-
-#include "FontPicker.h"
-using namespace NSFontCutter;
-
-#ifndef AVSINLINE
-#define AVSINLINE __forceinline
-#endif
+#include "WMFToImageConverter.h"
 
 #include <map>
 
@@ -115,7 +109,7 @@ namespace NSShapeImageGen
 				m_sName = L"display" + std::to_wstring(nRes) + L"image";
 		}
 
-		AVSINLINE std::wstring GetPath2()
+		std::wstring GetPath2()
 		{
 			std::wstring _strExt;
 			switch (m_eType)
@@ -141,7 +135,7 @@ namespace NSShapeImageGen
 			}
 			return m_sName + std::to_wstring(m_lID) + _strExt;
 		}
-		AVSINLINE std::wstring GetPathWithoutExtension()
+		std::wstring GetPathWithoutExtension()
 		{
 			return m_sName + std::to_wstring(m_lID);
 		}
@@ -167,7 +161,7 @@ namespace NSShapeImageGen
 		CMediaManager();
 		~CMediaManager();
 
-		AVSINLINE void Clear()
+		void Clear()
 		{
 			m_strDstMedia	= L"";
 			m_lMaxSizeImage = 1200;

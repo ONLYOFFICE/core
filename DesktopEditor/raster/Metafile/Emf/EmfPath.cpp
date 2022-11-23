@@ -132,12 +132,12 @@ namespace MetaFile
 
 		return true;
 	}
-	void CEmfPath::Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode)
+	void CEmfPath::Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, int nClipMode)
 	{
 		if (pOutput)
 		{	
-			if (-1 != unClipMode)
-				pOutput->StartClipPath(unClipMode);
+			if (-1 != nClipMode)
+				pOutput->StartClipPath(nClipMode);
 			else
 				pOutput->StartPath();
 
@@ -178,18 +178,18 @@ namespace MetaFile
 				}
 			}
 
-			if (-1 == unClipMode)
+			if (-1 == nClipMode)
 			{
 				int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
 				pOutput->DrawPath(lType);
 				pOutput->EndPath();
 			}
 			else
-				pOutput->EndClipPath(unClipMode);
+				pOutput->EndClipPath(nClipMode);
 		}
 
 		// При клипе пат не очищаем
-		if (-1 == unClipMode)
+		if (-1 == nClipMode)
 			Clear();
 	}
 	void CEmfPath::DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill)

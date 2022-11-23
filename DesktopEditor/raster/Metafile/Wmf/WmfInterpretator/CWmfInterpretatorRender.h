@@ -33,13 +33,17 @@ namespace MetaFile
 		void EndPath() override;
 
 		void ResetClip() override;
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override;
+		void IntersectClip(const TRectD& oClip) override;
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override;
 		void EndClipPath(unsigned int unMode) override;
 
 		void UpdateDC() override;
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override;
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override;
+
+		CMetaFileRenderer* GetRenderer() const;
 
 	private:
 		CMetaFileRenderer *m_pMetaFileRenderer;

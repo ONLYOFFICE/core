@@ -32,10 +32,9 @@
 #ifndef _METAFILE_EMF_EMFPATH_H
 #define _METAFILE_EMF_EMFPATH_H
 
+#include "../Common/MetaFileObjects.h"
 #include "EmfTypes.h"
-#include "../Wmf/WmfTypes.h"
 #include <vector>
-#include "../Common/IOutputDevice.h"
 
 namespace MetaFile
 {
@@ -177,7 +176,7 @@ namespace MetaFile
 	public:
 	};
 
-	class CEmfPath
+	class CEmfPath : public IPath
 	{
 	public:
 
@@ -190,7 +189,7 @@ namespace MetaFile
 		bool CurveTo(double dX1, double dY1, double dX2, double dY2, double dXE, double dYE);
 		bool ArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep);
 		bool Close();
-		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
+		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, int nClipMode = -1) override;
 		void DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill);
 	protected:
 

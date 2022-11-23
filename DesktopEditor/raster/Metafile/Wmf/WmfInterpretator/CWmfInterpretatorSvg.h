@@ -11,12 +11,13 @@ namespace MetaFile
 	{
 	public:
 		CWmfInterpretatorSvg(CWmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
-		CWmfInterpretatorSvg(const CWmfInterpretatorSvg& oInterpretator);
 		virtual ~CWmfInterpretatorSvg();
 
 		InterpretatorType   GetType() const override;
 
 		void SetSize(unsigned int unWidth, unsigned int unHeight);
+		void GetSize(unsigned int& unWidth, unsigned int& unHeight);
+		void UpdateSize();
 
 		void HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader) override;
 		//-----------------------------------------------------------
@@ -106,18 +107,23 @@ namespace MetaFile
 
 	private:
 		XmlUtils::CXmlWriter    m_oXmlWriter;
-		std::wstring            m_sOutputData;
 
 		CWmfParserBase          *m_pParser;
 
 		TSvgViewport            m_oViewport;
-		TEmfSizeL               m_oSizeWindow;
-	public:
-		void Begin() override;
-		void End() override;
-		//Следующие методы ничего не делают
+		TPointL                 m_oSizeWindow;
 
+		unsigned int			m_unNumberDefs;
+		std::wstring			m_wsDefs;
+		double                  m_dScale;
+
+		std::wstring            m_wsLastClipId;
+	public:
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+
+		//Следующие методы ничего не делают
+		void Begin() override {};
+		void End() override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
@@ -133,8 +139,10 @@ namespace MetaFile
 		void DrawPath(int nType = 0) override {};
 		void EndPath() override {};
 
-		void ResetClip() override {};
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override {};
+		void ResetClip() override;
+		void IntersectClip(const TRectD& oClip) override;
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 
@@ -142,25 +150,30 @@ namespace MetaFile
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
 
-		std::wstring GetFile() { return m_sOutputData; }
+		void SetXmlWriter(XmlUtils::CXmlWriter* pXmlWriter);
+		XmlUtils::CXmlWriter* GetXmlWriter();
+
+		std::wstring GetFile();
+		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, const TPointD& oTranslate);
 	private:
 		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
 		void WriteText(const std::wstring& wsText, double dX, double dY, const TWmfRect& oBounds = TWmfRect());
 
 		void AddStroke(NodeAttributes &arAttributes);
-		void AddFill(NodeAttributes &arAttributes);
+		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
+		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL);
+		void AddClip(NodeAttributes &arAttributes);
 
-		void UpdateTransform(double dX, double dY);
-		void UpdateTransform(const TRectD& oRect);
-		void UpdateTransform(const std::vector<TWmfPointS>& arPoints, const NodeAttributes& arAttributes = {});
+		void AddNoneFill(NodeAttributes &arAttributes);
 
-		double TranslateX(double nX);
-		double TranslateY(double nY);
-
-		TPointD TranslatePoint(const TPointD& oPoint);
 		TRectD TranslateRect(const TWmfRect& oRect);
 
 		TPointD GetCutPos();
+
+		std::wstring CreateHatchStyle(unsigned int unHetchStyle, double dWidth, double dHeight);
+		std::wstring CreateDibPatternStyle(IBrush *pBrush);
+
+		void UpdateClip();
 	};
 
 }

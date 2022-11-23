@@ -1,7 +1,7 @@
 #ifndef _XMLSIGNER_MSCRYPTO_H_
 #define _XMLSIGNER_MSCRYPTO_H_
 
-#include "./include/Certificate.h"
+#include "./../include/Certificate.h"
 
 #include <stdio.h>
 #include <windows.h>

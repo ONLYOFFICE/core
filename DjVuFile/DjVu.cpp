@@ -109,7 +109,6 @@ void CDjVuFile::ConvertToPdf(const std::wstring& wsDstPath)
 	if (m_pImplementation)
         m_pImplementation->ConvertToPdf(wsDstPath);
 }
-#ifdef BUILDING_WASM_MODULE
 BYTE* CDjVuFile::GetStructure()
 {
     if (m_pImplementation)
@@ -122,4 +121,3 @@ BYTE* CDjVuFile::GetLinks (int nPageIndex)
         return m_pImplementation->GetPageLinks(nPageIndex);
     return NULL;
 }
-#endif

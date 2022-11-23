@@ -9,7 +9,7 @@
 #define OOXML_SIGNATURE_BAD             3
 
 class COOXMLSignature_private;
-class Q_DECL_EXPORT COOXMLSignature
+class OPENSSL_DECL COOXMLSignature
 {
 public:
     COOXMLSignature();

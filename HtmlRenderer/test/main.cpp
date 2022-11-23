@@ -48,6 +48,7 @@
 
 #include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 
+
 void Download_OnComplete(int error)
 {
     int y = error;
@@ -62,12 +63,69 @@ void Download_OnComplete(int error)
 //#define TO_PDF
 //#define TO_HTML_RENDERER
 //#define ONLY_TEXT
-//#define DOWNLOADER_TEST
+#define DOWNLOADER_TEST
+
+#include "Windows.h"
+#include <wininet.h>
+#undef CreateDirectory
+
+bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
+{
+	STARTUPINFO sturtupinfo;
+	ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
+	sturtupinfo.cb = sizeof(STARTUPINFO);
+
+	std::wstring sFileDst = strFileOutput;
+	size_t posn = 0;
+	while (std::wstring::npos != (posn = sFileDst.find('\\', posn)))
+	{
+		sFileDst.replace(posn, 1, L"/");
+		posn += 1;
+	}
+
+	std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
+
+	wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];
+	memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
+	pCommandLine[sApp.length()] = (wchar_t)'\0';
+
+	HANDLE ghJob = CreateJobObject(NULL, NULL);
+
+	if (ghJob)
+	{
+		JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+
+		// Configure all child processes associated with the job to terminate when the
+		jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+		if ( 0 == SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
+		{
+			CloseHandle(ghJob);
+			ghJob = NULL;
+		}
+	}
+
+	PROCESS_INFORMATION processinfo;
+	ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
+	BOOL bResult = CreateProcessW(NULL, pCommandLine, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
+
+	if (bResult && ghJob)
+	{
+		AssignProcessToJobObject(ghJob, processinfo.hProcess);
+	}
+
+	::WaitForSingleObject(processinfo.hProcess, INFINITE);
+
+	RELEASEARRAYOBJECTS(pCommandLine);
+
+	return NSFile::CFileBinary::Exists(sFileDst);
+}
 
 int main(int argc, char *argv[])
 {
+	DownloadFilePS(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", L"D:/222.jpg");
+
 #ifdef DOWNLOADER_TEST
-    CFileDownloader oDownloader(L"https://download.onlyoffice.com/assets/fb/fb_icon_325x325.jpg", false);
+	NSNetwork::NSFileTransport::CFileDownloader oDownloader(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", false);
     oDownloader.SetFilePath(L"D:\\111.jpg");
     oDownloader.SetEvent_OnComplete(Download_OnComplete);
     oDownloader.DownloadSync();

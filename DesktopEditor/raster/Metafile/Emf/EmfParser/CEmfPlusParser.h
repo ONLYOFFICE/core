@@ -21,7 +21,7 @@ namespace MetaFile
 
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
-		double          GetPixWidth(double dScaleX) override;
+		double          GetDpi()                                    override;
 
 		EmfParserType   GetType()				    override;
 

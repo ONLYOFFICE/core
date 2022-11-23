@@ -777,12 +777,9 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CEmfParserBase::GetPixWidth(double dScaleX)
+	double CEmfParserBase::GetDpi()
 	{
-		if (MM_TEXT == m_pDC->GetMapMode())
-			return dScaleX * std::fabs((double)m_oHeader.oDevice.cx / (double)m_oHeader.oMillimeters.cx);
-
-		return dScaleX * std::fabs((double)(m_oHeader.oFrame.lRight - m_oHeader.oFrame.lLeft) / (double)(m_oHeader.oBounds.lRight - m_oHeader.oBounds.lLeft));
+		return 96.;
 	}
 
 	bool CEmfParserBase::IsViewportFlippedY()

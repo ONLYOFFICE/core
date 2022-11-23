@@ -1227,10 +1227,13 @@ namespace MetaFile
 
 	std::wstring CWmfInterpretatorSvg::CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight)
 	{
-		if (NULL == m_pParser || NULL == m_pParser->GetBrush())
+		if (NULL == m_pParser || NULL == m_pParser->GetBrush() || NULL == m_pParser->GetPen())
 			return std::wstring();
 
-		double dStrokeWidth = m_pParser->GetPixWidth(1.0);
+		double dStrokeWidth = m_pParser->GetPen()->GetWidth();
+
+		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+			dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 
 		std::wstring wsStrokeWidth = ConvertToWString(dStrokeWidth);
 		std::wstring wsValue  = ConvertToWString(dStrokeWidth * 8., 6);

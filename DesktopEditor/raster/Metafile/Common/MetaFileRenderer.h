@@ -1108,11 +1108,16 @@ namespace MetaFile
 			int nColor = pPen->GetColor();
 
 			unsigned int unMetaPenStyle = pPen->GetStyle();
+
+			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+
+			if (PS_NULL == ulPenStyle)
+				return false;
+
 			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
 			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
 			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
 			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
-			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
@@ -1145,9 +1150,16 @@ namespace MetaFile
 
 			double dWidth = pPen->GetWidth();
 
-			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
+			if (0 == dWidth || (1 == dWidth && PS_COSMETIC == ulPenType))
 			{
-				dWidth = m_pFile->GetPixWidth(m_dScaleX);
+				double dRendererDpiX;
+				m_pRenderer->get_DpiX(&dRendererDpiX);
+
+				dWidth = 25.4 / dRendererDpiX;
+
+				if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
+					dWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
+
 				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
 				nJoinStyle = Aggplus::LineJoinMiter;
 			}
@@ -1178,25 +1190,6 @@ namespace MetaFile
 					ulPenStyle = Aggplus::DashStyleDashDot;
 				else if (6 == unSizeDash)
 					ulPenStyle = Aggplus::DashStyleDashDotDot;
-
-				//				double dDpiX;
-				//				m_pRenderer->get_DpiX(&dDpiX);
-				//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
-
-				//				double *pDashPattern = new double[unSizeDash];
-
-				//				if (NULL != pDashPattern)
-				//				{
-				//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-				//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
-				//				}
-
-				//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
-				//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
-				//				ulPenStyle = Aggplus::DashStyleCustom;
-
-				//				RELEASEARRAYOBJECTS(pDashPattern)
-
 			}
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID

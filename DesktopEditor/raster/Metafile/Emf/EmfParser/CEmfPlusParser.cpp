@@ -334,9 +334,9 @@ namespace MetaFile
 		this->ClearFile();
 	}
 
-	double CEmfPlusParser::GetPixWidth(double dScaleX)
+	double CEmfPlusParser::GetDpi()
 	{
-		return (double)m_unLogicalDpiX / 96. * dScaleX;
+		return (double)m_unLogicalDpiX;
 	}
 
 	EmfParserType CEmfPlusParser::GetType()

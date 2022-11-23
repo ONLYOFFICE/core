@@ -165,12 +165,9 @@ namespace MetaFile
 		return m_pDC->GetMapMode();
 	}
 
-	double CWmfParserBase::GetPixWidth(double dScaleX)
+	double CWmfParserBase::GetDpi()
 	{
-		if (0 != m_oPlaceable.Inch && MM_TEXT != m_pDC->GetMapMode())
-			return dScaleX * (1440. / (((m_oPlaceable.Inch <= 1440) ? m_oPlaceable.Inch : 96) * m_pDC->GetPixelWidth()));
-
-		return dScaleX * 10. / m_pDC->GetPixelWidth() / ((0 != m_oPlaceable.Inch) ? (1440. / m_oPlaceable.Inch) : 1.);
+		return (0 != m_oPlaceable.Inch) ? m_oPlaceable.Inch : 96.;
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)

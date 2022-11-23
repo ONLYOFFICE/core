@@ -80,7 +80,7 @@ namespace MetaFile
 		bool            IsWindowFlippedY()               override;
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
-		double          GetPixWidth(double dScaleX)      override;
+		double          GetDpi()                         override;
 		bool            IsViewportFlippedY();
 		bool            IsViewportFlippedX();
 

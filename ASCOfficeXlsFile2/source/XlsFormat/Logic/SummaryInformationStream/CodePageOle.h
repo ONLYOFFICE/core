@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 #include <boost/smart_ptr/shared_array.hpp>
-#include "../../../../../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../../../../Common/DocxFormat/Source/Base/Types_32.h"
 namespace OLEPS
 {
 

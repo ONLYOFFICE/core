@@ -101,11 +101,11 @@ void List12BlockLevel::load(CFRecord& record)
 		dxfAggBorder.size = cbdxfAggBorder;
 		record >> dxfAggBorder;
 	}
-	if (istnHeader != -1)
+	if (istnHeader != std::wstring::npos)
 		record >> stHeader;
-	if (istnData != -1)
+	if (istnData != std::wstring::npos)
 		record >> stData;
-	if (istnAgg != -1)
+	if (istnAgg != std::wstring::npos)
 		record >> stAgg;
 }
 

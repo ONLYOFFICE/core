@@ -91,9 +91,9 @@ namespace Strings
 
         std::wstring color = strValue; //color = color.Trim();
 				
-        if (color.find (L"0x") != -1)
+        if (color.find (L"0x") != std::wstring::npos)
             color.erase (0, 2);
-        if (color.find (L"#") != -1)
+        if (color.find (L"#") != std::wstring::npos)
             color.erase (0, 1);
 
         while (color.length() < 6)

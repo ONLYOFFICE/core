@@ -1905,7 +1905,7 @@ namespace NExtractTools
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, sThemeDir, -1, _T(""), params);
 		std::wstring sResult;
 		bool bRes = oDoctRenderer.Execute(sXml, sResult);
-		if (-1 != sResult.find(_T("error")))
+		if (std::wstring::npos != sResult.find(_T("error")))
 		{
 			std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
 			nRes = AVS_FILEUTILS_ERROR_CONVERT;
@@ -3493,7 +3493,7 @@ namespace NExtractTools
        std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile::DOCT, eTypeTo, sFrom, sFileFromDir, sImagesDirectory, sThemeDir, -1, sMailMergeXml, params);
        std::wstring sResult;
        oDoctRenderer.Execute(sXml, sResult);
-       if (-1 != sResult.find(_T("error")))
+       if (std::wstring::npos != sResult.find(_T("error")))
        {
            std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
            nRes = AVS_FILEUTILS_ERROR_CONVERT;

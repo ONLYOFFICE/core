@@ -114,8 +114,8 @@ namespace XmlUtils
 
         std::wstring color = string; //boost::algorithm::trim(color);
 				
-        if (color.find(L"0x") != -1)    color.erase(0, 2);
-        if (color.find(L"#") != -1)     color.erase(0, 1);
+        if (color.find(L"0x") != std::wstring::npos)    color.erase(0, 2);
+        if (color.find(L"#") != std::wstring::npos)     color.erase(0, 1);
 
         while (color.length() < 6)
 			color = L"0" + color;

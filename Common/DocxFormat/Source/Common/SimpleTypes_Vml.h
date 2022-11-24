@@ -5389,7 +5389,7 @@ namespace SimpleTypes
 					return 0;
 
 				std::wstring sTemp = sValue.substr( 0, nPos );
-				if ( -1 != sTemp.find( '%' ) )
+				if ( std::wstring::npos != sTemp.find( '%' ) )
 				{
 					SimpleTypes::CPercentage oPerc = sTemp;
 					m_dX = oPerc.GetValue();
@@ -5403,7 +5403,7 @@ namespace SimpleTypes
 				}
 
 				sTemp = sValue.substr( nPos + 1, nLen - nPos - 1 );
-				if ( -1 != sTemp.find( '%' ) )
+				if ( std::wstring::npos != sTemp.find( '%' ) )
 				{
 					SimpleTypes::CPercentage oPerc = sTemp;
 					m_dY = oPerc.GetValue();

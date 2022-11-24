@@ -1157,7 +1157,7 @@ namespace NExtractTools
 			}
             size_t nIndex = m_sFileTo->rfind('.');
             COfficeFileFormatChecker FileFormatChecker;
-            if(-1 != nIndex)
+            if(std::wstring::npos != nIndex)
                 m_sFileTo->replace(nIndex, std::wstring::npos, FileFormatChecker.GetExtensionByType(toFormat));
             else
                 m_sFileTo->append(FileFormatChecker.GetExtensionByType(toFormat));

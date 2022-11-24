@@ -92,7 +92,7 @@ namespace NExtractTools
 		}
 
 		// there are no directories in paths, both paths are paths to files
-		if (-1 != nExt1Pos && -1 != nExt2Pos)
+		if (std::wstring::npos != nExt1Pos && std::wstring::npos != nExt2Pos)
 		{
 			std::wstring sExt1 = sFile1.substr(nExt1Pos);
 			std::wstring sExt2 = sFile2.substr(nExt2Pos);
@@ -495,7 +495,7 @@ namespace NExtractTools
 				std::wstring sResult;
                 oDoctRenderer.Execute(sXml, sResult);
                 bool bContinue = false;
-                if (!sResult.empty() && -1 != sResult.find(_T("error")))
+                if (!sResult.empty() && std::wstring::npos != sResult.find(_T("error")))
                 {
                     std::wcerr << _T("DoctRenderer:") << sResult << std::endl;
 					params.m_bOutputConvertCorrupted = true;

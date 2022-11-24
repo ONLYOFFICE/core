@@ -113,7 +113,7 @@ namespace DocFileFormat
 	{
 		//Todo сделать определение симольного шрифта через fontManager
 		//Заглушка под Google Docs, они пишут bullet в Arial
-        if (-1 != m_sAsciiFont.find (L"Arial") && -1 != m_sEastAsiaFont.find (L"Arial") && -1 != m_shAnsiFont.find (L"Arial"))
+        if (std::wstring::npos != m_sAsciiFont.find (L"Arial") && std::wstring::npos != m_sEastAsiaFont.find (L"Arial") && std::wstring::npos != m_shAnsiFont.find (L"Arial"))
 			return false;
 
 		return true;

@@ -629,8 +629,8 @@ void CFontFile::UpdateStyles(const INT& bBold, const INT& bItalic)
 	std::string sStyle = GetStyleName();
 
 	// Смотрим какой стиль у исходного шрифта
-	INT bSrcBold   = (size_t(-1) != sStyle.find("Bold"));
-	INT bSrcItalic = (size_t(-1) != sStyle.find("Italic"));
+	INT bSrcBold   = (std::string::npos != sStyle.find("Bold"));
+	INT bSrcItalic = (std::string::npos != sStyle.find("Italic"));
 
 	if (!bBold) // Нам нужен не жирный шрифт
 	{

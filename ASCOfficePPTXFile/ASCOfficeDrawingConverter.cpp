@@ -187,7 +187,7 @@ namespace NS_DWC_Common
 	BYTE getOpacityFromString(const std::wstring opacityStr)
 	{
 		BYTE alpha;
-		if (opacityStr.find(L"f") != -1)
+		if (opacityStr.find(L"f") != std::wstring::npos)
 			alpha = (BYTE)(XmlUtils::GetDouble(opacityStr) / 65536 * 256);
 		else
 		{
@@ -206,7 +206,7 @@ namespace NS_DWC_Common
 	{
 		long val = 0;
 
-		if (str.find(L"f") != -1)
+		if (str.find(L"f") != std::wstring::npos)
 			val = XmlUtils::GetInteger(str);
 		else
 			val = (long)(XmlUtils::GetDouble(str) * 65536);
@@ -226,7 +226,7 @@ namespace NS_DWC_Common
 			nCheckInvert += 1;
 
 		int nRot = XmlUtils::GetInteger(str);
-		if (str.rfind(wchar_t('f')) != -1)
+		if (str.rfind(wchar_t('f')) != std::wstring::npos)
 		{
 			double dVal = (double)nRot;
 			dVal /= 65536;
@@ -2983,7 +2983,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				if (sColor.is_init())
 				{
 					ODRAW::CColor color;
-					if (sColor->find(L"fill") != -1)
+					if (sColor->find(L"fill") != std::wstring::npos)
 					{
 						std::wstring sColorEffect = *sColor;
 						if (sColorEffect.length() > 5)
@@ -3033,7 +3033,7 @@ void CDrawingConverter::ConvertWordArtShape(PPTX::Logic::SpTreeElem* elem, XmlUt
 				if (sColor2.is_init())
 				{
 					ODRAW::CColor color;
-					if (sColor2->find(L"fill") != -1)
+					if (sColor2->find(L"fill") != std::wstring::npos)
 					{
 						std::wstring sColorEffect = *sColor2;
 						if (sColorEffect.length() > 5)
@@ -4797,7 +4797,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			{
 				PPTX::Logic::Gs Gs_;
 				Gs_.color.Color = new PPTX::Logic::SrgbClr();
-                if (sColor2->find(L"fill") != -1)
+                if (sColor2->find(L"fill") != std::wstring::npos)
 				{
                     std::wstring sColorEffect = *sColor2;
                     if (sColorEffect.length() > 5)

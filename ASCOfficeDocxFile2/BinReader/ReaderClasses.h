@@ -1341,7 +1341,7 @@ public:
     static WriteHyperlink* Parse(std::wstring fld)
 	{
 		WriteHyperlink* res = NULL;
-        if(-1 != fld.find(L"HYPERLINK"))
+        if(std::wstring::npos != fld.find(L"HYPERLINK"))
         {
             std::wstring sLink;
             std::wstring sTooltip;

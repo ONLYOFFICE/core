@@ -34,7 +34,7 @@ class Timing_2010
 {
 public:
     Timing_2010(CRecordPP10SlideBinaryTagExtension* pAnim_2010, const std::unordered_set<int>& shapesID);
-    void Convert(PPTX::Logic::Timing& timimg, CExMedia* pExMedia, CRelsGenerator* pRels);
+    void Convert(PPTX::Logic::Timing& timing, CExMedia* pExMedia, CRelsGenerator* pRels);
 
 public:
     enum TimeNodeLevel {
@@ -57,7 +57,7 @@ private:
     void FillBldOleChart(CRecordChartBuildContainer* pCBC, PPTX::Logic::BldOleChart &oBP);
     void FillBldDgm(CRecordDiagramBuildContainer *pDBC, PPTX::Logic::BldDgm &oBP);
 
-    void ConvertTnLst(PPTX::Logic::TnLst& tnLst, CRecordExtTimeNodeContainer* pETNC);
+    void ConvertTnLst(PPTX::Logic::Timing &timing, CRecordExtTimeNodeContainer* pETNC);
     bool FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
     void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq& oSec);
     void FillPar(

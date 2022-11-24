@@ -13,13 +13,13 @@ Timing_2010::Timing_2010(CRecordPP10SlideBinaryTagExtension *pAnim_2010, const s
     slideShapes(shapesID)
 {}
 
-void Timing_2010::Convert(PPTX::Logic::Timing &timimg, CExMedia *pExMedia, CRelsGenerator *pRels)
+void Timing_2010::Convert(PPTX::Logic::Timing &timing, CExMedia *pExMedia, CRelsGenerator *pRels)
 {
     m_pExMedia = pExMedia;
     m_pRels = pRels;
 
-    ConvertTnLst(timimg.tnLst.get2(), pTagExtAnim->m_pExtTimeNodeContainer);
-    ConvertBldLst(timimg, pTagExtAnim->m_pBuildListContainer);
+    ConvertTnLst(timing, pTagExtAnim->m_pExtTimeNodeContainer);
+    ConvertBldLst(timing, pTagExtAnim->m_pBuildListContainer);
 }
 
 void Timing_2010::ConvertBldLst(PPTX::Logic::Timing &timimg, CRecordBuildListContainer *pBLC)
@@ -46,15 +46,12 @@ void Timing_2010::ConvertBldLst(PPTX::Logic::Timing &timimg, CRecordBuildListCon
         FillBuildNodeBase(pSub, oBuildNodeBase);
         InsertBuildNode(timimg.bldLst.get2(), oBuildNodeBase);
     }
-
-    if (timimg.bldLst->list.empty())    // You can't leave an empty tag <p:bldLst/>
-        timimg.bldLst.reset();
 }
 
 void Timing_2010::InsertBuildNode(PPTX::Logic::BldLst &bldLst, PPTX::Logic::BuildNodeBase &bnb)
 {
     if (bnb.m_node.is<PPTX::Logic::BldP>())
-       InsertBldP(bldLst, bnb);
+        InsertBldP(bldLst, bnb);
     else if (bnb.m_node.IsInit())     // TODO BldOleChart and RT_DiagramBuild. Now it is not support (20.11.22).
         bldLst.list.push_back(bnb);
     else
@@ -184,8 +181,12 @@ void Timing_2010::FillBldDgm(CRecordDiagramBuildContainer *pDBC, PPTX::Logic::Bl
     oBP.bld       = ST_TLDiagramBuildType[pDBC->m_oDiagramBuildAtom.m_oDiagramBuild % 17];
 }
 
-void Timing_2010::ConvertTnLst(PPTX::Logic::TnLst &tnLst, CRecordExtTimeNodeContainer *pETNC)
+void Timing_2010::ConvertTnLst(PPTX::Logic::Timing &timing, CRecordExtTimeNodeContainer *pETNC)
 {
+    if (!timing.tnLst.IsInit())
+        timing.tnLst = new PPTX::Logic::TnLst;
+
+    auto& tnLst = timing.tnLst.get2();
     if (tnLst.list.empty())
         tnLst.list.push_back(PPTX::Logic::TimeNodeBase());
 
@@ -199,23 +200,29 @@ bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
         if (!oChild.m_node.IsInit())
             oChild.m_node = new PPTX::Logic::Seq;
 
-        FillSeq(pETNC, oChild.m_node.as<PPTX::Logic::Seq>());
+        if (oChild.m_node.is<PPTX::Logic::Seq>())
+            FillSeq(pETNC, oChild.m_node.as<PPTX::Logic::Seq>());
     }
     else if (pETNC->m_haveSetBehavior)
     {
         if (!oChild.m_node.IsInit())
             oChild.m_node = new PPTX::Logic::Set;
 
-        FillSet(pETNC, oChild.m_node.as<PPTX::Logic::Set>());
+        if (oChild.m_node.is<PPTX::Logic::Set>())
+            FillSet(pETNC, oChild.m_node.as<PPTX::Logic::Set>());
     }
     else if (pETNC->m_haveAnimateBehavior)
     {
         if (!oChild.m_node.IsInit())
             oChild.m_node = new PPTX::Logic::Anim;
-        auto& anim = oChild.m_node.as<PPTX::Logic::Anim>();
 
-        FillAnim(pETNC->m_pTimeAnimateBehavior, anim);
-        FillCTnRecursive(pETNC, anim.cBhvr.cTn);
+        if (oChild.m_node.is<PPTX::Logic::Anim>())
+        {
+            auto& anim = oChild.m_node.as<PPTX::Logic::Anim>();
+
+            FillAnim(pETNC->m_pTimeAnimateBehavior, anim);
+            FillCTnRecursive(pETNC, anim.cBhvr.cTn);
+        }
     }
     else if (pETNC->m_haveColorBehavior)
     {
@@ -229,7 +236,8 @@ bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
         if (!oChild.m_node.IsInit())
             oChild.m_node = new PPTX::Logic::AnimEffect;
 
-        FillAnimEffect(pETNC, oChild.m_node.as<PPTX::Logic::AnimEffect>());
+        if (oChild.m_node.is<PPTX::Logic::AnimEffect>())
+            FillAnimEffect(pETNC, oChild.m_node.as<PPTX::Logic::AnimEffect>());
     }
     else if (pETNC->m_haveMotionBehavior)
     {
@@ -257,14 +265,16 @@ bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
         if (!oChild.m_node.IsInit())
             oChild.m_node = new PPTX::Logic::Cmd;
 
-        FillCmd(pETNC, oChild.m_node.as<PPTX::Logic::Cmd>());
+        if (oChild.m_node.is<PPTX::Logic::Cmd>())
+            FillCmd(pETNC, oChild.m_node.as<PPTX::Logic::Cmd>());
     }
     else if (pETNC->m_oTimeNodeAtom.m_dwType == TL_TNT_Parallel)
     {
         if (!oChild.m_node.IsInit())
             oChild.m_node = new PPTX::Logic::Par;
 
-        FillPar(pETNC, oChild.m_node.as<PPTX::Logic::Par>());
+        if (oChild.m_node.is<PPTX::Logic::Par>())
+            FillPar(pETNC, oChild.m_node.as<PPTX::Logic::Par>());
     }
     else if (pETNC->m_haveClientVisualElement)
     {
@@ -387,9 +397,12 @@ void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CB
                 m_oClientVisualElement.
                 m_oVisualShapeAtom.m_nObjectIdRef;
 
-        oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt();
-        oBhvr.tgtEl.spTgt->spid =
-                std::to_wstring(spid);
+        if (!oBhvr.tgtEl.spTgt.IsInit())
+        {
+            oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt;
+            oBhvr.tgtEl.spTgt->spid = std::to_wstring(spid);
+        }
+
         if (m_currentBldP)
         {
             m_currentBldP->spid =
@@ -1407,7 +1420,7 @@ void Timing_2010::FillVideo(
     }
 
 
-    oVideo.cMediaNode.tgtEl.spTgt = PPTX::Logic::SpTgt();
+    oVideo.cMediaNode.tgtEl.spTgt = new PPTX::Logic::SpTgt();
     oVideo.cMediaNode.tgtEl.spTgt->spid = std::to_wstring(video.m_nObjectIdRef);
 }
 

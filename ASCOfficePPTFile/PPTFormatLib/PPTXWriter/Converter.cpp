@@ -1859,12 +1859,13 @@ void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme,
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& sharesID)
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID)
 {
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
     auto intermediateSlideAnimation = PPT::Intermediate::ParseSlideAnimation(slide_iter->second);
+    intermediateSlideAnimation.realShapesIds = shapesID;
     auto timing =
-            PPT::Converter::Timing(intermediateSlideAnimation, sharesID).
+            PPT::Converter::Timing(intermediateSlideAnimation, shapesID).
             Convert(&(m_pUserInfo->m_oExMedia), &oRels);
     oWriter.WriteString(timing.toXML());
 }

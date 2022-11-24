@@ -33,6 +33,7 @@ HEADERS += \
     ../Converter/Animation/TimingUtils.h \
     ../Converter/Animation/Timing_1995.h \
     ../Converter/Animation/Timing_2010.h \
+    ../Converter/Animation/hashcode10.h \
     ../Converter/Animation/intermediate_anim.h \
     ../Converter/timing.h \
     ../Converter/transition.h \
@@ -311,6 +312,7 @@ SOURCES += \
     ../Converter/Animation/TimingUtils.cpp \
     ../Converter/Animation/Timing_1995.cpp \
     ../Converter/Animation/Timing_2010.cpp \
+    ../Converter/Animation/hashcode10.cpp \
     ../Converter/Animation/intermediate_anim.cpp \
     ../Converter/timing.cpp \
     ../Converter/transition.cpp \

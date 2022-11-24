@@ -67,27 +67,6 @@ namespace OOX
 				writer.StartNodeWithNS(node_ns, node_name);
 				writer.StartAttributes();
 				writer.EndAttributes();
-				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
-				{
-					//todo more complex solution
-					//if name more then 31 chars Excel wants to recover xlsx
-					if (m_oRFont->m_sVal->length() <= 31)
-					{
-						WritingValNodeEncodeXml(child_ns, L"name", m_oRFont->m_sVal.get());
-					}
-					else
-					{
-						WritingValNodeEncodeXml(child_ns, L"name", m_oRFont->m_sVal->substr(0, 31));
-					}
-				}			
-				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
-				{
-					WritingValNode(child_ns, L"charset", m_oCharset->m_oCharset->ToString());
-				}
-				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
-				{
-					WritingValNode(child_ns, L"family", m_oFamily->m_oFontFamily->ToString());
-				}
 				if(m_oBold.IsInit())
 				{
 					WritingValNodeIf(child_ns, L"b", !m_oBold->ToBool(), L"0");
@@ -100,14 +79,6 @@ namespace OOX
 				{
 					WritingValNodeIf(child_ns, L"strike", !m_oStrike->ToBool(), L"0");
 				}
-				if(m_oOutline.IsInit())
-				{
-					WritingValNodeIf(child_ns, L"outline", !m_oOutline->ToBool(), L"0");
-				}
-				if(m_oShadow.IsInit())
-				{
-					WritingValNodeIf(child_ns, L"shadow", !m_oShadow->ToBool(), L"0");
-				}
 				if(m_oCondense.IsInit())
 				{
 					WritingValNodeIf(child_ns, L"condense", !m_oCondense->ToBool(), L"0");
@@ -116,11 +87,13 @@ namespace OOX
 				{
 					WritingValNodeIf(child_ns, L"extend", !m_oExtend->ToBool(), L"0");
 				}
-				if(m_oColor.IsInit())
-					m_oColor->toXMLWithNS(writer, child_ns, L"color", child_ns);
-				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
+				if(m_oOutline.IsInit())
 				{
-					WritingValNode(child_ns, L"sz", m_oSz->m_oVal->GetValue());
+					WritingValNodeIf(child_ns, L"outline", !m_oOutline->ToBool(), L"0");
+				}
+				if(m_oShadow.IsInit())
+				{
+					WritingValNodeIf(child_ns, L"shadow", !m_oShadow->ToBool(), L"0");
 				}
 				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 				{
@@ -129,6 +102,34 @@ namespace OOX
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
 					WritingValNode(child_ns, L"vertAlign", m_oVertAlign->m_oVerticalAlign->ToString());
+				}
+				if(m_oSz.IsInit() && m_oSz->m_oVal.IsInit())
+				{
+					WritingValNode(child_ns, L"sz", m_oSz->m_oVal->GetValue());
+				}
+				if(m_oColor.IsInit())
+					m_oColor->toXMLWithNS(writer, child_ns, L"color", child_ns);
+
+				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
+				{
+					//todo more complex solution
+					//if name more then 31 chars Excel wants to recover xlsx
+					if (m_oRFont->m_sVal->length() <= 31)
+					{
+						WritingValNodeEncodeXml(child_ns, L"name", m_oRFont->m_sVal.get());
+					}
+					else
+					{
+						WritingValNodeEncodeXml(child_ns, L"name", m_oRFont->m_sVal->substr(0, 31));
+					}
+				}
+				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
+				{
+					WritingValNode(child_ns, L"family", m_oFamily->m_oFontFamily->ToString());
+				}
+				if(m_oCharset.IsInit() && m_oCharset->m_oCharset.IsInit())
+				{
+					WritingValNode(child_ns, L"charset", m_oCharset->m_oCharset->ToString());
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())
 				{

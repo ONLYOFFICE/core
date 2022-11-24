@@ -829,16 +829,19 @@ namespace OOX
 					else
 						writer.WriteString(_T("<strike val=\"false\"/>"));
 				}
-				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
+				if(m_oCondense.IsInit())
 				{
-					if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
-					{
-						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
-					}
+					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
+						writer.WriteString(_T("<condense/>"));
 					else
-					{
-						writer.WriteString(L"<u/>");
-					}
+						writer.WriteString(_T("<condense val=\"false\"/>"));
+				}
+				if(m_oExtend.IsInit())
+				{
+					if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
+						writer.WriteString(_T("<extend/>"));
+					else
+						writer.WriteString(_T("<extend val=\"false\"/>"));
 				}
 				if(m_oOutline.IsInit())
 				{
@@ -854,19 +857,16 @@ namespace OOX
 					else
 						writer.WriteString(_T("<shadow val=\"false\"/>"));
 				}
-				if(m_oCondense.IsInit())
+				if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 				{
-					if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
-						writer.WriteString(_T("<condense/>"));
+					if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
+					{
+						WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
+					}
 					else
-						writer.WriteString(_T("<condense val=\"false\"/>"));
-				}
-				if(m_oExtend.IsInit())
-				{
-					if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
-						writer.WriteString(_T("<extend/>"));
-					else
-						writer.WriteString(_T("<extend val=\"false\"/>"));
+					{
+						writer.WriteString(L"<u/>");
+					}
 				}
 				if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 				{
@@ -884,7 +884,16 @@ namespace OOX
 
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
+					//todo more complex solution
+					//if name more then 31 chars Excel wants to recover xlsx
+					if (m_oRFont->m_sVal->length() <= 31)
+					{
+						WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
+					}
+					else
+					{
+						WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal->substr(0, 31));
+					}
 				}
 				if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 				{

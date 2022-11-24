@@ -611,7 +611,7 @@ png_convert_to_rfc1123(png_structp png_ptr, png_const_timep ptime)
 
    {
       size_t pos = 0;
-      char number_buf[5]; /* enough for a four-digit year */
+      char number_buf[5] = {0}; /* enough for a four-digit year */
 
 #     define APPEND_STRING(string)\
          pos = png_safecat(png_ptr->time_buffer, sizeof png_ptr->time_buffer,\

@@ -131,7 +131,7 @@ namespace NSUnicodeConverter
 								char *sResCur = sResStart;
 								const char *sResLimit = sResCur + nOutputLen * ucnv_getMaxCharSize(conv);
 
-								ucnv_fromUnicode(conv, &sResCur, sResLimit, &pOutputStart, pOutputLimit, NULL, TRUE, &status);
+								ucnv_fromUnicode(conv, &sResCur, sResLimit, &pOutputStart, pOutputLimit, NULL, 1, &status);
 								if (U_SUCCESS(status))
 								{
 									sRes = std::string(sResStart, sResCur - sResStart);
@@ -180,7 +180,7 @@ namespace NSUnicodeConverter
 						char *sResCur = sResStart;
 						const char *sResLimit = sResCur + sRes.size();
 
-						ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, TRUE, &status);
+						ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, 1, &status);
 						if (U_SUCCESS(status))
 						{
 							sRes.resize(sResCur - sResStart);
@@ -223,7 +223,7 @@ namespace NSUnicodeConverter
 						UChar* target = targetStart;
 						UChar* targetLimit = target + uBufSize;
 
-						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, 1, &status);
 						if (U_SUCCESS(status))
 						{
 							size_t nTargetSize = target - targetStart;
@@ -278,7 +278,7 @@ namespace NSUnicodeConverter
 						UChar* target = targetStart;
 						UChar* targetLimit = target + uBufSize;
 
-						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, TRUE, &status);
+						ucnv_toUnicode(conv, &target, targetLimit, &source, sourceLimit, NULL, 1, &status);
 						if (U_SUCCESS(status))
 						{
 							size_t nTargetSize = target - targetStart;
@@ -310,7 +310,7 @@ namespace NSUnicodeConverter
 		}
 		std::wstring convert_string(const char* sInput, const unsigned int& nInputLen, int nCodepage = 0)
 		{
-			bool ansi = true;
+			bool ansi = 1;
 			std::wstring sResult;
 
 			size_t insize = (size_t)nInputLen;
@@ -371,7 +371,7 @@ namespace NSUnicodeConverter
 			const wchar_t* pEnd = pUnicodes + lCount;
 			const wchar_t* pCur = pUnicodes;
 
-			bool bIsUtf16 = (2 == sizeof(wchar_t)) ? true : false;
+			bool bIsUtf16 = (2 == sizeof(wchar_t)) ? 1 : false;
 
 			while (pCur < pEnd)
 			{

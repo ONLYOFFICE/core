@@ -773,15 +773,15 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
 
     CFontsCache* pCache		= (CFontsCache*)((m_pOwnerCache != NULL) ? m_pOwnerCache : m_pApplication->GetCache());
     RELEASEINTERFACE(m_pFont);
-	
+
     NSFonts::CLibrary library;
     library.m_internal->m_library = pCache->GetLibrary();
     m_pFont = (CFontFile*)pCache->LockFont(library, sPath, lFaceIndex, dSize);
     if (NULL == m_pFont)
         return FALSE;
 
-	m_pFont->m_pFontManager = this;
-	m_pFont->SetSizeAndDpi(dSize, dDpiX, dDpiY);
+    m_pFont->m_pFontManager = this;
+    m_pFont->SetSizeAndDpi(dSize, dDpiX, dDpiY);
 
     m_sName = L"";
     if (m_pFont->m_pFace)
@@ -790,7 +790,7 @@ INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIn
         m_sName = m_pFont->m_sName;
     }
 
-	return TRUE;
+    return TRUE;
 }
 
 INT CFontManager::LoadFontFromFile2(NSFonts::IFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)

@@ -62,7 +62,7 @@ namespace MetaFile
 
     bool CXmlOutput::IsValid() const
     {
-        return (IsReader()) ? m_pXmlLiteReader->IsValid() : m_pXmlLiteReader->IsValid();
+        return (IsReader()) ? m_pXmlLiteReader->IsValid() : false;
     }
 
     bool CXmlOutput::IsEmptyNode() const

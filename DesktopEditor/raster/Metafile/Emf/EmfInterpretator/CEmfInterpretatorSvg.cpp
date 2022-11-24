@@ -15,6 +15,9 @@
 #define MININT8     ((char)~MAXINT8)
 #endif
 
+#define MAXTRANSFORMSCALE 100.
+#define MINTRANSFORMSCALE 0.00000001
+
 namespace MetaFile
 {               
 	CEmfInterpretatorSvg::CEmfInterpretatorSvg(CEmfParserBase* pParser, double dWidth, double dHeight)
@@ -2020,7 +2023,7 @@ namespace MetaFile
 		return m_oXmlWriter.GetXmlString();
 	}
 
-	void CEmfInterpretatorSvg::IncludeSvg(const std::wstring &wsSvg, const TRectD& oRect, const TRectD& oClipRect, const TPointD& oTranslate)
+	void CEmfInterpretatorSvg::IncludeSvg(const std::wstring &wsSvg, const TRectD& oRect, const TRectD& oClipRect, TXForm *pTransform)
 	{
 		if (wsSvg.empty())
 			return;
@@ -2033,35 +2036,25 @@ namespace MetaFile
 		if (std::wstring::npos == unSecondPos)
 			return;
 
+		TRectD oNewClipRect(oClipRect);
+
+		if (oNewClipRect.dLeft > oNewClipRect.dRight)
+			std::swap(oNewClipRect.dLeft, oNewClipRect.dRight);
+
+		if (oNewClipRect.dTop > oNewClipRect.dBottom)
+			std::swap(oNewClipRect.dTop, oNewClipRect.dBottom);
+
 		NodeAttributes arNodeAttributes;
 
-		double dWidth  = oRect.dRight - oRect.dLeft;
-		double dHeight = oRect.dBottom - oRect.dTop;
-
-		double dWidthVB  = oClipRect.dRight - oClipRect.dLeft;
-		double dHeightVB = oClipRect.dBottom - oClipRect.dTop;
-
-		double dM11 = std::fabs(dWidth  / dWidthVB);
-		double dM22 = std::fabs(dHeight / dHeightVB);
-		double dX   = oTranslate.x + (1. - dM11) * oRect.dLeft;
-		double dY   = oTranslate.y + (1. - dM22) * oRect.dTop;
-
-		if (1. != dM11 || 1. != dM22)
-		{
-			dWidth  = std::fabs(dWidthVB);
-			dHeight = std::fabs(dHeightVB);
-			arNodeAttributes.push_back({L"transform", L"matrix(" + ConvertToWString(dM11) + L",0,0," + ConvertToWString(dM22) + L',' + ConvertToWString(dX) + L',' + ConvertToWString(dY) + L')'});
-		}
-		else if (0. != dX || 0. != dY)
-			arNodeAttributes.push_back({L"transform", L"translate(" + ConvertToWString(dX) + L',' + ConvertToWString(dY) + L')'});
+		AddTransform(arNodeAttributes, pTransform);
 
 		WriteNodeBegin(L"g", arNodeAttributes);
 
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
-		                      L"width=\"" + ConvertToWString(dWidth) + L"\" height=\"" + ConvertToWString(dHeight) + L"\" " +
-		                      L"viewBox=\"" + ConvertToWString(oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dTop) + L' ' + ConvertToWString(dWidthVB) + L' ' + ConvertToWString(dHeightVB) + L'\"';
+		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
+		                      L"viewBox=\"" + ConvertToWString(oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dTop) + L' ' + ConvertToWString(oNewClipRect.dRight - oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dBottom - oNewClipRect.dTop) + L'\"';
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
@@ -2268,7 +2261,7 @@ namespace MetaFile
 				WriteNode(L"tspan", {{L"x", ConvertToWString(dXCoord)},
 				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
 
-				dYNewCoord += dFontHeight * 1.5;
+				dYNewCoord += dFontHeight * 1.6;
 				unStart = wsText.find_first_not_of(L"\n", unPosLineBreak);
 				unPosLineBreak = wsText.find(L"\n", unStart);
 			}
@@ -2457,7 +2450,7 @@ namespace MetaFile
 		else
 			oOldTransform.Copy(m_pParser->GetTransform());
 
-		if (std::fabs(oOldTransform.M11) > 100. || std::fabs(oOldTransform.M22) > 100.)
+		if (std::fabs(oOldTransform.M11) > MAXTRANSFORMSCALE || std::fabs(oOldTransform.M22) > MAXTRANSFORMSCALE)
 		{
 			oOldTransform.M11 /= std::fabs(oOldTransform.M11);
 			oOldTransform.M22 /= std::fabs(oOldTransform.M22);
@@ -2486,7 +2479,7 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	std::to_wstring(oOldTransform.M11) + L',' + std::to_wstring(oOldTransform.M22) + L')';
+			wsValue = L"scale(" +	ConvertToWString(oOldTransform.M11) + L',' + ConvertToWString(oOldTransform.M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
@@ -2494,10 +2487,10 @@ namespace MetaFile
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	std::to_wstring(oOldTransform.M11) + L',' +
-			                        std::to_wstring(oOldTransform.M12) + L',' +
-			                        std::to_wstring(oOldTransform.M21) + L',' +
-			                        std::to_wstring(oOldTransform.M22) + L',' +
+			wsValue = L"matrix(" +	ConvertToWString(oOldTransform.M11) + L',' +
+			                        ConvertToWString(oOldTransform.M12) + L',' +
+			                        ConvertToWString(oOldTransform.M21) + L',' +
+			                        ConvertToWString(oOldTransform.M22) + L',' +
 			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;

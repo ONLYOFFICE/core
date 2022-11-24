@@ -1219,6 +1219,6 @@ namespace MetaFile
 	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
 	std::wstring StringNormalization(std::wstring wsString);
-	std::wstring ConvertToWString(double dValue, unsigned int unAccuracy = 2);
+	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

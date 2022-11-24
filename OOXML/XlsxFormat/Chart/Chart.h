@@ -43,324 +43,117 @@ namespace OOX
 		class CChartFile: public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartFile(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bDocument = bDocument;
-				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
-			}
-			CChartFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
-				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
-				read( oRootPath, oPath );
-			}
-			virtual ~CChartFile()
-			{
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
+			CChartFile(OOX::Document* pMain, bool bDocument = true);
+			CChartFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CChartFile();
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual void write2(const std::wstring& sFilename) const;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual const OOX::FileType type() const;
 
-				m_oChartSpace.fromXML(oReader);
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-                std::wstring sPath = oPath.GetPath();
-                write2(sPath);
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				IFileContainer::Write(oPath, oDirectory, oContent);
-			}
-            virtual void write2(const std::wstring& sFilename) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-				toXML(sXml);
-                NSFile::CFileBinary::SaveToFile(sFilename, sXml.GetData());
-			}
-			void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				m_oChartSpace.toXML(L"c:chartSpace", writer);
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::FileTypes::Chart;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				if (m_bDocument)
-					return type().DefaultDirectory();
-				else
-					return L"../" + type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
 
 			CT_ChartSpace m_oChartSpace;
+
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 			bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 		};
+
 		class CChartExFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CChartExFile(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bDocument = bDocument;
-				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
-			}
-			CChartExFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
-				m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
-				read( oRootPath, oPath );
-			}
-			virtual ~CChartExFile()
-			{
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
+			CChartExFile(OOX::Document* pMain, bool bDocument = true);
+			CChartExFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CChartExFile();
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual void write2(const std::wstring& sFilename) const;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual const OOX::FileType type() const;
 
-				m_oChartSpace.fromXML(oReader);
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-                std::wstring sPath = oPath.GetPath();
-                write2(sPath);
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				IFileContainer::Write(oPath, oDirectory, oContent);
-			}
-            virtual void write2(const std::wstring& sFilename) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-				toXML(sXml);
-                NSFile::CFileBinary::SaveToFile(sFilename, sXml.GetData());
-			}
-			void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				m_oChartSpace.toXML(writer);
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::FileTypes::ChartEx;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				if (m_bDocument)
-					return type().DefaultDirectory();
-				else
-					return L"../" + type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
 
 			ChartEx::CChartSpace m_oChartSpace;
+
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 			bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 		};
+
 		class CChartStyleFile : public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{
 		public:
-			CChartStyleFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
-			{
-				//m_bSpreadsheets = true;
-			}
-			CChartStyleFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
-			{
-				//m_bSpreadsheets = true;
-				read( oRootPath, oPath );
-			}
-			virtual ~CChartStyleFile()
-			{
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				//IFileContainer::Read( oRootPath, oPath );
+			CChartStyleFile(OOX::Document* pMain);
+			CChartStyleFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CChartStyleFile();
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual void write2(const std::wstring& sFilename) const;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			bool isValid() const;
 
-				m_oChartStyle.fromXML(oReader);
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-                std::wstring sPath = oPath.GetPath();
-                write2(sPath);
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				//IFileContainer::Write(oPath, oDirectory, oContent);
-			}
-            virtual void write2(const std::wstring& sFilename) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-				toXML(sXml);
-                NSFile::CFileBinary::SaveToFile(sFilename, sXml.GetData());
-			}
-			void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				m_oChartStyle.toXML(writer);
-			}
-			bool isValid() const
-			{
-				return true;
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::FileTypes::ChartStyle;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
 
 			ChartEx::CChartStyle m_oChartStyle;
+
 		private:
 			CPath m_oReadPath;
 		};
+
 		class CChartColorsFile: public OOX::FileGlobalEnumerated/*, public OOX::IFileContainer*/
 		{
 		public:
-			CChartColorsFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
-			{
-				//m_bSpreadsheets = true;
-			}
-			CChartColorsFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain)/*, OOX::IFileContainer(pMain)*/
-			{
-				//m_bSpreadsheets = true;
-				read( oRootPath, oPath );
-			}
-			virtual ~CChartColorsFile()
-			{
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				//IFileContainer::Read( oRootPath, oPath );
+			CChartColorsFile(OOX::Document* pMain);
+			CChartColorsFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual ~CChartColorsFile();
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
+			virtual void write2(const std::wstring& sFilename) const;
 
-				m_oColorStyle.fromXML(oReader);
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-                std::wstring sPath = oPath.GetPath();
-                write2(sPath);
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				//IFileContainer::Write(oPath, oDirectory, oContent);
-			}
-            virtual void write2(const std::wstring& sFilename) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n");
-				toXML(sXml);
-                NSFile::CFileBinary::SaveToFile(sFilename, sXml.GetData());
-			}
-			void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				m_oColorStyle.toXML(writer);
-			}
-			bool isValid() const
-			{
-				return true;
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::FileTypes::ChartColors;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+			bool isValid() const;
+
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
 
 			ChartEx::CColorStyle m_oColorStyle;
 

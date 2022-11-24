@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,44 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef OOX_EXTERNALLINKPATH_INCLUDE_H_
-#define OOX_EXTERNALLINKPATH_INCLUDE_H_
 
-#include "../../DocxFormat/External/External.h"
-
+#include "ExternalLinkPath.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class ExternalLinkPath : public External
+		ExternalLinkPath::ExternalLinkPath(OOX::Document* pMain) : External(pMain)
 		{
-		public:
-			ExternalLinkPath(OOX::Document* pMain);
-			ExternalLinkPath(OOX::Document* pMain, const CPath& uri);
-			~ExternalLinkPath();
-
-			virtual const FileType type() const;
-
-			virtual const CPath DefaultDirectory() const;
-			virtual const CPath DefaultFileName() const;
-		};
-
-		class ExternalOleObject : public External
+		}
+		ExternalLinkPath::ExternalLinkPath(OOX::Document* pMain, const CPath& uri) : External(pMain)
 		{
-		public:
-			ExternalOleObject(OOX::Document* pMain);
-			ExternalOleObject(OOX::Document* pMain, const CPath& uri);
-			~ExternalOleObject();
+			read(uri);
+		}
+		ExternalLinkPath::~ExternalLinkPath()
+		{
+		}
+		const FileType ExternalLinkPath::type() const
+		{
+			return OOX::FileTypes::ExternalLinkPath;
+		}
+		const CPath ExternalLinkPath::DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		const CPath ExternalLinkPath::DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
 
-			virtual const FileType type() const;
-
-			virtual const CPath DefaultDirectory() const;
-			virtual const CPath DefaultFileName() const	;
-		};
+		ExternalOleObject::ExternalOleObject(OOX::Document* pMain) : External(pMain)
+		{
+		}
+		ExternalOleObject::ExternalOleObject(OOX::Document* pMain, const CPath& uri) : External(pMain)
+		{
+			read(uri);
+		}
+		ExternalOleObject::~ExternalOleObject()
+		{
+		}
+		const FileType ExternalOleObject::type() const
+		{
+			return OOX::FileTypes::OleObject;
+		}
+		const CPath ExternalOleObject::DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		const CPath ExternalOleObject::DefaultFileName() const
+			{
+				return type().DefaultFileName();
+			}
 
 	}// namespace Spreadsheet
 } // namespace OOX
-
-#endif // OOX_EXTERNALLINKPATH_INCLUDE_H_

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,44 +29,53 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef OOX_EXTERNALLINKPATH_INCLUDE_H_
-#define OOX_EXTERNALLINKPATH_INCLUDE_H_
 
-#include "../../DocxFormat/External/External.h"
-
+#include "Pos.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class ExternalLinkPath : public External
+		CPos::CPos()
 		{
-		public:
-			ExternalLinkPath(OOX::Document* pMain);
-			ExternalLinkPath(OOX::Document* pMain, const CPath& uri);
-			~ExternalLinkPath();
-
-			virtual const FileType type() const;
-
-			virtual const CPath DefaultDirectory() const;
-			virtual const CPath DefaultFileName() const;
-		};
-
-		class ExternalOleObject : public External
+		}
+		CPos::~CPos()
 		{
-		public:
-			ExternalOleObject(OOX::Document* pMain);
-			ExternalOleObject(OOX::Document* pMain, const CPath& uri);
-			~ExternalOleObject();
+		}
+		void CPos::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CPos::toXML() const
+		{
+			return _T("");
+		}
+		void CPos::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<xdr:pos"));
+			WritingStringNullableAttrInt64(L"x", m_oX, m_oX->ToEmu());
+			WritingStringNullableAttrInt64(L"y", m_oY, m_oY->ToEmu());
+			writer.WriteString(_T("/>"));
+		}
+		void CPos::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
 
-			virtual const FileType type() const;
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		EElementType CPos::getType () const
+		{
+			return et_x_FromTo;
+		}
+		void CPos::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Читаем атрибуты
+			WritingElement_ReadAttributes_Start( oReader )
 
-			virtual const CPath DefaultDirectory() const;
-			virtual const CPath DefaultFileName() const	;
-		};
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("x"),      m_oX )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("y"),      m_oY )
 
-	}// namespace Spreadsheet
+			WritingElement_ReadAttributes_End( oReader )
+		}
+	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_EXTERNALLINKPATH_INCLUDE_H_

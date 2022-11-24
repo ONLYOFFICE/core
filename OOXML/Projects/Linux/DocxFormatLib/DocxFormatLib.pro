@@ -69,6 +69,11 @@ SOURCES += \
 	../../../DocxFormat/Comments.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../DocxFormat/VmlDrawing.cpp \
+	../../../XlsxFormat/CalcChain/CalcChain.cpp \
+	../../../XlsxFormat/Chart/Chart.cpp \
+	../../../XlsxFormat/Chart/ChartColors.cpp \
+	../../../XlsxFormat/Chart/ChartDrawing.cpp \
+	../../../XlsxFormat/Chart/ChartStyle.cpp \
 	../../../XlsxFormat/Chart/ChartSerialize.cpp \
 	../../../XlsxFormat/Chart/ChartSerializeEx.cpp \
 	../../../XlsxFormat/Common.cpp \
@@ -139,7 +144,16 @@ SOURCES += \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
 	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
-	../../../XlsxFormat/Workbook/Workbook.cpp
+	../../../XlsxFormat/Workbook/Workbook.cpp \
+	../../../XlsxFormat/Comments/Comments.cpp \
+	../../../XlsxFormat/Comments/ThreadedComments.cpp \
+	../../../XlsxFormat/Drawing/CellAnchor.cpp \
+	../../../XlsxFormat/Drawing/Drawing.cpp \
+	../../../XlsxFormat/Drawing/FromTo.cpp \
+	../../../XlsxFormat/Drawing/Pos.cpp \
+	../../../XlsxFormat/ExternalLinks/ExternalLinkPath.cpp \
+	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
+	../../../XlsxFormat/Ole/OleObjects.cpp
 }
 
 
@@ -249,6 +263,9 @@ HEADERS += \
 	../../../XlsxFormat/Chart/Chart.h \
 	../../../XlsxFormat/Chart/ChartSerialize.h \
 	../../../XlsxFormat/Chart/ChartSerializeEx.h \
+	../../../XlsxFormat/Chart/ChartColors.h \
+	../../../XlsxFormat/Chart/ChartDrawing.h \
+	../../../XlsxFormat/Chart/ChartStyle.h \
 	../../../XlsxFormat/Comments/Comments.h \
 	../../../XlsxFormat/Comments/ThreadedComments.h \
 	../../../XlsxFormat/Drawing/CellAnchor.h \

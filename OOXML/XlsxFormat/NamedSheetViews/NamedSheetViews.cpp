@@ -721,6 +721,37 @@ namespace Spreadsheet
 		pReader->Seek(_end_rec);
 	}
 
+	CNamedSheetViewFile::CNamedSheetViewFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+	}
+	CNamedSheetViewFile::CNamedSheetViewFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+		read( oRootPath, oPath );
+	}
+	void CNamedSheetViewFile::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	const OOX::FileType CNamedSheetViewFile::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::NamedSheetView;
+	}
+	const CPath CNamedSheetViewFile::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CNamedSheetViewFile::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CNamedSheetViewFile::GetReadPath()
+	{
+		return m_oReadPath;
+	}
 	void CNamedSheetViewFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
@@ -751,6 +782,9 @@ namespace Spreadsheet
 
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		IFileContainer::Write( oPath, oDirectory, oContent );
+	}
+	void CNamedSheetViewFile::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
 	}
 
 } //Spreadsheet

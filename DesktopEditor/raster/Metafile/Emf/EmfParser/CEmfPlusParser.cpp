@@ -3102,8 +3102,8 @@ namespace MetaFile
 
 		dAngle *= M_PI / 180;
 
-		double dCosTheta = std::cosf(dAngle);
-		double dSinTheta = std::sinf(dAngle);
+		double dCosTheta = cos(dAngle);
+		double dSinTheta = sin(dAngle);
 
 		TEmfPlusXForm oMatrix(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, 0, 0);
 

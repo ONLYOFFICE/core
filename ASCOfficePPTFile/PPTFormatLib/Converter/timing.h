@@ -16,9 +16,13 @@ public:
     bool HasAnimation() const;
 
 private:
+    bool TryToConvertTiming2010();
+    bool TryToConvertTiming1995();
+
+private:
     const Intermediate::SlideAnimation& slideAnim;
-//    CExMedia* pExMedia;
-//    CRelsGenerator* pRels;
+    CExMedia* pExMedia;
+    CRelsGenerator* pRels;
     const std::unordered_set<int> shapesID;
     PPTX::Logic::Timing timing;
 };

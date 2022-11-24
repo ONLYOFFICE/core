@@ -18,6 +18,10 @@ void Timing_2010::Convert(PPTX::Logic::Timing &timing, CExMedia *pExMedia, CRels
     m_pExMedia = pExMedia;
     m_pRels = pRels;
 
+
+    if (pTagExtAnim == nullptr || pTagExtAnim->m_haveExtTime == false)
+        return;
+
     ConvertTnLst(timing, pTagExtAnim->m_pExtTimeNodeContainer);
     ConvertBldLst(timing, pTagExtAnim->m_pBuildListContainer);
 }
@@ -197,84 +201,56 @@ bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
 {
     if (pETNC->m_haveSequenceAtom)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::Seq;
-
-        if (oChild.m_node.is<PPTX::Logic::Seq>())
-            FillSeq(pETNC, oChild.m_node.as<PPTX::Logic::Seq>());
+        oChild.m_node = new PPTX::Logic::Seq;
+        FillSeq(pETNC, oChild.m_node.as<PPTX::Logic::Seq>());
     }
     else if (pETNC->m_haveSetBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::Set;
-
-        if (oChild.m_node.is<PPTX::Logic::Set>())
-            FillSet(pETNC, oChild.m_node.as<PPTX::Logic::Set>());
+        oChild.m_node = new PPTX::Logic::Set;
+        FillSet(pETNC, oChild.m_node.as<PPTX::Logic::Set>());
     }
     else if (pETNC->m_haveAnimateBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::Anim;
+        oChild.m_node = new PPTX::Logic::Anim;
 
-        if (oChild.m_node.is<PPTX::Logic::Anim>())
-        {
-            auto& anim = oChild.m_node.as<PPTX::Logic::Anim>();
-
-            FillAnim(pETNC->m_pTimeAnimateBehavior, anim);
-            FillCTnRecursive(pETNC, anim.cBhvr.cTn);
-        }
+        auto& anim = oChild.m_node.as<PPTX::Logic::Anim>();
+        FillAnim(pETNC->m_pTimeAnimateBehavior, anim);
+        FillCTnRecursive(pETNC, anim.cBhvr.cTn);
     }
     else if (pETNC->m_haveColorBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::AnimClr;
-
+        oChild.m_node = new PPTX::Logic::AnimClr;
         FillAnimClr(pETNC->m_pTimeColorBehavior, pETNC->m_pTimePropertyList, oChild.m_node.as<PPTX::Logic::AnimClr>());
     }
     else if (pETNC->m_haveEffectBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::AnimEffect;
-
-        if (oChild.m_node.is<PPTX::Logic::AnimEffect>())
-            FillAnimEffect(pETNC, oChild.m_node.as<PPTX::Logic::AnimEffect>());
+        oChild.m_node = new PPTX::Logic::AnimEffect;
+        FillAnimEffect(pETNC, oChild.m_node.as<PPTX::Logic::AnimEffect>());
     }
     else if (pETNC->m_haveMotionBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::AnimMotion;
-
+        oChild.m_node = new PPTX::Logic::AnimMotion;
         FillAnimMotion(pETNC, oChild.m_node.as<PPTX::Logic::AnimMotion>());
     }
     else if (pETNC->m_haveRotationBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::AnimRot;
-
+        oChild.m_node = new PPTX::Logic::AnimRot;
         FillAnimRot(pETNC, oChild.m_node.as<PPTX::Logic::AnimRot>());
     }
     else if (pETNC->m_haveScaleBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::AnimScale;
-
+        oChild.m_node = new PPTX::Logic::AnimScale;
         FillAnimScale(pETNC, oChild.m_node.as<PPTX::Logic::AnimScale>());
     }
     else if (pETNC->m_haveCommandBehavior)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::Cmd;
-
-        if (oChild.m_node.is<PPTX::Logic::Cmd>())
-            FillCmd(pETNC, oChild.m_node.as<PPTX::Logic::Cmd>());
+        oChild.m_node = new PPTX::Logic::Cmd;
+        FillCmd(pETNC, oChild.m_node.as<PPTX::Logic::Cmd>());
     }
     else if (pETNC->m_oTimeNodeAtom.m_dwType == TL_TNT_Parallel)
     {
-        if (!oChild.m_node.IsInit())
-            oChild.m_node = new PPTX::Logic::Par;
-
-        if (oChild.m_node.is<PPTX::Logic::Par>())
-            FillPar(pETNC, oChild.m_node.as<PPTX::Logic::Par>());
+        oChild.m_node = new PPTX::Logic::Par;
+        FillPar(pETNC, oChild.m_node.as<PPTX::Logic::Par>());
     }
     else if (pETNC->m_haveClientVisualElement)
     {
@@ -286,17 +262,13 @@ bool Timing_2010::FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::T
         {
             if (pETNC->m_pClientVisualElement->m_oVisualShapeAtom.m_Type == TL_TVET_Video)
             {
-                if (!oChild.m_node.IsInit())
-                    oChild.m_node = new PPTX::Logic::Video;
-
+                oChild.m_node = new PPTX::Logic::Video;
                 FillVideo(pETNC, oChild.m_node.as<PPTX::Logic::Video>());
             }
 
             if (pETNC->m_pClientVisualElement->m_oVisualShapeAtom.m_Type == TL_TVET_Audio)
             {
-                if (!oChild.m_node.IsInit())
-                    oChild.m_node = new PPTX::Logic::Audio;
-
+                oChild.m_node = new PPTX::Logic::Audio;
                 FillAudio(pETNC, oChild.m_node.as<PPTX::Logic::Audio>());
             }
         }
@@ -616,23 +588,10 @@ void Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Log
 bool Timing_2010::CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn)
 {
     auto anim_2010 = Intermediate::ParseExisting5Level_ETNC(pETNC);
-    if (IsSlideSpId(anim_2010.spid) == false)
-        return false;
-    if (isMainSeq == false)
-    {
+    bool isSlideShape = IsSlideSpId(anim_2010.spid);
+    if (isSlideShape)
         InsertAnimationSpId(anim_2010.spid);
-        return true;
-    }
-    if(IsCorrectAnimationSpId(anim_2010.spid))
-        return true;
-
-    auto anim_pptx = Intermediate::ParseExisting5Level_CTn(oCTn);
-    if (anim_pptx == anim_2010)
-    {
-        correctAnimatedShapes.insert(anim_2010.spid);
-        return true;
-    } else
-        return false;
+    return isSlideShape;
 }
 
 bool Timing_2010::IsSlideSpId(_INT32 spid) const

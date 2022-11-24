@@ -16,23 +16,52 @@ Timing::Timing(const Intermediate::SlideAnimation& slideAnim, const std::unorder
 
 PPTX::Logic::Timing Timing::Convert(CExMedia *pExMedia, CRelsGenerator *pRels)
 {
-//    this->pExMedia = pExMedia;
-//    this->pRels = pRels;
+    this->pExMedia = pExMedia;
+    this->pRels = pRels;
 
-    Timing_1995(slideAnim.arrAnim_1995).
-            Convert(timing, pExMedia, pRels);
-    bool isValidHash = HashCode10().IsValidHash(slideAnim);
-
-    try {
-        Timing_2010(slideAnim.pAnim_2010, shapesID).
-                Convert(timing, pExMedia, pRels);
-    } catch (const TimingExeption &ex) {
-    } catch (...) {
-    }
+    if (TryToConvertTiming2010() == false)
+        if (TryToConvertTiming1995() == false)
+            return {};
 
     if (timing.bldLst.IsInit() && timing.bldLst->list.empty())    // You can't leave an empty tag <p:bldLst/>
         timing.bldLst.reset();
 
     return std::move(timing);
+}
+
+bool Timing::HasAnimation() const
+{
+    if (slideAnim.arrAnim_1995.empty() && (slideAnim.pAnim_2010 == nullptr || slideAnim.pAnim_2010->m_haveExtTime == false))
+        return false;
+    else
+        return true;
+}
+
+bool Timing::TryToConvertTiming2010()
+{
+    timing = PPTX::Logic::Timing();
+    try {
+        Timing_2010(slideAnim.pAnim_2010, shapesID).
+                Convert(timing, pExMedia, pRels);
+    } catch (const TimingExeption &ex) {
+        return false;
+    } catch (...) {
+        return false;
+    }
+    return true;
+}
+
+bool Timing::TryToConvertTiming1995()
+{
+    timing = PPTX::Logic::Timing();
+    try {
+        Timing_1995(slideAnim.arrAnim_1995).
+                Convert(timing, pExMedia, pRels);
+    } catch (const TimingExeption &ex) {
+        return false;
+    } catch (...) {
+        return false;
+    }
+    return true;
 }
 

@@ -491,7 +491,8 @@ void Animation::FillBldLst(
     if (!pBLC)
         return;
     // Write p
-    for (unsigned i = 0; i < pBLC->n_arrRgChildRec.size(); i++)
+
+	for (unsigned i = 0; i < pBLC->n_arrRgChildRec.size(); i++)
     {
         PPTX::Logic::BuildNodeBase oBuildNodeBase;
         switch ( pBLC->n_arrRgChildRec[i]->m_oHeader.RecType ) {

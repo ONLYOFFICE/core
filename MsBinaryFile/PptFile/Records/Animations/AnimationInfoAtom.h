@@ -34,6 +34,7 @@
 
 #include "../Reader/Records.h"
 #include "../../Structures/ColorIndexStruct.h"
+#include <array>
 
 namespace PPT_FORMAT
 {

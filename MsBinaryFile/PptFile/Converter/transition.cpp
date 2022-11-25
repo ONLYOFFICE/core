@@ -1,16 +1,16 @@
 #include "transition.h"
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/Transition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/TransitionBase.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EmptyTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OrientationTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/EightDirectionTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/OptionalBlackTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SideDirectionTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/CornerDirectionTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/WheelTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/SplitTransition.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/Transition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/TransitionBase.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/EmptyTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/OrientationTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/EightDirectionTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/OptionalBlackTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/SideDirectionTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/CornerDirectionTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/WheelTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/SplitTransition.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/ZoomTransition.h"
 
 
 using namespace PPT::Converter;

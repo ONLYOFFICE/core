@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
 #include "../Records/SlideProgTagsContainer.h"
 #include "../PPTXWriter/ImageManager.h"

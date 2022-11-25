@@ -429,5 +429,6 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>	m_oPivot;
 			nullable<std::wstring >			m_oSqRef; // ToDo переделать на тип "sqref" (18.18.76) - последовательность "ref", разделенные пробелом
 		};
+
 	} //Spreadsheet
 } // namespace OOX

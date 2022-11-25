@@ -939,61 +939,6 @@ mc:Ignorable=\"x14ac\">");
 			return oElement;
 		}
 //----------------------------------------------------------------------------------------------------------------------
-		void CCol::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
 
-			nullable_double ptWidth;
-			nullable_bool bAutoFit;
-			nullable_string sStyleID;
-
-			WritingElement_ReadAttributes_Start(oReader)
-				WritingElement_ReadAttributes_Read_if(oReader, _T("bestFit"), m_oBestFit)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("collapsed"), m_oCollapsed)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("customWidth"), m_oCustomWidth)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("hidden"), m_oHidden)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("max"), m_oMax)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("min"), m_oMin)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("outlineLevel"), m_oOutlineLevel)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("phonetic"), m_oPhonetic)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("style"), m_oStyle)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("width"), m_oWidth)
-
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:Width"), ptWidth)
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:AutoFitWidth"), bAutoFit)
-
-				WritingElement_ReadAttributes_Read_else_if(oReader, _T("ss:StyleID"), sStyleID)
-				WritingElement_ReadAttributes_End(oReader)
-
-				if (ptWidth.IsInit() && xlsx_flat)
-				{
-					m_oWidth.Init();
-					double pixDpi = *ptWidth / 72.0 * 96.; if (pixDpi < 5) pixDpi = 7; // ~
-					double maxDigitSize = xlsx_flat->getMaxDigitSize().first;
-
-					m_oWidth->SetValue(((int)((pixDpi + 5) / maxDigitSize * 100. + 0.5)) / 100.);
-
-					m_oCustomWidth.Init();
-					m_oCustomWidth->FromBool(true);
-				}
-
-			if (bAutoFit.IsInit() && (*bAutoFit == false))
-			{
-			}
-			else if (xlsx_flat)
-			{
-				m_oBestFit.Init();
-				m_oBestFit->FromBool(true);
-
-				if (false == ptWidth.IsInit())
-				{
-					m_oCustomWidth.Init();
-					m_oCustomWidth->FromBool(true);
-
-					m_oWidth.Init();
-					m_oWidth->SetValue(9);
-				}
-			}
-		}
 	}
 }

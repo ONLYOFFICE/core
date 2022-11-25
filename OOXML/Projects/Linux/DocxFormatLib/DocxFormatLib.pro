@@ -84,6 +84,11 @@ SOURCES += \
 	../../../XlsxFormat/Worksheets/SheetData.cpp \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.cpp \
 	../../../XlsxFormat/Worksheets/DataValidation.cpp \
+	../../../XlsxFormat/Worksheets/Cols.cpp \
+	../../../XlsxFormat/Worksheets/Hyperlinks.cpp \
+	../../../XlsxFormat/Worksheets/MergeCells.cpp \
+	../../../XlsxFormat/Worksheets/Sparkline.cpp \
+	../../../XlsxFormat/Worksheets/WorksheetChildOther.cpp \
 	../../../XlsxFormat/Table/Tables.cpp \
 	../../../XlsxFormat/Table/Autofilter.cpp \
 	../../../XlsxFormat/Table/Connections.cpp \
@@ -161,6 +166,12 @@ SOURCES += \
 	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
 	../../../XlsxFormat/Workbook/Workbook.cpp \
+	../../../XlsxFormat/Workbook/BookViews.cpp \
+	../../../XlsxFormat/Workbook/CalcPr.cpp \
+	../../../XlsxFormat/Workbook/DefinedNames.cpp \
+	../../../XlsxFormat/Workbook/ExternalReferences.cpp \
+	../../../XlsxFormat/Workbook/Sheets.cpp \
+	../../../XlsxFormat/Workbook/WorkbookPr.cpp \
 	../../../XlsxFormat/Comments/Comments.cpp \
 	../../../XlsxFormat/Comments/ThreadedComments.cpp \
 	../../../XlsxFormat/Drawing/CellAnchor.cpp \
@@ -316,6 +327,7 @@ HEADERS += \
 	../../../XlsxFormat/Workbook/Sheets.h \
 	../../../XlsxFormat/Workbook/Workbook.h \
 	../../../XlsxFormat/Workbook/WorkbookPr.h \
+	../../../XlsxFormat/Workbook/ExternalReferences.h \
 	../../../XlsxFormat/Worksheets/Cols.h \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.h \
 	../../../XlsxFormat/Worksheets/DataValidation.h \

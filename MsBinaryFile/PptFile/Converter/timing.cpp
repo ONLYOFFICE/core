@@ -9,7 +9,7 @@
 
 using namespace PPT::Converter;
 
-Timing::Timing(const Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
+Timing::Timing(const PPT::Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
     slideAnim(slideAnim),
     shapesID(shapesID)
 {}

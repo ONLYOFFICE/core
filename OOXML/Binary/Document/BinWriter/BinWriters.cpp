@@ -3671,52 +3671,58 @@ void BinaryDocumentTableWriter::WriteParagraphContent(const std::vector<OOX::Wri
 
 		switch (item->getType())
 		{
-		case OOX::et_w_fldSimple:
+			case OOX::et_w_permStart:
+			{
+				OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+				//WritePermision(pPermStart);
+			}break;
+			case OOX::et_w_permEnd:
+			{
+				OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+				//WritePermision(pPermEnd);
+			}break;
+			case OOX::et_w_fldSimple:
 			{
 				OOX::Logic::CFldSimple* pFldSimple = static_cast<OOX::Logic::CFldSimple*>(item);
 				WriteFldSimple(pFldSimple);
-				break;
-			}
-		case OOX::et_w_hyperlink:
+
+			}break;
+			case OOX::et_w_hyperlink:
 			{
 				OOX::Logic::CHyperlink* pHyperlink = static_cast<OOX::Logic::CHyperlink*>(item);
 				WriteHyperlink(pHyperlink);
+			}break;
+			case OOX::et_w_pPr:
 				break;
-			}
-		case OOX::et_w_pPr:
-			break;
-		case OOX::et_w_br:
-		{
-			OOX::Logic::CRun oRun;
-			oRun.m_arrItems.push_back(item);
-			WriteRun(&oRun, false, false);
-			oRun.m_arrItems.clear();
-		}break;
-		case OOX::et_w_r:
+			case OOX::et_w_br:
+			{
+				OOX::Logic::CRun oRun;
+				oRun.m_arrItems.push_back(item);
+				WriteRun(&oRun, false, false);
+				oRun.m_arrItems.clear();
+			}break;
+			case OOX::et_w_r:
 			{
 				OOX::Logic::CRun* pRun = static_cast<OOX::Logic::CRun*>(item);
 				WriteRun(pRun, bHyperlink, false);				
 			}break;
-		case OOX::et_w_sdt:
+			case OOX::et_w_sdt:
 			{
 				OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Sdt);
 				WriteSdt(pStd, 1, NULL, 0, 0, 0);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_smartTag:
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);				
+			}break;
+			case OOX::et_w_smartTag:
 			{
 				OOX::Logic::CSmartTag* pSmartTag = static_cast<OOX::Logic::CSmartTag*>(item);
-				WriteParagraphContent(pSmartTag->m_arrItems);
-				break;
-			}
-		case OOX::et_w_dir:
+				WriteParagraphContent(pSmartTag->m_arrItems);				
+			}break;
+			case OOX::et_w_dir:
 			{
 				OOX::Logic::CDir* pDir = static_cast<OOX::Logic::CDir*>(item);
-				WriteParagraphContent(pDir->m_arrItems);
-				break;
-			}
+				WriteParagraphContent(pDir->m_arrItems);				
+			}break;
 		case OOX::et_w_bdo:
 			{
 				OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);

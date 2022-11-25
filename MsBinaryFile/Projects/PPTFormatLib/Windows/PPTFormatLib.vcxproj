@@ -233,6 +233,15 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\AnimationParser.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Animation_1995.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\hashcode10.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingExeption.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingUtils.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_1995.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_2010.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\timing.h" />
     <ClInclude Include="..\..\..\PptFile\Converter\transition.h" />
     <ClInclude Include="..\..\..\PptFile\Drawing\Animations.h" />
     <ClInclude Include="..\..\..\PptFile\Drawing\Attributes.h" />
@@ -477,6 +486,14 @@
     <ClInclude Include="..\..\..\PptFile\Structures\_includer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\AnimationParser.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Animation_1995.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\hashcode10.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\TimingUtils.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_1995.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_2010.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\timing.cpp" />
     <ClCompile Include="..\..\..\PptFile\Converter\transition.cpp" />
     <ClCompile Include="..\..\..\PptFile\Drawing\Elements.cpp" />
     <ClCompile Include="..\..\..\PptFile\Drawing\TextAttributesEx.cpp" />

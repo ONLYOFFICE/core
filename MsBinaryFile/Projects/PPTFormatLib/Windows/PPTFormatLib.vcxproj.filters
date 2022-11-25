@@ -25,6 +25,9 @@
     <Filter Include="Structures">
       <UniqueIdentifier>{e1779537-0a9d-4f28-b34c-2fa7d962a321}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Converter">
+      <UniqueIdentifier>{878f1451-aaec-42bc-9b15-a4faba99af16}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\PptFile\Structures\_includer.h">
@@ -711,9 +714,6 @@
     <ClInclude Include="..\..\..\PptFile\Drawing\XmlStringWriter.h">
       <Filter>OOXElements</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\PptFile\Converter\transition.h">
-      <Filter>OOXWriter</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.h">
       <Filter>OOXWriter</Filter>
     </ClInclude>
@@ -744,6 +744,36 @@
     </ClInclude>
     <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.hpp">
       <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\timing.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\transition.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Animation_1995.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\AnimationParser.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\hashcode10.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_1995.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_2010.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingExeption.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingUtils.h">
+      <Filter>Converter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -783,9 +813,6 @@
     <ClCompile Include="..\..\..\PptFile\Drawing\TextAttributesEx.cpp">
       <Filter>OOXElements</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\PptFile\Converter\transition.cpp">
-      <Filter>OOXWriter</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
@@ -803,5 +830,32 @@
     </ClCompile>
     <ClCompile Include="..\..\..\PptFile\Main\PPTFormatLib.cpp" />
     <ClCompile Include="..\..\..\PptFile\Enums\RecordType.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\timing.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\transition.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Animation_1995.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\AnimationParser.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\hashcode10.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_1995.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_2010.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\TimingUtils.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

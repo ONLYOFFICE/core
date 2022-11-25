@@ -1544,7 +1544,7 @@ namespace MetaFile
 
 				oEmfParser.PlayFile();
 
-				TXForm *pXForm = m_pDC->GetFinalTransform(GM_ADVANCED);
+				TXForm *pXForm = m_pDC->GetTransform();
 
 				TRectD oRect;
 
@@ -1552,9 +1552,6 @@ namespace MetaFile
 				oRect.dTop    = arPoints[0].Y;
 				oRect.dRight  = arPoints[1].X;
 				oRect.dBottom = arPoints[2].Y;
-
-				pXForm->Apply(oRect.dLeft,  oRect.dTop);
-				pXForm->Apply(oRect.dRight, oRect.dBottom);
 
 				TRectD oTempSrcRect = oSrcRect.GetRectD();
 
@@ -1567,7 +1564,14 @@ namespace MetaFile
 					oTempSrcRect.dTop    = dTempValue;
 				}
 
-				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
+				TXForm oTransform;
+
+				oTransform.Copy(pXForm);
+
+				oTransform.Dx -= m_oHeader.oFramePx.lLeft;
+				oTransform.Dy -= m_oHeader.oFramePx.lTop;
+
+				((CEmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CEmfInterpretatorSvg*)oEmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, &oTransform);
 			}
 
 		}
@@ -1663,10 +1667,25 @@ namespace MetaFile
 				oRect.dRight  = arPoints[1].X;
 				oRect.dBottom = arPoints[2].Y;
 
-				pXForm->Apply(oRect.dLeft,  oRect.dTop);
-				pXForm->Apply(oRect.dRight, oRect.dBottom);
+				TRectD oTempSrcRect = oSrcRect.GetRectD();
 
-				((CWmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetFile(), oRect, oSrcRect.GetRectD(), TPointD(-m_oHeader.oFramePx.lLeft, -m_oHeader.oFramePx.lTop));
+				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
+
+				if (NULL != pImageAttributes && WrapModeTileFlipY != pImageAttributes->eWrapMode && WrapModeTileFlipXY != pImageAttributes->eWrapMode)
+				{
+					double dTempValue    = oTempSrcRect.dBottom;
+					oTempSrcRect.dBottom = oTempSrcRect.dTop;
+					oTempSrcRect.dTop    = dTempValue;
+				}
+
+				TXForm oTransform;
+
+				oTransform.Copy(pXForm);
+
+				oTransform.Dx -= m_oHeader.oFramePx.lLeft;
+				oTransform.Dy -= m_oHeader.oFramePx.lTop;
+
+				((CWmfInterpretatorSvg*)m_pInterpretator)->IncludeSvg(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetFile(), oRect, oTempSrcRect, &oTransform);
 			}
 		}
 		//TODO: общую часть в идеале нужно вынести

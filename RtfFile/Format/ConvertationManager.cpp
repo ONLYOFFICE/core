@@ -39,7 +39,7 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "../OOXml/Reader/OOXReader.h"
 
-#include "../../../Common/OfficeFileErrorDescription.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 const double g_cdMaxReadRtfPercent = 0.70;
 const double g_cdMaxWriteRtfPercent = 0.30;

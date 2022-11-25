@@ -36,7 +36,7 @@
 #include <boost/regex.h>
 #include <boost/algorithm/string/case_conv.hpp>
 
-#include <xml/utils.h>
+#include "../../../OOXML/Base/Unit.h"
 
 #include "mediaitems_utils.h"
 
@@ -111,7 +111,7 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type_,  std::ws
 		{
 			count_image_object++;
 		}
-		item item_(input_path, type_, xml::utils::replace_text_to_xml(output_path));
+		item item_(input_path, type_, XmlUtils::EncodeXmlString(output_path));
 		
 		items_.push_back(item_);
 	}

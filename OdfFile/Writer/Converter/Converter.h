@@ -35,8 +35,6 @@
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../../OOXML/DocxFormat/Math/oMathContent.h"
 
-#include "../../src/progressCallbackW.h"
-
 #include <vector>
 #include <string>
 

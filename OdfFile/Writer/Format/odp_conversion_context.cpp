@@ -32,7 +32,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 #include "odp_conversion_context.h"
 #include "office_presentation.h"

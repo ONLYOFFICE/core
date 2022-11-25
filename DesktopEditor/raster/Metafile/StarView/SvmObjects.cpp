@@ -354,6 +354,10 @@ void CSvmBrush::GetBounds(double& left, double& top, double& width, double& heig
 	width	= BrushBounds.r - BrushBounds.l;
 	height	= BrushBounds.b - BrushBounds.t;
 }
+
+void CSvmBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+{}
+
 int CSvmPen::GetColor()
 {
 	return METAFILE_RGBA(Color.r, Color.g, Color.b);

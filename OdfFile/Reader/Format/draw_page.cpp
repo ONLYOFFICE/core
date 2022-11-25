@@ -34,7 +34,7 @@
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "calcs_styles.h"
 #include "draw_common.h"

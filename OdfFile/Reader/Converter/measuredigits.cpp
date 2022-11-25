@@ -33,7 +33,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace cpdoccore {

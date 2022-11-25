@@ -40,7 +40,7 @@
 #include <boost/regex.h>
 
 #include <xml/xmlchar.h>
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "serialize_elements.h"
 
@@ -340,7 +340,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-			odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L"", NULL));    
+            odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
 		}
 		office_element *contentSubDoc = odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
 		if (!contentSubDoc)

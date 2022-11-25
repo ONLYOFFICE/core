@@ -34,7 +34,7 @@
 
 #include <boost/ref.hpp>
 
-#include "../../include/utf8cpp/utf8.h"
+#include "../../Common/utf8cpp/utf8.h"
 
 #include "mediaitems.h"
 #include "../../../DesktopEditor/common/File.h"

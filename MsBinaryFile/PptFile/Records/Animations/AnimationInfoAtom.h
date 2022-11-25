@@ -34,6 +34,7 @@
 
 #include "../../Reader/Records.h"
 #include "../../Structures/ColorIndexStruct.h"
+#include <array>
 
 namespace PPT_FORMAT
 {
@@ -87,6 +88,8 @@ public:
     BYTE        m_AnimAfterEffect;
     BYTE        m_TextBuildSubEffect;
     BYTE        m_OleVerb;
+
+    std::array<BYTE, 36> asByteArr{};
 public:
 
     CRecordAnimationInfoAtom()
@@ -132,8 +135,11 @@ public:
 
 
         StreamUtils::StreamSkip(2, pStream);
-
         m_OldSoundIdRef = m_SoundIdRef;
+
+        StreamUtils::StreamSkipBack(36, pStream);
+        auto tempStr = StreamUtils::ReadStringA(pStream, 36);
+        std::copy(tempStr.begin(), tempStr.end(), asByteArr.begin());
     }
 };
 }

@@ -35,8 +35,8 @@
 
 #include "odf_page_layout_state.h"
 
-#include "length.h"
-#include "color.h"
+#include "../../DataTypes/length.h"
+#include "../../DataTypes/color.h"
 
 namespace cpdoccore {
 namespace odf_writer {
@@ -103,10 +103,10 @@ public:
 	void set_pages_mirrored				(bool val);
 	
 	bool add_footer(int type);
-		void set_footer_size(_CP_OPT(odf_types::length) length_);
+		void set_footer_size(_CP_OPT(odf_types::length) length_, _CP_OPT(odf_types::length) length_min);
 	
 	bool add_header(int type);
-		void set_header_size(_CP_OPT(odf_types::length) length_);
+		void set_header_size(_CP_OPT(odf_types::length) length_, _CP_OPT(odf_types::length) length_min);
 
 	void set_header_footer_image	(office_element_ptr image);
 	void set_background				(_CP_OPT(odf_types::color) & color, int type);

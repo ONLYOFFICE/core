@@ -38,10 +38,10 @@
 #include <xml/nodetype.h>
 
 #include "office_elements_create.h"
-#include "common_attlists.h"
+#include "../../DataTypes/common_attlists.h"
 
-#include "bool.h"
-#include "textdisplay.h"
+#include "../../DataTypes/bool.h"
+#include "../../DataTypes/textdisplay.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

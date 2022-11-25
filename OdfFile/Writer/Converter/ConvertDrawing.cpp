@@ -33,7 +33,7 @@
 #include "PptxConverter.h"
 #include "DocxConverter.h"
 
-#include "../../src/utils.h"
+#include "../../Common/utils.h"
 
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"

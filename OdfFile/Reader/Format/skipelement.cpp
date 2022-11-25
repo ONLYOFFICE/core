@@ -31,7 +31,7 @@
  */
 
 #include "skipelement.h"
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 #include <xml/attributes.h>
 
 namespace cpdoccore { 

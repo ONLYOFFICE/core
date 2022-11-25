@@ -63,9 +63,8 @@ public:
 	{
 		Clear();
 
-		NSFile::CFileBinary srcFile;
-		
-		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return false;
+		NSFile::CFileBinary srcFile;		
+		if (false == srcFile.OpenFile(sPath.c_str())) return false;
 
 		__int64 totalFileSize = srcFile.GetFileSize();
 		if (totalFileSize < 5)

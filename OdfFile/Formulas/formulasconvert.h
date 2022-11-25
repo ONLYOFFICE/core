@@ -33,7 +33,7 @@
 
 #include <string>
 #include <vector>
-#include "../include/CPScopedPtr.h"
+#include "../Common/CPScopedPtr.h"
 
 namespace cpdoccore {
 

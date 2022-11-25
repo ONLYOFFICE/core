@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../include/CPScopedPtr.h"
+#include "../../Common/CPScopedPtr.h"
 #include <iostream>
 
 namespace cpdoccore {

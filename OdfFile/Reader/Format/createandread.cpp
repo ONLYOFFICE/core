@@ -33,7 +33,7 @@
 
 #include "office_elements_create.h"
 #include <xml/sax.h>
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

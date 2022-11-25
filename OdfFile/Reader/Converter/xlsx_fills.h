@@ -36,7 +36,7 @@
 
 #include "xlsx_fill.h"
 
-#include "../../include/CPScopedPtr.h"
+#include "../../Common/CPScopedPtr.h"
 
 namespace cpdoccore { 
 namespace odf_reader {

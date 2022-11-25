@@ -40,8 +40,8 @@
 #include <xml/xmlchar.h>
 
 #include <xml/utils.h>
-#include "../../include/common/readstring.h"
-#include "../../include/odf/odf_document.h"
+#include "../../Common/readstring.h"
+#include "odf_document.h"
 
 #include "styles.h"
 #include "note.h"
@@ -122,7 +122,7 @@ const wchar_t * text::name = L"";
 
 std::wostream & text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_, true ) : text_);
+	_Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_, true ) : text_);
     return _Wostream;
 }
 void text::add_space(const std::wstring & Text) 
@@ -183,7 +183,7 @@ void text::docx_convert(oox::docx_conversion_context & Context)
 		Context.output_stream() << L" xml:space=\"preserve\"";
 	Context.output_stream() << L">";
 
-	Context.output_stream() << xml::utils::replace_text_to_xml( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
+	Context.output_stream() << XmlUtils::EncodeXmlString( text_, true );//0xf4 0x80 0x80 0x81-??? - Gangs_Aff-Neg.odt
     Context.output_stream() << L"</" << textNode << L">";
 
 	if (add_del_run)
@@ -525,24 +525,37 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 	bool addNewRun = false;
     bool pushed = false;
 
+	if (!content_.empty() && (content_[0]->get_type() == typeTextNote))
+	{
+		pushed = pushed;
+	}
+
     std::wostream & _Wostream = Context.output_stream();
 
     if (!text_style_name_.empty()/* && !drawing*/)
     {
-        if (style_instance * styleInst 
-            = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text,Context.process_headers_footers_)
-            )
+        if (style_instance *styleInst = Context.root()->odf_context().styleContainer().style_by_name(text_style_name_, style_family::Text, Context.process_headers_footers_))
         {
             if (styleInst->is_automatic())
             {
-                if (const style_content * styleContent = styleInst->content())
+                if (const style_content *styleContent = styleInst->content())
                 {
-                    Context.push_text_properties(styleContent->get_style_text_properties());
+					style_text_properties *text_props = styleContent->get_style_text_properties();
+					std::wstring parent = styleInst->parent_name();
+
+					if (false == parent.empty())
+                {
+						text_props->content_.r_style_ = Context.styles_map_.get(parent, styleInst->type());
+					}
+                    
+					Context.push_text_properties(text_props);
                     pushed = true;
                     Context.get_styles_context().start_process_style(styleInst);
 					Context.add_new_run();
                     Context.get_styles_context().end_process_style();
                     addNewRun = true;
+
+					text_props->content_.r_style_ = boost::none;
                 }                            
             }
             else
@@ -853,39 +866,36 @@ void note::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void note::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool addNewRun = false;
-    bool pushed = false;
-
-    std::wostream & _Wostream = Context.output_stream();
-    if (const text_notes_configuration * conf = Context.root()->odf_context().noteConfiguration().getConfiguration(text_note_class_.get_type()))
+    //bool addNewRun = false;
+	const text_notes_configuration *notes_conf = Context.root()->odf_context().noteConfiguration().getConfiguration(text_note_class_.get_type());
+    if (notes_conf)
     {
-        const std::wstring styleName = conf->text_citation_body_style_name_.get_value_or(L"");
+        const std::wstring styleName = notes_conf->text_citation_body_style_name_.get_value_or(L"");
         if (!styleName.empty())
         {
-            if (style_instance * styleInst 
-                = Context.root()->odf_context().styleContainer().style_by_name(styleName, style_family::Text,Context.process_headers_footers_)
-                )
+			style_instance * styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, style_family::Text, Context.process_headers_footers_);
+            if (styleInst)
             {
-                const std::wstring id = Context.styles_map_.get( styleInst->name(), styleInst->type() );
-				Context.add_new_run(id);
-                addNewRun = true;
+                const std::wstring styleId = Context.styles_map_.get( styleInst->name(), styleInst->type() );
+				Context.add_new_run(styleId);
+                //addNewRun = true;
             }
                                          
         }
     }
-
-    if (!addNewRun)
+    if (false == Context.get_run_state())
         Context.add_new_run();
 
 	Context.get_notes_context().set_current_note(text_note_class_.get_type(), dynamic_cast<const note_citation *>(text_note_citation_.get()));
 
+	std::wstring sCustom = text_note_citation_ ? L" w:customMarkFollows=\"1\"" : L"";
     if (text_note_class_.get_type() == noteclass::Footnote)
     {
-        _Wostream << "<w:footnoteReference w:customMarkFollows=\"1\" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
+	   Context.output_stream() << "<w:footnoteReference" << sCustom << L" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
     }
     else 
     {
-        _Wostream << "<w:endnoteReference w:customMarkFollows=\"1\" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
+		Context.output_stream() << "<w:endnoteReference" << sCustom << L" w:customMarkFollows=\"1\" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
     }
 
     if (text_note_citation_)
@@ -896,11 +906,7 @@ void note::docx_convert(oox::docx_conversion_context & Context)
         text_note_body_->docx_convert(Context);
     Context.set_process_note(oox::docx_conversion_context::noNote);
 
-	Context.finish_run();
-    
-	if (pushed)
-        Context.pop_text_properties();    
-
+	//Context.finish_run();
 }
 
 //------------------------------------------------------------------------------------------------------------
@@ -1476,7 +1482,7 @@ void expression::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 std::wostream & expression::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	_Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
+	_Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_ ) : text_);
     return _Wostream;
 }
 void expression::add_text(const std::wstring & Text)
@@ -1505,7 +1511,7 @@ void text_input::add_attributes( const xml::attributes_wc_ptr & Attributes )
 }
 std::wostream & text_input::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
+    _Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_ ) : text_);
     return _Wostream;
 }
 void text_input::add_text(const std::wstring & Text)
@@ -1549,7 +1555,7 @@ void text_drop_down::add_text(const std::wstring & Text)
 }
 std::wostream & text_drop_down::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-    _Wostream << (bXmlEncode ? xml::utils::replace_text_to_xml( text_ ) : text_);
+    _Wostream << (bXmlEncode ? XmlUtils::EncodeXmlString( text_ ) : text_);
     return _Wostream;
 }
 

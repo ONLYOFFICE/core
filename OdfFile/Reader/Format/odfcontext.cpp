@@ -671,6 +671,18 @@ int list_style_container::id_by_name(const std::wstring & Name)
     else
         return 0;
 }
+const text_notes_configuration * notes_configuration::getConfiguration(odf_types::noteclass::type noteType) const
+{
+	if (type_to_name_.count(noteType))
+		return type_to_name_.at(noteType);
+	else
+		return NULL;
+}
+
+void notes_configuration::add(odf_types::noteclass::type noteType, const text_notes_configuration * conf)
+{
+	type_to_name_[noteType] = conf; 
+}
 
 }
 }

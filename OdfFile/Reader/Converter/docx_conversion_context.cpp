@@ -33,11 +33,11 @@
 #include <iostream>
 
 #include <xml/utils.h>
-#include "../../include/odf/odf_document.h"
 #include <xml/simple_xml_writer.h>
 
 #include "docx_conversion_context.h"
 
+#include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 #include "../Format/text_content.h"
 #include "../Format/calcs_styles.h"
@@ -49,7 +49,7 @@
 #include "docx_package.h"
 #include "xlsx_package.h"
 #include "oox_rels.h"
-#include "../../include/logging.h"
+#include "../Common/logging.h"
 
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
@@ -651,7 +651,7 @@ std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, b
 {
 	oox::_rels_type_place type_place = get_type_place();
 		
-	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
+	std::wstring href_correct = XmlUtils::EncodeXmlString(href);
     XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 	
 	return hyperlinks_.add(href_correct, type_place, draw);

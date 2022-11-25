@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../include/CPNoncopyable.h"
+#include "../../Common/CPNoncopyable.h"
 
 #include "oox_package.h"
 #include "pptx_comments.h"

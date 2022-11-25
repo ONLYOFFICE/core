@@ -33,7 +33,7 @@
 #define BUFSIZE 2048
 #include <time.h>
 
-#include "../../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 class Utils
 {

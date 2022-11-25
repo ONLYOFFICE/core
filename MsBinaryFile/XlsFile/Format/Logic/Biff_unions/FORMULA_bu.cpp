@@ -40,7 +40,6 @@
 #include "../Biff_records/String.h"
 #include "../Biff_records/Continue.h"
 
-#include "../../../../Common/Utils/utils.h"
 #include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
@@ -219,7 +218,7 @@ int FORMULA::serialize(std::wostream & stream)
 
 				if (!formula_str.empty())
 				{
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(formula_str);
+					CP_XML_STREAM() << XmlUtils::EncodeXmlString(formula_str);
 				}
 			}
 

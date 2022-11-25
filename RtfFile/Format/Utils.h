@@ -310,7 +310,7 @@ public:
          {
 			NSFile::CFileBinary file;
 
-            if (file.OpenFile(sFilename) != S_OK) return;
+            if (false == file.OpenFile(sFilename)) return;
 
             DWORD dwBytesRead = 0;
             BYTE byteBuffer[ BUF_SIZE ];
@@ -446,7 +446,7 @@ public:
 			return;
 
 		NSFile::CFileBinary file;
-		if (file.CreateFileW(sFilename) != S_OK) return;
+		if (false == file.CreateFileW(sFilename)) return;
 
 		file.WriteFile(pbData, (DWORD)nLength);	
 		file.CloseFile();
@@ -455,7 +455,7 @@ public:
 	{
 		NSFile::CFileBinary file;
 
-		if (file.CreateFileW(sFilename) != S_OK) return;
+		if (false == file.CreateFileW(sFilename)) return;
 
         wchar_t * buf  = (wchar_t *)sData.c_str();
         size_t nLengthText	= sData.length();

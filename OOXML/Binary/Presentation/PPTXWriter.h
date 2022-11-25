@@ -31,8 +31,8 @@
  */
 #pragma once
 #include "Converter.h"
-#include "../../DesktopEditor/common/Directory.h"
-#include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/common/SystemUtils.h"
 
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"

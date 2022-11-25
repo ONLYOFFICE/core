@@ -32,7 +32,7 @@
 
 #include <iostream>
 #include "style_table_properties.h"
-#include "borderstyle.h"
+#include "../../DataTypes/borderstyle.h"
 
 #include <xml/simple_xml_writer.h>
 

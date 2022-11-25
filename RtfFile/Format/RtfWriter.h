@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../Common/FileWriter.h"
+#include "../../Common/FileWriter.h"
 
 #include "UniversalConverterUtils.h"
 

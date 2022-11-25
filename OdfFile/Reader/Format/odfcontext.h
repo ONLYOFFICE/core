@@ -383,15 +383,8 @@ private:
 class notes_configuration
 {
 public:
-    const text_notes_configuration * getConfiguration(odf_types::noteclass::type noteType) const
-    { 
-        if (type_to_name_.count(noteType)) 
-            return type_to_name_.at(noteType);
-        else
-            return NULL;
-    }
-
-    void add(odf_types::noteclass::type noteType, const text_notes_configuration * conf) { type_to_name_[noteType] = conf; }
+	const text_notes_configuration * getConfiguration(odf_types::noteclass::type noteType) const;
+	void add(odf_types::noteclass::type noteType, const text_notes_configuration * conf);
 private:
     boost::unordered_map<odf_types::noteclass::type, const text_notes_configuration *> type_to_name_;
         

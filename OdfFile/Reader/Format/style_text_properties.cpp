@@ -32,10 +32,10 @@
 
 #include <iostream>
 
-#include "../../include/odf/odf_document.h"
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 #include <xml/simple_xml_writer.h>
 
+#include "../Format/odf_document.h"
 #include "calcs_styles.h"
 
 #include "odfcontext.h"

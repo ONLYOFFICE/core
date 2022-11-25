@@ -34,7 +34,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "../include/CPScopedPtr.h"
+#include "../Common/CPScopedPtr.h"
 
 namespace cpdoccore { 
 namespace odf_types { 

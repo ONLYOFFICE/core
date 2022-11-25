@@ -37,7 +37,7 @@
 #include <map>
 
 #include <xml/simple_xml_writer.h>
-#include "../../include/CPSharedPtr.h"
+#include "../../Common/CPSharedPtr.h"
 
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/regex.hpp>

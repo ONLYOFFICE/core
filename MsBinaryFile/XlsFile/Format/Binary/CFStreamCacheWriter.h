@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BinSmartPointers.h"
-#include <Logic/GlobalWorkbookInfo.h>
+#include "../Logic/GlobalWorkbookInfo.h"
 
 namespace XLS
 {

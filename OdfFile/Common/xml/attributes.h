@@ -34,11 +34,11 @@
 #include <string>
 #include <vector>
 
-#include <CPSharedPtr.h>
-#include <CPOptional.h>
+#include "../CPSharedPtr.h"
+#include "../CPOptional.h"
 #include "xmlchar.h"
 
-#include "../include/logging.h"
+#include "../logging.h"
 
 #include <boost/variant.hpp>
 #include <boost/lexical_cast.hpp>

@@ -175,7 +175,7 @@ std::wstring mediaitems::detectImageFileExtension(const std::wstring &fileName)
 	NSFile::CFileBinary file;
 
 	std::wstring sExt;
-	if (file.OpenFile(fileName) == S_OK)
+	if (true == file.OpenFile(fileName))
 	{
 		BYTE buffer[128];
 		int buffer_size = 128;
@@ -307,7 +307,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, _rels_type type,
 			count_shape++;
 		}
 		
-		items_.push_back( item(inputPath, type, xml::utils::replace_text_to_xml(outputPath), isMediaInternal, id, type_place) );
+		items_.push_back( item(inputPath, type, XmlUtils::EncodeXmlString(outputPath), isMediaInternal, id, type_place) );
 	}
 
   	ref = outputPath;

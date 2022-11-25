@@ -36,8 +36,8 @@
 #include <iostream>
 #include <list>
 
-#include "../Common/Utils/simple_xml_writer.h"
-#include "../Common/Utils/utils.h"
+#include "../../Common/Utils/simple_xml_writer.h"
+#include "../../../OOXML/Base/Unit.h"
 
 namespace oox {
 
@@ -256,7 +256,7 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 
 std::wstring xlsx_text_context::Impl::dump_text()
 {
-    const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
+    const std::wstring content = XmlUtils::EncodeXmlString(text_.str());
 
 	if (content.length()<1) 
 		return content;

@@ -32,7 +32,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "officevaluetype.h"
-#include "errors.h"
+#include "../Common/errors.h"
 
 namespace cpdoccore { namespace odf_types { 
 

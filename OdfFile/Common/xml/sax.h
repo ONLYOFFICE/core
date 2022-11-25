@@ -36,7 +36,7 @@
 #include <exception>
 #include <iosfwd>
 
-#include "../include/CPSharedPtr.h"
+#include "../CPSharedPtr.h"
 #include "nodetype.h"
 
 namespace cpdoccore {

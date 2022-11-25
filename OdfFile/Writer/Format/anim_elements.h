@@ -38,8 +38,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
-#include "smil_transitiontype.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/smil_transitiontype.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

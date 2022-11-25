@@ -36,7 +36,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "serialize_elements.h"
 

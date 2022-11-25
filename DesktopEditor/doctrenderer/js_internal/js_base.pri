@@ -75,4 +75,6 @@ use_javascript_core {
 
     LIBS += -framework JavaScriptCore
 
+    DEFINES += JS_ENGINE_JAVASCRIPTCORE
+
 }

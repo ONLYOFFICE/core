@@ -787,7 +787,10 @@ namespace VBA
 	}
 	void REFERENCEPROJECT::load(CVbaFileStreamPtr stream)
 	{
-		LibidAbsolute.load(stream); 
+		_UINT32 sizeOf;
+		*stream >> sizeOf;
+
+		LibidAbsolute.load(stream);
 		LibidRelative.load(stream);
 
 		*stream >> MajorVersion >> MinorVersion;

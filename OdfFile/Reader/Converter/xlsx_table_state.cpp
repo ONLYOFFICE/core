@@ -29,14 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../../include/odf/odf_document.h"
 #include <xml/simple_xml_writer.h>
-#include "../../include/logging.h"
+#include "../../Common/logging.h"
 
 #include "xlsx_table_state.h"
 #include "xlsx_utils.h"
 #include "xlsxconversioncontext.h"
 
+#include "../Format/odf_document.h"
 #include "../Format/odfcontext.h"
 #include "../Format/style_table_properties.h"
 #include "../../DataTypes/stylefamily.h"

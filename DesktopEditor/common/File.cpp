@@ -948,10 +948,14 @@ namespace NSFile
 	}
 	long CFileBinary::GetFilePosition()
 	{
+		m_lFilePosition = ftell(m_pFile);
+		
 		return m_lFilePosition;
 	}	
 	unsigned long CFileBinary::GetPosition()
 	{
+		m_lFilePosition = ftell(m_pFile);
+
 		return (unsigned long)m_lFilePosition;
 	}
 
@@ -1109,6 +1113,7 @@ namespace NSFile
 			return false;
 
 		DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
+		
 		return (dwSizeRead == nBytesToRead) ? true : false;
 	}
 	bool CFileBinary::ReadFile(BYTE* pData, DWORD nBytesToRead, DWORD& dwSizeRead)
@@ -1117,6 +1122,7 @@ namespace NSFile
 			return false;
 
 		dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
+		
 		return true;
 	}
 	bool CFileBinary::WriteFile(const void* pData, DWORD nBytesCount)

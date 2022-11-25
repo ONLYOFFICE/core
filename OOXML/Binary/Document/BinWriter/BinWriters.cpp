@@ -32,8 +32,8 @@
 #include "BinWriters.h"
 
 #include "../DocWrapper/FontProcessor.h"
-#include "../../Common/Base64.h"
-#include "../../Common/OfficeFileFormatChecker.h"
+#include "../../../../Common/Base64.h"
+#include "../../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/App.h"
@@ -46,7 +46,7 @@
 #ifndef _IOS
 	#include "../../../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
 #endif
-#include "../../HtmlFile2/htmlfile2.h"
+#include "../../../../HtmlFile2/htmlfile2.h"
 #include "../../../../RtfFile/Format/ConvertationManager.h"
 
 #include "../../../DocxFormat/CustomXml.h"
@@ -3671,52 +3671,58 @@ void BinaryDocumentTableWriter::WriteParagraphContent(const std::vector<OOX::Wri
 
 		switch (item->getType())
 		{
-		case OOX::et_w_fldSimple:
+			case OOX::et_w_permStart:
+			{
+				OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+				WritePermission(pPermStart);
+			}break;
+			case OOX::et_w_permEnd:
+			{
+				OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+				WritePermission(pPermEnd);
+			}break;
+			case OOX::et_w_fldSimple:
 			{
 				OOX::Logic::CFldSimple* pFldSimple = static_cast<OOX::Logic::CFldSimple*>(item);
 				WriteFldSimple(pFldSimple);
-				break;
-			}
-		case OOX::et_w_hyperlink:
+
+			}break;
+			case OOX::et_w_hyperlink:
 			{
 				OOX::Logic::CHyperlink* pHyperlink = static_cast<OOX::Logic::CHyperlink*>(item);
 				WriteHyperlink(pHyperlink);
+			}break;
+			case OOX::et_w_pPr:
 				break;
-			}
-		case OOX::et_w_pPr:
-			break;
-		case OOX::et_w_br:
-		{
-			OOX::Logic::CRun oRun;
-			oRun.m_arrItems.push_back(item);
-			WriteRun(&oRun, false, false);
-			oRun.m_arrItems.clear();
-		}break;
-		case OOX::et_w_r:
+			case OOX::et_w_br:
+			{
+				OOX::Logic::CRun oRun;
+				oRun.m_arrItems.push_back(item);
+				WriteRun(&oRun, false, false);
+				oRun.m_arrItems.clear();
+			}break;
+			case OOX::et_w_r:
 			{
 				OOX::Logic::CRun* pRun = static_cast<OOX::Logic::CRun*>(item);
 				WriteRun(pRun, bHyperlink, false);				
 			}break;
-		case OOX::et_w_sdt:
+			case OOX::et_w_sdt:
 			{
 				OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Sdt);
 				WriteSdt(pStd, 1, NULL, 0, 0, 0);
-				m_oBcw.WriteItemWithLengthEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_smartTag:
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);				
+			}break;
+			case OOX::et_w_smartTag:
 			{
 				OOX::Logic::CSmartTag* pSmartTag = static_cast<OOX::Logic::CSmartTag*>(item);
-				WriteParagraphContent(pSmartTag->m_arrItems);
-				break;
-			}
-		case OOX::et_w_dir:
+				WriteParagraphContent(pSmartTag->m_arrItems);				
+			}break;
+			case OOX::et_w_dir:
 			{
 				OOX::Logic::CDir* pDir = static_cast<OOX::Logic::CDir*>(item);
-				WriteParagraphContent(pDir->m_arrItems);
-				break;
-			}
+				WriteParagraphContent(pDir->m_arrItems);				
+			}break;
 		case OOX::et_w_bdo:
 			{
 				OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
@@ -3968,6 +3974,69 @@ void BinaryDocumentTableWriter::WriteComment(OOX::EElementType eType, nullable<S
 		m_oBcw.WriteItemEnd(nCurPos2);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+}
+void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermStart* pPerm)
+{
+	if (!pPerm) return;
+
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::PermStart);
+
+	if (pPerm->m_sId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
+		m_oBcw.m_oStream.WriteStringW3(pPerm->m_sId.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPerm->m_oDisplacedByCustomXml.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::DisplacedByCustomXml);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)pPerm->m_oDisplacedByCustomXml->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPerm->m_oColFirst.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::ColFirst);
+		m_oBcw.m_oStream.WriteLONG(pPerm->m_oColFirst->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPerm->m_oColLast.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::ColLast);
+		m_oBcw.m_oStream.WriteLONG(pPerm->m_oColLast->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPerm->m_sEd.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Ed);
+		m_oBcw.m_oStream.WriteStringW3(pPerm->m_sEd.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPerm->m_oEdGrp.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::EdGroup);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)pPerm->m_oEdGrp->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	m_oBcw.WriteItemWithLengthEnd(nCurPos);
+}
+void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermEnd* pPerm)
+{
+	if (!pPerm) return;
+	
+	int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::PermEnd);
+	if (pPerm->m_sId.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
+		m_oBcw.m_oStream.WriteStringW3(pPerm->m_sId.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pPerm->m_oDisplacedByCustomXml.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::DisplacedByCustomXml);
+		m_oBcw.m_oStream.WriteBYTE((BYTE)pPerm->m_oDisplacedByCustomXml->GetValue());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	m_oBcw.WriteItemWithLengthEnd(nCurPos);
 }
 void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 {

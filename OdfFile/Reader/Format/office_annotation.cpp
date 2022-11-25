@@ -37,7 +37,7 @@
 
 #include "serialize_elements.h"
 
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "odfcontext.h"
 #include "draw_common.h"
@@ -110,11 +110,11 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
  	std::wstring author;
 	if (dc_date_)
 	{
-		date = xml::utils::replace_text_to_xml(dynamic_cast<dc_date * >(dc_date_.get())->content_);
+		date = XmlUtils::EncodeXmlString(dynamic_cast<dc_date * >(dc_date_.get())->content_);
 	}
 	if (dc_creator_)
 	{
-		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
+		author = XmlUtils::EncodeXmlString(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
 	////////////////////////////////////////
 
@@ -169,11 +169,11 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
  	std::wstring author;
 	if (dc_date_)
 	{
-		date = xml::utils::replace_text_to_xml(dynamic_cast<dc_date * >(dc_date_.get())->content_);
+		date = XmlUtils::EncodeXmlString(dynamic_cast<dc_date * >(dc_date_.get())->content_);
 	}
 	if (dc_creator_)
 	{
-		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
+		author = XmlUtils::EncodeXmlString(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
 	int col = Context.current_table_column();		if (col < 0) col = 0;
 	int row = Context.current_table_row();			if (row < 0) row = 0;
@@ -283,11 +283,11 @@ void officeooo_annotation::pptx_convert(oox::pptx_conversion_context & Context)
 	
 	if (dc_date_)
 	{
-		date = xml::utils::replace_text_to_xml(dynamic_cast<dc_date * >(dc_date_.get())->content_);
+		date = XmlUtils::EncodeXmlString(dynamic_cast<dc_date * >(dc_date_.get())->content_);
 	}
 	if (dc_creator_)
 	{
-		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
+		author = XmlUtils::EncodeXmlString(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
 	id_idx = Context.add_author_comments(author);
 

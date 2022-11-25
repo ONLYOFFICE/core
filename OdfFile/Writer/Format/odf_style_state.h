@@ -36,7 +36,7 @@
 
 #include "office_elements_create.h"
 
-#include "stylefamily.h"
+#include "../../DataTypes/stylefamily.h"
 
 namespace cpdoccore {
 namespace odf_writer {

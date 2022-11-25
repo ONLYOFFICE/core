@@ -34,12 +34,12 @@
 
 #include <xml/simple_xml_writer.h>
 #include <xml/utils.h>
-#include "../../include/odf/odf_document.h"
 
 #include "pptx_drawing.h"
 #include "pptx_drawings.h"
 #include "pptx_slide_context.h"
 
+#include "../Format/odf_document.h"
 #include "../Format/draw_common.h"
 
 #include "drawing_object_description.h"
@@ -344,7 +344,7 @@ std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href)
 	++hlinks_size_;
 	std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
 	
-	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
+	std::wstring href_correct = XmlUtils::EncodeXmlString(href);
 	XmlUtils::replace_all( href_correct, L" .", L".");//1 (130).odt
 
 	_hlink_desc desc = {hId, href_correct};
@@ -432,7 +432,7 @@ void pptx_slide_context::set_link(std::wstring link, _rels_type typeRels)
 		impl_->object_description_.action_.typeRels	= typeRels;
 		
 		std::wstring hId = L"hId" + std::to_wstring(hlinks_size_);
-		link = xml::utils::replace_text_to_xml(link);
+		link = XmlUtils::EncodeXmlString(link);
 		
 		if (typeRels == typeHyperlink)
 			XmlUtils::replace_all( link, L" .", L".");		//1 (130).odt

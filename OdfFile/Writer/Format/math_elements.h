@@ -38,8 +38,9 @@
 #include <xml/simple_xml_writer.h>
 
 #include "office_elements_create.h"
-#include "mathvariant.h"
-#include "../DataTypes/common_attlists.h"
+
+#include "../../DataTypes/mathvariant.h"
+#include "../../DataTypes/common_attlists.h"
 
 
 namespace cpdoccore { 

@@ -33,8 +33,8 @@
 
 #include "draw_base.h"
 
-#include "common_attlists.h"
-#include "targetframename.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/targetframename.h"
 
 namespace cpdoccore {
 namespace odf_writer {

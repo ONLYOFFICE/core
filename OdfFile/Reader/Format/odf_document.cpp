@@ -30,16 +30,14 @@
  *
  */
 
-#include "../../include/odf/odf_document.h"
-
+#include "odf_document.h"
 #include "odf_document_impl.h"
-#include "../../src/progressCallbackR.h"
 
 namespace cpdoccore { 
 namespace odf_reader {
 
-odf_document::odf_document(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring & Password, const ProgressCallback* CallBack) 
-	: impl_(new Impl(SrcPath, TempPath, Password, CallBack))
+odf_document::odf_document(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring & Password)
+    : impl_(new Impl(SrcPath, TempPath, Password))
 {}
 
 odf_document::odf_document( xml::sax * Reader, const std::wstring & TempPath) : impl_(new Impl(Reader, TempPath))
@@ -89,11 +87,7 @@ bool odf_document::get_error()
 {
 	return impl_->get_error();
 }
-bool odf_document::UpdateProgress(long Complete)
-{
-	if (!impl_) return true;
-	return impl_->UpdateProgress(Complete);
-}
+
 
 }
 }

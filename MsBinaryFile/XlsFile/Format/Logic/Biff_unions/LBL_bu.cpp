@@ -38,7 +38,7 @@
 #include "../Biff_structures/PtgRef3d.h"
 #include "../Biff_structures/PtgArea3d.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -140,7 +140,7 @@ int LBL::serialize(std::wostream & stream)
 
 	if (value == L"#REF") value = L"#REF!";
 
-	std::wstring name_ = xml::utils::replace_text_to_xml(name);
+	std::wstring name_ = XmlUtils::EncodeXmlString(name);
 
 	if (name_.empty()) name_ = L"_";
 
@@ -165,7 +165,7 @@ int LBL::serialize(std::wostream & stream)
 
 			if (!description.empty())
 			{
-				std::wstring description_ = xml::utils::replace_text_to_xml(description);
+				std::wstring description_ = XmlUtils::EncodeXmlString(description);
 				if (description_.length() > 255)
 				{
 					description_ = description_.substr(0, 255);
@@ -182,7 +182,7 @@ int LBL::serialize(std::wostream & stream)
 				CP_XML_ATTR(L"hidden", 1);
 			}
 
-			CP_XML_STREAM() << xml::utils::replace_text_to_xml(value);
+			CP_XML_STREAM() << XmlUtils::EncodeXmlString(value);
 		}
 	}
 	return 0;

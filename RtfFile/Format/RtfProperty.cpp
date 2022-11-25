@@ -34,11 +34,11 @@
 #include "RtfProperty.h"
 #include "RtfDocument.h"
 
-#include "../../../OOXML/DocxFormat/FileTypes.h"
-#include "../../../OOXML/DocxFormat/App.h"
-#include "../../../OOXML/DocxFormat/Core.h"
-#include "../../../DesktopEditor/common/SystemUtils.h"
-#include "../../../Common/MS-LCID.h"
+#include "../../OOXML/DocxFormat/FileTypes.h"
+#include "../../OOXML/DocxFormat/App.h"
+#include "../../OOXML/DocxFormat/Core.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
+#include "../../Common/MS-LCID.h"
 
 #include <boost/algorithm/string.hpp>
 

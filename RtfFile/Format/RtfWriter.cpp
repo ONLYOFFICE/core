@@ -214,7 +214,7 @@ bool RtfWriter::SaveByItemEnd()
 			//свойства секции
 
 			NSFile::CFileBinary file;
-			if (file.OpenFile(m_aTempFilesSectPr[i]) == S_OK)
+			if (true == file.OpenFile(m_aTempFilesSectPr[i]))
 			{
 				DWORD dwBytesRead = 1;
 				BYTE byteBuffer[ 4096 ];
@@ -230,7 +230,7 @@ bool RtfWriter::SaveByItemEnd()
 				file.CloseFile();
 			}
 			//параграфы
-			if (file.OpenFile(m_aTempFiles[i]) == S_OK)
+			if (true == file.OpenFile(m_aTempFiles[i]))
 			{
 				DWORD dwBytesRead = 1;
 				BYTE byteBuffer[ 4096 ];

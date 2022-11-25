@@ -36,11 +36,11 @@
 #include <xml/xmlelement.h>
 #include <xml/nodetype.h>
 
-#include "common_attlists.h"
-#include "charttimeunit.h"
-#include "chartclass.h"
-
 #include "text_elements.h"
+
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/charttimeunit.h"
+#include "../../DataTypes/chartclass.h"
 
 namespace cpdoccore {
 namespace odf_writer {

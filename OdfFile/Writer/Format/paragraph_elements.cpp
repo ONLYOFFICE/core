@@ -41,21 +41,20 @@
 
 #include <xml/attributes.h>
 #include <xml/utils.h>
-#include <common/readstring.h>
+#include <readstring.h>
 
 #include <CPOptional.h>
 #include <CPWeakPtr.h>
 
-#include "targetframename.h"
 #include "styles.h"
 //#include "note.h"
 //#include "ruby.h"
 
 #include "office_elements_create.h"
-
 #include "odf_conversion_context.h"
-
 #include "style_text_properties.h"
+
+#include "../../DataTypes/targetframename.h"
 
 namespace cpdoccore { 
 
@@ -71,16 +70,16 @@ using xml::xml_char_wc;
 const wchar_t * text_text::ns = L"";
 const wchar_t * text_text::name = L"";
 
-std::wostream & text_text::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_text::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	_Wostream << xml::utils::replace_text_to_xml( text_ );
+	_Wostream << XmlUtils::EncodeXmlString( text_ );
 
 	return _Wostream;
 }
 
-void text_text::serialize(std::wostream & _Wostream)
+void text_text::serialize(std::wostream & _Wostream) 
 {
-    _Wostream << xml::utils::replace_text_to_xml( text_ , true);
+    _Wostream << XmlUtils::EncodeXmlString( text_ , true);
 }
 
 void text_text::add_text(const std::wstring & Text) 
@@ -243,11 +242,11 @@ void text_reference_mark_end::serialize(std::wostream & _Wostream)
 const wchar_t * text_span::ns = L"text";
 const wchar_t * text_span::name = L"span";
 
-std::wostream & text_span::text_to_stream(std::wostream & _Wostream) const
+std::wostream & text_span::text_to_stream(std::wostream & _Wostream, bool bXmlEncode) const
 {
-	for (size_t i = 0; i < paragraph_content_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
 	{
-		paragraph_content_[i]->text_to_stream(_Wostream);
+		content_[i]->text_to_stream(_Wostream, bXmlEncode);
 	}
 	return _Wostream;
 }
@@ -259,9 +258,9 @@ void text_span::serialize(std::wostream & _Wostream)
         { 	
 			CP_XML_ATTR_OPT(L"text:style-name", text_style_name_);
 			
-			for (size_t i = 0; i < paragraph_content_.size(); i++)
+			for (size_t i = 0; i < content_.size(); i++)
 			{
-				paragraph_content_[i]->serialize(CP_XML_STREAM());
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}
@@ -269,11 +268,11 @@ void text_span::serialize(std::wostream & _Wostream)
 
 void text_span::create_child_element( const std::wstring & Ns, const std::wstring & Name)
 {
-    CP_CREATE_ELEMENT(paragraph_content_);
+    CP_CREATE_ELEMENT(content_);
 }
 void text_span::add_child_element( const office_element_ptr & child_element)
 {
-	paragraph_content_.push_back(child_element);
+	content_.push_back(child_element);
 }
 void text_span::add_text(const std::wstring & Text)
 {
@@ -289,12 +288,12 @@ void text_span::add_text(const std::wstring & Text)
 	if (bSpace)
 	{
 		office_element_ptr elm = boost::make_shared<text_s>((unsigned int)Text.size());
-		paragraph_content_.push_back( elm );
+		content_.push_back( elm );
 	}
 	else
 	{
 		office_element_ptr elm = text_text::create(Text);
-		paragraph_content_.push_back( elm );
+		content_.push_back( elm );
 	}
 }
 //----------------------------------------------------------------------------------
@@ -818,7 +817,7 @@ void text_sequence::add_text(const std::wstring & Text)
     text_.push_back( elm );
 }
 //----------------------------------------------------------------------------------
-// text:sequence
+// text:text-input
 //----------------------------------------------------------------------------------
 const wchar_t * text_text_input::ns = L"text";
 const wchar_t * text_text_input::name = L"text-input";

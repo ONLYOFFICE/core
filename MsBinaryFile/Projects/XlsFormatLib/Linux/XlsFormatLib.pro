@@ -830,7 +830,6 @@ SOURCES +=  \
 	../../../XlsFile/Format/Crypt/XORCrypt.cpp \
 	../../../XlsFile/Format/Logging/Log.cpp \
 	../../../XlsFile/Format/Logging/Logger.cpp \
-	../../../Common/Utils/utils.cpp \
 	../../../Common/ODraw/FormulaShape.cpp \
 	../../../Common/ODraw/CustomShape.cpp \
 	../../../Common/ODraw/BaseShape_1.cpp \
@@ -1610,7 +1609,6 @@ HEADERS +=  \
 	../../../Common/SummaryInformation/PropertySetStream.h \
 	../../../Common/Utils/OptPtr.h \
 	../../../Common/Utils/simple_xml_writer.h \
-	../../../Common/Utils/utils.h \
 	../../../XlsFile/Converter/ConvertXls2Xlsx.h \
 	../../../XlsFile/Converter/external_items.h \
 	../../../XlsFile/Converter/mediaitems_utils.h \

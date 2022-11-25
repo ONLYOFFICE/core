@@ -47,9 +47,9 @@
 
 #include "style_graphic_properties.h"
 
-#include "length.h"
-#include "borderstyle.h"
-#include "custom_shape_types_convert.h"
+#include "../../DataTypes/length.h"
+#include "../../DataTypes/borderstyle.h"
+#include "../../DataTypes/custom_shape_types_convert.h"
 
 #include "odf_conversion_context.h"
 

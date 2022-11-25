@@ -140,6 +140,7 @@ namespace MetaFile
 		void           SetPixelHeight(double dH);
 		bool           UpdatePixelMetrics();
 		void           UpdateFinalTransform();
+		void           FixIsotropic();
 
 	private:
 

@@ -1,0 +1,694 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="datatypes odf">
+      <UniqueIdentifier>{c5b21206-a811-4082-8df4-c8306b5518b0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Common\CPColorUtils.h" />
+    <ClInclude Include="..\..\Common\CPNoncopyable.h" />
+    <ClInclude Include="..\..\Common\CPOptional.h" />
+    <ClInclude Include="..\..\Common\CPScopedPtr.h" />
+    <ClInclude Include="..\..\Common\CPSharedPtr.h" />
+    <ClInclude Include="..\..\Common\CPString.h" />
+    <ClInclude Include="..\..\Common\CPWeakPtr.h" />
+    <ClInclude Include="..\..\DataTypes\anchortype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\backgroundcolor.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\bibliography.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\bool.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\bordermodel.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\borderstyle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\borderwidths.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\calcext_type.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartclass.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartdatalabelnumber.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\charterrorcategory.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartinterpolation.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartlabelarrangement.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartlabelposition.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartregressiontype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartseriessource.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartsolidtype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\chartsymbol.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\charttimeunit.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\clockvalue.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\color.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\commandtype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\common_attlists.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\custom_shape_types_convert.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\dategroup.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\direction.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\drawangle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\drawfill.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\dropcaplength.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\errors.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fillimagerefpoint.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fobreak.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontfamilygeneric.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontpitch.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontrelief.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontsize.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontstretch.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontstyle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontvariant.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\fontweight.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\gradientstyle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\grandtotal.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\hatchstyle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\hyphenationkeep.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\hyphenationladdercount.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\iconset_type.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\keeptogether.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\layoutgridmode.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\length.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\lengthorpercent.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\letterspacing.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\linebreak.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\linemode.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\linestyle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\linetype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\linewidth.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\markerstyle.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\mathvariant.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\membertype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\messagetype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\noteclass.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\odfattributes.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\officevaluetype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\pageusage.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\percent.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\percentorscale.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\presentationclass.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\punctuationwrap.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\rotationalign.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\runthrough.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\scripttype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\shadowtype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\smil_transitiontype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\style_ref.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylecellprotect.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylefamily.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylehorizontalpos.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylehorizontalrel.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\styleleadercolor.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylenumformat.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\styleposition.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\styleprint.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylerepeat.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\styletype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\styleverticalpos.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\styleverticalrel.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylewrap.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\stylewrapcontourmode.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tablealign.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tablecentering.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tablefunction.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tablemode.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tableorder.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tableorientation.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tabletype.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\tablevisibility.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\targetframename.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textalign.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textalignsource.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textautospace.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textcombine.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textdisplay.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textemphasize.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textposition.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\textrotationscale.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\texttransform.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\timeperiod.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\underlinecolor.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\verticalalign.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\wrapoption.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\writingmode.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\DataTypes\xlink.h">
+      <Filter>datatypes odf</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Common\logging.h" />
+    <ClInclude Include="..\..\Common\odf_elements_type.h" />
+    <ClInclude Include="..\..\Common\readdocelement.h" />
+    <ClInclude Include="..\..\Common\readstring.h" />
+    <ClInclude Include="..\..\Common\utils.h" />
+    <ClInclude Include="..\..\Common\writedocelement.h" />
+    <ClInclude Include="..\..\Common\errors.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
+    <ClCompile Include="..\..\Common\CPString.cpp" />
+    <ClCompile Include="..\..\DataTypes\anchortype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\backgroundcolor.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\bibliography.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\bool.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\bordermodel.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\borderstyle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\borderwidths.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\calcext_type.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartclass.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartdatalabelnumber.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\charterrorcategory.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartinterpolation.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartlabelarrangement.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartlabelposition.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartregressiontype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartseriessource.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartsolidtype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\chartsymbol.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\charttimeunit.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\clockvalue.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\color.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\commandtype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\common_attlists.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\dategroup.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\direction.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\drawangle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\drawfill.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\dropcaplength.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fillimagerefpoint.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fobreak.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontfamilygeneric.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontpitch.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontrelief.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontsize.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontstretch.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontstyle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontvariant.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\fontweight.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\gradientstyle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\grandtotal.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\hatchstyle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\hyphenationkeep.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\hyphenationladdercount.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\iconset_type.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\keeptogether.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\layoutgridmode.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\length.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\lengthorpercent.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\letterspacing.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\linebreak.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\linemode.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\linestyle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\linetype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\linewidth.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\markerstyle.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\mathvariant.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\membertype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\messagetype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\noteclass.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\officevaluetype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\pageusage.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\percent.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\percentorscale.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\presentationclass.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\punctuationwrap.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\rotationalign.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\runthrough.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\scripttype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\shadowtype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\style_ref.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylecellprotect.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylefamily.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylehorizontalpos.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylehorizontalrel.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\styleleadercolor.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylenumformat.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\styleposition.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\styleprint.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylerepeat.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\styletype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\styleverticalpos.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\styleverticalrel.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylewrap.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\stylewrapcontourmode.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tablealign.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tablecentering.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tablefunction.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tablemode.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tableorder.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tableorientation.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tabletype.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\tablevisibility.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\targetframename.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textalign.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textalignsource.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textautospace.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textcombine.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textdisplay.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textemphasize.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textposition.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\textrotationscale.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\texttransform.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\timeperiod.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\underlinecolor.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\verticalalign.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\wrapoption.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\writingmode.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\DataTypes\xlink.cpp">
+      <Filter>datatypes odf</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Common\readdocelement.cpp" />
+    <ClCompile Include="..\..\Common\utils.cpp" />
+    <ClCompile Include="..\..\Common\logging.cpp" />
+  </ItemGroup>
+</Project>

@@ -32,7 +32,7 @@
 #pragma once
 
 #include <string>
-#include "../../../OOXML/Base/Base.h"
+#include "../../OOXML/Base/Base.h"
 
 class OOXWriter;
 class OOXReader;

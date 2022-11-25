@@ -35,7 +35,7 @@
 
 #include <xml/xmlchar.h>
 #include <xml/utils.h>
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
@@ -280,7 +280,7 @@ void office_change_info::docx_convert(oox::docx_conversion_context & Context)
 	
 	if (dc_date_)
 	{
-		date = xml::utils::replace_text_to_xml(dynamic_cast<dc_date * >(dc_date_.get())->content_);
+		date = XmlUtils::EncodeXmlString(dynamic_cast<dc_date * >(dc_date_.get())->content_);
 	}
 	else if (office_chg_date_time_)
 	{
@@ -288,7 +288,7 @@ void office_change_info::docx_convert(oox::docx_conversion_context & Context)
 	}
 	if (dc_creator_)
 	{
-		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
+		author = XmlUtils::EncodeXmlString(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
 	else if (office_chg_author_)
 	{

@@ -39,7 +39,7 @@
 
 #include "../../../PPTXFormat/Theme.h"
 
-#include "../../Common/ASCUtils.h"
+#include "../../../../Common/ASCUtils.h"
 
 namespace DocWrapper {
     wchar_t* gc_sNoNameFont         = _T("NoNameFont");

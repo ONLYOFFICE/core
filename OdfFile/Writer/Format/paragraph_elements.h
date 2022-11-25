@@ -39,11 +39,11 @@
 
 #include "office_elements_create.h"
 
-#include "targetframename.h"
-#include "noteclass.h"
-#include "bibliography.h"
+#include "../../DataTypes/targetframename.h"
+#include "../../DataTypes/noteclass.h"
+#include "../../DataTypes/bibliography.h"
 
-#include "common_attlists.h"
+#include "../../DataTypes/common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf_writer {
@@ -63,7 +63,7 @@ public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element( const office_element_ptr & child_element){}
 
-	std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 	virtual void serialize(std::wostream & _Wostream);
   
     text_text(const std::wstring & Text) :  text_(Text) {}
@@ -308,18 +308,17 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeTextSpan;
-    
+    static const ElementType type = typeTextSpan;    
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
-	std::wostream & text_to_stream(std::wostream & _Wostream) const;
+	virtual std::wostream & text_to_stream(std::wostream & _Wostream, bool bXmlEncode = true) const;
 
     text_span() {}
    
-	office_element_ptr_array paragraph_content_;
+	office_element_ptr_array content_;
     
 	_CP_OPT(std::wstring)		text_style_name_;//ваще то это такой элемент где стиль должОн быть всегда
     std::vector<std::wstring>	text_class_names_;

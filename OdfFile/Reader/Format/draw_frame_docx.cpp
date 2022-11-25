@@ -39,7 +39,7 @@
 
 #include <boost/regex.hpp>
 
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 #include <xml/utils.h>
 
 #include "serialize_elements.h"
@@ -1626,7 +1626,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			// normalize path ???? todooo
 			XmlUtils::replace_all( objectPath, FILE_SEPARATOR_STR + std::wstring(L"./"), FILE_SEPARATOR_STR);
 
-			odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L"", NULL));    
+            odf_document_ = odf_document_ptr(new odf_document(objectPath, tempPath, L""));
 		}
 //---------------------------------------------------------------------------------------------------------------------
 		office_element* contentSubDoc	= odf_document_ ? odf_document_->get_impl()->get_content() : NULL;
@@ -1863,7 +1863,7 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 			Context.add_new_run(L"");
 				Context.output_stream() << L"<w:t xml:space=\"preserve\">";
-				Context.output_stream() << xml::utils::replace_text_to_xml( text, true );
+				Context.output_stream() << XmlUtils::EncodeXmlString( text, true );
 				Context.output_stream() << L"</w:t>";
 			Context.finish_run();
 		}

@@ -33,7 +33,7 @@
 
 #include <string>
 #include "odf_content_xml.h"
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 namespace cpdoccore 
 { 
@@ -58,9 +58,9 @@ typedef shared_ptr<content_xml_t>::Type content_xml_t_ptr;
 class odf_document::Impl
 {
 public:
-    Impl(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring & Password, const ProgressCallback* CallBack);
-	
+    Impl(const std::wstring & SrcPath, const std::wstring & TempPath, const std::wstring & Password);	
 	Impl(xml::sax * Reader, const std::wstring & TempPath);
+
 	virtual ~Impl();
 
     odf_read_context & odf_context();
@@ -84,13 +84,9 @@ public:
 	bool get_encrypted_extra()	{return (false == map_encryptions_extra_.empty());}
 	
 	bool get_error() {return bError;}
-
-	bool UpdateProgress(long Complete);
     
 private:
-	const ProgressCallback* pCallBack;
-	short bUserStopConvert;
-	bool bError;
+    bool bError = false;
    
 	odf_read_context_ptr context_;
     
@@ -124,8 +120,7 @@ private:
 	int GetMimetype(std::wstring value);
 
 	std::map<std::wstring, std::pair<office_element_ptr, int>> map_encryptions_;
- 	std::map<std::wstring, std::pair<office_element_ptr, int>> map_encryptions_extra_;
-           
+ 	std::map<std::wstring, std::pair<office_element_ptr, int>> map_encryptions_extra_;           
 };
 
 }

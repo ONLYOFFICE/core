@@ -34,7 +34,7 @@
 
 #include "odf_document_impl.h"
 
-#include "../../include/odf/odf_document.h"
+#include "odf_document.h"
 
 #include <CPString.h>
 #include <xml/sax.h>
@@ -84,8 +84,6 @@
 #include "draw_page.h"
 
 #include "documentcontext.h"
-
-#include "../../src/progressCallbackR.h"
 
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
@@ -138,10 +136,9 @@ content_xml_t_ptr odf_document::Impl::read_file_content(const std::wstring & Pat
 	
 	result->add_child_element(Reader.get(), namespacePrefix, localName);		
 
-    return result;
+    return result;    
 }
-odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath): 
-			context_(new odf_read_context()), base_folder_(L""), pCallBack(NULL), bUserStopConvert (0), bError(false)
+odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath) : context_(new odf_read_context())
 {
 	office_mime_type_ = 0;
 
@@ -169,112 +166,108 @@ odf_document::Impl::Impl(xml::sax * Reader, const std::wstring & tempPath):
 		tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 	}
 }
-
-odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & tempPath, const std::wstring & password, const ProgressCallback* callBack) : 
-			context_(new odf_read_context()), pCallBack(callBack), bUserStopConvert (0), bError(false)
+odf_document::Impl::Impl(const std::wstring & srcPath, const std::wstring & tempPath, const std::wstring & password) : context_(new odf_read_context())
 {
-	office_mime_type_ = 0;
+    office_mime_type_ = 0;
 
-	tmp_folder_original_ = tempPath;
+    tmp_folder_original_ = tempPath;
 
-	if (NSDirectory::Exists(srcPath))
-	{
-		base_folder_ = srcPath; 
+    if (NSDirectory::Exists(srcPath))
+    {
+        base_folder_ = srcPath;
 
-		std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
-		std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";
+        std::wstring manifest_xml	= srcPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
+        std::wstring mimetype_xml	= srcPath + FILE_SEPARATOR_STR + L"mimetype";
 
-		_CP_LOG << L"[info] read mimetype" << std::endl;
-		NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_); 
+        _CP_LOG << L"[info] read mimetype" << std::endl;
+        NSFile::CFileBinary::ReadAllTextUtf8(mimetype_xml, mimetype_content_file_);
 
-		_CP_LOG << L"[info] read manifest.xml" << std::endl;
-		manifest_xml_ = read_file_content(manifest_xml);
+        _CP_LOG << L"[info] read manifest.xml" << std::endl;
+        manifest_xml_ = read_file_content(manifest_xml);
 
-		_CP_LOG << L"[info] parse manifest" << std::endl;
-		parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
+        _CP_LOG << L"[info] parse manifest" << std::endl;
+        parse_manifests(manifest_xml_ ? manifest_xml_->get_content() : NULL);
 
-		if (!office_mime_type_)
-		{
-			office_mime_type_ = GetMimetype(mimetype_content_file_);
-		}
+        if (!office_mime_type_)
+        {
+            office_mime_type_ = GetMimetype(mimetype_content_file_);
+        }
 
-		if (false == map_encryptions_.empty())
-		{
-			if (password.empty())
-			{
-				bError = true;
-				return;
-			}
+        if (false == map_encryptions_.empty())
+        {
+            if (password.empty())
+            {
+                bError = true;
+                return;
+            }
 
-			//decrypt files
-			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
+            //decrypt files
+            tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
 
-			bError = !decrypt_folder(password, base_folder_, tmp_folder_);
+            bError = !decrypt_folder(password, base_folder_, tmp_folder_);
 
-			if (bError)
-				return;
+            if (bError)
+                return;
 
-			base_folder_ = tmp_folder_;
-		}
+            base_folder_ = tmp_folder_;
+        }
 
-		std::wstring content_xml	= base_folder_ + FILE_SEPARATOR_STR + L"content.xml";
-		std::wstring styles_xml		= base_folder_ + FILE_SEPARATOR_STR + L"styles.xml";
-		std::wstring meta_xml		= base_folder_ + FILE_SEPARATOR_STR + L"meta.xml";
-		std::wstring settings_xml	= base_folder_ + FILE_SEPARATOR_STR + L"settings.xml";
-		
-		std::wstring jsaProject_bin	= base_folder_ + FILE_SEPARATOR_STR + L"jsaProject.bin";
+        std::wstring content_xml	= base_folder_ + FILE_SEPARATOR_STR + L"content.xml";
+        std::wstring styles_xml		= base_folder_ + FILE_SEPARATOR_STR + L"styles.xml";
+        std::wstring meta_xml		= base_folder_ + FILE_SEPARATOR_STR + L"meta.xml";
+        std::wstring settings_xml	= base_folder_ + FILE_SEPARATOR_STR + L"settings.xml";
+
+        std::wstring jsaProject_bin	= base_folder_ + FILE_SEPARATOR_STR + L"jsaProject.bin";
 
 //-----------------------------------------------------------------------------------------------------
-		  _CP_LOG << L"[info] read settings.xml" << std::endl;
-		settings_xml_ = read_file_content(settings_xml);
+          _CP_LOG << L"[info] read settings.xml" << std::endl;
+        settings_xml_ = read_file_content(settings_xml);
 
-		_CP_LOG << L"[info] read content.xml" << std::endl;
-		content_xml_ = read_file_content(content_xml);
+        _CP_LOG << L"[info] read content.xml" << std::endl;
+        content_xml_ = read_file_content(content_xml);
 
-		_CP_LOG << L"[info] read styles.xml" << std::endl;
-		styles_xml_ = read_file_content(styles_xml);
+        _CP_LOG << L"[info] read styles.xml" << std::endl;
+        styles_xml_ = read_file_content(styles_xml);
 
-		_CP_LOG << L"[info] read meta.xml" << std::endl;
-		meta_xml_ = read_file_content(meta_xml);
-		
-		jsaProject_bin_ = read_binary(jsaProject_bin);
+        _CP_LOG << L"[info] read meta.xml" << std::endl;
+        meta_xml_ = read_file_content(meta_xml);
+
+        jsaProject_bin_ = read_binary(jsaProject_bin);
 //----------------------------------------------------------------------------------------
-		_CP_LOG << L"[info] parse fonts" << std::endl;
-		parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
+        _CP_LOG << L"[info] parse fonts" << std::endl;
+        parse_fonts(content_xml_ ? content_xml_->get_content() : NULL);
 
-		_CP_LOG << L"[info] parse styles" << std::endl;
-		parse_styles(styles_xml_ ? styles_xml_->get_content() : NULL);
+        _CP_LOG << L"[info] parse styles" << std::endl;
+        parse_styles(styles_xml_ ? styles_xml_->get_content() : NULL);
 
-		_CP_LOG << L"[info] parse settings" << std::endl;
-		parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
+        _CP_LOG << L"[info] parse settings" << std::endl;
+        parse_settings(settings_xml_ ? settings_xml_->get_content() : NULL);
 
-		_CP_LOG << L"[info] parse meta" << std::endl;
-		parse_meta(meta_xml_ ? meta_xml_->get_content() : NULL);
-	}
-	else 
-	{
-		_CP_LOG << L"[info] read flat document" << std::endl;
-		content_xml_ = read_file_content(srcPath);
-		
-		if (content_xml_)
-		{
-			_CP_LOG << L"[info] parse fonts" << std::endl;
-			parse_fonts(content_xml_->get_content());
-			
-			_CP_LOG << L"[info] parse styles" << std::endl;
-			parse_styles(content_xml_->get_content());
+        _CP_LOG << L"[info] parse meta" << std::endl;
+        parse_meta(meta_xml_ ? meta_xml_->get_content() : NULL);
+    }
+    else
+    {
+        _CP_LOG << L"[info] read flat document" << std::endl;
+        content_xml_ = read_file_content(srcPath);
 
-			_CP_LOG << L"[info] parse manifest" << std::endl;
-			parse_manifests(content_xml_->get_content());
+        if (content_xml_)
+        {
+            _CP_LOG << L"[info] parse fonts" << std::endl;
+            parse_fonts(content_xml_->get_content());
 
-			_CP_LOG << L"[info] parse settings" << std::endl;
-			parse_settings(content_xml_->get_content());
+            _CP_LOG << L"[info] parse styles" << std::endl;
+            parse_styles(content_xml_->get_content());
 
-			tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
-		}
-	}
+            _CP_LOG << L"[info] parse manifest" << std::endl;
+            parse_manifests(content_xml_->get_content());
 
-	UpdateProgress(400000);
+            _CP_LOG << L"[info] parse settings" << std::endl;
+            parse_settings(content_xml_->get_content());
+
+            tmp_folder_ = NSDirectory::CreateDirectoryWithUniqueName(tempPath);
+        }
+    }
 }
 odf_document::Impl::~Impl()
 {
@@ -459,20 +452,6 @@ const std::wstring & odf_document::Impl::get_folder() const
 	else return tmp_folder_;
 }
 
-bool odf_document::Impl::UpdateProgress(long nComplete)
-{
-	if (pCallBack)
-	{
-		pCallBack->OnProgress (pCallBack->caller, PROGRESSEVENT_ID, nComplete);
-
-		bUserStopConvert = 0;
-		pCallBack->OnProgressEx (pCallBack->caller, PROGRESSEVENT_ID, nComplete, &bUserStopConvert);
-
-		if (bUserStopConvert !=0 ) return true;
-	}
-
-	return false;
-}
 
 void odf_document::Impl::parse_fonts(office_element *element)
 {
@@ -1158,8 +1137,6 @@ void odf_document::Impl::parse_styles(office_element *element)
 
 bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
 {
- 	if (bUserStopConvert !=0 ) return false;
-
 	Context.process_styles();	
 
     Context.process_fonts();
@@ -1176,7 +1153,6 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
     // так как в процессе конвертации документа у нас могу добавиться стили — 
     // в случае если используется text:start-value (начинаем нумерацию заново)
     Context.process_list_styles();
-	if (UpdateProgress(850000)) return false;
 
 	Context.add_jsaProject(jsaProject_bin_);
 
@@ -1184,8 +1160,6 @@ bool odf_document::Impl::docx_convert(oox::docx_conversion_context & Context)
 }
 bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
- 	if (bUserStopConvert !=0 ) return false;
-
 	try
     {
 		_CP_LOG << L"[info] convert content" << std::endl;
@@ -1225,8 +1199,6 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context) 
 {
-	if (bUserStopConvert !=0 ) return false;
-
     try
     {
         _CP_LOG << L"[info] convert content" << std::endl;

@@ -48,7 +48,7 @@
 #include "../Biff_records/SeriesText.h"
 #include "../Biff_records/Font.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -290,7 +290,7 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 								{
 									CP_XML_NODE(L"a:t")
 									{
-										CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_);
+										CP_XML_STREAM() << XmlUtils::EncodeXmlString(str_);
 									}
 								}
 							}
@@ -325,7 +325,7 @@ int ATTACHEDLABEL::serialize(std::wostream & _stream, bool isPosition)
 
 											std::wstring str_part = str_.substr( run->ich, end_string - run->ich);
 
-											CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+											CP_XML_STREAM() << XmlUtils::EncodeXmlString(str_part);
 										}
 									}
 								}

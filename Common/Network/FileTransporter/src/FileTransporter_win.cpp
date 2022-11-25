@@ -87,9 +87,6 @@ namespace NSNetwork
 
             virtual int DownloadFile() override
             {
-				m_bComplete = true;
-				return (true == DownloadFilePS(m_sDownloadFileUrl, m_sDownloadFilePath)) ? S_OK : S_FALSE;
-
                 CoInitialize ( NULL );
                 if ( /*S_OK != _DownloadFile ( m_sFileUrl )*/TRUE )
                 {
@@ -100,7 +97,14 @@ namespace NSNetwork
                             NSFile::CFileBinary::Remove(m_sDownloadFilePath);
                     }
 
-					HRESULT hrResultAll = S_FALSE;
+                    HRESULT hrResultAll = DownloadFileAll(m_sDownloadFileUrl, m_sDownloadFilePath);
+
+                    if(E_ABORT == hrResultAll /*&& m_bIsExit->load()*/)
+                    {
+                        //DeleteUrlCacheEntry(m_sDownloadFileUrl.c_str());
+                        CoUninitialize ();
+                        return hrResultAll;
+                    }
                     if (S_OK != hrResultAll)
                     {
                         hrResultAll = (true == DownloadFilePS(m_sDownloadFileUrl, m_sDownloadFilePath)) ? S_OK : S_FALSE;
@@ -453,13 +457,6 @@ namespace NSNetwork
                 }
 
                 std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
-
-				std::string sss = U_TO_UTF8(sApp);
-				FILE* f = fopen("D://777.txt", "a+");
-				fprintf(f, sss.c_str());
-				fprintf(f, "\n");
-				fclose(f);
-
                 wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];
                 memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
                 pCommandLine[sApp.length()] = (wchar_t)'\0';

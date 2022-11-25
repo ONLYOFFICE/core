@@ -38,7 +38,7 @@
 #include <xml/attributes.h>
 #include <xml/utils.h>
 
-#include "borderstyle.h"
+#include "../../DataTypes/borderstyle.h"
 
 namespace cpdoccore { 
 

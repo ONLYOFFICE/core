@@ -38,13 +38,13 @@
 
 #include "office_elements_create.h"
 
-#include "tablevisibility.h"
-#include "messagetype.h"
-
-#include "common_attlists.h"
-#include "tablemode.h"
 #include "table_named_expressions.h"
 #include "table_database_ranges.h"
+
+#include "../../DataTypes/tablevisibility.h"
+#include "../../DataTypes/messagetype.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/tablemode.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

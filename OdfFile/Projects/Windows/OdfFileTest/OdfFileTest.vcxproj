@@ -70,8 +70,8 @@
     <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../../Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
-    <LibraryPath>../../Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>../../../../Common\3dParty\boost\build\win_32\include;../../Common;$(IncludePath)</IncludePath>
+    <LibraryPath>../../../../Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -168,42 +168,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Common\OfficeFileFormatChecker.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\Common\3dParty\pole\pole.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp" />
-    <ClCompile Include="..\..\Common\OfficeFileFormatChecker2.cpp" />
+    <ClCompile Include="..\..\..\..\Common\3dParty\pole\pole.cpp" />
+    <ClCompile Include="..\..\..\..\Common\OfficeFileFormatChecker2.cpp" />
+    <ClCompile Include="..\..\..\..\OOXML\Base\unicode_util.cpp" />
+    <ClCompile Include="..\..\..\..\OOXML\Base\Unit.cpp" />
     <ClCompile Include="OdfFileTest.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
+    <ProjectReference Include="..\..\..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
       <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
+    <ProjectReference Include="..\..\..\..\Common\cfcpp\CompoundFileLib.vcxproj">
+      <Project>{fa22bab4-e93e-459d-8a5f-16764fbbed40}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
       <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\win32\cpcommon.vcxproj">
+    <ProjectReference Include="..\cpcommon.vcxproj">
       <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\win32\cpodf.vcxproj">
+    <ProjectReference Include="..\cpodf.vcxproj">
       <Project>{50e20601-4a8d-4afb-8870-63828d328429}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\win32\cpxml.vcxproj">
+    <ProjectReference Include="..\cpxml.vcxproj">
       <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\win32\formulasconvert.vcxproj">
+    <ProjectReference Include="..\formulasconvert.vcxproj">
       <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -48,8 +48,10 @@ namespace MetaFile
 		virtual void HANDLE_EMR_SETMAPMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_SETWINDOWORGEX(const TEmfPointL&) = 0;
 		virtual void HANDLE_EMR_SETWINDOWEXTEX(const TEmfSizeL&) = 0;
+		virtual void HANDLE_EMR_SCALEWINDOWEXTEX(int, int, int, int) = 0;
 		virtual void HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL&) = 0;
 		virtual void HANDLE_EMR_SETVIEWPORTEXTEX(const TEmfSizeL&) = 0;
+		virtual void HANDLE_EMR_SCALEVIEWPORTEXTEX(int, int, int, int) = 0;
 		virtual void HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_SETICMMODE(const unsigned int&) = 0;
 		virtual void HANDLE_EMR_CREATEMONOBRUSH(const unsigned int&, const TEmfDibPatternBrush&, CDataStream&) = 0;
@@ -99,26 +101,83 @@ namespace MetaFile
 		virtual void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL&) = 0;
 		virtual void HANDLE_EMR_STROKEPATH(const TEmfRectL&) = 0;
 
-		virtual void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) = 0;
-		virtual void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) = 0;
+		virtual void HANDLE_EMR_UNKNOWN(CDataStream &) = 0;
+		virtual void HANDLE_EMR_FILLRGN(const TEmfRectL&, unsigned int, const TRegionDataHeader&, const std::vector<TEmfRectL>&) = 0;
+		virtual void HANDLE_EMR_PAINTRGN(const TEmfRectL&, const TRegionDataHeader&, const std::vector<TEmfRectL>&) = 0;
+		virtual void HANDLE_EMR_FRAMERGN(const TEmfRectL&, unsigned int, int, int, const TRegionDataHeader&, const std::vector<TEmfRectL>&) = 0;
 
-		virtual void HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY) = 0;
-		virtual void HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRect& oRectData) = 0;
-		virtual void HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF& oSrcRect, const TEmfPlusRectF& oRectData) = 0;
+		// Emf+
+		// 2.3.1 Clipping Record Types
+		virtual void HANDLE_EMFPLUS_OFFSETCLIP(double, double) = 0;
+		virtual void HANDLE_EMFPLUS_RESETCLIP() = 0;
+		virtual void HANDLE_EMFPLUS_SETCLIPPATH(short, const CEmfPlusPath*) = 0;
+		virtual void HANDLE_EMFPLUS_SETCLIPRECT(short, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_SETCLIPREGION(short, short, const CEmfPlusRegion*) = 0;
+
+		// 2.3.2 Comment Record Types
+		virtual void HANDLE_EMFPLUS_COMMENT(CDataStream &, unsigned int) = 0;
+
+		// 2.3.3 Control Record Types
+		virtual void HANDLE_EMFPLUS_ENDOFFILE() = 0;
+		virtual void HANDLE_EMFPLUS_GETDC() = 0;
+		virtual void HANDLE_EMFPLUS_HEADER(unsigned int, unsigned int, unsigned int) = 0;
+
+		// 2.3.4 Drawing Record Types
+		virtual void HANDLE_EMFPLUS_CLEAR(const TEmfPlusARGB&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWARC(BYTE, double, double, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWBEZIERS(short, const std::vector<TEmfPlusPointF>&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWCLOSEDCURVE(short, double, const std::vector<TEmfPlusPointF>&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWCURVE(short, double, unsigned int, unsigned int,const std::vector<TEmfPlusPointF>&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWDRIVERSTRING(short, unsigned int, unsigned int, unsigned int, TEmfPlusXForm*, const std::wstring&, const std::vector<TPointD>&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWELLIPSE(short, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWIMAGE(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWIMAGEPOINTS(short, unsigned int, const TEmfPlusRectF&, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWLINES(short, const std::vector<TEmfPlusPointF>&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWPATH(short, unsigned int, const CEmfPath*) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWPIE(short, double, double, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWRECTS(short, const std::vector<TEmfPlusRectF>&) = 0;
+		virtual void HANDLE_EMFPLUS_DRAWSTRING(short, unsigned int, unsigned int, const std::wstring&, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_FILLCLOSEDCURVE(unsigned int, double, const std::vector<TEmfPlusRectF>&) = 0;
+		virtual void HANDLE_EMFPLUS_FILLELLIPSE(unsigned int, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_FILLPATH(short, unsigned int, const  CEmfPlusPath*) = 0;
+		virtual void HANDLE_EMFPLUS_FILLPIE(unsigned int, double, double, const TEmfPlusRectF&) = 0;
+		virtual void HANDLE_EMFPLUS_FILLPOLYGON(unsigned int, const std::vector<TEmfPlusPointF>&) = 0;
+		virtual void HANDLE_EMFPLUS_FILLRECTS(unsigned int, const std::vector<TEmfPlusRectF>&) = 0;
+		virtual void HANDLE_EMFPLUS_FILLREGION(short, unsigned int) = 0;
+
+		// 2.3.5 Object Record Types
+		virtual void HANDLE_EMFPLUS_OBJECT(const CEmfPlusObject*, unsigned int) = 0;
+		virtual void HANDLE_EMFPLUS_SERIALIZABLEOBJECT(const TGUID&, unsigned int) = 0;
+
+		// 2.3.6 Property Record Types
+		virtual void HANDLE_EMFPLUS_SETANTIALIASMODE(short) = 0;
+		virtual void HANDLE_EMFPLUS_SETCOMPOSITINGMODE(short) = 0;
+		virtual void HANDLE_EMFPLUS_SETCOMPOSITINGQUALITY(short) = 0;
+		virtual void HANDLE_EMFPLUS_SETINTERPOLATIONMODE(short) = 0;
+		virtual void HANDLE_EMFPLUS_SETPIXELOFFSETMODE(short) = 0;
+		virtual void HANDLE_EMFPLUS_SETRENDERINGORIGIN(int, int) = 0;
+		virtual void HANDLE_EMFPLUS_SETTEXTCONTRAST(short) = 0;
+		virtual void HANDLE_EMFPLUS_SETTEXTRENDERINGHINT(short) = 0;
+
+		// 2.3.7 State Record Types
+		virtual void HANDLE_EMFPLUS_BEGINCONTAINER(short, const TEmfPlusRectF&, const TEmfPlusRectF&, unsigned int) = 0;
+		virtual void HANDLE_EMFPLUS_BEGINCONTAINERNOPARAMS(unsigned int) = 0;
+		virtual void HANDLE_EMFPLUS_ENDCONTAINER(unsigned int) = 0;
+		virtual void HANDLE_EMFPLUS_RESTORE(unsigned int) = 0;
+		virtual void HANDLE_EMFPLUS_SAVE(unsigned int) = 0;
+
+		// 2.3.8 Terminal Server Record Types
+		virtual void HANDLE_EMFPLUS_SETTSCLIP(short, const std::vector<TEmfPlusRectF>&) = 0;
+		virtual void HANDLE_EMFPLUS_SETTSGRAPHICS(unsigned char, unsigned char, unsigned char, unsigned char, short, short, unsigned short, unsigned char, unsigned char, const TEmfPlusXForm&) = 0;
+
+		// 2.3.9 Transform Record Types
+		virtual void HANDLE_EMFPLUS_MULTIPLYWORLDTRANSFORM(short, const TEmfPlusXForm&) = 0;
+		virtual void HANDLE_EMFPLUS_RESETWORLDTRANSFORM() = 0;
+		virtual void HANDLE_EMFPLUS_ROTATEWORLDTRANSFORM(short, double) = 0;
+		virtual void HANDLE_EMFPLUS_SCALEWORLDTRANSFORM(short, double, double) = 0;
+		virtual void HANDLE_EMFPLUS_SETPAGETRANSFORM(short, double) = 0;
+		virtual void HANDLE_EMFPLUS_SETWORLDTRANSFORM(const TEmfPlusXForm&) = 0;
+		virtual void HANDLE_EMFPLUS_TRANSLATEWORLDTRANSFORM(short, double, double) = 0;
 	};
 }
 

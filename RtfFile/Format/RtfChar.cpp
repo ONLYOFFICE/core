@@ -34,7 +34,7 @@
 
 #include "../OOXml/Writer/OOXWriter.h"
 
-#include "../../../Common/MS-LCID.h"
+#include "../../Common/MS-LCID.h"
 
 std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 {

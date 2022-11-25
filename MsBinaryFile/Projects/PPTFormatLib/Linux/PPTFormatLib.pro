@@ -28,16 +28,26 @@ DEFINES +=  UNICODE \
 
 HEADERS += \
 	../../../PptFile/Main/PPTFormatLib.h \
+	../../../PptFile/Converter/Animation/AnimationParser.h \
+	../../../PptFile/Converter/Animation/Animation_1995.h \
+	../../../PptFile/Converter/Animation/TimingExeption.h \
+	../../../PptFile/Converter/Animation/TimingUtils.h \
+	../../../PptFile/Converter/Animation/Timing_1995.h \
+	../../../PptFile/Converter/Animation/Timing_2010.h \
+	../../../PptFile/Converter/Animation/hashcode10.h \
+	../../../PptFile/Converter/Animation/intermediate_anim.h \
+	../../../PptFile/Converter/timing.h \
 	../../../PptFile/Converter/transition.h \
 	../../../PptFile/Enums/RecordType.h \
 	../../../PptFile/Enums/_includer.h \
 	../../../PptFile/Enums/enums.h \
-	../../../PptFile/PPTXWriter/Animation.h \
+	../../../PptFile/PPTFormatLib.h \
 	../../../PptFile/PPTXWriter/BulletsConverter.h \
 	../../../PptFile/PPTXWriter/TableWriter.h \
 	../../../PptFile/PPTXWriter/TxBodyConverter.h \
 	../../../PptFile/Reader/ClassesAtom.h \
 	../../../PptFile/Reader/CommonZLib.h \
+	../../../PptFile/Reader/ExtXmlUtils.hpp \
 	../../../PptFile/Reader/PPTDocumentInfo.h \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.h \
 	../../../PptFile/Reader/PPTFileDefines.h \
@@ -52,6 +62,7 @@ HEADERS += \
 	../../../PptFile/Records/Animations/AnimationInfoContainer.h \
 	../../../PptFile/Records/Animations/BuildAtom.h \
 	../../../PptFile/Records/Animations/BuildListContainer.h \
+	../../../PptFile/Records/Animations/BuildListSubContainer.h \
 	../../../PptFile/Records/Animations/ChartBuildAtom.h \
 	../../../PptFile/Records/Animations/ChartBuildContainer.h \
 	../../../PptFile/Records/Animations/ClientVisualElementContainer.h \
@@ -265,8 +276,7 @@ HEADERS += \
 	../../../PptFile/Structures/SmallRectStruct.h \
 	../../../PptFile/Structures/TmsfTimeStruct.h \
 	../../../PptFile/Structures/WideColorStruct.h \
-	../../../PptFile/Structures/_includer.h \
-	../../../../Common/3dParty/pole/pole.h
+	../../../PptFile/Structures/_includer.h
 
 core_release {
 SOURCES += \
@@ -276,6 +286,7 @@ SOURCES += \
 core_debug {
 SOURCES += \
 	../../../PptFile/Enums/RecordType.cpp \
+	../../../PptFile/Enums/RecordType.cpp \
 	../../../PptFile/Reader/ReadStructures.cpp \
 	../../../PptFile/Reader/RoundTripExtractor.cpp \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.cpp \
@@ -284,19 +295,26 @@ SOURCES += \
 	../../../PptFile/Reader/SlidePersist.cpp \
 	../../../PptFile/PPTXWriter/Converter.cpp \
 	../../../PptFile/PPTXWriter/ShapeWriter.cpp \
-	../../../PptFile/PPTXWriter/Animation.cpp \
 	../../../PptFile/PPTXWriter/TableWriter.cpp \
 	../../../PptFile/PPTXWriter/TxBodyConverter.cpp \
 	../../../PptFile/Records/Drawing/ArtBlip.cpp \
 	../../../PptFile/Records/Drawing/ShapeContainer.cpp \
 	../../../PptFile/Records/Animations/TimeVariant.cpp \
-	../../../PptFile/Records/BlipEntityAtom.cpp
+	../../../PptFile/Records/BlipEntityAtom.cpp \
+	../../../PptFile/Drawing/Elements.cpp \
+	../../../PptFile/Drawing/TextAttributesEx.cpp \
+  	../../../PptFile/Converter/Animation/AnimationParser.cpp \
+	../../../PptFile/Converter/Animation/Animation_1995.cpp \
+	../../../PptFile/Converter/Animation/TimingUtils.cpp \
+	../../../PptFile/Converter/Animation/Timing_1995.cpp \
+	../../../PptFile/Converter/Animation/Timing_2010.cpp \
+	../../../PptFile/Converter/Animation/hashcode10.cpp \
+	../../../PptFile/Converter/Animation/intermediate_anim.cpp \
+	../../../PptFile/Converter/timing.cpp \
+	../../../PptFile/Converter/transition.cpp \
+	../../../PptFile/PPTXWriter/BulletsConverter.cpp
 }
 
 SOURCES += \
 	../../../PptFile/Main/PPTFormatLib.cpp \
-	../../../PptFile/Drawing/Elements.cpp \
-	../../../PptFile/Drawing/TextAttributesEx.cpp \
-	../../../PptFile/Converter/transition.cpp \
-	../../../PptFile/PPTXWriter/BulletsConverter.cpp \
 	../../../../Common/3dParty/pole/pole.cpp

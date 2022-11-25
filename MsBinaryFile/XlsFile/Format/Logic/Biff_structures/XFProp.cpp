@@ -37,7 +37,7 @@
 #include "BiffString.h"
 #include "BitMarkedStructs.h"
 
-#include "../../../../Common/Utils/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {
@@ -176,7 +176,7 @@ static void serialize_val_prop(std::wostream & stream, const std::wstring & name
 			if (byte_)	CP_XML_ATTR(L"val", *byte_->value());
 
 			LPWideString* str_ = dynamic_cast<LPWideString*>(val.get());
-			if (str_)	CP_XML_ATTR(L"val", xml::utils::replace_text_to_xml(str_->value()));
+			if (str_)	CP_XML_ATTR(L"val", XmlUtils::EncodeXmlString(str_->value()));
 		}
 	}
 }
@@ -195,7 +195,7 @@ static void serialize_val_attr(CP_ATTR_NODE, const std::wstring & name, BiffStru
 	if (byte_)	CP_XML_ATTR(name.c_str(), *byte_->value());
 
 	LPWideString* str_ = dynamic_cast<LPWideString*>(val.get());
-	if (str_)	CP_XML_ATTR(name.c_str(), xml::utils::replace_text_to_xml(str_->value()));
+	if (str_)	CP_XML_ATTR(name.c_str(), XmlUtils::EncodeXmlString(str_->value()));
 }
 static void serialize_border_prop(std::wostream & stream, const std::wstring & name, BiffStructurePtr & val)
 {

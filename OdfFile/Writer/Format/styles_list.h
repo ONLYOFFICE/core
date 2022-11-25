@@ -41,7 +41,7 @@
 
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
+#include "../../DataTypes/common_attlists.h"
 
 
 namespace cpdoccore { 

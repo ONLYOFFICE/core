@@ -37,7 +37,7 @@
 #include "xlsx_alignment.h"
 #include "xlsx_protection.h"
 
-#include "../../include/CPSharedPtr.h"
+#include "../../Common/CPSharedPtr.h"
 
 namespace cpdoccore {
 namespace oox {

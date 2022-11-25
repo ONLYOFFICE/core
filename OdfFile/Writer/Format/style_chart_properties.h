@@ -38,17 +38,17 @@
 
 #include "office_elements_create.h"
 
-#include "chartsymbol.h"
-#include "length.h"
-#include "chartinterpolation.h"
-#include "chartsolidtype.h"
-#include "chartlabelarrangement.h"
-#include "common_attlists.h"
-#include "chartdatalabelnumber.h"
-#include "charterrorcategory.h"
-#include "chartseriessource.h"
-#include "chartregressiontype.h"
-#include "direction.h"
+#include "../../DataTypes/chartsymbol.h"
+#include "../../DataTypes/length.h"
+#include "../../DataTypes/chartinterpolation.h"
+#include "../../DataTypes/chartsolidtype.h"
+#include "../../DataTypes/chartlabelarrangement.h"
+#include "../../DataTypes/common_attlists.h"
+#include "../../DataTypes/chartdatalabelnumber.h"
+#include "../../DataTypes/charterrorcategory.h"
+#include "../../DataTypes/chartseriessource.h"
+#include "../../DataTypes/chartregressiontype.h"
+#include "../../DataTypes/direction.h"
 
 namespace cpdoccore { 
 namespace odf_writer {

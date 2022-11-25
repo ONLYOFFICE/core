@@ -2157,7 +2157,7 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 	{
 		//в туже папку что и исходная картинка
 		CBgraFrame image;
-		if (image.OpenFile(sPath) == FALSE ) return false;
+		if (image.OpenFile(sPath) == false ) return false;
 		
 		//правильно выставляем размеры
 		pOutput.m_nWidthGoal	= image.get_Width()	* 15;  //pixels to twip (  1440 / 96 )
@@ -2181,11 +2181,11 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 
         std::wstring sTargetFile = NSDirectory::CreateTempFileWithUniqueName(ooxPath.GetDirectory(), L"img");
 
-		int res = file_inp.OpenFile(sPath);
-		if (res != S_OK) return false;
+		bool res = file_inp.OpenFile(sPath);
+		if (res == false) return false;
 
         res = file_out.CreateFile(sTargetFile);
-		if (res != S_OK) return false;
+		if (res == false) return false;
 
 		DWORD dwBytesRead = 0;
 		DWORD dwBytesWrite = 0;
@@ -2253,7 +2253,7 @@ bool OOXShapeReader::WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput
 		{//png, jpeg
 			CBgraFrame image;
 		
-			if (image.OpenFile(sPath, 0) == FALSE ) return false;
+			if (image.OpenFile(sPath, 0) == false ) return false;
 			//правильно выставляем размеры
 			pOutput.m_nWidthGoal	= image.get_Width()		* 15;  //pixels to twip 
 			pOutput.m_nHeightGoal	= image.get_Height()	* 15;  //pixels to twip;

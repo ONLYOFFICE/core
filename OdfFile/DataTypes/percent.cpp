@@ -33,7 +33,7 @@
 #include "percent.h"
 #include <iostream>
 #include <sstream>
-#include "errors.h"
+#include "../Common/errors.h"
 
 namespace cpdoccore { namespace odf_types { 
 

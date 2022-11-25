@@ -320,6 +320,8 @@ public:
 	int ReadTextInput(BYTE type, long length, void* poResult);
 	int ReadBookmarkStart(BYTE type, long length, void* poResult);
 	int ReadBookmarkEnd(BYTE type, long length, void* poResult);
+	int ReadPermStart(BYTE type, long length, void* poResult);
+	int ReadPermEnd(BYTE type, long length, void* poResult);	
 	int ReadHyperlink(BYTE type, long length, void* poResult);
 	int ReadMathLong(BYTE type, long length, void* poResult);
 	int ReadMathArgOut(long length);

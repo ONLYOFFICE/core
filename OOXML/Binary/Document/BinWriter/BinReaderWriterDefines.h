@@ -532,7 +532,9 @@ extern int g_nCurFormatVersion;
 		BookmarkEnd = 24,
 		MRun = 25,
 		AltChunk = 26,
-		DocParts = 27
+		DocParts = 27,
+		PermStart = 28,
+		PermEnd = 29
 	};}
 	namespace c_oSerGlossary {
 		enum c_oSerGlossary
@@ -1314,6 +1316,15 @@ extern int g_nCurFormatVersion;
 		DisplacedByCustomXml = 2,
 		ColFirst = 3,
 		ColLast = 4
+	};}
+	namespace c_oSerPermission {enum c_oSerPermission
+	{
+		Id = 0,
+		DisplacedByCustomXml = 1,
+		ColFirst = 2,
+		ColLast = 3,
+		Ed = 4,
+		EdGroup = 5
 	};}
 	namespace c_oSerCompat{enum c_oSerCompat
 	{

@@ -39,6 +39,7 @@
 #include "../../../XlsxFormat/Chart/ChartSerializeEx.cpp"
 #include "../../../XlsxFormat/Common.cpp"
 #include "../../../XlsxFormat/FileFactory_Spreadsheet.cpp"
+#include "../../../XlsxFormat/ComplexTypes_Spreadsheet.cpp"
 #include "../../../XlsxFormat/Xlsx.cpp"
 #include "../../../XlsxFormat/XlsxFlat.cpp"
 #include "../../../XlsxFormat/FileTypes_Spreadsheet.cpp"
@@ -47,10 +48,11 @@
 #include "../../../XlsxFormat/Worksheets/ConditionalFormatting.cpp"
 #include "../../../XlsxFormat/Worksheets/DataValidation.cpp"
 #include "../../../XlsxFormat/Table/Tables.cpp"
+#include "../../../XlsxFormat/Table/Autofilter.cpp"
+#include "../../../XlsxFormat/Table/Connections.cpp"
 #include "../../../XlsxFormat/Controls/Controls.cpp"
 #include "../../../XlsxFormat/Styles/rPr.cpp"
 #include "../../../XlsxFormat/Styles/Styles.cpp"
-
 #include "../../../XlsxFormat/Styles/Borders.cpp"
 #include "../../../XlsxFormat/Styles/CellStyles.cpp"
 #include "../../../XlsxFormat/Styles/Colors.cpp"
@@ -60,8 +62,6 @@
 #include "../../../XlsxFormat/Styles/NumFmts.cpp"
 #include "../../../XlsxFormat/Styles/TableStyles.cpp"
 #include "../../../XlsxFormat/Styles/Xfs.cpp"
-
-
 #include "../../../XlsxFormat/SharedStrings/Si.cpp"
 #include "../../../XlsxFormat/SharedStrings/Text.cpp"
 #include "../../../XlsxFormat/Pivot/Pivots.cpp"

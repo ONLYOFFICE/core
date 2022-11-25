@@ -85,6 +85,8 @@ SOURCES += \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.cpp \
 	../../../XlsxFormat/Worksheets/DataValidation.cpp \
 	../../../XlsxFormat/Table/Tables.cpp \
+	../../../XlsxFormat/Table/Autofilter.cpp \
+	../../../XlsxFormat/Table/Connections.cpp \
 	../../../XlsxFormat/Controls/Controls.cpp \
 	../../../DocxFormat/Settings/Settings.cpp \
 	../../../DocxFormat/Settings/WebSettings.cpp \
@@ -110,6 +112,7 @@ SOURCES += \
 	../../../DocxFormat/IFileContainer.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../XlsxFormat/FileFactory_Spreadsheet.cpp \
+	../../../XlsxFormat/ComplexTypes_Spreadsheet.cpp \
 	../../../DocxFormat/Drawing/Drawing.cpp \
 	../../../DocxFormat/Drawing/DrawingExt.cpp \
 	../../../DocxFormat/Diagram/DiagramColors.cpp \
@@ -304,6 +307,9 @@ HEADERS += \
 	../../../XlsxFormat/Styles/Xfs.h \
 	../../../XlsxFormat/Table/Autofilter.h \
 	../../../XlsxFormat/Table/Table.h \
+	../../../XlsxFormat/Table/Autofilter.h \
+	../../../XlsxFormat/Table/Connections.h \
+	../../../XlsxFormat/Table/QueryTable.h \
 	../../../XlsxFormat/Workbook/BookViews.h \
 	../../../XlsxFormat/Workbook/CalcPr.h \
 	../../../XlsxFormat/Workbook/DefinedNames.h \

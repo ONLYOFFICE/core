@@ -876,13 +876,13 @@ namespace OOX
 	std::wstring CNumbering::toXML() const
 	{
 		std::wstring sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<w:nring \
-xmln=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmln\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
-xmln\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmln4=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmln5=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
-mc:Iable=\"w14 w15\">");
+<w:numbering \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+mc:Ignorable=\"w14 w15\">");
 
 		for (unsigned int nIndex = 0; nIndex < m_arrAbstractNum.size(); nIndex++ )
 		{

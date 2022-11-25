@@ -31,14 +31,14 @@
  */
 #pragma once
 
-#include "../Drawing/Document.h"
+#include "../../../ASCOfficePPTXFile/Editor/Drawing/Document.h"
 
-#include "../../../OOXML/Binary/Presentation/DefaultNotesMaster.h"
-#include "../../../OOXML/Binary/Presentation/DefaultNotesTheme.h"
+#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesMaster.h"
+#include "../../../ASCOfficePPTXFile/Editor/DefaultNotesTheme.h"
 
-#include "../../../OOXML/PPTXFormat/NotesMaster.h"
-#include "../../../OOXML/PPTXFormat/SlideMaster.h"
-#include "../../../OOXML/PPTXFormat/HandoutMaster.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/NotesMaster.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/SlideMaster.h"
+#include "../../../ASCOfficePPTXFile/PPTXFormat/HandoutMaster.h"
 
 #include "TableWriter.h"
 #include "../Reader/PPTDocumentInfo.h"
@@ -47,10 +47,11 @@
 #include "StylesWriter.h"
 
 #include "Converter.h"
-#include "Animation.h"
+#include "../Converter/timing.h"
+#include "../Converter/Animation/AnimationParser.h"
 #include "../Converter/transition.h"
 
-#include "../../Common/Utils/simple_xml_writer.h"
+#include "../../../ASCOfficeXlsFile2/source/Common/simple_xml_writer.h"
 
 #include "../Reader/RoundTripExtractor.h"
 #include "../../../DesktopEditor/common/Directory.h"
@@ -58,8 +59,6 @@
 
 #include <boost/uuid/detail/md5.hpp>
 #include <boost/regex.hpp>
-
-#include "../../../OOXML/SystemUtility/File.h"
 
 typedef boost::uuids::detail::md5 MD5;
 
@@ -718,7 +717,7 @@ bool CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
     // compare hash
     char* pointerToThemeElems = strstr((char*)utf8Data, "<a:themeElements>");
     UINT hashShift = pointerToThemeElems ? pointerToThemeElems - (char*)utf8Data : 0;
-	auto strHash = StreamUtils::md5(utf8Data+hashShift, utf8DataSize-hashShift);
+    auto strHash = CFile::md5(utf8Data+hashShift, utf8DataSize-hashShift);
 
     needRels = (int)std::string(utf8Data, utf8Data + utf8DataSize).find("rId") != -1;
 
@@ -1287,29 +1286,29 @@ void PPT_FORMAT::CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, con
     oStringWriter.WriteStringXML(name);
     oStringWriter.WriteString(L"\">");
 
-    oStringWriter.WriteString(L"<a:dk1><a:srgbClr val=\"" + XmlUtils::ToString(colors[14].GetLONG_RGB(), L"%06X") + L"\"/></a:dk1>");
+    oStringWriter.WriteString(L"<a:dk1><a:srgbClr val=\"" + XmlUtils::IntToString(colors[14].GetLONG_RGB(), L"%06X") + L"\"/></a:dk1>");
 
-    oStringWriter.WriteString(L"<a:lt1><a:srgbClr val=\"" + XmlUtils::ToString(colors[13].GetLONG_RGB(), L"%06X") + L"\"/></a:lt1>");
+    oStringWriter.WriteString(L"<a:lt1><a:srgbClr val=\"" + XmlUtils::IntToString(colors[13].GetLONG_RGB(), L"%06X") + L"\"/></a:lt1>");
 
-    oStringWriter.WriteString(L"<a:dk2><a:srgbClr val=\"" + XmlUtils::ToString(colors[16].GetLONG_RGB(), L"%06X") + L"\"/></a:dk2>");
+    oStringWriter.WriteString(L"<a:dk2><a:srgbClr val=\"" + XmlUtils::IntToString(colors[16].GetLONG_RGB(), L"%06X") + L"\"/></a:dk2>");
 
-    oStringWriter.WriteString(L"<a:lt2><a:srgbClr val=\"" + XmlUtils::ToString(colors[15].GetLONG_RGB(), L"%06X") + L"\"/></a:lt2>");
+    oStringWriter.WriteString(L"<a:lt2><a:srgbClr val=\"" + XmlUtils::IntToString(colors[15].GetLONG_RGB(), L"%06X") + L"\"/></a:lt2>");
 
-    oStringWriter.WriteString(L"<a:accent1><a:srgbClr val=\"" + XmlUtils::ToString(colors[5].GetLONG_RGB(), L"%06X") + L"\"/></a:accent1>");
+    oStringWriter.WriteString(L"<a:accent1><a:srgbClr val=\"" + XmlUtils::IntToString(colors[5].GetLONG_RGB(), L"%06X") + L"\"/></a:accent1>");
 
-    oStringWriter.WriteString(L"<a:accent2><a:srgbClr val=\"" + XmlUtils::ToString(colors[6].GetLONG_RGB(), L"%06X") + L"\"/></a:accent2>");
+    oStringWriter.WriteString(L"<a:accent2><a:srgbClr val=\"" + XmlUtils::IntToString(colors[6].GetLONG_RGB(), L"%06X") + L"\"/></a:accent2>");
 
-    oStringWriter.WriteString(L"<a:accent3><a:srgbClr val=\"" + XmlUtils::ToString(colors[7].GetLONG_RGB(), L"%06X") + L"\"/></a:accent3>");
+    oStringWriter.WriteString(L"<a:accent3><a:srgbClr val=\"" + XmlUtils::IntToString(colors[7].GetLONG_RGB(), L"%06X") + L"\"/></a:accent3>");
 
-    oStringWriter.WriteString(L"<a:accent4><a:srgbClr val=\"" + XmlUtils::ToString(colors[8].GetLONG_RGB(), L"%06X") + L"\"/></a:accent4>");
+    oStringWriter.WriteString(L"<a:accent4><a:srgbClr val=\"" + XmlUtils::IntToString(colors[8].GetLONG_RGB(), L"%06X") + L"\"/></a:accent4>");
 
-    oStringWriter.WriteString(L"<a:accent5><a:srgbClr val=\"" + XmlUtils::ToString(colors[9].GetLONG_RGB(), L"%06X") + L"\"/></a:accent5>");
+    oStringWriter.WriteString(L"<a:accent5><a:srgbClr val=\"" + XmlUtils::IntToString(colors[9].GetLONG_RGB(), L"%06X") + L"\"/></a:accent5>");
 
-    oStringWriter.WriteString(L"<a:accent6><a:srgbClr val=\"" + XmlUtils::ToString(colors[10].GetLONG_RGB(), L"%06X") + L"\"/></a:accent6>");
+    oStringWriter.WriteString(L"<a:accent6><a:srgbClr val=\"" + XmlUtils::IntToString(colors[10].GetLONG_RGB(), L"%06X") + L"\"/></a:accent6>");
 
-    oStringWriter.WriteString(L"<a:hlink><a:srgbClr val=\"" + XmlUtils::ToString(colors[11].GetLONG_RGB(), L"%06X") + L"\"/></a:hlink>");
+    oStringWriter.WriteString(L"<a:hlink><a:srgbClr val=\"" + XmlUtils::IntToString(colors[11].GetLONG_RGB(), L"%06X") + L"\"/></a:hlink>");
 
-    oStringWriter.WriteString(L"<a:folHlink><a:srgbClr val=\"" + XmlUtils::ToString(colors[12].GetLONG_RGB(), L"%06X") + L"\"/></a:folHlink>");
+    oStringWriter.WriteString(L"<a:folHlink><a:srgbClr val=\"" + XmlUtils::IntToString(colors[12].GetLONG_RGB(), L"%06X") + L"\"/></a:folHlink>");
 
     oStringWriter.WriteString(L"</a:clrScheme>");
     if (extra)
@@ -1534,7 +1533,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     CGroupElement *pGroupElement = !pSlide->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pSlide->m_arElements[0].get()) : NULL;
 
     size_t start_index = 0;
-    std::unordered_set<int> realShapesId;
+    std::unordered_set<int> realShapesId; // todo Wrap in context when code is restructured
 
     if (pGroupElement)
     {
@@ -1564,7 +1563,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-    WriteTiming(oWriter, oRels, realShapesId, nIndexSlide);
+    WriteTiming(oWriter, oRels, nIndexSlide, realShapesId);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
@@ -1860,42 +1859,15 @@ void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme,
 }
 
 
-void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, const std::unordered_set<int>& realShapesId, int nIndexSlide)
+void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID)
 {
-    PPTX::Logic::Timing oTiming;
-
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    // This part for new animation
-    CRecordSlideProgTagsContainer* progTag = slide_iter->second->m_pSlideProgTagsContainer;
-    CRecordPP10SlideBinaryTagExtension* pPP10SlideBinaryTag = progTag ? progTag->getPP10SlideBinaryTagExtension() : NULL;
-    // This part for old animation
-    std::vector<CRecordShapeContainer* > arrShapeCont;
-    slide_iter->second->GetRecordsByType(&arrShapeCont, true);
-    std::vector<SOldAnimation> arrOldAnim;
-    for (auto ShapeCont : arrShapeCont)
-    {
-        SOldAnimation oldAnim;
-        std::vector<CRecordShape* > shape;
-        ShapeCont->GetRecordsByType(&shape, true);
-        std::vector<CRecordAnimationInfoContainer* > anim;
-        ShapeCont->GetRecordsByType(&anim, true);
-        if (!anim.empty() && !shape.empty())
-        {
-            oldAnim.shapeId = shape[0]->m_nID;
-            oldAnim.anim = anim[0];
-            arrOldAnim.push_back(oldAnim);
-        }
-    }
-
-    if (/*!pPP10SlideBinaryTag && */arrOldAnim.empty()) // todo check condition
-        return;
-
-    Animation animation(pPP10SlideBinaryTag, arrOldAnim, &(m_pUserInfo->m_oExMedia), &oRels, realShapesId);
-
-    animation.Convert(oTiming);
-    oWriter.WriteString(oTiming.toXML());
-    //oWriter.WriteString(std::wstring(L"<p:timing><p:tnLst><p:par><p:cTn id=\"1\" dur=\"indefinite\" restart=\"never\" nodeType=\"tmRoot\" /></p:par></p:tnLst></p:timing>"));
-
+    auto intermediateSlideAnimation = PPT::Intermediate::ParseSlideAnimation(slide_iter->second);
+    intermediateSlideAnimation.realShapesIds = shapesID;
+    auto timing =
+            PPT::Converter::Timing(intermediateSlideAnimation, shapesID).
+            Convert(&(m_pUserInfo->m_oExMedia), &oRels);
+    oWriter.WriteString(timing.toXML());
 }
 
 std::vector<std::wstring> PPT_FORMAT::CPPTXWriter::GrepPaths(const std::vector<std::wstring> &paths, const std::wstring &strRegEx)

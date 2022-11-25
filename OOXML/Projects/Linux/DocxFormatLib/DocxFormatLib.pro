@@ -163,8 +163,8 @@ SOURCES += \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
 	../../../XlsxFormat/Slicer/Slicer.cpp \
-        ../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
-        ../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
+	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
+	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.cpp \
 	../../../XlsxFormat/Pivot/PivotCacheDefinitionExt.cpp \
 	../../../XlsxFormat/Workbook/Workbook.cpp \
 	../../../XlsxFormat/Workbook/BookViews.cpp \

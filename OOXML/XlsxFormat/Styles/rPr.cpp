@@ -37,7 +37,7 @@
 namespace OOX
 {
 	namespace Spreadsheet
-	{	
+	{
 		CRgbColor::CRgbColor()
 		{
 		}
@@ -363,8 +363,7 @@ namespace OOX
 		{
 		}
 
-		CColor::CColor(OOX::Document *pMain) :  WritingElement(pMain)
-		{}
+		CColor::CColor(OOX::Document *pMain) :  WritingElement(pMain){}
 		CColor::~CColor()
 		{
 		}
@@ -564,8 +563,7 @@ namespace OOX
 		{
 		}
 
-		CCharset::CCharset(OOX::Document *pMain) :  WritingElement(pMain)
-		{}
+		CCharset::CCharset(OOX::Document *pMain) :  WritingElement(pMain){}
 		CCharset::~CCharset()
 		{
 		}
@@ -593,8 +591,7 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
-		CVerticalAlign::CVerticalAlign(OOX::Document *pMain) :  WritingElement(pMain)
-		{}
+		CVerticalAlign::CVerticalAlign(OOX::Document *pMain) :  WritingElement(pMain){}
 		CVerticalAlign::~CVerticalAlign()
 		{
 		}
@@ -622,8 +619,7 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
-		CFontFamily::CFontFamily(OOX::Document *pMain) :  WritingElement(pMain)
-		{}
+		CFontFamily::CFontFamily(OOX::Document *pMain) :  WritingElement(pMain){}
 		CFontFamily::~CFontFamily()
 		{
 		}
@@ -681,8 +677,7 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
-		CUnderline::CUnderline(OOX::Document *pMain) :  WritingElement(pMain)
-		{}
+		CUnderline::CUnderline(OOX::Document *pMain) :  WritingElement(pMain){}
 		CUnderline::~CUnderline()
 		{
 		}
@@ -710,9 +705,7 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
-		CRPr::CRPr(OOX::Document *pMain) :  WritingElement(pMain)
-		{
-		}
+		CRPr::CRPr(OOX::Document *pMain) :  WritingElement(pMain){}
 		CRPr::~CRPr()
 		{
 		}
@@ -747,16 +740,19 @@ namespace OOX
 				else
 					writer.WriteString(_T("<strike val=\"false\"/>"));
 			}
-			if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
+			if(m_oCondense.IsInit())
 			{
-				if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
-				{
-					WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
-				}
+				if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
+					writer.WriteString(_T("<condense/>"));
 				else
-				{
-					writer.WriteString(L"<u/>");
-				}
+					writer.WriteString(_T("<condense val=\"false\"/>"));
+			}
+			if(m_oExtend.IsInit())
+			{
+				if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
+					writer.WriteString(_T("<extend/>"));
+				else
+					writer.WriteString(_T("<extend val=\"false\"/>"));
 			}
 			if(m_oOutline.IsInit())
 			{
@@ -772,19 +768,16 @@ namespace OOX
 				else
 					writer.WriteString(_T("<shadow val=\"false\"/>"));
 			}
-			if(m_oCondense.IsInit())
+			if(m_oUnderline.IsInit() && m_oUnderline->m_oUnderline.IsInit())
 			{
-				if(SimpleTypes::onoffTrue == m_oCondense->m_oVal.GetValue())
-					writer.WriteString(_T("<condense/>"));
+				if( SimpleTypes::underlineSingle != m_oUnderline->m_oUnderline->GetValue())
+				{
+					WritingStringValAttrString(L"u", m_oUnderline->m_oUnderline->ToString());
+				}
 				else
-					writer.WriteString(_T("<condense val=\"false\"/>"));
-			}
-			if(m_oExtend.IsInit())
-			{
-				if(SimpleTypes::onoffTrue == m_oExtend->m_oVal.GetValue())
-					writer.WriteString(_T("<extend/>"));
-				else
-					writer.WriteString(_T("<extend val=\"false\"/>"));
+				{
+					writer.WriteString(L"<u/>");
+				}
 			}
 			if(m_oVertAlign.IsInit() && m_oVertAlign->m_oVerticalAlign.IsInit())
 			{
@@ -802,7 +795,16 @@ namespace OOX
 
 			if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 			{
-				WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
+				//todo more complex solution
+				//if name more then 31 chars Excel wants to recover xlsx
+				if (m_oRFont->m_sVal->length() <= 31)
+				{
+					WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal.get());
+				}
+				else
+				{
+					WritingStringValAttrEncodeXmlString(L"rFont", m_oRFont->m_sVal->substr(0, 31));
+				}
 			}
 			if(m_oFamily.IsInit() && m_oFamily->m_oFontFamily.IsInit())
 			{
@@ -868,8 +870,8 @@ namespace OOX
 			return et_x_rPr;
 		}
 		void CRPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-	{
-	}
+		{
+		}
 		void CRPr::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
 			//LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
@@ -1259,25 +1261,25 @@ namespace OOX
 			nLen += 4 + 2 * (m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit() ? m_oRFont->m_sVal->length() : 0);
 			return nLen;
 		}
-        void CRPr::fromFont(CFont* font)
-        {
-            m_oBold           = font->m_oBold;
-            m_oCharset        = font->m_oCharset;
-            m_oColor          = font->m_oColor;
-            m_oCondense       = font->m_oCondense;
-            m_oExtend         = font->m_oExtend;
-            m_oFamily         = font->m_oFamily;
-            m_oItalic         = font->m_oItalic;
-            m_oOutline        = font->m_oOutline;
-            m_oRFont          = font->m_oRFont;
-            m_oScheme         = font->m_oScheme;
-            m_oShadow         = font->m_oShadow;
-            m_oStrike         = font->m_oStrike;
-            m_oSz             = font->m_oSz;
-            m_oUnderline      = font->m_oUnderline;
-            m_oVertAlign      = font->m_oVertAlign;
+		void CRPr::fromFont(CFont* font)
+		{
+			m_oBold           = font->m_oBold;
+			m_oCharset        = font->m_oCharset;
+			m_oColor          = font->m_oColor;
+			m_oCondense       = font->m_oCondense;
+			m_oExtend         = font->m_oExtend;
+			m_oFamily         = font->m_oFamily;
+			m_oItalic         = font->m_oItalic;
+			m_oOutline        = font->m_oOutline;
+			m_oRFont          = font->m_oRFont;
+			m_oScheme         = font->m_oScheme;
+			m_oShadow         = font->m_oShadow;
+			m_oStrike         = font->m_oStrike;
+			m_oSz             = font->m_oSz;
+			m_oUnderline      = font->m_oUnderline;
+			m_oVertAlign      = font->m_oVertAlign;
 
-        }
+		}
 
 	} //Spreadsheet
 } // OOX

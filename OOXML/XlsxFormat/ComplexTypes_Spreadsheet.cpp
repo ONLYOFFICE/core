@@ -36,7 +36,7 @@ namespace ComplexTypes
 {
 	namespace Spreadsheet
 	{
-		ComplexType::ComplexType() {};
+		ComplexType::ComplexType() {}
 		ComplexType::~ComplexType() {}
 
 		COnOff2::COnOff2()

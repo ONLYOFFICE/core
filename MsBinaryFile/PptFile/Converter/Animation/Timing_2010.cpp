@@ -1,11 +1,8 @@
 #include "Timing_2010.h"
-<<<<<<< HEAD
-#include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
-#include "../../../OOXML/PPTXFormat/Logic/Colors/SrgbClr.h"
-=======
+
 #include "../../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "../../../../OOXML/PPTXFormat/Logic/Colors/SrgbClr.h"
->>>>>>> 810f7dc592dc25e2eb685e9dda8695c84d7fd1b7
+
 #include "TimingExeption.h"
 #include "TimingUtils.h"
 

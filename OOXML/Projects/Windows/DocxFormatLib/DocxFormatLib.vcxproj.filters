@@ -773,5 +773,8 @@
     </ClCompile>
     <ClCompile Include="..\..\..\DocxFormat\VmlDrawing.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\WritingElement.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinks.cpp">
+      <Filter>XlsxFormat\ExternalLinks</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

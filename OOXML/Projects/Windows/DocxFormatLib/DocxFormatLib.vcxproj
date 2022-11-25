@@ -468,6 +468,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartSerializeEx.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Common.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Controls\Controls.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinks.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\FileFactory_Spreadsheet.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\FileTypes_Spreadsheet.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp" />

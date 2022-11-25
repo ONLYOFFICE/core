@@ -1169,19 +1169,7 @@ namespace ComplexTypes
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring ToString() const;
 
-			static const CSpacing Merge(const CSpacing& oPrev, const CSpacing& oCurrent)
-			{
-				CSpacing oProperties;
-				oProperties.m_oAfter = Merge(oPrev.m_oAfter, oCurrent.m_oAfter);
-				oProperties.m_oAfterAutospacing = Merge(oPrev.m_oAfterAutospacing, oCurrent.m_oAfterAutospacing);
-				oProperties.m_oAfterLines = Merge(oPrev.m_oAfterLines, oCurrent.m_oAfterLines);
-				oProperties.m_oBefore = Merge(oPrev.m_oBefore, oCurrent.m_oBefore);
-				oProperties.m_oBeforeAutospacing = Merge(oPrev.m_oBeforeAutospacing, oCurrent.m_oBeforeAutospacing);
-				oProperties.m_oBeforeLines = Merge(oPrev.m_oBeforeLines, oCurrent.m_oBeforeLines);
-				oProperties.m_oLine = Merge(oPrev.m_oLine, oCurrent.m_oLine);
-				oProperties.m_oLineRule = Merge(oPrev.m_oLineRule, oCurrent.m_oLineRule);
-				return oProperties;
-			}
+			static const CSpacing Merge(const CSpacing& oPrev, const CSpacing& oCurrent);
 
 			template<typename Type>
 			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)

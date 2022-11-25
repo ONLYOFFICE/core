@@ -73,6 +73,7 @@ namespace OOX
 			//Members
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 		class CSlicers : public WritingElement
 		{
 		public:
@@ -96,6 +97,7 @@ namespace OOX
 			//Members
 			std::vector<CSlicer> m_oSlicer;
 		};
+
 		class CSlicerFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
@@ -142,5 +144,6 @@ namespace OOX
 			{
 			}
 		};
+
 	} //Spreadsheet
 } // namespace OOX

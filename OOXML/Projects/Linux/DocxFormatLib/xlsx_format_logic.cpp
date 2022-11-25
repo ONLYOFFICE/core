@@ -50,6 +50,18 @@
 #include "../../../XlsxFormat/Controls/Controls.cpp"
 #include "../../../XlsxFormat/Styles/rPr.cpp"
 #include "../../../XlsxFormat/Styles/Styles.cpp"
+
+#include "../../../XlsxFormat/Styles/Borders.cpp"
+#include "../../../XlsxFormat/Styles/CellStyles.cpp"
+#include "../../../XlsxFormat/Styles/Colors.cpp"
+#include "../../../XlsxFormat/Styles/dxf.cpp"
+#include "../../../XlsxFormat/Styles/Fills.cpp"
+#include "../../../XlsxFormat/Styles/Fonts.cpp"
+#include "../../../XlsxFormat/Styles/NumFmts.cpp"
+#include "../../../XlsxFormat/Styles/TableStyles.cpp"
+#include "../../../XlsxFormat/Styles/Xfs.cpp"
+
+
 #include "../../../XlsxFormat/SharedStrings/Si.cpp"
 #include "../../../XlsxFormat/SharedStrings/Text.cpp"
 #include "../../../XlsxFormat/Pivot/Pivots.cpp"
@@ -68,3 +80,7 @@
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinkPath.cpp"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp"
 #include "../../../XlsxFormat/Ole/OleObjects.cpp"
+#include "../../../XlsxFormat/SharedStrings/PhoneticPr.cpp"
+//#include "../../../XlsxFormat/SharedStrings/rPr.cpp"
+#include "../../../XlsxFormat/SharedStrings/Run.cpp"
+#include "../../../XlsxFormat/SharedStrings/SharedStrings.cpp"

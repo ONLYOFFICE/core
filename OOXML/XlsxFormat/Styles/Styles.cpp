@@ -50,6 +50,26 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		CStyle2003::CStyle2003(OOX::Document* pMain) : WritingElement(pMain)
+		{
+		}
+		CStyle2003::~CStyle2003()
+		{
+		}
+		void CStyle2003::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CStyle2003::toXML() const
+		{
+			return L"";
+		}
+		void CStyle2003::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+		}
+		EElementType CStyle2003::getType () const
+		{
+			return et_x_Style2003;
+		}
 		void CStyle2003::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
@@ -90,7 +110,9 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_if(oReader, L"ss:Parent", m_sParentId)
 				WritingElement_ReadAttributes_End(oReader)
 		}
+
 //----------------------------------------------------------------------------------------------------------------------
+
 		CStyles::CStyles(OOX::Document* pMain) : OOX::File(pMain), OOX::IFileContainer(pMain), WritingElement(pMain)
 		{
 			m_bSpreadsheets = true;
@@ -122,7 +144,6 @@ namespace OOX
 			m_mapStyles2003.clear();
 
 		}
-
 		void CStyles::readBin(const CPath& oPath)
 		{
 			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
@@ -174,7 +195,19 @@ namespace OOX
 
 			}
 		}
-
+		void CStyles::read(const CPath& oPath)
+		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		void CStyles::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CStyles::toXML() const
+		{
+			return _T("");
+		}
 		void CStyles::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -706,6 +739,23 @@ xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\">"
 			if (false == m_oTableStyles->m_oDefaultPivotStyle.IsInit())
 				m_oTableStyles->m_oDefaultPivotStyle = _T("PivotStyleLight16");
 		}
+		const OOX::FileType CStyles::type() const
+		{
+			return OOX::Spreadsheet::FileTypes::Styles;
+		}
+		const CPath CStyles::DefaultDirectory() const
+		{
+			return type().DefaultDirectory();
+		}
+		const CPath CStyles::DefaultFileName() const
+		{
+			return type().DefaultFileName();
+		}
+		const CPath& CStyles::GetReadPath()
+		{
+			return m_oReadPath;
+		}
+
 	} //Spreadsheet
 } // namespace OOX
 

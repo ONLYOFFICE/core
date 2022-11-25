@@ -53,30 +53,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CStyle2003)
-			CStyle2003(OOX::Document* pMain) : WritingElement(pMain)
-			{
-			}
-			virtual ~CStyle2003()
-			{
-			}
+			CStyle2003(OOX::Document* pMain);
+			virtual ~CStyle2003();
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType () const
-			{
-				return et_x_Style2003;
-			}
+
+			virtual EElementType getType () const;
+
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable_string		m_sName;
 			nullable_string		m_sId;
@@ -101,20 +91,10 @@ namespace OOX
 
 			void readBin(const CPath& oPath);
 
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
+			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
@@ -122,22 +102,11 @@ namespace OOX
 			void ConvertStyle2003(CStyle2003 *style2003, bool bDefault = false);
 			void MergeStyles2003(CStyle2003 *style2003, CStyle2003 *parent);
 			void PrepareToWrite();
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::Styles;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const OOX::FileType type() const;
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+			const CPath& GetReadPath();
+
 		public:
 			CPath										m_oReadPath;
 

@@ -151,6 +151,7 @@ namespace ComplexTypes
 
 			nullable_string m_sVal;
 		};
+
 		class CDouble : public ComplexType
 		{
 		public:
@@ -199,6 +200,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CDouble > m_oVal;
 		};
+
 		class CPointMeasure : public ComplexType
 		{
 		public:
@@ -247,6 +249,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::CPointMeasure> m_oVal;
 		};
+
 		class CChartLayoutTarget : public ComplexType
 		{
 		public:
@@ -294,6 +297,7 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::Spreadsheet::CChartLayoutTarget> m_oVal;
 		};
+
 		class CChartHMode : public ComplexType
 		{
 		public:
@@ -342,6 +346,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::Spreadsheet::CChartHMode> m_oVal;
 		};
+
 		class CChartAxPos : public ComplexType
 		{
 		public:
@@ -390,6 +395,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::Spreadsheet::CChartAxPos> m_oVal;
 		};
+
 		class CChartBarGrouping : public ComplexType
 		{
 		public:
@@ -439,6 +445,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::Spreadsheet::CChartBarGrouping> m_oVal;
 		};
+
 		class CChartBarDerection : public ComplexType
 		{
 		public:
@@ -487,6 +494,7 @@ namespace ComplexTypes
 
 			nullable<SimpleTypes::Spreadsheet::CChartBarDirection> m_oVal;
 		};
+
 		class CChartSymbol : public ComplexType
 		{
 		public:
@@ -573,6 +581,7 @@ namespace ComplexTypes
 		public:
 			nullable<SimpleTypes::Spreadsheet::CRegionLabelLayout> m_oVal;
 		};
+
 		class CParentLabelLayout : public ComplexType
 		{
 		public:

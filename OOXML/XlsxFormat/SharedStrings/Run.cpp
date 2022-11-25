@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,44 +29,77 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#include "../CommonInclude.h"
 
-#include "rPr.h"
-#include "../../XlsbFormat/Biff12_unions/COLORPALETTE.h"
-#include "../../XlsbFormat/Biff12_unions/INDEXEDCOLORS.h"
-#include "../../XlsbFormat/Biff12_unions/MRUCOLORS.h"
+#include "Run.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
-		class CColors : public WritingElement
+		CRun::CRun()
 		{
-		public:
-			WritingElement_AdditionConstructors(CColors)
-            WritingElement_XlsbConstructors(CColors)
-			CColors();
-			virtual ~CColors();
+		}
+		CRun::~CRun()
+		{
+		}
+		void CRun::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CRun::toXML() const
+		{
+			return _T("");
+		}
+		void CRun::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<r>"));
+			if(m_oRPr.IsInit())
+				m_oRPr->toXML(writer);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
 
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			writer.WriteString(_T("</r>"));
+		}
+		void CRun::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
 
-			void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const;
+			if ( oReader.IsEmptyNode() )
+				return;
 
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-		public:
-			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCount;
+				if ( _T("rPr") == sName )
+					m_oRPr = oReader;
+				else if ( _T("t") == sName )
+					m_arrItems.push_back( new CText( oReader ));
+			}
+		}
+		void CRun::fromBin(std::wstring& str, unsigned short fontindex)
+		{
+			auto ptr = new CText();
+			ptr->fromBin(str);
+			m_arrItems.push_back(ptr);
 
-			nullable<CIndexedColors>	m_oIndexedColors;
-			nullable<CMruColors>		m_oMruColors;
-		};
+			m_oRPr.Init();
+			m_oRPr->m_nFontIndex.Init();
+			m_oRPr->m_nFontIndex = fontindex;
+		}
+		EElementType CRun::getType () const
+		{
+			return et_x_r;
+		}
+		void CRun::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
+
 	} //Spreadsheet
 } // namespace OOX
-

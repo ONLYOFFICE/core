@@ -136,8 +136,21 @@ SOURCES += \
 	../../../XML/XmlSimple.cpp \
 	../../../XlsxFormat/Styles/Styles.cpp \
 	../../../XlsxFormat/Styles/rPr.cpp \
+	../../../XlsxFormat/Styles/Borders.cpp \
+	../../../XlsxFormat/Styles/CellStyles.cpp \
+	../../../XlsxFormat/Styles/Colors.cpp \
+	../../../XlsxFormat/Styles/dxf.cpp \
+	../../../XlsxFormat/Styles/Fills.cpp \
+	../../../XlsxFormat/Styles/Fonts.cpp \
+	../../../XlsxFormat/Styles/NumFmts.cpp \
+	../../../XlsxFormat/Styles/TableStyles.cpp \
+	../../../XlsxFormat/Styles/Xfs.cpp \
 	../../../XlsxFormat/SharedStrings/Si.cpp \
 	../../../XlsxFormat/SharedStrings/Text.cpp \
+	../../../XlsxFormat/SharedStrings/PhoneticPr.cpp \
+	#../../../XlsxFormat/SharedStrings/rPr.cpp \
+	../../../XlsxFormat/SharedStrings/Run.cpp \
+	../../../XlsxFormat/SharedStrings/SharedStrings.cpp \
 	../../../XlsxFormat/Pivot/Pivots.cpp \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
 	../../../XlsxFormat/Slicer/SlicerCacheExt.cpp \
@@ -183,7 +196,7 @@ HEADERS += \
 	../../../Common/Wrap.h \
 	../../../Common/ZIndex.h \
 	../../../DocxFormat/Drawing/Drawing.h \
-	../../../DocxFormat/Drawing/DrawingBody.h \
+	#../../../DocxFormat/Drawing/DrawingBody.h \
 	../../../DocxFormat/Drawing/DrawingExt.h \
 	../../../DocxFormat/External/External.h \
 	../../../DocxFormat/External/HyperLink.h \
@@ -273,7 +286,7 @@ HEADERS += \
 	../../../XlsxFormat/Drawing/FromTo.h \
 	../../../XlsxFormat/Drawing/Pos.h \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.h \
-	../../../XlsxFormat/SharedStrings/rPr.h \
+	#../../../XlsxFormat/SharedStrings/rPr.h \
 	../../../XlsxFormat/SharedStrings/Run.h \
 	../../../XlsxFormat/SharedStrings/SharedStrings.h \
 	../../../XlsxFormat/SharedStrings/Si.h \

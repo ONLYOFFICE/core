@@ -742,6 +742,15 @@
     <ClInclude Include="..\..\..\PptFile\Enums\_includer.h" />
     <ClInclude Include="..\..\..\PptFile\Enums\enums.h" />
     <ClInclude Include="..\..\..\PptFile\Enums\RecordType.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListSubContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.hpp">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\ridmanager.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.cpp">
@@ -803,5 +812,8 @@
     </ClCompile>
     <ClCompile Include="..\..\..\PptFile\Main\PPTFormatLib.cpp" />
     <ClCompile Include="..\..\..\PptFile\Enums\RecordType.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ridmanager.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -260,11 +260,13 @@
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\Converter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\ImageManager.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\ridmanager.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\StylesWriter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\TableWriter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.h" />
     <ClInclude Include="..\..\..\PptFile\Reader\ClassesAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.hpp" />
     <ClInclude Include="..\..\..\PptFile\Reader\PPTDocumentInfo.h" />
     <ClInclude Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.h" />
     <ClInclude Include="..\..\..\PptFile\Reader\PPTFileDefines.h" />
@@ -279,6 +281,7 @@
     <ClInclude Include="..\..\..\PptFile\Records\Animations\AnimationInfoContainer.h" />
     <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildAtom.h" />
     <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListSubContainer.h" />
     <ClInclude Include="..\..\..\PptFile\Records\Animations\ChartBuildAtom.h" />
     <ClInclude Include="..\..\..\PptFile\Records\Animations\ChartBuildContainer.h" />
     <ClInclude Include="..\..\..\PptFile\Records\Animations\ClientVisualElementContainer.h" />
@@ -484,6 +487,7 @@
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\Animation.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\Converter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ridmanager.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\TableWriter.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.cpp" />

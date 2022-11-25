@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../../PPTXWriter/ImageManager.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Timing.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Par.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Seq.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/Seq.h"
 #include "intermediate_anim.h"
 
 

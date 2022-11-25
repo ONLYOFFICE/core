@@ -1,9 +1,9 @@
 #pragma once
 
 #include "intermediate_anim.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/ChildTnLst.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/Anim.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/AnimEffect.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/ChildTnLst.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/Anim.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/AnimEffect.h"
 
 
 namespace PPT {

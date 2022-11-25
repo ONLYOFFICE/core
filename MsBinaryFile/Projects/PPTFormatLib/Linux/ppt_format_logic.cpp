@@ -31,8 +31,6 @@
  */
 
 #include "../../../PptFile/Enums/RecordType.cpp"
-#include "../../../PptFile/Enums/RecordType.cpp"
-#include "../../../PptFile/Enums/RecordType.cpp"
 #include "../../../PptFile/Reader/ReadStructures.cpp"
 #include "../../../PptFile/Reader/RoundTripExtractor.cpp"
 #include "../../../PptFile/Reader/PPTDocumentInfoOneUser.cpp"
@@ -58,4 +56,4 @@
 #include "../../../PptFile/Converter/Animation/intermediate_anim.cpp"
 #include "../../../PptFile/Converter/timing.cpp"
 #include "../../../PptFile/Converter/transition.cpp"
-#include "../../../PptFile/PPTXWriter/BulletsConverter.cpp
+#include "../../../PptFile/PPTXWriter/BulletsConverter.cpp"

@@ -180,6 +180,9 @@ namespace OOX
 		{
 			return et_x_Dxf;
 		}
+		void CDxf::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+		}
 
 		CDxfs::CDxfs()
 		{
@@ -281,9 +284,9 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void CDxfs::ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj)
-			{
-				m_oCount = (_UINT32)obj.size();
-			}
+		{
+			m_oCount = (_UINT32)obj.size();
+		}
 
 	} //Spreadsheet
 } // namespace OOX

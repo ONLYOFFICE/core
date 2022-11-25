@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/CTn.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/CTn.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
 
 namespace PPT {

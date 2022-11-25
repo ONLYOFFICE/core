@@ -1,6 +1,6 @@
 #include "Timing_2010.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SchemeClr.h"
-#include "../../../ASCOfficePPTXFile/PPTXFormat/Logic/Colors/SrgbClr.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Colors/SrgbClr.h"
 #include "TimingExeption.h"
 #include "TimingUtils.h"
 

@@ -1,9 +1,9 @@
 #include "Timing_1995.h"
 #include "Animation_1995.h"
 #include "../../Records/Animations/BuildListContainer.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldLst.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldP.h"
-#include "../../../../ASCOfficePPTXFile/PPTXFormat/Logic/Timing/BldOleChart.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/BldLst.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/BldP.h"
+#include "../../../../OOXML/PPTXFormat/Logic/Timing/BldOleChart.h"
 #include "../../Records/Animations/BuildListContainer.h"
 #include <algorithm>
 

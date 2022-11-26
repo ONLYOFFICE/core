@@ -85,7 +85,6 @@
 #include "../../../DocxFormat/Settings/WebSettings.cpp"
 #include "../../../DocxFormat/FileFactory.cpp"
 #include "../../../DocxFormat/FileTypes.cpp"
-#include "../../../DocxFormat/Namespaces.cpp"
 #include "../../../DocxFormat/Numbering.cpp"
 #include "../../../DocxFormat/Rels.cpp"
 #include "../../../DocxFormat/RId.cpp"

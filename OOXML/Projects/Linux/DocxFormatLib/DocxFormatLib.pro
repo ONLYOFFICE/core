@@ -108,7 +108,6 @@ SOURCES += \
 	../../../DocxFormat/FtnEdn.cpp \
 	../../../DocxFormat/FileFactory.cpp \
 	../../../DocxFormat/FileTypes.cpp \
-	../../../DocxFormat/Namespaces.cpp \
 	../../../DocxFormat/Numbering.cpp \
 	../../../DocxFormat/Rels.cpp \
 	../../../DocxFormat/RId.cpp \

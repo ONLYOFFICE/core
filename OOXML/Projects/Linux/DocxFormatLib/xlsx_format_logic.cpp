@@ -92,6 +92,5 @@
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp"
 #include "../../../XlsxFormat/Ole/OleObjects.cpp"
 #include "../../../XlsxFormat/SharedStrings/PhoneticPr.cpp"
-//#include "../../../XlsxFormat/SharedStrings/rPr.cpp"
 #include "../../../XlsxFormat/SharedStrings/Run.cpp"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.cpp"

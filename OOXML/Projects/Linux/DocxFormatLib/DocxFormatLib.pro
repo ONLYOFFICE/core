@@ -69,6 +69,7 @@ SOURCES += \
 	../../../DocxFormat/Comments.cpp \
 	../../../DocxFormat/Document.cpp \
 	../../../DocxFormat/VmlDrawing.cpp \
+	../../../DocxFormat/Namespaces.cpp \
 	../../../XlsxFormat/CalcChain/CalcChain.cpp \
 	../../../XlsxFormat/Chart/Chart.cpp \
 	../../../XlsxFormat/Chart/ChartColors.cpp \
@@ -155,7 +156,6 @@ SOURCES += \
 	../../../XlsxFormat/SharedStrings/Si.cpp \
 	../../../XlsxFormat/SharedStrings/Text.cpp \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.cpp \
-	#../../../XlsxFormat/SharedStrings/rPr.cpp \
 	../../../XlsxFormat/SharedStrings/Run.cpp \
 	../../../XlsxFormat/SharedStrings/SharedStrings.cpp \
 	../../../XlsxFormat/Pivot/Pivots.cpp \
@@ -210,7 +210,6 @@ HEADERS += \
 	../../../Common/Wrap.h \
 	../../../Common/ZIndex.h \
 	../../../DocxFormat/Drawing/Drawing.h \
-	#../../../DocxFormat/Drawing/DrawingBody.h \
 	../../../DocxFormat/Drawing/DrawingExt.h \
 	../../../DocxFormat/External/External.h \
 	../../../DocxFormat/External/HyperLink.h \
@@ -300,7 +299,6 @@ HEADERS += \
 	../../../XlsxFormat/Drawing/FromTo.h \
 	../../../XlsxFormat/Drawing/Pos.h \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.h \
-	#../../../XlsxFormat/SharedStrings/rPr.h \
 	../../../XlsxFormat/SharedStrings/Run.h \
 	../../../XlsxFormat/SharedStrings/SharedStrings.h \
 	../../../XlsxFormat/SharedStrings/Si.h \

@@ -70,6 +70,7 @@
 #include "../../../DocxFormat/Document.cpp"
 #include "../../../DocxFormat/Comments.cpp"
 #include "../../../DocxFormat/VmlDrawing.cpp"
+#include "../../../DocxFormat/Namespaces.cpp"
 #include "../../../DocxFormat/App.cpp"
 #include "../../../DocxFormat/Core.cpp"
 #include "../../../DocxFormat/Bibliography.cpp"

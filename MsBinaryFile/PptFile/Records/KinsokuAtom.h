@@ -35,21 +35,8 @@
 class CRecordKinsokuAtom : public CUnknownRecord
 {
 public:
-	_UINT32 m_nLevel;
-	
-	CRecordKinsokuAtom()
-	{
-	}
+    _UINT32 m_nLevel = 0;
 
-	~CRecordKinsokuAtom()
-	{
-	}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nLevel = StreamUtils::ReadDWORD(pStream);
-	}
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };

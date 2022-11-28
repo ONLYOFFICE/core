@@ -34,23 +34,10 @@
 
 class CRecordGuideAtom : public CUnknownRecord
 {
+public:
 	_UINT32 m_nType;
 	_UINT32 m_nPos;
 
-public:
-	
-	CRecordGuideAtom()
-	{
-	}
 
-	~CRecordGuideAtom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		m_nType = StreamUtils::ReadDWORD(pStream);
-		m_nPos = StreamUtils::ReadDWORD(pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };

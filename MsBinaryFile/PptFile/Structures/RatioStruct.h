@@ -42,10 +42,7 @@ struct RatioStruct : public IStruct
     LONG m_nNumber;
     LONG m_nDenom;
 
-    void ReadFromStream(POLE::Stream* pStream) override
-    {
-        m_nNumber	= StreamUtils::ReadLONG(pStream);
-        m_nDenom	= StreamUtils::ReadLONG(pStream);
-    }
+
+    void ReadFromStream(POLE::Stream* pStream) override;
 };
 }

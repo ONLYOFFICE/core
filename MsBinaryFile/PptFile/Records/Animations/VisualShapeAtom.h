@@ -42,19 +42,8 @@ class CRecordVisualShapeAtom : public CUnknownRecord
 {
 public:
     // Привязка анимации через этот объект к ID объекту
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        m_Type				=	(TimeVisualElementEnum) StreamUtils::ReadDWORD ( pStream );
-        m_RefType			=	(ElementTypeEnum) StreamUtils::ReadDWORD ( pStream );
-        m_nObjectIdRef                  =	StreamUtils::ReadDWORD ( pStream );
-        m_nData1			=	StreamUtils::ReadDWORD ( pStream );
-        m_nData2			=	StreamUtils::ReadDWORD ( pStream );
-    }
-
-public:
 
     TimeVisualElementEnum	m_Type;
     ElementTypeEnum			m_RefType;

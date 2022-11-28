@@ -34,22 +34,9 @@
 
 class CRecordExControlAtom : public CUnknownRecord
 {
-	UINT m_nSlideIdRef;
-
 public:
-	
-	CRecordExControlAtom()
-	{
-	}
+    UINT m_nSlideIdRef = 0;
 
-	~CRecordExControlAtom()
-	{
-	}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		
-		m_nSlideIdRef = StreamUtils::ReadDWORD(pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };

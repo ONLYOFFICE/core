@@ -43,10 +43,6 @@ struct STextMasterStyle9Level
     STextCFException9 m_cf9;
 
 
-    void ReadFromStream(POLE::Stream* pStream)
-    {
-        m_pf9.ReadFromStream(pStream);
-        m_cf9.ReadFromStream(pStream);
-    }
+    void ReadFromStream(POLE::Stream* pStream);
 };
 }

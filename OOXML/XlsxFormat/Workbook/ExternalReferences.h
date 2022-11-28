@@ -46,24 +46,68 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CExternalReference)
 			WritingElement_XlsbConstructors(CExternalReference)
-			CExternalReference();
-			virtual ~CExternalReference();
+			CExternalReference()
+			{
+			}
+			virtual ~CExternalReference()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return (L"");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				writer.WriteString((L"<externalReference"));
+				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
+				writer.WriteString((L"/>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+				if ( !oReader.IsEmptyNode() )
+					oReader.ReadTillEnd();
+			}
 
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
 
-			virtual void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const;
+			virtual EElementType getType () const
+			{
+				return et_x_ExternalReference;
+			}
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes(XLS::BaseObjectPtr& obj);
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				WritingElement_ReadAttributes_Start_No_NS( oReader )
+					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oRid )
+				WritingElement_ReadAttributes_End_No_NS( oReader )
+			}
+
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::SUP*>(obj.get());
+				if (ptr != nullptr && ptr->m_source != nullptr)
+				{
+					if (ptr->m_source->get_type() == XLS::typeSupBookSrc)
+					{
+						if (!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
+							m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
+					}
+				}
+			}
 
 		public:
-			nullable<SimpleTypes::CRelationshipId>				m_oRid;
+				nullable<SimpleTypes::CRelationshipId> m_oRid;
+
 		};
 
 		class CExternalReferences  : public WritingElementWithChilds<CExternalReference>
@@ -71,22 +115,76 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CExternalReferences)
 			WritingElement_XlsbVectorConstructors(CExternalReferences)
-			CExternalReferences();
-			virtual ~CExternalReferences();
+			CExternalReferences()
+			{
+			}                        
+			virtual ~CExternalReferences()
+			{
+			}
+			virtual void fromXML(XmlUtils::CXmlNode& node)
+			{
+			}
+			virtual std::wstring toXML() const
+			{
+				return (L"");
+			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
+			{
+				if (m_arrItems.empty()) return;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+				writer.WriteString((L"<externalReferences>"));
+				
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
 
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+				writer.WriteString((L"</externalReferences>"));
+			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
+			{
+				ReadAttributes( oReader );
 
-			virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
-			virtual EElementType getType () const;
+				if ( oReader.IsEmptyNode() )
+					return;
 
+				int nCurDepth = oReader.GetDepth();
+				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				{
+					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+					if ( (L"externalReference") == sName )
+						m_arrItems.push_back( new CExternalReference( oReader ));
+
+				}
+			}
+
+			virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				//ReadAttributes(obj);
+
+				if (obj.empty())
+					return;
+
+				for (auto &externalReference : obj)
+				{
+					m_arrItems.push_back(new CExternalReference(externalReference));
+				}
+			}
+
+			virtual EElementType getType () const
+			{
+				return et_x_ExternalReferences;
+			}
+		
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+			}
 		};
-
 	} //ExternalReference
 } // namespace OOX
 

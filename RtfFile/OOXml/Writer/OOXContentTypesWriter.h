@@ -58,7 +58,7 @@ public:
 	{
 		NSFile::CFileBinary file;
 
-        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
+        if (false == file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml"))) return false;
 
          std::wstring sXml = CreateXml();
 

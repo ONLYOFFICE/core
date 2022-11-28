@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../../Format/IdGenerator.h"
+#include "../../OOXml/Writer/OOXWriter.h"
 
 class OOXStylesWriter
 {
@@ -57,7 +58,7 @@ public:
 		//if( false == m_sFileXml.empty() ) 
 		{		
 			NSFile::CFileBinary file;
-			if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + L"styles.xml")) return false;
+			if (false == file.CreateFile(pathWord + FILE_SEPARATOR_STR + L"styles.xml")) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" );
 			m_oWriter.m_oContentTypes.AddContent( L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml", L"/word/styles.xml" );

@@ -2676,7 +2676,7 @@ int BinaryWorkbookTableReader::ReadWorkbookPr(BYTE type, long length, void* poRe
 int BinaryWorkbookTableReader::ReadBookViews(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::WorkbookView == type)
+	if (c_oSerWorkbookTypes::WorkbookView == type)
 	{
 		OOX::Spreadsheet::CWorkbookView* pWorkbookView = new OOX::Spreadsheet::CWorkbookView();
 		READ2_DEF_SPREADSHEET(length, res, this->ReadWorkbookView, pWorkbookView);
@@ -2699,64 +2699,55 @@ int BinaryWorkbookTableReader::ReadWorkbookView(BYTE type, long length, void* po
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryWorkbookTableReader::ReadExternalReference(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+
+	OOX::Spreadsheet::CExternalLink *externalLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
+	
+	if (c_oSerWorkbookTypes::ExternalBook == type)
+	{
+		externalLink->m_oExternalBook.Init();
+		READ1_DEF(length, res, this->ReadExternalBook, externalLink);
+	}
+	else if (c_oSerWorkbookTypes::OleLink == type)
+	{
+		externalLink->m_oOleLink.Init();
+		READ1_DEF(length, res, this->ReadOleLink, externalLink);
+	}
+	else if (c_oSerWorkbookTypes::DdeLink == type)
+	{
+		externalLink->m_oDdeLink.Init();
+		READ1_DEF(length, res, this->ReadDdeLink, externalLink->m_oDdeLink.GetPointer());
+	}
+	else if (c_oSerWorkbookTypes::ExternalFileId == type)
+	{
+		externalLink->m_oFileId = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSerWorkbookTypes::ExternalPortalName == type)
+	{
+		externalLink->m_oPortalName = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryWorkbookTableReader::ReadExternalReferences(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if(c_oSerWorkbookTypes::ExternalBook == type)
+	if (c_oSerWorkbookTypes::ExternalReference == type)
 	{
 		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		extLink->m_oExternalBook.Init();
-		READ1_DEF(length, res, this->ReadExternalBook, extLink);
-		if (extLink->m_oExternalBook->m_oRid.IsInit())
-		{
-			OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
-
-			smart_ptr<OOX::File> oCurFile(extLink);
-			const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
-
-			pExternalReference->m_oRid.Init();
-			pExternalReference->m_oRid->SetValue(oRId.get());
-
-
-			m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
-		}
-		else
-		{
-			RELEASEOBJECT(extLink)
-		}
-	}
-	else if(c_oSerWorkbookTypes::OleLink == type)
-	{
-		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		extLink->m_oOleLink.Init();
-		READ1_DEF(length, res, this->ReadOleLink, extLink);
-		if (extLink->m_oOleLink->m_oRid.IsInit())
-		{
-			smart_ptr<OOX::File> oCurFile(extLink);
-			const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
-
-			OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
-			pExternalReference->m_oRid.Init();
-			pExternalReference->m_oRid->SetValue(oRId.get());
-			m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
-		}
-		else
-		{
-			RELEASEOBJECT(extLink)
-		}
-	}
-	else if(c_oSerWorkbookTypes::DdeLink == type)
-	{
-		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		extLink->m_oDdeLink.Init();
-		READ1_DEF(length, res, this->ReadDdeLink, extLink->m_oDdeLink.GetPointer());
+		READ2_DEF_SPREADSHEET(length, res, this->ReadExternalReference, extLink);
 
 		smart_ptr<OOX::File> oCurFile(extLink);
 		const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
 
 		OOX::Spreadsheet::CExternalReference* pExternalReference = new OOX::Spreadsheet::CExternalReference();
+
 		pExternalReference->m_oRid.Init();
 		pExternalReference->m_oRid->SetValue(oRId.get());
+		
 		m_oWorkbook.m_oExternalReferences->m_arrItems.push_back(pExternalReference);
 	}
 	else
@@ -2880,6 +2871,7 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 {
 	OOX::Spreadsheet::CExternalLink* extLink = static_cast<OOX::Spreadsheet::CExternalLink*>(poResult);
 	OOX::Spreadsheet::CExternalBook* pExternalBook = extLink->m_oExternalBook.GetPointer();
+	
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_ExternalLinkTypes::Id == type)
 	{
@@ -3108,6 +3100,7 @@ int BinaryWorkbookTableReader::ReadOleItem(BYTE type, long length, void* poResul
 int BinaryWorkbookTableReader::ReadDdeLink(BYTE type, long length, void* poResult)
 {
 	OOX::Spreadsheet::CDdeLink* ddeLink = static_cast<OOX::Spreadsheet::CDdeLink*>(poResult);
+	
 	int res = c_oSerConstants::ReadOk;
 	if(c_oSer_DdeLinkTypes::DdeService == type)
 	{

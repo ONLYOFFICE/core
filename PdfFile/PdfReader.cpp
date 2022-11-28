@@ -287,7 +287,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
         sRes += L"\"";\
         sRes += wsName;\
         sRes += L"\":\"";\
-        sRes += sValue.empty() ? L" " : sValue;\
+        sRes += sValue;\
         sRes += L"\",";\
     }\
 }\

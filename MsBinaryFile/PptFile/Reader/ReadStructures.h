@@ -191,98 +191,21 @@ private:
 	LONG m_lMetaFileSize;
 
 public:
-	CMetaFileBuffer()
-	{
-		m_bIsCompressed		= false;
-        m_bIsValid			= false;
+    CMetaFileBuffer();
+    ~CMetaFileBuffer();
 
-		m_pMetaHeader		= NULL;
-		m_pMetaFile			= NULL;
+    void SetHeader(BYTE* pHeader, LONG lSize);
 
-		m_lMetaHeaderSize	= 0;
-		m_lMetaFileSize		= 0;
-	}
-	~CMetaFileBuffer()
-	{
-		RELEASEARRAYOBJECTS(m_pMetaHeader);
-		RELEASEARRAYOBJECTS(m_pMetaFile);
+    void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed);
 
-		if (m_bIsCompressed)
-			RELEASEARRAYOBJECTS(m_pMetaFile);
-		m_bIsCompressed = false;
-	}
-
-	void SetHeader(BYTE* pHeader, LONG lSize)
-	{
-		m_pMetaHeader		= pHeader;
-		m_lMetaHeaderSize	= lSize;
-	}
-
-    void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
-	{
-		m_bIsCompressed = bIsCompressed;
-		if (!m_bIsCompressed)
-		{
-			m_pMetaFile		= pCompress;
-			m_lMetaFileSize = lUncompressSize;
-		}
-		else
-		{
-			ULONG lSize = lUncompressSize;
-			m_pMetaFile = new BYTE[lUncompressSize];
-            bool bRes	= NSZip::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
-			if (bRes)
-			{
-				m_lMetaFileSize = (LONG)lSize;
-				m_bIsCompressed = true;
-			}
-			else
-			{
-				RELEASEARRAYOBJECTS(m_pMetaFile);
-			
-				m_pMetaFile		= pCompress;
-				m_lMetaFileSize = lUncompressSize;
-				m_bIsCompressed = false;
-			}
-		}
-	}
-
-	void ToFile(NSFile::CFileBinary* pFile)
-	{
-		if (NULL != m_pMetaHeader)
-		{
-			pFile->WriteFile(m_pMetaHeader, m_lMetaHeaderSize);
-		}
-		if (NULL != m_pMetaFile)
-		{
-			pFile->WriteFile(m_pMetaFile, m_lMetaFileSize);
-		}
-	}
+    void ToFile(NSFile::CFileBinary* pFile);
 };
 
 namespace NSStreamReader
 {
-	static inline void Read(POLE::Stream* pStream, SPointAtom& oAtom)
-	{
-		oAtom.X = StreamUtils::ReadLONG(pStream);
-		oAtom.Y = StreamUtils::ReadLONG(pStream);
-	}
+    static void Read(POLE::Stream* pStream, SPointAtom& oAtom);
 
-	static inline void Read(POLE::Stream* pStream, SColorAtom& oAtom)
-	{
-		oAtom.R				= StreamUtils::ReadBYTE(pStream);
-		oAtom.G				= StreamUtils::ReadBYTE(pStream);
-		oAtom.B				= StreamUtils::ReadBYTE(pStream);
-		oAtom.Index			= StreamUtils::ReadBYTE(pStream);
-
-		oAtom.bPaletteIndex	= oAtom.bPaletteRGB = oAtom.bSystemRGB	= oAtom.bSysIndex = oAtom.bSchemeIndex = false;
-
-		if (oAtom.Index != 0xFF)
-		{
-			oAtom.bPaletteRGB	= (oAtom.Index == 0xFE);
-			oAtom.bSchemeIndex	= (oAtom.Index != 0xFE);
-		}
-	}
+    static void Read(POLE::Stream* pStream, SColorAtom& oAtom);
 	
 	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
 	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);
@@ -295,22 +218,9 @@ public:
 	LONG					m_lLevel;
 	LONG					m_lCount;
 
-	CTextPFRunRecord() : m_oRun()
-	{
-		m_lLevel = -1;
-		m_lCount = 0;
-	}
-	CTextPFRunRecord(const CTextPFRunRecord& oSrc)
-	{
-		*this = oSrc;
-	}
-	CTextPFRunRecord& operator=(const CTextPFRunRecord& oSrc)
-	{
-		m_oRun		= oSrc.m_oRun;
-		m_lLevel	= oSrc.m_lLevel;
-		m_lCount	= oSrc.m_lCount;
-		return *this;
-	}
+    CTextPFRunRecord();
+    CTextPFRunRecord(const CTextPFRunRecord& oSrc);
+    CTextPFRunRecord& operator=(const CTextPFRunRecord& oSrc);
 
 	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
 };
@@ -321,20 +231,9 @@ public:
 	PPT_FORMAT::CTextCFRun	m_oRun;
 	LONG					m_lCount;
 
-	CTextCFRunRecord() : m_oRun()
-	{
-		m_lCount = 0;
-	}
-	CTextCFRunRecord(const CTextCFRunRecord& oSrc)
-	{
-		*this = oSrc;
-	}
-	CTextCFRunRecord& operator=(const CTextCFRunRecord& oSrc)
-	{
-		m_oRun		= oSrc.m_oRun;
-		m_lCount	= oSrc.m_lCount;
-		return *this;
-	}
+    CTextCFRunRecord();
+    CTextCFRunRecord(const CTextCFRunRecord& oSrc);
+    CTextCFRunRecord& operator=(const CTextCFRunRecord& oSrc);
 
 	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
 };

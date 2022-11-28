@@ -45,7 +45,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalReference)
-                        WritingElement_XlsbConstructors(CExternalReference)
+			WritingElement_XlsbConstructors(CExternalReference)
 			CExternalReference()
 			{
 			}
@@ -73,10 +73,10 @@ namespace OOX
 					oReader.ReadTillEnd();
 			}
 
-                        virtual void fromBin(XLS::BaseObjectPtr& obj)
-                        {
-                            ReadAttributes(obj);
-                        }
+			virtual void fromBin(XLS::BaseObjectPtr& obj)
+			{
+				ReadAttributes(obj);
+			}
 
 			virtual EElementType getType () const
 			{
@@ -92,21 +92,21 @@ namespace OOX
 				WritingElement_ReadAttributes_End_No_NS( oReader )
 			}
 
-                        void ReadAttributes(XLS::BaseObjectPtr& obj)
-                        {
-                            auto ptr = static_cast<XLSB::SUP*>(obj.get());
-                            if(ptr != nullptr && ptr->m_source != nullptr)
-                            {
-                                if(ptr->m_source->get_type() == XLS::typeSupBookSrc)
-                                {
-                                    if(!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
-                                        m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
-                                }
-                            }
-                        }
+			void ReadAttributes(XLS::BaseObjectPtr& obj)
+			{
+				auto ptr = static_cast<XLSB::SUP*>(obj.get());
+				if (ptr != nullptr && ptr->m_source != nullptr)
+				{
+					if (ptr->m_source->get_type() == XLS::typeSupBookSrc)
+					{
+						if (!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
+							m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
+					}
+				}
+			}
 
 		public:
-				nullable<SimpleTypes::CRelationshipId>				m_oRid;
+				nullable<SimpleTypes::CRelationshipId> m_oRid;
 
 		};
 
@@ -114,7 +114,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CExternalReferences)
-                        WritingElement_XlsbVectorConstructors(CExternalReferences)
+			WritingElement_XlsbVectorConstructors(CExternalReferences)
 			CExternalReferences()
 			{
 			}                        
@@ -134,14 +134,14 @@ namespace OOX
 
 				writer.WriteString((L"<externalReferences>"));
 				
-                                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                                {
-                                    if (  m_arrItems[i] )
-                                    {
-                                        m_arrItems[i]->toXML(writer);
-                                    }
-                                }
-				
+				for (size_t i = 0; i < m_arrItems.size(); ++i)
+				{
+					if (m_arrItems[i])
+					{
+						m_arrItems[i]->toXML(writer);
+					}
+				}
+
 				writer.WriteString((L"</externalReferences>"));
 			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -162,18 +162,18 @@ namespace OOX
 				}
 			}
 
-                        virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-                        {
-                            //ReadAttributes(obj);
+			virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
+			{
+				//ReadAttributes(obj);
 
-                            if (obj.empty())
-                                return;
+				if (obj.empty())
+					return;
 
-                            for(auto &externalReference : obj)
-                            {
-                                m_arrItems.push_back(new CExternalReference(externalReference));
-                            }
-                        }
+				for (auto &externalReference : obj)
+				{
+					m_arrItems.push_back(new CExternalReference(externalReference));
+				}
+			}
 
 			virtual EElementType getType () const
 			{

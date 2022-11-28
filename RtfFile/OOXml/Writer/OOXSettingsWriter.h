@@ -64,7 +64,7 @@ public:
 	{
         std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 
-		if( false == m_sFileXml.empty() )
+		if ( false == m_sFileXml.empty() )
 		{
 			//генерируем свою xml
 			 std::wstring sXml = CreateXml();
@@ -87,7 +87,7 @@ public:
 			//}
 
 			NSFile::CFileBinary file;
-            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("settings.xml"))) return false;
+            if (false == file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("settings.xml"))) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings"), _T("settings.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"), _T("/word/settings.xml") );

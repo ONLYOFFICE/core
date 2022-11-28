@@ -54,7 +54,7 @@ public:
 		if( false == m_sFileXml.empty() )
 		{
 			NSFile::CFileBinary file;
-            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
+            if (false == file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"), _T("/word/fontTable.xml") );

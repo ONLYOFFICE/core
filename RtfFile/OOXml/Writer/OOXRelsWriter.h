@@ -96,7 +96,7 @@ public:
         NSDirectory::CreateDirectory(pathRels) ;
 
 		NSFile::CFileBinary file;
-        if (file.CreateFile(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
+        if (false == file.CreateFile(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
 
         std::wstring sXml = CreateXml();
 

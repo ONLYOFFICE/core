@@ -518,74 +518,7 @@ namespace OOX
 				}
 			}
 		}
-		void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
-	{
-		ReadAttributes( oReader );
-
-		if ( oReader.IsEmptyNode() )
-			return;
-
-		int nCurDepth = oReader.GetDepth();
-		while (oReader.ReadNextSiblingNode(nCurDepth))
-		{
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if (L"formula1" == sName)
-			{
-				m_oFormula1 = oReader;
-			}
-			else if (L"formula2" == sName)
-			{
-				m_oFormula2 = oReader;
-			}
-			else if (L"sqref" == sName)
-			{
-				m_oSqRef = oReader.GetText2();
-			}
-	//--------------------------------------------------- xml spreadsheet 2002
-			else if (L"Range" == sName)
-			{
-				r1c1_formula_convert::base_row = 1;
-				r1c1_formula_convert::base_col = 1;
-
-				r1c1_formula_convert convert;
-
-				m_oSqRef = convert.convert(oReader.GetText2());
-			}
-			else if (L"Type" == sName)
-			{
-				m_oType = oReader.GetText2();
-
-				m_oAllowBlank.Init();
-				m_oAllowBlank->FromBool(true);
-
-				m_oShowInputMessage.Init();
-				m_oShowInputMessage->FromBool(true);
-			}
-			else if (L"Value" == sName)
-			{
-				r1c1_formula_convert::base_row = 1;
-				r1c1_formula_convert::base_col = 1;
-
-				r1c1_formula_convert convert;
-
-				m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
-				m_oFormula1->m_sText = convert.convert(oReader.GetText3());
-
-				//if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
-				//{
-				//	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-				//	if (xlsx_flat)
-				//	{
-				//		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
-				//		if (pSheet->m_oName.IsInit())
-				//		{
-				//			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
-				//		}
-				//	}
-				//}
-			}
-		}
-	}
-
+        // void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
+        //->sheetData
 	} //Spreadsheet
 } // namespace OOX

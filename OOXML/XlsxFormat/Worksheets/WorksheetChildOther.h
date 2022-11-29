@@ -32,35 +32,7 @@
 #pragma once
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/WsDim.h"
-#include "../../XlsbFormat/Biff12_records/WsFmtInfo.h"
-#include "../../XlsbFormat/Biff12_unions/WSVIEWS2.h"
-#include "../../XlsbFormat/Biff12_unions/WSVIEW2.h"
-#include "../../XlsbFormat/Biff12_unions/HEADERFOOTER.h"
-#include "../../XlsbFormat/Biff12_records/BeginHeaderFooter.h"
-#include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
-#include "../../XlsbFormat/Biff12_records/SheetProtection.h"
-#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
-#include "../../XlsbFormat/Biff12_records/Margins.h"
-#include "../../XlsbFormat/Biff12_records/PrintOptions.h"
-#include "../../XlsbFormat/Biff12_records/WsProp.h"
-#include "../../XlsbFormat/Biff12_records/BkHim.h"
-#include "../../XlsbFormat/Biff12_unions/RWBRK.h"
-#include "../../XlsbFormat/Biff12_unions/COLBRK.h"
-#include "../../XlsbFormat/Biff12_records/BeginRwBrk.h"
-#include "../../XlsbFormat/Biff12_records/BeginColBrk.h"
-#include "../../XlsbFormat/Biff12_records/Brk.h"
-#include "../../XlsbFormat/Biff12_records/RangeProtectionIso.h"
-#include "../../XlsbFormat/Biff12_records/RangeProtection.h"
-#include "../../XlsbFormat/Biff12_unions/DCON.h"
-#include "../../XlsbFormat/Biff12_records/BeginDCon.h"
-#include "../../XlsbFormat/Biff12_unions/DREFS.h"
-#include "../../XlsbFormat/Biff12_records/DRef.h"
-#include "../../XlsbFormat/Biff12_unions/CSVIEWS.h"
-#include "../../XlsbFormat/Biff12_unions/CSVIEW.h"
-#include "../../XlsbFormat/Biff12_records/CsProp.h"
-#include "../../XlsbFormat/Biff12_records/CsProtectionIso.h"
-#include "../../XlsbFormat/Biff12_records/CsProtection.h"
+#include "../Styles/rPr.h"
 
 namespace OOX
 {
@@ -501,7 +473,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<CColor>					m_oTabColor;
+            nullable<Spreadsheet::CColor>		m_oTabColor;
 			nullable<CPageSetUpPr>				m_oPageSetUpPr;
 			nullable<COutlinePr>				m_oOutlinePr;
 

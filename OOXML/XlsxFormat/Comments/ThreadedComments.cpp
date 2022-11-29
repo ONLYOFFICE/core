@@ -31,6 +31,8 @@
  */
 
 #include "ThreadedComments.h"
+#include "../Xlsx.h"
+#include "../Worksheets/Worksheet.h"
 
 namespace OOX
 {

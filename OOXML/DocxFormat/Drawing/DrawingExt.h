@@ -33,6 +33,7 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
+#include "../RId.h"
 
 namespace OOX
 {

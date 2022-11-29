@@ -31,6 +31,8 @@
  */
 
 #include "Numbering.h"
+#include "Docx.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 namespace ComplexTypes
 {
@@ -826,7 +828,7 @@ namespace OOX
 	void CNumbering::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		std::wstring sXml = toXML();
-		CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+        NSFile::CFileBinary::SaveToFile( oFilePath.GetPath(), sXml );
 
 		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 	}

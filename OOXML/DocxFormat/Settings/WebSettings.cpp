@@ -31,6 +31,8 @@
  */
 
 #include "WebSettings.h"
+#include "../../../../DesktopEditor/common/File.h"
+#include "../FileTypes.h"
 
 namespace ComplexTypes
 {
@@ -53,7 +55,6 @@ namespace ComplexTypes
 		}
 		void    COptimizeForBrowser::FromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:val"),    m_oVal )
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:target"), m_oTarget )
@@ -134,13 +135,14 @@ namespace OOX
 		}
 
 		sXml += _T("</w:webSettings>");
-		CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+
+        NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), sXml );
 
 		oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
 	}
 	const OOX::FileType CWebSettings::type() const
 	{
-		return FileTypes::WebSetting;
+        return FileTypes::WebSetting;
 	}
 	const CPath CWebSettings::DefaultDirectory() const
 	{

@@ -31,6 +31,8 @@
  */
 
 #include "Bibliography.h"
+#include "../../../../DesktopEditor/common/File.h"
+#include "FileTypes.h"
 
 namespace OOX
 {
@@ -93,7 +95,7 @@ namespace OOX
 
 		sXml += _T("</a:Sources>");
 
-		CDirectory::SaveToFile( oFilePath.GetPath(), sXml );
+        NSFile::CFileBinary::SaveToFile( oFilePath.GetPath(), sXml );
 		oContent.Registration( type().OverrideType(), oDirectory, oFilePath );
 	}
 	const OOX::FileType CBibliography::type() const

@@ -36,6 +36,8 @@
 
 #include "Logic/ParagraphProperty.h"
 #include "Logic/RunProperty.h"
+#include "Logic/Pict.h"
+#include "Drawing/Drawing.h"
 
 namespace ComplexTypes
 {

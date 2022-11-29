@@ -31,6 +31,7 @@
  */
 
 #include "Cols.h"
+#include "../XlsxFlat.h"
 
 namespace OOX
 {

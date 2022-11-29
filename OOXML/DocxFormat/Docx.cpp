@@ -52,6 +52,7 @@
 #include "CustomXml.h"
 
 #include "../PPTXFormat/Theme.h"
+#include "../../DesktopEditor/common/Directory.h"
 
 namespace OOX
 {
@@ -79,7 +80,8 @@ namespace OOX
 	bool CDocx::Write(const CPath& oFilePath)
 	{
 		// Создаем папку
-		NSDirectory::CreateDirectory(oFilePath.GetPath());
+        std::wstring filePath = oFilePath.GetPath();
+        NSDirectory::CreateDirectory(filePath);
 
 		OOX::CRels         oRels;
 		OOX::CContentTypes oContent;

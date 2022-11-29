@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_WEBSETTINGS_INCLUDE_H_
-#define OOX_WEBSETTINGS_INCLUDE_H_
 
 #include "../File.h"
 #include "../../Common/ComplexTypes.h"
@@ -96,5 +94,3 @@ namespace OOX
 	};
 
 } // namespace OOX
-
-#endif // OOX_WEBSETTING_INCLDUE_H_

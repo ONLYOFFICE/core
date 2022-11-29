@@ -775,6 +775,9 @@
     <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingUtils.h">
       <Filter>Converter</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\Animation.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.cpp">
@@ -1375,6 +1378,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualSoundAtom.cpp">
       <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\StylesWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ImageManager.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\Animation.cpp">
+      <Filter>OOXWriter</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

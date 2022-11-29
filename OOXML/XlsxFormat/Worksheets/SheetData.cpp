@@ -2845,6 +2845,448 @@ namespace OOX
 		{
 			return et_x_SheetData;
 		}
+//-----------------------------------------------------------------------------------------
+        void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
+        {
+            if ( oReader.IsEmptyNode() )
+                return;
+
+            CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
+
+            if (!xlsx_flat) return;
+
+            if (false == m_oSheetViews.IsInit())
+            {
+                m_oSheetViews.Init();
+                m_oSheetViews->m_arrItems.push_back(new CSheetView());
+            }
+            nullable_int active_pane;
+            nullable_bool bFreeze;
+            nullable_int xSplit, ySplit;
+
+            nullable_int active_pane_number;
+            nullable_int left_column_visible;
+            nullable_int page_break_zoom;
+            std::map<int, nullable<CPane>> mapPanes;
+
+            nullable_string sDataHeader, sDataFooter;
+
+            int nDocumentDepth = oReader.GetDepth();
+            while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
+            {
+                std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                if (L"PageSetup" == sName)
+                {
+                    if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+
+                    int nDocumentDepth1 = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+                    {
+                        std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                        if (L"Header" == sName1)
+                        {
+                            if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oHeader)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataHeader)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                        else if (L"Footer" == sName1)
+                        {
+                            if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oFooter)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataFooter)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                        else if (L"Layout" == sName1)
+                        {
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"x:Orientation", m_oPageSetup->m_oOrientation)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                        else if (L"PageMargins" == sName1)
+                        {
+                            if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"Top", m_oPageMargins->m_oTop)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Left", m_oPageMargins->m_oLeft)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Right", m_oPageMargins->m_oRight)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Bottom", m_oPageMargins->m_oBottom)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                    }
+                }
+                else if (L"Panes" == sName)
+                {
+                    int nDocumentDepth1 = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+                    {
+                        std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                        if (L"Pane" == sName1)
+                        {
+                            nullable<CPane> pane; pane.Init();
+                            nullable_int number;
+
+                            int nDocumentDepth2 = oReader.GetDepth();
+                            nullable_int col, row;
+                            while (oReader.ReadNextSiblingNode(nDocumentDepth2))
+                            {
+                                std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
+                                if (L"Number" == sName2)
+                                {
+                                    number = oReader.GetText2();
+                                }
+                                else if (L"ActiveRow" == sName2)
+                                {
+                                    row = oReader.GetText2();
+                                }
+                                else if (L"ActiveCol" == sName2)
+                                {
+                                    col = oReader.GetText2();
+                                }
+                                else if (L"RangeSelection" == sName2)
+                                {
+                                    r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+                                    r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+
+                                    r1c1_formula_convert convert;
+
+                                    std::wstring ref = convert.convert(oReader.GetText2());
+
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
+
+                                    size_t pos_split = ref.find(L":");
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell =
+                                        pos_split != std::wstring::npos ? ref.substr(0, pos_split) : ref;
+                                }
+                            }
+                            if (col.IsInit() && row.IsInit())
+                            {
+                                if (m_oSheetViews->m_arrItems.back()->m_arrItems.empty())
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
+
+                                m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
+
+                                if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
+                                {
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;
+                                }
+                            }
+                            if (number.IsInit())
+                            {
+                                mapPanes.insert(std::make_pair(*number, pane));
+                            }
+                        }
+                    }
+                }
+                else if (L"SplitHorizontal" == sName)
+                {
+                    ySplit = oReader.GetText2();
+                }
+                else if (L"SplitVertical" == sName)
+                {
+                    xSplit = oReader.GetText2();
+                }
+                else if (L"DoNotDisplayGridlines" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oShowGridLines.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oShowGridLines->FromBool(false);
+                }
+                else if (L"Selected" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oTabSelected.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oTabSelected->FromBool(true);
+                }
+                else if (L"FreezePanes" == sName)
+                {
+                    bFreeze = true;
+                }
+                else if (L"ActivePane" == sName)
+                {
+                    active_pane_number = oReader.GetText2();
+                }
+                else if (L"Print" == sName)
+                {
+                    if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+                    if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();
+
+                    int nDocumentDepth1 = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+                    {
+                        std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                        if (L"FitHeight" == sName1)
+                        {
+                            m_oPageSetup->m_oFitToHeight = oReader.GetText2();
+                        }
+                        else if (L"DraftQuality" == sName1)
+                        {
+                            m_oPageSetup->m_oDraft.Init();
+                        }
+                        else if (L"Gridlines" == sName1)
+                        {
+                            m_oPrintOptions->m_oGridLines = true;
+                        }
+                        else if (L"Scale" == sName1)
+                        {
+                            m_oPageSetup->m_oScale = oReader.GetText2();
+                        }
+                        else if (L"HorizontalResolution" == sName1)
+                        {
+                            m_oPageSetup->m_oHorizontalDpi = oReader.GetText2();
+                        }
+                        else if (L"VerticalResolution" == sName1)
+                        {
+                            m_oPageSetup->m_oVerticalDpi = oReader.GetText2();
+                        }
+                        else if (L"PaperSizeIndex" == sName1)
+                        {
+                            m_oPageSetup->m_oPaperSize = oReader.GetText2();
+                        }
+                    }
+                }
+                else if (L"FitToPage" == sName)
+                {
+                    if (!m_oSheetPr.IsInit()) m_oSheetPr.Init();
+                    if (!m_oSheetPr->m_oPageSetUpPr.IsInit()) m_oSheetPr->m_oPageSetUpPr.Init();
+
+                    m_oSheetPr->m_oPageSetUpPr->m_oFitToPage.Init();
+                    m_oSheetPr->m_oPageSetUpPr->m_oFitToPage->FromBool(true);
+                }
+                else if (L"ProtectObjects" == sName)
+                {
+
+                }
+                else if (L"ProtectScenarios" == sName)
+                {
+
+                }
+                else if (L"ProtectContents" == sName)
+                {
+
+                }
+                else if (L"LeftColumnVisible" == sName)
+                {
+                    left_column_visible = oReader.GetText2();
+                }
+                else if (L"PageBreakZoom" == sName)
+                {
+                    page_break_zoom = oReader.GetText2();
+                }
+                else if (L"DoNotDisplayColHeaders" == sName)
+                {
+
+                }
+                else if (L"ViewableRange" == sName)
+                {
+
+                }
+                else if (L"GridlineColor" == sName)
+                {
+
+                }
+                else if (L"Unsynced" == sName)
+                {
+
+                }
+                else if (L"DisplayPageBreak" == sName)
+                {
+
+                }
+                else if (L"ShowPageBreakZoom" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oView = SimpleTypes::Spreadsheet::sheetviewPageBreakPreview;
+                }
+                else if (L"DefaultRowHeight" == sName)
+                {
+
+                }
+                else if (L"DefaultColumnWidth" == sName)
+                {
+
+                }
+                else if (L"Visible" == sName)
+                {
+
+                }
+                else if (L"DisplayRightToLeft" == sName)
+                {
+
+                }
+                else if (L"DisplayFormulas" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oShowFormulas = true;
+                }
+                else if (L"ActiveRow" == sName)
+                {
+
+                }
+                else if (L"ActiveColumn" == sName)
+                {
+
+                }
+                else if (L"TabColorIndex" == sName)
+                {
+                    if (false == m_oSheetPr.IsInit()) m_oSheetPr.Init();
+                    m_oSheetPr->m_oTabColor.Init();  m_oSheetPr->m_oTabColor->m_oIndexed = oReader.GetText2();
+                }
+            }
+
+            if (m_oPageMargins.IsInit())
+            {
+                if (!m_oPageMargins->m_oFooter.IsInit())
+                {
+                    m_oPageMargins->m_oFooter.Init();
+                    m_oPageMargins->m_oFooter->SetValue(0.5);
+                }
+                if (!m_oPageMargins->m_oHeader.IsInit())
+                {
+                    m_oPageMargins->m_oHeader.Init();
+                    m_oPageMargins->m_oHeader->SetValue(0.5);
+                }
+            }
+
+            if (active_pane_number.IsInit())
+            {
+                std::map<int, nullable<CPane>>::iterator pFind = mapPanes.find(*active_pane_number);
+                if (pFind != mapPanes.end())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane = pFind->second;
+                }
+            }
+            if (m_oSheetViews->m_arrItems.back()->m_oPane.IsInit())
+            {
+                m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane.Init();
+                m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane->SetValue(SimpleTypes::Spreadsheet::activepaneBottomLeft);
+                if (bFreeze.IsInit())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oState.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oState->SetValue(SimpleTypes::Spreadsheet::panestateFrozen);
+                }
+                if (ySplit.IsInit())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit->SetValue(*ySplit);
+                }
+                if (xSplit.IsInit())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit->SetValue(*xSplit);
+                }
+            }
+        }
+//----------------------------------------------------------------------------------------
+        void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
+        {
+            ReadAttributes( oReader );
+
+            if ( oReader.IsEmptyNode() )
+                return;
+
+            int nCurDepth = oReader.GetDepth();
+            while (oReader.ReadNextSiblingNode(nCurDepth))
+            {
+                std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                if (L"formula1" == sName)
+                {
+                    m_oFormula1 = oReader;
+                }
+                else if (L"formula2" == sName)
+                {
+                    m_oFormula2 = oReader;
+                }
+                else if (L"sqref" == sName)
+                {
+                    m_oSqRef = oReader.GetText2();
+                }
+        //--------------------------------------------------- xml spreadsheet 2002
+                else if (L"Range" == sName)
+                {
+                    r1c1_formula_convert::base_row = 1;
+                    r1c1_formula_convert::base_col = 1;
+
+                    r1c1_formula_convert convert;
+
+                    m_oSqRef = convert.convert(oReader.GetText2());
+                }
+                else if (L"Type" == sName)
+                {
+                    m_oType = oReader.GetText2();
+
+                    m_oAllowBlank.Init();
+                    m_oAllowBlank->FromBool(true);
+
+                    m_oShowInputMessage.Init();
+                    m_oShowInputMessage->FromBool(true);
+                }
+                else if (L"Value" == sName)
+                {
+                    r1c1_formula_convert::base_row = 1;
+                    r1c1_formula_convert::base_col = 1;
+
+                    r1c1_formula_convert convert;
+
+                    m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
+                    m_oFormula1->m_sText = convert.convert(oReader.GetText3());
+
+                    //if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
+                    //{
+                    //	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+                    //	if (xlsx_flat)
+                    //	{
+                    //		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
+                    //		if (pSheet->m_oName.IsInit())
+                    //		{
+                    //			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
+                    //		}
+                    //	}
+                    //}
+                }
+            }
+        }
+//-----------------------------------------------------------------------------------------
+        void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+        {
+            nullable_string oRefersTo;
+            WritingElement_ReadAttributes_Start( oReader )
+                WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"customMenu",		m_oCustomMenu )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"description",	m_oDescription )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"function",		m_oFunction )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"functionGroupId",m_oFunctionGroupId )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"help",			m_oHelp )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"hidden",			m_oHidden )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"localSheetId",	m_oLocalSheetId )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"name",			m_oName )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"publishToServer",m_oPublishToServer )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"shortcutKey ",	m_oShortcutKey  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"statusBar",		m_oStatusBar  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"vbProcedure",	m_oVbProcedure  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"workbookParameter",	m_oWorkbookParameter  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"xlm",			m_oXlm  )
+
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:Name",		m_oName )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:RefersTo",	oRefersTo )
+            WritingElement_ReadAttributes_End( oReader )
+
+            if (oRefersTo.IsInit())
+            {
+                r1c1_formula_convert::base_row = 1;
+                r1c1_formula_convert::base_col = 1;
+
+                r1c1_formula_convert convert;
+
+                m_oRef = convert.convert(oRefersTo->substr(1));
+            }
+        }
 
 	} //Spreadsheet
 } // OOX

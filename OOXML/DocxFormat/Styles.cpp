@@ -31,6 +31,7 @@
  */
 
 #include "Styles.h"
+#include "Docx.h"
 
 namespace ComplexTypes
 {

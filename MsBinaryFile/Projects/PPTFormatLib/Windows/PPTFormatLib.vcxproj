@@ -265,6 +265,7 @@
     <ClInclude Include="..\..\..\PptFile\Enums\RecordType.h" />
     <ClInclude Include="..\..\..\PptFile\Enums\_includer.h" />
     <ClInclude Include="..\..\..\PptFile\Main\PPTFormatLib.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\Animation.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\Converter.h" />
     <ClInclude Include="..\..\..\PptFile\PPTXWriter\ImageManager.h" />
@@ -499,9 +500,12 @@
     <ClCompile Include="..\..\..\PptFile\Drawing\TextAttributesEx.cpp" />
     <ClCompile Include="..\..\..\PptFile\Enums\RecordType.cpp" />
     <ClCompile Include="..\..\..\PptFile\Main\PPTFormatLib.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\Animation.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\Converter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ImageManager.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\StylesWriter.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\TableWriter.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.cpp" />
     <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.cpp" />

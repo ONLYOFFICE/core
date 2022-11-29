@@ -31,6 +31,7 @@
  */
 
 #include "ContentTypes.h"
+#include "../XML/XmlSimple.h"
 
 namespace OOX
 {

@@ -39,6 +39,8 @@
 #include "../../PPTXFormat/Logic/StyleRef.h"
 #include "../../PPTXFormat/Logic/FontRef.h"
 #include "../../PPTXFormat/Logic/RunProperties.h"
+#include "../../PPTXFormat/Logic/SpPr.h"
+#include "../../PPTXFormat/Logic/BodyPr.h"
 
 namespace OOX
 {

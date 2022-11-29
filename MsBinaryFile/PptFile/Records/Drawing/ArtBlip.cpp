@@ -237,3 +237,18 @@ void CRecordOfficeArtBlip::ReadFromStream(SRecordHeader & oHeader, POLE::Stream*
 		m_sFileName = strFile;
 	}
 }
+
+CRecordBitmapBlip::CRecordBitmapBlip()
+{
+
+}
+
+CRecordBitmapBlip::~CRecordBitmapBlip()
+{
+
+}
+
+void CRecordBitmapBlip::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    return CUnknownRecord::ReadFromStream(oHeader, pStream);
+}

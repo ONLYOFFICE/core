@@ -37,99 +37,7 @@
 
 namespace PPT_FORMAT
 {
-    static inline LONG GetPPTXPlaceHolderType(const int & lType)
-	{
-		switch (lType)
-		{
-		case PT_None:	break;
-			
-		case PT_MasterTitle:
-		case PT_Title:
-		case PT_VerticalTitle:
-			return 15;	// title
-
-		case PT_MasterBody:
-		case PT_Body:
-		case PT_MasterNotesBody:
-		case PT_VerticalBody:
-		case PT_NotesBody:
-			return 0;	// body
-
-		case PT_MasterCenterTitle:
-		case PT_CenterTitle:
-			return 3;	// ctrTitle
-
-		case PT_MasterSubTitle:
-		case PT_SubTitle:
-			return 13;	// subtitle
-
-		case PT_Object:
-			return 9;	// object
-
-		case PT_MasterNotesSlideImage:
-		case PT_NotesSlideImage:
-			return 11;	// slideImg
-
-		case PT_Graph: 
-			return 1;	//chart
-
-		case PT_Table:
-			return 14;	// table
-
-		case PT_ClipArt:
-			return 2;	// clipArt
-
-		case PT_OrgChart:
-			return 1;	// chart
-
-		case PT_Media:
-			return 8;	// media
-
-		case PT_MasterDate:
-			return 5;	// date
-
-		case PT_MasterSlideNumber:
-			return 12;	// sldNum
-
-		case PT_MasterFooter:
-			return 6;	// footer
-
-		case PT_MasterHeader:
-			return 7;	// header
-		default:
-			break;
-		}
-
-		return lType;
-	}
-
-	AVSINLINE std::wstring GetPhType(const int & lType)
-	{
-		int TypePPTX = GetPPTXPlaceHolderType(lType);
-		
-		switch (TypePPTX)
-		{
-			case 0: return _T("body");
-			case 100: return _T("body"); // для master pages  
-			case 1: return _T("chart");
-			case 2: return _T("clipArt");
-			case 3: return _T("ctrTitle");
-			case 4: return _T("dgm");
-			case 5: return _T("dt");
-			case 6: return _T("ftr");
-			case 7: return _T("hdr");
-			case 8: return _T("media");
-			case 9: return _T("obj");
-			case 10: return _T("pic");
-			case 11: return _T("sldImg");
-			case 12: return _T("sldNum");
-			case 13: return _T("subTitle");
-			case 14: return _T("tbl");
-			case 15: return _T("title");
-			default: break;
-		}
-		return _T("body");
-	}
+    std::wstring GetPhType(const int & lType);
 
 	class CShapeWriter
 	{
@@ -162,10 +70,7 @@ namespace PPT_FORMAT
 
 		friend class CPPTXWriter;
 
-		AVSINLINE void InitNextId()
-		{
-			m_lNextShapeID = 1000;
-		}
+        void InitNextId();
 
 		bool SetElement(CElementPtr pElem);
 //--------------------------------------------------------------------
@@ -334,40 +239,11 @@ namespace PPT_FORMAT
         HRESULT SetPen(std::wstring bsXML);
         HRESULT SetBrush(std::wstring bsXML);
     public:
-        void SetRelsGenerator(CRelsGenerator* pGenerator)
-		{
-			m_pRels = pGenerator;
-		}
+        void SetRelsGenerator(CRelsGenerator* pGenerator);
 
     protected:
-		void CalculateFullTransform()
-		{
-			m_oFullTransform	= m_oBaseTransform;
-			m_oFullTransform.Multiply(&m_oTransform, Aggplus::MatrixOrderPrepend);
-
-			m_dTransformAngle	= m_oTransform.z_Rotation();
-		}
-		void _SetFont()
-		{
-			if (NULL == m_pFontManager)
-			{
-                m_pFontManager = NSFonts::NSFontManager::Create();
-				m_pFontManager->Initialize();
-			}
-
-			m_pFontManager->SetStringGID(m_oFont.StringGID);
-
-			if (_T("") == m_oFont.Path)
-			{
-				m_pFontManager->LoadFontByName(m_oFont.Name, m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
-			}
-			else
-			{
-				m_pFontManager->LoadFontFromFile(m_oFont.Path, 0, m_oFont.Size, m_dDpiX, m_dDpiY);
-            }
-
-			m_oInstalledFont = m_oFont;
-		}
+        void CalculateFullTransform();
+        void _SetFont();
 
 
 	public:
@@ -397,53 +273,12 @@ namespace PPT_FORMAT
 		CFont							m_oInstalledFont;
 
 	public:
-		inline void MoveTo(const double& dX, const double& dY)
-		{
-			double x = dX;
-			double y = dY;
-			m_oFullTransform.TransformPoint(x, y);
-
-            m_oWriterPath.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring((int)x) + L"\" y=\"" + std::to_wstring((int)y) + L"\"/></a:moveTo>");
-		}
-		inline void LineTo(const double& dX, const double& dY)
-		{
-			double x = dX;
-			double y = dY;
-			m_oFullTransform.TransformPoint(x, y);
-
-            m_oWriterPath.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring((int)x) + L"\" y=\"" +std::to_wstring((int)y) + L"\"/></a:lnTo>");
-		}
-		inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
-		{
-			double _x1 = x1;
-			double _y1 = y1;
-			m_oFullTransform.TransformPoint(_x1, _y1);
-
-			double _x2 = x2;
-			double _y2 = y2;
-			m_oFullTransform.TransformPoint(_x2, _y2);
-
-			double _x3 = x3;
-			double _y3 = y3;
-			m_oFullTransform.TransformPoint(_x3, _y3);
-
-            m_oWriterPath.WriteString(L"<a:cubicBezTo><a:pt x=\"" + std::to_wstring((int)x1) + L"\" y=\"" + std::to_wstring((int)y1)
-                                      + L"\"/><a:pt x=\"" + std::to_wstring((int)x2) + L"\" y=\"" + std::to_wstring((int)y2) + L"\"/><a:pt x=\""
-                                      + std::to_wstring((int)x3) + L"\" y=\"" + std::to_wstring((int)y3) + L"\"/></a:cubicBezTo>");
-		}
-		void Start()
-		{
-			m_oWriterPath.ClearNoAttack();
-		}
-		void End()
-		{
-			m_oWriterPath.ClearNoAttack();
-		}
-		void Close()
-		{
-            std::wstring str = _T("<a:close/>");
-			m_oWriterPath.WriteString(str);
-		}
+        void MoveTo(const double& dX, const double& dY);
+        void LineTo(const double& dX, const double& dY);
+        void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);
+        void Start();
+        void End();
+        void Close();
 
         void WriteGroupInfo();
         void WriteTableInfo();

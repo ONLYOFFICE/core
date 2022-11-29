@@ -67,9 +67,7 @@ namespace PPT_FORMAT
 
 		void CloseFile();
 
-		void Write()
-		{
-		}
+        void Write();
 		std::wstring    m_xmlApp;
 		std::wstring    m_xmlCore;
 

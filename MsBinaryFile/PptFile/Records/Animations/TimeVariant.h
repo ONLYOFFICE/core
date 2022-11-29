@@ -43,22 +43,11 @@ class CRecordTimeVariant : public CUnknownRecord
 {
 public:
 
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )override;
 
-        m_Type				=	( TimeVariantTypeEnum )StreamUtils::ReadBYTE ( pStream );
-    }
+    virtual ~CRecordTimeVariant();
 
-    virtual ~CRecordTimeVariant(){}
-
-    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
-    {
-        CUnknownRecord::operator=(src);
-        m_Type = src.m_Type;
-
-        return *this;
-    }
+    virtual CRecordTimeVariant &operator=(const CRecordTimeVariant& src) ;
 
 public:
     TimeVariantTypeEnum		m_Type;
@@ -68,19 +57,9 @@ public:
 class CRecordTimeVariantBool : public CRecordTimeVariant
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
-        m_Value	= ( 0x1 == StreamUtils::ReadBYTE ( pStream ) );
-    }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
-    {
-        CRecordTimeVariant::operator=(src);
-        m_Value = dynamic_cast<const CRecordTimeVariantBool&>(src).m_Value;
-
-        return *this;
-    }
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src) override;
 
     virtual ~CRecordTimeVariantBool(){}
 
@@ -91,19 +70,9 @@ public:
 class CRecordTimeVariantInt : public CRecordTimeVariant
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
-        m_Value	= StreamUtils::ReadDWORD ( pStream );
-    }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )override;
 
-    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
-    {
-        CRecordTimeVariant::operator=(src);
-        m_Value = dynamic_cast<const CRecordTimeVariantInt&>(src).m_Value;
-
-        return *this;
-    }
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src) override;
 
     virtual ~CRecordTimeVariantInt(){}
 
@@ -114,21 +83,9 @@ public:
 class CRecordTimeVariantFloat : public CRecordTimeVariant
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
-        m_Value	= StreamUtils::ReadFLOAT ( pStream );
-    }
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
-    {
-        CRecordTimeVariant::operator=(src);
-        m_Value = dynamic_cast<const CRecordTimeVariantFloat&>(src).m_Value;
-
-        return *this;
-    }
-
-    virtual ~CRecordTimeVariantFloat(){}
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src) override;
 
 public:
     FLOAT                           m_Value;
@@ -137,33 +94,9 @@ public:
 class CRecordTimeVariantString : public CRecordTimeVariant
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        if (oHeader.RecLen == 0)
-            return;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-        LONG lPos; StreamUtils::StreamPosition(lPos, pStream);
-        lPos += oHeader.RecLen;
-
-        CRecordTimeVariant::ReadFromStream(oHeader, pStream);
-        int strLen = m_oHeader.RecLen / 2 - 1;
-        if (strLen > 0)
-        {
-            m_Value = StreamUtils::ReadStringW(pStream, strLen);
-        }
-        StreamUtils::StreamSeek(lPos, pStream);
-    }
-
-    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src)
-    {
-        CRecordTimeVariant::operator=(src);
-        m_Value = dynamic_cast<const CRecordTimeVariantString&>(src).m_Value;
-
-        return *this;
-    }
-
-     virtual ~CRecordTimeVariantString(){}
-
+    virtual CRecordTimeVariant& operator=(const CRecordTimeVariant& src) override;
 
 public:
     std::wstring            m_Value;

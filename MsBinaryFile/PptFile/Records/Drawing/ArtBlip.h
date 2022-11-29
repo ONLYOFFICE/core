@@ -65,17 +65,7 @@ public:
 
 	//BYTE* m_pScan0;
 	
-	CRecordBitmapBlip()
-	{
-	}
-
-	~CRecordBitmapBlip()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-
+    CRecordBitmapBlip();
+    ~CRecordBitmapBlip();
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 };

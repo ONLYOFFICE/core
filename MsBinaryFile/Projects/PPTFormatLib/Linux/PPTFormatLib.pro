@@ -47,7 +47,7 @@ HEADERS += \
 	../../../PptFile/PPTXWriter/TxBodyConverter.h \
 	../../../PptFile/Reader/ClassesAtom.h \
 	../../../PptFile/Reader/CommonZLib.h \
-	../../../PptFile/Reader/ExtXmlUtils.hpp \
+	../../../PptFile/Reader/ExtXmlUtils.h \
 	../../../PptFile/Reader/PPTDocumentInfo.h \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.h \
 	../../../PptFile/Reader/PPTFileDefines.h \

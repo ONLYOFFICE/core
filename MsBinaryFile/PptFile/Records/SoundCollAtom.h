@@ -37,18 +37,8 @@ class CRecordSoundCollAtom : public CUnknownRecord
 public:
 	INT m_nObjectIdSeed;
 	
-	CRecordSoundCollAtom()
-	{
-	}
+    CRecordSoundCollAtom();
+    ~CRecordSoundCollAtom();
 
-	~CRecordSoundCollAtom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nObjectIdSeed = StreamUtils::ReadDWORD(pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };

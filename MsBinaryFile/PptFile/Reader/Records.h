@@ -43,11 +43,6 @@
 
 #include <boost/smart_ptr/shared_array.hpp>
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-
-
 //#include <execinfo.h>
 
 //using namespace PPT_FORMAT;
@@ -67,114 +62,15 @@ public:
 
     bool bBadHeader;
 
-    void Clear()
-    {
-        RecVersion = 0;
-        RecInstance = 0;
-        RecType = RT_NONE;
-        RecLen = 0;
+    void Clear();
+    SRecordHeader();
+    bool ReadFromStream(const CFStreamPtr &pStream);
 
-        bBadHeader = false;
-    }
-    SRecordHeader()
-    {
-        Clear();
-    }
-    bool ReadFromStream(const CFStreamPtr &pStream)
-    {
-        Clear();
+    bool ReadFromStream(POLE::Stream * pStream);
 
-        if (pStream->isEOF()) return FALSE;
-        POLE::uint64 nRd = 0;
+    bool IsContainer();
 
-        unsigned short rec =0;
-        pStream->read((unsigned char*)&(rec), 2);
-
-        RecInstance = rec >> 4;
-        RecVersion	= rec - (RecInstance << 4);
-
-        *pStream >> RecType >> RecLen;
-
-        unsigned long sz = pStream->getStreamSize() - pStream->getStreamPointer();
-
-        if (RecLen > sz)
-        {
-            RecLen = (UINT)sz;
-            bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
-        }
-
-        return true;
-    }
-
-    bool ReadFromStream(POLE::Stream * pStream)
-    {
-        Clear();
-        if (!pStream) return false;
-
-        POLE::uint64 nRd = 0;
-
-        unsigned short rec =0;
-        nRd = pStream->read((unsigned char*)&(rec), 2);
-
-        if (nRd != 2) return false;
-
-        RecInstance = rec >> 4;
-        RecVersion	= rec - (RecInstance<<4);
-
-        nRd = pStream->read((unsigned char*)&(RecType), 2);
-
-        nRd = pStream->read((unsigned char*)&(RecLen), 4);
-
-        POLE::uint64 sz = pStream->size() - pStream->tell();
-
-        if (RecLen > sz)
-        {
-            RecLen = (UINT)sz;
-            bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
-        }
-
-//        void** backTraceData = (void**)(new char*[40]);
-//        int backTraceSize = backtrace(backTraceData, 40);
-
-//        std::ofstream file("/home/ivaz28/pp/dia/ppt/pptRecords.txt", std::ios::out | std::ios::app);
-
-//        file << std::string(backTraceSize - 11, ' ')
-//             << "0x" << std::setw(4) << std::setfill('0') << std::hex << (int)RecType
-//             << " " << std::setw(40) << std::setfill(' ') << std::left << GetRecordName(RecType)
-//             << " " << std::setw(5) << std::dec << RecLen
-//             << " " << backTraceSize << std::endl;
-
-//        delete [] backTraceData;
-//        file.close();
-
-        return true;
-    }
-
-    bool IsContainer()
-    {
-        /*if ((RecVersion == PSFLAG_CONTAINER) || ((RecVersion & 0x0F) == 0x0F))
-        {
-            return TRUE;
-        }*/
-        if (1064 == RecType)
-            return false;
-
-        if (RecVersion == 0x0F)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    SRecordHeader& operator =(const SRecordHeader& oSrc)
-    {
-        RecVersion	= oSrc.RecVersion;
-        RecInstance = oSrc.RecInstance;
-        RecType		= oSrc.RecType;
-        RecLen		= oSrc.RecLen;
-        return (*this);
-    }
-
+    SRecordHeader& operator =(const SRecordHeader& oSrc);
 };
 
 class IRecord
@@ -193,25 +89,11 @@ class CUnknownRecord : public IRecord
     // реализована ли у нас такая запись
 
 public:
-    CUnknownRecord()
-    {
-    }
+    CUnknownRecord();
 
-    ~CUnknownRecord()
-    {
-    }
-    virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
-    {
-        m_oHeader = oHeader;
-
-        pStream->seekFromCurForward(m_oHeader.RecLen);
-    }
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        StreamUtils::StreamSkip((long)m_oHeader.RecLen, pStream);
-    }
+    ~CUnknownRecord();
+    virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream);
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
     std::wstring ReadStringW(const CFStreamPtr &pStream, int size);
     std::string	 ReadStringA(const CFStreamPtr &pStream, int size);
@@ -224,29 +106,11 @@ class CRecordsContainer : public CUnknownRecord
 public:
     std::vector<IRecord*> m_arRecords;
 
-    CRecordsContainer() : m_arRecords()
-    {
-    }
+    CRecordsContainer();
 
-    virtual ~CRecordsContainer()
-    {
-        Clear();
-    }
+    virtual ~CRecordsContainer();
 
-    void Clear()
-    {
-        size_t nCount = m_arRecords.size();
-        while(0 != nCount)
-        {
-            if (NULL != m_arRecords[nCount-1])
-            {
-                delete m_arRecords[nCount-1];
-                m_arRecords[nCount-1] = NULL;
-            }
-            m_arRecords.pop_back();
-            --nCount;
-        }
-    }
+    void Clear();
 
     virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream);
     virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
@@ -338,8 +202,3 @@ class CRecordVBAInfo					: public CRecordsContainer {};
 /********************************************************************************
         создаем по типу (остальные будем добавлять по мере необходимости)
 ********************************************************************************/
-
-//-------------------------------------------------------------------------------
-#define CREATE_BY_TYPE(RECORD_TYPE, CLASS_RECORD_NAME)							\
-    case RECORD_TYPE: { pRecord = new CLASS_RECORD_NAME(); break; }				\
-    //-------------------------------------------------------------------------------

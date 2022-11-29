@@ -43,12 +43,7 @@ struct SmallRectStruct : public IStruct
     _INT16 m_nRight;
     _INT16 m_nBottom;
 
-    void ReadFromStream(POLE::Stream *pStream) override
-    {
-        m_nTop = StreamUtils::ReadSHORT(pStream);
-        m_nLeft = StreamUtils::ReadSHORT(pStream);
-        m_nRight = StreamUtils::ReadSHORT(pStream);
-        m_nBottom = StreamUtils::ReadSHORT(pStream);
-    }
+
+    void ReadFromStream(POLE::Stream *pStream) override;
 };
 }

@@ -35,9 +35,4 @@
 
 class CRecordOfficeArtClientTextbox : public CRecordsContainer
 {
-public:
-    CRecordOfficeArtClientTextbox()
-    {
-
-    }
 };

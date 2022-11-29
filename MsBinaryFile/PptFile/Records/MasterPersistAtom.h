@@ -37,18 +37,7 @@ class CRecordMasterPersistAtom : public CUnknownRecord
 public:
 	UINT m_nPsrRef;
 	INT m_nMasterID;
-	
-	CRecordMasterPersistAtom()
-	{
-	}
 
-	~CRecordMasterPersistAtom()
-	{
-	}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };

@@ -1,12 +1,7 @@
-#pragma once
-
-#include <string>
-#include <vector>
-#include <algorithm>
+#include "ExtXmlUtils.h"
 
 
-namespace XmlUtils {
-std::vector<std::wstring> FindAttrValues(const std::wstring& xml, std::wstring attrName)
+std::vector<std::wstring> XmlUtils::FindAttrValues(const std::wstring &xml, std::wstring attrName)
 {
     attrName += L"=\"";
     std::vector<std::wstring> values;
@@ -28,7 +23,7 @@ std::vector<std::wstring> FindAttrValues(const std::wstring& xml, std::wstring a
     return values;
 }
 
-std::vector<int> FindAttrValuesInt(const std::wstring& xml, std::wstring attrName)
+std::vector<int> XmlUtils::FindAttrValuesInt(const std::wstring &xml, std::wstring attrName)
 {
     auto vecStrValues = FindAttrValues(xml, attrName);
     std::vector<int> vecIntValues;
@@ -41,6 +36,3 @@ std::vector<int> FindAttrValuesInt(const std::wstring& xml, std::wstring attrNam
     }
     return vecIntValues;
 }
-
-}
-

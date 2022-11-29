@@ -38,22 +38,8 @@ public:
 	LONG m_lStart;
 	LONG m_lEnd;
 
-	CRecordTextInteractiveInfoAtom()
-	{
-		m_lStart	= 0;
-		m_lEnd		= 0;
-	}
+    CRecordTextInteractiveInfoAtom();
+    ~CRecordTextInteractiveInfoAtom();
 
-	~CRecordTextInteractiveInfoAtom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		
-		m_lStart	= StreamUtils::ReadLONG(pStream);
-		m_lEnd		= StreamUtils::ReadLONG(pStream);
-	}
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };

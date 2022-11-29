@@ -110,7 +110,7 @@ SOURCES += \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
-	../../../../MsBinaryFile/Common/Vml/PPTXShape/ElementSettings.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/ElementSettings.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.cpp \
 	\

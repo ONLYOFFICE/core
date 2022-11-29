@@ -35,5 +35,17 @@
 class CRecordExVideoContainer : public CRecordsContainer
 {
 public:
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	
+	CRecordExVideoContainer()
+	{
+	}
+
+	~CRecordExVideoContainer()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordsContainer::ReadFromStream(oHeader, pStream);
+	}
 };

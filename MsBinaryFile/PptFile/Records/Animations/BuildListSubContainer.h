@@ -41,10 +41,25 @@ namespace PPT_FORMAT
 class CRecordBuildListSubContainer : public CUnknownRecord
 {
 public:
-    CRecordBuildListSubContainer();
-    ~CRecordBuildListSubContainer();
+    CRecordBuildListSubContainer()
+    {
 
-    virtual void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override;
+    }
+
+    ~CRecordBuildListSubContainer()
+    {
+
+    }
+
+    virtual void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override
+    {
+        m_oHeader = header;
+
+        SRecordHeader buildAtomHeader;
+        if (buildAtomHeader.ReadFromStream(pStream))
+            buildAtom.ReadFromStream ( buildAtomHeader, pStream );
+
+    }
 
 public:
     CRecordBuildAtom buildAtom;

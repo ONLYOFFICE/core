@@ -39,9 +39,15 @@ namespace PPT_FORMAT
 class CRecordTimeAnimationValueAtom : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader			=	oHeader;
+
+        m_nTime				=	StreamUtils::ReadDWORD ( pStream );
+    }
 
 public:
+
     long	m_nTime;
 
 };

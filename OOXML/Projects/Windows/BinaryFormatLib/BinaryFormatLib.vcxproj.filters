@@ -135,6 +135,9 @@
     <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.cpp">
+      <Filter>Common\Vml\PptShape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h">

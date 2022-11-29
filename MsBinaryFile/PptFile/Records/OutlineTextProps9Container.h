@@ -42,7 +42,21 @@ public:
     CRecordStyleTextProp9Atom m_styleTextProp9Atom;
 
 public:
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
+    {
+        CRecordOutlineTextPropsHeaderExAtom::ReadFromStream(oHeader, pStream);
+        
+		SRecordHeader ReadHeader;
+        ReadHeader.ReadFromStream(pStream);
+
+		if (ReadHeader.bBadHeader)
+		{
+			oHeader.bBadHeader = true; // GZoabli_PhD.ppt
+			return;
+		}
+
+        m_styleTextProp9Atom.ReadFromStream(ReadHeader, pStream);
+    }
 };
 
 
@@ -52,8 +66,40 @@ public:
     std::vector<CRecordOutlineTextProps9Entry* > m_rgOutlineTextProps9Entry;
 
 public:
-    virtual ~CRecordOutlineTextProps9Container();
+    virtual ~CRecordOutlineTextProps9Container()
+    {
+        for (auto pEl : m_rgOutlineTextProps9Entry)
+        {
+            RELEASEOBJECT(pEl)
+        }
+    }
 
-    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
+	virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+	{
+		m_oHeader = oHeader;
+		LONG lPos = 0;
+		StreamUtils::StreamPosition(lPos, pStream);
+
+		UINT lCurLen = 0;
+
+		SRecordHeader ReadHeader;
+
+		while (lCurLen < m_oHeader.RecLen)
+		{
+			if (ReadHeader.ReadFromStream(pStream) == false || ReadHeader.bBadHeader)
+                break;
+
+            lCurLen += 8 + ReadHeader.RecLen;
+
+            auto pRec = new CRecordOutlineTextProps9Entry;
+            pRec->ReadFromStream(ReadHeader, pStream);
+
+			if (ReadHeader.bBadHeader)
+				break;
+
+            m_rgOutlineTextProps9Entry.push_back(pRec);
+        }
+        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
+    }
 };
 }

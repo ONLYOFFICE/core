@@ -36,8 +36,18 @@ class CRecordNotesPersistAtom : public CUnknownRecord
 {
 public:
 	UINT m_nPsrRef;
-    INT m_nNotesID;
+	INT m_nNotesID;
+	
+	CRecordNotesPersistAtom()
+	{
+	}
 
+	~CRecordNotesPersistAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+	}
 };

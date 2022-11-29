@@ -31,6 +31,7 @@
  */
 #pragma once
 
+
 #include "../../Reader/Records.h"
 #include "VisualPageAtom.h"
 #include "VisualShapeAtom.h"
@@ -41,12 +42,39 @@ namespace PPT_FORMAT
 class CRecordClientVisualElementContainer : public CUnknownRecord
 {
 public:
-    CRecordClientVisualElementContainer ();
-    ~CRecordClientVisualElementContainer();
+    CRecordClientVisualElementContainer ()
+    {
+        m_bVisualPageAtom	=	false;
+        m_bVisualShapeAtom	=	false;
+    }
 
-    void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
+    void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override
+    {
+        m_oHeader			=	oHeader;
+
+        LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
+
+        SRecordHeader ReadHeader;
+        if (ReadHeader.ReadFromStream(pStream) )
+        {
+            if ( RT_VisualPageAtom == ReadHeader.RecType )
+            {
+                m_bVisualPageAtom	=	true;
+                m_oVisualPageAtom.ReadFromStream ( ReadHeader, pStream );
+            }
+
+            if ( RT_VisualShapeAtom == ReadHeader.RecType )
+            {
+                m_bVisualShapeAtom	=	true;
+                m_oVisualShapeAtom.ReadFromStream ( ReadHeader, pStream );
+            }
+        }
+
+        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
+    }
 
 public:
+
     CRecordVisualPageAtom	m_oVisualPageAtom;
     CRecordVisualShapeAtom	m_oVisualShapeAtom;
 

@@ -40,10 +40,23 @@ public:
 	SColorAtom m_oShadowColor;
 	SColorAtom m_o3DColor;
 	
-    CRecordSplitMenuColorRecord();
-    ~CRecordSplitMenuColorRecord();
+	CRecordSplitMenuColorRecord()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	~CRecordSplitMenuColorRecord()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		
+		NSStreamReader::Read(pStream, m_oFillColor);
+		NSStreamReader::Read(pStream, m_oLineColor);
+		NSStreamReader::Read(pStream, m_oShadowColor);
+		NSStreamReader::Read(pStream, m_o3DColor);
+	}
 };
 
 class CRecordMostRecentlyUserColors : public CUnknownRecord
@@ -51,9 +64,24 @@ class CRecordMostRecentlyUserColors : public CUnknownRecord
 public:
 	std::vector<SColorAtom>	m_oColors;
 	
+	CRecordMostRecentlyUserColors()
+	{
+	}
 
-    CRecordMostRecentlyUserColors();
-    ~CRecordMostRecentlyUserColors();
+	~CRecordMostRecentlyUserColors()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		for (unsigned int i = 0; i < m_oHeader.RecLen / 4; i++)
+		{
+			SColorAtom color;
+			NSStreamReader::Read(pStream, color);
+
+			m_oColors.push_back(color);
+		}
+	}
 };

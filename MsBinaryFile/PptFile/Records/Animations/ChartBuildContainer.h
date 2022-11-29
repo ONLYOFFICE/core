@@ -39,10 +39,24 @@ namespace PPT_FORMAT
 class CRecordChartBuildContainer : public CRecordBuildListSubContainer
 {
 public:
-    CRecordChartBuildContainer();
-    ~CRecordChartBuildContainer();
+    CRecordChartBuildContainer()
+    {
 
-    void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override;
+    }
+
+    ~CRecordChartBuildContainer()
+    {
+
+    }
+
+    void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override
+    {
+        CRecordBuildListSubContainer::ReadFromStream(header, pStream);
+
+        SRecordHeader childHeader;
+        if (childHeader.ReadFromStream(pStream))
+            m_oChartBuildAtom.ReadFromStream ( childHeader, pStream );
+    }
 
 public:
     CRecordChartBuildAtom   m_oChartBuildAtom;

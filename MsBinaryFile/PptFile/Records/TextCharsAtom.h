@@ -38,8 +38,19 @@ public:
 	std::wstring m_strText;
 
 public:
-    CRecordTextCharsAtom();
-    ~CRecordTextCharsAtom();
+	
+	CRecordTextCharsAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	~CRecordTextCharsAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
+	}
+
 };

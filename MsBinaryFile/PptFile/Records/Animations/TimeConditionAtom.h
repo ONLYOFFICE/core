@@ -41,8 +41,18 @@ namespace PPT_FORMAT
 class CRecordTimeConditionAtom : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream );
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader			=	oHeader;
 
+        m_TriggerObject		=	( TriggerObjectEnum )StreamUtils::ReadDWORD ( pStream );
+
+        m_nTriggerEvent		=	StreamUtils::ReadDWORD ( pStream );
+        m_nID				=	StreamUtils::ReadDWORD ( pStream );
+        m_nTimeDelay		=	StreamUtils::ReadLONG ( pStream );
+    }
+
+public:
 
     TriggerObjectEnum	m_TriggerObject;
     _UINT32				m_nTriggerEvent;

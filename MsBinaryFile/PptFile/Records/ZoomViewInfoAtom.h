@@ -46,10 +46,28 @@ public:
     BOOL1 m_fUseVarScale;
     BOOL1 m_fDraftMode;
 	
+	CRecordZoomViewInfoAtom()
+	{
+	}
 
-    CRecordZoomViewInfoAtom();
-    ~CRecordZoomViewInfoAtom();
+	~CRecordZoomViewInfoAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+        m_oHeader = oHeader;
+
+        m_oCurScale.ReadFromStream(pStream);
+
+        StreamUtils::StreamSkip(24, pStream);
+
+        m_oOrigin.ReadFromStream(pStream);
+
+        m_fUseVarScale  = StreamUtils::ReadBYTE(pStream);
+        m_fDraftMode    = StreamUtils::ReadBYTE(pStream);
+
+        StreamUtils::StreamSkip(2, pStream);
+	}
 };
 }

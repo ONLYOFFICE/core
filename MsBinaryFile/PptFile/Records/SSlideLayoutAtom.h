@@ -38,10 +38,17 @@ public:
 	INT m_nGeom;
 	BYTE m_pPlaceHolderID[8];
 	
+	CRecordSSlideLayoutAtom()
+	{
+	}
 
-    CRecordSSlideLayoutAtom();
-    ~CRecordSSlideLayoutAtom();
+	~CRecordSSlideLayoutAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+	}
 
 };

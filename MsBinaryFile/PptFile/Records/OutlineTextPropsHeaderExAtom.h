@@ -43,6 +43,11 @@ public:
     TextTypeEnum    m_eTxType;
 protected:
 
-    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
+    virtual void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+    {
+        m_oHeader = oHeader;
+        m_slideIdRef    = StreamUtils::ReadDWORD(pStream);
+        m_eTxType       = (TextTypeEnum)StreamUtils::ReadDWORD(pStream);
+    }
 };
 }

@@ -44,7 +44,12 @@ struct TmsfTimeStruct : public IStruct
     BYTE m_nSecond;
     BYTE m_nFrame;
 
-
-    void ReadFromStream(POLE::Stream *pStream) override;
+    void ReadFromStream(POLE::Stream *pStream) override
+    {
+        m_nTrack    = StreamUtils::ReadBYTE(pStream);
+        m_nMinute   = StreamUtils::ReadBYTE(pStream);
+        m_nSecond   = StreamUtils::ReadBYTE(pStream);
+        m_nFrame    = StreamUtils::ReadBYTE(pStream);
+    }
 };
 }

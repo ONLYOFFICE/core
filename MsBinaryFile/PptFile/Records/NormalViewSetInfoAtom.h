@@ -44,6 +44,17 @@ public:
 	BOOL1 m_fPreferSingleSet;
 	BYTE m_nFlags;
 
+	
+	CRecordNormalViewSetInfoAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	~CRecordNormalViewSetInfoAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+	}
 };

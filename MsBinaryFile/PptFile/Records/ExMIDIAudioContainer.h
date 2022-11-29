@@ -35,5 +35,17 @@
 class CRecordExMIDIAudioContainer : public CRecordsContainer
 {
 public:
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	
+	CRecordExMIDIAudioContainer()
+	{
+	}
+
+	~CRecordExMIDIAudioContainer()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordsContainer::ReadFromStream(oHeader, pStream);
+	}
 };

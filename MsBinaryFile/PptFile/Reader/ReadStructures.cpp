@@ -232,50 +232,8 @@ void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
     if (bLeftMargin5_)	oRun.LeftMargin5	= StreamUtils::ReadSHORT(pStream) * dScaleX;
     if (bIndent5_)		oRun.Indent5		= StreamUtils::ReadSHORT(pStream) * dScaleX;
 }
-
-void Read(POLE::Stream *pStream, SPointAtom &oAtom)
-{
-    oAtom.X = StreamUtils::ReadLONG(pStream);
-    oAtom.Y = StreamUtils::ReadLONG(pStream);
 }
 
-void Read(POLE::Stream *pStream, SColorAtom &oAtom)
-{
-    oAtom.R				= StreamUtils::ReadBYTE(pStream);
-    oAtom.G				= StreamUtils::ReadBYTE(pStream);
-    oAtom.B				= StreamUtils::ReadBYTE(pStream);
-    oAtom.Index			= StreamUtils::ReadBYTE(pStream);
-
-    oAtom.bPaletteIndex	= oAtom.bPaletteRGB = oAtom.bSystemRGB	= oAtom.bSysIndex = oAtom.bSchemeIndex = false;
-
-    if (oAtom.Index != 0xFF)
-    {
-        oAtom.bPaletteRGB	= (oAtom.Index == 0xFE);
-        oAtom.bSchemeIndex	= (oAtom.Index != 0xFE);
-    }
-}
-
-}
-
-
-CTextPFRunRecord::CTextPFRunRecord() : m_oRun()
-{
-    m_lLevel = -1;
-    m_lCount = 0;
-}
-
-CTextPFRunRecord::CTextPFRunRecord(const CTextPFRunRecord &oSrc)
-{
-    *this = oSrc;
-}
-
-CTextPFRunRecord &CTextPFRunRecord::operator=(const CTextPFRunRecord &oSrc)
-{
-    m_oRun		= oSrc.m_oRun;
-    m_lLevel	= oSrc.m_lLevel;
-    m_lCount	= oSrc.m_lCount;
-    return *this;
-}
 
 void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 {
@@ -452,23 +410,6 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
         m_oRun.textDirection = StreamUtils::ReadWORD(pStream);
 }
 
-
-CTextCFRunRecord::CTextCFRunRecord() : m_oRun()
-{
-    m_lCount = 0;
-}
-
-CTextCFRunRecord::CTextCFRunRecord(const CTextCFRunRecord &oSrc)
-{
-    *this = oSrc;
-}
-
-CTextCFRunRecord &CTextCFRunRecord::operator=(const CTextCFRunRecord &oSrc)
-{
-    m_oRun		= oSrc.m_oRun;
-    m_lCount	= oSrc.m_lCount;
-    return *this;
-}
 
 void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 {
@@ -850,73 +791,4 @@ void CMetaHeader::ToPICTHeader(BYTE *& pHeader, int & size)
     //}
     int sz = ((BYTE*)picPtr - pHeader);
     size = sz;
-}
-
-CMetaFileBuffer::CMetaFileBuffer()
-{
-    m_bIsCompressed		= false;
-    m_bIsValid			= false;
-
-    m_pMetaHeader		= NULL;
-    m_pMetaFile			= NULL;
-
-    m_lMetaHeaderSize	= 0;
-    m_lMetaFileSize		= 0;
-}
-
-CMetaFileBuffer::~CMetaFileBuffer()
-{
-    RELEASEARRAYOBJECTS(m_pMetaHeader);
-    RELEASEARRAYOBJECTS(m_pMetaFile);
-
-    if (m_bIsCompressed)
-        RELEASEARRAYOBJECTS(m_pMetaFile);
-    m_bIsCompressed = false;
-}
-
-void CMetaFileBuffer::SetHeader(BYTE *pHeader, LONG lSize)
-{
-    m_pMetaHeader		= pHeader;
-    m_lMetaHeaderSize	= lSize;
-}
-
-void CMetaFileBuffer::SetData(BYTE *pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
-{
-    m_bIsCompressed = bIsCompressed;
-    if (!m_bIsCompressed)
-    {
-        m_pMetaFile		= pCompress;
-        m_lMetaFileSize = lUncompressSize;
-    }
-    else
-    {
-        ULONG lSize = lUncompressSize;
-        m_pMetaFile = new BYTE[lUncompressSize];
-        bool bRes	= NSZip::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
-        if (bRes)
-        {
-            m_lMetaFileSize = (LONG)lSize;
-            m_bIsCompressed = true;
-        }
-        else
-        {
-            RELEASEARRAYOBJECTS(m_pMetaFile);
-
-            m_pMetaFile		= pCompress;
-            m_lMetaFileSize = lUncompressSize;
-            m_bIsCompressed = false;
-        }
-    }
-}
-
-void CMetaFileBuffer::ToFile(NSFile::CFileBinary *pFile)
-{
-    if (NULL != m_pMetaHeader)
-    {
-        pFile->WriteFile(m_pMetaHeader, m_lMetaHeaderSize);
-    }
-    if (NULL != m_pMetaFile)
-    {
-        pFile->WriteFile(m_pMetaFile, m_lMetaFileSize);
-    }
 }

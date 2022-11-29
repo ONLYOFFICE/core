@@ -43,7 +43,11 @@ struct WideColorStruct : IStruct
     USHORT m_nGreen;
     USHORT m_nBlue;
 
-
-    void ReadFromStream(POLE::Stream *pStream) override;
+    void ReadFromStream(POLE::Stream *pStream) override
+    {
+        m_nRed      = StreamUtils::ReadWORD(pStream);
+        m_nGreen    = StreamUtils::ReadWORD(pStream);
+        m_nBlue     = StreamUtils::ReadWORD(pStream);
+    }
 };
 }

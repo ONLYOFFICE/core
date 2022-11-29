@@ -35,8 +35,20 @@
 class CRecordBookmarkEntityAtom : public CUnknownRecord
 {
 public:
-    UINT m_nID = 0;
+	UINT m_nID;
     std::wstring m_strName;
+	
+	CRecordBookmarkEntityAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+	~CRecordBookmarkEntityAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+	}
+
 };

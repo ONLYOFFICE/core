@@ -42,6 +42,10 @@ struct ScalingStruct : public IStruct
     RatioStruct m_x;
     RatioStruct m_y;
 
-    void ReadFromStream(POLE::Stream* pStream) override;
+    void ReadFromStream(POLE::Stream* pStream) override
+    {
+        m_x.ReadFromStream(pStream);
+        m_y.ReadFromStream(pStream);
+    }
 };
 }

@@ -211,10 +211,6 @@ void PPT_FORMAT::CPPTXWriter::CloseFile()
     m_oManager.Clear();
 }
 
-void CPPTXWriter::Write()
-{
-}
-
 
 void PPT_FORMAT::CPPTXWriter::WriteContentTypes()
 {

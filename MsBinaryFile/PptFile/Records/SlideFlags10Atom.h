@@ -39,7 +39,15 @@ namespace PPT_FORMAT
 class CRecordSlideFlags10Atom : public CUnknownRecord
 {
 public:
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
+    {
+        m_oHeader = oHeader;
+
+        _UINT32 data(StreamUtils::ReadLONG(pStream));
+
+        m_fPreserveMaster           = ( 0x01 == ( 0x01 & ((BYTE)data) ) );
+        m_fOverrideMasterAnimation  = ( 0x02 == ( 0x02 & ((BYTE)data) ) );
+    }
 public:
     bool m_fPreserveMaster;
     bool m_fOverrideMasterAnimation;

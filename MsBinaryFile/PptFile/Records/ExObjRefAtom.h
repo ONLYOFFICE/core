@@ -35,8 +35,19 @@
 class CRecordExObjRefAtom : public CUnknownRecord
 {
 public:
-    _UINT32 m_nExObjID = 0;
+	_UINT32 m_nExObjID;
 
+	CRecordExObjRefAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	~CRecordExObjRefAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		m_nExObjID = StreamUtils::ReadDWORD(pStream);
+	}
 };

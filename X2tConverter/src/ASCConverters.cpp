@@ -1686,7 +1686,7 @@ namespace NExtractTools
             imageWriter.SetFileName(sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat()));
 		}
 		nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-        if(!imageWriter.GetIsOnlyFirst())
+		if(!imageWriter.GetIsOnlyFirst() && *params.m_oThumbnail->zip)
 		{
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
@@ -3814,6 +3814,7 @@ namespace NExtractTools
 				int nRasterFormat = 4;
 				int nSaveType = 2;
 				bool bIsOnlyFirst = true;
+				bool bIsZip = true;
 				int nRasterW = 100;
 				int nRasterH = 100;
 				if(NULL != params.m_oThumbnail)
@@ -3830,6 +3831,10 @@ namespace NExtractTools
 					if(NULL != oThumbnail->first)
 					{
 						bIsOnlyFirst = *oThumbnail->first;
+					}
+					if(NULL != oThumbnail->zip)
+					{
+						bIsZip = *oThumbnail->zip;
 					}
 					if(NULL != oThumbnail->width)
 					{
@@ -3887,7 +3892,7 @@ namespace NExtractTools
 					pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 				}
 				//zip
-				if(!bIsOnlyFirst)
+				if(!bIsOnlyFirst && bIsZip)
 				{
 					COfficeUtils oCOfficeUtils(NULL);
 					nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;

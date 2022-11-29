@@ -42,8 +42,6 @@
 
 #include "../../XlsbFormat/SharedStringsStream.h"
 
-#include "../../XlsbFormat/Biff12_records/BeginSst.h"
-#include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 #include "../Styles/Styles.h"
 
 namespace OOX

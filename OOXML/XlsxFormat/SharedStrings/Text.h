@@ -30,12 +30,10 @@
  *
  */
 #pragma once
-#ifndef OOX_TEXT_FILE_INCLUDE_H_
-#define OOX_TEXT_FILE_INCLUDE_H_
+
 
 #include "../CommonInclude.h"
 #include "../../../DesktopEditor/common/StringExt.h"
-#include "../../XlsbFormat/Biff12_structures/RichStr.h"
 
 namespace OOX
 {
@@ -100,14 +98,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			// Attributes
-			nullable<SimpleTypes::CXmlSpace>		m_oSpace;
-
-			// Value
-			std::wstring                             m_sText;
+			nullable<SimpleTypes::CXmlSpace>	m_oSpace;
+			std::wstring						m_sText;
 
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_TEXT_FILE_INCLUDE_H_

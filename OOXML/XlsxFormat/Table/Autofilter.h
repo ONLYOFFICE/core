@@ -34,29 +34,7 @@
 #define OOX_AUTOFILTER_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_unions/SORTSTATE.h"
-#include "../../XlsbFormat/Biff12_unions/SORTCONDS.h"
-#include "../../XlsbFormat/Biff12_unions/SORTCOND.h"
-#include "../../XlsbFormat/Biff12_records/BeginSortCond.h"
-#include "../../XlsbFormat/Biff12_unions/ACSORTCONDS.h"
-#include "../../XlsbFormat/Biff12_unions/SORTCOND14.h"
-#include "../../XlsbFormat/Biff12_records/BeginSortCond14.h"
-#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
-#include "../../XlsbFormat/Biff12_unions/AUTOFILTER.h"
-#include "../../XlsbFormat/Biff12_records/BeginAFilter.h"
-#include "../../XlsbFormat/Biff12_unions/FILTERCOLUMN.h"
-#include "../../XlsbFormat/Biff12_records/BeginFilterColumn.h"
-#include "../../XlsbFormat/Biff12_records/ColorFilter.h"
-#include "../../XlsbFormat/Biff12_records/DynamicFilter.h"
-#include "../../XlsbFormat/Biff12_unions/CUSTOMFILTERS.h"
-#include "../../XlsbFormat/Biff12_records/BeginCustomFilters.h"
-#include "../../XlsbFormat/Biff12_records/CustomFilter.h"
-#include "../../XlsbFormat/Biff12_unions/FILTERS.h"
-#include "../../XlsbFormat/Biff12_records/BeginFilters.h"
-#include "../../XlsbFormat/Biff12_records/Filter.h"
-#include "../../XlsbFormat/Biff12_records/AFilterDateGroupItem.h"
-#include "../../XlsbFormat/Biff12_records/Top10Filter.h"
 
 namespace OOX
 {

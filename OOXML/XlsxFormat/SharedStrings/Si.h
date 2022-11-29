@@ -30,14 +30,11 @@
  *
  */
 #pragma once
-#ifndef OOX_SI_FILE_INCLUDE_H_
-#define OOX_SI_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
 #include "PhoneticPr.h"
 #include "Run.h"
-#include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
 namespace NSBinPptxRW
 {
@@ -80,5 +77,3 @@ namespace OOX
 
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_SI_FILE_INCLUDE_H_

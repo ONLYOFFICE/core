@@ -30,13 +30,10 @@
  *
  */
 #pragma once
-#ifndef OOX_PHONETIC_FILE_INCLUDE_H_
-#define OOX_PHONETIC_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
 #include "Text.h"
-#include "../../XlsbFormat/Biff12_structures/PhRun.h"
 
 namespace OOX
 {
@@ -96,5 +93,3 @@ namespace OOX
 
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_PHONETIC_FILE_INCLUDE_H_

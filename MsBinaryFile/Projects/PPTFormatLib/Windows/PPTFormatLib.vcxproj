@@ -498,6 +498,7 @@
     <ClCompile Include="..\..\..\PptFile\Converter\transition.cpp" />
     <ClCompile Include="..\..\..\PptFile\Drawing\Elements.cpp" />
     <ClCompile Include="..\..\..\PptFile\Drawing\TextAttributesEx.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\Theme.cpp" />
     <ClCompile Include="..\..\..\PptFile\Enums\RecordType.cpp" />
     <ClCompile Include="..\..\..\PptFile\Main\PPTFormatLib.cpp" />
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\Animation.cpp" />

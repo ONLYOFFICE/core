@@ -55,6 +55,7 @@
 #include "../../../PptFile/Drawing/Slide.cpp"
 #include "../../../PptFile/Drawing/TextStructures.cpp"
 #include "../../../PptFile/Drawing/TextAttributesEx.cpp"
+#include "../../../PptFile/Drawing/Theme.cpp"
 
 #include "../../../PptFile/Converter/Animation/AnimationParser.cpp"
 #include "../../../PptFile/Converter/Animation/Animation_1995.cpp"
@@ -65,7 +66,6 @@
 #include "../../../PptFile/Converter/Animation/intermediate_anim.cpp"
 #include "../../../PptFile/Converter/timing.cpp"
 #include "../../../PptFile/Converter/transition.cpp"
-
 
 #include "../../../PptFile/Records/Animations/AnimationInfoAtom.cpp"
 #include "../../../PptFile/Records/Animations/AnimationInfoContainer.cpp"

@@ -30,6 +30,7 @@
  *
  */
 #include "Si.h"
+#include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 

@@ -31,6 +31,8 @@
  */
 
 #include "SharedStrings.h"
+#include "../../XlsbFormat/Biff12_records/BeginSst.h"
+#include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 
 namespace OOX
 {

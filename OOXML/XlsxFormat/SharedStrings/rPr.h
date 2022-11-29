@@ -32,6 +32,8 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
+#include "../WritingElement.h"
+
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
@@ -54,7 +56,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff<>>						m_oAuto;
+			nullable<SimpleTypes::COnOff>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIndexed;
 			nullable_string										m_oRgb;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTheme;

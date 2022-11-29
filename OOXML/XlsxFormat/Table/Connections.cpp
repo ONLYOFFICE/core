@@ -32,6 +32,24 @@
 
 #include "Connections.h"
 
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/ConnectionsStream.h"
+#include "../../XlsbFormat/Biff12_unions/EXTCONNECTIONS.h"
+#include "../../XlsbFormat/Biff12_unions/EXTCONNECTION.h"
+#include "../../XlsbFormat/Biff12_records/BeginExtConnection.h"
+#include "../../XlsbFormat/Biff12_unions/ECDBPROPS.h"
+#include "../../XlsbFormat/Biff12_records/BeginECDbProps.h"
+#include "../../XlsbFormat/Biff12_unions/ECOLAPPROPS.h"
+#include "../../XlsbFormat/Biff12_records/BeginECOlapProps.h"
+#include "../../XlsbFormat/Biff12_unions/ECTXTWIZ.h"
+#include "../../XlsbFormat/Biff12_records/BeginECTxtWiz.h"
+#include "../../XlsbFormat/Biff12_unions/ECTWFLDINFOLST.h"
+#include "../../XlsbFormat/Biff12_records/BeginECTwFldInfo.h"
+#include "../../XlsbFormat/Biff12_unions/ECWEBPROPS.h"
+#include "../../XlsbFormat/Biff12_records/BeginECWebProps.h"
+#include "../../XlsbFormat/Biff12_unions/EXTCONN15.h"
+#include "../../XlsbFormat/Biff12_records/BeginExtConn15.h"
+#include "../../XlsbFormat/Biff12_records/RangePr15.h"
 namespace OOX
 {
 	namespace Spreadsheet

@@ -1388,5 +1388,8 @@
     <ClCompile Include="..\..\..\PptFile\PPTXWriter\Animation.cpp">
       <Filter>OOXWriter</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\Theme.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

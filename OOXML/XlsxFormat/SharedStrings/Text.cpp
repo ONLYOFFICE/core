@@ -30,6 +30,7 @@
  *
  */
 #include "Text.h"
+#include "../../XlsbFormat/Biff12_structures/RichStr.h"
 
 namespace OOX
 {

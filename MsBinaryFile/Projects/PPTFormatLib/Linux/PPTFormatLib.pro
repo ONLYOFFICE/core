@@ -307,6 +307,7 @@ SOURCES += \
         ../../../PptFile/Drawing/Elements.cpp \
         ../../../PptFile/Drawing/Layout.cpp \
         ../../../PptFile/Drawing/Slide.cpp \
+        ../../../PptFile/Drawing/Theme.cpp \
         ../../../PptFile/Drawing/TextStructures.cpp \
         ../../../PptFile/Drawing/TextAttributesEx.cpp \
         \

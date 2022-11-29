@@ -36,16 +36,28 @@
 
 namespace PPT_FORMAT
 {
-struct ColorStruct
-{
+struct ColorStruct  {
+
     BYTE m_red;
     BYTE m_green;
     BYTE m_blue;
 
+    ColorStruct()
+    {
+        clear();
+    }
 
-    ColorStruct();
-    void clear();
+    void clear()
+    {
+        m_red = m_green = m_blue = 0;
+    }
 
-    void ReadFromStream(POLE::Stream * pStream) override;
+    void ReadFromStream(POLE::Stream * pStream)
+    {
+        m_red       = StreamUtils::ReadBYTE(pStream);
+        m_green     = StreamUtils::ReadBYTE(pStream);
+        m_blue      = StreamUtils::ReadBYTE(pStream);
+        StreamUtils::StreamSkip(1, pStream);
+    }
 };
 }

@@ -35,20 +35,18 @@
 #include "../BaseShape.h"
 #include "../../../PptFile/Drawing/Attributes.h"
 #include "PptFormula.h"
+#include "../GraphicsPath.h"
 
 namespace NSCustomVML
 {
-    using namespace PPT_FORMAT;
-    using namespace NSGuidesVML;
-
     class CSegment
     {
     public:
-        RulesType	m_eRuler;
-        WORD		m_nCount;
+		ODRAW::RulesType m_eRuler;
+        WORD m_nCount;
 
     public:
-        CSegment(RulesType eType = rtMoveTo, WORD nCount = 2)
+        CSegment(ODRAW::RulesType eType = ODRAW::rtMoveTo, WORD nCount = 2)
         {
             m_eRuler = eType;
             m_nCount = nCount;
@@ -84,37 +82,37 @@ namespace NSCustomVML
             switch (value)
             {
             case 0x0001: // lineto
-                m_eRuler = rtLineTo;
+                m_eRuler = ODRAW::rtLineTo;
                 m_nCount = 1;
                 break;
             case 0x4000: // moveto
-                m_eRuler = rtMoveTo;
+                m_eRuler = ODRAW::rtMoveTo;
                 m_nCount = 1;
                 break;
             case 0x2000: // curveto
-                m_eRuler = rtCurveTo;
+                m_eRuler = ODRAW::rtCurveTo;
                 m_nCount = 3;
                 break;
             case 0xb300: // arcto
-                m_eRuler = rtArc;
+                m_eRuler = ODRAW::rtArc;
                 m_nCount = 2;
                 break;
             case 0xac00:
             case 0xaa00: // nofill
             case 0xad00:
-                m_eRuler = rtNoFill;
+                m_eRuler = ODRAW::rtNoFill;
                 break;
             case 0xab00: // nostroke
-                m_eRuler = rtNoStroke;
+                m_eRuler = ODRAW::rtNoStroke;
                 break;
             case 0x6001: // close
-                m_eRuler = rtClose;
+                m_eRuler = ODRAW::rtClose;
                 break;
             case 0x8000: // end
-                m_eRuler = rtEnd;
+                m_eRuler = ODRAW::rtEnd;
                 break;
             default: // given number of lineto elements
-                m_eRuler = rtLineTo;
+                m_eRuler = ODRAW::rtLineTo;
                 m_nCount = value;
                 break;
             }
@@ -127,7 +125,7 @@ namespace NSCustomVML
 
             if (type <= 4)
             {
-                m_eRuler	= (RulesType)type;
+                m_eRuler	= (ODRAW::RulesType)type;
                 m_nCount	= (mem >> 3) & 0x1FFF;
                 return;
             }
@@ -139,77 +137,77 @@ namespace NSCustomVML
             {
             case 0x00:
             {
-                m_eRuler = rtLineTo;
+                m_eRuler = ODRAW::rtLineTo;
                 break;
             }
             case 0x01:
             {
-                m_eRuler = rtAngleEllipseTo;
+                m_eRuler = ODRAW::rtAngleEllipseTo;
                 break;
             }
             case 0x02:
             {
-                m_eRuler = rtAngleEllipse;
+                m_eRuler = ODRAW::rtAngleEllipse;
                 break;
             }
             case 0x03:
             {
-                m_eRuler = rtArcTo;
+                m_eRuler = ODRAW::rtArcTo;
                 break;
             }
             case 0x04:
             {
-                m_eRuler = rtArc;
+                m_eRuler = ODRAW::rtArc;
                 break;
             }
             case 0x05:
             {
-                m_eRuler = rtClockwiseArcTo;
+                m_eRuler = ODRAW::rtClockwiseArcTo;
                 break;
             }
             case 0x06:
             {
-                m_eRuler = rtClockwiseArc;
+                m_eRuler = ODRAW::rtClockwiseArc;
                 break;
             }
             case 0x07:
             {
-                m_eRuler = rtEllipticalQuadrX;
+                m_eRuler = ODRAW::rtEllipticalQuadrX;
                 break;
             }
             case 0x08:
             {
-                m_eRuler = rtEllipticalQuadrY;
+                m_eRuler = ODRAW::rtEllipticalQuadrY;
                 break;
             }
             case 0x09:
             {
-                m_eRuler = rtQuadrBesier;
+                m_eRuler = ODRAW::rtQuadrBesier;
                 break;
             }
             case 0x0A:
             {
-                m_eRuler = rtNoFill;
+                m_eRuler = ODRAW::rtNoFill;
                 break;
             }
             case 0x0B:
             {
-                m_eRuler = rtNoStroke;
+                m_eRuler = ODRAW::rtNoStroke;
                 break;
             }
             case 0x15:
             {
-                m_eRuler = rtFillColor;
+                m_eRuler = ODRAW::rtFillColor;
                 break;
             }
             case 0x16:
             {
-                m_eRuler = rtLineColor;
+                m_eRuler = ODRAW::rtLineColor;
                 break;
             }
             default:
             {
-                m_eRuler = rtCurveTo;
+                m_eRuler = ODRAW::rtCurveTo;
             }
             };
 
@@ -222,7 +220,7 @@ namespace NSCustomVML
             BYTE type = (mem >> 13 & 0x07);
             if (type <= 4)
             {
-                m_eRuler	= (RulesType)type;
+                m_eRuler	= (ODRAW::RulesType)type;
                 m_nCount	= (mem & 0x1FFF);
                 m_nCount = (WORD)GetCountPoints2(m_eRuler, m_nCount);
                 return;
@@ -235,68 +233,68 @@ namespace NSCustomVML
             {
             case 0x00:
             {
-                m_eRuler = rtLineTo;
+                m_eRuler = ODRAW::rtLineTo;
                 break;
             }
             case 0x01:
             {
-                m_eRuler = rtAngleEllipseTo;
+                m_eRuler = ODRAW::rtAngleEllipseTo;
                 break;
             }
             case 0x02:
             {
-                m_eRuler = rtAngleEllipse;
+                m_eRuler = ODRAW::rtAngleEllipse;
                 break;
             }
             case 0x03:
             {
-                m_eRuler = rtArcTo;
+                m_eRuler = ODRAW::rtArcTo;
                 break;
             }
             case 0x04:
             {
-                m_eRuler = rtArc;
+                m_eRuler = ODRAW::rtArc;
                 break;
             }
             case 0x05:
             {
-                m_eRuler = rtClockwiseArcTo;
+                m_eRuler = ODRAW::rtClockwiseArcTo;
                 break;
             }
             case 0x06:
             {
-                m_eRuler = rtClockwiseArc;
+                m_eRuler = ODRAW::rtClockwiseArc;
                 break;
             }
             case 0x07:
             {
-                m_eRuler = rtEllipticalQuadrX;
+                m_eRuler = ODRAW::rtEllipticalQuadrX;
                 break;
             }
             case 0x08:
             {
-                m_eRuler = rtEllipticalQuadrY;
+                m_eRuler = ODRAW::rtEllipticalQuadrY;
                 break;
             }
             case 0x09:
             {
-                m_eRuler = rtQuadrBesier;
+                m_eRuler = ODRAW::rtQuadrBesier;
                 break;
             }
             case 0x0A:
             {
-                m_eRuler = rtNoFill;
+                m_eRuler = ODRAW::rtNoFill;
                 break;
             }
             case 0x0B:
             {
-                m_eRuler = rtNoStroke;
+                m_eRuler = ODRAW::rtNoStroke;
                 break;
             }
             case 0x0C:
             case 0x10:
             {
-                m_eRuler = rtLineTo;
+                m_eRuler = ODRAW::rtLineTo;
                 break;
             }
             case 0x0D:
@@ -307,22 +305,22 @@ namespace NSCustomVML
             case 0x13:
             case 0x14:
             {
-                m_eRuler = rtCurveTo;
+                m_eRuler = ODRAW::rtCurveTo;
                 break;
             }
             case 0x15:
             {
-                m_eRuler = rtFillColor;
+                m_eRuler = ODRAW::rtFillColor;
                 break;
             }
             case 0x16:
             {
-                m_eRuler = rtLineColor;
+                m_eRuler = ODRAW::rtLineColor;
                 break;
             }
             default:
             {
-                m_eRuler = rtCurveTo;
+                m_eRuler = ODRAW::rtCurveTo;
             }
             };
 
@@ -335,7 +333,7 @@ namespace NSCustomVML
     class CGuide
     {
     public:
-        FormulaType m_eType;
+		NSGuidesVML::FormulaType m_eType;
 
         BYTE m_param_type1;
         BYTE m_param_type2;
@@ -351,7 +349,7 @@ namespace NSCustomVML
 
         CGuide()
         {
-            m_eType = ftVal;
+            m_eType = NSGuidesVML::ftVal;
 
             m_param_type1 = 0;
             m_param_type2 = 0;
@@ -401,7 +399,7 @@ namespace NSCustomVML
         {
             WORD ftType = StreamUtils::ReadWORD(pStream);
 
-            m_eType = FormulaType(ftType & 0x1FFF);
+            m_eType = NSGuidesVML::FormulaType(ftType & 0x1FFF);
 
             m_param_type1 = (BYTE)(ftType & 0x04);
             m_param_type2 = (BYTE)(ftType & 0x02);
@@ -415,7 +413,7 @@ namespace NSCustomVML
         {
             WORD ftType = oReader.ReadWORD();
 
-            m_eType = FormulaType(ftType & 0x1FFF);
+            m_eType = NSGuidesVML::FormulaType(ftType & 0x1FFF);
 
             m_param_type1 = (BYTE)(ftType & 0x04);
             m_param_type2 = (BYTE)(ftType & 0x02);
@@ -482,7 +480,7 @@ namespace NSCustomVML
     class CCustomVML
     {
     private:
-        RulesType m_ePath;
+		ODRAW::RulesType m_ePath;
 
         std::vector<Aggplus::POINT>		m_arVertices;
         std::vector<CSegment>			m_arSegments;
@@ -495,13 +493,13 @@ namespace NSCustomVML
         bool m_bIsVerticesPresent;
         bool m_bIsPathPresent;
 
-        CBrush	m_oBrush;
-        CPen	m_oPen;
+		ODRAW::CBrush	m_oBrush;
+		ODRAW::CPen	m_oPen;
 
     public:
         CCustomVML() : m_pAdjustValues(NULL)
         {
-            m_ePath = rtCurveTo/*rtLineTo*/;
+            m_ePath = ODRAW::rtCurveTo/*rtLineTo*/;
 
             m_bIsVerticesPresent	= false;
             m_bIsPathPresent		= false;
@@ -545,7 +543,7 @@ namespace NSCustomVML
             return (m_bIsVerticesPresent && m_bIsPathPresent);
         }
 
-        void SetPath(RulesType ePath)
+        void SetPath(ODRAW::RulesType ePath)
         {
             m_ePath = ePath;
             m_bIsPathPresent = true;
@@ -706,10 +704,10 @@ namespace NSCustomVML
 
                 if (0 == oInfo.m_nCount)
                 {
-                    if ((rtEnd		!= oInfo.m_eRuler) &&
-                            (rtNoFill	!= oInfo.m_eRuler) &&
-                            (rtNoStroke != oInfo.m_eRuler) &&
-                            (rtClose	!= oInfo.m_eRuler))
+                    if ((ODRAW::rtEnd		!= oInfo.m_eRuler) &&
+                            (ODRAW::rtNoFill	!= oInfo.m_eRuler) &&
+                            (ODRAW::rtNoStroke != oInfo.m_eRuler) &&
+                            (ODRAW::rtClose	!= oInfo.m_eRuler))
                     {
                         continue;
                     }
@@ -734,10 +732,10 @@ namespace NSCustomVML
 
                 if (0 == oInfo.m_nCount)
                 {
-                    if ((rtEnd		!= oInfo.m_eRuler) &&
-                            (rtNoFill	!= oInfo.m_eRuler) &&
-                            (rtNoStroke != oInfo.m_eRuler) &&
-                            (rtClose	!= oInfo.m_eRuler))
+                    if ((ODRAW::rtEnd		!= oInfo.m_eRuler) &&
+                            (ODRAW::rtNoFill	!= oInfo.m_eRuler) &&
+                            (ODRAW::rtNoStroke != oInfo.m_eRuler) &&
+                            (ODRAW::rtClose	!= oInfo.m_eRuler))
                     {
                         continue;
                     }
@@ -817,7 +815,7 @@ namespace NSCustomVML
             m_pAdjustValues = pList;
         }
 
-        void ToCustomShape(CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager)
+        void ToCustomShape(ODRAW::CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager)
         {
             if ((NULL == pShape) || (!IsCustom()))
                 return;
@@ -881,21 +879,21 @@ namespace NSCustomVML
                 {
                     if (bBreak)
                     {
-                        if ((rtEnd		!= m_arSegments[nS].m_eRuler) &&
-                                (rtNoFill	!= m_arSegments[nS].m_eRuler) &&
-                                (rtNoStroke != m_arSegments[nS].m_eRuler) &&
-                                (rtClose	!= m_arSegments[nS].m_eRuler))
+                        if ((ODRAW::rtEnd		!= m_arSegments[nS].m_eRuler) &&
+                                (ODRAW::rtNoFill	!= m_arSegments[nS].m_eRuler) &&
+                                (ODRAW::rtNoStroke != m_arSegments[nS].m_eRuler) &&
+                                (ODRAW::rtClose	!= m_arSegments[nS].m_eRuler))
                         {
                             strPath += _T("e");
                             break;
                         }
                     }
 
-                    if ((rtFillColor == m_arSegments[nS].m_eRuler) || (rtLineColor == m_arSegments[nS].m_eRuler))
+                    if ((ODRAW::rtFillColor == m_arSegments[nS].m_eRuler) || (ODRAW::rtLineColor == m_arSegments[nS].m_eRuler))
                     {
                         if (nStart <  m_arVertices.size())
                         {
-                            if (rtFillColor == m_arSegments[nS].m_eRuler)
+                            if (ODRAW::rtFillColor == m_arSegments[nS].m_eRuler)
                             {
                                 m_oBrush.Color1 = (_UINT32)m_arVertices[nStart].x;
                                 m_oBrush.Color2 = (_UINT32)m_arVertices[nStart].y;

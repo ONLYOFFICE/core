@@ -39,8 +39,18 @@ class CRecordTextBookmarkAtom : public CUnknownRecord
 	UINT m_nBookmarkID;
 
 public:
-    CRecordTextBookmarkAtom();
-    ~CRecordTextBookmarkAtom();
+	
+	CRecordTextBookmarkAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	~CRecordTextBookmarkAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+	}
+
 };

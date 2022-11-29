@@ -44,6 +44,9 @@ struct TimeAnimateColorBy
     _UINT32 component1;
     _UINT32 component2;
 
-    unsigned long FRGB (BYTE alpha = 0xFF);
+    inline unsigned long FRGB (BYTE alpha = 0xFF)	//
+    {
+        return ((component2 <<  16) |	(component1 << 8) | (component0 <<   0) | (alpha << 24));
+    }
 };
 }

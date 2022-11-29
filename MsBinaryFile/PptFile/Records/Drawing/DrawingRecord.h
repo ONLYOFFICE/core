@@ -32,7 +32,6 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-
 class CRecordDrawingRecord : public CUnknownRecord
 {
 public:
@@ -41,8 +40,18 @@ public:
     UINT m_nPidCur;
 
 	
-    CRecordDrawingRecord();
-    ~CRecordDrawingRecord();
+	CRecordDrawingRecord()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+	~CRecordDrawingRecord()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+		m_nCountShapes = (UINT)StreamUtils::ReadDWORD(pStream);
+		m_nPidCur = (UINT)StreamUtils::ReadDWORD(pStream);
+	}
 };

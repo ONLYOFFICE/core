@@ -92,8 +92,9 @@ SOURCES += \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
-	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
-	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
+        ../../../../MsBinaryFile/Common/Vml/PPTXShape/ElementSettings.cpp \
+        ../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
+        ../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
 	../../../Binary/Presentation/BinaryFileReaderWriter.cpp \
 	../../../Binary/Presentation/FontPicker.cpp \

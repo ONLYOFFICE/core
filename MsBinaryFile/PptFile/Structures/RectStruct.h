@@ -44,7 +44,12 @@ struct RectStruct : public IStruct
     _INT32 m_nRight;
     _INT32 m_nBottom;
 
-
-    void ReadFromStream(POLE::Stream *pStream) override;
+    void ReadFromStream(POLE::Stream *pStream) override
+    {
+        m_nTop = StreamUtils::ReadLONG(pStream);
+        m_nLeft = StreamUtils::ReadLONG(pStream);
+        m_nRight = StreamUtils::ReadLONG(pStream);
+        m_nBottom = StreamUtils::ReadLONG(pStream);
+    }
 };
 }

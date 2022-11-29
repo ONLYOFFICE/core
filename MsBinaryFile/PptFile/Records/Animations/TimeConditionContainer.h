@@ -31,6 +31,7 @@
  */
 #pragma once
 
+
 #include "../../Reader/Records.h"
 #include "TimeConditionAtom.h"
 #include "ClientVisualElementContainer.h"
@@ -41,8 +42,31 @@ namespace PPT_FORMAT
 class CRecordTimeConditionContainer : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
+    {
+        m_oHeader = oHeader;
 
+        LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
+
+        SRecordHeader header;
+
+        if ( header.ReadFromStream(pStream) )
+        {
+            m_oTimeConditionAtom.ReadFromStream ( header, pStream );
+
+            if ( TL_TOT_VisualElement == m_oTimeConditionAtom.m_TriggerObject )
+            {
+                if ( header.ReadFromStream(pStream) )
+                {
+                    m_oVisualElement.ReadFromStream ( header, pStream );
+                }
+            }
+        }
+
+        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
+    }
+
+public:
 
     CRecordTimeConditionAtom				m_oTimeConditionAtom;
     CRecordClientVisualElementContainer     m_oVisualElement;

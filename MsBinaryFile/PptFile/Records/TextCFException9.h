@@ -43,6 +43,12 @@ struct STextCFException9
     nullable_uint   m_pp10runid;    // 4 bits
 
 
-    void ReadFromStream(POLE::Stream* pStream);
+    void ReadFromStream(POLE::Stream* pStream)
+    {
+        m_masks.ReadFromStream(pStream);
+
+        if (m_masks.m_pp10ext)
+            m_pp10runid = 0xF & StreamUtils::ReadDWORD(pStream);
+    }
 };
 }

@@ -35,12 +35,34 @@
 class CRecordExMediaAtom : public CUnknownRecord
 {
 public:
-    _UINT32 m_nExObjID = 0;
+	_UINT32 m_nExObjID;
 	
-    bool m_bLoop = false;
-    bool m_bRewind = false;
-    bool m_bNarration = false;
+	bool m_bLoop;
+	bool m_bRewind;
+	bool m_bNarration;
 
+public:
+	
+	CRecordExMediaAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+	~CRecordExMediaAtom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		m_nExObjID = StreamUtils::ReadDWORD(pStream);
+
+		USHORT nFlag = StreamUtils::ReadWORD(pStream);
+
+		m_bLoop = ((nFlag & 0x01) == 0x01);
+		m_bRewind = ((nFlag & 0x02) == 0x02);
+		m_bNarration = ((nFlag & 0x04) == 0x04);
+
+		StreamUtils::StreamSkip(2, pStream);
+	}
 };

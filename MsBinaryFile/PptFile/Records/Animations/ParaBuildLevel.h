@@ -40,10 +40,30 @@
 class CRecordParaBuildLevel
 {
 public:
-    CRecordParaBuildLevel ();
-    ~CRecordParaBuildLevel();
+    CRecordParaBuildLevel () : m_nRecordLen(0)
+    {
+    }
 
-    virtual void ReadFromStream ( POLE::Stream* pStream );
+    ~CRecordParaBuildLevel()
+    {
+    }
+
+    virtual void ReadFromStream ( POLE::Stream* pStream )
+    {
+        SRecordHeader oHeader;
+
+        if (oHeader.ReadFromStream(pStream))
+        {
+            m_oLevelInfoAtom.ReadFromStream ( oHeader, pStream );
+            m_nRecordLen += oHeader.RecLen + 8;
+        }
+
+        if (oHeader.ReadFromStream(pStream))
+        {
+            m_oTimeNode.ReadFromStream ( oHeader, pStream );
+            m_nRecordLen += oHeader.RecLen + 8;
+        }
+    }
 
     _UINT32 getRecordLen()const {return m_nRecordLen;}
 
@@ -51,5 +71,5 @@ public:
     CRecordExtTimeNodeContainer     m_oTimeNode;	// ExtTimeNodeContainer
 
 private:
-    _UINT32 m_nRecordLen = 0;
+    _UINT32 m_nRecordLen;
 };

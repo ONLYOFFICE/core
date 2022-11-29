@@ -38,13 +38,30 @@ namespace PPT_FORMAT {
 class CRecordProgStringTagContainer : public CUnknownRecord
 {
 public:
-    CRecordProgStringTagContainer();
-    ~CRecordProgStringTagContainer();
+    CRecordProgStringTagContainer() : m_pTagValueAtom(nullptr) {}
 
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
+    ~CRecordProgStringTagContainer()
+    {
+        RELEASEOBJECT(m_pTagValueAtom)
+    }
+
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
+    {
+        m_oHeader = oHeader;
+        SRecordHeader ReadHeader;
+        ReadHeader.ReadFromStream(pStream);
+
+        m_oTagNameAtom.ReadFromStream(ReadHeader, pStream);
+        if (m_oHeader.RecLen > 8 + ReadHeader.RecLen)
+        {
+            m_pTagValueAtom = new CRecordTagValueAtom();
+            ReadHeader.ReadFromStream(pStream);
+            m_pTagValueAtom->ReadFromStream(ReadHeader, pStream);
+        }
+    }
 
 public:
     CRecordTagNameAtom      m_oTagNameAtom;
-    CRecordTagValueAtom*    m_pTagValueAtom = nullptr;    // OPTIONAL
+    CRecordTagValueAtom*    m_pTagValueAtom;    // OPTIONAL
 };
 }

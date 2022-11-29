@@ -35,5 +35,17 @@
 class CRecordExObjListContainer : public CRecordsContainer
 {
 public:
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	
+	CRecordExObjListContainer()
+	{
+	}
+
+	~CRecordExObjListContainer()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordsContainer::ReadFromStream(oHeader, pStream);
+	}
 };

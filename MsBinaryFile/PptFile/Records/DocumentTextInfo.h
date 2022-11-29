@@ -35,11 +35,37 @@
 class CRecordDocumentTextInfo : public CRecordsContainer
 {
 public:
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	
+	CRecordDocumentTextInfo()
+	{
+	}
+
+	~CRecordDocumentTextInfo()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordsContainer::ReadFromStream(oHeader, pStream);
+	}
+
 };
 
 class CRecordFontCollection : public CRecordsContainer
 {
 public:
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	
+	CRecordFontCollection()
+	{
+	}
+
+	~CRecordFontCollection()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		CRecordsContainer::ReadFromStream(oHeader, pStream);
+	}
+
 };

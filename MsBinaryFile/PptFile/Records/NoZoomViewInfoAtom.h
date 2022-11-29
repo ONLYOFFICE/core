@@ -38,8 +38,18 @@ public:
 	SScalingAtom m_oCurScale;
 	SPointAtom m_nOrigin;
 
-    BOOL1 m_bDraftMode;
+	BOOL1 m_bDraftMode;
+	
+	CRecordNoZoomViewInfoAtom()
+	{
+	}
 
+	~CRecordNoZoomViewInfoAtom()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		return CUnknownRecord::ReadFromStream(oHeader, pStream);
+	}
 };

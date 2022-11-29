@@ -37,7 +37,19 @@ class CRecordCString : public CUnknownRecord
 {
 public:
 	std::wstring m_strText;
+	
+	CRecordCString()
+	{
+	}
 
+	~CRecordCString()
+	{
+	}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+        m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
+	}
+
 };

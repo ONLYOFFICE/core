@@ -55,16 +55,8 @@ namespace OOX
 		{
 		public:
 
-			CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
-			{
-				init();
-			}
-			CXlsx(const CPath& oFilePath) : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
-			{
-				init();
-
-				Read( oFilePath );
-			}
+			CXlsx();
+			CXlsx(const CPath& oFilePath);
 			virtual ~CXlsx();
 
 			bool Read(const CPath& oFilePath);
@@ -82,10 +74,8 @@ namespace OOX
 			void CreateSharedStrings ();
 			void CreateStyles ();
 			
-			PPTX::Theme  *GetTheme () const
-			{
-				return (PPTX::Theme  *)(m_pTheme.GetPointer());
-			}
+			PPTX::Theme  *GetTheme () const;
+
 			smart_ptr<PPTX::Theme>							m_pTheme;
 
 			CApp*											m_pApp;

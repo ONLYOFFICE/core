@@ -40,28 +40,14 @@ namespace OOX
 	class Audio : public Media
 	{
 	public:
-		Audio(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
-		{
-		}
-		Audio(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
-		{
-		}
-		virtual ~Audio()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::Audio;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
+		Audio(OOX::Document* pMain, bool bDocument = true);
+		Audio(OOX::Document* pMain, const CPath& filename, bool bExternal = false);
+		virtual ~Audio();
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

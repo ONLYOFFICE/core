@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 #include "Media.h"
 
 namespace OOX
@@ -37,27 +38,13 @@ namespace OOX
 	class Image : public Media
 	{
 	public:
-		Image(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
-		{
-		}
-		Image(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
-		{
-		}
-		virtual ~Image()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::Image;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
+		Image(OOX::Document* pMain, bool bDocument = true);
+		Image(OOX::Document* pMain, const CPath& filename, bool bExternal = false);
+		virtual ~Image();
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 	};
 } // namespace OOX

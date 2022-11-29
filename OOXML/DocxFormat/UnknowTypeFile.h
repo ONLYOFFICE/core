@@ -42,34 +42,15 @@ namespace OOX
 	class UnknowTypeFile : public File
 	{
 	public:
-		UnknowTypeFile(OOX::Document* pMain): File(pMain)
-		{
-		}
-		virtual ~UnknowTypeFile()
-		{
-		}
+		UnknowTypeFile(OOX::Document* pMain);
+		virtual ~UnknowTypeFile();
 
-	public:
-		virtual void read(const CPath& filename)
-		{
-		}
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
-		{
-		}
+		virtual void read(const CPath& filename);
+		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
 
-	public:
-		virtual const FileType type() const
-		{
-			return FileTypes::Unknow;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

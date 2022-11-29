@@ -39,26 +39,11 @@ namespace Writers
 	class WebSettingsWriter
 	{
         std::wstring	m_sDir;
+
 	public:
-        WebSettingsWriter(std::wstring sDir):m_sDir(sDir)
-		{
-		}
-		void Write(bool bGlossary = false)
-		{
-            std::wstring s_Common;
+		WebSettingsWriter(std::wstring sDir);
 
-			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
-<w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
-<w:optimizeForBrowser/> \
-</w:webSettings>");
-
-            OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("webSettings.xml");
-
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(fileName.GetPath());
-            oFile.WriteStringUTF8(s_Common);
-			oFile.CloseFile();
-		}
+		void Write(bool bGlossary = false);
 	};
 }
 #endif	// #ifndef WEB_SETTINGS_WRITER

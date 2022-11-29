@@ -49,6 +49,34 @@ namespace OOX
 
 		read(filename);
 	}
+	Media::~Media()
+	{
+	}
+	const FileType Media::type() const
+	{
+		return FileTypes::Media;
+	}
+	bool Media::IsExist()
+	{
+		return m_bExist;
+	}
+	bool Media::IsExternal()
+	{
+		return m_bExternal;
+	}
+	CPath Media::filename()
+	{
+		return m_filename;
+	}
+	const CPath Media::DefaultDirectory() const
+	{
+		if (m_bDocument) return type().DefaultDirectory();
+		else	return L"../" + type().DefaultDirectory();
+	}
+	const CPath Media::DefaultFileName() const
+	{
+		return m_filename.GetFilename();
+	}
 	void Media::read(const CPath& filename)
 	{
 		m_filename = filename;

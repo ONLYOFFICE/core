@@ -46,48 +46,19 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CMacroName)
-			CMacroName()
-			{
-			}
-			virtual ~CMacroName()
-			{
-			}
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:val", m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			CMacroName();
+			virtual ~CMacroName();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oVal.IsInit() )
-				{
-					sResult += L"w:val=\"";
-					sResult += m_oVal->ToString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring ToString() const;
 
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CMacroName > m_oVal;
 		};
 
@@ -98,57 +69,19 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CFFHelpText)
-			CFFHelpText()
-			{
-			}
-			virtual ~CFFHelpText()
-			{
-			}
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
-				XmlMacroReadAttributeBase( oNode, L"w:val",  m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			CFFHelpText();
+			virtual ~CFFHelpText();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oVal.IsInit() )
-				{
-					sResult += L"w:val=\"";
-					sResult += m_oVal->ToXmlString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring ToString() const;
 
-				if ( m_oType.IsInit() )
-				{
-					sResult += L"w:type=\"";
-					sResult += m_oType->ToString();
-					sResult += L"\" ";
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:type", m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",  m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CInfoTextType>	m_oType;
 			nullable<SimpleTypes::CFFHelpTextVal>	m_oVal;
 		};
@@ -160,48 +93,19 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CFFName)
-			CFFName()
-			{
-			}
-			virtual ~CFFName()
-			{
-			}
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:val",  m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			CFFName();
+			virtual ~CFFName();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oVal.IsInit() )
-				{
-					sResult += L"w:val=\"";
-					sResult += m_oVal->ToXmlString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring ToString() const;
 
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CFFName > m_oVal;
 		};
 
@@ -212,57 +116,19 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CFFStatusText)
-			CFFStatusText()
-			{
-			}
-			virtual ~CFFStatusText()
-			{
-			}
 
-			virtual void FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:type", m_oType );
-				XmlMacroReadAttributeBase( oNode, L"w:val",  m_oVal );
-			}
-			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			CFFStatusText();
+			virtual ~CFFStatusText();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual void FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oVal.IsInit() )
-				{
-					sResult += L"w:val=\"";
-					sResult += m_oVal->ToXmlString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring ToString() const;
 
-				if ( m_oType.IsInit() )
-				{
-					sResult += L"w:type=\"";
-					sResult += m_oType->ToString();
-					sResult += L"\" ";
-				}
-
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:type", m_oType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:val",  m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CInfoTextType>	m_oType;
 			nullable<SimpleTypes::CFFStatusTextVal>	m_oVal;
 		};
@@ -274,48 +140,19 @@ namespace ComplexTypes
 		{
 		public:
 			ComplexTypes_AdditionConstructors(CFFTextType)
-			CFFTextType()
-			{
-			}
-			virtual ~CFFTextType()
-			{
-			}
 
-			virtual void    FromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:val",  m_oVal );
-			}
-			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			CFFTextType();
+			virtual ~CFFTextType();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-			virtual std::wstring ToString() const
-			{
-				std::wstring sResult;
+			virtual void    FromXML(XmlUtils::CXmlNode& oNode);
+			virtual void    FromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oVal.IsInit() )
-				{
-					sResult += L"w:val=\"";
-					sResult += m_oVal->ToString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring ToString() const;
 
-				return sResult;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:val", m_oVal )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CFFTextType> m_oVal;
 		};
 
@@ -332,80 +169,25 @@ namespace OOX
 		class CFFCheckBox : public WritingElement
 		{
 		public:
-			CFFCheckBox()
-			{
-			}
-			CFFCheckBox(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CFFCheckBox(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFFCheckBox()
-			{
-			}
-			const CFFCheckBox &operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( (XmlUtils::CXmlNode&) oNode );
-				return *this;
-			}
-			const CFFCheckBox &operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNode oChild;
-				WritingElement_ReadNode( oNode, oChild, L"w:checked",  m_oChecked );
-				WritingElement_ReadNode( oNode, oChild, L"w:default",  m_oDefault );
-				WritingElement_ReadNode( oNode, oChild, L"w:size",     m_oSize );
-				WritingElement_ReadNode( oNode, oChild, L"w:sizeAuto", m_oSizeAuto );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			CFFCheckBox();
+			CFFCheckBox(XmlUtils::CXmlNode &oNode);
+			CFFCheckBox(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CFFCheckBox();
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					if ( L"w:checked" == sName )
-						m_oChecked = oReader;
-					else if ( L"w:default" == sName )
-						m_oDefault = oReader;
-					else if ( L"w:size" == sName )
-						m_oSize = oReader;
-					else if ( L"w:sizeAuto" == sName )
-						m_oSizeAuto = oReader;
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = L"<w:checkBox>";
+			const CFFCheckBox &operator=(const XmlUtils::CXmlNode &oNode);
+			const CFFCheckBox &operator=(const XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_WriteNode_1( L"<w:checked ",  m_oChecked );
-				WritingElement_WriteNode_1( L"<w:default ",  m_oDefault );
-				WritingElement_WriteNode_1( L"<w:size ",     m_oSize );
-				WritingElement_WriteNode_1( L"<w:sizeAuto ", m_oSizeAuto );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"</w:checkBox>";
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return et_w_checkBox;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		public:
-			nullable<ComplexTypes::Word::COnOff2 > m_oChecked;
-			nullable<ComplexTypes::Word::COnOff2 > m_oDefault;
-			nullable<ComplexTypes::Word::CHpsMeasure                     > m_oSize;
-			nullable<ComplexTypes::Word::COnOff2 > m_oSizeAuto;
+			nullable<ComplexTypes::Word::COnOff2     > m_oChecked;
+			nullable<ComplexTypes::Word::COnOff2     > m_oDefault;
+			nullable<ComplexTypes::Word::CHpsMeasure > m_oSize;
+			nullable<ComplexTypes::Word::COnOff2     > m_oSizeAuto;
 
 		};
 
@@ -415,107 +197,23 @@ namespace OOX
 		class CFFDDList : public WritingElement
 		{
 		public:
-			CFFDDList()
-			{
-			}
-			CFFDDList(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CFFDDList(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFFDDList()
-			{
-				ClearItems();
-			}
-			virtual void ClearItems()
-			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrListEntry.size(); nIndex++ )
-				{
-					if ( m_arrListEntry[nIndex] ) delete m_arrListEntry[nIndex];
-					m_arrListEntry[nIndex] = NULL;
-				}
-				m_arrListEntry.clear();
-			}
-			const CFFDDList &operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&) oNode );
-				return *this;
-			}
-			const CFFDDList &operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNode oChild;
-				WritingElement_ReadNode( oNode, oChild, L"w:default", m_oDefault );
-				WritingElement_ReadNode( oNode, oChild, L"w:result",  m_oResult );
+			CFFDDList();
+			CFFDDList(XmlUtils::CXmlNode &oNode);
+			CFFDDList(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CFFDDList();
 
-				XmlUtils::CXmlNodes oListEntryNodes;
-				if ( oNode.GetNodes( L"w:listEntry", oListEntryNodes ) )
-				{
-					XmlUtils::CXmlNode oListEntryNode;
-					for ( int nIndex = 0; nIndex < oListEntryNodes.GetCount(); nIndex++ )
-					{
-						if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
-						{
-                            ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oListEntryNode);
-							if (oListEntry) m_arrListEntry.push_back( oListEntry );
-						}
-					}
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void ClearItems();
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					if ( L"w:default" == sName )
-						m_oDefault = oReader;
-					else if ( L"w:result" == sName )
-						m_oResult = oReader;
-					else if ( L"w:listEntry" == sName )
-					{
-                        ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oReader);
-						if (oListEntry) m_arrListEntry.push_back( oListEntry );
-					}
-				}
-			}				
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = L"<w:ddList>";
+			const CFFDDList &operator=(const XmlUtils::CXmlNode &oNode);
+			const CFFDDList &operator=(const XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_WriteNode_1( L"<w:default ", m_oDefault );
-				WritingElement_WriteNode_1( L"<w:result ",  m_oResult );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				for (unsigned int nIndex = 0; nIndex < m_arrListEntry.size(); nIndex++ )
-				{
-					sResult += L"<w:listEntry ";
-					if (m_arrListEntry[nIndex])
-						sResult += m_arrListEntry[nIndex]->ToString();
-					sResult += L"/>";
-				}
-
-				sResult += L"</w:ddList>";
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return et_w_ddList;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		public:
-
 			nullable<ComplexTypes::Word::CDecimalNumber> m_oDefault;
 			nullable<ComplexTypes::Word::CDecimalNumber> m_oResult;
             std::vector<ComplexTypes::Word::String*> m_arrListEntry;
@@ -527,80 +225,24 @@ namespace OOX
 		class CFFTextInput : public WritingElement
 		{
 		public:
-			CFFTextInput()
-			{
-			}
-			CFFTextInput(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CFFTextInput(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFFTextInput()
-			{
-			}
-			const CFFTextInput &operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( (XmlUtils::CXmlNode&) oNode );
-				return *this;
-			}
-			const CFFTextInput &operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNode oChild;
-				WritingElement_ReadNode( oNode, oChild, L"w:default",   m_oDefault );
-				WritingElement_ReadNode( oNode, oChild, L"w:format",    m_oFormat );
-				WritingElement_ReadNode( oNode, oChild, L"w:maxLength", m_oMaxLength );
-				WritingElement_ReadNode( oNode, oChild, L"w:type",      m_oType );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			CFFTextInput();
+			CFFTextInput(XmlUtils::CXmlNode &oNode);
+			CFFTextInput(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CFFTextInput();
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					if ( L"w:default" == sName )
-						m_oDefault = oReader;
-					else if ( L"w:format" == sName )
-						m_oFormat = oReader;
-					else if ( L"w:maxLength" == sName )
-						m_oMaxLength = oReader;
-					else if ( L"w:type" == sName )
-						m_oType = oReader;
-				}
-			}				
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = L"<w:textInput>";
+			const CFFTextInput &operator=(const XmlUtils::CXmlNode &oNode);
+			const CFFTextInput &operator=(const XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_WriteNode_1( L"<w:type ",      m_oType );
-				WritingElement_WriteNode_1( L"<w:default ",   m_oDefault );
-				WritingElement_WriteNode_1( L"<w:format ",    m_oFormat );
-				WritingElement_WriteNode_1( L"<w:maxLength ", m_oMaxLength );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"</w:textInput>";
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return et_w_textInput;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
             nullable<ComplexTypes::Word::String> m_oDefault;
             nullable<ComplexTypes::Word::String> m_oFormat;
 			nullable<ComplexTypes::Word::CDecimalNumber> m_oMaxLength;
 			nullable<ComplexTypes::Word::CFFTextType> m_oType;
-
 		};
 
 		//--------------------------------------------------------------------------------
@@ -609,98 +251,21 @@ namespace OOX
 		class CFFData : public WritingElement
 		{
 		public:
-			CFFData()
-			{
-			}
-			CFFData(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CFFData(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFFData()
-			{
-			}
-			const CFFData &operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( (XmlUtils::CXmlNode&) oNode );
-				return *this;
-			}
-			const CFFData &operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlUtils::CXmlNode oChild;
-				WritingElement_ReadNode( oNode, oChild, L"w:calcOnExit", m_oCalcOnExit );
-				WritingElement_ReadNode( oNode, oChild, L"w:checkBox",   m_oCheckBox );
-				WritingElement_ReadNode( oNode, oChild, L"w:ddList",     m_oDDList );
-				WritingElement_ReadNode( oNode, oChild, L"w:enabled",    m_oEnabled );
-				WritingElement_ReadNode( oNode, oChild, L"w:entryMacro", m_oEntryMacro );
-				WritingElement_ReadNode( oNode, oChild, L"w:exitMacro",  m_oExitMacro );
-				WritingElement_ReadNode( oNode, oChild, L"w:helpText",   m_oHelpText );
-				WritingElement_ReadNode( oNode, oChild, L"w:label",      m_oLabel );
-				WritingElement_ReadNode( oNode, oChild, L"w:name",       m_oName );
-				WritingElement_ReadNode( oNode, oChild, L"w:statusText", m_oStatusText );
-				WritingElement_ReadNode( oNode, oChild, L"w:tabIndex",   m_oTabIndex );
-				WritingElement_ReadNode( oNode, oChild, L"w:textInput",  m_oTextInput );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			CFFData();
+			CFFData(XmlUtils::CXmlNode &oNode);
+			CFFData(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CFFData();
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
+			const CFFData &operator=(const XmlUtils::CXmlNode &oNode);
+			const CFFData &operator=(const XmlUtils::CXmlLiteReader& oReader);
 
-					if      ( L"w:calcOnExit" == sName ) m_oCalcOnExit = oReader;
-					else if ( L"w:checkBox"   == sName ) m_oCheckBox = oReader;
-					else if ( L"w:ddList"     == sName ) m_oDDList = oReader;
-					else if ( L"w:enabled"    == sName ) m_oEnabled = oReader;
-					else if ( L"w:entryMacro" == sName ) m_oEntryMacro = oReader;
-					else if ( L"w:exitMacro"  == sName ) m_oExitMacro = oReader;
-					else if ( L"w:helpText"   == sName ) m_oHelpText = oReader;
-					else if ( L"w:label"      == sName ) m_oLabel = oReader;
-					else if ( L"w:name"       == sName ) m_oName = oReader;
-					else if ( L"w:statusText" == sName ) m_oStatusText = oReader;
-					else if ( L"w:tabIndex"   == sName ) m_oTabIndex = oReader;
-					else if ( L"w:textInput"  == sName ) m_oTextInput = oReader;
-				}
-			}				
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = L"<w:ffData>";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_WriteNode_1( L"<w:name ",       m_oName );
-				WritingElement_WriteNode_1( L"<w:label ",      m_oLabel );
-				WritingElement_WriteNode_1( L"<w:enabled ",    m_oEnabled );
-				WritingElement_WriteNode_1( L"<w:calcOnExit ", m_oCalcOnExit );
-				WritingElement_WriteNode_1( L"<w:helpText ",   m_oHelpText );
-				WritingElement_WriteNode_1( L"<w:statusText ", m_oStatusText );
-				WritingElement_WriteNode_1( L"<w:entryMacro ", m_oEntryMacro );
-				WritingElement_WriteNode_1( L"<w:exitMacro ",  m_oExitMacro );
-				WritingElement_WriteNode_1( L"<w:tabIndex ",   m_oTabIndex );	
-				WritingElement_WriteNode_2( m_oCheckBox );
-				WritingElement_WriteNode_2( m_oDDList );
-				WritingElement_WriteNode_2( m_oTextInput );
-
-				sResult += L"</w:ffData>";
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return et_w_ffData;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		public:
-
 			nullable<ComplexTypes::Word::COnOff2> m_oCalcOnExit;
 			nullable<OOX::Logic::CFFCheckBox> m_oCheckBox;
 			nullable<OOX::Logic::CFFDDList> m_oDDList;
@@ -722,94 +287,24 @@ namespace OOX
 		class CFldChar : public WritingElement
 		{
 		public:
-			CFldChar(OOX::Document *pMain = NULL) : WritingElement(pMain) {}
+			CFldChar(OOX::Document *pMain = NULL);
+			CFldChar(XmlUtils::CXmlNode &oNode);
+			CFldChar(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CFldChar();
 
-			CFldChar(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CFldChar(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFldChar()
-			{
-			}
-			const CFldChar &operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( (XmlUtils::CXmlNode&) oNode );
-				return *this;
-			}
-			const CFldChar &operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:dirty",       m_oDirty );
-				XmlMacroReadAttributeBase( oNode, L"w:fldCharType", m_oFldCharType );
-				XmlMacroReadAttributeBase( oNode, L"w:fldLock",     m_oFldLock );
+			const CFldChar &operator=(const XmlUtils::CXmlNode &oNode);
+			const CFldChar &operator=(const XmlUtils::CXmlLiteReader& oReader);
 
-				XmlUtils::CXmlNode oChild;
-				WritingElement_ReadNode( oNode, oChild, L"w:ffData", m_oFFData );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth )  )
-				{
-                    std::wstring sName = oReader.GetName();
-					WritingElement *pItem = NULL;
-
-					if ( L"w:ffData" == sName )
-						m_oFFData = oReader;
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring sResult = L"<w:fldChar";
-
-				ComplexTypes_WriteAttribute( L" w:dirty=\"",       m_oDirty );
-				ComplexTypes_WriteAttribute( L" w:fldCharType=\"", m_oFldCharType );
-				ComplexTypes_WriteAttribute( L" w:fldLock=\"",     m_oFldLock );
-
-				if ( m_oFFData.IsInit() )
-				{
-					sResult += L">";
-					sResult += m_oFFData->toXML();
-					sResult += L"</w:fldChar>";
-				}
-				else
-				{
-					sResult += L"/>";
-				}
-
-				return sResult;
-			}
-			virtual EElementType getType() const
-			{
-				return et_w_fldChar;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:dirty",       m_oDirty )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldCharType", m_oFldCharType )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:fldLock",     m_oFldLock )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::COnOff         > m_oDirty;
 			nullable<SimpleTypes::CFldCharType   > m_oFldCharType;
 			nullable<SimpleTypes::COnOff         > m_oFldLock;

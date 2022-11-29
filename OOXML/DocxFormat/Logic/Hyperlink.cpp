@@ -56,6 +56,44 @@ namespace OOX
 {
 	namespace Logic
 	{
+		CHyperlink::CHyperlink(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+		}
+		CHyperlink::CHyperlink(XmlUtils::CXmlNode &oNode)
+		{
+			fromXML( oNode );
+		}
+		CHyperlink::CHyperlink(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( oReader );
+		}
+		CHyperlink::~CHyperlink()
+		{
+		}
+		const CHyperlink& CHyperlink::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CHyperlink& CHyperlink::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CHyperlink::ClearItems()
+		{
+			m_sAnchor.reset();
+			m_sDocLocation.reset();
+			m_oHistory.reset();
+			m_oId.reset();
+			m_sTgtFrame.reset();
+			m_sTooltip.reset();
+			m_sDestinition.reset();
+
+			WritingElementWithChilds::ClearItems();
+		}
 		void CHyperlink::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:anchor"),		m_sAnchor );
@@ -272,8 +310,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		std::wstring CHyperlink::toXML() const
 		{
 				std::wstring sResult = L"<w:hyperlink";
@@ -322,8 +358,17 @@ namespace OOX
 
 				return sResult;
 		}
+		EElementType CHyperlink::getType() const
+		{
+			return et_w_hyperlink;
+		}
 
-
+		CAltChunkPr::CAltChunkPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CAltChunkPr::~CAltChunkPr()
+		{
+		}
 		void CAltChunkPr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlUtils::CXmlNodes oChilds;
@@ -373,7 +418,17 @@ namespace OOX
 				sResult += L"</w:altChunkPr>";
 				return sResult;
 		}
+		EElementType CAltChunkPr::getType() const
+		{
+			return et_w_altChunkPr;
+		}
 
+		CAltChunk::CAltChunk(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CAltChunk::~CAltChunk()
+		{
+		}
 		void CAltChunk::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, L"r:id", m_oId );
@@ -437,7 +492,17 @@ namespace OOX
 
 				return sResult;
 		}
+		EElementType CAltChunk::getType() const
+		{
+			return et_w_altChunk;
+		}
+		void CAltChunk::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if( oReader, L"id", m_oId)
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 
+		}
 
 	} // namespace Logic
 } // namespace OOX

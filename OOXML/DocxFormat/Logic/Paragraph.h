@@ -54,50 +54,15 @@ namespace OOX
 		class CParagraph : public WritingElementWithChilds<>
 		{
 		public:
-			CParagraph(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
-			{
-				m_oParagraphProperty = NULL;
-			}
-			CParagraph(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CParagraph(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CParagraph()
-			{
-				m_oParagraphProperty = NULL;
-			}
-			const CParagraph &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
+			CParagraph(OOX::Document *pMain = NULL);
+			CParagraph(XmlUtils::CXmlNode &oNode);
+			CParagraph(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CParagraph();
 
-			const CParagraph &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			const CParagraph &operator =(const XmlUtils::CXmlNode& oNode);
+			const CParagraph &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void ClearItems()
-			{
-				m_oRsidDel.reset();
-				m_oRsidP.reset();
-				m_oRsidR.reset();
-				m_oRsidRDefault.reset();
-				m_oRsidRPr.reset();
-			
-				m_oParagraphProperty = NULL;
-				
-				WritingElementWithChilds<>::ClearItems();
-			}
+			virtual void ClearItems();
 
 			void AddRun(CRun *pRun);
 			void AddText(std::wstring& sText);
@@ -113,10 +78,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_p;
-			}
+			virtual EElementType getType() const;
 
 		private:
 			void fromXML(int nDepth, XmlUtils::CXmlLiteReader& oReader);

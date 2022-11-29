@@ -43,56 +43,29 @@ namespace OOX
 		class ExternalLinkPath : public External
 		{
 		public:
-			ExternalLinkPath(OOX::Document* pMain) : External(pMain)
-			{
-			}
-			ExternalLinkPath(OOX::Document* pMain, const CPath& uri) : External(pMain)
-			{
-				read(uri);
-			}
-			~ExternalLinkPath()
-			{
-			}
-			virtual const FileType type() const
-			{
-				return OOX::FileTypes::ExternalLinkPath;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
+			ExternalLinkPath(OOX::Document* pMain);
+			ExternalLinkPath(OOX::Document* pMain, const CPath& uri);
+			~ExternalLinkPath();
+
+			virtual const FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
 		};
+
 		class ExternalOleObject : public External
 		{
 		public:
-			ExternalOleObject(OOX::Document* pMain) : External(pMain)
-			{
-			}
-			ExternalOleObject(OOX::Document* pMain, const CPath& uri) : External(pMain)
-			{
-				read(uri);
-			}
-			~ExternalOleObject()
-			{
-			}
+			ExternalOleObject(OOX::Document* pMain);
+			ExternalOleObject(OOX::Document* pMain, const CPath& uri);
+			~ExternalOleObject();
 
-			virtual const FileType type() const
-			{
-				return OOX::FileTypes::OleObject;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
+			virtual const FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const	;
 		};
+
 	}// namespace Spreadsheet
 } // namespace OOX
 

@@ -46,31 +46,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CColor)
-			CColor()
-			{
-			}
-			virtual ~CColor()
-			{
-			}
+			CColor();
+			virtual ~CColor();
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("auto"),	m_oAuto )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("indexed"),	m_oIndexed )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rgb"),		m_oRgb )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("theme"),	m_oTheme )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tint"),	m_oTint )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::COnOff<>>						m_oAuto;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oIndexed;
@@ -78,90 +60,38 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oTheme;
 			nullable<SimpleTypes::CDouble>						m_oTint;
 		};
+
 		//необработано:
 		class CRPr : public WritingElementWithChilds
 		{
 		public:
 			WritingElement_AdditionConstructors(CRPr)
-			CRPr()
-			{
-			}
-			virtual ~CRPr()
-			{
-			}
+			CRPr();
+			virtual ~CRPr();
 
 		public:
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("b") == sName )
-						m_oBold = oReader;
-					else if ( _T("charset") == sName )
-						;//pItem = new CText( oReader );
-					else if ( _T("color") == sName )
-						m_oColor = oReader;
-					else if ( _T("condense") == sName )
-						m_oCondense = oReader;
-					else if ( _T("extend") == sName )
-						m_oExtend = oReader;
-					else if ( _T("family") == sName )
-						;//m_oFamily = oReader;
-					else if ( _T("i") == sName )
-						m_oItalic = oReader;
-					else if ( _T("outline") == sName )
-						m_oOutline = oReader;
-					else if ( _T("rFont") == sName )
-						m_oRFont = oReader;
-					else if ( _T("scheme") == sName )
-						;//m_oScheme = oReader;
-					else if ( _T("shadow") == sName )
-						m_oShadow = oReader;
-					else if ( _T("strike") == sName )
-						m_oStrike = oReader;
-					else if ( _T("sz") == sName )
-						m_oSz = oReader;
-					else if ( _T("u") == sName )
-						m_oUnderline = oReader;
-					else if ( _T("vertAlign") == sName )
-						m_oVertAlign = oReader;
-
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_rPr;
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
-			nullable<ComplexTypes::Word::COnOff2 >	m_oBold;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oCharset;
-			nullable<CColor>												m_oColor;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oCondense;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oExtend;
-			//nullable<SimpleTypes::Spreadsheet::CFontFamily<> >				m_oFamily;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oItalic;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oOutline;
-			nullable<ComplexTypes::Word::String >							m_oRFont;
-			//nullable<SimpleTypes::Spreadsheet::CFontScheme<> >				m_oScheme;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oShadow;
-			nullable<ComplexTypes::Word::COnOff2 >	m_oStrike;
-			nullable<ComplexTypes::Word::CDouble2>							m_oSz;
-			nullable<SimpleTypes::Spreadsheet::CUnderline<> >				m_oUnderline;
-			nullable<SimpleTypes::CVerticalAlignRun<> >						m_oVertAlign;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oBold;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oCharset;
+			nullable<CColor>										m_oColor;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oCondense;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oExtend;
+			//nullable<SimpleTypes::Spreadsheet::CFontFamily<> >	m_oFamily;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oItalic;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oOutline;
+			nullable<ComplexTypes::Word::String >					m_oRFont;
+			//nullable<SimpleTypes::Spreadsheet::CFontScheme<> >	m_oScheme;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oShadow;
+			nullable<ComplexTypes::Word::COnOff2 >					m_oStrike;
+			nullable<ComplexTypes::Word::CDouble2>					m_oSz;
+			nullable<SimpleTypes::Spreadsheet::CUnderline >			m_oUnderline;
+			nullable<SimpleTypes::CVerticalAlignRun >				m_oVertAlign;
 		};
 	} //Spreadsheet
 } // namespace OOX

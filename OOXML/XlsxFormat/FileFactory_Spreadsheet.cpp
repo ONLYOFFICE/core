@@ -67,7 +67,7 @@
 #include "../DocxFormat/Diagram/DiagramColors.h"
 #include "../DocxFormat/Diagram/DiagramLayout.h"
 #include "../DocxFormat/Diagram/DiagramQuickStyle.h"
-#include "Chart//ChartDrawing.h"
+#include "Chart/ChartDrawing.h"
 
 #ifdef CreateFile
 #undef CreateFile

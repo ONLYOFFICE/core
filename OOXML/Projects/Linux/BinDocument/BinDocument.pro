@@ -32,6 +32,7 @@ SOURCES += \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.cpp \
 	../../../Binary/Document/DocWrapper/ChartWriter.cpp \
 	../../../Binary/Document/BinWriter/BinWriters.cpp \
+	../../../Binary/Document/BinWriter/BinEquationWriter.cpp \
 	../../../Binary/Sheets/Common/Common.cpp \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.cpp \
 	../../../Binary/Sheets/Reader/CommonWriter.cpp \
@@ -44,7 +45,19 @@ SOURCES += \
 	../../../Binary/Document/BinReader/ReaderClasses.cpp \
 	../../../Binary/Document/BinReader/Readers.cpp \
 	../../../Binary/Document/BinReader/CustomXmlWriter.cpp \
-	../../../Binary/Document/BinReader/FileWriter.cpp
+	../../../Binary/Document/BinReader/FileWriter.cpp \
+	../../../Binary/Document/BinReader/ChartWriter.cpp \
+	../../../Binary/Document/BinReader/CommentsWriter.cpp \
+	../../../Binary/Document/BinReader/DefaultThemeWriter.cpp \
+	../../../Binary/Document/BinReader/DocumentRelsWriter.cpp \
+	../../../Binary/Document/BinReader/DocumentWriter.cpp \
+	../../../Binary/Document/BinReader/fontTableWriter.cpp \
+	../../../Binary/Document/BinReader/HeaderFooterWriter.cpp \
+	../../../Binary/Document/BinReader/MediaWriter.cpp \
+	../../../Binary/Document/BinReader/NumberingWriter.cpp \
+	../../../Binary/Document/BinReader/SettingWriter.cpp \
+	../../../Binary/Document/BinReader/StylesWriter.cpp \
+	../../../Binary/Document/BinReader/webSettingsWriter.cpp
 
 HEADERS += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.h \

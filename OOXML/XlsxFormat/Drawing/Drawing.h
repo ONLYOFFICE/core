@@ -48,63 +48,22 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CDrawingWorksheet)
                         WritingElement_XlsbConstructors(CDrawingWorksheet)
-			CDrawingWorksheet()
-			{
-			}
-			virtual ~CDrawingWorksheet()
-			{
-			}
+			CDrawingWorksheet();
+			virtual ~CDrawingWorksheet();
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-                        virtual std::wstring toXML() const
-			{
-				return (L"");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_oId.IsInit())
-				{
-					writer.WriteString(L"<drawing r:id=\"");
-					writer.WriteString(m_oId->ToString());
-					writer.WriteString(L"\"/>");
-				}
-				
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType () const
-			{
-				return et_x_FromTo;
-			}
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS ( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
-				WritingElement_ReadAttributes_End_No_NS ( oReader )
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::Drawing*>(obj.get());
-                if(ptr != nullptr)
-                {
-                    if(!ptr->stRelId.value.value().empty())
-                        m_oId = ptr->stRelId.value.value();
-                }
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
             nullable<SimpleTypes::CRelationshipId > m_oId;
 		};
@@ -112,166 +71,27 @@ namespace OOX
 		class CDrawing : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CDrawing(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-			}
-			CDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-				read( oRootPath, oPath );
-			}
-			virtual ~CDrawing()
-			{
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
+			CDrawing(OOX::Document* pMain);
+			CDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CDrawing();
 
-				XmlUtils::CXmlLiteReader oReader;
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
+			virtual const OOX::FileType type() const;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
 
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( (L"wsDr") == sName )
-				{
-					ReadAttributes( oReader );
-
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nCurDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nCurDepth ) )
-						{
-							sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-							CCellAnchor *pItem = NULL;
-
-							if ( (L"absoluteAnchor") == sName )
-							{
-								pItem = new CCellAnchor( oReader );
-								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
-							}
-							else if ( (L"oneCellAnchor") == sName )
-							{
-								pItem = new CCellAnchor( oReader );
-								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-							}
-							else if ( (L"twoCellAnchor") == sName )
-							{
-								pItem = new CCellAnchor( oReader );
-								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-							}
-							else if ( (L"AlternateContent") == sName)
-							{
-								nCurDepth++;
-								while( oReader.ReadNextSiblingNode( nCurDepth ) )
-								{
-									sName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( (L"Choice") != sName  && (L"Fallback") != sName ) continue;
-		
-                                    nullable<std::wstring> sRequires;
-									WritingElement_ReadAttributes_Start( oReader )
-										WritingElement_ReadAttributes_Read_if ( oReader, (L"Requires"), sRequires )
-									WritingElement_ReadAttributes_End( oReader )
-									
-									if (sRequires.IsInit() == false) continue;
-									if (*sRequires != (L"a14"))continue;									
-
-									nCurDepth++;
-									while( oReader.ReadNextSiblingNode( nCurDepth ) )
-									{
-										sName = XmlUtils::GetNameNoNS(oReader.GetName());
-										if ( (L"absoluteAnchor") == sName )
-										{
-											pItem = new CCellAnchor( oReader );
-											pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
-										}
-										else if ( (L"oneCellAnchor") == sName )
-										{
-											pItem = new CCellAnchor( oReader );
-											pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
-										}
-										else if ( (L"twoCellAnchor") == sName )
-										{
-											pItem = new CCellAnchor( oReader );
-											pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
-										}									
-									}nCurDepth--;
-									break;
-								}
-								nCurDepth--;
-							}
-
-							if ( pItem )
-								m_arrItems.push_back( pItem );
-						}
-					}
-				}		
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString((L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><xdr:wsDr xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">"));
-				for(size_t i = 0, length = m_arrItems.size(); i < length; ++i)
-					m_arrItems[i]->toXML(sXml);
-				sXml.WriteString((L"</xdr:wsDr>"));				
-
-                std::wstring sPath = oPath.GetPath();
-                NSFile::CFileBinary::SaveToFile(sPath.c_str(), sXml.GetData());
-
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				IFileContainer::Write(oPath, oDirectory, oContent);
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::Drawings;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
-
-			bool IsEmpty()
-			{
-				return m_arrItems.empty();
-			}
+			const CPath& GetReadPath();
+			bool IsEmpty();
 
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			void ClearItems()
-			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
 
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ClearItems();
 
 		public:
 			std::vector<CCellAnchor *>	m_arrItems;

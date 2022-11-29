@@ -36,6 +36,35 @@ namespace OOX
 {
 	namespace Logic
 	{
+		CAlternateContent::CAlternateContent(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CAlternateContent::~CAlternateContent()
+		{
+			Clear();
+		}
+
+		void CAlternateContent::Clear()
+		{
+			for ( unsigned int nIndex = 0; nIndex < m_arrChoiceItems.size(); nIndex++ )
+			{
+				if ( m_arrChoiceItems[nIndex] )
+					delete m_arrChoiceItems[nIndex];
+				m_arrChoiceItems[nIndex] = NULL;
+			}
+			m_arrChoiceItems.clear();
+			for (unsigned int nIndex = 0; nIndex < m_arrFallbackItems.size(); nIndex++ )
+			{
+				if ( m_arrFallbackItems[nIndex] )
+					delete m_arrFallbackItems[nIndex];
+				m_arrFallbackItems[nIndex] = NULL;
+			}
+			m_arrFallbackItems.clear();
+		}
+
+		void CAlternateContent::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
 		void CAlternateContent::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() )
@@ -83,6 +112,23 @@ namespace OOX
 					altRun.m_arrItems.clear();
 				}
 			}
+		}
+
+		std::wstring CAlternateContent::toXML() const
+		{
+			return _T("");
+		}
+		EElementType CAlternateContent::getType() const
+		{
+			return OOX::et_mc_alternateContent;
+		}
+
+		void CAlternateContent::ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_string & oRequires)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, (L"Requires"), oRequires )
+			WritingElement_ReadAttributes_End( oReader )
+
 		}
 	} // namespace Words
 } // namespace OOX

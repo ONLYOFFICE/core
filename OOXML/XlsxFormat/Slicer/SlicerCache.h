@@ -58,6 +58,7 @@ namespace OOX
 			//Attributes
 			nullable_string m_oN;
 		};
+
 		class COlapSlicerCacheItem : public WritingElement
 		{
 		public:
@@ -85,6 +86,7 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheItemParent> m_oP;
 		};
+
 		class COlapSlicerCacheRange : public WritingElement
 		{
 		public:
@@ -110,6 +112,7 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheItem> m_oI;
 		};
+
 		class CTabularSlicerCacheItem : public WritingElement
 		{
 		public:
@@ -135,6 +138,7 @@ namespace OOX
 			nullable_bool m_oS;//False
 			nullable_bool m_oNd;//False
 		};
+
 		class COlapSlicerCacheSelection : public WritingElement
 		{
 		public:
@@ -160,6 +164,7 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheItemParent> m_oP;
 		};
+
 		class COlapSlicerCacheLevelData : public WritingElement
 		{
 		public:
@@ -189,6 +194,7 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheRange> m_oRanges;
 		};
+
 		class CTabularSlicerCacheItems : public WritingElement
 		{
 		public:
@@ -214,6 +220,7 @@ namespace OOX
 			//Members
 			std::vector<CTabularSlicerCacheItem> m_oI;
 		};
+
 		class COlapSlicerCacheSelections : public WritingElement
 		{
 		public:
@@ -239,6 +246,7 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheSelection> m_oSelection;
 		};
+
 		class COlapSlicerCacheLevelsData : public WritingElement
 		{
 		public:
@@ -264,6 +272,7 @@ namespace OOX
 			//Members
 			std::vector<COlapSlicerCacheLevelData> m_oLevel;
 		};
+
 		class CTabularSlicerCache : public WritingElement
 		{
 		public:
@@ -295,6 +304,7 @@ namespace OOX
 			nullable<CTabularSlicerCacheItems> m_oItems;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 		class COlapSlicerCache : public WritingElement
 		{
 		public:
@@ -323,6 +333,7 @@ namespace OOX
 			nullable<COlapSlicerCacheSelections> m_oSelections;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 		class CSlicerCacheData : public WritingElement
 		{
 		public:
@@ -347,6 +358,7 @@ namespace OOX
 			nullable<COlapSlicerCache> m_oOlap;
 			nullable<CTabularSlicerCache> m_oTabular;
 		};
+
 		class CSlicerCachePivotTable : public WritingElement
 		{
 		public:
@@ -371,6 +383,7 @@ namespace OOX
 			nullable_uint m_oTabId;
 			nullable_string m_oName;
 		};
+
 		class CSlicerCacheDefinition : public WritingElement
 		{
 		public:
@@ -442,11 +455,13 @@ IFileContainer(pMain)
 			}
 
 			nullable<CSlicerCacheDefinition> m_oSlicerCacheDefinition;
+
 		private:
 			CPath m_oReadPath;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
+
 	} //Spreadsheet
 } // namespace OOX

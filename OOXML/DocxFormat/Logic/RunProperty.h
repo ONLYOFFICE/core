@@ -54,21 +54,14 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CStylisticSets)
-			CStylisticSets(OOX::Document *pMain = NULL) : WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>(pMain)
-			{
-			}
-			virtual ~CStylisticSets() {}
+			CStylisticSets(OOX::Document *pMain = NULL);
+			virtual ~CStylisticSets();
 
 			virtual std::wstring toXML() const;
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType() const
-			{
-				return et_w_stylisticSets;
-			}
+			virtual EElementType getType() const;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -98,41 +91,17 @@ namespace OOX
             nullable<CRunProperty>					m_pRunPr;
 		};
 
-
 		class CRunProperty : public WritingElement
 		{
 		public:
-			CRunProperty()
-			{
-				m_pText = NULL;
-				m_bRPRChange = false;
-			}
-			virtual ~CRunProperty()
-			{
-				RELEASEOBJECT(m_pText);
-			}
-			CRunProperty(const XmlUtils::CXmlNode &oNode)
-			{
-				m_pText = NULL;
-				m_bRPRChange = false;
-				fromXML( (XmlUtils::CXmlNode &)oNode );
-			}
-			CRunProperty(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_pText = NULL;
-				m_bRPRChange = false;
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-			}
-			const CRunProperty& operator=(const XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( (XmlUtils::CXmlNode &)oNode );
-				return *this;
-			}
-			const CRunProperty& operator=(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			CRunProperty();
+			virtual ~CRunProperty();
+			CRunProperty(const XmlUtils::CXmlNode &oNode);
+			CRunProperty(const XmlUtils::CXmlLiteReader& oReader);
+
+			const CRunProperty& operator=(const XmlUtils::CXmlNode &oNode);
+			const CRunProperty& operator=(const XmlUtils::CXmlLiteReader& oReader);
+
 			bool IsNoEmpty();
 			void Clear();
 
@@ -141,10 +110,8 @@ namespace OOX
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, CRun* pRun);
             virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual EElementType getType() const
-			{
-				return et_w_rPr;
-			}
+			virtual EElementType getType() const;
+
 			template<typename Type>
 			static nullable<Type>     Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 			{

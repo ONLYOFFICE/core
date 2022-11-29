@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 #ifndef OOX_LOGIC_DRAWING_BODY_INCLUDE_H_
 #define OOX_LOGIC_DRAWING_BODY_INCLUDE_H_

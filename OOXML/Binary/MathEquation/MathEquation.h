@@ -48,21 +48,10 @@ namespace MathEquation
 	{
 	public:
 
-        CEquationReader(const wchar_t* wsFilePath) : m_oStorage(wsFilePath), pStm(NULL), pS(NULL), nHAlign(0), nVAlign(0)
-		{
-			InitSizes();
-		}
-
-		~CEquationReader()
-		{
-			if (NULL != pS)
-				delete pS;
-            if (NULL != pStm)
-                delete pStm;
-		}
+		CEquationReader(const wchar_t* wsFilePath);
+		~CEquationReader();
 
         void SetOutputDev(IOutputDev *pOutput);
-
 		int Parse();
 
 	private:

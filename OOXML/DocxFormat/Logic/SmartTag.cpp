@@ -59,7 +59,33 @@ namespace OOX
 		// CSmartTag
 		//--------------------------------------------------------------------------------	
 
-		void    CSmartTag::fromXML(XmlUtils::CXmlNode& oNode)
+		CSmartTag::CSmartTag(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+		}
+		CSmartTag::CSmartTag(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oNode );
+		}
+		CSmartTag::CSmartTag(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oReader );
+		}
+		CSmartTag::~CSmartTag()
+		{
+		}
+		const CSmartTag& CSmartTag::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CSmartTag& CSmartTag::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CSmartTag::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:element"),      m_sElement );
             XmlMacroReadAttributeBase( oNode, _T("w:uri"), m_sUri );
@@ -150,9 +176,7 @@ namespace OOX
 				}
 			}
 		}
-
-
-		void    CSmartTag::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		void CSmartTag::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -238,8 +262,6 @@ namespace OOX
 					m_arrItems.push_back( pItem );
 			}
 		}
-
-
 		std::wstring CSmartTag::toXML() const
 		{
 				std::wstring sResult = _T("<w:smartTag ");
@@ -272,6 +294,31 @@ namespace OOX
 				sResult += _T("</w:smartTag>");
 
 				return sResult;
+		}
+		EElementType CSmartTag::getType() const
+		{
+			return et_w_smartTag;
+		}
+		void CSmartTag::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				if      ( _T("w:element")	== wsName )	m_sElement	= oReader.GetText();
+				else if ( _T("w:uri")		== wsName )	m_sUri		= oReader.GetText();
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+			oReader.MoveToElement();
 		}
 
 	} // namespace Logic

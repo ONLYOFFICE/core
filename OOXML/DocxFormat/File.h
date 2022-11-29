@@ -43,11 +43,8 @@ namespace OOX
 	class File
 	{
 	public:
-		File(OOX::Document *pMain) : m_pMainDocument(pMain)
-		{
-			m_bDoNotAddRels = false;
-		}
-		virtual ~File(){}
+		File(OOX::Document *pMain);
+		virtual ~File();
 
 		virtual void read(const CPath& filename)                                                        = 0;
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const = 0;
@@ -61,24 +58,19 @@ namespace OOX
 		
 		OOX::Document *m_pMainDocument;
 	};
+
 	class FileGlobalEnumerated : public File
 	{
 	private:
 		int m_nGlobalNumber;
+
 	public:
-		FileGlobalEnumerated(OOX::Document* pMain) : File(pMain)
-		{
-			m_nGlobalNumber = 0;
-		}
-		int GetGlobalNumber() const
-		{
-			return m_nGlobalNumber;
-		}
-		void SetGlobalNumber(int nValue)
-		{
-			m_nGlobalNumber = nValue;
-		}
+		FileGlobalEnumerated(OOX::Document* pMain);
+
+		int GetGlobalNumber() const;
+		void SetGlobalNumber(int nValue);
 	};
+
 } // namespace OOX
 
 #endif // OOX_FILE_INCLUDE_H_

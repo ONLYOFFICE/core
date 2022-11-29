@@ -76,6 +76,56 @@ namespace Spreadsheet
 		}
 		m_arWorksheets.clear();
 	}
+
+	void CXlsxFlat::read(const CPath& oFilePath)
+	{
+		XmlUtils::CXmlLiteReader oReader;
+
+		if ( !oReader.FromFile( oFilePath.GetPath() ) )
+			return;
+
+		if ( !oReader.ReadNextNode() )
+			return;
+
+		fromXML(oReader);
+	}
+	void CXlsxFlat::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		std::wstring sXml = toXML();
+
+		NSFile::CFileBinary file;
+		file.CreateFileW(oFilePath.GetPath());
+		file.WriteStringUTF8(sXml);
+		file.CloseFile();
+	}
+	const OOX::FileType CXlsxFlat::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::SpreadsheetFlat;
+	}
+	const CPath CXlsxFlat::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CXlsxFlat::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void CXlsxFlat::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	std::wstring CXlsxFlat::toXML() const
+	{
+		std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
+		return sXml;
+	}
+	void CXlsxFlat::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+	}
+	EElementType CXlsxFlat::getType() const
+	{
+		return et_x_SpreadsheetFlat;
+	}
 	void CXlsxFlat::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if ( oReader.IsEmptyNode() )

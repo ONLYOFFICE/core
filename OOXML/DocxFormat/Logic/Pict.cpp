@@ -40,6 +40,112 @@ namespace OOX
 {
 	namespace Logic
 	{
+		CBinData::CBinData(OOX::Document *pMain) : WritingElement(pMain) {}
+		CBinData::~CBinData() {}
+		void CBinData::fromXML(XmlUtils::CXmlNode &oNode)
+		{
+		}
+		void CBinData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			m_sData = oReader.GetText2A();
+		}
+		std::wstring CBinData::toXML() const
+		{
+			std::wstring sResult = L"<w:binData ";
+
+			ComplexTypes_WriteAttribute2( L"w:name=\"", m_sName );
+
+			sResult += L">";
+
+			if (m_sData.IsInit())
+			{
+			}
+			sResult += L"</w:binData>";
+
+			return sResult;
+		}
+		EElementType CBinData::getType() const
+		{
+			return et_w_binData;
+		}
+		void CBinData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 )
+				return;
+
+			if ( !oReader.MoveToFirstAttribute() )
+				return;
+
+			std::wstring wsName = oReader.GetName();
+			while( !wsName.empty() )
+			{
+				if ( L"w:name" == wsName )
+					m_sName = oReader.GetText();
+
+				if ( !oReader.MoveToNextAttribute() )
+					break;
+
+				wsName = oReader.GetName();
+			}
+
+			oReader.MoveToElement();
+		}
+
+		CControl::CControl(OOX::Document *pMain) : WritingElement(pMain) {}
+		CControl::~CControl() {}
+		void CControl::fromXML(XmlUtils::CXmlNode &oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"r:id",      m_rId  );
+			XmlMacroReadAttributeBase( oNode, L"w:name",    m_sName );
+			XmlMacroReadAttributeBase( oNode, L"w:shapeid", m_sShapeId );
+
+			if (false == m_rId.IsInit())
+			{
+				XmlMacroReadAttributeBase( oNode, L"relationships:id", m_rId );
+			}
+		}
+		void CControl::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd( oReader.GetDepth() );
+		}
+		std::wstring CControl::toXML() const
+		{
+			std::wstring sResult = L"<w:control";
+
+			ComplexTypes_WriteAttribute ( L" r:id=\"",      m_rId );
+			ComplexTypes_WriteAttribute2( L" w:name=\"",    m_sName );
+			ComplexTypes_WriteAttribute2( L" w:shapeid=\"", m_sShapeId );
+
+			sResult += L"/>";
+
+			return sResult;
+		}
+		EElementType CControl::getType() const
+		{
+			return et_w_control;
+		}
+		void CControl::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"r:id",				m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"relationships:id",	m_rId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",				m_sName )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:shapeid",			m_sShapeId )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+
+		CPicture::CPicture(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
+		CPicture::~CPicture()
+		{
+		}
 		void CPicture::fromXML(XmlUtils::CXmlNode &oNode)
 		{
 			if (oNode.IsValid() == false)
@@ -50,7 +156,6 @@ namespace OOX
 
 			fromStringXML(m_sXml.get());
 		}
-
 		void CPicture::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -354,7 +459,6 @@ namespace OOX
 				}
 			}
 		}
-
 		std::wstring CPicture::toXML() const
 		{
 			std::wstring sResult = _T("<w:pict>");
@@ -382,7 +486,18 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CPicture::getType() const
+		{
+			return et_w_pict;
+		}
 
+		CObject::CObject(OOX::Document *pMain) : WritingElementWithChilds<>(pMain) {}
+		CObject::~CObject()
+		{
+		}
+		void CObject::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
 		void CObject::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -577,5 +692,17 @@ namespace OOX
 		{
 			return _T("<w:object/>");
 		}	
+		EElementType CObject::getType() const
+		{
+			return et_w_object;
+		}
+		void CObject::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if		( oReader, L"w:dxaOrig", m_oDxaOrig )
+			WritingElement_ReadAttributes_Read_else_if	( oReader, L"w:dyaOrig", m_oDyaOrig )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+
 	} // namespace Logic
 } // namespace OOX

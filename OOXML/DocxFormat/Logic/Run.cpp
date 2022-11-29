@@ -43,25 +43,35 @@ namespace OOX
 {
 	namespace Logic
 	{
-		void CContentPart::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		CRun::CRun(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
-			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-			
-			ReadAttributes( oReader );
+			m_oRunProperty = NULL;
+		}
+		CRun::CRun(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oNode );
+		}
+		CRun::CRun(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oReader );
+		}
+		CRun::~CRun()
+		{
+			ClearItems();
+		}
+		const CRun& CRun::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
 
-			if ( oReader.IsEmptyNode() )
-				return;
-				
-			int nParentDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nParentDepth ) )
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CRun& CRun::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
 
-				if ( L"xfrm" == sName)
-					m_oXfrm = oReader;
-				//else if (L"nvContentPartPr" == sName)
-				//	m_oNvContentPartPr = oReader;
-			}
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
 		}
 		void CRun::ClearItems()
 		{
@@ -212,7 +222,6 @@ namespace OOX
 				}
 			}
 		}
-
 		WritingElement* CRun::fromXMLElem(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
@@ -475,6 +484,10 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CRun::getType() const
+		{
+			return et_w_r;
+		}
 		void CRun::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.GetAttributesCount() <= 0 )
@@ -501,6 +514,7 @@ namespace OOX
 
 			oReader.MoveToElement();
 		}
+
 	} // namespace Logic
 } // namespace OOX
 

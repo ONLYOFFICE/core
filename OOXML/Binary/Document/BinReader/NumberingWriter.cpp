@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,20 +29,33 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Sheets/Common/Common.h"
+#include "NumberingWriter.h"
 
 namespace Writers
 {
-	class DefaultThemeWriter
+	NumberingWriter::NumberingWriter(std::wstring sDir) : m_sDir(sDir)
 	{
-	public:
- 		std::wstring m_sContent;
-		
-		DefaultThemeWriter();
+	}
+	bool NumberingWriter::IsEmpty()
+	{
+		return 0 == m_oANum.GetCurSize();
+	}
+	void NumberingWriter::Write(bool bGlossary)
+	{
+		if(IsEmpty()) return;
 
-		void Write(std::wstring sThemeFilePath);
-	};
+		m_oWriter.WriteString(g_string_n_Start);
+		m_oWriter.Write(m_oANum);
+		m_oWriter.Write(m_oNumList);
+		m_oWriter.WriteString(g_string_n_End);
+
+		OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("numbering.xml");
+
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(filePath.GetPath());
+
+		oFile.WriteStringUTF8(m_oWriter.GetData());
+		oFile.CloseFile();
+	}
 }
-

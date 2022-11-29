@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,20 +29,39 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Sheets/Common/Common.h"
+#include "StylesWriter.h"
 
 namespace Writers
 {
-	class DefaultThemeWriter
+	StylesWriter::StylesWriter(std::wstring sDir, int nVersion) : m_sDir(sDir), m_nVersion(nVersion)
 	{
-	public:
- 		std::wstring m_sContent;
-		
-		DefaultThemeWriter();
+	}
 
-		void Write(std::wstring sThemeFilePath);
-	};
+	void StylesWriter::Write(bool bGlossary)
+	{
+		m_oWriter.WriteString(g_string_st_Start);
+		m_oWriter.WriteString(std::wstring(_T("<w:docDefaults>")));
+		m_oWriter.WriteString(std::wstring(_T("<w:rPrDefault>")));
+		if(m_rPrDefault.GetCurSize() > 0)
+			m_oWriter.Write(m_rPrDefault);
+		m_oWriter.WriteString(std::wstring(_T("</w:rPrDefault>")));
+		m_oWriter.WriteString(std::wstring(_T("<w:pPrDefault>")));
+		if(m_rPrDefault.GetCurSize() > 0)
+			m_oWriter.Write(m_pPrDefault);
+		m_oWriter.WriteString(std::wstring(_T("</w:pPrDefault>")));
+		m_oWriter.WriteString(std::wstring(_T("</w:docDefaults>")));
+		m_oWriter.WriteString(g_string_st_Latent1);
+		m_oWriter.WriteString(g_string_st_Latent2);
+		m_oWriter.Write(m_Styles);
+		m_oWriter.WriteString(g_string_st_End);
+
+		OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("styles.xml");
+
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(filePath.GetPath());
+
+		oFile.WriteStringUTF8(m_oWriter.GetData());
+		oFile.CloseFile();
+	}
 }
-

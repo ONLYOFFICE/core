@@ -34,6 +34,7 @@
 #include "../../../Base/Unit.h"
 #include "../../../SystemUtility/SystemUtility.h"
 #include "../../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 #include <string>
 #include <vector>

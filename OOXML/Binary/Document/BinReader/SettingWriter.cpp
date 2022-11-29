@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,20 +29,25 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Sheets/Common/Common.h"
+#include "SettingWriter.h"
 
 namespace Writers
 {
-	class DefaultThemeWriter
+	SettingWriter::SettingWriter(std::wstring sDir) : m_sDir(sDir)
 	{
-	public:
- 		std::wstring m_sContent;
-		
-		DefaultThemeWriter();
+	}
+	void SettingWriter::Write(bool bGlossary)
+	{
+		OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + L"settings.xml";
 
-		void Write(std::wstring sThemeFilePath);
-	};
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(filePath.GetPath());
+		oFile.WriteStringUTF8(m_oSettingWriter.GetData());
+		oFile.CloseFile();
+	}
+	void SettingWriter::AddSetting(std::wstring sSetting)
+	{
+		m_oSettingWriter.WriteString(sSetting);
+	}
 }
-

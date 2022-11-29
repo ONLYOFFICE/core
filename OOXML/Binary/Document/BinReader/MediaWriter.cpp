@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,20 +29,56 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Sheets/Common/Common.h"
+#include "MediaWriter.h"
+#include "../../../../DesktopEditor/common/Path.h"
 
 namespace Writers
 {
-	class DefaultThemeWriter
+	MediaWriter::MediaWriter(std::wstring sDir) : m_sDir(sDir)
 	{
-	public:
- 		std::wstring m_sContent;
-		
-		DefaultThemeWriter();
+		nImageCount = 0;
 
-		void Write(std::wstring sThemeFilePath);
-	};
+		OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + L"media";
+
+		m_sMediaDir = filePath.GetPath();
+	}
+	std::wstring MediaWriter::AddImageGetNewPath()
+	{
+		NSDirectory::CreateDirectories(m_sMediaDir);
+
+		std::wstring sNewImgName = L"image" + std::to_wstring(nImageCount + 1) + L".jpg";
+		std::wstring sNewImg = m_sMediaDir + FILE_SEPARATOR_STR + sNewImgName;
+		nImageCount++;
+		return sNewImg;
+	}
+	void MediaWriter::AddImage2(FILE* pFile)
+	{
+		long size = ftell(pFile);
+		if(size > 0)
+		{
+			rewind(pFile);
+			BYTE* pData = new BYTE[size];
+			_UINT32 dwSizeRead = (_UINT32)fread((void*)pData, 1, size, pFile);
+			if(dwSizeRead > 0)
+			{
+				std::wstring sNewImagePath = AddImageGetNewPath();
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(sNewImagePath);
+				oFile.WriteFile(pData, dwSizeRead);
+				oFile.CloseFile();
+				std::wstring sFilename = NSSystemPath::GetFileName(sNewImagePath);
+				m_aImageNames.push_back(sFilename);
+			}
+			RELEASEARRAYOBJECTS(pData);
+		}
+	}
+	void MediaWriter::AddImage(const std::wstring& sImg)
+	{
+		OOX::CPath pathNewImg = AddImageGetNewPath();
+
+		NSFile::CFileBinary::Copy(sImg, pathNewImg.GetPath());
+		std::wstring sFilename = NSSystemPath::GetFileName(pathNewImg.GetPath()).c_str();
+		m_aImageNames.push_back(sFilename);
+	}
 }
-

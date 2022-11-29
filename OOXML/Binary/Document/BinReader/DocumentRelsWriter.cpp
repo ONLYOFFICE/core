@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,20 +29,35 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Sheets/Common/Common.h"
+#include "DocumentRelsWriter.h"
 
 namespace Writers
 {
-	class DefaultThemeWriter
+	DocumentRelsWriter::DocumentRelsWriter(std::wstring sDir) : m_sDir(sDir), m_bHasCustomProperties(false)
 	{
-	public:
- 		std::wstring m_sContent;
-		
-		DefaultThemeWriter();
+	}
 
-		void Write(std::wstring sThemeFilePath);
-	};
+	void DocumentRelsWriter::Write(bool bGlossary)
+	{
+		std::wstring s_Common;
+
+		s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
+<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"> \
+<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/> \
+<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/> \
+<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
+		if (m_bHasCustomProperties)
+		{
+			s_Common += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>";
+		}
+		s_Common += L"</Relationships>";
+
+		OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + _T(".rels");
+
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(fileName.GetPath());
+		oFile.WriteStringUTF8(s_Common);
+		oFile.CloseFile();
+	}
 }
-

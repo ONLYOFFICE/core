@@ -33,7 +33,6 @@
 
 #include "../../Sheets/Common/Common.h"
 #include "../../../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../../../DesktopEditor/common/StringBuilder.h"
 #include <boost/unordered_map.hpp>
 
 namespace Writers
@@ -47,94 +46,15 @@ namespace Writers
         std::wstring					m_sDir;
         NSFonts::IApplicationFonts*		m_pApplicationFonts;
         NSFonts::IFontManager*			m_pFontManager;
+
 	public:
         boost::unordered_map<std::wstring, char> m_mapFonts;
 
-		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir) : m_sDir(sDir)
-		{
-            m_pApplicationFonts = NSFonts::NSApplication::Create();
-			m_pFontManager = NULL;
-			if(!bNoFontDir)
-			{
-                if(sFontDir.empty())
-                    m_pApplicationFonts->Initialize();
-				else
-                    m_pApplicationFonts->InitializeFromFolder(sFontDir);
-                m_pFontManager = m_pApplicationFonts->GenerateFontManager();
-			}
-		}
-		~FontTableWriter()
-		{
-			RELEASEOBJECT(m_pFontManager);
-            RELEASEOBJECT(m_pApplicationFonts);
-		}
+		FontTableWriter(std::wstring sDir, std::wstring sFontDir, bool bNoFontDir);
+		~FontTableWriter();
 
-		void Write(bool bGlossary = false)
-		{
-			m_oWriter.WriteString(g_string_ft_Start);
-
-	//Те шрифты которые всегда пишем в FontTable
-			bool bCalibri = false;
-			bool bTimes = false;
-			bool bCambria = false;
-            for (boost::unordered_map<std::wstring, char>::const_iterator it = m_mapFonts.begin(); it != m_mapFonts.end(); ++it)
-			{
-                const std::wstring& sFontName = it->first;
-				if(_T("Calibri") == sFontName)
-					bCalibri = true;
-				else if(_T("Times New Roman") == sFontName)
-					bTimes = true;
-				else if(_T("Cambria") == sFontName)
-					bCambria = true;
-				WriteFont(sFontName);
-			}
-			if(false == bCalibri)
-				WriteFont(_T("Calibri"));
-			if(false == bTimes)
-				WriteFont(_T("Times New Roman"));
-			if(false == bCambria)
-				WriteFont(_T("Cambria"));
-
-			m_oWriter.WriteString(g_string_ft_End);
-
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("fontTable.xml");
-
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(filePath.GetPath());
-
-			oFile.WriteStringUTF8(m_oWriter.GetData());
-			oFile.CloseFile();
-		}
-        void WriteFont(std::wstring sFontName)
-		{
-            std::wstring sPanose;
-			bool bUsePanose = false;
-			if(NULL != m_pFontManager)
-			{
-                NSFonts::CFontSelectFormat oFontSelectFormat;
-				oFontSelectFormat.wsName = new std::wstring;
-                *oFontSelectFormat.wsName = sFontName;
-
-                NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
-				if(NULL != pFontInfo)
-				{
-					for (size_t i = 0; i < 10; ++i)
-					{
-						BYTE cElem = pFontInfo->m_aPanose[i];
-						if(0 != cElem)
-							bUsePanose = true;
-						sPanose += XmlUtils::ToString(cElem, L"%02X");
-					}
-					
-				}
-			}
-
-			sFontName = XmlUtils::EncodeXmlString(sFontName);
-			m_oWriter.WriteString(_T("<w:font w:name=\"") + sFontName + _T("\">"));
-            if(bUsePanose && !sPanose.empty())
-				m_oWriter.WriteString(_T("<w:panose1 w:val=\"")+sPanose+_T("\"/>"));
-            m_oWriter.WriteString(std::wstring(_T("</w:font>")));
-		}
+		void Write(bool bGlossary = false);
+		void WriteFont(std::wstring sFontName);
 	};
 }
 

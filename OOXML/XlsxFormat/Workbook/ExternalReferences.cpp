@@ -35,7 +35,7 @@
 namespace OOX
 {
 	namespace Spreadsheet
-	{
+	{	
 		CExternalReference::CExternalReference()
 		{
 		}
@@ -79,11 +79,11 @@ namespace OOX
 		void CExternalReference::ReadAttributes(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::SUP*>(obj.get());
-			if(ptr != nullptr && ptr->m_source != nullptr)
+			if (ptr != nullptr && ptr->m_source != nullptr)
 			{
-				if(ptr->m_source->get_type() == XLS::typeSupBookSrc)
+				if (ptr->m_source->get_type() == XLS::typeSupBookSrc)
 				{
-					if(!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
+					if (!static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value().empty())
 						m_oRid = static_cast<XLSB::SupBookSrc*>(ptr->m_source.get())->strRelID.value.value();
 				}
 			}
@@ -108,13 +108,13 @@ namespace OOX
 
 			writer.WriteString((L"<externalReferences>"));
 
-							for ( size_t i = 0; i < m_arrItems.size(); ++i)
-							{
-								if (  m_arrItems[i] )
-								{
-									m_arrItems[i]->toXML(writer);
-								}
-							}
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
 
 			writer.WriteString((L"</externalReferences>"));
 		}
@@ -142,7 +142,7 @@ namespace OOX
 			if (obj.empty())
 				return;
 
-			for(auto &externalReference : obj)
+			for (auto &externalReference : obj)
 			{
 				m_arrItems.push_back(new CExternalReference(externalReference));
 			}
@@ -152,8 +152,8 @@ namespace OOX
 			return et_x_ExternalReferences;
 		}
 		void CExternalReferences::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+		{
+		}
 
 	} //ExternalReference
 } // namespace OOX

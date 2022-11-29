@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,20 +29,28 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Sheets/Common/Common.h"
+#include "webSettingsWriter.h"
 
 namespace Writers
 {
-	class DefaultThemeWriter
+	WebSettingsWriter::WebSettingsWriter(std::wstring sDir) : m_sDir(sDir)
 	{
-	public:
- 		std::wstring m_sContent;
-		
-		DefaultThemeWriter();
+	}
+	void WebSettingsWriter::Write(bool bGlossary)
+	{
+		std::wstring s_Common;
 
-		void Write(std::wstring sThemeFilePath);
-	};
+		s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
+<w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
+<w:optimizeForBrowser/> \
+</w:webSettings>");
+
+		OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR +_T("word") + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + _T("webSettings.xml");
+
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(fileName.GetPath());
+		oFile.WriteStringUTF8(s_Common);
+		oFile.CloseFile();
+	}
 }
-

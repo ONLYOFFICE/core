@@ -32,6 +32,7 @@
 
 #include "Fills.h"
 
+#include "../../XlsbFormat/Biff12_records/Fill.h"
 namespace OOX
 {
 	namespace Spreadsheet

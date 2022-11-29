@@ -31,6 +31,7 @@
  */
 
 #include "CellStyles.h"
+#include "../../XlsbFormat/Biff12_records/Style.h"
 
 namespace OOX
 {

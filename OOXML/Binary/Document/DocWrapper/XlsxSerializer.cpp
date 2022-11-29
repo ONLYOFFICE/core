@@ -39,7 +39,7 @@
 #include "../../Presentation/FontPicker.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-#include "ChartWriter.h"
+#include "ChartSerializer.h"
 
 #include "../BinReader/DefaultThemeWriter.h"
 

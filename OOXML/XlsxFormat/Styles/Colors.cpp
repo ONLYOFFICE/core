@@ -32,6 +32,10 @@
 
 #include "Colors.h"
 
+#include "../../XlsbFormat/Biff12_unions/COLORPALETTE.h"
+#include "../../XlsbFormat/Biff12_unions/INDEXEDCOLORS.h"
+#include "../../XlsbFormat/Biff12_unions/MRUCOLORS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

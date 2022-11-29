@@ -32,6 +32,8 @@
 
 #include "NumFmts.h"
 
+#include "../../XlsbFormat/Biff12_records/Fmt.h"
+#include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 namespace OOX
 {
 	namespace Spreadsheet

@@ -33,8 +33,6 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
-#include "../../XlsbFormat/Biff12_records/Fmt.h"
-#include "../../XlsbFormat/Biff12_unions/ACFMT.h"
 
 namespace OOX
 {

@@ -44,16 +44,6 @@
 #include "WorkbookPr.h"
 #include "ExternalReferences.h"
 
-#include "../../XlsbFormat/WorkBookStream.h"
-
-#include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
-#include "../../XlsbFormat/Biff12_unions/BUNDLESHS.h"
-#include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
-#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
-#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
-#include "../../XlsbFormat/Biff12_records/FileVersion.h"
-#include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
-
 namespace OOX
 {
 	namespace Spreadsheet

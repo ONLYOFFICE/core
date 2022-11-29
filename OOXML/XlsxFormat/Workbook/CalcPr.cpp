@@ -31,6 +31,7 @@
  */
 
 #include "CalcPr.h"
+#include "../../XlsbFormat/Biff12_records/CalcProp.h"
 
 namespace OOX
 {

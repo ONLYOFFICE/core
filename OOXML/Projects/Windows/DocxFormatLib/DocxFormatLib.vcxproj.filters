@@ -597,9 +597,6 @@
     <ClCompile Include="..\..\..\XlsxFormat\Styles\rPr.cpp">
       <Filter>XlsxFormat\Styles</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsxFormat\Styles\Styles.cpp">
-      <Filter>XlsxFormat\Styles</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Slicer\Slicer.cpp">
       <Filter>XlsxFormat\Slicer</Filter>
     </ClCompile>
@@ -756,9 +753,6 @@
     <ClCompile Include="..\..\..\Common\SimpleTypes_Word.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\SystemUtility\File.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\SystemUtility\SystemUtility.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -807,9 +801,6 @@
       <Filter>XlsxFormat</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Cols.cpp">
-      <Filter>XlsxFormat\Worksheets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Hyperlinks.cpp">
       <Filter>XlsxFormat\Worksheets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\MergeCells.cpp">
@@ -875,9 +866,6 @@
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp">
       <Filter>XlsxFormat\SharedStrings</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\Run.cpp">
-      <Filter>XlsxFormat\SharedStrings</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.cpp">
       <Filter>XlsxFormat\SharedStrings</Filter>
     </ClCompile>
@@ -890,17 +878,11 @@
     <ClCompile Include="..\..\..\XlsxFormat\Drawing\CellAnchor.cpp">
       <Filter>XlsxFormat\Drawing</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsxFormat\Drawing\Drawing.cpp">
-      <Filter>XlsxFormat\Drawing</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Drawing\FromTo.cpp">
       <Filter>XlsxFormat\Drawing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Drawing\Pos.cpp">
       <Filter>XlsxFormat\Drawing</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxFormat\Comments\Comments.cpp">
-      <Filter>XlsxFormat\Comments</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Comments\ThreadedComments.cpp">
       <Filter>XlsxFormat\Comments</Filter>
@@ -920,5 +902,47 @@
     <ClCompile Include="..\..\..\XlsxFormat\CalcChain\CalcChain.cpp">
       <Filter>XlsxFormat\CalcChain</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\XlsxStyles.cpp">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Comments\XlsxComments.cpp">
+      <Filter>XlsxFormat\Comments</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Drawing\XlsxDrawing.cpp">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\XlsxRun.cpp">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\Settings\WebSettings.cpp">
+      <Filter>Settings</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\Media\Audio.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\Media\Image.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\Media\OleObject.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\Media\Video.cpp">
+      <Filter>Media</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\SystemUtility\FileUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\External\External.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\External\HyperLink.cpp">
+      <Filter>External</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\XlsxHyperlinks.cpp">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

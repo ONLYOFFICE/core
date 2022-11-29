@@ -31,6 +31,8 @@
  */
 
 #include "ExternalReferences.h"
+#include "../../XlsbFormat/Biff12_unions/SUP.h"
+#include "../../XlsbFormat/Biff12_records/SupBookSrc.h"
 
 namespace OOX
 {

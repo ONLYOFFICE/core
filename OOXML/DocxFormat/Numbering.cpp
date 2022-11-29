@@ -32,7 +32,7 @@
 
 #include "Numbering.h"
 #include "Docx.h"
-#include "../../../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace ComplexTypes
 {

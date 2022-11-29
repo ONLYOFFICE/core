@@ -32,6 +32,10 @@
 
 #include "WorkbookPr.h"
 
+#include "../../XlsbFormat/Biff12_records/WbProp.h"
+#include "../../XlsbFormat/Biff12_records/BookProtectionIso.h"
+#include "../../XlsbFormat/Biff12_records/BookProtection.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

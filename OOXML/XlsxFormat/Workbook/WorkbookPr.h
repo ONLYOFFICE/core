@@ -30,14 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_WORKBOOKPR_FILE_INCLUDE_H_
-#define OOX_WORKBOOKPR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-
-#include "../../XlsbFormat/Biff12_records/WbProp.h"
-#include "../../XlsbFormat/Biff12_records/BookProtectionIso.h"
-#include "../../XlsbFormat/Biff12_records/BookProtection.h"
 
 namespace OOX
 {
@@ -124,5 +118,3 @@ namespace OOX
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_WORKBOOKPR_FILE_INCLUDE_H_

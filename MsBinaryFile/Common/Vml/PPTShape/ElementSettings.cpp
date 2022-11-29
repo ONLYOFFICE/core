@@ -100,7 +100,7 @@ void CProperty::ComplexFromStream(POLE::Stream* pStream)
 		{
 		case ODRAW::fillBlip:
 		{
-			SRecordHeader oHeader;
+			PPT_FORMAT::SRecordHeader oHeader;
 			if (oHeader.ReadFromStream(pStream) == false)
 			{
 				return;
@@ -115,7 +115,7 @@ void CProperty::ComplexFromStream(POLE::Stream* pStream)
 			case RECORD_TYPE_ESCHER_BLIP_DIB:
 			case RECORD_TYPE_ESCHER_BLIP_TIFF:
 			{
-				CRecordOfficeArtBlip art_blip;
+				PPT_FORMAT::CRecordOfficeArtBlip art_blip;
 				art_blip.ReadFromStream(oHeader, pStream);
 			}
 			}

@@ -31,22 +31,9 @@
  */
 #pragma once
 
-#include "../Xlsx.h"
-#include "../../XlsbFormat/Xlsb.h"
+
 #include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
-
-#include "../../XlsbFormat/CommentsStream.h"
-
-#include "../../XlsbFormat/Biff12_unions/COMMENTS.h"
-#include "../../XlsbFormat/Biff12_unions/COMMENTAUTHORS.h"
-#include "../../XlsbFormat/Biff12_unions/COMMENTLIST.h"
-#include "../../XlsbFormat/Biff12_unions/COMMENT.h"
-
-#include "../../XlsbFormat/Biff12_records/CommentAuthor.h"
-#include "../../XlsbFormat/Biff12_records/BeginComment.h"
-#include "../../XlsbFormat/Biff12_records/CommentText.h"
-#include "../../XlsbFormat/Biff12_records/LegacyDrawing.h"
 
 #include "../Styles/Styles.h"
 

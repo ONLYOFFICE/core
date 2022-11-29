@@ -86,7 +86,7 @@ SOURCES += \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.cpp \
 	../../../XlsxFormat/Worksheets/DataValidation.cpp \
 	../../../XlsxFormat/Worksheets/Cols.cpp \
-	../../../XlsxFormat/Worksheets/Hyperlinks.cpp \
+        ../../../XlsxFormat/Worksheets/XlsxHyperlinks.cpp \
 	../../../XlsxFormat/Worksheets/MergeCells.cpp \
 	../../../XlsxFormat/Worksheets/Sparkline.cpp \
 	../../../XlsxFormat/Worksheets/WorksheetChildOther.cpp \
@@ -140,9 +140,9 @@ SOURCES += \
 	../../../Common/SimpleTypes_Vml.cpp \
 	../../../Common/ComplexTypes.cpp \
 	../../../SystemUtility/SystemUtility.cpp \
-	../../../SystemUtility/File.cpp \
+        ../../../SystemUtility/FileUtils.cpp \
 	../../../XML/XmlSimple.cpp \
-	../../../XlsxFormat/Styles/Styles.cpp \
+        ../../../XlsxFormat/Styles/XlsxStyles.cpp \
 	../../../XlsxFormat/Styles/rPr.cpp \
 	../../../XlsxFormat/Styles/Borders.cpp \
 	../../../XlsxFormat/Styles/CellStyles.cpp \
@@ -156,7 +156,7 @@ SOURCES += \
 	../../../XlsxFormat/SharedStrings/Si.cpp \
 	../../../XlsxFormat/SharedStrings/Text.cpp \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.cpp \
-	../../../XlsxFormat/SharedStrings/Run.cpp \
+        ../../../XlsxFormat/SharedStrings/XlsxRun.cpp \
 	../../../XlsxFormat/SharedStrings/SharedStrings.cpp \
 	../../../XlsxFormat/Pivot/Pivots.cpp \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
@@ -175,7 +175,7 @@ SOURCES += \
 	../../../XlsxFormat/Comments/Comments.cpp \
 	../../../XlsxFormat/Comments/ThreadedComments.cpp \
 	../../../XlsxFormat/Drawing/CellAnchor.cpp \
-	../../../XlsxFormat/Drawing/Drawing.cpp \
+        ../../../XlsxFormat/Drawing/XlsxDrawing.cpp \
 	../../../XlsxFormat/Drawing/FromTo.cpp \
 	../../../XlsxFormat/Drawing/Pos.cpp \
 	../../../XlsxFormat/ExternalLinks/ExternalLinkPath.cpp \

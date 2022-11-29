@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_DXFS_FILE_INCLUDE_H_
-#define OOX_DXFS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
@@ -41,9 +39,6 @@
 #include "NumFmts.h"
 #include "Xfs.h"
 
-#include "../../XlsbFormat/Biff12_unions/DXF.h"
-#include "../../XlsbFormat/Biff12_unions/FRTDXF.h"
-#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX
 {
@@ -110,5 +105,3 @@ namespace OOX
 
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_DXFS_FILE_INCLUDE_H_

@@ -30,12 +30,9 @@
  *
  */
 #pragma once
-#ifndef OOX_ExternalReferences_FILE_INCLUDE_H_
-#define OOX_ExternalReferences_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_unions/SUP.h"
-#include "../../XlsbFormat/Biff12_records/SupBookSrc.h"
+
 
 namespace OOX
 {
@@ -90,5 +87,3 @@ namespace OOX
 
 	} //ExternalReference
 } // namespace OOX
-
-#endif // OOX_ExternalReferences_FILE_INCLUDE_H_

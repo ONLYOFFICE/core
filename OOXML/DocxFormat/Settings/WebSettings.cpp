@@ -31,7 +31,7 @@
  */
 
 #include "WebSettings.h"
-#include "../../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/File.h"
 #include "../FileTypes.h"
 
 namespace ComplexTypes

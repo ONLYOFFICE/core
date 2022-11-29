@@ -32,6 +32,9 @@
 
 #include "dxf.h"
 
+#include "../../XlsbFormat/Biff12_unions/DXF.h"
+#include "../../XlsbFormat/Biff12_unions/FRTDXF.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 namespace OOX
 {
 	namespace Spreadsheet

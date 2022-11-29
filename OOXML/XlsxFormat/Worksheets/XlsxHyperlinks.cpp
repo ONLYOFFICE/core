@@ -31,6 +31,7 @@
  */
 
 #include "Hyperlinks.h"
+#include "../../XlsbFormat/Biff12_records/HLink.h"
 
 namespace OOX
 {

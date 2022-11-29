@@ -32,9 +32,6 @@
 #pragma once
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/Color.h"
-#include "../../XlsbFormat/Biff12_records/IndexedColor.h"
-#include "../../XlsbFormat/Biff12_records/MRUColor.h"
 
 namespace NSBinPptxRW
 {

@@ -432,6 +432,8 @@
     <ClCompile Include="..\..\..\DocxFormat\Drawing\Drawing.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Drawing\DrawingExt.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Endnote.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\External\External.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\External\HyperLink.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\File.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FileFactory.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FileType.cpp" />
@@ -469,19 +471,24 @@
     <ClCompile Include="..\..\..\DocxFormat\Math\oMathContent.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Math\oMathPara.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\ActiveX.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Audio.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Image.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\JsaProject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\Media.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\OleObject.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Media\VbaProject.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Video.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Namespaces.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Numbering.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Rels.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\RId.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Settings\Settings.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Settings\WebSettings.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Styles.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\UnknowTypeFile.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\VmlDrawing.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\WritingElement.cpp" />
-    <ClCompile Include="..\..\..\SystemUtility\File.cpp" />
+    <ClCompile Include="..\..\..\SystemUtility\FileUtils.cpp" />
     <ClCompile Include="..\..\..\SystemUtility\SystemUtility.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\CalcChain\CalcChain.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Chart\Chart.cpp" />
@@ -490,13 +497,13 @@
     <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartSerialize.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartSerializeEx.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartStyle.cpp" />
-    <ClCompile Include="..\..\..\XlsxFormat\Comments\Comments.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Comments\XlsxComments.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Comments\ThreadedComments.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Common.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\ComplexTypes_Spreadsheet.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Controls\Controls.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Drawing\CellAnchor.cpp" />
-    <ClCompile Include="..\..\..\XlsxFormat\Drawing\Drawing.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Drawing\XlsxDrawing.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Drawing\FromTo.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Drawing\Pos.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinkPath.cpp" />
@@ -508,7 +515,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\Pivots.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp" />
-    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\Run.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\XlsxRun.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\Si.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\Text.cpp" />
@@ -523,7 +530,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Styles\Fonts.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Styles\NumFmts.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Styles\rPr.cpp" />
-    <ClCompile Include="..\..\..\XlsxFormat\Styles\Styles.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\XlsxStyles.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Styles\TableStyles.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Styles\Xfs.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Table\Autofilter.cpp" />
@@ -539,7 +546,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Cols.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\ConditionalFormatting.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\DataValidation.cpp" />
-    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Hyperlinks.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\XlsxHyperlinks.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\MergeCells.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\SheetData.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Sparkline.cpp" />
@@ -548,6 +555,9 @@
     <ClCompile Include="..\..\..\XlsxFormat\Xlsx.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\XlsxFlat.cpp" />
     <ClCompile Include="..\..\..\XML\XmlSimple.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

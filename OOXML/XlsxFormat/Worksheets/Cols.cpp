@@ -33,6 +33,8 @@
 #include "Cols.h"
 #include "../XlsxFlat.h"
 
+#include "../../XlsbFormat/Biff12_unions/COLINFOS.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

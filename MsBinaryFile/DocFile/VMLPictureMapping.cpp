@@ -321,7 +321,7 @@ namespace DocFileFormat
 			ODRAW::OfficeArtFOPTEPtr & iter = options[i];
 			switch (iter->opid)
 			{
-			case wzEquationXML:
+			case ODRAW::wzEquationXML:
 				{
 					ODRAW::XmlString *pXml = dynamic_cast<ODRAW::XmlString*>(iter.get());
 					if (pXml)

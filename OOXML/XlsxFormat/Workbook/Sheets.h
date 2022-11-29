@@ -33,9 +33,6 @@
 
 #include "../CommonInclude.h"
 
-#include "../../XlsbFormat/Biff12_records/BundleSh.h"
-
-
 namespace OOX
 {
 	namespace Spreadsheet

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_XLSXTREADEDCOMMENTS_FILE_INCLUDE_H_
-#define OOX_XLSXTREADEDCOMMENTS_FILE_INCLUDE_H_
 
 #include <unordered_map>
 
@@ -213,5 +211,3 @@ namespace OOX
 
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_XLSXTREADEDCOMMENTS_FILE_INCLUDE_H_

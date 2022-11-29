@@ -1197,6 +1197,23 @@
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\TransitionBase.cpp">
       <Filter>Logic\Transition</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\App.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\CommentAuthors.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Comments.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Core.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\HandoutMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\LegacyDiagramText.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Namespaces.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\NotesMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\NotesSlide.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\PresProps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Slide.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\SlideLayout.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\SlideMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\TableStyles.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\WrapperFile.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Limits">

@@ -400,11 +400,17 @@
     <ClInclude Include="..\..\..\PPTXFormat\WritingVector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\PPTXFormat\App.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\CommentAuthors.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Comments.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Core.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileFactory.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileMap.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\FileTypes.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Folder.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\HandoutMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\LegacyDiagramText.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Bg.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvGrpSpPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SchemeClr.cpp" />
@@ -440,7 +446,18 @@
     <ClCompile Include="..\..\..\PPTXFormat\Logic\UniColor.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\UniEffect.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\UniFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Namespaces.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\NotesMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\NotesSlide.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Presentation.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\PresProps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Slide.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\SlideLayout.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\SlideMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\TableStyles.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\WrapperFile.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{36636678-AE25-4BE6-9A34-2561D1BCF302}</ProjectGuid>

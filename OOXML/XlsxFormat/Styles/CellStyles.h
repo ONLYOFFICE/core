@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/Style.h"
 
 namespace OOX
 {

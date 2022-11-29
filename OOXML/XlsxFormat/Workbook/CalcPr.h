@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_CALCPR_FILE_INCLUDE_H_
-#define OOX_CALCPR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/CalcProp.h"
 
 namespace OOX
 {
@@ -80,4 +77,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_CALCPR_FILE_INCLUDE_H_

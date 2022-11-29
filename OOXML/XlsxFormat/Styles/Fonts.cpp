@@ -31,6 +31,7 @@
  */
 
 #include "Fonts.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX
 {

@@ -34,6 +34,9 @@
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "Fonts.h"
 
+#include "../../XlsbFormat/Biff12_records/Color.h"
+#include "../../XlsbFormat/Biff12_records/IndexedColor.h"
+#include "../../XlsbFormat/Biff12_records/MRUColor.h"
 namespace OOX
 {
 	namespace Spreadsheet

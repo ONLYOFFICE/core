@@ -32,7 +32,7 @@
 
 #include "FontTable.h"
 
-#include "../../../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/Directory.h"
 #include "FileTypes.h"
 #include "Docx.h"
 

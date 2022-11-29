@@ -30,17 +30,10 @@
  *
  */
 #pragma once
-#ifndef OOX_SPARKLINE_FILE_INCLUDE_H_
-#define OOX_SPARKLINE_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 #include "../Chart/ChartSerialize.h"
 #include "../Styles/rPr.h"
-
-#include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h"
-#include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUP.h"
-#include "../../XlsbFormat/Biff12_records/BeginSparklineGroup.h"
-#include "../../XlsbFormat/Biff12_records/Sparkline.h"
 
 namespace OOX
 {
@@ -169,4 +162,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_SPARKLINE_FILE_INCLUDE_H_

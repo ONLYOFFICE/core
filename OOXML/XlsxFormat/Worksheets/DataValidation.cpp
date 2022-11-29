@@ -30,6 +30,7 @@
  *
  */
 #include "DataValidation.h"
+
 #include "../../XlsbFormat/Biff12_unions/DVALS.h"
 #include "../../XlsbFormat/Biff12_unions/DVALS14.h"
 #include "../../XlsbFormat/Biff12_records/BeginDVals.h"

@@ -32,6 +32,8 @@
 
 #include "MergeCells.h"
 
+#include "../../XlsbFormat/Biff12_records/MergeCell.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

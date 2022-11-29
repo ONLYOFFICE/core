@@ -34,7 +34,6 @@
 #include "../CommonInclude.h"
 
 #include "rPr.h"
-#include "../../XlsbFormat/Biff12_records/Border.h"
 
 namespace OOX
 {

@@ -32,6 +32,8 @@
 
 #include "Borders.h"
 
+#include "../../XlsbFormat/Biff12_records/Border.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

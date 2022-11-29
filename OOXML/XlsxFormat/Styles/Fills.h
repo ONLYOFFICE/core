@@ -34,7 +34,6 @@
 
 #include "rPr.h"
 
-#include "../../XlsbFormat/Biff12_records/Fill.h"
 
 namespace OOX
 {

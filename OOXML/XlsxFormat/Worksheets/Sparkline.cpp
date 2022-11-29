@@ -32,6 +32,11 @@
 
 #include "Sparkline.h"
 
+#include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h"
+#include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUP.h"
+#include "../../XlsbFormat/Biff12_records/BeginSparklineGroup.h"
+#include "../../XlsbFormat/Biff12_records/Sparkline.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

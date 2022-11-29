@@ -287,23 +287,30 @@ core_debug {
 SOURCES += \
 	../../../PptFile/Enums/RecordType.cpp \
 	../../../PptFile/Enums/RecordType.cpp \
+        \
 	../../../PptFile/Reader/ReadStructures.cpp \
 	../../../PptFile/Reader/RoundTripExtractor.cpp \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.cpp \
 	../../../PptFile/Reader/Records.cpp \
 	../../../PptFile/Reader/PPTFileReader.cpp \
 	../../../PptFile/Reader/SlidePersist.cpp \
+        \
 	../../../PptFile/PPTXWriter/Converter.cpp \
 	../../../PptFile/PPTXWriter/ShapeWriter.cpp \
-	../../../PptFile/PPTXWriter/TableWriter.cpp \
+        ../../../PptFile/PPTXWriter/StylesWriter.cpp \
+        ../../../PptFile/PPTXWriter/TableWriter.cpp \
 	../../../PptFile/PPTXWriter/TxBodyConverter.cpp \
-	../../../PptFile/Records/Drawing/ArtBlip.cpp \
-	../../../PptFile/Records/Drawing/ShapeContainer.cpp \
-	../../../PptFile/Records/Animations/TimeVariant.cpp \
-	../../../PptFile/Records/BlipEntityAtom.cpp \
-	../../../PptFile/Drawing/Elements.cpp \
-	../../../PptFile/Drawing/TextAttributesEx.cpp \
-  	../../../PptFile/Converter/Animation/AnimationParser.cpp \
+        ../../../PptFile/PPTXWriter/ImageManager.cpp \
+        ../../../PptFile/PPTXWriter/BulletsConverter.cpp \
+        \
+        ../../../PptFile/Drawing/Element.cpp \
+        ../../../PptFile/Drawing/Elements.cpp \
+        ../../../PptFile/Drawing/Layout.cpp \
+        ../../../PptFile/Drawing/Slide.cpp \
+        ../../../PptFile/Drawing/TextStructures.cpp \
+        ../../../PptFile/Drawing/TextAttributesEx.cpp \
+        \
+        ../../../PptFile/Converter/Animation/AnimationParser.cpp \
 	../../../PptFile/Converter/Animation/Animation_1995.cpp \
 	../../../PptFile/Converter/Animation/TimingUtils.cpp \
 	../../../PptFile/Converter/Animation/Timing_1995.cpp \
@@ -312,7 +319,126 @@ SOURCES += \
 	../../../PptFile/Converter/Animation/intermediate_anim.cpp \
 	../../../PptFile/Converter/timing.cpp \
 	../../../PptFile/Converter/transition.cpp \
-	../../../PptFile/PPTXWriter/BulletsConverter.cpp
+        \
+        ../../../PptFile/Records/Drawing/ArtBlip.cpp \
+        ../../../PptFile/Records/Drawing/ShapeContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeVariant.cpp \
+        ../../../PptFile/Records/BlipEntityAtom.cpp \
+        ../../../PptFile/Records/Animations/AnimationInfoAtom.cpp \
+        ../../../PptFile/Records/Animations/AnimationInfoContainer.cpp \
+        ../../../PptFile/Records/Animations/BuildAtom.cpp \
+        ../../../PptFile/Records/Animations/BuildListSubContainer.cpp \
+        ../../../PptFile/Records/Animations/ChartBuildAtom.cpp \
+        ../../../PptFile/Records/Animations/ChartBuildContainer.cpp \
+        ../../../PptFile/Records/Animations/ClientVisualElementContainer.cpp \
+        ../../../PptFile/Records/Animations/DiagramBuildAtom.cpp \
+        ../../../PptFile/Records/Animations/DiagramBuildContainer.cpp \
+        ../../../PptFile/Records/Animations/ExtTimeNodeContainer.cpp \
+        ../../../PptFile/Records/Animations/HashCode10Atom.cpp \
+        ../../../PptFile/Records/Animations/LevelInfoAtom.cpp \
+        ../../../PptFile/Records/Animations/ParaBuildAtom.cpp \
+        ../../../PptFile/Records/Animations/ParaBuildContainer.cpp \
+        ../../../PptFile/Records/Animations/ParaBuildLevel.cpp \
+        ../../../PptFile/Records/Animations/SubEffectContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimateBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimateBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimateColor.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimateColorBy.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimationValueAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimationValueListContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeAnimationValueListEntry.cpp \
+        ../../../PptFile/Records/Animations/TimeBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeColorBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeColorBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeCommandBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeCommandBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeConditionAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeConditionContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeEffectBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeEffectBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeIterateDataAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeModifierAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeMotionBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeMotionBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeNodeAtom.cpp \
+        ../../../PptFile/Records/Animations/TimePropertyList4TimeBehavior.cpp \
+        ../../../PptFile/Records/Animations/TimePropertyList4TimeNodeContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeRotationBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeRotationBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeScaleBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeScaleBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeSequenceDataAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeSetBehaviorAtom.cpp \
+        ../../../PptFile/Records/Animations/TimeSetBehaviorContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeStringListContainer.cpp \
+        ../../../PptFile/Records/Animations/TimeVariant4Behavior.cpp \
+        ../../../PptFile/Records/Animations/VisualPageAtom.cpp \
+        ../../../PptFile/Records/Animations/VisualShapeAtom.cpp \
+        ../../../PptFile/Records/Animations/VisualShapeChartElementAtom.cpp \
+        ../../../PptFile/Records/Animations/VisualShapeGeneralAtom.cpp \
+        ../../../PptFile/Records/Animations/VisualSoundAtom.cpp \
+        ../../../PptFile/Records/BlipCollection9Container.cpp \
+        ../../../PptFile/Records/BookmarkEntityAtom.cpp \
+        ../../../PptFile/Records/BookmarkSeedAtom.cpp \
+        ../../../PptFile/Records/BuildAtom.cpp \
+        ../../../PptFile/Records/CFMasks.cpp \
+        ../../../PptFile/Records/CString.cpp \
+        ../../../PptFile/Records/ColorSchemeAtom.cpp \
+        ../../../PptFile/Records/Comment10Container.cpp \
+        ../../../PptFile/Records/CurrentUserAtom.cpp \
+        ../../../PptFile/Records/DocInfoListContainer.cpp \
+        ../../../PptFile/Records/DocProgTagsContainer.cpp \
+        ../../../PptFile/Records/DocRoutingSlipAtom.cpp \
+        ../../../PptFile/Records/DocumentAtom.cpp \
+        ../../../PptFile/Records/DocumentRecords.cpp \
+        ../../../PptFile/Records/DocumentTextInfo.cpp \
+        ../../../PptFile/Records/Drawing/BlipStoreContainer.cpp \
+        ../../../PptFile/Records/Drawing/BlipStoreEntry.cpp \
+        ../../../PptFile/Records/Drawing/ChildAnchor.cpp \
+        ../../../PptFile/Records/Drawing/ClientAnchor.cpp \
+        ../../../PptFile/Records/Drawing/DrawingContainer.cpp \
+        ../../../PptFile/Records/Drawing/DrawingGroup.cpp \
+        ../../../PptFile/Records/Drawing/DrawingRecord.cpp \
+        ../../../PptFile/Records/Drawing/GroupShape.cpp \
+        ../../../PptFile/Records/Drawing/Shape.cpp \
+        ../../../PptFile/Records/Drawing/ShapeProperties.cpp \
+        ../../../PptFile/Records/Drawing/TextBox.cpp \
+        ../../../PptFile/Records/EndDocument.cpp \
+        ../../../PptFile/Records/ExCDAudioContainer.cpp \
+        ../../../PptFile/Records/ExControlAtom.cpp \
+        ../../../PptFile/Records/ExHyperlinkAtom.cpp \
+        ../../../PptFile/Records/ExMIDIAudioContainer.cpp \
+        ../../../PptFile/Records/ExMediaAtom.cpp \
+        ../../../PptFile/Records/ExObjListAtom.cpp \
+        ../../../PptFile/Records/ExObjListContainer.cpp \
+        ../../../PptFile/Records/ExObjRefAtom.cpp \
+        ../../../PptFile/Records/ExOleEmbedAtom.cpp \
+        ../../../PptFile/Records/ExOleLinkAtom.cpp \
+        ../../../PptFile/Records/ExOleObjAtom.cpp \
+        ../../../PptFile/Records/ExVideoContainer.cpp \
+        ../../../PptFile/Records/ExWAVAudioEmbeddedContainer.cpp \
+        ../../../PptFile/Records/ExWAVAudioLinkContainer.cpp \
+        ../../../PptFile/Records/FontCollection10Container.cpp \
+        ../../../PptFile/Records/FontEmbedFlags10Atom.cpp \
+        ../../../PptFile/Records/FontEntityAtom.cpp \
+        ../../../PptFile/Records/GridSpacing10Atom.cpp \
+        ../../../PptFile/Records/GuideAtom.cpp \
+        ../../../PptFile/Records/HeadersFootersAtom.cpp \
+        ../../../PptFile/Records/InteractiveInfoAtom.cpp \
+        ../../../PptFile/Records/KinsokuAtom.cpp \
+        ../../../PptFile/Records/KinsokuContainer.cpp \
+        ../../../PptFile/Records/KinsokuFollowingAtom.cpp \
+        ../../../PptFile/Records/KinsokuLeadingAtom.cpp \
+        ../../../PptFile/Records/LinkedShape10Atom.cpp \
+        ../../../PptFile/Records/LinkedSlide10Atom.cpp \
+        ../../../PptFile/Records/MasterPersistAtom.cpp \
+        ../../../PptFile/Records/MasterTextPropAtom.cpp \
+        ../../../PptFile/Records/MetafileBlob.cpp \
+        ../../../PptFile/Records/MouseInteractiveInfoContainer.cpp \
+        ../../../PptFile/Records/MouseTextInteractiveInfoAtom.cpp \
+        ../../../PptFile/Records/NamedShowSlidesAtom.cpp
+
 }
 
 SOURCES += \

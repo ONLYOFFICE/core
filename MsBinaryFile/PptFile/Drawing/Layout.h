@@ -36,10 +36,10 @@
 
 namespace PPT_FORMAT
 {
-    static void CorrectPlaceholderType(int & type);
 
-    static bool isTitlePlaceholder(int type);
-    static bool isBodyPlaceholder(int type);
+void CorrectPlaceholderType(int & type);
+bool isTitlePlaceholder(int type);
+bool isBodyPlaceholder(int type);
 
     class CLayout
     {

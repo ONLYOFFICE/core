@@ -203,9 +203,8 @@ public:
 
 namespace NSStreamReader
 {
-    static void Read(POLE::Stream* pStream, SPointAtom& oAtom);
-
-    static void Read(POLE::Stream* pStream, SColorAtom& oAtom);
+    void Read(POLE::Stream* pStream, SPointAtom& oAtom);
+    void Read(POLE::Stream* pStream, SColorAtom& oAtom);
 	
 	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
 	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);

@@ -31,6 +31,7 @@
  */
 #pragma once
 #include "../Reader/Records.h"
+#include "../Enums/enums.h"
 
 enum BuildTypeEnum : _UINT32
 {

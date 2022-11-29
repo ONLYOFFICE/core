@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include "../Drawing/TextStructures.h"
+
 namespace PPT_FORMAT
 {
 	class CTheme;

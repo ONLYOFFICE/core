@@ -61,14 +61,6 @@ enum AnimBuildTypeEnum : BYTE
 };
 
 
-enum BuildTypeEnum
-{
-    TL_BuildParagraph,
-    TL_BuildChart,
-    TL_BuildDiagram
-};
-
-
 enum ChartBuildEnum
 {
     TLCB_AsOneObject,

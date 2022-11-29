@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../Structures/FontCollectionEntry.h"
+//#include "FontCollectionEntry.h"
 #include "../Reader/Records.h"
 
 namespace PPT_FORMAT
@@ -39,7 +39,7 @@ namespace PPT_FORMAT
 class CRecordFontCollection10Container : public CUnknownRecord
 {
 public:
-    std::vector<FontCollectionEntry*> m_rgFontCollectionEntry;
+    //std::vector<FontCollectionEntry*> m_rgFontCollectionEntry;
 
 public:
     virtual ~CRecordFontCollection10Container();

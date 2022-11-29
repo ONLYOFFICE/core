@@ -53,6 +53,8 @@ public:
     void FromAtom(CRecordUserEditAtom* pAtom);
 }; 
 
+class CRecordCurrentUserAtom;
+
 class CCurrentUser 
 { 
 public:

@@ -149,55 +149,55 @@ public:
     контейнеры... (по идее они не нужны, потом можно убрать)
 **************************************************************/
 
-/*
-class CRecordDocument					: public CRecordsContainer {};
-class CRecordExAviMovie					: public CRecordsContainer {};
-class CRecordExCDAudio					: public CRecordsContainer {};
-class CRecordExControl					: public CRecordsContainer {};
-class CRecordExEmbed					: public CRecordsContainer {};
-class CRecordExHyperlink				: public CRecordsContainer {};
-class CRecordExHyperlink9				: public CRecordsContainer {};
-class CRecordExLink						: public CRecordsContainer {};
-class CRecordExMCIMovie					: public CRecordsContainer {};
-class CRecordExMIDIAudio				: public CRecordsContainer {};
-class CRecordExObjList					: public CRecordsContainer {};
-class CRecordExOleObjStg				: public CRecordsContainer {};
-class CRecordExQuickTimeMovie			: public CRecordsContainer {};
-class CRecordExVideo					: public CRecordsContainer {};
-class CRecordExWAVAudioEmbedded			: public CRecordsContainer {};
-class CRecordExWAVAudioLink				: public CRecordsContainer {};
-class CRecordFontCollection10			: public CRecordsContainer {};
-class CRecordHandout					: public CRecordsContainer {};
-class CRecordHeadersFooters				: public CRecordsContainer {};
-class CRecordHTMLPublishInfo			: public CRecordsContainer {};
-class CRecordInteractiveInfo			: public CRecordsContainer {};
-class CRecordList						: public CRecordsContainer {};
-class CRecordMainMaster					: public CRecordsContainer {};
-class CRecordMsofbtClientData			: public CRecordsContainer {};
-class CRecordNamedShow					: public CRecordsContainer {};
-class CRecordNamedShows					: public CRecordsContainer {};
-class CRecordNotes						: public CRecordsContainer {};
-class CRecordNotesTextViewInfo			: public CRecordsContainer {};
-class CRecordOutlineTextProps9			: public CRecordsContainer {};
-class CRecordOutlineTextProps10			: public CRecordsContainer {};
-class CRecordOutlineTextProps11			: public CRecordsContainer {};
-class CRecordOutlineViewInfo			: public CRecordsContainer {};
-class CRecordParaBuild					: public CRecordsContainer {};
-class CRecordProgBinaryTag				: public CRecordsContainer {};
-class CRecordProgStringTag				: public CRecordsContainer {};
-class CRecordProgTags					: public CRecordsContainer {};
-class CRecordSlide						: public CRecordsContainer {};
-class CRecordSlideListTable10			: public CRecordsContainer {};
-class CRecordSlideListWithText			: public CRecordsContainer {};
-class CRecordSlideSyncInfo12			: public CRecordsContainer {};
-class CRecordSlideViewInfo				: public CRecordsContainer {};
-class CRecordSorterViewInfo				: public CRecordsContainer {};
-class CRecordSound						: public CRecordsContainer {};
-class CRecordSoundCollection			: public CRecordsContainer {};
-class CRecordSrKinsoku					: public CRecordsContainer {};
-class CRecordSummary					: public CRecordsContainer {};
-class CRecordVBAInfo					: public CRecordsContainer {};
-*/
+
+//class CRecordDocument					: public CRecordsContainer {};
+//class CRecordExAviMovie					: public CRecordsContainer {};
+//class CRecordExCDAudio					: public CRecordsContainer {};
+//class CRecordExControl					: public CRecordsContainer {};
+//class CRecordExEmbed					: public CRecordsContainer {};
+//class CRecordExHyperlink				: public CRecordsContainer {};
+//class CRecordExHyperlink9				: public CRecordsContainer {};
+//class CRecordExLink						: public CRecordsContainer {};
+//class CRecordExMCIMovie					: public CRecordsContainer {};
+//class CRecordExMIDIAudio				: public CRecordsContainer {};
+//class CRecordExObjList					: public CRecordsContainer {};
+//class CRecordExOleObjStg				: public CRecordsContainer {};
+//class CRecordExQuickTimeMovie			: public CRecordsContainer {};
+//class CRecordExVideo					: public CRecordsContainer {};
+//class CRecordExWAVAudioEmbedded			: public CRecordsContainer {};
+//class CRecordExWAVAudioLink				: public CRecordsContainer {};
+//class CRecordFontCollection10			: public CRecordsContainer {};
+//class CRecordHandout					: public CRecordsContainer {};
+//class CRecordHeadersFooters				: public CRecordsContainer {};
+//class CRecordHTMLPublishInfo			: public CRecordsContainer {};
+//class CRecordInteractiveInfo			: public CRecordsContainer {};
+//class CRecordList						: public CRecordsContainer {};
+//class CRecordMainMaster					: public CRecordsContainer {};
+//class CRecordMsofbtClientData			: public CRecordsContainer {};
+//class CRecordNamedShow					: public CRecordsContainer {};
+//class CRecordNamedShows					: public CRecordsContainer {};
+//class CRecordNotes						: public CRecordsContainer {};
+//class CRecordNotesTextViewInfo			: public CRecordsContainer {};
+//class CRecordOutlineTextProps9			: public CRecordsContainer {};
+//class CRecordOutlineTextProps10			: public CRecordsContainer {};
+//class CRecordOutlineTextProps11			: public CRecordsContainer {};
+//class CRecordOutlineViewInfo			: public CRecordsContainer {};
+//class CRecordParaBuild					: public CRecordsContainer {};
+//class CRecordProgBinaryTag				: public CRecordsContainer {};
+//class CRecordProgStringTag				: public CRecordsContainer {};
+//class CRecordProgTags					: public CRecordsContainer {};
+//class CRecordSlide						: public CRecordsContainer {};
+//class CRecordSlideListTable10			: public CRecordsContainer {};
+//class CRecordSlideListWithText			: public CRecordsContainer {};
+//class CRecordSlideSyncInfo12			: public CRecordsContainer {};
+//class CRecordSlideViewInfo				: public CRecordsContainer {};
+//class CRecordSorterViewInfo				: public CRecordsContainer {};
+//class CRecordSound						: public CRecordsContainer {};
+//class CRecordSoundCollection			: public CRecordsContainer {};
+//class CRecordSrKinsoku					: public CRecordsContainer {};
+//class CRecordSummary					: public CRecordsContainer {};
+//class CRecordVBAInfo					: public CRecordsContainer {};
+
 
 /********************************************************************************
         создаем по типу (остальные будем добавлять по мере необходимости)

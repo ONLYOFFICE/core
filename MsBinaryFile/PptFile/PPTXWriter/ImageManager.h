@@ -34,7 +34,6 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
-#include <boost/algorithm/string.hpp>
 #include "../Drawing/Attributes.h"
 #include "../../../DesktopEditor/common/File.h"
 namespace PPT_FORMAT
@@ -65,7 +64,8 @@ namespace PPT_FORMAT
         bool IsNeedDownload(const std::wstring& strFile);
 	};
 
-    static std::wstring CorrectXmlString3(const std::wstring & str);
+    std::wstring CorrectXmlString3(const std::wstring & str);
+
 	class CRelsGenerator
 	{
     private:

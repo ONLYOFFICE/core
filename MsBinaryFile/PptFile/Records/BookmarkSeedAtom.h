@@ -32,22 +32,25 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordBookmarkSeedAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	INT m_nBookmarkID;
-	
-	CRecordBookmarkSeedAtom()
+	class CRecordBookmarkSeedAtom : public CUnknownRecord
 	{
-	}
+	public:
+		INT m_nBookmarkID;
 
-	~CRecordBookmarkSeedAtom()
-	{
-	}
+		CRecordBookmarkSeedAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
+		~CRecordBookmarkSeedAtom()
+		{
+		}
 
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+
+	};
+}

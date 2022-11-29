@@ -34,8 +34,6 @@
 #include "Interactive.h"
 #include "Animations.h"
 
-using namespace ODRAW;
-
 namespace PPT_FORMAT
 {
 enum ElementType
@@ -61,9 +59,9 @@ class CElement
 public:
     ElementType			m_etType;
 
-    CDoubleRect			m_rcChildAnchor;
-    CDoubleRect			m_rcAnchor;
-    CDoubleRect			m_rcGroupAnchor;
+    ODRAW::CDoubleRect			m_rcChildAnchor;
+	ODRAW::CDoubleRect			m_rcAnchor;
+	ODRAW::CDoubleRect			m_rcGroupAnchor;
 
     bool				m_bChildAnchorEnabled;
     bool				m_bAnchorEnabled;
@@ -82,9 +80,9 @@ public:
     CAnimationInfo		m_oAnimations;
     CEffects			m_oEffects;
 
-    CPen				m_oPen;
-    CBrush				m_oBrush;
-    CShadow				m_oShadow;
+    ODRAW::CPen				m_oPen;
+    ODRAW::CBrush				m_oBrush;
+    ODRAW::CShadow				m_oShadow;
 
     int					m_lID;
     int					m_lLayoutID;

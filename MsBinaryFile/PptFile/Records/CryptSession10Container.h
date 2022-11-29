@@ -45,7 +45,7 @@ public:
 	bool			fStream;
 	std::wstring	StreamName;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
+	virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream)
 	{
 		m_oHeader = oHeader;
 

@@ -680,7 +680,7 @@ bool CPPTXWriter::WriteRoundTripTheme(const CRecordSlide *pSlide, std::unordered
         return false;
 
     // Write Theme
-    PPT_FORMAT::CRelsGenerator themeRels(&m_oManager);
+    CRelsGenerator themeRels(&m_oManager);
     std::wstring strPptDirectory = m_strTempDirectory + FILE_SEPARATOR_STR  + _T("ppt") + FILE_SEPARATOR_STR ;
     std::wstring strThemeDirectory = strPptDirectory + FILE_SEPARATOR + _T("theme");
     if (nIndexTheme == 0)
@@ -1605,7 +1605,7 @@ void PPT_FORMAT::CPPTXWriter::WriteSlide(int nIndexSlide)
 
 void PPT_FORMAT::CPPTXWriter::WriteTransition(CStringWriter& oWriter, CSlideShowInfo &oSSInfo)
 {
-    PPT::Converter::Transition transitionConverter(oSSInfo, m_pShapeWriter->m_pRels);
+    PPT_FORMAT::Converter::Transition transitionConverter(oSSInfo, m_pShapeWriter->m_pRels);
     auto transition = transitionConverter.Convert();
     oWriter.WriteString(transition.toXML());
 }
@@ -1879,10 +1879,10 @@ void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme,
 void PPT_FORMAT::CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID)
 {
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    auto intermediateSlideAnimation = PPT::Intermediate::ParseSlideAnimation(slide_iter->second);
+    auto intermediateSlideAnimation = PPT_FORMAT::Intermediate::ParseSlideAnimation(slide_iter->second);
     intermediateSlideAnimation.realShapesIds = shapesID;
     auto timing =
-            PPT::Converter::Timing(intermediateSlideAnimation, shapesID).
+            PPT_FORMAT::Converter::Timing(intermediateSlideAnimation, shapesID).
             Convert(&(m_pUserInfo->m_oExMedia), &oRels);
     oWriter.WriteString(timing.toXML());
 }

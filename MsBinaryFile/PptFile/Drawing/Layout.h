@@ -33,7 +33,6 @@
 #include "Element.h"
 #include "../Enums/_includer.h"
 
-
 namespace PPT_FORMAT
 {
 //    enum eSlideSize
@@ -160,14 +159,14 @@ namespace PPT_FORMAT
     public:
 
         std::vector<CElementPtr>		m_arElements;
-        std::vector<CColor>				m_arColorScheme;
+        std::vector<ODRAW::CColor>		m_arColorScheme;
         std::multimap<int, CElementPtr>	m_mapPlaceholders;
 
         bool					m_bIsTitleMaster;
         bool					m_bUseThemeColorScheme;
 
         bool					m_bIsBackground;
-        CBrush					m_oBackground;
+        ODRAW::CBrush			m_oBackground;
 
         bool					m_bHasDate;
         bool					m_bHasSlideNumber;

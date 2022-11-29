@@ -32,23 +32,26 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordBookmarkEntityAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	UINT m_nID;
-    std::wstring m_strName;
-	
-	CRecordBookmarkEntityAtom()
+	class CRecordBookmarkEntityAtom : public CUnknownRecord
 	{
-	}
+	public:
+		UINT m_nID;
+		std::wstring m_strName;
 
-	~CRecordBookmarkEntityAtom()
-	{
-	}
+		CRecordBookmarkEntityAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
+		~CRecordBookmarkEntityAtom()
+		{
+		}
 
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+
+	};
+}

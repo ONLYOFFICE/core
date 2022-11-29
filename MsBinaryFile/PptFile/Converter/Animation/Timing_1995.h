@@ -7,7 +7,7 @@
 #include "intermediate_anim.h"
 
 
-namespace PPT {
+namespace PPT_FORMAT {
 namespace Converter {
 class Animation_1995;
 

@@ -36,8 +36,6 @@
 #include "Interactive.h"
 #include <set>
 
-using namespace ODRAW;
-
 namespace PPT_FORMAT
 {
 
@@ -80,7 +78,7 @@ namespace PPT_FORMAT
 		
 		return _T("<") + strName + _T(">") + XmlUtils::ToString(prop.get()) + _T("</") + strName + _T(">");
 	}
-    static std::wstring ToNode(const NSCommon::nullable_base<CColor>& prop, const std::wstring& strName)
+    static std::wstring ToNode(const NSCommon::nullable_base<ODRAW::CColor>& prop, const std::wstring& strName)
 	{
         if (!prop.is_init()) return L"";
 		
@@ -204,7 +202,7 @@ namespace PPT_FORMAT
 
 		NSCommon::nullable_base<double>	BaseLineOffset;		// baseline offset
 
-		NSCommon::nullable_base<CColor>	Color;				// text color
+		NSCommon::nullable_base<ODRAW::CColor>	Color;				// text color
 		NSCommon::nullable_base<WORD>	Size;				// font size
 
 		NSCommon::nullable_base<WORD>	Cap;				// 0 - none, 1 - TEXT, 2 - text
@@ -325,7 +323,7 @@ namespace PPT_FORMAT
 		NSCommon::nullable_base<WORD>			bulletFontRef;
 		NSCommon::nullable_base<WORD>			bulletSize;
 		NSCommon::nullable_base<WCHAR>			bulletChar;
-		NSCommon::nullable_base<CColor>			bulletColor;
+		NSCommon::nullable_base<ODRAW::CColor>			bulletColor;
         NSCommon::nullable_base<CFontProperty>  bulletFontProperties;
         NSCommon::nullable_base<CBulletAutoNum> bulletAutoNum;
         NSCommon::nullable_base<CBulletBlip>    bulletBlip;

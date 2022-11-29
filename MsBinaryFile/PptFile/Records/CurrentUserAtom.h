@@ -35,76 +35,79 @@
 #define			NO_ENCRYPT		0xE391C05F
 #define			ENCRYPT			0xF3D1C4DF
 
-class CRecordCurrentUserAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	_UINT32 m_nSize;		// must be 0x00000014
-	_UINT32 m_nToken;		// encrypt or not
-
-	_UINT32 m_nOffsetToCurEdit;   // offset to UserEditAtom in PPTDocStream
-
-	USHORT m_nLenUserName;  
-
-	USHORT m_nDocFileVersion;	// must be 0x03F4
-	BYTE m_nMajorVersion;		// must be 0x03
-	BYTE m_nMinorVersion;		// must be 0x00
-
-	std::string		m_strANSIUserName;
-	std::wstring	m_strUNICODEUserName;
-
-	_UINT32 m_nRelVersion;  // 0x00000008 or 0x00000009
-
-
-	CRecordCurrentUserAtom() : m_nToken(0)
+	class CRecordCurrentUserAtom : public CUnknownRecord
 	{
-		m_nSize = m_nRelVersion = m_nToken = m_nOffsetToCurEdit = 0;
-		m_nLenUserName = m_nDocFileVersion = 0;
-		m_nMinorVersion = m_nMajorVersion = 0;
+	public:
+		_UINT32 m_nSize;		// must be 0x00000014
+		_UINT32 m_nToken;		// encrypt or not
 
-	}
+		_UINT32 m_nOffsetToCurEdit;   // offset to UserEditAtom in PPTDocStream
 
-	~CRecordCurrentUserAtom()
-	{
-	}
+		USHORT m_nLenUserName;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream * pStream)
-	{
-		m_oHeader = oHeader;
+		USHORT m_nDocFileVersion;	// must be 0x03F4
+		BYTE m_nMajorVersion;		// must be 0x03
+		BYTE m_nMinorVersion;		// must be 0x00
 
-		m_nSize				= StreamUtils::ReadDWORD(pStream);
-		
-		long sz = (long)(pStream->size() - pStream->tell());
+		std::string		m_strANSIUserName;
+		std::wstring	m_strUNICODEUserName;
 
-		if ((long)m_nSize >  sz )
+		_UINT32 m_nRelVersion;  // 0x00000008 or 0x00000009
+
+
+		CRecordCurrentUserAtom() : m_nToken(0)
 		{
-			m_nSize =  sz ;
+			m_nSize = m_nRelVersion = m_nToken = m_nOffsetToCurEdit = 0;
+			m_nLenUserName = m_nDocFileVersion = 0;
+			m_nMinorVersion = m_nMajorVersion = 0;
+
 		}
 
-		if (m_nSize < 16) return;
+		~CRecordCurrentUserAtom()
+		{
+		}
 
-		m_nToken			= StreamUtils::ReadDWORD(pStream);
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream * pStream)
+		{
+			m_oHeader = oHeader;
 
-		m_nOffsetToCurEdit	= StreamUtils::ReadDWORD(pStream);
+			m_nSize = StreamUtils::ReadDWORD(pStream);
 
-		m_nLenUserName		= StreamUtils::ReadWORD(pStream);
+			long sz = (long)(pStream->size() - pStream->tell());
 
-		m_nDocFileVersion	= StreamUtils::ReadWORD(pStream);
+			if ((long)m_nSize > sz)
+			{
+				m_nSize = sz;
+			}
 
-		m_nMajorVersion		= StreamUtils::ReadBYTE(pStream);
-		m_nMinorVersion		= StreamUtils::ReadBYTE(pStream);
+			if (m_nSize < 16) return;
 
-		StreamUtils::StreamSkip(2, pStream);
+			m_nToken = StreamUtils::ReadDWORD(pStream);
 
-		m_strANSIUserName = StreamUtils::ReadStringA(pStream, m_nLenUserName);
+			m_nOffsetToCurEdit = StreamUtils::ReadDWORD(pStream);
 
-		m_nRelVersion = StreamUtils::ReadDWORD(pStream);
+			m_nLenUserName = StreamUtils::ReadWORD(pStream);
 
-        m_strUNICODEUserName = StreamUtils::ReadStringW(pStream, m_nLenUserName );
+			m_nDocFileVersion = StreamUtils::ReadWORD(pStream);
 
-	}
+			m_nMajorVersion = StreamUtils::ReadBYTE(pStream);
+			m_nMinorVersion = StreamUtils::ReadBYTE(pStream);
 
-    bool IsSupported()
-	{
-		return (NO_ENCRYPT == m_nToken);
-	}
-};
+			StreamUtils::StreamSkip(2, pStream);
+
+			m_strANSIUserName = StreamUtils::ReadStringA(pStream, m_nLenUserName);
+
+			m_nRelVersion = StreamUtils::ReadDWORD(pStream);
+
+			m_strUNICODEUserName = StreamUtils::ReadStringW(pStream, m_nLenUserName);
+
+		}
+
+		bool IsSupported()
+		{
+			return (NO_ENCRYPT == m_nToken);
+		}
+	};
+}

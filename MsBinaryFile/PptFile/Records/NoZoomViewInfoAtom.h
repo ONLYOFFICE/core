@@ -32,24 +32,27 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordNoZoomViewInfoAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	SScalingAtom m_oCurScale;
-	SPointAtom m_nOrigin;
-
-	BOOL1 m_bDraftMode;
-	
-	CRecordNoZoomViewInfoAtom()
+	class CRecordNoZoomViewInfoAtom : public CUnknownRecord
 	{
-	}
+	public:
+		SScalingAtom m_oCurScale;
+		ODRAW::SPointAtom m_nOrigin;
 
-	~CRecordNoZoomViewInfoAtom()
-	{
-	}
+		BOOL1 m_bDraftMode;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-};
+		CRecordNoZoomViewInfoAtom()
+		{
+		}
+
+		~CRecordNoZoomViewInfoAtom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

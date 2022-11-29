@@ -32,23 +32,26 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordSoundCollAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	INT m_nObjectIdSeed;
-	
-	CRecordSoundCollAtom()
+	class CRecordSoundCollAtom : public CUnknownRecord
 	{
-	}
+	public:
+		INT m_nObjectIdSeed;
 
-	~CRecordSoundCollAtom()
-	{
-	}
+		CRecordSoundCollAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+		~CRecordSoundCollAtom()
+		{
+		}
 
-		m_nObjectIdSeed = StreamUtils::ReadDWORD(pStream);
-	}
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			m_nObjectIdSeed = StreamUtils::ReadDWORD(pStream);
+		}
+	};
+}

@@ -33,11 +33,14 @@
 #include "../Reader/Records.h"
 
 
-class CRecordOfficeArtClientTextbox : public CRecordsContainer
+namespace PPT_FORMAT
 {
-public:
-    CRecordOfficeArtClientTextbox()
-    {
+	class CRecordOfficeArtClientTextbox : public CRecordsContainer
+	{
+	public:
+		CRecordOfficeArtClientTextbox()
+		{
 
-    }
-};
+		}
+	};
+}

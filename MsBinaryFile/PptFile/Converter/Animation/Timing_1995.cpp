@@ -8,7 +8,7 @@
 #include <algorithm>
 
 
-namespace PPT {
+namespace PPT_FORMAT {
 namespace Converter {
 
 Timing_1995::Timing_1995(const std::vector<Intermediate::SOldAnimation> &vecAIC) :

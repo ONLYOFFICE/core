@@ -35,47 +35,49 @@
 
 class CPPTDocumentInfo;
 
-
-class CRecordOfficeArtBlip  : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	CPPTDocumentInfo *	m_oDocumentInfo;
-	
-	std::wstring		m_sFileName;
-	std::wstring		m_strTmpDirectory;
-
-	CRecordOfficeArtBlip()
+	class CRecordOfficeArtBlip : public CUnknownRecord
 	{
-		m_oDocumentInfo = NULL;
-	}
+	public:
+		CPPTDocumentInfo *	m_oDocumentInfo;
 
-	~CRecordOfficeArtBlip()
+		std::wstring		m_sFileName;
+		std::wstring		m_strTmpDirectory;
+
+		CRecordOfficeArtBlip()
+		{
+			m_oDocumentInfo = NULL;
+		}
+
+		~CRecordOfficeArtBlip()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+
+	};
+
+	class CRecordBitmapBlip : public CUnknownRecord
 	{
-	}
+	public:
+		BYTE m_pRgbUid[16];
+		BYTE m_nTag;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+		//BYTE* m_pScan0;
 
-};
+		CRecordBitmapBlip()
+		{
+		}
 
-class CRecordBitmapBlip : public CUnknownRecord
-{
-public:
-	BYTE m_pRgbUid[16];
-	BYTE m_nTag;
+		~CRecordBitmapBlip()
+		{
+		}
 
-	//BYTE* m_pScan0;
-	
-	CRecordBitmapBlip()
-	{
-	}
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
 
-	~CRecordBitmapBlip()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-
-};
+	};
+}

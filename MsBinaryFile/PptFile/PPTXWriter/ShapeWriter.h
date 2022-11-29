@@ -140,7 +140,7 @@ namespace PPT_FORMAT
 
 		PPT_FORMAT::CElementPtr		m_pElement;
 		
-		PPT_FORMAT::CRelsGenerator*	m_pRels;
+		CRelsGenerator*	m_pRels;
 
 		PPT_FORMAT::CTheme*			m_pTheme;
 

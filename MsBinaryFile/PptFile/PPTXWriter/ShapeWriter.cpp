@@ -46,6 +46,9 @@
 #include <algorithm>
 #include <iostream>
 #include <ostream>
+
+using namespace PPT_FORMAT;
+
 static UINT nRTCounter = 1;
 
 

@@ -32,52 +32,55 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-class CRecordBlipStoreEntry : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	ODRAW::eBlipType m_btWin32;
-	ODRAW::eBlipType m_btMacOS;
-	
-	BYTE m_pRgbUid[16];
-	unsigned short m_nTag;
-	_UINT32 m_nSize;
-	_UINT32 m_nCountRef;
-	_UINT32 m_nFoDelay;
-
-	ODRAW::eBlipUsage m_eUsage;
-	BYTE m_nLenName;
-
-	BYTE m_nUnused2;
-	BYTE m_nUnused3;
-	
-	CRecordBlipStoreEntry()
+	class CRecordBlipStoreEntry : public CUnknownRecord
 	{
-	}
+	public:
+		ODRAW::eBlipType m_btWin32;
+		ODRAW::eBlipType m_btMacOS;
 
-	~CRecordBlipStoreEntry()
-	{
-	}
+		BYTE m_pRgbUid[16];
+		unsigned short m_nTag;
+		_UINT32 m_nSize;
+		_UINT32 m_nCountRef;
+		_UINT32 m_nFoDelay;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+		ODRAW::eBlipUsage m_eUsage;
+		BYTE m_nLenName;
 
-		m_btWin32 = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
-		m_btMacOS = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
+		BYTE m_nUnused2;
+		BYTE m_nUnused3;
 
-		pStream->read(m_pRgbUid, 16);
+		CRecordBlipStoreEntry()
+		{
+		}
 
-		m_nTag = StreamUtils::ReadWORD(pStream);
+		~CRecordBlipStoreEntry()
+		{
+		}
 
-		m_nSize = StreamUtils::ReadDWORD(pStream);
-		m_nCountRef = StreamUtils::ReadDWORD(pStream);
-		m_nFoDelay = StreamUtils::ReadDWORD(pStream);
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
 
-		m_eUsage = (ODRAW::eBlipUsage)StreamUtils::ReadBYTE(pStream);
-		
-		m_nLenName = StreamUtils::ReadBYTE(pStream);
-		
-		m_nUnused2 = StreamUtils::ReadBYTE(pStream);
-		m_nUnused3 = StreamUtils::ReadBYTE(pStream);
-	}
-};
+			m_btWin32 = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
+			m_btMacOS = (ODRAW::eBlipType)StreamUtils::ReadBYTE(pStream);
+
+			pStream->read(m_pRgbUid, 16);
+
+			m_nTag = StreamUtils::ReadWORD(pStream);
+
+			m_nSize = StreamUtils::ReadDWORD(pStream);
+			m_nCountRef = StreamUtils::ReadDWORD(pStream);
+			m_nFoDelay = StreamUtils::ReadDWORD(pStream);
+
+			m_eUsage = (ODRAW::eBlipUsage)StreamUtils::ReadBYTE(pStream);
+
+			m_nLenName = StreamUtils::ReadBYTE(pStream);
+
+			m_nUnused2 = StreamUtils::ReadBYTE(pStream);
+			m_nUnused3 = StreamUtils::ReadBYTE(pStream);
+		}
+	};
+}

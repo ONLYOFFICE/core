@@ -33,23 +33,26 @@
 #include "../Reader/Records.h"
 #include <iostream>
 
-class CRecordCString : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	std::wstring m_strText;
-	
-	CRecordCString()
+	class CRecordCString : public CUnknownRecord
 	{
-	}
+	public:
+		std::wstring m_strText;
 
-	~CRecordCString()
-	{
-	}
+		CRecordCString()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-        m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
-	}
+		~CRecordCString()
+		{
+		}
 
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+			m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
+		}
+
+	};
+}

@@ -32,31 +32,34 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordPlaceHolderAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	int	 m_nPosition;
-    BYTE m_nPlacementID;
-	BYTE m_nSize;
-
-public:
-	
-	CRecordPlaceHolderAtom()
+	class CRecordPlaceHolderAtom : public CUnknownRecord
 	{
-	}
+	public:
+		int	 m_nPosition;
+		BYTE m_nPlacementID;
+		BYTE m_nSize;
 
-	~CRecordPlaceHolderAtom()
-	{
-	}
+	public:
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+		CRecordPlaceHolderAtom()
+		{
+		}
 
-		m_nPosition = StreamUtils::ReadLONG(pStream);
-        m_nPlacementID = StreamUtils::ReadBYTE(pStream);
-		m_nSize = StreamUtils::ReadBYTE(pStream);
+		~CRecordPlaceHolderAtom()
+		{
+		}
 
-		StreamUtils::StreamSkip(2, pStream);
-	}
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			m_nPosition = StreamUtils::ReadLONG(pStream);
+			m_nPlacementID = StreamUtils::ReadBYTE(pStream);
+			m_nSize = StreamUtils::ReadBYTE(pStream);
+
+			StreamUtils::StreamSkip(2, pStream);
+		}
+	};
+}

@@ -32,38 +32,41 @@
 #pragma once
 #include "ExMediaAtom.h"
 
-class CRecordWAVAudioEmbeddedContainer : public CRecordsContainer
+namespace PPT_FORMAT
 {
-public:
-	CRecordExMediaAtom	m_oMedia;
-	
-	_UINT32				m_nSoundID;
-	LONG				m_nDuration;
-
-public:
-	
-	CRecordWAVAudioEmbeddedContainer()
+	class CRecordWAVAudioEmbeddedContainer : public CRecordsContainer
 	{
-		m_nSoundID		= 0;
-		m_nDuration		= 0;
-	}
+	public:
+		CRecordExMediaAtom	m_oMedia;
 
-	~CRecordWAVAudioEmbeddedContainer()
-	{
-	}
+		_UINT32				m_nSoundID;
+		LONG				m_nDuration;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+	public:
 
-		SRecordHeader oExHeader;
-		oExHeader.ReadFromStream(pStream);
+		CRecordWAVAudioEmbeddedContainer()
+		{
+			m_nSoundID = 0;
+			m_nDuration = 0;
+		}
 
-		m_oMedia.ReadFromStream(oExHeader, pStream);
+		~CRecordWAVAudioEmbeddedContainer()
+		{
+		}
 
-		StreamUtils::StreamSkip(8, pStream);
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
 
-		m_nSoundID	= StreamUtils::ReadDWORD(pStream);
-		m_nDuration	= StreamUtils::ReadLONG(pStream);		
-	}
-};
+			SRecordHeader oExHeader;
+			oExHeader.ReadFromStream(pStream);
+
+			m_oMedia.ReadFromStream(oExHeader, pStream);
+
+			StreamUtils::StreamSkip(8, pStream);
+
+			m_nSoundID = StreamUtils::ReadDWORD(pStream);
+			m_nDuration = StreamUtils::ReadLONG(pStream);
+		}
+	};
+}

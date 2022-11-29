@@ -32,42 +32,45 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordSlidePersistAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	_UINT32 m_nPsrRef;
-	
-	bool m_bShouldCollapse;
-	bool m_bNonOutlineData;
-
-	INT m_nNumberText;
-	_UINT32 m_nSlideID;
-
-	CRecordSlidePersistAtom()
+	class CRecordSlidePersistAtom : public CUnknownRecord
 	{
-	}
+	public:
+		_UINT32 m_nPsrRef;
 
-	~CRecordSlidePersistAtom()
-	{
-	}
+		bool m_bShouldCollapse;
+		bool m_bNonOutlineData;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+		INT m_nNumberText;
+		_UINT32 m_nSlideID;
 
-		m_nPsrRef = StreamUtils::ReadDWORD(pStream);
+		CRecordSlidePersistAtom()
+		{
+		}
 
-		BYTE Mem = 0;
-		Mem = StreamUtils::ReadBYTE(pStream);
-		m_bShouldCollapse = ((Mem & 0x02) == 0x02);
-		m_bNonOutlineData = ((Mem & 0x04) == 0x04);
+		~CRecordSlidePersistAtom()
+		{
+		}
 
-		StreamUtils::StreamSkip(3, pStream);
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
 
-		m_nNumberText = (INT)StreamUtils::ReadLONG(pStream);
-		m_nSlideID = StreamUtils::ReadDWORD(pStream);
+			m_nPsrRef = StreamUtils::ReadDWORD(pStream);
 
-		StreamUtils::StreamSkip(4, pStream);
-	}
+			BYTE Mem = 0;
+			Mem = StreamUtils::ReadBYTE(pStream);
+			m_bShouldCollapse = ((Mem & 0x02) == 0x02);
+			m_bNonOutlineData = ((Mem & 0x04) == 0x04);
 
-};
+			StreamUtils::StreamSkip(3, pStream);
+
+			m_nNumberText = (INT)StreamUtils::ReadLONG(pStream);
+			m_nSlideID = StreamUtils::ReadDWORD(pStream);
+
+			StreamUtils::StreamSkip(4, pStream);
+		}
+
+	};
+}

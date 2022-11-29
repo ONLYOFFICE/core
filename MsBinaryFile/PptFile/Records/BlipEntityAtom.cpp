@@ -32,6 +32,8 @@
 #include "BlipEntityAtom.h"
 #include "../../../DesktopEditor/common/Directory.h"
 
+using namespace PPT_FORMAT;
+
 CRecordBlipEntityAtom::CRecordBlipEntityAtom()
 {
 

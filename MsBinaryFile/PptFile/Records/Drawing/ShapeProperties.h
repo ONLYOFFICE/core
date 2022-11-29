@@ -34,31 +34,34 @@
 #include "../../Reader/Records.h"
 #include "../../../Common/Vml/PPTShape/ElementSettings.h"
 
-class CRecordShapeProperties : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	CProperties m_oProperties;
-
-	CRecordShapeProperties()
+	class CRecordShapeProperties : public CUnknownRecord
 	{
-	}
+	public:
+		CProperties m_oProperties;
 
-	~CRecordShapeProperties()
-	{
-	}
+		CRecordShapeProperties()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+		~CRecordShapeProperties()
+		{
+		}
 
-		LONG lPosition = 0;
-		StreamUtils::StreamPosition(lPosition, pStream);
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
 
-		m_oProperties.FromStream(pStream, m_oHeader.RecInstance);
-		_UINT32 dwLen = m_oProperties.GetLen();
+			LONG lPosition = 0;
+			StreamUtils::StreamPosition(lPosition, pStream);
 
-		// это на всякий случай, может там напридумывают проперти с complex - 
-		// которые мы не поддерживаем...
-		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
-	}
-};
+			m_oProperties.FromStream(pStream, m_oHeader.RecInstance);
+			_UINT32 dwLen = m_oProperties.GetLen();
+
+			// это на всякий случай, может там напридумывают проперти с complex - 
+			// которые мы не поддерживаем...
+			StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
+		}
+	};
+}

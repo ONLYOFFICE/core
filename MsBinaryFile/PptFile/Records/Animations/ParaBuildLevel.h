@@ -36,40 +36,42 @@
 #include "LevelInfoAtom.h"
 #include "ExtTimeNodeContainer.h"
 
-
-class CRecordParaBuildLevel
+namespace PPT_FORMAT
 {
-public:
-    CRecordParaBuildLevel () : m_nRecordLen(0)
-    {
-    }
+	class CRecordParaBuildLevel
+	{
+	public:
+		CRecordParaBuildLevel() : m_nRecordLen(0)
+		{
+		}
 
-    ~CRecordParaBuildLevel()
-    {
-    }
+		~CRecordParaBuildLevel()
+		{
+		}
 
-    virtual void ReadFromStream ( POLE::Stream* pStream )
-    {
-        SRecordHeader oHeader;
+		virtual void ReadFromStream(POLE::Stream* pStream)
+		{
+			SRecordHeader oHeader;
 
-        if (oHeader.ReadFromStream(pStream))
-        {
-            m_oLevelInfoAtom.ReadFromStream ( oHeader, pStream );
-            m_nRecordLen += oHeader.RecLen + 8;
-        }
+			if (oHeader.ReadFromStream(pStream))
+			{
+				m_oLevelInfoAtom.ReadFromStream(oHeader, pStream);
+				m_nRecordLen += oHeader.RecLen + 8;
+			}
 
-        if (oHeader.ReadFromStream(pStream))
-        {
-            m_oTimeNode.ReadFromStream ( oHeader, pStream );
-            m_nRecordLen += oHeader.RecLen + 8;
-        }
-    }
+			if (oHeader.ReadFromStream(pStream))
+			{
+				m_oTimeNode.ReadFromStream(oHeader, pStream);
+				m_nRecordLen += oHeader.RecLen + 8;
+			}
+		}
 
-    _UINT32 getRecordLen()const {return m_nRecordLen;}
+		_UINT32 getRecordLen()const { return m_nRecordLen; }
 
-    CRecordLevelInfoAtom            m_oLevelInfoAtom;
-    CRecordExtTimeNodeContainer     m_oTimeNode;	// ExtTimeNodeContainer
+		CRecordLevelInfoAtom            m_oLevelInfoAtom;
+		CRecordExtTimeNodeContainer     m_oTimeNode;	// ExtTimeNodeContainer
 
-private:
-    _UINT32 m_nRecordLen;
-};
+	private:
+		_UINT32 m_nRecordLen;
+	};
+}

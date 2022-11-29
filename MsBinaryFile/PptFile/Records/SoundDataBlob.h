@@ -32,52 +32,55 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordSoundDataBlob : public CUnknownRecord
+namespace PPT_FORMAT
 {
-	BYTE* m_pData;
-	LONG  m_lSize;
-
-public:
-	
-	CRecordSoundDataBlob()
+	class CRecordSoundDataBlob : public CUnknownRecord
 	{
-		m_pData = NULL;
-		m_lSize = 0;
-	}
+		BYTE* m_pData;
+		LONG  m_lSize;
 
-	~CRecordSoundDataBlob()
-	{
-		ReleaseData();
-	}
+	public:
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		m_lSize = m_oHeader.RecLen;
-
-		if (0 < m_lSize)
+		CRecordSoundDataBlob()
 		{
-			m_pData = new BYTE[m_lSize];
-			pStream->read(m_pData, m_lSize);
+			m_pData = NULL;
+			m_lSize = 0;
 		}
-	}
 
-	void ReleaseData()
-	{
-		RELEASEARRAYOBJECTS(m_pData);
-	}
+		~CRecordSoundDataBlob()
+		{
+			ReleaseData();
+		}
 
-	void SaveToFile(std::wstring strFile)
-	{
-		if ((NULL == m_pData) || (0 >= m_lSize))
-			return;
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+			m_lSize = m_oHeader.RecLen;
 
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(strFile);
+			if (0 < m_lSize)
+			{
+				m_pData = new BYTE[m_lSize];
+				pStream->read(m_pData, m_lSize);
+			}
+		}
 
-		oFile.WriteFile((BYTE*)m_pData, (DWORD)m_lSize);
-		oFile.CloseFile();
+		void ReleaseData()
+		{
+			RELEASEARRAYOBJECTS(m_pData);
+		}
 
-		ReleaseData();
-	}
-};
+		void SaveToFile(std::wstring strFile)
+		{
+			if ((NULL == m_pData) || (0 >= m_lSize))
+				return;
+
+			NSFile::CFileBinary oFile;
+			oFile.CreateFileW(strFile);
+
+			oFile.WriteFile((BYTE*)m_pData, (DWORD)m_lSize);
+			oFile.CloseFile();
+
+			ReleaseData();
+		}
+	};
+}

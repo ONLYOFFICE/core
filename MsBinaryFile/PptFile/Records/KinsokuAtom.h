@@ -32,24 +32,27 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordKinsokuAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	_UINT32 m_nLevel;
-	
-	CRecordKinsokuAtom()
+	class CRecordKinsokuAtom : public CUnknownRecord
 	{
-	}
+	public:
+		_UINT32 m_nLevel;
 
-	~CRecordKinsokuAtom()
-	{
-	}
+		CRecordKinsokuAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
+		~CRecordKinsokuAtom()
+		{
+		}
 
-		m_nLevel = StreamUtils::ReadDWORD(pStream);
-	}
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
 
-};
+			m_nLevel = StreamUtils::ReadDWORD(pStream);
+		}
+
+	};
+}

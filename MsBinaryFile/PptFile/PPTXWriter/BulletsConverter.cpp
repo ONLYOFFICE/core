@@ -230,7 +230,7 @@ void BulletsConverter::ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTe
 }
 
 
-void BulletsConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, CColor &oColor)
+void BulletsConverter::FillBuClr(PPTX::Logic::BulletColor &oBuClr, ODRAW::CColor &oColor)
 {
     auto pBuClr = new PPTX::Logic::BuClr;
     pBuClr->Color.SetRGBColor(oColor.GetR(), oColor.GetG(), oColor.GetB());

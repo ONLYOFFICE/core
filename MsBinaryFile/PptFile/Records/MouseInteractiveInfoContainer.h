@@ -33,36 +33,39 @@
 #include "InteractiveInfoAtom.h"
 #include "CString.h"
 
-class CRecordMouseInteractiveInfoContainer : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-    CRecordInteractiveInfoAtom  interactiveInfoAtom;
-    nullable<CRecordCString>    macroNameAtom;
-    bool                        isOver; // click = 0, over = 1
+	class CRecordMouseInteractiveInfoContainer : public CUnknownRecord
+	{
+	public:
+		CRecordInteractiveInfoAtom  interactiveInfoAtom;
+		nullable<CRecordCString>    macroNameAtom;
+		bool                        isOver; // click = 0, over = 1
 
-    CRecordMouseInteractiveInfoContainer() :
-        isOver(false)
-    {
-    }
+		CRecordMouseInteractiveInfoContainer() :
+			isOver(false)
+		{
+		}
 
-    ~CRecordMouseInteractiveInfoContainer()
-    {
-    }
+		~CRecordMouseInteractiveInfoContainer()
+		{
+		}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        isOver = oHeader.RecInstance;
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+			isOver = oHeader.RecInstance;
 
-        SRecordHeader header;
-        header.ReadFromStream(pStream);
-        interactiveInfoAtom.ReadFromStream(header, pStream);
+			SRecordHeader header;
+			header.ReadFromStream(pStream);
+			interactiveInfoAtom.ReadFromStream(header, pStream);
 
-        if (m_oHeader.RecLen > 24)
-        {
-            header.ReadFromStream(pStream);
-            macroNameAtom.reset(new CRecordCString);
-            macroNameAtom->ReadFromStream(header, pStream);
-        }
-    }
-};
+			if (m_oHeader.RecLen > 24)
+			{
+				header.ReadFromStream(pStream);
+				macroNameAtom.reset(new CRecordCString);
+				macroNameAtom->ReadFromStream(header, pStream);
+			}
+		}
+	};
+}

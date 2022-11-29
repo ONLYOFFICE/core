@@ -32,40 +32,43 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordDocumentTextInfo : public CRecordsContainer
+namespace PPT_FORMAT
 {
-public:
-	
-	CRecordDocumentTextInfo()
+	class CRecordDocumentTextInfo : public CRecordsContainer
 	{
-	}
+	public:
 
-	~CRecordDocumentTextInfo()
+		CRecordDocumentTextInfo()
+		{
+		}
+
+		~CRecordDocumentTextInfo()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			CRecordsContainer::ReadFromStream(oHeader, pStream);
+		}
+
+	};
+
+	class CRecordFontCollection : public CRecordsContainer
 	{
-	}
+	public:
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		CRecordsContainer::ReadFromStream(oHeader, pStream);
-	}
+		CRecordFontCollection()
+		{
+		}
 
-};
+		~CRecordFontCollection()
+		{
+		}
 
-class CRecordFontCollection : public CRecordsContainer
-{
-public:
-	
-	CRecordFontCollection()
-	{
-	}
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			CRecordsContainer::ReadFromStream(oHeader, pStream);
+		}
 
-	~CRecordFontCollection()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		CRecordsContainer::ReadFromStream(oHeader, pStream);
-	}
-
-};
+	};
+}

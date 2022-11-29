@@ -61,7 +61,7 @@ namespace PPT_FORMAT
         Aggplus::RECT m_oBounds;
 
 		// настройки по-умолчанию
-		CTextAttributes			m_oAttributes;
+		ODRAW::CTextAttributes			m_oAttributes;
 		std::vector<CParagraph>	m_arParagraphs;
         std::wstring m_originalText;
 

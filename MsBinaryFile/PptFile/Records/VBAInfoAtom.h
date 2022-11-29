@@ -32,101 +32,104 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordVBAInfoAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-
-	UINT m_nObjStgDataRef;
-	UINT m_nHasMacros;
-	UINT m_nVersion;
-	
-	CRecordVBAInfoAtom()
+	class CRecordVBAInfoAtom : public CUnknownRecord
 	{
-	}
+	public:
 
-	~CRecordVBAInfoAtom()
-	{
-	}
+		UINT m_nObjStgDataRef;
+		UINT m_nHasMacros;
+		UINT m_nVersion;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nObjStgDataRef	= StreamUtils::ReadDWORD(pStream);
-		m_nHasMacros		= StreamUtils::ReadDWORD(pStream);
-		m_nVersion			= StreamUtils::ReadDWORD(pStream);
-	}
-
-};
-
-class CRecordVBAInfoContainer : public CRecordsContainer
-{
-public:
-    CRecordVBAInfoContainer()
-    {}
-    ~CRecordVBAInfoContainer()
-    {}
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        CRecordsContainer::ReadFromStream(oHeader, pStream);
-    }
-};
-
-class CRecordVbaProjectStg : public CUnknownRecord
-{
-public:
-	std::wstring m_sFileName;
-	std::wstring m_strTmpDirectory;
-	
-	CRecordVbaProjectStg(std::wstring strTemp) : m_strTmpDirectory(strTemp)
-	{
-	}
-
-	~CRecordVbaProjectStg()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		ULONG decompressedSize = m_oHeader.RecLen, compressedSize = m_oHeader.RecLen;
-
-		BYTE* pData = new BYTE[compressedSize];
-		if (!pData) return;
-
-		if (m_oHeader.RecInstance == 0x01)
+		CRecordVBAInfoAtom()
 		{
-			decompressedSize = StreamUtils::ReadDWORD(pStream) + 64;
-			compressedSize -= 4;
 		}
-		pStream->read(pData, compressedSize); 
-		
-		//if (pDecryptor)
-		//{
-		//	pDecryptor->Decrypt((char*)pData, compressedSize, 0);
-		//}
-		
-		if (m_oHeader.RecInstance == 0x01)
-		{
-			BYTE* pDataUncompress = new BYTE[decompressedSize];
-            NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize);
 
-			delete []pData;
-			pData = pDataUncompress;
-		}			
-
-		m_sFileName = m_strTmpDirectory + FILE_SEPARATOR_STR +  L"vbaProject.bin";
-			
-		NSFile::CFileBinary file;
-        if (file.CreateFileW(m_sFileName))
+		~CRecordVBAInfoAtom()
 		{
-			file.WriteFile(pData, decompressedSize);
-			file.CloseFile();
 		}
-		delete[] pData;
-		pData = NULL;	
-	}
 
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			m_nObjStgDataRef = StreamUtils::ReadDWORD(pStream);
+			m_nHasMacros = StreamUtils::ReadDWORD(pStream);
+			m_nVersion = StreamUtils::ReadDWORD(pStream);
+		}
+
+	};
+
+	class CRecordVBAInfoContainer : public CRecordsContainer
+	{
+	public:
+		CRecordVBAInfoContainer()
+		{}
+		~CRecordVBAInfoContainer()
+		{}
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+			CRecordsContainer::ReadFromStream(oHeader, pStream);
+		}
+	};
+
+	class CRecordVbaProjectStg : public CUnknownRecord
+	{
+	public:
+		std::wstring m_sFileName;
+		std::wstring m_strTmpDirectory;
+
+		CRecordVbaProjectStg(std::wstring strTemp) : m_strTmpDirectory(strTemp)
+		{
+		}
+
+		~CRecordVbaProjectStg()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			ULONG decompressedSize = m_oHeader.RecLen, compressedSize = m_oHeader.RecLen;
+
+			BYTE* pData = new BYTE[compressedSize];
+			if (!pData) return;
+
+			if (m_oHeader.RecInstance == 0x01)
+			{
+				decompressedSize = StreamUtils::ReadDWORD(pStream) + 64;
+				compressedSize -= 4;
+			}
+			pStream->read(pData, compressedSize);
+
+			//if (pDecryptor)
+			//{
+			//	pDecryptor->Decrypt((char*)pData, compressedSize, 0);
+			//}
+
+			if (m_oHeader.RecInstance == 0x01)
+			{
+				BYTE* pDataUncompress = new BYTE[decompressedSize];
+				NSZip::Decompress(pData, compressedSize, pDataUncompress, decompressedSize);
+
+				delete[]pData;
+				pData = pDataUncompress;
+			}
+
+			m_sFileName = m_strTmpDirectory + FILE_SEPARATOR_STR + L"vbaProject.bin";
+
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(m_sFileName))
+			{
+				file.WriteFile(pData, decompressedSize);
+				file.CloseFile();
+			}
+			delete[] pData;
+			pData = NULL;
+		}
+
+	};
+}

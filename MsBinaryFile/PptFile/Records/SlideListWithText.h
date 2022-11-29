@@ -34,137 +34,139 @@
 #include "SlidePersistAtom.h"
 #include "../Enums/RecordType.h"
 
-
-class CRecordSlideListWithText : public CRecordsContainer
+namespace PPT_FORMAT
 {
-public:
-	enum Instances
-    {
-        CollectionOfSlides			= 0,
-        CollectionOfMasterSlides	= 1,
-        CollectionOfNotesSlides		= 2
-    };
-
-public:
-	std::vector<CRecordSlidePersistAtom*> m_arSlides;
-	std::vector<std::vector<CTextFullSettings>> m_arTextPlaceHolders;
-
-	Instances m_Type;
-
-public:
-	
-	CRecordSlideListWithText() : m_arSlides()
+	class CRecordSlideListWithText : public CRecordsContainer
 	{
-		m_Type = CollectionOfSlides;
-	}
-
-	~CRecordSlideListWithText()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		m_Type = (Instances)m_oHeader.RecInstance;
-
-		if (m_oHeader.IsContainer())
+	public:
+		enum Instances
 		{
-			// а по-другому и быть не могло...
-			_UINT32 lSymbolCount = 0;
+			CollectionOfSlides = 0,
+			CollectionOfMasterSlides = 1,
+			CollectionOfNotesSlides = 2
+		};
 
-			UINT lCurLen = 0;
-			SRecordHeader oRec;
+	public:
+		std::vector<CRecordSlidePersistAtom*> m_arSlides;
+		std::vector<std::vector<CTextFullSettings>> m_arTextPlaceHolders;
 
-			while (lCurLen < m_oHeader.RecLen)
+		Instances m_Type;
+
+	public:
+
+		CRecordSlideListWithText() : m_arSlides()
+		{
+			m_Type = CollectionOfSlides;
+		}
+
+		~CRecordSlideListWithText()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+			m_Type = (Instances)m_oHeader.RecInstance;
+
+			if (m_oHeader.IsContainer())
 			{
-				if (oRec.ReadFromStream(pStream) == FALSE)	
-				{
-					break;
-				}
-				
-				IRecord* pRecord = CreateByType(oRec);
+				// а по-другому и быть не могло...
+				_UINT32 lSymbolCount = 0;
 
-                if (RT_StyleTextPropAtom == oRec.RecType)
-				{
-					((CRecordStyleTextPropAtom*)(pRecord))->m_lCount = lSymbolCount;
-				}
-                else if (RT_TextSpecialInfoAtom == oRec.RecType)
-				{
-					((CRecordTextSpecInfoAtom*)(pRecord))->m_lCount = lSymbolCount;
-				}
+				UINT lCurLen = 0;
+				SRecordHeader oRec;
 
-				pRecord->ReadFromStream(oRec, pStream);
-				lCurLen += (8 + oRec.RecLen);
-
-                if (RT_SlidePersistAtom == oRec.RecType)
+				while (lCurLen < m_oHeader.RecLen)
 				{
-					m_arSlides.push_back((CRecordSlidePersistAtom*)pRecord);
-
-					std::vector<CTextFullSettings> elm;
-					m_arTextPlaceHolders.push_back(elm);
-				}
-				else
-				{
-					long nCurrentSlide = (long)m_arSlides.size() - 1;
-					if (0 > nCurrentSlide)
-						continue;
-					
-					CRecordTextHeaderAtom* pHeader = dynamic_cast<CRecordTextHeaderAtom*>(pRecord);
-					if (NULL != pHeader)
+					if (oRec.ReadFromStream(pStream) == FALSE)
 					{
-						CTextFullSettings oAttr;
-						m_arTextPlaceHolders[nCurrentSlide].push_back(oAttr);
-						m_arTextPlaceHolders[nCurrentSlide][m_arTextPlaceHolders[nCurrentSlide].size() - 1].m_nTextType = pHeader->m_nTextType;
-						
-						m_arRecords.push_back(pRecord);
-						continue;
+						break;
 					}
-					CRecordTextCharsAtom* pChars = dynamic_cast<CRecordTextCharsAtom*>(pRecord);
-					CRecordTextBytesAtom* pBytes = dynamic_cast<CRecordTextBytesAtom*>(pRecord);
 
-					long nCurrentTextHeader = (long)m_arTextPlaceHolders[nCurrentSlide].size() - 1;
-					if (0 > nCurrentTextHeader)
-						continue;
+					IRecord* pRecord = CreateByType(oRec);
 
-					// здесь еще настойки кроме текста
-					if (NULL != pChars)
+					if (RT_StyleTextPropAtom == oRec.RecType)
 					{
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pChars->m_strText;
-						lSymbolCount = (_UINT32)pChars->m_strText.length();
+						((CRecordStyleTextPropAtom*)(pRecord))->m_lCount = lSymbolCount;
 					}
-					else if (NULL != pBytes)
+					else if (RT_TextSpecialInfoAtom == oRec.RecType)
 					{
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pBytes->m_strText;
-						lSymbolCount = (_UINT32)pBytes->m_strText.length();
-					}					
-					
-                    if (RT_StyleTextPropAtom == oRec.RecType)
+						((CRecordTextSpecInfoAtom*)(pRecord))->m_lCount = lSymbolCount;
+					}
+
+					pRecord->ReadFromStream(oRec, pStream);
+					lCurLen += (8 + oRec.RecLen);
+
+					if (RT_SlidePersistAtom == oRec.RecType)
 					{
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextStyleProp = 
+						m_arSlides.push_back((CRecordSlidePersistAtom*)pRecord);
+
+						std::vector<CTextFullSettings> elm;
+						m_arTextPlaceHolders.push_back(elm);
+					}
+					else
+					{
+						long nCurrentSlide = (long)m_arSlides.size() - 1;
+						if (0 > nCurrentSlide)
+							continue;
+
+						CRecordTextHeaderAtom* pHeader = dynamic_cast<CRecordTextHeaderAtom*>(pRecord);
+						if (NULL != pHeader)
+						{
+							CTextFullSettings oAttr;
+							m_arTextPlaceHolders[nCurrentSlide].push_back(oAttr);
+							m_arTextPlaceHolders[nCurrentSlide][m_arTextPlaceHolders[nCurrentSlide].size() - 1].m_nTextType = pHeader->m_nTextType;
+
+							m_arRecords.push_back(pRecord);
+							continue;
+						}
+						CRecordTextCharsAtom* pChars = dynamic_cast<CRecordTextCharsAtom*>(pRecord);
+						CRecordTextBytesAtom* pBytes = dynamic_cast<CRecordTextBytesAtom*>(pRecord);
+
+						long nCurrentTextHeader = (long)m_arTextPlaceHolders[nCurrentSlide].size() - 1;
+						if (0 > nCurrentTextHeader)
+							continue;
+
+						// здесь еще настойки кроме текста
+						if (NULL != pChars)
+						{
+							m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pChars->m_strText;
+							lSymbolCount = (_UINT32)pChars->m_strText.length();
+						}
+						else if (NULL != pBytes)
+						{
+							m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_strText = pBytes->m_strText;
+							lSymbolCount = (_UINT32)pBytes->m_strText.length();
+						}
+
+						if (RT_StyleTextPropAtom == oRec.RecType)
+						{
+							m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextStyleProp =
 								dynamic_cast<CRecordStyleTextPropAtom*>(pRecord);
-					}
-                    if (RT_TextSpecialInfoAtom == oRec.RecType)
-					{
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextSpecInfo = 
+						}
+						if (RT_TextSpecialInfoAtom == oRec.RecType)
+						{
+							m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextSpecInfo =
 								dynamic_cast<CRecordTextSpecInfoAtom*>(pRecord);
-					}
-                    if (RT_TextRulerAtom == oRec.RecType)
-					{
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextRuler = 
+						}
+						if (RT_TextRulerAtom == oRec.RecType)
+						{
+							m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_pTextRuler =
 								dynamic_cast<CRecordTextRulerAtom*>(pRecord);
+						}
+						if (RT_TextInteractiveInfoAtom == oRec.RecType)
+						{
+							CRecordTextInteractiveInfoAtom* pTxRanges = dynamic_cast<CRecordTextInteractiveInfoAtom*>(pRecord);
+							PPT_FORMAT::CTextRange oRange;
+							oRange.m_lStart = pTxRanges->m_lStart;
+							oRange.m_lEnd = pTxRanges->m_lEnd;
+							m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_arRanges.push_back(oRange);
+						}
 					}
-                    if (RT_TextInteractiveInfoAtom == oRec.RecType)
-					{
-						CRecordTextInteractiveInfoAtom* pTxRanges = dynamic_cast<CRecordTextInteractiveInfoAtom*>(pRecord);
-						PPT_FORMAT::CTextRange oRange;
-						oRange.m_lStart	= pTxRanges->m_lStart;
-						oRange.m_lEnd	= pTxRanges->m_lEnd;
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_arRanges.push_back(oRange);
-					}
-				}
 
-				m_arRecords.push_back(pRecord);
+					m_arRecords.push_back(pRecord);
+				}
 			}
 		}
-	}
-};
+	};
+}

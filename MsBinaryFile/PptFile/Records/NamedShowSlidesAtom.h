@@ -32,21 +32,24 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordNamedShowSlidesAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	std::vector<UINT> m_arRgSlideIdRef;
-	
-	CRecordNamedShowSlidesAtom()
+	class CRecordNamedShowSlidesAtom : public CUnknownRecord
 	{
-	}
+	public:
+		std::vector<UINT> m_arRgSlideIdRef;
 
-	~CRecordNamedShowSlidesAtom()
-	{
-	}
+		CRecordNamedShowSlidesAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-};
+		~CRecordNamedShowSlidesAtom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

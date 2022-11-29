@@ -33,24 +33,27 @@
 #include "../Reader/Records.h"
 #include "Drawing/ArtBlip.h"
 
-class CRecordBlipEntityAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	
-    CRecordBlipEntityAtom();
-    const std::wstring getTmpImgPath() const;
-    const std::wstring getImgExtention() const;
-    ~CRecordBlipEntityAtom();
+	class CRecordBlipEntityAtom : public CUnknownRecord
+	{
+	public:
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+		CRecordBlipEntityAtom();
+		const std::wstring getTmpImgPath() const;
+		const std::wstring getImgExtention() const;
+		~CRecordBlipEntityAtom();
+
+		void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
 
-private:
-    bool writeImage();
-    std::wstring getTempFolder()const;
+	private:
+		bool writeImage();
+		std::wstring getTempFolder()const;
 
-private:
-    BYTE m_nWinBlipType;
-    CRecordOfficeArtBlip m_oBlip;
-    std::wstring m_tmpFolder;
-};
+	private:
+		BYTE m_nWinBlipType;
+		CRecordOfficeArtBlip m_oBlip;
+		std::wstring m_tmpFolder;
+	};
+}

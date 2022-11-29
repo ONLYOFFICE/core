@@ -32,22 +32,25 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordNotesPersistAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	UINT m_nPsrRef;
-	INT m_nNotesID;
-	
-	CRecordNotesPersistAtom()
+	class CRecordNotesPersistAtom : public CUnknownRecord
 	{
-	}
+	public:
+		UINT m_nPsrRef;
+		INT m_nNotesID;
 
-	~CRecordNotesPersistAtom()
-	{
-	}
+		CRecordNotesPersistAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-};
+		~CRecordNotesPersistAtom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

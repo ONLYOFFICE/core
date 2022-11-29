@@ -32,29 +32,32 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordNormalViewSetInfoAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	SRatioAtom m_oLeftPortion;
-	SRatioAtom m_oTopPortion;
-
-	BYTE m_nVertBarState;
-	BYTE m_HorizBarState;
-
-	BOOL1 m_fPreferSingleSet;
-	BYTE m_nFlags;
-
-	
-	CRecordNormalViewSetInfoAtom()
+	class CRecordNormalViewSetInfoAtom : public CUnknownRecord
 	{
-	}
+	public:
+		SRatioAtom m_oLeftPortion;
+		SRatioAtom m_oTopPortion;
 
-	~CRecordNormalViewSetInfoAtom()
-	{
-	}
+		BYTE m_nVertBarState;
+		BYTE m_HorizBarState;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-};
+		BOOL1 m_fPreferSingleSet;
+		BYTE m_nFlags;
+
+
+		CRecordNormalViewSetInfoAtom()
+		{
+		}
+
+		~CRecordNormalViewSetInfoAtom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

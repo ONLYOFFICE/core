@@ -212,7 +212,7 @@ void CPPTUserInfo::DecryptStream(POLE::Stream *pStream, int block)
     pStreamTmp->flush();
     pStreamTmp->seek(0);
 
-    m_arStreamDecrypt.push_back(CFStreamPtr(new CFStream(pStreamTmp)));
+    m_arStreamDecrypt.push_back(XLS::CFStreamPtr(new XLS::CFStream(pStreamTmp)));
 }
 
 bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)

@@ -48,7 +48,7 @@ private:
     void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);
     void FillBuChar(PPTX::Logic::Bullet& oBullet, WCHAR symbol, CTextPFRun *pPF = nullptr);
     void ConvertAllBullets(PPTX::Logic::TextParagraphPr &oPPr, CTextPFRun *pPF);
-    void FillBuClr(PPTX::Logic::BulletColor& oBuClr, CColor& oColor);
+    void FillBuClr(PPTX::Logic::BulletColor& oBuClr, ODRAW::CColor& oColor);
 
 private:
     CRelsGenerator* m_pRels;

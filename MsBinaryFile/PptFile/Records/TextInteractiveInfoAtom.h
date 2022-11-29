@@ -32,28 +32,31 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordTextInteractiveInfoAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	LONG m_lStart;
-	LONG m_lEnd;
-
-	CRecordTextInteractiveInfoAtom()
+	class CRecordTextInteractiveInfoAtom : public CUnknownRecord
 	{
-		m_lStart	= 0;
-		m_lEnd		= 0;
-	}
+	public:
+		LONG m_lStart;
+		LONG m_lEnd;
 
-	~CRecordTextInteractiveInfoAtom()
-	{
-	}
+		CRecordTextInteractiveInfoAtom()
+		{
+			m_lStart = 0;
+			m_lEnd = 0;
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		
-		m_lStart	= StreamUtils::ReadLONG(pStream);
-		m_lEnd		= StreamUtils::ReadLONG(pStream);
-	}
+		~CRecordTextInteractiveInfoAtom()
+		{
+		}
 
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			m_lStart = StreamUtils::ReadLONG(pStream);
+			m_lEnd = StreamUtils::ReadLONG(pStream);
+		}
+
+	};
+}

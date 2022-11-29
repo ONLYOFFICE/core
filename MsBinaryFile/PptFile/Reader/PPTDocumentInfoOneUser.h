@@ -40,7 +40,6 @@
 #include "SlideInfo.h"
 
 class CPPTDocumentInfo;
-using namespace PPT_FORMAT;
 
 class CPPTUserInfo : public CDocument
 {
@@ -54,7 +53,7 @@ public:
 	std::wstring									m_strPassword;
 	CRYPT::ECMADecryptor*							m_pDecryptor;
 	POLE::Storage*									m_pStorageDecrypt;
-	std::vector<CFStreamPtr>						m_arStreamDecrypt; // на каждый Persist свой ... оО
+	std::vector<XLS::CFStreamPtr>					m_arStreamDecrypt; // на каждый Persist свой ... оО
 	
 	std::map<_UINT32, CRecordSlide*>				m_mapSlides;
 	std::map<_UINT32, CRecordSlide*>				m_mapMasters;

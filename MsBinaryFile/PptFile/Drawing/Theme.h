@@ -54,11 +54,11 @@ namespace PPT_FORMAT
 		
 		std::multimap<int,CElementPtr>	m_mapPlaceholders;
 
-		std::vector<CColor>				m_arColorScheme;
+		std::vector<ODRAW::CColor>				m_arColorScheme;
 		std::vector<CFontProperty>		m_arFonts;
 
-		std::vector<CBrush>				m_arBrushes;
-		std::vector<CPen>				m_arPens;
+		std::vector<ODRAW::CBrush>				m_arBrushes;
+		std::vector<ODRAW::CPen>				m_arPens;
 
 		CFontProperties					majorFont;
 		CFontProperties					minorFont;
@@ -68,13 +68,13 @@ namespace PPT_FORMAT
 		std::vector<CLayoutPtr>			m_arLayouts;
 
 		bool							m_bIsBackground;
-		CBrush							m_oBackground;
+		ODRAW::CBrush							m_oBackground;
 
 		std::vector<CElementPtr>		m_arElements;
 
 		std::wstring					m_sThemeName;
 		
-		std::vector<std::vector<CColor>>m_arExtraColorScheme;
+		std::vector<std::vector<ODRAW::CColor>>m_arExtraColorScheme;
 
 		bool							m_bHasDate;
 		bool							m_bHasSlideNumber;
@@ -143,7 +143,8 @@ namespace PPT_FORMAT
 
 					if (pLevel->m_oPFRun.bulletColor.is_init())
 					{
-						CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
+						ODRAW::CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
+						
 						if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 						{
 							oColor.R	= m_arColorScheme[oColor.m_lSchemeIndex].R;
@@ -154,7 +155,7 @@ namespace PPT_FORMAT
 					}
 					if (pLevel->m_oCFRun.Color.is_init())
 					{
-						CColor& oColor = pLevel->m_oCFRun.Color.get();
+						ODRAW::CColor& oColor = pLevel->m_oCFRun.Color.get();
 						if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 						{
 							oColor.R	= m_arColorScheme[oColor.m_lSchemeIndex].R;
@@ -227,7 +228,7 @@ namespace PPT_FORMAT
 
 				if (pLevel->m_oPFRun.bulletColor.is_init())
 				{
-					CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
+					ODRAW::CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
 					if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 					{
 						oColor.R	= pTheme->m_arColorScheme[oColor.m_lSchemeIndex].R;
@@ -238,7 +239,7 @@ namespace PPT_FORMAT
 				}
 				if (pLevel->m_oCFRun.Color.is_init())
 				{
-					CColor& oColor = pLevel->m_oCFRun.Color.get();
+					ODRAW::CColor& oColor = pLevel->m_oCFRun.Color.get();
 					if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 					{
 						oColor.R	= pTheme->m_arColorScheme[oColor.m_lSchemeIndex].R;

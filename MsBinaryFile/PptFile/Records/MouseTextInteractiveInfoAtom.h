@@ -32,21 +32,24 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordMouseTextInteractiveInfoAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	STextRange m_oRange;
-	
-	CRecordMouseTextInteractiveInfoAtom()
+	class CRecordMouseTextInteractiveInfoAtom : public CUnknownRecord
 	{
-	}
+	public:
+		ODRAW::STextRange m_oRange;
 
-	~CRecordMouseTextInteractiveInfoAtom()
-	{
-	}
+		CRecordMouseTextInteractiveInfoAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-};
+		~CRecordMouseTextInteractiveInfoAtom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

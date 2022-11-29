@@ -32,25 +32,28 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordGuideAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-	_UINT32 m_nType;
-	_UINT32 m_nPos;
-
-public:
-	
-	CRecordGuideAtom()
+	class CRecordGuideAtom : public CUnknownRecord
 	{
-	}
+		_UINT32 m_nType;
+		_UINT32 m_nPos;
 
-	~CRecordGuideAtom()
-	{
-	}
+	public:
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		m_nType = StreamUtils::ReadDWORD(pStream);
-		m_nPos = StreamUtils::ReadDWORD(pStream);
-	}
-};
+		CRecordGuideAtom()
+		{
+		}
+
+		~CRecordGuideAtom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+			m_nType = StreamUtils::ReadDWORD(pStream);
+			m_nPos = StreamUtils::ReadDWORD(pStream);
+		}
+	};
+}

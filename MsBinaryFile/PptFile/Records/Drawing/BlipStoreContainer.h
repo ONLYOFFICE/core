@@ -33,43 +33,46 @@
 #include "../../Reader/Records.h"
 #include "BlipStoreEntry.h"
 
-class CRecordBlipStoreContainer : public CRecordsContainer
+namespace PPT_FORMAT
 {
-public:
-	
-	CRecordBlipStoreContainer()
+	class CRecordBlipStoreContainer : public CRecordsContainer
 	{
-	}
+	public:
 
-	~CRecordBlipStoreContainer()
-	{
-	}
-
-    void SetUpPicturesInfos(std::vector<int>* pArray)
-	{
-		if (NULL == pArray)
-			return;
-
-		pArray->clear();
-
-		std::map<_UINT32, int> image_map;
-		for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
+		CRecordBlipStoreContainer()
 		{
-			CRecordBlipStoreEntry* pEntry = dynamic_cast<CRecordBlipStoreEntry*>(m_arRecords[nIndex]);
-			if (NULL != pEntry)
+		}
+
+		~CRecordBlipStoreContainer()
+		{
+		}
+
+		void SetUpPicturesInfos(std::vector<int>* pArray)
+		{
+			if (NULL == pArray)
+				return;
+
+			pArray->clear();
+
+			std::map<_UINT32, int> image_map;
+			for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 			{
-				image_map.insert(std::pair<_UINT32, int>(pEntry->m_nFoDelay, pArray->size()));
-
-				int offset = pEntry->m_nFoDelay;
-				if (0 == pEntry->m_oHeader.RecInstance)	offset = -1;
-
-				if (pEntry->m_oHeader.RecType == 0xf007)
+				CRecordBlipStoreEntry* pEntry = dynamic_cast<CRecordBlipStoreEntry*>(m_arRecords[nIndex]);
+				if (NULL != pEntry)
 				{
-					//inside here?
-				}
+					image_map.insert(std::pair<_UINT32, int>(pEntry->m_nFoDelay, pArray->size()));
 
-				pArray->push_back(offset);
+					int offset = pEntry->m_nFoDelay;
+					if (0 == pEntry->m_oHeader.RecInstance)	offset = -1;
+
+					if (pEntry->m_oHeader.RecType == 0xf007)
+					{
+						//inside here?
+					}
+
+					pArray->push_back(offset);
+				}
 			}
 		}
-	}
-};
+	};
+}

@@ -32,39 +32,42 @@
 #pragma once
 #include "../../Reader/Records.h"
 
-class CRecordClientAnchor : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	SRectAtom m_oBounds;
-
-public:
-	
-	CRecordClientAnchor()
+	class CRecordClientAnchor : public CUnknownRecord
 	{
-	}
+	public:
+		ODRAW::SRectAtom m_oBounds;
 
-	~CRecordClientAnchor()
-	{
-	}
+	public:
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		if (m_oHeader.RecLen == 0x00000008) //SSmallRectAtom 
+		CRecordClientAnchor()
 		{
-			m_oBounds.Top		= StreamUtils::ReadSHORT(pStream);
-			m_oBounds.Left		= StreamUtils::ReadSHORT(pStream);
-			m_oBounds.Right		= StreamUtils::ReadSHORT(pStream);
-			m_oBounds.Bottom	= StreamUtils::ReadSHORT(pStream);
 		}
-		if (m_oHeader.RecLen == 0x00000010) //SRectAtom 
-		{
-			m_oBounds.Top		= StreamUtils::ReadLONG(pStream);
-			m_oBounds.Left		= StreamUtils::ReadLONG(pStream);
-			m_oBounds.Right		= StreamUtils::ReadLONG(pStream);
-			m_oBounds.Bottom	= StreamUtils::ReadLONG(pStream);
-		}
-	}
 
-};
+		~CRecordClientAnchor()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			if (m_oHeader.RecLen == 0x00000008) //SSmallRectAtom 
+			{
+				m_oBounds.Top = StreamUtils::ReadSHORT(pStream);
+				m_oBounds.Left = StreamUtils::ReadSHORT(pStream);
+				m_oBounds.Right = StreamUtils::ReadSHORT(pStream);
+				m_oBounds.Bottom = StreamUtils::ReadSHORT(pStream);
+			}
+			if (m_oHeader.RecLen == 0x00000010) //SRectAtom 
+			{
+				m_oBounds.Top = StreamUtils::ReadLONG(pStream);
+				m_oBounds.Left = StreamUtils::ReadLONG(pStream);
+				m_oBounds.Right = StreamUtils::ReadLONG(pStream);
+				m_oBounds.Bottom = StreamUtils::ReadLONG(pStream);
+			}
+		}
+
+	};
+}

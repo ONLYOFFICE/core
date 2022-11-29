@@ -32,50 +32,53 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordTextBytesAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	std::wstring m_strText;
-
-public:
-	
-	CRecordTextBytesAtom()
+	class CRecordTextBytesAtom : public CUnknownRecord
 	{
-	}
+	public:
+		std::wstring m_strText;
 
-	~CRecordTextBytesAtom()
-	{
-	}
+	public:
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		
-		//UTF-16 Unicode  character whose high byte is 0x00.
-		unsigned short	*pUTF16		= new unsigned short[m_oHeader.RecLen];
-		unsigned char	*pUTF16_low = new unsigned char	[m_oHeader.RecLen];
-
-		if (pUTF16 && pUTF16_low)
+		CRecordTextBytesAtom()
 		{
-			pStream->read(pUTF16_low, m_oHeader.RecLen);
-
-			for (UINT i = 0 ; i < m_oHeader.RecLen; i++)
-			{
-				pUTF16[i] = pUTF16_low[i];
-			}
-
-			m_strText = NSFile::CUtf8Converter::GetWStringFromUTF16(pUTF16, m_oHeader.RecLen);
-			
 		}
 
-		RELEASEARRAYOBJECTS(pUTF16_low);
-		RELEASEARRAYOBJECTS(pUTF16);
+		~CRecordTextBytesAtom()
+		{
+		}
 
-        //std::string tmpStrTextA = StreamUtils::ReadCStringA(pStream, m_oHeader.RecLen);
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
 
-        //std::wstring tmpStrTextW (tmpStrTextA.begin(), tmpStrTextA.end());
+			//UTF-16 Unicode  character whose high byte is 0x00.
+			unsigned short	*pUTF16 = new unsigned short[m_oHeader.RecLen];
+			unsigned char	*pUTF16_low = new unsigned char[m_oHeader.RecLen];
 
-        //m_strText = std_string2string(tmpStrTextW);
-	}
+			if (pUTF16 && pUTF16_low)
+			{
+				pStream->read(pUTF16_low, m_oHeader.RecLen);
 
-};
+				for (UINT i = 0; i < m_oHeader.RecLen; i++)
+				{
+					pUTF16[i] = pUTF16_low[i];
+				}
+
+				m_strText = NSFile::CUtf8Converter::GetWStringFromUTF16(pUTF16, m_oHeader.RecLen);
+
+			}
+
+			RELEASEARRAYOBJECTS(pUTF16_low);
+			RELEASEARRAYOBJECTS(pUTF16);
+
+			//std::string tmpStrTextA = StreamUtils::ReadCStringA(pStream, m_oHeader.RecLen);
+
+			//std::wstring tmpStrTextW (tmpStrTextA.begin(), tmpStrTextA.end());
+
+			//m_strText = std_string2string(tmpStrTextW);
+		}
+
+	};
+}

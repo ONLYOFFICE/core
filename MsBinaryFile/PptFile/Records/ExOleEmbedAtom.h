@@ -32,30 +32,33 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordExOleEmbedAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	UINT m_nColorFollow;
-	BOOL1 m_nCantLockServer;
-	BOOL1 m_nNoSizeToServer;
-	BOOL1 m_nIsTable;
-	
-	CRecordExOleEmbedAtom()
+	class CRecordExOleEmbedAtom : public CUnknownRecord
 	{
-	}
+	public:
+		UINT m_nColorFollow;
+		BOOL1 m_nCantLockServer;
+		BOOL1 m_nNoSizeToServer;
+		BOOL1 m_nIsTable;
 
-	~CRecordExOleEmbedAtom()
-	{
-	}
+		CRecordExOleEmbedAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-        m_oHeader = oHeader;
+		~CRecordExOleEmbedAtom()
+		{
+		}
 
-        m_nColorFollow = StreamUtils::ReadLONG(pStream);
-        m_nCantLockServer = StreamUtils::ReadBYTE(pStream);
-        m_nNoSizeToServer = StreamUtils::ReadBYTE(pStream);
-        m_nIsTable = StreamUtils::ReadBYTE(pStream);
-        StreamUtils::StreamSkip(1, pStream);
-	}
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			m_oHeader = oHeader;
+
+			m_nColorFollow = StreamUtils::ReadLONG(pStream);
+			m_nCantLockServer = StreamUtils::ReadBYTE(pStream);
+			m_nNoSizeToServer = StreamUtils::ReadBYTE(pStream);
+			m_nIsTable = StreamUtils::ReadBYTE(pStream);
+			StreamUtils::StreamSkip(1, pStream);
+		}
+	};
+}

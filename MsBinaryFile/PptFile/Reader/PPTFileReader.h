@@ -33,8 +33,6 @@
 
 #include "PPTDocumentInfo.h"
 
-using namespace XLS;
-
 class CPPTFileReader
 {
 public: 
@@ -46,13 +44,13 @@ public:
 	void ReadDocument();
 protected: 
 
-	CFStreamPtr GetDocumentStream();
-	CFStreamPtr GetPictureStream();
- 	CFStreamPtr GetEncryptedSummaryStream();
-	CFStreamPtr GetDocumentSummaryStream();   
-	CFStreamPtr GetSummaryStream();
+	XLS::CFStreamPtr GetDocumentStream();
+	XLS::CFStreamPtr GetPictureStream();
+	XLS::CFStreamPtr GetEncryptedSummaryStream();
+	XLS::CFStreamPtr GetDocumentSummaryStream();
+	XLS::CFStreamPtr GetSummaryStream();
 	
-	CFStreamPtr GetStreamByName(const std::wstring & name);
+	XLS::CFStreamPtr GetStreamByName(const std::wstring & name);
 
 	bool ReadCurrentUser(POLE::Stream *pStm);
 	void ReadEncryptedSummary();

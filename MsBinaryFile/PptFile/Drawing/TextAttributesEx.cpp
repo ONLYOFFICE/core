@@ -116,7 +116,7 @@ namespace PPT_FORMAT
 
                 nullable_bool		hasBullet;
 
-                nullable_base<CColor>	bulletColor;
+                nullable_base<ODRAW::CColor>	bulletColor;
                 nullable_base<WORD>		bulletFontRef;
                 nullable_base<WORD>		bulletSize;
                 nullable_base<WCHAR>	bulletChar;

@@ -32,23 +32,26 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordSSlideLayoutAtom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	INT m_nGeom;
-	BYTE m_pPlaceHolderID[8];
-	
-	CRecordSSlideLayoutAtom()
+	class CRecordSSlideLayoutAtom : public CUnknownRecord
 	{
-	}
+	public:
+		INT m_nGeom;
+		BYTE m_pPlaceHolderID[8];
 
-	~CRecordSSlideLayoutAtom()
-	{
-	}
+		CRecordSSlideLayoutAtom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
+		~CRecordSSlideLayoutAtom()
+		{
+		}
 
-};
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+
+	};
+}

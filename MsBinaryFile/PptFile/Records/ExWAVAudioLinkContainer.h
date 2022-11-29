@@ -32,20 +32,23 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordWAVAudioLinkContainer : public CRecordsContainer
+namespace PPT_FORMAT
 {
-public:
-	
-	CRecordWAVAudioLinkContainer()
+	class CRecordWAVAudioLinkContainer : public CRecordsContainer
 	{
-	}
+	public:
 
-	~CRecordWAVAudioLinkContainer()
-	{
-	}
+		CRecordWAVAudioLinkContainer()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		CRecordsContainer::ReadFromStream(oHeader, pStream);
-	}
-};
+		~CRecordWAVAudioLinkContainer()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			CRecordsContainer::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

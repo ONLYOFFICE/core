@@ -32,21 +32,24 @@
 #pragma once
 #include "../Reader/Records.h"
 
-class CRecordShapeFlags10Atom : public CUnknownRecord
+namespace PPT_FORMAT
 {
-public:
-	BYTE m_nFlags;
-	
-	CRecordShapeFlags10Atom()
+	class CRecordShapeFlags10Atom : public CUnknownRecord
 	{
-	}
+	public:
+		BYTE m_nFlags;
 
-	~CRecordShapeFlags10Atom()
-	{
-	}
+		CRecordShapeFlags10Atom()
+		{
+		}
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-};
+		~CRecordShapeFlags10Atom()
+		{
+		}
+
+		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+		{
+			return CUnknownRecord::ReadFromStream(oHeader, pStream);
+		}
+	};
+}

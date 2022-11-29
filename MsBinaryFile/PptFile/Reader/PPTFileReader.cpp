@@ -114,7 +114,7 @@ bool CPPTFileReader::IsEncrypted()
 
 bool CPPTFileReader::ReadPersists()
 {
-	CFStreamPtr pStream = GetDocumentStream();
+	XLS::CFStreamPtr pStream = GetDocumentStream();
 	if (!pStream) return false;
 
 	return m_oDocumentInfo.ReadFromStream(&m_oCurrentUser, pStream->stream_);
@@ -144,7 +144,7 @@ bool CPPTFileReader::ReadCurrentUser(POLE::Stream *pStm)
 	return isPP; 
 }
 
-CFStreamPtr CPPTFileReader::GetDocumentStream()
+XLS::CFStreamPtr CPPTFileReader::GetDocumentStream()
 { 
 	if (!m_pDocumentStream) 
 	{ 
@@ -152,7 +152,7 @@ CFStreamPtr CPPTFileReader::GetDocumentStream()
 	} 
 	return m_pDocumentStream; 
 }
-CFStreamPtr CPPTFileReader::GetPictureStream()
+XLS::CFStreamPtr CPPTFileReader::GetPictureStream()
 { 
 	if (!m_pPictureStream) 
 	{ 
@@ -160,10 +160,10 @@ CFStreamPtr CPPTFileReader::GetPictureStream()
 	} 
 	return m_pPictureStream; 
 }
-CFStreamPtr CPPTFileReader::GetStreamByName(const std::wstring & name)
+XLS::CFStreamPtr CPPTFileReader::GetStreamByName(const std::wstring & name)
 {
 	if (!m_bIsPPTFile) 
-		return CFStreamPtr(); 
+		return XLS::CFStreamPtr();
 
 	std::wstring stream_name;
 
@@ -174,11 +174,11 @@ CFStreamPtr CPPTFileReader::GetStreamByName(const std::wstring & name)
 	if (pStream->fail())
 	{
 		RELEASEOBJECT(pStream);
-		return CFStreamPtr();
+		return XLS::CFStreamPtr();
 	}
-	return CFStreamPtr( new CFStream(pStream));
+	return XLS::CFStreamPtr( new XLS::CFStream(pStream));
 }
-CFStreamPtr CPPTFileReader::GetEncryptedSummaryStream()
+XLS::CFStreamPtr CPPTFileReader::GetEncryptedSummaryStream()
 { 
 	if (m_pEncryptedSummaryStream == NULL) 
 	{ 
@@ -186,7 +186,7 @@ CFStreamPtr CPPTFileReader::GetEncryptedSummaryStream()
 	} 
 	return m_pEncryptedSummaryStream; 
 }
-CFStreamPtr CPPTFileReader::GetSummaryStream()
+XLS::CFStreamPtr CPPTFileReader::GetSummaryStream()
 {
 	if (!m_pDocumentSummaryStream)
 	{
@@ -194,7 +194,7 @@ CFStreamPtr CPPTFileReader::GetSummaryStream()
 	}
 	return m_pDocumentSummaryStream;
 }
-CFStreamPtr CPPTFileReader::GetDocumentSummaryStream()
+XLS::CFStreamPtr CPPTFileReader::GetDocumentSummaryStream()
 { 
 	if (!m_pDocumentSummaryStream) 
 	{ 
@@ -204,7 +204,7 @@ CFStreamPtr CPPTFileReader::GetDocumentSummaryStream()
 }
 void CPPTFileReader::ReadEncryptedSummary()
 {
-	CFStreamPtr pStream = GetEncryptedSummaryStream();
+	XLS::CFStreamPtr pStream = GetEncryptedSummaryStream();
 	if (!pStream) return;
 
 	SRecordHeader oHeader;
@@ -222,7 +222,7 @@ void CPPTFileReader::ReadDocumentSummary()
 {
 	OLEPS::PropertySetStream summary_info;
 	
-	CFStreamPtr pStream = GetSummaryStream();
+	XLS::CFStreamPtr pStream = GetSummaryStream();
 	if (pStream)
 		summary_info.read(pStream);
 
@@ -243,7 +243,7 @@ void CPPTFileReader::ReadPictures()
 {
 	if (m_oDocumentInfo.m_arUsers.empty()) return;
 	
-	CFStreamPtr pStream = GetPictureStream();
+	XLS::CFStreamPtr pStream = GetPictureStream();
 	if (!pStream) return;
 
 	CRYPT::ECMADecryptor *pDecryptor = m_oDocumentInfo.m_arUsers[0]->m_pDecryptor;

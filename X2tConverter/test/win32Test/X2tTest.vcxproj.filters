@@ -5,6 +5,7 @@
     <ClCompile Include="..\..\src\cextracttools.cpp" />
     <ClCompile Include="..\..\..\Common\OfficeFileFormatChecker2.cpp" />
     <ClCompile Include="X2tTest.cpp" />
+    <ClCompile Include="..\..\..\Common\3dParty\pole\pole.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\ASCConverters.h" />

@@ -282,6 +282,7 @@ namespace PPT_FORMAT
 
 		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
 		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);
+
 	}
 
 	class CTextPFRunRecord

@@ -168,6 +168,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\Common\3dParty\pole\pole.cpp" />
     <ClCompile Include="..\..\..\Common\OfficeFileFormatChecker2.cpp" />
     <ClCompile Include="..\..\src\ASCConverters.cpp" />
     <ClCompile Include="..\..\src\cextracttools.cpp" />

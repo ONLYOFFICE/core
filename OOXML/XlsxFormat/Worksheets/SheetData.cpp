@@ -32,11 +32,11 @@
 
 #include "../Workbook/Workbook.h"
 
-#include "../Comments/Comments.h"
-#include "DataValidation.h"
-
+#include "../../DocxFormat/VmlDrawing.h"
 #include "../Styles/Styles.h"
 #include "../SharedStrings/SharedStrings.h"
+#include "DataValidation.h"
+#include "../Comments/ThreadedComments.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"
@@ -3287,6 +3287,237 @@ namespace OOX
                 m_oRef = convert.convert(oRefersTo->substr(1));
             }
         }
+		void CWorksheet::PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing)
+		{
+			OOX::CVmlDrawing* pVmlDrawing = NULL;
+			if (NULL != pLegacyDrawing && pLegacyDrawing->m_oId.IsInit())
+			{
+				OOX::RId oRId(pLegacyDrawing->m_oId->GetValue());
 
+				smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
+
+				if (oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
+				{
+					pVmlDrawing = static_cast<OOX::CVmlDrawing*>(oVmlDrawing.GetPointer());
+				}
+			}
+			//2.3.7.3.1 Reconciliation
+			//if Corresponding placeholder is not found, Delete the entire comment thread.
+			if (!pComments || !pVmlDrawing)
+				return;
+			std::unordered_map<std::wstring, int> mapCheckCopyThreadedComments;
+			std::vector<std::wstring> & arAuthors = pComments->m_oAuthors->m_arrItems;
+
+			if (pComments->m_oCommentList.IsInit())
+			{
+				std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
+
+				for (size_t i = 0; i < aComments.size(); ++i)
+				{
+					OOX::Spreadsheet::CComment* pComment = aComments[i];
+
+					if (!pComment) continue;
+
+					bool bThreadedCommentCopy = false;
+					OOX::Spreadsheet::CThreadedComment* pThreadedComment = NULL;
+					if (pThreadedComments)
+					{
+						std::unordered_map<std::wstring, CThreadedComment*>::iterator pFind = pThreadedComments->m_mapTopLevelThreadedComments.end();
+
+						bool isPlaceholder = false;
+						if (pComment->m_oAuthorId.IsInit())
+						{
+							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
+
+							if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+							{
+								const std::wstring& sAuthor = arAuthors[nAuthorId];
+								if (0 == sAuthor.compare(0, 3, L"tc="))
+								{
+									isPlaceholder = true;
+									std::wstring sGUID = sAuthor.substr(3);
+									//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+									if (L"{00000000-0000-0000-0000-000000000000}" == sGUID && pComment->m_oRef.IsInit())
+									{
+										for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
+										{
+											if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
+											{
+												pFind = it;
+												break;
+											}
+										}
+									}
+									else
+									{
+										pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sGUID);
+									}
+
+								}
+							}
+						}
+						if (pThreadedComments->m_mapTopLevelThreadedComments.end() != pFind)
+						{
+							pThreadedComment = pFind->second;
+							if (mapCheckCopyThreadedComments.end() != mapCheckCopyThreadedComments.find(pThreadedComment->id->ToString()))
+							{
+								bThreadedCommentCopy = true;
+							}
+							else
+							{
+								mapCheckCopyThreadedComments[pThreadedComment->id->ToString()] = 1;
+							}
+						}
+						else if (isPlaceholder)
+						{
+							continue;
+						}
+					}
+
+					if (pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
+					{
+						int nRow, nCol;
+						if (CCell::parseRef(pComment->m_oRef->GetValue(), nRow, nCol))
+						{
+							CCommentItem* pCommentItem = new CCommentItem();
+							pCommentItem->m_nRow = nRow - 1;
+							pCommentItem->m_nCol = nCol - 1;
+
+							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
+
+							if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+							{
+								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
+							}
+							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
+							if (NULL != pSi)
+								pCommentItem->m_oText.reset(pSi);
+
+							pCommentItem->m_pThreadedComment = pThreadedComment;
+							pCommentItem->m_bThreadedCommentCopy = bThreadedCommentCopy;
+
+							std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
+							m_mapComments[sNewId] = pCommentItem;
+						}
+					}
+				}
+			}
+
+			for (size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
+			{
+				OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
+
+				if (pShape == NULL) continue;
+
+				if (pShape->m_sId.IsInit())
+				{//mark shape as used
+					boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
+					if (pFind != pVmlDrawing->m_mapShapes.end())
+					{
+						pFind->second.bUsed = true;
+					}
+				}
+				for (size_t j = 0; j < pShape->m_arrItems.size(); ++j)
+				{
+					OOX::WritingElement* pElem = pShape->m_arrItems[j];
+
+					if (!pElem) continue;
+
+					if (OOX::et_v_ClientData == pElem->getType())
+					{
+						OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElem);
+						if (pClientData->m_oRow.IsInit() && pClientData->m_oColumn.IsInit())
+						{
+							int nRow = pClientData->m_oRow->GetValue();
+							int nCol = pClientData->m_oColumn->GetValue();
+							std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
+
+							std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+							if (pPair != m_mapComments.end())
+							{
+								CCommentItem* pCommentItem = pPair->second;
+								if (pShape->m_sGfxData.IsInit())
+									pCommentItem->m_sGfxdata = *pShape->m_sGfxData;
+								std::vector<int> m_aAnchor;
+								pClientData->getAnchorArray(m_aAnchor);
+								if (8 <= m_aAnchor.size())
+								{
+									pCommentItem->m_nLeft = abs(m_aAnchor[0]);
+									pCommentItem->m_nLeftOffset = abs(m_aAnchor[1]);
+									pCommentItem->m_nTop = abs(m_aAnchor[2]);
+									pCommentItem->m_nTopOffset = abs(m_aAnchor[3]);
+									pCommentItem->m_nRight = abs(m_aAnchor[4]);
+									pCommentItem->m_nRightOffset = abs(m_aAnchor[5]);
+									pCommentItem->m_nBottom = abs(m_aAnchor[6]);
+									pCommentItem->m_nBottomOffset = abs(m_aAnchor[7]);
+								}
+								pCommentItem->m_bMove = pClientData->m_oMoveWithCells;
+								pCommentItem->m_bSize = pClientData->m_oSizeWithCells;
+								pCommentItem->m_bVisible = pClientData->m_oVisible;
+
+								if (pShape->m_oFillColor.IsInit())
+								{
+									BYTE r = pShape->m_oFillColor->Get_R();
+									BYTE g = pShape->m_oFillColor->Get_G();
+									BYTE b = pShape->m_oFillColor->Get_B();
+
+									std::wstringstream sstream;
+									sstream << boost::wformat(L"%02X%02X%02X") % r % g % b;
+
+									pCommentItem->m_sFillColorRgb = sstream.str();
+								}
+
+								for (size_t k = 0; k < pShape->m_oStyle->m_arrProperties.size(); ++k)
+								{
+									if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
+
+									SimpleTypes::Vml::CCssProperty *oProperty = pShape->m_oStyle->m_arrProperties[k].get();
+									if (SimpleTypes::Vml::cssptMarginLeft == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dLeftMM = oPoint.ToMm();
+										}
+									}
+									else if (SimpleTypes::Vml::cssptMarginTop == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dTopMM = oPoint.ToMm();
+										}
+									}
+									else if (SimpleTypes::Vml::cssptWidth == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dWidthMM = oPoint.ToMm();
+										}
+									}
+									else if (SimpleTypes::Vml::cssptHeight == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dHeightMM = oPoint.ToMm();
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	} //Spreadsheet
 } // OOX

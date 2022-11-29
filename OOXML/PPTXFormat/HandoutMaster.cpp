@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,69 +29,53 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTXOOX_NAMESPACES_INCLUDE_H_
-#define PPTXOOX_NAMESPACES_INCLUDE_H_
 
-#include "../Base/Base.h"
+#include "HandoutMaster.h"
 
 namespace PPTX
 {
-	class Namespace
+	HandoutMaster::HandoutMaster(OOX::Document* pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 	{
-	public:
-		std::wstring m_strName;
-		std::wstring m_strLink;
-
-	public:
-		Namespace(const wchar_t* sName, const wchar_t* sLink);
-	};
-	
-	class Namespaces
+	}
+	HandoutMaster::HandoutMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
 	{
-	public:
-		Namespaces();
+		read(filename, map);
+	}
+	HandoutMaster::~HandoutMaster()
+	{
+	}
+	void HandoutMaster::read(const OOX::CPath& filename, FileMap& map)
+	{
+		//FileContainer::read(filename, map);
+		XmlUtils::CXmlNode oNode;
+		oNode.FromXmlFile(filename.m_strFilename);
 
-	public:
-		const Namespace a;
-		const Namespace b;
-		const Namespace cdr;
-		const Namespace cp;
-		const Namespace cup;
-		const Namespace dc;
-		const Namespace dchrt;
-		const Namespace dcmitype;
-		const Namespace dcterms;
-		const Namespace ddgrm;
-		const Namespace dgm;
-		const Namespace dlckcnv;
-		const Namespace dpct;
-		const Namespace ds;
-		const Namespace m;
-		const Namespace o;
-		const Namespace p;
-		const Namespace pic;
-		const Namespace pvml;
-		const Namespace r;
-		const Namespace s;
-		const Namespace sl;
-		const Namespace v;
-		const Namespace ve;
-		const Namespace vp;
-		const Namespace vt;
-		const Namespace w;
-		const Namespace w10;
-		const Namespace wne;
-		const Namespace wp;
-		const Namespace x;
-		const Namespace xdr;
-		const Namespace xmlns;
-		const Namespace xsd;
-		const Namespace xsi;
-		const Namespace p14;
-	};
+		cSld = oNode.ReadNode(_T("p:cSld"));
+		cSld.SetParentFilePointer(this);
 
-	static Namespaces g_Namespaces;
+		clrMap = oNode.ReadNode(_T("p:clrMap"));
+		clrMap.SetParentFilePointer(this);
+
+		hf = oNode.ReadNode(_T("p:hf"));
+
+		if (hf.is_init())
+			hf->SetParentFilePointer(this);
+	}
+	void HandoutMaster::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
+	{
+		WrapperFile::write(filename, directory, content);
+		FileContainer::write(filename, directory, content);
+	}
+	const OOX::FileType HandoutMaster::type() const
+	{
+		return OOX::Presentation::FileTypes::HandoutMaster;
+	}
+	const OOX::CPath HandoutMaster::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const OOX::CPath HandoutMaster::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
 } // namespace PPTX
-
-#endif // PPTXOOX_NAMESPACES_INCLUDE_H_

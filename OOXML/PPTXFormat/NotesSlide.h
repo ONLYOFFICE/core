@@ -38,144 +38,31 @@
 #include "FileTypes.h"
 
 #include "NotesMaster.h"
+#include "Logic/ClrMapOvr.h"
 
 namespace PPTX
 {
 	class NotesSlide : public WrapperFile, public FileContainer
 	{
 	public:
-		NotesSlide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
-		{
-		}
-		NotesSlide(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
-		{
-			read(filename, map);
-		}
-		virtual ~NotesSlide()
-		{
-		}
-		virtual void read(const OOX::CPath& filename, FileMap& map)
-		{
-			//FileContainer::read(filename, map);
+		NotesSlide(OOX::Document* pMain);
+		NotesSlide(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~NotesSlide();
 
-			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile(filename.m_strFilename);
+		virtual void read(const OOX::CPath& filename, FileMap& map);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
-            XmlMacroReadAttributeBase(oNode, L"showMasterPhAnim", showMasterPhAnim);
-            XmlMacroReadAttributeBase(oNode, L"showMasterSp", showMasterSp);
+		virtual const OOX::FileType type() const;
 
-			cSld = oNode.ReadNode(_T("p:cSld"));
-			cSld.SetParentFilePointer(this);
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
-			clrMapOvr = oNode.ReadNode(_T("p:clrMapOvr"));
-			if (clrMapOvr.IsInit())
-				clrMapOvr->SetParentFilePointer(this);
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{
-			WrapperFile::write(filename, directory, content);
-			FileContainer::write(filename, directory, content);
-		}
-		virtual const OOX::FileType type() const
-		{
-			return OOX::Presentation::FileTypes::NotesSlide;
-		}
-		virtual const OOX::CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const OOX::CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->StartRecord(NSBinPptxRW::NSMainTables::NotesSlides);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteBool2(0, showMasterPhAnim);
-			pWriter->WriteBool2(1, showMasterSp);
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		void ApplyRels();
 
-			pWriter->WriteRecord1(0, cSld);
-			pWriter->WriteRecord2(1, clrMapOvr);
-
-			pWriter->EndRecord();
-		}
-		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-			pWriter->StartNode(_T("p:notes"));
-
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:m"), PPTX::g_Namespaces.m.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:w"), PPTX::g_Namespaces.w.m_strLink);
-			pWriter->WriteAttribute(_T("showMasterPhAnim"), showMasterPhAnim);
-			pWriter->WriteAttribute(_T("showMasterSp"), showMasterSp);
-			pWriter->EndAttributes();
-
-			cSld.toXmlWriter(pWriter);
-			pWriter->Write(clrMapOvr);
-
-			pWriter->EndNode(_T("p:notes"));
-		}
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			pReader->Skip(1); // type
-			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-			pReader->Skip(1); // attribute start
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-
-				if (0 == _at)
-					showMasterPhAnim = pReader->GetBool();
-				else if (1 == _at)
-					showMasterSp = pReader->GetBool();
-			}
-			while (pReader->GetPos() < end)
-			{
-				BYTE _rec = pReader->GetUChar();
-
-				switch (_rec)
-				{
-					case 0:
-					{
-						cSld.fromPPTY(pReader);
-						break;
-					}
-					case 1:
-					{
-						clrMapOvr = new Logic::ClrMapOvr();
-						clrMapOvr->fromPPTY(pReader);
-						break;
-					}
-					default:
-					{
-						pReader->SkipRecord();
-						break;
-					}
-				}
-			}
-
-			pReader->Seek(end);
-		}
-		void ApplyRels()
-		{
-			smart_ptr<OOX::File> pFile = FileContainer::Get(OOX::Presentation::FileTypes::NotesMaster);
-
-			master_ = pFile.smart_dynamic_cast<PPTX::NotesMaster>();
-
-			if (master_.IsInit())
-			{
-				theme_ = master_->theme_;
-			}
-		}
 		Logic::CSld					cSld;
 		nullable<Logic::ClrMapOvr>	clrMapOvr;
 

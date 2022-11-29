@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,69 +29,77 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTXOOX_NAMESPACES_INCLUDE_H_
-#define PPTXOOX_NAMESPACES_INCLUDE_H_
 
-#include "../Base/Base.h"
+#include "CalculatorCRC32.h"
 
-namespace PPTX
+CCalculatorCRC32::CCalculatorCRC32()
 {
-	class Namespace
+	m_dwMagicWord = 0xEDB88320;
+	m_dwInitCrc = 0xFFFFFFFF;
+	m_bInitTable = false;
+}
+DWORD CCalculatorCRC32::Calc(BYTE const*pStream, int nSize)
+{
+	InitCRCTable();
+	DWORD dwRes = m_dwInitCrc;
+	for (int i=0;i<nSize;i++)
 	{
-	public:
-		std::wstring m_strName;
-		std::wstring m_strLink;
+		dwRes = m_arCRCTable[(dwRes ^ pStream[i])& 0xFF] ^ (dwRes >> 8);
+	}
 
-	public:
-		Namespace(const wchar_t* sName, const wchar_t* sLink);
-	};
-	
-	class Namespaces
+	dwRes = dwRes ^ 0xFFFFFFFF;
+	return dwRes;
+}
+DWORD CCalculatorCRC32::Calc(const std::wstring &sStream)
+{
+	InitCRCTable();
+	DWORD dwRes = m_dwInitCrc;
+
+	for (size_t i=0; i < sStream.length(); i++)
 	{
-	public:
-		Namespaces();
+		dwRes = m_arCRCTable[(dwRes ^ (BYTE)sStream[i]) & 0xFF] ^ (dwRes >> 8);
+	}
 
-	public:
-		const Namespace a;
-		const Namespace b;
-		const Namespace cdr;
-		const Namespace cp;
-		const Namespace cup;
-		const Namespace dc;
-		const Namespace dchrt;
-		const Namespace dcmitype;
-		const Namespace dcterms;
-		const Namespace ddgrm;
-		const Namespace dgm;
-		const Namespace dlckcnv;
-		const Namespace dpct;
-		const Namespace ds;
-		const Namespace m;
-		const Namespace o;
-		const Namespace p;
-		const Namespace pic;
-		const Namespace pvml;
-		const Namespace r;
-		const Namespace s;
-		const Namespace sl;
-		const Namespace v;
-		const Namespace ve;
-		const Namespace vp;
-		const Namespace vt;
-		const Namespace w;
-		const Namespace w10;
-		const Namespace wne;
-		const Namespace wp;
-		const Namespace x;
-		const Namespace xdr;
-		const Namespace xmlns;
-		const Namespace xsd;
-		const Namespace xsi;
-		const Namespace p14;
-	};
+	dwRes = dwRes ^ 0xFFFFFFFF;
+	return dwRes;
+}
+DWORD CCalculatorCRC32::CalcPartFile(const std::wstring &sFilepath)
+{
+	DWORD dwRet = 0xFFFFFFFF;
+	//LPBYTE pBuffer = new BYTE[g_clFilePartSize];
+	//if (NULL==pBuffer)
+	//	return dwRet;
+	//FILE *pFile = fopen(sFilepath, "rb");
+	//if (NULL==pFile)
+	//{
+	//	delete [] pBuffer;
+	//	return dwRet;
+	//}
 
-	static Namespaces g_Namespaces;
-} // namespace PPTX
+	//size_t nReaded = fread(pBuffer, 1, 1024, pFile);
+	//fclose(pFile);
 
-#endif // PPTXOOX_NAMESPACES_INCLUDE_H_
+	//dwRet = CCalculatorCRC32::Calc(pBuffer, nReaded);
+	//
+	//delete [] pBuffer;
+	return dwRet;
+}
+void CCalculatorCRC32::InitCRCTable()
+{
+	if (m_bInitTable)
+		return;
+
+	DWORD dwTemp;
+	for (int i = 0; i < 256; i++)
+	{
+		dwTemp = i;
+		for (int j = 0;j < 8;j++)
+		{
+			if (0x1==(dwTemp & 0x1))
+				dwTemp = (dwTemp >> 1) ^ m_dwMagicWord;
+			else
+				dwTemp = dwTemp >> 1;
+		}
+		m_arCRCTable[i] = dwTemp;
+	}
+}

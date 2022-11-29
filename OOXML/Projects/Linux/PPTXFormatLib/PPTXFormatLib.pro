@@ -84,25 +84,52 @@ SOURCES += \
 	../../../PPTXFormat/FileTypes.cpp \
 	../../../PPTXFormat/FileFactory.cpp \
 	../../../PPTXFormat/FileMap.cpp \
-	../../../PPTXFormat/Folder.cpp
+	../../../PPTXFormat/Folder.cpp \
+	../../../PPTXFormat/WrapperFile.cpp \
+	../../../PPTXFormat/ViewProps.cpp \
+	../../../PPTXFormat/Theme.cpp \
+	../../../PPTXFormat/TableStyles.cpp \
+	../../../PPTXFormat/SlideMaster.cpp \
+	../../../PPTXFormat/SlideLayout.cpp \
+	../../../PPTXFormat/Slide.cpp \
+	../../../PPTXFormat/PresProps.cpp \
+	../../../PPTXFormat/NotesSlide.cpp \
+	../../../PPTXFormat/NotesMaster.cpp \
+	../../../PPTXFormat/Namespaces.cpp \
+	../../../PPTXFormat/LegacyDiagramText.cpp \
+	../../../PPTXFormat/HandoutMaster.cpp \
+	../../../PPTXFormat/Core.cpp \
+	../../../PPTXFormat/App.cpp \
+	../../../PPTXFormat/Comments.cpp \
+	../../../PPTXFormat/CommentAuthors.cpp
 }
 
 SOURCES += \
+	pptx_format.cpp \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
-	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
-	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
-	../../../Binary/Presentation/BinaryFileReaderWriter.cpp \
-	../../../Binary/Presentation/FontPicker.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.cpp \
+	\
 	../../../../MsBinaryFile/PptFile/Drawing/TextAttributesEx.cpp \
 	../../../../MsBinaryFile/PptFile/Drawing/Elements.cpp \
-	../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
+	\
+	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
+	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
+	\
 	../../../Binary/Presentation/imagemanager.cpp \
-	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.cpp \
-	pptx_format.cpp
+	../../../Binary/Presentation/FontPicker.cpp \
+	../../../Binary/Presentation/BinaryFileReaderWriter.cpp \
+	../../../Binary/Presentation/PPTXWriter.cpp \
+	../../../Binary/Presentation/DefaultNotesTheme.cpp \
+	../../../Binary/Presentation/DefaultNotesMaster.cpp \
+	../../../Binary/Presentation/Converter.cpp \
+	../../../Binary/Presentation/CalculatorCRC32.cpp \
+	../../../Binary/Presentation/FontCutter.cpp \
+	\
+	../../../../HtmlRenderer/src/ASCSVGWriter.cpp
 
 HEADERS += \
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \

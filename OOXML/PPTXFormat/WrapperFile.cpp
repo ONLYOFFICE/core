@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,69 +29,45 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTXOOX_NAMESPACES_INCLUDE_H_
-#define PPTXOOX_NAMESPACES_INCLUDE_H_
 
-#include "../Base/Base.h"
+#include "WrapperFile.h"
 
 namespace PPTX
 {
-	class Namespace
+	WrapperFile::WrapperFile(OOX::Document *pMain) : OOX::File(pMain)
 	{
-	public:
-		std::wstring m_strName;
-		std::wstring m_strLink;
-
-	public:
-		Namespace(const wchar_t* sName, const wchar_t* sLink);
-	};
-	
-	class Namespaces
+		m_written = false;
+		m_WrittenFileName = _T("");
+	}
+	WrapperFile::~WrapperFile()
 	{
-	public:
-		Namespaces();
-
-	public:
-		const Namespace a;
-		const Namespace b;
-		const Namespace cdr;
-		const Namespace cp;
-		const Namespace cup;
-		const Namespace dc;
-		const Namespace dchrt;
-		const Namespace dcmitype;
-		const Namespace dcterms;
-		const Namespace ddgrm;
-		const Namespace dgm;
-		const Namespace dlckcnv;
-		const Namespace dpct;
-		const Namespace ds;
-		const Namespace m;
-		const Namespace o;
-		const Namespace p;
-		const Namespace pic;
-		const Namespace pvml;
-		const Namespace r;
-		const Namespace s;
-		const Namespace sl;
-		const Namespace v;
-		const Namespace ve;
-		const Namespace vp;
-		const Namespace vt;
-		const Namespace w;
-		const Namespace w10;
-		const Namespace wne;
-		const Namespace wp;
-		const Namespace x;
-		const Namespace xdr;
-		const Namespace xmlns;
-		const Namespace xsd;
-		const Namespace xsi;
-		const Namespace p14;
-	};
-
-	static Namespaces g_Namespaces;
+	}
+	void WrapperFile::read(const OOX::CPath& filename)
+	{
+		return;
+	}
+	bool WrapperFile::GetWrittenStatus()const
+	{
+		return m_written;
+	}
+	void WrapperFile::WrittenSetFalse()
+	{
+		m_written = false;
+		m_WrittenFileName = _T("");
+	}
+	const OOX::CPath WrapperFile::GetWrittenFileName()const
+	{
+		return m_WrittenFileName;
+	}
+	// PPTY format serialise
+	void WrapperFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		pReader->SkipRecord();
+	}
+	void WrapperFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+	}
+	void WrapperFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+	}
 } // namespace PPTX
-
-#endif // PPTXOOX_NAMESPACES_INCLUDE_H_

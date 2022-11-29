@@ -44,51 +44,26 @@ namespace PPTX
 	class WrapperFile : public OOX::File
 	{
 	public:
-		WrapperFile(OOX::Document *pMain) : OOX::File(pMain)
-		{
-			m_written = false;
-			m_WrittenFileName = _T("");
-		}
-		virtual ~WrapperFile()
-		{
-		}
+		WrapperFile(OOX::Document *pMain);
+		virtual ~WrapperFile();
 
-		virtual void read(const OOX::CPath& filename)
-		{
-			return;
-		}
+		virtual void read(const OOX::CPath& filename);
 		virtual void read(const OOX::CPath&, FileMap& map) = 0;
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 	protected:
 		mutable bool			m_written;
 		mutable OOX::CPath		m_WrittenFileName;
+
 	public:
-		bool GetWrittenStatus()const
-		{
-			return m_written;
-		}
-		void WrittenSetFalse()
-		{
-			m_written = false;
-			m_WrittenFileName = _T("");
-		}
-		const OOX::CPath GetWrittenFileName()const
-		{
-			return m_WrittenFileName;
-		}
+		bool GetWrittenStatus() const;
+		void WrittenSetFalse();
+		const OOX::CPath GetWrittenFileName() const;
 
 		// PPTY format serialise
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			pReader->SkipRecord();
-		}
-        virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-		}
-		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-		}
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 	};
 } // namespace PPTX
 

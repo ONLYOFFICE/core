@@ -35,6 +35,8 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
+#include "FileTypes.h"
+#include "WrapperWritingElement.h"
 
 namespace PPTX
 {
@@ -52,85 +54,15 @@ namespace PPTX
 			nullable_string	name;
 			nullable_string	initials;			
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"id", id);
-				XmlMacroReadAttributeBase(node, L"lastIdx", last_idx);
-				XmlMacroReadAttributeBase(node, L"clrIdx", clr_idx);
-				XmlMacroReadAttributeBase(node, L"name", name);
-				XmlMacroReadAttributeBase(node, L"initials", initials);
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:cmAuthor"));
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("id"), id);
-                pWriter->WriteAttribute2(_T("name"), name);
-				pWriter->WriteAttribute(_T("initials"), initials);
-				pWriter->WriteAttribute(_T("lastIdx"), last_idx);
-				pWriter->WriteAttribute(_T("clrIdx"), clr_idx);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(_T("p:cmAuthor"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, id);
-				pWriter->WriteInt2(1, last_idx);
-				pWriter->WriteInt2(2, clr_idx);
-				pWriter->WriteString2(3, name);
-				pWriter->WriteString2(4, initials);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);	
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-					case 0:
-						id = pReader->GetLong();
-						break;
-					case 1:
-						last_idx = pReader->GetLong();
-						break;
-					case 2:
-						clr_idx = pReader->GetLong();
-						break;
-					case 3:
-						name = pReader->GetString2();
-						break;
-					case 4:
-						initials = pReader->GetString2();
-						break;
-					default:
-						break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void FillParentPointersForChilds()
-			{
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	}
 	
@@ -139,108 +71,21 @@ namespace PPTX
 	public:
 		std::vector<PPTX::Logic::CommentAuthor> m_arAuthors;
 
-		Authors(OOX::Document* pMain) : WrapperFile(pMain)
-		{
-		}
-		Authors(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain)
-		{
-			read(filename, map);
-		}
-		virtual ~Authors()
-		{
-		}
-		virtual void read(const OOX::CPath& filename, FileMap& map)
-		{
-			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile(filename.m_strFilename);
+		Authors(OOX::Document* pMain);
+		Authors(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~Authors();
 
-			XmlUtils::CXmlNodes oNodes;
-			oNode.GetNodes(_T("p:cmAuthor"), oNodes);
-			int nCount = oNodes.GetCount();
-			for (int i = 0; i < nCount; ++i)
-			{
-				XmlUtils::CXmlNode oCm;
-				oNodes.GetAt(i, oCm);
+		virtual void read(const OOX::CPath& filename, FileMap& map);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
-				PPTX::Logic::CommentAuthor comm;
+		virtual const OOX::FileType type() const;
 
-				m_arAuthors.push_back(comm);				
-				m_arAuthors.back().fromXML(oCm);
-			}		
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{		
-			WrapperFile::write(filename, directory, content);
-		}
-		virtual const OOX::FileType type() const
-		{
-			return OOX::Presentation::FileTypes::CommentAuthors;
-		}
-		virtual const OOX::CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const OOX::CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->WriteRecordArray(0, 0, m_arAuthors);
-		}
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
-		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-			pWriter->StartNode(_T("p:cmAuthorLst"));
-
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			pWriter->EndAttributes();
-
-			pWriter->WriteArray2(m_arAuthors);
-
-			pWriter->EndNode(_T("p:cmAuthorLst"));
-		}
-
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-			while (pReader->GetPos() < end)
-			{
-				BYTE _rec = pReader->GetUChar();
-
-				switch (_rec)
-				{
-					case 0:
-					{
-						pReader->Skip(4); // len
-						ULONG lCount = pReader->GetULong();
-
-						for (ULONG i = 0; i < lCount; ++i)
-						{
-							pReader->Skip(1);
-
-							PPTX::Logic::CommentAuthor comm;
-
-							m_arAuthors.push_back(comm);
-							m_arAuthors.back().fromPPTY(pReader);
-						}
-						
-						break;
-					}
-					default:
-					{
-						pReader->SkipRecord();
-						break;
-					}
-				}
-			}
-
-			pReader->Seek(end);
-		}
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	};
 } // namespace PPTX
 

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_HYPERLINK_INCLUDE_H_
-#define OOX_LOGIC_HYPERLINK_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
 
@@ -126,4 +124,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_HYPERLINK_INCLUDE_H_

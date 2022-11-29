@@ -433,7 +433,7 @@
     <ClCompile Include="..\..\..\DocxFormat\Drawing\DrawingExt.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\Endnote.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\External\External.cpp" />
-    <ClCompile Include="..\..\..\DocxFormat\External\HyperLink.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\External\ExternalHyperLink.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\File.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FileFactory.cpp" />
     <ClCompile Include="..\..\..\DocxFormat\FileType.cpp" />

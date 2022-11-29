@@ -101,7 +101,7 @@
 #include "../../../DocxFormat/Diagram/DiagramLayout.cpp"
 #include "../../../DocxFormat/Diagram/DiagramQuickStyle.cpp"
 #include "../../../DocxFormat/External/External.cpp"
-#include "../../../DocxFormat/External/HyperLink.cpp"
+#include "../../../DocxFormat/External/ExternalHyperLink.cpp"
 #include "../../../Binary/MathEquation/MathEquation.cpp"
 #include "../../../DocxFormat/Logic/DocParts.cpp"
 #include "../../../DocxFormat/WritingElement.cpp"

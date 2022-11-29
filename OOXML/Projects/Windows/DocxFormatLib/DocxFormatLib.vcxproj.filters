@@ -935,11 +935,11 @@
     <ClCompile Include="..\..\..\DocxFormat\External\External.cpp">
       <Filter>External</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\DocxFormat\External\HyperLink.cpp">
-      <Filter>External</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Worksheets\XlsxHyperlinks.cpp">
       <Filter>XlsxFormat\Worksheets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\DocxFormat\External\ExternalHyperLink.cpp">
+      <Filter>External</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

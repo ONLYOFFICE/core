@@ -52,7 +52,9 @@ SOURCES += \
 	../../../DocxFormat/Logic/VmlOfficeDrawing.cpp \
 	../../../DocxFormat/Logic/VmlWord.cpp \
 	../../../DocxFormat/Logic/Shape.cpp \
-	../../../DocxFormat/Media/Media.cpp \
+        ../../../DocxFormat/External/ExternalHyperLink.cpp \
+        ../../../DocxFormat/External/External.cpp \
+        ../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
 	../../../DocxFormat/Media/ActiveX.cpp \

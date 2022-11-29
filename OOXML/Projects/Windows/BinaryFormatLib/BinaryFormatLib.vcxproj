@@ -43,6 +43,7 @@
     <ClCompile Include="..\..\..\Binary\Document\BinReader\SettingWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\StylesWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinWriters.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp" />

@@ -40,36 +40,14 @@ namespace PPTX
 		class TLSyncBehavior : public BaseLimit
 		{
 		public:
-			TLSyncBehavior()
-			{
-				m_strValue = L"canSlip";
-			}
+			TLSyncBehavior();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"canSlip" == strValue) ||
-					(L"locked" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"canSlip" == m_strValue)	return 0;
-				if (L"locked" == m_strValue)	return 1;
-				return 0;
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual void SetBYTECode(const BYTE& val)
-			{
-				switch (val)
-				{
-				case 0: m_strValue = L"canSlip";	break;
-				case 1: m_strValue = L"locked";		break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& val);
 		};
 	} // namespace Limit
 } // namespace PPTX

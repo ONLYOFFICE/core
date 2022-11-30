@@ -43,35 +43,14 @@ namespace PPTX
 		class TLColorDirection : public BaseLimit
 		{
 		public:
-			TLColorDirection()
-			{
-				m_strValue = _T("cw");
-			}
+			TLColorDirection();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("ccw") == strValue) ||
-					(_T("cw") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"ccw" == m_strValue)	return 0;
-				if (L"cw" == m_strValue)	return 1;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"ccw"; break;
-				case 1: m_strValue = L"cw"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

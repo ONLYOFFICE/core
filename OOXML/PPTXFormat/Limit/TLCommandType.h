@@ -43,38 +43,14 @@ namespace PPTX
 		class TLCommandType : public BaseLimit
 		{
 		public:
-			TLCommandType()
-			{
-				m_strValue = _T("verb");
-			}
+			TLCommandType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("call") == strValue) ||
-					(_T("evt") == strValue) ||
-					(_T("verb") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"call" == m_strValue)	return 0;
-				if (L"evt" == m_strValue)	return 1;
-				if (L"verb" == m_strValue)	return 2;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"call"; break;
-				case 1: m_strValue = L"evt"; break;
-				case 2: m_strValue = L"verb"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

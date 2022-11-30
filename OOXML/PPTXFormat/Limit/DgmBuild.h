@@ -40,30 +40,14 @@ namespace PPTX
 		class DgmBuild : public BaseLimit
 		{
 		public:
-			DgmBuild()
-			{
-				m_strValue = _T("sp");
-			}
+			DgmBuild();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("bg") == strValue) ||
-					(_T("sp") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				//not using yet
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

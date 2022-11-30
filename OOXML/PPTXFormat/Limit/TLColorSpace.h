@@ -43,35 +43,14 @@ namespace PPTX
 		class TLColorSpace : public BaseLimit
 		{
 		public:
-			TLColorSpace()
-			{
-				m_strValue = _T("rgb");
-			}
+			TLColorSpace();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("rgb") == strValue) ||
-					(_T("hsl") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"rgb" == m_strValue)	return 0;
-				if (L"hsl" == m_strValue)	return 1;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"rgb"; break;
-				case 1: m_strValue = L"hsl"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

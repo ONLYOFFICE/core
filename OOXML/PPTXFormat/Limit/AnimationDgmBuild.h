@@ -40,32 +40,14 @@ namespace PPTX
 		class AnimationDgmBuild : public BaseLimit
 		{
 		public:
-			AnimationDgmBuild()
-			{
-				m_strValue = _T("allAtOnce");
-			}
+			AnimationDgmBuild();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((strValue == _T("allAtOnce")) || 
-					(strValue == _T("lvlAtOnce")) || 
-					(strValue == _T("lvlOne")) || 
-					(strValue == _T("one")))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				//not using yet
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

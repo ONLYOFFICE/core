@@ -40,41 +40,14 @@ namespace PPTX
 		class CornerDirectionVal : public BaseLimit
 		{
 		public:
-			CornerDirectionVal()
-			{
-				m_strValue = _T("lu");
-			}
+			CornerDirectionVal();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("ld") == strValue) ||
-					(_T("lu") == strValue) ||
-					(_T("rd") == strValue) ||
-					(_T("ru") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"ld" == m_strValue)	return 0;
-				if (L"lu" == m_strValue)	return 1;
-				if (L"rd" == m_strValue)	return 2;
-				if (L"ru" == m_strValue)	return 3;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"ld"; break;
-				case 1: m_strValue = L"lu"; break;
-				case 2: m_strValue = L"rd"; break;
-				case 3: m_strValue = L"ru"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

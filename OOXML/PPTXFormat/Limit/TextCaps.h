@@ -40,47 +40,14 @@ namespace PPTX
 		class TextCaps : public BaseLimit
 		{
 		public:
-			TextCaps()
-			{
-				m_strValue = _T("none");
-			}
+			TextCaps();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("all") == strValue) ||
-					(_T("none") == strValue) ||
-					(_T("small") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("all") == m_strValue)
-					return 0;
-				if (_T("small") == m_strValue)
-					return 1;
-				return 2;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("all");
-					break;
-				case 1:
-					m_strValue = _T("small");
-					break;
-				default:
-					m_strValue = _T("none");
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

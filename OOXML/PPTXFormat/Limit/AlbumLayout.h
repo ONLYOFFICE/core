@@ -39,35 +39,14 @@ namespace PPTX
 		class AlbumLayout : public BaseLimit
 		{
 		public:
-			AlbumLayout()
-			{
-				m_strValue = L"fitToSlide";
-			}
+			AlbumLayout();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"1pic" == strValue) || 
-					(L"1picTitle" == strValue) || 
-					(L"2pic" == strValue) ||
-					(L"2picTitle" == strValue) || 
-					(L"4pic" == strValue) || 
-					(L"4picTitle" == strValue) || 
-					(L"fitToSlide" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				//not using yet
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

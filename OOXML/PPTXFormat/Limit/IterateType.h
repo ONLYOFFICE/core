@@ -40,38 +40,14 @@ namespace PPTX
 		class IterateType : public BaseLimit
 		{
 		public:
-			IterateType()
-			{
-				m_strValue = L"el";
-			}
+			IterateType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"el" == strValue) ||
-					(L"lt" == strValue) ||
-					(L"wd" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"el" == m_strValue)	return 0;
-				if (L"lt" == m_strValue)	return 1;
-				if (L"wd" == m_strValue)	return 2;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"el"; break;
-				case 1: m_strValue = L"lt"; break;
-				case 2: m_strValue = L"wd"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

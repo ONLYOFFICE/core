@@ -40,50 +40,15 @@ namespace PPTX
 		class TLNodeFillType : public BaseLimit
 		{
 		public:
-			TLNodeFillType()
-			{
-				m_strValue = _T("hold");
-			}
-
-            TLNodeFillType(UINT fill)
-            {
-                if (    fill == 0       ||
-                        fill == 3) m_strValue = L"hold";
-                else if(fill == 1       ||
-                        fill == 4) m_strValue = L"transition";
-                else m_strValue = L"freeze";
-            }
+			TLNodeFillType();
+			TLNodeFillType(UINT fill);
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("freeze") == strValue) ||
-					(_T("hold") == strValue) ||
-					(_T("remove") == strValue) ||
-					(_T("transition") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"freeze" == m_strValue)		return 0;
-				if (L"hold" == m_strValue)			return 1;
-				if (L"remove" == m_strValue)		return 2;
-				if (L"transition" == m_strValue)	return 3;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"freeze"; break;
-				case 1: m_strValue = L"hold"; break;
-				case 2: m_strValue = L"remove"; break;
-				case 3: m_strValue = L"transition"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

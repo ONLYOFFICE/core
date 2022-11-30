@@ -40,35 +40,14 @@ namespace PPTX
 		class InOutDirectionVal : public BaseLimit
 		{
 		public:
-			InOutDirectionVal()
-			{
-				m_strValue = L"out";
-			}
+			InOutDirectionVal();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"in" == strValue) ||
-					(L"out" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"in" == m_strValue)	return 0;
-				if (L"out" == m_strValue)	return 1;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"in"; break;
-				case 1: m_strValue = L"out"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

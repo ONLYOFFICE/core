@@ -43,38 +43,14 @@ namespace PPTX
 		class TLCalcMode : public BaseLimit
 		{
 		public:
-			TLCalcMode()
-			{
-				m_strValue = _T("lin");
-			}
+			TLCalcMode();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("lin") == strValue) ||
-					(_T("fmla") == strValue) ||
-					(_T("discrete") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"discrete" == m_strValue)	return 0;
-				if (L"lin" == m_strValue)	return 1;
-				if (L"fmla" == m_strValue)	return 2;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"discrete"; break;
-				case 1: m_strValue = L"lin"; break;
-				case 2: m_strValue = L"fmla"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

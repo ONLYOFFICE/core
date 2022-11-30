@@ -169,7 +169,96 @@ SOURCES += \
 	../../../PPTXFormat/Presentation/EmbeddedFontDataId.cpp \
 	../../../PPTXFormat/Presentation/Kinsoku.cpp \
 	../../../PPTXFormat/Presentation/SectionLst.cpp \
-	../../../PPTXFormat/Presentation/SldSz.cpp
+	../../../PPTXFormat/Presentation/SldSz.cpp \
+	\
+	../../../PPTXFormat/Limit/AlbumLayout.cpp \
+	../../../PPTXFormat/Limit/AnimationDgmBuild.cpp \
+	../../../PPTXFormat/Limit/BaseLimit.cpp \
+	../../../PPTXFormat/Limit/BevelType.cpp \
+	../../../PPTXFormat/Limit/BlendMode.cpp \
+	../../../PPTXFormat/Limit/BlipCompression.cpp \
+	../../../PPTXFormat/Limit/BWMode.cpp \
+	../../../PPTXFormat/Limit/CameraType.cpp \
+	../../../PPTXFormat/Limit/ChartBuild.cpp \
+	../../../PPTXFormat/Limit/ChartBuildType.cpp \
+	../../../PPTXFormat/Limit/ColorSchemeIndex.cpp \
+	../../../PPTXFormat/Limit/CompoundLine.cpp \
+	../../../PPTXFormat/Limit/Conformance.cpp \
+	../../../PPTXFormat/Limit/ContentStatus.cpp \
+	../../../PPTXFormat/Limit/CornerDirectionVal.cpp \
+	../../../PPTXFormat/Limit/DgmBuild.cpp \
+	../../../PPTXFormat/Limit/DgmBuildType.cpp \
+	../../../PPTXFormat/Limit/EffectContainerType.cpp \
+	../../../PPTXFormat/Limit/EightDirectionVal.cpp \
+	../../../PPTXFormat/Limit/FillPath.cpp \
+	../../../PPTXFormat/Limit/Flip.cpp \
+	../../../PPTXFormat/Limit/FontAlign.cpp \
+	../../../PPTXFormat/Limit/FontStyleIndex.cpp \
+	../../../PPTXFormat/Limit/FrameShape.cpp \
+	../../../PPTXFormat/Limit/HorzOverflow.cpp \
+	../../../PPTXFormat/Limit/InOutDirectionVal.cpp \
+	../../../PPTXFormat/Limit/IterateType.cpp \
+	../../../PPTXFormat/Limit/LastView.cpp \
+	../../../PPTXFormat/Limit/LightRigType.cpp \
+	../../../PPTXFormat/Limit/LineCap.cpp \
+	../../../PPTXFormat/Limit/LineEndSize.cpp \
+	../../../PPTXFormat/Limit/LineEndType.cpp \
+	../../../PPTXFormat/Limit/Material.cpp \
+	../../../PPTXFormat/Limit/OnOff.cpp \
+	../../../PPTXFormat/Limit/Orient.cpp \
+	../../../PPTXFormat/Limit/ParaBuildType.cpp \
+	../../../PPTXFormat/Limit/PathFillMode.cpp \
+	../../../PPTXFormat/Limit/PattFillVal.cpp \
+	../../../PPTXFormat/Limit/PenAlign.cpp \
+	../../../PPTXFormat/Limit/PlaceholderSize.cpp \
+	../../../PPTXFormat/Limit/PlaceholderType.cpp \
+	../../../PPTXFormat/Limit/PresetShadowVal.cpp \
+	../../../PPTXFormat/Limit/PrstClrVal.cpp \
+	../../../PPTXFormat/Limit/PrstDashVal.cpp \
+	../../../PPTXFormat/Limit/RectAlign.cpp \
+	../../../PPTXFormat/Limit/SchemeClrVal.cpp \
+	../../../PPTXFormat/Limit/ShapeType.cpp \
+	../../../PPTXFormat/Limit/SideDirectionVal.cpp \
+	../../../PPTXFormat/Limit/SlideLayoutType.cpp \
+	../../../PPTXFormat/Limit/SlideSize.cpp \
+	../../../PPTXFormat/Limit/SplitterBarState.cpp \
+	../../../PPTXFormat/Limit/SysClrVal.cpp \
+	../../../PPTXFormat/Limit/TextAlign.cpp \
+	../../../PPTXFormat/Limit/TextAnchor.cpp \
+	../../../PPTXFormat/Limit/TextAutonumberScheme.cpp \
+	../../../PPTXFormat/Limit/TextCaps.cpp \
+	../../../PPTXFormat/Limit/TextShapeType.cpp \
+	../../../PPTXFormat/Limit/TextStrike.cpp \
+	../../../PPTXFormat/Limit/TextTabAlignType.cpp \
+	../../../PPTXFormat/Limit/TextUnderline.cpp \
+	../../../PPTXFormat/Limit/TextVerticalType.cpp \
+	../../../PPTXFormat/Limit/TextWrap.cpp \
+	../../../PPTXFormat/Limit/TLAccumulate.cpp \
+	../../../PPTXFormat/Limit/TLAdditive.cpp \
+	../../../PPTXFormat/Limit/TLCalcMode.cpp \
+	../../../PPTXFormat/Limit/TLChartSubElement.cpp \
+	../../../PPTXFormat/Limit/TLColorDirection.cpp \
+	../../../PPTXFormat/Limit/TLColorSpace.cpp \
+	../../../PPTXFormat/Limit/TLCommandType.cpp \
+	../../../PPTXFormat/Limit/TLMasterRelation.cpp \
+	../../../PPTXFormat/Limit/TLNextAc.cpp \
+	../../../PPTXFormat/Limit/TLNodeFillType.cpp \
+	../../../PPTXFormat/Limit/TLNodeType.cpp \
+	../../../PPTXFormat/Limit/TLOrigin.cpp \
+	../../../PPTXFormat/Limit/TLOverride.cpp \
+	../../../PPTXFormat/Limit/TLPathEditMode.cpp \
+	../../../PPTXFormat/Limit/TLPresetClass.cpp \
+	../../../PPTXFormat/Limit/TLPrevAc.cpp \
+	../../../PPTXFormat/Limit/TLRestart.cpp \
+	../../../PPTXFormat/Limit/TLRuntimeTrigger.cpp \
+	../../../PPTXFormat/Limit/TLSyncBehavior.cpp \
+	../../../PPTXFormat/Limit/TLTransform.cpp \
+	../../../PPTXFormat/Limit/TLTransition.cpp \
+	../../../PPTXFormat/Limit/TLTriggerEvent.cpp \
+	../../../PPTXFormat/Limit/TLValueType.cpp \
+	../../../PPTXFormat/Limit/TransitionSpeed.cpp \
+	../../../PPTXFormat/Limit/VariantType.cpp \
+	../../../PPTXFormat/Limit/VertOverflow.cpp
 
 
 HEADERS += \

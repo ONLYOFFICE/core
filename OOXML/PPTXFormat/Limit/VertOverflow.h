@@ -40,43 +40,14 @@ namespace PPTX
 		class VertOverflow : public BaseLimit
 		{
 		public:
-			VertOverflow()
-			{
-				m_strValue = _T("clip");
-			}
+			VertOverflow();
 
 			_USE_STRING_OPERATOR
 			
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("clip") == strValue) ||
-					(_T("ellipsis") == strValue) ||
-					(_T("overflow") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("clip") == m_strValue)
-					return 0;
-				if (_T("ellipsis") == m_strValue)
-					return 1;
-				if (_T("overflow") == m_strValue)
-					return 2;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				if (2 == src)
-					m_strValue = _T("overflow");
-				else if (1 == src)
-					m_strValue = _T("ellipsis");
-				else
-					m_strValue = _T("clip");
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -40,42 +40,14 @@ namespace PPTX
 		class SplitterBarState : public BaseLimit
 		{
 		public:
-			SplitterBarState()
-			{
-				m_strValue = _T("restored");
-			}
+			SplitterBarState();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("maximized") == strValue) ||
-					(_T("minimized") == strValue) ||
-					(_T("restored") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("maximized") == m_strValue)
-					return 0;
-				if (_T("minimized") == m_strValue)
-					return 1;
-				if (_T("restored") == m_strValue)
-					return 2;
-				return 2;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"maximized"; break;
-				case 1: m_strValue = L"minimized"; break;
-				case 2: m_strValue = L"restored"; break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

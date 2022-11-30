@@ -43,52 +43,14 @@ namespace PPTX
 		class TransitionSpeed : public BaseLimit
 		{
 		public:
-			TransitionSpeed()
-			{
-				m_strValue = _T("fast");
-			}
+			TransitionSpeed();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("fast") == strValue) ||
-					(_T("med") == strValue) ||
-					(_T("slow") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("fast") == m_strValue)
-					return 0;
-				if (_T("med") == m_strValue)
-					return 1;
-				if (_T("slow") == m_strValue)
-					return 2;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("fast");
-					break;
-				case 1:
-					m_strValue = _T("med");
-					break;
-				case 2:
-					m_strValue = _T("slow");
-					break;
-				default:
-					m_strValue = _T("fast");
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

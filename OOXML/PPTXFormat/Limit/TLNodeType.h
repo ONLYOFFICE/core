@@ -43,56 +43,14 @@ namespace PPTX
 		class TLNodeType : public BaseLimit
 		{
 		public:
-			TLNodeType()
-			{
-				m_strValue = _T("tmRoot");
-			}
+			TLNodeType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("afterEffect") == strValue) ||
-					(_T("afterGroup") == strValue) ||
-					(_T("clickEffect") == strValue) ||
-					(_T("clickPar") == strValue) ||
-					(_T("interactiveSeq") == strValue) ||
-					(_T("mainSeq") == strValue) ||
-					(_T("tmRoot") == strValue) ||
-					(_T("withEffect") == strValue) ||
-					(_T("withGroup") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"afterEffect" == m_strValue)	return 0;
-				if (L"afterGroup" == m_strValue)	return 1;
-				if (L"clickEffect" == m_strValue)	return 2;
-				if (L"clickPar" == m_strValue)		return 3;
-				if (L"interactiveSeq" == m_strValue)return 4;
-				if (L"mainSeq" == m_strValue)		return 5;
-				if (L"tmRoot" == m_strValue)		return 6;
-				if (L"withEffect" == m_strValue)	return 7;
-				if (L"withGroup" == m_strValue)		return 8;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"afterEffect"; break;
-				case 1: m_strValue = L"afterGroup"; break;
-				case 2: m_strValue = L"clickEffect"; break;
-				case 3: m_strValue = L"clickPar"; break;
-				case 4: m_strValue = L"interactiveSeq"; break;
-				case 5: m_strValue = L"mainSeq"; break;
-				case 6: m_strValue = L"tmRoot"; break;
-				case 7: m_strValue = L"withEffect"; break;
-				case 8: m_strValue = L"withGroup"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

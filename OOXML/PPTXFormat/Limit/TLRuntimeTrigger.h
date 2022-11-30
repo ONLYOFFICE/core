@@ -43,39 +43,14 @@ namespace PPTX
 		class TLRuntimeTrigger : public BaseLimit
 		{
 		public:
-			TLRuntimeTrigger()
-			{
-				m_strValue = _T("first");
-			}
+			TLRuntimeTrigger();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("all") == strValue) ||
-					(_T("first") == strValue) ||
-					(_T("last") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"all" == m_strValue)	return 0;
-				if (L"first" == m_strValue)	return 1;
-				if (L"last" == m_strValue)	return 2;
+			virtual void set(const std::wstring& strValue);
 
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"all"; break;
-				case 1: m_strValue = L"first"; break;
-				case 2: m_strValue = L"last"; break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

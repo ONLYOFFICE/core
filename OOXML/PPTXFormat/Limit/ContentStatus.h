@@ -40,35 +40,14 @@ namespace PPTX
 		class ContentStatus : public BaseLimit
 		{
 		public:
-			ContentStatus()
-			{
-				m_strValue = _T("Draft");
-			}
+			ContentStatus();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("Draft") == strValue) ||
-					(_T("Reviewed") == strValue) ||
-					(_T("Final") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"Draft" == m_strValue)		return 0;
-				if (L"Reviewed" == m_strValue)	return 1;
-				if (L"Final" == m_strValue)		return 2;
-				return 1;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				if (src == 0) m_strValue = L"Draft";
-				else if (src == 1) m_strValue = L"Reviewed";
-				else if (src == 2) m_strValue = L"Final";
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

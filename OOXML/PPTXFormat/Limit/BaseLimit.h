@@ -54,11 +54,20 @@ namespace PPTX
 			BaseLimit& operator=(const BaseLimit& oSrc);
 			void operator=(const std::wstring& str);
 
-			AVSINLINE void _set(const std::wstring& strValue);
 			virtual void set(const std::wstring& strValue) = 0;
 
-			AVSINLINE std::wstring& get();
-			AVSINLINE const std::wstring& get() const;
+			AVSINLINE void _set(const std::wstring& strValue)
+			{
+				set(strValue);
+			}
+			AVSINLINE std::wstring& get()
+			{
+				return m_strValue;
+			}
+			AVSINLINE const std::wstring& get() const
+			{
+				return m_strValue;
+			}
 
 			virtual BYTE GetBYTECode() const = 0;
 			virtual void SetBYTECode(const BYTE& src) = 0;

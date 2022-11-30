@@ -52,19 +52,7 @@ namespace PPTX
 		void BaseLimit::operator=(const std::wstring& str)
 		{
 			set(str);
-		}
-		AVSINLINE void BaseLimit::_set(const std::wstring& strValue)
-		{
-			set(strValue);
-		}
-		AVSINLINE std::wstring& BaseLimit::get()
-		{
-			return m_strValue;
-		}
-		AVSINLINE const std::wstring& BaseLimit::get() const
-		{
-			return m_strValue;
-		}
+		}		
 	} // namespace Limit
 } // namespace PPTX
 

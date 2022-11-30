@@ -105,8 +105,8 @@ SOURCES += \
 }
 
 SOURCES += \
-        ../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
-        pptx_format.cpp \
+	pptx_format.cpp \
+	../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
@@ -263,6 +263,7 @@ SOURCES += \
 
 
 HEADERS += \
+	pptx_format.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h \
 	../../../PPTXFormat/FileTypes.h \
@@ -797,5 +798,4 @@ HEADERS += \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout1type.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout3type.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout90type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/arctype.h \
-	pptx_format.h
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/arctype.h

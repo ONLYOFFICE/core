@@ -659,10 +659,6 @@ DWORD CConverter::ThreadProc()
 
 		builder.WriteString(L"<m_sFileTo>");
 		builder.WriteEncodeXmlString(output_file);
-
-		if (output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
-			builder.WriteEncodeXmlString(L".zip");
-
 		builder.WriteString(L"</m_sFileTo>");
 
 		builder.WriteString(L"<m_nFormatTo>");
@@ -714,15 +710,28 @@ DWORD CConverter::ThreadProc()
 		input_size = b_file.GetFileSize();
 		b_file.CloseFile();
 
+
+		// get sizes
 		if (!exit_code)
 		{
 			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
-				b_file.OpenFile(output_file + L".zip");
+			{
+				int total_size = 0;
+				std::vector<std::wstring> pages = NSDirectory::GetFiles(output_file);
+				for(int j = 0; j < pages.size(); j++)
+				{
+					b_file.OpenFile(pages[j]);
+					total_size += b_file.GetFileSize();
+					b_file.CloseFile();
+				}
+				output_size = total_size;
+			}
 			else
+			{
 				b_file.OpenFile(output_file);
-
-			output_size = b_file.GetFileSize();
-			b_file.CloseFile();
+				output_size = b_file.GetFileSize();
+				b_file.CloseFile();
+			}
 		}
 
 		// save param xml of error conversion
@@ -760,12 +769,12 @@ DWORD CConverter::ThreadProc()
 
 		if(!exit_code)
 		{
-			std::cout << "OK ";
+			std::cout << "OK";
 		}
 		else
 		{
 			is_all_ok = false;
-			std::cout << "BAD ";
+			std::cout << "BAD " << exit_code;
 		}
 
 		std::cout << std::endl;

@@ -338,12 +338,10 @@ public:
 		NSStringUtils::CStringBuilder oBuilder;
 		oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
 
-		std::wstring sFileDst = sDirectoryDst + L"/page.zip";
-
 		oBuilder.WriteEncodeXmlString(m_file);
 		oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 
-		oBuilder.WriteEncodeXmlString(sFileDst);
+		oBuilder.WriteEncodeXmlString(sDirectoryDst);
 		oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 		oBuilder.WriteString(std::to_wstring(AVS_OFFICESTUDIO_FILE_IMAGE));
 		oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");

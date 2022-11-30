@@ -1686,10 +1686,14 @@ namespace NExtractTools
             imageWriter.SetFileName(sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat()));
 		}
 		nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-		if(!imageWriter.GetIsOnlyFirst() && *params.m_oThumbnail->zip)
+		if(!imageWriter.GetIsOnlyFirst() && (NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip)))
 		{
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
+		else if(!imageWriter.GetIsOnlyFirst() && NULL != params.m_oThumbnail->zip && !(*(params.m_oThumbnail->zip)))
+		{
+			nRes = S_OK == NSDirectory::CopyDirectory(sThumbnailDir, sTo);
 		}
         RELEASEOBJECT(pApplicationFonts);
 		return nRes;
@@ -3891,12 +3895,17 @@ namespace NExtractTools
 					}
 					pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 				}
-				//zip
-				if(!bIsOnlyFirst && bIsZip)
+				// zip
+				if(!bIsZip)
+				{
+					nRes = S_OK == NSDirectory::CopyDirectory(sThumbnailDir, sTo);
+				}
+				else if(!bIsOnlyFirst)
 				{
 					COfficeUtils oCOfficeUtils(NULL);
 					nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 				}
+
 			}
 			else
 			{

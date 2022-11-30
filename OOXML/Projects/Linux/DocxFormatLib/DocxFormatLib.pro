@@ -127,8 +127,6 @@ SOURCES += \
 	../../../DocxFormat/Diagram/DiagramDrawing.cpp \
 	../../../DocxFormat/Diagram/DiagramLayout.cpp \
 	../../../DocxFormat/Diagram/DiagramQuickStyle.cpp \
-	../../../DocxFormat/External/External.cpp \
-	../../../DocxFormat/External/HyperLink.cpp \
 	../../../DocxFormat/WritingElement.cpp \
 	../../../DocxFormat/HeaderFooter.cpp \
 	../../../DocxFormat/Endnote.cpp \
@@ -174,7 +172,7 @@ SOURCES += \
 	../../../XlsxFormat/Workbook/ExternalReferences.cpp \
 	../../../XlsxFormat/Workbook/Sheets.cpp \
 	../../../XlsxFormat/Workbook/WorkbookPr.cpp \
-	../../../XlsxFormat/Comments/Comments.cpp \
+        ../../../XlsxFormat/Comments/XlsxComments.cpp \
 	../../../XlsxFormat/Comments/ThreadedComments.cpp \
 	../../../XlsxFormat/Drawing/CellAnchor.cpp \
         ../../../XlsxFormat/Drawing/XlsxDrawing.cpp \
@@ -214,7 +212,7 @@ HEADERS += \
 	../../../DocxFormat/Drawing/Drawing.h \
 	../../../DocxFormat/Drawing/DrawingExt.h \
 	../../../DocxFormat/External/External.h \
-	../../../DocxFormat/External/HyperLink.h \
+        ../../../DocxFormat/External/HyperLink.h \
 	../../../DocxFormat/Logic/AlternateContent.h \
 	../../../DocxFormat/Logic/Annotations.h \
 	../../../DocxFormat/Logic/BaseLogicSettings.h \

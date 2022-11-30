@@ -141,7 +141,7 @@ public:
 	void SetOutputFormats(const std::vector<int> outputFormats);
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
-	void SetOnlyErrors(bool bIsErrorsOnly);
+	void SetErrorsOnly(bool bIsErrorsOnly);
 	void SetDeleteOk(bool bIsDeleteOk);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 	void SetFilesCount(int totalFiles, int currFile);

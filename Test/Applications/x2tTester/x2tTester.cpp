@@ -470,7 +470,7 @@ void Cx2tTester::Start()
 		converter->SetOutputFormats(output_file_formats);
 		converter->SetFontsDirectory(fonts_directory);
 		converter->SetX2tPath(m_x2tPath);
-		converter->SetOnlyErrors(m_bIsErrorsOnly);
+		converter->SetErrorsOnly(m_bIsErrorsOnly);
 		converter->SetDeleteOk(m_bIsDeleteOk);
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
 		converter->SetFilesCount(files.size(), i + 1);
@@ -602,7 +602,7 @@ void CConverter::SetX2tPath(const std::wstring& x2tPath)
 {
 	m_x2tPath = x2tPath;
 }
-void CConverter::SetOnlyErrors(bool bIsErrorsOnly)
+void CConverter::SetErrorsOnly(bool bIsErrorsOnly)
 {
 	m_bIsErrorsOnly = bIsErrorsOnly;
 }

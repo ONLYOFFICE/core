@@ -37,10 +37,14 @@
 #include "../../../Common/SimpleTypes_OMath.h"
 #include "../../../Common/SimpleTypes_Shared.h"
 #include "../../../Common/SimpleTypes_Word.h"
-#include "../../Presentation/BinaryFileReaderWriter.h"
 
 #include <stack>
 #include <vector>
+
+namespace NSBinPptxRW
+{
+    class CBinaryFileWriter;
+}
 
 namespace MathEquation
 {
@@ -54,7 +58,6 @@ namespace MathEquation
 			MEMBELTYPE eType;
 			bool bNormal;
 
-		public:
 			EquationRun();
 
 			void AddChar(std::wstring sChar, TMathFont* pNewFont, LONG lSize);
@@ -89,14 +92,13 @@ namespace MathEquation
 
 			void AddAccent (MEMBELTYPE eType);
 
-		public:
 			bool bAlligment;
 	};
 
 	class BinaryEquationWriter : public IOutputDev
 	{
 		public:
-			NSBinPptxRW::CBinaryFileWriter &m_oStream;
+            NSBinPptxRW::CBinaryFileWriter *m_pStream;
 			std::stack<int> m_aEquationStack;
 			std::stack<int> m_aNArrayStack;
 			std::stack<int> m_aNArrayCutStack;
@@ -119,8 +121,7 @@ namespace MathEquation
 			LONG nCtrlSize;
 			BYTE nHAlignPile;
 
-		public:
-			BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter &oStream);
+            BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter *pStream);
 
 			void WriteRPR(TMathFont* pFont, LONG nSize, bool bIsOpen);
 			void WriteMRPR(EquationRun oRun);
@@ -194,296 +195,296 @@ namespace MathEquation
 			void WriteItemValStr(BYTE name, std::wstring val);
 
 		private:
-		enum ECommandType
-		{
-			commandMatrix			 = 0x00,
-			commandBrackets			 = 0x01,
-			commandRoot				 = 0x02,
-			commandFraction			 = 0x03,
-			commandScript			 = 0x04,
-			commandBar				 = 0x05,
-			commandArrow			 = 0x06,
-			commandIntegral			 = 0x07,
-			commandVerticalBrace	 = 0x08,
-			commandNArray			 = 0x09,
-			commandLongDivision		 = 0x0a,
-			commandBracketsSep		 = 0x0b,
-			commandVerticalBraceLim	 = 0x0c,
-			commandEqArray			 = 0x0d
-		};
+            enum ECommandType
+            {
+                commandMatrix			 = 0x00,
+                commandBrackets			 = 0x01,
+                commandRoot				 = 0x02,
+                commandFraction			 = 0x03,
+                commandScript			 = 0x04,
+                commandBar				 = 0x05,
+                commandArrow			 = 0x06,
+                commandIntegral			 = 0x07,
+                commandVerticalBrace	 = 0x08,
+                commandNArray			 = 0x09,
+                commandLongDivision		 = 0x0a,
+                commandBracketsSep		 = 0x0b,
+                commandVerticalBraceLim	 = 0x0c,
+                commandEqArray			 = 0x0d
+            };
 
-		class CBaseCommand
-		{
-		public:
-			CBaseCommand();
+            class CBaseCommand
+            {
+            public:
+                CBaseCommand();
 
-			virtual ~CBaseCommand();
+                virtual ~CBaseCommand();
 
-			void Next();
-			bool IsOpenNode();
+                void Next();
+                bool IsOpenNode();
 
-			int GetCount();
+                int GetCount();
 
-			void SetPile(bool bSetPile, BYTE nHPile);
-			bool GetPile();
+                void SetPile(bool bSetPile, BYTE nHPile);
+                bool GetPile();
 
-			int GetBlockNum();
+                int GetBlockNum();
 
-			void WriteBeginNode(BinaryEquationWriter* pWriter, BYTE elem);
-			void WriteBeginNode(BinaryEquationWriter* pWriter);
-			void WriteEndNode(BinaryEquationWriter* pWriter);
+                void WriteBeginNode(BinaryEquationWriter* pWriter, BYTE elem);
+                void WriteBeginNode(BinaryEquationWriter* pWriter);
+                void WriteEndNode(BinaryEquationWriter* pWriter);
 
-			virtual ECommandType GetCommand() = 0;
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter) = 0;
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)   = 0;
+                virtual ECommandType GetCommand() = 0;
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter) = 0;
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter)   = 0;
 
-		protected:
-			int nCount;
-			int nRows;
-			std::stack<int> m_aBaseStack;
-            bool bOpenNode;
-            bool bPile;
-            bool bEqArrayStart;
-			int nBlockNum;
-			BYTE nHAlignPile;
-		};
+            protected:
+                int nCount;
+                int nRows;
+                std::stack<int> m_aBaseStack;
+                bool bOpenNode;
+                bool bPile;
+                bool bEqArrayStart;
+                int nBlockNum;
+                BYTE nHAlignPile;
+            };
 
-		class CMatrixCommand : public CBaseCommand
-		{
-		public:
-			CMatrixCommand();
-			virtual ~CMatrixCommand();
-			virtual ECommandType GetCommand();
+            class CMatrixCommand : public CBaseCommand
+            {
+            public:
+                CMatrixCommand();
+                virtual ~CMatrixCommand();
+                virtual ECommandType GetCommand();
 
-			void SetProps(int nRows, int nCols);
+                void SetProps(int nRows, int nCols);
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			int nRowPos;
-			int nColPos;
-			int nRows;
-			int nCols;
-		};		
-		class CBracketsCommand : public CBaseCommand
-		{
-		public:
-			CBracketsCommand();
-			virtual ~CBracketsCommand();
-			virtual ECommandType GetCommand();
-			
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+            private:
+                int nRowPos;
+                int nColPos;
+                int nRows;
+                int nCols;
+            };
+            class CBracketsCommand : public CBaseCommand
+            {
+            public:
+                CBracketsCommand();
+                virtual ~CBracketsCommand();
+                virtual ECommandType GetCommand();
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			int nElemPos;
-		};
-		class CRootCommand : public CBaseCommand
-		{
-		public:
-			CRootCommand();
-			virtual ~CRootCommand();
-			virtual ECommandType GetCommand();
-			
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+            private:
+                int nElemPos;
+            };
+            class CRootCommand : public CBaseCommand
+            {
+            public:
+                CRootCommand();
+                virtual ~CRootCommand();
+                virtual ECommandType GetCommand();
 
-		private:
-			int nElemPos;
-			int nDegPos;
-		};
-		class CFractionCommand : public CBaseCommand
-		{
-		public:
-			CFractionCommand();
-			virtual ~CFractionCommand();
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-			virtual ECommandType GetCommand();
-			
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
-		};
-		class CScriptCommand : public CBaseCommand
-		{
-		public:
-			CScriptCommand();
-			virtual ~CScriptCommand();
+            private:
+                int nElemPos;
+                int nDegPos;
+            };
+            class CFractionCommand : public CBaseCommand
+            {
+            public:
+                CFractionCommand();
+                virtual ~CFractionCommand();
 
-			virtual ECommandType GetCommand();
-			void SetProps(bool bInline, bool bBase, bool bSup, bool bSub);
-			
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual ECommandType GetCommand();
 
-		private:
-			void Write(BinaryEquationWriter* pWriter, bool bBegin);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			bool bBase;
-			bool bSup;
-			bool bSub;
-			bool bInline;
-		};
-		class CBarCommand : public CBaseCommand
-		{
-		public:
-			CBarCommand();
-			virtual ~CBarCommand();
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+            };
+            class CScriptCommand : public CBaseCommand
+            {
+            public:
+                CScriptCommand();
+                virtual ~CScriptCommand();
 
-			virtual ECommandType GetCommand();
+                virtual ECommandType GetCommand();
+                void SetProps(bool bInline, bool bBase, bool bSup, bool bSub);
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+            private:
+                void Write(BinaryEquationWriter* pWriter, bool bBegin);
 
-		private:
-			int nElemPos;
-		};
-		class CArrowCommand : public CBaseCommand
-		{
-		public:
-			CArrowCommand();
-			virtual ~CArrowCommand();
+            private:
+                bool bBase;
+                bool bSup;
+                bool bSub;
+                bool bInline;
+            };
+            class CBarCommand : public CBaseCommand
+            {
+            public:
+                CBarCommand();
+                virtual ~CBarCommand();
 
-			virtual ECommandType GetCommand();
+                virtual ECommandType GetCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			int nElemPos;
-		};
-		class CEqArrayCommand : public CBaseCommand
-		{
-		public:
-			CEqArrayCommand();
-			virtual ~CEqArrayCommand();
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-			virtual ECommandType GetCommand();
+            private:
+                int nElemPos;
+            };
+            class CArrowCommand : public CBaseCommand
+            {
+            public:
+                CArrowCommand();
+                virtual ~CArrowCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual ECommandType GetCommand();
 
-		private:
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			int nElemPos;
-		};
-		class CIntegralCommand : public CBaseCommand
-		{
-		public:
-			CIntegralCommand();
-			virtual ~CIntegralCommand();
+            private:
+                int nElemPos;
+            };
+            class CEqArrayCommand : public CBaseCommand
+            {
+            public:
+                CEqArrayCommand();
+                virtual ~CEqArrayCommand();
 
-			virtual ECommandType GetCommand();
+                virtual ECommandType GetCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
-		};
-		class CVerticalBraceCommand : public CBaseCommand
-		{
-		public:
-			CVerticalBraceCommand();
-			virtual ~CVerticalBraceCommand();
+            private:
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-			virtual ECommandType GetCommand();
+            private:
+                int nElemPos;
+            };
+            class CIntegralCommand : public CBaseCommand
+            {
+            public:
+                CIntegralCommand();
+                virtual ~CIntegralCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual ECommandType GetCommand();
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			int nBasePos;
-			int nBraceBasePos;
-		};
-		class CVerticalBraceLimCommand : public CBaseCommand
-		{
-		public:
-			CVerticalBraceLimCommand();
-			virtual ~CVerticalBraceLimCommand();
+            private:
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+            };
+            class CVerticalBraceCommand : public CBaseCommand
+            {
+            public:
+                CVerticalBraceCommand();
+                virtual ~CVerticalBraceCommand();
 
-			virtual ECommandType GetCommand();
+                virtual ECommandType GetCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-		private:
-			int nBasePos;
-			int nBraceBasePos;
-		};
-		class CNArrayCommand : public CBaseCommand
-		{
-		public:
-			CNArrayCommand();
-			virtual ~CNArrayCommand();
+            private:
+                int nBasePos;
+                int nBraceBasePos;
+            };
+            class CVerticalBraceLimCommand : public CBaseCommand
+            {
+            public:
+                CVerticalBraceLimCommand();
+                virtual ~CVerticalBraceLimCommand();
 
-			virtual ECommandType GetCommand();
+                virtual ECommandType GetCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-			void SetType(MNARRAYTYPE eType);
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-			MNARRAYTYPE GetType();
+            private:
+                int nBasePos;
+                int nBraceBasePos;
+            };
+            class CNArrayCommand : public CBaseCommand
+            {
+            public:
+                CNArrayCommand();
+                virtual ~CNArrayCommand();
 
-		private:
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+                virtual ECommandType GetCommand();
 
-		private:			
-			MNARRAYTYPE eType;
-		};
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		class CLongDivisionCommand : public CBaseCommand
-		{
-		public:
-			CLongDivisionCommand();
-			virtual ~CLongDivisionCommand();
+                void SetType(MNARRAYTYPE eType);
 
-			virtual ECommandType GetCommand();
+                MNARRAYTYPE GetType();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+            private:
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
 
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
-		};
+            private:
+                MNARRAYTYPE eType;
+            };
 
-		class CBracketsWithSeparatorCommand : public CBaseCommand
-		{
-		public:
-			CBracketsWithSeparatorCommand();
-			virtual ~CBracketsWithSeparatorCommand();
+            class CLongDivisionCommand : public CBaseCommand
+            {
+            public:
+                CLongDivisionCommand();
+                virtual ~CLongDivisionCommand();
 
-			virtual ECommandType GetCommand();
-			void SetType(MANGLEBRACKETSWITHSEPARATORTYPE eType);
+                virtual ECommandType GetCommand();
 
-			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
-			virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
 
-		private:
-			void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+            };
 
-		private:
-			MANGLEBRACKETSWITHSEPARATORTYPE eType;
-		};
+            class CBracketsWithSeparatorCommand : public CBaseCommand
+            {
+            public:
+                CBracketsWithSeparatorCommand();
+                virtual ~CBracketsWithSeparatorCommand();
 
-		CBaseCommand* PushCommand(ECommandType eType);
-		void PopCommand();
-		CBaseCommand* TopCommand();
+                virtual ECommandType GetCommand();
+                void SetType(MANGLEBRACKETSWITHSEPARATORTYPE eType);
+
+                virtual void WriteBeginBlock(BinaryEquationWriter* pWriter);
+                virtual void WriteEndBlock(BinaryEquationWriter* pWriter);
+
+            private:
+                void Write(BinaryEquationWriter* pWriter, bool bBeginNode);
+
+            private:
+                MANGLEBRACKETSWITHSEPARATORTYPE eType;
+            };
+
+            CBaseCommand* PushCommand(ECommandType eType);
+            void PopCommand();
+            CBaseCommand* TopCommand();
 
 		private:
             std::wstring rRet;

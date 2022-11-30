@@ -31,6 +31,7 @@
  */
 
 #include "BinEquationWriter.h"
+#include "../../Presentation/BinaryFileReaderWriter.h"
 
 namespace MathEquation
 {
@@ -131,7 +132,7 @@ namespace MathEquation
 		Add(oRun);
 	}
 
-	BinaryEquationWriter::BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter &oStream) : bEmbel(false), m_oStream(oStream)
+    BinaryEquationWriter::BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter *pStream) : bEmbel(false), m_pStream(pStream)
 	{
 	}
 	void BinaryEquationWriter::WriteRPR(TMathFont* pFont, LONG nSize, bool bIsOpen)
@@ -146,27 +147,27 @@ namespace MathEquation
 
 			std::wstring sFontName = L"Cambria Math";
 			{
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-				m_oStream.WriteStringW(sFontName);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+                m_pStream->WriteStringW(sFontName);
 
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-				m_oStream.WriteStringW(sFontName);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+                m_pStream->WriteStringW(sFontName);
 
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAE);
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-				m_oStream.WriteStringW(sFontName);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAE);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+                m_pStream->WriteStringW(sFontName);
 			}
 			if (nTextSize)
 			{
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSize);
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
-				m_oStream.WriteLONG(nSize);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSize);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+                m_pStream->WriteLONG(nSize);
 
-				/*m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSizeCS);
-				m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
-				m_oStream.WriteLONG(nSize);*/
+                /*m_pStream->WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSizeCS);
+                m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+                m_pStream->WriteLONG(nSize);*/
 			}
 			WriteItemEnd(nCurPos);
 		}
@@ -203,9 +204,9 @@ namespace MathEquation
 		WriteRPR(oRun.pFont, oRun.nTextSize, bIsOpen);
 		WriteMRPR(oRun);
 		int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-		m_oStream.WriteStringW(oRun.str);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+        m_pStream->WriteStringW(oRun.str);
 		WriteItemEnd(nCurPos1);
 		WriteItemEnd(nCurPos);
 	}
@@ -332,7 +333,7 @@ namespace MathEquation
 	int BinaryEquationWriter::WriteItemStart(BYTE type)
 	{
 		//type
-		m_oStream.WriteBYTE(type);
+        m_pStream->WriteBYTE(type);
 		return WriteItemWithLengthStart();
 	}
 	void BinaryEquationWriter::WriteItemEnd(int nStart)
@@ -342,17 +343,17 @@ namespace MathEquation
 	int BinaryEquationWriter::WriteItemWithLengthStart()
 	{
 		//Запоминаем позицию чтобы в конце записать туда длину
-		int nStartPos = m_oStream.GetPosition();
-		m_oStream.Skip(4);
+        int nStartPos = m_pStream->GetPosition();
+        m_pStream->Skip(4);
 		return nStartPos;
 	}
 	void BinaryEquationWriter::WriteItemWithLengthEnd(int nStart)
 	{
 		//Length
-		int nEnd = m_oStream.GetPosition();
-		m_oStream.SetPosition(nStart);
-		m_oStream.WriteLONG(nEnd - nStart - 4);
-		m_oStream.SetPosition(nEnd);
+        int nEnd = m_pStream->GetPosition();
+        m_pStream->SetPosition(nStart);
+        m_pStream->WriteLONG(nEnd - nStart - 4);
+        m_pStream->SetPosition(nEnd);
 	}
 	void BinaryEquationWriter::BeginEquation()
 	{
@@ -564,13 +565,13 @@ namespace MathEquation
 				nPos = m_aRowsPosCounter.top();
 				m_aRowsPosCounter.pop();
 			}
-			int nEnd = m_oStream.GetPosition();
+            int nEnd = m_pStream->GetPosition();
 			if (nPos >= 0)
 			{
-				m_oStream.SetPosition(nPos);
-				m_oStream.WriteLONG(nRows);
+                m_pStream->SetPosition(nPos);
+                m_pStream->WriteLONG(nRows);
 			}
-			m_oStream.SetPosition(nEnd);
+            m_pStream->SetPosition(nEnd);
 
 			ECommandType type;
 			type = pCommand->GetCommand();
@@ -592,11 +593,11 @@ namespace MathEquation
 
 		int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Column);
 
-		m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
 
-		int nStartPos = m_oStream.GetPosition();
-		m_oStream.Skip(4);
+        int nStartPos = m_pStream->GetPosition();
+        m_pStream->Skip(4);
 		m_aDelimiterCounter.push(nStartPos);
 
 		WriteItemEnd(nCurPos2);
@@ -657,10 +658,10 @@ namespace MathEquation
 		{
 			int nCount = m_aCommandStack.top()->GetCount();
 			int nPos = m_aDelimiterCounter.top();
-			int nEnd = m_oStream.GetPosition();
-			m_oStream.SetPosition(nPos);
-			m_oStream.WriteLONG(nCount);
-			m_oStream.SetPosition(nEnd);
+            int nEnd = m_pStream->GetPosition();
+            m_pStream->SetPosition(nPos);
+            m_pStream->WriteLONG(nCount);
+            m_pStream->SetPosition(nEnd);
 			m_aDelimiterCounter.pop();
 		}
 
@@ -1443,9 +1444,9 @@ namespace MathEquation
 	{
 		int nCurPos = WriteItemStart(name);
 
-		m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-		m_oStream.WriteBYTE(val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
+        m_pStream->WriteBYTE(val);
 
 		WriteItemEnd(nCurPos);
 	}
@@ -1453,9 +1454,9 @@ namespace MathEquation
 	{
 		int nCurPos = WriteItemStart(name);
 
-		m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
-		m_oStream.WriteLONG(val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+        m_pStream->WriteLONG(val);
 
 		WriteItemEnd(nCurPos);
 	}
@@ -1463,9 +1464,9 @@ namespace MathEquation
 	{
 		int nCurPos = WriteItemStart(name);
 
-		m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-		m_oStream.WriteBOOL(val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
+        m_pStream->WriteBOOL(val);
 
 		WriteItemEnd(nCurPos);
 	}
@@ -1473,9 +1474,9 @@ namespace MathEquation
 	{
 		int nCurPos = WriteItemStart(name);
 
-		m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-		m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-		m_oStream.WriteStringW(val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+        m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+        m_pStream->WriteStringW(val);
 
 		WriteItemEnd(nCurPos);
 	}
@@ -1542,8 +1543,8 @@ namespace MathEquation
 			pWriter->WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::McJc, nHAlignPile);
 
 			int nCurPos1 = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Row);
-			pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-			pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+            pWriter->m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+            pWriter->m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
 			pWriter->m_aRowsPosCounter.push( pWriter->WriteItemWithLengthStart());
 			pWriter->WriteItemEnd(nCurPos1);
 
@@ -1577,8 +1578,8 @@ namespace MathEquation
 			pWriter->WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::McJc, nHAlignPile);
 
 			int nCurPos1 = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Row);
-			pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
-			pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+            pWriter->m_pStream->WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+            pWriter->m_pStream->WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
 			pWriter->m_aRowsPosCounter.push(pWriter->WriteItemWithLengthStart());
 			pWriter->WriteItemEnd(nCurPos1);
 

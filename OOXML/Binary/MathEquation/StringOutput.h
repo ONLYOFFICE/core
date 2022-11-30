@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATH_EQUATION_STRINGOUTPUTDEV_H
-#define _MATH_EQUATION_STRINGOUTPUTDEV_H
+#pragma once
 
 #include "OutputDev.h"
 #include "String.h"
@@ -1125,4 +1124,3 @@ namespace MathEquation
 
 }
 
-#endif

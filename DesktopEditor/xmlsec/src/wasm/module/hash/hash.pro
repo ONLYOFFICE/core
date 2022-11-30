@@ -43,5 +43,20 @@ SOURCES += \
 SOURCES += \
     $$OPENSSL_DIR/crypto/mem_clr.c
 
+#CONFIG += openssl_sha3
+
+openssl_sha3 {
+
+    DEFINES += OOXML_SUPPORT_SHA3_512
+
+    SOURCES += \
+	    $$OPENSSL_DIR/crypto/evp/digest.c \
+		$$OPENSSL_DIR/crypto/mem.c
+
+    INCLUDEPATH += $$OPENSSL_DIR/include
+	INCLUDEPATH += $$OPENSSL_DIR/include/openssl
+
+}
+
 # WASM EXPORT
 SOURCES += main.cpp

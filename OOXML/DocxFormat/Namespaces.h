@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_NAMESPACES_INCLUDE_H_
-#define OOX_NAMESPACES_INCLUDE_H_
 
 #include "../Base/Base.h"
 
@@ -47,9 +45,7 @@ namespace OOX
 		std::wstring m_strName;
 		std::wstring m_strLink;
 
-	public:
-		//Namespace(LPCSTR sName, LPCSTR sLink);
-		Namespace(LPCWSTR sName, LPCWSTR sLink);
+		Namespace(const wchar_t* sName, const wchar_t*  sLink);
 	};
 	
 	class Namespaces
@@ -95,4 +91,3 @@ namespace OOX
 	};
 } // namespace OOX
 
-#endif // OOX_NAMESPACES_INCLUDE_H_

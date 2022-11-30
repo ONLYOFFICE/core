@@ -105,7 +105,8 @@ SOURCES += \
 }
 
 SOURCES += \
-	pptx_format.cpp \
+        ../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
+        pptx_format.cpp \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \

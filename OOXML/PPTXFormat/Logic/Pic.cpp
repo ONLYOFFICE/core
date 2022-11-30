@@ -335,7 +335,7 @@ namespace PPTX
 				pWriter->EndRecord();
 
 				MathEquation::CEquationReader		oReader		(ole_file->filename().GetPath().c_str());
-				MathEquation::BinaryEquationWriter	oBinEqWriter(*pWriter);
+                MathEquation::BinaryEquationWriter	oBinEqWriter(pWriter);
 				
 				oReader.SetOutputDev(&oBinEqWriter);
 				

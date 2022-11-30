@@ -32,7 +32,6 @@ SOURCES += \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.cpp \
         ../../../Binary/Document/DocWrapper/ChartSerializer.cpp \
 	../../../Binary/Document/BinWriter/BinWriters.cpp \
-	../../../Binary/Document/BinWriter/BinEquationWriter.cpp \
 	../../../Binary/Sheets/Common/Common.cpp \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.cpp \
 	../../../Binary/Sheets/Reader/CommonWriter.cpp \

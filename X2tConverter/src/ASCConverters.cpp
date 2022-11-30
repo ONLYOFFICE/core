@@ -3896,16 +3896,18 @@ namespace NExtractTools
 					pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 				}
 				// zip
-				if(!bIsZip)
+				if(!bIsOnlyFirst)
 				{
-					nRes = S_OK == NSDirectory::CopyDirectory(sThumbnailDir, sTo);
+					if(!bIsZip)
+					{
+						nRes = S_OK == NSDirectory::CopyDirectory(sThumbnailDir, sTo);
+					}
+					else
+					{
+						COfficeUtils oCOfficeUtils(NULL);
+						nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+					}
 				}
-				else if(!bIsOnlyFirst)
-				{
-					COfficeUtils oCOfficeUtils(NULL);
-					nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-				}
-
 			}
 			else
 			{

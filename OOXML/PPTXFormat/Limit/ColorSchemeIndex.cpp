@@ -157,6 +157,5 @@ namespace PPTX
 				break;
 			}
 		}
-
 	} // namespace Limit
 } // namespace PPTX

@@ -61,23 +61,23 @@ namespace PPTX
 			return 0;
 		}
 		void BevelType::SetBYTECode(const BYTE& val)
+		{
+			switch (val)
 			{
-				switch (val)
-				{
-					case 0:		m_strValue = L"angle";		break;
-					case 1:		m_strValue = L"artDeco";	break;
-					case 2:		m_strValue = L"circle";		break;
-					case 3:		m_strValue = L"convex";		break;
-					case 4:		m_strValue = L"coolSlant";	break;
-					case 5:		m_strValue = L"cross";		break;
-					case 6:		m_strValue = L"divot";		break;
-					case 7:		m_strValue = L"hardEdge";	break;
-					case 8:		m_strValue = L"relaxedInset";break;
-					case 9:		m_strValue = L"riblet";		break;
-					case 10:	m_strValue = L"slope";		break;
-					case 11:	m_strValue = L"softRound";	break;
-					default:	m_strValue = L"angle";
-				}
-			}		
+				case 0:		m_strValue = L"angle";		break;
+				case 1:		m_strValue = L"artDeco";	break;
+				case 2:		m_strValue = L"circle";		break;
+				case 3:		m_strValue = L"convex";		break;
+				case 4:		m_strValue = L"coolSlant";	break;
+				case 5:		m_strValue = L"cross";		break;
+				case 6:		m_strValue = L"divot";		break;
+				case 7:		m_strValue = L"hardEdge";	break;
+				case 8:		m_strValue = L"relaxedInset";break;
+				case 9:		m_strValue = L"riblet";		break;
+				case 10:	m_strValue = L"slope";		break;
+				case 11:	m_strValue = L"softRound";	break;
+				default:	m_strValue = L"angle";
+			}
+		}
 	} // namespace Limit
 } // namespace PPTX

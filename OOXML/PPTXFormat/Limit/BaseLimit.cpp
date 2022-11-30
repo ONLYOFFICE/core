@@ -62,9 +62,9 @@ namespace PPTX
 			return m_strValue;
 		}
 		AVSINLINE const std::wstring& BaseLimit::get() const
-			{
-				return m_strValue;
-			}
+		{
+			return m_strValue;
+		}
 	} // namespace Limit
 } // namespace PPTX
 

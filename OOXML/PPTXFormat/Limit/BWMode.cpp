@@ -73,24 +73,24 @@ namespace PPTX
 			return 0;
 		}
 		void BWMode::SetBYTECode(const BYTE& src)
+		{
+			switch (src)
 			{
-				switch (src)
-				{
-				case 0: m_strValue = L"auto"; break;
-				case 1: m_strValue = L"black"; break;
-				case 2: m_strValue = L"blackGray"; break;
-				case 3: m_strValue = L"blackWhite"; break;
-				case 4: m_strValue = L"clr"; break;
-				case 5: m_strValue = L"gray"; break;
-				case 6: m_strValue = L"grayWhite"; break;
-				case 7: m_strValue = L"hidden"; break;
-				case 8: m_strValue = L"invGray"; break;
-				case 9: m_strValue = L"ltGray"; break;
-				case 10: m_strValue = L"white"; break;
-				default:
-					m_strValue = L"auto";
-					break;
-				}
-			}		
+			case 0: m_strValue = L"auto"; break;
+			case 1: m_strValue = L"black"; break;
+			case 2: m_strValue = L"blackGray"; break;
+			case 3: m_strValue = L"blackWhite"; break;
+			case 4: m_strValue = L"clr"; break;
+			case 5: m_strValue = L"gray"; break;
+			case 6: m_strValue = L"grayWhite"; break;
+			case 7: m_strValue = L"hidden"; break;
+			case 8: m_strValue = L"invGray"; break;
+			case 9: m_strValue = L"ltGray"; break;
+			case 10: m_strValue = L"white"; break;
+			default:
+				m_strValue = L"auto";
+				break;
+			}
+		}
 	} // namespace Limit
 } // namespace PPTX

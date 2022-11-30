@@ -59,8 +59,8 @@ namespace PPTX
 			return 0;
 		}
 		void AlbumLayout::SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}		
+		{
+			//not using yet
+		}
 	} // namespace Limit
 } // namespace PPTX

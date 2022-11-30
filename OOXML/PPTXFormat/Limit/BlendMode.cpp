@@ -61,15 +61,15 @@ namespace PPTX
 			return 4;
 		}
 		void BlendMode::SetBYTECode(const BYTE& val)
+		{
+			switch(val)
 			{
-				switch(val)
-				{
-					case 0: m_strValue = L"darken";		break;
-					case 1: m_strValue = L"lighten";	break;
-					case 2: m_strValue = L"mult";		break;
-					case 3: m_strValue = L"over";		break;
-					case 4: m_strValue = L"screen";		break;
-				}
-			}		
+				case 0: m_strValue = L"darken";		break;
+				case 1: m_strValue = L"lighten";	break;
+				case 2: m_strValue = L"mult";		break;
+				case 3: m_strValue = L"over";		break;
+				case 4: m_strValue = L"screen";		break;
+			}
+		}
 	} // namespace Limit
 } // namespace PPTX

@@ -37,10 +37,14 @@
 #include "../../../Common/SimpleTypes_OMath.h"
 #include "../../../Common/SimpleTypes_Shared.h"
 #include "../../../Common/SimpleTypes_Word.h"
-#include "../../Presentation/BinaryFileReaderWriter.h"
 
 #include <stack>
 #include <vector>
+
+namespace NSBinPptxRW
+{
+    class CBinaryFileWriter;
+}
 
 namespace MathEquation
 {
@@ -94,7 +98,7 @@ namespace MathEquation
 	class BinaryEquationWriter : public IOutputDev
 	{
 		public:
-			NSBinPptxRW::CBinaryFileWriter &m_oStream;
+            NSBinPptxRW::CBinaryFileWriter *m_pStream;
 			std::stack<int> m_aEquationStack;
 			std::stack<int> m_aNArrayStack;
 			std::stack<int> m_aNArrayCutStack;
@@ -117,7 +121,7 @@ namespace MathEquation
 			LONG nCtrlSize;
 			BYTE nHAlignPile;
 
-			BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter &oStream);
+            BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter *pStream);
 
 			void WriteRPR(TMathFont* pFont, LONG nSize, bool bIsOpen);
 			void WriteMRPR(EquationRun oRun);

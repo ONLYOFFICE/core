@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATH_EQUATION_STRING_H
-#define _MATH_EQUATION_STRING_H
+#pragma once
 
 #include <string>
 
@@ -145,5 +144,3 @@ namespace MathEquation
 		std::string Value;
 	};
 }
-
-#endif

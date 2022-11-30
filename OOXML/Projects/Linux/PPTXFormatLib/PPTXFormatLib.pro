@@ -153,7 +153,23 @@ SOURCES += \
 	../../../PPTXFormat/Theme/ExtraClrScheme.cpp \
 	../../../PPTXFormat/Theme/FmtScheme.cpp \
 	../../../PPTXFormat/Theme/FontScheme.cpp \
-	../../../PPTXFormat/Theme/ThemeElements.cpp
+	../../../PPTXFormat/Theme/ThemeElements.cpp \
+	\
+	../../../PPTXFormat/ShowPr/ShowPr.cpp \
+	../../../PPTXFormat/ShowPr/Present.cpp \
+	../../../PPTXFormat/ShowPr/Kiosk.cpp \
+	../../../PPTXFormat/ShowPr/CustShow.cpp \
+	../../../PPTXFormat/ShowPr/Browse.cpp \
+	../../../PPTXFormat/ShowPr/SldRg.cpp \
+	../../../PPTXFormat/ShowPr/SldAll.cpp \
+	\
+	../../../PPTXFormat/Presentation/NotesSz.cpp \
+	../../../PPTXFormat/Presentation/PhotoAlbum.cpp \
+	../../../PPTXFormat/Presentation/EmbeddedFont.cpp \
+	../../../PPTXFormat/Presentation/EmbeddedFontDataId.cpp \
+	../../../PPTXFormat/Presentation/Kinsoku.cpp \
+	../../../PPTXFormat/Presentation/SectionLst.cpp \
+	../../../PPTXFormat/Presentation/SldSz.cpp
 
 
 HEADERS += \

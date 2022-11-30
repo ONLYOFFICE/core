@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,54 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_SHOWPR_FILE_INCLUDE_H_
-#define PPTX_SHOWPR_FILE_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "../Logic/UniColor.h"
-#include "./Browse.h"
-#include "./CustShow.h"
-#include "./Kiosk.h"
-#include "./Present.h"
-#include "./SldAll.h"
-#include "./SldRg.h"
+#include "CustShow.h"
 
 namespace PPTX
 {
 	namespace nsShowPr
 	{
-		class ShowPr : public WrapperWritingElement
+		void CustShow::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ShowPr)
+			XmlMacroReadAttributeBase(node, _T("id"), id);
+		}
+		std::wstring CustShow::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("id"), id);
 
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			return XmlUtils::CreateNode(_T("p:custShow"), oAttr);
+		}
+		void CustShow::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt2(0, id);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void CustShow::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p:custShow"));
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			pWriter->StartAttributes();
 
-		public:
-			nullable<nsShowPr::Browse> Browse;
-			nullable<nsShowPr::CustShow> CustShow;
-			nullable<nsShowPr::Kiosk> Kiosk;
-			Logic::UniColor PenClr;
-			nullable<nsShowPr::Present> Present;
-			nullable<nsShowPr::SldAll> SldAll;
-			nullable<nsShowPr::SldRg> SldRg;
+			pWriter->WriteAttribute(_T("id"), id);
 
-			nullable_bool			loop;
-			nullable_bool			showAnimation;
-			nullable_bool			showNarration;
-			nullable_bool			useTimings;
+			pWriter->EndAttributes();
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			pWriter->EndNode(_T("p:custShow"));
+		}
+		void CustShow::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				if (0 == _at)
+					id = pReader->GetLong();
+				else
+					break;
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void CustShow::FillParentPointersForChilds()
+		{
+		}
 	} // namespace nsShowPr
 } // namespace PPTX
-
-#endif // PPTX_SHOWPR_FILE_INCLUDE_H_

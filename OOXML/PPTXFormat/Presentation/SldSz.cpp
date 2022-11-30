@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,54 +29,58 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_SHOWPR_FILE_INCLUDE_H_
-#define PPTX_SHOWPR_FILE_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "../Logic/UniColor.h"
-#include "./Browse.h"
-#include "./CustShow.h"
-#include "./Kiosk.h"
-#include "./Present.h"
-#include "./SldAll.h"
-#include "./SldRg.h"
+#include "SldSz.h"
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentation
 	{
-		class ShowPr : public WrapperWritingElement
+		void SldSz::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ShowPr)
+			cx = node.ReadAttributeInt(L"cx");
+			cy = node.ReadAttributeInt(L"cy");
 
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			XmlMacroReadAttributeBase(node, L"type", type);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			Normalize();
+		}
+		std::wstring SldSz::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("cx"), cx);
+			oAttr.Write(_T("cy"), cy);
+			oAttr.WriteLimitNullable(_T("type"), type);
 
-		public:
-			nullable<nsShowPr::Browse> Browse;
-			nullable<nsShowPr::CustShow> CustShow;
-			nullable<nsShowPr::Kiosk> Kiosk;
-			Logic::UniColor PenClr;
-			nullable<nsShowPr::Present> Present;
-			nullable<nsShowPr::SldAll> SldAll;
-			nullable<nsShowPr::SldRg> SldRg;
+			return XmlUtils::CreateNode(_T("p:sldSz"), oAttr);
+		}
+		void SldSz::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-			nullable_bool			loop;
-			nullable_bool			showAnimation;
-			nullable_bool			showNarration;
-			nullable_bool			useTimings;
+			pWriter->WriteInt1(0, cx);
+			pWriter->WriteInt1(1, cy);
+			pWriter->WriteLimit2(2, type);
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsShowPr
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void SldSz::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p:sldSz"));
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("cx"), cx);
+			pWriter->WriteAttribute(_T("cy"), cy);
+			pWriter->WriteAttribute(_T("type"), type);
+			pWriter->EndAttributes();
+			pWriter->EndNode(_T("p:sldSz"));
+		}
+		void SldSz::FillParentPointersForChilds()
+		{
+		}
+		AVSINLINE void SldSz::Normalize()
+		{
+			cx = (std::min)((std::max)(cx, 914400), 51206400);
+			cy = (std::min)((std::max)(cy, 914400), 51206400);
+		}
+	} // namespace nsPresentation
 } // namespace PPTX
-
-#endif // PPTX_SHOWPR_FILE_INCLUDE_H_

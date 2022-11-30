@@ -45,38 +45,20 @@ namespace PPTX
 			PPTX_LOGIC_BASE(PhotoAlbum)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"bw", bw);
-				XmlMacroReadAttributeBase(node, L"frame", frame);
-				XmlMacroReadAttributeBase(node, L"layout", layout);
-				XmlMacroReadAttributeBase(node, L"showCaptions", showCaptions);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("bw"), bw);
-				oAttr.WriteLimitNullable(_T("frame"), frame);
-				oAttr.WriteLimitNullable(_T("layout"), layout);
-				oAttr.Write(_T("showCaptions"), showCaptions);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				return XmlUtils::CreateNode(_T("p:photoAlbum"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
 			nullable_bool							bw;
 			nullable_limit<Limit::FrameShape>		frame;
 			nullable_limit<Limit::AlbumLayout>		layout;
 			nullable_bool							showCaptions;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsPresentation
 } // namespace PPTX

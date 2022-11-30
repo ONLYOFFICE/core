@@ -45,34 +45,17 @@ namespace PPTX
 			PPTX_LOGIC_BASE(Kinsoku)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				invalEndChars	= node.GetAttribute(_T("invalEndChars"));
-				invalStChars	= node.GetAttribute(_T("invalStChars"));
-
-				XmlMacroReadAttributeBase(node, L"lang", lang);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("invalEndChars"), invalEndChars);
-				oAttr.Write(_T("invalStChars"), invalStChars);
-				oAttr.Write(_T("lang"), lang);
-
-				return XmlUtils::CreateNode(_T("p:kinsoku"), oAttr);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				// TODO:
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			std::wstring				invalEndChars;
 			std::wstring				invalStChars;
-			nullable_string		lang;
+			nullable_string				lang;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsPresentation
 } // namespace PPTX

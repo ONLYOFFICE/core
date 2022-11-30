@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,54 +29,42 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_SHOWPR_FILE_INCLUDE_H_
-#define PPTX_SHOWPR_FILE_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "../Logic/UniColor.h"
-#include "./Browse.h"
-#include "./CustShow.h"
-#include "./Kiosk.h"
-#include "./Present.h"
-#include "./SldAll.h"
-#include "./SldRg.h"
+#include "PhotoAlbum.h"
 
 namespace PPTX
 {
-	namespace nsShowPr
+	namespace nsPresentation
 	{
-		class ShowPr : public WrapperWritingElement
+		void PhotoAlbum::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ShowPr)
+			XmlMacroReadAttributeBase(node, L"bw", bw);
+			XmlMacroReadAttributeBase(node, L"frame", frame);
+			XmlMacroReadAttributeBase(node, L"layout", layout);
+			XmlMacroReadAttributeBase(node, L"showCaptions", showCaptions);
+		}
+		std::wstring PhotoAlbum::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("bw"), bw);
+			oAttr.WriteLimitNullable(_T("frame"), frame);
+			oAttr.WriteLimitNullable(_T("layout"), layout);
+			oAttr.Write(_T("showCaptions"), showCaptions);
 
-		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-
-		public:
-			nullable<nsShowPr::Browse> Browse;
-			nullable<nsShowPr::CustShow> CustShow;
-			nullable<nsShowPr::Kiosk> Kiosk;
-			Logic::UniColor PenClr;
-			nullable<nsShowPr::Present> Present;
-			nullable<nsShowPr::SldAll> SldAll;
-			nullable<nsShowPr::SldRg> SldRg;
-
-			nullable_bool			loop;
-			nullable_bool			showAnimation;
-			nullable_bool			showNarration;
-			nullable_bool			useTimings;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsShowPr
+			return XmlUtils::CreateNode(_T("p:photoAlbum"), oAttr);
+		}
+		void PhotoAlbum::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+		}
+		void PhotoAlbum::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+		}
+		void PhotoAlbum::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+		}
+		void PhotoAlbum::FillParentPointersForChilds()
+		{
+		}
+	} // namespace nsPresentation
 } // namespace PPTX
 
-#endif // PPTX_SHOWPR_FILE_INCLUDE_H_

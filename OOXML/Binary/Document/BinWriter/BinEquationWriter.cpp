@@ -31,6 +31,7 @@
  */
 
 #include "BinEquationWriter.h"
+#include "../../Presentation/BinaryFileReaderWriter.h"
 
 namespace MathEquation
 {

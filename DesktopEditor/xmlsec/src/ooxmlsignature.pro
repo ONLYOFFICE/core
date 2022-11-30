@@ -47,7 +47,13 @@ core_windows {
     LIBS += -lUser32
 }
 
+DEFINES += SUPPORT_OPENSSL
 HEADERS += src/Certificate_openssl.h
+
+support_oform {
+    DEFINES += SUPPORT_OFORM
+	HEADERS += src/Certificate_oform.h
+}
 
 CONFIG += open_ssl_common
 include(../../../Common/3dParty/openssl/openssl.pri)

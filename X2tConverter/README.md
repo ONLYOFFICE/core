@@ -58,6 +58,9 @@ Information about formats you can find [here](https://github.com/ONLYOFFICE/core
 		# only first page or not
 		<first> </first>
 
+		# zip images or not
+		<zip> </zip>
+
 		# width of image
 		<width> </width>
 

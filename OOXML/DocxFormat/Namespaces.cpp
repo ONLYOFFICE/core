@@ -34,11 +34,7 @@
 
 namespace OOX
 {
-
-	/*Namespace::Namespace(LPCSTR sName, LPCSTR sLink) : m_strName(sName), m_strLink(sLink)
-	{
-	}*/
-	Namespace::Namespace(LPCWSTR sName, LPCWSTR sLink) : m_strName(sName), m_strLink(sLink)
+	Namespace::Namespace(const wchar_t* sName, const wchar_t* sLink) : m_strName(sName), m_strLink(sLink)
 	{
 	}
 

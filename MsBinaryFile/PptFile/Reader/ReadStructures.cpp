@@ -102,139 +102,136 @@ namespace PPT_FORMAT
     color.SetRGB(palette[index][0], palette[index][1], palette[index][2]);
     return color;
 }
-}
 
-namespace NSStreamReader
-{
-	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation)
+	namespace NSStreamReader
 	{
-		if (bIsIndentation)
+		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
 		{
-			oRun.lCount = StreamUtils::ReadDWORD(pStream);
-		}
+			double dScaleX = 625 * 2.54;
+			//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
 
-		_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
-		BYTE flag1 = (BYTE)(dwFlags);
-		BYTE flag2 = (BYTE)(dwFlags >> 8);
-
-		oRun.bSpell = (0x01 == (0x01 & flag1));
-		oRun.bLang = (0x02 == (0x02 & flag1));
-		oRun.bAltLang = (0x04 == (0x04 & flag1));
-		// unused
-		// unused
-		oRun.bPp10ext = (0x20 == (0x20 & flag1));
-		oRun.bBidi = (0x40 == (0x40 & flag1));
-		// unused
-		// reserved
-		oRun.bSmartTag = (0x02 == (0x02 & flag2));
-
-		if (oRun.bSpell)
-		{
-			oRun.Spell = StreamUtils::ReadWORD(pStream);
-		}
-		if (oRun.bLang)
-		{
-			oRun.Lang = StreamUtils::ReadWORD(pStream);
-		}
-		if (oRun.bAltLang)
-		{
-			oRun.AltLang = StreamUtils::ReadWORD(pStream);
-		}
-		if (oRun.bBidi)
-		{
-			oRun.Bidi = StreamUtils::ReadWORD(pStream);
-		}
-		if (oRun.bPp10ext)
-		{
 			_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
 			BYTE flag1 = (BYTE)(dwFlags);
 			BYTE flag2 = (BYTE)(dwFlags >> 8);
 			BYTE flag3 = (BYTE)(dwFlags >> 16);
 			BYTE flag4 = (BYTE)(dwFlags >> 24);
 
-			oRun.pp10runid = (0x0F & flag1);
-			oRun.bGramma = (0x80 == (0x80 & flag4));
-		}
+			bool bDefaultTabSize_ = (0x01 == (0x01 & flag1));
+			bool bCLevels_ = (0x02 == (0x02 & flag1));
+			bool bTabStops_ = (0x04 == (0x04 & flag1));
 
-		/*if (bSmartTag)
-		{
-		_UINT32 tabStopsCount = StreamUtils::ReadDWORD(pStream);
-		arSmartTags.clear();
+			bool bLeftMargin1_ = (0x08 == (0x08 & flag1));
+			bool bLeftMargin2_ = (0x10 == (0x10 & flag1));
+			bool bLeftMargin3_ = (0x20 == (0x20 & flag1));
+			bool bLeftMargin4_ = (0x40 == (0x40 & flag1));
+			bool bLeftMargin5_ = (0x80 == (0x80 & flag1));
 
-		for (int i = 0; i < (int)tabStopsCount; ++i)
-		{
-		arSmartTags.Add(StreamUtils::ReadDWORD(pStream));
-		}
-		}*/
-	}
-	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
-	{
-		double dScaleX = 625 * 2.54;
-		//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
+			bool bIndent1_ = (0x01 == (0x01 & flag2));
+			bool bIndent2_ = (0x02 == (0x02 & flag2));
+			bool bIndent3_ = (0x04 == (0x04 & flag2));
+			bool bIndent4_ = (0x08 == (0x08 & flag2));
+			bool bIndent5_ = (0x10 == (0x10 & flag2));
 
-		_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
-		BYTE flag1 = (BYTE)(dwFlags);
-		BYTE flag2 = (BYTE)(dwFlags >> 8);
-		BYTE flag3 = (BYTE)(dwFlags >> 16);
-		BYTE flag4 = (BYTE)(dwFlags >> 24);
+			if (bCLevels_)
+				oRun.CLevels = StreamUtils::ReadSHORT(pStream);
+			if (bDefaultTabSize_)
+				oRun.DefaultTabSize = (long)(StreamUtils::ReadSHORT(pStream) * dScaleX);
 
-		bool bDefaultTabSize_ = (0x01 == (0x01 & flag1));
-		bool bCLevels_ = (0x02 == (0x02 & flag1));
-		bool bTabStops_ = (0x04 == (0x04 & flag1));
-
-		bool bLeftMargin1_ = (0x08 == (0x08 & flag1));
-		bool bLeftMargin2_ = (0x10 == (0x10 & flag1));
-		bool bLeftMargin3_ = (0x20 == (0x20 & flag1));
-		bool bLeftMargin4_ = (0x40 == (0x40 & flag1));
-		bool bLeftMargin5_ = (0x80 == (0x80 & flag1));
-
-		bool bIndent1_ = (0x01 == (0x01 & flag2));
-		bool bIndent2_ = (0x02 == (0x02 & flag2));
-		bool bIndent3_ = (0x04 == (0x04 & flag2));
-		bool bIndent4_ = (0x08 == (0x08 & flag2));
-		bool bIndent5_ = (0x10 == (0x10 & flag2));
-
-		if (bCLevels_)
-			oRun.CLevels = StreamUtils::ReadSHORT(pStream);
-		if (bDefaultTabSize_)
-			oRun.DefaultTabSize = (long)(StreamUtils::ReadSHORT(pStream) * dScaleX);
-
-		if (bTabStops_)
-		{
-			WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
-			oRun.tabsStops.clear();
-
-			for (WORD i = 0; i < tabStopsCount; ++i)
+			if (bTabStops_)
 			{
-				WORD tabPos = StreamUtils::ReadWORD(pStream);
-				WORD tabType = StreamUtils::ReadWORD(pStream);
+				WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
+				oRun.tabsStops.clear();
 
-				if ((tabPos & 0xff00) == 0xff00)
-					break;
-				tabType = 0x0000;
-				oRun.tabsStops.push_back(std::pair<int, int>(tabPos * dScaleX, tabType));
+				for (WORD i = 0; i < tabStopsCount; ++i)
+				{
+					WORD tabPos = StreamUtils::ReadWORD(pStream);
+					WORD tabType = StreamUtils::ReadWORD(pStream);
+
+					if ((tabPos & 0xff00) == 0xff00)
+						break;
+					tabType = 0x0000;
+					oRun.tabsStops.push_back(std::pair<int, int>(tabPos * dScaleX, tabType));
+				}
 			}
+
+			if (bLeftMargin1_)	oRun.LeftMargin1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			if (bIndent1_)		oRun.Indent1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+			if (bLeftMargin2_)	oRun.LeftMargin2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			if (bIndent2_)		oRun.Indent2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+			if (bLeftMargin3_)	oRun.LeftMargin3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			if (bIndent3_)		oRun.Indent3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+			if (bLeftMargin4_)	oRun.LeftMargin4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			if (bIndent4_)		oRun.Indent4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+			if (bLeftMargin5_)	oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			if (bIndent5_)		oRun.Indent5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		}
+		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation)
+		{
+			if (bIsIndentation)
+			{
+				oRun.lCount = StreamUtils::ReadDWORD(pStream);
+			}
 
-		if (bLeftMargin1_)	oRun.LeftMargin1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent1_)		oRun.Indent1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
+			BYTE flag1 = (BYTE)(dwFlags);
+			BYTE flag2 = (BYTE)(dwFlags >> 8);
 
-		if (bLeftMargin2_)	oRun.LeftMargin2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent2_)		oRun.Indent2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			oRun.bSpell = (0x01 == (0x01 & flag1));
+			oRun.bLang = (0x02 == (0x02 & flag1));
+			oRun.bAltLang = (0x04 == (0x04 & flag1));
+			// unused
+			// unused
+			oRun.bPp10ext = (0x20 == (0x20 & flag1));
+			oRun.bBidi = (0x40 == (0x40 & flag1));
+			// unused
+			// reserved
+			oRun.bSmartTag = (0x02 == (0x02 & flag2));
 
-		if (bLeftMargin3_)	oRun.LeftMargin3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent3_)		oRun.Indent3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			if (oRun.bSpell)
+			{
+				oRun.Spell = StreamUtils::ReadWORD(pStream);
+			}
+			if (oRun.bLang)
+			{
+				oRun.Lang = StreamUtils::ReadWORD(pStream);
+			}
+			if (oRun.bAltLang)
+			{
+				oRun.AltLang = StreamUtils::ReadWORD(pStream);
+			}
+			if (oRun.bBidi)
+			{
+				oRun.Bidi = StreamUtils::ReadWORD(pStream);
+			}
+			if (oRun.bPp10ext)
+			{
+				_UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
+				BYTE flag1 = (BYTE)(dwFlags);
+				BYTE flag2 = (BYTE)(dwFlags >> 8);
+				BYTE flag3 = (BYTE)(dwFlags >> 16);
+				BYTE flag4 = (BYTE)(dwFlags >> 24);
 
-		if (bLeftMargin4_)	oRun.LeftMargin4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent4_)		oRun.Indent4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+				oRun.pp10runid = (0x0F & flag1);
+				oRun.bGramma = (0x80 == (0x80 & flag4));
+			}
 
-		if (bLeftMargin5_)	oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
-		if (bIndent5_)		oRun.Indent5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+			/*if (bSmartTag)
+			{
+			_UINT32 tabStopsCount = StreamUtils::ReadDWORD(pStream);
+			arSmartTags.clear();
+
+			for (int i = 0; i < (int)tabStopsCount; ++i)
+			{
+			arSmartTags.Add(StreamUtils::ReadDWORD(pStream));
+			}
+			}*/
+		}
 	}
-}
 
-namespace PPT_FORMAT
-{
 	void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 	{
 		double dScaleX = 625 * 2.54;

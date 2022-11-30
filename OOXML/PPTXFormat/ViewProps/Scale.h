@@ -43,84 +43,18 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Scale)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				sx = node.ReadNodeNoNS(L"sx");
-				sy = node.ReadNodeNoNS(L"sy");
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(sx);
-				oValue.Write(sy);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				return XmlUtils::CreateNode(L"p:scale", oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, sx);
-				pWriter->WriteRecord1(1, sy);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							sx.name = L"sx";
-							sx.fromPPTY(pReader);
-						}break;
-						case 1:
-						{
-							sy.name = L"sy";
-							sy.fromPPTY(pReader);
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:scale");
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(L"a:sx");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"n", sx.n);
-				pWriter->WriteAttribute(L"d", sx.d);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:sx");
-
-				pWriter->StartNode(L"a:sy");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"n", sy.n);
-				pWriter->WriteAttribute(L"d", sy.d);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:sy");
-				
-				pWriter->EndNode(L"p:scale");
-			}
 			nsViewProps::Ratio sx;
 			nsViewProps::Ratio sy;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				sx.SetParentPointer(this);
-				sy.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

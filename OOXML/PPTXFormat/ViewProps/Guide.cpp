@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,82 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "./../WrapperWritingElement.h"
+#include "Guide.h"
 
 namespace PPTX
 {
 	namespace nsViewProps
 	{
-		class Origin : public WrapperWritingElement
+		void Guide::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(Origin)
+			XmlMacroReadAttributeBase(node, L"orient", orient);
+			XmlMacroReadAttributeBase(node, L"pos", pos);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			Normalize();
+		}
+		std::wstring Guide::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"pos", pos);
+			oAttr.WriteLimitNullable(L"orient", orient);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			return XmlUtils::CreateNode(L"p:guide", oAttr);
+		}
+		void Guide::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-			int x;
-			int y;
+			pWriter->WriteInt2(0, pos);
+			pWriter->WriteLimit2(1, orient);
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void Guide::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						pos = pReader->GetLong();
+					}break;
+					case 1:
+					{
+						orient = pReader->GetUChar();
+					}break;
+					default:
+						break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void Guide::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"p:guide");
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"pos", pos);
+			pWriter->WriteAttribute(L"orient", orient);
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(L"p:guide");
+		}
+		void Guide::FillParentPointersForChilds()
+		{
+		}
+		AVSINLINE void Guide::Normalize()
+		{
+			pos.normalize_positive();
+		}
 	} // namespace nsViewProps
 } // namespace PPTX

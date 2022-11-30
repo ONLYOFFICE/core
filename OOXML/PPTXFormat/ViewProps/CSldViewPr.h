@@ -44,135 +44,14 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CSldViewPr)
 
-			CSldViewPr& operator=(const CSldViewPr& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			CSldViewPr& operator=(const CSldViewPr& oSrc);
 
-				CViewPr				= oSrc.CViewPr;
-				attrShowGuides		= oSrc.attrShowGuides;
-				attrSnapToGrid		= oSrc.attrSnapToGrid;
-				attrSnapToObjects	= oSrc.attrSnapToObjects;
-				
-				GuideLst = oSrc.GuideLst;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				GuideLst.clear();
-
-				CViewPr = node.ReadNode(L"p:cViewPr");
-
-                XmlUtils::CXmlNode oNodeLst = node.ReadNode(L"p:guideLst");
-                XmlMacroLoadArray(oNodeLst, L"p:guide", GuideLst, Guide);
-
-                XmlMacroReadAttributeBase(node, L"showGuides", attrShowGuides);
-                XmlMacroReadAttributeBase(node, L"snapToGrid", attrSnapToGrid);
-                XmlMacroReadAttributeBase(node, L"snapToObjects", attrSnapToObjects);
-
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"showGuides", attrShowGuides);
-				oAttr.Write(L"snapToGrid", attrSnapToGrid);
-				oAttr.Write(L"snapToObjects", attrSnapToObjects);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(CViewPr);
-				oValue.WriteArray(L"p:guideLst", GuideLst);
-
-				return XmlUtils::CreateNode(L"p:cSldViewPr", oAttr, oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, attrShowGuides);
-				pWriter->WriteBool2(1, attrSnapToGrid);
-				pWriter->WriteBool2(2, attrSnapToObjects);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, CViewPr);
-				pWriter->WriteRecordArray(1, 2, GuideLst);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							attrShowGuides = pReader->GetBool();
-						}break;
-						case 1:
-						{
-							attrSnapToGrid = pReader->GetBool();
-						}break;
-						case 2:
-						{
-							attrSnapToObjects = pReader->GetBool();
-						}break;
-						default:
-							break;
-					}
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							CViewPr.fromPPTY(pReader);
-						}break;
-						case 1:
-						{
-							pReader->Skip(4);
-							ULONG _c = pReader->GetULong();
-							for (ULONG i = 0; i < _c; ++i)
-							{
-								pReader->Skip(1); // type
-								GuideLst.push_back(Guide());
-								GuideLst.back().fromPPTY(pReader);
-							}
-						}break;
-						default:
-						{
-							break;
-						}
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:cSldViewPr");
-
-				pWriter->StartAttributes();
-
-				pWriter->WriteAttribute(L"showGuides", attrShowGuides);
-				pWriter->WriteAttribute(L"snapToGrid", attrSnapToGrid);
-				pWriter->WriteAttribute(L"snapToObjects", attrSnapToObjects);
-
-				pWriter->EndAttributes();
-
-				CViewPr.toXmlWriter(pWriter);
-				pWriter->WriteArray(L"p:guideLst", GuideLst);	
-
-				pWriter->EndNode(L"p:cSldViewPr");
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			nsViewProps::CViewPr	CViewPr;
 			std::vector<Guide>		GuideLst;
@@ -180,15 +59,9 @@ namespace PPTX
 			nullable_bool			attrShowGuides;
 			nullable_bool			attrSnapToGrid;
 			nullable_bool			attrSnapToObjects;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				CViewPr.SetParentPointer(this);
 
-				size_t count = GuideLst.size();
-				for (size_t i = 0; i < count; ++i)
-					GuideLst[i].SetParentPointer(this);
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

@@ -42,70 +42,19 @@ namespace PPTX
 		{
 		public:
 			PPTX_LOGIC_BASE(Sld)
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"id", id);
-                XmlMacroReadAttributeBase(node, L"collapse", collapse);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("id"), id);
-				oAttr.Write(_T("collapse"), collapse);
 
-				return XmlUtils::CreateNode(_T("p:sld"), oAttr);
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				pWriter->WriteString2(0, id);
-				pWriter->WriteBool2(1, collapse);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							id = pReader->GetString2();
-						}break;
-						case 1:
-						{
-							collapse = pReader->GetBool();
-						}break;
-						default:
-							break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:sld"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("id"), id);
-				pWriter->WriteAttribute(_T("collapse"), collapse);
-				pWriter->EndAttributes();
-		
-				pWriter->EndNode(_T("p:sld"));
-			}
 			nullable_string		id;
 			nullable_bool		collapse;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

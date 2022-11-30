@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,39 +29,76 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
-#define PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "ClrScheme.h"
-#include "FontScheme.h"
-#include "FmtScheme.h"
+#include "Sld.h"
 
 namespace PPTX
 {
-	namespace nsTheme
+	namespace nsViewProps
 	{
-		class ThemeElements : public WrapperWritingElement
+		void Sld::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ThemeElements)
+			XmlMacroReadAttributeBase(node, L"id", id);
+			XmlMacroReadAttributeBase(node, L"collapse", collapse);
+		}
+		std::wstring Sld::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("id"), id);
+			oAttr.Write(_T("collapse"), collapse);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			return XmlUtils::CreateNode(_T("p:sld"), oAttr);
+		}
+		void Sld::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			pWriter->WriteString2(0, id);
+			pWriter->WriteBool2(1, collapse);
 
-			ClrScheme	clrScheme;
-			FontScheme	fontScheme;
-			FmtScheme	fmtScheme;
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void Sld::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsTheme
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						id = pReader->GetString2();
+					}break;
+					case 1:
+					{
+						collapse = pReader->GetBool();
+					}break;
+					default:
+						break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void Sld::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p:sld"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("id"), id);
+			pWriter->WriteAttribute(_T("collapse"), collapse);
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(_T("p:sld"));
+		}
+		void Sld::FillParentPointersForChilds()
+		{
+		}
+	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_THEME_THEMEELEMENTS_INCLUDE_H

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,39 +29,73 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
-#define PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "ClrScheme.h"
-#include "FontScheme.h"
-#include "FmtScheme.h"
+#include "Restored.h"
 
 namespace PPTX
 {
-	namespace nsTheme
+	namespace nsViewProps
 	{
-		class ThemeElements : public WrapperWritingElement
+		void Restored::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ThemeElements)
+			name = XmlUtils::GetNameNoNS(node.GetName());
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			sz = node.ReadAttributeInt(L"sz");
+			XmlMacroReadAttributeBase(node, L"autoAdjust", autoAdjust);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			Normalize();
+		}
+		std::wstring Restored::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("sz"), sz);
+			oAttr.Write(_T("autoAdjust"), autoAdjust);
 
-			ClrScheme	clrScheme;
-			FontScheme	fontScheme;
-			FmtScheme	fmtScheme;
+			return XmlUtils::CreateNode(_T("p:") + name, oAttr);
+		}
+		void Restored::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt1(0, sz);
+			pWriter->WriteBool2(1, autoAdjust);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void Restored::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsTheme
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						sz = pReader->GetLong();
+					}break;
+					case 1:
+					{
+						autoAdjust = pReader->GetBool();
+					}break;
+					default:
+						break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void Restored::FillParentPointersForChilds()
+		{
+		}
+		AVSINLINE void Restored::Normalize()
+		{
+			if (sz < 0)
+				sz = 0;
+		}
+	} // namespace nsViewProps
 } // namespace PPTX
 
-#endif // PPTX_THEME_THEMEELEMENTS_INCLUDE_H

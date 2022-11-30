@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,39 +29,73 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
-#define PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "ClrScheme.h"
-#include "FontScheme.h"
-#include "FmtScheme.h"
+#include "Ratio.h"
 
 namespace PPTX
 {
-	namespace nsTheme
+	namespace nsViewProps
 	{
-		class ThemeElements : public WrapperWritingElement
+		void Ratio::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ThemeElements)
+			name = XmlUtils::GetNameNoNS(node.GetName());
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			n = node.ReadAttributeInt(L"n");
+			d = node.ReadAttributeInt(L"d");
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			Normalize();
+		}
+		std::wstring Ratio::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"n", n);
+			oAttr.Write(L"d", d);
 
-			ClrScheme	clrScheme;
-			FontScheme	fontScheme;
-			FmtScheme	fmtScheme;
+			return XmlUtils::CreateNode(L"a:" + name, oAttr);
+		}
+		void Ratio::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt1(0, d);
+			pWriter->WriteInt1(1, n);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void Ratio::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsTheme
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						d = pReader->GetLong();
+					}break;
+					case 1:
+					{
+						n = pReader->GetLong();
+					}break;
+					default:
+						break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void Ratio::FillParentPointersForChilds()
+		{
+		}
+		AVSINLINE void Ratio::Normalize()
+		{
+			if (d < 0)
+				d = 0;
+			if (n < 0)
+				n = 0;
+		}
+	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_THEME_THEMEELEMENTS_INCLUDE_H

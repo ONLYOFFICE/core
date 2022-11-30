@@ -131,7 +131,30 @@ SOURCES += \
 	\
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
-	../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+	../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
+	\
+	../../../PPTXFormat/ViewProps/CSldViewPr.cpp \
+	../../../PPTXFormat/ViewProps/CViewPr.cpp \
+	../../../PPTXFormat/ViewProps/GridSpacing.cpp \
+	../../../PPTXFormat/ViewProps/Guide.cpp \
+	../../../PPTXFormat/ViewProps/NormalViewPr.cpp \
+	../../../PPTXFormat/ViewProps/NotesTextViewPr.cpp \
+	../../../PPTXFormat/ViewProps/NotesViewPr.cpp \
+	../../../PPTXFormat/ViewProps/Origin.cpp \
+	../../../PPTXFormat/ViewProps/OutlineViewPr.cpp \
+	../../../PPTXFormat/ViewProps/Ratio.cpp \
+	../../../PPTXFormat/ViewProps/Restored.cpp \
+	../../../PPTXFormat/ViewProps/Scale.cpp \
+	../../../PPTXFormat/ViewProps/Sld.cpp \
+	../../../PPTXFormat/ViewProps/SlideViewPr.cpp \
+	../../../PPTXFormat/ViewProps/SorterViewPr.cpp \
+	\
+	../../../PPTXFormat/Theme/ClrScheme.cpp \
+	../../../PPTXFormat/Theme/ExtraClrScheme.cpp \
+	../../../PPTXFormat/Theme/FmtScheme.cpp \
+	../../../PPTXFormat/Theme/FontScheme.cpp \
+	../../../PPTXFormat/Theme/ThemeElements.cpp
+
 
 HEADERS += \
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \

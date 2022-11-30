@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,39 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
-#define PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
 
-#include "./../WrapperWritingElement.h"
-#include "ClrScheme.h"
-#include "FontScheme.h"
-#include "FmtScheme.h"
+#include "SlideViewPr.h"
 
 namespace PPTX
 {
-	namespace nsTheme
+	namespace nsViewProps
 	{
-		class ThemeElements : public WrapperWritingElement
+		void SlideViewPr::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(ThemeElements)
+			CSldViewPr = node.ReadNode(L"p:cSldViewPr");
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			FillParentPointersForChilds();
+		}
+		std::wstring SlideViewPr::toXML() const
+		{
+			XmlUtils::CNodeValue oValue;
+			oValue.Write(CSldViewPr);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			return XmlUtils::CreateNode(L"p:slideViewPr", oValue);
+		}
+		void SlideViewPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord1(0, CSldViewPr);
+		}
+		void SlideViewPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
-			ClrScheme	clrScheme;
-			FontScheme	fontScheme;
-			FmtScheme	fmtScheme;
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _rec = pReader->GetUChar();
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsTheme
+				switch (_rec)
+				{
+					case 0:
+					{
+						CSldViewPr.fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void SlideViewPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"p:slideViewPr");
+			pWriter->EndAttributes();
+
+			CSldViewPr.toXmlWriter(pWriter);
+
+			pWriter->EndNode(L"p:slideViewPr");
+		}
+		void SlideViewPr::FillParentPointersForChilds()
+		{
+			CSldViewPr.SetParentPointer(this);
+		}
+	} // namespace nsViewProps
 } // namespace PPTX
-
-#endif // PPTX_THEME_THEMEELEMENTS_INCLUDE_H

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,84 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "./../WrapperWritingElement.h"
+#include "GridSpacing.h"
 
 namespace PPTX
 {
 	namespace nsViewProps
 	{
-		class Origin : public WrapperWritingElement
+		void GridSpacing::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(Origin)
+			cx = node.ReadAttributeInt(L"cx");
+			cy = node.ReadAttributeInt(L"cy");
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			Normalize();
+		}
+		std::wstring GridSpacing::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"cx", cx);
+			oAttr.Write(L"cy", cy);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			return XmlUtils::CreateNode(L"p:gridSpacing", oAttr);
+		}
+		void GridSpacing::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt1(0, cx);
+			pWriter->WriteInt1(1, cy);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void GridSpacing::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
 
-			int x;
-			int y;
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+				switch (_at)
+				{
+					case 0:
+					{
+						cx = pReader->GetLong();
+					}break;
+					case 1:
+					{
+						cy = pReader->GetLong();
+					}break;
+					default:
+						break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void GridSpacing::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"p:gridSpacing");
+
+			pWriter->StartAttributes();
+
+			pWriter->WriteAttribute(L"cx", cx);
+			pWriter->WriteAttribute(L"cy", cy);
+
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(L"p:gridSpacing");
+		}
+		void GridSpacing::FillParentPointersForChilds()
+		{
+		}
+		AVSINLINE void GridSpacing::Normalize()
+		{
+			if (cx < 0)
+				cx = 0;
+			if (cy < 0)
+				cy = 0;
+		}
 	} // namespace nsViewProps
 } // namespace PPTX

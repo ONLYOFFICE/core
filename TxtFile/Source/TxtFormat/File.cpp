@@ -106,13 +106,30 @@ namespace NSEncoding
 		}
 		else
 		{
-			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
-			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+			static const std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
 
-			for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+			if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
 			{
-				result.push_back(oUnicodeConverter.fromUnicode(*iter, oEncodindId.Name));
+				const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
+				NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+
+				for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+				{
+					result.push_back(oUnicodeConverter.fromUnicode(*iter, pFind->second.c_str()));
+				}
 			}
+			else
+			{
+				//by index ???
+				const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
+				NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+
+				for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+				{
+					result.push_back(oUnicodeConverter.fromUnicode(*iter, oEncodindId.Name));
+				}
+			}
+
 		}
 		return result;
 	}

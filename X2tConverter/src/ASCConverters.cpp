@@ -3859,8 +3859,16 @@ namespace NExtractTools
 				std::wstring sFileToExt;
 				if (!bIsOnlyFirst)
 				{
-					sThumbnailDir = sTemp + FILE_SEPARATOR_STR + _T("thumbnails");
-					NSDirectory::CreateDirectory(sThumbnailDir);
+					if (bIsZip)
+					{
+						sThumbnailDir = sTemp + FILE_SEPARATOR_STR + _T("thumbnails");
+						NSDirectory::CreateDirectory(sThumbnailDir);
+					}
+					else
+					{
+						if (!NSDirectory::Exists(sTo))
+							NSDirectory::CreateDirectory(sTo);
+					}
 					sFileToExt = getExtentionByRasterFormat(nRasterFormat);
 				}
 				int nPagesCount = pReader->GetPagesCount();
@@ -3902,17 +3910,10 @@ namespace NExtractTools
 					pReader->ConvertToRaster(i, sFileTo, nRasterFormat, nRasterWCur, nRasterHCur);
 				}
 				// zip
-				if(!bIsOnlyFirst)
+				if(!bIsOnlyFirst && bIsZip)
 				{
-					if(!bIsZip)
-					{
-						nRes = S_OK == NSDirectory::CopyDirectory(sThumbnailDir, sTo);
-					}
-					else
-					{
-						COfficeUtils oCOfficeUtils(NULL);
-						nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-					}
+					COfficeUtils oCOfficeUtils(NULL);
+					nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 				}
 			}
 			else

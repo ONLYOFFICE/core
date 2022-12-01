@@ -1478,8 +1478,8 @@ namespace MetaFile
 				int nWidth = fabs(pEmfBounds->lRight - pEmfBounds->lLeft);
 				int nHeight = fabs(pEmfBounds->lBottom - pEmfBounds->lTop);
 
-				double dWidth  = 25.4 * nWidth / 96;
-				double dHeight = 25.4 * nHeight / 96;
+				double dWidth  = 25.4 * nWidth / 72;
+				double dHeight = 25.4 * nHeight / 72;
 
 				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
@@ -1532,7 +1532,7 @@ namespace MetaFile
 				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
 				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - 1, arPoints[2].Y - arPoints[0].Y - 1,
 						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
@@ -1593,8 +1593,8 @@ namespace MetaFile
 				int nWidth = fabs(oWmfBounds.dRight - oWmfBounds.dLeft);
 				int nHeight = fabs(oWmfBounds.dBottom - oWmfBounds.dTop);
 
-				double dWidth  = 25.4 * nWidth / 96;
-				double dHeight = 25.4 * nHeight / 96;
+				double dWidth  = 25.4 * nWidth / 72;
+				double dHeight = 25.4 * nHeight / 72;
 
 				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
@@ -1646,7 +1646,7 @@ namespace MetaFile
 				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
 				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - 1, arPoints[2].Y - arPoints[0].Y - 1,
 											 (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
@@ -1729,7 +1729,7 @@ namespace MetaFile
 
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect);
 
-		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - 1, arPoints[2].Y - arPoints[0].Y - 1,
 				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.nRight - oClipRect.nLeft), fabs(oClipRect.nBottom - oClipRect.nTop));
 
 		if (!bExternalBuffer)

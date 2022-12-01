@@ -48,150 +48,16 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(DefaultShapeDefinition)
 			
-			DefaultShapeDefinition()
-			{
-			}
+			DefaultShapeDefinition();
+			DefaultShapeDefinition& operator=(const DefaultShapeDefinition& oSrc);
 
-			DefaultShapeDefinition& operator=(const DefaultShapeDefinition& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				spPr		= oSrc.spPr;
-				bodyPr		= oSrc.bodyPr;
-				lstStyle	= oSrc.lstStyle;
-				style		= oSrc.style;
-				m_name		= oSrc.m_name;
-
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = XmlUtils::GetNameNoNS(oReader.GetName());
-					
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (_T("spPr") == strName)
-						spPr.fromXML(oReader);
-					else if (_T("bodyPr") == strName)
-						bodyPr = oReader;
-					else if (_T("lstStyle") == strName)
-						lstStyle.fromXML(oReader);
-					else if (_T("style") == strName)
-						style = oReader;
-				}
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = XmlUtils::GetNameNoNS(node.GetName());
-
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int count = oNodes.GetCount();
-					for (int i = 0; i < count; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("spPr") == strName)
-							spPr = oNode;
-						else if (_T("bodyPr") == strName)
-							bodyPr = oNode;
-						else if (_T("lstStyle") == strName)
-							lstStyle = oNode;
-						else if (_T("style") == strName)
-							style = oNode;
-					}
-				}
-
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(spPr);
-				oValue.WriteNullable(bodyPr);
-				oValue.Write(lstStyle);
-				oValue.WriteNullable(style);
-
-				return XmlUtils::CreateNode(_T("a:") + m_name, oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, spPr);
-				pWriter->WriteRecord2(1, bodyPr);
-				pWriter->WriteRecord1(2, lstStyle);
-				pWriter->WriteRecord2(3, style);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							spPr.m_namespace = _T("a");
-							spPr.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							bodyPr = BodyPr(L"a");
-							bodyPr->fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							lstStyle.m_name = _T("a:lstStyle");
-							lstStyle.fromPPTY(pReader);
-							break;
-						}
-						case 3:
-						{
-							style = new ShapeStyle(L"a");
-							style->fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:") + m_name);
-				pWriter->EndAttributes();
-
-				pWriter->m_lFlag = 0x04;
-				spPr.toXmlWriter(pWriter);
-				pWriter->m_lFlag = 0;
-				
-				if (bodyPr.IsInit())
-					bodyPr->toXmlWriter(pWriter);
-				lstStyle.toXmlWriter(pWriter);
-				pWriter->Write(style);
-
-				pWriter->EndNode(_T("a:") + m_name);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			SpPr					spPr;
@@ -200,18 +66,9 @@ namespace PPTX
 			nullable<ShapeStyle>	style;
 
 			std::wstring			m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				spPr.SetParentPointer(this);
-				
-				if (bodyPr.IsInit())
-					bodyPr->SetParentPointer(this);
-				
-				lstStyle.SetParentPointer(this);
-				if(style.IsInit())
-					style->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

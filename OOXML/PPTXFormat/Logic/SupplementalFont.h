@@ -46,74 +46,21 @@ namespace PPTX
 			PPTX_LOGIC_BASE(SupplementalFont)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				XmlMacroReadAttributeBase(node, L"script", script);
-				XmlMacroReadAttributeBase(node, L"typeface", typeface);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(m_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("script"), script);
-				pWriter->WriteAttribute(_T("typeface"), typeface);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(m_name);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, script);
-				pWriter->WriteString1(1, typeface);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attr
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							script = pReader->GetString2();
-							break;
-						}
-						case 1:
-						{
-							typeface = pReader->GetString2();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			std::wstring script;
 			std::wstring typeface;
-		//private:
+
 		public:
 			std::wstring m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

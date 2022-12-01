@@ -54,7 +54,6 @@ SOURCES += \
 	../../../PPTXFormat/Logic/Transitions/TransitionBase.cpp \
 	../../../PPTXFormat/Logic/Bg.cpp \
 	../../../PPTXFormat/Logic/CNvGrpSpPr.cpp \
-	../../../PPTXFormat/Logic/ContentPart.cpp \
 	../../../PPTXFormat/Logic/CxnSp.cpp \
 	../../../PPTXFormat/Logic/EffectDag.cpp \
 	../../../PPTXFormat/Logic/EffectLst.cpp \
@@ -79,6 +78,80 @@ SOURCES += \
 	../../../PPTXFormat/Logic/UniEffect.cpp \
 	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
 	../../../PPTXFormat/Logic/Controls.cpp \
+	\
+	../../../PPTXFormat/Logic/Ah.cpp \
+	../../../PPTXFormat/Logic/AhBase.cpp \
+	../../../PPTXFormat/Logic/AhPolar.cpp \
+	../../../PPTXFormat/Logic/AhXY.cpp \
+	../../../PPTXFormat/Logic/Backdrop.cpp \
+	../../../PPTXFormat/Logic/Bevel.cpp \
+	../../../PPTXFormat/Logic/BgPr.cpp \
+	../../../PPTXFormat/Logic/BodyPr.cpp \
+	../../../PPTXFormat/Logic/Camera.cpp \
+	../../../PPTXFormat/Logic/Cell3D.cpp \
+	../../../PPTXFormat/Logic/ClrMap.cpp \
+	../../../PPTXFormat/Logic/ClrMapOvr.cpp \
+	../../../PPTXFormat/Logic/CNvCxnSpPr.cpp \
+	../../../PPTXFormat/Logic/CNvGraphicFramePr.cpp \
+	../../../PPTXFormat/Logic/CNvPicPr.cpp \
+	../../../PPTXFormat/Logic/CNvPr.cpp \
+	../../../PPTXFormat/Logic/CNvSpPr.cpp \
+	../../../PPTXFormat/Logic/CSld.cpp \
+	../../../PPTXFormat/Logic/CustGeom.cpp \
+	../../../PPTXFormat/Logic/Cxn.cpp \
+	../../../PPTXFormat/Logic/DefaultShapeDefinition.cpp \
+	../../../PPTXFormat/Logic/ExtP.cpp \
+	../../../PPTXFormat/Logic/FillStyle.cpp \
+	../../../PPTXFormat/Logic/FontCollection.cpp \
+	../../../PPTXFormat/Logic/FontRef.cpp \
+	../../../PPTXFormat/Logic/Gd.cpp \
+	../../../PPTXFormat/Logic/Gs.cpp \
+	../../../PPTXFormat/Logic/Hf.cpp \
+	../../../PPTXFormat/Logic/LightRig.cpp \
+	../../../PPTXFormat/Logic/Lin.cpp \
+	../../../PPTXFormat/Logic/LineEnd.cpp \
+	../../../PPTXFormat/Logic/LineJoin.cpp \
+	../../../PPTXFormat/Logic/LineStyle.cpp \
+	../../../PPTXFormat/Logic/Ln.cpp \
+	../../../PPTXFormat/Logic/NvCxnSpPr.cpp \
+	../../../PPTXFormat/Logic/NvPicPr.cpp \
+	../../../PPTXFormat/Logic/NvPr.cpp \
+	../../../PPTXFormat/Logic/NvSpPr.cpp \
+	../../../PPTXFormat/Logic/Paragraph.cpp \
+	../../../PPTXFormat/Logic/PartTitle.cpp \
+	../../../PPTXFormat/Logic/Path.cpp \
+	../../../PPTXFormat/Logic/Path2D.cpp \
+	../../../PPTXFormat/Logic/Ph.cpp \
+	../../../PPTXFormat/Logic/PrstDash.cpp \
+	../../../PPTXFormat/Logic/PrstGeom.cpp \
+	../../../PPTXFormat/Logic/PrstTxWarp.cpp \
+	../../../PPTXFormat/Logic/Rect.cpp \
+	../../../PPTXFormat/Logic/Rot.cpp \
+	../../../PPTXFormat/Logic/RunElem.cpp \
+	../../../PPTXFormat/Logic/RunProperties.cpp \
+	../../../PPTXFormat/Logic/Scene3d.cpp \
+	../../../PPTXFormat/Logic/ShapeStyle.cpp \
+	../../../PPTXFormat/Logic/Sp3d.cpp \
+	../../../PPTXFormat/Logic/StyleRef.cpp \
+	../../../PPTXFormat/Logic/SupplementalFont.cpp \
+	../../../PPTXFormat/Logic/Tab.cpp \
+	../../../PPTXFormat/Logic/TableBgStyle.cpp \
+	../../../PPTXFormat/Logic/TablePartStyle.cpp \
+	../../../PPTXFormat/Logic/TableStyle.cpp \
+	../../../PPTXFormat/Logic/TcBdr.cpp \
+	../../../PPTXFormat/Logic/TcStyle.cpp \
+	../../../PPTXFormat/Logic/TcTxStyle.cpp \
+	../../../PPTXFormat/Logic/TextFit.cpp \
+	../../../PPTXFormat/Logic/TextFont.cpp \
+	../../../PPTXFormat/Logic/TextListStyle.cpp \
+	../../../PPTXFormat/Logic/TextParagraphPr.cpp \
+	../../../PPTXFormat/Logic/TextSpacing.cpp \
+	../../../PPTXFormat/Logic/TxStyles.cpp \
+	../../../PPTXFormat/Logic/UniMedia.cpp \
+	../../../PPTXFormat/Logic/UniPath2D.cpp \
+	../../../PPTXFormat/Logic/Xfrm.cpp \
+	../../../PPTXFormat/Logic/XmlId.cpp \
+	\
 	../../../PPTXFormat/Presentation.cpp \
 	../../../PPTXFormat/FileContainer.cpp \
 	../../../PPTXFormat/FileTypes.cpp \
@@ -508,7 +581,6 @@ HEADERS += \
 	../../../PPTXFormat/Logic/CNvPicPr.h \
 	../../../PPTXFormat/Logic/CNvPr.h \
 	../../../PPTXFormat/Logic/CNvSpPr.h \
-	../../../PPTXFormat/Logic/ContentPart.h \
 	../../../PPTXFormat/Logic/CSld.h \
 	../../../PPTXFormat/Logic/CustGeom.h \
 	../../../PPTXFormat/Logic/Cxn.h \

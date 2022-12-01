@@ -45,252 +45,32 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Gd)
 			PPTX_LOGIC_BASE2(Gd)
 
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_gd;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual OOX::EElementType getType () const;
 
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("name"), name )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fmla"), fmla )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"name", name);
-				XmlMacroReadAttributeBase(node, L"fmla", fmla);
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("name"), name);
-				oAttr.Write(_T("fmla"), fmla);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				return XmlUtils::CreateNode(_T("a:gd"), oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:gd"));
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->StartAttributes();
-                pWriter->WriteAttribute2(_T("name"), name);
-				pWriter->WriteAttribute(_T("fmla"), fmla);
-//				pWriter->EndAttributes();
-                                pWriter->WriteNodeEnd(_T(""), true, true);
-
-//				pWriter->EndNode(_T("a:gd"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-				if (name.is_init() && fmla.is_init())
-				{
-					pWriter->WriteString2(0, name);
-					
-					size_t nStart = 0;
-					size_t nCurrent = 0;
-
-                    const wchar_t* pData = fmla->c_str();
-					size_t nLen = fmla->length();
-
-					int nFound = 0;
-					while (nCurrent < nLen)
-					{
-						if (pData[nCurrent] == (WCHAR)' ')
-						{
-							if (nStart < nCurrent)
-							{
-								if (0 == nFound)
-								{
-									if ((nCurrent - nStart) > 1)
-									{
-										pWriter->WriteInt1(1, GetFormulaType2(pData[nStart], pData[nStart + 1]));
-									}
-									else
-									{
-										pWriter->WriteInt1(1, 0);
-									}
-								}
-								else
-								{
-									pWriter->WriteString1Data(nFound + 1, pData + nStart, (ULONG)(nCurrent - nStart));
-								}
-								nStart = nCurrent + 1;
-								++nFound;
-							}
-						}
-						++nCurrent;
-					}
-					if (nStart < nCurrent)
-					{
-						if (0 == nFound)
-						{
-							if ((nCurrent - nStart) > 1)
-							{
-								pWriter->WriteInt1(1, GetFormulaType2(pData[nStart], pData[nStart + 1]));
-							}
-							else
-							{
-								pWriter->WriteInt1(1, 0);
-							}
-						}
-						else
-						{
-							pWriter->WriteString1Data(nFound + 1, pData + nStart, (ULONG)(nCurrent - nStart));
-						}
-					}
-				}
-				
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(5); // len + start attributes
-
-				std::wstring _fmla = _T("");
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-						name = pReader->GetString2();
-					else if (1 == _at)
-					{
-						_fmla = GetFormulaName(pReader->GetLong());
-					}
-					else
-					{
-						if (1 < _at)
-							_fmla += _T(" ");
-						_fmla += pReader->GetString2();
-					}
-				}
-				if (_T("") != _fmla)
-					fmla = _fmla;
-			}
-
-			int GetFormulaType(const std::wstring& str) const
-			{
-				if (_T("*/") == str)
-					return 0;
-				if (_T("+-") == str)
-					return 1;
-				if (_T("+/") == str)
-					return 2;
-				if (_T("?:") == str)
-					return 3;
-				if (_T("abs") == str)
-					return 4;
-				if (_T("at2") == str)
-					return 5;
-				if (_T("cat2") == str)
-					return 6;
-				if (_T("cos") == str)
-					return 7;
-				if (_T("max") == str)
-					return 8;
-				if (_T("min") == str)
-					return 16;
-				if (_T("mod") == str)
-					return 9;
-				if (_T("pin") == str)
-					return 10;
-				if (_T("sat2") == str)
-					return 11;
-				if (_T("sin") == str)
-					return 12;
-				if (_T("sqrt") == str)
-					return 13;
-				if (_T("tan") == str)
-					return 14;
-				if (_T("val") == str)
-					return 15;
-				return 0;
-			}
-
-			AVSINLINE int GetFormulaType2(const WCHAR& c1, const WCHAR& c2) const
-			{
-				switch (c1)
-				{
-				case (WCHAR)'*':
-					return 0;
-				case (WCHAR)'+':
-					return ((WCHAR)'-' == c2) ? 1 : 2;
-				case (WCHAR)'?':
-					return 3;
-				case (WCHAR)'a':
-					return ((WCHAR)'b' == c2) ? 4 : 5;
-				case (WCHAR)'c':
-					return ((WCHAR)'a' == c2) ? 6 : 7;
-				case (WCHAR)'m':
-					return ((WCHAR)'a' == c2) ? 8 : (((WCHAR)'i' == c2) ? 16 : 9);
-				case (WCHAR)'p':
-					return 10;
-				case (WCHAR)'s':
-					return ((WCHAR)'a' == c2) ? 11 : (((WCHAR)'i' == c2) ? 12 : 13);					
-				case (WCHAR)'t':
-					return 14;
-				case (WCHAR)'v':
-					return 15;
-				default:
-					break;
-				}
-				return 0;
-			}
-
-			static std::wstring GetFormulaName(const int& val)
-			{
-				switch (val)
-				{
-				case 0: return _T("*/");
-				case 1: return _T("+-");
-				case 2: return _T("+/");
-				case 3: return _T("?:");
-				case 4: return _T("abs");
-				case 5: return _T("at2");
-				case 6: return _T("cat2");
-				case 7: return _T("cos");
-				case 8: return _T("max");
-				case 16: return _T("min");
-				case 9: return _T("mod");
-				case 10: return _T("pin");
-				case 11: return _T("sat2");
-				case 12: return _T("sin");
-				case 13: return _T("sqrt");
-				case 14: return _T("tan");
-				case 15: return _T("val");
-				default:
-					return _T("*/");
-				}
-			}
+			int GetFormulaType(const std::wstring& str) const;
+			int GetFormulaType2(const WCHAR& c1, const WCHAR& c2) const;
+			static std::wstring GetFormulaName(const int& val);
 
 		public:
 			nullable_string			name;
 			nullable_string			fmla;
-		protected:
-			virtual void FillParentPointersForChilds(){};
-		public:
-			virtual std::wstring GetODString()const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("name"), name);
-				oAttr.Write(_T("fmla"), fmla);
 
-				return XmlUtils::CreateNode(_T("gd"), oAttr);
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+
+		public:
+			virtual std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

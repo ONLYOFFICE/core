@@ -47,88 +47,22 @@ namespace PPTX
 			WritingElement_AdditionConstructors(PrstDash)
 			PPTX_LOGIC_BASE2(PrstDash)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_prstDash;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"val", val);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("val"), val);
+			virtual OOX::EElementType getType() const;
 
-				return XmlUtils::CreateNode(_T("a:prstDash"), oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, val);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-					case 0:
-					{
-						val = pReader->GetUChar();
-						break;
-					}
-					default:
-						break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = _T("w14:");
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = _T("a:");
-				pWriter->StartNode(sNodeNamespace + _T("prstDash"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(sNodeNamespace + _T("prstDash"));
-			}
+			virtual std::wstring toXML() const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			nullable_limit<Limit::PrstDashVal> val;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

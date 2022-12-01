@@ -47,79 +47,26 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(Cell3D)
 
-			Cell3D()
-			{
-			}
+			Cell3D();
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-					if (_T("bevel") == strName)
-						bevel = oReader;
-					else if (_T("lightRig") == strName)
-						lightRig = oReader;
-				}
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("prstMaterial"), prstMaterial )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"prstMaterial", prstMaterial);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				bevel		= node.ReadNodeNoNS(_T("bevel"));
-				lightRig	= node.ReadNodeNoNS(_T("lightRig"));
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("prstMaterial"), prstMaterial);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(bevel);
-				oValue.WriteNullable(lightRig);
-
-				return XmlUtils::CreateNode(_T("a:cell3D"), oAttr, oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				// TODO:
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				// TODO:
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			nullable_limit<Limit::Material>		prstMaterial;
 
 			nullable<Bevel>						bevel;
 			nullable<LightRig>					lightRig;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(bevel.IsInit())
-					bevel->SetParentPointer(this);
-				if(lightRig.IsInit())
-					lightRig->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

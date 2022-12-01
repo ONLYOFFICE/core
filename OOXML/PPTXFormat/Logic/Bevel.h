@@ -40,127 +40,36 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Bevel : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(Bevel)
-			
-			Bevel(const std::wstring name = L"a:bevel")
-			{
-				m_name = name;
-			}	
-			virtual ~Bevel() {}		
-			Bevel(const Bevel& oSrc) { *this = oSrc; }
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_bevel;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
+			Bevel(const std::wstring name = L"a:bevel");
+			virtual ~Bevel();
+			Bevel(const Bevel& oSrc);
 
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("w"), w)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("h"), h)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prst"), prst)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name	= XmlUtils::GetNameNoNS(node.GetName());
-				
-				XmlMacroReadAttributeBase(node, L"w", w);
-				XmlMacroReadAttributeBase(node, L"h", h);
-				XmlMacroReadAttributeBase(node, L"prst", prst);
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual std::wstring toXML() const
-			{
-				std::wstring namespace_ = XmlUtils::GetNamespace(m_name);
-				if (namespace_ == L"w14")
-				{
-					namespace_ + L"w14:";
-				}
-				else namespace_.clear();
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(namespace_ + L"w", w);
-				oAttr.Write(namespace_ + L"h", h);
-				oAttr.WriteLimitNullable(namespace_ + L"prst", prst);
-				
-				return XmlUtils::CreateNode(m_name, oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = _T("w14:");
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = _T("a:");
+			virtual std::wstring toXML() const;
 
-
-				pWriter->StartNode(sNodeNamespace + m_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"w", w);
-				pWriter->WriteAttribute(sAttrNamespace + L"h", h);
-				if (prst.IsInit())
-				{
-					pWriter->WriteAttribute(sAttrNamespace + L"prst", prst->get());
-				}
-				pWriter->EndAttributes();
-				
-				pWriter->EndNode(sNodeNamespace + m_name);
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, w);
-				pWriter->WriteInt2(1, h);
-				pWriter->WriteLimit2(2, prst);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)		w = pReader->GetLong();
-					else if (1 == _at)	h = pReader->GetLong();
-					else if (2 == _at)	prst = pReader->GetUChar();
-					else
-						break;
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable_int						w;
 			nullable_int						h;
 			nullable_limit<Limit::BevelType>	prst;
 
 			std::wstring						m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX
-
 #endif // PPTX_LOGIC_BEVEL_INCLUDE_H_

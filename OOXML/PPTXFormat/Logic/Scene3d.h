@@ -47,143 +47,28 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(Scene3d)
-			Scene3d() {}
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_scene3d;
-			}	
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			Scene3d();
 
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			virtual OOX::EElementType getType() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-					if (strName == L"a:camera")
-						camera = oReader;
-                	if (strName == L"a:lightRig")
-						lightRig = oReader;
-                	if (strName == L"a:backdrop")
-						backdrop = oReader;
-				}
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                camera		= node.ReadNode(L"a:camera");
-                lightRig	= node.ReadNode(L"a:lightRig");
-                backdrop	= node.ReadNode(L"a:backdrop");
-				
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				
-				oValue.WriteNullable(camera);
-				oValue.WriteNullable(lightRig);
-				oValue.WriteNullable(backdrop);
+			virtual std::wstring toXML() const;
 
-				return XmlUtils::CreateNode(L"a:scene3d", oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, camera);
-				pWriter->WriteRecord2(1, lightRig);
-				pWriter->WriteRecord2(2, backdrop);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							camera = new Logic::Camera();
-							camera->fromPPTY(pReader);							
-						}break;
-						case 1:
-						{
-							lightRig = new Logic::LightRig();
-							lightRig->fromPPTY(pReader);							
-						}break;
-						case 2:
-						{
-							backdrop = new Logic::Backdrop();
-							backdrop->fromPPTY(pReader);							
-						}break;
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = L"w14:";
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = m_namespace + L":";
-
-				pWriter->StartNode(sNodeNamespace + L"scene3d");
-				
-				pWriter->StartAttributes();
-				pWriter->EndAttributes();
-
-				pWriter->Write(camera);
-				pWriter->Write(lightRig);
-				pWriter->Write(backdrop);
-
-				pWriter->EndNode(sNodeNamespace + L"scene3d");
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			nullable<Camera>	camera;
 			nullable<LightRig>	lightRig;
 			nullable<Backdrop>	backdrop;
 
             std::wstring m_namespace = L"a";
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(camera.IsInit())
-					camera->SetParentPointer(this);
-				if(lightRig.IsInit())
-					lightRig->SetParentPointer(this);
-				if(backdrop.IsInit())
-					backdrop->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

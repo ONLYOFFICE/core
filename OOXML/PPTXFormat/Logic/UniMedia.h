@@ -47,92 +47,31 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(UniMedia)
 
+			UniMedia();
 
-			UniMedia()
-			{
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void GetMediaFrom(XmlUtils::CXmlNode& element);
 
-				if (name == _T("audioCd"))
-					Media.reset(new Logic::AudioCD(oReader));
-				else if (name == _T("wavAudioFile"))
-					Media.reset(new Logic::WavAudioFile(oReader));
-				else if (name == _T("audioFile"))
-					Media.reset(new Logic::MediaFile(oReader));
-				else if (name == _T("videoFile"))
-					Media.reset(new Logic::MediaFile(oReader));
-				else if (name == _T("quickTimeFile"))
-					Media.reset(new Logic::MediaFile(oReader));
-				else Media.reset();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
+			virtual std::wstring toXML() const;
 
-				if (name == _T("audioCd"))
-					Media.reset(new Logic::AudioCD(node));
-				else if (name == _T("wavAudioFile"))
-					Media.reset(new Logic::WavAudioFile(node));
-				else if (name == _T("audioFile"))
-					Media.reset(new Logic::MediaFile(node));
-				else if (name == _T("videoFile"))
-					Media.reset(new Logic::MediaFile(node));
-				else if (name == _T("quickTimeFile"))
-					Media.reset(new Logic::MediaFile(node));
-				else Media.reset();
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void GetMediaFrom(XmlUtils::CXmlNode& element)
-			{
-				XmlUtils::CXmlNode oNode;
-				if (element.GetNode(_T("a:audioCd"), oNode))
-					Media.reset(new Logic::AudioCD(oNode));
-				else if (element.GetNode(_T("a:wavAudioFile"), oNode))
-					Media.reset(new Logic::WavAudioFile(oNode));
-				else if (element.GetNode(_T("a:audioFile"), oNode))
-					Media.reset(new Logic::MediaFile(oNode));
-				else if (element.GetNode(_T("a:videoFile"), oNode))
-					Media.reset(new Logic::MediaFile(oNode));
-				else if (element.GetNode(_T("a:quickTimeFile"), oNode))
-					Media.reset(new Logic::MediaFile(oNode));
-				else Media.reset();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				if (Media.IsInit())
-					return Media->toXML();
-				return _T("");
-			}
-			
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (Media.is_init())
-					Media->toXmlWriter(pWriter);
-			}
-
-			virtual bool is_init()const{return (Media.IsInit());};
+			virtual bool is_init() const;
 			
 			template<class T> AVSINLINE const bool	is() const	{ return Media.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Media.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return Media.as<T>(); }
 
 			smart_ptr<WrapperWritingElement> Media;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					Media->SetParentPointer(pParent);
-			};
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 		};
 	} // namespace Logic
 } // namespace PPTX

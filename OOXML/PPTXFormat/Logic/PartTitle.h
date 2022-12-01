@@ -45,23 +45,15 @@ namespace PPTX
 			PPTX_LOGIC_BASE(PartTitle)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_title = node.GetTextExt();
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("<vt:lpstr>") + m_title + _T("</vt:lpstr>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteNodeValue(_T("vt:lpstr"), m_title);	
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			std::wstring	m_title;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -41,163 +41,32 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class FontCollection : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(FontCollection)
 
-			FontCollection& operator=(const FontCollection& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
-
-				latin	= oSrc.latin;
-				ea		= oSrc.ea;
-				cs		= oSrc.cs;
-				
-				for (size_t i=0; i < oSrc.Fonts.size(); i++)
-					Fonts.push_back(oSrc.Fonts[i]);
-
-				m_name	= oSrc.m_name;
-
-				return *this;
-			}
+			FontCollection& operator=(const FontCollection& oSrc);
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("latin") == strName)
-							latin = oNode;
-						else if (_T("ea") == strName)
-							ea = oNode;
-						else if (_T("cs") == strName)
-							cs = oNode;
-						else if (_T("font") == strName)
-							Fonts.push_back(SupplementalFont(oNode));
-					}
-				}
-
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(latin);
-				oValue.Write(ea);
-				oValue.Write(cs);
-				oValue.WriteArray(Fonts);
-
-				return XmlUtils::CreateNode(m_name, oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(m_name);
-				pWriter->EndAttributes();
-
-				latin.toXmlWriter(pWriter);
-				ea.toXmlWriter(pWriter);				
-				cs.toXmlWriter(pWriter);
-				
-				size_t nCount = Fonts.size();
-				for (size_t i = 0; i < nCount; ++i)
-					Fonts[i].toXmlWriter(pWriter);
-
-				pWriter->EndNode(m_name);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, latin);
-				pWriter->WriteRecord1(1, ea);
-				pWriter->WriteRecord1(2, cs);
-				pWriter->WriteRecordArray(3, 0, Fonts);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							latin.fromPPTY(pReader);
-							latin.m_name = _T("a:latin");
-							break;
-						}
-						case 1:
-						{
-							ea.fromPPTY(pReader);
-							ea.m_name = _T("a:ea");
-							break;
-						}
-						case 2:
-						{
-							cs.fromPPTY(pReader);
-							cs.m_name = _T("a:cs");
-							break;
-						}
-						case 3:
-						{
-							pReader->Skip(4);
-							ULONG _c = pReader->GetULong();
-							for (ULONG i = 0; i < _c; ++i)
-							{
-								pReader->Skip(1); // type
-
-								SupplementalFont elm;
-								Fonts.push_back(elm);
-								
-								Fonts[i].m_name = _T("a:font");
-								Fonts[i].fromPPTY(pReader);
-							}
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			TextFont					latin;
 			TextFont					ea;
 			TextFont					cs;
 			std::vector<SupplementalFont> Fonts;
-		//private:
+
 		public:
 			std::wstring m_name;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				latin.SetParentPointer(this);
-				ea.SetParentPointer(this);
-				cs.SetParentPointer(this);
 
-				size_t count = Fonts.size();
-				for (size_t i = 0; i < count; ++i)
-					Fonts[i].SetParentPointer(this);
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

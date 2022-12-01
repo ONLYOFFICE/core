@@ -40,237 +40,25 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Sp3d : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(Sp3d)
 
-			Sp3d() {}
-			Sp3d& operator=(const Sp3d& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Sp3d();
 
-				contourW		= oSrc.contourW;
-				extrusionH		= oSrc.extrusionH;
-				prstMaterial	= oSrc.prstMaterial;
-				z				= oSrc.z;
+			Sp3d& operator=(const Sp3d& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				bevelT			= oSrc.bevelT;
-				bevelB			= oSrc.bevelB;
-				extrusionClr	= oSrc.extrusionClr;
-				contourClr		= oSrc.contourClr;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_prstClr;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-                m_name = XmlUtils::GetNameNoNS(oReader.GetName());
-				ReadAttributes( oReader );
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (_T("bevelT") == strName)
-						bevelT = oReader;
-					else if (_T("bevelB") == strName)
-						bevelB = oReader;
-					else if (_T("extrusionClr") == strName)
-					{
-						extrusionClr.GetColorFrom(oReader);
-					}
-					else if (_T("contourClr") == strName)
-					{
-						contourClr.GetColorFrom(oReader);
-					}
-				}
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"contourW", contourW);
-				XmlMacroReadAttributeBase(node, L"extrusionH", extrusionH);
-				XmlMacroReadAttributeBase(node, L"prstMaterial", prstMaterial);
-				XmlMacroReadAttributeBase(node, L"z", z);
-				XmlMacroReadAttributeBase(node, L"macro", macro);
-
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("bevelT") == strName)
-							bevelT = oNode;
-						else if (_T("bevelB") == strName)
-							bevelB = oNode;
-						else if (_T("extrusionClr") == strName)
-						{
-							extrusionClr.GetColorFrom(oNode);
-						}
-						else if (_T("contourClr") == strName)
-						{
-							contourClr.GetColorFrom(oNode);
-						}
-					}
-				}
-
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS(oReader)
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("contourW"), contourW)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("extrusionH"), extrusionH)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("prstMaterial"), prstMaterial)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("z"), z)
-					WritingElement_ReadAttributes_Read_else_if  (oReader, _T("macro"), macro)
-				WritingElement_ReadAttributes_End_No_NS(oReader)
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace, sNodeChildNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = L"w14:";
-					sNodeChildNamespace = sAttrNamespace = sNodeNamespace;
-				}
-				else
-				{
-					sNodeNamespace = m_namespace + L":";
-					sNodeChildNamespace = L"a:";
-				}
-
-
-				pWriter->StartNode(sNodeNamespace + m_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"macro", macro);
-				pWriter->WriteAttribute(sAttrNamespace + L"contourW", contourW);
-				pWriter->WriteAttribute(sAttrNamespace + L"extrusionH", extrusionH);
-				pWriter->WriteAttribute(sAttrNamespace + L"prstMaterial", prstMaterial);
-				pWriter->WriteAttribute(sAttrNamespace + L"z", z);
-				pWriter->EndAttributes();
-				
-				pWriter->Write(bevelT);
-				pWriter->Write(bevelB);
-
-				if (extrusionClr.is_init())
-				{
-					pWriter->StartNode(sNodeChildNamespace + L"extrusionClr");
-					pWriter->EndAttributes();
-					extrusionClr.toXmlWriter(pWriter);
-					pWriter->EndNode(sNodeChildNamespace + L"extrusionClr");
-				}
-				if (contourClr.is_init())
-				{
-					pWriter->StartNode(sNodeChildNamespace + L"contourClr");
-					pWriter->EndAttributes();
-					contourClr.toXmlWriter(pWriter);
-					pWriter->EndNode(sNodeChildNamespace + L"contourClr");
-				}
-
-				pWriter->EndNode(sNodeNamespace + m_name);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteInt2(0, contourW);
-					pWriter->WriteInt2(1, extrusionH);
-					pWriter->WriteLimit2(2, prstMaterial);
-					pWriter->WriteInt2(3, z);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, bevelT);
-				pWriter->WriteRecord2(1, bevelB);
-				pWriter->WriteRecord1(2, extrusionClr);
-				pWriter->WriteRecord1(3, contourClr);
-				
-				if (macro.IsInit())
-				{
-					pWriter->StartRecord(SPTREE_TYPE_MACRO);
-					pWriter->WriteString1(0, *macro);
-					pWriter->EndRecord();
-				}
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)		contourW = pReader->GetLong();
-					else if (1 == _at)	extrusionH = pReader->GetLong();
-					else if (2 == _at)	prstMaterial = pReader->GetUChar();
-					else if (3 == _at)	z = pReader->GetLong();
-					else
-						break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							bevelT = new Logic::Bevel(L"bevelT");
-							bevelT->fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							bevelB = new Logic::Bevel(L"bevelB");
-							bevelB->fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							extrusionClr.fromPPTY(pReader);
-							break;
-						}
-						case 3:
-						{
-							contourClr.fromPPTY(pReader);
-							break;
-						}
-						case SPTREE_TYPE_MACRO:
-						{
-							pReader->Skip(5); // type + size
-							macro = pReader->GetString2();
-						}break;
-						default:
-							break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-			
 			nullable_string					macro;
 			nullable_int					contourW;
 			nullable_int					extrusionH;
@@ -284,22 +72,10 @@ namespace PPTX
 
 			std::wstring m_name = L"sp3d";
 			std::wstring m_namespace = L"a";
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(bevelT.IsInit())
-					bevelT->SetParentPointer(this);
-				if(bevelB.IsInit())
-					bevelB->SetParentPointer(this);
-				extrusionClr.SetParentPointer(this);
-				contourClr.SetParentPointer(this);
-			}
 
-			AVSINLINE void Normalize()
-			{
-				contourW.normalize_positive();
-				extrusionH.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

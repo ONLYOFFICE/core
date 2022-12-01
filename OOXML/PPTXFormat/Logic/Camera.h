@@ -41,152 +41,33 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Camera : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(Camera)
 			PPTX_LOGIC_BASE2(Camera)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_camera;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual OOX::EElementType getType() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-					if (strName == L"a:rot")
-					{
-						rot = oReader;
-						break;
-					}
-				}
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("prst"), prst)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fov"), fov)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("zoom"), zoom)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				prst	= node.GetAttribute(_T("prst"));
-				XmlMacroReadAttributeBase(node, L"fov", fov);
-				XmlMacroReadAttributeBase(node, L"zoom", zoom);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-                std::wstring sRotNodeName = _T("a:rot");
-                rot		= node.ReadNode(sRotNodeName);
-				FillParentPointersForChilds();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("prst"), prst.get());
-				oAttr.Write(_T("fov"), fov);
-				oAttr.Write(_T("zoom"), zoom);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(rot);
-
-				return XmlUtils::CreateNode(_T("a:camera"), oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = L"w14:";
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = L"a:";
-
-				pWriter->StartNode(sNodeNamespace + L"camera");
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"prst", prst.get());
-				pWriter->WriteAttribute(sAttrNamespace + L"fov", fov);
-				pWriter->WriteAttribute(sAttrNamespace + L"zoom", zoom);
-				pWriter->EndAttributes();
-
-				pWriter->Write(rot);
-
-				pWriter->EndNode(sNodeNamespace + L"camera");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit1(0, prst);
-				pWriter->WriteInt2(1, fov);
-				pWriter->WriteInt2(2, zoom);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-				
-				pWriter->WriteRecord2(0, rot);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)		prst.SetBYTECode(pReader->GetUChar());
-					else if (1 == _at)	fov	= pReader->GetLong();
-					else if (2 == _at)	zoom	= pReader->GetLong();
-					else
-						break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							rot = new Logic::Rot();
-							rot->fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-			
 			nullable<Rot>		rot;
 
 			Limit::CameraType	prst;
 			nullable_int		fov;
 			nullable_int		zoom;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(rot.IsInit())
-					rot->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 
 			AVSINLINE void Normalize()
 			{

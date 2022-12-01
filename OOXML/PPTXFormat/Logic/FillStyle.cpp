@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,3 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include "FillStyle.h"
+
+namespace PPTX
+{
+	namespace Logic
+	{		
+		void FillStyle::fromXML(XmlUtils::CXmlNode& node)
+		{
+			Fill.GetFillFrom(node);
+			FillParentPointersForChilds();
+		}
+		std::wstring FillStyle::toXML() const
+		{
+			return _T("<a:fill>") + Fill.toXML() + _T("</a:fill>");
+		}
+		void FillStyle::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("a:fill"));
+			pWriter->EndAttributes();
+
+			Fill.toXmlWriter(pWriter);
+
+			pWriter->EndNode(_T("a:fill"));
+		}
+		void FillStyle::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord1(0, Fill);
+		}
+		void FillStyle::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						Fill.fromPPTY(pReader);
+						break;
+					}
+					default:
+						break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void FillStyle::FillParentPointersForChilds()
+		{
+			Fill.SetParentPointer(this);
+		}
+	} // namespace Logic
+} // namespace PPTX

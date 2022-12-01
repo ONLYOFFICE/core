@@ -48,265 +48,20 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Path2D)
 			PPTX_LOGIC_BASE2(Path2D)
 
-			Path2D& operator=(const Path2D& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Path2D& operator=(const Path2D& oSrc);
 
-				extrusionOk	= oSrc.extrusionOk;
-				fill		= oSrc.fill;
-				h			= oSrc.h;
-				stroke		= oSrc.stroke; 
-				w			= oSrc.w;
+			virtual OOX::EElementType getType() const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				Paths = oSrc.Paths;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_path;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				Paths.clear();
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-					UniPath2D p;
-					Paths.push_back(p);
-					Paths.back().fromXML(oReader);
-				}
-			
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("extrusionOk"), extrusionOk)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fill"), fill )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("h"), h )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("stroke"), stroke )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w"), w )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"extrusionOk", extrusionOk);
-				XmlMacroReadAttributeBase(node, L"fill", fill);
-				XmlMacroReadAttributeBase(node, L"h", h);
-				XmlMacroReadAttributeBase(node, L"stroke", stroke);
-				XmlMacroReadAttributeBase(node, L"w", w);
-
-				Paths.clear();
-				XmlMacroLoadArray(node, _T("*"), Paths, UniPath2D);
-				
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("w"), w);
-				oAttr.Write(_T("h"), h);
-				oAttr.WriteLimitNullable(_T("fill"), fill);
-				oAttr.Write(_T("stroke"), stroke);
-				oAttr.Write(_T("extrusionOk"), extrusionOk);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(Paths);
-
-				return XmlUtils::CreateNode(_T("a:path"), oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:path"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("w"), w);
-				pWriter->WriteAttribute(_T("h"), h);
-				pWriter->WriteAttribute(_T("fill"), fill);
-				pWriter->WriteAttribute(_T("stroke"), stroke);
-				pWriter->WriteAttribute(_T("extrusionOk"), extrusionOk);
-				pWriter->EndAttributes();
-
-				size_t nCount = Paths.size();
-				for (size_t i = 0; i < nCount; ++i)
-					Paths[i].toXmlWriter(pWriter);
-
-				pWriter->EndNode(_T("a:path"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, extrusionOk);
-				pWriter->WriteLimit2(1, fill);
-				pWriter->WriteInt2(2, h);
-				pWriter->WriteBool2(3, stroke);
-				pWriter->WriteInt2(4, w);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecordArray(0, 1, Paths);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							extrusionOk = pReader->GetBool();
-							break;
-						}
-						case 1:
-						{
-							fill = pReader->GetUChar();
-							break;
-						}
-						case 2:
-						{
-							h = pReader->GetLong();
-							break;
-						}
-						case 3:
-						{
-							stroke = pReader->GetBool();
-							break;
-						}
-						case 4:
-						{
-							w = pReader->GetLong();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _e)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							pReader->Skip(4); // len
-
-							ULONG _c = pReader->GetULong();
-
-							for (ULONG j = 0; j < _c; ++j)
-							{
-								pReader->Skip(5); // type + len
-								
-								BYTE _type = pReader->GetUChar();
-								LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-								Paths.push_back(UniPath2D());
-								UniPath2D& oPath = Paths[j];
-
-								if (_type == GEOMETRY_TYPE_PATH_CLOZE)
-								{
-									Logic::Close* p = new Logic::Close();
-									oPath.Path2D.reset(p);
-									pReader->Seek(_end);
-									continue;
-								}
-
-								pReader->Skip(1);
-
-								std::wstring arr[6];
-
-								while (true)
-								{
-									BYTE _at2 = pReader->GetUChar_TypeNode();
-									if (_at2 == NSBinPptxRW::g_nodeAttributeEnd)
-										break;
-
-									arr[_at2] = pReader->GetString2();
-								}
-
-								switch (_type)
-								{
-								case GEOMETRY_TYPE_PATH_MOVETO:
-									{
-										Logic::MoveTo* p = new Logic::MoveTo();
-										p->x = arr[0];
-										p->y = arr[1];
-										oPath.Path2D.reset(p);
-										break;
-									}
-								case GEOMETRY_TYPE_PATH_LINETO:
-									{
-										Logic::LineTo* p = new Logic::LineTo();
-										p->x = arr[0];
-										p->y = arr[1];
-										oPath.Path2D.reset(p);
-										break;
-									}
-								case GEOMETRY_TYPE_PATH_CUBICBEZTO:
-									{
-										Logic::CubicBezTo* p = new Logic::CubicBezTo();
-										p->x[0] = arr[0];
-										p->y[0] = arr[1];
-										p->x[1] = arr[2];
-										p->y[1] = arr[3];
-										p->x[2] = arr[4];
-										p->y[2] = arr[5];
-										oPath.Path2D.reset(p);
-										break;
-									}
-								case GEOMETRY_TYPE_PATH_ARCTO:
-									{
-										Logic::ArcTo* p = new Logic::ArcTo();
-										p->wR = arr[0];
-										p->hR = arr[1];
-										p->stAng = arr[2];
-										p->swAng = arr[3];
-										oPath.Path2D.reset(p);
-										break;
-									}
-								case GEOMETRY_TYPE_PATH_QUADBEZTO:
-									{
-										Logic::QuadBezTo* p = new Logic::QuadBezTo();
-										p->x[0] = arr[0];
-										p->y[0] = arr[1];
-										p->x[1] = arr[2];
-										p->y[1] = arr[3];
-										oPath.Path2D.reset(p);
-										break;
-									}
-								default:
-									break;
-								}
-
-								pReader->Seek(_end);
-							}
-
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_e);
-			}
-			
 		public:
 			nullable_bool							extrusionOk;
 			nullable_limit<Limit::PathFillMode>		fill;
@@ -315,30 +70,12 @@ namespace PPTX
 			nullable_int							w;
 
 			std::vector<UniPath2D>					Paths;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				size_t count = Paths.size();
-				for (size_t i = 0; i < count; ++i)
-					Paths[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual std::wstring GetODString()const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("w"), w);
-				oAttr.Write(_T("h"), h);
-				oAttr.WriteLimitNullable(_T("fill"), fill);
-				oAttr.Write(_T("stroke"), stroke);
-				oAttr.Write(_T("extrusionOk"), extrusionOk);
-
-				std::wstring strXml = _T("");
-				size_t nCount = Paths.size();
-				for (size_t i = 0; i < nCount; ++i)
-					strXml += Paths[i].GetODString();
-
-				return XmlUtils::CreateNode(_T("path"), oAttr, strXml);
-			}
+			virtual std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

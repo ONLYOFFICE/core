@@ -46,93 +46,24 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Rot)
 			PPTX_LOGIC_BASE2(Rot)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_rot;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"lat", lat)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"lon", lon)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"rev", rev)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				lat = node.GetAttribute(L"lat");
-				lon = node.GetAttribute(L"lon");
-				rev = node.GetAttribute(L"rev");
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"lat", lat);
-				oAttr.Write(L"lon", lon);
-				oAttr.Write(L"rev", rev);
+			virtual OOX::EElementType getType() const;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				return XmlUtils::CreateNode(L"a:rot", oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = L"w14:";
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = L"a:";
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				pWriter->StartNode(sNodeNamespace + L"rot");
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"lat", lat);
-				pWriter->WriteAttribute(sAttrNamespace + L"lon", lon);
-				pWriter->WriteAttribute(sAttrNamespace + L"rev", rev);
-				pWriter->EndAttributes();
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->EndNode(sNodeNamespace + L"rot");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, lat);
-				pWriter->WriteInt2(1, lon);
-				pWriter->WriteInt2(2, rev);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)		lat	= pReader->GetLong();
-					else if (1 == _at)	lon	= pReader->GetLong();
-					else if (2 == _at)	rev = pReader->GetLong();
-					else
-						break;
-				}
-				pReader->Seek(_end_rec);
-			}
 			nullable_int lat;
 			nullable_int lon;
 			nullable_int rev;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

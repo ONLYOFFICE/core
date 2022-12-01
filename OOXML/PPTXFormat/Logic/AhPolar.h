@@ -39,125 +39,22 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class AhPolar : public Ah
 		{
 		public:
 			WritingElement_AdditionConstructors(AhPolar)
 			PPTX_LOGIC_BASE2(AhPolar)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oPos = node.ReadNode(_T("a:pos"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual OOX::EElementType getType() const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				x	= oPos.GetAttributeBase(L"x");
-				y	= oPos.GetAttributeBase(L"y");
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader);
 
-				XmlMacroReadAttributeBase(node, L"gdRefAng", gdRefAng);
-				XmlMacroReadAttributeBase(node, L"gdRefR", gdRefR);
-				XmlMacroReadAttributeBase(node, L"maxAng", maxAng);
-				XmlMacroReadAttributeBase(node, L"maxR", maxR);
-				XmlMacroReadAttributeBase(node, L"minAng", minAng);
-				XmlMacroReadAttributeBase(node, L"minR", minR);
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_ahPolar;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-
-					if (sName == L"a:pos")
-					{
-						ReadAttributes2(oReader);
-					}
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("gdRefR"), gdRefR )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minR"), minR )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxR"), maxR )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("gdRefAng"), gdRefAng )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("minAng"), minAng )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("maxAng"), maxAng )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, _T("x"), x )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, _T("y"), y )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr1;
-				oAttr1.Write(_T("gdRefR"), gdRefR);
-				oAttr1.Write(_T("minR"), minR);
-				oAttr1.Write(_T("maxR"), maxR);
-				oAttr1.Write(_T("gdRefAng"), gdRefAng);
-				oAttr1.Write(_T("minAng"), minAng);
-				oAttr1.Write(_T("maxAng"), maxAng);
-
-				XmlUtils::CAttribute oAttr2;
-				oAttr2.Write(_T("x"), x);
-				oAttr2.Write(_T("y"), y);
-
-				return XmlUtils::CreateNode(_T("a:ahPolar"), oAttr1, XmlUtils::CreateNode(_T("a:pos"), oAttr2));
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:ahPolar"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("gdRefR"), gdRefR);
-				pWriter->WriteAttribute(_T("minR"), minR);
-				pWriter->WriteAttribute(_T("maxR"), maxR);
-				pWriter->WriteAttribute(_T("gdRefAng"), gdRefAng);
-				pWriter->WriteAttribute(_T("minAng"), minAng);
-				pWriter->WriteAttribute(_T("maxAng"), maxAng);
-				pWriter->EndAttributes();
-
-				pWriter->StartNode(_T("a:pos"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("x"), x);
-				pWriter->WriteAttribute(_T("y"), y);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("a:pos"));
-
-				pWriter->EndNode(_T("a:ahPolar"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(GEOMETRY_TYPE_AH_POLAR);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, x);
-				pWriter->WriteString1(1, y);
-
-				pWriter->WriteString2(2, gdRefAng);
-				pWriter->WriteString2(3, gdRefR);
-				pWriter->WriteString2(4, maxAng);
-				pWriter->WriteString2(5, maxR);
-				pWriter->WriteString2(6, minAng);
-				pWriter->WriteString2(7, minR);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			std::wstring				x;
@@ -169,25 +66,12 @@ namespace PPTX
 			nullable_string maxR;
 			nullable_string minAng;
 			nullable_string minR;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			std::wstring GetODString()const
-			{
-				XmlUtils::CAttribute oAttr1;
-				oAttr1.Write(_T("gdRefR"), gdRefR);
-				oAttr1.Write(_T("minR"), minR);
-				oAttr1.Write(_T("maxR"), maxR);
-				oAttr1.Write(_T("gdRefAng"), gdRefAng);
-				oAttr1.Write(_T("minAng"), minAng);
-				oAttr1.Write(_T("maxAng"), maxAng);
-
-				XmlUtils::CAttribute oAttr2;
-				oAttr2.Write(_T("x"), x);
-				oAttr2.Write(_T("y"), y);
-
-				return XmlUtils::CreateNode(_T("ahPolar"), oAttr1, XmlUtils::CreateNode(_T("pos"), oAttr2));
-			}
+			std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -55,7 +55,6 @@ namespace PPTX
 		{
 			fromXML(oReader);
 		}
-
 		const SpPr& SpPr::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -157,7 +156,6 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
-
 		std::wstring SpPr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
@@ -174,7 +172,6 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":spPr", oAttr, oValue);
 		}
-
 		void SpPr::Merge(SpPr& spPr)const
 		{
 			if(xfrm.IsInit())
@@ -186,7 +183,6 @@ namespace PPTX
 			if(ln.IsInit())
 				ln->Merge(spPr.ln);
 		}
-
 		void SpPr::FillParentPointersForChilds()
 		{
 			if(xfrm.IsInit())
@@ -201,7 +197,6 @@ namespace PPTX
 			if(sp3d.IsInit())
 				sp3d->SetParentPointer(this);
 		}
-
 		void SpPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -272,6 +267,73 @@ namespace PPTX
 			}
 
 			pReader->Seek(_end_rec);
+		}
+		OOX::EElementType SpPr::getType () const
+		{
+			return OOX::et_a_spPr;
+		}
+		void SpPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("bwMode"), bwMode )
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		void SpPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring name_ = L"a:spPr";
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
+			{
+				if (0 == (pWriter->m_lFlag & 0x01))								name_ = L"wps:spPr";
+				else															name_ = L"pic:spPr";
+			}
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			name_ = L"xdr:spPr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:spPr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			name_ = L"dgm:spPr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		name_ = L"dsp:spPr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART)			name_ = L"c:spPr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		name_ = L"a:spPr";
+			else
+			{//theme
+				if (0 != (pWriter->m_lFlag & 0x04))								name_ = L"a:spPr";
+				else															name_ = L"p:spPr";
+			}
+			pWriter->StartNode(name_);
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("bwMode"), bwMode);
+			pWriter->EndAttributes();
+
+			pWriter->Write(xfrm);
+			Geometry.toXmlWriter(pWriter);
+
+			if ((pWriter->m_lFlag & 0x02) != 0 && !Fill.is_init())
+			{
+				pWriter->WriteString(_T("<a:grpFill/>"));
+			}
+			Fill.toXmlWriter(pWriter);
+
+			pWriter->Write(ln);
+			EffectList.toXmlWriter(pWriter);
+			pWriter->Write(scene3d);
+			pWriter->Write(sp3d);
+
+			pWriter->EndNode(name_);
+		}
+		void SpPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteLimit2(0, bwMode);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			pWriter->WriteRecord2(0, xfrm);
+			pWriter->WriteRecord1(1, Geometry);
+			pWriter->WriteRecord1(2, Fill);
+			pWriter->WriteRecord2(3, ln);
+			pWriter->WriteRecord1(4, EffectList);
+			pWriter->WriteRecord2(5, scene3d);
+			pWriter->WriteRecord2(6, sp3d);
 		}
 	} // namespace Logic
 } // namespace PPTX

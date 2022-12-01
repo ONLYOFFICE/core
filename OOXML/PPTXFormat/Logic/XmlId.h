@@ -45,84 +45,21 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(XmlId)
 
-			XmlId(std::wstring name)
-			{
-				m_name = name;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
+			XmlId(std::wstring name);
 
-				XmlMacroReadAttributeBase(node, L"r:id", rid);
-				XmlMacroReadAttributeBase(node, L"id", id);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("r:id"), rid.ToString());
-				oAttr.Write(_T("id"), id);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				return XmlUtils::CreateNode(m_name, oAttr);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, id);
-				
-				rid.toPPTY(1, pWriter);
-				
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-					case 0:
-						id = pReader->GetString2();
-						break;
-					case 1:
-						rid = pReader->GetString2();
-						break;
-					default:
-						break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode( m_name );
-				
-				pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("id"), id);
-					
-					std::wstring sRid = rid.ToString();
-					if (sRid.empty() == false)
-					{
-						pWriter->WriteAttribute(_T("r:id"), sRid);
-					}
-				pWriter->EndAttributes();				
-
-				pWriter->EndNode( m_name );
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			nullable_string			id;
 			OOX::RId				rid;
 			std::wstring			m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

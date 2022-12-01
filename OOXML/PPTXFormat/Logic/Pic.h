@@ -88,6 +88,7 @@ namespace PPTX
 				}
 			}
 		};
+
 		class OLEType : public BaseLimit
 		{
 		public:
@@ -131,6 +132,7 @@ namespace PPTX
 				}
 			}
 		};
+
 		class OLEUpdateMode : public BaseLimit
 		{
 		public:

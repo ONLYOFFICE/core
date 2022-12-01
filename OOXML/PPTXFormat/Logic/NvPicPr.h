@@ -48,158 +48,27 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(NvPicPr)
 
-			NvPicPr(std::wstring ns = L"p")
-			{
-				m_namespace = ns;
-			}
-			NvPicPr& operator=(const NvPicPr& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			NvPicPr(std::wstring ns = L"p");
 
-				cNvPr		= oSrc.cNvPr;
-				cNvPicPr	= oSrc.cNvPicPr;
-				nvPr		= oSrc.nvPr;
+			NvPicPr& operator=(const NvPicPr& oSrc);
 
-				m_namespace	= oSrc.m_namespace;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-					if (_T("cNvPr") == strName)
-						cNvPr.fromXML( oReader);
-					else if (_T("cNvPicPr") == strName)
-						cNvPicPr.fromXML( oReader);
-					else if (_T("nvPr") == strName)
-						nvPr.fromXML( oReader);
-				}
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
-
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("cNvPr") == strName)
-							cNvPr = oNode;
-						else if (_T("cNvPicPr") == strName)
-							cNvPicPr = oNode;
-						else if (_T("nvPr") == strName)
-							nvPr = oNode;
-					}
-				}
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cNvPr);
-				oValue.Write(cNvPicPr);
-				oValue.Write(nvPr);
-
-				return XmlUtils::CreateNode(m_namespace + L":nvPicPr", oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring namespace_ = m_namespace;
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)		namespace_ = L"pic";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
-
-				pWriter->StartNode(namespace_ + L":nvPicPr");
-
-				pWriter->EndAttributes();
-
-				cNvPr.toXmlWriter(pWriter);
-				cNvPicPr.toXmlWriter(pWriter);
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX ||
-					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-					pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
-						nvPr.toXmlWriter(pWriter);
-
-				pWriter->EndNode(namespace_ + L":nvPicPr");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, cNvPr);
-				pWriter->WriteRecord1(1, cNvPicPr);
-				pWriter->WriteRecord1(2, nvPr);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							cNvPr.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							cNvPicPr.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							nvPr.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 			std::wstring	m_namespace;
 
 			CNvPr			cNvPr;
 			CNvPicPr		cNvPicPr;
 			NvPr			nvPr;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cNvPr.SetParentPointer(this);
-				cNvPicPr.SetParentPointer(this);
-				nvPr.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

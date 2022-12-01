@@ -1675,27 +1675,33 @@ namespace NExtractTools
 			}
 		}
 		std::wstring sThumbnailDir;
-        if(imageWriter.GetIsOnlyFirst())
+		if(imageWriter.GetIsOnlyFirst())
 		{
-            imageWriter.SetFileName(sTo);
+			imageWriter.SetFileName(sTo);
 		}
 		else
 		{
-			sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
-			NSDirectory::CreateDirectory(sThumbnailDir);
-            imageWriter.SetFileName(sThumbnailDir + FILE_SEPARATOR_STR + L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat()));
+			std::wstring sFileAddon = L"image" + getExtentionByRasterFormat(imageWriter.GetRasterFormat());
+			if (NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip))
+			{
+				sThumbnailDir = sTemp + FILE_SEPARATOR_STR + L"thumbnails";
+				NSDirectory::CreateDirectory(sThumbnailDir);
+				imageWriter.SetFileName(sThumbnailDir + FILE_SEPARATOR_STR + sFileAddon);
+			}
+			else
+			{
+				if (!NSDirectory::Exists(sTo))
+					NSDirectory::CreateDirectory(sTo);
+				imageWriter.SetFileName(sTo + FILE_SEPARATOR_STR + sFileAddon);
+			}
 		}
 		nRes = imageWriter.ConvertBuffer(pBuffer, lBufferLen) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
-		if(!imageWriter.GetIsOnlyFirst() && (NULL == params.m_oThumbnail->zip || *(params.m_oThumbnail->zip)))
+		if(!sThumbnailDir.empty())
 		{
 			COfficeUtils oCOfficeUtils(NULL);
 			nRes = S_OK == oCOfficeUtils.CompressFileOrDirectory(sThumbnailDir, sTo) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 		}
-		else if(!imageWriter.GetIsOnlyFirst() && NULL != params.m_oThumbnail->zip && !(*(params.m_oThumbnail->zip)))
-		{
-			nRes = S_OK == NSDirectory::CopyDirectory(sThumbnailDir, sTo);
-		}
-        RELEASEOBJECT(pApplicationFonts);
+		RELEASEOBJECT(pApplicationFonts);
 		return nRes;
 	}
 	_UINT32 bin2imageBase64 (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params, const std::wstring& sDocxDir = L"")

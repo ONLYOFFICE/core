@@ -19,7 +19,6 @@
 #include "../../../Common/ComplexTypes.h"
 #include "../../../Common/SimpleTypes_Shared.h"
 #include "../../../Common/SimpleTypes_Word.h"
-#include "../../../Common/Unit.h"
 #include "../../../DocxFormat/Drawing/Drawing.h"
 #include "../../../DocxFormat/External/HyperLink.h"
 #include "../../../DocxFormat/Logic/Annotations.h"

@@ -47,7 +47,6 @@
 #include "../../../DocxFormat/IFileContainer.h"
 #include "../../../DocxFormat/RId.h"
 #include "../../../DocxFormat/Styles.h"
-#include "../../../DocxFormat/Unit.h"
 #include "../../../DocxFormat/WritingElement.h"
 #include "../../../SystemUtility/SystemUtility.h"
 #include "../../../Base/Unit.h"
@@ -66,5 +65,4 @@
 #include "../../../XlsxFormat/FileTypes_Spreadsheet.h"
 #include "../../../XlsxFormat/WritingElement.h"
 #include "../../../XlsxFormat/Xlsx.h"
-#include "../../../MathEquation/Types.h"
 #include "../../../DocxFormat/Diagram/DiagramData.h"

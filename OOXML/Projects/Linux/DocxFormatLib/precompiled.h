@@ -1,3 +1,5 @@
+#if defined __cplusplus
+
 #include <string>
 #include <iostream>
 #include <memory.h>
@@ -66,3 +68,5 @@
 #include "../../../XlsxFormat/WritingElement.h"
 #include "../../../XlsxFormat/Xlsx.h"
 #include "../../../DocxFormat/Diagram/DiagramData.h"
+
+#endif

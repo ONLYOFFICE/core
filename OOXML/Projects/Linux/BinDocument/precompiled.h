@@ -1,3 +1,5 @@
+#if defined __cplusplus
+
 #include <string>
 #include <iostream>
 #include <memory.h>
@@ -17,3 +19,5 @@
 #include "../../../Binary/Document/BinWriter/BinReaderWriterDefines.h"
 #include "../../../Binary/Sheets/Common/BinReaderWriterDefines.h"
 #include "../../../Binary/Sheets/Common/Common.h"
+
+#endif

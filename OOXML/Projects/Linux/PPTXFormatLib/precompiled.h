@@ -1,3 +1,5 @@
+#if defined __cplusplus
+
 #include <string>
 #include <iostream>
 #include <memory.h>
@@ -37,6 +39,6 @@
 #include "../../../PPTXFormat/Theme.h"
 #include "../../../PPTXFormat/WrapperFile.h"
 #include "../../../PPTXFormat/WrapperWritingElement.h"
-#include "../../../Binary/Presentation/BinaryFileReaderWriter.h"
-#include "../../../Binary/Presentation/BinReaderWriterDefines.h"
 #include "../../../Base/Nullable.h"
+
+#endif

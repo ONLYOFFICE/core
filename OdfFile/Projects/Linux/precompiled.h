@@ -1,3 +1,5 @@
+#if defined __cplusplus
+
 #include <string>
 #include <iosfwd>
 #include <ostream>
@@ -47,3 +49,5 @@
 #include "../../DataTypes/odfattributes.h"
 #include "../../DataTypes/percent.h"
 #include "../../DataTypes/verticalalign.h"
+
+#endif

@@ -1,3 +1,5 @@
+#if defined __cplusplus
+
 #include <string>
 #include <iostream>
 #include <memory.h>
@@ -32,3 +34,5 @@
 #include "../../../XlsbFormat/Biff12_structures/PCDISrvFmt.h"
 #include "../../../XlsbFormat/Biff12_unions/ACUID.h"
 #include "../../../XlsbFormat/Biff12_unions/FRT.h"
+
+#endif

@@ -1542,7 +1542,7 @@ namespace MetaFile
 				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
 				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - 1, arPoints[2].Y - arPoints[0].Y - 1,
+				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
 						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
@@ -1560,8 +1560,8 @@ namespace MetaFile
 
 				oRect.dLeft   = arPoints[0].X;
 				oRect.dTop    = arPoints[0].Y;
-				oRect.dRight  = arPoints[1].X;
-				oRect.dBottom = arPoints[2].Y;
+				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
+				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
 				TRectD oTempSrcRect = oSrcRect.GetRectD();
 
@@ -1656,7 +1656,7 @@ namespace MetaFile
 				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
 				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - 1, arPoints[2].Y - arPoints[0].Y - 1,
+				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
 											 (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
@@ -1739,7 +1739,7 @@ namespace MetaFile
 
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect);
 
-		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - 1, arPoints[2].Y - arPoints[0].Y - 1,
+		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
 				(NULL != pNewBuffer) ? pNewBuffer : pBytes, fabs(oClipRect.nRight - oClipRect.nLeft), fabs(oClipRect.nBottom - oClipRect.nTop));
 
 		if (!bExternalBuffer)

@@ -863,7 +863,7 @@ namespace MetaFile
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
-		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
+		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft - 1) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop - 1) + L"\" " +
 		                      L"viewBox=\"" + ConvertToWString(oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dTop) + L' ' + ConvertToWString(oNewClipRect.dRight - oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dBottom - oNewClipRect.dTop) + L'\"';
 
 		wsNewSvg.insert(unFirstPos, wsClip);
@@ -1182,7 +1182,7 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	std::to_wstring(oOldTransform.M11) + L',' + std::to_wstring(oOldTransform.M22) + L')';
+			wsValue = L"scale(" +	ConvertToWString(oOldTransform.M11) + L',' + ConvertToWString(oOldTransform.M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
@@ -1190,10 +1190,10 @@ namespace MetaFile
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	std::to_wstring(oOldTransform.M11) + L',' +
-			                        std::to_wstring(oOldTransform.M12) + L',' +
-			                        std::to_wstring(oOldTransform.M21) + L',' +
-			                        std::to_wstring(oOldTransform.M22) + L',' +
+			wsValue = L"matrix(" +	ConvertToWString(oOldTransform.M11) + L',' +
+			                        ConvertToWString(oOldTransform.M12) + L',' +
+			                        ConvertToWString(oOldTransform.M21) + L',' +
+			                        ConvertToWString(oOldTransform.M22) + L',' +
 			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;

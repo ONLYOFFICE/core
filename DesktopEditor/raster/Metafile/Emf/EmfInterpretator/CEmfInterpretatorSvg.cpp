@@ -2235,6 +2235,8 @@ namespace MetaFile
 
 		AddTransform(arNodeAttributes, &oTransform);
 
+		arNodeAttributes.push_back({L"xml:space", L"preserve"});
+
 		if (!m_wsLastClipId.empty() && !bWriteG)
 		{
 			NodeAttributes arGAttributes;

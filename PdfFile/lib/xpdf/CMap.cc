@@ -76,6 +76,59 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA, Object *obj) {
   return cMap;
 }
 
+#include <iostream>
+void printVector(CMapVectorEntry *vector)
+{
+    for (int i = 0; i < 256; ++i)
+    {
+        if (vector[i].isVector)
+        {
+            int m = 0;
+            for (int j = 0; j < 256; ++j)
+            {
+                if (vector[i].vector[j].isVector)
+                {
+                    std::cout << "NO";
+                }
+                if (vector[i].vector[j].cid)
+                    m++;
+            }
+
+            if (m > 106)
+            {
+                std::cout << 256 << ",";
+                for (int j = 0; j < 256; ++j)
+                {
+                    std::cout << vector[i].vector[j].cid << ",";
+                }
+            }
+            else
+            {
+                std::cout << m << ",";
+                for (int j = 0; j < 256; ++j)
+                {
+                    if (vector[i].vector[j].cid)
+                    {
+                        std::cout << j << "," << vector[i].vector[j].cid << ",";
+                    }
+                }
+            }
+        }
+        else
+        {
+            std::cout << 0 << ",";
+        }
+    }
+}
+
+void CMap::PrintCMap(GString *cMapNameA)
+{
+    std::cout << cMapNameA->getCString() << std::endl;
+    std::cout << "isIdent" << isIdent << std::endl;
+    std::cout << "wMode" << wMode << std::endl;
+    printVector(vector);
+}
+
 CMap *CMap::parse(CMapCache *cache, GString *collectionA,
 		  GString *cMapNameA) {
   FILE *f;
@@ -92,6 +145,7 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA,
       return NULL;
     cMap = new CMap(collectionA->copy(), cMapNameA->copy());
     cMap->parse2(cache, &getCharFromStream, str);
+    cMap->PrintCMap(cMapNameA);
     delete str;
     return cMap;
   }

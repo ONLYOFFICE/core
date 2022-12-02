@@ -6,7 +6,7 @@ import codecs
 base.configure_common_apps()
 
 cmap_directory = "./../CMap/"
-cidToUnicode_names = ["Adobe-GB1", "Adobe-Korea1", "Adobe-KR", "Adobe-Japan1"]
+cidToUnicode_names = ["Adobe-GB1", "Adobe-CNS1", "Adobe-Korea1", "Adobe-KR", "Adobe-Japan1"]
 cidToUnicode_values = {}
 
 for item in cidToUnicode_names:
@@ -19,7 +19,10 @@ for item in cidToUnicode_names:
 
 cmap_directory = "./../CMap/CMap/"
 
-cmap_names = ["90ms-RKSJ-H", "90ms-RKSJ-V", "GBK-EUC-H"]
+# GB1
+cmap_names = ["GB-EUC-H", "GB-EUC-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H", "GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF16-H", "UniGB-UTF16-V"]
+# Japan1
+cmap_names += ["90ms-RKSJ-H", "90ms-RKSJ-V"]
 cmap_values = {}
 
 for item in cmap_names:

@@ -447,9 +447,14 @@ namespace MetaFile
 
 		BYTE* pBuffer = new BYTE[unMetafileSize];
 
+		if (NULL == pBuffer)
+			return;
+
 		m_oStream.ReadBytes(pBuffer, unMetafileSize);
 
 		oImage.AddData(pBuffer, unMetafileSize);
+
+		delete[] pBuffer;
 	}
 
 	void CEmfPlusParser::ReadBitmap(CEmfPlusImage &oImage, bool bReadData)
@@ -469,12 +474,17 @@ namespace MetaFile
 
 		BYTE* pBuffer = new BYTE[m_ulRecordSize - 28];
 
+		if (NULL == pBuffer)
+			return;
+
 		m_oStream.ReadBytes(pBuffer, m_ulRecordSize - 28);
 
 		if (BitmapDataTypePixel == unType)
 			oImage.SetImageSize(nWidth, nHeight);
 
 		oImage.AddData(pBuffer, m_ulRecordSize - 28);
+
+		delete[] pBuffer;
 	}
 
 	CEmfPlusImage* CEmfPlusParser::GetImage(unsigned int unImageIndex)

@@ -42,6 +42,10 @@ SOURCES += \
 	pptx_format_logic.cpp
 }
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
+
 core_debug {
 SOURCES += \
 	../../../PPTXFormat/Logic/Media/WavAudioFile.cpp \

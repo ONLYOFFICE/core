@@ -25,12 +25,15 @@ DEFINES += UNICODE \
 	DONT_WRITE_EMBEDDED_FONTS \
 	AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
 
 SOURCES += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.cpp \
 	../../../Binary/Document/DocWrapper/FontProcessor.cpp \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.cpp \
-        ../../../Binary/Document/DocWrapper/ChartSerializer.cpp \
+	../../../Binary/Document/DocWrapper/ChartSerializer.cpp \
 	../../../Binary/Document/BinWriter/BinWriters.cpp \
 	../../../Binary/Sheets/Common/Common.cpp \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.cpp \

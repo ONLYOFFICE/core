@@ -106,30 +106,13 @@ namespace NSEncoding
 		}
 		else
 		{
-			static const std::map<int, std::string>::const_iterator pFind = NSUnicodeConverter::mapEncodingsICU.find(code_page);
+			const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
+			NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
 
-			if (pFind != NSUnicodeConverter::mapEncodingsICU.end())
+			for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
 			{
-				const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
-				NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-
-				for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
-				{
-					result.push_back(oUnicodeConverter.fromUnicode(*iter, pFind->second.c_str()));
-				}
+				result.push_back(oUnicodeConverter.fromUnicode(*iter, oEncodindId.Name));
 			}
-			else
-			{
-				//by index ???
-				const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[code_page];
-				NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
-
-				for (std::vector<std::wstring>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
-				{
-					result.push_back(oUnicodeConverter.fromUnicode(*iter, oEncodindId.Name));
-				}
-			}
-
 		}
 		return result;
 	}
@@ -179,7 +162,7 @@ namespace Txt
 
 		if (file.isUtf8())
 		{
-			m_listContent = NSEncoding::transformToUnicode(file.readUtf8(), 65001);
+			m_listContent = NSEncoding::transformToUnicode(file.readUtf8(), 46); //65001 Unicode (UTF-8)
 		}
 		else if (file.isUnicode())
 		{
@@ -197,7 +180,7 @@ namespace Txt
 		else
 		{
 			int nCodePage = m_nEncoding;
-			if (-1 == nCodePage) nCodePage = 65001;
+			if (-1 == nCodePage) nCodePage = 46;
 			else if (1000 == nCodePage) nCodePage = -1;
 
 			m_listContent = NSEncoding::transformToUnicode(file.readAnsiOrCodePage(), nCodePage);
@@ -209,7 +192,7 @@ namespace Txt
 	void File::write(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 65001));
+		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 46));
 	}
 
 	void File::writeCodePage(const std::wstring& filename, int code_page) const
@@ -221,7 +204,7 @@ namespace Txt
 	void File::writeUtf8(const std::wstring& filename) const
 	{
 		TxtFile file(filename);
-		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 65001));
+		file.writeUtf8(NSEncoding::transformFromUnicode(m_listContent, 46));
 	}
 
 	void File::writeUnicode(const std::wstring& filename) const

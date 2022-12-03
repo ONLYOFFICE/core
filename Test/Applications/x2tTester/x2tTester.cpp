@@ -701,6 +701,13 @@ DWORD CConverter::ThreadProc()
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 
+		bool exist;
+		if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
+			exist = NSDirectory::Exists(output_file);
+		else
+			exist = NSFile::CFileBinary::Exists(output_file);
+
+
 		int input_size = 0;
 		int output_size = 0;
 
@@ -710,9 +717,8 @@ DWORD CConverter::ThreadProc()
 		input_size = b_file.GetFileSize();
 		b_file.CloseFile();
 
-
 		// get sizes
-		if (!exit_code)
+		if (!exit_code && exist)
 		{
 			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 			{
@@ -735,14 +741,14 @@ DWORD CConverter::ThreadProc()
 		}
 
 		// save param xml of error conversion
-		if(exit_code)
+		if(exit_code || !exist)
 		{
 			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_filename;
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
 		}
 
 		// writing report
-		if(!m_bIsErrorsOnly || exit_code)
+		if(!m_bIsErrorsOnly || exit_code || !exist)
 		{
 			Cx2tTester::Report report;
 			report.inputFile = input_filename;
@@ -755,7 +761,8 @@ DWORD CConverter::ThreadProc()
 			reports.push_back(report);
 		}
 
-		NSFile::CFileBinary::Remove(xml_params_file);
+		if(!exit_code && exist)
+			NSFile::CFileBinary::Remove(xml_params_file);
 
 		std::string input_file_UTF8 = U_TO_UTF8(input_filename);
 		std::string output_file_UTF8 = U_TO_UTF8(output_filename);
@@ -767,20 +774,22 @@ DWORD CConverter::ThreadProc()
 		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
 		std::cout << input_file_UTF8 << " to " << output_file_UTF8 << " ";
 
-		if(!exit_code)
-		{
+		if(!exit_code && exist)
 			std::cout << "OK";
-		}
 		else
 		{
 			is_all_ok = false;
-			std::cout << "BAD " << exit_code;
+			std::cout << "BAD ";
+			if(exit_code)
+				std::cout << exit_code;
+			else
+				std::cout << "OUTPUT IS NOT EXIST";
 		}
 
 		std::cout << std::endl;
 		m_internal->m_outputCS.Leave();
 
-		if(m_bIsDeleteOk && !exit_code)
+		if(m_bIsDeleteOk && !exit_code && exist)
 		{
 			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 				NSDirectory::DeleteDirectory(output_file);

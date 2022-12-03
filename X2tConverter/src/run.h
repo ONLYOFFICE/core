@@ -165,7 +165,11 @@ namespace NSX2T
 		}
 		default: // parent process, pid now contains the child pid
 			while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-			if (WIFEXITED(status))
+			if(WIFSIGNALED(status))
+			{
+				nReturnCode = status;
+			}
+			else if (WIFEXITED(status))
 			{
 				nReturnCode =  WEXITSTATUS(status);
 			}

@@ -1,6 +1,5 @@
 #if defined __cplusplus
 
-#include <Logic/Biff_structures/BiffString.h>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -24,6 +23,7 @@
 #include <unordered_set>
 #include <inttypes.h>
 
+#include <Logic/Biff_structures/BiffString.h>
 #include "../../../XlsFile/Format/Binary/CFStream.h"
 #include "../../../XlsFile/Format/Logic/Biff_records/Begin.h"
 #include "../../../XlsFile/Format/Logic/Biff_records/BiffRecord.h"

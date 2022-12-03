@@ -46,119 +46,19 @@ namespace PPTX
 			WritingElement_AdditionConstructors(XfrmEffect)
 			PPTX_LOGIC_BASE2(XfrmEffect)
 
-			XfrmEffect& operator=(const XfrmEffect& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			XfrmEffect& operator=(const XfrmEffect& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				kx = oSrc.kx;
-				ky = oSrc.ky;
-				sx = oSrc.sx;
-				sy = oSrc.sy;
-				tx = oSrc.tx;
-				ty = oSrc.ty;
-				
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_xfrm;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("kx"), kx)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ky"), ky)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sx"), sx)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), sy)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("tx"), tx)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ty"), ty)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-				
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"kx", kx);
-                XmlMacroReadAttributeBase(node, L"ky", ky);
-                XmlMacroReadAttributeBase(node, L"sx", sx);
-                XmlMacroReadAttributeBase(node, L"sy", sy);
-                XmlMacroReadAttributeBase(node, L"tx", tx);
-                XmlMacroReadAttributeBase(node, L"ty", ty);
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				Normalize();
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("sx"), sx);
-				oAttr.Write(_T("sy"), sy);
-				oAttr.Write(_T("kx"), kx);
-				oAttr.Write(_T("ky"), ky);
-				oAttr.Write(_T("tx"), tx);
-				oAttr.Write(_T("ty"), ty);
-				
-				return XmlUtils::CreateNode(_T("a:xfrm"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:xfrm");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"kx", kx);
-				pWriter->WriteAttribute(L"ky", ky);
-				pWriter->WriteAttribute(L"sx", sx);
-				pWriter->WriteAttribute(L"sy", sy);
-				pWriter->WriteAttribute(L"tx", tx);
-				pWriter->WriteAttribute(L"ty", ty);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:xfrm");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_XFRM);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, kx);
-				pWriter->WriteInt2(1, ky);
-				pWriter->WriteInt2(2, sx);
-				pWriter->WriteInt2(3, sy);
-				pWriter->WriteSize_t2(4, tx);
-				pWriter->WriteSize_t2(5, tx);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:	kx	= pReader->GetLong(); break;
-						case 1: ky	= pReader->GetLong(); break;
-						case 2: sx	= pReader->GetLong(); break;
-						case 3: sy	= pReader->GetLong(); break;
-						case 4: tx	= (size_t)pReader->GetULong(); break;
-						case 5: ty	= (size_t)pReader->GetULong(); break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}	
 		public:
 			nullable_int	kx;
 			nullable_int	ky;
@@ -166,14 +66,10 @@ namespace PPTX
 			nullable_int	sy;
 			nullable_sizet	tx;
 			nullable_sizet	ty;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				kx.normalize(-5400000, 5400000);
-				ky.normalize(-5400000, 5400000);
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

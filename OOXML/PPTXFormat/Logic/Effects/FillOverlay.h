@@ -41,7 +41,6 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class FillOverlay : public WrapperWritingElement
 		{
 		public:
@@ -49,125 +48,25 @@ namespace PPTX
 			WritingElement_AdditionConstructors(FillOverlay)
 			PPTX_LOGIC_BASE2(FillOverlay)
 
-			FillOverlay& operator=(const FillOverlay& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			FillOverlay& operator=(const FillOverlay& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				Fill = oSrc.Fill;
-				blend = oSrc.blend;
-				return *this;
-			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_fillOverlay;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
-
-					Fill.fromXML(oReader);
-				}
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blend"), blend)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Fill.GetFillFrom(node);
-				blend = node.GetAttribute(_T("blend"));
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				std::wstring str = _T("<a:fillOverlay blend=\"") + blend.get() + _T("\">");
-				str += Fill.toXML();
-				str += _T("</a:fillOverlay>");
-
-				return str;
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:fillOverlay");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"blend", blend.get());
-				pWriter->EndAttributes();
-				
-				Fill.toXmlWriter(pWriter);
-
-				pWriter->EndNode(L"a:fillOverlay");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_FILLOVERLAY);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit1(0, blend);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, Fill);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar();
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-					
-					if (_at == 0)
-						blend.SetBYTECode(pReader->GetUChar());
-					else break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Fill.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 		public:
 			UniFill				Fill;
 			Limit::BlendMode	blend;
+
 		protected:
-            virtual void FillParentPointersForChilds()
-			{
-				Fill.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

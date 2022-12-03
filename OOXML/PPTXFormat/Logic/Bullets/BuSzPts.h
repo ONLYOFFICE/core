@@ -45,64 +45,23 @@ namespace PPTX
 			WritingElement_AdditionConstructors(BuSzPts)
 			PPTX_LOGIC_BASE2(BuSzPts)
 
-			BuSzPts& operator=(const BuSzPts& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BuSzPts& operator=(const BuSzPts& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				val = oSrc.val;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_buSzPts;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, L"val", val)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				val = node.ReadAttributeInt(L"val");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:buSzPts");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"val", val);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:buSzPts");
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_SIZE_PTS);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, val.get_value_or(0));
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				pWriter->EndRecord();
-			}
 		public:
 			nullable_int val;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
-			AVSINLINE void Normalize()
-			{
-				if (val.IsInit())
-				{
-					int tmp = *val;
-					normalize_value(tmp, 100, 400000);
-					val = tmp;
-				}
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

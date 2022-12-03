@@ -156,6 +156,51 @@ SOURCES += \
 	../../../PPTXFormat/Logic/Xfrm.cpp \
 	../../../PPTXFormat/Logic/XmlId.cpp \
 	\
+	../../../PPTXFormat/Logic/Bullets/BuAutoNum.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuBlip.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuChar.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuClr.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuClrTx.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuFontTx.cpp \
+	../../../PPTXFormat/Logic/Bullets/Bullet.cpp \
+	../../../PPTXFormat/Logic/Bullets/BulletColor.cpp \
+	../../../PPTXFormat/Logic/Bullets/BulletSize.cpp \
+	../../../PPTXFormat/Logic/Bullets/BulletTypeface.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuNone.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuSzPct.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuSzPts.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuSzTx.cpp \
+	\
+	../../../PPTXFormat/Logic/Effects/AlphaBiLevel.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaCeiling.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaFloor.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaInv.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaMod.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaModFix.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaOutset.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaRepl.cpp \
+	../../../PPTXFormat/Logic/Effects/BiLevel.cpp \
+	../../../PPTXFormat/Logic/Effects/Blend.cpp \
+	../../../PPTXFormat/Logic/Effects/Blur.cpp \
+	../../../PPTXFormat/Logic/Effects/ClrChange.cpp \
+	../../../PPTXFormat/Logic/Effects/ClrRepl.cpp \
+	../../../PPTXFormat/Logic/Effects/Duotone.cpp \
+	../../../PPTXFormat/Logic/Effects/EffectElement.cpp \
+	../../../PPTXFormat/Logic/Effects/FillEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/FillOverlay.cpp \
+	../../../PPTXFormat/Logic/Effects/Glow.cpp \
+	../../../PPTXFormat/Logic/Effects/Grayscl.cpp \
+	../../../PPTXFormat/Logic/Effects/HslEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/InnerShdw.cpp \
+	../../../PPTXFormat/Logic/Effects/LumEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/OuterShdw.cpp \
+	../../../PPTXFormat/Logic/Effects/PrstShdw.cpp \
+	../../../PPTXFormat/Logic/Effects/Reflection.cpp \
+	../../../PPTXFormat/Logic/Effects/RelOff.cpp \
+	../../../PPTXFormat/Logic/Effects/SoftEdge.cpp \
+	../../../PPTXFormat/Logic/Effects/TintEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/XfrmEffect.cpp \
+	\
 	../../../PPTXFormat/Presentation.cpp \
 	../../../PPTXFormat/FileContainer.cpp \
 	../../../PPTXFormat/FileTypes.cpp \

@@ -40,107 +40,30 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class AlphaMod : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(AlphaMod)
 			PPTX_LOGIC_BASE2(AlphaMod)
 
-			AlphaMod& operator=(const AlphaMod& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AlphaMod& operator=(const AlphaMod& oSrc);
 
-				cont = oSrc.cont;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_alphaMod;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual OOX::EElementType getType() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
-					if (strName == L"a:cont")
-					{
-						cont = oReader;
-						break;
-					}
-				}
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				cont = node.ReadNode(_T("a:cont"));
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:alphaMod>") + cont.toXML() + _T("</a:alphaMod>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:alphaMod");
-				pWriter->EndAttributes();
-				
-				cont.toXmlWriter(pWriter);
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				pWriter->EndNode(L"a:alphaMod");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ALPHAMOD);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				pWriter->WriteRecord1(0, cont);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							cont.m_name = L"a:cont";
-							cont.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 		public:
 			EffectDag cont;
+
 		protected:
-            virtual void FillParentPointersForChilds()
-			{
-				cont.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

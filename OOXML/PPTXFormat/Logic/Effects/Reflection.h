@@ -45,185 +45,19 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Reflection)
 			PPTX_LOGIC_BASE2(Reflection)
 
-			Reflection& operator=(const Reflection& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Reflection& operator=(const Reflection& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				algn	= oSrc.algn;
-				blurRad	= oSrc.blurRad;
-				stA		= oSrc.stA;
-				endA	= oSrc.endA;
-				stPos	= oSrc.stPos;
-				endPos	= oSrc.endPos;
-				dir		= oSrc.dir;
-				fadeDir	= oSrc.fadeDir;
-				dist	= oSrc.dist;
-				kx		= oSrc.kx;
-				ky		= oSrc.ky;
-				rotWithShape = oSrc.rotWithShape;
-				sx		= oSrc.sx;
-				sy		= oSrc.sy;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_reflection;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("blurRad"), blurRad)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dir"), dir)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("fadeDir"), fadeDir)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("dist"), dist)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("algn"), algn)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("kx"), kx)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("ky"), ky)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("rotWithShape"), rotWithShape)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sx"), sx)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("sy"), sy)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("stA"), stA)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("endA"), endA)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("stPos"), stPos)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("endPos"), endPos)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-				
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"algn", algn);
-				XmlMacroReadAttributeBase(node, L"blurRad", blurRad);
-				XmlMacroReadAttributeBase(node, L"dir", dir);
-				XmlMacroReadAttributeBase(node, L"dist", dist);
-				XmlMacroReadAttributeBase(node, L"kx", kx);
-				XmlMacroReadAttributeBase(node, L"ky", ky);
-				XmlMacroReadAttributeBase(node, L"rotWithShape", rotWithShape);
-				XmlMacroReadAttributeBase(node, L"sx", sx);
-				XmlMacroReadAttributeBase(node, L"sy", sy);
-				XmlMacroReadAttributeBase(node, L"stA", stA);
-				XmlMacroReadAttributeBase(node, L"endA", endA);
-				XmlMacroReadAttributeBase(node, L"stPos", stPos);
-				XmlMacroReadAttributeBase(node, L"endPos", endPos);
-				XmlMacroReadAttributeBase(node, L"fadeDir", fadeDir);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				Normalize();
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("blurRad"), blurRad);
-				oAttr.Write(_T("stA"), stA);
-				oAttr.Write(_T("stPos"), stPos);
-				oAttr.Write(_T("endA"), endA);
-				oAttr.Write(_T("endPos"), endPos);
-				oAttr.Write(_T("dist"), dist);
-				oAttr.Write(_T("dir"), dir);
-				oAttr.Write(_T("fadeDir"), fadeDir);
-				oAttr.Write(_T("sx"), sx);
-				oAttr.Write(_T("sy"), sy);
-				oAttr.Write(_T("kx"), kx);
-				oAttr.Write(_T("ky"), ky);
-				oAttr.WriteLimitNullable(_T("algn"), algn);
-				oAttr.Write(_T("rotWithShape"), rotWithShape);
-
-				return XmlUtils::CreateNode(_T("a:reflection"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = L"w14:";
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = L"a:";
-
-				pWriter->StartNode(sNodeNamespace + L"reflection");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"blurRad", blurRad);
-				pWriter->WriteAttribute(sAttrNamespace + L"stA", stA);
-				pWriter->WriteAttribute(sAttrNamespace + L"stPos", stPos);
-				pWriter->WriteAttribute(sAttrNamespace + L"endA", endA);
-				pWriter->WriteAttribute(sAttrNamespace + L"endPos", endPos);
-				pWriter->WriteAttribute(sAttrNamespace + L"dist", dist);
-				pWriter->WriteAttribute(sAttrNamespace + L"dir", dir);
-				pWriter->WriteAttribute(sAttrNamespace + L"fadeDir", fadeDir);
-				pWriter->WriteAttribute(sAttrNamespace + L"sx", sx);
-				pWriter->WriteAttribute(sAttrNamespace + L"sy", sy);
-				pWriter->WriteAttribute(sAttrNamespace + L"kx", kx);
-				pWriter->WriteAttribute(sAttrNamespace + L"ky", ky);
-				pWriter->WriteAttribute(sAttrNamespace + L"algn", algn);
-				pWriter->WriteAttribute(sAttrNamespace + L"rotWithShape", rotWithShape);
-				pWriter->EndAttributes();
-				pWriter->EndNode(sNodeNamespace + L"reflection");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_REFLECTION);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, algn);
-				pWriter->WriteInt2(1, blurRad);
-				pWriter->WriteInt2(2, stA);
-				pWriter->WriteInt2(3, endA);
-				pWriter->WriteInt2(4, stPos);
-				pWriter->WriteInt2(5, endPos);
-				pWriter->WriteInt2(6, dir);
-				pWriter->WriteInt2(7, fadeDir);
-				pWriter->WriteInt2(8, dist);
-				pWriter->WriteInt2(9, kx);
-				pWriter->WriteInt2(10, ky);
-				pWriter->WriteInt2(11, sx);
-				pWriter->WriteInt2(12, sy);
-				pWriter->WriteBool2(13, rotWithShape);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:	algn	= pReader->GetUChar(); break;
-						case 1:	blurRad = pReader->GetLong(); break;
-						case 2:	stA		= pReader->GetLong(); break;
-						case 3:	endA	= pReader->GetLong(); break;
-						case 4:	stPos	= pReader->GetLong(); break;
-						case 5:	endPos	= pReader->GetLong(); break;
-						case 6:	dir		= pReader->GetLong(); break;
-						case 7:	fadeDir	= pReader->GetLong(); break;
-						case 8:	dist	= pReader->GetLong(); break;
-						case 9:	kx		= pReader->GetLong(); break;
-						case 10:ky		= pReader->GetLong(); break;
-						case 11:sx		= pReader->GetLong(); break;
-						case 12:sy		= pReader->GetLong(); break;
-						case 13:rotWithShape = pReader->GetBool(); break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}	
 		public:
 			nullable_limit<Limit::RectAlign>	algn;
 			nullable_int						blurRad;
@@ -239,24 +73,10 @@ namespace PPTX
 			nullable_bool						rotWithShape;
 			nullable_int						sx;
 			nullable_int						sy;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
-
-			AVSINLINE void Normalize()
-			{
-				blurRad.normalize_positive();
-				stA.normalize_positive();
-				endA.normalize_positive();
-				stPos.normalize_positive();
-				endPos.normalize_positive();
-				dist.normalize_positive();
-
-				dir.normalize(0, 21600000);
-				//fadeDir.normalize(0, 27273042316900);
-
-				kx.normalize(-5400000, 5400000);
-				ky.normalize(-5400000, 5400000);
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

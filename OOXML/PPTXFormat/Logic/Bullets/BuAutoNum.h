@@ -46,74 +46,25 @@ namespace PPTX
 			WritingElement_AdditionConstructors(BuAutoNum)
 			PPTX_LOGIC_BASE2(BuAutoNum)
 
-			BuAutoNum& operator=(const BuAutoNum& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BuAutoNum& operator=(const BuAutoNum& oSrc);
 
-				type	= oSrc.type;
-				startAt = oSrc.startAt;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual OOX::EElementType getType() const;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_buChar;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"type", type);
-				XmlMacroReadAttributeBase(node, L"startAt", startAt);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				Normalize();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if	  ( oReader, L"startAt",	startAt)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"type",		type)
-				WritingElement_ReadAttributes_End	( oReader )		
-				
-				Normalize();
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:buAutoNum");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"type", type.get());
-				pWriter->WriteAttribute(L"startAt", startAt);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:buAutoNum");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_BULLET_AUTONUM);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);				
-				pWriter->WriteLimit1(0, type);
-				pWriter->WriteInt2(1, startAt);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-		
 		public:
 			Limit::TextAutonumberScheme type;
 			nullable_int				startAt;
 
 		public:
-			AVSINLINE void Normalize()
-			{
-				startAt.normalize(1, 32767);
-			}
+			void Normalize();
 
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

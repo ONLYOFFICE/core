@@ -42,109 +42,26 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class BgPr : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(BgPr)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"shadeToTitle", shadeToTitle);
-				Fill.GetFillFrom(node);
-				EffectList.GetEffectListFrom(node);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("shadeToTitle"), shadeToTitle);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(Fill);
-				oValue.Write(EffectList);
-
-				return XmlUtils::CreateNode(_T("p:bgPr"), oAttr, oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:bgPr"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("shadeToTitle"), shadeToTitle);
-				pWriter->EndAttributes();
-
-				Fill.toXmlWriter(pWriter);
-				EffectList.toXmlWriter(pWriter);
-				
-				pWriter->EndNode(_T("p:bgPr"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, shadeToTitle);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, Fill);
-				pWriter->WriteRecord1(1, EffectList);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-						shadeToTitle = pReader->GetBool();
-					else
-						break;
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Fill.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							EffectList.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			UniFill				Fill;
-			EffectProperties	EffectList;
- 
+			EffectProperties	EffectList; 
 			nullable_bool		shadeToTitle;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Fill.SetParentPointer(this);
-				EffectList.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -43,62 +43,17 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SlideViewPr)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				CSldViewPr = node.ReadNode(L"p:cSldViewPr");
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(CSldViewPr);
-
-				return XmlUtils::CreateNode(L"p:slideViewPr", oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, CSldViewPr);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							CSldViewPr.fromPPTY(pReader);
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:slideViewPr");
-				pWriter->EndAttributes();
-
-				CSldViewPr.toXmlWriter(pWriter);				
-
-				pWriter->EndNode(L"p:slideViewPr");
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			nsViewProps::CSldViewPr CSldViewPr;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				CSldViewPr.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

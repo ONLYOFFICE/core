@@ -42,6 +42,10 @@ SOURCES += \
 	pptx_format_logic.cpp
 }
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
+
 core_debug {
 SOURCES += \
 	../../../PPTXFormat/Logic/Media/WavAudioFile.cpp \
@@ -54,7 +58,6 @@ SOURCES += \
 	../../../PPTXFormat/Logic/Transitions/TransitionBase.cpp \
 	../../../PPTXFormat/Logic/Bg.cpp \
 	../../../PPTXFormat/Logic/CNvGrpSpPr.cpp \
-	../../../PPTXFormat/Logic/ContentPart.cpp \
 	../../../PPTXFormat/Logic/CxnSp.cpp \
 	../../../PPTXFormat/Logic/EffectDag.cpp \
 	../../../PPTXFormat/Logic/EffectLst.cpp \
@@ -79,6 +82,125 @@ SOURCES += \
 	../../../PPTXFormat/Logic/UniEffect.cpp \
 	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
 	../../../PPTXFormat/Logic/Controls.cpp \
+	\
+	../../../PPTXFormat/Logic/Ah.cpp \
+	../../../PPTXFormat/Logic/AhBase.cpp \
+	../../../PPTXFormat/Logic/AhPolar.cpp \
+	../../../PPTXFormat/Logic/AhXY.cpp \
+	../../../PPTXFormat/Logic/Backdrop.cpp \
+	../../../PPTXFormat/Logic/Bevel.cpp \
+	../../../PPTXFormat/Logic/BgPr.cpp \
+	../../../PPTXFormat/Logic/BodyPr.cpp \
+	../../../PPTXFormat/Logic/Camera.cpp \
+	../../../PPTXFormat/Logic/Cell3D.cpp \
+	../../../PPTXFormat/Logic/ClrMap.cpp \
+	../../../PPTXFormat/Logic/ClrMapOvr.cpp \
+	../../../PPTXFormat/Logic/CNvCxnSpPr.cpp \
+	../../../PPTXFormat/Logic/CNvGraphicFramePr.cpp \
+	../../../PPTXFormat/Logic/CNvPicPr.cpp \
+	../../../PPTXFormat/Logic/CNvPr.cpp \
+	../../../PPTXFormat/Logic/CNvSpPr.cpp \
+	../../../PPTXFormat/Logic/CSld.cpp \
+	../../../PPTXFormat/Logic/CustGeom.cpp \
+	../../../PPTXFormat/Logic/Cxn.cpp \
+	../../../PPTXFormat/Logic/DefaultShapeDefinition.cpp \
+	../../../PPTXFormat/Logic/ExtP.cpp \
+	../../../PPTXFormat/Logic/FillStyle.cpp \
+	../../../PPTXFormat/Logic/FontCollection.cpp \
+	../../../PPTXFormat/Logic/FontRef.cpp \
+	../../../PPTXFormat/Logic/Gd.cpp \
+	../../../PPTXFormat/Logic/Gs.cpp \
+	../../../PPTXFormat/Logic/Hf.cpp \
+	../../../PPTXFormat/Logic/LightRig.cpp \
+	../../../PPTXFormat/Logic/Lin.cpp \
+	../../../PPTXFormat/Logic/LineEnd.cpp \
+	../../../PPTXFormat/Logic/LineJoin.cpp \
+	../../../PPTXFormat/Logic/LineStyle.cpp \
+	../../../PPTXFormat/Logic/Ln.cpp \
+	../../../PPTXFormat/Logic/NvCxnSpPr.cpp \
+	../../../PPTXFormat/Logic/NvPicPr.cpp \
+	../../../PPTXFormat/Logic/NvPr.cpp \
+	../../../PPTXFormat/Logic/NvSpPr.cpp \
+	../../../PPTXFormat/Logic/Paragraph.cpp \
+	../../../PPTXFormat/Logic/PartTitle.cpp \
+	../../../PPTXFormat/Logic/Path.cpp \
+	../../../PPTXFormat/Logic/Path2D.cpp \
+	../../../PPTXFormat/Logic/Ph.cpp \
+	../../../PPTXFormat/Logic/PrstDash.cpp \
+	../../../PPTXFormat/Logic/PrstGeom.cpp \
+	../../../PPTXFormat/Logic/PrstTxWarp.cpp \
+	../../../PPTXFormat/Logic/Rect.cpp \
+	../../../PPTXFormat/Logic/Rot.cpp \
+	../../../PPTXFormat/Logic/RunElem.cpp \
+	../../../PPTXFormat/Logic/RunProperties.cpp \
+	../../../PPTXFormat/Logic/Scene3d.cpp \
+	../../../PPTXFormat/Logic/ShapeStyle.cpp \
+	../../../PPTXFormat/Logic/Sp3d.cpp \
+	../../../PPTXFormat/Logic/StyleRef.cpp \
+	../../../PPTXFormat/Logic/SupplementalFont.cpp \
+	../../../PPTXFormat/Logic/Tab.cpp \
+	../../../PPTXFormat/Logic/TableBgStyle.cpp \
+	../../../PPTXFormat/Logic/TablePartStyle.cpp \
+	../../../PPTXFormat/Logic/TableStyle.cpp \
+	../../../PPTXFormat/Logic/TcBdr.cpp \
+	../../../PPTXFormat/Logic/TcStyle.cpp \
+	../../../PPTXFormat/Logic/TcTxStyle.cpp \
+	../../../PPTXFormat/Logic/TextFit.cpp \
+	../../../PPTXFormat/Logic/TextFont.cpp \
+	../../../PPTXFormat/Logic/TextListStyle.cpp \
+	../../../PPTXFormat/Logic/TextParagraphPr.cpp \
+	../../../PPTXFormat/Logic/TextSpacing.cpp \
+	../../../PPTXFormat/Logic/TxStyles.cpp \
+	../../../PPTXFormat/Logic/UniMedia.cpp \
+	../../../PPTXFormat/Logic/UniPath2D.cpp \
+	../../../PPTXFormat/Logic/Xfrm.cpp \
+	../../../PPTXFormat/Logic/XmlId.cpp \
+	\
+	../../../PPTXFormat/Logic/Bullets/BuAutoNum.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuBlip.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuChar.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuClr.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuClrTx.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuFontTx.cpp \
+	../../../PPTXFormat/Logic/Bullets/Bullet.cpp \
+	../../../PPTXFormat/Logic/Bullets/BulletColor.cpp \
+	../../../PPTXFormat/Logic/Bullets/BulletSize.cpp \
+	../../../PPTXFormat/Logic/Bullets/BulletTypeface.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuNone.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuSzPct.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuSzPts.cpp \
+	../../../PPTXFormat/Logic/Bullets/BuSzTx.cpp \
+	\
+	../../../PPTXFormat/Logic/Effects/AlphaBiLevel.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaCeiling.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaFloor.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaInv.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaMod.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaModFix.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaOutset.cpp \
+	../../../PPTXFormat/Logic/Effects/AlphaRepl.cpp \
+	../../../PPTXFormat/Logic/Effects/BiLevel.cpp \
+	../../../PPTXFormat/Logic/Effects/Blend.cpp \
+	../../../PPTXFormat/Logic/Effects/Blur.cpp \
+	../../../PPTXFormat/Logic/Effects/ClrChange.cpp \
+	../../../PPTXFormat/Logic/Effects/ClrRepl.cpp \
+	../../../PPTXFormat/Logic/Effects/Duotone.cpp \
+	../../../PPTXFormat/Logic/Effects/EffectElement.cpp \
+	../../../PPTXFormat/Logic/Effects/FillEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/FillOverlay.cpp \
+	../../../PPTXFormat/Logic/Effects/Glow.cpp \
+	../../../PPTXFormat/Logic/Effects/Grayscl.cpp \
+	../../../PPTXFormat/Logic/Effects/HslEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/InnerShdw.cpp \
+	../../../PPTXFormat/Logic/Effects/LumEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/OuterShdw.cpp \
+	../../../PPTXFormat/Logic/Effects/PrstShdw.cpp \
+	../../../PPTXFormat/Logic/Effects/Reflection.cpp \
+	../../../PPTXFormat/Logic/Effects/RelOff.cpp \
+	../../../PPTXFormat/Logic/Effects/SoftEdge.cpp \
+	../../../PPTXFormat/Logic/Effects/TintEffect.cpp \
+	../../../PPTXFormat/Logic/Effects/XfrmEffect.cpp \
+	\
 	../../../PPTXFormat/Presentation.cpp \
 	../../../PPTXFormat/FileContainer.cpp \
 	../../../PPTXFormat/FileTypes.cpp \
@@ -105,8 +227,8 @@ SOURCES += \
 }
 
 SOURCES += \
-        ../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
-        pptx_format.cpp \
+	pptx_format.cpp \
+	../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
@@ -132,9 +254,138 @@ SOURCES += \
 	\
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
-	../../../../HtmlRenderer/src/ASCSVGWriter.cpp
+	../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
+	\
+	../../../PPTXFormat/ViewProps/CSldViewPr.cpp \
+	../../../PPTXFormat/ViewProps/CViewPr.cpp \
+	../../../PPTXFormat/ViewProps/GridSpacing.cpp \
+	../../../PPTXFormat/ViewProps/Guide.cpp \
+	../../../PPTXFormat/ViewProps/NormalViewPr.cpp \
+	../../../PPTXFormat/ViewProps/NotesTextViewPr.cpp \
+	../../../PPTXFormat/ViewProps/NotesViewPr.cpp \
+	../../../PPTXFormat/ViewProps/Origin.cpp \
+	../../../PPTXFormat/ViewProps/OutlineViewPr.cpp \
+	../../../PPTXFormat/ViewProps/Ratio.cpp \
+	../../../PPTXFormat/ViewProps/Restored.cpp \
+	../../../PPTXFormat/ViewProps/Scale.cpp \
+	../../../PPTXFormat/ViewProps/Sld.cpp \
+	../../../PPTXFormat/ViewProps/SlideViewPr.cpp \
+	../../../PPTXFormat/ViewProps/SorterViewPr.cpp \
+	\
+	../../../PPTXFormat/Theme/ClrScheme.cpp \
+	../../../PPTXFormat/Theme/ExtraClrScheme.cpp \
+	../../../PPTXFormat/Theme/FmtScheme.cpp \
+	../../../PPTXFormat/Theme/FontScheme.cpp \
+	../../../PPTXFormat/Theme/ThemeElements.cpp \
+	\
+	../../../PPTXFormat/ShowPr/ShowPr.cpp \
+	../../../PPTXFormat/ShowPr/Present.cpp \
+	../../../PPTXFormat/ShowPr/Kiosk.cpp \
+	../../../PPTXFormat/ShowPr/CustShow.cpp \
+	../../../PPTXFormat/ShowPr/Browse.cpp \
+	../../../PPTXFormat/ShowPr/SldRg.cpp \
+	../../../PPTXFormat/ShowPr/SldAll.cpp \
+	\
+	../../../PPTXFormat/Presentation/NotesSz.cpp \
+	../../../PPTXFormat/Presentation/PhotoAlbum.cpp \
+	../../../PPTXFormat/Presentation/EmbeddedFont.cpp \
+	../../../PPTXFormat/Presentation/EmbeddedFontDataId.cpp \
+	../../../PPTXFormat/Presentation/Kinsoku.cpp \
+	../../../PPTXFormat/Presentation/SectionLst.cpp \
+	../../../PPTXFormat/Presentation/SldSz.cpp \
+	\
+	../../../PPTXFormat/Limit/AlbumLayout.cpp \
+	../../../PPTXFormat/Limit/AnimationDgmBuild.cpp \
+	../../../PPTXFormat/Limit/BaseLimit.cpp \
+	../../../PPTXFormat/Limit/BevelType.cpp \
+	../../../PPTXFormat/Limit/BlendMode.cpp \
+	../../../PPTXFormat/Limit/BlipCompression.cpp \
+	../../../PPTXFormat/Limit/BWMode.cpp \
+	../../../PPTXFormat/Limit/CameraType.cpp \
+	../../../PPTXFormat/Limit/ChartBuild.cpp \
+	../../../PPTXFormat/Limit/ChartBuildType.cpp \
+	../../../PPTXFormat/Limit/ColorSchemeIndex.cpp \
+	../../../PPTXFormat/Limit/CompoundLine.cpp \
+	../../../PPTXFormat/Limit/Conformance.cpp \
+	../../../PPTXFormat/Limit/ContentStatus.cpp \
+	../../../PPTXFormat/Limit/CornerDirectionVal.cpp \
+	../../../PPTXFormat/Limit/DgmBuild.cpp \
+	../../../PPTXFormat/Limit/DgmBuildType.cpp \
+	../../../PPTXFormat/Limit/EffectContainerType.cpp \
+	../../../PPTXFormat/Limit/EightDirectionVal.cpp \
+	../../../PPTXFormat/Limit/FillPath.cpp \
+	../../../PPTXFormat/Limit/Flip.cpp \
+	../../../PPTXFormat/Limit/FontAlign.cpp \
+	../../../PPTXFormat/Limit/FontStyleIndex.cpp \
+	../../../PPTXFormat/Limit/FrameShape.cpp \
+	../../../PPTXFormat/Limit/HorzOverflow.cpp \
+	../../../PPTXFormat/Limit/InOutDirectionVal.cpp \
+	../../../PPTXFormat/Limit/IterateType.cpp \
+	../../../PPTXFormat/Limit/LastView.cpp \
+	../../../PPTXFormat/Limit/LightRigType.cpp \
+	../../../PPTXFormat/Limit/LineCap.cpp \
+	../../../PPTXFormat/Limit/LineEndSize.cpp \
+	../../../PPTXFormat/Limit/LineEndType.cpp \
+	../../../PPTXFormat/Limit/Material.cpp \
+	../../../PPTXFormat/Limit/OnOff.cpp \
+	../../../PPTXFormat/Limit/Orient.cpp \
+	../../../PPTXFormat/Limit/ParaBuildType.cpp \
+	../../../PPTXFormat/Limit/PathFillMode.cpp \
+	../../../PPTXFormat/Limit/PattFillVal.cpp \
+	../../../PPTXFormat/Limit/PenAlign.cpp \
+	../../../PPTXFormat/Limit/PlaceholderSize.cpp \
+	../../../PPTXFormat/Limit/PlaceholderType.cpp \
+	../../../PPTXFormat/Limit/PresetShadowVal.cpp \
+	../../../PPTXFormat/Limit/PrstClrVal.cpp \
+	../../../PPTXFormat/Limit/PrstDashVal.cpp \
+	../../../PPTXFormat/Limit/RectAlign.cpp \
+	../../../PPTXFormat/Limit/SchemeClrVal.cpp \
+	../../../PPTXFormat/Limit/ShapeType.cpp \
+	../../../PPTXFormat/Limit/SideDirectionVal.cpp \
+	../../../PPTXFormat/Limit/SlideLayoutType.cpp \
+	../../../PPTXFormat/Limit/SlideSize.cpp \
+	../../../PPTXFormat/Limit/SplitterBarState.cpp \
+	../../../PPTXFormat/Limit/SysClrVal.cpp \
+	../../../PPTXFormat/Limit/TextAlign.cpp \
+	../../../PPTXFormat/Limit/TextAnchor.cpp \
+	../../../PPTXFormat/Limit/TextAutonumberScheme.cpp \
+	../../../PPTXFormat/Limit/TextCaps.cpp \
+	../../../PPTXFormat/Limit/TextShapeType.cpp \
+	../../../PPTXFormat/Limit/TextStrike.cpp \
+	../../../PPTXFormat/Limit/TextTabAlignType.cpp \
+	../../../PPTXFormat/Limit/TextUnderline.cpp \
+	../../../PPTXFormat/Limit/TextVerticalType.cpp \
+	../../../PPTXFormat/Limit/TextWrap.cpp \
+	../../../PPTXFormat/Limit/TLAccumulate.cpp \
+	../../../PPTXFormat/Limit/TLAdditive.cpp \
+	../../../PPTXFormat/Limit/TLCalcMode.cpp \
+	../../../PPTXFormat/Limit/TLChartSubElement.cpp \
+	../../../PPTXFormat/Limit/TLColorDirection.cpp \
+	../../../PPTXFormat/Limit/TLColorSpace.cpp \
+	../../../PPTXFormat/Limit/TLCommandType.cpp \
+	../../../PPTXFormat/Limit/TLMasterRelation.cpp \
+	../../../PPTXFormat/Limit/TLNextAc.cpp \
+	../../../PPTXFormat/Limit/TLNodeFillType.cpp \
+	../../../PPTXFormat/Limit/TLNodeType.cpp \
+	../../../PPTXFormat/Limit/TLOrigin.cpp \
+	../../../PPTXFormat/Limit/TLOverride.cpp \
+	../../../PPTXFormat/Limit/TLPathEditMode.cpp \
+	../../../PPTXFormat/Limit/TLPresetClass.cpp \
+	../../../PPTXFormat/Limit/TLPrevAc.cpp \
+	../../../PPTXFormat/Limit/TLRestart.cpp \
+	../../../PPTXFormat/Limit/TLRuntimeTrigger.cpp \
+	../../../PPTXFormat/Limit/TLSyncBehavior.cpp \
+	../../../PPTXFormat/Limit/TLTransform.cpp \
+	../../../PPTXFormat/Limit/TLTransition.cpp \
+	../../../PPTXFormat/Limit/TLTriggerEvent.cpp \
+	../../../PPTXFormat/Limit/TLValueType.cpp \
+	../../../PPTXFormat/Limit/TransitionSpeed.cpp \
+	../../../PPTXFormat/Limit/VariantType.cpp \
+	../../../PPTXFormat/Limit/VertOverflow.cpp
+
 
 HEADERS += \
+	pptx_format.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h \
 	../../../PPTXFormat/FileTypes.h \
@@ -379,7 +630,6 @@ HEADERS += \
 	../../../PPTXFormat/Logic/CNvPicPr.h \
 	../../../PPTXFormat/Logic/CNvPr.h \
 	../../../PPTXFormat/Logic/CNvSpPr.h \
-	../../../PPTXFormat/Logic/ContentPart.h \
 	../../../PPTXFormat/Logic/CSld.h \
 	../../../PPTXFormat/Logic/CustGeom.h \
 	../../../PPTXFormat/Logic/Cxn.h \
@@ -669,5 +919,4 @@ HEADERS += \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout1type.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout3type.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout90type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/arctype.h \
-	pptx_format.h
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/arctype.h

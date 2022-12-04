@@ -40,48 +40,14 @@ namespace PPTX
 		class FontStyleIndex : public BaseLimit
 		{
 		public:
-			FontStyleIndex()
-			{
-				m_strValue = _T("none");
-			}
+			FontStyleIndex();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("major") == strValue) ||
-					(_T("minor") == strValue) ||
-					(_T("none") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("major") == m_strValue)
-					return 0;
-				if (_T("minor") == m_strValue)
-					return 1;
-				if (_T("none") == m_strValue)
-					return 2;
-				return 2;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{		
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("major");
-					break;
-				case 1:
-					m_strValue = _T("minor");
-					break;
-				default:
-					m_strValue = _T("none");
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -40,45 +40,14 @@ namespace PPTX
 		class DgmBuildType : public BaseLimit
 		{
 		public:
-			DgmBuildType()
-			{
-				m_strValue = _T("whole");
-			}
+			DgmBuildType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("allAtOnce") == strValue) ||
-					(_T("breadthByLvl") == strValue) ||
-					(_T("breadthByNode") == strValue) ||
-					(_T("ccw") == strValue) ||
-					(_T("ccwIn") == strValue) ||
-					(_T("ccwOut") == strValue) ||
-					(_T("cust") == strValue) ||
-					(_T("cw") == strValue) ||
-					(_T("cwIn") == strValue) ||
-					(_T("cwOut") == strValue) ||
-					(_T("depthByBranch") == strValue) ||
-					(_T("depthByNode") == strValue) ||
-					(_T("down") == strValue) ||
-					(_T("inByRing") == strValue) ||
-					(_T("outByRing") == strValue) ||
-					(_T("up") == strValue) ||
-					(_T("whole") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				//not using yet
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -46,164 +46,19 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(ShapeStyle)
 
-			ShapeStyle(std::wstring ns = L"a")
-			{
-				m_namespace = ns;
-			}	
-			ShapeStyle& operator=(const ShapeStyle& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			ShapeStyle(std::wstring ns = L"a");
+			ShapeStyle& operator=(const ShapeStyle& oSrc);
 
-				lnRef		= oSrc.lnRef;
-				fillRef		= oSrc.fillRef;
-				effectRef	= oSrc.effectRef;
-				fontRef		= oSrc.fontRef;
+			virtual OOX::EElementType getType () const;
 
-				m_namespace	= oSrc.m_namespace;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_p_style;
-			}
-			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			virtual std::wstring toXML() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-					
-					if (_T("lnRef") == strName)
-						lnRef.fromXML(oReader);
-					else if (_T("fillRef") == strName)
-						fillRef.fromXML(oReader);
-					else if (_T("effectRef") == strName)
-						effectRef.fromXML(oReader);
-					else if (_T("fontRef") == strName)
-						fontRef.fromXML(oReader);
-				}
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
-
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("lnRef") == strName)
-							lnRef = oNode;
-						else if (_T("fillRef") == strName)
-							fillRef = oNode;
-						else if (_T("effectRef") == strName)
-							effectRef = oNode;
-						else if (_T("fontRef") == strName)
-							fontRef = oNode;
-					}
-				}
-				
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("xmlns:") + PPTX::g_Namespaces.p.m_strName, PPTX::g_Namespaces.p.m_strLink);
-				oAttr.Write(_T("xmlns:") + PPTX::g_Namespaces.a.m_strName, PPTX::g_Namespaces.a.m_strLink);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(lnRef);
-				oValue.Write(fillRef);
-				oValue.Write(effectRef);
-				oValue.Write(fontRef);
-
-				return XmlUtils::CreateNode(m_namespace + _T(":style"), oAttr, oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring name_ = L"a:style";
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	name_ = L"cdr:style";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)		name_ = L"dgm:style";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)	name_ = L"dsp:style";
-				else name_ = m_namespace + L":style";
-
-				pWriter->StartNode(name_);
-				pWriter->EndAttributes();
-
-				lnRef.toXmlWriter(pWriter);
-				fillRef.toXmlWriter(pWriter);
-				effectRef.toXmlWriter(pWriter);
-				fontRef.toXmlWriter(pWriter);
-				
-				pWriter->EndNode(name_);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, lnRef);
-				pWriter->WriteRecord1(1, fillRef);
-				pWriter->WriteRecord1(2, effectRef);
-				pWriter->WriteRecord1(3, fontRef);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							lnRef.m_name = _T("a:lnRef");
-							lnRef.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							fillRef.m_name = _T("a:fillRef");
-							fillRef.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							effectRef.m_name = _T("a:effectRef");
-							effectRef.fromPPTY(pReader);
-							break;
-						}
-						case 3:
-						{
-							fontRef.m_name = _T("a:fontRef");
-							fontRef.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			StyleRef	lnRef;
@@ -212,14 +67,9 @@ namespace PPTX
 			FontRef		fontRef;
 
 			mutable std::wstring m_namespace;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				lnRef.SetParentPointer(this);
-				fillRef.SetParentPointer(this);
-				effectRef.SetParentPointer(this);
-				fontRef.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

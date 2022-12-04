@@ -40,75 +40,14 @@ namespace PPTX
 		class Material : public BaseLimit
 		{
 		public:
-			Material()
-			{
-				m_strValue = L"clear";
-			}
+			Material();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				m_strValue = strValue;
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"clear" == m_strValue)
-					return 0;
-				if (L"dkEdge" == m_strValue)
-					return 1;
-				if (L"flat" == m_strValue)
-					return 2;
-				if (L"legacyMatte" == m_strValue)
-					return 3;
-				if (L"legacyMetal" == m_strValue)
-					return 4;
-				if (L"legacyPlastic" == m_strValue)
-					return 5;
-				if (L"legacyWireframe" == m_strValue)
-					return 6;
-				if (L"matte" == m_strValue)
-					return 7;
-				if (L"metal" == m_strValue)
-					return 8;
-				if (L"plastic" == m_strValue)
-					return 9;
-				if (L"powder" == m_strValue)
-					return 10;
-				if (L"softEdge" == m_strValue)
-					return 11;
-				if (L"softmetal" == m_strValue)
-					return 12;
-				if (L"translucentPowder" == m_strValue)
-					return 13;
-				if (L"warmMatte" == m_strValue)
-					return 14;
-
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& val)
-			{
-				switch (val)
-				{
-					case 0:		m_strValue = L"clear";			break;
-					case 1:		m_strValue = L"dkEdge";			break;
-					case 2:		m_strValue = L"flat";			break;
-					case 3:		m_strValue = L"legacyMatte";	break;
-					case 4:		m_strValue = L"legacyMetal";	break;
-					case 5:		m_strValue = L"legacyPlastic";	break;
-					case 6:		m_strValue = L"legacyWireframe";break;
-					case 7:		m_strValue = L"matte";			break;
-					case 8:		m_strValue = L"metal";			break;
-					case 9:		m_strValue = L"plastic";		break;
-					case 10:	m_strValue = L"powder";			break;
-					case 11:	m_strValue = L"softEdge";		break;
-					case 12:	m_strValue = L"softmetal";		break;
-					case 13:	m_strValue = L"translucentPowder";break;
-					case 14:	m_strValue = L"warmMatte";		break;
-					default:	m_strValue = L"clear";	
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& val);
 		};
 	} // namespace Limit
 } // namespace PPTX

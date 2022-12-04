@@ -35,7 +35,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-         CNvGrpSpPr& CNvGrpSpPr::operator=(const CNvGrpSpPr& oSrc)
+		CNvGrpSpPr& CNvGrpSpPr::operator=(const CNvGrpSpPr& oSrc)
         {
             parentFile		= oSrc.parentFile;
             parentElement	= oSrc.parentElement;

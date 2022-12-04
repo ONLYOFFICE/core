@@ -46,90 +46,25 @@ namespace PPTX
 			WritingElement_AdditionConstructors(AlphaRepl)
 			PPTX_LOGIC_BASE2(AlphaRepl)
 
-			AlphaRepl& operator=(const AlphaRepl& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AlphaRepl& operator=(const AlphaRepl& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				a = oSrc.a;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_alphaRepl;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("a"), a)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-				
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"a", a);
-				Normalize();
-			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual std::wstring toXML() const
-			{
-				if (!a.IsInit())
-					return _T("<a:alphaRepl/>");
-				
-                std::wstring str = L"<a:alphaRepl a=\"" + std::to_wstring(*a) + L"\" />";
-				return str;
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:alphaRepl");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"a", a);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:alphaRepl");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ALPHAREPL);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, a);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (_at == 0)
-						a = pReader->GetLong(); 
-					else break;
-				}
-				pReader->Seek(_e);
-			}
 		public:
 			nullable_int a;
+
 		protected:
-            virtual void FillParentPointersForChilds(){}
-			AVSINLINE void Normalize()
-			{
-				a.normalize_positive();
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

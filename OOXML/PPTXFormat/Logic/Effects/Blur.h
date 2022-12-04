@@ -46,92 +46,25 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Blur)
 			PPTX_LOGIC_BASE2(Blur)
 
-			Blur& operator=(const Blur& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Blur& operator=(const Blur& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				rad  = oSrc.rad;
-				grow = oSrc.grow;
-				return *this;
-			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_blur;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("rad"), rad)
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("grow"), grow)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"rad", rad);
-				XmlMacroReadAttributeBase(node, L"grow", grow);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("rad"), rad);
-				oAttr.Write(_T("grow"), grow);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				return XmlUtils::CreateNode(_T("a:blur"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:blur");
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"rad", rad);
-				pWriter->WriteAttribute(L"grow", grow);
-				pWriter->EndAttributes();
-				pWriter->EndNode(L"a:blur");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_BLUR);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteSize_t2(0, rad);
-				pWriter->WriteBool2(1, grow);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:	rad = (size_t)pReader->GetULong(); break;
-						case 1:	grow = pReader->GetBool(); break;
-					}
-				}
-				pReader->Seek(_e);
-			}
 		public:
 			nullable_sizet	rad;
 			nullable_bool	grow;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

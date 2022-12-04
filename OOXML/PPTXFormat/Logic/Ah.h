@@ -42,8 +42,9 @@ namespace PPTX
 		class Ah : public WrapperWritingElement
 		{
 		public:
-			Ah(){}
-			virtual ~Ah(){}
+			Ah();
+			virtual ~Ah();
+
 			virtual std::wstring GetODString()const = 0;
 		};
 	} // namespace Logic

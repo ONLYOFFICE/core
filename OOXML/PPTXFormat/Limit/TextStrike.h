@@ -40,49 +40,14 @@ namespace PPTX
 		class TextStrike : public BaseLimit
 		{
 		public:
-			TextStrike()
-			{
-				m_strValue = _T("noStrike");
-			}
+			TextStrike();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("dblStrike") == strValue) ||
-					(_T("noStrike") == strValue) ||
-					(_T("sngStrike") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("dblStrike") == m_strValue)
-					return 0;
-				if (_T("noStrike") == m_strValue)
-					return 1;
-				if (_T("sngStrike") == m_strValue)
-					return 2;
-				return 1;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{	
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("dblStrike");
-					break;
-				case 2:
-					m_strValue = _T("sngStrike");
-					break;
-				default:
-					m_strValue = _T("noStrike");
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

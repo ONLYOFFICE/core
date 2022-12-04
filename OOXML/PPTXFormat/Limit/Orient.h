@@ -40,35 +40,14 @@ namespace PPTX
 		class Orient : public BaseLimit
 		{
 		public:
-			Orient()
-			{
-				m_strValue = _T("vert");
-			}
+			Orient();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("horz") == strValue) ||
-					(_T("vert") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("horz") == m_strValue)
-					return 0;
-				return 1;
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual void SetBYTECode(const BYTE& src)
-			{		
-				if (0 == src)
-					m_strValue = _T("horz");
-				else
-					m_strValue = _T("vert");
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -46,101 +46,23 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Duotone)
 			PPTX_LOGIC_BASE2(Duotone)
 
-			Duotone& operator=(const Duotone& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Duotone& operator=(const Duotone& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				Colors = oSrc.Colors;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_duotone;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-					UniColor col;
-					Colors.push_back(col);
-					Colors.back().fromXML(oReader);
-				}
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Colors.clear();
-                XmlMacroLoadArray(node, L"*", Colors, UniColor);
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(Colors);
-
-				return XmlUtils::CreateNode(L"a:duotone", oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:duotone");
-				pWriter->EndAttributes();
-
-				pWriter->WriteArray2(Colors);
-
-				pWriter->EndNode(L"a:duotone");
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar();
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				ULONG count = pReader->GetULong();
-				for (ULONG i = 0; i < count; ++i)
-				{
-					pReader->Skip(1); // type 
-
-					Colors.push_back(UniColor());
-					Colors.back().fromPPTY(pReader);
-
-					if (false == Colors.back().is_init())
-					{
-						Colors.pop_back();
-					}
-				}
-				pReader->Seek(_e);
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_DUOTONE);
-
-				ULONG len = (ULONG)Colors.size();
-				pWriter->WriteULONG(len);
-				
-				for (ULONG i = 0; i < len; ++i)
-				{
-					pWriter->WriteRecord1(0, Colors[i]);
-				}
-
-				pWriter->EndRecord();
-			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			std::vector<UniColor> Colors;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				size_t count = Colors.size();
-				for (size_t i = 0; i < count; ++i)
-					Colors[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

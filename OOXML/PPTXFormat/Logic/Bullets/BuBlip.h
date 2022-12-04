@@ -44,63 +44,20 @@ namespace PPTX
 			WritingElement_AdditionConstructors(BuBlip)
 			PPTX_LOGIC_BASE2(BuBlip)
 
-			BuBlip& operator=(const BuBlip& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BuBlip& operator=(const BuBlip& oSrc);
 
-				blip = oSrc.blip;
-				return *this;
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual OOX::EElementType getType () const;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (strName == L"blip")
-					{
-						blip  = oReader;
-						break;
-					}
-				}
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_buBlip;
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				blip = node.ReadNodeNoNS(L"blip");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:buBlip");
-				pWriter->EndAttributes();
-				blip.toXmlWriter(pWriter);
-				pWriter->EndNode(L"a:buBlip");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_BULLET_BLIP);
-				pWriter->WriteRecord1(0, blip);
-				pWriter->EndRecord();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			Blip blip;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				blip.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

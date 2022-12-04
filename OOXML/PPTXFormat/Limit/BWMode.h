@@ -40,67 +40,14 @@ namespace PPTX
 		class BWMode : public BaseLimit
 		{
 		public:
-			BWMode()
-			{
-				m_strValue = L"auto";
-			}
+			BWMode();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"auto"			== strValue) ||
-					(L"black"		== strValue) ||
-					(L"blackGray"	== strValue) ||
-					(L"blackWhite"	== strValue) ||
-					(L"clr"			== strValue) ||
-					(L"gray"			== strValue) ||
-					(L"grayWhite"	== strValue) ||
-					(L"hidden"		== strValue) ||
-					(L"invGray"		== strValue) ||
-					(L"ltGray"		== strValue) ||
-					(L"white"		== strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"auto" == m_strValue)		return 0;
-				if (L"black" == m_strValue)		return 1;
-				if (L"blackGray" == m_strValue)	return 2;
-				if (L"blackWhite" == m_strValue)return 3;
-				if (L"clr" == m_strValue)		return 4;
-				if (L"gray" == m_strValue)		return 5;
-				if (L"grayWhite" == m_strValue)	return 6;
-				if (L"hidden" == m_strValue)	return 7;
-				if (L"invGray" == m_strValue)	return 8;
-				if (L"ltGray" == m_strValue)	return 9;
-				if (L"white" == m_strValue)		return 10;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"auto"; break;
-				case 1: m_strValue = L"black"; break;
-				case 2: m_strValue = L"blackGray"; break;
-				case 3: m_strValue = L"blackWhite"; break;
-				case 4: m_strValue = L"clr"; break;
-				case 5: m_strValue = L"gray"; break;
-				case 6: m_strValue = L"grayWhite"; break;
-				case 7: m_strValue = L"hidden"; break;
-				case 8: m_strValue = L"invGray"; break;
-				case 9: m_strValue = L"ltGray"; break;
-				case 10: m_strValue = L"white"; break;
-				default:
-					m_strValue = L"auto";
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

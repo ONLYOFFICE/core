@@ -40,35 +40,14 @@ namespace PPTX
 		class FrameShape : public BaseLimit
 		{
 		public:
-			FrameShape()
-			{
-				m_strValue = _T("frameStyle1");
-			}
+			FrameShape();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("frameStyle1") == strValue) ||
-					(_T("frameStyle2") == strValue) ||
-					(_T("frameStyle3") == strValue) ||
-					(_T("frameStyle4") == strValue) ||
-					(_T("frameStyle5") == strValue) ||
-					(_T("frameStyle6") == strValue) ||
-					(_T("frameStyle7") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				//not using yet
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

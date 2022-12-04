@@ -47,145 +47,26 @@ namespace PPTX
 			WritingElement_AdditionConstructors(ClrChange)
 			PPTX_LOGIC_BASE2(ClrChange)
 
-			ClrChange& operator=(const ClrChange& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			ClrChange& operator=(const ClrChange& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				ClrFrom	= oSrc.ClrFrom;
-				ClrTo	= oSrc.ClrTo;
-				useA	= oSrc.useA;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_clrChange;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-				if ( oReader.IsEmptyNode() )
-					return;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-					if (strName == L"a:clrTo")
-						ClrTo.fromXMLParent(oReader);
-					else if (strName == L"a:clrFrom")
-						ClrFrom.fromXMLParent(oReader);
-				}
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("useA"), useA)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlUtils::CXmlNode node1 = node.ReadNode(_T("a:clrFrom"));
-                ClrFrom.GetColorFrom(node1);
-
-                node1 = node.ReadNode(_T("a:clrTo"));
-                ClrTo.GetColorFrom(node1);
-
-                XmlMacroReadAttributeBase(node, L"useA", useA);
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("useA"), useA);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(_T("a:clrFrom"), ClrFrom);
-				oValue.Write(_T("a:clrTo"), ClrTo);
-
-				return XmlUtils::CreateNode(_T("a:clrChange"), oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:clrChange");
-				pWriter->EndAttributes();
-					pWriter->StartNode(L"a:clrFrom");
-						pWriter->EndAttributes();
-						ClrFrom.toXmlWriter(pWriter);
-					pWriter->EndNode(L"a:clrFrom");
-					pWriter->StartNode(L"a:clrTo");
-						pWriter->EndAttributes();
-						ClrTo.toXmlWriter(pWriter);
-					pWriter->EndNode(L"a:clrTo");
-				pWriter->EndNode(L"a:clrChange");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_CLRCHANGE);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, useA);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, ClrFrom);
-				pWriter->WriteRecord1(1, ClrTo);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-							useA = pReader->GetBool(); break;
-					}
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							ClrFrom.fromPPTY(pReader);							
-						}break;
-						case 1:
-						{
-							ClrTo.fromPPTY(pReader);							
-						}break;
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
 		public:
 			UniColor		ClrFrom;
 			UniColor		ClrTo;
 			nullable_bool	useA;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				ClrFrom.SetParentPointer(this);
-				ClrTo.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -40,34 +40,14 @@ namespace PPTX
 		class ChartBuild : public BaseLimit
 		{
 		public:
-			ChartBuild()
-			{
-				m_strValue = _T("allPts");
-			}
+			ChartBuild();
 
 			_USE_STRING_OPERATOR
 			
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("allPts") == strValue) ||
-					(_T("category") == strValue) ||
-					(_T("gridLegend") == strValue) ||
-					(_T("ptInCategory") == strValue) ||
-					(_T("ptInSeries") == strValue) ||
-					(_T("series") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				//not using yet
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				//not using yet
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

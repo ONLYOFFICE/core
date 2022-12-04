@@ -22,6 +22,10 @@ DEFINES +=  UNICODE _UNICODE \
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
+
 core_release {
 SOURCES += \
 	docx_format_logic.cpp
@@ -52,9 +56,9 @@ SOURCES += \
 	../../../DocxFormat/Logic/VmlOfficeDrawing.cpp \
 	../../../DocxFormat/Logic/VmlWord.cpp \
 	../../../DocxFormat/Logic/Shape.cpp \
-        ../../../DocxFormat/External/ExternalHyperLink.cpp \
-        ../../../DocxFormat/External/External.cpp \
-        ../../../DocxFormat/Media/Media.cpp \
+	../../../DocxFormat/External/ExternalHyperLink.cpp \
+	../../../DocxFormat/External/External.cpp \
+	../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
 	../../../DocxFormat/Media/ActiveX.cpp \
@@ -88,7 +92,7 @@ SOURCES += \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.cpp \
 	../../../XlsxFormat/Worksheets/DataValidation.cpp \
 	../../../XlsxFormat/Worksheets/Cols.cpp \
-        ../../../XlsxFormat/Worksheets/XlsxHyperlinks.cpp \
+	../../../XlsxFormat/Worksheets/XlsxHyperlinks.cpp \
 	../../../XlsxFormat/Worksheets/MergeCells.cpp \
 	../../../XlsxFormat/Worksheets/Sparkline.cpp \
 	../../../XlsxFormat/Worksheets/WorksheetChildOther.cpp \
@@ -140,9 +144,9 @@ SOURCES += \
 	../../../Common/SimpleTypes_Vml.cpp \
 	../../../Common/ComplexTypes.cpp \
 	../../../SystemUtility/SystemUtility.cpp \
-        ../../../SystemUtility/FileUtils.cpp \
+	../../../SystemUtility/FileUtils.cpp \
 	../../../XML/XmlSimple.cpp \
-        ../../../XlsxFormat/Styles/XlsxStyles.cpp \
+	../../../XlsxFormat/Styles/XlsxStyles.cpp \
 	../../../XlsxFormat/Styles/rPr.cpp \
 	../../../XlsxFormat/Styles/Borders.cpp \
 	../../../XlsxFormat/Styles/CellStyles.cpp \
@@ -156,7 +160,7 @@ SOURCES += \
 	../../../XlsxFormat/SharedStrings/Si.cpp \
 	../../../XlsxFormat/SharedStrings/Text.cpp \
 	../../../XlsxFormat/SharedStrings/PhoneticPr.cpp \
-        ../../../XlsxFormat/SharedStrings/XlsxRun.cpp \
+	../../../XlsxFormat/SharedStrings/XlsxRun.cpp \
 	../../../XlsxFormat/SharedStrings/SharedStrings.cpp \
 	../../../XlsxFormat/Pivot/Pivots.cpp \
 	../../../XlsxFormat/Slicer/SlicerCache.cpp \
@@ -172,10 +176,10 @@ SOURCES += \
 	../../../XlsxFormat/Workbook/ExternalReferences.cpp \
 	../../../XlsxFormat/Workbook/Sheets.cpp \
 	../../../XlsxFormat/Workbook/WorkbookPr.cpp \
-        ../../../XlsxFormat/Comments/XlsxComments.cpp \
+	../../../XlsxFormat/Comments/XlsxComments.cpp \
 	../../../XlsxFormat/Comments/ThreadedComments.cpp \
 	../../../XlsxFormat/Drawing/CellAnchor.cpp \
-        ../../../XlsxFormat/Drawing/XlsxDrawing.cpp \
+	../../../XlsxFormat/Drawing/XlsxDrawing.cpp \
 	../../../XlsxFormat/Drawing/FromTo.cpp \
 	../../../XlsxFormat/Drawing/Pos.cpp \
 	../../../XlsxFormat/ExternalLinks/ExternalLinkPath.cpp \
@@ -212,7 +216,7 @@ HEADERS += \
 	../../../DocxFormat/Drawing/Drawing.h \
 	../../../DocxFormat/Drawing/DrawingExt.h \
 	../../../DocxFormat/External/External.h \
-        ../../../DocxFormat/External/HyperLink.h \
+	../../../DocxFormat/External/HyperLink.h \
 	../../../DocxFormat/Logic/AlternateContent.h \
 	../../../DocxFormat/Logic/Annotations.h \
 	../../../DocxFormat/Logic/BaseLogicSettings.h \

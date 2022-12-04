@@ -440,7 +440,6 @@ namespace NSBinPptxRW
 		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 	};
 
-
 	class CStreamBinaryWriter : public NSFile::CFileBinary, public CBinaryFileWriter
 	{
 	protected:
@@ -455,6 +454,7 @@ namespace NSBinPptxRW
 
 		void WriteReserved(size_t lCount);
 	};
+
 	class CXlsbBinaryWriter : public CStreamBinaryWriter
 	{
 	public:

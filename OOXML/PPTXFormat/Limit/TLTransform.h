@@ -43,36 +43,14 @@ namespace PPTX
 		class TLTransform : public BaseLimit
 		{
 		public:
-			TLTransform()
-			{
-				m_strValue = _T("pt");
-			}
+			TLTransform();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("img") == strValue) ||
-					(_T("pt") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"img" == m_strValue)	return 0;
-				if (L"pt" == m_strValue)	return 1;
+			virtual void set(const std::wstring& strValue);
 
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"img"; break;
-				case 1: m_strValue = L"pt"; break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

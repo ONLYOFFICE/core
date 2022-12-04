@@ -35,7 +35,87 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		NvGrpSpPr::NvGrpSpPr(std::wstring ns)
+		{
+			m_namespace = ns;
+		}
+		NvGrpSpPr& NvGrpSpPr::operator=(const NvGrpSpPr& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
 
+			cNvPr		= oSrc.cNvPr;
+			cNvGrpSpPr	= oSrc.cNvGrpSpPr;
+			nvPr		= oSrc.nvPr;
+			return *this;
+		}
+		OOX::EElementType NvGrpSpPr::getType () const
+		{
+			return OOX::et_p_NvGrpSpPr;
+		}
+		void NvGrpSpPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring namespace_ = m_namespace;
+
+			if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
+					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_ = L"wpg";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
+			else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
+
+			pWriter->StartNode(namespace_ + L":nvGrpSpPr");
+
+			pWriter->EndAttributes();
+
+			cNvPr.toXmlWriter(pWriter);
+			cNvGrpSpPr.toXmlWriter(pWriter);
+
+			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_PPTX)
+			{
+				nvPr.toXmlWriter(pWriter);
+			}
+
+			pWriter->EndNode(namespace_ + L":nvGrpSpPr");
+		}
+		void NvGrpSpPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord1(0, cNvPr);
+			pWriter->WriteRecord1(1, cNvGrpSpPr);
+			pWriter->WriteRecord1(2, nvPr);
+		}
+		void NvGrpSpPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+					case 0:
+					{
+						cNvPr.fromPPTY(pReader);
+						break;
+					}
+					case 1:
+					{
+						cNvGrpSpPr.fromPPTY(pReader);
+						break;
+					}
+					case 2:
+					{
+						nvPr.fromPPTY(pReader);
+						break;
+					}
+					default:
+						break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
 		void NvGrpSpPr::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -78,13 +158,11 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":nvGrpSpPr", oValue);
 		}
-
 		void NvGrpSpPr::FillParentPointersForChilds()
 		{
 			cNvPr.SetParentPointer(this);
 			cNvGrpSpPr.SetParentPointer(this);
 			nvPr.SetParentPointer(this);
 		}
-
 	} // namespace Logic
 } // namespace PPTX

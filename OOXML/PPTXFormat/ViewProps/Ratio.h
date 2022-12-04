@@ -41,72 +41,19 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Ratio)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name = XmlUtils::GetNameNoNS(node.GetName());
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				n = node.ReadAttributeInt(L"n");
-				d = node.ReadAttributeInt(L"d");
-
-				Normalize();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"n", n);
-				oAttr.Write(L"d", d);
-
-				return XmlUtils::CreateNode(L"a:" + name, oAttr);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt1(0, d);
-				pWriter->WriteInt1(1, n);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							d = pReader->GetLong();
-						}break;
-						case 1:
-						{
-							n = pReader->GetLong();
-						}break;
-						default:
-							break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			int				d;
 			int				n;
 			std::wstring	name;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				if (d < 0)
-					d = 0;
-				if (n < 0)
-					n = 0;
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			AVSINLINE void Normalize();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

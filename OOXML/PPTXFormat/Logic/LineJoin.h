@@ -47,182 +47,28 @@ namespace PPTX
 			WritingElement_AdditionConstructors(LineJoin)
 			PPTX_LOGIC_BASE2(LineJoin)
 
-			virtual bool is_init()const{return (type==JoinEmpty);};
+			virtual bool is_init() const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual OOX::EElementType getType () const;
 
-				type = JoinEmpty;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void GetJoinFrom(XmlUtils::CXmlNode& element);
 
-				if (name == _T("round"))
-					type = JoinRound;
-				else if (name == _T("bevel"))
-					type = JoinBevel;
-				else if (name == _T("miter"))
-				{
-					type = JoinMiter;
-					ReadAttributes(oReader);
-				}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				Normalize();
-			}
-			virtual OOX::EElementType getType () const
-			{
-				if(type == JoinRound)
-					return OOX::et_a_round;
-				else if(type == JoinBevel)
-					return OOX::et_a_bevel;
-				else if(type == JoinMiter)
-					return OOX::et_a_miter;
-				else
-					return OOX::et_Unknown;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS ( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("lim"), lim )
-				WritingElement_ReadAttributes_End_No_NS ( oReader )
-			}
-
-			virtual void GetJoinFrom(XmlUtils::CXmlNode& element)
-			{
-				type = JoinEmpty;
-				XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("round"));
-				if (oNode.IsValid())
-					type = JoinRound;
-				else
-				{
-					oNode = element.ReadNodeNoNS(_T("bevel"));
-					if (oNode.IsValid())
-						type = JoinBevel;
-					else
-					{
-						oNode = element.ReadNodeNoNS(_T("miter"));
-						if (oNode.IsValid())
-						{
-							type = JoinMiter;
-							XmlMacroReadAttributeBase(oNode, L"lim", lim);
-						}
-					}
-				}
-
-				Normalize();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
-				
-				type = JoinEmpty;
-
-				if (name == _T("round"))
-					type = JoinRound;
-				else if (name == _T("bevel"))
-					type = JoinBevel;
-				else if (name == _T("miter"))
-				{
-					type = JoinMiter;
-					XmlMacroReadAttributeBase(node, L"lim", lim);
-				}
-
-				Normalize();
-			}
-			virtual std::wstring toXML() const
-			{
-				if(type == JoinRound)
-					return _T("<a:round/>");
-				else if(type == JoinBevel)
-					return _T("<a:bevel/>");
-				else if(type == JoinMiter)
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("lim"), lim);
-
-					return XmlUtils::CreateNode(_T("a:miter"), oAttr);
-				}
-				return _T("");
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring sNodeNamespace;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					sNodeNamespace = _T("w14:");
-					sAttrNamespace = sNodeNamespace;
-				}
-				else
-					sNodeNamespace = _T("a:");
-				if (type == JoinRound)
-				{
-					pWriter->WriteString(_T("<") + sNodeNamespace + _T("round/>"));
-				}
-				else if (type == JoinBevel)
-				{
-					pWriter->WriteString(_T("<") + sNodeNamespace + _T("bevel/>"));
-				}
-				else if (type == JoinMiter)
-				{
-					pWriter->StartNode(sNodeNamespace + _T("miter"));
-					pWriter->StartAttributes();
-					pWriter->WriteAttribute(sAttrNamespace + _T("lim"), lim);
-					pWriter->EndAttributes();
-					pWriter->EndNode(sNodeNamespace + _T("miter"));
-				}
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				int bb = (int)type;
-				pWriter->WriteInt1(0, bb);
-				pWriter->WriteInt2(1, lim);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);				
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							type = (eJoin)pReader->GetLong();
-							break;
-						}
-						case 1:
-						{
-							lim = pReader->GetLong();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			eJoin			type;
 			nullable_int	lim;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				lim.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

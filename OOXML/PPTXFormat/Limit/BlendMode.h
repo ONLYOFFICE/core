@@ -40,46 +40,14 @@ namespace PPTX
 		class BlendMode : public BaseLimit
 		{
 		public:
-			BlendMode()
-			{
-				m_strValue = L"screen";
-			}
+			BlendMode();
 
 			_USE_STRING_OPERATOR
 			
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"darken"	== strValue) ||
-					(L"lighten"	== strValue) ||
-					(L"mult"	== strValue) ||
-					(L"over"	== strValue) ||
-					(L"screen"	== strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"darken" == m_strValue)		return 0;
-				if (L"lighten" == m_strValue)	return 1;
-				if (L"mult" == m_strValue)		return 2;
-				if (L"over" == m_strValue)		return 3;
-				if (L"screen" == m_strValue)		return 4;
-				return 4;
-			}
-
-			virtual void SetBYTECode(const BYTE& val)
-			{
-				switch(val)
-				{
-					case 0: m_strValue = L"darken";		break;
-					case 1: m_strValue = L"lighten";	break;
-					case 2: m_strValue = L"mult";		break;
-					case 3: m_strValue = L"over";		break;
-					case 4: m_strValue = L"screen";		break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& val);
 		};
 	} // namespace Limit
 } // namespace PPTX

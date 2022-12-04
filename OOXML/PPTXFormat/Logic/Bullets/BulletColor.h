@@ -47,146 +47,41 @@ namespace PPTX
 			WritingElement_AdditionConstructors(BulletColor)
 			PPTX_LOGIC_BASE2(BulletColor)
 
-			BulletColor& operator=(const BulletColor& oColor)
-			{
-				parentFile		= oColor.parentFile;
-				parentElement	= oColor.parentElement;
+			BulletColor& operator=(const BulletColor& oColor);
 
-				m_Color			= oColor.m_Color;
+			virtual OOX::EElementType getType() const;
 
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				if (m_Color.IsInit())
-					return m_Color->getType();
-				return OOX::et_Unknown;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-                std::wstring strName = oReader.GetName();
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				if (strName == _T("a:buClrTx"))
-					m_Color.reset(new Logic::BuClrTx(oReader));
-				else if (strName == _T("a:buClr"))
-					m_Color.reset(new Logic::BuClr(oReader));
-				else 
-					m_Color.reset();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring strName = node.GetName();
+			void ReadBulletColorFrom(XmlUtils::CXmlNode& element);
 
-				if (strName == _T("a:buClrTx"))
-					m_Color.reset(new Logic::BuClrTx(node));
-				else if (strName == _T("a:buClr"))
-					m_Color.reset(new Logic::BuClr(node));
-				else 
-					m_Color.reset();
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			void ReadBulletColorFrom(XmlUtils::CXmlNode& element)
-			{
-				XmlUtils::CXmlNode oNode;
-				if (element.GetNode(_T("a:buClrTx"), oNode))
-					m_Color.reset(new Logic::BuClrTx(oNode));
-				else if (element.GetNode(_T("a:buClr"), oNode))
-					m_Color.reset(new Logic::BuClr(oNode));
-				else 
-					m_Color.reset();
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (m_Color.is_init())
-					m_Color->toPPTY(pWriter);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				if (pReader->GetPos() == _end_rec)
-					return;
-
-				BYTE _type = pReader->GetUChar();
-
-				if (_type == BULLET_TYPE_COLOR_CLRTX)
-				{
-					m_Color.reset(new Logic::BuClrTx());
-				}
-				else
-				{
-					LONG len = pReader->GetLong();
-					if(len > 0)
-					{
-						Logic::BuClr* pClr = new Logic::BuClr();
-						pReader->Skip(1); // type(0)
-						pClr->Color.fromPPTY(pReader);
-						m_Color.reset(pClr);
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (m_Color.is_init())
-					m_Color->toXmlWriter(pWriter);
-			}
-
-			virtual bool is_init()const{return (m_Color.IsInit());};
-			virtual bool has_spec_color()const{return is<BuClr>();};
+			virtual bool is_init() const;
+			virtual bool has_spec_color() const;
 			
 			template<class T> AVSINLINE const bool	is() const	{ return m_Color.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return m_Color.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_Color.as<T>(); }
 
-            virtual DWORD GetRGBA()const
-			{
-				if(has_spec_color())
-					return as<BuClr>().GetRGBA();
-				return 0;
-			}
+			virtual DWORD GetRGBA() const;
+			virtual DWORD GetARGB() const;
+			virtual DWORD GetBGRA() const;
+			virtual DWORD GetABGR() const;
 
-            virtual DWORD GetARGB()const
-			{
-				if(has_spec_color())
-					return as<BuClr>().GetARGB();
-				return 0;
-			}
+			virtual std::wstring toXML() const;
 
-            virtual DWORD GetBGRA()const
-			{
-				if(has_spec_color())
-					return as<BuClr>().GetBGRA();
-				return 0;
-			}
-
-            virtual DWORD GetABGR()const
-			{
-				if(has_spec_color())
-					return as<BuClr>().GetABGR();
-				return 0;
-			}
-
-			virtual std::wstring toXML()const
-			{
-				if (m_Color.IsInit())
-					return m_Color->toXML();
-				return _T("");
-			}
-
-		public:
-		//private:
+		public:		
 			smart_ptr<WrapperWritingElement> m_Color;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					m_Color->SetParentPointer(pParent);
-			};
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 		};
 	} // namespace Logic
 } // namespace PPTX

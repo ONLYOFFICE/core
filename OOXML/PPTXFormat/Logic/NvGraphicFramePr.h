@@ -48,156 +48,28 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(NvGraphicFramePr)
 
-			NvGraphicFramePr(std::wstring ns = L"p") : cNvPr(ns), cNvGraphicFramePr(ns), nvPr(ns)
-			{
-				m_namespace = ns;
-			}
-			NvGraphicFramePr& operator=(const NvGraphicFramePr& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			NvGraphicFramePr(std::wstring ns = L"p");
 
-				cNvPr				= oSrc.cNvPr;
-				cNvGraphicFramePr	= oSrc.cNvGraphicFramePr;
-				nvPr				= oSrc.nvPr;
+			NvGraphicFramePr& operator=(const NvGraphicFramePr& oSrc);
 
-				m_namespace		= oSrc.m_namespace;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				return *this;
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace			= XmlUtils::GetNamespace(node.GetName());
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				cNvPr				= node.ReadNodeNoNS(_T("cNvPr"));
-				cNvGraphicFramePr	= node.ReadNodeNoNS(_T("cNvGraphicFramePr"));
-				nvPr				= node.ReadNodeNoNS(_T("nvPr"));
-
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (sName == L"cNvPr")
-						cNvPr.fromXML( oReader);
-					else if (sName == L"cNvGraphicFramePr")
-						cNvGraphicFramePr.fromXML( oReader);
-					else if (sName == L"nvPr")
-						nvPr.fromXML( oReader);
-				}
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cNvPr);
-				oValue.Write(cNvGraphicFramePr);
-				oValue.Write(nvPr);
-
-				return XmlUtils::CreateNode(m_namespace + L":nvGraphicFramePr", oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if ((pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-					 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY) && pWriter->m_lGroupIndex >= 0)
-				{
-					cNvPr.toXmlWriter2(_T("wpg"), pWriter);
-					pWriter->WriteString(_T("<wpg:cNvFrPr/>"));
-					return;
-				}
-
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX && pWriter->m_lGroupIndex >= 0)
-				{
-					pWriter->StartNode(_T("xdr:nvGraphicFramePr"));
-					pWriter->EndAttributes();
-
-					cNvPr.toXmlWriter(pWriter);
-					cNvGraphicFramePr.toXmlWriter(pWriter);
-					
-					pWriter->EndNode(_T("xdr:nvGraphicFramePr"));
-					return;
-				}
-				std::wstring namespace_ = m_namespace;
-				
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)				namespace_ = L"a";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
-
-				pWriter->StartNode(namespace_ + L":nvGraphicFramePr");
-				pWriter->EndAttributes();
-
-				cNvPr.toXmlWriter(pWriter);
-				cNvGraphicFramePr.toXmlWriter(pWriter);
-				nvPr.toXmlWriter(pWriter);
-				
-				pWriter->EndNode(namespace_ + L":nvGraphicFramePr");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, cNvPr);
-				pWriter->WriteRecord1(1, cNvGraphicFramePr);
-				pWriter->WriteRecord1(2, nvPr);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							cNvPr.fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							cNvGraphicFramePr.fromPPTY(pReader);
-							break;
-						}
-						case 2:
-						{
-							nvPr.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			
 			std::wstring		m_namespace;
 
 			CNvPr				cNvPr;
 			CNvGraphicFramePr	cNvGraphicFramePr;
 			NvPr				nvPr;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cNvPr.SetParentPointer(this);
-				cNvGraphicFramePr.SetParentPointer(this);
-				nvPr.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
+
 		};
 	} // namespace Logic
 } // namespace PPTX

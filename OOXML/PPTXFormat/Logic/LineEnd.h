@@ -47,122 +47,28 @@ namespace PPTX
 			WritingElement_AdditionConstructors(LineEnd)
 			PPTX_LOGIC_BASE2(LineEnd)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_buSzPts;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = oReader.GetName();
-				
-				ReadAttributes( oReader );
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w"), w )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("type"), type )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("len"), len )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
-				
-				XmlMacroReadAttributeBase(node, L"type", type);
-				XmlMacroReadAttributeBase(node, L"w", w);
-				XmlMacroReadAttributeBase(node, L"len", len);
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("type"), type);
-				oAttr.WriteLimitNullable(_T("w"), w);
-				oAttr.WriteLimitNullable(_T("len"), len);
+			virtual OOX::EElementType getType() const;
 
-				return XmlUtils::CreateNode(m_name, oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(m_name);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("type"), type);
-				pWriter->WriteAttribute(_T("w"), w);
-				pWriter->WriteAttribute(_T("len"), len);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(m_name);
-			}
-
-			virtual void Merge(nullable<LineEnd>& line)const
-			{
-				if(!line.IsInit())
-					line = LineEnd();
-				if(type.IsInit())
-					line->type = *type;
-				if(w.IsInit())
-					line->w = *w;
-				if(len.IsInit())
-					line->len = *len;
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							type = pReader->GetUChar();
-							break;
-						}
-						case 1:
-						{
-							w = pReader->GetUChar();
-							break;
-						}
-						case 2:
-						{
-							len = pReader->GetUChar();
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, type);
-				pWriter->WriteLimit2(1, w);
-				pWriter->WriteLimit2(2, len);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);				
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void Merge(nullable<LineEnd>& line) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			nullable_limit<Limit::LineEndType> type;
 			nullable_limit<Limit::LineEndSize> w;
 			nullable_limit<Limit::LineEndSize> len;
-		//private:
+
 		public:
 			std::wstring m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

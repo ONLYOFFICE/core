@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,3 +29,47 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include "BlipCompression.h"
+
+namespace PPTX
+{
+	namespace Limit
+	{		
+		BlipCompression::BlipCompression()
+		{
+			m_strValue = L"none";
+		}
+		void BlipCompression::set(const std::wstring& strValue)
+		{
+			if ((L"none"	== strValue) ||
+				(L"email"	== strValue) ||
+				(L"hqprint"	== strValue) ||
+				(L"print"	== strValue) ||
+				(L"screen"	== strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		BYTE BlipCompression::GetBYTECode() const
+		{
+			if (L"none" == m_strValue)		return 0;
+			if (L"email" == m_strValue)		return 1;
+			if (L"hqprint" == m_strValue)	return 2;
+			if (L"print" == m_strValue)		return 3;
+			if (L"screen" == m_strValue)	return 4;
+			return 0;
+		}
+		void BlipCompression::SetBYTECode(const BYTE& val)
+		{
+			switch (val)
+			{
+			case 0:	m_strValue = L"none";	break;
+			case 1:	m_strValue = L"email";	break;
+			case 2:	m_strValue = L"hqprint"; break;
+			case 3:	m_strValue = L"print";	break;
+			case 4:	m_strValue = L"screen"; break;
+			}
+		}
+	} // namespace Limit
+} // namespace PPTX

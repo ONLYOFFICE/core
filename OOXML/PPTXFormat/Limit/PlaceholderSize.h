@@ -40,49 +40,14 @@ namespace PPTX
 		class PlaceholderSize : public BaseLimit
 		{
 		public:
-			PlaceholderSize()
-			{
-				m_strValue = _T("full");
-			}
+			PlaceholderSize();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("full") == strValue) ||
-					(_T("half") == strValue) ||
-					(_T("quarter") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("full") == m_strValue)
-					return 0;
-				if (_T("half") == m_strValue)
-					return 1;
-				if (_T("quarter") == m_strValue)
-					return 2;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{		
-				switch (src)
-				{
-				case 1:
-					m_strValue = _T("half");
-					break;
-				case 2:
-					m_strValue = _T("quarter");
-					break;
-				default:
-					m_strValue = _T("full");
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -42,127 +42,28 @@ namespace PPTX
 			WritingElement_AdditionConstructors(ColorModifier)
 			PPTX_LOGIC_BASE2(ColorModifier)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_prstClr;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				name = oReader.GetName();
+			virtual OOX::EElementType getType() const;
 
-				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
-				{
-					ReadAttributes2( oReader );
-				}
-				else
-				{
-					ReadAttributes( oReader );
-				}
-			}
-			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_string sTmp;
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), sTmp)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if (sTmp.is_init())
-				{
-					val = sTmp.get();
-					if (val.is_init() && std::wstring::npos != sTmp->find(L"%"))
-					{
-						*val = (*val) * 1000; 
-					}
-				}
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name = node.GetName();
-				XmlMacroReadAttributeBase(node, L"val", val);
+			void ReadAttributes2(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
-				{
-					nullable_string sTmp;
-					XmlMacroReadAttributeBase(node, L"val", sTmp);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-                    if (val.is_init() && sTmp.is_init() && std::wstring::npos != sTmp->find(L"%"))
-						*val = (*val) * 1000;
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("val"), val);
-				return XmlUtils::CreateNode(name, oAttr);
-			}
+			ColorModifier& operator=(const ColorModifier& oSrc);
 
-			ColorModifier& operator=(const ColorModifier& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
-
-				name		= oSrc.name;
-				val			= oSrc.val;
-				return *this;
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, name);
-				pWriter->WriteInt2(1, val);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					if (0 == _at)
-						name = pReader->GetString2();
-					else if (1 == _at)
-						val = pReader->GetLong();
-					else
-						break;
-				}
-				pReader->Seek(_end_rec);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{				
-				std::wstring _name;
-				std::wstring sAttrNamespace;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-				{
-					_name = L"w14:" + XmlUtils::GetNameNoNS(name);
-					sAttrNamespace = L"w14:";
-				}
-				else
-					_name = name;
-				pWriter->StartNode(_name);
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(sAttrNamespace + L"val", val);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_name);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			std::wstring	name;
 			nullable_int	val;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

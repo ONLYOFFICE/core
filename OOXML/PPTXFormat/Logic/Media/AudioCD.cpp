@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,41 +29,67 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_STRETCH_INCLUDE_H_
-#define PPTX_LOGIC_STRETCH_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../Rect.h"
+#include "AudioCD.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-
-		class Stretch : public WrapperWritingElement
+		AudioCD::AudioCD()
 		{
-		public:
-			WritingElement_AdditionConstructors(Stretch)
-			PPTX_LOGIC_BASE2(Stretch)
+		}
+		AudioCD& AudioCD::operator=(const AudioCD& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
 
-			Stretch& operator=(const Stretch& oSrc);
+			stTrack		= oSrc.stTrack;
+			endTrack	= oSrc.endTrack;
 
-			virtual OOX::EElementType getType() const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			stTime		= oSrc.stTime;
+			endTime		= oSrc.endTime;
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			return *this;
+		}
+		void AudioCD::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			//todooo
+		}
+		void AudioCD::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlUtils::CXmlNode oMem;
 
-		public:
-			nullable<Rect> fillRect;
+			oMem		= node.ReadNode(_T("a:st"));
+			stTrack		= oMem.ReadAttributeInt(L"track");
+			XmlMacroReadAttributeBase(oMem, L"time", stTime);
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			oMem		= node.ReadNode(_T("a:end"));
+			endTrack	= oMem.ReadAttributeInt(L"track");
+			XmlMacroReadAttributeBase(oMem, L"time", endTime);
+
+			Normalize();
+		}
+		std::wstring AudioCD::toXML() const
+		{
+			XmlUtils::CAttribute oAttr1;
+			oAttr1.Write(_T("track"), stTrack);
+			oAttr1.Write(_T("time"), stTime);
+
+			XmlUtils::CAttribute oAttr2;
+			oAttr2.Write(_T("track"), endTrack);
+			oAttr2.Write(_T("time"), endTime);
+
+			return _T("<a:audioCd>") + XmlUtils::CreateNode(_T("a:st"), oAttr1) + XmlUtils::CreateNode(_T("a:end"), oAttr2) + _T("</a:audioCd>");
+		}
+		void AudioCD::FillParentPointersForChilds(){}
+		AVSINLINE void AudioCD::Normalize()
+		{
+			stTrack = (std::max)(0, (std::min)(255, stTrack));
+			stTrack = (std::max)(0, (std::min)(255, endTrack));
+
+			stTime.normalize_positive();
+			endTime.normalize_positive();
+		}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_STRETCH_INCLUDE_H_

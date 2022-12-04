@@ -49,17 +49,9 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_schemeClr;
-			}	
+			virtual OOX::EElementType getType() const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual DWORD GetRGBA(DWORD RGBA) const;
@@ -73,12 +65,14 @@ namespace PPTX
 
 		public:
 			Limit::SchemeClrVal val;
+
 		private:
 			void FillRGBFromVal(DWORD rgb);
 
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
+
 		class StyleClr : public ColorBase
 		{
 		public:
@@ -89,33 +83,18 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_styleClr;
-			}
+			virtual OOX::EElementType getType() const;
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				nullable_string sVal;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				WritingElement_ReadAttributes_Start_No_NS(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, L"val", sVal)
-				WritingElement_ReadAttributes_End_No_NS(oReader)
-
-				if (sVal.IsInit())
-				{
-					if (*sVal == L"auto") bAuto = true;
-					else
-						val = *sVal;
-				}
-			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 			nullable_uint val;
 			bool bAuto = false;
+
 		protected:
-			virtual void FillParentPointersForChilds() {};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,41 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_STRETCH_INCLUDE_H_
-#define PPTX_LOGIC_STRETCH_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../Rect.h"
+#include "PathBase.h"
 
 namespace PPTX
 {
 	namespace Logic
-	{
-
-		class Stretch : public WrapperWritingElement
-		{
-		public:
-			WritingElement_AdditionConstructors(Stretch)
-			PPTX_LOGIC_BASE2(Stretch)
-
-			Stretch& operator=(const Stretch& oSrc);
-
-			virtual OOX::EElementType getType() const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
-		public:
-			nullable<Rect> fillRect;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+	{		
+		PathBase::PathBase() {}
+		PathBase::~PathBase() {}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_STRETCH_INCLUDE_H_

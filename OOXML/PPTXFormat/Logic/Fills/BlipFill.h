@@ -39,7 +39,6 @@
 #include "Tile.h"
 #include "Stretch.h"
 
-
 namespace PPTX
 {
 	namespace Logic
@@ -50,42 +49,13 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(BlipFill)
 			
-			BlipFill(std::wstring ns = L"p")
-			{
-				m_namespace = ns;
-			}
+			BlipFill(std::wstring ns = L"p");
+			BlipFill& operator=(const BlipFill& oSrc);
 
-			BlipFill& operator=(const BlipFill& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
-				
-				blip			= oSrc.blip;
-				srcRect			= oSrc.srcRect;
-				tile			= oSrc.tile;
-				stretch			= oSrc.stretch;
-
-				dpi				= oSrc.dpi;
-				rotWithShape	= oSrc.rotWithShape;
-
-				additionalFile	= oSrc.additionalFile;
-				oleData			= oSrc.oleData;
-
-				m_namespace = oSrc.m_namespace;
-				return *this;
-			}
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_blipFill;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS (oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, _T("dpi"), dpi)
-					WritingElement_ReadAttributes_Read_else_if ( oReader, _T("rotWithShape"), rotWithShape )
-				WritingElement_ReadAttributes_End_No_NS	( oReader )
-			}
+			virtual OOX::EElementType getType () const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
@@ -105,23 +75,10 @@ namespace PPTX
 	//internal
 			mutable smart_ptr<OOX::File>	additionalFile;
 			std::wstring					oleData;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(blip.IsInit())
-					blip->SetParentPointer(this);
-				if(srcRect.IsInit())
-					srcRect->SetParentPointer(this);
-				if(tile.IsInit())
-					tile->SetParentPointer(this);
-				if(stretch.IsInit())
-					stretch->SetParentPointer(this);
-			}
 
-			AVSINLINE void Normalize()
-			{
-				dpi.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

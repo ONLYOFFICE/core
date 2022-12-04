@@ -45,56 +45,24 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(Blip)
 
-			Blip(std::wstring ns = L"a")
-			{
-				m_namespace = ns;
-				mediaExternal = false;
-			}	
-			Blip& operator=(const Blip& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Blip(std::wstring ns = L"a");
+			Blip& operator=(const Blip& oSrc);
 
-				Effects = oSrc.Effects;
+			virtual OOX::EElementType getType() const;
 
-				cstate	= oSrc.cstate;
-				embed	= oSrc.embed;
-				link	= oSrc.link;
-
-				m_namespace		= oSrc.m_namespace;
-				
-				oleRid			= oSrc.oleRid;
-				oleFilepathBin	= oSrc.oleFilepathBin;
-
-				mediaRid		= oSrc.mediaRid;
-				mediaFilepath	= oSrc.mediaFilepath;
-				mediaExternal	= oSrc.mediaExternal;
-
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_blip;
-			}			
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"link", link )
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"cstate", cstate )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			
-			virtual std::wstring GetFullPicName(OOX::IFileContainer* pRels = NULL)const;
-			virtual std::wstring GetFullOleName(const OOX::RId& pRId, OOX::IFileContainer* pRels = NULL)const;
+			virtual std::wstring GetFullPicName(OOX::IFileContainer* pRels = NULL) const;
+			virtual std::wstring GetFullOleName(const OOX::RId& pRId, OOX::IFileContainer* pRels = NULL) const;
 
 			std::vector<UniEffect> Effects;
 
@@ -114,6 +82,7 @@ namespace PPTX
 			std::wstring		oleFilepathImage;
 			
 			std::wstring		dataFilepathImage;
+
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

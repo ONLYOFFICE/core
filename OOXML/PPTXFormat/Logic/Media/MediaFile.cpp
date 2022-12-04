@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,41 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_STRETCH_INCLUDE_H_
-#define PPTX_LOGIC_STRETCH_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../Rect.h"
+#include "MediaFile.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-
-		class Stretch : public WrapperWritingElement
+		MediaFile::MediaFile(std::wstring name_)
 		{
-		public:
-			WritingElement_AdditionConstructors(Stretch)
-			PPTX_LOGIC_BASE2(Stretch)
+			name = name_;
+		}
+		MediaFile& MediaFile::operator=(const MediaFile& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
 
-			Stretch& operator=(const Stretch& oSrc);
+			name = oSrc.name;
+			link = oSrc.link;
+			contentType = oSrc.contentType;
 
-			virtual OOX::EElementType getType() const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			return *this;
+		}
+		void MediaFile::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			name = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			ReadAttributes(oReader);
+		}
+		void MediaFile::fromXML(XmlUtils::CXmlNode& node)
+		{
+			name		= XmlUtils::GetNameNoNS(node.GetName());
+			link		= node.GetAttribute(_T("r:link"));
+			XmlMacroReadAttributeBase(node, L"contentType", contentType);
+		}
+		void MediaFile::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_Read_if		( oReader, L"r:link",	link)
+				WritingElement_ReadAttributes_Read_else_if	( oReader, L"contentType",	contentType)
+			WritingElement_ReadAttributes_End( oReader )
+		}
+		std::wstring MediaFile::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"r:link", link.ToString());
+			oAttr.Write(L"contentType", contentType);
 
-		public:
-			nullable<Rect> fillRect;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			return XmlUtils::CreateNode(L"a:" + name, oAttr);
+		}
+		void MediaFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"a:" + name);
+				pWriter->StartAttributes();
+					pWriter->WriteAttribute (L"r:link", link.ToString());
+					pWriter->WriteAttribute (L"contentType", contentType);
+				pWriter->EndAttributes();
+			pWriter->EndNode(L"a:" + name);
+		}
+		void MediaFile::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_STRETCH_INCLUDE_H_

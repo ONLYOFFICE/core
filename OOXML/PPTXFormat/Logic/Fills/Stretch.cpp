@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,41 +29,78 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_STRETCH_INCLUDE_H_
-#define PPTX_LOGIC_STRETCH_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../Rect.h"
+#include "Stretch.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-
-		class Stretch : public WrapperWritingElement
+		Stretch& Stretch::operator=(const Stretch& oSrc)
 		{
-		public:
-			WritingElement_AdditionConstructors(Stretch)
-			PPTX_LOGIC_BASE2(Stretch)
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
 
-			Stretch& operator=(const Stretch& oSrc);
+			fillRect = oSrc.fillRect;
+			return *this;
+		}
+		OOX::EElementType Stretch::getType() const
+		{
+			return OOX::et_a_stretch;
+		}
+		void Stretch::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
-			virtual OOX::EElementType getType() const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				if (_T("fillRect") == XmlUtils::GetNameNoNS(oReader.GetName()))
+					fillRect = oReader;
+			}
+		}
+		void Stretch::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlUtils::CXmlNodes oNodes;
+			if (node.GetNodes(_T("*"), oNodes))
+			{
+				int count = oNodes.GetCount();
+				for (int i = 0; i < count; ++i)
+				{
+					XmlUtils::CXmlNode oNode;
+					oNodes.GetAt(i, oNode);
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+					if (_T("fillRect") == XmlUtils::GetNameNoNS(oNode.GetName()))
+						fillRect = oNode;
+				}
+			}
+			FillParentPointersForChilds();
+		}
+		std::wstring Stretch::toXML() const
+		{
+			XmlUtils::CNodeValue oValue;
+			oValue.WriteNullable(fillRect);
 
-		public:
-			nullable<Rect> fillRect;
+			return XmlUtils::CreateNode(_T("a:stretch"), oValue);
+		}
+		void Stretch::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("a:stretch"));
+			pWriter->EndAttributes();
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			pWriter->Write(fillRect);
+
+			pWriter->EndNode(_T("a:stretch"));
+		}
+		void Stretch::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord2(0, fillRect);
+		}
+		void Stretch::FillParentPointersForChilds()
+		{
+			if(fillRect.IsInit())
+				fillRect->SetParentPointer(this);
+		}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_STRETCH_INCLUDE_H_

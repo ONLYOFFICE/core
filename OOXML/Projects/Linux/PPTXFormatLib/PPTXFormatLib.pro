@@ -49,9 +49,33 @@ HEADERS += precompiled.h
 core_debug {
 SOURCES += \
 	../../../PPTXFormat/Logic/Media/WavAudioFile.cpp \
+	../../../PPTXFormat/Logic/Media/AudioCD.cpp \
+	../../../PPTXFormat/Logic/Media/MediaFile.cpp \
+	\
+	../../../PPTXFormat/Logic/Path2D/ArcTo.cpp \
+	../../../PPTXFormat/Logic/Path2D/Close.cpp \
+	../../../PPTXFormat/Logic/Path2D/CubicBezTo.cpp \
+	../../../PPTXFormat/Logic/Path2D/LineTo.cpp \
+	../../../PPTXFormat/Logic/Path2D/MoveTo.cpp \
+	../../../PPTXFormat/Logic/Path2D/PathBase.cpp \
+	../../../PPTXFormat/Logic/Path2D/QuadBezTo.cpp \
+	\
 	../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
+	../../../PPTXFormat/Logic/Colors/ColorBase.cpp \
+	../../../PPTXFormat/Logic/Colors/ColorModifier.cpp \
+	../../../PPTXFormat/Logic/Colors/PrstClr.cpp \
+	../../../PPTXFormat/Logic/Colors/SrgbClr.cpp \
+	../../../PPTXFormat/Logic/Colors/SysClr.cpp \
+	\
 	../../../PPTXFormat/Logic/Fills/Blip.cpp \
 	../../../PPTXFormat/Logic/Fills/BlipFill.cpp \
+	../../../PPTXFormat/Logic/Fills/GradFill.cpp \
+	../../../PPTXFormat/Logic/Fills/NoFill.cpp \
+	../../../PPTXFormat/Logic/Fills/PattFill.cpp \
+	../../../PPTXFormat/Logic/Fills/SolidFill.cpp \
+	../../../PPTXFormat/Logic/Fills/Stretch.cpp \
+	../../../PPTXFormat/Logic/Fills/Tile.cpp \
+	\
 	../../../PPTXFormat/Logic/Table/TableCell.cpp \
 	../../../PPTXFormat/Logic/Timing/BuildNodeBase.cpp \
 	../../../PPTXFormat/Logic/Timing/TimeNodeBase.cpp \

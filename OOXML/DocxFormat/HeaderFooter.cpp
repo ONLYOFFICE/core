@@ -32,6 +32,13 @@
 
 #include "HeaderFooter.h"
 
+#include "Logic/Annotations.h"
+#include "Logic/Paragraph.h"
+#include "Logic/Sdt.h"
+#include "Logic/Table.h"
+#include "Math/oMathPara.h"
+#include "Math/OMath.h"
+
 namespace OOX
 {
 	//--------------------------------------------------------------------------------
@@ -269,10 +276,6 @@ mc:Ignorable=\"w14 w15 wp14\">");
 	EElementType CHdrFtr::getType() const
 	{
 		return m_eType;
-	}
-	void CHdrFtr::AddParagraph(Logic::CParagraph *pPara)
-	{
-		m_arrItems.push_back( (WritingElement*)pPara );
 	}
 	void CHdrFtr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 {

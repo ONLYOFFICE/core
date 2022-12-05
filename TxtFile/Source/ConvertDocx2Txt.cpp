@@ -39,7 +39,15 @@
 #include "../../OOXML/DocxFormat/Styles.h"
 #include "../../OOXML/DocxFormat/Footnote.h"
 #include "../../OOXML/DocxFormat/Endnote.h"
+#include "../../OOXML/DocxFormat/FtnEdn.h"
 #include "../../OOXML/DocxFormat/HeaderFooter.h"
+#include "../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../OOXML/DocxFormat/Logic/Sdt.h"
+#include "../../OOXML/DocxFormat/Logic/FldSimple.h"
+#include "../../OOXML/DocxFormat/Logic/Hyperlink.h"
+#include "../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../OOXML/DocxFormat/Logic/Run.h"
 
 #include <map>
 

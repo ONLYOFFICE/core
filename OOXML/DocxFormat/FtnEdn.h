@@ -35,13 +35,6 @@
 
 #include "WritingElement.h"
 
-#include "Logic/Annotations.h"
-#include "Logic/Paragraph.h"
-#include "Logic/Sdt.h"
-#include "Logic/Table.h"
-#include "Math/oMathPara.h"
-#include "Math/OMath.h"
-
 // TO DO: Нехватающие классы:
 //        <w:customXml>
 //        <w:del>
@@ -70,8 +63,6 @@ namespace OOX
 
 		virtual std::wstring toXML() const;
 		virtual EElementType getType() const;
-
-		void AddParagraph(Logic::CParagraph *pPara);
 
 		OOX::EElementType                        m_eType; // <w:footnote> или <w:endnote>
 

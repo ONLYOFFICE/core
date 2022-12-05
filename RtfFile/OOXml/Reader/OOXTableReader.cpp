@@ -34,6 +34,7 @@
 #include "OOXTableReader.h"
 
 #include "../../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
 
 bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle)
 {
@@ -218,4 +219,123 @@ void OOXTableReader::ApplyParagraphProperty( RtfTable& oOutputTable )
 				}
 			}
 	}
+}
+OOXTableRowReader::OOXTableRowReader(OOX::Logic::CTr *ooxRowTable, OOX::Logic::CTableProperty* ooxTableProps)
+{
+    m_ooxRowTable	= ooxRowTable;
+    m_ooxTableProps	= ooxTableProps;
+}
+
+bool OOXTableRowReader::Parse( ReaderParameter oParam, RtfTableRow& oOutputRow, int nCurRow, int nRowCount)
+{
+    if (m_ooxRowTable == NULL) return false;
+
+    CcnfStyle oConditionStyle;
+
+    if (nCurRow == 0 && oOutputRow.m_oProperty.m_bAutoFirstRow == 1)
+        oConditionStyle.bFirstRow = true;
+
+    if (nCurRow == nRowCount - 1 && oOutputRow.m_oProperty.m_bAutoLastRow == 1)
+        oConditionStyle.bLastRow = true;
+
+    //сначала применяем свойства
+    if( m_ooxRowTable->m_pTableRowProperties )
+    {
+        OOXtrPrReader otrPrReader(m_ooxRowTable->m_pTableRowProperties);
+        otrPrReader.Parse( oParam, oOutputRow.m_oProperty, oConditionStyle);// может поменяться на любой condition(first row)
+    }
+
+    int nCellCount = m_ooxRowTable->m_nCountCell, nCurCell = 0;
+
+    for (size_t i = 0; i < m_ooxRowTable->m_arrItems.size(); ++i)
+    {
+        if ( m_ooxRowTable->m_arrItems[i] == NULL )		continue;
+        if ( m_ooxRowTable->m_arrItems[i]->getType() != OOX::et_w_tc) continue;//todooo bookmarks
+
+        RtfTableCellPtr oNewCell( new RtfTableCell() );
+
+        OOX::Logic::CTc *ooxCell = NULL;
+
+        if (nCurCell < (int)m_ooxRowTable->m_arrItems.size())
+        {
+            ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[i]);
+        }
+
+        OOXTableCellReader oCellReader(ooxCell, m_ooxTableProps );
+        oCellReader.Parse( oParam, *oNewCell, oConditionStyle, nCurCell++, nCurRow, nCellCount, nRowCount );
+        //добавляем cell
+        oOutputRow.AddItem(oNewCell);
+        //свойства cell в row
+        oOutputRow.m_oProperty.AddItem( oNewCell->m_oProperty );
+    }
+    return true;
+}
+
+OOXTableCellReader::OOXTableCellReader(OOX::Logic::CTc *ooxTableCell, OOX::Logic::CTableProperty* ooxTableProps)
+{
+    m_ooxTableCell	= ooxTableCell;
+    m_ooxTableProps	= ooxTableProps;
+}
+bool OOXTableCellReader::Parse( ReaderParameter oParam ,RtfTableCell& oOutputCell,  CcnfStyle oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount )
+{
+    if (m_ooxTableCell == NULL) return false;
+
+    if( m_ooxTableCell->m_pTableCellProperties )
+    {
+        OOXtcPrReader oCellPropReader(m_ooxTableCell->m_pTableCellProperties, m_ooxTableProps);
+        oCellPropReader.Parse( oParam, oOutputCell.m_oProperty, oConditionalTableStyle, nCurCell, nCellCount, nCurRow, nRowCount );//может поменяться на любой condition (firstRow)
+    }
+    else
+    {
+        RtfTableStylePtr oResultStyle = oConditionalTableStyle.ApplyTableStyle( oParam.poTableStyle );
+        if( NULL != oResultStyle )
+            oOutputCell.m_oProperty.Merge( oResultStyle->m_oCellProp );
+        oConditionalTableStyle.ApplyTableStyleToCellBorder( oParam.poTableStyle, oOutputCell.m_oProperty, nCurCell, nCellCount, nCurRow, nRowCount );
+    }
+
+    for (std::vector<OOX::WritingElement*>::iterator it = m_ooxTableCell->m_arrItems.begin(); it != m_ooxTableCell->m_arrItems.end(); ++it)
+    {
+        switch((*it)->getType())
+        {
+            case OOX::et_w_p:
+            {
+                OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(*it);
+
+                RtfParagraphPtr oNewParagraph( new RtfParagraph() );
+                //применяем к новому параграфу default property
+                oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
+                oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
+
+                OOXParagraphReader oParagraphReader(pParagraph);
+                oParagraphReader.Parse( oParam, (*oNewParagraph), oConditionalTableStyle );
+
+                //ставим стиль таблицы
+                if( NULL != oParam.poTableStyle )
+                    oNewParagraph->m_oProperty.m_nTableStyle = oParam.poTableStyle->m_nID;
+                oNewParagraph->m_oProperty.m_nItap = oParam.oReader->m_nCurItap;
+                oNewParagraph->m_oProperty.m_bInTable = 1;
+
+                oOutputCell.AddItem( oNewParagraph );
+            }break;
+            case OOX::et_w_tbl:
+            {
+                OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(*it);
+
+                oParam.oReader->m_nCurItap ++ ;
+                RtfTablePtr oNewTabel( new RtfTable() );
+                OOXTableReader oTableReader(pTbl);
+                oTableReader.Parse( oParam, *oNewTabel);
+                oOutputCell.AddItem( oNewTabel );
+                oParam.oReader->m_nCurItap -- ;
+            }break;
+            default:
+            {
+                //todooo - универсальный риадер
+                //OOXElementReader oElementReader((*it));
+                //ITextItemPtr *rtfElement = oElementReader.Parse( oParam);
+                //oOutputCell.AddItem( rtfElement );
+            }break;
+        }
+    }
+    return true;
 }

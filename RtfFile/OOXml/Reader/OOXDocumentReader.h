@@ -31,10 +31,7 @@
  */
 #pragma once
 
-//#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
-
-//#include "../../../OOXML/DocxFormat/Document.h"
 
 namespace OOX
 {

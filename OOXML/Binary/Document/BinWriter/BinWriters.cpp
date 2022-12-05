@@ -50,7 +50,12 @@
 #include "../../../../RtfFile/Format/ConvertationManager.h"
 
 #include "../../../DocxFormat/CustomXml.h"
-
+#include "../../../DocxFormat/Logic/AlternateContent.h"
+#include "../../../DocxFormat/Logic/Dir.h"
+#include "../../../DocxFormat/Logic/SmartTag.h"
+#include "../../../DocxFormat/Logic/Bdo.h"
+#include "../../../DocxFormat/Logic/Run.h"
+#include "../../../DocxFormat/Logic/RunProperty.h"
 
 #define COMPLEX_BOOL_TO_UINT(offset, val) \
 	if(val.IsInit()) { \

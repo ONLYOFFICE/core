@@ -37,6 +37,12 @@
 #include "../../OOXML/DocxFormat/Footnote.h"
 #include "../../OOXML/DocxFormat/Endnote.h"
 #include "../../OOXML/DocxFormat/HeaderFooter.h"
+#include "../../OOXML/DocxFormat/Logic/AlternateContent.h"
+#include "../../OOXML/DocxFormat/Logic/Annotations.h"
+#include "../../OOXML/DocxFormat/Logic/Sdt.h"
+#include "../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../OOXML/DocxFormat/Logic/Run.h"
 
 namespace Txt2Docx
 {
@@ -49,7 +55,85 @@ namespace Txt2Docx
 
 		Txt::File		m_inputFile;
 		OOX::CDocument	m_outputFile;
-	};
+
+        void AddText(OOX::Logic::CParagraph *pPara , std::wstring& sText)
+        {
+            if (!pPara)
+                return;
+
+            OOX::WritingElement *pR = new OOX::Logic::CRun();
+            if ( !pR )
+                return;
+
+            OOX::WritingElement *pT = new OOX::Logic::CText();
+            if ( !pT )
+            {
+                delete pR;
+                return;
+            }
+
+            OOX::Logic::CText *pText = (OOX::Logic::CText*)pT;
+            pText->m_sText  = sText;
+            pText->m_oSpace = new SimpleTypes::CXmlSpace();
+            pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
+
+
+            ((OOX::Logic::CRun*)pR)->m_arrItems.push_back( pT );
+
+            pPara->m_arrItems.push_back( pR );
+        }
+        void AddText(OOX::Logic::CParagraph *pPara , std::wstring& sText, OOX::Logic::CRunProperty * pProperty)
+        {
+            if (!pPara)
+                return;
+
+            OOX::WritingElement *pR = new OOX::Logic::CRun();
+            if ( !pR )
+                return;
+
+            OOX::WritingElement *pT = new OOX::Logic::CText();
+            if ( !pT )
+            {
+                delete pR;
+                return;
+            }
+
+            OOX::Logic::CText *pText = (OOX::Logic::CText*)pT;
+            pText->m_sText  = sText;
+            pText->m_oSpace = new SimpleTypes::CXmlSpace();
+            pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
+
+            if ( pProperty )
+            {
+                ((OOX::Logic::CRun*)pR)->m_arrItems.push_back( (OOX::WritingElement*)pProperty );
+                ((OOX::Logic::CRun*)pR)->m_oRunProperty	= pProperty;//копия для удобства
+            }
+
+            ((OOX::Logic::CRun*)pR)->m_arrItems.push_back( pT );
+
+            pPara->m_arrItems.push_back( pR );
+        }
+        void AddTab(OOX::Logic::CParagraph *pPara)
+        {
+            if (!pPara)
+                return;
+
+            OOX::WritingElement *pR = new OOX::Logic::CRun();
+            if ( !pR )
+                return;
+
+            OOX::WritingElement *pTab = new OOX::Logic::CTab();
+            if ( !pTab )
+            {
+                delete pR;
+                return;
+            }
+
+            ((OOX::Logic::CRun*)pR)->m_arrItems.push_back( pTab );
+
+            pPara->m_arrItems.push_back( pR );
+        }
+    };
 
 	Converter::Converter(int encoding) : converter_( new Converter_Impl(encoding) )
 	{
@@ -137,17 +221,17 @@ namespace Txt2Docx
 							OOX::Logic::CRunProperty *rPr_	= new OOX::Logic::CRunProperty();
 							rPr_->m_oRFonts		= font;
 							std::wstring s_ = XmlUtils::EncodeXmlString(s);
-							paragraph->AddText(s_, rPr_);
+                            AddText(paragraph, s_, rPr_);
 						}
 					}
-					paragraph->AddTab();
+                    AddTab(paragraph);
 					line.erase(0, pos + 1);
 				}
 
 				if (!line.empty())
 				{
 					std::wstring s_ = XmlUtils::EncodeXmlString(line);
-					paragraph->AddText(s_, rPr);
+                    AddText(paragraph, s_, rPr);
 				}
 				pDocument->m_arrItems.push_back(paragraph);
 			}

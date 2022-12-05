@@ -40,6 +40,7 @@
 #include "../../../OOXML/DocxFormat/FontTable.h"
 #include "../../../OOXML/DocxFormat/Numbering.h"
 #include "../../../OOXML/DocxFormat/Styles.h"
+#include "../../../OOXML/DocxFormat/Comments.h"
 #include "../../../OOXML/DocxFormat/Settings/WebSettings.h"
 #include "../../../OOXML/DocxFormat/Settings/Settings.h"
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
@@ -47,7 +48,19 @@
 
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
+#include "../../../OOXML/DocxFormat/Logic/Sdt.h"
 #include "../../../OOXML/DocxFormat/Logic/Pict.h"
+#include "../../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../../OOXML/DocxFormat/Logic/Hyperlink.h"
+#include "../../../OOXML/DocxFormat/Logic/AlternateContent.h"
+#include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../../OOXML/DocxFormat/Logic/Bdo.h"
+#include "../../../OOXML/DocxFormat/Logic/Dir.h"
+#include "../../../OOXML/DocxFormat/Logic/SmartTag.h"
+#include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../OOXML/DocxFormat/Logic/FldSimple.h"
+#include "../../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../../OOXML/DocxFormat/Logic/RunProperty.h"
 
 #include "VmlShapeTypes2Oox.h"
 

@@ -31,12 +31,18 @@
  */
 #include "Comments.h"
 
+#include "Math/oMathPara.h"
+#include "Math/OMath.h"
+
 #include "Logic/Annotations.h"
 #include "Logic/Paragraph.h"
 #include "Logic/Sdt.h"
 #include "Logic/Table.h"
-#include "Math/oMathPara.h"
-#include "Math/OMath.h"
+
+#include "Logic/Run.h"
+#include "Logic/SmartTag.h"
+#include "Logic/Dir.h"
+#include "Logic/Bdo.h"
 
 namespace OOX
 {

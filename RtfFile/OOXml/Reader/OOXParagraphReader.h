@@ -37,6 +37,14 @@
 #include "../../Format/RtfDocument.h"
 #include "../../Format/RtfField.h"
 
+namespace OOX
+{
+    namespace Logic
+    {
+        class CParagraph;
+    }
+}
+
 class OOXParagraphReader
 {
 private:
@@ -46,28 +54,10 @@ private:
 public: 
 	RtfCharProperty										m_oCharProperty;
 
-	OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph)
-	{
-		m_ooxElement		= NULL; 
-		m_ooxParagraph		= ooxParagraph;
-		m_drawingParagraph	= NULL;
-		
-		m_oCharProperty.SetDefault();
-	}
-	OOXParagraphReader (PPTX::Logic::Paragraph *ooxParagraph)
-	{
-		m_ooxElement		= NULL; 
-		m_ooxParagraph		= NULL;
-		m_drawingParagraph	= ooxParagraph;
-		
-		m_oCharProperty.SetDefault();
-	}
-	OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement)
-	{
-		m_drawingParagraph	= NULL;
-		m_ooxParagraph		= NULL;
-		m_ooxElement		= ooxElement;
-	}
+    OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph);
+    OOXParagraphReader (PPTX::Logic::Paragraph *ooxParagraph);
+    OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement);
+
 	bool Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle);
 	bool Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle);
 	bool Parse3( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle, OOX::WritingElement* m_ooxElement);

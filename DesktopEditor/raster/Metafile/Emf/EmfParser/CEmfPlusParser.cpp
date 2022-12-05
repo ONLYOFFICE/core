@@ -1674,8 +1674,8 @@ namespace MetaFile
 
 				oRect.dLeft   = arPoints[0].X;
 				oRect.dTop    = arPoints[0].Y;
-				oRect.dRight  = arPoints[1].X;
-				oRect.dBottom = arPoints[2].Y;
+				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
+				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
 				TRectD oTempSrcRect = oSrcRect.GetRectD();
 

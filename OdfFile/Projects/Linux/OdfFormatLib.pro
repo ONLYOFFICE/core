@@ -29,9 +29,9 @@ CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
 
-#CONFIG += precompile_header
-#PRECOMPILED_HEADER = precompiled.h
-#HEADERS += precompiled.h
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
 
 core_release {
 SOURCES += \

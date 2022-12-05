@@ -42,9 +42,9 @@ SOURCES += \
 	pptx_format_logic.cpp
 }
 
-#CONFIG += precompile_header
-#PRECOMPILED_HEADER = precompiled.h
-#HEADERS += precompiled.h
+CONFIG += precompile_header
+PRECOMPILED_HEADER = precompiled.h
+HEADERS += precompiled.h
 
 core_debug {
 SOURCES += \
@@ -85,6 +85,45 @@ SOURCES += \
 	\
 	../../../PPTXFormat/Logic/Timing/BuildNodeBase.cpp \
 	../../../PPTXFormat/Logic/Timing/TimeNodeBase.cpp \
+	../../../PPTXFormat/Logic/Timing/Anim.cpp \
+	../../../PPTXFormat/Logic/Timing/AnimClr.cpp \
+	../../../PPTXFormat/Logic/Timing/AnimEffect.cpp \
+	../../../PPTXFormat/Logic/Timing/AnimMotion.cpp \
+	../../../PPTXFormat/Logic/Timing/AnimRot.cpp \
+	../../../PPTXFormat/Logic/Timing/AnimScale.cpp \
+	../../../PPTXFormat/Logic/Timing/AnimVariant.cpp \
+	../../../PPTXFormat/Logic/Timing/AttrName.cpp \
+	../../../PPTXFormat/Logic/Timing/AttrNameLst.cpp \
+	../../../PPTXFormat/Logic/Timing/Audio.cpp \
+	../../../PPTXFormat/Logic/Timing/BldDgm.cpp \
+	../../../PPTXFormat/Logic/Timing/BldGraphic.cpp \
+	../../../PPTXFormat/Logic/Timing/BldLst.cpp \
+	../../../PPTXFormat/Logic/Timing/BldOleChart.cpp \
+	../../../PPTXFormat/Logic/Timing/BldP.cpp \
+	../../../PPTXFormat/Logic/Timing/BldSub.cpp \
+	../../../PPTXFormat/Logic/Timing/CBhvr.cpp \
+	../../../PPTXFormat/Logic/Timing/ChildTnLst.cpp \
+	../../../PPTXFormat/Logic/Timing/Cmd.cpp \
+	../../../PPTXFormat/Logic/Timing/CMediaNode.cpp \
+	../../../PPTXFormat/Logic/Timing/Cond.cpp \
+	../../../PPTXFormat/Logic/Timing/CondLst.cpp \
+	../../../PPTXFormat/Logic/Timing/CTn.cpp \
+	../../../PPTXFormat/Logic/Timing/Excl.cpp \
+	../../../PPTXFormat/Logic/Timing/GraphicEl.cpp \
+	../../../PPTXFormat/Logic/Timing/Iterate.cpp \
+	../../../PPTXFormat/Logic/Timing/Par.cpp \
+	../../../PPTXFormat/Logic/Timing/Seq.cpp \
+	../../../PPTXFormat/Logic/Timing/Set.cpp \
+	../../../PPTXFormat/Logic/Timing/SpTgt.cpp \
+	../../../PPTXFormat/Logic/Timing/Tav.cpp \
+	../../../PPTXFormat/Logic/Timing/TavLst.cpp \
+	../../../PPTXFormat/Logic/Timing/TgtEl.cpp \
+	../../../PPTXFormat/Logic/Timing/Timing.cpp \
+	../../../PPTXFormat/Logic/Timing/Tmpl.cpp \
+	../../../PPTXFormat/Logic/Timing/TmplLst.cpp \
+	../../../PPTXFormat/Logic/Timing/TnLst.cpp \
+	../../../PPTXFormat/Logic/Timing/TxEl.cpp \
+	../../../PPTXFormat/Logic/Timing/Video.cpp \
 	\
 	../../../PPTXFormat/Logic/Transitions/TransitionBase.cpp \
 	../../../PPTXFormat/Logic/Transitions/CornerDirectionTransition.cpp \

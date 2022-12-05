@@ -45,95 +45,19 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldLst)
 
-			BldLst& operator=(const BldLst& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			BldLst& operator=(const BldLst& oSrc);
 
-				list = oSrc.list;
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroLoadArray(node,_T("*"), list, BuildNodeBase);
-				FillParentPointersForChilds();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(list);
-				return XmlUtils::CreateNode(_T("p:bldLst"), oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				if (false == list.empty())
-				{
-					pWriter->StartRecord(0);
-
-					_UINT32 len = (_UINT32)list.size();
-					pWriter->WriteULONG(len);
-
-					for (size_t i = 0; i < list.size(); ++i)
-					{
-						list[i].toPPTY(pWriter);
-					}
-					pWriter->EndRecord();
-				}
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							pReader->Skip(4); // len
-							ULONG _c = pReader->GetULong();
-
-							for (ULONG i = 0; i < _c; ++i)
-							{
-								list.push_back(BuildNodeBase());
-								list[i].fromPPTY(pReader);
-							}
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			std::vector<BuildNodeBase> list;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				for (size_t i = 0; i < list.size(); ++i)
-					list[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

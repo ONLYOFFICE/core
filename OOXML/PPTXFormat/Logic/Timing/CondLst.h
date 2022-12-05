@@ -43,112 +43,20 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CondLst)
 
-			CondLst& operator=(const CondLst& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			CondLst& operator=(const CondLst& oSrc);
 
-				list = oSrc.list;
-				node_name = oSrc.node_name;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				node_name = XmlUtils::GetNameNoNS(node.GetName());
-                XmlMacroLoadArray(node, _T("p:cond"), list, Cond);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				if (list.empty()) return L"";
-				
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(list);
-
-                return XmlUtils::CreateNode(_T("p:") + node_name, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (list.empty()) return;
-
-				pWriter->StartNode(L"p:" + node_name);
-				pWriter->EndAttributes();
-
-				for (size_t i = 0; i < list.size(); ++i)
-				{
-					list[i].toXmlWriter(pWriter);
-				}
-
-				pWriter->EndNode(L"p:" + node_name);
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				if (false == list.empty())
-				{
-					pWriter->StartRecord(0);
-
-					_UINT32 len = (_UINT32)list.size();
-					pWriter->WriteULONG(len);
-
-					for (size_t i = 0; i < list.size(); ++i)
-					{
-						pWriter->WriteRecord1(0, list[i]);
-					}
-					pWriter->EndRecord();
-				}
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						pReader->Skip(4); // len
-						ULONG _c = pReader->GetULong();
-
-						for (ULONG i = 0; i < _c; ++i)
-						{
-							list.push_back(Cond());
-							
-							BYTE type = pReader->GetUChar(); //skip .. 
-							list[i].fromPPTY(pReader);
-						}
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
 			std::vector<Cond>	list;
 			std::wstring		node_name;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				for (size_t i = 0; i < list.size(); ++i)
-					list[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

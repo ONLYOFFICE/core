@@ -46,93 +46,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(BldSub)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oNode;
-				if (node.GetNode(_T("a:bldChart"), oNode))
-				{
-					chart		= true;
-                    XmlMacroReadAttributeBase(oNode, L"bld", bldChart);
-                    XmlMacroReadAttributeBase(oNode, L"animBg", animBg);
-				}
-				else if (node.GetNode(_T("a:bldDgm"), oNode))
-				{
-					chart		= false;
-                    XmlMacroReadAttributeBase(oNode, L"bld", bldDgm);
-                    XmlMacroReadAttributeBase(oNode, L"rev", rev);
-				}
-				else
-					chart.reset();
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				if (chart.IsInit())
-				{
-					if (*chart)
-					{
-						XmlUtils::CAttribute oAttr;
-						oAttr.WriteLimitNullable(_T("bld"), bldChart);
-						oAttr.Write(_T("animBg"), animBg);
-
-						return XmlUtils::CreateNode(_T("p:bldSub"), XmlUtils::CreateNode(_T("a:bldChart"), oAttr));
-					}
-
-					XmlUtils::CAttribute oAttr;
-					oAttr.WriteLimitNullable(_T("bld"), bldDgm);
-					oAttr.Write(_T("rev"), rev);
-
-					return XmlUtils::CreateNode(_T("p:bldSub"), XmlUtils::CreateNode(_T("a:bldDgm"), oAttr));
-				}
-				return _T("<p:bldSub/>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteBool2(0, chart);
-					pWriter->WriteBool2(1, animBg);
-					pWriter->WriteLimit2(2, bldChart);
-					pWriter->WriteLimit2(3, bldDgm);
-					pWriter->WriteBool2(4, rev);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	chart = pReader->GetBool();
-					else if (1 == _at)	animBg = pReader->GetBool();
-					else if (2 == _at)	bldChart = pReader->GetUChar();
-					else if (3 == _at)	bldDgm = pReader->GetUChar();
-					else if (4 == _at)	rev = pReader->GetBool();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable_bool								chart;
 			//bldChart
@@ -141,8 +60,9 @@ namespace PPTX
 			//bldDgm
 			nullable_limit<Limit::AnimationDgmBuild>	bldDgm;
 			nullable_bool								rev;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

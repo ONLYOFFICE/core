@@ -46,109 +46,12 @@ namespace PPTX
 			PPTX_LOGIC_BASE(AnimVariant)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				node_name = XmlUtils::GetNameNoNS(node.GetName());
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				XmlUtils::CXmlNode oNode;
-
-				if (node.GetNode(_T("p:boolVal"), oNode))
-                    XmlMacroReadAttributeBase(oNode, L"val", boolVal)
-				else if (node.GetNode(_T("p:intVal"), oNode))
-                    XmlMacroReadAttributeBase(oNode, L"val", intVal)
-				else if (node.GetNode(_T("p:fltVal"), oNode))
-                    XmlMacroReadAttributeBase(oNode, L"val", fltVal)
-				else if (node.GetNode(_T("p:clrVal"), oNode))
-					clrVal.GetColorFrom(oNode);
-				else if (node.GetNode(_T("p:strVal"), oNode))
-                    XmlMacroReadAttributeBase(oNode, L"val", strVal)
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-
-				if (strVal.IsInit())
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("val"), strVal);
-					oValue.m_strValue += XmlUtils::CreateNode(_T("p:strVal"), oAttr);
-				}
-				if (boolVal.IsInit())
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("val"), boolVal);
-					oValue.m_strValue += XmlUtils::CreateNode(_T("p:boolVal"), oAttr);
-				}
-				if (intVal.IsInit())
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("val"), intVal);
-					oValue.m_strValue += XmlUtils::CreateNode(_T("p:intVal"), oAttr);
-				}
-				if (fltVal.IsInit())
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("val"), fltVal);
-					oValue.m_strValue += XmlUtils::CreateNode(_T("p:fltVal"), oAttr);
-				}
-				if (clrVal.is_init())
-				{
-					oValue.m_strValue += (_T("<p:clrVal>") + clrVal.toXML() + _T("</p:clrVal>"));
-				}
-				return XmlUtils::CreateNode(_T("p:") + node_name, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBool2(0, boolVal);
-				pWriter->WriteString2(1, strVal);
-				pWriter->WriteInt2(2, intVal);
-				pWriter->WriteDouble2(3, fltVal);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, clrVal);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	boolVal = pReader->GetBool();
-					else if (1 == _at)	strVal = pReader->GetString2();
-					else if (2 == _at)	intVal = pReader->GetLong();
-					else if (3 == _at)	fltVal = pReader->GetDouble();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						clrVal.fromPPTY(pReader);
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			std::wstring		node_name = L"val";
 
@@ -158,11 +61,9 @@ namespace PPTX
 			nullable_double		fltVal;
 
 			UniColor			clrVal;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				clrVal.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

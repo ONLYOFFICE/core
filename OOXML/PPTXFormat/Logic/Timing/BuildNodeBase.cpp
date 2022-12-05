@@ -30,7 +30,6 @@
  *
  */
 
-
 #include "BuildNodeBase.h"
 #include "BldP.h"
 #include "BldDgm.h"
@@ -41,26 +40,21 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		BuildNodeBase::BuildNodeBase()
 		{
 		}
-
 		BuildNodeBase::~BuildNodeBase()
 		{
 		}
-
 		BuildNodeBase::BuildNodeBase(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const BuildNodeBase& BuildNodeBase::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
 		void BuildNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
@@ -75,7 +69,6 @@ namespace PPTX
 				m_node.reset(new Logic::BldOleChart(node));
 			else m_node.reset();
 		}
-
 		void BuildNodeBase::GetBuildNodeFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;
@@ -90,7 +83,6 @@ namespace PPTX
 				m_node.reset(new Logic::BldOleChart(oNode));
 			else m_node.reset();
 		}
-
 		std::wstring BuildNodeBase::toXML() const
 		{
 			if (m_node.IsInit())
@@ -138,5 +130,11 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+		void BuildNodeBase::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				m_node->SetParentPointer(pParent);
+		}
+		void BuildNodeBase::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

@@ -45,94 +45,25 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(SolidFill)
 			
-			SolidFill(std::wstring ns = L"a")
-			{
-				m_namespace = ns;
-			}
-			SolidFill& operator=(const SolidFill& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			SolidFill(std::wstring ns = L"a");
+			SolidFill& operator=(const SolidFill& oSrc);
 
-				Color		= oSrc.Color;
-				m_namespace	= oSrc.m_namespace;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual OOX::EElementType getType () const;
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-				
-				if ( oReader.IsEmptyNode() )
-					return;
-				
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					
-					Color.fromXML(oReader);
-				}
-				FillParentPointersForChilds();
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_solidFill;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                m_namespace = XmlUtils::GetNamespace(node.GetName());
-				Color.GetColorFrom(node);
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				std::wstring strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(Color);
+			void Merge(SolidFill& fill) const;
 
-				return XmlUtils::CreateNode(strName, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring strName;
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-					strName = _T("w14:solidFill");
-				else
-					strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
-
-				pWriter->StartNode(strName);
-				pWriter->EndAttributes();
-				
-				if (Color.is_init())
-					Color.toXmlWriter(pWriter);
-
-				pWriter->EndNode(strName);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(FILL_TYPE_SOLID);
-
-				pWriter->WriteRecord1(0, Color);
-
-				pWriter->EndRecord();
-			}
-
-			void Merge(SolidFill& fill)const
-			{
-				if(Color.is_init())
-					fill.Color = Color;
-			}
 			UniColor		Color;
 			std::wstring	m_namespace;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Color.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

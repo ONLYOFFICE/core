@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,41 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_STRETCH_INCLUDE_H_
-#define PPTX_LOGIC_STRETCH_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../Rect.h"
+#include "Close.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-
-		class Stretch : public WrapperWritingElement
+		Close& Close::operator=(const Close& oSrc)
 		{
-		public:
-			WritingElement_AdditionConstructors(Stretch)
-			PPTX_LOGIC_BASE2(Stretch)
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
 
-			Stretch& operator=(const Stretch& oSrc);
-
-			virtual OOX::EElementType getType() const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-
-		public:
-			nullable<Rect> fillRect;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			return *this;
+		}
+		OOX::EElementType Close::getType() const
+		{
+			return OOX::et_a_close;
+		}
+		void Close::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+		}
+		void Close::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		void Close::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->WriteString(_T("<a:close/>"));
+		}
+		void Close::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(GEOMETRY_TYPE_PATH_CLOZE);
+			pWriter->EndRecord();
+		}
+		void Close::FillParentPointersForChilds(){}
+		std::wstring Close::GetODString()const
+		{
+			return _T("<close/>");
+		}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_STRETCH_INCLUDE_H_

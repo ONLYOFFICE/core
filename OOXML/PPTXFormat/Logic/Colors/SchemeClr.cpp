@@ -30,14 +30,7 @@
  *
  */
 
-
 #include "SchemeClr.h"
-#include "./../../Slide.h"
-#include "./../../SlideLayout.h"
-#include "./../../SlideMaster.h"
-#include "./../../Theme.h"
-#include "./../../TableStyles.h"
-#include "./../../Presentation.h"
 
 namespace PPTX
 {
@@ -66,7 +59,6 @@ namespace PPTX
 				Modifiers.back().fromXML(oReader);
 			}
 		}
-
 		std::wstring SchemeClr::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
@@ -76,6 +68,16 @@ namespace PPTX
 			oValue.WriteArray(Modifiers);
 			
 			return XmlUtils::CreateNode(_T("a:schemeClr"), oAttr, oValue);
+		}
+		OOX::EElementType SchemeClr::getType() const
+		{
+			return OOX::et_a_schemeClr;
+		}
+		void SchemeClr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), val)
+			WritingElement_ReadAttributes_End_No_NS( oReader )
 		}
 		void SchemeClr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -124,7 +126,6 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
-
 		DWORD SchemeClr::GetRGBA(DWORD RGBA) const
 		{
 			SchemeClr* pColor = const_cast<SchemeClr*>(this);
@@ -134,7 +135,6 @@ namespace PPTX
 			pColor->FillRGBFromVal((RGBA >> 8) + A);
 			return ColorBase::GetRGBA(RGBA);
 		}
-
 		DWORD SchemeClr::GetARGB(DWORD ARGB) const
 		{
 			SchemeClr* pColor = const_cast<SchemeClr*>(this);
@@ -142,7 +142,6 @@ namespace PPTX
 			pColor->FillRGBFromVal(ARGB);
 			return ColorBase::GetARGB(ARGB);
 		}
-
 		DWORD SchemeClr::GetBGRA(DWORD BGRA) const
 		{
 			SchemeClr* pColor = const_cast<SchemeClr*>(this);
@@ -154,7 +153,6 @@ namespace PPTX
 			pColor->FillRGBFromVal(ARGB);
 			return ColorBase::GetBGRA(BGRA);
 		}
-
 		DWORD SchemeClr::GetABGR(DWORD ABGR) const
 		{
 			SchemeClr* pColor = const_cast<SchemeClr*>(this);
@@ -165,7 +163,6 @@ namespace PPTX
 			pColor->FillRGBFromVal(ARGB);
 			return ColorBase::GetABGR(ABGR);
 		}
-
 		DWORD SchemeClr::GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, DWORD ARGB)
 		{
 			DWORD RGB = 0;
@@ -198,6 +195,7 @@ namespace PPTX
 			
 			return ColorBase::GetARGB(ARGB);
 		}
+		void SchemeClr::FillParentPointersForChilds(){}
 
 		void SchemeClr::FillRGBFromVal(DWORD rgb)
 		{
@@ -240,7 +238,6 @@ namespace PPTX
 			red		= static_cast<unsigned char>((RGB & 0xFF0000)>>16);
 			alpha	= static_cast<unsigned char>((RGB & 0xFF000000)>>24);
 		}
-//--------------------------------------------------------------------------------
 		void StyleClr::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring sVal = node.GetAttribute(_T("val"));
@@ -280,6 +277,25 @@ namespace PPTX
 				oAttr.Write(L"val", std::wstring(L"auto"));
 
 			return XmlUtils::CreateNode(L"cs:styleClr", oAttr, oValue);
+		}
+		OOX::EElementType StyleClr::getType() const
+		{
+			return OOX::et_a_styleClr;
+		}
+		void StyleClr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			nullable_string sVal;
+
+			WritingElement_ReadAttributes_Start_No_NS(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, L"val", sVal)
+			WritingElement_ReadAttributes_End_No_NS(oReader)
+
+			if (sVal.IsInit())
+			{
+				if (*sVal == L"auto") bAuto = true;
+				else
+					val = *sVal;
+			}
 		}
 		void StyleClr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -324,6 +340,6 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
-
+		void StyleClr::FillParentPointersForChilds() {}
 	} // namespace Logic
 } // namespace PPTX

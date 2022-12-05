@@ -45,64 +45,24 @@ namespace PPTX
 		public:			
 			WritingElement_AdditionConstructors(MediaFile)
 
-			MediaFile(std::wstring name_)
-			{
-				name = name_;
-			}
+			MediaFile(std::wstring name_);
 
-			MediaFile& operator=(const MediaFile& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			MediaFile& operator=(const MediaFile& oSrc);
 
-				name = oSrc.name;
-				link = oSrc.link;
-				contentType = oSrc.contentType;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				name = XmlUtils::GetNameNoNS(oReader.GetName());
-				
-				ReadAttributes(oReader);
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name		= XmlUtils::GetNameNoNS(node.GetName());
-				link		= node.GetAttribute(_T("r:link"));
-				XmlMacroReadAttributeBase(node, L"contentType", contentType);
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, L"r:link",	link)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, L"contentType",	contentType)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"r:link", link.ToString());
-				oAttr.Write(L"contentType", contentType);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				return XmlUtils::CreateNode(L"a:" + name, oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:" + name);
-					pWriter->StartAttributes();
-						pWriter->WriteAttribute (L"r:link", link.ToString());
-						pWriter->WriteAttribute (L"contentType", contentType);
-					pWriter->EndAttributes();
-				pWriter->EndNode(L"a:" + name);
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			std::wstring		name;
 			OOX::RId			link;
 			nullable_string		contentType;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

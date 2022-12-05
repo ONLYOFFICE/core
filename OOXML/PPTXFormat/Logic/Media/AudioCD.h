@@ -44,71 +44,25 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(AudioCD)
 
-			AudioCD()
-			{
-			}
+			AudioCD();
 
-			AudioCD& operator=(const AudioCD& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AudioCD& operator=(const AudioCD& oSrc);
 
-				stTrack		= oSrc.stTrack;
-				endTrack	= oSrc.endTrack;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				stTime		= oSrc.stTime;
-				endTime		= oSrc.endTime;
+			virtual std::wstring toXML() const;
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				//todooo
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oMem;
-
-				oMem		= node.ReadNode(_T("a:st"));
-				stTrack		= oMem.ReadAttributeInt(L"track");
-				XmlMacroReadAttributeBase(oMem, L"time", stTime);
-
-				oMem		= node.ReadNode(_T("a:end"));
-				endTrack	= oMem.ReadAttributeInt(L"track");
-				XmlMacroReadAttributeBase(oMem, L"time", endTime);
-
-				Normalize();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr1;
-				oAttr1.Write(_T("track"), stTrack);
-				oAttr1.Write(_T("time"), stTime);
-				
-				XmlUtils::CAttribute oAttr2;
-				oAttr2.Write(_T("track"), endTrack);
-				oAttr2.Write(_T("time"), endTime);
-
-				return _T("<a:audioCd>") + XmlUtils::CreateNode(_T("a:st"), oAttr1) + XmlUtils::CreateNode(_T("a:end"), oAttr2) + _T("</a:audioCd>");
-			}
 		public:
 			int stTrack;
 			int endTrack;
 
 			nullable_int	stTime;
 			nullable_int	endTime;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
-
-			AVSINLINE void Normalize()
-			{
-                stTrack = (std::max)(0, (std::min)(255, stTrack));
-                stTrack = (std::max)(0, (std::min)(255, endTrack));
-
-				stTime.normalize_positive();
-				endTime.normalize_positive();
-			}
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -30,7 +30,6 @@
  *
  */
 
-
 #include "WavAudioFile.h"
 #include "../../Slide.h"
 #include "../../SlideMaster.h"
@@ -42,6 +41,63 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		WavAudioFile::WavAudioFile(const std::wstring & name)
+		{
+			m_name = name;
+		}
+		WavAudioFile& WavAudioFile::operator=(const WavAudioFile& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			name  = oSrc.name;
+			embed = oSrc.embed;
+			m_name = oSrc.m_name;
+			return *this;
+		}
+		OOX::EElementType WavAudioFile::getType() const
+		{
+			return OOX::et_a_snd; //todooo расширить ...
+		}
+		void WavAudioFile::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_name	= XmlUtils::GetNameNoNS(oReader.GetName());
+			ReadAttributes( oReader );
+		}
+		void WavAudioFile::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"name", name )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
+		}
+		void WavAudioFile::fromXML(XmlUtils::CXmlNode& node)
+		{
+			m_name	= XmlUtils::GetNameNoNS(node.GetName());
+
+			embed	= node.GetAttribute((L"r:embed"));
+			XmlMacroReadAttributeBase(node, L"name", name);
+		}
+		std::wstring WavAudioFile::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write((L"r:embed"), embed.ToString());
+			oAttr.Write((L"name"), name);
+
+			return XmlUtils::CreateNode((L"a:") + m_name, oAttr);
+		}
+		void WavAudioFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode((L"a:") + m_name);
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute((L"r:embed"), embed.ToString());
+			pWriter->WriteAttribute2((L"name"), name);
+			pWriter->EndAttributes();
+
+			pWriter->EndNode((L"a:") + m_name);
+		}
+		void WavAudioFile::FillParentPointersForChilds(){}
 		std::wstring WavAudioFile::GetPathFromId(OOX::IFileContainer* pRels, const std::wstring & rId)const
 		{
 			if (rId.empty()) return L"";
@@ -80,7 +136,6 @@ namespace PPTX
 			}
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		}
-		
 		void WavAudioFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;

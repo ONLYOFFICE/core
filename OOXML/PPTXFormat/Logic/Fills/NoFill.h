@@ -45,56 +45,25 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(NoFill)
 			
-			NoFill(std::wstring ns = L"a")
-			{
-				m_namespace = ns;
-			}
-			NoFill& operator=(const NoFill& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			NoFill(std::wstring ns = L"a");
 
-				m_namespace = oSrc.m_namespace;
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_noFill;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
-			}
-			virtual std::wstring toXML() const
-			{
-				if (_T("") == m_namespace)
-					return _T("<noFill/>");
-				return _T("<") + m_namespace + _T(":noFill/>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-					pWriter->WriteString(_T("<w14:noFill/>"));
-				else
-					pWriter->WriteString(_T("<a:noFill/>"));
-			}
+			NoFill& operator=(const NoFill& oSrc);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(FILL_TYPE_NOFILL);
-				pWriter->EndRecord();
-			}
+			virtual OOX::EElementType getType () const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
 		public:
 			std::wstring m_namespace;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 
 		class GrpFill : public WrapperWritingElement
@@ -103,52 +72,23 @@ namespace PPTX
 			WritingElement_AdditionConstructors(GrpFill)
 			PPTX_LOGIC_BASE2(GrpFill)
 
-			GrpFill& operator=(const GrpFill& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			GrpFill& operator=(const GrpFill& oSrc);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				m_namespace = oSrc.m_namespace;
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_grpFill;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
-			}
-			virtual std::wstring toXML() const
-			{
-				if (_T("") == m_namespace)
-					return _T("<grpFill/>");
-				return _T("<") + m_namespace + _T(":grpFill/>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
-					pWriter->WriteString(_T("<w14:grpFill/>"));
-				else
-					pWriter->WriteString(_T("<a:grpFill/>"));
-			}
+			virtual OOX::EElementType getType () const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(FILL_TYPE_GRP);
-				pWriter->EndRecord();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
 		public:
 			std::wstring m_namespace;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -30,9 +30,33 @@
  *
  */
 #include "../../../PPTXFormat/Logic/Media/WavAudioFile.cpp"
+#include "../../../PPTXFormat/Logic/Media/AudioCD.cpp"
+#include "../../../PPTXFormat/Logic/Media/MediaFile.cpp"
+
+#include "../../../PPTXFormat/Logic/Path2D/ArcTo.cpp"
+#include "../../../PPTXFormat/Logic/Path2D/Close.cpp"
+#include "../../../PPTXFormat/Logic/Path2D/CubicBezTo.cpp"
+#include "../../../PPTXFormat/Logic/Path2D/LineTo.cpp"
+#include "../../../PPTXFormat/Logic/Path2D/MoveTo.cpp"
+#include "../../../PPTXFormat/Logic/Path2D/PathBase.cpp"
+#include "../../../PPTXFormat/Logic/Path2D/QuadBezTo.cpp"
+
 #include "../../../PPTXFormat/Logic/Colors/SchemeClr.cpp"
+#include "../../../PPTXFormat/Logic/Colors/ColorBase.cpp"
+#include "../../../PPTXFormat/Logic/Colors/ColorModifier.cpp"
+#include "../../../PPTXFormat/Logic/Colors/PrstClr.cpp"
+#include "../../../PPTXFormat/Logic/Colors/SrgbClr.cpp"
+#include "../../../PPTXFormat/Logic/Colors/SysClr.cpp"
+
 #include "../../../PPTXFormat/Logic/Fills/Blip.cpp"
 #include "../../../PPTXFormat/Logic/Fills/BlipFill.cpp"
+#include "../../../PPTXFormat/Logic/Fills/GradFill.cpp"
+#include "../../../PPTXFormat/Logic/Fills/NoFill.cpp"
+#include "../../../PPTXFormat/Logic/Fills/PattFill.cpp"
+#include "../../../PPTXFormat/Logic/Fills/SolidFill.cpp"
+#include "../../../PPTXFormat/Logic/Fills/Stretch.cpp"
+#include "../../../PPTXFormat/Logic/Fills/Tile.cpp"
+
 #include "../../../PPTXFormat/Logic/Table/TableCell.cpp"
 #include "../../../PPTXFormat/Logic/Timing/BuildNodeBase.cpp"
 #include "../../../PPTXFormat/Logic/Timing/TimeNodeBase.cpp"

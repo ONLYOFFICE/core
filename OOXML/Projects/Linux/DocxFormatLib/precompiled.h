@@ -13,8 +13,11 @@
 #include <stdio.h>
 #include <stack>
 #include <list>
-#include <windows.h>
 #include <boost/shared_ptr.hpp>
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
 
 #include "../../../Base/Base.h"
 #include "../../../Base/Nullable.h"

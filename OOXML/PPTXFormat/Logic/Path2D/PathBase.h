@@ -42,8 +42,9 @@ namespace PPTX
 		class PathBase : public WrapperWritingElement
 		{
 		public:
-			PathBase(){}
-			virtual ~PathBase(){}
+			PathBase();
+			virtual ~PathBase();
+
 			virtual std::wstring GetODString()const = 0;
 		};
 	} // namespace Logic

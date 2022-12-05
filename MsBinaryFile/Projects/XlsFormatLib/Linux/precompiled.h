@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <list>
 #include <math.h>
-#include <windows.h>
 #include <boost/lexical_cast.hpp>
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
@@ -21,9 +20,11 @@
 #include <fstream>
 #include <memory>
 #include <unordered_set>
-#include <inttypes.h>
 
-#include <Logic/Biff_structures/BiffString.h>
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
+
 #include "../../../XlsFile/Format/Binary/CFStream.h"
 #include "../../../XlsFile/Format/Logic/Biff_records/Begin.h"
 #include "../../../XlsFile/Format/Logic/Biff_records/BiffRecord.h"

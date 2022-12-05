@@ -273,14 +273,23 @@ void CPdfReader::ChangeLength(DWORD nLength)
 if (info.dictLookup(sName, &obj1)->isString())\
 {\
     TextString* s = new TextString(obj1.getString());\
-    sRes += L"\"";\
-    sRes += wsName;\
-    sRes += L"\":\"";\
     std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());\
-    NSStringExt::Replace(sValue, L"\"", L"\\\"");\
-    sRes += sValue.empty() ? L" " : sValue;\
-    sRes += L"\",";\
     delete s;\
+    NSStringExt::Replace(sValue, L"\"", L"\\\"");\
+    size_t nFind = sValue.find(L'\000');\
+    while (nFind != std::wstring::npos)\
+    {\
+        sValue.erase(nFind, 1);\
+        nFind = sValue.find(L'\000');\
+    }\
+    if (!sValue.empty())\
+    {\
+        sRes += L"\"";\
+        sRes += wsName;\
+        sRes += L"\":\"";\
+        sRes += sValue;\
+        sRes += L"\",";\
+    }\
 }\
 
 #define DICT_LOOKUP_DATE(sName, wsName) \

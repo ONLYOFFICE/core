@@ -35,14 +35,6 @@
 #include "../WritingElement.h"
 #include "../../Common/SimpleTypes_Word.h"
 
-#include "RunProperty.h"
-#include "Run.h"
-#include "Hyperlink.h"
-#include "SmartTag.h"
-#include "Dir.h"
-#include "Bdo.h"
-#include "../Math/oMathPara.h"
-
 namespace OOX
 {
 	namespace Logic
@@ -63,17 +55,6 @@ namespace OOX
 			const CParagraph &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void ClearItems();
-
-			void AddRun(CRun *pRun);
-			void AddText(std::wstring& sText);
-            void AddText(std::wstring& sText, CRunProperty *pProperty);
-			void AddTab();
-			void AddTab(CRunProperty *pProperty);
-			void AddBreak(SimpleTypes::EBrType eType);
-			void AddSpace(const int nCount);
-			void AddSpace(const int nCount, CRunProperty *pProperty);
-			void AddBookmarkStart(int nId, std::wstring& sName);
-			void AddBookmarkEnd  (int nId);
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

@@ -29,6 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "Run.h"
+
 #include "../DocxFlat.h"
 #include "../Docx.h"
 #include "../Document.h"
@@ -36,8 +38,18 @@
 #include "../Footnote.h"
 #include "../Comments.h"
 #include "../Settings/Settings.h"
+#include "../Drawing/Drawing.h"
+#include "../Comments.h"
 
-#include "Run.h"
+#include "AlternateContent.h"
+#include "RunProperty.h"
+#include "RunContent.h"
+#include "FldChar.h"
+#include "FldSimple.h"
+#include "Pict.h"
+#include "Annotations.h"
+
+#include "../../../DesktopEditor/common/StringExt.h"
 
 namespace OOX
 {

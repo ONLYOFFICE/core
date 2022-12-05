@@ -32,6 +32,7 @@
 
 #include "BinEquationWriter.h"
 #include "../../Presentation/BinaryFileReaderWriter.h"
+#include "../../../Common/SimpleTypes_OMath.h"
 
 namespace MathEquation
 {

@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "oMathContent.h"
-#include "../Logic/Run.h"
 
 namespace OOX
 {	

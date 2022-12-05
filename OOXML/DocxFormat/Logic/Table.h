@@ -30,11 +30,7 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_TABLE_INCLUDE_H_
-#define OOX_LOGIC_TABLE_INCLUDE_H_
 
-#include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
 #include "TableProperty.h"
 
 namespace ComplexTypes
@@ -69,7 +65,7 @@ namespace ComplexTypes
 namespace OOX
 {
 	namespace Logic
-	{
+    {
 		//--------------------------------------------------------------------------------
 		// CTblGridChange 17.13.5.33 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -461,4 +457,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_TABLE_INCLUDE_H_

@@ -47,160 +47,23 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(Table)
 
-			Table()
-			{
-			}
+			Table();
+			Table& operator=(const Table& oSrc);
 
-			Table& operator=(const Table& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				TableCols = oSrc.TableCols;
-				TableRows = oSrc.TableRows;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-                tableProperties = oSrc.tableProperties;
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oNode;
-				if (node.GetNode(_T("a:tblGrid"), oNode))
-					XmlMacroLoadArray(oNode, _T("a:gridCol"), TableCols, TableCol);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				XmlMacroLoadArray(node, _T("a:tr"), TableRows, TableRow);
-
-                tableProperties = node.ReadNode(_T("a:tblPr"));
-
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (strName == L"tblGrid")
-					{
-						if ( oReader.IsEmptyNode() )
-							continue;
-
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							std::wstring strName1 = XmlUtils::GetNameNoNS(oReader.GetName());
-							if (strName1 == L"gridCol")
-							{
-								TableCol col;
-								TableCols.push_back(col);
-								TableCols.back().fromXML(oReader);
-							}
-						}
-					}
-					else if (strName == L"tblPr")
-						tableProperties = oReader;
-					else if (strName == L"tr")
-					{
-						TableRow tr;
-						TableRows.push_back(tr);
-						TableRows.back().fromXML(oReader);
-					}
-				}
-				FillParentPointersForChilds();
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-                pWriter->WriteRecord2(0, tableProperties);
-				pWriter->WriteRecordArray(1, 0, TableCols);
-				pWriter->WriteRecordArray(2, 0, TableRows);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-                            tableProperties = new Logic::TableProperties();
-                            tableProperties->fromPPTY(pReader);
-							break;
-						}
-						case 1:
-						{
-							pReader->Skip(4);
-							LONG lCount = pReader->GetLong();
-							for (LONG i = 0; i < lCount; ++i)
-							{
-								pReader->Skip(1);
-								TableCols.push_back(TableCol());
-								TableCols[i].fromPPTY(pReader);
-							}
-							break;
-						}
-						case 2:
-						{
-							pReader->Skip(4);
-							LONG lCount = pReader->GetLong();
-							for (LONG i = 0; i < lCount; ++i)
-							{
-								pReader->Skip(1);
-								TableRows.push_back(TableRow());
-								TableRows[i].fromPPTY(pReader);
-							}
-						}
-						default:
-						{
-							break;
-						}
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:tbl"));
-				pWriter->EndAttributes();
-
-                pWriter->Write(tableProperties);
-				
-				pWriter->WriteString(_T("<a:tblGrid>"));
-				size_t n1 = TableCols.size();
-				for (size_t i = 0; i < n1; ++i)
-					TableCols[i].toXmlWriter(pWriter);
-				pWriter->WriteString(_T("</a:tblGrid>"));
-
-				size_t n2 = TableRows.size();
-				for (size_t i = 0; i < n2; ++i)
-					TableRows[i].toXmlWriter(pWriter);
-
-				pWriter->EndNode(_T("a:tbl"));
-			}
-			
 			std::vector<TableCol>			TableCols;
 			std::vector<TableRow>			TableRows;
             nullable<TableProperties>	tableProperties;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-                if (tableProperties.IsInit())
-                    tableProperties->SetParentPointer(this);
-				
-				size_t count = TableRows.size();
-				for (size_t i = 0; i < count; ++i)
-					TableRows[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

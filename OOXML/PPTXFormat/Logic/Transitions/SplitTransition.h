@@ -46,30 +46,16 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SplitTransition)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_SplitTransition;
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"dir", dir);
-                XmlMacroReadAttributeBase(node, L"orient", orient);
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("dir"), dir);
-				oAttr.WriteLimitNullable(_T("orient"), orient);
-
-				return XmlUtils::CreateNode(_T("p:split"), oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 			nullable_limit<Limit::InOutDirectionVal>	dir;
 			nullable_limit<Limit::Orient>				orient;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

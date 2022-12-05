@@ -44,33 +44,17 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(WheelTransition)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_WheelTransition;
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"spokes", spokes);
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("spokes"), spokes);
-
-				return XmlUtils::CreateNode(_T("p:wheel"), oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 			nullable_int	spokes;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				spokes.normalize_positive();
-			}
-		};
+		protected:
+			virtual void FillParentPointersForChilds();
+			AVSINLINE void Normalize();
+					};
 	} // namespace Logic
 } // namespace PPTX
 

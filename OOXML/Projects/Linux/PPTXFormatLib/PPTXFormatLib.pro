@@ -42,9 +42,9 @@ SOURCES += \
 	pptx_format_logic.cpp
 }
 
-CONFIG += precompile_header
-PRECOMPILED_HEADER = precompiled.h
-HEADERS += precompiled.h
+#CONFIG += precompile_header
+#PRECOMPILED_HEADER = precompiled.h
+#HEADERS += precompiled.h
 
 core_debug {
 SOURCES += \
@@ -77,9 +77,29 @@ SOURCES += \
 	../../../PPTXFormat/Logic/Fills/Tile.cpp \
 	\
 	../../../PPTXFormat/Logic/Table/TableCell.cpp \
+	../../../PPTXFormat/Logic/Table/Table.cpp \
+	../../../PPTXFormat/Logic/Table/TableCellProperties.cpp \
+	../../../PPTXFormat/Logic/Table/TableCol.cpp \
+	../../../PPTXFormat/Logic/Table/TableProperties.cpp \
+	../../../PPTXFormat/Logic/Table/TableRow.cpp \
+	\
 	../../../PPTXFormat/Logic/Timing/BuildNodeBase.cpp \
 	../../../PPTXFormat/Logic/Timing/TimeNodeBase.cpp \
+	\
 	../../../PPTXFormat/Logic/Transitions/TransitionBase.cpp \
+	../../../PPTXFormat/Logic/Transitions/CornerDirectionTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/EightDirectionTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/EmptyTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/OptionalBlackTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/OrientationTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/SideDirectionTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/SndAc.cpp \
+	../../../PPTXFormat/Logic/Transitions/SplitTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/StSnd.cpp \
+	../../../PPTXFormat/Logic/Transitions/Transition.cpp \
+	../../../PPTXFormat/Logic/Transitions/WheelTransition.cpp \
+	../../../PPTXFormat/Logic/Transitions/ZoomTransition.cpp \
+	\
 	../../../PPTXFormat/Logic/Bg.cpp \
 	../../../PPTXFormat/Logic/CNvGrpSpPr.cpp \
 	../../../PPTXFormat/Logic/CxnSp.cpp \
@@ -104,8 +124,13 @@ SOURCES += \
 	../../../PPTXFormat/Logic/UniColor.cpp \
 	../../../PPTXFormat/Logic/UniFill.cpp \
 	../../../PPTXFormat/Logic/UniEffect.cpp \
-	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
 	../../../PPTXFormat/Logic/Controls.cpp \
+	\
+	../../../PPTXFormat/Logic/Runs/MathParaWrapper.cpp \
+	../../../PPTXFormat/Logic/Runs/Br.cpp \
+	../../../PPTXFormat/Logic/Runs/Fld.cpp \
+	../../../PPTXFormat/Logic/Runs/Run.cpp \
+	../../../PPTXFormat/Logic/Runs/RunBase.cpp \
 	\
 	../../../PPTXFormat/Logic/Ah.cpp \
 	../../../PPTXFormat/Logic/AhBase.cpp \

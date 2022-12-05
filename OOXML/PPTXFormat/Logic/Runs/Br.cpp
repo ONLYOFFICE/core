@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,69 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
-#define PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/EightDirectionVal.h"
+#include "Br.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		class EightDirectionTransition : public WrapperWritingElement
+		Br& Br::operator=(const Br& oSrc)
 		{
-		public:
-			PPTX_LOGIC_BASE(EightDirectionTransition)
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
 
-			virtual OOX::EElementType getType() const;
+			rPr = oSrc.rPr;
+			return *this;
+		}
+		OOX::EElementType Br::getType () const
+		{
+			return OOX::et_a_br;
+		}
+		void Br::fromXML(XmlUtils::CXmlNode& node)
+		{
+			rPr = node.ReadNode(_T("a:rPr"));
+			FillParentPointersForChilds();
+		}
+		void Br::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			int nParentDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nParentDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
 
-			std::wstring								name;
-			nullable_limit<Limit::EightDirectionVal>	dir;
+				if ( _T("a:rPr") == sName )
+					rPr = oReader;
+			}
+		}
+		void Br::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("a:br"));
+			pWriter->EndAttributes();
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			pWriter->Write(rPr);
+
+			pWriter->EndNode(_T("a:br"));
+		}
+		void Br::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->StartRecord(PARRUN_TYPE_BR);
+
+			pWriter->WriteRecord2(0, rPr);
+
+			pWriter->EndRecord();
+		}
+		std::wstring Br::GetText() const
+		{
+			return _T("\n");
+		}
+		void Br::FillParentPointersForChilds()
+		{
+			if(rPr.IsInit())
+				rPr->SetParentPointer(this);
+		}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H

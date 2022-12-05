@@ -40,36 +40,20 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class SndAc : public WrapperWritingElement
 		{
 		public:
 			PPTX_LOGIC_BASE(SndAc)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				stSnd = node.ReadNode(_T("p:stSnd"));
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				if(stSnd.IsInit())
-				{
-					return XmlUtils::CreateNode(_T("p:sndAc"), stSnd->toXML());
-				}
-				return _T("<p:sndAc><p:endSnd/></p:sndAc>");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 		public:
 			nullable<StSnd> stSnd;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(stSnd.IsInit())
-					stSnd->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

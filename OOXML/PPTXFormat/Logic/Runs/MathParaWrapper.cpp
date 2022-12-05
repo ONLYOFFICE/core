@@ -56,6 +56,10 @@ namespace PPTX
 			m_oMath = oSrc.m_oMath;
 			return *this;
 		}
+		OOX::EElementType MathParaWrapper::getType () const
+		{
+			return OOX::et_p_MathPara;
+		}
 		void MathParaWrapper::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() )
@@ -101,7 +105,6 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
-
 		std::wstring MathParaWrapper::toXML() const
 		{
 			if(m_oMathPara.IsInit() || m_oMath.IsInit() || m_oXml.IsInit())
@@ -129,13 +132,11 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 				return L"";
 			}
 		}
-
 		void MathParaWrapper::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			if (!pWriter) return;
 			pWriter->WriteString(toXML());
 		}
-
 		void MathParaWrapper::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			if (!pWriter) return;
@@ -181,7 +182,6 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 				pWriter->EndRecord();
 			}
 		}
-
 		void MathParaWrapper::fromPPTY(BYTE type, NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			OOX::EElementType eType;
@@ -220,11 +220,11 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 			m_oXml = sXml;
 			pReader->Seek(_end);
 		}
-
 		std::wstring MathParaWrapper::GetText() const
 		{
 			//todo
 			return _T("");
 		}
+		void MathParaWrapper::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

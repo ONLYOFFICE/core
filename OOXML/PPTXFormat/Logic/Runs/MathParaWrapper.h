@@ -55,16 +55,12 @@ namespace PPTX
 
 			MathParaWrapper& operator=(const MathParaWrapper& oSrc);
 
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_p_MathPara;
-			}
+			virtual OOX::EElementType getType () const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 
 			virtual std::wstring toXML() const;
-
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
@@ -74,8 +70,9 @@ namespace PPTX
 			nullable<OOX::Logic::COMathPara>	m_oMathPara;
 			nullable<OOX::Logic::COMath>		m_oMath;
 			nullable_string						m_oXml;
+
 		protected:
-			virtual void FillParentPointersForChilds(){}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

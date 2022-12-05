@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
-#define PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/EightDirectionVal.h"
+#include "StSnd.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		class EightDirectionTransition : public WrapperWritingElement
+		void StSnd::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(EightDirectionTransition)
+			XmlMacroReadAttributeBase(node, L"loop", loop);
 
-			virtual OOX::EElementType getType() const;
+			XmlUtils::CXmlNode oNode;
+			node.GetNode(_T("p:snd"), oNode);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			XmlMacroReadAttributeBase(oNode, L"r:embed", embed);
+			XmlMacroReadAttributeBase(oNode, L"name", name);
 
-			std::wstring								name;
-			nullable_limit<Limit::EightDirectionVal>	dir;
+			FillParentPointersForChilds();
+		}
+		std::wstring StSnd::toXML() const
+		{
+			XmlUtils::CAttribute oAttr1;
+			oAttr1.Write(_T("loop"), loop);
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			XmlUtils::CAttribute oAttr2;
+			oAttr2.Write(_T("r:embed"), embed.ToString());
+			oAttr2.Write(_T("name"), name);
+
+			return XmlUtils::CreateNode(_T("p:stSnd"), oAttr1, XmlUtils::CreateNode(_T("p:snd"), oAttr2));
+		}
+		void StSnd::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H

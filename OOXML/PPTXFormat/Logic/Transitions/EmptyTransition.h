@@ -44,24 +44,15 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(EmptyTransition)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_EmptyTransition;
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name = XmlUtils::GetNameNoNS(node.GetName());
-			}
-
-			virtual std::wstring toXML() const
-			{
-				return _T("<p:") + name + _T("/>");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 			std::wstring name;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

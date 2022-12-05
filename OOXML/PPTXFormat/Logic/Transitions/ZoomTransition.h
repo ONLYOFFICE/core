@@ -45,27 +45,15 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ZoomTransition)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_ZoomTransition;
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroReadAttributeBase(node, L"dir", dir);
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("dir"), dir);
-
-				return XmlUtils::CreateNode(_T("p:zoom"), oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 			nullable_limit<Limit::InOutDirectionVal> dir;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

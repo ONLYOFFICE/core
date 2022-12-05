@@ -37,9 +37,9 @@ INCLUDEPATH += ../../../XlsFile/Format
 INCLUDEPATH += ../../../Common
 INCLUDEPATH += ../../../../OOXML/XlsbFormat
 
-CONFIG += precompile_header
-PRECOMPILED_HEADER = precompiled.h
-HEADERS += precompiled.h
+#CONFIG += precompile_header
+#PRECOMPILED_HEADER = precompiled.h
+#HEADERS += precompiled.h
 
 core_release {
 SOURCES += \

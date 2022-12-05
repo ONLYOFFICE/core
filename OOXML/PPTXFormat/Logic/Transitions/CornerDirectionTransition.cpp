@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,29 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
-#define PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/EightDirectionVal.h"
+#include "CornerDirectionTransition.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		class EightDirectionTransition : public WrapperWritingElement
+		OOX::EElementType CornerDirectionTransition::getType() const
 		{
-		public:
-			PPTX_LOGIC_BASE(EightDirectionTransition)
+			return OOX::et_p_CornerDirectionTransition;
+		}
+		void CornerDirectionTransition::fromXML(XmlUtils::CXmlNode& node)
+		{
+			name	= XmlUtils::GetNameNoNS(node.GetName());
+			XmlMacroReadAttributeBase(node, L"dir", dir);
+		}
+		std::wstring CornerDirectionTransition::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.WriteLimitNullable(_T("dir"), dir);
 
-			virtual OOX::EElementType getType() const;
-
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			std::wstring								name;
-			nullable_limit<Limit::EightDirectionVal>	dir;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			return XmlUtils::CreateNode(_T("p:") + name, oAttr);
+		}
+		void CornerDirectionTransition::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H

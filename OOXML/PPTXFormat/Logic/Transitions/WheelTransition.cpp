@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
-#define PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/EightDirectionVal.h"
+#include "WheelTransition.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		class EightDirectionTransition : public WrapperWritingElement
+		OOX::EElementType WheelTransition::getType() const
 		{
-		public:
-			PPTX_LOGIC_BASE(EightDirectionTransition)
+			return OOX::et_p_WheelTransition;
+		}
+		void WheelTransition::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"spokes", spokes);
+		}
+		std::wstring WheelTransition::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("spokes"), spokes);
 
-			virtual OOX::EElementType getType() const;
-
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			std::wstring								name;
-			nullable_limit<Limit::EightDirectionVal>	dir;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			return XmlUtils::CreateNode(_T("p:wheel"), oAttr);
+		}
+		void WheelTransition::FillParentPointersForChilds(){}
+		AVSINLINE void WheelTransition::Normalize()
+		{
+			spokes.normalize_positive();
+		}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H

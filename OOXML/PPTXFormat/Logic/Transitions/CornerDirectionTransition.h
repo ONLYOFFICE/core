@@ -45,30 +45,17 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(CornerDirectionTransition)
 
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_p_CornerDirectionTransition;
-			}
+			virtual OOX::EElementType getType() const;
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				name	= XmlUtils::GetNameNoNS(node.GetName());
-                XmlMacroReadAttributeBase(node, L"dir", dir);
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("dir"), dir);
-
-				return XmlUtils::CreateNode(_T("p:") + name, oAttr);
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
 		public:
 			std::wstring								name;
 			nullable_limit<Limit::CornerDirectionVal>	dir;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

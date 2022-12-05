@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,34 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
-#define PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/EightDirectionVal.h"
+#include "SplitTransition.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		class EightDirectionTransition : public WrapperWritingElement
+		OOX::EElementType SplitTransition::getType() const
 		{
-		public:
-			PPTX_LOGIC_BASE(EightDirectionTransition)
+			return OOX::et_p_SplitTransition;
+		}
+		void SplitTransition::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"dir", dir);
+			XmlMacroReadAttributeBase(node, L"orient", orient);
+		}
+		std::wstring SplitTransition::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.WriteLimitNullable(_T("dir"), dir);
+			oAttr.WriteLimitNullable(_T("orient"), orient);
 
-			virtual OOX::EElementType getType() const;
-
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			std::wstring								name;
-			nullable_limit<Limit::EightDirectionVal>	dir;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
+			return XmlUtils::CreateNode(_T("p:split"), oAttr);
+		}
+		void SplitTransition::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EIGHTDIRECTION_TRANSITION_INCLUDE_H

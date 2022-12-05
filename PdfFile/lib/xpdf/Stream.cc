@@ -309,7 +309,42 @@ Stream *Stream::makeFilter(char *name, Stream *str, Object *params,
     globals.free();
   } else if (!strcmp(name, "JPXDecode")) {
 #ifdef USE_EXTERNAL_JPEG2000
-    str = new JPXStream2(str);
+    // check_j2000_type, openjpeg support
+    str->reset();
+    bool bOpenJpegSupport = false;
+    unsigned char pBuffer[32] = {0};
+    for (int i = 0; i < 32; ++i)
+    {
+      int nCurrentChar = str->getChar();
+      if (EOF == nCurrentChar)
+        break;
+      pBuffer[i] = nCurrentChar;
+    }
+    if (0x00 == pBuffer[0]  && 0x00 == pBuffer[1]  && 0x00 == pBuffer[2]  && 0x0c == pBuffer[3]
+     && 0x6a == pBuffer[4]  && 0x50 == pBuffer[5]  && 0x20 == pBuffer[6]  && 0x20 == pBuffer[7]
+     && 0x0d == pBuffer[8]  && 0x0a == pBuffer[9]  && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
+     && 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14]
+     && 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
+     && 0x6a == pBuffer[20] && 0x70 == pBuffer[21] && 0x32 == pBuffer[22] && 0x20 == pBuffer[23]
+     && 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]) {
+        bOpenJpegSupport = true; // JP2
+    } else if (0xff == pBuffer[0] && 0x4f == pBuffer[1] && 0xff == pBuffer[2] && 0x51 == pBuffer[3]) {
+        bOpenJpegSupport = true; // J2K
+    } else if (0x00 == pBuffer[0]  && 0x00 == pBuffer[1]  && 0x00 == pBuffer[2]  && 0x0c == pBuffer[3]
+            && 0x6a == pBuffer[4]  && 0x50 == pBuffer[5]  && 0x20 == pBuffer[6]  && 0x20 == pBuffer[7]
+            && 0x0d == pBuffer[8]  && 0x0a == pBuffer[9]  && 0x87 == pBuffer[10] && 0x0a == pBuffer[11]
+            && 0x00 == pBuffer[12] && 0x00 == pBuffer[13] && 0x00 == pBuffer[14] && 0x18 == pBuffer[15]
+            && 0x66 == pBuffer[16] && 0x74 == pBuffer[17] && 0x79 == pBuffer[18] && 0x70 == pBuffer[19]
+            && 0x6d == pBuffer[20] && 0x6a == pBuffer[21] && 0x70 == pBuffer[22] && 0x32 == pBuffer[23]
+            && 0x00 == pBuffer[24] && 0x00 == pBuffer[25] && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
+            && 0x6d == pBuffer[28] && 0x6a == pBuffer[29] && 0x70 == pBuffer[30] && 0x32 == pBuffer[31]) {
+        bOpenJpegSupport = true; // JPT
+    }
+    str->reset();
+    if (bOpenJpegSupport)
+      str = new JPXStream2(str);
+    else
+      str = new JPXStream(str);
 #else
     str = new JPXStream(str);
 #endif

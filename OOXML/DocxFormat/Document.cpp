@@ -32,6 +32,17 @@
 #pragma once
 #include "Document.h"
 
+#include "Math/oMathPara.h"
+#include "Math/OMath.h"
+
+#include "Logic/Annotations.h"
+#include "Logic/Hyperlink.h"
+#include "Logic/Paragraph.h"
+#include "Logic/Sdt.h"
+#include "Logic/Table.h"
+
+#include "External/HyperLink.h"
+
 namespace OOX
 {
 	namespace Logic

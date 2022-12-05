@@ -38,7 +38,7 @@
 #include "../WritingElement.h"
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../DocxFormat/Logic/FldChar.h"
+#include "FldChar.h"
 
 namespace OOX
 {

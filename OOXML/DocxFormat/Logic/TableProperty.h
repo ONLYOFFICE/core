@@ -31,11 +31,7 @@
  */
 #pragma once
 
-#ifndef OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_
-#define OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_
-
 #include "../WritingElement.h"
-
 #include "../../Common/ComplexTypes.h"
 
 namespace ComplexTypes
@@ -780,4 +776,3 @@ namespace OOX
 	} // namespace Logic
 } // namespace OOX
 
-#endif // OOX_LOGIC_TABLE_PROPERTY_INCLUDE_H_

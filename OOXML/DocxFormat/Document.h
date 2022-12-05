@@ -42,14 +42,7 @@
 
 #include "Logic/DocParts.h"
 #include "Logic/SectionProperty.h"
-#include "Logic/Annotations.h"
-#include "Logic/Paragraph.h"
-#include "Logic/Sdt.h"
-#include "Logic/Table.h"
 #include "Logic/Pict.h"
-#include "Math/oMathPara.h"
-#include "Math/OMath.h"
-#include "External/HyperLink.h"
 
 namespace OOX
 {

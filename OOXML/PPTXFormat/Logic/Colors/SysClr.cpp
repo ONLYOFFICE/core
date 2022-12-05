@@ -31,6 +31,7 @@
  */
 
 #include "SysClr.h"
+#include <boost/format.hpp>
 
 namespace PPTX
 {

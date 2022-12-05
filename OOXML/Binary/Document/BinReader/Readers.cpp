@@ -52,6 +52,7 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Math/oMathContent.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 

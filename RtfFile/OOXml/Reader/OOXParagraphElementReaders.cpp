@@ -39,6 +39,47 @@
 
 #include "../../Format/RtfOle.h"
 
+#include "../../../OOXML/DocxFormat/Comments.h"
+
+#include "../../../OOXML/DocxFormat/Math/OMath.h"
+#include "../../../OOXML/DocxFormat/Math/oMathPara.h"
+
+#include "../../../OOXML/DocxFormat/Logic/AlternateContent.h"
+#include "../../../OOXML/DocxFormat/Logic/Annotations.h"
+#include "../../../OOXML/DocxFormat/Logic/Pict.h"
+#include "../../../OOXML/DocxFormat/Logic/Sdt.h"
+#include "../../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../../OOXML/DocxFormat/Logic/Hyperlink.h"
+#include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../OOXML/DocxFormat/Logic/Dir.h"
+#include "../../../OOXML/DocxFormat/Logic/FldSimple.h"
+#include "../../../OOXML/DocxFormat/Logic/SmartTag.h"
+#include "../../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../../OOXML/DocxFormat/Logic/RunProperty.h"
+
+OOXParagraphReader::OOXParagraphReader (OOX::Logic::CParagraph *ooxParagraph)
+{
+    m_ooxElement		= NULL;
+    m_ooxParagraph		= ooxParagraph;
+    m_drawingParagraph	= NULL;
+
+    m_oCharProperty.SetDefault();
+}
+OOXParagraphReader::OOXParagraphReader (PPTX::Logic::Paragraph *ooxParagraph)
+{
+    m_ooxElement		= NULL;
+    m_ooxParagraph		= NULL;
+    m_drawingParagraph	= ooxParagraph;
+
+    m_oCharProperty.SetDefault();
+}
+OOXParagraphReader::OOXParagraphReader (OOX::WritingElementWithChilds<OOX::WritingElement> *ooxElement)
+{
+    m_drawingParagraph	= NULL;
+    m_ooxParagraph		= NULL;
+    m_ooxElement		= ooxElement;
+}
 bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle )
 {
 	if (m_drawingParagraph)
@@ -114,9 +155,6 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 
 	return res;
 }
-
-
-
 bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputParagraph, CcnfStyle oConditionalTableStyle, RtfStylePtr poStyle )
 {
 	if (m_ooxElement == NULL) return false;
@@ -579,7 +617,18 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
     }
 	return true;
 }
-
+OOXRunReader::OOXRunReader(OOX::Logic::CRun *ooxRun)
+{
+    m_drawingRun	= NULL;
+    m_ooxRun		= ooxRun;
+    m_oCharProperty.SetDefault();
+}
+OOXRunReader::OOXRunReader(PPTX::Logic::Run *ooxRun)
+{
+    m_drawingRun	= ooxRun;
+    m_ooxRun		= NULL;
+    m_oCharProperty.SetDefault();
+}
 bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagraph, RtfStylePtr poStyle, RtfCharProperty& oNewProperty, OOX::WritingElement* ooxItem )
 {
 	if (!ooxItem) return false;
@@ -2346,7 +2395,5 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			oOutput.m_pOldSectionProp = props;
 		}
 	}
-
 	return true;
 }
-

@@ -32,6 +32,13 @@
 
 #include "SchemeClr.h"
 
+#include "../../Presentation.h"
+#include "../../Slide.h"
+#include "../../SlideLayout.h"
+#include "../../SlideMaster.h"
+#include "../../Theme.h"
+#include "../../TableStyles.h"
+
 namespace PPTX
 {
 	namespace Logic

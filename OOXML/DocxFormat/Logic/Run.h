@@ -31,22 +31,15 @@
  */
 #pragma once
 
-#include "RunProperty.h"
-#include "RunContent.h"
-#include "FldChar.h"
-#include "FldSimple.h"
-
-#include "../Drawing/Drawing.h"
-#include "../Comments.h"
-#include "Pict.h"
-#include "Annotations.h"
-#include "AlternateContent.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+#include "../../Base/Nullable.h"
+#include "../WritingElement.h"
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+        class CRunProperty;
 		//--------------------------------------------------------------------------------
 		// CRun 17.3.2.25 (Part 1)
 		//--------------------------------------------------------------------------------	

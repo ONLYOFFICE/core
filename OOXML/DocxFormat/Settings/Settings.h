@@ -39,6 +39,10 @@
 
 namespace OOX
 {
+    namespace Logic
+    {
+        class CMathPr;
+    }
 	namespace Settings
 	{
 		//--------------------------------------------------------------------------------

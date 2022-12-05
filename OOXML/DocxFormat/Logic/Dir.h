@@ -30,11 +30,10 @@
  *
  */
 #pragma once
-#ifndef OOX_LOGIC_DIR_INCLUDE_H_
-#define OOX_LOGIC_DIR_INCLUDE_H_
 
+#include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "RunProperty.h"
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {
@@ -65,5 +64,3 @@ namespace OOX
 		};
 	} // namespace Logic
 } // namespace OOX
-
-#endif // OOX_LOGIC_DIR_INCLUDE_H_

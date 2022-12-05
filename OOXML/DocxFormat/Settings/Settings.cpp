@@ -33,6 +33,7 @@
 #include "Settings.h"
 #include "../Endnote.h"
 #include "../Footnote.h"
+#include "../Math/oMathContent.h"
 
 namespace OOX
 {

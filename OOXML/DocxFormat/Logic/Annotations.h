@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_
-#define OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_
-
 #include "../../Base/Nullable.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
@@ -679,4 +676,3 @@ namespace OOX
 	} // Logic
 } // OOX
 
-#endif /* OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_ */

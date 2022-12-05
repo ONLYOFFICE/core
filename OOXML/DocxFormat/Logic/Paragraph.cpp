@@ -30,6 +30,7 @@
  *
  */
 #include "../DocxFlat.h"
+#include "../Comments.h"
 
 #include "Paragraph.h"
 #include "Annotations.h"
@@ -42,9 +43,9 @@
 #include "Hyperlink.h"
 #include "SmartTag.h"
 #include "Dir.h"
-#include "../Comments.h"
-#include "../Math/oMathPara.h"
+
 #include "../Math/OMath.h"
+#include "../Math/oMathPara.h"
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
@@ -423,197 +424,6 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader,L"textId",      m_oTextId )
 
 			WritingElement_ReadAttributes_End_No_NS( oReader )
-		}
-		void CParagraph::AddRun(CRun *pRun)
-		{
-			m_arrItems.push_back( (WritingElement*)pRun );
-		}
-		void CParagraph::AddText(std::wstring& sText)
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pT = new CText();
-			if ( !pT )
-			{
-				delete pR;
-				return;
-			}
-
-			CText *pText = (CText*)pT;
-			pText->m_sText  = sText;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace();
-			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
-
-
-			((CRun*)pR)->m_arrItems.push_back( pT );
-
-			m_arrItems.push_back( pR );
-		}
-        void CParagraph::AddText(std::wstring& sText, CRunProperty * pProperty)
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pT = new CText();
-			if ( !pT )
-			{
-				delete pR;
-				return;
-			}
-
-			CText *pText = (CText*)pT;
-			pText->m_sText  = sText;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace();
-			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
-
-			if ( pProperty )
-			{
-				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
-				((CRun*)pR)->m_oRunProperty	= pProperty;//копия для удобства
-			}
-
-			((CRun*)pR)->m_arrItems.push_back( pT );
-
-			m_arrItems.push_back( pR );
-		}
-		void CParagraph::AddTab()
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pTab = new CTab();
-			if ( !pTab )
-			{
-				delete pR;
-				return;
-			}
-
-			((CRun*)pR)->m_arrItems.push_back( pTab );
-
-			m_arrItems.push_back( pR );
-		}
-		void CParagraph::AddTab(CRunProperty *pProperty)
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pTab = new CTab();
-			if ( !pTab )
-			{
-				delete pR;
-				return;
-			}
-			if ( pProperty )
-				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
-
-			((CRun*)pR)->m_arrItems.push_back( pTab );
-
-			m_arrItems.push_back( pR );
-		}
-		void CParagraph::AddBreak(SimpleTypes::EBrType eType)
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pBr = new CBr();
-			if ( !pBr )
-			{
-				delete pR;
-				return;
-			}
-
-			((CBr*)pBr)->m_oType.SetValue( eType );
-
-			((CRun*)pR)->m_arrItems.push_back( pBr );
-
-			m_arrItems.push_back( pR );
-		}
-		void CParagraph::AddSpace(const int nCount)
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pT = new CText();
-			if ( !pT )
-			{
-				delete pR;
-				return;
-			}
-
-			CText *pText = (CText*)pT;
-			
-			char *sString = new char[nCount + 1];
-			::memset( sString, 0x20, nCount );
-            sString[nCount] = '\0';
-			std::string s(sString);
-			pText->m_sText = std::wstring(s.begin(), s.end());
-			delete sString;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace();
-			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
-
-			((CRun*)pR)->m_arrItems.push_back( pT );
-
-			m_arrItems.push_back( pR );
-		}
-		void CParagraph::AddSpace(const int nCount, CRunProperty *pProperty)
-		{
-			WritingElement *pR = new CRun();
-			if ( !pR )
-				return;
-
-			WritingElement *pT = new CText();
-			if ( !pT )
-			{
-				delete pR;
-				return;
-			}
-
-			CText *pText = (CText*)pT;
-			char *sString = new char[nCount + 1];
-			::memset( sString, 0x20, nCount );
-			sString[nCount] = '\0';
-            std::string s(sString);
-            pText->m_sText = std::wstring(s.begin(), s.end());
-			delete sString;
-			pText->m_oSpace = new SimpleTypes::CXmlSpace();
-			pText->m_oSpace->SetValue( SimpleTypes::xmlspacePreserve );
-
-			if ( pProperty )
-				((CRun*)pR)->m_arrItems.push_back( (WritingElement*)pProperty );
-
-			((CRun*)pR)->m_arrItems.push_back( pT );
-
-			m_arrItems.push_back( pR );
-		}
-		void CParagraph::AddBookmarkStart(int nId, std::wstring& sName)
-		{
-			WritingElement *pBS = new CBookmarkStart();
-			if ( !pBS )
-				return;
-
-			((CBookmarkStart*)pBS)->m_oId   = new SimpleTypes::CDecimalNumber();
-			((CBookmarkStart*)pBS)->m_oId->SetValue( nId );
-			((CBookmarkStart*)pBS)->m_sName = sName;
-
-			m_arrItems.push_back( pBS );
-		}	
-		void CParagraph::AddBookmarkEnd  (int nId)
-		{
-			WritingElement *pBE = new CBookmarkEnd();
-			if ( !pBE )
-				return;
-
-			((CBookmarkEnd*)pBE)->m_oId = new SimpleTypes::CDecimalNumber();
-			((CBookmarkEnd*)pBE)->m_oId->SetValue( nId );
-
-			m_arrItems.push_back( pBE );
 		}
 		EElementType CParagraph::getType() const
 		{

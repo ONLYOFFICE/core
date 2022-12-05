@@ -30,6 +30,8 @@
  *
  */
 #include "oMathPara.h"
+#include "../Logic/Run.h"
+
 namespace OOX
 {	
 	namespace Logic

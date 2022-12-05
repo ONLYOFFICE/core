@@ -32,6 +32,15 @@
 
 #include "FtnEdn.h"
 
+#include "Math/oMathPara.h"
+#include "Math/OMath.h"
+
+#include "Logic/Annotations.h"
+#include "Logic/Hyperlink.h"
+#include "Logic/Paragraph.h"
+#include "Logic/Sdt.h"
+#include "Logic/Table.h"
+
 namespace OOX
 {
 	//--------------------------------------------------------------------------------
@@ -273,10 +282,6 @@ namespace OOX
 	{
 		return m_eType;
 	}
-	void CFtnEdn::AddParagraph(Logic::CParagraph *pPara)
-		{
-			m_arrItems.push_back( (WritingElement*)pPara );
-		}
 
 	//--------------------------------------------------------------------------------
 	// CFtnEdnSepRef 17.11.3 && 17.11.9 (Part 1)

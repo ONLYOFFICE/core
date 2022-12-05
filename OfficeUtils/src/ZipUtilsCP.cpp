@@ -120,8 +120,8 @@ namespace ZLibZipUtils
   static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date );
   static int mymkdir( const wchar_t* dirname );
   static int makedir( const wchar_t *newdir );
-  static int do_extract_currentfile( unzFile uf, const int* popt_extract_without_path, int* popt_overwrite, const char* password );
-  static int do_extract( unzFile uf, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress );
+  static int do_extract_currentfile( unzFile uf, const WCHAR* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password );
+  static int do_extract( unzFile uf, const WCHAR* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress );
   
   static bool is_file_in_archive(unzFile uf, const wchar_t *filename);
   static bool current_file_is_find(unzFile uf, const wchar_t *filename);
@@ -217,7 +217,7 @@ namespace ZLibZipUtils
           pos += replace.length();
       }
   }
-  static int do_extract_currentfile( unzFile uf, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
+  static int do_extract_currentfile( unzFile uf, const WCHAR* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
   {   	  
 	char filename_inzipA[256];
 	wchar_t filename_inzip[256];
@@ -232,6 +232,11 @@ namespace ZLibZipUtils
 
     std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzipA);
 	wcscpy(filename_inzip , filenameW.c_str());
+
+	std::wstring output = std::wstring(unzip_dir) + L"/" + std::wstring(filename_inzip);
+	for(int i = 0; i < output.size(); i++)
+	  if(output[i] == L'\\')
+		  output[i] = L'/';;
 
     if (err!=UNZ_OK)
     {
@@ -250,7 +255,7 @@ namespace ZLibZipUtils
     {
       if ((*popt_extract_without_path)==0)
       {
-        mymkdir(filename_inzip);
+		mymkdir(output.c_str());
       }
     }
     else
@@ -258,8 +263,8 @@ namespace ZLibZipUtils
       const wchar_t* write_filename;
       int skip=0;
 
-      if ((*popt_extract_without_path)==0)
-        write_filename = filename_inzip;
+	  if ((*popt_extract_without_path)==0)
+		  write_filename = output.c_str();
       else
         write_filename = filename_withoutpath;
 
@@ -381,7 +386,7 @@ namespace ZLibZipUtils
 
   /*========================================================================================================*/
 
-  static int do_extract( unzFile uf, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress )
+  static int do_extract( unzFile uf, const WCHAR* unzip_dir, int opt_extract_without_path, int opt_overwrite, const char* password, const OnProgressCallback* progress )
   {
     uLong i;
     unz_global_info gi;
@@ -392,7 +397,7 @@ namespace ZLibZipUtils
 
     for (i=0;i<gi.number_entry;i++)
     {		
-	  if (do_extract_currentfile(uf,&opt_extract_without_path,
+	  if (do_extract_currentfile(uf, unzip_dir, &opt_extract_without_path,
                                  &opt_overwrite,
                                  password) != UNZ_OK)
 	  {
@@ -788,7 +793,10 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
   {
     unzFile uf = NULL;
 
-    int err = -1;
+	int err = -1;
+
+	if(NSDirectory::Exists(unzipDir))
+		err = 0;
 
     if ( ( zipFile != NULL ) && ( unzipDir != NULL ) )
     {
@@ -804,49 +812,21 @@ int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback*
 	  {
 	    ClearDirectory( unzipDir );
 	  }
-#if defined(_WIN32) || defined (_WIN64)
-	  wchar_t* buffer = NULL;
-
-	  buffer = _wgetcwd( NULL, 0 );
-	  	  
-	  err = _wchdir (unzipDir);
-#else
-	  char* buffer = NULL;
-
-	  buffer = getcwd( NULL, 0 );
-	  BYTE* pUtf8 = NULL;
-	  LONG lLen = 0;
-      NSFile::CUtf8Converter::GetUtf8StringFromUnicode(unzipDir, wcslen(unzipDir), pUtf8, lLen);
-	  err = chdir ((char*)pUtf8);
-	  RELEASEARRAYOBJECTS(pUtf8);
-#endif
   
       if ( err == 0 )
 	  {
 	    if(NULL != password)
 	    {
 			std::string passwordA = codepage_issue_fixToOEM(password);
-			err = do_extract( uf, opt_extract_without_path, 1, passwordA.c_str(), progress );
+			err = do_extract( uf, unzipDir, opt_extract_without_path, 1, passwordA.c_str(), progress );
 	    }
 	    else
-			err = do_extract( uf, opt_extract_without_path, 1, NULL, progress );
+			err = do_extract( uf, unzipDir, opt_extract_without_path, 1, NULL, progress );
 	  }
 
       if ( err == UNZ_OK )
 	  {
 	    err = unzClose( uf );
-	  }
-
-	  if ( buffer != NULL )
-	  {
-#if defined(_WIN32) || defined (_WIN64)
-	    int err1 = _wchdir( buffer );
-#else
-	    int err1 = chdir( buffer );
-#endif
-
-	    free( buffer );
-	    buffer = NULL;
 	  }
     }
 

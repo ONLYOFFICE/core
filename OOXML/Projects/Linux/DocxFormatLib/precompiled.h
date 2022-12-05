@@ -35,8 +35,6 @@
 #include "../../../DocxFormat/Logic/Sdt.h"
 #include "../../../DocxFormat/Logic/Shape.h"
 #include "../../../DocxFormat/Logic/Table.h"
-#include "../../../DocxFormat/Math/OMath.h"
-#include "../../../DocxFormat/Math/oMathPara.h"
 #include "../../../DocxFormat/Media/Image.h"
 #include "../../../DocxFormat/Media/Media.h"
 #include "../../../DocxFormat/Media/OleObject.h"

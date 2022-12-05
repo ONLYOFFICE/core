@@ -43,6 +43,9 @@
 
 #include "../PptFile/Reader/ReadStructures.h"
 
+#include "../../OOXML/DocxFormat/Math/oMathPara.h"
+#include "../../OOXML/DocxFormat/Logic/Paragraph.h"
+
 using namespace DocFileFormat;
 
 

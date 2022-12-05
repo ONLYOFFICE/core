@@ -31,7 +31,9 @@
  */
 #pragma once
 
+#include "../../Base/Nullable.h"
 #include "../WritingElement.h"
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {

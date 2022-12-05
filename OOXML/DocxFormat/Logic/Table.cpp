@@ -29,12 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../Math/oMathPara.h"
+#include "../Math/OMath.h"
+
 #include "Table.h" 
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Sdt.h"
-#include "../Math/oMathPara.h"
-#include "../Math/OMath.h"
+#include "Hyperlink.h"
 
 namespace ComplexTypes
 {

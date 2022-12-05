@@ -34,6 +34,7 @@
 
 #include "Logic/Annotations.h"
 #include "Logic/Paragraph.h"
+#include "Logic/Hyperlink.h"
 #include "Logic/Sdt.h"
 #include "Logic/Table.h"
 #include "Math/oMathPara.h"

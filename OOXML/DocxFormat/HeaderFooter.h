@@ -35,6 +35,9 @@
 #include "../Base/Nullable.h"
 
 #include "WritingElement.h"
+#include "IFileContainer.h"
+
+#include "../Common/SimpleTypes_Word.h"
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>

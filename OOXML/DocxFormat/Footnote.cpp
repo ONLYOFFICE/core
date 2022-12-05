@@ -31,6 +31,7 @@
  */
 
 #include "Footnote.h"
+#include "Document.h"
 
 namespace OOX
 {

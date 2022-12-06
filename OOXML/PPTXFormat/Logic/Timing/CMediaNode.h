@@ -47,90 +47,12 @@ namespace PPTX
 			PPTX_LOGIC_BASE(CMediaNode)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				cTn			= node.ReadNode(_T("p:cTn"));
-				tgtEl		= node.ReadNode(_T("p:tgtEl"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-                XmlMacroReadAttributeBase(node, L"mute", mute);
-                XmlMacroReadAttributeBase(node, L"numSld", numSld);
-                XmlMacroReadAttributeBase(node, L"showWhenStopped", showWhenStopped);
-                XmlMacroReadAttributeBase(node, L"vol", vol);
-
-				Normalize();
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("mute"), mute);
-				oAttr.Write(_T("numSld"), numSld);
-				oAttr.Write(_T("showWhenStopped"), showWhenStopped);
-				oAttr.Write(_T("vol"), vol);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(cTn);
-				oValue.Write(tgtEl);
-
-				return XmlUtils::CreateNode(_T("p:cMediaNode"), oAttr, oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteInt2(0, numSld);
-					pWriter->WriteInt2(1, vol);
-					pWriter->WriteBool2(2, mute);
-					pWriter->WriteBool2(3, showWhenStopped);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, cTn);
-				pWriter->WriteRecord1(1, tgtEl);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	numSld = pReader->GetLong();
-					else if (1 == _at)	vol = pReader->GetLong();
-					else if (2 == _at)	mute = pReader->GetBool();
-					else if (3 == _at)	showWhenStopped = pReader->GetBool();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							cTn.fromPPTY(pReader);
-						}break;
-						case 1:
-						{
-							tgtEl.fromPPTY(pReader);
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			CTn						cTn;
 			TgtEl					tgtEl;
@@ -139,17 +61,10 @@ namespace PPTX
 			nullable_int			numSld;
 			nullable_bool			showWhenStopped;
 			nullable_int			vol;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				cTn.SetParentPointer(this);
-				tgtEl.SetParentPointer(this);
-			}
 
-			AVSINLINE void Normalize()
-			{
-				numSld.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			AVSINLINE void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

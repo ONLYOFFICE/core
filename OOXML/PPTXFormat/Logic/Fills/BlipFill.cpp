@@ -86,9 +86,9 @@ namespace PPTX
 				stretch->SetParentPointer(this);
 		}
 		AVSINLINE void BlipFill::Normalize()
-	{
-		dpi.normalize_positive();
-	}
+		{
+			dpi.normalize_positive();
+		}
 		void BlipFill::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());

@@ -43,94 +43,19 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(AttrNameLst)
 
-			AttrNameLst& operator=(const AttrNameLst& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AttrNameLst& operator=(const AttrNameLst& oSrc);
 
-				list = oSrc.list;
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-                XmlMacroLoadArray(node, _T("p:attrName"), list, AttrName);
-				FillParentPointersForChilds();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				if (list.empty()) return L"";
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(list);
-
-				return XmlUtils::CreateNode(_T("p:attrNameLst"), oValue);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				if (false == list.empty())
-				{
-					pWriter->StartRecord(0);
-
-					_UINT32 len = (_UINT32)list.size();
-					pWriter->WriteULONG(len);
-
-					for (size_t i = 0; i < list.size(); ++i)
-					{
-						pWriter->WriteRecord1(0, list[i]);
-					}
-					pWriter->EndRecord();
-				}
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					case 0:
-					{
-						pReader->Skip(4); // len
-						ULONG _c = pReader->GetULong();
-
-						for (ULONG i = 0; i < _c; ++i)
-						{
-							list.push_back(AttrName());
-
-							BYTE type = pReader->GetUChar(); //skip .. 
-							list[i].fromPPTY(pReader);
-						}
-					}break;
-					default:
-					{
-						pReader->SkipRecord();
-					}break;
-					}
-				}
-				pReader->Seek(end);
-			}
 			std::vector<AttrName> list;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

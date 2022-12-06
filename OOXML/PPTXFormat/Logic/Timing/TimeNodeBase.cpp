@@ -30,7 +30,6 @@
  *
  */
 
-
 #include "TimeNodeBase.h"
 #include "Seq.h"
 #include "Par.h"
@@ -50,26 +49,21 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		TimeNodeBase::TimeNodeBase()
 		{
 		}
-
 		TimeNodeBase::~TimeNodeBase()
 		{
 		}
-
 		TimeNodeBase::TimeNodeBase(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const TimeNodeBase& TimeNodeBase::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
 		void TimeNodeBase::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
@@ -102,7 +96,6 @@ namespace PPTX
 				m_node.reset(new Logic::Set(node));
 			else m_node.reset();
 		}
-
 		void TimeNodeBase::GetTimeNodeFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;			
@@ -200,5 +193,11 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
+		void TimeNodeBase::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(m_node.IsInit())
+				m_node->SetParentPointer(pParent);
+		}
+		void TimeNodeBase::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

@@ -44,94 +44,18 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Timing)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				tnLst	= node.ReadNode(L"p:tnLst");
-				bldLst	= node.ReadNode(L"p:bldLst");
-				FillParentPointersForChilds();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(tnLst);
-				oValue.WriteNullable(bldLst);
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				return XmlUtils::CreateNode(L"p:timing", oValue);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, tnLst);
-				pWriter->WriteRecord2(1, bldLst);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							tnLst = new Logic::TnLst();
-							tnLst->fromPPTY(pReader);						
-						}break;
-						case 1:
-						{
-							bldLst = new Logic::BldLst();
-							bldLst->fromPPTY(pReader);						
-						}break;
-						default:
-						{
-							pReader->SkipRecord();						
-						}break;
-					}
-				}
-
-				pReader->Seek(end);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"p:timing");
-				pWriter->EndAttributes();
-					
-				if ((tnLst.IsInit()) && (false == tnLst->list.empty()))
-				{
-					tnLst->toXmlWriter(pWriter);
-				}
-					
-				if ((bldLst.IsInit()) && (false == bldLst->list.empty()))
-				{
-					bldLst->toXmlWriter(pWriter);
-				}
-
-				pWriter->EndNode(L"p:timing");
-			}
 			nullable<TnLst>		tnLst;
 			nullable<BldLst>	bldLst;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(tnLst.IsInit())
-					tnLst->SetParentPointer(this);
-				if(bldLst.IsInit())
-					bldLst->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

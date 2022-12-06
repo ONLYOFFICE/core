@@ -178,7 +178,7 @@ namespace PPTX
 
 		protected:
 			virtual void FillParentPointersForChilds();
-			AVSINLINE void Normalize();
+			void Normalize();
 
 		public:
 			PPTX::Logic::UniColor GetColor() const;

@@ -77,7 +77,7 @@ namespace PPTX
 		void SldSz::FillParentPointersForChilds()
 		{
 		}
-		AVSINLINE void SldSz::Normalize()
+		void SldSz::Normalize()
 		{
 			cx = (std::min)((std::max)(cx, 914400), 51206400);
 			cy = (std::min)((std::max)(cy, 914400), 51206400);

@@ -38,7 +38,7 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		AVSINLINE int GetPhType(const std::wstring& strType);
+		int GetPhType(const std::wstring& strType);
 
 		class PlaceholderType : public BaseLimit
 		{

@@ -92,6 +92,6 @@ namespace PPTX
 		nullable_int						m_VectorSize;
 		nullable_int						m_Headings;
 
-		AVSINLINE void Normalize();
+		void Normalize();
 	};
 } // namespace PPTX

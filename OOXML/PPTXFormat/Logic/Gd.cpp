@@ -206,7 +206,7 @@ namespace PPTX
 				return 15;
 			return 0;
 		}
-		AVSINLINE int Gd::GetFormulaType2(const WCHAR& c1, const WCHAR& c2) const
+		int Gd::GetFormulaType2(const WCHAR& c1, const WCHAR& c2) const
 		{
 			switch (c1)
 			{

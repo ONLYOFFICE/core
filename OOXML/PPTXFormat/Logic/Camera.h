@@ -68,12 +68,7 @@ namespace PPTX
 
 		protected:
 			virtual void FillParentPointersForChilds();
-
-			AVSINLINE void Normalize()
-			{
-				fov.normalize(0, 10800000);
-				zoom.normalize_positive();
-			}
+			AVSINLINE void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

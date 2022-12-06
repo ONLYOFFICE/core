@@ -265,7 +265,7 @@ namespace PPTX
 			extrusionClr.SetParentPointer(this);
 			contourClr.SetParentPointer(this);
 		}
-		AVSINLINE void Sp3d::Normalize()
+		void Sp3d::Normalize()
 		{
 			contourW.normalize_positive();
 			extrusionH.normalize_positive();

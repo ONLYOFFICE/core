@@ -96,7 +96,7 @@ namespace PPTX
 		{
 			tnLst.SetParentPointer(this);
 		}
-		AVSINLINE void Tmpl::Normalize()
+		void Tmpl::Normalize()
 		{
 			lvl.normalize_positive();
 		}

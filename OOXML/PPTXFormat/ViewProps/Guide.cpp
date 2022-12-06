@@ -102,7 +102,7 @@ namespace PPTX
 		void Guide::FillParentPointersForChilds()
 		{
 		}
-		AVSINLINE void Guide::Normalize()
+		void Guide::Normalize()
 		{
 			pos.normalize_positive();
 		}

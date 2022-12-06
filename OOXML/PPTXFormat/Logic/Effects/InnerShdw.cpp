@@ -165,7 +165,7 @@ namespace PPTX
 		{
 			Color.SetParentPointer(this);
 		}
-		AVSINLINE void InnerShdw::Normalize()
+		void InnerShdw::Normalize()
 		{
 			blurRad.normalize_positive();
 			dist.normalize_positive();

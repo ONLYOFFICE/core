@@ -180,7 +180,7 @@ namespace PPTX
 				if(sndAc.IsInit())
 					sndAc->SetParentPointer(this);
 			}
-			AVSINLINE void Transition::Normalize()
+			void Transition::Normalize()
 			{
 				advTm.normalize_positive();
 			}		

@@ -215,7 +215,7 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}
 		void Reflection::FillParentPointersForChilds(){}
-		AVSINLINE void Reflection::Normalize()
+		void Reflection::Normalize()
 		{
 			blurRad.normalize_positive();
 			stA.normalize_positive();

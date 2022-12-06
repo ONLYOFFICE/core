@@ -116,7 +116,7 @@ namespace PPTX
 			pWriter->EndNode(sNodeNamespace + _T("lin"));
 		}
 		void Lin::FillParentPointersForChilds() {}
-		AVSINLINE void Lin::Normalize()
+		void Lin::Normalize()
 		{
 			ang.normalize(0, 21600000);
 		}

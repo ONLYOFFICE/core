@@ -146,6 +146,6 @@ namespace PPTX
 		}
 
 	private:
-		AVSINLINE void Normalize();
+		void Normalize();
 	};
 } // namespace PPTX

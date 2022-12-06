@@ -98,12 +98,7 @@ namespace PPTX
 
 		protected:
 			virtual void FillParentPointersForChilds();
-
-			AVSINLINE void Normalize()
-			{
-				numCol.normalize(1, 16);
-				spcCol.normalize_positive();
-			}
+			void Normalize();
 		};
 
 		class LinkedTxbx : public WrapperWritingElement
@@ -134,10 +129,7 @@ namespace PPTX
 
 		protected:
 			virtual void FillParentPointersForChilds();
-
-			AVSINLINE void Normalize()
-			{
-			}
+			AVSINLINE void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

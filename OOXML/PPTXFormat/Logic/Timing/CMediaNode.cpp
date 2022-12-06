@@ -124,7 +124,7 @@ namespace PPTX
 			cTn.SetParentPointer(this);
 			tgtEl.SetParentPointer(this);
 		}
-		AVSINLINE void CMediaNode::Normalize()
+		void CMediaNode::Normalize()
 		{
 			numSld.normalize_positive();
 		}

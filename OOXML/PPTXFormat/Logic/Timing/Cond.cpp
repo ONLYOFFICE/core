@@ -162,7 +162,7 @@ namespace PPTX
 			if(tgtEl.IsInit())
 				tgtEl->SetParentPointer(this);
 		}
-		AVSINLINE void Cond::Normalize()
+		void Cond::Normalize()
 		{
 			tn.normalize_positive();
 		}

@@ -113,7 +113,7 @@ namespace PPTX
 			pWriter->EndRecord();
 		}
 		void AlphaModFix::FillParentPointersForChilds(){}
-		AVSINLINE void AlphaModFix::Normalize()
+		void AlphaModFix::Normalize()
 		{
 			amt.normalize_positive();
 		}

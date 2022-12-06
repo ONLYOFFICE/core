@@ -404,7 +404,7 @@ namespace PPTX
 				xfrm->rot = *rot;
 		}
 		void Xfrm::FillParentPointersForChilds(){}
-		AVSINLINE void Xfrm::Normalize()
+		void Xfrm::Normalize()
 		{
 			extX.normalize_positive();
 			extY.normalize_positive();

@@ -116,7 +116,7 @@ namespace PPTX
 			if(bldSub.IsInit())
 				bldSub->SetParentPointer(this);
 		}
-		AVSINLINE void BldGraphic::Normalize()
+		void BldGraphic::Normalize()
 		{
 			if (grpId < 0)
 				grpId = 0;

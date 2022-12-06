@@ -340,5 +340,12 @@ namespace PPTX
 		void CNvCxnSpPr::FillParentPointersForChilds()
 		{
 		}
+		void CNvCxnSpPr::Normalize()
+		{
+			stCxn_id.normalize_positive();
+			stCxn_idx.normalize_positive();
+			endCxn_id.normalize_positive();
+			endCxn_idx.normalize_positive();
+		}
 	} // namespace Logic
 } // namespace PPTX

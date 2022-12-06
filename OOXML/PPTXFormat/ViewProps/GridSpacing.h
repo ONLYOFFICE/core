@@ -53,7 +53,7 @@ namespace PPTX
 
 		protected:
 			virtual void FillParentPointersForChilds();
-			AVSINLINE void Normalize();
+			void Normalize();
 		};
 	} // namespace nsViewProps
 } // namespace PPTX

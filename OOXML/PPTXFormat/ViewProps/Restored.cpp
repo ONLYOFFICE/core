@@ -91,7 +91,7 @@ namespace PPTX
 		void Restored::FillParentPointersForChilds()
 		{
 		}
-		AVSINLINE void Restored::Normalize()
+		void Restored::Normalize()
 		{
 			if (sz < 0)
 				sz = 0;

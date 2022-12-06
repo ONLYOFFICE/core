@@ -153,7 +153,7 @@ namespace PPTX
 				return spcPct.get_value_or(100000)/1000;
 		}
 		void TextSpacing::FillParentPointersForChilds(){}
-		AVSINLINE void TextSpacing::Normalize()
+		void TextSpacing::Normalize()
 		{
 			spcPts.normalize(0, 158400);
 		}

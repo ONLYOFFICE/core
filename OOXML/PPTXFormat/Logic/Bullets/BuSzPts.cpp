@@ -81,7 +81,7 @@ namespace PPTX
 			pWriter->EndRecord();
 		}
 		void BuSzPts::FillParentPointersForChilds(){}
-		AVSINLINE void BuSzPts::Normalize()
+		void BuSzPts::Normalize()
 		{
 			if (val.IsInit())
 			{

@@ -16,10 +16,6 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_x2t
 include(../../../../Common/base.pri)
 
-core_windows {
-	QMAKE_CXXFLAGS_RELEASE += -Ob0
-}
-
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
@@ -329,10 +325,10 @@ SOURCES += \
 	../../../../MsBinaryFile/PptFile/Drawing/Elements.cpp \
 	\
 	../../../Binary/Presentation/BinaryFileReaderWriter.cpp \
+	../../../Binary/Presentation/XmlWriter.cpp \
 	../../../Binary/Presentation/FontPicker.cpp \
 	../../../Binary/Presentation/imagemanager.cpp \	
 	../../../Binary/Presentation/FontPicker.cpp \
-	../../../Binary/Presentation/BinaryFileReaderWriter.cpp \
 	../../../Binary/Presentation/PPTXWriter.cpp \
 	../../../Binary/Presentation/DefaultNotesTheme.cpp \
 	../../../Binary/Presentation/DefaultNotesMaster.cpp \

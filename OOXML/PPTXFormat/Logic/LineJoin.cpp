@@ -200,7 +200,7 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}
 		void LineJoin::FillParentPointersForChilds() {}
-		AVSINLINE void LineJoin::Normalize()
+		void LineJoin::Normalize()
 		{
 			lim.normalize_positive();
 		}

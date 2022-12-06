@@ -112,7 +112,7 @@ namespace PPTX
 			pReader->Seek(_e);
 		}
 		void AlphaRepl::FillParentPointersForChilds(){}
-		AVSINLINE void AlphaRepl::Normalize()
+		void AlphaRepl::Normalize()
 		{
 			a.normalize_positive();
 		}

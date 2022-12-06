@@ -17,7 +17,7 @@ CONFIG += core_x2t
 include(../../../../Common/base.pri)
 
 core_windows {
-    QMAKE_CXXFLAGS_RELEASE += -Ob0
+	QMAKE_CXXFLAGS_RELEASE += -Ob0
 }
 
 #BOOST
@@ -42,9 +42,9 @@ SOURCES += \
 	pptx_format_logic.cpp
 }
 
-CONFIG += precompile_header
-PRECOMPILED_HEADER = precompiled.h
-HEADERS += precompiled.h
+#CONFIG += precompile_header
+#PRECOMPILED_HEADER = precompiled.h
+#HEADERS += precompiled.h
 
 core_debug {
 SOURCES += \

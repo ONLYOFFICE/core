@@ -61,7 +61,7 @@ namespace PPTX
 			nullable_int				startAt;
 
 		public:
-			void Normalize();
+			AVSINLINE void Normalize();
 
 		protected:
 			virtual void FillParentPointersForChilds();

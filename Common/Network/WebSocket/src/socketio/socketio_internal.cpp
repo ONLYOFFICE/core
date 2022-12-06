@@ -34,7 +34,7 @@
 #include <iostream>
 #include "../../../../3dParty/socketio/socket.io-client-cpp/src/internal/sio_packet.h"
 #include "../../../../3dParty/socketio/socket.io-client-cpp/src/sio_client.h"
-#include "../../../../../../DesktopEditor/graphics/TemporaryCS.h"
+#include "../../../../../DesktopEditor/graphics/TemporaryCS.h"
 
 namespace NSNetwork
 {

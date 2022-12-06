@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATH_EQUATION_READER_H
-#define _MATH_EQUATION_READER_H
+#pragma once
 
 #include "../../../Common/3dParty/pole/pole.h"
 
@@ -139,5 +138,3 @@ namespace MathEquation
 		TFontMap mFontMap;
 	};
 }
-
-#endif

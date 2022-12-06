@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATH_EQUATION_TYPES_H
-#define _MATH_EQUATION_TYPES_H
+#pragma once
 
 #include <map>
 #include "../../../DesktopEditor/common/Types.h"
@@ -234,5 +233,3 @@ namespace MathEquation
 		specialsymOnePtSpace = 0xeb08
 	};
 }
-
-#endif _MATH_EQUATION_OUTPUTDEV_H

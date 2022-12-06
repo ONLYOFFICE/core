@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATH_EQUATION_OUTPUTDEV_H
-#define _MATH_EQUATION_OUTPUTDEV_H
+#pragma once
 
 #include "Types.h"
 
@@ -135,5 +134,3 @@ namespace MathEquation
 	};
 
 }
-
-#endif

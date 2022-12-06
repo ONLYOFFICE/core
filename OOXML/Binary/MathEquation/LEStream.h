@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _MATHEQUATION_LESTREAM
-#define _MATHEQUATION_LESTREAM
+#pragma once
 
 #include "../../Base/Base.h"
 #include "Types.h"
@@ -155,5 +154,3 @@ private:
 };
 
 }
-
-#endif

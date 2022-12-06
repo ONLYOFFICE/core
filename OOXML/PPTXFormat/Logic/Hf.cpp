@@ -30,7 +30,7 @@
  *
  */
 
-#include "HF.h"
+#include "Hf.h"
 
 namespace PPTX
 {

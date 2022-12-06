@@ -53,12 +53,43 @@ static int getCharFromStream(void *data) {
 
 //------------------------------------------------------------------------
 
+#ifdef TEST_AS_EXECUTABLE
+#include <iostream>
+#include <vector>
+#include "../../../DesktopEditor/common/File.h"
+#endif
+
 CMap *CMap::parse(CMapCache *cache, GString *collectionA, Object *obj) {
   CMap *cMap;
   GString *cMapNameA;
 
   if (obj->isName()) {
     cMapNameA = new GString(obj->getName());
+#ifdef TEST_AS_EXECUTABLE
+std::vector<std::string> sCMaps {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H", "GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V", "UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H", "UniGB-UTF32-V",
+"B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V", "HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H", "HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H", "CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H", "UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V",
+"78-EUC-H", "78-EUC-V", "78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V", "90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V", "EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H", "UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H", "UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H", "UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V", "UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V", "WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman",
+"KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H", "KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V", "UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H", "UniKS-UTF32-V",
+"UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
+
+for (const std::string& sCMap : sCMaps)
+{
+    const char* pDataCMap = NULL;
+    unsigned int nSizeCMap = 0;
+    if (PdfReader::GetBaseCMap(sCMap.c_str(), pDataCMap, nSizeCMap)) {
+      Object obj;
+      obj.initNull();
+      BaseStream *str = new MemStream((char*)pDataCMap, 0, nSizeCMap, &obj);
+      if (!str)
+        return NULL;
+      cMap = new CMap(collectionA->copy(), new GString(sCMap.c_str()));
+      cMap->parse2(cache, &getCharFromStream, str);
+      cMap->SaveCMap(sCMap.c_str(), sCMap.length());
+      delete str;
+      delete cMap;
+    }
+}
+#endif // TEST_AS_EXECUTABLE
     if (!(cMap = globalParams->getCMap(collectionA, cMapNameA))) {
       error(errSyntaxError, -1,
 	    "Unknown CMap '{0:t}' for character collection '{1:t}'",
@@ -76,58 +107,53 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA, Object *obj) {
   return cMap;
 }
 
-#include <iostream>
-void printVector(CMapVectorEntry *vector)
+#ifdef TEST_AS_EXECUTABLE
+void CMap::SaveCMap(const char* cMapNameA, long nMapNameALength)
 {
-    for (int i = 0; i < 256; ++i)
+    NSFile::CFileBinary oFile;
+    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/CMap/" + NSFile::CUtf8Converter::GetUnicodeFromCharPtr(cMapNameA, nMapNameALength)))
     {
-        if (vector[i].isVector)
-        {
-            int m = 0;
-            for (int j = 0; j < 256; ++j)
-            {
-                if (vector[i].vector[j].isVector)
-                {
-                    std::cout << "NO";
-                }
-                if (vector[i].vector[j].cid)
-                    m++;
-            }
+        oFile.WriteStringUTF8(std::to_wstring(isIdent) + L",");
+        oFile.WriteStringUTF8(std::to_wstring(wMode) + L",");
 
-            if (m > 106)
+        for (int i = 0; i < 256; ++i)
+        {
+            if (vector[i].isVector)
             {
-                std::cout << 256 << ",";
+                int m = 0;
                 for (int j = 0; j < 256; ++j)
                 {
-                    std::cout << vector[i].vector[j].cid << ",";
-                }
-            }
-            else
-            {
-                std::cout << m << ",";
-                for (int j = 0; j < 256; ++j)
-                {
-                    if (vector[i].vector[j].cid)
+                    if (vector[i].vector[j].isVector)
                     {
-                        std::cout << j << "," << vector[i].vector[j].cid << ",";
+                        std::cout << "NO";
+                    }
+                    if (vector[i].vector[j].cid)
+                        m++;
+                }
+
+                if (m > 106)
+                {
+                    oFile.WriteStringUTF8(std::to_wstring(256) + L",");
+                    for (int j = 0; j < 256; ++j)
+                        oFile.WriteStringUTF8(std::to_wstring(vector[i].vector[j].cid) + L",");
+                }
+                else
+                {
+                    oFile.WriteStringUTF8(std::to_wstring(m) + L",");
+                    for (int j = 0; j < 256; ++j)
+                    {
+                        if (vector[i].vector[j].cid)
+                            oFile.WriteStringUTF8(std::to_wstring(j) + L"," + std::to_wstring(vector[i].vector[j].cid) + L",");
                     }
                 }
             }
-        }
-        else
-        {
-            std::cout << 0 << ",";
+            else
+                oFile.WriteStringUTF8(std::to_wstring(0) + L",");
         }
     }
+    oFile.CloseFile();
 }
-
-void CMap::PrintCMap(GString *cMapNameA)
-{
-    std::cout << cMapNameA->getCString() << std::endl;
-    std::cout << "isIdent" << isIdent << std::endl;
-    std::cout << "wMode" << wMode << std::endl;
-    printVector(vector);
-}
+#endif // TEST_AS_EXECUTABLE
 
 CMap *CMap::parse(CMapCache *cache, GString *collectionA,
 		  GString *cMapNameA) {
@@ -145,11 +171,11 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA,
       return NULL;
     cMap = new CMap(collectionA->copy(), cMapNameA->copy());
     cMap->parse2(cache, &getCharFromStream, str);
-    cMap->PrintCMap(cMapNameA);
+
     delete str;
     return cMap;
   }
-#endif
+#endif // CMAP_USE_MEMORY
 
   if (!(f = globalParams->findCMapFile(collectionA, cMapNameA))) {
 

@@ -55,19 +55,10 @@ namespace PPTX
 			void operator=(const std::wstring& str);
 
 			virtual void set(const std::wstring& strValue) = 0;
+			void _set(const std::wstring& strValue);
 
-			AVSINLINE void _set(const std::wstring& strValue)
-			{
-				set(strValue);
-			}
-			AVSINLINE std::wstring& get()
-			{
-				return m_strValue;
-			}
-			AVSINLINE const std::wstring& get() const
-			{
-				return m_strValue;
-			}
+			std::wstring& get();
+			const std::wstring& get() const;
 
 			virtual BYTE GetBYTECode() const = 0;
 			virtual void SetBYTECode(const BYTE& src) = 0;

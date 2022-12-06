@@ -488,7 +488,7 @@ namespace PPTX
 			if(defRPr.is_init())
 				defRPr->SetParentPointer(this);
 		}
-		AVSINLINE void TextParagraphPr::Normalize()
+		void TextParagraphPr::Normalize()
 		{
 			indent.normalize(-51206400, 51206400);
 			lvl.normalize(0, 8);

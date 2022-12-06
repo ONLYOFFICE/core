@@ -130,7 +130,7 @@ namespace PPTX
 			pReader->Seek(_e);
 		}
 		void HslEffect::FillParentPointersForChilds(){}
-		AVSINLINE void HslEffect::Normalize()
+		void HslEffect::Normalize()
 		{
 			hue.normalize(0, 21600000);
 		}

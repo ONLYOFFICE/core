@@ -120,7 +120,6 @@ namespace PPTX
 				Color.reset(new Logic::StyleClr(node));
 			else Color.reset();
 		}
-
 		void UniColor::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _len = pReader->GetLong();
@@ -286,7 +285,6 @@ namespace PPTX
 					break;
 			}
 		}
-
 		void UniColor::GetColorFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("srgbClr"));
@@ -323,42 +321,36 @@ namespace PPTX
 				}
 			}
 		}
-
 		std::wstring UniColor::toXML() const
 		{
 			if (Color.IsInit())
 				return Color->toXML();
 			return _T("");
 		}
-
 		DWORD UniColor::GetRGBA(DWORD RGBA)const
 		{
 			if(is_init())
 				return Color->GetRGBA(RGBA);
 			return 0; //return 0; - заменить на просмотр настроек по умолчанию
 		}
-
 		DWORD UniColor::GetARGB(DWORD ARGB)const
 		{
 			if(is_init())
 				return Color->GetARGB(ARGB);
 			return 0; //return 0; - заменить на просмотр настроек по умолчанию
 		}
-
 		DWORD UniColor::GetBGRA(DWORD BGRA)const
 		{
 			if(is_init())
 				return Color->GetBGRA(BGRA);
 			return 0; //return 0; - заменить на просмотр настроек по умолчанию
 		}
-
 		DWORD UniColor::GetABGR(DWORD ABGR)const
 		{
 			if(is_init())
 				return Color->GetABGR(ABGR);
 			return 0; //return 0; - заменить на просмотр настроек по умолчанию
 		}
-
 		void UniColor::SetRGBColor(const BYTE& R, const BYTE& G, const BYTE& B)
 		{
 			Logic::SrgbClr* rgbColor = new Logic::SrgbClr();
@@ -366,6 +358,27 @@ namespace PPTX
 
 			Color.reset(rgbColor);
 		}
-
+		DWORD UniColor::GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB)
+		{
+			if (Color.is_init())
+				return Color->GetRGBColor(_oTheme,_oClrMap, ARGB);
+			return 0;
+		}
+		void UniColor::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (Color.is_init())
+				Color->toPPTY(pWriter);
+		}
+		void UniColor::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (Color.is_init())
+				Color->toXmlWriter(pWriter);
+		}
+		void UniColor::FillParentPointersForChilds(){}
+		void UniColor::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				Color->SetParentPointer(pParent);
+		}
 	} // namespace Logic
 } // namespace PPTX

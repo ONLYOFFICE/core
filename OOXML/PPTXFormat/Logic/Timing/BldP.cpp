@@ -140,7 +140,7 @@ namespace PPTX
 			if(tmplLst.IsInit())
 				tmplLst->SetParentPointer(this);
 		}
-		AVSINLINE void BldP::Normalize()
+		void BldP::Normalize()
 		{
 			if (grpId < 0)
 				grpId = 0;

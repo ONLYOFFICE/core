@@ -59,7 +59,7 @@ namespace PPTX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			int GetFormulaType(const std::wstring& str) const;
-			AVSINLINE int GetFormulaType2(const WCHAR& c1, const WCHAR& c2) const;
+			int GetFormulaType2(const WCHAR& c1, const WCHAR& c2) const;
 			static std::wstring GetFormulaName(const int& val);
 
 		public:

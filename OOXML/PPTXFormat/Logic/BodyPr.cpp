@@ -463,6 +463,11 @@ namespace PPTX
 			if(scene3d.IsInit())
 				scene3d->SetParentPointer(this);
 		}
+		void BodyPr::Normalize()
+		{
+			numCol.normalize(1, 16);
+			spcCol.normalize_positive();
+		}
 
 		LinkedTxbx::LinkedTxbx(std::wstring ns)
 		{
@@ -574,6 +579,9 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}
 		void LinkedTxbx::FillParentPointersForChilds()
+		{
+		}
+		void LinkedTxbx::Normalize()
 		{
 		}
 	} // namespace Logic

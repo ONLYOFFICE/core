@@ -184,7 +184,7 @@ namespace PPTX
 		{
 			Color.SetParentPointer(this);
 		}
-		AVSINLINE void PrstShdw::Normalize()
+		void PrstShdw::Normalize()
 		{
 			dir.normalize(0, 21600000);
 			dist.normalize_positive();

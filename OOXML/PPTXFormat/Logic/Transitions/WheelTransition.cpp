@@ -52,7 +52,7 @@ namespace PPTX
 			return XmlUtils::CreateNode(_T("p:wheel"), oAttr);
 		}
 		void WheelTransition::FillParentPointersForChilds(){}
-		AVSINLINE void WheelTransition::Normalize()
+		void WheelTransition::Normalize()
 		{
 			spokes.normalize_positive();
 		}

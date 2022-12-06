@@ -300,7 +300,7 @@ namespace PPTX
 
 		pWriter->EndNode(_T("Properties"));
 	}
-	AVSINLINE void App::Normalize()
+	void App::Normalize()
 	{
 		TotalTime.normalize_positive();
 		Words.normalize_positive();

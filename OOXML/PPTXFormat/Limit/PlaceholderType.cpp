@@ -36,7 +36,7 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		AVSINLINE int GetPhType(const std::wstring& strType)
+		int GetPhType(const std::wstring& strType)
 		{
 			if (_T("body") == strType)
 				return 0;

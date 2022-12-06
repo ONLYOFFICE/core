@@ -116,7 +116,7 @@ namespace PPTX
 	public:
 		CCSS();
 		~CCSS();
-		AVSINLINE void Clear();
+		void Clear();
 
 	public:
 		void LoadFromString(std::wstring& strParams);
@@ -131,7 +131,7 @@ namespace PPTX
 	public:
 		CStylesCSS();
 		~CStylesCSS();
-		AVSINLINE void Clear();
+		void Clear();
 
 	public:
 		void LoadStyles(std::wstring& strParams);
@@ -270,6 +270,7 @@ namespace NSBinPptxRW
         void SetFontManager         (NSFonts::IFontManager* pFontManager);
 
         OOX::CContentTypes* GetContentTypes();
+
 	protected:
 		nullable<PPTX::Logic::Xfrm> m_oxfrm_override;
 

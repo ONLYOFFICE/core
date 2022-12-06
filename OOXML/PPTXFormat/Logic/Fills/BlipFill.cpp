@@ -85,7 +85,7 @@ namespace PPTX
 			if(stretch.IsInit())
 				stretch->SetParentPointer(this);
 		}
-		AVSINLINE void BlipFill::Normalize()
+		void BlipFill::Normalize()
 		{
 			dpi.normalize_positive();
 		}

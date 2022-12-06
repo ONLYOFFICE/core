@@ -105,7 +105,7 @@ namespace PPTX
 			pReader->Seek(end);
 		}
 		void BldDgm::FillParentPointersForChilds(){}
-		AVSINLINE void BldDgm::Normalize()
+		void BldDgm::Normalize()
 		{
 			if (grpId < 0)
 				grpId = 0;

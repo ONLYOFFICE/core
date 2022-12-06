@@ -90,7 +90,7 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
-		AVSINLINE void BuAutoNum::Normalize()
+		void BuAutoNum::Normalize()
 		{
 			startAt.normalize(1, 32767);
 		}

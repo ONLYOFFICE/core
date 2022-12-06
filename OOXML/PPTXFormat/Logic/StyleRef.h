@@ -66,7 +66,7 @@ namespace PPTX
 
 		protected:
 			virtual void FillParentPointersForChilds();
-			AVSINLINE void Nomalize();
+			void Nomalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

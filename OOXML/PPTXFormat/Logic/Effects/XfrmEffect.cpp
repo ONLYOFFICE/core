@@ -149,7 +149,7 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}
 		void XfrmEffect::FillParentPointersForChilds(){}
-		AVSINLINE void XfrmEffect::Normalize()
+		void XfrmEffect::Normalize()
 		{
 			kx.normalize(-5400000, 5400000);
 			ky.normalize(-5400000, 5400000);

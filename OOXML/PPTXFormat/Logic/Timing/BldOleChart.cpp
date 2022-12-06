@@ -109,7 +109,7 @@ namespace PPTX
 			pReader->Seek(end);
 		}
 		void BldOleChart::FillParentPointersForChilds(){}
-		AVSINLINE void BldOleChart::Normalize()
+		void BldOleChart::Normalize()
 		{
 			if (grpId < 0)
 				grpId = 0;

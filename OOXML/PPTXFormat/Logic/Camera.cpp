@@ -166,5 +166,10 @@ namespace PPTX
 			if(rot.IsInit())
 				rot->SetParentPointer(this);
 		}
+		void Camera::Normalize()
+		{
+			fov.normalize(0, 10800000);
+			zoom.normalize_positive();
+		}
 	} // namespace Logic
 } // namespace PPTX

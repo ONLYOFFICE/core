@@ -120,7 +120,7 @@ namespace PPTX
 			pReader->Seek(_e);
 		}
 		void TintEffect::FillParentPointersForChilds(){}
-		AVSINLINE void TintEffect::Normalize()
+		void TintEffect::Normalize()
 		{
 			hue.normalize(0, 21600000);
 		}

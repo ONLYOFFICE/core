@@ -160,7 +160,7 @@ namespace PPTX
 		{
 			Color.SetParentPointer(this);
 		}
-		AVSINLINE void Glow::Normalize()
+		void Glow::Normalize()
 		{
 			rad.normalize_positive();
 		}

@@ -83,7 +83,7 @@ namespace PPTX
 			return _T("<a:audioCd>") + XmlUtils::CreateNode(_T("a:st"), oAttr1) + XmlUtils::CreateNode(_T("a:end"), oAttr2) + _T("</a:audioCd>");
 		}
 		void AudioCD::FillParentPointersForChilds(){}
-		AVSINLINE void AudioCD::Normalize()
+		void AudioCD::Normalize()
 		{
 			stTrack = (std::max)(0, (std::min)(255, stTrack));
 			stTrack = (std::max)(0, (std::min)(255, endTrack));

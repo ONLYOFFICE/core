@@ -55,23 +55,16 @@ namespace PPTX
 			SpTreeElem();
 			virtual ~SpTreeElem();
 
-			virtual OOX::EElementType getType () const
-			{
-				if (m_elem.IsInit())
-					return m_elem->getType();
-				return OOX::et_Unknown;
-			}
+			virtual OOX::EElementType getType () const;
+
 			explicit SpTreeElem(XmlUtils::CXmlNode& node);
 			const SpTreeElem& operator =(XmlUtils::CXmlNode& node);
 
 			explicit SpTreeElem(XmlUtils::CXmlLiteReader& oReader);
 			const SpTreeElem& operator =(XmlUtils::CXmlLiteReader& oReader);
 
-			SpTreeElem& operator=(const SpTreeElem& oSrc)
-			{
-				m_elem = oSrc.m_elem;
-				return *this;
-			}			
+			SpTreeElem& operator=(const SpTreeElem& oSrc);
+
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributesRequires(XmlUtils::CXmlLiteReader& oReader);
@@ -83,39 +76,28 @@ namespace PPTX
 			template<class T> AVSINLINE T&			as()		{ return m_elem.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_elem.as<T>(); }
 
-			void InitElem(WrapperWritingElement* pElem)
-			{
-				m_elem.reset(pElem);
-			}
-			
+			void InitElem(WrapperWritingElement* pElem);
 
 			virtual void fromPPTY	(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY		(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (m_elem.is_init())
-					m_elem->toPPTY(pWriter);
-			}
-					void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL) const;
-			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (m_elem.is_init())
-					m_elem->toXmlWriter(pWriter);
-			}
-			std::wstring GetUriElem();
-			
-			smart_ptr<WrapperWritingElement> GetElem()
-			{
-				return m_elem;
-			}
-			virtual void SetParentPointer(const WrapperWritingElement* pParent) {if(is_init()) m_elem->SetParentPointer(pParent);};
+			virtual void toPPTY		(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+
+			void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL) const;
+			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			std::wstring GetUriElem();			
+			smart_ptr<WrapperWritingElement> GetElem();
+
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 			std::wstring GetSlicerRequires();
 
 			nullable_string m_binaryData;
 			std::wstring m_sRequires;//from mc:Choice
+
 		private:
 			smart_ptr<WrapperWritingElement> m_elem;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -90,7 +90,7 @@ namespace PPTX
 		void Ratio::FillParentPointersForChilds()
 		{
 		}
-		AVSINLINE void Ratio::Normalize()
+		void Ratio::Normalize()
 		{
 			if (d < 0)
 				d = 0;

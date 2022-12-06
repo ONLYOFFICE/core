@@ -294,7 +294,7 @@ namespace PPTX
 			if(subTnLst.IsInit())
 				subTnLst->SetParentPointer(this);
 		}
-		AVSINLINE void CTn::Normalize()
+		void CTn::Normalize()
 		{
 			grpId.normalize_positive();
 			id.normalize_positive();

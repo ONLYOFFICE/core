@@ -133,7 +133,7 @@ namespace PPTX
 		{
 			Color.SetParentPointer(this);
 		}
-		AVSINLINE void StyleRef::Nomalize()
+		void StyleRef::Nomalize()
 		{
 			idx.normalize_positive();
 		}

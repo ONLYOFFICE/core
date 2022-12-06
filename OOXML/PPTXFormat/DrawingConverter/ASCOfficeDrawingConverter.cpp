@@ -676,7 +676,7 @@ namespace PPTX
 	CCSS::~CCSS()
 	{
 	}
-	AVSINLINE void CCSS::Clear()
+	void CCSS::Clear()
 	{
         m_strClassName = L"";
 		m_mapSettings.clear();
@@ -847,7 +847,7 @@ namespace PPTX
 	CStylesCSS::~CStylesCSS()
 	{
 	}
-	AVSINLINE void CStylesCSS::Clear()
+	void CStylesCSS::Clear()
 	{
 		m_arStyles.clear();
 	}

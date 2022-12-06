@@ -241,8 +241,15 @@ namespace PPTX
 					strNode = L"<v:stroke dashstyle=\"" + value  + L"\"/>";
 			}
 		}
+
 		SpTreeElem::SpTreeElem()
 		{
+		}
+		OOX::EElementType SpTreeElem::getType () const
+		{
+			if (m_elem.IsInit())
+				return m_elem->getType();
+			return OOX::et_Unknown;
 		}
 		SpTreeElem::~SpTreeElem()
 		{
@@ -254,6 +261,11 @@ namespace PPTX
 		const SpTreeElem& SpTreeElem::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
+			return *this;
+		}
+		SpTreeElem& SpTreeElem::operator=(const SpTreeElem& oSrc)
+		{
+			m_elem = oSrc.m_elem;
 			return *this;
 		}
 		SpTreeElem::SpTreeElem(XmlUtils::CXmlLiteReader& oReader)
@@ -402,7 +414,6 @@ namespace PPTX
 				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("Requires"), m_sRequires )
 			WritingElement_ReadAttributes_End( oReader )
 		}
-
 		std::wstring SpTreeElem::GetUriElem()
 		{
 			if (m_elem.IsInit() == false)
@@ -505,14 +516,21 @@ namespace PPTX
 				}break;
 			}
 		}
-
+		void SpTreeElem::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (m_elem.is_init())
+				m_elem->toPPTY(pWriter);
+		}
+		void SpTreeElem::InitElem(WrapperWritingElement* pElem)
+		{
+			m_elem.reset(pElem);
+		}
 		std::wstring SpTreeElem::toXML() const
 		{
 			if (m_elem.IsInit())
 				return m_elem->toXML();
 			return L"";
 		}
-
 		void SpTreeElem::toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId) const
 		{
 			if (m_elem.IsInit() == false) return;
@@ -539,6 +557,11 @@ namespace PPTX
 					break;
 			}
 		}
+		void SpTreeElem::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (m_elem.is_init())
+				m_elem->toXmlWriter(pWriter);
+		}
 		std::wstring SpTreeElem::GetSlicerRequires()
 		{
 			if (m_elem.IsInit() && m_elem.is<PPTX::Logic::GraphicFrame>())
@@ -555,5 +578,15 @@ namespace PPTX
 			}
 			return L"";
 		}
+		smart_ptr<WrapperWritingElement> SpTreeElem::GetElem()
+		{
+			return m_elem;
+		}
+		void SpTreeElem::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if (is_init())
+				m_elem->SetParentPointer(pParent);
+		}
+		void SpTreeElem::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

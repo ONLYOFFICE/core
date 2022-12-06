@@ -111,7 +111,7 @@ namespace PPTX
 			pReader->Seek(_e);
 		}
 		void AlphaBiLevel::FillParentPointersForChilds(){}
-		AVSINLINE void AlphaBiLevel::Normalize()
+		void AlphaBiLevel::Normalize()
 		{
 			thresh.normalize_positive();
 		}

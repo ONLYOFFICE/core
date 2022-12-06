@@ -162,7 +162,7 @@ namespace PPTX
 			if (graphicEl.IsInit())
 				graphicEl->SetParentPointer(this);
 		}
-		AVSINLINE void SpTgt::Normalize()
+		void SpTgt::Normalize()
 		{
 			lvl.normalize_positive();
 		}

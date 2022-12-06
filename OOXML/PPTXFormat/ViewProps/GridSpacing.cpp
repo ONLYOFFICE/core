@@ -101,7 +101,7 @@ namespace PPTX
 		void GridSpacing::FillParentPointersForChilds()
 		{
 		}
-		AVSINLINE void GridSpacing::Normalize()
+		void GridSpacing::Normalize()
 		{
 			if (cx < 0)
 				cx = 0;

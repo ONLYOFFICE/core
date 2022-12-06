@@ -744,7 +744,7 @@ namespace PPTX
 			if (highlight.is_init())
 				highlight->SetParentPointer(this);
 		}
-		AVSINLINE void RunProperties::Normalize()
+		void RunProperties::Normalize()
 		{
 			kern.normalize(0, 400000);
 			smtId.normalize_positive();

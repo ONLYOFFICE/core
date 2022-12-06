@@ -306,6 +306,11 @@ namespace PPTX
 			if(hlinkHover.IsInit())
 				hlinkHover->SetParentPointer(this);
 		}
+		void CNvPr::Normalize()
+		{
+			if (id < 0)
+				id = 0;
+		}
 	} // namespace Logic
 } // namespace PPTX
 

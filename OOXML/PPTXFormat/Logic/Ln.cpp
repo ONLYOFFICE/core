@@ -342,7 +342,7 @@ namespace PPTX
 			if(tailEnd.IsInit())
 				tailEnd->SetParentPointer(this);
 		}
-		AVSINLINE void Ln::Normalize()
+		void Ln::Normalize()
 		{
 			w.normalize(0, 20116800);
 		}

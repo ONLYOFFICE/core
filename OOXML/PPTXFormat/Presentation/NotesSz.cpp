@@ -72,7 +72,7 @@ namespace PPTX
 		void NotesSz::FillParentPointersForChilds()
 		{
 		}
-		AVSINLINE void NotesSz::Normalize()
+		void NotesSz::Normalize()
 		{
 			if (cx < 0)
 				cx = 0;

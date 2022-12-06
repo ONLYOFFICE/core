@@ -185,7 +185,8 @@ namespace NSNetwork
             //CTemporaryCS (&m_internal->m_oCS);
 
             // если json -то надо объект
-            if (0 == message_str.find("{"))
+            if (0 == message_str.find("{") ||
+                0 == message_str.find("["))
             {
                 sio::packet_manager manager;
                 sio::message::ptr message;
@@ -208,7 +209,8 @@ namespace NSNetwork
 
         void CIOWebSocket::close()
         {
-            CTemporaryCS (&m_internal->m_oCS);
+            //CTemporaryCS (&m_internal->m_oCS);
+            m_internal->m_socket.socket()->off_all();
             m_internal->m_socket.close();
         }
 

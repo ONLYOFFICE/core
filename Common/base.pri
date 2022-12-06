@@ -337,6 +337,7 @@ core_android {
 }
 
 core_debug {
+    DEFINES += _DEBUG
     CORE_BUILDS_CONFIGURATION_PREFIX    = debug
 }
 core_release {

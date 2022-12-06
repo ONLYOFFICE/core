@@ -1182,7 +1182,7 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	std::to_wstring(oOldTransform.M11) + L',' + std::to_wstring(oOldTransform.M22) + L')';
+			wsValue = L"scale(" +	ConvertToWString(oOldTransform.M11) + L',' + ConvertToWString(oOldTransform.M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
@@ -1190,10 +1190,10 @@ namespace MetaFile
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	std::to_wstring(oOldTransform.M11) + L',' +
-			                        std::to_wstring(oOldTransform.M12) + L',' +
-			                        std::to_wstring(oOldTransform.M21) + L',' +
-			                        std::to_wstring(oOldTransform.M22) + L',' +
+			wsValue = L"matrix(" +	ConvertToWString(oOldTransform.M11) + L',' +
+			                        ConvertToWString(oOldTransform.M12) + L',' +
+			                        ConvertToWString(oOldTransform.M21) + L',' +
+			                        ConvertToWString(oOldTransform.M22) + L',' +
 			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;

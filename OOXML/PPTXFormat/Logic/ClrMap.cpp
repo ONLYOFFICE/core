@@ -239,13 +239,13 @@ namespace PPTX
 			std::map<std::wstring, int>::const_iterator pPair = m_mapColorMap.find(prop);
 			if (m_mapColorMap.end() != pPair)
 			{
-				val = m_arColorMap[pPair->second].second;
-				return true;
+				if (pPair->second < m_arColorMap.size())
+				{
+					val = m_arColorMap[pPair->second].second;
+					return true;
+				}
 			}
-			else
-			{
-				return false;
-			}
+			return false;
 		}
 		void ClrMap::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{

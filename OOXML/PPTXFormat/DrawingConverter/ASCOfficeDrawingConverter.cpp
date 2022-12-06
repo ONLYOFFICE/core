@@ -60,6 +60,8 @@
 #include "../../Common/SimpleTypes_Base.h"
 #include "../../Common/SimpleTypes_Vml.h"
 
+#include "../../Binary/Presentation/BinWriters.h"
+
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
 const std::wstring _start_xml_object(L"<main xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \

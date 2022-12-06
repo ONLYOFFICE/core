@@ -864,7 +864,7 @@ std::wstring RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderP
 	RtfDocument* poRtfDocument	= static_cast<RtfDocument*> ( oRenderParameter.poDocument );
 
     std::wstring sFilename;
-	if( true == bHeader )
+	if ( true == bHeader )
         sFilename += L"header" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_HeaderNumber()) + L".xml";
 	else
         sFilename += L"footer" + std::to_wstring(poRtfDocument->m_oIdGenerator.Generate_FooterNumber()) + L".xml";
@@ -916,7 +916,7 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 	
 	NSFile::CFileBinary file;
 	
-    if (file.CreateFile(sFilePath) == S_OK)
+    if (file.CreateFile(sFilePath) == true)
 	{            
         file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
 		file.CloseFile();

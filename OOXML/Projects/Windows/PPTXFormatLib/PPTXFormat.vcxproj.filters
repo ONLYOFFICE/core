@@ -2006,6 +2006,159 @@
     <ClCompile Include="..\..\..\PPTXFormat\Limit\VertOverflow.cpp">
       <Filter>Limits</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Anim.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimClr.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimEffect.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimMotion.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimRot.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimScale.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimVariant.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AttrName.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AttrNameLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Audio.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldDgm.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldGraphic.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldOleChart.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldP.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldSub.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CBhvr.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\ChildTnLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Cmd.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CMediaNode.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Cond.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CondLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CTn.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Excl.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\GraphicEl.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Iterate.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Par.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Seq.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Set.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\SpTgt.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Tav.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TavLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TgtEl.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Timing.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Tmpl.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TmplLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TnLst.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TxEl.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Video.cpp">
+      <Filter>Logic\Timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\CornerDirectionTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\EightDirectionTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\EmptyTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\OptionalBlackTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\OrientationTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\SideDirectionTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\SndAc.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\SplitTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\StSnd.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\Transition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\WheelTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\ZoomTransition.cpp">
+      <Filter>Logic\Transition</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Limits">

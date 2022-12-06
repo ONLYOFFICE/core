@@ -62,7 +62,7 @@ namespace NSNetwork
             virtual ~IListener() {}
         };
 
-        // type : { "ixwebsocket" | "socketRocket" }
+        // type : { "ixwebsocket" | "socketRocket" | "socketio" }
         KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url = "");
     }
 }

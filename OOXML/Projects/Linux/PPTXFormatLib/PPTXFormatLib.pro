@@ -16,10 +16,6 @@ PWD_ROOT_DIR = $$PWD
 CONFIG += core_x2t
 include(../../../../Common/base.pri)
 
-#core_windows {
-#	QMAKE_CXXFLAGS_RELEASE += -Ob0
-#}
-
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 

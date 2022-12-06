@@ -30,8 +30,8 @@
  *
  */
 
-#ifndef _SOCKET_ROCKET_H_
-#define _SOCKET_ROCKET_H_
+#ifndef _IO_WEB_SOCKET_H_
+#define _IO_WEB_SOCKET_H_
 
 #include "../websocketbase.h"
 
@@ -39,25 +39,24 @@ namespace NSNetwork
 {
     namespace NSWebSocket
     {
-        struct SocketRocketImpl;
-        class CSocketRocket: public CWebWorkerBase
+        class CIOWebSocket_private;
+        class CIOWebSocket: public CWebWorkerBase
         {
-    	    
         private:
-
-             SocketRocketImpl* impl;
+            CIOWebSocket_private* m_internal;
            
         public:
+            CIOWebSocket(const std::string& url, std::shared_ptr<IListener> listener);
+            virtual ~CIOWebSocket();
 
-            CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener);
-            ~CSocketRocket();
+        public:
             virtual void open(const std::map<std::string, std::string>& query) override;
             virtual void send(const std::string& message) override;
             virtual void close() override;
-            virtual void setUrl(const std::string& url) override;
 
+            friend class CIOWebSocket_private;
         };
     }
 }
 
-#endif /* _SOCKET_ROCKET_H_ */
+#endif /* _IO_WEB_SOCKET_H_ */

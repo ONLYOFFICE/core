@@ -36,6 +36,7 @@
 #include "../../../kernel_config.h"
 #include <string>
 #include <memory>
+#include <map>
 
 namespace NSNetwork
 {
@@ -44,7 +45,7 @@ namespace NSNetwork
         class IWebSocket
         {
         public:
-            virtual void open() = 0;
+            virtual void open(const std::map<std::string, std::string>& query) = 0;
             virtual void send(const std::string& message) = 0;
             virtual void close() = 0;
             virtual void setUrl(const std::string& url) = 0;

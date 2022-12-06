@@ -447,9 +447,14 @@ namespace MetaFile
 
 		BYTE* pBuffer = new BYTE[unMetafileSize];
 
+		if (NULL == pBuffer)
+			return;
+
 		m_oStream.ReadBytes(pBuffer, unMetafileSize);
 
 		oImage.AddData(pBuffer, unMetafileSize);
+
+		delete[] pBuffer;
 	}
 
 	void CEmfPlusParser::ReadBitmap(CEmfPlusImage &oImage, bool bReadData)
@@ -469,12 +474,17 @@ namespace MetaFile
 
 		BYTE* pBuffer = new BYTE[m_ulRecordSize - 28];
 
+		if (NULL == pBuffer)
+			return;
+
 		m_oStream.ReadBytes(pBuffer, m_ulRecordSize - 28);
 
 		if (BitmapDataTypePixel == unType)
 			oImage.SetImageSize(nWidth, nHeight);
 
 		oImage.AddData(pBuffer, m_ulRecordSize - 28);
+
+		delete[] pBuffer;
 	}
 
 	CEmfPlusImage* CEmfPlusParser::GetImage(unsigned int unImageIndex)
@@ -1478,8 +1488,8 @@ namespace MetaFile
 				int nWidth = fabs(pEmfBounds->lRight - pEmfBounds->lLeft);
 				int nHeight = fabs(pEmfBounds->lBottom - pEmfBounds->lTop);
 
-				double dWidth  = 25.4 * nWidth / 96;
-				double dHeight = 25.4 * nHeight / 96;
+				double dWidth  = 25.4 * nWidth / 72;
+				double dHeight = 25.4 * nHeight / 72;
 
 				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
@@ -1532,7 +1542,7 @@ namespace MetaFile
 				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
 				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
 						(NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
@@ -1550,8 +1560,8 @@ namespace MetaFile
 
 				oRect.dLeft   = arPoints[0].X;
 				oRect.dTop    = arPoints[0].Y;
-				oRect.dRight  = arPoints[1].X;
-				oRect.dBottom = arPoints[2].Y;
+				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
+				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
 				TRectD oTempSrcRect = oSrcRect.GetRectD();
 
@@ -1593,8 +1603,8 @@ namespace MetaFile
 				int nWidth = fabs(oWmfBounds.dRight - oWmfBounds.dLeft);
 				int nHeight = fabs(oWmfBounds.dBottom - oWmfBounds.dTop);
 
-				double dWidth  = 25.4 * nWidth / 96;
-				double dHeight = 25.4 * nHeight / 96;
+				double dWidth  = 25.4 * nWidth / 72;
+				double dHeight = 25.4 * nHeight / 72;
 
 				BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
@@ -1646,7 +1656,7 @@ namespace MetaFile
 				unsigned int unWidth  = std::min(((unsigned int)fabs(oClipRect.nRight - oClipRect.nLeft)), ((unsigned int)lWidth ));
 				unsigned int unHeight = std::min(((unsigned int)fabs(oClipRect.nBottom - oClipRect.nTop)), ((unsigned int)lHeight));
 
-				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
+				m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
 											 (NULL != pNewBuffer) ? pNewBuffer : pPixels, unWidth, unHeight);
 
 				RELEASEINTERFACE(pGrRenderer);
@@ -1664,8 +1674,8 @@ namespace MetaFile
 
 				oRect.dLeft   = arPoints[0].X;
 				oRect.dTop    = arPoints[0].Y;
-				oRect.dRight  = arPoints[1].X;
-				oRect.dBottom = arPoints[2].Y;
+				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
+				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
 				TRectD oTempSrcRect = oSrcRect.GetRectD();
 

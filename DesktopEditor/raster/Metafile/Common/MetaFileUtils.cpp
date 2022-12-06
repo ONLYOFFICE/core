@@ -1040,14 +1040,14 @@ namespace MetaFile
 
 	static int GetMinAccuracy(double dValue)
 	{
+		if (dValue == (int)dValue)
+			return 0;
+
 		if (dValue < 0.)
 			dValue = -dValue;
 
 		if (dValue > 1.)
 			return MINACCURACY;
-
-		if (0. == dValue)
-			return 0;
 
 		unsigned int unAccuracy = 0;
 
@@ -1063,8 +1063,6 @@ namespace MetaFile
 
 		if (MAXACCURACY == unAccuracy)
 			return 0;
-		else if (MINACCURACY > unAccuracy)
-			return MINACCURACY;
 		else
 			return unAccuracy + 3;
 	}

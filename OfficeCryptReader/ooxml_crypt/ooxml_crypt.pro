@@ -14,6 +14,8 @@ include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib -lCompoundFileLib
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
+
 CONFIG += open_ssl_common
 include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)
 

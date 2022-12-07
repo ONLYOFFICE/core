@@ -94,7 +94,9 @@ HEADERS += \
 	$$METAFILE_PATH/Common/MetaFileClip.h \
 	$$METAFILE_PATH/Common/MetaFileObjects.h \
 	$$METAFILE_PATH/Common/MetaFileRenderer.h \
-	$$METAFILE_PATH/Common/MetaFileUtils.h
+	$$METAFILE_PATH/Common/MetaFileUtils.h \
+	\
+	$$METAFILE_PATH/Common/GenerateSignature.h
 
 SOURCES += \
     $$METAFILE_PATH/MetaFile.cpp \

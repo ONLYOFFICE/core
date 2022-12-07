@@ -172,6 +172,7 @@ HEADERS +=  \
 	../../../Common/Base/TextMark.h \
 	../../../Common/Base/utf8.h \
 	../../../Common/Base/XmlTools.h \
+	\
 	../../../DocFile/AbstractOpenXmlMapping.h \
 	../../../DocFile/AnnotationOwnerList.h \
 	../../../DocFile/AnnotationReferenceDescriptor.h \

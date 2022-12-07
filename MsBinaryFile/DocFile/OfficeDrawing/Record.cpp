@@ -33,43 +33,35 @@
 
 namespace DocFileFormat
 {
-  Record::~Record()
-  {
-    RELEASEARRAYOBJECTS( RawData );
-	RELEASEOBJECT( Reader );
-  }
-
-  /*========================================================================================================*/
-
-  Record::Record():
-  HeaderSize(0), BodySize(0), RawData(NULL), SiblingIdx(0), TypeCode(0), Version(0), Instance(0), Reader(NULL),
-  _ParentRecord(NULL)
-  {
-  }
-
-  /*========================================================================================================*/
-
-  Record::Record( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance ):
-  HeaderSize(Record::HEADER_SIZE_IN_BYTES), BodySize(bodySize), RawData(NULL), SiblingIdx(0), TypeCode(typeCode), Version(version), Instance(instance), Reader(NULL),
-  _ParentRecord(NULL)
-  {
-	HeaderSize = Record::HEADER_SIZE_IN_BYTES;
-
-	int real_size = _reader->GetSize() - _reader->GetPosition();
-
-	if (real_size < BodySize)
+	Record::~Record()
 	{
-		BodySize = real_size;
+		RELEASEARRAYOBJECTS( RawData );
+		RELEASEOBJECT( Reader );
+	}
+	Record::Record():
+		HeaderSize(0), BodySize(0), RawData(NULL), SiblingIdx(0), TypeCode(0), Version(0), Instance(0), Reader(NULL),
+		_ParentRecord(NULL)
+	{
+	}
+	Record::Record( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance ):
+		HeaderSize(Record::HEADER_SIZE_IN_BYTES), BodySize(bodySize), RawData(NULL), SiblingIdx(0), TypeCode(typeCode), Version(version), Instance(instance), Reader(NULL),
+		_ParentRecord(NULL)
+	{
+		HeaderSize = Record::HEADER_SIZE_IN_BYTES;
+
+		int real_size = _reader->GetSize() - _reader->GetPosition();
+
+		if (real_size < BodySize)
+		{
+			BodySize = real_size;
+		}
+
+		RawData = _reader->ReadBytes( BodySize, true );
+		Reader = new MemoryStream( RawData, BodySize, false );
 	}
 
-	RawData = _reader->ReadBytes( BodySize, true );
-	Reader = new MemoryStream( RawData, BodySize, false );
-  }
-
-  /*========================================================================================================*/
-
-  unsigned int Record::GetTotalSize() const
-  {
-    return ( HeaderSize + BodySize );
-  }
+	unsigned int Record::GetTotalSize() const
+	{
+		return ( HeaderSize + BodySize );
+	}
 }

@@ -111,44 +111,10 @@ namespace DocFileFormat
 		std::vector<ODRAW::OfficeArtFOPTEPtr>					Options;
 		std::map<ODRAW::ePropertyId, ODRAW::OfficeArtFOPTEPtr>	OptionsByID;
 	
-		ShapeOptions() : Record()
-		{
-		}
+		ShapeOptions();
+		virtual ~ShapeOptions();
+		ShapeOptions (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
 
-		virtual ~ShapeOptions()
-		{
-		}
-
-		ShapeOptions (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record (_reader, size, typeCode, version, instance)
-		{
-			long pos = Reader->GetPosition();
-
-	// parse the flags and the simple values
-			for (unsigned int i = 0; i < instance; ++i)
-			{
-				ODRAW::OfficeArtFOPTEPtr fopte = ODRAW::OfficeArtFOPTE::load_and_create(Reader);
-				if (!fopte)continue;
-
-
-				Options.push_back(fopte);
-			}
-	// complex load 
-
-			for(size_t i = 0; i < Options.size();  ++i)
-			{
-				if(Options[i]->fComplex && Options[i]->op > 0)
-				{
-					Options[i]->ReadComplexData(Reader);
-				}
-				OptionsByID.insert(std::make_pair((ODRAW::ePropertyId)Options[i]->opid, Options[i]));
-			}
-
-            Reader->Seek(( pos + size ), 0/*STREAM_SEEK_SET*/);
-		}
-
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
-		{
-			return new ShapeOptions( _reader, bodySize, typeCode, version, instance );
-		}
+		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
 	};
 }

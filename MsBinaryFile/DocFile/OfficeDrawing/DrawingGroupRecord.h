@@ -58,29 +58,10 @@ namespace DocFileFormat
 
 		std::list<FileIdCluster> Clusters;
 
-		DrawingGroupRecord () : Record(), MaxShapeId(0), IdClustersCount(0), ShapesSavedCount(0), DrawingsSavedCount(0)
-		{
+		DrawingGroupRecord ();
+		DrawingGroupRecord (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~DrawingGroupRecord();
 
-		}
-
-		DrawingGroupRecord (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record( _reader, size, typeCode, version, instance )
-		{
-			MaxShapeId			=	Reader->ReadUInt32();
-			IdClustersCount		=	Reader->ReadUInt32() - 1; // Office saves the actual value + 1 -- flgr
-			ShapesSavedCount	=	Reader->ReadUInt32();
-			DrawingsSavedCount	=	Reader->ReadUInt32();
-
-			for (unsigned int i = 0; i < IdClustersCount; ++i)
-				Clusters.push_back(FileIdCluster(Reader));
-		}
-
-		virtual ~DrawingGroupRecord()
-		{
-		}
-
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
-		{
-			return new DrawingGroupRecord( _reader, bodySize, typeCode, version, instance );
-		}
+		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
 	};
 }

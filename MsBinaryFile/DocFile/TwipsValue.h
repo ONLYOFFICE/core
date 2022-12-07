@@ -44,22 +44,10 @@ namespace DocFileFormat
 		static const unsigned char Dpi = 72;
 
 		/// Creates a new TwipsValue for the given value.
-		TwipsValue( double _value = 0 ): value(_value)
-		{
-		}
+		TwipsValue( double _value = 0 );
+		TwipsValue( const TwipsValue& _twipsValue );
 
-		TwipsValue( const TwipsValue& _twipsValue )
-		{
-			value = _twipsValue.value;
-		}
-
-		TwipsValue& operator = ( const TwipsValue& _twipsValue )
-		{
-			if ( this != &_twipsValue )
-				value = _twipsValue.value;
-
-			return *this;
-		}
+		TwipsValue& operator = ( const TwipsValue& _twipsValue );
 
 		/// Converts the twips to pt
 		inline double ToPoints() const

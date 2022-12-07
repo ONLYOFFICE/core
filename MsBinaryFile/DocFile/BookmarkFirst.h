@@ -45,34 +45,16 @@ namespace DocFileFormat
     public:
       static const int STRUCTURE_SIZE = 4;
 
-	  BookmarkFirst()
-	  {
-	  }
+	  BookmarkFirst();
 
-	  short GetIndex() const
-	  {
-	    return this->ibkl;
-	  }
-
-	  short GetInformation() const
-	  {
-	    return this->bkc;
-	  }
+	  short GetIndex() const;
+	  short GetInformation() const;
 	
-	  virtual ~BookmarkFirst()
-	  {
-	  }
+	  virtual ~BookmarkFirst();
 
-      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-      {
-        BookmarkFirst *newObject = new BookmarkFirst();
-
-	    newObject->ibkl = reader->ReadInt16();
-        newObject->bkc = reader->ReadInt16();
-
-	    return static_cast<ByteStructure*>( newObject );
-      }
+	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
   };
+
   class AtnBookmarkFirst: public ByteStructure
   {
 public:
@@ -81,24 +63,9 @@ public:
 
 	static const int STRUCTURE_SIZE = 10;
 
-	  AtnBookmarkFirst()
-	  {
-	  }
+	  AtnBookmarkFirst();
+	  virtual ~AtnBookmarkFirst();
 
-	  virtual ~AtnBookmarkFirst()
-	  {
-	  }
-
-      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-      {
-        AtnBookmarkFirst *newObject = new AtnBookmarkFirst();
-
-	    newObject->bmc = reader->ReadUInt16(); //0x0100
-        newObject->lTag = reader->ReadUInt32();
-        
-		unsigned int lTagOld = reader->ReadUInt32();
-
-	    return static_cast<ByteStructure*>( newObject );
-      }
+	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
   };
 }

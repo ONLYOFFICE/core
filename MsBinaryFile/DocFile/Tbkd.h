@@ -43,33 +43,10 @@ namespace DocFileFormat
 
 		static const int STRUCTURE_SIZE = 6;
 
-		Tbkd() : ipgd(0), itxbxs(0), dcpDepend(0), icol(0), fTableBreak(false), fColumnBreak(false), fMarked(false), fUnk(false), fTextOverflow(false)
-		{
-		}
+		Tbkd();
+		virtual ~Tbkd();
 
-		virtual ~Tbkd()
-		{
-		}
-
-		virtual ByteStructure* ConstructObject (VirtualStreamReader* reader, int length)
-		{
-			Tbkd* pTbkd				=	new Tbkd();
-
-			pTbkd->ipgd				=	reader->ReadInt16();
-			pTbkd->itxbxs			=	pTbkd->ipgd;
-			pTbkd->dcpDepend		=	reader->ReadInt16();
-
-			int flag				=	(int)reader->ReadInt16();
-
-			pTbkd->icol				=	(unsigned short)FormatUtils::BitmaskToInt(flag, 0x00FF);
-			pTbkd->fTableBreak		=	FormatUtils::BitmaskToBool(flag, 0x0100);
-			pTbkd->fColumnBreak		=	FormatUtils::BitmaskToBool(flag, 0x0200);
-			pTbkd->fMarked			=	FormatUtils::BitmaskToBool(flag, 0x0400);
-			pTbkd->fUnk				=	FormatUtils::BitmaskToBool(flag, 0x0800);
-			pTbkd->fTextOverflow	=	FormatUtils::BitmaskToBool(flag, 0x1000);
-
-			return static_cast<ByteStructure*>(pTbkd);
-		}
+		virtual ByteStructure* ConstructObject (VirtualStreamReader* reader, int length);
 
 	private:
 		bool bUsed = false;
@@ -95,6 +72,7 @@ namespace DocFileFormat
 	class FTXBXS : public ByteStructure
 	{
 		friend class TextboxMapping;
+
 	public:
 		static const int STRUCTURE_SIZE		= 22;
 		
@@ -110,33 +88,10 @@ namespace DocFileFormat
 			int cTxbxEdit;				//	This value MUST be zero and MUST be ignored.
 		};
 
-		FTXBXS ()
-		{
-
-		}
-
-		virtual ~FTXBXS()
-		{
-
-		}
-
+		FTXBXS();
+		virtual ~FTXBXS();
 	
-		virtual ByteStructure* ConstructObject (VirtualStreamReader* reader, int length)
-		{
-			FTXBXS* pFTXBXS	=	new FTXBXS();
-			if (!pFTXBXS) return NULL;
-
-			pFTXBXS->reusable01		=	reader->ReadInt32();
-			pFTXBXS->reusable02		=	reader->ReadInt32();
-
-			pFTXBXS->fReusable		=	reader->ReadInt16();
-
-			pFTXBXS->itxbxsDest		=	reader->ReadInt32();
-			pFTXBXS->lid			=	reader->ReadInt32();
-			pFTXBXS->txidUndo		=	reader->ReadInt32();
-
-			return static_cast<ByteStructure*>(pFTXBXS);
-		}
+		virtual ByteStructure* ConstructObject (VirtualStreamReader* reader, int length);
 
 	private:
 		int					reusable01;

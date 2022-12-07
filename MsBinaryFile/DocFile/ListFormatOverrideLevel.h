@@ -56,32 +56,10 @@ namespace DocFileFormat
 
 
     public:
-	  ListFormatOverrideLevel():
-	  iStartAt(0), ilvl(0), fStartAt(false), fFormatting(false), grfhic(0), lvl(NULL)
-	  {
-	  }
-
-      virtual ~ListFormatOverrideLevel()
-	  {
-	    RELEASEOBJECT( this->lvl );
-	  }
+	  ListFormatOverrideLevel();
+	  virtual ~ListFormatOverrideLevel();
  
       /// Parses the bytes to retrieve a ListFormatOverrideLevel
-      ListFormatOverrideLevel( VirtualStreamReader* reader, int length ):
-	  iStartAt(0), ilvl(0), fStartAt(false), fFormatting(false), grfhic(0), lvl(NULL)
-      {
-	    this->iStartAt = reader->ReadInt32();
-		unsigned int flag = (int)reader->ReadUInt32();
-        this->ilvl = (unsigned char)( flag & 0x000F );
-		this->fStartAt = FormatUtils::BitmaskToBool( flag, 0x0010 );
-		this->fFormatting = FormatUtils::BitmaskToBool( flag, 0x0020 );
-		this->grfhic = FormatUtils::GetIntFromBits( flag, 6, 8 );
-		
-        //it's a complete override, so the fix part is followed by LVL struct
-        if ( this->fFormatting )
-        {
-		  this->lvl = new ListLevel( reader, length );
-        }
-      }
+	  ListFormatOverrideLevel( VirtualStreamReader* reader, int length );
   };
 }

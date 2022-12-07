@@ -34,6 +34,17 @@
 
 namespace DocFileFormat
 {
+	ParagraphPropertyExceptions::ParagraphPropertyExceptions() : PropertyExceptions(), istd(0)
+	{
+	}
+	ParagraphPropertyExceptions::ParagraphPropertyExceptions( const std::list<SinglePropertyModifier>& grpprl ):
+														  PropertyExceptions( grpprl ), istd(0)
+	{
+	}
+	ParagraphPropertyExceptions::~ParagraphPropertyExceptions()
+	{
+	}
+
 	ParagraphPropertyExceptions::ParagraphPropertyExceptions( unsigned char* bytes, int size, POLE::Stream* dataStream, int nWordVersion): 
 				PropertyExceptions( ( bytes + 2 ), ( size - 2 ),  nWordVersion)
 	{

@@ -35,27 +35,18 @@
 
 namespace DocFileFormat
 {
-  class FootnoteDescriptor: public ByteStructure
-  {
+	class FootnoteDescriptor: public ByteStructure
+	{
 
-    public:
-	  static const int STRUCTURE_SIZE = 2;
+	public:
+		static const int STRUCTURE_SIZE = 2;
 
-	  FootnoteDescriptor() : aFtnIdx(0), bUsed(false)  {}
+		FootnoteDescriptor();
+		virtual ~FootnoteDescriptor();
 
-	  virtual ~FootnoteDescriptor()
-	  {
-	  }  
-      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-      {
-        FootnoteDescriptor *newObject = new FootnoteDescriptor();
+		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 
-		newObject->aFtnIdx = reader->ReadInt16();
-
-		return static_cast<ByteStructure*>( newObject );
-      }
-
-	  short aFtnIdx;
-	  bool bUsed;
-  };
+		short aFtnIdx;
+		bool bUsed;
+	};
 }

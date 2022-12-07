@@ -33,7 +33,8 @@ SOURCES +=  \
 	../../../DocFile/EncryptionHeader.cpp \
 	../../../DocFile/DrawingPrimitives.cpp \
 	../../../DocFile/Spa.cpp \
-	../../../DocFile/OleObject.cpp
+	../../../DocFile/OleObject.cpp \
+	../../../Common/Base/XmlTools.cpp
 
 core_release {
 SOURCES += \
@@ -87,9 +88,78 @@ SOURCES += \
 	../../../DocFile/WordDocument.cpp \
 	../../../DocFile/WordprocessingDocument.cpp \
 	../../../DocFile/FormFieldData.cpp \
+	../../../DocFile/AbstractOpenXmlMapping.cpp \
+	../../../DocFile/AnnotationOwnerList.cpp \
+	../../../DocFile/AutoSummaryInfo.cpp \
+	../../../DocFile/BookmarkFirst.cpp \
+	../../../DocFile/BorderCode.cpp \
+	../../../DocFile/ByteStructure.cpp \
+	../../../DocFile/CharacterPropertyExceptions.cpp \
+	../../../DocFile/CharacterRange.cpp \
+	../../../DocFile/CommentsMapping.cpp \
+	../../../DocFile/ConversionContext.cpp \
+	../../../DocFile/DateAndTime.cpp \
+	../../../DocFile/DocumentTypographyInfo.cpp \
+	../../../DocFile/DrawingObjectGrid.cpp \
+	../../../DocFile/EmuValue.cpp \
+	../../../DocFile/EndnoteDescriptor.cpp \
+	../../../DocFile/EndnotesMapping.cpp \
+	../../../DocFile/FieldCharacter.cpp \
+	../../../DocFile/FileInformationBlock.cpp \
+	../../../DocFile/FixedPointNumber.cpp \
+	../../../DocFile/FootnoteDescriptor.cpp \
+	../../../DocFile/FootnotesMapping.cpp \
+	../../../DocFile/FormattedDiskPage.cpp \
+	../../../DocFile/FormFieldDataMapping.cpp \
+	../../../DocFile/LanguageId.cpp \
+	../../../DocFile/LineSpacingDescriptor.cpp \
+	../../../DocFile/ListFormatOverride.cpp \
+	../../../DocFile/ListFormatOverrideLevel.cpp \
+	../../../DocFile/ListFormatOverrideTable.cpp \
+	../../../DocFile/MemoryStream.cpp \
+	../../../DocFile/OfficeArtContent.cpp \
+	../../../DocFile/OleObjectMapping.cpp \
+	../../../DocFile/PieceDescriptor.cpp \
+	../../../DocFile/RGBColor.cpp \
+	../../../DocFile/SectionDescriptor.cpp \
+	../../../DocFile/SectionPropertyExceptions.cpp \
+	../../../DocFile/ShadingDescriptor.cpp \
+	../../../DocFile/SprmTDefTable.cpp \
+	../../../DocFile/StructuredStorageReader.cpp \
+	../../../DocFile/TabDescriptor.cpp \
+	../../../DocFile/TableInfo.cpp \
+	../../../DocFile/TablePropertyExceptions.cpp \
+	../../../DocFile/Tbkd.cpp \
+	../../../DocFile/TwipsValue.cpp \
+	../../../DocFile/VirtualStreamReader.cpp \
+	../../../DocFile/WideString.cpp \
+	\
 	../../../DocFile/OfficeDrawing/Record.cpp \
 	../../../DocFile/OfficeDrawing/RecordFactory.cpp \
-	../../../DocFile/OfficeDrawing/ShapeTypeFactory.cpp
+	../../../DocFile/OfficeDrawing/ShapeTypeFactory.cpp \
+	../../../DocFile/OfficeDrawing/BitmapBlip.cpp \
+	../../../DocFile/OfficeDrawing/BlipStoreContainer.cpp \
+	../../../DocFile/OfficeDrawing/BlipStoreEntry.cpp \
+	../../../DocFile/OfficeDrawing/ChildAnchor.cpp \
+	../../../DocFile/OfficeDrawing/ClientAnchor.cpp \
+	../../../DocFile/OfficeDrawing/ClientData.cpp \
+	../../../DocFile/OfficeDrawing/DiagramBooleanProperties.cpp \
+	../../../DocFile/OfficeDrawing/DrawingContainer.cpp \
+	../../../DocFile/OfficeDrawing/DrawingGroup.cpp \
+	../../../DocFile/OfficeDrawing/DrawingGroupRecord.cpp \
+	../../../DocFile/OfficeDrawing/DrawingRecord.cpp \
+	../../../DocFile/OfficeDrawing/GroupContainer.cpp \
+	../../../DocFile/OfficeDrawing/GroupShapeRecord.cpp \
+	../../../DocFile/OfficeDrawing/MetafilePictBlip.cpp \
+	../../../DocFile/OfficeDrawing/OfficeArtClientTextbox.cpp \
+	../../../DocFile/OfficeDrawing/OfficeArtFRITContainer.cpp \
+	../../../DocFile/OfficeDrawing/RegularContainer.cpp \
+	../../../DocFile/OfficeDrawing/Shape.cpp \
+	../../../DocFile/OfficeDrawing/ShapeContainer.cpp \
+	../../../DocFile/OfficeDrawing/ShapeOptions.cpp \
+	../../../DocFile/OfficeDrawing/ShapeType.cpp \
+	../../../DocFile/OfficeDrawing/SplitMenuColorContainer.cpp \
+	../../../DocFile/OfficeDrawing/UnknownRecord.cpp
 }
 
 HEADERS +=  \
@@ -203,6 +273,7 @@ HEADERS +=  \
 	../../../DocFile/WideString.h \
 	../../../DocFile/WordDocument.h \
 	../../../DocFile/WordprocessingDocument.h \
+	\
 	../../../DocFile/OfficeDrawing/BitmapBlip.h \
 	../../../DocFile/OfficeDrawing/BlipStoreContainer.h \
 	../../../DocFile/OfficeDrawing/BlipStoreEntry.h \
@@ -229,6 +300,7 @@ HEADERS +=  \
 	../../../DocFile/OfficeDrawing/ShapeTypeFactory.h \
 	../../../DocFile/OfficeDrawing/SplitMenuColorContainer.h \
 	../../../DocFile/OfficeDrawing/UnknownRecord.h \
+	\
 	../../../DocFile/OfficeDrawing/Shapetypes/ArcType.h \
 	../../../DocFile/OfficeDrawing/Shapetypes/ArrowType.h \
 	../../../DocFile/OfficeDrawing/Shapetypes/BevelType.h \

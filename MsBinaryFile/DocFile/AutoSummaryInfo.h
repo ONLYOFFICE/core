@@ -57,37 +57,10 @@ namespace DocFileFormat
       int lCurrentLevel;
 
     public:
-	  virtual ~AutoSummaryInfo()
-	  {
-	  }
-
-	  AutoSummaryInfo():
-	  fValid(false), fView(false), iViewBy(0), fUpdateProps(false), wDlgLevel(0), 
-	  lHighestLevel(0), lCurrentLevel(0)
-	  {
-	  }
+	  virtual ~AutoSummaryInfo();
+	  AutoSummaryInfo();
 
       /// Parses the bytes to retrieve a AutoSummaryInfo
-	  AutoSummaryInfo( unsigned char* bytes, int size ):
-	  fValid(false), fView(false), iViewBy(0), fUpdateProps(false), wDlgLevel(0), 
-	  lHighestLevel(0), lCurrentLevel(0)
-      {
-        if ( size == 12 )
-        {
-          //split unsigned char 0 and 1 into bits
-          this->fValid = FormatUtils::GetBitFromBytes( bytes, size, 0 );
-          this->fView = FormatUtils::GetBitFromBytes( bytes, size, 1 );
-          this->iViewBy = (short)FormatUtils::GetUIntFromBytesBits( bytes, size, 2, 2 );
-          this->fUpdateProps = FormatUtils::GetBitFromBytes( bytes, size, 4 );
-
-          this->wDlgLevel = FormatUtils::BytesToInt16( bytes, 2, size );
-          this->lHighestLevel = FormatUtils::BytesToInt32( bytes, 4, size );
-          this->lCurrentLevel = FormatUtils::BytesToInt32( bytes, 8, size );
-        }
-        else
-        {
-          //throw new ByteParseException("Cannot parse the struct ASUMYI, the length of the struct doesn't match");
-        }
-      }
+	  AutoSummaryInfo( unsigned char* bytes, int size );
   };
 }

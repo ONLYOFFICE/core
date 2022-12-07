@@ -31,6 +31,7 @@
  */
 #pragma once
 
+#include "FileInformationBlock.h"
 #include "OfficeDrawing/RecordFactory.h"
 
 #include "OfficeDrawing/DrawingContainer.h"
@@ -58,138 +59,19 @@ namespace DocFileFormat
 
 	public:
 
-		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream): m_pDrawingGroupData(NULL), m_pBackgroud(NULL), m_uLastShapeId(1024)
-		{
-			VirtualStreamReader oStearmReader(pStream, 0 , pFIB->m_nWordVersion);
+		OfficeArtContent (const FileInformationBlock* pFIB, POLE::Stream* pStream);
+		~OfficeArtContent();
 
-			if (pFIB->m_FibWord97.fcDggInfo > oStearmReader.GetSize()) return;
-
-            oStearmReader.Seek (pFIB->m_FibWord97.fcDggInfo, 0/*STREAM_SEEK_SET*/);
-
-			if (pFIB->m_FibWord97.lcbDggInfo > 0)
-			{
-				unsigned int maxPosition	=	(int)(pFIB->m_FibWord97.fcDggInfo + pFIB->m_FibWord97.lcbDggInfo);
-
-				// read the DrawingGroupData
-				m_pDrawingGroupData			=	static_cast<DrawingGroup*>(RecordFactory::ReadRecord (&oStearmReader, 0));
-
-				while (oStearmReader.GetPosition() < maxPosition)
-				{
-					OfficeArtWordDrawing drawing;
-					drawing.dgglbl			=	(DrawingType)oStearmReader.ReadByte();
-					drawing.container		=	static_cast<DrawingContainer*>(RecordFactory::ReadRecord (&oStearmReader, 0));
-
-					for (size_t i = 0; i < drawing.container->Children.size(); ++i)
-					{
-						Record* groupChild = drawing.container->Children[i];
-						if (groupChild)
-						{
-							if (GroupContainer::TYPE_CODE_0xF003 == groupChild->TypeCode)
-							{
-								GroupContainer* group	=	static_cast<GroupContainer*>(groupChild);
-								if (group)
-								{
-									group->Index =	(int)i;
-								}
-							}
-							else if (ShapeContainer::TYPE_CODE_0xF004 == groupChild->TypeCode)
-							{
-								ShapeContainer* shape	=	static_cast<ShapeContainer*>(groupChild);
-								if (shape)
-								{
-									shape->m_nIndex = (int)i;
-									if (shape->m_bBackground)
-									{
-										m_pBackgroud = shape;
-									}
-								}
-							}
-							else if (DrawingRecord::TYPE_CODE_0xF008 == groupChild->TypeCode)
-							{
-								DrawingRecord* dr	=	static_cast<DrawingRecord*>(groupChild);
-								if (dr)
-								{
-									m_uLastShapeId = dr->spidCur;
-								}
-							}
-						}
-					}
-
-					m_arrDrawings.push_back( drawing );
-				}
-			}
-		}
-
-		~OfficeArtContent()
-		{
-			RELEASEOBJECT (m_pDrawingGroupData);
-
-			for ( std::list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
-				RELEASEOBJECT(iter->container);  
-		}
 		inline ShapeContainer* GetShapeBackgound()
 		{
 			return m_pBackgroud;
 		}
-		inline ShapeContainer* GetShapeContainer (int spid)
-		{
-			ShapeContainer* ret = NULL;
 
-			for (std::list<OfficeArtWordDrawing>::iterator iter = m_arrDrawings.begin(); iter != m_arrDrawings.end(); ++iter)
-			{
-				GroupContainer* group = iter->container->FirstChildWithType<GroupContainer>();
-				if (group)
-				{
-					for (size_t i = 1; i < group->Children.size(); ++i)
-					{
-						Record* groupChild = group->Children[i];
+		ShapeContainer* GetShapeContainer (int spid);
+		const DrawingGroup* GetDrawingGroup () const;
 
-						if ( groupChild->TypeCode == GroupContainer::TYPE_CODE_0xF003)
-						{
-							//It's a group of shapes
-							GroupContainer* subgroup	=	static_cast<GroupContainer*>(groupChild);
-
-							//the referenced shape must be the first shape in the group
-							ShapeContainer* container	=	static_cast<ShapeContainer*>(subgroup->Children[0]);
-							Shape* shape				=	static_cast<Shape*>(container->Children[1]);
-
-							if (shape->GetShapeID() == spid)
-							{
-								ret = container;
-								break;
-							}
-						}
-						else if ( groupChild->TypeCode == ShapeContainer::TYPE_CODE_0xF004 )
-						{
-							//It's a singe shape
-							ShapeContainer* container	=	static_cast<ShapeContainer*>(groupChild);
-							Shape* shape				=	static_cast<Shape*>(container->Children[0]);
-
-							if (shape->GetShapeID() == spid)
-							{
-								ret	 =	container;
-								break;
-							}
-						}
-					}
-				}
-				else
-				{
-					continue;
-				}
-
-				if (ret)
-					break;
-			}
-
-			return ret;
-		}
-
-		inline const DrawingGroup* GetDrawingGroup () const
-		{
-			return m_pDrawingGroupData;
-		}
 		unsigned int					m_uLastShapeId;
+
 	private:
 		ShapeContainer*					m_pBackgroud;
 		DrawingGroup*					m_pDrawingGroupData;

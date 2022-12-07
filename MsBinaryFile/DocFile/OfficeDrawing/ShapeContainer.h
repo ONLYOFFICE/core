@@ -50,95 +50,13 @@ namespace DocFileFormat
 		bool			m_bOleInPicture;
 		bool			m_bSkip;
 
-		ShapeContainer():
-		RegularContainer(), m_nIndex(0), m_nShapeType(0), m_bSkip(false), m_bBackground(false), m_bOLE(false), m_bOleInPicture(false)
-		{
-		}
+		ShapeContainer();
+		ShapeContainer( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance );
+		virtual ~ShapeContainer();
 
-		ShapeContainer( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ) :
-		m_bSkip(false), m_bBackground(false), m_bOLE(false), m_nIndex(0), m_nShapeType(0), RegularContainer( _reader, size, typeCode, version, instance )
-		{ 
-			for ( size_t i = 0; i < this->Children.size(); ++i )
-			{
-				ClientAnchor *clientAnchor = dynamic_cast<ClientAnchor*>( this->Children[i] );
-				//if ( (clientAnchor) && (clientAnchor->value == 0x80000000))
-				//	m_bSkip = true; //О реорганизации территориальных органов ПФР с 01.11.2018.doc
+		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
 
-				Shape* sh = dynamic_cast<Shape*>( this->Children[i] );
-				if (sh)
-				{
-					m_bBackground	= sh->fBackground;
-					m_bOLE			= sh->fOleShape;
-
-					if (sh->shapeType) 
-					{
-						m_nShapeType = sh->shapeType->GetTypeCode();
-					}
-					else 
-					{
-						for ( size_t j = 0; j < this->Children.size(); ++j)
-						{
-							ShapeOptions* sh_options = dynamic_cast<ShapeOptions*>( this->Children[j] );
-							if (sh_options)
-							{
-								if (sh_options->OptionsByID.end() != sh_options->OptionsByID.find(ODRAW::pib))
-								{
-									m_nShapeType = msosptPictureFrame;
-								}
-							}
-						}
-					}
-				}
-
-			}
-		}
-
-		virtual ~ShapeContainer()
-		{
-		}
-
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
-		{
-			return new ShapeContainer( _reader, bodySize, typeCode, version, instance );
-		}
-
-		ODRAW::OfficeArtFOPTEPtr ExtractOption(const ODRAW::ePropertyId & prop) const
-		{
-			ODRAW::OfficeArtFOPTEPtr ret;
-			
-			for ( size_t i = 0; i < this->Children.size(); ++i )
-			{
-				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( this->Children[i] );
-
-				if ( opt == NULL ) continue;
-
-				std::map<ODRAW::ePropertyId, ODRAW::OfficeArtFOPTEPtr>::iterator pFind = opt->OptionsByID.find(prop);
-				if (pFind != opt->OptionsByID.end())
-				{
-					ret = pFind->second;
-				}
-			}
-			return ret;
-		}
-
-		std::vector<ODRAW::OfficeArtFOPTEPtr> ExtractOptions() const
-		{
-			std::vector<ODRAW::OfficeArtFOPTEPtr> ret;
-
-			//build the list of all option entries of this shape
-			for ( size_t i = 0; i < this->Children.size(); ++i )
-			{
-				ShapeOptions* opt = dynamic_cast<ShapeOptions*>( this->Children[i] );
-
-				if ( opt == NULL ) continue;
-				
-				for ( size_t i = 0; i < opt->Options.size(); i++)
-				{
-					ret.push_back( opt->Options[i]);
-				}
-			}
-
-			return ret;
-		}
+		ODRAW::OfficeArtFOPTEPtr ExtractOption(const ODRAW::ePropertyId & prop) const;
+		std::vector<ODRAW::OfficeArtFOPTEPtr> ExtractOptions() const;
 	};
 }

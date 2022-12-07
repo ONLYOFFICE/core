@@ -64,6 +64,25 @@
 
 namespace BinDocxRW
 {
+ParamsWriter::ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager)
+	:
+	m_pCBufferedStream(pCBufferedStream),
+	m_pFontProcessor(pFontProcessor),
+	m_pOfficeDrawingConverter(pOfficeDrawingConverter),
+	m_pEmbeddedFontsManager(pEmbeddedFontsManager)
+{
+	m_pMain		= NULL;
+	m_pSettings = NULL;
+	m_pTheme	= NULL;
+	m_pCurRels	= NULL;
+	m_pStyles	= NULL;
+	m_pNumbering = NULL;
+
+	m_pEmbeddedStyles = NULL;
+	m_pEmbeddedNumbering = NULL;
+
+	m_bLocalStyles = m_bLocalNumbering = false;
+}
 std::wstring ParamsWriter::AddEmbeddedStyle(const std::wstring & sStyleId)
 {
 	if (!m_pEmbeddedStyles) return L"";
@@ -92,6 +111,7 @@ std::wstring ParamsWriter::AddEmbeddedStyle(const std::wstring & sStyleId)
 	}
 	return sNewStyleId;
 }
+
 BinaryCommonWriter::BinaryCommonWriter(ParamsWriter& oParamsWriter) :	m_oStream(*oParamsWriter.m_pCBufferedStream),
 													m_pEmbeddedFontsManager(oParamsWriter.m_pEmbeddedFontsManager)
 {

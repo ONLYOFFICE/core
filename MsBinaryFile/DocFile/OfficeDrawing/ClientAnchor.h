@@ -40,23 +40,11 @@ namespace DocFileFormat
 	public:
 		static const unsigned short TYPE_CODE_0xF010 = 0xF010;
 
-		ClientAnchor() : Record(), value(0)
-		{
-		}
+		ClientAnchor();
+		ClientAnchor(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~ClientAnchor();
 
-		ClientAnchor (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record (_reader, size, typeCode, version, instance), value(0)
-		{
-			value	=	Reader->ReadInt32(); //index PlcfSpa
-		}
-
-		virtual ~ClientAnchor()
-		{
-		}
-
-		virtual Record* NewObject (IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance)
-		{
-			return new ClientAnchor (_reader, bodySize, typeCode, version, instance);
-		}
+		virtual Record* NewObject (IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance);
 
 		unsigned int value;
 	};

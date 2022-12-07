@@ -99,25 +99,11 @@ namespace BinDocxRW
 		OOX::IFileContainer*	m_pCurRels;
 		std::map<int, bool>		m_mapIgnoreComments;
 
-		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager)
-			:
-			m_pCBufferedStream(pCBufferedStream), 
-			m_pFontProcessor(pFontProcessor), 
-			m_pOfficeDrawingConverter(pOfficeDrawingConverter), 
-			m_pEmbeddedFontsManager(pEmbeddedFontsManager)
-		{
-			m_pMain		= NULL;
-			m_pSettings = NULL;
-			m_pTheme	= NULL;
-			m_pCurRels	= NULL;
-			m_pStyles	= NULL;
-			m_pNumbering = NULL;
+		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream,
+					 DocWrapper::FontProcessor* pFontProcessor,
+					 NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter,
+					 NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager);
 
-			m_pEmbeddedStyles = NULL;
-			m_pEmbeddedNumbering = NULL;
-
-			m_bLocalStyles = m_bLocalNumbering = false;
-		}
 		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class ParamsDocumentWriter

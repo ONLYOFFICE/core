@@ -39,37 +39,10 @@ namespace DocFileFormat
 	class WideString: public std::wstring, public ByteStructure
 	{
 	public:
-		WideString( VirtualStreamReader reader, int length ): std::wstring()
-		{
-		}
+		WideString( VirtualStreamReader reader, int length );
+		WideString();
+		virtual ~WideString();
 
-		WideString(): std::wstring()
-		{
-		}
-
-		virtual ~WideString()
-		{
-		}
-
-        virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-		{
-			WideString* newObject = new WideString();
-
-			unsigned char *bytes = NULL;
-			bytes = reader->ReadBytes( length, true );
-
-			//It's a real string table
-			if (reader->nWordVersion > 0)
-			{
-				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_WINDOWS_1250 );
-			}
-			else
-			{
-				FormatUtils::GetSTLCollectionFromBytes<WideString>( newObject, bytes, length, ENCODING_UTF16 );
-			}
-			RELEASEARRAYOBJECTS( bytes );
-
-			return static_cast<ByteStructure*>( newObject );
-		}
+		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 	};
 }

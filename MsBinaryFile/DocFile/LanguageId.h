@@ -42,10 +42,6 @@ namespace DocFileFormat
 	  int Id;
       LanguageCode Code;
 
-      LanguageId( int id )
-      {
-        this->Id = id;
-        this->Code = (LanguageCode)id;
-      }
+	  LanguageId( int id );
   };
 }

@@ -59,6 +59,7 @@
     <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Common\Common.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp" />

@@ -62,33 +62,7 @@ namespace DocFileFormat
 
     public:
 	  /// Parses the given Stream Reader to retrieve a ListFormatOverride
-	  ListFormatOverride( VirtualStreamReader* reader, int length ):
-	  lsid(0), clfolvl(0), ibstFltAutoNum(0), grfhic(0)
-      {
-	    long startPos = reader->GetPosition();
-
-        this->lsid = reader->ReadInt32();
-        reader->ReadBytes( 8, false );
-        this->clfolvl = reader->ReadByte();
-        this->ibstFltAutoNum = reader->ReadByte();
-        this->grfhic = reader->ReadByte();
-        reader->ReadByte();
-
-        if ( this->clfolvl != 0 )
-		{
-		  this->rgLfoLvl = std::vector<ListFormatOverrideLevel*>( this->clfolvl );
-		}
-
-        reader->Seek( startPos, 0/*STREAM_SEEK_SET*/ );
-        reader->ReadBytes( LFO_LENGTH, false );
-      }
-
-	  virtual ~ListFormatOverride()
-	  {
-	    for ( std::vector<ListFormatOverrideLevel*>::iterator iter = this->rgLfoLvl.begin(); iter != this->rgLfoLvl.end(); iter++ )
-		{
-		  RELEASEOBJECT( *iter );  
-		}
-	  }
+	  ListFormatOverride( VirtualStreamReader* reader, int length );
+	  virtual ~ListFormatOverride();
   };
 }

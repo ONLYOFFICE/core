@@ -47,6 +47,7 @@ namespace DocFileFormat
 		VMLShapeTypeMapping(XMLTools::CStringXmlWriter* writer, bool isInlineShape = false );
 		virtual ~VMLShapeTypeMapping();
 		virtual void Apply( IVisitable* visited );
+
 		/// Returns the id of the referenced type
 		static std::wstring GenerateTypeId (const ShapeType* pShape);
 	};

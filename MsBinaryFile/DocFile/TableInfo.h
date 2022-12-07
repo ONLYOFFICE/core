@@ -44,65 +44,6 @@ namespace DocFileFormat
 		bool fInnerTableCell;
 		unsigned int iTap;
 
-		TableInfo( ParagraphPropertyExceptions* papx, int  nWordVersion):
-				fInTable(false), fTtp(false), fInnerTtp(false), fInnerTableCell(false), iTap(0)
-		{
-			if ( papx != NULL )
-			{
-				for ( std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
-				{
-					switch(iter->OpCode)
-					{
-						case sprmOldPFInTable:
-						case sprmPFInTable:
-						{
-							fInTable = ( iter->Arguments[0] == 1 ) ? (true) : (false);
-
-							if (iTap < 1 && fInTable) iTap = 1;
-						}break;
-		          
-						//case sprmOldPFTtp:
-						case sprmOldPTtp:
-						case sprmPFTtp:
-						{
-							fTtp = ( iter->Arguments[0] == 1 ) ? (true) : (false);
-						}break;
-
-						//case sprmOldPFInnerTableCell:
-						case sprmPFInnerTableCell:
-						{
-							fInnerTableCell = ( iter->Arguments[0] == 1 ) ? (true) : (false);
-						}break;
-
-						//case sprmOldPFInnerTtp:
-						case sprmPFInnerTtp:
-						{
-							fInnerTtp = ( iter->Arguments[0] == 1 ) ? (true) : (false);
-						}break;
-
-						//case sprmOldPItap:
-						case sprmPItap:
-						{
-							iTap = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
-
-							if ( iTap > 0 )
-							{
-								fInTable = true;
-							}
-						}break;
-					}
-	          
-					if ( (int)( iter->OpCode ) == sprmTCnf )//66a
-					{
-						iTap = FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize );
-
-						if ( iTap > 0 )
-						{
-							fInTable = true;
-						}
-					}
-				}
-			}
-		}
+		TableInfo( ParagraphPropertyExceptions* papx, int  nWordVersion);
 	};
 }

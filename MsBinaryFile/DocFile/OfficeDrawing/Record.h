@@ -63,6 +63,7 @@ namespace DocFileFormat
 	  virtual ~Record();
 	  Record();
       Record( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
+
 	  unsigned int GetTotalSize() const;
       virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance ) = 0;
   };

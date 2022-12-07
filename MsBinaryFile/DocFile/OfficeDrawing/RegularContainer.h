@@ -40,44 +40,9 @@ namespace DocFileFormat
 	class RegularContainer: public Record
 	{
 	public: 
-		RegularContainer() :	Record()
-		{
-		}
-
-		virtual ~RegularContainer()
-		{
-			for (std::vector<Record*>::iterator iter = Children.begin(); iter != Children.end(); ++iter)
-			{
-				RELEASEOBJECT (*iter);
-			}
-		}
-
-		RegularContainer (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record (_reader, size, typeCode, version, instance)
-		{
-			unsigned int readSize = 0;
-			unsigned int idx = 0;
-
-			while ( readSize < this->BodySize )
-			{
-				Record* child = NULL;
-
-				child = RecordFactory::ReadRecord( this->Reader, idx );
-
-				if ( child != NULL )
-				{
-					this->Children.push_back( child );
-					child->_ParentRecord = this;
-
-					readSize += child->GetTotalSize();
-
-					idx++;
-				}
-				else
-				{
-					readSize += this->BodySize;
-				}
-			}
-		}
+		RegularContainer();
+		virtual ~RegularContainer();
+		RegularContainer (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
 
 		/// Finds the first child of the given type.
 		template<class T> T* FirstChildWithType() const
@@ -98,7 +63,6 @@ namespace DocFileFormat
 		}
 
 	public: 
-
 		std::vector<Record*> Children;
 	};
 }

@@ -43,24 +43,9 @@ namespace DocFileFormat
 
 	public:
 		/// Creates a new LineSpacingDescriptor with empty values
-		LineSpacingDescriptor(): dyaLine(0), fMultLinespace(false)
-		{
-		}
+		LineSpacingDescriptor();
 
 		/// Parses the bytes to retrieve a LineSpacingDescriptor
-		LineSpacingDescriptor( unsigned char* bytes, int size )	:	dyaLine(0), fMultLinespace(false)
-		{
-			dyaLine = FormatUtils::BytesToInt16( bytes, 0, size );
-
-			if ( FormatUtils::BytesToInt16( bytes, 2, size ) == 1 )
-			{
-				fMultLinespace = true;
-			}
-			
-			if ( size > 4 )
-			{
-			}
-
-		}
+		LineSpacingDescriptor( unsigned char* bytes, int size );
 	};
 }

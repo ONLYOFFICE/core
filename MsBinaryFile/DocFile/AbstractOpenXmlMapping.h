@@ -38,23 +38,16 @@ namespace DocFileFormat
 	class AbstractOpenXmlMapping
 	{
 	public: 
-		AbstractOpenXmlMapping (XMLTools::CStringXmlWriter* pWriter) : m_pXmlWriter(pWriter)
-		{
-
-		}
+		AbstractOpenXmlMapping (XMLTools::CStringXmlWriter* pWriter);
 
 		inline XMLTools::CStringXmlWriter* GetXMLWriter()
 		{
 			return m_pXmlWriter;
 		}
 
-		virtual ~AbstractOpenXmlMapping()
-		{
-
-		}
+		virtual ~AbstractOpenXmlMapping();
 
 	protected:
-
 		XMLTools::CStringXmlWriter* m_pXmlWriter;
 	};
 }

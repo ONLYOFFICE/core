@@ -54,11 +54,6 @@ namespace DocFileFormat
       unsigned char tlc;
 
       /// Parses the bytes to retrieve a TabDescriptor
-	  TabDescriptor( unsigned char b ):
-      jc(0), tlc(0)
-      {
-	    this->jc = b & 0x07;
-        this->tlc = b >> 3;
-      }
+	  TabDescriptor( unsigned char b );
   };
 }

@@ -38,6 +38,7 @@ namespace Writers
 	{
 		eType = _eType;
 	}
+
 	bool HdrFtrItem::IsEmpty()
 	{
 		return m_sFilename.empty();

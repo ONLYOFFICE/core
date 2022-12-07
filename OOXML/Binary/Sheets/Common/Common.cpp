@@ -160,4 +160,16 @@ namespace SerializeCommon
 
 		return;
 	}
+
+	CommentData::CommentData()
+	{
+		bSolved = false;
+		bDocument = false;
+	}
+	CommentData::~CommentData()
+	{
+		for(size_t i = 0, length = aReplies.size(); i < length; ++i)
+			delete aReplies[i];
+		aReplies.clear();
+	}
 }

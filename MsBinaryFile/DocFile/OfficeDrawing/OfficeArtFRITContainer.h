@@ -40,21 +40,10 @@ namespace DocFileFormat
 	public:
 		static const unsigned short TYPE_CODE_0xF118 = 0xF118;
 
-		OfficeArtFRITContainer () : RegularContainer()
-		{
-		}
+		OfficeArtFRITContainer ();
+		OfficeArtFRITContainer (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~OfficeArtFRITContainer();
 
-		OfficeArtFRITContainer (IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : RegularContainer (_reader, size, typeCode, version, instance) 
-		{ 
-		}
-
-		virtual ~OfficeArtFRITContainer()
-		{
-		}
-
-		virtual Record* NewObject (IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance)
-		{
-			return new OfficeArtFRITContainer( _reader, bodySize, typeCode, version, instance );
-		}
+		virtual Record* NewObject (IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance);
 	};
 }

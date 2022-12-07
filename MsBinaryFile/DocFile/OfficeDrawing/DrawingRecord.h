@@ -43,25 +43,10 @@ namespace DocFileFormat
 		unsigned int	csp;		// The number of shapes in this drawing
 		unsigned int	spidCur;	// The last MSOSPID given to an SP in this DG
 
-		DrawingRecord():
-		Record(), csp(0), spidCur(0)
-		{
-		}
+		DrawingRecord();
+		DrawingRecord( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance );
 
-		DrawingRecord( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
-		Record( _reader, size, typeCode, version, instance )
-		{
-			csp		= Reader->ReadUInt32();
-			spidCur	= Reader->ReadInt32();
-		}
-
-		virtual ~DrawingRecord()
-		{
-		}
-
-		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )
-		{
-			return new DrawingRecord( _reader, bodySize, typeCode, version, instance );
-		}
+		virtual ~DrawingRecord();
+		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance );
   };
 }

@@ -45,7 +45,7 @@ namespace DocFileFormat
 		friend class FootnotesMapping;
 		friend class EndnotesMapping;
         friend class CommentsMapping;
-        friend class Table;
+		friend class Table;
 		friend class TextboxMapping;
 		friend class NumberingMapping;
 

@@ -47,6 +47,7 @@ namespace SerializeCommon
     VOID convertBase64ToImage (NSFile::CFileBinary& oFile, std::wstring &pBase64);
 	long Round(double val);
     std::wstring changeExtention(const std::wstring& sSourcePath, const std::wstring& sTargetExt);
+
 	class CommentData
 	{
 	public :
@@ -64,18 +65,11 @@ namespace SerializeCommon
 		bool bSolved;
 		bool bDocument;
 		std::vector<CommentData*> aReplies;
-		CommentData()
-		{
-			bSolved = false;
-			bDocument = false;
-		}
-		~CommentData()
-		{
-			for(size_t i = 0, length = aReplies.size(); i < length; ++i)
-				delete aReplies[i];
-			aReplies.clear();
-		}
+
+		CommentData();
+		~CommentData();
 	};
+
 	void ReadFileType(const std::wstring& sXMLOptions, BYTE& result, UINT& nCodePage, std::wstring& wcDelimiter, BYTE& saveFileType);
 }
 

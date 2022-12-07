@@ -51,20 +51,10 @@ namespace DocFileFormat
 		};
 		static const int STRUCTURE_SIZE = 2;
 
-		FieldCharacter() : fldch(0), grffld(0)	{}
-		virtual ~FieldCharacter()	{}
+		FieldCharacter();
+		virtual ~FieldCharacter();
 
-		virtual ByteStructure* ConstructObject (VirtualStreamReader* pReader, int length)
-		{
-			FieldCharacter* pFldChar = new FieldCharacter();
-			if (pFldChar)
-			{
-				pFldChar->fldch		= pReader->ReadByte();
-				pFldChar->grffld	= pReader->ReadByte();
-			}
-
-			return static_cast<ByteStructure*>(pFldChar);
-		}
+		virtual ByteStructure* ConstructObject (VirtualStreamReader* pReader, int length);
 
 		unsigned char fldch;
 		unsigned char grffld;
@@ -75,19 +65,10 @@ namespace DocFileFormat
 	public:
 		static const int STRUCTURE_SIZE = 4;
 
-		ListNumCache() : value(-1)		{}
-		virtual			~ListNumCache()	{}
+		ListNumCache();
+		virtual	~ListNumCache();
 		
-		virtual ByteStructure* ConstructObject (VirtualStreamReader* pReader, int length)
-		{
-			ListNumCache* pList	= new ListNumCache();
-			if (pList)
-			{
-				pList->value = pReader->ReadInt32();
-			}
-
-			return static_cast<ByteStructure*>(pList);
-		}
+		virtual ByteStructure* ConstructObject (VirtualStreamReader* pReader, int length);
 
 		int value;
 	};

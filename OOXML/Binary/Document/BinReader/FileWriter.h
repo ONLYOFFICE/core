@@ -114,6 +114,7 @@ namespace Writers
 		FontTableWriter			font_table;
 		CommentsWriter			comments;
 	};
+
 	class FileWriter
 	{
 	private:
@@ -135,23 +136,14 @@ namespace Writers
 		StylesWriter&			get_style_writers()			{ return m_bGlossaryMode ? m_oGlossary.styles : m_oMain.styles; }
 		WebSettingsWriter&		get_web_settings_writer()	{ return m_bGlossaryMode ? m_oGlossary.web_settings : m_oMain.web_settings; }
 
-		int getNextDocPr()
-		{
-			m_nDocPrIndex++;
-			return m_nDocPrIndex;
-		}
-		void AddSetting(std::wstring sSetting)
-		{
-			if (m_bGlossaryMode) m_oGlossary.settings.AddSetting(sSetting);
-			else m_oMain.settings.AddSetting(sSetting);
-		}
+		int getNextDocPr();
+
+		void AddSetting(std::wstring sSetting);
+
 		void Write();
 		void WriteGlossary();
 
-		bool IsEmptyGlossary()
-		{
-			return m_oGlossary.document.m_oContent.GetSize() < 1;
-		}
+		bool IsEmptyGlossary();
 
 		MediaWriter				m_oMediaWriter;
 		ChartWriter				m_oChartWriter;

@@ -25,10 +25,6 @@ DEFINES += UNICODE _UNICODE \
 
 INCLUDEPATH += ../../../OdfFile/include
 
-core_mac {
-LIBS += $$DESTDIR -lUnicodeConverter
-}
-
 core_release {
 SOURCES += \
     rtffile_source.cpp

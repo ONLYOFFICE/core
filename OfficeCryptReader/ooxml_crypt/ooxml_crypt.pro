@@ -11,7 +11,7 @@ CONFIG += core_static_link_libstd
 include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib -lCompoundFileLib
 ADD_DEPENDENCY(kernel)
 
 CONFIG += open_ssl_common
@@ -32,7 +32,7 @@ SOURCES += \
 SOURCES += \
     $$CORE_ROOT_DIR/Common/OfficeFileFormatChecker2.cpp \
     $$CORE_ROOT_DIR/Common/3dParty/pole/pole.cpp \
-    $$CORE_ROOT_DIR/Common/DocxFormat/Source/Base/unicode_util.cpp
+	$$CORE_ROOT_DIR/OOXML/Base/unicode_util.cpp
 
 SOURCES += \
     $$PWD/main.cpp

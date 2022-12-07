@@ -23,10 +23,6 @@ DEFINES +=  UNICODE \
         _UNICODE \
         DONT_WRITE_EMBEDDED_FONTS
 
-core_mac {
-    #QMAKE_MAC_SDK = macosx10.11
-}
-
 SOURCES +=  \
 	../../../DocFile/Main/DocFormatLib.cpp \
 	../../../../Common/3dParty/pole/pole.cpp \

@@ -30,41 +30,33 @@
  *
  */
 
-#ifndef _WEB_SOCKET_H_
-#define _WEB_SOCKET_H_
+#ifndef _IO_WEB_SOCKET_H_
+#define _IO_WEB_SOCKET_H_
 
-#include "../../../kernel_config.h"
-#include <string>
-#include <memory>
-#include <map>
+#include "../websocketbase.h"
 
 namespace NSNetwork
 {
     namespace NSWebSocket
     {
-        class IWebSocket
+        class CIOWebSocket_private;
+        class CIOWebSocket: public CWebWorkerBase
         {
+        private:
+            CIOWebSocket_private* m_internal;
+           
         public:
-            virtual void open(const std::map<std::string, std::string>& query) = 0;
-            virtual void send(const std::string& message) = 0;
-            virtual void close() = 0;
-            virtual void setUrl(const std::string& url) = 0;
-            virtual ~IWebSocket() {}
-        };
+            CIOWebSocket(const std::string& url, std::shared_ptr<IListener> listener);
+            virtual ~CIOWebSocket();
 
-        class IListener
-        {
         public:
-            virtual void onMessage(const std::string& message) = 0;
-            virtual void onOpen() = 0;
-            virtual void onError(const std::string& error) = 0;
-            virtual void onClose(int code, const std::string& reason) = 0;
-            virtual ~IListener() {}
-        };
+            virtual void open(const std::map<std::string, std::string>& query) override;
+            virtual void send(const std::string& message) override;
+            virtual void close() override;
 
-        // type : { "ixwebsocket" | "socketRocket" | "socketio" }
-        KERNEL_DECL std::shared_ptr<IWebSocket> createWebsocket(const std::string& type, std::shared_ptr<IListener> listener, const std::string& url = "");
+            friend class CIOWebSocket_private;
+        };
     }
 }
 
-#endif /* _WEB_SOCKET_H_ */
+#endif /* _IO_WEB_SOCKET_H_ */

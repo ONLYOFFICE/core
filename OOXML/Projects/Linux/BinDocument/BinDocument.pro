@@ -25,9 +25,11 @@ DEFINES += UNICODE \
 	DONT_WRITE_EMBEDDED_FONTS \
 	AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
-CONFIG += precompile_header
-PRECOMPILED_HEADER = precompiled.h
-HEADERS += precompiled.h
+!disable_precompiled_header:CONFIG += precompile_header
+precompile_header {
+    PRECOMPILED_HEADER = precompiled.h
+    HEADERS += precompiled.h
+}
 
 SOURCES += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.cpp \

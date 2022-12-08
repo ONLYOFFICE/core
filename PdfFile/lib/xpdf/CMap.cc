@@ -53,12 +53,6 @@ static int getCharFromStream(void *data) {
 
 //------------------------------------------------------------------------
 
-#ifdef TEST_AS_EXECUTABLE
-#include <iostream>
-#include <vector>
-#include "../../../DesktopEditor/common/File.h"
-#endif
-
 CMap *CMap::parse(CMapCache *cache, GString *collectionA, Object *obj) {
   CMap *cMap;
   GString *cMapNameA;
@@ -98,7 +92,6 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA,
       return NULL;
     cMap = new CMap(collectionA->copy(), cMapNameA->copy());
     cMap->parse2(cache, &getCharFromStream, str);
-
     delete str;
     return cMap;
   }

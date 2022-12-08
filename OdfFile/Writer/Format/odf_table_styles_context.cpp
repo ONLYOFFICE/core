@@ -225,8 +225,8 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
-	int col_shift =0;
-	int row_shift =0;
+	int col_shift = 0;
+	int row_shift = 0;
 
 	if (state.firstCol_.is && current_used_.back().first_col)col_shift = 1;
 	if (state.firstRow_.is && current_used_.back().first_row)row_shift = 1;
@@ -310,7 +310,7 @@ bool odf_table_styles_context::is_text_properties()
 void odf_table_styles_context::get_text_properties (style_text_properties* text_props)
 {
 	if (current_used_.empty()) return;
-	if (text_props == NULL)	  return;
+	if (text_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
@@ -318,8 +318,8 @@ void odf_table_styles_context::get_text_properties (style_text_properties* text_
 }
 void odf_table_styles_context::get_table_cell_properties (style_table_cell_properties* table_cell_props)
 {
-	if (current_used_.size() < 1) return;
-	if (table_cell_props == NULL)	  return;
+	if (current_used_.empty()) return;
+	if (table_cell_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
@@ -327,8 +327,8 @@ void odf_table_styles_context::get_table_cell_properties (style_table_cell_prope
 }
 void odf_table_styles_context::get_text_properties (int col, int row, style_text_properties* text_props)
 {
-	if (current_used_.size() < 1) return;
-	if (text_props == NULL)		  return;
+	if (current_used_.empty()) return;
+	if (text_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
@@ -380,6 +380,51 @@ void odf_table_styles_context::get_text_properties (int col, int row, style_text
 	if (se)			text_props->apply_from(dynamic_cast<style_text_properties *>(state.seCell_.text_props.get()));
 	if (sw)			text_props->apply_from(dynamic_cast<style_text_properties *>(state.swCell_.text_props.get()));
 }
+bool odf_table_styles_context::is_styled(int col, int row)
+{
+	table_format_state & state = table_format_array_[current_used_.back().table_style_];
+
+	int col_shift = 0;
+	int row_shift = 0;
+
+	if (state.firstCol_.is && current_used_.back().first_col) col_shift = 1;
+	if (state.firstRow_.is && current_used_.back().first_row) row_shift = 1;
+	//------------------------------------------------------------------------------
+	bool first_row = (row == 1) ? true : false;
+	bool first_col = (col == 1) ? true : false;
+
+	if (state.firstCol_.is && first_col) return true;
+	if (state.firstRow_.is && first_row) return true;
+
+	bool last_row = (row == current_used_.back().table_row_count_) ? true : false;
+	bool last_col = (col == current_used_.back().table_col_count_) ? true : false;
+	
+	if (state.lastCol_.is && last_col) return true;
+	if (state.lastRow_.is && last_row) return true;
+
+	bool odd_row = ((row + row_shift) % 2 != 0) ? true : false;//нечетные
+	bool odd_col = ((col + col_shift) % 2 != 0) ? true : false;
+
+	if (state.band1Vert_.is && odd_col) return true;
+	if (state.band1Horz_.is && odd_row) return true;
+
+	if (state.band2Vert_.is && !odd_col) return true;
+	if (state.band2Horz_.is && !odd_row) return true;
+
+	bool ne = (row == 1 && col == current_used_.back().table_col_count_) ? true : false; //top right cell
+	bool nw = (row == 1 && col == 1) ? true : false;						//top left cell.
+
+	if (state.neCell_.is && ne) return true;
+	if (state.nwCell_.is && nw) return true;
+
+	bool se = (row == current_used_.back().table_row_count_ && col == current_used_.back().table_col_count_) ? true : false; //bottom right cell
+	bool sw = (row == current_used_.back().table_row_count_ && col == 1) ? true : false;						//bottom left cell.
+
+	if (state.seCell_.is && se) return true;
+	if (state.swCell_.is && sw) return true;
+
+	return false;
+}
 void odf_table_styles_context::get_paragraph_properties (int col, int row, style_paragraph_properties* para_props)
 {
 	if (current_used_.empty()) return;
@@ -387,17 +432,17 @@ void odf_table_styles_context::get_paragraph_properties (int col, int row, style
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
-	int col_shift =0;
-	int row_shift =0;
+	int col_shift = 0;
+	int row_shift = 0;
 
-	if (state.firstCol_.is && current_used_.back().first_col)col_shift = 1;
-	if (state.firstRow_.is && current_used_.back().first_row)row_shift = 1;
+	if (state.firstCol_.is && current_used_.back().first_col) col_shift = 1;
+	if (state.firstRow_.is && current_used_.back().first_row) row_shift = 1;
 //------------------------------------------------------------------------------
-	bool first_row = (row == 1)? true: false;
-	bool first_col = (col == 1)? true: false;
+	bool first_row = (row == 1)? true : false;
+	bool first_col = (col == 1)? true : false;
 
-	bool odd_row = ((row+row_shift)%2 != 0) ? true : false;//нечетные
-	bool odd_col = ((col+col_shift)%2 != 0) ? true : false;
+	bool odd_row = ((row + row_shift) % 2 != 0) ? true : false;//нечетные
+	bool odd_col = ((col + col_shift) % 2 != 0) ? true : false;
 
 	bool last_row = (row == current_used_.back().table_row_count_) ? true: false; 
 	bool last_col = (col == current_used_.back().table_col_count_) ? true: false; 

@@ -195,6 +195,9 @@
     <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp">
       <Filter>Document\Writer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h">

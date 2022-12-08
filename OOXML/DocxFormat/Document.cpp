@@ -344,11 +344,13 @@ namespace OOX
 				{
 					OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
 					
-					OOX::CDocument::_section section;
-					section.sect = m_oSectPr.GetPointer();
-					section.end_elm = doc->m_arrItems.size();
-
-					doc->m_arrSections.push_back(section);
+					if (doc->m_arrSections.empty())
+					{
+						OOX::CDocument::_section section;
+						doc->m_arrSections.push_back(section);
+					}
+					doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
+					doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); //активный рутовый еще не добавлен
 				}
 //-------------------------------------------------------------------------
 			}

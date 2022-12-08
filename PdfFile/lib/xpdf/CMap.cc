@@ -84,9 +84,13 @@ for (const std::string& sCMap : sCMaps)
         return NULL;
       cMap = new CMap(collectionA->copy(), new GString(sCMap.c_str()));
       cMap->parse2(cache, &getCharFromStream, str);
-      cMap->SaveCMap(sCMap.c_str(), sCMap.length());
+      int nLength = cMap->SaveCMap(sCMap.c_str(), sCMap.length());
       delete str;
       delete cMap;
+      if (nLength * 4 < nSizeCMap * 2 && nLength > 0)
+      {
+          std::cout << sCMap << " v" << std::endl;
+      }
     }
 }
 #endif // TEST_AS_EXECUTABLE
@@ -108,13 +112,15 @@ for (const std::string& sCMap : sCMaps)
 }
 
 #ifdef TEST_AS_EXECUTABLE
-void CMap::SaveCMap(const char* cMapNameA, long nMapNameALength)
+int CMap::SaveCMap(const char* cMapNameA, long nMapNameALength)
 {
+    int nLength = 0;
     NSFile::CFileBinary oFile;
     if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/CMap/" + NSFile::CUtf8Converter::GetUnicodeFromCharPtr(cMapNameA, nMapNameALength)))
     {
         oFile.WriteStringUTF8(std::to_wstring(isIdent) + L",");
         oFile.WriteStringUTF8(std::to_wstring(wMode) + L",");
+        nLength += 2;
 
         for (int i = 0; i < 256; ++i)
         {
@@ -125,7 +131,7 @@ void CMap::SaveCMap(const char* cMapNameA, long nMapNameALength)
                 {
                     if (vector[i].vector[j].isVector)
                     {
-                        std::cout << "NO";
+                        return -1;
                     }
                     if (vector[i].vector[j].cid)
                         m++;
@@ -136,6 +142,7 @@ void CMap::SaveCMap(const char* cMapNameA, long nMapNameALength)
                     oFile.WriteStringUTF8(std::to_wstring(256) + L",");
                     for (int j = 0; j < 256; ++j)
                         oFile.WriteStringUTF8(std::to_wstring(vector[i].vector[j].cid) + L",");
+                    nLength += 257;
                 }
                 else
                 {
@@ -145,13 +152,18 @@ void CMap::SaveCMap(const char* cMapNameA, long nMapNameALength)
                         if (vector[i].vector[j].cid)
                             oFile.WriteStringUTF8(std::to_wstring(j) + L"," + std::to_wstring(vector[i].vector[j].cid) + L",");
                     }
+                    nLength += (1 + m * 2);
                 }
             }
             else
+            {
                 oFile.WriteStringUTF8(std::to_wstring(0) + L",");
+                nLength++;
+            }
         }
     }
     oFile.CloseFile();
+    return nLength;
 }
 #endif // TEST_AS_EXECUTABLE
 

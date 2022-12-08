@@ -67,3 +67,13 @@
 
 #include "../../OOXml/Writer/OOXDocumentWriter.cpp"
 #include "../../OOXml/Writer/OOXWriter.cpp"
+#include "../../OOXml/Writer/OOXCommentsWriter.cpp"
+#include "../../OOXml/Writer/OOXContentTypesWriter.cpp"
+#include "../../OOXml/Writer/OOXFontTableWriter.cpp"
+#include "../../OOXml/Writer/OOXFootnoteWriter.cpp"
+#include "../../OOXml/Writer/OOXNumberingWriter.cpp"
+#include "../../OOXml/Writer/OOXRelsWriter.cpp"
+#include "../../OOXml/Writer/OOXSettingsWriter.cpp"
+#include "../../OOXml/Writer/OOXStylesWriter.cpp"
+#include "../../OOXml/Writer/OOXThemeWriter.cpp"
+

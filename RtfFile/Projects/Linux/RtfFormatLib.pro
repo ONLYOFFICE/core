@@ -68,7 +68,16 @@ SOURCES += \
 	../../OOXml/Reader/OOXTextItemReader.cpp \
 	\
 	../../OOXml/Writer/OOXDocumentWriter.cpp \
-	../../OOXml/Writer/OOXWriter.cpp
+	../../OOXml/Writer/OOXWriter.cpp \
+	../../OOXml/Writer/OOXCommentsWriter.cpp \
+	../../OOXml/Writer/OOXContentTypesWriter.cpp \
+	../../OOXml/Writer/OOXFontTableWriter.cpp \
+	../../OOXml/Writer/OOXFootnoteWriter.cpp \
+	../../OOXml/Writer/OOXNumberingWriter.cpp \
+	../../OOXml/Writer/OOXRelsWriter.cpp \
+	../../OOXml/Writer/OOXSettingsWriter.cpp \
+	../../OOXml/Writer/OOXStylesWriter.cpp \
+	../../OOXml/Writer/OOXThemeWriter.cpp
 }
 
 SOURCES += \
@@ -164,4 +173,5 @@ HEADERS += \
 	../../OOXml/Writer/OOXSettingsWriter.h \
 	../../OOXml/Writer/OOXStylesWriter.h \
 	../../OOXml/Writer/OOXThemeWriter.h \
-	../../OOXml/Writer/OOXWriter.h
+	../../OOXml/Writer/OOXWriter.h \
+	../../OOXml/Writer/OOXCommentsWriter.h

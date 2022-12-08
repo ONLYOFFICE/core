@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,25 +29,31 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "OOXWriter.h"
-#include "OOXRelsWriter.h"
+#include "OOXThemeWriter.h"
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../OOXML/Base/Base.h"
 
-class OOXSettingsWriter
+OOXThemeWriter::OOXThemeWriter(OOXWriter& oWriter,RtfDocument& oDocument ):m_oWriter(oWriter)
 {
-private:
-    std::wstring m_sFileXml;
-	OOXWriter& m_oWriter;
+}
+bool OOXThemeWriter::Save( std::wstring sFolder ) //todo доделать очистку поле ошибок
+{
+	std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 
-	std::wstring CreateXml();
+	NSDirectory::CreateDirectory(pathWord) ;
+	NSDirectory::CreateDirectory(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
 
-public: 
-	OOXRelsWriterPtr m_oRelsWriter;
-
-	OOXSettingsWriter(OOXWriter& oWriter,RtfDocument& oDocument );
-
-	void AddContent( std::wstring sText );
-	bool Save( std::wstring sFolder );
-	bool IsEmpty();
-};
+	//todooo default theme !!!!!
+	//
+	//if( true == RtfUtility:: SaveResourceToFile( IDR_THEME, L"XML", sFolder + _T("\\word\\theme\\theme1.xml") ) )
+	//{
+	//	m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
+	//	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
+	//}
+	//else
+	//{
+	//	RemoveDirectory( sFolder + _T("\\word\\theme") );
+	//}
+	return true;
+}

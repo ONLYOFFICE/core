@@ -31,65 +31,24 @@
  */
 #pragma once
 
+#include "OOXWriter.h"
 #include "OOXRelsWriter.h"
 
 class OOXFontTableWriter
 {
 public: 
 	OOXRelsWriterPtr m_oRelsWriter;
-	OOXFontTableWriter(OOXWriter& oWriter,RtfDocument& oDocument ):m_oWriter(oWriter)
-	{
-		m_oRelsWriter = OOXRelsWriterPtr( new OOXRelsWriter(  _T("fontTable.xml"), oDocument ) );
-		oWriter.m_oCustomRelsWriter.push_back( m_oRelsWriter );
-	}
 
-    void AddContent( std::wstring sText )
-	{
-		m_sFileXml += sText;
-	}
-    bool Save(  std::wstring sFolder )
-	{
-        std::wstring pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+	OOXFontTableWriter(OOXWriter& oWriter,RtfDocument& oDocument );
 
-		if( false == m_sFileXml.empty() )
-		{
-			NSFile::CFileBinary file;
-            if (false == file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
+	void AddContent( std::wstring sText );
+	bool Save(  std::wstring sFolder );
+	bool IsEmpty();
 
-			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml") );
-			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"), _T("/word/fontTable.xml") );
-
-            std::wstring sXml = CreateXml();
-
-            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
-
-            file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
-
-			file.CloseFile();
-			return true;
-		}
-		else
-		{
-			//todooo - default fontTable !!!
-		}
-		return false;
-	}
-	bool IsEmpty()
-	{
-		return m_sFileXml.empty();
-	}
 private: 
     std::wstring m_sFileXml;
 
     OOXWriter& m_oWriter;
 
-    std::wstring CreateXml()
-	{
-        std::wstring sResult;
-        sResult.append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
-        sResult.append( _T("<w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">") );
-        sResult.append( m_sFileXml);
-        sResult.append( _T("</w:fonts>") );
-		return  sResult;
-	}
+	std::wstring CreateXml();
 };

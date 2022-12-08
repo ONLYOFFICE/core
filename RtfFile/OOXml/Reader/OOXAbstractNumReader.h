@@ -31,7 +31,14 @@
  */
 #pragma once
 #include "OOXLevelReader.h"
-#include "../../OOXML/DocxFormat/Numbering.h"
+
+namespace OOX
+{
+	namespace Numbering
+	{
+		class CAbstractNum;
+	}
+}
 
 class OOXAbstractNumReader
 {

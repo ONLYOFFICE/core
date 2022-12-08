@@ -31,8 +31,7 @@
  */
 
 #pragma once
-#include "../../Format/RtfDocument.h"
-#include "../../Format/RtfProperty.h"
+#include "OOXReaderBasic.h"
 
 class OOXLatentStyleReader
 {

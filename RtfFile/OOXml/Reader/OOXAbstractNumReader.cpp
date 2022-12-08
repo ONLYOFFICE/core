@@ -31,6 +31,7 @@
  */
 
 #include "OOXAbstractNumReader.h"
+#include "../../../OOXML/DocxFormat/Numbering.h"
 
 OOXAbstractNumReader::OOXAbstractNumReader(OOX::Numbering::CAbstractNum  *ooxAbstractNum)
 {

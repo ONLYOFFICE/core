@@ -52,6 +52,8 @@ namespace MetaFile
 
 			GenerateWmfBKMode();
 
+			GenerateWmfBackground();
+
 			GenerateWmfCheckmark();
 			GenerateWmfMiddleLine();
 			GenerateWmfStrings(arStrings);
@@ -224,6 +226,91 @@ namespace MetaFile
 				m_oFile.WriteFile((BYTE*)&oPoint.first,  2);
 				m_oFile.WriteFile((BYTE*)&oPoint.second, 2);
 			}
+		}
+
+		void GenerateWmfRegion(short shX1, short shY1, short shX2, short shY2)
+		{
+			unsigned int unRecordSize        = 0x00000014;
+			unsigned short ushRecordFunction = 0x06FF;
+			unsigned short ushZero           = 0x0000;
+			unsigned short ushObjectType     = 0x0006;
+			unsigned int unObjectCount       = 0x00000000;
+			unsigned short ushRegionSize     = 34;
+			unsigned short ushScanCount      = 1;
+			unsigned short ushMaxScan        = 2;
+
+			unsigned short ushCount          = 2;
+
+		// META_CREATEREGION
+			m_oFile.WriteFile((BYTE*)&unRecordSize,      4); // RecordSize
+			m_oFile.WriteFile((BYTE*)&ushRecordFunction, 2); // RecordFunction
+			//Region Object
+			m_oFile.WriteFile((BYTE*)&ushZero,           2); // nextInChain
+			m_oFile.WriteFile((BYTE*)&ushObjectType,     2); // ObjectType
+			m_oFile.WriteFile((BYTE*)&unObjectCount,     4); // ObjectCount
+			m_oFile.WriteFile((BYTE*)&ushRegionSize,     2); // RegionSize
+			m_oFile.WriteFile((BYTE*)&ushScanCount,      2); // ScanCount
+			m_oFile.WriteFile((BYTE*)&ushMaxScan ,       2); // maxScan
+			//BoundingBox
+			m_oFile.WriteFile((BYTE*)&ushZero ,    2); // Left
+			m_oFile.WriteFile((BYTE*)&ushZero ,    2); // Top
+			m_oFile.WriteFile((BYTE*)&m_ushWidth,  2); // Right
+			m_oFile.WriteFile((BYTE*)&m_ushHeight, 2); // Bottom
+			//Scan Object
+			m_oFile.WriteFile((BYTE*)&ushCount,      2); // Count
+			m_oFile.WriteFile((BYTE*)&shY1,          2); // Top
+			m_oFile.WriteFile((BYTE*)&shY2,          2); // Bottom
+			m_oFile.WriteFile((BYTE*)&shX1,          2); // Left
+			m_oFile.WriteFile((BYTE*)&shX2,          2); // Right
+			m_oFile.WriteFile((BYTE*)&ushCount,      2); // Count2
+
+			++m_shObjectIndex;
+		}
+
+		void GenerateWmfBrush(int nColor)
+		{
+			unsigned int unRecordSize        = 0x00000007;
+			unsigned short ushRecordFunction = 0x02FC;
+			unsigned short ushBrushStyle     = 0x0000;
+			unsigned short ushBrushHatch     = 0x0000;
+
+		// META_CREATEBRUSHINDIRECT
+			m_oFile.WriteFile((BYTE*)&unRecordSize,      4); // RecordSize
+			m_oFile.WriteFile((BYTE*)&ushRecordFunction, 2); // RecordFunction
+			// LogBrush
+			m_oFile.WriteFile((BYTE*)&ushBrushStyle,     2); // BrushStyle
+			m_oFile.WriteFile((BYTE*)&nColor,            4); // ColorRef
+			m_oFile.WriteFile((BYTE*)&ushBrushHatch,     2); // BrushHatch
+
+			++m_shObjectIndex;
+		}
+
+		void GenerateWmfPaintRegion()
+		{
+			GenerateWmfRegion(0, 0, m_ushWidth, m_ushHeight);
+
+			unsigned int unRecordSize        = 0x00000004;
+			unsigned short ushRecordFunction = 0x012B;
+
+		// META_PAINTREGION
+			m_oFile.WriteFile((BYTE*)&unRecordSize,      4); // RecordSize
+			m_oFile.WriteFile((BYTE*)&ushRecordFunction, 2); // RecordFunction
+			m_oFile.WriteFile((BYTE*)&m_shObjectIndex,   2); // Region
+
+			GenerateWmfDeleteObject(m_shObjectIndex);
+		}
+
+		void GenerateWmfBackground()
+		{
+			if (0 > m_nBKColor)
+				return;
+
+			GenerateWmfBrush(m_nBKColor);
+			GenerateWmfSelectObject(m_shObjectIndex);
+
+			GenerateWmfPaintRegion();
+
+			GenerateWmfDeleteObject(m_shObjectIndex);
 		}
 
 		void GenerateWmfCheckmark()

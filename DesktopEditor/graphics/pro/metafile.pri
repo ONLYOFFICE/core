@@ -96,9 +96,11 @@ HEADERS += \
 	$$METAFILE_PATH/Common/MetaFileRenderer.h \
 	$$METAFILE_PATH/Common/MetaFileUtils.h \
 	\
-	$$METAFILE_PATH/Common/GenerateSignature.h
+	$$METAFILE_PATH/Common/CGenerateSignature.h
 
 SOURCES += \
     $$METAFILE_PATH/MetaFile.cpp \
 	$$METAFILE_PATH/Common/MetaFileTypes.cpp \
-	$$METAFILE_PATH/Common/MetaFileUtils.cpp
+	$$METAFILE_PATH/Common/MetaFileUtils.cpp \
+	\
+	$$METAFILE_PATH/Common/CGenerateSignature.cpp

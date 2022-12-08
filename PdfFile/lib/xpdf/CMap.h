@@ -76,9 +76,6 @@ private:
   void copyVector(CMapVectorEntry *dest, CMapVectorEntry *src);
   void addCIDs(Guint start, Guint end, Guint nBytes, CID firstCID);
   void freeCMapVector(CMapVectorEntry *vec);
-#ifdef TEST_AS_EXECUTABLE
-  int SaveCMap(const char* cMapNameA, long nMapNameALength);
-#endif
 
   GString *collection;
   GString *cMapName;

@@ -66,6 +66,34 @@ SOURCES += \
 	../../OOXml/Reader/OOXTableReader.cpp \
 	../../OOXml/Reader/OOXDocumentReader.cpp \
 	../../OOXml/Reader/OOXTextItemReader.cpp \
+	../../OOXml/Reader/OOXAbstractNumReader.cpp \
+	../../OOXml/Reader/OOXAppReader.cpp \
+	../../OOXml/Reader/OOXBorderReader.cpp \
+	../../OOXml/Reader/OOXcnfStyleReader.cpp \
+	../../OOXml/Reader/OOXColorReader.cpp \
+	../../OOXml/Reader/OOXColorReader2.cpp \
+	../../OOXml/Reader/OOXColorSchemeReader.cpp \
+	../../OOXml/Reader/OOXCoreReader.cpp \
+	../../OOXml/Reader/OOXDocDefaultsReader.cpp \
+	../../OOXml/Reader/OOXFontReader.cpp \
+	../../OOXml/Reader/OOXFontSchemeReader.cpp \
+	../../OOXml/Reader/OOXFontTableReader.cpp \
+	../../OOXml/Reader/OOXFootnotesReader.cpp \
+	../../OOXml/Reader/OOXLevelReader.cpp \
+	../../OOXml/Reader/OOXNumberingMapReader.cpp \
+	../../OOXml/Reader/OOXNumberingReader.cpp \
+	../../OOXml/Reader/OOXPictureAnchorReader.cpp \
+	../../OOXml/Reader/OOXPictureInlineReader.cpp \
+	../../OOXml/Reader/OOXPictureReader.cpp \
+	../../OOXml/Reader/OOXpPrTabReader.cpp \
+	../../OOXml/Reader/OOXShadingReader.cpp \
+	../../OOXml/Reader/OOXStyleReader.cpp \
+	../../OOXml/Reader/OOXStyleTableReader.cpp \
+	../../OOXml/Reader/OOXtblLookReader.cpp \
+	../../OOXml/Reader/OOXtblpPrReader.cpp \
+	../../OOXml/Reader/OOXtblPrReader.cpp \
+	../../OOXml/Reader/OOXtcPrReader.cpp \
+	../../OOXml/Reader/OOXThemeReader.cpp \	
 	\
 	../../OOXml/Writer/OOXDocumentWriter.cpp \
 	../../OOXml/Writer/OOXWriter.cpp \
@@ -113,6 +141,7 @@ HEADERS += \
 	../../Format/UniversalConverterUtils.h \
 	../../Format/Utils.h \
 	../../Format/Ole1FormatReader.h \
+	\
 	../../OOXml/Reader/OOXAbstractNumReader.h \
 	../../OOXml/Reader/OOXAppReader.h \
 	../../OOXml/Reader/OOXBorderReader.h \
@@ -129,7 +158,6 @@ HEADERS += \
 	../../OOXml/Reader/OOXFontTableReader.h \
 	../../OOXml/Reader/OOXFootnotesReader.h \
 	../../OOXml/Reader/OOXHeaderReader.h \
-	../../OOXml/Reader/OOXLatentStyleReader.h \
 	../../OOXml/Reader/OOXLevelReader.h \
 	../../OOXml/Reader/OOXMathPropReader.h \
 	../../OOXml/Reader/OOXMathReader.h \
@@ -164,6 +192,7 @@ HEADERS += \
 	../../OOXml/Reader/OOXTextItemReader.h \
 	../../OOXml/Reader/OOXThemeReader.h \
 	../../OOXml/Reader/OOXtrPrReader.h \
+	\
 	../../OOXml/Writer/OOXContentTypesWriter.h \
 	../../OOXml/Writer/OOXDocumentWriter.h \
 	../../OOXml/Writer/OOXFontTableWriter.h \

@@ -60,22 +60,9 @@ class OOXtblLookReader
 {
 private:
 	ComplexTypes::Word::CTblLook *m_ooxTblLook;
+
 public:
-	OOXtblLookReader(ComplexTypes::Word::CTblLook *ooxTblLook)
-	{
-		m_ooxTblLook = ooxTblLook;
-	}
-	bool Parse( ReaderParameter oParam, CtblLook& oOutput)
-	{
-		if (m_ooxTblLook == NULL) return false;
+	OOXtblLookReader(ComplexTypes::Word::CTblLook *ooxTblLook);
 
-		oOutput.bFirstRow = m_ooxTblLook->IsFirstRow();
-		oOutput.bLastRow = m_ooxTblLook->IsLastRow();
-		oOutput.bFirstCol = m_ooxTblLook->IsFirstColumn();
-		oOutput.bLastCol = m_ooxTblLook->IsLastColumn();
-		oOutput.bNoHBand = m_ooxTblLook->IsNoHBand();
-		oOutput.bNoVBand = m_ooxTblLook->IsNoVBand();
-
-		return true;
-	}
+	bool Parse( ReaderParameter oParam, CtblLook& oOutput);
 };

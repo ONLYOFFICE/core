@@ -116,7 +116,6 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 	return true;
 }
 
-
 bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 {
 	if (m_ooxTable == NULL) return false;

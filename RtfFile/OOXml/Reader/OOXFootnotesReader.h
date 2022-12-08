@@ -30,8 +30,11 @@
  *
  */
 #pragma once
+
 #include "OOXReader.h"
+#include "OOXReaderBasic.h"
 #include "../../Format/RtfDocument.h"
+
 #include <limits.h>
 
 class OOXFootnotesReader
@@ -41,142 +44,9 @@ private:
 	OOX::CFootnotes * m_ooxFootNotes;
 
 public: 
-	OOXFootnotesReader(OOX::CEndnotes * ooxNotes)
-	{
-		m_ooxFootNotes	= NULL;
-		m_ooxEndNotes	= ooxNotes;
-	}
-	OOXFootnotesReader(OOX::CFootnotes * ooxNotes)
-	{
-		m_ooxFootNotes	= ooxNotes;
-		m_ooxEndNotes	= NULL;
-	}
+	OOXFootnotesReader(OOX::CEndnotes * ooxNotes);
+	OOXFootnotesReader(OOX::CFootnotes * ooxNotes);
 
-	bool Parse( ReaderParameter oParam)
-	{
-		int nSeparatorId = 0;
-		int nContinueId = 1;
-
-		if (m_ooxEndNotes)
-		{
-			if( oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size() > 0 )
-			{
-				for (size_t i = 0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
-				{
-					for (size_t j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialEndnotes.size(); j++ )
-					{
-						if (m_ooxEndNotes->m_arrEndnote[i]->m_oId.IsInit() && 
-							m_ooxEndNotes->m_arrEndnote[i]->m_oId->GetValue() == oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j])
-						{
-							if (m_ooxEndNotes->m_arrEndnote[i]->m_oType.IsInit())
-							{
-								if (m_ooxEndNotes->m_arrEndnote[i]->m_oType->GetValue() == SimpleTypes::ftnednSeparator)
-								{
-									nSeparatorId = oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j];
-									break;
-								}
-								else if (m_ooxEndNotes->m_arrEndnote[i]->m_oType->GetValue() == SimpleTypes::ftnednContinuationSeparator)
-								{
-									nContinueId = oParam.oRtf->m_oProperty.m_aSpecialEndnotes[j];
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-
-			for (size_t i =0 ; i < m_ooxEndNotes->m_arrEndnote.size() ; i++)
-			{
-				ParseOne(m_ooxEndNotes->m_arrEndnote[i], oParam, false, nSeparatorId, nContinueId);
-			}
-		}
-
-		if (m_ooxFootNotes)
-		{
-			if( oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size() > 0 )
-			{
-				for (size_t i = 0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
-				{
-					for (size_t j = 0; j < oParam.oRtf->m_oProperty.m_aSpecialFootnotes.size(); j++ )
-					{
-						if (m_ooxFootNotes->m_arrFootnote[i]->m_oId.IsInit() && 
-							m_ooxFootNotes->m_arrFootnote[i]->m_oId->GetValue() == oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j])
-						{
-							if (m_ooxFootNotes->m_arrFootnote[i]->m_oType.IsInit())
-							{
-								if (m_ooxFootNotes->m_arrFootnote[i]->m_oType->GetValue() == SimpleTypes::ftnednSeparator)
-								{
-									nSeparatorId = oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j];
-									break;
-								}
-								else if (m_ooxFootNotes->m_arrFootnote[i]->m_oType->GetValue() == SimpleTypes::ftnednContinuationSeparator)
-								{
-									nContinueId = oParam.oRtf->m_oProperty.m_aSpecialFootnotes[j];
-									break;
-								}
-							}
-						}
-					}
-				}
-			}
-			for (size_t i =0 ; i < m_ooxFootNotes->m_arrFootnote.size() ; i++)
-			{
-				ParseOne(m_ooxFootNotes->m_arrFootnote[i], oParam, true, nSeparatorId, nContinueId);
-			}
-		}
-		return true;
-	}
-	bool ParseOne(OOX::CFtnEdn* ooxFtnEdn, ReaderParameter & oParam, bool bFootnote, int nSeparatorId, int nContinueId)
-	{
-		if (ooxFtnEdn == NULL) return false;
-		if (ooxFtnEdn->m_oId.IsInit() == false) return false;
-
-		int nId = ooxFtnEdn->m_oId->GetValue();
-		OOXTextItemReader oTextItemReader;
-		
-        for (size_t i = 0; i < ooxFtnEdn->m_arrItems.size(); ++i)
-		{	
-			if( nSeparatorId == nId )
-			{
-				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
-				oTextItemReader.m_oTextItems = oNewTextItem;
-				
-				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
-				{
-					if( true == bFootnote )
-						oParam.oRtf->m_oFootnoteSep = oNewTextItem;
-					else
-						oParam.oRtf->m_oEndnoteSep = oNewTextItem;
-				}
-			}
-			else if( nContinueId == nId )
-			{
-				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
-				oTextItemReader.m_oTextItems = oNewTextItem;
-				
-				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
-				{
-					if( true == bFootnote )
-						oParam.oRtf->m_oFootnoteCon = oNewTextItem;
-					else
-						oParam.oRtf->m_oEndnoteCon = oNewTextItem;
-				}
-			}
-			else
-			{
-				TextItemContainerPtr oNewTextItem ( new TextItemContainer() );
-				oTextItemReader.m_oTextItems = oNewTextItem;
-				
-				if( true == oTextItemReader.Parse( ooxFtnEdn->m_arrItems[i], oParam ) )
-				{
-					if( true == bFootnote )
-						oParam.oReader->m_mapFootnotes[ nId] = oNewTextItem;
-					else
-						oParam.oReader->m_mapEndnotes[ nId] = oNewTextItem;
-				}
-			}
-		}
-		return true;
-	}
+	bool Parse( ReaderParameter oParam);
+	bool ParseOne(OOX::CFtnEdn* ooxFtnEdn, ReaderParameter & oParam, bool bFootnote, int nSeparatorId, int nContinueId);
 };

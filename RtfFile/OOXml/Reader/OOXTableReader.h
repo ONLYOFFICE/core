@@ -41,10 +41,12 @@ namespace OOX
 		class CTbl;
 	}
 }
+
 class OOXTableReader
 {
 private:
 	OOX::Logic::CTbl *m_ooxTable;
+
 public:
 	OOXTableReader(OOX::Logic::CTbl *ooxTable)
 	{

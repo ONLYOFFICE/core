@@ -39,10 +39,9 @@ class OOXHeaderReader
 {
 private:
 	ComplexTypes::Word::CHdrFtrRef* m_ref;
+
 public: 
-	OOXHeaderReader(ComplexTypes::Word::CHdrFtrRef* ref)
-	{
-		m_ref = ref;
-	}
+	OOXHeaderReader(ComplexTypes::Word::CHdrFtrRef* ref);
+
 	bool Parse(ReaderParameter oParam, std::wstring sRID, TextItemContainerPtr& oOutput, bool bHeader );
 };

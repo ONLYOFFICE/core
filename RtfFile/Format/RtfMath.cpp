@@ -33,6 +33,38 @@
 
 #include "../../OOXML/DocxFormat/WritingElement.h"
 
+RtfMath::RtfMath( )
+{
+	m_bHeader = true;
+	m_bIsVal = m_bIsBool = false;
+}
+RtfMath::RtfMath(const RtfMath& oMath )
+{
+	(*this) = oMath;
+}
+RtfMath& RtfMath::operator=(const RtfMath& oMath )
+{
+	m_bHeader	= oMath.m_bHeader;
+	m_bIsVal	= oMath.m_bIsVal;
+	m_bIsBool	= oMath.m_bIsBool;
+
+	m_sRtfName	= oMath.m_sRtfName;
+	m_sOOXName	= oMath.m_sOOXName;
+
+	m_aArray.clear();
+	m_aArray	= oMath.m_aArray;
+
+	return (*this);
+}
+bool RtfMath::IsEmpty()
+{
+	return m_sRtfName.empty();
+}
+bool RtfMath::IsValid()
+{
+	return (false == m_sRtfName.empty());
+}
+
 bool RtfMath::IsRtfControlPropertyBool( std::string sControl )
 {
     const char* mc_aRtfControlWords[]		= { "maln", "malnScr", "mdegHide", "mdiff", "mdispDef",
@@ -65,7 +97,6 @@ bool RtfMath::IsRtfControlProperty( std::string sControl )
 	}
 	return false;
 }
-
 bool RtfMath::IsRtfControlWord( std::string sControl )
 {
     const char* mc_aRtfControlWords[]		= { "moMath", "moMathPara", "moMathParaPr", "maccPr", "macc",
@@ -86,7 +117,6 @@ bool RtfMath::IsRtfControlWord( std::string sControl )
 	}
 	return false;
 }
-
 std::wstring RtfMath::RenderToRtf(RenderParameter oRenderParameter)
 {
     if (m_sRtfName.empty())
@@ -130,7 +160,6 @@ std::wstring RtfMath::RenderToRtf(RenderParameter oRenderParameter)
         sResult += L"}";// m_sRtfName
 	return sResult;
 }
-
 std::wstring RtfMath::RenderToOOX(RenderParameter oRenderParameter)
 {
     if (m_sOOXName.empty()) return L"";
@@ -327,4 +356,11 @@ void RtfMath::SetOOXType(int type)
 			break;
 		}
 	}
+}
+void RtfMath::SetRtfName(std::string sName)
+{
+	m_sRtfName = sName;
+
+	m_sOOXName = sName;
+	m_sOOXName.insert(m_sOOXName.begin() + 1, L':');
 }

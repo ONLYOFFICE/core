@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,60 +29,52 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#include "RtfProperty.h"
 
-struct OOXColorTableItem
+#include "UniversalConverterUtils.h"
+#include "../../OOXML/SystemUtility/File.h"
+
+int Utils::CopyDirOrFile(std::wstring sSource, std::wstring sDestination)
 {
-	ThemeColor oTheme;
-	RtfColor oColor;
+	//удаляем sDestination, чтобы там не было.
+	if( 0 != RemoveDirOrFile( sDestination ) )
+		return 1;
+
+	//копируем
+	CDirectory::CopyFile(sSource, sDestination);
+
+	return 0;
 }
-class OOXColorTable
+// return "" если не удалось создать
+int Utils::RemoveDirOrFile(std::wstring sPath)
 {
-private: 
-	std::vector<OOXColorTableItem> m_aTable;
-public: 
-	OOXColorTable()
+	CDirectory::DeleteFile(sPath);
+	return 0;
+}
+std::wstring Utils::CreateTempFile( )
+{
+	return CreateTempFile(NSDirectory::GetTempPath());
+}
+std::wstring Utils::CreateTempFile( std::wstring sDir )
+{
+	if( !sDir.empty() )
 	{
+		return NSDirectory::CreateTempFileWithUniqueName(sDir, L"img");
 	}
-
-	void AddItem( RtfColor& oColor,ThemeColor& oTheme  )
+	else
+		return CreateTempFile();
+}
+// return "" если не удалось создать
+std::wstring Utils::CreateTempDir( std::wstring sDir )//создаем файл в папке sDir
+{
+	if( !sDir.empty() )
 	{
-		OOXColorTableItem oItem;
-		oItem.oColor = oColor;
-		oItem.oTheme = oTheme;
-		m_aTable.push_back( oItem );
+		return NSDirectory::CreateDirectoryWithUniqueName(sDir);
 	}
-	bool GetItem( int nIndex, RtfColor& oOutput )
-	{
-		if( nIndex >= 0 && nIndex< m_aTable.size())
-		{
-			oOutput =  m_aTable[i].oColor;
-			retrun true;
-		}
-		return false;
-	}
-	bool GetItem( ThemeColor eTheme, RtfColor& oOutput )
-	{
-		for (size_t i = 0 ; i < m_aTable.size(); i++ )
-			if( m_aTable[i].oTheme == eTheme )
-			{
-				oOutput = m_aTable[i].oColor;
-				return true;
-			}
-		return false;
-	}
-	bool GetItem( std::wstring sTheme, RtfColor& oOutput )
-	{
-		ThemeColor oThemeColor;
-		if( true == RtfColor.GetThemeByString("",oThemeColor) )
-		{
-			return GetItem(sTheme,oOutput);
-		}
-		return false;
-	}
-	int GetCount()
-	{
-		return m_aTable.size();
-	}
-};
+	else
+		return CreateTempDir();
+}
+std::wstring Utils::CreateTempDir()
+{
+	std::wstring tmpDirectory = NSDirectory::GetTempPath();
+	return NSDirectory::CreateDirectoryWithUniqueName(tmpDirectory);
+}

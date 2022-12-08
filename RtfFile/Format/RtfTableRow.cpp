@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,38 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Common/FileWriter.h"
+#include "RtfTableRow.h"
 
-#include "UniversalConverterUtils.h"
-
-class RtfDocument;
-
-class RtfWriter
+int RtfTableRow::GetType()
 {
-public:	
-    std::wstring                m_sTempFolder;
-    std::vector<std::wstring>   m_aTempFiles;
-    std::vector<std::wstring>   m_aTempFilesSectPr;
+	return TYPE_RTF_TABLE_ROW;
+}
+RtfTableRow::RtfTableRow()
+{
+}
+std::wstring RtfTableRow::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	sResult += L"\n";
+	if( RENDER_TO_RTF_PARAM_NESTED == oRenderParameter.nType )
+	{
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
+			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
+		}
+		sResult += L"{\\*\\nesttableprops";
+		sResult += m_oProperty.RenderToRtf( oRenderParameter );
+		sResult += L"\\nestrow}{\\nonesttables \\par}";
+	}
+	else
+	{
+		sResult += m_oProperty.RenderToRtf( oRenderParameter );
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
+			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
+		}
+		sResult += L"\\row";
+	}
+	return sResult;
+}
+std::wstring RtfTableRow::RenderToOOX(RenderParameter oRenderParameter)
+{
+	XmlUtils::CXmlWriter oXmlWriter;
+	oXmlWriter.WriteNodeBegin(L"w:tr",0);
 
-	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder );
-	~RtfWriter();
+	RenderParameter oNewParam = oRenderParameter;
+	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 
-	bool Save();
-	bool SaveByItemStart();
-	bool SaveByItem();
-	bool SaveByItemEnd();
-
-private: 
-	RtfDocument& m_oDocument;
-    std::wstring m_sFilename;
-
-	bool m_bFirst;
-	int GetCount();
-	NFileWriter::CBufferedFileWriter* m_oCurTempFileWriter;
-	NFileWriter::CBufferedFileWriter* m_oCurTempFileSectWriter;
-
-    std::wstring CreateRtfStart();
-    std::wstring CreateRtfEnd( );
-};
+	std::wstring sRowProp = m_oProperty.RenderToOOX(oNewParam);
+	if( false == sRowProp.empty() )
+	{
+		std::wstring sXml = L"<w:trPr>" + sRowProp + L"</w:trPr>";
+		oXmlWriter.WriteString(sXml);
+	}
+	for (size_t i = 0 ; i < m_aArray.size(); i++)
+	{
+		oXmlWriter.WriteString( m_aArray[i]->RenderToOOX(oNewParam) );
+	}
+	oXmlWriter.WriteNodeEnd(L"w:tr");
+	return oXmlWriter.GetXmlString();
+}

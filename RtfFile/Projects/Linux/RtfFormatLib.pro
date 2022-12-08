@@ -29,6 +29,7 @@ core_release {
 SOURCES += \
     rtffile_source.cpp
 }
+
 core_debug {
 SOURCES += \
 	../../Format/RtfBookmark.cpp \
@@ -47,6 +48,15 @@ SOURCES += \
 	../../Format/RtfWriter.cpp \
 	../../Format/RtfMath.cpp \
 	../../Format/RtfTable.cpp \
+	../../Format/IdGenerator.cpp \
+	../../Format/Ole1FormatReader.cpp \
+	../../Format/RtfLex.cpp \
+	../../Format/RtfTableCell.cpp \
+	../../Format/RtfTableRow.cpp \
+	../../Format/RtfToken.cpp \
+	../../Format/UniversalConverterUtils.cpp \
+	../../Format/Utils.cpp \
+	\
 	../../OOXml/Reader/OOXMathReader.cpp \
 	../../OOXml/Reader/OOXDrawingGraphicReader.cpp \
 	../../OOXml/Reader/OOXHeaderReader.cpp \
@@ -56,6 +66,7 @@ SOURCES += \
 	../../OOXml/Reader/OOXTableReader.cpp \
 	../../OOXml/Reader/OOXDocumentReader.cpp \
 	../../OOXml/Reader/OOXTextItemReader.cpp \
+	\
 	../../OOXml/Writer/OOXDocumentWriter.cpp \
 	../../OOXml/Writer/OOXWriter.cpp
 }
@@ -69,7 +80,6 @@ HEADERS += \
 	../../Format/ConvertationManager.h \
 	../../Format/DestinationCommand.h \
 	../../Format/IdGenerator.h \
-	../../Format/OOXColorTable.h \
 	../../Format/RtfBookmark.h \
 	../../Format/RtfChar.h \
 	../../Format/RtfDefine.h \

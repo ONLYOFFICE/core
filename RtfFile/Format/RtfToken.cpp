@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,38 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Common/FileWriter.h"
+#include "RtfToken.h"
 
-#include "UniversalConverterUtils.h"
-
-class RtfDocument;
-
-class RtfWriter
+RtfToken::RtfToken()
 {
-public:	
-    std::wstring                m_sTempFolder;
-    std::vector<std::wstring>   m_aTempFiles;
-    std::vector<std::wstring>   m_aTempFilesSectPr;
-
-	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder );
-	~RtfWriter();
-
-	bool Save();
-	bool SaveByItemStart();
-	bool SaveByItem();
-	bool SaveByItemEnd();
-
-private: 
-	RtfDocument& m_oDocument;
-    std::wstring m_sFilename;
-
-	bool m_bFirst;
-	int GetCount();
-	NFileWriter::CBufferedFileWriter* m_oCurTempFileWriter;
-	NFileWriter::CBufferedFileWriter* m_oCurTempFileSectWriter;
-
-    std::wstring CreateRtfStart();
-    std::wstring CreateRtfEnd( );
-};
+	Type = None;
+	Key = "";
+	HasParameter = false;
+	Parameter = 0;
+}

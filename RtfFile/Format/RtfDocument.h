@@ -89,53 +89,15 @@ public:
 private: 
 	std::vector<int>	m_aShapeId;
 	int					m_nZIndexLast;
+
 public: 
-	int GetZIndex()
-	{
-		return m_nZIndexLast++;
-	}
-	void SetZIndex(int val)
-	{
-		if (m_nZIndexLast < val)
-			m_nZIndexLast = val;
-	}
+	int GetZIndex();
+	void SetZIndex(int val);
+
 	IdGenerator m_oIdGenerator;
-	void SetShapeId( int nShapeId )//todoo -> map
-	{
-		for (size_t i = 0; i < m_aShapeId.size(); i++ )
-		{
-			if( nShapeId == m_aShapeId[i] )
-				return;
-		}
-		m_aShapeId.push_back( nShapeId );
-	}
-	int GetShapeId(  int& nShapeId  )
-	{
-		if( PROP_DEF != nShapeId )
-			return nShapeId;
-		int nNewShapeId;
-		while( true )
-		{
-			bool bUnique = true;
-			nNewShapeId = m_oIdGenerator.Generate_ShapeId();
-			
-			for (size_t i = 0; i < m_aShapeId.size(); i++ )
-			{
-				if( nNewShapeId == m_aShapeId[i] )
-				{
-					bUnique = false;
-					break;
-				}
-			}
-			if( true == bUnique )
-			{
-				nShapeId = nNewShapeId;
-				m_aShapeId.push_back( nNewShapeId );
-				break;
-			}
-		}
-		return nShapeId;
-	}
+
+	void SetShapeId( int nShapeId );
+	int GetShapeId(  int& nShapeId  );
 	
 	RtfDocument();
 	virtual ~RtfDocument();

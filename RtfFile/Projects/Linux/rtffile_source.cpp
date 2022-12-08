@@ -46,6 +46,14 @@
 #include "../../Format/RtfWriter.cpp"
 #include "../../Format/RtfMath.cpp"
 #include "../../Format/RtfTable.cpp"
+#include "../../Format/IdGenerator.cpp"
+#include "../../Format/Ole1FormatReader.cpp"
+#include "../../Format/RtfLex.cpp"
+#include "../../Format/RtfTableCell.cpp"
+#include "../../Format/RtfTableRow.cpp"
+#include "../../Format/RtfToken.cpp"
+#include "../../Format/UniversalConverterUtils.cpp"
+#include "../../Format/Utils.cpp"
 
 #include "../../OOXml/Reader/OOXDocumentReader.cpp"
 #include "../../OOXml/Reader/OOXTextItemReader.cpp"
@@ -56,5 +64,6 @@
 #include "../../OOXml/Reader/OOXReader.cpp"
 #include "../../OOXml/Reader/OOXShapeReader.cpp"
 #include "../../OOXml/Reader/OOXTableReader.cpp"
+
 #include "../../OOXml/Writer/OOXDocumentWriter.cpp"
 #include "../../OOXml/Writer/OOXWriter.cpp"

@@ -33,6 +33,24 @@
 #include "RtfWriter.h"
 #include "RtfDocument.h"
 
+RtfWriter::RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder ):m_oDocument(oDocument)
+{
+	m_sFilename = sFilename;
+	m_sTempFolder = sFolder;
+	m_bFirst = true;
+	m_oCurTempFileWriter = NULL;
+	m_oCurTempFileSectWriter = NULL;
+}
+RtfWriter::~RtfWriter()
+{
+	RELEASEOBJECT( m_oCurTempFileWriter );
+	RELEASEOBJECT( m_oCurTempFileSectWriter );
+	for( int i = 0; i < (int)m_aTempFiles.size(); i++ )
+		Utils::RemoveDirOrFile( m_aTempFiles[i] );
+	for( int i = 0; i < (int)m_aTempFilesSectPr.size(); i++ )
+		Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
+	m_aTempFiles.clear();
+}
 bool RtfWriter::Save()
 {
 	int nItemsCount = GetCount();
@@ -340,7 +358,6 @@ std::wstring RtfWriter::CreateRtfStart()
 	sResult += L"\n\n";
 	return sResult;
 }
-
 std::wstring RtfWriter::CreateRtfEnd( )
 {
 	return L"\n}\n";

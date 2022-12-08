@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,38 +29,61 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../Common/FileWriter.h"
-
-#include "UniversalConverterUtils.h"
-
-class RtfDocument;
-
-class RtfWriter
+#include "RtfTableCell.h"
+	
+RtfTableCell::RtfTableCell()
 {
-public:	
-    std::wstring                m_sTempFolder;
-    std::vector<std::wstring>   m_aTempFiles;
-    std::vector<std::wstring>   m_aTempFilesSectPr;
+}
+int RtfTableCell::GetType( )
+{
+	return TYPE_RTF_TABLE_CELL;
+}
+std::wstring RtfTableCell::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring result;
 
-	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder );
-	~RtfWriter();
+	for (size_t i =0 ; i < m_aArray.size(); i++)
+	{
+		if( m_aArray[i]->GetType() == TYPE_RTF_PARAGRAPH )
+		{
+			result += m_aArray[i]->RenderToRtf( oRenderParameter );
 
-	bool Save();
-	bool SaveByItemStart();
-	bool SaveByItem();
-	bool SaveByItemEnd();
+			if( i != m_aArray.size() - 1 )
+				result += L"\\par";
+		}
+		else
+		{
+			RenderParameter oNewParameter = oRenderParameter;
+			oNewParameter.nType = RENDER_TO_RTF_PARAM_NESTED;
 
-private: 
-	RtfDocument& m_oDocument;
-    std::wstring m_sFilename;
+			result += m_aArray[i]->RenderToRtf( oNewParameter );
+		}
 
-	bool m_bFirst;
-	int GetCount();
-	NFileWriter::CBufferedFileWriter* m_oCurTempFileWriter;
-	NFileWriter::CBufferedFileWriter* m_oCurTempFileSectWriter;
 
-    std::wstring CreateRtfStart();
-    std::wstring CreateRtfEnd( );
-};
+	}
+	if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
+		result += L"\\cell";
+	else
+		result += L"\\nestcell{\\nonesttables  }"; //todo как бы вернуть
+	return result;
+}
+std::wstring RtfTableCell::RenderToOOX(RenderParameter oRenderParameter)
+{
+	std::wstring sResult = L"<w:tc>";
+
+	std::wstring sProp = m_oProperty.RenderToOOX( oRenderParameter );
+	if( !sProp.empty() )
+	{
+		sResult += L"<w:tcPr>";
+			sResult += sProp;
+		sResult += L"</w:tcPr>";
+	}
+
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		sResult += m_aArray[i]->RenderToOOX( oRenderParameter);
+	}
+	sResult += L"</w:tc>";
+	return sResult;
+}

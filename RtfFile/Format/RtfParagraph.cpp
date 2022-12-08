@@ -34,6 +34,22 @@
 
 #include "../OOXml/Writer/OOXWriter.h"
 
+bool RtfParagraph::IsValid()
+{
+	return m_IsValid;
+}
+int RtfParagraph::GetType( )
+{
+	return TYPE_RTF_PARAGRAPH;
+}
+RtfParagraph::RtfParagraph()
+{
+}
+void RtfParagraph::SetValid(bool val)
+{
+	m_IsValid = val;
+}
+
 int RtfParagraph::AddItem( IDocumentElementPtr piRend )
 {
 	m_IsValid = true;

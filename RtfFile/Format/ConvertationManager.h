@@ -47,16 +47,7 @@ public:
     std::wstring m_sTempFolder;
 	int m_nUserLCID;
 
-    RtfConvertationManager( )
-    {
-		m_nUserLCID = -1;
-
-        m_poOOXWriter = NULL;
-        m_poOOXReader = NULL;
-
-        m_poRtfWriter = NULL;
-        m_poRtfReader = NULL;
-    }
+	RtfConvertationManager();
 
     _UINT32 ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath);
 

@@ -35,6 +35,28 @@
 
 #include "../../Common/MS-LCID.h"
 
+RtfReader::ReaderState::ReaderState()
+{
+	m_bControlPresent = false;
+	m_nUnicodeClean = 1;
+	m_oCharProp.SetDefaultRtf();
+	m_oParagraphProp.SetDefaultRtf();
+	m_oRowProperty.SetDefaultRtf();
+	m_oCellProperty.SetDefaultRtf();
+	m_oCurOldList.SetDefault();
+}
+
+RtfReader::~RtfReader()
+{
+}
+long RtfReader::GetProgress()
+{
+	return (long)( g_cdMaxPercent * m_oLex.GetProgress());
+}
+void RtfReader::Stop()
+{
+	m_oLex.CloseSource();
+}
 RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocument(oDocument), m_sFilename(sFilename)
 {
 	m_oState = ReaderStatePtr(new ReaderState());
@@ -72,8 +94,81 @@ void RtfReader::PopState()
 	if( 0 != m_oState->m_pSaveState )
 		m_oState = m_oState->m_pSaveState;
 }
+
 //---------------------------------------------------------------------------------------------------------------------------------
-bool RtfAbstractReader::Parse(RtfDocument& oDocument, RtfReader& oReader)
+RtfAbstractReader::RtfAbstractReader()
+{
+	m_bCanStartNewReader = false;
+	m_bSkip = false;
+	m_nSkipChars = 0;
+	m_nCurGroups = 1;
+	m_oFileWriter = NULL;
+	m_bStopReader = false;
+
+	m_bUseGlobalCodepage = false;
+}
+void RtfAbstractReader::PushState(RtfReader& oReader)
+{
+	oReader.PushState();
+	m_nCurGroups++;
+	m_bCanStartNewReader = true;
+}
+void RtfAbstractReader::PopState(RtfDocument& oDocument, RtfReader& oReader)
+{
+	if( m_nCurGroups > 0 )
+		m_nCurGroups--;
+	else
+		;//ASSERT(false);
+	if( m_nCurGroups == 0 )
+	{
+		m_bStopReader = true;
+		ExitReader( oDocument, oReader );
+	}
+	oReader.PopState();
+	if( m_nCurGroups == 0 )
+		ExitReader2( oDocument, oReader );
+}
+bool RtfAbstractReader::StartSubReader( RtfAbstractReader& poNewReader, RtfDocument& oDocument, RtfReader& oReader  )
+{
+	if( true == m_bCanStartNewReader )
+	{
+		m_bCanStartNewReader = false;
+		m_nCurGroups--;
+
+		poNewReader.m_bSkip = m_bSkip;
+		return poNewReader.Parse(oDocument, oReader);
+	}
+	return false;
+}
+void RtfAbstractReader::Skip( RtfDocument& oDocument, RtfReader& oReader )
+{
+	int cGroup = 1;
+	while( cGroup >= 1 )
+	{
+		m_oTok = oReader.m_oLex.NextToken();
+		if(m_oTok.Type == RtfToken::GroupStart)
+			cGroup++;
+		else if(m_oTok.Type == RtfToken::GroupEnd)
+			cGroup--;
+		else if(m_oTok.Type == RtfToken::Eof)
+			break;
+	}
+	PopState( oDocument, oReader );
+}
+bool RtfAbstractReader::ExecuteCommand( RtfDocument& oDocument, RtfReader& oReader, std::string sKey, bool bHasPar, int nPar )
+{
+	return true;
+}
+void RtfAbstractReader::ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring oText )
+{
+}
+void RtfAbstractReader::ExitReader( RtfDocument& oDocument, RtfReader& oReader )
+{
+}
+void RtfAbstractReader::ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
+{
+}
+bool RtfAbstractReader::RtfAbstractReader::Parse(RtfDocument& oDocument, RtfReader& oReader)
 {
 	NFileWriter::CBufferedFileWriter* poOldWriter = oReader.m_oLex.m_oFileWriter;
 	oReader.m_oLex.m_oFileWriter = m_oFileWriter;

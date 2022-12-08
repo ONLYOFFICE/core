@@ -29,69 +29,15 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 #include "../../Format/RtfDocument.h"
 #include "../../Format/RtfProperty.h"
 
-
 class OOXLatentStyleReader
 {
-public: 
-	OOXLatentStyleReader()
-	{
-	}
-	bool Parse( ReaderParameter oParam )
-	{
-		XmlUtils::CXmlLiteReader oXmlReader;
-		if( TRUE ==  oXmlReader.OpenFromXmlNode(oParam.oNode) )
-		{
-			std::wstring nCount = oXmlReader.ReadNodeAttribute( L"w:count" );
-			if( !nCount.empty() )
-				oParam.oRtf->m_oLatentStyleTable.m_nCount = Strings::ToInteger( nCount );
-			std::wstring nLocked = oXmlReader.ReadNodeAttribute( L"w:defLockedState" );
-			if( !nLocked.empty() )
-				oParam.oRtf->m_oLatentStyleTable.m_nLocked= Strings::ToInteger( nLocked );
-			std::wstring nSemiHid = oXmlReader.ReadNodeAttribute( L"w:defSemiHidden" );
-			if( !nSemiHid.empty() )
-				oParam.oRtf->m_oLatentStyleTable.m_nSemiHidden= Strings::ToInteger( nSemiHid );
-			std::wstring nUNhidWU = oXmlReader.ReadNodeAttribute( L"w:defUnhideWhenUsed" );
-			if( !nUNhidWU.empty() )
-				oParam.oRtf->m_oLatentStyleTable.m_nUnHiddenWhenUse= Strings::ToInteger( nUNhidWU );
-			std::wstring nQFormat = oXmlReader.ReadNodeAttribute( L"w:defQFormat" );
-			if( !nQFormat.empty() )
-				oParam.oRtf->m_oLatentStyleTable.m_nQFormat= Strings::ToInteger( nQFormat );
-			std::wstring nUIPriority = oXmlReader.ReadNodeAttribute( L"w:defUIPriority" );
-			if( !nUIPriority.empty() )
-				oParam.oRtf->m_oLatentStyleTable.m_nPriority= Strings::ToInteger( nUIPriority );
+public:
+	OOXLatentStyleReader();
 
-			oXmlReader.ReadNodeList( L"w:lsdException" );
-			for (size_t i = 0; i < oXmlReader.GetLengthList(); i++ )
-			{
-				RtfStyleException oNewException;
-				oNewException.m_sName	= oXmlReader.ReadNodeAttribute( L"w:name", L"" );
-				std::wstring nPriority		= oXmlReader.ReadNodeAttribute( L"w:uiPriority");
-				
-				if( !nPriority.empty() )
-					oNewException.m_nPriority = Strings::ToInteger( nPriority );
-				std::wstring nHiddenWhenUse = oXmlReader.ReadNodeAttribute( L"w:unhideWhenUsed");
-				if( !nHiddenWhenUse.empty() )
-					oNewException.m_nHiddenWhenUse = Strings::ToInteger( nHiddenWhenUse );
-				std::wstring nQFormat = oXmlReader.ReadNodeAttribute( L"w:qFormat" );
-				if( !nQFormat.empty() )
-					oNewException.m_nQFormat = Strings::ToInteger( nQFormat );
-				std::wstring nLocked = oXmlReader.ReadNodeAttribute( L"w:locked" );
-				if( !nLocked.empty() )
-					oNewException.m_nLocked = Strings::ToInteger( nLocked );
-				std::wstring nSemiHidden = oXmlReader.ReadNodeAttribute( L"w:semiHidden");
-				if( !nSemiHidden.empty() )
-					oNewException.m_nSemiHidden = Strings::ToInteger( nSemiHidden );
-
-				if( true == oNewException.IsValid() )
-					oParam.oRtf->m_oLatentStyleTable.AddItem( oNewException );
-			}
-
-		}
-		return false;
-	}
-
+	bool Parse( ReaderParameter oParam );
 };

@@ -142,157 +142,20 @@ public:
 	int m_bSplitPageBrake;	// spltpgpar
 	int m_bHtmlAutoSpace;	// htmautsp	Use HTML paragraph auto spacing.
 
-	RtfDocumentProperty()
-	{
-		SetDefault();
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_DOCUMENT;
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-		m_bUseTabAlignment = 0;
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		m_eCodePage					= cp_ansi;
-		m_nTabWidth					= 720; //todo -1
-		m_nDeffFont					= PROP_DEF;
-		m_nDeffMathFont				= PROP_DEF;
-		m_bHypCaps					= PROP_DEF;
-		m_bAutoHyp					= PROP_DEF;
-		m_nMaxHypen					= PROP_DEF;
-		m_nHyphenationRight			= PROP_DEF;
-		m_nZoom						= 100;
-		m_nAnsiCodePage				= CP_ACP;
+	RtfDocumentProperty();
 
-		m_bDorderSurroundHeader		= PROP_DEF;
-		m_bDorderSurroundFotter		= PROP_DEF;
-		m_bAlignBordersAndEdges		= PROP_DEF;
+	int GetType();
+	bool IsValid();
 
-		m_bRtlGutter				= PROP_DEF;
-		m_bRtl						= PROP_DEF;
-		
-		m_nThemelang				= PROP_DEF;
-		m_nThemelangfe				= PROP_DEF;
-		m_nThemelangcs				= PROP_DEF;
-
-		m_nPaperWidth				= 12240;
-		m_nPaperHeight				= 15840;
-		m_nMarginLeft				= 1701;
-		m_nMarginRight				= 850;
-		m_nMarginTop				= 1134;
-		m_nMarginBottom				= 1134;
-		m_bFacingPage				= PROP_DEF;
-		m_nGutterWidth				= 0;
-		m_nGutterWidthOutside		= PROP_DEF;
-		m_bGutterAtTop				= PROP_DEF;
-		m_bSwitchMargins			= PROP_DEF;
-		m_bLandScape				= PROP_DEF;
-		m_nBeginningPageNumber		= PROP_DEF;
-		m_nDisplayBackground		= PROP_DEF;
-		m_bUseTabAlignment			= PROP_DEF;
-
-		m_nDrawingGridHorizontalSpacing		= PROP_DEF;
-		m_nDrawingGridVerticalSpacing		= PROP_DEF;
-		m_nDrawingGridHorizontalOrigin		= PROP_DEF;
-		m_nDrawingGridVerticalOrigin		= PROP_DEF;
-		m_nDisplayHorizontalDrawingGridEvery= PROP_DEF;		//def = 3
-		m_nDisplayVerticalDrawingGridEvery	= PROP_DEF;		//def = 0
-
-		m_aSpecialFootnotes.clear();
-		m_nFootnoteNumberingFormat	= PROP_DEF;
-		m_nFootnoteStart			= PROP_DEF;
-		m_eFootnoteRestart			= fr_None;
-		m_eFootnotePlacement		= fp_None;
-
-		m_aSpecialEndnotes.clear();
-		m_nEndnoteNumberingFormat	= PROP_DEF;
-		m_nEndnoteStart				= PROP_DEF;
-		m_eEndnoteRestart			= er_None;
-		m_eEndnotePlacement			= ep_None;
-
-		m_bSplitPageBrake			= 1;
-		m_bHtmlAutoSpace			= PROP_DEF;
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
+
 private: 
-    std::wstring GetRtfFormat( int nFormat, bool bFootnote )
-	{
-		if( PROP_DEF == nFormat )
-		{
-			if( true == bFootnote )	return L"ftnnar";
-			else					return L"aftnnar";
-		}
-		if( true == bFootnote )
-		{
-			 switch( nFormat )
-			 {
-			 case 0:	return L"ftnnar"; 
-			 case 4:	return L"ftnnalc";
-			 case 3:	return L"ftnnauc";
-			 case 2:	return L"ftnnrlc";
-			 case 1:	return L"ftnnruc";
-			 case 70:	return L"ftnnchi";
-			 case 25:	return L"ftnnchi";
-			 case 18:	return L"ftnncnum";
-			 case 10:	return L"ftnndbnum";
-			 case 11:	return L"ftnndbnumd";
-			 case 16:	return L"ftnndbnumt";
-			 case 17:	return L"ftnndbnumk";
-			 case 20:	return L"ftnndbar";
-			 case 24:	return L"ftnnganada";
-			 case 26:	return L"ftnngbnum";
-			 case 27:	return L"ftnngbnumd";
-			 case 28:	return L"ftnngbnuml";
-			 case 29:	return L"ftnngbnumk";
-			 case 30:	return L"ftnnzodiac";
-			 case 31:	return L"ftnnzodiacd";
-			 case 32:	return L"ftnnzodiacl";
-			 }
-		}
-		else
-		{
-			switch( nFormat )
-			{
-				case 0:		return L"aftnnar"; 
-				case 4:		return L"aftnnalc";
-				case 3:		return L"aftnnauc";
-				case 2:		return L"aftnnrlc";
-				case 1:		return L"aftnnruc";
-				case 70:	 return L"aftnnchi";
-				case 25:	return L"aftnnchi";
-				case 18:	return L"aftnncnum";
-				case 10:	return L"aftnndbnum";
-				case 11:	return L"aftnndbnumd";
-				case 16:	return L"aftnndbnumt";
-				case 17:	return L"aftnndbnumk";
-				case 20:	return L"aftnndbar";
-				case 24:	return L"aftnnganada";
-				case 26:	return L"aftnngbnum";
-				case 27:	return L"aftnngbnumd";
-				case 28:	return L"aftnngbnuml";
-				case 29:	return L"aftnngbnumk";
-				case 30:	return L"aftnnzodiac";
-				case 31:	return L"aftnnzodiacd";
-				case 32:	return L"aftnnzodiacl";
-			}
-		}
-		if( true == bFootnote )	return L"ftnnar";
-		else					return L"aftnnar";
-	}
+	std::wstring GetRtfFormat( int nFormat, bool bFootnote );
 };
 
 class RtfSectionProperty;
@@ -332,26 +195,15 @@ public:
 		{
 			int m_nColumnSpaceToRightOfCol	= PROP_DEF;		// colsrN 	Space to right of column in twips; used to specify formatting for variable-width columns.
 			int m_nColumnWidth				= PROP_DEF;		// colwN 	Width of column in twips; used to override the default constant width setting for variable-width columns.
-
 		};
+
 		std::vector< CollumnVar > m_aCollumnProperty;
-		ColumnProperty()
-		{
-		}
-		ColumnProperty( const ColumnProperty& oColumnProperty )
-		{
-			(*this) = oColumnProperty;
-		}
-		ColumnProperty& operator=( const ColumnProperty& oColumnProperty )
-		{
-			m_aCollumnProperty.clear();
-			m_aCollumnProperty = oColumnProperty.m_aCollumnProperty ;
-			return (*this);
-		}
-		void SetDefault()
-		{
-			m_aCollumnProperty.clear();
-		}
+
+		ColumnProperty();
+		ColumnProperty( const ColumnProperty& oColumnProperty );
+
+		ColumnProperty& operator=( const ColumnProperty& oColumnProperty );
+		void SetDefault();
 	};
 
 	ColumnProperty m_oCollumnProperty;
@@ -520,133 +372,17 @@ public:
 
 	RtfSectionPropertyPtr m_pOldSectionProp;
 
-	RtfSectionProperty()
-	{
-		SetDefault();
+	RtfSectionProperty();
 
-		//footer - header
-		m_oHeaderLeft	= TextItemContainerPtr();
-		m_oHeaderFirst	= TextItemContainerPtr();
-		m_oHeaderRight	= TextItemContainerPtr();
-		m_oFooterLeft	= TextItemContainerPtr();
-		m_oFooterFirst	= TextItemContainerPtr();
-		m_oFooterRight	= TextItemContainerPtr();
-	}
+	int GetType();
 
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SECTION;
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
-	void SetDefaultRtf()
-	{
-		SetDefault();
-		
-		DEFAULT_PROPERTY_DEF( m_eSectionBreak, sb_sbkpage )
-		DEFAULT_PROPERTY_DEF( m_nColumnSpace, 720);
-	}
-
-	void SetDefaultOOX()
-	{
-		SetDefault();
-
-		m_nPageWidth			= 11906;
-		m_nPageHeight			= 16838;
-
-		m_nMarginLeft			= 210;
-		m_nMarginRight			= 215;
-		m_nMarginTop			= 204;
-		m_nMarginBottom			= 204;
-
-		m_nHeaderTop			= 709;
-		m_nFooterBottom			= 709;
-		m_nGutterMarginWidth	= 0;
-
-		m_nColumnSpace			= 708;
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY	( m_bBidi )
-		DEFAULT_PROPERTY	( m_nPaperSourceFirst )
-		DEFAULT_PROPERTY	( m_nPaperSourceOther )
-		DEFAULT_PROPERTY	( m_bRtlGutter )
-		DEFAULT_PROPERTY	( m_bEndnotes )
-		DEFAULT_PROPERTY	( m_nStyle )
-		DEFAULT_PROPERTY_DEF( m_eSectionBreak, sb_none )
-
-		//Columns
-		m_nColumnNumber = 1;
-		DEFAULT_PROPERTY	( m_nColumnSpace )
-		DEFAULT_PROPERTY	( m_bColumnLineBetween )
-
-		//Footnotes and Endnotes
-		DEFAULT_PROPERTY_DEF( m_eFootnotesJust,		fj_none )
-		DEFAULT_PROPERTY	( m_nFootnotesStart )
-		DEFAULT_PROPERTY_DEF( m_eFootnotesRestart,	fr_none )
-		DEFAULT_PROPERTY_DEF( m_eFootnotesFormat,	ff_none )
-		DEFAULT_PROPERTY	( m_nEndnotesStart )
-		DEFAULT_PROPERTY_DEF( m_eEndnotesRestart,	er_none )
-		DEFAULT_PROPERTY_DEF( m_eEndnotesFormat,	ef_none )
-
-		//Line Numbering
-		DEFAULT_PROPERTY	( m_nLineModulus )
-		DEFAULT_PROPERTY	( m_nLineX )
-		DEFAULT_PROPERTY	( m_nLineStart )
-		DEFAULT_PROPERTY_DEF( m_eLineNumberRestart, lnr_none )
-
-		//Page Information
-		DEFAULT_PROPERTY	( m_nPageWidth )
-		DEFAULT_PROPERTY	( m_nPageHeight )
-		DEFAULT_PROPERTY	( m_nMarginLeft )
-		DEFAULT_PROPERTY	( m_nMarginRight )
-		DEFAULT_PROPERTY	( m_nMarginTop )
-		DEFAULT_PROPERTY	( m_nMarginBottom )
-		DEFAULT_PROPERTY	( m_nGutterMarginWidth )
-		DEFAULT_PROPERTY	( m_bSwitchMargin )
-		DEFAULT_PROPERTY	( m_bLandscapeFormat )
-		DEFAULT_PROPERTY	( m_bTitlePage )
-		DEFAULT_PROPERTY_DEF( m_nHeaderTop, 720 )
-		DEFAULT_PROPERTY_DEF( m_nFooterBottom, 720 )
-
-		//Page Numbers
-		DEFAULT_PROPERTY	( m_nPageNumberStart )
-		DEFAULT_PROPERTY	( m_bPageNumberContinuos )
-		DEFAULT_PROPERTY	( m_bPageNumberRestart )
-		DEFAULT_PROPERTY	( m_nPageNumberX )
-		DEFAULT_PROPERTY	( m_nPageNumberY )
-		DEFAULT_PROPERTY_DEF( m_ePageNumberFormat, pnf_none )
-
-		//Vertical Alignment
-		DEFAULT_PROPERTY_DEF( m_eVerticalAlignment, va_none )
-
-		//Text Flow
-		DEFAULT_PROPERTY	( m_nTextFollow )
-
-		//Page Borders
-		m_oBorderLeft.SetDefault();
-		m_oBorderTop.SetDefault();
-		m_oBorderRight.SetDefault();
-		m_oBorderBottom.SetDefault();
-
-		DEFAULT_PROPERTY	( m_nBorderArt )
-		DEFAULT_PROPERTY	( m_nBorderMeasure )
-		DEFAULT_PROPERTY	( m_nBorderAlign )
-
-		//footer - header надо обнулять вручную
-		//m_oHeaderLeft = TextItemContainerPtr();
-		//m_oHeaderFirst = TextItemContainerPtr();
-		//m_oHeaderRight = TextItemContainerPtr();
-		//m_oFooterLeft = TextItemContainerPtr();
-		//m_oFooterFirst = TextItemContainerPtr();
-		//m_oFooterRight = TextItemContainerPtr();
-
-		DEFAULT_PROPERTY( m_nSrAuth)
-		DEFAULT_PROPERTY( m_nSrDate)
-
-		m_pOldSectionProp = RtfSectionPropertyPtr();
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
+
 private: 
     std::wstring SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader);
 };
@@ -660,38 +396,10 @@ public:
 
 	bool m_bFinalize;
 
-	RtfSection()
-	{
-		m_bFinalize = false;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_SECTION;
-	}
+	RtfSection();
+	int GetType();
 
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult = m_oProperty.RenderToRtf(  oRenderParameter );
-
-		if( RENDER_TO_RTF_PARAM_NO_SECT != oRenderParameter.nType )
-			sResult += L"\\sectd";
-
-		for( size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			sResult += m_aArray[i]->RenderToRtf( oRenderParameter );
-		}
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		if (!m_bFinalize) return L"";
-		
-		m_bFinalize = false; // тут .. чтобы не повторилось при конвертации колонтитулов
-
-		RenderParameter oNewParam = oRenderParameter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		
-		return m_oProperty.RenderToOOX(oNewParam);
-	}
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfSection> RtfSectionPtr;

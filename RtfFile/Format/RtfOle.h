@@ -51,42 +51,19 @@ public:
 	std::pair<boost::shared_array<unsigned char>, size_t> m_oOle1Data;
 
 	RtfCharProperty	m_oCharProperty; // тут могут быть track changes ....
-	RtfOle()
-	{
-		SetDefault();
-	}
-	~RtfOle()
-	{
-		SetDefault();
-	}
-	int GetType( )
-	{
-		return TYPE_RTF_OLE;
-	}
-	bool IsValid()
-	{
-        return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && L"" != m_sOleFilename;
-                /*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
-	}
+
+	RtfOle();
+	~RtfOle();
+
+	int GetType();
+	bool IsValid();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 
-    void SetFilename( std::wstring sFilename )
-	{
-		m_sOleFilename = sFilename;
-	}
-	void SetDefault()
-	{
-		m_eOleType	 = ot_none;
-		m_nShapeId	= PROP_DEF;
-		m_nWidth	= PROP_DEF;
-		m_nHeight	= PROP_DEF;
-		
-		Utils::RemoveDirOrFile( m_sOleFilename );
-		m_sOleFilename = L"";
+	void SetFilename( std::wstring sFilename );
+	void SetDefault();
 
-		m_oCharProperty.SetDefault();
-	}
 private: 
     std::wstring	m_sOleFilename;
 

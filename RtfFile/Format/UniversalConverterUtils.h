@@ -38,50 +38,16 @@
 class Utils
 {
 public:	
-    static int CopyDirOrFile(std::wstring sSource, std::wstring sDestination)
-	{
-		//удаляем sDestination, чтобы там не было.
-		if( 0 != RemoveDirOrFile( sDestination ) )
-			return 1;
+	static int CopyDirOrFile(std::wstring sSource, std::wstring sDestination);
 
-		//копируем
-        CDirectory::CopyFile(sSource, sDestination);
-
-		return 0;
-	}
-// return "" если не удалось создать
+	// return "" если не удалось создать
  
-    static int RemoveDirOrFile(std::wstring sPath)
-	{
-		CDirectory::DeleteFile(sPath);
-		return 0;
-	}
-    static std::wstring CreateTempFile( )
-	{
-        return CreateTempFile(NSDirectory::GetTempPath());
-	}
-    static std::wstring CreateTempFile( std::wstring sDir )
-	{
-        if( !sDir.empty() )
-		{
-            return NSDirectory::CreateTempFileWithUniqueName(sDir, L"img");
-		}
-		else
-			return CreateTempFile();
-	}
-// return "" если не удалось создать
-    static std::wstring CreateTempDir( std::wstring sDir )//создаем файл в папке sDir
-	{
-        if( !sDir.empty() )
-        {
-            return NSDirectory::CreateDirectoryWithUniqueName(sDir);
-		}
-		else
-			return CreateTempDir();
-	}
-    static std::wstring CreateTempDir()
-	{
-        std::wstring tmpDirectory = NSDirectory::GetTempPath();
-        return NSDirectory::CreateDirectoryWithUniqueName(tmpDirectory);
-	}
+	static int RemoveDirOrFile(std::wstring sPath);
+	static std::wstring CreateTempFile( );
+	static std::wstring CreateTempFile( std::wstring sDir );
+
+	// return "" если не удалось создать
+
+	static std::wstring CreateTempDir( std::wstring sDir ); //создаем файл в папке sDir
+	static std::wstring CreateTempDir();
 };

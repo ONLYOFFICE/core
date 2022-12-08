@@ -31,44 +31,16 @@
  */
 #pragma once
 
+#include <string>
+#include <vector>
 
 class OOXContentTypesWriter
 {
 public:
-	void AddWriter()
-	{
-	}
-    void AddContent( std::wstring sType, std::wstring sTarget )
-	{
-		for (size_t i = 0 ;i < (int)m_aTargets.size(); i++ )
-			if( sTarget == m_aTargets[i] )
-				return;
-		m_aTargets.push_back( sTarget );
-		m_aTypes.push_back( sType );
-	}
-    void AddExtension( std::wstring sType, std::wstring sTarget )
-	{
-		for (size_t i = 0 ;i < (int)m_aExtensions.size(); i++ )
-			if( sTarget == m_aExtensions[i] )
-				return;
-		m_aExtensions.push_back( sTarget );
-		m_aExtTypes.push_back( sType );
-	}
-    bool Save(std::wstring sFolder)
-	{
-		NSFile::CFileBinary file;
-
-        if (false == file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml"))) return false;
-
-         std::wstring sXml = CreateXml();
-
-         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
-
-		 file.WriteFile((const void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
-		 
-		 file.CloseFile();
-		 return true;
-	}
+	void AddWriter();
+	void AddContent( std::wstring sType, std::wstring sTarget );
+	void AddExtension( std::wstring sType, std::wstring sTarget );
+	bool Save(std::wstring sFolder);
 
 private: 
     std::vector< std::wstring > m_aTargets;
@@ -77,34 +49,5 @@ private:
     std::vector< std::wstring > m_aExtensions;
     std::vector< std::wstring > m_aExtTypes;
 
-    std::wstring CreateXml()
-	{
-        std::wstring sResult;
-        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
-
-		sResult += _T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
-
-		sResult += _T("<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
-		sResult += _T("<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
-
-		for (size_t i = 0; i < m_aExtensions.size(); i++ )
-		{
-            sResult += _T("<Default Extension=\"");
-			sResult += m_aExtensions[i];
-			sResult += _T("\" ContentType=\"");
-			sResult += m_aExtTypes[i];
-			sResult += _T("\"/>");
-		}
-
-		for (size_t i = 0; i < m_aTargets.size(); i++ )
-		{
-            sResult += _T("<Override PartName=\"");
-			sResult += m_aTargets[i];
-			sResult += _T("\" ContentType=\"");
-			sResult += m_aTypes[i];
-			sResult += _T("\"/>");
-		}
-		sResult += _T("</Types>");
-		return sResult;
-	}
+	std::wstring CreateXml();
 };

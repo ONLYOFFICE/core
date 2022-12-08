@@ -39,34 +39,19 @@ class RtfDocument;
 
 class RtfWriter
 {
-public:
-	
+public:	
     std::wstring                m_sTempFolder;
     std::vector<std::wstring>   m_aTempFiles;
     std::vector<std::wstring>   m_aTempFilesSectPr;
 
-	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder ):m_oDocument(oDocument)
-	{
-		m_sFilename = sFilename;
-		m_sTempFolder = sFolder;
-		m_bFirst = true;
-		m_oCurTempFileWriter = NULL;
-		m_oCurTempFileSectWriter = NULL;
-	}
-	~RtfWriter()
-	{
-		RELEASEOBJECT( m_oCurTempFileWriter );
-		RELEASEOBJECT( m_oCurTempFileSectWriter );
-		for( int i = 0; i < (int)m_aTempFiles.size(); i++ )
-			Utils::RemoveDirOrFile( m_aTempFiles[i] );
-		for( int i = 0; i < (int)m_aTempFilesSectPr.size(); i++ )
-			Utils::RemoveDirOrFile( m_aTempFilesSectPr[i] );
-		m_aTempFiles.clear();
-	}
+	RtfWriter( RtfDocument& oDocument , std::wstring sFilename, std::wstring sFolder );
+	~RtfWriter();
+
 	bool Save();
 	bool SaveByItemStart();
 	bool SaveByItem();
 	bool SaveByItemEnd();
+
 private: 
 	RtfDocument& m_oDocument;
     std::wstring m_sFilename;

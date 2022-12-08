@@ -39,83 +39,48 @@ public:
 	int				m_bLock;
 	RtfCharProperty m_oCharProperty;
 
-	OOXFieldBegin()
-	{
-		SetDefault();
-	}
-	int GetType()
-	{
-		return TYPE_OOX_FIELD;
-	}
-	void SetDefault()
-	{
-		m_bDirty	= PROP_DEF;
-		m_bLock		= PROP_DEF;
-		
-		m_oCharProperty.SetDefault();
-	}
+	OOXFieldBegin();
+
+	int GetType();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class OOXFieldInsertText : public IDocumentElement
 {
 public: 
 	RtfCharPtr m_oText;
 	
-	int GetType()
-	{
-		return TYPE_OOX_FIELD;
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-		if( NULL != m_oText )
-			return m_oText->RenderToRtf( oRenderParameter );
-		else
-			return L"";
-	}
+	int GetType();
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class OOXFieldSeparate : public IDocumentElement
 {
 public:
-	int GetType()
-	{
-		return TYPE_OOX_FIELD;
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		return L"}{\\fldrslt";
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return L"<w:fldChar w:fldCharType=\"separate\"/>";
-	}
+	int GetType();
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class OOXFieldEnd : public IDocumentElement
 {
 public: 
-	int GetType()
-	{
-		return TYPE_OOX_FIELD;
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		return L"}}";
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return L"<w:fldChar w:fldCharType=\"end\"/>";
-	}
+	int GetType();
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfFormField : public IDocumentElement
 {
 public:
-	RtfFormField(){	}
+	RtfFormField();
 
 	int type = PROP_DEF;
 	int ownhelp = PROP_DEF;
@@ -140,40 +105,21 @@ public:
 	std::vector<std::wstring> list;
 	std::wstring datafield;
 
-	int GetType()
-	{
-		return TYPE_OOX_FORMFIELD;
-	}
-	std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-		return L"";
-	}
-	std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return L"";
-	}
+	int GetType();
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfFormField>	RtfFormFieldPtr;
 
 class RtfFieldInst : public IDocumentElement
 {
 public:
-	RtfFieldInst() 
-	{
-		SetDefault();
-	} 
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		m_pTextItems = TextItemContainerPtr( new TextItemContainer() );
-	}
+	RtfFieldInst();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
@@ -207,41 +153,14 @@ public:
 	bool					m_bTextOnly;
 	RtfCharProperty			m_oCharProperty;
 
-	RtfField()
-	{
-		SetDefault();
-	}
+	RtfField();
 
-	int GetType()
-	{
-		return TYPE_RTF_FIELD;
-	}
+	int GetType();
+	bool IsValid();
 
-	bool IsValid()
-	{
-		return true;
-		//return false == m_oInsert.IsValid() && false == m_oResult.IsValid(); 
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		m_eMode					= fm_none;
-		m_bReferenceToEndnote	= false;
-		m_bTextOnly				= false;
-		m_sData					= L"";
-
-		m_pResult				= RtfFieldInstPtr(new RtfFieldInst());
-		m_pInsert				= RtfFieldInstPtr(new RtfFieldInst());
-		
-		m_oCharProperty.SetDefault();
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);

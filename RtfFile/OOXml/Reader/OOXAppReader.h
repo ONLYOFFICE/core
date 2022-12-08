@@ -33,44 +33,15 @@
 
 #include "../../Format/RtfDocument.h"
 #include "OOXReader.h"
+#include "OOXReaderBasic.h"
 
 class OOXAppReader
 {
 private: 
 	OOX::CApp *m_ooxApp;
-public: 
-	OOXAppReader(OOX::CApp *ooxApp)
-	{
-		m_ooxApp = ooxApp;
-	}
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxApp == NULL) return false;
 
-		if(m_ooxApp->m_nTotalTime.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_nEndingTime = m_ooxApp->m_nTotalTime.get();
-		}
-		if(m_ooxApp->m_nPages.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_nNumberOfPages = m_ooxApp->m_nPages.get();
-		}
-		if(m_ooxApp->m_nWords.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_nNumberOfWords = m_ooxApp->m_nWords.get();
-		}
-		if(m_ooxApp->m_nCharacters.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_nNumberOfCharactersWithoutSpace = m_ooxApp->m_nCharacters.get();
-		}
-		if(m_ooxApp->m_nCharactersWithSpaces.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_nNumberOfCharactersWithSpace = m_ooxApp->m_nCharactersWithSpaces.get();
-		}
-		if (m_ooxApp->m_sApplication.IsInit())
-		{
-			oParam.oRtf->m_oInformation.m_sApplication = m_ooxApp->m_sApplication.get();
-		}
-		return true;
-	}
+public: 
+	OOXAppReader(OOX::CApp *ooxApp);
+
+	bool Parse( ReaderParameter oParam );
 };

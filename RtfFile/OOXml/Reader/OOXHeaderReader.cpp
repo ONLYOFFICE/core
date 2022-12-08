@@ -33,6 +33,10 @@
 #include "OOXTextItemReader.h"
 #include "OOXRelsReader.h"
 
+OOXHeaderReader::OOXHeaderReader(ComplexTypes::Word::CHdrFtrRef* ref)
+{
+	m_ref = ref;
+}
 bool OOXHeaderReader::Parse( ReaderParameter oParam, std::wstring sRID, TextItemContainerPtr& oOutput, bool bHeader )
 {
 	if (m_ref == NULL) return false;

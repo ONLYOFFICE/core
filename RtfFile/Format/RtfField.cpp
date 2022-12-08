@@ -36,6 +36,21 @@
 #include "../OOXml/Writer/OOXWriter.h"
 #include "../OOXml/Writer/OOXRelsWriter.h"
 
+OOXFieldBegin::OOXFieldBegin()
+{
+	SetDefault();
+}
+int OOXFieldBegin::GetType()
+{
+	return TYPE_OOX_FIELD;
+}
+void OOXFieldBegin::SetDefault()
+{
+	m_bDirty	= PROP_DEF;
+	m_bLock		= PROP_DEF;
+
+	m_oCharProperty.SetDefault();
+}
 std::wstring OOXFieldBegin::RenderToRtf(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -47,7 +62,6 @@ std::wstring OOXFieldBegin::RenderToRtf(RenderParameter oRenderParameter)
 	sResult +=  m_oCharProperty.RenderToRtf(oRenderParameter);
 	return sResult;
 }
-
 std::wstring OOXFieldBegin::RenderToOOX(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
@@ -70,7 +84,17 @@ std::wstring OOXFieldBegin::RenderToOOX(RenderParameter oRenderParameter)
 	return sResult;
 }
 
-
+int OOXFieldInsertText::GetType()
+{
+	return TYPE_OOX_FIELD;
+}
+std::wstring OOXFieldInsertText::RenderToRtf(RenderParameter oRenderParameter)
+{
+	if( NULL != m_oText )
+		return m_oText->RenderToRtf( oRenderParameter );
+	else
+		return L"";
+}
 std::wstring OOXFieldInsertText::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( NULL != m_oText )
@@ -91,6 +115,67 @@ std::wstring OOXFieldInsertText::RenderToOOX(RenderParameter oRenderParameter)
 	else
 		return L"";
 }
+
+int OOXFieldSeparate::GetType()
+{
+	return TYPE_OOX_FIELD;
+}
+std::wstring OOXFieldSeparate::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	return L"}{\\fldrslt";
+}
+std::wstring OOXFieldSeparate::RenderToOOX(RenderParameter oRenderParameter)
+{
+	return L"<w:fldChar w:fldCharType=\"separate\"/>";
+}
+
+int OOXFieldEnd::GetType()
+{
+	return TYPE_OOX_FIELD;
+}
+std::wstring OOXFieldEnd::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	return L"}}";
+}
+std::wstring OOXFieldEnd::RenderToOOX(RenderParameter oRenderParameter)
+{
+	return L"<w:fldChar w:fldCharType=\"end\"/>";
+}
+
+RtfFormField::RtfFormField()
+{
+}
+int RtfFormField::GetType()
+{
+	return TYPE_OOX_FORMFIELD;
+}
+std::wstring RtfFormField::RenderToRtf(RenderParameter oRenderParameter)
+{
+	return L"";
+}
+std::wstring RtfFormField::RenderToOOX(RenderParameter oRenderParameter)
+{
+	return L"";
+}
+
+RtfFieldInst::RtfFieldInst()
+{
+	SetDefault();
+}
+void RtfFieldInst::SetDefaultRtf()
+{
+	SetDefault();
+}
+void RtfFieldInst::SetDefaultOOX()
+{
+	SetDefault();
+}
+void RtfFieldInst::SetDefault()
+{
+	m_pTextItems = TextItemContainerPtr( new TextItemContainer() );
+}
 std::wstring RtfFieldInst::RenderToRtf(RenderParameter oRenderParameter)
 {
 	return L"";
@@ -104,6 +189,40 @@ std::wstring RtfFieldInst::RenderToOOX(RenderParameter oRenderParameter)
 		return m_pTextItems->RenderToOOX(oRenderParameter);
 	else 
 		return L"";
+}
+
+RtfField::RtfField()
+{
+	SetDefault();
+}
+int RtfField::GetType()
+{
+	return TYPE_RTF_FIELD;
+}
+bool RtfField::IsValid()
+{
+	return true;
+	//return false == m_oInsert.IsValid() && false == m_oResult.IsValid();
+}
+void RtfField::SetDefaultRtf()
+{
+	SetDefault();
+}
+void RtfField::SetDefaultOOX()
+{
+	SetDefault();
+}
+void RtfField::SetDefault()
+{
+	m_eMode					= fm_none;
+	m_bReferenceToEndnote	= false;
+	m_bTextOnly				= false;
+	m_sData					= L"";
+
+	m_pResult				= RtfFieldInstPtr(new RtfFieldInst());
+	m_pInsert				= RtfFieldInstPtr(new RtfFieldInst());
+
+	m_oCharProperty.SetDefault();
 }
 std::wstring RtfField::RenderToRtf(RenderParameter oRenderParameter)
 {
@@ -142,7 +261,6 @@ std::wstring RtfField::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += L"}";
 	return sResult;
 }
-
 std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 {
 	RtfDocument*	pRtfDocument	= static_cast<RtfDocument*>	(oRenderParameter.poDocument);

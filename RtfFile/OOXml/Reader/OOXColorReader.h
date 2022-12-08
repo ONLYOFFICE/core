@@ -40,77 +40,11 @@ class OOXColorReader
 {
 private:
 	PPTX::nsTheme::ClrScheme * m_ooxColorScheme;
+
 public: 
-	OOXColorReader()
-	{
-		m_ooxColorScheme = NULL;
-	}
-	OOXColorReader(PPTX::nsTheme::ClrScheme * ooxColorScheme)
-	{
-		m_ooxColorScheme = ooxColorScheme;
-	}
-	bool Parse( ReaderParameter oParam, const std::wstring &name, RtfColor & oOutputColor )
-	{
-		if (!m_ooxColorScheme) return false;
+	OOXColorReader();
+	OOXColorReader(PPTX::nsTheme::ClrScheme * ooxColorScheme);
 
-		std::map<std::wstring, PPTX::Logic::UniColor>::iterator pFind = m_ooxColorScheme->Scheme.find(name);
-
-		if (pFind == m_ooxColorScheme->Scheme.end()) return false;
-		PPTX::Logic::UniColor & color = pFind->second;
-
-		switch(color.getType ())
-		{
-			case OOX::et_a_schemeClr:
-			{
-				NSCommon::smart_ptr<PPTX::Logic::SchemeClr> schemeColor = color.Color.smart_dynamic_cast<PPTX::Logic::SchemeClr>();
-				if (schemeColor.IsInit())
-				{
-					RtfColor::_ThemeColor oTheme;
-					if( true == RtfColor::GetThemeByOOX( (SimpleTypes::EShemeColorVal)schemeColor->val.GetBYTECode(), oTheme ))
-					return oParam.oRtf->m_oColorTable.GetColor( oTheme, oOutputColor );	
-				}
-			}break;
-			case OOX::et_a_prstClr:
-			case OOX::et_a_scrgbClr:
-			case OOX::et_a_srgbClr:
-			case OOX::et_a_sysClr:
-			default:
-			{
-				DWORD rgba = color.GetRGBA();
-				oOutputColor.SetRGB(rgba >> 8);
-				return true;
-			}break;
-		}
-		return false;
-	}
-	bool Parse (ReaderParameter oParam, ComplexTypes::Word::CColor ooxColor, RtfColor & oOutputColor)
-	{
-		bool res = false;
-		if (ooxColor.m_oThemeColor.IsInit())
-		{
-			oParam.oRtf->m_oColorTable.GetColor( ooxColor.m_oThemeColor->GetValue() , oOutputColor );
-			if (oOutputColor.m_eTheme != RtfColor::TC_NONE) res = true;
-		}
-		if (ooxColor.m_oThemeShade.IsInit())
-		{
-			oOutputColor.SetShade( ooxColor.m_oThemeShade->GetValue() );
-			res = true;
-		}
-		if (ooxColor.m_oThemeTint.IsInit())
-		{
-			oOutputColor.SetTint( ooxColor.m_oThemeTint->GetValue() );
-			res = true;
-		}
-		if (ooxColor.m_oVal.IsInit())
-		{
-			if (ooxColor.m_oVal->GetValue() == SimpleTypes::hexcolorRGB)
-				oOutputColor.SetRGB(ooxColor.m_oVal->Get_R(), ooxColor.m_oVal->Get_G(), ooxColor.m_oVal->Get_B());
-			if (ooxColor.m_oVal->GetValue() == SimpleTypes::hexcolorAuto)
-				oOutputColor.m_bAuto = true;
-			
-			res = true;
-		}
-		return res;
-
-	}
+	bool Parse( ReaderParameter oParam, const std::wstring &name, RtfColor & oOutputColor );
+	bool Parse (ReaderParameter oParam, ComplexTypes::Word::CColor ooxColor, RtfColor & oOutputColor);
 };

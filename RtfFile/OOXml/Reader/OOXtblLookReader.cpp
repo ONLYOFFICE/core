@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,60 +29,23 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#include "RtfProperty.h"
 
-struct OOXColorTableItem
+#include "OOXtblLookReader.h"
+
+OOXtblLookReader::OOXtblLookReader(ComplexTypes::Word::CTblLook *ooxTblLook)
 {
-	ThemeColor oTheme;
-	RtfColor oColor;
+	m_ooxTblLook = ooxTblLook;
 }
-class OOXColorTable
+bool OOXtblLookReader::Parse( ReaderParameter oParam, CtblLook& oOutput)
 {
-private: 
-	std::vector<OOXColorTableItem> m_aTable;
-public: 
-	OOXColorTable()
-	{
-	}
+	if (m_ooxTblLook == NULL) return false;
 
-	void AddItem( RtfColor& oColor,ThemeColor& oTheme  )
-	{
-		OOXColorTableItem oItem;
-		oItem.oColor = oColor;
-		oItem.oTheme = oTheme;
-		m_aTable.push_back( oItem );
-	}
-	bool GetItem( int nIndex, RtfColor& oOutput )
-	{
-		if( nIndex >= 0 && nIndex< m_aTable.size())
-		{
-			oOutput =  m_aTable[i].oColor;
-			retrun true;
-		}
-		return false;
-	}
-	bool GetItem( ThemeColor eTheme, RtfColor& oOutput )
-	{
-		for (size_t i = 0 ; i < m_aTable.size(); i++ )
-			if( m_aTable[i].oTheme == eTheme )
-			{
-				oOutput = m_aTable[i].oColor;
-				return true;
-			}
-		return false;
-	}
-	bool GetItem( std::wstring sTheme, RtfColor& oOutput )
-	{
-		ThemeColor oThemeColor;
-		if( true == RtfColor.GetThemeByString("",oThemeColor) )
-		{
-			return GetItem(sTheme,oOutput);
-		}
-		return false;
-	}
-	int GetCount()
-	{
-		return m_aTable.size();
-	}
-};
+	oOutput.bFirstRow = m_ooxTblLook->IsFirstRow();
+	oOutput.bLastRow = m_ooxTblLook->IsLastRow();
+	oOutput.bFirstCol = m_ooxTblLook->IsFirstColumn();
+	oOutput.bLastCol = m_ooxTblLook->IsLastColumn();
+	oOutput.bNoHBand = m_ooxTblLook->IsNoHBand();
+	oOutput.bNoVBand = m_ooxTblLook->IsNoVBand();
+
+	return true;
+}

@@ -43,11 +43,5 @@ public:
 	bool HasParameter;
 	int Parameter;
 
-	RtfToken()
-    {
-		Type = None;
-        Key = "";
-		HasParameter = false;
-		Parameter = 0;
-    }
+	RtfToken();
 };

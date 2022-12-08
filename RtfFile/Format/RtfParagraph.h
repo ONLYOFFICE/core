@@ -77,22 +77,14 @@ public:
 	RtfParagraphProperty	m_oProperty;
 	RtfOldListPtr			m_oOldList;
 	
-	virtual bool IsValid()
-	{
-		return m_IsValid;
-	}	
-	int GetType( )
-	{
-		return TYPE_RTF_PARAGRAPH;
-	}
-	RtfParagraph()
-	{
-	}
-	void SetValid(bool val)
-	{
-		m_IsValid = val;
-	}
+	RtfParagraph();
+
+	virtual bool IsValid();
+	int GetType( );
+
+	void SetValid(bool val);
 	int AddItem( IDocumentElementPtr piRend );	
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };

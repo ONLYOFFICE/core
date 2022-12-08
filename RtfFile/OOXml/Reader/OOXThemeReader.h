@@ -40,22 +40,7 @@ private:
 	PPTX::Theme* m_ooxTheme;
 
 public: 
-	OOXThemeReader( PPTX::Theme* ooxTheme)
-	{
-		m_ooxTheme = ooxTheme;
-	}
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxTheme == NULL) return false;
+	OOXThemeReader( PPTX::Theme* ooxTheme);
 
-		{
-			OOXColorSchemeReader oColorSchemeReader (&m_ooxTheme->themeElements.clrScheme);
-			oColorSchemeReader.Parse( oParam );
-		}
-		{
-			OOXFontSchemeReader oFontSchemeReader (&m_ooxTheme->themeElements.fontScheme );
-			oFontSchemeReader.Parse( oParam );
-		}
-		return true;
-	}
+	bool Parse( ReaderParameter oParam );
 };

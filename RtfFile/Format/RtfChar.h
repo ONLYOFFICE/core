@@ -52,8 +52,7 @@ public:
 		a_center,
 		a_right,
 	};
- 
-	enum Relative	
+ 	enum Relative	
 	{	r_none,
 		r_margin,
 		r_indent,
@@ -63,67 +62,13 @@ public:
 	Alignment	m_eAlignment;
 	Relative	m_eRelative;
 
-	RtfAbsPosTab()
-	{
-	}
-	bool IsValid()
-	{
-		return a_none != m_eAlignment && r_none != m_eRelative;
-	}
-	
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		switch( m_eLeader )
-		{
-			case l_ptablnone:	sResult += L"\\ptablnone";	break;
-			case l_ptabldot:	sResult += L"\\ptabldot";	break;
-			case l_ptablminus:	sResult += L"\\ptablminus";	break;
-			case l_ptabluscore: sResult += L"\\ptabluscore";	break;
-			case l_ptablmdot:	sResult += L"\\ptablmdo";	break;
-		}
-		switch( m_eRelative )
-		{
-			case r_margin: sResult += L"\\pmartabq";	break;
-			case r_indent: sResult += L"\\pindtabq";	break;
-		}
-		switch( m_eAlignment )
-		{
-			case a_left:	sResult += L"l";	break;
-			case a_center:	sResult += L"c";	break;
-			case a_right:	sResult += L"r";	break;
-		}
-        if( false == sResult.empty() )
-			sResult = L"{" + sResult + L"}";
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		switch( m_eLeader )
-		{
-			case l_ptablnone:	sResult += L" w:leader=\"none\"";		break;
-			case l_ptabldot:	sResult += L" w:leader=\"dot\"";			break;
-			case l_ptablminus:	sResult += L" w:leader=\"hyphen\"";		break;
-			case l_ptabluscore: sResult += L" w:leader=\"underscore\"";	break;
-			case l_ptablmdot:	sResult += L" w:leader=\"middleDot\"";	break;
-		}
-		switch( m_eRelative )
-		{
-			case r_margin: sResult += L" w:relativeTo=\"margin\"";	break;
-			case r_indent: sResult += L" w:relativeTo=\"indent\"";	break;
-		}
-		switch( m_eAlignment )
-		{
-			case a_left:	sResult += L" w:alignment=\"left\"";		break;
-			case a_center:	sResult += L" w:alignment=\"center\"";	break;
-			case a_right:	sResult += L" w:alignment=\"right\"";	break;
-		}
-        if( !sResult.empty() )
-			sResult = L"<w:ptab" + sResult + L"/>";
-		return sResult;
-	}
+	RtfAbsPosTab();
+
+	bool IsValid();
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfCharSpecial : public IDocumentElement
 {
 public: 
@@ -167,12 +112,8 @@ public:
 	_RtfSpecChar		m_eType;
 	RtfCharProperty		m_oProperty;
 	
-	RtfCharSpecial()
-	{
-		m_eType				= rsc_none;
-		m_nTextWrapBreak	= PROP_DEF;
-		m_nSoftHeight		= PROP_DEF;
-	}
+	RtfCharSpecial();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring _RenderToOOX(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
@@ -183,63 +124,34 @@ class RtfChar : public IDocumentElement
 {            
 protected: 
     std::wstring m_sChars;
+
 public: 
-	RtfChar()
-	{
-		m_bRtfEncode = true;
-	}
+	RtfChar();
+
 	RtfCharProperty m_oProperty;
 	bool m_bRtfEncode;
 
-	int GetType()
-	{
-		return TYPE_RTF_CHAR;
-	}
-    void AddText(std::wstring text)
-	{
-		m_sChars += text;
-	}
-    void setText(std::wstring text)
-	{
-		m_sChars = text;
-	}
+	int GetType();
 
-    std::wstring GetText()
-	{
-		return m_sChars;
-	}
+	void AddText(std::wstring text);
+	void setText(std::wstring text);
+	std::wstring GetText();
+
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
     
     static std::wstring renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL, bool bMarker = false);
     static std::wstring renderRtfText( std::wstring& sText, void* poDocument, int nCodePage, bool bMarker = false );
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
+
 private: 
     std::wstring renderTextToXML( std::wstring sParam, bool bDelete = false );
 };
+
 class RtfCharNative : public RtfChar
 {            
 public: 
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring result;
-		if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
-		{
-			result = m_sChars;
-		}
-		else
-		{
-            std::wstring sText = m_sChars;
-			if( L"" != sText )
-			{
-				result += L"{";
-				result += m_oProperty.RenderToRtf( oRenderParameter );
-				result += L" " + sText;
-				result += L"}";
-			}
-		}
-		return result;
-	}
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 typedef boost::shared_ptr<RtfCharNative> RtfCharNativePtr;
 typedef boost::shared_ptr<RtfChar> RtfCharPtr;

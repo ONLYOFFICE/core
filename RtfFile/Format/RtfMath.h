@@ -50,48 +50,18 @@ public:
 	RtfParagraph		m_oVal;
 	RtfShapePtr			m_oPicture;
 
-	RtfMath( )
-	{
-		m_bHeader = true;
-		m_bIsVal = m_bIsBool = false;
-	}
-	RtfMath(const RtfMath& oMath )
-	{
-		(*this) = oMath;
-	}
-	RtfMath& operator=(const RtfMath& oMath )
-	{
-		m_bHeader	= oMath.m_bHeader;
-		m_bIsVal	= oMath.m_bIsVal;
-		m_bIsBool	= oMath.m_bIsBool;
+	RtfMath( );
+	RtfMath(const RtfMath& oMath );
 
-		m_sRtfName	= oMath.m_sRtfName;
-		m_sOOXName	= oMath.m_sOOXName;
-	
-		m_aArray.clear();
-		m_aArray	= oMath.m_aArray;
+	RtfMath& operator=(const RtfMath& oMath );
+	bool IsEmpty();
+	bool IsValid();
 
-		return (*this);
-	}
-	bool IsEmpty()
-	{
-        return m_sRtfName.empty();
-	}
-	bool IsValid()
-	{
-        return (false == m_sRtfName.empty());
-	}
     bool IsRtfControlPropertyBool	( std::string sControl );
     bool IsRtfControlProperty		( std::string sControl );
     bool IsRtfControlWord			( std::string sControl );
 
-    void SetRtfName(std::string sName)
-	{
-		m_sRtfName = sName;
-		
-		m_sOOXName = sName;
-        m_sOOXName.insert(m_sOOXName.begin() + 1, L':');
-	}
+	void SetRtfName(std::string sName);
 
 	void	SetOOXType		(int type);
 	

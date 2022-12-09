@@ -33,10 +33,10 @@
 
 #include "../../Reader/Records.h"
 
-class CPPTDocumentInfo;
 
 namespace PPT
 {
+class CPPTDocumentInfo;
 	class CRecordOfficeArtBlip : public CUnknownRecord
 	{
 	public:

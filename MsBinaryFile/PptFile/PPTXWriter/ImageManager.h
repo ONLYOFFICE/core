@@ -31,6 +31,7 @@
  */
 #pragma once
 
+#include <string>
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
 #endif
@@ -51,140 +52,21 @@ private:
 	std::wstring							m_strDstMedia;
 
 public:
-	CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0)
-	{
-	}
-	~CMediaManager()
-	{
-	}
-	inline void Clear()
-	{
-		m_mapMedia.clear();
-
-		m_lIndexNextImage = 0;
-		m_lIndexNextAudio = 0;
-		m_lIndexNextVideo = 0;
-	}
-	inline std::wstring FindMedia(const std::wstring& strInput)
-	{
-		std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
-		if (m_mapMedia.end() != pPair)
-		{
-			return pPair->second;
-		}
-		return L"";
-	}
-	inline void SetDstMedia(const std::wstring& strDst)
-	{
-		m_strDstMedia = strDst;
-	}
-	inline std::wstring GenerateVideo(const std::wstring& strInput)
-	{
-		return GenerateMedia(strInput, L"video", m_lIndexNextVideo, L".avi");
-	}
-	inline std::wstring GenerateAudio(const std::wstring& strInput)
-	{
-		return GenerateMedia(strInput, L"audio", m_lIndexNextAudio, L".wav");
-	}
-	inline std::wstring GenerateImage(const std::wstring& strInput)
-	{
-		return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".png");
-	}
-	inline std::wstring GenerateImageJPEG(const std::wstring& strInput)
-	{
-		return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".jpeg");
-	}
-	inline std::wstring GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long & Indexer, const std::wstring& strDefaultExt)
-	{
-		std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
-		if (m_mapMedia.end() != pPair)
-		{
-			return pPair->second;
-		}
-
-		if (IsNeedDownload(strInput))
-		{
-#ifndef DISABLE_FILE_DOWNLOADER
-			NSNetwork::NSFileTransport::CFileDownloader oDownloader(strInput, TRUE);
-			if (oDownloader.DownloadSync())
-			{
-				std::wstring file_name = oDownloader.GetFilePath();
-
-				//todooo - check media file
-				return GenerateMedia(file_name, Template, Indexer, strDefaultExt);
-			}
-#endif
-		}
-
-		std::wstring strExts = strDefaultExt;
-		int nIndexExt = strInput.rfind(wchar_t('.'));
-		if (-1 != nIndexExt)
-			strExts = strInput.substr(nIndexExt);
-
-		if (strExts == _T(".video") || strExts == _T(".audio"))
-		{
-			std::wstring strInput1 = strInput.substr(0, nIndexExt);
-			nIndexExt = strInput1.rfind(wchar_t('.'));
-			strExts = nIndexExt < 0 ? L"" : strInput1.substr(nIndexExt);
-		}
-		if (strExts == _T(".tmp") || strExts.empty()) strExts = strDefaultExt;
-
-		std::wstring strMediaName = Template + std::to_wstring(++Indexer);
-
-		std::wstring strOutput = m_strDstMedia + strMediaName + strExts;
-		strMediaName = _T("../media/") + strMediaName + strExts;
-
-		// теперь нужно скопировать
-		if (strOutput != strInput)
-		{
-			if (NSFile::CFileBinary::Copy(strInput, strOutput) == false)
-			{
-				return L"";
-			}
-		}
-		m_mapMedia[strInput] = strMediaName;
-		return strMediaName;
-	}
-	inline void WriteAudioCollection(const std::vector<PPT::CExFilesInfo>& audioCont)
-	{
-		if (audioCont.empty()) return;
-
-		for (auto& audio : audioCont)
-		{
-			auto pathAudio = GenerateAudio(audio.m_strFilePath);
-		}
-
-	}
-	inline bool IsNeedDownload(const std::wstring& strFile)
-	{
-		int n1 = strFile.find(L"www");
-		int n2 = strFile.find(L"http");
-		int n3 = strFile.find(L"ftp");
-
-		if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)))
-			return true;
-		return false;
-	}
+    CMediaManager();
+    ~CMediaManager();
+    void Clear();
+    std::wstring FindMedia(const std::wstring& strInput);
+    void SetDstMedia(const std::wstring& strDst);
+    std::wstring GenerateVideo(const std::wstring& strInput);
+    std::wstring GenerateAudio(const std::wstring& strInput);
+    std::wstring GenerateImage(const std::wstring& strInput);
+    std::wstring GenerateImageJPEG(const std::wstring& strInput);
+    std::wstring GenerateMedia(const std::wstring& strInput, const std::wstring& Template, long & Indexer, const std::wstring& strDefaultExt);
+    void WriteAudioCollection(const std::vector<PPT::CExFilesInfo>& audioCont);
+    bool IsNeedDownload(const std::wstring& strFile);
 };
 
-static std::wstring CorrectXmlString3(const std::wstring & str)
-{
-	std::wstring buffer;
-	buffer.reserve(str.size());
-	for (size_t pos = 0; pos != str.size(); ++pos)
-	{
-		switch (str[pos])
-		{
-		case '&':  buffer.append(_T("&amp;"));      break;
-		case '\"': buffer.append(_T("&quot;"));     break;
-		case '\'': buffer.append(_T("&apos;"));     break;
-		case '<':  buffer.append(_T("&lt;"));       break;
-		case '>':  buffer.append(_T("&gt;"));       break;
-		default:   buffer.append(&str[pos], 1);	break;
-		}
-	}
-	return buffer;
-}
+std::wstring CorrectXmlString3(const std::wstring & str);
 class CRelsGenerator
 {
 private:
@@ -195,236 +77,31 @@ private:
 	std::map<std::wstring, std::wstring>	m_mapHyperlinks;
 
 public:
-	CRelsGenerator(CMediaManager* pManager) : m_oWriter(), m_lNextRelsID(1)
-	{
-		m_pManager = pManager;
-	}
-	~CRelsGenerator()
-	{
-	}
-	inline void Clear()
-	{
-		m_oWriter.ClearNoAttack();
-		m_lNextRelsID = 1;
-		m_mapMediaRelsID.clear();
-		m_mapHyperlinks.clear();
-	}
+    CRelsGenerator(CMediaManager* pManager);
+    ~CRelsGenerator();
+    void Clear();
 
-	inline void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
-	{
-		std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+    void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts);
 
-		m_oWriter.WriteString(str1);
+    std::wstring WriteFile(const std::wstring& strPath);
 
-		for (int i = 0; i < nCountLayouts; ++i)
-		{
-			std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
-				+ std::to_wstring(nStartLayoutIndex + 1) + L".xml\"/>";
-			nStartLayoutIndex++;
-			m_oWriter.WriteString(str);
-		}
-
-		std::wstring s = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme"
-			+ std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
-		m_oWriter.WriteString(s);
-	}
-	inline void StartLayout(int nIndexTheme)
-	{
-		std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-
-		m_oWriter.WriteString(str1);
-
-		std::wstring str = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"../slideMasters/slideMaster"
-			+ std::to_wstring(nIndexTheme + 1) + L".xml\"/>";
-
-		m_oWriter.WriteString(str);
-	}
-	inline void StartNotes(int nIndexSlide, bool bMaster)
-	{
-		m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-							<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-		if (bMaster)
-		{
-			m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"../notesMasters/notesMaster1.xml\"/>");
-		}
-		if (nIndexSlide >= 0)
-		{
-			m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"../slides/slide"
-				+ std::to_wstring(nIndexSlide + 1) + L".xml\"/>");
-		}
-	}
-	inline void StartSlide(int nIndexLayout, int nIndexNotes)
-	{
-		m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-                                  <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-
-		m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout\" Target=\"../slideLayouts/slideLayout"
-			+ std::to_wstring(nIndexLayout + 1) + L".xml\"/>");
-
-		if (nIndexNotes >= 0)
-		{
-			m_oWriter.WriteString(L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesSlide\" Target=\"../notesSlides/notesSlide"
-				+ std::to_wstring(nIndexNotes + 1) + L".xml\"/>");
-		}
-	}
-	inline void CloseRels()
-	{
-		std::wstring str = _T("</Relationships>");
-		m_oWriter.WriteString(str);
-	}
-	inline void SaveRels(const std::wstring& strFile)
-	{
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(strFile);
-		std::wstring strMem = m_oWriter.GetData();
-		oFile.WriteStringUTF8(strMem);
-		oFile.CloseFile();
-	}
-	inline std::wstring WriteHyperlink(const std::wstring& strHyperlink, bool isExternal = false)
-	{
-		std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
-
-		if (m_mapHyperlinks.end() != pPair)
-		{
-			std::wstring strRid = L"rId" + pPair->second;
-			return strRid;
-		}
-		m_mapHyperlinks[strHyperlink] = std::to_wstring(m_lNextRelsID);
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-		std::wstring strRels = L"<Relationship Id=\"";
-
-		strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
-		strRels += XmlUtils::EncodeXmlStringExtend(strHyperlink);
-		strRels += (isExternal ? L"\" TargetMode=\"External\" />" : L"\"/>");
-
-		m_oWriter.WriteString(strRels);
-
-		return strRid;
-	}
-
-	inline std::wstring WriteFile(const std::wstring& strPath)
-	{
-		std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strPath);
-
-		if (m_mapHyperlinks.end() != pPair)
-		{
-			std::wstring strRid = L"rId" + pPair->second;
-			return strRid;
-		}
-		m_mapHyperlinks[strPath] = std::to_wstring(m_lNextRelsID);
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-		std::wstring strRels = L"<Relationship Id=\"";
-
-		strRels += strRid + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"";
-		strRels += L"file:///" + strPath + L"\" TargetMode=\"External\" />";
-
-		m_oWriter.WriteString(strRels);
-
-		return strRid;
-	}
+    void StartNotes(int nIndexSlide, bool bMaster);
+    void StartSlide(int nIndexLayout, int nIndexNotes);
+    void CloseRels();
+    void SaveRels(const std::wstring &strFile);
+    std::wstring WriteHyperlink(const std::wstring &strHyperlink, bool isExternal = false);
+    void StartLayout(int nIndexTheme);
 
 
-	inline std::wstring WriteHyperlinkMedia(const std::wstring& strMedia, bool bExternal = true, bool newRIdAlways = false, std::wstring strRelsType = L"http://schemas.microsoft.com/office/2007/relationships/media")
-	{
-		if (!newRIdAlways)
-		{
-			std::map<std::wstring, int>::iterator pPair = m_mapMediaRelsID.find(strMedia);
+    std::wstring WriteHyperlinkMedia(const std::wstring& strMedia, bool bExternal = true, bool newRIdAlways = false, std::wstring strRelsType = L"http://schemas.microsoft.com/office/2007/relationships/media");
+    std::wstring WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true);
+    std::wstring WriteHyperlinkAudio(const std::wstring& strImage, bool bExternal = true);
+    std::wstring WriteHyperlinkVideo(const std::wstring& strImage, bool bExternal = true);
+    std::wstring WriteMedia(const std::wstring& strMediaPath);
+    std::wstring WriteImage(const std::wstring& strImagePath);
+    std::wstring WriteSlideRef(const std::wstring& strLocation);
+    std::wstring WriteAudio(const std::wstring& strAudioPath, bool & bExternal);
+    std::wstring WriteVideo(const std::wstring& strVideoPath, bool & bExternal);
 
-			if (m_mapMediaRelsID.end() != pPair)
-			{
-				std::wstring strRid = L"rId" + std::to_wstring(pPair->second);
-				return strRid;
-			}
-
-			m_mapMediaRelsID[strMedia] = m_lNextRelsID;
-		}
-
-		std::wstring strRid = L"rId" + std::to_wstring(m_lNextRelsID++);
-
-		std::wstring strRels = L"<Relationship Id=\"" + strRid + L"\"" + L" Type=\"" + strRelsType + L"\""
-			+ L" Target=\"" + strMedia + L"\"";
-
-		if (bExternal)
-			strRels += L" TargetMode=\"External\"";
-		strRels += L"/>";
-
-		m_oWriter.WriteString(strRels);
-
-		return strRid;
-	}
-	inline std::wstring WriteHyperlinkImage(const std::wstring& strImage, bool bExternal = true)
-	{
-		return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
-	}
-	inline std::wstring WriteHyperlinkAudio(const std::wstring& strImage, bool bExternal = true)
-	{
-		return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
-	}
-	inline std::wstring WriteHyperlinkVideo(const std::wstring& strImage, bool bExternal = true)
-	{
-		return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
-	}
-	inline std::wstring WriteMedia(const std::wstring& strMediaPath)
-	{
-		std::wstring strMedia = m_pManager->FindMedia(strMediaPath);
-
-		if (strMedia.empty())	return WriteHyperlinkMedia(CorrectXmlString3(strMediaPath), true, true);
-		return WriteHyperlinkMedia(strMedia, false, false); // changed
-	}
-	inline std::wstring WriteImage(const std::wstring& strImagePath)
-	{
-		std::wstring strImage = m_pManager->GenerateImage(strImagePath);
-
-		if (strImage.empty())	return WriteHyperlinkImage(CorrectXmlString3(strImagePath), true);
-		return WriteHyperlinkImage(strImage, false);
-	}
-	std::wstring WriteSlideRef(const std::wstring& strLocation)
-	{
-		int sldNum = PPT::CExFilesInfo::GetSlideNumber(strLocation);
-
-		std::wstring strSlide(L"slide");
-		strSlide += std::to_wstring(sldNum);
-		strSlide += L".xml";
-		return WriteHyperlinkMedia(strSlide, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
-	}
-	inline std::wstring WriteAudio(const std::wstring& strAudioPath, bool & bExternal)
-	{
-		std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);
-
-		if (strAudio.empty())
-		{
-			bExternal = true;
-			return WriteHyperlinkAudio(CorrectXmlString3(strAudioPath), true);
-		}
-		else
-		{
-			return WriteHyperlinkAudio(strAudio, false);
-		}
-	}
-	inline std::wstring WriteVideo(const std::wstring& strVideoPath, bool & bExternal)
-	{
-		std::wstring strVideo = m_pManager->GenerateVideo(strVideoPath);
-
-		if (strVideo.empty())
-		{
-			bExternal = true;
-			return WriteHyperlinkVideo(CorrectXmlString3(strVideoPath), true);
-		}
-		else
-		{
-			return WriteHyperlinkVideo(strVideo, false);
-		}
-	}
-
-	inline int getRId()const { return m_lNextRelsID; }
+    int getRId()const { return m_lNextRelsID; }
 };

@@ -2581,6 +2581,195 @@ void CPPTUserInfo::CreateDefaultStyle(PPT::CTextStyles& pStyle, PPT::CTheme* pTh
     }
 }
 
+void CPPTUserInfo::CorrectColorScheme(std::vector<CColor> &oScheme)
+{
+    if (oScheme.size() < 1) return;
+
+    std::vector<CColor> oArrayMem;
+    oArrayMem.push_back(oScheme[0]);//0
+    oArrayMem.push_back(oScheme[1]);//1
+    oArrayMem.push_back(oScheme[2]);//2
+    oArrayMem.push_back(oScheme[3]);//3
+    oArrayMem.push_back(oScheme[0]);//4
+    oArrayMem.push_back(oScheme[4]);//5 //accent1
+    oArrayMem.push_back(oScheme[5]);//6 //accent2
+    oArrayMem.push_back(CColor(0xAAAAAA));//(oScheme[0]);//7 //accent3
+    oArrayMem.push_back(CColor(0xDCDCDC));//(oScheme[5]);//8 //accent4
+    oArrayMem.push_back(CColor(0xDBF1FA));//(oScheme[4]);//9 //accent5
+    oArrayMem.push_back(CColor(0x4B9DCA));//(oScheme[7]);//10 //accent6
+    oArrayMem.push_back(oScheme[6]);//11 //hlink
+    oArrayMem.push_back(oScheme[7]);//12 //folHlink
+    oArrayMem.push_back(oScheme[0]);//13 //lt1
+    oArrayMem.push_back(oScheme[1]);//14 //dk1
+    oArrayMem.push_back(oScheme[2]);//15 //lt2
+    oArrayMem.push_back(oScheme[3]);//16 //dk2
+
+    //0x00 //Background color
+    //0x01 //Text color
+    //0x02 //Shadow color
+    //0x03 //Title text color
+    //0x04 //Fill color
+    //0x05 //Accent 1 color
+    //0x06 //Accent 2 color
+    //0x07 //Accent 3 color
+
+    oScheme  = oArrayMem;
+}
+
+void CPPTUserInfo::ConvertLayoutType(SSlideLayoutAtom &layoutRecord, std::wstring &type, std::wstring &name)
+{
+    name = L"Blank Slide";
+    type = L"blank";
+
+    switch (layoutRecord.m_nGeom)
+    {
+    case SL_TitleSlide:
+    case SL_MasterTitle:
+    {
+        name = L"Title Slide";
+        type = L"title";
+    }break;
+    case SL_TitleBody:
+    {
+        name = L"Title and Object Slide";
+        type = L"obj";
+
+        int ind = 0;
+        if (layoutRecord.m_pPlaceHolderID[0] == 13 && layoutRecord.m_pPlaceHolderID[1] != 0) ind++;
+        PlaceholderEnum phbody = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[ind];
+        switch (phbody)
+        {
+        case PT_MasterTitle:	type = L"title";	name = L"Title and Object Slide";		break;
+        case PT_Table:			type = L"tbl";		name = L"Title and Table Slide";		break;
+        case PT_OrgChart:		type = L"dgm";		name = L"Title and Diagramma Slide";	break;
+        case PT_Graph:			type = L"chart";	name = L"Title and Chart Slide";		break;
+        default:
+            break;
+        }
+    }break;
+    case SL_TitleOnly:
+    {
+        name = L"Title Only Slide";
+        type = L"titleOnly";
+    }break;
+    case SL_TwoColumns:
+    {
+        PlaceholderEnum leftType  = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+        PlaceholderEnum rightType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
+
+        name = L"Two Objects Slide";
+        type = L"twoObj";
+
+        if (leftType == PT_Body && rightType == PT_Object)
+        {
+            name = L"Text And Object Slide";
+            type = L"txAndObj";
+        }
+        else if (leftType == PT_Object && rightType == PT_Body)
+        {
+            name = L"Object And Text Slide";
+            type = L"objAndTx";
+        }
+        else if (leftType == PT_Body && rightType == PT_ClipArt)
+        {
+            name = L"Text And ClipArt Slide";
+            type = L"txAndClipArt";
+        }
+        else if (leftType == PT_ClipArt && rightType == PT_Body)
+        {
+            name = L"ClipArt And Text Slide";
+            type = L"clipArtAndTx";
+        }
+        else if (leftType == PT_Body && rightType == PT_Graph)
+        {
+            name = L"Text And Chart Slide";
+            type = L"txAndChart";
+        }
+        else if (leftType == PT_Graph && rightType == PT_Body)
+        {
+            name = L"Chart And Text Slide";
+            type = L"chartAndTx";
+        }
+        else if (leftType == PT_Body && rightType == PT_Media)
+        {
+            name = L"Text And Media Slide";
+            type = L"txAndMedia";
+        }
+        else if (leftType == PT_Media && rightType == PT_Body)
+        {
+            name = L"Media And Text Slide";
+            type = L"mediaAndTx";
+        }
+    }break;
+    case SL_TwoRows:
+    {
+        PlaceholderEnum topType	= (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+        PlaceholderEnum bottomType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
+
+        if (topType == PT_Body && bottomType == PT_Object)
+        {
+            name = L"Text Over Object Slide";
+            type = L"txOverObj";
+        }
+        else
+        {
+            name = L"Object Over Text Slide";
+            type = L"objOverTx";
+        }
+    }break;
+    case SL_ColumnTwoRows:
+    {
+        PlaceholderEnum leftType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+
+        if (leftType == PT_Object)
+        {
+            type = L"objAndTwoObj";
+        }
+        else
+        {
+            type = L"txAndTwoObj";
+        }
+    }break;
+    case SL_TwoRowsColumn:
+    {
+        PlaceholderEnum rightType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
+
+        if (rightType == PT_Object)
+        {
+            type = L"twoObjAndObj";
+        }
+        else
+        {
+            type = L"twoObjAndTx";
+        }
+    }break;
+    case SL_TwoColumnsRow:
+    {
+        type = L"twoObjOverTx";
+    }break;
+    case SL_FourObjects:
+    {
+        type = L"fourObj";
+    }break;
+    case SL_BigObject:
+    {
+        name = L"Object Only Slide";
+        type = L"objOnly";
+    }break;
+    case SL_VerticalTitleBody:
+    {
+        type = L"vertTitleAndTx";
+    }break;
+    case SL_VerticalTwoRows:
+    {
+        type = L"vertTx";
+    }break;
+    case SL_Blank:
+    default:
+        break;
+    }
+}
+
 void CPPTUserInfo::LoadAutoNumbering(CRecordGroupShapeContainer *pGroupContainer, CTheme *pTheme)
 {
 
@@ -2622,28 +2811,28 @@ void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
     auto& arrPars = pShape->m_pShape->m_oText.m_arParagraphs;
 
     // TODO need to find BlipEntity;
-     IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
-     auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
-     if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
-         return;
+    IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
+    auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
+    if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
+        return;
 
-     const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
- //    const auto& arrAutoNum      = pProgBinaryTag->m_outlineTextPropsContainer.get()
-     if(arrBlipEntity.empty())
-         return;
+    const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
+    //    const auto& arrAutoNum      = pProgBinaryTag->m_outlineTextPropsContainer.get()
+    if(arrBlipEntity.empty())
+        return;
 
-     for (auto& par : arrPars)
-     {
-         if (par.m_oPFRun.bulletBlip.IsInit())
-         {
-             auto& buBlip = par.m_oPFRun.bulletBlip.get();
-             if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
-             {
-                 buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
-             }
-         }
+    for (auto& par : arrPars)
+    {
+        if (par.m_oPFRun.bulletBlip.IsInit())
+        {
+            auto& buBlip = par.m_oPFRun.bulletBlip.get();
+            if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
+            {
+                buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
+            }
+        }
 
-     }
+    }
 }
 
 void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape, int slideID)

@@ -47,7 +47,7 @@ HEADERS += \
 	../../../PptFile/PPTXWriter/TxBodyConverter.h \
 	../../../PptFile/Reader/ClassesAtom.h \
 	../../../PptFile/Reader/CommonZLib.h \
-	../../../PptFile/Reader/ExtXmlUtils.hpp \
+        ../../../PptFile/Reader/ExtXmlUtils.h \
 	../../../PptFile/Reader/PPTDocumentInfo.h \
 	../../../PptFile/Reader/PPTDocumentInfoOneUser.h \
 	../../../PptFile/Reader/PPTFileDefines.h \
@@ -316,5 +316,15 @@ SOURCES += \
 }
 
 SOURCES += \
+	../../../PptFile/Drawing/Element.cpp \
+	../../../PptFile/Drawing/Slide.cpp \
+	../../../PptFile/Drawing/TextStructures.cpp \
+	../../../PptFile/Drawing/Theme.cpp \
 	../../../PptFile/Main/PPTFormatLib.cpp \
-	../../../../Common/3dParty/pole/pole.cpp
+	../../../../Common/3dParty/pole/pole.cpp \
+	../../../PptFile/PPTXWriter/ImageManager.cpp \
+	../../../PptFile/Reader/ClassesAtom.cpp \
+	../../../PptFile/Reader/ExtXmlUtils.cpp \
+	../../../PptFile/Reader/PPTDocumentInfo.cpp \
+	../../../PptFile/Reader/SlideInfo.cpp \
+	../../../PptFile/Records/TextFullSettings.cpp

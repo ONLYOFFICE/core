@@ -33,15 +33,15 @@
 #include <boost/algorithm/string.hpp>
 
 
-PPT::CMediaManager::CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0)
+CMediaManager::CMediaManager() : m_lIndexNextImage(0), m_lIndexNextAudio(0), m_lIndexNextVideo(0)
 {
 }
 
-PPT::CMediaManager::~CMediaManager()
+CMediaManager::~CMediaManager()
 {
 }
 
-void PPT::CMediaManager::Clear()
+void CMediaManager::Clear()
 {
     m_mapMedia.clear();
 
@@ -50,7 +50,7 @@ void PPT::CMediaManager::Clear()
     m_lIndexNextVideo = 0;
 }
 
-std::wstring PPT::CMediaManager::FindMedia(const std::wstring &strInput)
+std::wstring CMediaManager::FindMedia(const std::wstring &strInput)
 {
     std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
     if (m_mapMedia.end() != pPair)
@@ -60,32 +60,32 @@ std::wstring PPT::CMediaManager::FindMedia(const std::wstring &strInput)
     return L"";
 }
 
-void PPT::CMediaManager::SetDstMedia(const std::wstring &strDst)
+void CMediaManager::SetDstMedia(const std::wstring &strDst)
 {
     m_strDstMedia = strDst;
 }
 
-std::wstring PPT::CMediaManager::GenerateVideo(const std::wstring &strInput)
+std::wstring CMediaManager::GenerateVideo(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"video", m_lIndexNextVideo, L".avi");
 }
 
-std::wstring PPT::CMediaManager::GenerateAudio(const std::wstring &strInput)
+std::wstring CMediaManager::GenerateAudio(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"audio", m_lIndexNextAudio, L".wav");
 }
 
-std::wstring PPT::CMediaManager::GenerateImage(const std::wstring &strInput)
+std::wstring CMediaManager::GenerateImage(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".png");
 }
 
-std::wstring PPT::CMediaManager::GenerateImageJPEG(const std::wstring &strInput)
+std::wstring CMediaManager::GenerateImageJPEG(const std::wstring &strInput)
 {
     return GenerateMedia(strInput, L"image", m_lIndexNextImage, L".jpeg");
 }
 
-std::wstring PPT::CMediaManager::GenerateMedia(const std::wstring &strInput, const std::wstring &Template, long &Indexer, const std::wstring &strDefaultExt)
+std::wstring CMediaManager::GenerateMedia(const std::wstring &strInput, const std::wstring &Template, long &Indexer, const std::wstring &strDefaultExt)
 {
     std::map<std::wstring, std::wstring>::iterator pPair = m_mapMedia.find(strInput);
     if (m_mapMedia.end() != pPair)
@@ -137,7 +137,7 @@ std::wstring PPT::CMediaManager::GenerateMedia(const std::wstring &strInput, con
     return strMediaName;
 }
 
-void PPT::CMediaManager::WriteAudioCollection(const std::vector<CExFilesInfo> &audioCont)
+void CMediaManager::WriteAudioCollection(const std::vector<PPT::CExFilesInfo> &audioCont)
 {
     if (audioCont.empty()) return;
 
@@ -148,7 +148,7 @@ void PPT::CMediaManager::WriteAudioCollection(const std::vector<CExFilesInfo> &a
 
 }
 
-bool PPT::CMediaManager::IsNeedDownload(const std::wstring &strFile)
+bool CMediaManager::IsNeedDownload(const std::wstring &strFile)
 {
     int n1 = strFile.find(L"www");
     int n2 = strFile.find(L"http");
@@ -159,7 +159,7 @@ bool PPT::CMediaManager::IsNeedDownload(const std::wstring &strFile)
     return false;
 }
 
-std::wstring PPT::CorrectXmlString3(const std::wstring &str)
+std::wstring CorrectXmlString3(const std::wstring &str)
 {
     std::wstring buffer;
     buffer.reserve(str.size());
@@ -178,16 +178,16 @@ std::wstring PPT::CorrectXmlString3(const std::wstring &str)
     return buffer;
 }
 
-PPT::CRelsGenerator::CRelsGenerator(CMediaManager *pManager) : m_oWriter(), m_lNextRelsID(1)
+CRelsGenerator::CRelsGenerator(CMediaManager *pManager) : m_oWriter(), m_lNextRelsID(1)
 {
     m_pManager = pManager;
 }
 
-PPT::CRelsGenerator::~CRelsGenerator()
+CRelsGenerator::~CRelsGenerator()
 {
 }
 
-void PPT::CRelsGenerator::Clear()
+void CRelsGenerator::Clear()
 {
     m_oWriter.ClearNoAttack();
     m_lNextRelsID = 1;
@@ -195,7 +195,7 @@ void PPT::CRelsGenerator::Clear()
     m_mapHyperlinks.clear();
 }
 
-void PPT::CRelsGenerator::StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
+void CRelsGenerator::StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
 {
     std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
                            <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
@@ -215,7 +215,7 @@ void PPT::CRelsGenerator::StartMaster(int nIndexTheme, int nStartLayoutIndex, in
     m_oWriter.WriteString(s);
 }
 
-void PPT::CRelsGenerator::StartLayout(int nIndexTheme)
+void CRelsGenerator::StartLayout(int nIndexTheme)
 {
     std::wstring str1 = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                            <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
@@ -229,7 +229,7 @@ void PPT::CRelsGenerator::StartLayout(int nIndexTheme)
     m_oWriter.WriteString(str);
 }
 
-void PPT::CRelsGenerator::StartNotes(int nIndexSlide, bool bMaster)
+void CRelsGenerator::StartNotes(int nIndexSlide, bool bMaster)
 {
     m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
@@ -246,7 +246,7 @@ void PPT::CRelsGenerator::StartNotes(int nIndexSlide, bool bMaster)
     }
 }
 
-void PPT::CRelsGenerator::StartSlide(int nIndexLayout, int nIndexNotes)
+void CRelsGenerator::StartSlide(int nIndexLayout, int nIndexNotes)
 {
     m_oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
                           <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
@@ -262,13 +262,13 @@ void PPT::CRelsGenerator::StartSlide(int nIndexLayout, int nIndexNotes)
     }
 }
 
-void PPT::CRelsGenerator::CloseRels()
+void CRelsGenerator::CloseRels()
 {
     std::wstring str = _T("</Relationships>");
     m_oWriter.WriteString(str);
 }
 
-void PPT::CRelsGenerator::SaveRels(const std::wstring &strFile)
+void CRelsGenerator::SaveRels(const std::wstring &strFile)
 {
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(strFile);
@@ -277,7 +277,7 @@ void PPT::CRelsGenerator::SaveRels(const std::wstring &strFile)
     oFile.CloseFile();
 }
 
-std::wstring PPT::CRelsGenerator::WriteHyperlink(const std::wstring &strHyperlink, bool isExternal)
+std::wstring CRelsGenerator::WriteHyperlink(const std::wstring &strHyperlink, bool isExternal)
 {
     std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strHyperlink);
 
@@ -301,7 +301,7 @@ std::wstring PPT::CRelsGenerator::WriteHyperlink(const std::wstring &strHyperlin
     return strRid;
 }
 
-std::wstring PPT::CRelsGenerator::WriteFile(const std::wstring &strPath)
+std::wstring CRelsGenerator::WriteFile(const std::wstring &strPath)
 {
     std::map<std::wstring, std::wstring>::iterator pPair = m_mapHyperlinks.find(strPath);
 
@@ -324,7 +324,7 @@ std::wstring PPT::CRelsGenerator::WriteFile(const std::wstring &strPath)
     return strRid;
 }
 
-std::wstring PPT::CRelsGenerator::WriteHyperlinkMedia(const std::wstring &strMedia, bool bExternal, bool newRIdAlways, std::wstring strRelsType)
+std::wstring CRelsGenerator::WriteHyperlinkMedia(const std::wstring &strMedia, bool bExternal, bool newRIdAlways, std::wstring strRelsType)
 {
     if (!newRIdAlways)
     {
@@ -353,22 +353,22 @@ std::wstring PPT::CRelsGenerator::WriteHyperlinkMedia(const std::wstring &strMed
     return strRid;
 }
 
-std::wstring PPT::CRelsGenerator::WriteHyperlinkImage(const std::wstring &strImage, bool bExternal)
+std::wstring CRelsGenerator::WriteHyperlinkImage(const std::wstring &strImage, bool bExternal)
 {
     return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image");
 }
 
-std::wstring PPT::CRelsGenerator::WriteHyperlinkAudio(const std::wstring &strImage, bool bExternal)
+std::wstring CRelsGenerator::WriteHyperlinkAudio(const std::wstring &strImage, bool bExternal)
 {
     return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio");
 }
 
-std::wstring PPT::CRelsGenerator::WriteHyperlinkVideo(const std::wstring &strImage, bool bExternal)
+std::wstring CRelsGenerator::WriteHyperlinkVideo(const std::wstring &strImage, bool bExternal)
 {
     return WriteHyperlinkMedia(strImage, bExternal, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video");
 }
 
-std::wstring PPT::CRelsGenerator::WriteMedia(const std::wstring &strMediaPath)
+std::wstring CRelsGenerator::WriteMedia(const std::wstring &strMediaPath)
 {
     std::wstring strMedia = m_pManager->FindMedia(strMediaPath);
 
@@ -376,7 +376,7 @@ std::wstring PPT::CRelsGenerator::WriteMedia(const std::wstring &strMediaPath)
     return WriteHyperlinkMedia(strMedia, false, false); // changed
 }
 
-std::wstring PPT::CRelsGenerator::WriteImage(const std::wstring &strImagePath)
+std::wstring CRelsGenerator::WriteImage(const std::wstring &strImagePath)
 {
     std::wstring strImage = m_pManager->GenerateImage(strImagePath);
 
@@ -384,9 +384,9 @@ std::wstring PPT::CRelsGenerator::WriteImage(const std::wstring &strImagePath)
     return WriteHyperlinkImage(strImage, false);
 }
 
-std::wstring PPT::CRelsGenerator::WriteSlideRef(const std::wstring &strLocation)
+std::wstring CRelsGenerator::WriteSlideRef(const std::wstring &strLocation)
 {
-    int sldNum = CExFilesInfo::GetSlideNumber(strLocation);
+    int sldNum = PPT::CExFilesInfo::GetSlideNumber(strLocation);
 
     std::wstring strSlide(L"slide");
     strSlide += std::to_wstring(sldNum);
@@ -394,7 +394,7 @@ std::wstring PPT::CRelsGenerator::WriteSlideRef(const std::wstring &strLocation)
     return WriteHyperlinkMedia(strSlide, false, false, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide");
 }
 
-std::wstring PPT::CRelsGenerator::WriteAudio(const std::wstring &strAudioPath, bool &bExternal)
+std::wstring CRelsGenerator::WriteAudio(const std::wstring &strAudioPath, bool &bExternal)
 {
     std::wstring strAudio = m_pManager->GenerateAudio(strAudioPath);
 
@@ -409,7 +409,7 @@ std::wstring PPT::CRelsGenerator::WriteAudio(const std::wstring &strAudioPath, b
     }
 }
 
-std::wstring PPT::CRelsGenerator::WriteVideo(const std::wstring &strVideoPath, bool &bExternal)
+std::wstring CRelsGenerator::WriteVideo(const std::wstring &strVideoPath, bool &bExternal)
 {
     std::wstring strVideo = m_pManager->GenerateVideo(strVideoPath);
 

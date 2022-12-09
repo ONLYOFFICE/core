@@ -62,6 +62,7 @@
 */
 #include "TextFullSettings.h"
 
+using namespace PPT;
 
 CTextFullSettings::CTextFullSettings() : m_arRanges()
 {

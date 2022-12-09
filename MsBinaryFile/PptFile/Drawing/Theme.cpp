@@ -89,7 +89,7 @@ void PPT::CTheme::CalculateStyles()
 
 			if (pLevel->m_oPFRun.bulletColor.is_init())
 			{
-				CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
+                ODRAW::CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
 				if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 				{
 					oColor.R = m_arColorScheme[oColor.m_lSchemeIndex].R;
@@ -100,7 +100,7 @@ void PPT::CTheme::CalculateStyles()
 			}
 			if (pLevel->m_oCFRun.Color.is_init())
 			{
-				CColor& oColor = pLevel->m_oCFRun.Color.get();
+                ODRAW::CColor& oColor = pLevel->m_oCFRun.Color.get();
 				if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 				{
 					oColor.R = m_arColorScheme[oColor.m_lSchemeIndex].R;
@@ -173,7 +173,7 @@ void PPT::CTheme::CalculateStyle(CTheme *pTheme, CTextStyles &oStyle)
 
 		if (pLevel->m_oPFRun.bulletColor.is_init())
 		{
-			CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
+            ODRAW::CColor& oColor = pLevel->m_oPFRun.bulletColor.get();
 			if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 			{
 				oColor.R = pTheme->m_arColorScheme[oColor.m_lSchemeIndex].R;
@@ -184,7 +184,7 @@ void PPT::CTheme::CalculateStyle(CTheme *pTheme, CTextStyles &oStyle)
 		}
 		if (pLevel->m_oCFRun.Color.is_init())
 		{
-			CColor& oColor = pLevel->m_oCFRun.Color.get();
+            ODRAW::CColor& oColor = pLevel->m_oCFRun.Color.get();
 			if ((0 <= oColor.m_lSchemeIndex) && (oColor.m_lSchemeIndex < lCountColors))
 			{
 				oColor.R = pTheme->m_arColorScheme[oColor.m_lSchemeIndex].R;

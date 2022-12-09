@@ -20,11 +20,13 @@ SOURCES += \
 
 HEADERS += \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/Certificate.h \
-	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/CertificateCommon.h \
-	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/Certificate_openssl.h
+	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/CertificateCommon.h
 
 SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp
+
+DEFINES += SUPPORT_OFORM
+HEADERS += $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/Certificate_oform.h
 
 # OPENSSL
 CONFIG += open_ssl_common

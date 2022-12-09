@@ -124,10 +124,12 @@ namespace NSCertificate
 		CertCloseStore(hStoreHandle, 0);
 #else
 
+#ifdef SUPPORT_OPENSSL
 		CCertificate_openssl* pCertificate = (CCertificate_openssl*)CreateInstance(CERTIFICATE_ENGINE_TYPE_OPENSSL);
 		if (pCertificate->FromKey(id))
 			return pCertificate;
 		delete pCertificate;
+#endif
 
 #endif
 

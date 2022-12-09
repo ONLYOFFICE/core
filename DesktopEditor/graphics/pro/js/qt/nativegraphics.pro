@@ -659,5 +659,6 @@ SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 
 HEADERS += \
     ../wasm/src/drawingfile.h \
-    ../wasm/src/serialize.h
+    ../wasm/src/serialize.h \
+    ../wasm/src/CMapSerialize.h
 SOURCES += ../wasm/src/drawingfile.cpp

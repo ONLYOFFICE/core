@@ -50,11 +50,13 @@ void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 void GlobalParamsAdaptor::SetCMapMemory()
 {
 	cidToUnicodes->add(new GString("Adobe-GB1"), new GString());
+	cidToUnicodes->add(new GString("Adobe-CNS1"), new GString());
 	cidToUnicodes->add(new GString("Adobe-Korea1"), new GString());
 	cidToUnicodes->add(new GString("Adobe-KR"), new GString());
 	cidToUnicodes->add(new GString("Adobe-Japan1"), new GString());
 
 	cMapDirs->add(new GString("Adobe-GB1"), new GList());
+	cMapDirs->add(new GString("Adobe-CNS1"), new GList());
 	cMapDirs->add(new GString("Adobe-Korea1"), new GList());
 	cMapDirs->add(new GString("Adobe-KR"), new GList());
 	cMapDirs->add(new GString("Adobe-Japan1"), new GList());

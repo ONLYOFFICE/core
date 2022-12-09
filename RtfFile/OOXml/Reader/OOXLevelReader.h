@@ -32,10 +32,6 @@
 #pragma once
 
 #include "OOXReaderBasic.h"
-
-#include "../../Format/RtfDocument.h"
-#include "../../Format/RtfProperty.h"
-#include "../../Format/Utils.h"
 #include "../../../OOXML/DocxFormat/Numbering.h"
 
 class OOXLevelReader

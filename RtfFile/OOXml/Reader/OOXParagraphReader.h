@@ -30,12 +30,11 @@
  *
  */
 #pragma once
+
 #include "OOXRunReader.h"
 #include "OOXpPrReader.h"
-#include "OOXMathReader.h"
 
 #include "../../Format/RtfDocument.h"
-#include "../../Format/RtfField.h"
 
 namespace OOX
 {
@@ -51,6 +50,7 @@ private:
 	PPTX::Logic::Paragraph								*m_drawingParagraph;
 	OOX::Logic::CParagraph								*m_ooxParagraph;
 	OOX::WritingElementWithChilds<OOX::WritingElement>	*m_ooxElement;
+
 public: 
 	RtfCharProperty										m_oCharProperty;
 

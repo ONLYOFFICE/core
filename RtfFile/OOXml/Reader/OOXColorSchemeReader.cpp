@@ -30,6 +30,7 @@
  *
  */
 
+#include "OOXColorReader.h"
 #include "OOXColorSchemeReader.h"
 
 OOXColorSchemeReader::OOXColorSchemeReader(PPTX::nsTheme::ClrScheme * ooxColorScheme)

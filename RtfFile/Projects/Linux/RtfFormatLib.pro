@@ -149,7 +149,6 @@ HEADERS += \
 	../../OOXml/Reader/OOXColorReader.h \
 	../../OOXml/Reader/OOXColorReader2.h \
 	../../OOXml/Reader/OOXColorSchemeReader.h \
-	../../OOXml/Reader/OOXContentTypeReader.h \
 	../../OOXml/Reader/OOXCoreReader.h \
 	../../OOXml/Reader/OOXDocDefaultsReader.h \
 	../../OOXml/Reader/OOXDocumentReader.h \

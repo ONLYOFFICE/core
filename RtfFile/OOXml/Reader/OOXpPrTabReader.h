@@ -29,10 +29,10 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
 #include "OOXReaderBasic.h"
-#include "../../Format/RtfProperty.h"
 #include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
 
 class OOXpPrTabReader

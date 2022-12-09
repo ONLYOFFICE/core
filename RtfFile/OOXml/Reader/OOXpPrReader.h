@@ -33,7 +33,7 @@
 
 #include "OOXShadingReader.h"
 #include "OOXBorderReader.h"
-#include "OOXReaderBasic.h"
+
 #include "OOXcnfStyleReader.h"
 #include "OOXrPrReader.h"
 #include "OOXSectionPropertyReader.h"
@@ -48,20 +48,12 @@ private:
 
 	PPTX::Logic::TextParagraphPr *		m_drawingParaProps;
 	OOX::Logic::CParagraphProperty *	m_ooxParaProps;
+
 public: 
 	bool m_bDefStyle;
 	
-	OOXpPrReader(OOX::Logic::CParagraphProperty *ooxParaProps)
-	{
-		m_bDefStyle			= true;
-		m_ooxParaProps		= ooxParaProps;
-		m_drawingParaProps	= NULL;
-	}
-	OOXpPrReader(PPTX::Logic::TextParagraphPr *ooxParaProps)
-	{
-		m_bDefStyle			= true;
-		m_ooxParaProps		= NULL;
-		m_drawingParaProps	= ooxParaProps;
-	}
-	bool Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle);
+	OOXpPrReader(OOX::Logic::CParagraphProperty *ooxParaProps);
+	OOXpPrReader(PPTX::Logic::TextParagraphPr *ooxParaProps);
+
+	bool Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle);
 };

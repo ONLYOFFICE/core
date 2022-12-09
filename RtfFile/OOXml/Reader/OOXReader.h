@@ -53,6 +53,7 @@
 #include "../../../OOXML/DocxFormat/HeaderFooter.h"
 
 #include "../../../OOXML/PPTXFormat/Theme.h"
+
 class RtfConvertationManager;
 
 class OOXReader

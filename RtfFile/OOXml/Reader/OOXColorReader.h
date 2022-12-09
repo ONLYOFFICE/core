@@ -30,11 +30,12 @@
  *
  */
 #pragma once
-#include "../../Format/RtfProperty.h"
-#include "OOXReader.h"
+
 #include "OOXReaderBasic.h"
 
-#include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "OOXReader.h"
+#include "../../Format/RtfProperty.h"
+#include "../../../OOXML/PPTXFormat/Theme/ClrScheme.h"
 
 class OOXColorReader
 {

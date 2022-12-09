@@ -40,5 +40,6 @@ public:
 	TextItemContainerPtr m_oTextItems;
 
 	OOXTextItemReader();
+
 	bool Parse(OOX::WritingElement* ooxElement, ReaderParameter oParam);
 };

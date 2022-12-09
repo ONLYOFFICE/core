@@ -32,10 +32,15 @@
 #include "OOXtblPrReader.h"
 #include "OOXTableRowReader.h"
 #include "OOXTableReader.h"
+#include "OOXParagraphReader.h"
 
 #include "../../../OOXML/DocxFormat/Logic/Table.h"
 #include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
 
+OOXtrPrReader::OOXtrPrReader(OOX::Logic::CTableRowProperties*	ooxTableRowProps)
+{
+	m_ooxTableRowProps = ooxTableRowProps;
+}
 bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle)
 {
 	if (m_ooxTableRowProps == NULL) return false;
@@ -116,6 +121,10 @@ bool OOXtrPrReader::Parse( ReaderParameter oParam , RtfRowProperty& oOutputPrope
 	return true;
 }
 
+OOXTableReader::OOXTableReader(OOX::Logic::CTbl *ooxTable)
+{
+	m_ooxTable = ooxTable;
+}
 bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 {
 	if (m_ooxTable == NULL) return false;
@@ -219,12 +228,12 @@ void OOXTableReader::ApplyParagraphProperty( RtfTable& oOutputTable )
 			}
 	}
 }
+
 OOXTableRowReader::OOXTableRowReader(OOX::Logic::CTr *ooxRowTable, OOX::Logic::CTableProperty* ooxTableProps)
 {
     m_ooxRowTable	= ooxRowTable;
     m_ooxTableProps	= ooxTableProps;
 }
-
 bool OOXTableRowReader::Parse( ReaderParameter oParam, RtfTableRow& oOutputRow, int nCurRow, int nRowCount)
 {
     if (m_ooxRowTable == NULL) return false;

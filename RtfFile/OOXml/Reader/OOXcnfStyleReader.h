@@ -34,7 +34,6 @@
 #include "../../Format/RtfProperty.h"
 #include "../../Format/RtfTableCell.h"
 
-#include "OOXReaderBasic.h"
 #include "OOXtblLookReader.h"
 
 class CcnfStyle

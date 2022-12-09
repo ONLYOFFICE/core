@@ -33,9 +33,6 @@
 
 #include "OOXReader.h"
 #include "OOXReaderBasic.h"
-#include "../../Format/RtfDocument.h"
-
-#include <limits.h>
 
 class OOXFootnotesReader
 {

@@ -30,6 +30,9 @@
  *
  */
 
+#include "OOXPictureAnchorReader.h"
+#include "OOXPictureInlineReader.h"
+
 #include "OOXPictureReader.h"
 
 OOXDrawingReader::OOXDrawingReader(OOX::Logic::CDrawing* ooxDrawing)

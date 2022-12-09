@@ -30,8 +30,9 @@
  *
  */
 #pragma once
+
 #include "OOXFontReader.h"
-#include "../../Format/RtfProperty.h"
+#include "../../../OOXML/PPTXFormat/Theme/FontScheme.h"
 
 class OOXFontSchemeReader
 {

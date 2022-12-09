@@ -45,6 +45,7 @@ private:
 	RtfDocument*		m_poDocument = NULL;
 
 	OOX::CDocument* m_ooxDocument = NULL;
+
 public: 
 	OOXDocumentReader(OOX::CDocument* ooxDocument);
 	~OOXDocumentReader();

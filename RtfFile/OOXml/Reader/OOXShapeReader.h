@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 #include "OOXReaderBasic.h"
 
 #include "../../Format/RtfDocument.h"
@@ -44,19 +45,13 @@ namespace OOX
 		class CBackground;
 	}
 }
+
 class OOXShapeReader
 {
 public: 
-	OOXShapeReader(OOX::Vml::CVmlCommonElements * vmlElem)
-	{
-		m_vmlElement = vmlElem;
-		m_arrElement = vmlElem;
-	}
+	OOXShapeReader(OOX::Vml::CVmlCommonElements * vmlElem);
 	OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem);
-	OOXShapeReader(OOX::WritingElement* ooxShape)
-	{
-		m_ooxShape	 = ooxShape;
-	}
+	OOXShapeReader(OOX::WritingElement* ooxShape);
 
 	static bool WriteDataToPicture( std::wstring sPath, RtfPicture& pOutput, ReaderParameter& oParam );
 
@@ -70,6 +65,7 @@ public:
 	static void Parse(ReaderParameter oParam, PPTX::Logic::ColorBase *oox_color, unsigned int & nColor, _CP_OPT(double) &opacity);
 	
 	static bool ParseVmlStyle(RtfShapePtr pShape, SimpleTypes::Vml::CCssProperty* prop);
+
 private:
 	void ParseVmlPath(RtfShapePtr& pShape, const std::wstring &custom_path);
 	bool ParseVmlStyles(RtfShapePtr& pShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props);
@@ -108,23 +104,11 @@ class OOXShapeGroupReader
 private:
 	OOX::Vml::CGroup		*m_vmlGroup = NULL;
 	PPTX::Logic::SpTree		*m_ooxGroup = NULL;
+
 public: 
-	OOXShapeGroupReader(OOX::Vml::CGroup *vmlGroup)
-	{
-		m_vmlGroup = vmlGroup;
-	}
-	OOXShapeGroupReader(PPTX::Logic::SpTree *ooxGroup)
-	{
-		m_ooxGroup = ooxGroup;
-	}
-	bool ParseVmlStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props)
-	{
-		for (size_t i = 0; i < props.size(); i++)
-		{
-			OOXShapeReader::ParseVmlStyle( pGroupShape, props[i].get());
-		}
-		return true;
-	}
+	OOXShapeGroupReader(OOX::Vml::CGroup *vmlGroup);
+	OOXShapeGroupReader(PPTX::Logic::SpTree *ooxGroup);
+	bool ParseVmlStyles(RtfShapePtr pGroupShape, std::vector<SimpleTypes::Vml::CCssPropertyPtr> & props);
 
 	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 };
@@ -133,6 +117,7 @@ class OOXBackgroundReader
 {
 private:
 	OOX::Logic::CBackground *m_ooxBackground = NULL;
+
 public: 
 	OOXBackgroundReader(OOX::Logic::CBackground *oox_background);
 

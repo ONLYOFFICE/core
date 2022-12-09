@@ -30,6 +30,8 @@
  *
  */
 
+#include "../../Format/RtfDocument.h"
+
 #include "OOXCoreReader.h"
 
 OOXCoreReader::OOXCoreReader(OOX::CCore * ooxCore)

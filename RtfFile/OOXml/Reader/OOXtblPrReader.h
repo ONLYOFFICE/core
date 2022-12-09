@@ -31,14 +31,7 @@
  */
 #pragma once
 
-#include "OOXReader.h"
-#include "OOXBorderReader.h"
-#include "OOXShadingReader.h"
-#include "OOXtblpPrReader.h"
 #include "OOXReaderBasic.h"
-#include "OOXtblLookReader.h"
-#include "OOXtcPrReader.h"
-
 #include "../../Format/RtfDocument.h"
 #include "../../../OOXML/DocxFormat/Logic/TableProperty.h"
 

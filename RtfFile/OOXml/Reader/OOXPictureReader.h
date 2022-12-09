@@ -30,10 +30,9 @@
  *
  */
 #pragma once
-#include "../../Format/RtfPicture.h"
-#include "OOXPictureAnchorReader.h"
-#include "OOXPictureInlineReader.h"
 
+#include "OOXReaderBasic.h"
+#include "../../Format/RtfPicture.h"
 #include "../../../OOXML/DocxFormat/Drawing/Drawing.h"
 
 class OOXDrawingReader

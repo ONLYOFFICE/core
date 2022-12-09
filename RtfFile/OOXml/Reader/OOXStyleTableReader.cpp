@@ -30,6 +30,9 @@
  *
  */
 
+#include "OOXDocDefaultsReader.h"
+#include "OOXStyleReader.h"
+
 #include "OOXStyleTableReader.h"
 
 OOXStyleTableReader::OOXStyleTableReader(OOX::CStyles* ooxStyles)

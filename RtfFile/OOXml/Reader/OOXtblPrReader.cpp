@@ -30,6 +30,13 @@
  *
  */
 
+#include "OOXReader.h"
+#include "OOXBorderReader.h"
+#include "OOXShadingReader.h"
+#include "OOXtblpPrReader.h"
+#include "OOXtblLookReader.h"
+#include "OOXtcPrReader.h"
+
 #include "OOXtblPrReader.h"
 
 OOXtblPrReader::OOXtblPrReader(OOX::Logic::CTableProperty* ooxTableProps)

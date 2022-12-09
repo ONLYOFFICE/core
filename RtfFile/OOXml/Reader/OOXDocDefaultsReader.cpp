@@ -30,6 +30,9 @@
  *
  */
 
+#include "OOXrPrReader.h"
+#include "OOXpPrReader.h"
+
 #include "OOXDocDefaultsReader.h"
 
 OOXDocDefaultsReader::OOXDocDefaultsReader(OOX::CDocDefaults* ooxDefaults)

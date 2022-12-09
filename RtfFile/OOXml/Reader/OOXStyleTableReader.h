@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#include "OOXStyleReader.h"
-#include "OOXDocDefaultsReader.h"
 
 #include "../../../OOXML/DocxFormat/Styles.h"
 

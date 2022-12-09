@@ -31,9 +31,7 @@
  */
 #pragma once
 
-#include "../../Format/RtfProperty.h"
 #include "OOXReaderBasic.h"
-
 #include "../../../OOXML/DocxFormat/Logic/TableProperty.h"
 
 struct CtblLook

@@ -36,6 +36,7 @@
 #include "OOXTextItemReader.h"
 #include "OOXpPrFrameReader.h"
 #include "OOXpPrTabReader.h"
+#include "OOXMathReader.h"
 
 #include "../../Format/RtfOle.h"
 
@@ -617,6 +618,8 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
     }
 	return true;
 }
+
+
 OOXRunReader::OOXRunReader(OOX::Logic::CRun *ooxRun)
 {
     m_drawingRun	= NULL;
@@ -1094,6 +1097,18 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 }
 
 
+OOXpPrReader::OOXpPrReader(OOX::Logic::CParagraphProperty *ooxParaProps)
+{
+	m_bDefStyle			= true;
+	m_ooxParaProps		= ooxParaProps;
+	m_drawingParaProps	= NULL;
+}
+OOXpPrReader::OOXpPrReader(PPTX::Logic::TextParagraphPr *ooxParaProps)
+{
+	m_bDefStyle			= true;
+	m_ooxParaProps		= NULL;
+	m_drawingParaProps	= ooxParaProps;
+}
 bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle )
 {
 	if (m_drawingParaProps) return ParseDrawing( oParam, oOutputProperty);
@@ -1440,6 +1455,114 @@ bool OOXpPrReader::Parse( ReaderParameter oParam, RtfParagraphProperty& oOutputP
 	}
 	return true;
 }
+bool OOXpPrReader::ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty)
+{
+	if (m_drawingParaProps == NULL) return false;
+
+	if (m_drawingParaProps->lvl.IsInit())
+		oOutputProperty.m_nOutlinelevel = m_drawingParaProps->lvl.get();
+
+	if( m_drawingParaProps->algn.IsInit())
+	{
+		switch(m_drawingParaProps->algn->GetBYTECode())
+		{
+		case SimpleTypes::jcBoth            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qj;break;
+		case SimpleTypes::jcCenter          : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qc;break;
+		case SimpleTypes::jcDistribute      : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qd;break;
+		case SimpleTypes::jcEnd             : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
+		case SimpleTypes::jcHighKashida     : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk20;break;
+		case SimpleTypes::jcLowKashida      : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk0; break;
+		case SimpleTypes::jcMediumKashida   : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk10; break;
+		case SimpleTypes::jcNumTab          : break;
+		case SimpleTypes::jcStart           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
+		case SimpleTypes::jcThaiDistribute  : break;
+		case SimpleTypes::jcLeft            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
+		case SimpleTypes::jcRight           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
+		default: break;
+		}
+	}
+
+	//if( m_drawingParaProps->m_oInd.IsInit() )
+	//{
+	//	int nFirstLine = PROP_DEF;
+
+	//	if (m_drawingParaProps->m_oInd->m_oHanging.IsInit())
+	//		nFirstLine = m_drawingParaProps->m_oInd->m_oHanging->ToTwips();
+	//	if( PROP_DEF != nFirstLine )
+	//		oOutputProperty.m_nIndFirstLine = -nFirstLine;
+
+	//	if (m_drawingParaProps->m_oInd->m_oFirstLine.IsInit())
+	//		oOutputProperty.m_nIndFirstLine = m_drawingParaProps->m_oInd->m_oFirstLine->ToTwips();
+
+	//	if (m_drawingParaProps->m_oInd->m_oStart.IsInit())
+	//		oOutputProperty.m_nIndStart = m_drawingParaProps->m_oInd->m_oStart->ToTwips();
+
+	//	if (m_drawingParaProps->m_oInd->m_oEnd.IsInit())
+	//		oOutputProperty.m_nIndEnd = m_drawingParaProps->m_oInd->m_oEnd->ToTwips();
+	//}
+
+	if (	m_drawingParaProps->spcBef.IsInit()
+		&&	m_drawingParaProps->spcBef->spcPts.IsInit())
+			oOutputProperty.m_nSpaceBefore = m_drawingParaProps->spcBef->spcPts.get();
+
+	if (	m_drawingParaProps->spcAft.IsInit()
+		&&	m_drawingParaProps->spcAft->spcPts.IsInit())
+			oOutputProperty.m_nSpaceAfter = m_drawingParaProps->spcAft->spcPts.get();
+
+	if (m_drawingParaProps->ParagraphBullet.has_bullet())
+	{
+		oOutputProperty.m_nListLevel	= 0;
+		oOutputProperty.m_nListId		= oParam.oRtf->m_oListTable.GetCount() + 1;
+
+		RtfListProperty oNewList;
+		oNewList.m_nID = oOutputProperty.m_nListId;
+		oNewList.m_nListSimple = 1;
+
+		RtfListLevelProperty oNewLevel;
+		//if (m_drawingParaProps->ParagraphBullet.IsInit() && m_drawingParaProps->m_oBuChar->m_sChar.IsInit())
+		//{
+		//	oNewLevel.m_sText		= m_drawingParaProps->m_oBuChar->m_sChar.get();
+		//	oNewLevel.m_nNumberType = 23;
+		//}
+		//else if ( m_drawingParaProps->m_oBuAutoNum.IsInit() )
+		//{
+		//	if (m_drawingParaProps->m_oBuAutoNum->m_sType.IsInit())
+		//		oNewLevel.m_nNumberType = oNewLevel.GetFormat( m_drawingParaProps->m_oBuAutoNum->m_sType.get());
+		//	else
+		//		oNewLevel.m_nNumberType = 0;
+
+		//	if (m_drawingParaProps->m_oBuAutoNum->m_nStartAt.IsInit())
+		//		oNewLevel.m_nStart =  m_drawingParaProps->m_oBuAutoNum->m_nStartAt->GetValue();
+		//}
+
+		oNewList.AddItem( oNewLevel );
+		oParam.oRtf->m_oListTable.AddItem( oNewList );	}
+
+	if (m_drawingParaProps->rtl.IsInit())
+		oOutputProperty.m_bRtl = m_drawingParaProps->rtl.get() ? 1 : 0;
+
+	if( m_drawingParaProps->defRPr.IsInit() )
+	{
+		OOXrPrReader orPrReader(m_drawingParaProps->defRPr.GetPointer());
+		orPrReader.Parse( oParam, oOutputProperty.m_oCharProperty );
+	}
+
+	return true;
+}
+
+
+OOXrPrReader::OOXrPrReader(OOX::Logic::CRunProperty *ooxRunProps)
+{
+	m_bDefStyle			= true;
+	m_ooxRunProps		= ooxRunProps;
+	m_drawingRunProps	= NULL;
+}
+OOXrPrReader::OOXrPrReader(PPTX::Logic::RunProperties *ooxRunProps)
+{
+	m_bDefStyle			= true;
+	m_ooxRunProps		= NULL;
+	m_drawingRunProps	= ooxRunProps;
+}
 bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProperty)
 {
 	if (m_drawingRunProps) ParseDrawing( oParam, oOutputProperty );
@@ -1717,100 +1840,6 @@ bool OOXrPrReader::Parse( ReaderParameter oParam, RtfCharProperty& oOutputProper
 	}
 	return true;
 }
-bool OOXpPrReader::ParseDrawing( ReaderParameter oParam, RtfParagraphProperty& oOutputProperty)
-{
-	if (m_drawingParaProps == NULL) return false;
-
-	if (m_drawingParaProps->lvl.IsInit())
-		oOutputProperty.m_nOutlinelevel = m_drawingParaProps->lvl.get();
-
-	if( m_drawingParaProps->algn.IsInit())
-	{
-		switch(m_drawingParaProps->algn->GetBYTECode())
-		{
-		case SimpleTypes::jcBoth            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qj;break;
-		case SimpleTypes::jcCenter          : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qc;break;
-		case SimpleTypes::jcDistribute      : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qd;break;
-		case SimpleTypes::jcEnd             : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
-		case SimpleTypes::jcHighKashida     : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk20;break;
-		case SimpleTypes::jcLowKashida      : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk0; break;
-		case SimpleTypes::jcMediumKashida   : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qk10; break;
-		case SimpleTypes::jcNumTab          : break;
-		case SimpleTypes::jcStart           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
-		case SimpleTypes::jcThaiDistribute  : break;
-		case SimpleTypes::jcLeft            : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_ql;break;
-		case SimpleTypes::jcRight           : oOutputProperty.m_eAlign = RtfParagraphProperty::pa_qr;break;
-        default: break;
-        }
-	}
-
-	//if( m_drawingParaProps->m_oInd.IsInit() )
-	//{
-	//	int nFirstLine = PROP_DEF;
-
-	//	if (m_drawingParaProps->m_oInd->m_oHanging.IsInit())
-	//		nFirstLine = m_drawingParaProps->m_oInd->m_oHanging->ToTwips();
-	//	if( PROP_DEF != nFirstLine )
-	//		oOutputProperty.m_nIndFirstLine = -nFirstLine;
-
-	//	if (m_drawingParaProps->m_oInd->m_oFirstLine.IsInit())
-	//		oOutputProperty.m_nIndFirstLine = m_drawingParaProps->m_oInd->m_oFirstLine->ToTwips();
-
-	//	if (m_drawingParaProps->m_oInd->m_oStart.IsInit())
-	//		oOutputProperty.m_nIndStart = m_drawingParaProps->m_oInd->m_oStart->ToTwips();
-
-	//	if (m_drawingParaProps->m_oInd->m_oEnd.IsInit())
-	//		oOutputProperty.m_nIndEnd = m_drawingParaProps->m_oInd->m_oEnd->ToTwips();
-	//}
-
-	if (	m_drawingParaProps->spcBef.IsInit() 
-		&&	m_drawingParaProps->spcBef->spcPts.IsInit())
-			oOutputProperty.m_nSpaceBefore = m_drawingParaProps->spcBef->spcPts.get();
-	
-	if (	m_drawingParaProps->spcAft.IsInit() 
-		&&	m_drawingParaProps->spcAft->spcPts.IsInit())
-			oOutputProperty.m_nSpaceAfter = m_drawingParaProps->spcAft->spcPts.get();
-
-	if (m_drawingParaProps->ParagraphBullet.has_bullet())
-	{
-		oOutputProperty.m_nListLevel	= 0;
-		oOutputProperty.m_nListId		= oParam.oRtf->m_oListTable.GetCount() + 1;
-
-		RtfListProperty oNewList;
-		oNewList.m_nID = oOutputProperty.m_nListId;
-		oNewList.m_nListSimple = 1;
-
-		RtfListLevelProperty oNewLevel;
-		//if (m_drawingParaProps->ParagraphBullet.IsInit() && m_drawingParaProps->m_oBuChar->m_sChar.IsInit())
-		//{
-		//	oNewLevel.m_sText		= m_drawingParaProps->m_oBuChar->m_sChar.get();
-		//	oNewLevel.m_nNumberType = 23;
-		//}
-		//else if ( m_drawingParaProps->m_oBuAutoNum.IsInit() )
-		//{
-		//	if (m_drawingParaProps->m_oBuAutoNum->m_sType.IsInit())
-		//		oNewLevel.m_nNumberType = oNewLevel.GetFormat( m_drawingParaProps->m_oBuAutoNum->m_sType.get());
-		//	else
-		//		oNewLevel.m_nNumberType = 0;
-
-		//	if (m_drawingParaProps->m_oBuAutoNum->m_nStartAt.IsInit())
-		//		oNewLevel.m_nStart =  m_drawingParaProps->m_oBuAutoNum->m_nStartAt->GetValue();
-		//}
-		
-		oNewList.AddItem( oNewLevel );
-		oParam.oRtf->m_oListTable.AddItem( oNewList );	}
-
-	if (m_drawingParaProps->rtl.IsInit())
-		oOutputProperty.m_bRtl = m_drawingParaProps->rtl.get() ? 1 : 0;
-
-	if( m_drawingParaProps->defRPr.IsInit() )
-	{
-		OOXrPrReader orPrReader(m_drawingParaProps->defRPr.GetPointer());
-		orPrReader.Parse( oParam, oOutputProperty.m_oCharProperty );
-	}
-
-	return true;
-}
 bool OOXrPrReader::ParseDrawing(ReaderParameter oParam, RtfCharProperty& oOutputProperty)
 {
 	if (m_drawingRunProps == NULL) return false;
@@ -1868,7 +1897,7 @@ bool OOXrPrReader::ParseDrawing(ReaderParameter oParam, RtfCharProperty& oOutput
 	//if( m_drawingRunProps->m_oHighlight.IsInit() && m_drawingRunProps->m_oHighlight->m_oVal.IsInit() )
 	//{
 		//if (m_drawingRunProps->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
-		//{ 	
+		//{
 			//	oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_drawingRunProps->m_oHighlight->m_oVal->Get_R(),
 	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_G(),
 	//																				m_drawingRunProps->m_oHighlight->m_oVal->Get_B()));
@@ -1906,12 +1935,12 @@ bool OOXrPrReader::ParseDrawing(ReaderParameter oParam, RtfCharProperty& oOutput
 		case SimpleTypes::underlineWavyDouble      : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Double_wave;			break;
 		case SimpleTypes::underlineWavyHeavy       : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Heavy_wave;			break;
 		case SimpleTypes::underlineWords           : oOutputProperty.m_eUnderStyle = RtfCharProperty::uls_Word;					break;
-        default: break;
-        }
+		default: break;
+		}
 
 		//if ((m_drawingRunProps->m_oU->m_oColor.IsInit()) && (m_drawingRunProps->m_oU->m_oColor->GetValue() == SimpleTypes::hexcolorRGB))
 		//{
-		//	RtfColor oColor(m_drawingRunProps->m_oU->m_oColor->Get_R(), m_drawingRunProps->m_oU->m_oColor->Get_G(), m_drawingRunProps->m_oU->m_oColor->Get_B());	
+		//	RtfColor oColor(m_drawingRunProps->m_oU->m_oColor->Get_R(), m_drawingRunProps->m_oU->m_oColor->Get_G(), m_drawingRunProps->m_oU->m_oColor->Get_B());
 		//	oOutputProperty.m_nUnderlineColor =  oParam.oRtf->m_oColorTable.AddItem( oColor );
 		//}//todooo theme color, tint, shadow
 	}
@@ -1919,6 +1948,10 @@ bool OOXrPrReader::ParseDrawing(ReaderParameter oParam, RtfCharProperty& oOutput
 	return true;
 }
 
+OOXpPrFrameReader::OOXpPrFrameReader(ComplexTypes::Word::CFramePr *ooxFramePr)
+{
+	m_ooxFramePr = ooxFramePr;
+}
 bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty)
 {
 	if (m_ooxFramePr == NULL) return false;
@@ -2019,6 +2052,12 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 	}
 
 	return true;
+}
+
+
+OOXSectionPropertyReader::OOXSectionPropertyReader(OOX::Logic::CSectionProperty *ooxSectionProperty)
+{
+	m_ooxSectionProperty = ooxSectionProperty;
 }
 bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionProperty& oOutput)
 {

@@ -42,16 +42,18 @@ namespace OOX
     namespace Logic
     {
         class CTr;
-        class CTableProperty;
+		class CTableProperty;
     }
 }
+
 class OOXTableRowReader
 {
 private:
 	OOX::Logic::CTr				*m_ooxRowTable;
 	OOX::Logic::CTableProperty	*m_ooxTableProps;
+
 public: 
     OOXTableRowReader(OOX::Logic::CTr *ooxRowTable, OOX::Logic::CTableProperty* ooxTableProps);
 
-    bool Parse( ReaderParameter oParam ,RtfTableRow& oOutputRow, int nCurRow, int nRowCount);
+	bool Parse( ReaderParameter oParam, RtfTableRow& oOutputRow, int nCurRow, int nRowCount);
 };

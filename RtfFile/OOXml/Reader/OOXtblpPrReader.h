@@ -33,7 +33,6 @@
 
 #include "OOXReader.h"
 #include "OOXReaderBasic.h"
-#include "../../Format/RtfDocument.h"
 
 class OOXtblpPrReader
 {

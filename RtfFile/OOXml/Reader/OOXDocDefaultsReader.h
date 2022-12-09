@@ -30,9 +30,8 @@
  *
  */
 #pragma once
-#include "OOXrPrReader.h"
-#include "OOXpPrReader.h"
 
+#include "OOXReaderBasic.h"
 #include "../../../OOXML/DocxFormat/Styles.h"
 
 class OOXDocDefaultsReader

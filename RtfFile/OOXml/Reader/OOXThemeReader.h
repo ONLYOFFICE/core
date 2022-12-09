@@ -30,9 +30,9 @@
  *
  */
 #pragma once
+
 #include "OOXColorSchemeReader.h"
 #include "OOXFontSchemeReader.h"
-#include "../../Format/Utils.h"
 
 class OOXThemeReader
 {

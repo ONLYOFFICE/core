@@ -30,6 +30,10 @@
  *
  */
 
+#include "OOXtblPrReader.h"
+#include "OOXtcPrReader.h"
+#include "OOXrPrReader.h"
+
 #include "OOXStyleReader.h"
 
 OOXStyleReader::OOXStyleReader(OOX::CStyle    *ooxStyle)

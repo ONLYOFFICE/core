@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../../Format/RtfDocument.h"
 #include "OOXLevelReader.h"
 
 class OOXNumberingMapReader

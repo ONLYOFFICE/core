@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 #include "Basic.h"
 
 #include "RtfGlobalTables.h"

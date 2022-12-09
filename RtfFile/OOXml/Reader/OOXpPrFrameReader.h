@@ -30,19 +30,17 @@
  *
  */
 #pragma once
-#include "OOXReaderBasic.h"
-#include "../../Format/RtfProperty.h"
 
+#include "OOXReaderBasic.h"
 #include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
 
 class OOXpPrFrameReader
 {
 private:
 	ComplexTypes::Word::CFramePr *m_ooxFramePr;
+
 public: 
-	OOXpPrFrameReader(ComplexTypes::Word::CFramePr *ooxFramePr)
-	{
-		m_ooxFramePr = ooxFramePr;
-	}
-	bool Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty);
+	OOXpPrFrameReader(ComplexTypes::Word::CFramePr *ooxFramePr);
+
+	bool Parse( ReaderParameter oParam, RtfFrame& oOutputProperty);
 };

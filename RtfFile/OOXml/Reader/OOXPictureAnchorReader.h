@@ -30,8 +30,8 @@
  *
  */
 #pragma once
+
 #include "OOXDrawingGraphicReader.h"
-#include "OOXReaderBasic.h"
 
 class OOXDrawingAnchorReader
 {

@@ -30,8 +30,9 @@
  *
  */
 #pragma once
-#include "OOXColorReader.h"
-#include "../../Format/RtfProperty.h"
+
+#include "OOXReaderBasic.h"
+#include "../../../OOXML/PPTXFormat/Theme/ClrScheme.h"
 
 class OOXColorSchemeReader
 {

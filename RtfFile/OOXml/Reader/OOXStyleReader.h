@@ -30,11 +30,9 @@
  *
  */
 #pragma once
-#include "OOXpPrReader.h"
-#include "OOXrPrReader.h"
-#include "OOXtblPrReader.h"
+
 #include "OOXtrPrReader.h"
-#include "OOXtcPrReader.h"
+#include "OOXpPrReader.h"
 
 class OOXStyleReader
 {

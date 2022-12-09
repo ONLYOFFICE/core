@@ -37,9 +37,7 @@
 
 #include "../../Format/RtfDocument.h"
 #include "../../Format/RtfProperty.h"
-#include "../../Format/RtfField.h"
 #include "../../Format/RtfBookmark.h"
-#include "../../Format/RtfOle.h"
 
 namespace OOX
 {
@@ -54,6 +52,7 @@ class OOXRunReader
 private:
 	PPTX::Logic::Run*	m_drawingRun;
 	OOX::Logic::CRun*	m_ooxRun;
+
 public:
 	RtfCharProperty		m_oCharProperty;
 	

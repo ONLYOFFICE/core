@@ -31,10 +31,7 @@
  */
 #pragma once
 
-#include "OOXTableReader.h"
-#include "OOXParagraphReader.h"
 #include "OOXtcPrReader.h"
-
 #include "../../Format/RtfDocument.h"
 #include "../../Format/RtfTable.h"
 
@@ -52,7 +49,8 @@ class OOXTableCellReader
 private:
 	OOX::Logic::CTc						*m_ooxTableCell;
 	OOX::Logic::CTableProperty			*m_ooxTableProps;
+
 public: 
     OOXTableCellReader(OOX::Logic::CTc *ooxTableCell, OOX::Logic::CTableProperty* ooxTableProps);
-    bool Parse( ReaderParameter oParam ,RtfTableCell& oOutputCell,  CcnfStyle oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount );
+	bool Parse( ReaderParameter oParam, RtfTableCell& oOutputCell, CcnfStyle oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount );
 };

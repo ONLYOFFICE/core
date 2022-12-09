@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+
 #include "OOXFontReader.h"
 
 class OOXFontTableReader

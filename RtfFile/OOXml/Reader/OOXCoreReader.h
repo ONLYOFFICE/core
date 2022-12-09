@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../../Format/RtfDocument.h"
 #include "OOXReader.h"
 #include "OOXReaderBasic.h"
 

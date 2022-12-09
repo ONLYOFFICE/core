@@ -30,21 +30,17 @@
  *
  */
 #pragma once
-#include "OOXReader.h"
+
 #include "OOXReaderBasic.h"
 #include "OOXcnfStyleReader.h"
-
-#include "../../Format/RtfDocument.h"
 
 class OOXtrPrReader
 {
 private:
 	OOX::Logic::CTableRowProperties*	m_ooxTableRowProps;
+
 public: 
-	OOXtrPrReader(OOX::Logic::CTableRowProperties*	ooxTableRowProps)
-	{
-		m_ooxTableRowProps = ooxTableRowProps;
-	}
+	OOXtrPrReader(OOX::Logic::CTableRowProperties*	ooxTableRowProps);
 	
 	bool Parse( ReaderParameter oParam , RtfRowProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle);
 };

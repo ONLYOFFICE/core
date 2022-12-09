@@ -30,8 +30,8 @@
  *
  */
 #pragma once
-#include "../../Format/RtfDocument.h"
 
+#include "../../Format/RtfDocument.h"
 #include "OOXBorderReader.h"
 #include "OOXcnfStyleReader.h"
 
@@ -43,7 +43,7 @@ class OOXtcPrReader
 public: 
 	OOXtcPrReader(OOX::Logic::CTableCellProperties* ooxTableCellProps, OOX::Logic::CTableProperty* ooxTableProps);
 
-	bool Parse( ReaderParameter oParam ,RtfCellProperty& oOutputProperty,  CcnfStyle& oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount );
+	bool Parse( ReaderParameter oParam, RtfCellProperty& oOutputProperty, CcnfStyle& oConditionalTableStyle, int nCurCell, int nCellCount, int nCurRow, int nRowCount );
 
 	static void Parse(ComplexTypes::Word::CTblWidth* margin, int& type, int& value, bool full = true );
 };

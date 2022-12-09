@@ -35,7 +35,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
 #include "StylesWriter.h"
 
-using namespace PPT_FORMAT;
+using namespace PPT;
 
 TxBodyConverter::TxBodyConverter(CElementPtr pShapeElement, CRelsGenerator* pRels, CTextCFRun *pLastCF) :
     m_bError(false), m_pLastCF(pLastCF)

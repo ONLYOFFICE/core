@@ -33,7 +33,7 @@
 #include "../Reader/Records.h"
 #include "CString.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordHeadersFootersAtom : public CUnknownRecord
 	{

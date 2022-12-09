@@ -33,7 +33,7 @@
 #include "../Reader/Records.h"
 #include "Drawing/ArtBlip.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordBlipEntityAtom : public CUnknownRecord
 	{

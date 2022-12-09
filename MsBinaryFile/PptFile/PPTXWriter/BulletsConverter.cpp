@@ -1,7 +1,7 @@
 #include "BulletsConverter.h"
 #include "StylesWriter.h"
 
-using namespace PPT_FORMAT;
+using namespace PPT;
 
 BulletsConverter::BulletsConverter(CRelsGenerator* pRels) : m_pRels(pRels) {}
 

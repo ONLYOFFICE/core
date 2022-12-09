@@ -33,7 +33,7 @@
 
 #include "../Records/CurrentUserAtom.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CUserEdit
 	{
@@ -67,7 +67,7 @@ namespace PPT_FORMAT
 			return (*this);
 		}
 
-		void FromAtom(PPT_FORMAT::CRecordUserEditAtom* pAtom)
+		void FromAtom(PPT::CRecordUserEditAtom* pAtom)
 		{
 			m_nOffsetLastEdit = pAtom->m_nOffsetLastEdit;
 			m_nOffsetPersistDirectory = pAtom->m_nOffsetPersistDirectory;

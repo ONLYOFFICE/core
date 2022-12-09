@@ -1,12 +1,12 @@
 #include "ColorIndex.h"
 
-void PPT_FORMAT::ColorIndex::clear()
+void PPT::ColorIndex::clear()
 {
     m_red = m_green = m_blue = 0;
     m_index = 0xFF;         // Color is undefined.
 }
 
-void PPT_FORMAT::ColorIndex::ReadFromStream(POLE::Stream *pStream)
+void PPT::ColorIndex::ReadFromStream(POLE::Stream *pStream)
 {
     m_red       = StreamUtils::ReadBYTE(pStream);
     m_green     = StreamUtils::ReadBYTE(pStream);

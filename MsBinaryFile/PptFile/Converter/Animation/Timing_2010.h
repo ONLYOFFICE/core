@@ -26,7 +26,7 @@
 #include "intermediate_anim.h" // it using
 
 
-namespace PPT_FORMAT {
+namespace PPT {
 	namespace Converter {
 		class Animation_2010;
 
@@ -59,7 +59,7 @@ namespace PPT_FORMAT {
 
 			void ConvertTnLst(PPTX::Logic::Timing &timing, CRecordExtTimeNodeContainer* pETNC);
 			bool FillTnChild(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::TimeNodeBase &oChild);
-			void FillSeq(PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq& oSec);
+			void FillSeq(PPT::CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::Seq& oSec);
 			void FillPar(
 				CRecordExtTimeNodeContainer *pETNC,
 				PPTX::Logic::Par &oPar);
@@ -73,7 +73,7 @@ namespace PPT_FORMAT {
 				PPTX::Logic::CBhvr &oBhvr, int dur,
 				UINT spid, std::wstring attrname, int delay);
 			void FillSet(
-				PPT_FORMAT::CRecordExtTimeNodeContainer *pETNC,
+				PPT::CRecordExtTimeNodeContainer *pETNC,
 				PPTX::Logic::Set& oSet);
 			void FillAnim(
 				CRecordTimeAnimateBehaviorContainer *pTimeAnimateBehavior,
@@ -89,7 +89,7 @@ namespace PPT_FORMAT {
 			void ConvertCTnEndSync(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
 			void ConvertCTnSubTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
 			void ConvertCTnStCondLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
-			void FillCond(PPT_FORMAT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond);
+			void FillCond(PPT::CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond);
 			void FillStCondLst(const std::vector<CRecordTimeConditionContainer*>& timeCondCont, PPTX::Logic::CondLst& stCondLst);
 			void FillSubTnLst(std::vector<CRecordSubEffectContainer*> &vecSEC, PPTX::Logic::TnLst &oSubTnLst);
 			void FillCondLst(std::vector<CRecordTimeConditionContainer*>& oCondVec, PPTX::Logic::CondLst &oCondLst);

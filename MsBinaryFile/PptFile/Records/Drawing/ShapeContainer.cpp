@@ -207,7 +207,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
     size_t lCount = pProperties->m_lCount;
     switch (pElement->m_etType)
     {
-    case PPT_FORMAT::etVideo:
+    case PPT::etVideo:
     {
         if (reset_default)
         {
@@ -219,7 +219,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }
         break;
     }
-    case PPT_FORMAT::etPicture:
+    case PPT::etPicture:
     {
         if (reset_default)
         {
@@ -232,7 +232,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }
         break;
     }
-    case PPT_FORMAT::etAudio:
+    case PPT::etAudio:
     {
         if (reset_default)
         {
@@ -244,7 +244,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
         }
         break;
     }
-    case PPT_FORMAT::etGroup:
+    case PPT::etGroup:
     {
         if (reset_default)
         {
@@ -256,7 +256,7 @@ void CPPTElement::SetUpProperties(CElementPtr pElement, CTheme* pTheme, CSlideIn
             SetUpProperty(pElement, pTheme, pWrapper, pSlide, &pProperties->m_arProperties[i]);
         }
     }break;
-    case PPT_FORMAT::etShape:
+    case PPT::etShape:
     {
         CShapeElement* pShapeElem = dynamic_cast<CShapeElement*>(pElement.get());
         CPPTShape* pPPTShape = dynamic_cast<CPPTShape*>(pShapeElem->m_pShape->getBaseShape().get());
@@ -1074,8 +1074,8 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
                     if (str.at(i) > 13 ) break;
                     length--;
                 }
-                PPT_FORMAT::CParagraph p;
-                PPT_FORMAT::CSpan s;
+                PPT::CParagraph p;
+                PPT::CSpan s;
                 s.m_strText = str.substr(0,length);
                 p.m_arSpans.push_back(s);
                 pParentShape->m_oText.m_arParagraphs.push_back(p);
@@ -1526,7 +1526,7 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     GetRecordsByType(&oArrayOptions, true, /*true*/false/*secondary & tetriary*/);
 
     PPTShapes::ShapeType eType = (PPTShapes::ShapeType)oArrayShape[0]->m_oHeader.RecInstance;
-    PPT_FORMAT::ElementType elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
+    PPT::ElementType elType = GetTypeElem((ODRAW::eSPT)oArrayShape[0]->m_oHeader.RecInstance);
 
     int lMasterID = -1;
 
@@ -2250,7 +2250,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
             pStyle->ReadFromStream(oHeader, oElemInfo.m_pStream);
 
-            PPT_FORMAT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
+            PPT::ConvertPPTTextToEditorStructure(pStyle->m_arrPFs, pStyle->m_arrCFs, strText, pShape->m_pShape->m_oText);
 
             bIsOwnPresentSettings = (0 < pStyle->m_lCount);
 
@@ -2471,7 +2471,7 @@ void CRecordShapeContainer::SetUpTextStyle(std::wstring& strText, CTheme* pTheme
 
         oArrayCF.push_back(elm1);
 
-        PPT_FORMAT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
+        PPT::ConvertPPTTextToEditorStructure(oArrayPF, oArrayCF, strText, *pTextSettings);
     }
 
     if (NULL != oElemInfo.m_pStream && -1 != oElemInfo.m_lOffsetTextProp)

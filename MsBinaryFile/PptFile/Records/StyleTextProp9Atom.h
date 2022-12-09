@@ -34,7 +34,7 @@
 #include "TextCFException9.h"
 #include "TextSIException.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 struct SStyleTextProp9

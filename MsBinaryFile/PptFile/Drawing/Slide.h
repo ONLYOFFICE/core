@@ -34,7 +34,7 @@
 #include "Theme.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CSlide
 	{
@@ -131,7 +131,7 @@ namespace PPT_FORMAT
 			m_sName				= oSrc.m_sName;
 		}
 
-		void SetUpPlaceholderStyles(PPT_FORMAT::CLayout* pLayout)
+		void SetUpPlaceholderStyles(PPT::CLayout* pLayout)
 		{
 			size_t nCountElements = m_arElements.size();
 			for (size_t nEl = 0; nEl < nCountElements; ++nEl)

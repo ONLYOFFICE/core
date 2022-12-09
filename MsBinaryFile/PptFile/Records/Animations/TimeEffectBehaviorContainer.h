@@ -37,7 +37,7 @@
 #include "TimeVariant.h"
 #include "TimeBehaviorContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeEffectBehaviorContainer : public CUnknownRecord
 {

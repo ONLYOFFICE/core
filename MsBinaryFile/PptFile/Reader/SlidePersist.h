@@ -34,7 +34,7 @@
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
 #include <vector>
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CTextFullSettings;
 	struct SSlidePersist

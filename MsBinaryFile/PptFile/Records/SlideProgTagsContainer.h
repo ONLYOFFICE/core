@@ -52,7 +52,7 @@
 #define TN_PPT12 L"___PPT12"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordPP9SlideBinaryTagExtension : public CUnknownRecord

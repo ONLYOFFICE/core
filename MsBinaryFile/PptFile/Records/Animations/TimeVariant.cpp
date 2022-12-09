@@ -31,9 +31,9 @@
  */
 #include "TimeVariant.h"
 
-using namespace PPT_FORMAT;
+using namespace PPT;
 
-CRecordTimeVariant* PPT_FORMAT::TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream)
+CRecordTimeVariant* PPT::TimeVariantFactoryMethod(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
     LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
 

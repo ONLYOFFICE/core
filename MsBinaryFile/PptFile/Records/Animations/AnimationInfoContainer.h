@@ -37,7 +37,7 @@
 #include "../SoundContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordAnimationInfoContainer: public CUnknownRecord
 {

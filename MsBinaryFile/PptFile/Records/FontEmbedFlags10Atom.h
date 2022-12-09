@@ -34,7 +34,7 @@
 #include "../Reader/Records.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordFontEmbedFlags10Atom : public CUnknownRecord
 {

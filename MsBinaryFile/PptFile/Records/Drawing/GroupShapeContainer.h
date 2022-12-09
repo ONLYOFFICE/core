@@ -34,7 +34,7 @@
 #include <vector>
 #include "ShapeContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordGroupShapeContainer : public CRecordsContainer
 	{

@@ -35,7 +35,7 @@
 #include "TextSIException.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct SStyleTextProp11 : public STextSIException
 {

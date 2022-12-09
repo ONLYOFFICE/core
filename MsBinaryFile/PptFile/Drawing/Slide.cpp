@@ -114,7 +114,7 @@ void CSlide::SetUpPlaceholderStyles(CLayout *pLayout)
     }
 }
 
-ODRAW::CColor PPT_FORMAT::CSlide::GetColor(const LONG &lIndexScheme)
+ODRAW::CColor PPT::CSlide::GetColor(const LONG &lIndexScheme)
 {
     if (lIndexScheme < (LONG)m_arColorScheme.size())
     {

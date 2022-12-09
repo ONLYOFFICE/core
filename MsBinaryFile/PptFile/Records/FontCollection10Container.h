@@ -34,7 +34,7 @@
 #include "../Structures/FontCollectionEntry.h"
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordFontCollection10Container : public CUnknownRecord
 {

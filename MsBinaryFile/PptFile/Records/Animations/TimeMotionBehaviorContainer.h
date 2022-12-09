@@ -38,7 +38,7 @@
 #include "TimeBehaviorContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeMotionBehaviorContainer : public CUnknownRecord
 {

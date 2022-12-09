@@ -35,7 +35,7 @@
 
 #include "ImageManager.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
     static inline LONG GetPPTXPlaceHolderType(const int & lType)
 	{
@@ -134,15 +134,15 @@ namespace PPT_FORMAT
 	class CShapeWriter
 	{
 	private:
-		PPT_FORMAT::CStringWriter		m_oWriterPath;
-		PPT_FORMAT::CStringWriter		m_oWriterVML;
-		PPT_FORMAT::CStringWriter		m_oWriter;
+        PPT::CStringWriter		m_oWriterPath;
+        PPT::CStringWriter		m_oWriterVML;
+        PPT::CStringWriter		m_oWriter;
 
-		PPT_FORMAT::CElementPtr		m_pElement;
+        PPT::CElementPtr		m_pElement;
 		
 		CRelsGenerator*	m_pRels;
 
-		PPT_FORMAT::CTheme*			m_pTheme;
+        PPT::CTheme*			m_pTheme;
 
         LONG									m_lNextShapeID;
 

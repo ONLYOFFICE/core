@@ -51,7 +51,7 @@ void CRecordTextSpecInfoAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Strea
     _UINT32 lMemCount = 0;
     while (true)
     {
-        PPT_FORMAT::CTextSIRun elm;
+        PPT::CTextSIRun elm;
         m_arrSIs.push_back(elm);
 
         NSStreamReader::Read(pStream, m_arrSIs.back());
@@ -69,7 +69,7 @@ void CRecordTextSpecInfoAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Strea
     StreamUtils::StreamSeek(m_lOffsetInStream + m_oHeader.RecLen, pStream);
 }
 
-void CRecordTextSpecInfoAtom::ApplyProperties(PPT_FORMAT::CTextAttributesEx *pText)
+void CRecordTextSpecInfoAtom::ApplyProperties(PPT::CTextAttributesEx *pText)
 {
     if (m_arrSIs.size() < 1) return;
 

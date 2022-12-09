@@ -4,7 +4,7 @@
 #include "../../Records/SlideContainer.h"
 
 
-namespace PPT_FORMAT {
+namespace PPT {
 	namespace Intermediate {
 		SlideAnimation ParseSlideAnimation(CRecordSlide* pSlide);
 	}

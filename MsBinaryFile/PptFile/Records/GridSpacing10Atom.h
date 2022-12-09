@@ -32,7 +32,7 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordGridSpacing10Atom : public CUnknownRecord
 	{

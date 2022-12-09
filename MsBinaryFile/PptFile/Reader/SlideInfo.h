@@ -32,7 +32,7 @@
 #pragma once
 #include "../Drawing/Document.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CElementInfo
 	{
@@ -85,7 +85,7 @@ namespace PPT_FORMAT
 		std::map<LONG, CElementInfo>						m_mapElements;
 		std::vector<int>*									m_parEmptyPictures;
 		std::map<int, std::wstring>*						m_mapFilePictures;
-		nullable_base<PPT_FORMAT::CTextStyles>	m_pStyles[9];
+		nullable_base<PPT::CTextStyles>	m_pStyles[9];
 
 		CSlideInfo()
 		{

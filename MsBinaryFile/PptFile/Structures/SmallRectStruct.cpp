@@ -1,7 +1,7 @@
 #include "SmallRectStruct.h"
 
 
-void PPT_FORMAT::SmallRectStruct::ReadFromStream(POLE::Stream *pStream)
+void PPT::SmallRectStruct::ReadFromStream(POLE::Stream *pStream)
 {
     m_nTop = StreamUtils::ReadSHORT(pStream);
     m_nLeft = StreamUtils::ReadSHORT(pStream);

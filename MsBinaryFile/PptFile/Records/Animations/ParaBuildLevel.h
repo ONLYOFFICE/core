@@ -36,7 +36,7 @@
 #include "LevelInfoAtom.h"
 #include "ExtTimeNodeContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordParaBuildLevel
 	{

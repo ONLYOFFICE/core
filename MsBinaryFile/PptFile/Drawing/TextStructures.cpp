@@ -15,49 +15,49 @@ if (oSrc.##EXIST_PARAM)						\
     PARAM = oSrc.##PARAM;					\
 }
 
-std::wstring PPT_FORMAT::ToNode(const NSCommon::nullable_base<WORD> &prop, const std::wstring &strName)
+std::wstring PPT::ToNode(const NSCommon::nullable_base<WORD> &prop, const std::wstring &strName)
 {
     if (!prop.is_init()) return L"";
 
     return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 }
 
-std::wstring PPT_FORMAT::ToNode(const NSCommon::nullable_base<LONG> &prop, const std::wstring &strName)
+std::wstring PPT::ToNode(const NSCommon::nullable_base<LONG> &prop, const std::wstring &strName)
 {
     if (!prop.is_init()) return L"";
 
     return _T("<") + strName + _T(">") + std::to_wstring( (int)prop.get() ) + _T("</") + strName + _T(">");
 }
 
-std::wstring PPT_FORMAT::ToNode(const NSCommon::nullable_base<_UINT32> &prop, const std::wstring &strName)
+std::wstring PPT::ToNode(const NSCommon::nullable_base<_UINT32> &prop, const std::wstring &strName)
 {
     if (!prop.is_init()) return L"";
 
     return _T("<") + strName + _T(">") + std::to_wstring((int)prop.get()) + _T("</") + strName + _T(">");
 }
 
-std::wstring PPT_FORMAT::ToNode(const NSCommon::nullable_base<double> &prop, const std::wstring &strName)
+std::wstring PPT::ToNode(const NSCommon::nullable_base<double> &prop, const std::wstring &strName)
 {
     if (!prop.is_init()) return L"";
 
     return _T("<") + strName + _T(">") + XmlUtils::ToString(prop.get()) + _T("</") + strName + _T(">");
 }
 
-std::wstring PPT_FORMAT::ToNode(const NSCommon::nullable_base<CColor> &prop, const std::wstring &strName)
+std::wstring PPT::ToNode(const NSCommon::nullable_base<CColor> &prop, const std::wstring &strName)
 {
     if (!prop.is_init()) return L"";
 
     return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
 }
 
-PPT_FORMAT::CFontProperty::CFontProperty() : PitchFamily(0), Charset(0) {}
+PPT::CFontProperty::CFontProperty() : PitchFamily(0), Charset(0) {}
 
-PPT_FORMAT::CFontProperty::CFontProperty(const CFontProperty &oSrc)
+PPT::CFontProperty::CFontProperty(const CFontProperty &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CFontProperty &PPT_FORMAT::CFontProperty::operator=(const CFontProperty &oSrc)
+PPT::CFontProperty &PPT::CFontProperty::operator=(const CFontProperty &oSrc)
 {
     Name		= oSrc.Name;
     PitchFamily	= oSrc.PitchFamily;
@@ -66,7 +66,7 @@ PPT_FORMAT::CFontProperty &PPT_FORMAT::CFontProperty::operator=(const CFontPrope
     return *this;
 }
 
-std::wstring PPT_FORMAT::CFontProperty::getXmlArgsStr() const
+std::wstring PPT::CFontProperty::getXmlArgsStr() const
 {
     std::wstring str = L" typeface=\"" + Name + L"\"";
     if (IsValidPitchFamily(PitchFamily))
@@ -77,7 +77,7 @@ std::wstring PPT_FORMAT::CFontProperty::getXmlArgsStr() const
     return str;
 }
 
-bool PPT_FORMAT::CFontProperty::IsValidCharset(int value)
+bool PPT::CFontProperty::IsValidCharset(int value)
 {
     if (value <= 0 || value > 255)
         return false;
@@ -86,7 +86,7 @@ bool PPT_FORMAT::CFontProperty::IsValidCharset(int value)
     return BLCharset.find(value) == BLCharset.end();
 }
 
-bool PPT_FORMAT::CFontProperty::IsValidPitchFamily(int value)
+bool PPT::CFontProperty::IsValidPitchFamily(int value)
 {
     if (value <= 0 || value > 255)
         return false;
@@ -95,18 +95,18 @@ bool PPT_FORMAT::CFontProperty::IsValidPitchFamily(int value)
     return BLPitchFamily.find(value) == BLPitchFamily.end();
 }
 
-bool PPT_FORMAT::CBulletAutoNum::isDefault() const
+bool PPT::CBulletAutoNum::isDefault() const
 {
     return type.get_value_or(L"arabicPeriod") == L"arabicPeriod" &&
             (startAt.is_init() ? *startAt == 1 : true);
 }
 
-PPT_FORMAT::CFontProperties::CFontProperties(const CFontProperties &oSrc)
+PPT::CFontProperties::CFontProperties(const CFontProperties &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CFontProperties &PPT_FORMAT::CFontProperties::operator=(const CFontProperties &oSrc)
+PPT::CFontProperties &PPT::CFontProperties::operator=(const CFontProperties &oSrc)
 {
     font	= oSrc.font;
     ansi	= oSrc.ansi;
@@ -116,16 +116,16 @@ PPT_FORMAT::CFontProperties &PPT_FORMAT::CFontProperties::operator=(const CFontP
     return *this;
 }
 
-PPT_FORMAT::CTextCFRun::CTextCFRun()
+PPT::CTextCFRun::CTextCFRun()
 {
 }
 
-PPT_FORMAT::CTextCFRun::CTextCFRun(const CTextCFRun &oSrc)
+PPT::CTextCFRun::CTextCFRun(const CTextCFRun &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CTextCFRun &PPT_FORMAT::CTextCFRun::operator=(const CTextCFRun &oSrc)
+PPT::CTextCFRun &PPT::CTextCFRun::operator=(const CTextCFRun &oSrc)
 {
     FontBold		= oSrc.FontBold;
     FontItalic		= oSrc.FontItalic;
@@ -154,11 +154,11 @@ PPT_FORMAT::CTextCFRun &PPT_FORMAT::CTextCFRun::operator=(const CTextCFRun &oSrc
     return *this;
 }
 
-PPT_FORMAT::CTextCFRun::~CTextCFRun()
+PPT::CTextCFRun::~CTextCFRun()
 {
 }
 
-void PPT_FORMAT::CTextCFRun::ApplyBefore(const CTextCFRun &oSrc)
+void PPT::CTextCFRun::ApplyBefore(const CTextCFRun &oSrc)
 {
     if (!FontBold.is_init()) 		FontBold = oSrc.FontBold;
     if (!FontItalic.is_init())		FontItalic = oSrc.FontItalic;
@@ -184,7 +184,7 @@ void PPT_FORMAT::CTextCFRun::ApplyBefore(const CTextCFRun &oSrc)
     if (!Language.is_init())		Language = oSrc.Language;
 }
 
-void PPT_FORMAT::CTextCFRun::ApplyAfter(const CTextCFRun &oSrc)
+void PPT::CTextCFRun::ApplyAfter(const CTextCFRun &oSrc)
 {
     if (oSrc.FontBold.is_init())			FontBold = oSrc.FontBold;
     if (oSrc.FontItalic.is_init())			FontItalic = oSrc.FontItalic;
@@ -222,16 +222,16 @@ void PPT_FORMAT::CTextCFRun::ApplyAfter(const CTextCFRun &oSrc)
 
 }
 
-PPT_FORMAT::CTextPFRun::CTextPFRun() : bIsOneLine(false)
+PPT::CTextPFRun::CTextPFRun() : bIsOneLine(false)
 {
 }
 
-PPT_FORMAT::CTextPFRun::CTextPFRun(const CTextPFRun &oSrc)
+PPT::CTextPFRun::CTextPFRun(const CTextPFRun &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CTextPFRun &PPT_FORMAT::CTextPFRun::operator =(const CTextPFRun &oSrc)
+PPT::CTextPFRun &PPT::CTextPFRun::operator =(const CTextPFRun &oSrc)
 {
     hasBullet			= oSrc.hasBullet;
 
@@ -261,7 +261,7 @@ PPT_FORMAT::CTextPFRun &PPT_FORMAT::CTextPFRun::operator =(const CTextPFRun &oSr
     return *this;
 }
 
-void PPT_FORMAT::CTextPFRun::ApplyBefore(const CTextPFRun &oSrc)
+void PPT::CTextPFRun::ApplyBefore(const CTextPFRun &oSrc)
 {
     if (!hasBullet.is_init())
     {
@@ -301,7 +301,7 @@ void PPT_FORMAT::CTextPFRun::ApplyBefore(const CTextPFRun &oSrc)
     }
 }
 
-void PPT_FORMAT::CTextPFRun::ApplyAfter(const CTextPFRun &oSrc)
+void PPT::CTextPFRun::ApplyAfter(const CTextPFRun &oSrc)
 {
     if (oSrc.hasBullet.is_init())
     {
@@ -331,21 +331,21 @@ void PPT_FORMAT::CTextPFRun::ApplyAfter(const CTextPFRun &oSrc)
     if (!oSrc.tabStops.empty())				tabStops		= oSrc.tabStops;
 }
 
-std::wstring PPT_FORMAT::CTextPFRun::ToString(LONG lCount)
+std::wstring PPT::CTextPFRun::ToString(LONG lCount)
 {
     return L"";
 }
 
-PPT_FORMAT::CTextRuler::CTextRuler()
+PPT::CTextRuler::CTextRuler()
 {
 }
 
-PPT_FORMAT::CTextRuler::CTextRuler(const CTextRuler &oSrc)
+PPT::CTextRuler::CTextRuler(const CTextRuler &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CTextRuler &PPT_FORMAT::CTextRuler::operator =(const CTextRuler &oSrc)
+PPT::CTextRuler &PPT::CTextRuler::operator =(const CTextRuler &oSrc)
 {
     DefaultTabSize	= oSrc.DefaultTabSize;
     CLevels			= oSrc.CLevels;
@@ -368,12 +368,12 @@ PPT_FORMAT::CTextRuler &PPT_FORMAT::CTextRuler::operator =(const CTextRuler &oSr
     return *this;
 }
 
-PPT_FORMAT::CTextRuler::~CTextRuler()
+PPT::CTextRuler::~CTextRuler()
 {
     tabsStops.clear();
 }
 
-void PPT_FORMAT::CTextRuler::ApplyBefore(const CTextRuler &oSrc)
+void PPT::CTextRuler::ApplyBefore(const CTextRuler &oSrc)
 {
     if (!DefaultTabSize.is_init())			DefaultTabSize = oSrc.DefaultTabSize;
     if (!CLevels.is_init())					CLevels		= oSrc.CLevels;
@@ -393,12 +393,12 @@ void PPT_FORMAT::CTextRuler::ApplyBefore(const CTextRuler &oSrc)
     if (!tabsStops.empty())					tabsStops = oSrc.tabsStops;
 }
 
-std::wstring PPT_FORMAT::CTextRuler::ToString()
+std::wstring PPT::CTextRuler::ToString()
 {
     return L"";
 }
 
-PPT_FORMAT::CTextSIRun::CTextSIRun()
+PPT::CTextSIRun::CTextSIRun()
 {
     bIsExt = true;
     lCount  = 0;
@@ -421,12 +421,12 @@ PPT_FORMAT::CTextSIRun::CTextSIRun()
     bGramma = false;
 }
 
-PPT_FORMAT::CTextSIRun::CTextSIRun(const CTextSIRun &oSrc)
+PPT::CTextSIRun::CTextSIRun(const CTextSIRun &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CTextSIRun &PPT_FORMAT::CTextSIRun::operator =(const CTextSIRun &oSrc)
+PPT::CTextSIRun &PPT::CTextSIRun::operator =(const CTextSIRun &oSrc)
 {
     bIsExt		= oSrc.bIsExt;
     lCount		= oSrc.lCount;
@@ -453,7 +453,7 @@ PPT_FORMAT::CTextSIRun &PPT_FORMAT::CTextSIRun::operator =(const CTextSIRun &oSr
     return *this;
 }
 
-void PPT_FORMAT::CTextSIRun::ApplyBefore(const CTextSIRun &oSrc)
+void PPT::CTextSIRun::ApplyBefore(const CTextSIRun &oSrc)
 {
     /*
              * gcc 4.8 doesn't understand this construction:
@@ -497,21 +497,21 @@ void PPT_FORMAT::CTextSIRun::ApplyBefore(const CTextSIRun &oSrc)
     }
 }
 
-std::wstring PPT_FORMAT::CTextSIRun::ToString()
+std::wstring PPT::CTextSIRun::ToString()
 {
     return L"";
 }
 
-PPT_FORMAT::CSpan::CSpan() : m_bField(false), m_bBreak(false)
+PPT::CSpan::CSpan() : m_bField(false), m_bBreak(false)
 {
 }
 
-PPT_FORMAT::CSpan::CSpan(const CSpan &oSrc)
+PPT::CSpan::CSpan(const CSpan &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CSpan &PPT_FORMAT::CSpan::operator=(const CSpan &oSrc)
+PPT::CSpan &PPT::CSpan::operator=(const CSpan &oSrc)
 {
     m_oRun		= oSrc.m_oRun;
     m_strText	= oSrc.m_strText;
@@ -522,20 +522,20 @@ PPT_FORMAT::CSpan &PPT_FORMAT::CSpan::operator=(const CSpan &oSrc)
     return *this;
 }
 
-PPT_FORMAT::CSpan::~CSpan()
+PPT::CSpan::~CSpan()
 {
 }
 
-PPT_FORMAT::CTextStyleLevel::CTextStyleLevel()
+PPT::CTextStyleLevel::CTextStyleLevel()
 {
 }
 
-PPT_FORMAT::CTextStyleLevel::CTextStyleLevel(const CTextStyleLevel &oSrc)
+PPT::CTextStyleLevel::CTextStyleLevel(const CTextStyleLevel &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CTextStyleLevel &PPT_FORMAT::CTextStyleLevel::operator=(const CTextStyleLevel &oSrc)
+PPT::CTextStyleLevel &PPT::CTextStyleLevel::operator=(const CTextStyleLevel &oSrc)
 {
     m_oPFRun	= oSrc.m_oPFRun;
     m_oCFRun	= oSrc.m_oCFRun;
@@ -543,19 +543,19 @@ PPT_FORMAT::CTextStyleLevel &PPT_FORMAT::CTextStyleLevel::operator=(const CTextS
     return *this;
 }
 
-void PPT_FORMAT::CTextStyleLevel::ApplyAfter(const CTextStyleLevel &oSrc)
+void PPT::CTextStyleLevel::ApplyAfter(const CTextStyleLevel &oSrc)
 {
     m_oPFRun.ApplyAfter(oSrc.m_oPFRun);
     m_oCFRun.ApplyAfter(oSrc.m_oCFRun);
 }
 
-void PPT_FORMAT::CTextStyleLevel::ApplyBefore(const CTextStyleLevel &oSrc)
+void PPT::CTextStyleLevel::ApplyBefore(const CTextStyleLevel &oSrc)
 {
     m_oPFRun.ApplyBefore(oSrc.m_oPFRun);
     m_oCFRun.ApplyBefore(oSrc.m_oCFRun);
 }
 
-PPT_FORMAT::CTextStyles::CTextStyles()
+PPT::CTextStyles::CTextStyles()
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -563,12 +563,12 @@ PPT_FORMAT::CTextStyles::CTextStyles()
     }
 }
 
-PPT_FORMAT::CTextStyles::CTextStyles(const CTextStyles &oSrc)
+PPT::CTextStyles::CTextStyles(const CTextStyles &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CTextStyles &PPT_FORMAT::CTextStyles::operator=(const CTextStyles &oSrc)
+PPT::CTextStyles &PPT::CTextStyles::operator=(const CTextStyles &oSrc)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -577,7 +577,7 @@ PPT_FORMAT::CTextStyles &PPT_FORMAT::CTextStyles::operator=(const CTextStyles &o
     return *this;
 }
 
-void PPT_FORMAT::CTextStyles::SetStyles(CTextStyles *pStyles)
+void PPT::CTextStyles::SetStyles(CTextStyles *pStyles)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -585,7 +585,7 @@ void PPT_FORMAT::CTextStyles::SetStyles(CTextStyles *pStyles)
     }
 }
 
-void PPT_FORMAT::CTextStyles::SetLanguage(nullable<WORD> &language)
+void PPT::CTextStyles::SetLanguage(nullable<WORD> &language)
 {
     if (!language.is_init()) return;
 
@@ -598,7 +598,7 @@ void PPT_FORMAT::CTextStyles::SetLanguage(nullable<WORD> &language)
     }
 }
 
-void PPT_FORMAT::CTextStyles::ApplyAfter(const CTextStyles &oSrc)
+void PPT::CTextStyles::ApplyAfter(const CTextStyles &oSrc)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -614,7 +614,7 @@ void PPT_FORMAT::CTextStyles::ApplyAfter(const CTextStyles &oSrc)
     }
 }
 
-void PPT_FORMAT::CTextStyles::ApplyBefore(const CTextStyles &oSrc)
+void PPT::CTextStyles::ApplyBefore(const CTextStyles &oSrc)
 {
     for (int i = 0; i < 10; ++i)
     {
@@ -630,19 +630,19 @@ void PPT_FORMAT::CTextStyles::ApplyBefore(const CTextStyles &oSrc)
     }
 }
 
-PPT_FORMAT::CParagraph::CParagraph()
+PPT::CParagraph::CParagraph()
 {
     m_lTextType			= -1;
     m_lTextLevel		= 0;
     m_lStyleThemeIndex	= -1;
 }
 
-PPT_FORMAT::CParagraph::CParagraph(const CParagraph &oSrc)
+PPT::CParagraph::CParagraph(const CParagraph &oSrc)
 {
     *this = oSrc;
 }
 
-PPT_FORMAT::CParagraph &PPT_FORMAT::CParagraph::operator=(const CParagraph &oSrc)
+PPT::CParagraph &PPT::CParagraph::operator=(const CParagraph &oSrc)
 {
     m_lTextLevel		= oSrc.m_lTextLevel;
     m_lTextType			= oSrc.m_lTextType;
@@ -655,12 +655,12 @@ PPT_FORMAT::CParagraph &PPT_FORMAT::CParagraph::operator=(const CParagraph &oSrc
     return *this;
 }
 
-PPT_FORMAT::CParagraph::~CParagraph()
+PPT::CParagraph::~CParagraph()
 {
     m_arSpans.clear();
 }
 
-void PPT_FORMAT::CParagraph::CheckErrors()
+void PPT::CParagraph::CheckErrors()
 {
     //if (IsEmpty())
     //{
@@ -673,7 +673,7 @@ void PPT_FORMAT::CParagraph::CheckErrors()
     }
 }
 
-bool PPT_FORMAT::CParagraph::IsEmpty()
+bool PPT::CParagraph::IsEmpty()
 {
     size_t nCountSpans = m_arSpans.size();
     for (size_t i = 0; i < nCountSpans; ++i)

@@ -43,7 +43,7 @@
 //-------------------------------------------------------------------------------
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 //TODO
 class FactoryTimeVariant4Behavior

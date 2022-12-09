@@ -34,7 +34,7 @@
 #include  "../../../OOXML/Base/Base.h"
 #include "../../../DesktopEditor/common/File.h"
 
-namespace PPT_FORMAT {
+namespace PPT {
 struct IStruct {
     virtual void ReadFromStream (POLE::Stream* pStream) = 0;
 };

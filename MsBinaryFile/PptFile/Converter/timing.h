@@ -4,7 +4,7 @@
 #include "../PPTXWriter/ImageManager.h"
 #include "Animation/intermediate_anim.h"
 
-namespace PPT_FORMAT {
+namespace PPT {
 	namespace Converter {
 		class Timing
 		{

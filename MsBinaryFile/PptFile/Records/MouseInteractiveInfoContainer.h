@@ -33,7 +33,7 @@
 #include "InteractiveInfoAtom.h"
 #include "CString.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordMouseInteractiveInfoContainer : public CUnknownRecord
 	{

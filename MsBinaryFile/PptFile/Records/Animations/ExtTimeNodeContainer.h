@@ -52,7 +52,7 @@
 #include "SubEffectContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordExtTimeNodeContainer : public CUnknownRecord

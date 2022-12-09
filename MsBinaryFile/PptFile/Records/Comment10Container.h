@@ -36,7 +36,7 @@
 #include "../Structures/PointStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordComment10AuthorAtom : public CUnknownRecord
 {

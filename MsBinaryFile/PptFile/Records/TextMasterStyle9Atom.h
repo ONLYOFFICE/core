@@ -33,7 +33,7 @@
 #include "TextMasterStyle9Level.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordTextMasterStyle9Atom : public CUnknownRecord

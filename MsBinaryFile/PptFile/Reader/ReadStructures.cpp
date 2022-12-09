@@ -36,7 +36,7 @@
 #include "../../DocFile/MemoryStream.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	static ODRAW::CColor GetStandartPaletteColor(int index)
 {
@@ -105,7 +105,7 @@ namespace PPT_FORMAT
 
 	namespace NSStreamReader
 	{
-		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
+		void Read(POLE::Stream* pStream, PPT::CTextRuler& oRun)
 		{
 			double dScaleX = 625 * 2.54;
 			//1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
@@ -169,7 +169,7 @@ namespace PPT_FORMAT
 			if (bLeftMargin5_)	oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 			if (bIndent5_)		oRun.Indent5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
 		}
-		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation)
+		void Read(POLE::Stream* pStream, PPT::CTextSIRun& oRun, bool bIsIndentation)
 		{
 			if (bIsIndentation)
 			{
@@ -509,7 +509,7 @@ namespace PPT_FORMAT
 
 
 	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
-		std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes)
+		std::wstring& strText, PPT::CTextAttributesEx& oAttributes)
 	{
 		int nCountPFs = (int)oArrayPF.size();
 		int nCountCFs = (int)oArrayCF.size();
@@ -528,7 +528,7 @@ namespace PPT_FORMAT
 		{
 			CParagraph elm;
 			oAttributes.m_arParagraphs.push_back(elm);
-			PPT_FORMAT::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
+			PPT::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
 			pPar->m_lTextLevel = oArrayPF[nIndexPF].m_lLevel;
 			pPar->m_oPFRun = oArrayPF[nIndexPF].m_oRun;
@@ -556,7 +556,7 @@ namespace PPT_FORMAT
 				{
 					nOffsetCF += nCountInPF;
 
-					PPT_FORMAT::CSpan oSpan;
+					PPT::CSpan oSpan;
 					oSpan.m_oRun = oArrayCF[nCurrentCF].m_oRun;
 
 					nCountAddTrue = nCountInPF;
@@ -578,7 +578,7 @@ namespace PPT_FORMAT
 				{
 					nOffsetCF = 0;
 
-					PPT_FORMAT::CSpan oSpan;
+					PPT::CSpan oSpan;
 					oSpan.m_oRun = oArrayCF[nCurrentCF].m_oRun;
 
 					if (nCountAddTrue > 0)
@@ -594,7 +594,7 @@ namespace PPT_FORMAT
 				{
 					nOffsetCF = 0;
 
-					PPT_FORMAT::CSpan oSpan;
+					PPT::CSpan oSpan;
 					oSpan.m_oRun = oArrayCF[nCurrentCF].m_oRun;
 
 					if (nCountAddTrue > 0)

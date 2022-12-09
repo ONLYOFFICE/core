@@ -52,7 +52,7 @@
 //-------------------------------------------------------------------------------
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct CRecordSubEffectContainer : public CUnknownRecord
 {

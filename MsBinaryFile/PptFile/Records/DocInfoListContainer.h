@@ -34,7 +34,7 @@
 #include "DocProgTagsContainer.h"
 #include "VBAInfoAtom.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class DocInfoListSubContainerOrAtom
 {

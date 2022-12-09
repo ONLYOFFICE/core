@@ -32,7 +32,7 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordTextSpecInfoAtom : public CUnknownRecord
 	{
@@ -42,7 +42,7 @@ namespace PPT_FORMAT
 		LONG											m_lOffsetInStream;
 		_UINT32											m_lCount;
 
-		std::vector<PPT_FORMAT::CTextSIRun>	m_arrSIs;
+		std::vector<PPT::CTextSIRun>	m_arrSIs;
 
 
 		CRecordTextSpecInfoAtom()
@@ -64,7 +64,7 @@ namespace PPT_FORMAT
 			_UINT32 lMemCount = 0;
 			while (true)
 			{
-				PPT_FORMAT::CTextSIRun elm;
+				PPT::CTextSIRun elm;
 				m_arrSIs.push_back(elm);
 
 				NSStreamReader::Read(pStream, m_arrSIs.back());

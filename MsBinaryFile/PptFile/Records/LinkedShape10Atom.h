@@ -34,7 +34,7 @@
 #include "../Reader/Records.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordLinkedShape10Atom : public CUnknownRecord
 {

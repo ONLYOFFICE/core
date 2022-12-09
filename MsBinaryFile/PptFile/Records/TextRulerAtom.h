@@ -32,12 +32,12 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordTextRulerAtom : public CUnknownRecord
 	{
 	public:
-		PPT_FORMAT::CTextRuler m_oTextRuler;
+		PPT::CTextRuler m_oTextRuler;
 
 	public:
 

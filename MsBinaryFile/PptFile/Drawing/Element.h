@@ -34,7 +34,7 @@
 #include "Interactive.h"
 #include "Animations.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 enum ElementType
 {

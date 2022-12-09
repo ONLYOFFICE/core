@@ -3,7 +3,7 @@
 #include "../../../../OOXML/PPTXFormat/Logic/Timing/CTn.h"
 #include "../../Records/Animations/ExtTimeNodeContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	namespace Intermediate
 	{

@@ -39,7 +39,7 @@ namespace CRYPT
 {
 	class ECMADecryptor;
 }
-namespace PPT_FORMAT
+namespace PPT
 {
 	struct SRatioAtom
 	{
@@ -280,14 +280,14 @@ namespace PPT_FORMAT
 			}
 		}
 
-		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
-		void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);
+		void Read(POLE::Stream* pStream, PPT::CTextSIRun& oRun, bool bIsIndentation = true);
+		void Read(POLE::Stream* pStream, PPT::CTextRuler& oRun);
 	}
 
 	class CTextPFRunRecord
 	{
 	public:
-		PPT_FORMAT::CTextPFRun	m_oRun;
+		PPT::CTextPFRun	m_oRun;
 		LONG					m_lLevel;
 		LONG					m_lCount;
 
@@ -314,7 +314,7 @@ namespace PPT_FORMAT
 	class CTextCFRunRecord
 	{
 	public:
-		PPT_FORMAT::CTextCFRun	m_oRun;
+		PPT::CTextCFRun	m_oRun;
 		LONG					m_lCount;
 
 		CTextCFRunRecord() : m_oRun()
@@ -336,5 +336,5 @@ namespace PPT_FORMAT
 	};
 
 	void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
-        std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
+        std::wstring& strText, PPT::CTextAttributesEx& oAttributes);
 }

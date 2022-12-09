@@ -453,7 +453,7 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
     // так... теперь берем всю инфу о ExObject -----------------------------
     m_oExMedia.m_strPresentationDirectory	= strFolderMem;
 
-    PPT_FORMAT::CExFilesInfo oInfo;
+    PPT::CExFilesInfo oInfo;
 
     oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory;
     oInfo.m_dwID		= 0xFFFFFFFF;
@@ -517,7 +517,7 @@ void CPPTUserInfo::FromDocument()
         oArrayInfo[0]->GetRecordsByType(&oStyles, false, false);
 
         if (0 != oStyles.size())
-            m_oDefaultTextStyle.SetStyles((PPT_FORMAT::CTextStyles*)oStyles[0]);
+            m_oDefaultTextStyle.SetStyles((PPT::CTextStyles*)oStyles[0]);
 
         std::vector<CRecordTextSIExceptionAtom*> oSI;
         oArrayInfo[0]->GetRecordsByType(&oSI, false, false);
@@ -810,7 +810,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 
         pTransition->m_bAudioPresent	= pAtom->m_bSound;
 
-        PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
+        PPT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
         if (NULL != pInfo)
         {
             pTransition->m_oAudio.m_strAudioFileName = pInfo->m_strFilePath;
@@ -830,7 +830,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
     CSlideShowSlideInfoAtom* pAtom	= &pRecordSlide->m_oSlideShowSlideInfoAtom;
     if (pAtom->m_bSound)
     {
-        PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
+        PPT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
         if (NULL != pInfo)
             AddAudioTransition (pAtom->m_nSoundRef, pTransition, pInfo->m_strFilePath);
     }
@@ -1254,7 +1254,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 
     int ind = pTheme->m_arLayouts.size();
 
-    pTheme->m_arLayouts.push_back(boost::make_shared<PPT_FORMAT::CLayout>());
+    pTheme->m_arLayouts.push_back(boost::make_shared<PPT::CLayout>());
     CLayout *pLayout = pTheme->m_arLayouts.back().get();
 
     pLayout->m_bUseThemeColorScheme = true;
@@ -1457,7 +1457,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 
     m_mapMasterToTheme.insert(std::pair<_UINT32, LONG>(dwMasterID, lIndexTheme));
 
-    m_arThemes.push_back(boost::make_shared<PPT_FORMAT::CTheme>());
+    m_arThemes.push_back(boost::make_shared<PPT::CTheme>());
     CTheme* pTheme = m_arThemes[lIndexTheme].get();
 
     std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
@@ -1568,8 +1568,8 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         if ((0 > lType) || (lType > 8))
             continue;
 
-        pMasterWrapper->m_pStyles[lType] = new PPT_FORMAT::CTextStyles();
-        pMasterWrapper->m_pStyles[lType]->SetStyles((PPT_FORMAT::CTextStyles*)oArrayTextMasters[i]);
+        pMasterWrapper->m_pStyles[lType] = new PPT::CTextStyles();
+        pMasterWrapper->m_pStyles[lType]->SetStyles((PPT::CTextStyles*)oArrayTextMasters[i]);
 
         CTheme::CalculateStyle(pTheme, pMasterWrapper->m_pStyles[lType].get());
     }
@@ -1715,7 +1715,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
         }
     }
 
-    pTheme = boost::make_shared<PPT_FORMAT::CTheme>(type);
+    pTheme = boost::make_shared<PPT::CTheme>(type);
 
     std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
     pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
@@ -2297,7 +2297,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
             if ((3 <= oArrayStrings.size()) && (1 == oArrayData.size()))
             {
-                PPT_FORMAT::CExFilesInfo oInfo;
+                PPT::CExFilesInfo oInfo;
 
                 oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
                 oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
@@ -2348,10 +2348,10 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         _UINT32 dwKeySound	= oArrayAudioEmbedded[nIndex]->m_nSoundID;
         _UINT32 dwKeyObj		= oArrayAudioEmbedded[nIndex]->m_oMedia.m_nExObjID;
 
-        PPT_FORMAT::CExFilesInfo* pInfo = m_oExMedia.LockAudioFromCollection(dwKeySound);
+        PPT::CExFilesInfo* pInfo = m_oExMedia.LockAudioFromCollection(dwKeySound);
         if (NULL != pInfo)
         {
-            PPT_FORMAT::CExFilesInfo oAudio;
+            PPT::CExFilesInfo oAudio;
 
             oAudio.m_dwID			= dwKeyObj;
             oAudio.m_strFilePath	= pInfo->m_strFilePath;
@@ -2364,7 +2364,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
     {
         _UINT32 dwKeyObj			= oArrayAudioCD[nIndex]->m_oMedia.m_nExObjID;
 
-        PPT_FORMAT::CExFilesInfo* pInfo		= m_oExMedia.LockAudio(dwKeyObj);
+        PPT::CExFilesInfo* pInfo		= m_oExMedia.LockAudio(dwKeyObj);
 
         if (NULL != pInfo)
         {
@@ -2384,7 +2384,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         if (!pExHyperlink || !pExHyperlink->hasCString())
             continue;
 
-        PPT_FORMAT::CExFilesInfo oInfo;
+        PPT::CExFilesInfo oInfo;
         oInfo.m_dwID = pExHyperlink->m_exHyperlinkAtom.m_nHyperlinkID;
 
         bool wasSlide = false;
@@ -2457,7 +2457,7 @@ void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 
     if ((1 == oArrayExMedia.size()) && (1 == oArrayCString.size()))
     {
-        PPT_FORMAT::CExFilesInfo oInfo;
+        PPT::CExFilesInfo oInfo;
 
         oInfo.m_dwID			= oArrayExMedia[0]->m_nExObjID;
         oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
@@ -2480,7 +2480,7 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 
     if ((1 == oArrayExMedia.size()) && (1 == oArrayCString.size()))
     {
-        PPT_FORMAT::CExFilesInfo oInfo;
+        PPT::CExFilesInfo oInfo;
 
         oInfo.m_dwID			= oArrayExMedia[0]->m_nExObjID;
         oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
@@ -2563,21 +2563,21 @@ void CPPTUserInfo::AddAudioTransition (_UINT32 refID, CTransition* pTransition, 
     // ??? недоделка ???
 }
 
-void CPPTUserInfo::CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme)
+void CPPTUserInfo::CreateDefaultStyle(PPT::CTextStyles& pStyle, PPT::CTheme* pTheme)
 {
     for (int i = 0; i < 10; ++i)
     {
         if (!pStyle.m_pLevels[i].is_init())
-            pStyle.m_pLevels[i] = new PPT_FORMAT::CTextStyleLevel();
+            pStyle.m_pLevels[i] = new PPT::CTextStyleLevel();
 
-        PPT_FORMAT::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
-        PPT_FORMAT::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
+        PPT::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
+        PPT::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
 
         pCF->Language		= m_wLanguage;
 
         pCF->Size			= 18;
 
-        pCF->font.font = new PPT_FORMAT::CFontProperty(pTheme->m_arFonts.size() > 1 ? pTheme->m_arFonts[1] : pTheme->m_arFonts[0]);
+        pCF->font.font = new PPT::CFontProperty(pTheme->m_arFonts.size() > 1 ? pTheme->m_arFonts[1] : pTheme->m_arFonts[0]);
     }
 }
 

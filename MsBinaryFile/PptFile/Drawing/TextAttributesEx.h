@@ -40,7 +40,7 @@
 #include "Structures.h"
 #include "TextStructures.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CTheme;
 	class CLayout;

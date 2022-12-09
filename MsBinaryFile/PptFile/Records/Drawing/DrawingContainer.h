@@ -32,7 +32,7 @@
 #pragma once
 #include "GroupShapeContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordDrawingContainer : public CRecordsContainer
 	{

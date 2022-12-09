@@ -3,7 +3,7 @@
 #include "../../Enums/enums.h"
 
 
-PPT_FORMAT::Intermediate::ShapeAnim PPT_FORMAT::Intermediate::ParseExisting5Level_CTn(const PPTX::Logic::CTn &oCTn)
+PPT::Intermediate::ShapeAnim PPT::Intermediate::ParseExisting5Level_CTn(const PPTX::Logic::CTn &oCTn)
 {
     ShapeAnim spAn;
     spAn.presetID = oCTn.presetID.get_value_or(-1);
@@ -15,7 +15,7 @@ PPT_FORMAT::Intermediate::ShapeAnim PPT_FORMAT::Intermediate::ParseExisting5Leve
     return spAn;
 }
 
-PPT_FORMAT::Intermediate::ShapeAnim PPT_FORMAT::Intermediate::ParseExisting5Level_ETNC(const CRecordExtTimeNodeContainer *pETNC)
+PPT::Intermediate::ShapeAnim PPT::Intermediate::ParseExisting5Level_ETNC(const CRecordExtTimeNodeContainer *pETNC)
 {
     if (pETNC == nullptr)
         return {};
@@ -45,7 +45,7 @@ PPT_FORMAT::Intermediate::ShapeAnim PPT_FORMAT::Intermediate::ParseExisting5Leve
     return spAn;
 }
 
-bool PPT_FORMAT::Intermediate::operator==(const ShapeAnim &s1, const ShapeAnim &s2)
+bool PPT::Intermediate::operator==(const ShapeAnim &s1, const ShapeAnim &s2)
 {
     if (s1.IsValid() == false)
         return false;
@@ -53,7 +53,7 @@ bool PPT_FORMAT::Intermediate::operator==(const ShapeAnim &s1, const ShapeAnim &
     return s1.spid == s2.spid && (s1.presetID == s2.presetID || s1.presetID == 1 || s2.presetID == 1);  /// 1 - Appear
 }
 
-PPT_FORMAT::CRecordTimeBehaviorContainer* PPT_FORMAT::Intermediate::GetTimeBehaviorContainer(CRecordExtTimeNodeContainer *pETNC)
+PPT::CRecordTimeBehaviorContainer* PPT::Intermediate::GetTimeBehaviorContainer(CRecordExtTimeNodeContainer *pETNC)
 {
     CRecordTimeBehaviorContainer *pBhvr = nullptr;
     if      (pETNC->m_haveSetBehavior)
@@ -76,7 +76,7 @@ PPT_FORMAT::CRecordTimeBehaviorContainer* PPT_FORMAT::Intermediate::GetTimeBehav
     return pBhvr;
 }
 
-_INT32 PPT_FORMAT::Intermediate::GetSpID(CRecordExtTimeNodeContainer *pETNC)
+_INT32 PPT::Intermediate::GetSpID(CRecordExtTimeNodeContainer *pETNC)
 {
     auto pBhvr = GetTimeBehaviorContainer(pETNC);
     if (pBhvr == nullptr)

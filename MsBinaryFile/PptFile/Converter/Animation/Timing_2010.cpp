@@ -7,7 +7,7 @@
 #include "TimingUtils.h"
 
 
-namespace PPT_FORMAT {
+namespace PPT {
 namespace Converter {
 
 Timing_2010::Timing_2010(CRecordPP10SlideBinaryTagExtension *pAnim_2010, const std::unordered_set<int> &shapesID) :

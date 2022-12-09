@@ -31,19 +31,19 @@
  */
 #pragma once
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CTheme;
 }
 class CStylesWriter
 {
 public:
-	CStylesWriter(PPT_FORMAT::CTheme* m_pTheme);
+    CStylesWriter(PPT::CTheme* m_pTheme);
 	CStylesWriter();
 
-	PPT_FORMAT::CTheme* m_pTheme;
+    PPT::CTheme* m_pTheme;
 	
-	void ConvertStyles(PPT_FORMAT::CTextStyles& oStyles, PPT_FORMAT::CStringWriter& oWriter, int nCount = 10)
+    void ConvertStyles(PPT::CTextStyles& oStyles, PPT::CStringWriter& oWriter, int nCount = 10)
 	{
 		for (int i = 0; i < nCount; ++i)
 		{
@@ -51,19 +51,19 @@ public:
 				ConvertStyleLevel(oStyles.m_pLevels[i].get(), oWriter, i);
 		}
 	}
-	std::wstring ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel, const int& nLevel)
+    std::wstring ConvertStyleLevel(PPT::CTextStyleLevel& oLevel, const int& nLevel)
 	{
-		PPT_FORMAT::CStringWriter oWriter;
+        PPT::CStringWriter oWriter;
 		ConvertStyleLevel(oLevel, oWriter, nLevel);
 		return oWriter.GetData();
 	}
 
-	void ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel& oLevel,
-		PPT_FORMAT::CStringWriter& oWriter, const int& nLevel);
+    void ConvertStyleLevel(PPT::CTextStyleLevel& oLevel,
+        PPT::CStringWriter& oWriter, const int& nLevel);
 
-    std::wstring ConvertStyles(PPT_FORMAT::CTextStyles& oStyles, int nCount = 10)
+    std::wstring ConvertStyles(PPT::CTextStyles& oStyles, int nCount = 10)
 	{
-		PPT_FORMAT::CStringWriter oWriter;
+        PPT::CStringWriter oWriter;
 		ConvertStyles(oStyles, oWriter, nCount);
 		return oWriter.GetData();
 	}

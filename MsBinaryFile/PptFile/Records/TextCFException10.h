@@ -32,7 +32,7 @@
 #pragma once
 #include "CFMasks.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct STextCFException10
 {

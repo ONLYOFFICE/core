@@ -32,7 +32,7 @@
 #pragma once
 #include "ExMediaAtom.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordWAVAudioEmbeddedContainer : public CRecordsContainer
 	{

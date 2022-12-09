@@ -31,7 +31,7 @@
  */
 #include "RecordType.h"
 
-using namespace PPT_FORMAT;
+using namespace PPT;
 
 //#define RECORDNAME_BY_TYPE(RECORD_TYPE, RECORD_NAME)						\
 //    case RECORD_TYPE: { name = RECORD_NAME; break;}			\

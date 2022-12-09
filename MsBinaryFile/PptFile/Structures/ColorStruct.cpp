@@ -1,17 +1,17 @@
 #include "ColorStruct.h"
 
 
-PPT_FORMAT::ColorStruct::ColorStruct()
+PPT::ColorStruct::ColorStruct()
 {
     clear();
 }
 
-void PPT_FORMAT::ColorStruct::clear()
+void PPT::ColorStruct::clear()
 {
     m_red = m_green = m_blue = 0;
 }
 
-void PPT_FORMAT::ColorStruct::ReadFromStream(POLE::Stream *pStream)
+void PPT::ColorStruct::ReadFromStream(POLE::Stream *pStream)
 {
     m_red       = StreamUtils::ReadBYTE(pStream);
     m_green     = StreamUtils::ReadBYTE(pStream);

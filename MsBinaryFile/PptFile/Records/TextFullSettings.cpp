@@ -100,7 +100,7 @@ CTextFullSettings::~CTextFullSettings()
     m_pTextRuler = NULL;
 }
 
-std::wstring CTextFullSettings::ApplyProperties(PPT_FORMAT::CTextAttributesEx *pTextAttributes)
+std::wstring CTextFullSettings::ApplyProperties(PPT::CTextAttributesEx *pTextAttributes)
 {
     if (NULL == pTextAttributes)
         return m_strText;
@@ -109,7 +109,7 @@ std::wstring CTextFullSettings::ApplyProperties(PPT_FORMAT::CTextAttributesEx *p
     pTextAttributes->m_lStyleThemeIndex	= m_lStyleThemeIndex;
 
     if (NULL != m_pTextStyleProp)
-        PPT_FORMAT::ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes);
+        PPT::ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes);
 
     if (NULL != m_pTextRuler)
         pTextAttributes->m_oRuler = m_pTextRuler->m_oTextRuler;

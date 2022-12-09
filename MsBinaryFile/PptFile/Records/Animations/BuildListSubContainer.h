@@ -36,7 +36,7 @@
 #include "BuildAtom.h"
 #include "ChartBuildAtom.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordBuildListSubContainer : public CUnknownRecord
 {

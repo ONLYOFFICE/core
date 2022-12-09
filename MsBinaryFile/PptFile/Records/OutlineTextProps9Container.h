@@ -34,7 +34,7 @@
 #include "StyleTextProp9Atom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordOutlineTextProps9Entry : public CRecordOutlineTextPropsHeaderExAtom
 {

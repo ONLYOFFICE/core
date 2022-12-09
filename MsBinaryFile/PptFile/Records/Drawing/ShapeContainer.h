@@ -58,7 +58,7 @@
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
-using namespace PPT_FORMAT;
+using namespace PPT;
 
 class CPPTElement
 {
@@ -107,7 +107,7 @@ public:
                             CTheme* pTheme, CLayout* pLayout,
                             CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 
-    PPT_FORMAT::ElementType GetTypeElem(eSPT eType)
+    PPT::ElementType GetTypeElem(eSPT eType)
     {
         switch (eType)
         {

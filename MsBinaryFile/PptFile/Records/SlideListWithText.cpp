@@ -135,7 +135,7 @@ void CRecordSlideListWithText::ReadFromStream(SRecordHeader &oHeader, POLE::Stre
                 if (RT_TextInteractiveInfoAtom == oRec.RecType)
                 {
                     CRecordTextInteractiveInfoAtom* pTxRanges = dynamic_cast<CRecordTextInteractiveInfoAtom*>(pRecord);
-                    PPT_FORMAT::CTextRange oRange;
+                    PPT::CTextRange oRange;
                     oRange.m_lStart	= pTxRanges->m_lStart;
                     oRange.m_lEnd	= pTxRanges->m_lEnd;
                     m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_arRanges.push_back(oRange);

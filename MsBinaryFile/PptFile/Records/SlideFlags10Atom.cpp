@@ -32,7 +32,7 @@
 #include "SlideFlags10Atom.h"
 
 
-void PPT_FORMAT::CRecordSlideFlags10Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+void PPT::CRecordSlideFlags10Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
     m_oHeader = oHeader;
 

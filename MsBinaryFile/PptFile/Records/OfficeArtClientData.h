@@ -36,7 +36,7 @@
 #include "Animations/AnimationInfoContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordShapeProgBinaryTagContainer : public CUnknownRecord
 {

@@ -37,7 +37,7 @@
 #include "ClientVisualElementContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeConditionContainer : public CUnknownRecord
 {

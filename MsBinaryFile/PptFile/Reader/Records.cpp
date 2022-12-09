@@ -37,7 +37,7 @@
 #include <iostream>
 #include <iomanip>
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 	std::wstring CUnknownRecord::ReadStringW(const XLS::CFStreamPtr &pStream, int lLen)
@@ -169,7 +169,7 @@ namespace PPT_FORMAT
 #define RECORDNAME_BY_TYPE(RECORD_TYPE, RECORD_NAME)						\
     case RECORD_TYPE: { name = RECORD_NAME; break;}			\
 
-	std::string GetRecordName(PPT_FORMAT::RecordType dwType)
+	std::string GetRecordName(PPT::RecordType dwType)
 	{
 		std::string name;
 		switch (dwType) {

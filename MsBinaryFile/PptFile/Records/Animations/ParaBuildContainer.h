@@ -36,7 +36,7 @@
 #include "ParaBuildLevel.h"
 #include "ParaBuildAtom.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordParaBuildContainer : public CRecordBuildListSubContainer
 {

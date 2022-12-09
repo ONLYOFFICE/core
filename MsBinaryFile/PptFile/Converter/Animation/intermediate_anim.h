@@ -7,7 +7,7 @@
 #include "../../Records/Animations/AnimationInfoContainer.h"
 #include <unordered_set>
 
-namespace PPT_FORMAT 
+namespace PPT 
 {
 	namespace Intermediate
 	{

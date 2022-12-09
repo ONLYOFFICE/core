@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-namespace PPT_FORMAT {
+namespace PPT {
 namespace Converter {
 class TimingExeption : virtual public std::exception
 {

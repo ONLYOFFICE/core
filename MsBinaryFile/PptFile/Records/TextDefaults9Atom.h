@@ -34,7 +34,7 @@
 #include "TextPFException9.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordTextDefaults9Atom : public CUnknownRecord

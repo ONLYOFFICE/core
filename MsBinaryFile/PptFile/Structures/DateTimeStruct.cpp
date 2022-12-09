@@ -1,12 +1,12 @@
 #include "DateTimeStruct.h"
 
 
-PPT_FORMAT::DateTimeStruct::DateTimeStruct() :
+PPT::DateTimeStruct::DateTimeStruct() :
     m_wYear(0), m_wMonth(0),    m_wDayOfWeek(0),    m_wDay(0),
     m_wHour(0), m_wMinute(0),   m_wSecond(0),       m_wMilliseconds(0)
 {}
 
-void PPT_FORMAT::DateTimeStruct::ReadFromStream(POLE::Stream *pStream)
+void PPT::DateTimeStruct::ReadFromStream(POLE::Stream *pStream)
 {
     m_wYear         = StreamUtils::ReadWORD(pStream);
     m_wMonth        = StreamUtils::ReadWORD(pStream);

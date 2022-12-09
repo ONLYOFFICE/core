@@ -16,13 +16,13 @@
 #include "../../../../OOXML/PPTXFormat/Logic/Timing/Video.h"
 #include "../../Records/Animations/AnimationInfoContainer.h"
 
-using namespace PPT_FORMAT::Converter;
+using namespace PPT::Converter;
 
 Animation_1995::Animation_1995(_INT32 &cTnId) :
     cTnId(cTnId)
 {}
 
-void Animation_1995::FillCTnAnimation(PPTX::Logic::CTn &oCTN, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim)
+void Animation_1995::FillCTnAnimation(PPTX::Logic::CTn &oCTN, PPT::Intermediate::SOldAnimation *pOldAnim)
 {
     oCTN.presetClass = L"entr";
     oCTN.grpId = 0;
@@ -164,7 +164,7 @@ void Animation_1995::FillCTnAnimation(PPTX::Logic::CTn &oCTN, PPT_FORMAT::Interm
 
 
 
-void Animation_1995::FillCBhvrForAnim (PPTX::Logic::Anim& oAnim, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int dur, std::wstring attrname)
+void Animation_1995::FillCBhvrForAnim (PPTX::Logic::Anim& oAnim, PPT::Intermediate::SOldAnimation* pOldAnim, int dur, std::wstring attrname)
 {
     FillCBhvr(oAnim.cBhvr, dur, pOldAnim->shapeId, attrname, -1);
 
@@ -203,13 +203,13 @@ void Animation_1995::FillCBhvr(PPTX::Logic::CBhvr &oBhvr, int dur, UINT spid, st
     }
 }
 
-void Animation_1995::FillCBhvr(PPTX::Logic::CBhvr &oCBhvr, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int delay)
+void Animation_1995::FillCBhvr(PPTX::Logic::CBhvr &oCBhvr, PPT::Intermediate::SOldAnimation *pOldAnim, int delay)
 {
     FillCBhvr(oCBhvr, 1, pOldAnim->shapeId, L"style.visibility", delay);
 }
 
-void Animation_1995::FillAnim (PPTX::Logic::Anim& oAnim, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int dur, std::wstring attrname,
-	PPT_FORMAT::Intermediate::SValue val1, PPT_FORMAT::Intermediate::SValue val2, std::wstring fmla)
+void Animation_1995::FillAnim (PPTX::Logic::Anim& oAnim, PPT::Intermediate::SOldAnimation* pOldAnim, int dur, std::wstring attrname,
+	PPT::Intermediate::SValue val1, PPT::Intermediate::SValue val2, std::wstring fmla)
 {
     FillCBhvrForAnim(oAnim, pOldAnim, dur, attrname);
 
@@ -245,7 +245,7 @@ void Animation_1995::FillAnim (PPTX::Logic::Anim& oAnim, PPT_FORMAT::Intermediat
 
 }
 
-void Animation_1995::FillAnimEffect (PPTX::Logic::AnimEffect& oAnimEffect, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, std::wstring filter, std::wstring transition)
+void Animation_1995::FillAnimEffect (PPTX::Logic::AnimEffect& oAnimEffect, PPT::Intermediate::SOldAnimation* pOldAnim, std::wstring filter, std::wstring transition)
 {
     oAnimEffect.transition = new PPTX::Limit::TLTransition();
     oAnimEffect.transition->set(transition);
@@ -258,12 +258,12 @@ void Animation_1995::FillAnimEffect (PPTX::Logic::AnimEffect& oAnimEffect, PPT_F
 }
 
 // This methods fill ChildTnLst with anim nodes
-void Animation_1995::ConvertAppear(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim)
+void Animation_1995::ConvertAppear(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim)
 {
     PushSet(oParent, pOldAnim, 0);
 }
 
-void Animation_1995::ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
+void Animation_1995::ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -344,7 +344,7 @@ void Animation_1995::ConvertFlyIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::
     }
 }
 
-void Animation_1995::ConvertBlinds(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int &presetSub)
+void Animation_1995::ConvertBlinds(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int &presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -367,7 +367,7 @@ void Animation_1995::ConvertBlinds(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT:
     }
 }
 
-void Animation_1995::ConvertShape(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
+void Animation_1995::ConvertShape(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -390,13 +390,13 @@ void Animation_1995::ConvertShape(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::
     }
 }
 
-void Animation_1995::ConvertCheckerboard(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim)
+void Animation_1995::ConvertCheckerboard(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim)
 {
     PushSet(oParent, pOldAnim);
     PushAnimEffect(oParent, pOldAnim, L"checkerboard(across)", L"in");
 }
 
-void Animation_1995::ConvertCrawlIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
+void Animation_1995::ConvertCrawlIn(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -441,19 +441,19 @@ void Animation_1995::ConvertCrawlIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT
     }
 }
 
-void Animation_1995::ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim)
+void Animation_1995::ConvertDissolveIn(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim)
 {
     PushSet(oParent, pOldAnim);
     PushAnimEffect(oParent, pOldAnim, L"dissolve", L"in");
 }
 
-void Animation_1995::ConvertFade(PPTX::Logic::ChildTnLst &oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim)
+void Animation_1995::ConvertFade(PPTX::Logic::ChildTnLst &oParent, PPT::Intermediate::SOldAnimation *pOldAnim)
 {
     PushSet(oParent, pOldAnim);
     PushAnimEffect(oParent, pOldAnim, L"fade", L"in");
 }
 
-void Animation_1995::ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
+void Animation_1995::ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
     presetSub = 0;
@@ -465,7 +465,7 @@ void Animation_1995::ConvertFlashOnce(PPTX::Logic::ChildTnLst& oParent, PPT_FORM
     set->cBhvr.cTn.fill.reset();
 }
 
-void Animation_1995::ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
+void Animation_1995::ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -506,7 +506,7 @@ void Animation_1995::ConvertPeekIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT:
     }
 }
 
-void Animation_1995::ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
+void Animation_1995::ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -529,7 +529,7 @@ void Animation_1995::ConvertRandomBars(PPTX::Logic::ChildTnLst& oParent, PPT_FOR
     }
 }
 
-void Animation_1995::ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim)
+void Animation_1995::ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim)
 {
     PushSet(oParent, pOldAnim);
     //     TODO
@@ -552,7 +552,7 @@ void Animation_1995::ConvertSpiralIn(PPTX::Logic::ChildTnLst& oParent, PPT_FORMA
 
 }
 
-void Animation_1995::ConvertSplit(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
+void Animation_1995::ConvertSplit(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -589,7 +589,7 @@ void Animation_1995::ConvertSplit(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::
     }
 }
 
-void Animation_1995::ConvertStretch(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
+void Animation_1995::ConvertStretch(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -655,7 +655,7 @@ void Animation_1995::ConvertStretch(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT
     }
 }
 
-void Animation_1995::ConvertStrips(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
+void Animation_1995::ConvertStrips(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -692,7 +692,7 @@ void Animation_1995::ConvertStrips(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT:
     }
 }
 
-void Animation_1995::ConvertBasicSwivel(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
+void Animation_1995::ConvertBasicSwivel(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
     presetSub = 10;
@@ -703,7 +703,7 @@ void Animation_1995::ConvertBasicSwivel(PPTX::Logic::ChildTnLst& oParent, PPT_FO
              L"#ppt_w*sin(2.5*pi*$)");
 }
 
-void Animation_1995::ConvertWipe(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
+void Animation_1995::ConvertWipe(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -740,7 +740,7 @@ void Animation_1995::ConvertWipe(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::I
     }
 }
 
-void Animation_1995::ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
+void Animation_1995::ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim, int& presetSub)
 {
     PushSet(oParent, pOldAnim);
 
@@ -809,7 +809,7 @@ void Animation_1995::ConvertBasicZoom(PPTX::Logic::ChildTnLst& oParent, PPT_FORM
     }
 }
 
-void Animation_1995::ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation* pOldAnim)
+void Animation_1995::ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation* pOldAnim)
 {
     PushSet(oParent, pOldAnim, 0);
 
@@ -827,16 +827,16 @@ void Animation_1995::ConvertRandomEffect(PPTX::Logic::ChildTnLst& oParent, PPT_F
     oParent.list.push_back(childTimeNode);
 }
 
-void Animation_1995::PushAnim(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int dur,
-                              std::wstring attrname1, PPT_FORMAT::Intermediate::SValue val1, PPT_FORMAT::Intermediate::SValue val2,
-                              std::wstring attrname2, PPT_FORMAT::Intermediate::SValue val3, PPT_FORMAT::Intermediate::SValue val4, std::wstring fmla1, std::wstring fmla2)
+void Animation_1995::PushAnim(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int dur,
+                              std::wstring attrname1, PPT::Intermediate::SValue val1, PPT::Intermediate::SValue val2,
+                              std::wstring attrname2, PPT::Intermediate::SValue val3, PPT::Intermediate::SValue val4, std::wstring fmla1, std::wstring fmla2)
 {
     PushAnim(oParent, pOldAnim, attrname1, val1, val2, fmla1);
     PushAnim(oParent, pOldAnim, attrname2, val3, val4, fmla2);
 }
 
-void Animation_1995::PushAnim(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim,
-                              std::wstring attrname1, PPT_FORMAT::Intermediate::SValue val1, PPT_FORMAT::Intermediate::SValue val2,std::wstring fmla1)
+void Animation_1995::PushAnim(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim,
+                              std::wstring attrname1, PPT::Intermediate::SValue val1, PPT::Intermediate::SValue val2,std::wstring fmla1)
 {
     PPTX::Logic::TimeNodeBase childTimeNode;
 
@@ -846,7 +846,7 @@ void Animation_1995::PushAnim(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Inte
     oParent.list.push_back(childTimeNode);
 }
 
-void Animation_1995::PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition)
+void Animation_1995::PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, std::wstring filter, std::wstring transition)
 {
     PPTX::Logic::TimeNodeBase childTimeNode;
 
@@ -856,7 +856,7 @@ void Animation_1995::PushAnimEffect(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT
     oParent.list.push_back(childTimeNode);
 }
 
-void Animation_1995::PushSet(PPTX::Logic::ChildTnLst& oParent, PPT_FORMAT::Intermediate::SOldAnimation *pOldAnim, int dur)
+void Animation_1995::PushSet(PPTX::Logic::ChildTnLst& oParent, PPT::Intermediate::SOldAnimation *pOldAnim, int dur)
 {
     PPTX::Logic::TimeNodeBase childTimeNode;
     auto set = new PPTX::Logic::Set;

@@ -2,7 +2,7 @@
 #include "../../Records/Drawing/ShapeContainer.h"
 #include "Timing_1995.h"
 
-namespace PPT_FORMAT 
+namespace PPT 
 {
 	namespace Intermediate 
 	{

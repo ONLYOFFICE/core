@@ -34,7 +34,7 @@
 #include "../Enums/enums.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordOutlineTextPropsHeaderExAtom : public CUnknownRecord
 {

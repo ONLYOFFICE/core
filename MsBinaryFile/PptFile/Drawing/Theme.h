@@ -33,7 +33,7 @@
 #include "Structures.h"
 #include "Layout.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	enum _typeMaster
 	{
@@ -131,7 +131,7 @@ namespace PPT_FORMAT
 
 			for (int pos = 0; pos < g_ThemeTextStylesCount; ++pos)
 			{
-				PPT_FORMAT::CTextStyles& oStyle = m_pStyles[pos];
+				PPT::CTextStyles& oStyle = m_pStyles[pos];
 
 				size_t nLevels = 10;
 				for (size_t i = 0; i < nLevels; ++i)

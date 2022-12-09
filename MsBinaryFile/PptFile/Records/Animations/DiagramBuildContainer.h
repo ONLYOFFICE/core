@@ -36,7 +36,7 @@
 #include "DiagramBuildAtom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordDiagramBuildContainer : public CRecordBuildListSubContainer
 {

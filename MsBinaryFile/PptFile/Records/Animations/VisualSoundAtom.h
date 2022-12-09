@@ -36,7 +36,7 @@
 #include "../../Enums/_includer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordVisualSoundAtom : public CUnknownRecord
 {

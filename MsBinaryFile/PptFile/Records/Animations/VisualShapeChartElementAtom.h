@@ -35,7 +35,7 @@
 #include "../../Reader/Records.h"
 #include "../../Enums/_includer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordVisualShapeChartElementAtom : public CUnknownRecord
 {

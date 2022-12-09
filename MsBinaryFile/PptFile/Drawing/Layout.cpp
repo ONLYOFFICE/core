@@ -1,7 +1,7 @@
 #include "Layout.h"
 
 
-void PPT_FORMAT::CorrectPlaceholderType(int &type)
+void PPT::CorrectPlaceholderType(int &type)
 {
     switch (type)
     {
@@ -14,7 +14,7 @@ void PPT_FORMAT::CorrectPlaceholderType(int &type)
     }
 }
 
-bool PPT_FORMAT::isTitlePlaceholder(int type)
+bool PPT::isTitlePlaceholder(int type)
 {
     switch (type)
     {
@@ -29,7 +29,7 @@ bool PPT_FORMAT::isTitlePlaceholder(int type)
     }
 }
 
-bool PPT_FORMAT::isBodyPlaceholder(int type)
+bool PPT::isBodyPlaceholder(int type)
 {
     switch (type)
     {
@@ -42,12 +42,12 @@ bool PPT_FORMAT::isBodyPlaceholder(int type)
     }
 }
 
-PPT_FORMAT::CLayout::CLayout()
+PPT::CLayout::CLayout()
 {
     Clear();
 }
 
-void PPT_FORMAT::CLayout::Clear()
+void PPT::CLayout::Clear()
 {
     m_arElements.clear();
     m_mapPlaceholders.clear();
@@ -68,7 +68,7 @@ void PPT_FORMAT::CLayout::Clear()
     m_bIsBackground			= false;
 }
 
-void PPT_FORMAT::CLayout::CreateDublicateElements()
+void PPT::CLayout::CreateDublicateElements()
 {
     // просто из всех своих элементов делаем дубликата
 
@@ -82,7 +82,7 @@ void PPT_FORMAT::CLayout::CreateDublicateElements()
     }
 }
 
-PPT_FORMAT::CElementPtr PPT_FORMAT::CLayout::GetPlaceholder(LONG lID)
+PPT::CElementPtr PPT::CLayout::GetPlaceholder(LONG lID)
 {
     size_t nCount = m_arElements.size();
 
@@ -99,7 +99,7 @@ PPT_FORMAT::CElementPtr PPT_FORMAT::CLayout::GetPlaceholder(LONG lID)
     return CElementPtr();
 }
 
-LONG PPT_FORMAT::CLayout::GetCountPlaceholderWithType(LONG lType)
+LONG PPT::CLayout::GetCountPlaceholderWithType(LONG lType)
 {
     LONG lFound = 0;
 
@@ -114,7 +114,7 @@ LONG PPT_FORMAT::CLayout::GetCountPlaceholderWithType(LONG lType)
     return lFound;
 }
 
-CColor PPT_FORMAT::CLayout::GetColor(const LONG &lIndexScheme)
+CColor PPT::CLayout::GetColor(const LONG &lIndexScheme)
 {
     if (lIndexScheme < (LONG)m_arColorScheme.size())
     {
@@ -123,7 +123,7 @@ CColor PPT_FORMAT::CLayout::GetColor(const LONG &lIndexScheme)
     return ODRAW::CColor();
 }
 
-void PPT_FORMAT::CLayout::CheckPlaceholderStyle(std::wstring strStyleName, LONG &lType, LONG &lLevel, LONG &lTypeStyle)
+void PPT::CLayout::CheckPlaceholderStyle(std::wstring strStyleName, LONG &lType, LONG &lLevel, LONG &lTypeStyle)
 {
     size_t		nLen  = strStyleName.length();
     wchar_t*    pData = (wchar_t*)strStyleName.c_str();

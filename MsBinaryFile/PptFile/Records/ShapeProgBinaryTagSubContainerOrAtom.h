@@ -40,7 +40,7 @@
 #define TN_PPT10 L"___PPT10"
 #define TN_PPT11 L"___PPT11"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordPP9ShapeBinaryTagExtension : public CUnknownRecord
 {

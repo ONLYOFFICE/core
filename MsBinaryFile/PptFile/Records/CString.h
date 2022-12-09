@@ -33,7 +33,7 @@
 #include "../Reader/Records.h"
 #include <iostream>
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordCString : public CUnknownRecord
 	{

@@ -32,7 +32,7 @@
 #include "TextAttributesEx.h"
 #include "Theme.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
     void CTextAttributesEx::RecalcParagraphsPPT()

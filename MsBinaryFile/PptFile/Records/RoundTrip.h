@@ -35,7 +35,7 @@
 #include <fstream>
 //static UINT nRTCounter = 1;
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CUnknownRoundTrip : public CUnknownRecord
 	{

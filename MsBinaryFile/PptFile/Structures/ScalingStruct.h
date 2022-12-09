@@ -35,7 +35,7 @@
 #include "RatioStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct ScalingStruct : public IStruct
 {

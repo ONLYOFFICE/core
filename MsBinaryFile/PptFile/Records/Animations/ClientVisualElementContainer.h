@@ -37,7 +37,7 @@
 #include "VisualShapeAtom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordClientVisualElementContainer : public CUnknownRecord
 {

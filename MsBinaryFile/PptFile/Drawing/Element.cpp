@@ -1,7 +1,7 @@
 #include "Element.h"
 
 
-PPT_FORMAT::CElement::CElement()
+PPT::CElement::CElement()
 {
     m_bIsBackground				= false;
     m_bHaveAnchor				= true;
@@ -37,11 +37,11 @@ PPT_FORMAT::CElement::CElement()
     m_pParentElements			= NULL;
 }
 
-PPT_FORMAT::CElement::~CElement()
+PPT::CElement::~CElement()
 {
 }
 
-void PPT_FORMAT::CElement::SetProperiesToDublicate(CElementPtr pDublicate)
+void PPT::CElement::SetProperiesToDublicate(CElementPtr pDublicate)
 {
     if (!pDublicate)
         return;
@@ -93,7 +93,7 @@ void PPT_FORMAT::CElement::SetProperiesToDublicate(CElementPtr pDublicate)
     pDublicate->m_oShadow					= m_oShadow;
 }
 
-void PPT_FORMAT::CElement::NormalizeCoordsByMetric()
+void PPT::CElement::NormalizeCoordsByMetric()
 {
     if (!m_bAnchorEnabled) return;
     double dScale = 1587.5; //master to emu

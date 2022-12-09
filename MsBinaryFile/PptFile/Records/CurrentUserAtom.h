@@ -35,7 +35,7 @@
 #define			NO_ENCRYPT		0xE391C05F
 #define			ENCRYPT			0xF3D1C4DF
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordCurrentUserAtom : public CUnknownRecord
 	{

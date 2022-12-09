@@ -35,7 +35,7 @@
 #include "../Structures/ScalingStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordZoomViewInfoAtom : public CUnknownRecord
 	{

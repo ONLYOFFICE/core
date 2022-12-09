@@ -145,7 +145,7 @@ public:
 		m_mapMedia[strInput] = strMediaName;
 		return strMediaName;
 	}
-	inline void WriteAudioCollection(const std::vector<PPT_FORMAT::CExFilesInfo>& audioCont)
+	inline void WriteAudioCollection(const std::vector<PPT::CExFilesInfo>& audioCont)
 	{
 		if (audioCont.empty()) return;
 
@@ -188,7 +188,7 @@ static std::wstring CorrectXmlString3(const std::wstring & str)
 class CRelsGenerator
 {
 private:
-	PPT_FORMAT::CStringWriter               m_oWriter;
+	PPT::CStringWriter               m_oWriter;
 	int										m_lNextRelsID;
 	std::map<std::wstring, int>				m_mapMediaRelsID;
 	CMediaManager*							m_pManager;
@@ -390,7 +390,7 @@ public:
 	}
 	std::wstring WriteSlideRef(const std::wstring& strLocation)
 	{
-		int sldNum = PPT_FORMAT::CExFilesInfo::GetSlideNumber(strLocation);
+		int sldNum = PPT::CExFilesInfo::GetSlideNumber(strLocation);
 
 		std::wstring strSlide(L"slide");
 		strSlide += std::to_wstring(sldNum);

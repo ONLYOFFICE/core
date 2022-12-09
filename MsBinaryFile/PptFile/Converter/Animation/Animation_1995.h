@@ -6,7 +6,7 @@
 #include "../../../../OOXML/PPTXFormat/Logic/Timing/AnimEffect.h"
 
 
-namespace PPT_FORMAT {
+namespace PPT {
 	namespace Converter {
 		class Animation_1995
 		{

@@ -36,7 +36,7 @@
 #include "TimeVariant.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeStringListContainer : public CUnknownRecord
 {

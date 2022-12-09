@@ -129,7 +129,7 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 	}
 	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
-		PPT_FORMAT::CPPTXWriter oPPTXWriter;
+		PPT::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
 		oPPTXWriter.m_xmlApp  = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;

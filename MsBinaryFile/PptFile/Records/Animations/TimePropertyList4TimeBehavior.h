@@ -37,7 +37,7 @@
 
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimePropertyList4TimeBehavior : public CRecordsContainer
 {

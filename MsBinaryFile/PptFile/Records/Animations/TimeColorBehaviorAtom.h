@@ -37,7 +37,7 @@
 #include "TimeAnimateColorBy.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordTimeColorBehaviorAtom: public CUnknownRecord

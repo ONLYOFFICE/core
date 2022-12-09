@@ -1,7 +1,7 @@
 #include "TmsfTimeStruct.h"
 
 
-void PPT_FORMAT::TmsfTimeStruct::ReadFromStream(POLE::Stream *pStream)
+void PPT::TmsfTimeStruct::ReadFromStream(POLE::Stream *pStream)
 {
     m_nTrack    = StreamUtils::ReadBYTE(pStream);
     m_nMinute   = StreamUtils::ReadBYTE(pStream);

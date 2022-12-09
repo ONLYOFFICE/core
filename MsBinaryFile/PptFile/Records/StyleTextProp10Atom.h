@@ -35,7 +35,7 @@
 #include "TextCFException10.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordStyleTextProp10Atom : public CUnknownRecord
 {

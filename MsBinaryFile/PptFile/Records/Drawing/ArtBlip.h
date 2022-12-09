@@ -35,7 +35,7 @@
 
 class CPPTDocumentInfo;
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordOfficeArtBlip : public CUnknownRecord
 	{

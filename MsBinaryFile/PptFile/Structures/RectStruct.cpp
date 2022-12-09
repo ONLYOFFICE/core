@@ -1,7 +1,7 @@
 #include "RectStruct.h"
 
 
-void PPT_FORMAT::RectStruct::ReadFromStream(POLE::Stream *pStream)
+void PPT::RectStruct::ReadFromStream(POLE::Stream *pStream)
 {
     m_nTop = StreamUtils::ReadLONG(pStream);
     m_nLeft = StreamUtils::ReadLONG(pStream);

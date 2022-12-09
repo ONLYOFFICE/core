@@ -37,7 +37,7 @@
 #include "TimeAnimationValueAtom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordTimeAnimationEntry

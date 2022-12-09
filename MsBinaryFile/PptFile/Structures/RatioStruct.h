@@ -35,7 +35,7 @@
 
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct RatioStruct : public IStruct
 {

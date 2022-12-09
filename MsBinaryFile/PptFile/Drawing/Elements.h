@@ -278,7 +278,7 @@ namespace PPTX2EditorAdvanced
 }
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CImageElement : public CElement
 	{

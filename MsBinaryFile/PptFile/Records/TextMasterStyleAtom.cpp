@@ -31,7 +31,7 @@
 */
 #include "TextMasterStyleAtom.h"
 
-CRecordTextMasterStyleAtom::CRecordTextMasterStyleAtom() : PPT_FORMAT::CTextStyles()
+CRecordTextMasterStyleAtom::CRecordTextMasterStyleAtom() : PPT::CTextStyles()
 {
     m_nTextType = -1;
 }
@@ -110,7 +110,7 @@ void CRecordTextMasterStyleAtom::LoadLevel(LONG lLevel, POLE::Stream *pStream, b
     oPF.LoadFromStream(pStream, false);
     oCF.LoadFromStream(pStream, false);
 
-    m_pLevels[lLevelOld] = new PPT_FORMAT::CTextStyleLevel();
+    m_pLevels[lLevelOld] = new PPT::CTextStyleLevel();
     m_pLevels[lLevelOld]->m_oPFRun = oPF.m_oRun;
     m_pLevels[lLevelOld]->m_oCFRun = oCF.m_oRun;
 }

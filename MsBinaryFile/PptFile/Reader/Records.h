@@ -47,16 +47,16 @@
 #include <iomanip>
 #include <fstream>
 
-std::string GetRecordName(PPT_FORMAT::RecordType dwType);
+std::string GetRecordName(PPT::RecordType dwType);
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class SRecordHeader
 	{
 	public:
 		unsigned char           RecVersion;
 		unsigned short          RecInstance;
-		PPT_FORMAT::RecordType	RecType;
+        PPT::RecordType	RecType;
 		_UINT32                 RecLen;
 
 		bool bBadHeader;

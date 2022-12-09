@@ -13,10 +13,10 @@
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/ZoomTransition.h"
 
 
-using namespace PPT_FORMAT::Converter;
+using namespace PPT::Converter;
 
 
-Transition::Transition(const PPT_FORMAT::CSlideShowInfo &SSInfo, CRelsGenerator *pRels) :
+Transition::Transition(const PPT::CSlideShowInfo &SSInfo, CRelsGenerator *pRels) :
     slideShowInfo(SSInfo), oldTransition(SSInfo.m_oTransition),
     pRels(pRels)
 {

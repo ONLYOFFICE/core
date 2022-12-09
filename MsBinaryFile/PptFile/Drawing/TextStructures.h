@@ -36,7 +36,7 @@
 #include "Interactive.h"
 #include <set>
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 
@@ -84,7 +84,7 @@ namespace PPT_FORMAT
 		
         return _T("<") + strName + _T(">") + std::to_wstring((unsigned int)prop->GetLONG()) + _T("</") + strName + _T(">");
 	}
-//    std::wstring TextAutoNumberSchemeEnumTOTextAutonumberScheme(const PPT_FORMAT::TextAutoNumberSchemeEnum oldEnum);
+//    std::wstring TextAutoNumberSchemeEnumTOTextAutonumberScheme(const PPT::TextAutoNumberSchemeEnum oldEnum);
 
 	class CFontProperty
 	{

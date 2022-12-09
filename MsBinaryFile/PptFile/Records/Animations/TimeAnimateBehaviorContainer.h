@@ -40,7 +40,7 @@
 #include "TimeBehaviorContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeAnimateBehaviorContainer : public CUnknownRecord
 {

@@ -34,7 +34,7 @@
 
 #include "BuildListSubContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordChartBuildContainer : public CRecordBuildListSubContainer
 {

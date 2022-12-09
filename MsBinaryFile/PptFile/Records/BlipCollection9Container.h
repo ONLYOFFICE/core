@@ -33,7 +33,7 @@
 #include "BlipEntityAtom.h"
 #include <memory>
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordBlipCollection9Container : public CUnknownRecord

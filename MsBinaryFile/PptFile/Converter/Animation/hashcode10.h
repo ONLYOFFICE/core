@@ -2,7 +2,7 @@
 
 #include "intermediate_anim.h"
 
-namespace PPT_FORMAT 
+namespace PPT 
 {
 	namespace Converter {
 

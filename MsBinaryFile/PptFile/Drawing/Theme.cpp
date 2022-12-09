@@ -32,14 +32,14 @@
 #pragma once
 #include "Theme.h"
 
-PPT_FORMAT::CTheme::CTheme(_typeMaster type) : m_arColorScheme(), m_arFonts(), m_arBrushes(),
+PPT::CTheme::CTheme(_typeMaster type) : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 m_arPens(), m_arEffects(), m_arLayouts(), m_eType(type), m_wasBulletStart(false),
 m_bulletPos(0)
 {
 	Clear();
 }
 
-void PPT_FORMAT::CTheme::Clear()
+void PPT::CTheme::Clear()
 {
 	m_arElements.clear();
 	m_arLayouts.clear();
@@ -58,11 +58,11 @@ void PPT_FORMAT::CTheme::Clear()
 		m_PlaceholdersReplaceString[i].clear();
 }
 
-PPT_FORMAT::CTheme::~CTheme()
+PPT::CTheme::~CTheme()
 {
 }
 
-ODRAW::CColor PPT_FORMAT::CTheme::GetColor(const LONG &lIndexScheme)
+ODRAW::CColor PPT::CTheme::GetColor(const LONG &lIndexScheme)
 {
 	if (lIndexScheme < (LONG)m_arColorScheme.size())
 	{
@@ -71,13 +71,13 @@ ODRAW::CColor PPT_FORMAT::CTheme::GetColor(const LONG &lIndexScheme)
 	return ODRAW::CColor();
 }
 
-void PPT_FORMAT::CTheme::CalculateStyles()
+void PPT::CTheme::CalculateStyles()
 {
 	LONG lCountColors = (LONG)m_arColorScheme.size();
 
 	for (int pos = 0; pos < g_ThemeTextStylesCount; ++pos)
 	{
-		PPT_FORMAT::CTextStyles& oStyle = m_pStyles[pos];
+		PPT::CTextStyles& oStyle = m_pStyles[pos];
 
 		size_t nLevels = 10;
 		for (size_t i = 0; i < nLevels; ++i)
@@ -158,7 +158,7 @@ void PPT_FORMAT::CTheme::CalculateStyles()
 	}
 }
 
-void PPT_FORMAT::CTheme::CalculateStyle(CTheme *pTheme, CTextStyles &oStyle)
+void PPT::CTheme::CalculateStyle(CTheme *pTheme, CTextStyles &oStyle)
 {
 	LONG lCountColors = (LONG)pTheme->m_arColorScheme.size();
 

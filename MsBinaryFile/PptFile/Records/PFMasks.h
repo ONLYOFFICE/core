@@ -32,7 +32,7 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 inline bool getBit(_UINT32 data, _UINT32 mask)

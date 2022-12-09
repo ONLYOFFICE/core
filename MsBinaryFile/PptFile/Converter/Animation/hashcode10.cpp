@@ -1,6 +1,6 @@
 #include "hashcode10.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	namespace Converter 
 	{

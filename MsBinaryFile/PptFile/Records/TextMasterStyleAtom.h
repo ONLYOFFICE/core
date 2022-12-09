@@ -32,14 +32,14 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordTextMasterStyleAtom : public CUnknownRecord, public PPT_FORMAT::CTextStyles
+	class CRecordTextMasterStyleAtom : public CUnknownRecord, public PPT::CTextStyles
 	{
 	public:
 		LONG m_nTextType;
 
-		CRecordTextMasterStyleAtom() : PPT_FORMAT::CTextStyles()
+		CRecordTextMasterStyleAtom() : PPT::CTextStyles()
 		{
 			m_nTextType = -1;
 		}
@@ -118,7 +118,7 @@ namespace PPT_FORMAT
 			oPF.LoadFromStream(pStream, false);
 			oCF.LoadFromStream(pStream, false);
 
-			m_pLevels[lLevelOld] = new PPT_FORMAT::CTextStyleLevel();
+			m_pLevels[lLevelOld] = new PPT::CTextStyleLevel();
 			m_pLevels[lLevelOld]->m_oPFRun = oPF.m_oRun;
 			m_pLevels[lLevelOld]->m_oCFRun = oCF.m_oRun;
 		}

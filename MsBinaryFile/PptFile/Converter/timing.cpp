@@ -7,14 +7,14 @@
 #include "Animation/hashcode10.h"   // not work correct
 
 
-using namespace PPT_FORMAT::Converter;
+using namespace PPT::Converter;
 
-Timing::Timing(const PPT_FORMAT::Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
+Timing::Timing(const PPT::Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
     slideAnim(slideAnim),
     shapesID(shapesID)
 {}
 
-PPTX::Logic::Timing Timing::Convert(PPT_FORMAT::CExMedia *pExMedia, CRelsGenerator *pRels)
+PPTX::Logic::Timing Timing::Convert(PPT::CExMedia *pExMedia, CRelsGenerator *pRels)
 {
     this->pExMedia = pExMedia;
     this->pRels = pRels;

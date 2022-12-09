@@ -34,7 +34,7 @@
 #include "../../Reader/Records.h"
 #include "../../../Common/Vml/PPTShape/ElementSettings.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordShapeProperties : public CUnknownRecord
 	{

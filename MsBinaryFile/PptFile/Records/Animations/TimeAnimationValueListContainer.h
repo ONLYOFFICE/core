@@ -37,7 +37,7 @@
 #include <memory>
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeAnimationValueListContainer : public CUnknownRecord
 {

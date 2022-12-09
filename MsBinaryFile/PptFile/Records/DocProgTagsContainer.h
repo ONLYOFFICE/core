@@ -45,7 +45,7 @@
 #define ___PPT12 L"___PPT12"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
 class CRecordPP9DocBinaryTagExtension : public CRecordsContainer

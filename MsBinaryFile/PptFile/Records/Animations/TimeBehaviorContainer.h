@@ -40,7 +40,7 @@
 #include "ClientVisualElementContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordTimeBehaviorContainer : public CUnknownRecord
 	{

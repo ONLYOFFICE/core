@@ -103,7 +103,7 @@ CRecordPP10SlideBinaryTagExtension::~CRecordPP10SlideBinaryTagExtension()
             RELEASEOBJECT(pEl)
 }
 
-void PPT_FORMAT::CRecordPP10SlideBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+void PPT::CRecordPP10SlideBinaryTagExtension::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
     m_oHeader			=	oHeader;
 
@@ -277,7 +277,7 @@ CRecordSlideProgTagsContainer::~CRecordSlideProgTagsContainer()
         RELEASEOBJECT(pEl)
 }
 
-void PPT_FORMAT::CRecordSlideProgTagsContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+void PPT::CRecordSlideProgTagsContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
     m_oHeader	=	oHeader;
 

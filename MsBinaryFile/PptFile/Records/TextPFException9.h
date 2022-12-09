@@ -34,7 +34,7 @@
 #include "PFMasks.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct STextAutoNumberScheme
 {

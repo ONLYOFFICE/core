@@ -33,7 +33,7 @@
 #include "Element.h"
 #include "../Enums/_includer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 //    enum eSlideSize
 //    {

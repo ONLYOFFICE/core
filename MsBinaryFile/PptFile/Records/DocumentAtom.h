@@ -32,7 +32,7 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CRecordDocumentAtom : public CUnknownRecord
 	{
@@ -40,7 +40,7 @@ namespace PPT_FORMAT
 		ODRAW::SPointAtom m_oSlideSize;
 		ODRAW::SPointAtom m_oNotesSize;
 
-		PPT_FORMAT::SRatioAtom m_oServerZoom;
+		PPT::SRatioAtom m_oServerZoom;
 
 		UINT m_nNotesMasterPersistIDRef;
 		UINT m_nHandoutMasterPersistIDRef;

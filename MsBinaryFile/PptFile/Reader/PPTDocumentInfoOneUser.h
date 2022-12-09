@@ -82,7 +82,7 @@ public:
 	std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
     std::vector<CFontProperty>						m_arrFonts;
 
-	PPT_FORMAT::CTextStyles							m_oDefaultTextStyle;
+    PPT::CTextStyles							m_oDefaultTextStyle;
 
 	vector_string									m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
@@ -156,10 +156,10 @@ public:
 	void LoadExVideo(CRecordsContainer* pExObject);
 	void LoadExAudio(CRecordsContainer* pExObject);
 
-    void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, PPT_FORMAT::CTheme* pTheme);
+    void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, PPT::CTheme* pTheme);
     void LoadBulletBlip(CShapeElement* pShape);
     void LoadAutoNumBullet(CShapeElement* pShape, int slideID);
-	void CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme);
+    void CreateDefaultStyle(PPT::CTextStyles& pStyle, PPT::CTheme* pTheme);
 	void CorrectColorScheme(std::vector<CColor>& oScheme)
 	{
 		if (oScheme.size() < 1) return;
@@ -352,7 +352,7 @@ public:
 	void AddAnimation		(_UINT32 dwSlideID, double Width, double Height, CElementPtr pElement);
 	void AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
-	int			AddNewLayout(PPT_FORMAT::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
+    int			AddNewLayout(PPT::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
 	
 	CElementPtr	AddNewLayoutPlaceholder		(CLayout *pLayout,	int placeholderType, int placeholderSizePreset = -1);
 

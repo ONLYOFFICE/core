@@ -31,6 +31,11 @@ namespace MetaFile
 		m_nBKColor = TO_RGB(chR, chG, chB);
 	}
 
+	void CGenerateWmfSignature::SetBKColor(int nColor)
+	{
+		m_nBKColor = nColor;
+	}
+
 	bool CGenerateWmfSignature::GenerateSignature(const std::wstring &wsFilePath, const std::vector<std::wstring> &arStrings, bool bIsUnsigned)
 	{
 		if (wsFilePath.empty() || 0 == m_ushWidth || 0 == m_ushHeight)

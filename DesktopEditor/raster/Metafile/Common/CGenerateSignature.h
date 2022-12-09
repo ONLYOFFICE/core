@@ -19,6 +19,7 @@ namespace MetaFile
 		void SetSize(unsigned short ushWidth, unsigned short ushHeight);
 		void SetFont(short shFontHeight, const std::wstring& wsFontName);
 		void SetBKColor(char chR, char chG, char chB);
+		void SetBKColor(int nColor);
 
 		bool GenerateSignature(const std::wstring& wsFilePath, const std::vector<std::wstring>& arStrings, bool bIsUnsigned = false);
 	private:

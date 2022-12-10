@@ -919,4 +919,22 @@ void CMetaFileBuffer::ToFile(NSFile::CFileBinary *pFile)
     }
 }
 
+void SScalingAtom::FromStream(POLE::Stream *pStream)
+{
+    X.FromStream(pStream);
+    Y.FromStream(pStream);
+}
+
+void SRatioAtom::FromStream(POLE::Stream *pStream)
+{
+    Number = StreamUtils::ReadLONG(pStream);
+    Denom = StreamUtils::ReadLONG(pStream);
+}
+
+void SFileIdCluster::ReadFromStream(POLE::Stream *pStream)
+{
+    DrawingGroupID = (UINT)StreamUtils::ReadDWORD(pStream);
+    CurrentShapeID = (UINT)StreamUtils::ReadDWORD(pStream);
+}
+
 }

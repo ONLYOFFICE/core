@@ -51,232 +51,98 @@ std::string GetRecordName(PPT::RecordType dwType);
 
 namespace PPT
 {
-	class SRecordHeader
-	{
-	public:
-		unsigned char           RecVersion;
-		unsigned short          RecInstance;
-        RecordType	RecType;
-		_UINT32                 RecLen;
+class SRecordHeader
+{
+public:
+    unsigned char           RecVersion;
+    unsigned short          RecInstance;
+    RecordType	RecType;
+    _UINT32                 RecLen;
 
-		bool bBadHeader;
+    bool bBadHeader;
 
-		void Clear()
-		{
-			RecVersion = 0;
-			RecInstance = 0;
-			RecType = RT_NONE;
-			RecLen = 0;
+    void Clear();
+    SRecordHeader();
+    bool ReadFromStream(const XLS::CFStreamPtr &pStream);
 
-			bBadHeader = false;
-		}
-		SRecordHeader()
-		{
-			Clear();
-		}
-		bool ReadFromStream(const XLS::CFStreamPtr &pStream)
-		{
-			Clear();
+    bool ReadFromStream(POLE::Stream * pStream);
 
-			if (pStream->isEOF()) return FALSE;
-			POLE::uint64 nRd = 0;
+    bool IsContainer();
 
-			unsigned short rec = 0;
-			pStream->read((unsigned char*)&(rec), 2);
+    SRecordHeader& operator =(const SRecordHeader& oSrc);
 
-			RecInstance = rec >> 4;
-			RecVersion = rec - (RecInstance << 4);
+};
 
-			*pStream >> RecType >> RecLen;
+class IRecord
+{
+public:
+    SRecordHeader m_oHeader;
 
-			unsigned long sz = pStream->getStreamSize() - pStream->getStreamPointer();
+    virtual ~IRecord();
+    virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream) = 0;
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
+};
 
-			if (RecLen > sz)
-			{
-				RecLen = (UINT)sz;
-				bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
-			}
+class CUnknownRecord : public IRecord
+{
+    // этот класс - просто для того, чтобы нигде не проверять,
+    // реализована ли у нас такая запись
 
-			return true;
-		}
+public:
+    CUnknownRecord();
 
-		bool ReadFromStream(POLE::Stream * pStream)
-		{
-			Clear();
-			if (!pStream) return false;
+    virtual ~CUnknownRecord();
+    virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream);
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
-			POLE::uint64 nRd = 0;
+    std::wstring ReadStringW(const XLS::CFStreamPtr &pStream, int size);
+    std::string	 ReadStringA(const XLS::CFStreamPtr &pStream, int size);
+};
 
-			unsigned short rec = 0;
-			nRd = pStream->read((unsigned char*)&(rec), 2);
+IRecord* CreateByType(SRecordHeader oHeader);
 
-			if (nRd != 2) return false;
+class CRecordsContainer : public CUnknownRecord
+{
+public:
+    std::vector<IRecord*> m_arRecords;
 
-			RecInstance = rec >> 4;
-			RecVersion = rec - (RecInstance << 4);
+    CRecordsContainer();
 
-			nRd = pStream->read((unsigned char*)&(RecType), 2);
+    virtual ~CRecordsContainer();
 
-			nRd = pStream->read((unsigned char*)&(RecLen), 4);
+    void Clear();
 
-			POLE::uint64 sz = pStream->size() - pStream->tell();
+    virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream);
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
-			if (RecLen > sz)
-			{
-				RecLen = (UINT)sz;
-				bBadHeader = true; // GZoabli_PhD.ppt ... RecLen & 0xffff ????
-			}
+    template <typename T>
+    void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false) const
+    {
+        if (NULL == pArray)
+            return;
 
-			//        void** backTraceData = (void**)(new char*[40]);
-			//        int backTraceSize = backtrace(backTraceData, 40);
-
-			//        std::ofstream file("/home/ivaz28/pp/dia/ppt/pptRecords.txt", std::ios::out | std::ios::app);
-
-			//        file << std::string(backTraceSize - 11, ' ')
-			//             << "0x" << std::setw(4) << std::setfill('0') << std::hex << (int)RecType
-			//             << " " << std::setw(40) << std::setfill(' ') << std::left << GetRecordName(RecType)
-			//             << " " << std::setw(5) << std::dec << RecLen
-			//             << " " << backTraceSize << std::endl;
-
-			//        delete [] backTraceData;
-			//        file.close();
-
-			return true;
-		}
-
-		bool IsContainer()
-		{
-			/*if ((RecVersion == PSFLAG_CONTAINER) || ((RecVersion & 0x0F) == 0x0F))
-			{
-				return TRUE;
-			}*/
-			if (1064 == RecType)
-				return false;
-
-			if (RecVersion == 0x0F)
-			{
-				return true;
-			}
-			return false;
-		}
-
-		SRecordHeader& operator =(const SRecordHeader& oSrc)
-		{
-			RecVersion = oSrc.RecVersion;
-			RecInstance = oSrc.RecInstance;
-			RecType = oSrc.RecType;
-			RecLen = oSrc.RecLen;
-			return (*this);
-		}
-
-	};
-
-	class IRecord
-	{
-	public:
-		SRecordHeader m_oHeader;
-
-		virtual ~IRecord() {}
-		virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream) = 0;
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) = 0;
-	};
-
-	class CUnknownRecord : public IRecord
-	{
-		// этот класс - просто для того, чтобы нигде не проверять,
-		// реализована ли у нас такая запись
-
-	public:
-		CUnknownRecord()
-		{
-		}
-
-		~CUnknownRecord()
-		{
-		}
-		virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream)
-		{
-			m_oHeader = oHeader;
-
-			pStream->seekFromCurForward(m_oHeader.RecLen);
-		}
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			StreamUtils::StreamSkip((long)m_oHeader.RecLen, pStream);
-		}
-
-		std::wstring ReadStringW(const XLS::CFStreamPtr &pStream, int size);
-		std::string	 ReadStringA(const XLS::CFStreamPtr &pStream, int size);
-	};
-
-	IRecord* CreateByType(SRecordHeader oHeader);
-
-	class CRecordsContainer : public CUnknownRecord
-	{
-	public:
-		std::vector<IRecord*> m_arRecords;
-
-		CRecordsContainer() : m_arRecords()
-		{
-		}
-
-		virtual ~CRecordsContainer()
-		{
-			Clear();
-		}
-
-		void Clear()
-		{
-			size_t nCount = m_arRecords.size();
-			while (0 != nCount)
-			{
-				if (NULL != m_arRecords[nCount - 1])
-				{
-					delete m_arRecords[nCount - 1];
-					m_arRecords[nCount - 1] = NULL;
-				}
-				m_arRecords.pop_back();
-				--nCount;
-			}
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream);
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
-
-		template <typename T>
-		void GetRecordsByType(std::vector<T>* pArray, bool bIsChild, bool bOnlyFirst = false) const
-		{
-			if (NULL == pArray)
-				return;
-
-			// возвращаем указатели, их не удалять наверху!!!!
-			for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
-			{
-				T pRec = dynamic_cast<T>(m_arRecords[nIndex]);
-				if (NULL != pRec)
-				{
-					pArray->push_back(pRec);
-					if (bOnlyFirst)
-					{
-						return;
-					}
-				}
-				else if ((bIsChild) && (m_arRecords[nIndex]->m_oHeader.IsContainer()))
-				{
-					CRecordsContainer* pContainer = dynamic_cast<CRecordsContainer*>(m_arRecords[nIndex]);
-					if (NULL != pContainer)
-					{
-						pContainer->GetRecordsByType(pArray, bIsChild, bOnlyFirst);
-					}
-				}
-			}
-		}
-	};
+        // возвращаем указатели, их не удалять наверху!!!!
+        for (size_t nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
+        {
+            T pRec = dynamic_cast<T>(m_arRecords[nIndex]);
+            if (NULL != pRec)
+            {
+                pArray->push_back(pRec);
+                if (bOnlyFirst)
+                {
+                    return;
+                }
+            }
+            else if ((bIsChild) && (m_arRecords[nIndex]->m_oHeader.IsContainer()))
+            {
+                CRecordsContainer* pContainer = dynamic_cast<CRecordsContainer*>(m_arRecords[nIndex]);
+                if (NULL != pContainer)
+                {
+                    pContainer->GetRecordsByType(pArray, bIsChild, bOnlyFirst);
+                }
+            }
+        }
+    }
+};
 }
-	//-------------------------------------------------------------------------------
-#define CREATE_BY_TYPE(RECORD_TYPE, CLASS_RECORD_NAME)							\
-    case RECORD_TYPE: { pRecord = new CLASS_RECORD_NAME(); break; }				\
-    //-------------------------------------------------------------------------------
 

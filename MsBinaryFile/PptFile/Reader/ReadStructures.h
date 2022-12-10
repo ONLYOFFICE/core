@@ -46,11 +46,7 @@ struct SRatioAtom
     LONG Number;
     LONG Denom;
 
-    void FromStream(POLE::Stream* pStream)
-    {
-        Number = StreamUtils::ReadLONG(pStream);
-        Denom = StreamUtils::ReadLONG(pStream);
-    }
+    void FromStream(POLE::Stream* pStream);
 };
 
 struct SScalingAtom
@@ -58,11 +54,7 @@ struct SScalingAtom
     SRatioAtom X;
     SRatioAtom Y;
 
-    void FromStream(POLE::Stream* pStream)
-    {
-        X.FromStream(pStream);
-        Y.FromStream(pStream);
-    }
+    void FromStream(POLE::Stream* pStream);
 };
 
 struct SSlideLayoutAtom
@@ -77,11 +69,7 @@ struct SFileIdCluster
     UINT DrawingGroupID;
     UINT CurrentShapeID;
 
-    void ReadFromStream(POLE::Stream* pStream)
-    {
-        DrawingGroupID = (UINT)StreamUtils::ReadDWORD(pStream);
-        CurrentShapeID = (UINT)StreamUtils::ReadDWORD(pStream);
-    }
+    void ReadFromStream(POLE::Stream* pStream);
 };
 #if !defined(_WIN32) && !defined (_WIN64)
 #ifndef customTagPoint

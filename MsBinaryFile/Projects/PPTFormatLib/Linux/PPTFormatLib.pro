@@ -392,6 +392,7 @@ SOURCES += \
 	../../../PptFile/Records/CString.cpp \
 	../../../PptFile/Records/ColorSchemeAtom.cpp \
 	../../../PptFile/Records/Comment10Container.cpp \
+	../../../PptFile/Records/CryptSession10Container.cpp \
 	../../../PptFile/Records/CurrentUserAtom.cpp \
 	../../../PptFile/Records/DocInfoListContainer.cpp \
 	../../../PptFile/Records/DocProgTagsContainer.cpp \

@@ -40,7 +40,6 @@
 #include "../../../../OOXML/Base/Base.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-#include <fstream>
 #include "../../Enums/_includer.h"
 #include "../RecordsIncluder.h"
 

@@ -72,8 +72,8 @@ _UINT32 COfficePPTFile::OpenFile(const std::wstring & sFileName, const std::wstr
 		return AVS_ERROR_FILEACCESS; 
 	}
 
-	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
-	CPPTFileReader* pptReader = (CPPTFileReader*)m_pReader;	
+    m_pReader = new PPT::CPPTFileReader(pStgFrom, m_strTempDirectory);
+    PPT::CPPTFileReader* pptReader = (PPT::CPPTFileReader*)m_pReader;
     
 	pptReader->m_oDocumentInfo.m_strTmpDirectory	= m_strTempDirectory;
 	pptReader->m_oDocumentInfo.m_strPassword		= password;
@@ -108,7 +108,7 @@ bool COfficePPTFile::CloseFile()
 {
 	m_Status = NULLMODE;
 
-	CPPTFileReader* r = (CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
+    PPT::CPPTFileReader* r = (PPT::CPPTFileReader*)m_pReader;	RELEASEOBJECT(r);
 	m_pReader = NULL;
 	return S_OK;
 }
@@ -127,15 +127,15 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 		m_Status = NULLMODE;
 		return nResult;
 	}
-	if (!((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
+    if (!((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.empty())
 	{
 		PPT::CPPTXWriter oPPTXWriter;
         oPPTXWriter.m_strTempDirectory = sDstPath;
 		
-		oPPTXWriter.m_xmlApp  = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
-		oPPTXWriter.m_xmlCore = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
+        oPPTXWriter.m_xmlApp  = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
+        oPPTXWriter.m_xmlCore = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
 
-		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
+        oPPTXWriter.CreateFile(((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);
 		oPPTXWriter.CloseFile();
 	}
 	return S_OK;

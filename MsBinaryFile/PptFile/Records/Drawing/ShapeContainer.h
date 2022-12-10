@@ -58,9 +58,8 @@
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
-using namespace ODRAW;
-using namespace PPT;
-
+namespace PPT
+{
 class CPPTElement
 {
 public:
@@ -111,3 +110,4 @@ protected:
     void ConvertStyleTextProp9(CTextAttributesEx *pText);
 };
 
+}

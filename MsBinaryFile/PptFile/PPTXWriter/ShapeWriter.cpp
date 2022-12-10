@@ -44,8 +44,6 @@
 #include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
 
 #include <algorithm>
-#include <iostream>
-#include <ostream>
 
 using namespace PPT;
 

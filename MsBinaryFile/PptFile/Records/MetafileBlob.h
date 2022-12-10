@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "../Reader/Records.h"
-#include <iostream>
 
 namespace PPT
 {

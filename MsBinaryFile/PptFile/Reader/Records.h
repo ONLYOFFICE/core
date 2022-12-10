@@ -43,9 +43,9 @@
 
 #include <boost/smart_ptr/shared_array.hpp>
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
+//#include <iostream>
+//#include <iomanip>
+//#include <fstream>
 
 std::string GetRecordName(PPT::RecordType dwType);
 

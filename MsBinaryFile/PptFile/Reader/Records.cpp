@@ -34,9 +34,6 @@
 #include "../Records/RecordsIncluder.h"
 #include "../Records/Animations/_includer.h"
 
-#include <iostream>
-#include <iomanip>
-
 namespace PPT
 {
 

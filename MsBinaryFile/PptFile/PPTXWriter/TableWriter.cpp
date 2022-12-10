@@ -31,7 +31,6 @@
 */
 #include "TableWriter.h"
 #include "TxBodyConverter.h"
-#include <iostream>
 #include <numeric>
 #include <algorithm>
 

@@ -39,17 +39,10 @@ namespace PPT
 class CRecordFontEmbedFlags10Atom : public CUnknownRecord
 {
 public:
-    bool m_fSubset;
-    bool m_fSubsetOptionConfirmed;
+    bool m_fSubset = false;
+    bool m_fSubsetOptionConfirmed = false;
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        _UINT32 flags = StreamUtils::ReadDWORD(pStream);
-        m_fSubset                   = 0x1 & flags;
-        m_fSubsetOptionConfirmed    = 0x2 & flags;
-    }
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
 };
 }

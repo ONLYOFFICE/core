@@ -1,5 +1,6 @@
 #include "ParaBuildLevel.h"
 
+using namespace PPT;
 
 void CRecordParaBuildLevel::ReadFromStream(POLE::Stream *pStream)
 {

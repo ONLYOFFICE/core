@@ -34,50 +34,36 @@
 #include "../../Reader/Records.h"
 
 
+
 namespace PPT
 {
 class CPPTDocumentInfo;
-	class CRecordOfficeArtBlip : public CUnknownRecord
-	{
-	public:
-		CPPTDocumentInfo *	m_oDocumentInfo;
+class CRecordOfficeArtBlip  : public CUnknownRecord
+{
+public:
+	CPPTDocumentInfo *	m_oDocumentInfo;
+	
+	std::wstring		m_sFileName;
+	std::wstring		m_strTmpDirectory;
 
-		std::wstring		m_sFileName;
-		std::wstring		m_strTmpDirectory;
+    CRecordOfficeArtBlip();
 
-		CRecordOfficeArtBlip()
-		{
-			m_oDocumentInfo = NULL;
-		}
+    ~CRecordOfficeArtBlip();
 
-		~CRecordOfficeArtBlip()
-		{
-		}
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+};
 
-	};
+class CRecordBitmapBlip : public CUnknownRecord
+{
+public:
+	BYTE m_pRgbUid[16];
+	BYTE m_nTag;
 
-	class CRecordBitmapBlip : public CUnknownRecord
-	{
-	public:
-		BYTE m_pRgbUid[16];
-		BYTE m_nTag;
-
-		//BYTE* m_pScan0;
-
-		CRecordBitmapBlip()
-		{
-		}
-
-		~CRecordBitmapBlip()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		}
-
-	};
+	//BYTE* m_pScan0;
+	
+    CRecordBitmapBlip();
+    ~CRecordBitmapBlip();
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+};
 }

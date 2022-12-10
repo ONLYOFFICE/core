@@ -32,6 +32,8 @@
 #include "ClassesAtom.h"
 
 
+using namespace PPT;
+
 CUserEdit::CUserEdit()
 {
     m_nOffsetLastEdit			= 0;

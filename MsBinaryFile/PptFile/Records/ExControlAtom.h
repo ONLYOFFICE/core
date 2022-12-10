@@ -30,29 +30,18 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
+
 
 namespace PPT
 {
-	class CRecordExControlAtom : public CUnknownRecord
-	{
-		UINT m_nSlideIdRef;
+class CRecordExControlAtom : public CUnknownRecord
+{
+public:
+    UINT m_nSlideIdRef = 0;
 
-	public:
 
-		CRecordExControlAtom()
-		{
-		}
-
-		~CRecordExControlAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			m_nSlideIdRef = StreamUtils::ReadDWORD(pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

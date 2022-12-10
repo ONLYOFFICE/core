@@ -1,5 +1,6 @@
 #include "TimeColorBehaviorContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeColorBehaviorContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

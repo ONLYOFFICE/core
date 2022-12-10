@@ -42,10 +42,14 @@
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
 #include <fstream>
 #include "../../Enums/_includer.h"
+#include "../RecordsIncluder.h"
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
 ULONG xmlName = 1;
+
+using namespace ODRAW;
+using namespace PPT;
 
 bool CPPTElement::ChangeBlack2ColorImage(std::wstring image_path, int rgbColor1, int rgbColor2)
 {
@@ -1506,6 +1510,25 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
 }
 
 
+CRecordShapeContainer::CRecordShapeContainer()
+{
+    bGroupShape = false;
+
+    m_pStream = NULL;
+
+}
+
+CRecordShapeContainer::~CRecordShapeContainer()
+{
+    m_pStream = NULL;
+}
+
+void CRecordShapeContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    m_pStream = pStream;
+    CRecordsContainer::ReadFromStream(oHeader, pStream);
+}
+
 CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
                                                CTheme* pTheme, CLayout* pLayout,
                                                CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide)
@@ -2057,6 +2080,36 @@ CElementPtr CRecordShapeContainer::GetElement (bool inGroup, CExMedia* pMapIDs,
     return pElement;
 }
 
+PPT::ElementType CRecordShapeContainer::GetTypeElem(eSPT eType)
+{
+    switch (eType)
+    {
+        //case sptMin:
+    case sptMax:
+    case sptNil:
+        {
+            return etShape;
+        }
+    case sptPictureFrame:
+        {
+            return etPicture;
+        }
+    default:
+        {
+            return etShape;
+        }
+    };
+    return etShape;
+}
+
+std::wstring CRecordShapeContainer::GetFileName(std::wstring strFilePath)
+{
+    int nIndex = strFilePath.rfind(wchar_t('\\'));
+    if (-1 != nIndex)
+        return strFilePath.substr(nIndex + 1);
+    else
+        return strFilePath;
+}
 bool CRecordShapeContainer::isTable() const
 {
     std::vector<CRecordShapeProperties*> oArrayOptions;
@@ -2856,8 +2909,8 @@ void CRecordShapeContainer::ConvertStyleTextProp9(CTextAttributesEx *pText)
 
 //}
 
-void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-{
-    CRecordsContainer::ReadFromStream(oHeader, pStream);
+//void CRecordGroupShapeContainer::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+//{
+//    CRecordsContainer::ReadFromStream(oHeader, pStream);
 
-}
+//}

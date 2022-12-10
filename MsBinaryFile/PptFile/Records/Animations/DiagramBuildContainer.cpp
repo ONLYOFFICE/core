@@ -1,5 +1,6 @@
 #include"DiagramBuildContainer.h"
 
+using namespace PPT;
 
 CRecordDiagramBuildContainer::CRecordDiagramBuildContainer()
 {

@@ -1,5 +1,6 @@
 #include "TimeSetBehaviorContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeSetBehaviorContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

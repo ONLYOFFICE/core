@@ -1,5 +1,6 @@
 #include "TimeEffectBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeEffectBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

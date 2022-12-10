@@ -1,5 +1,6 @@
 #include "TimeConditionContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeConditionContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

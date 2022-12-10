@@ -1,5 +1,6 @@
 #include "TimeModifierAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeModifierAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -1,5 +1,6 @@
 #include "DiagramBuildAtom.h"
 
+using namespace PPT;
 
 CRecordDiagramBuildAtom::CRecordDiagramBuildAtom()
 {

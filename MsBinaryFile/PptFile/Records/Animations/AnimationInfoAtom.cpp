@@ -1,5 +1,6 @@
 #include "AnimationInfoAtom.h"
 
+using namespace PPT;
 
 struct SFlagsAH {
 

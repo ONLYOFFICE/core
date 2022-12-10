@@ -1,5 +1,6 @@
 #include "ChartBuildAtom.h"
 
+using namespace PPT;
 
 CRecordChartBuildAtom::CRecordChartBuildAtom()
 {

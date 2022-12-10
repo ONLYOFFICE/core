@@ -1,5 +1,6 @@
 #include "TimeColorBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeColorBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

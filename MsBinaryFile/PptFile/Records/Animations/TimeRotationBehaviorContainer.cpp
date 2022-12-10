@@ -1,5 +1,6 @@
 #include "TimeRotationBehaviorContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeRotationBehaviorContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

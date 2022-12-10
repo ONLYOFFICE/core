@@ -1,5 +1,6 @@
 #include "TimePropertyList4TimeNodeContainer.h"
 
+using namespace PPT;
 
 CRecordTimePropertyList4TimeNodeContainer::CRecordTimePropertyList4TimeNodeContainer()
 {

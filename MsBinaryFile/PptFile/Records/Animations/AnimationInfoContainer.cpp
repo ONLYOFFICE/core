@@ -1,5 +1,6 @@
 #include "AnimationInfoContainer.h"
 
+using namespace PPT;
 
 CRecordAnimationInfoContainer::CRecordAnimationInfoContainer()
 {

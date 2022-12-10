@@ -30,25 +30,15 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
+
 
 namespace PPT
 {
-	class CRecordEndDocument : public CUnknownRecord
-	{
-	public:
-
-		CRecordEndDocument()
-		{
-		}
-
-		~CRecordEndDocument()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		}
-	};
+class CRecordEndDocument : public CUnknownRecord
+{
+public:
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

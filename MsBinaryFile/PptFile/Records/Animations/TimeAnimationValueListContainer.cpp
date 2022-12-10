@@ -1,5 +1,6 @@
 #include "TimeAnimationValueListContainer.h"
 
+using namespace PPT;
 
 CRecordTimeAnimationValueListContainer::CRecordTimeAnimationValueListContainer()
 {

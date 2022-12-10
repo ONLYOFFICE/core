@@ -34,23 +34,12 @@
 
 namespace PPT
 {
-	class CRecordExObjRefAtom : public CUnknownRecord
-	{
-	public:
-		_UINT32 m_nExObjID;
+class CRecordExObjRefAtom : public CUnknownRecord
+{
+public:
+    _UINT32 m_nExObjID = 0;
 
-		CRecordExObjRefAtom()
-		{
-		}
 
-		~CRecordExObjRefAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-			m_nExObjID = StreamUtils::ReadDWORD(pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

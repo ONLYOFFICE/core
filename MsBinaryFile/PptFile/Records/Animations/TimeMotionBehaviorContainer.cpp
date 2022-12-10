@@ -1,5 +1,6 @@
 #include "TimeMotionBehaviorContainer.h"
 
+using namespace PPT;
 
 CRecordTimeMotionBehaviorContainer::~CRecordTimeMotionBehaviorContainer()
 {

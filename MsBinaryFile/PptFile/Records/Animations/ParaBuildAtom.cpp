@@ -1,5 +1,6 @@
 #include "ParaBuildAtom.h"
 
+using namespace PPT;
 
 void CRecordParaBuildAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

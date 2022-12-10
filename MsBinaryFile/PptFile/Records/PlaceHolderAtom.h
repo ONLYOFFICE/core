@@ -34,32 +34,14 @@
 
 namespace PPT
 {
-	class CRecordPlaceHolderAtom : public CUnknownRecord
-	{
-	public:
-		int	 m_nPosition;
-		BYTE m_nPlacementID;
-		BYTE m_nSize;
+class CRecordPlaceHolderAtom : public CUnknownRecord
+{
+public:
+	int	 m_nPosition;
+    BYTE m_nPlacementID;
+	BYTE m_nSize;
 
-	public:
 
-		CRecordPlaceHolderAtom()
-		{
-		}
-
-		~CRecordPlaceHolderAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			m_nPosition = StreamUtils::ReadLONG(pStream);
-			m_nPlacementID = StreamUtils::ReadBYTE(pStream);
-			m_nSize = StreamUtils::ReadBYTE(pStream);
-
-			StreamUtils::StreamSkip(2, pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

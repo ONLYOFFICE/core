@@ -1,5 +1,6 @@
 #include "VisualShapeGeneralAtom.h"
 
+using namespace PPT;
 
 void CRecordVisualShapeGeneralAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -40,27 +40,28 @@
 
 #include "../Drawing/Interactive.h"
 
+
 namespace PPT
 {
-	class CTextFullSettings
-	{
-	public:
-		CRecordStyleTextPropAtom*   m_pTextStyleProp;
-		CRecordTextSpecInfoAtom*    m_pTextSpecInfo;
-		CRecordTextRulerAtom*       m_pTextRuler;
+class CTextFullSettings
+{
+public:
+    CRecordStyleTextPropAtom*   m_pTextStyleProp;
+    CRecordTextSpecInfoAtom*    m_pTextSpecInfo;
+    CRecordTextRulerAtom*       m_pTextRuler;
 
-		std::vector<PPT::CTextRange> m_arRanges;
+    std::vector<CTextRange> m_arRanges;
 
-		std::wstring	m_strText;
-		_UINT32			m_nTextType;
-		_UINT32			m_lStyleThemeIndex;
+	std::wstring	m_strText;
+	_UINT32			m_nTextType;
+	_UINT32			m_lStyleThemeIndex;
 
-	public:
-        CTextFullSettings();
-        CTextFullSettings(const CTextFullSettings& oSrc);
-        CTextFullSettings& operator =(const CTextFullSettings& oSrc);
-        ~CTextFullSettings();
-
-        std::wstring ApplyProperties(CTextAttributesEx* pTextAttributes);
-	};
+public:
+    CTextFullSettings();
+    CTextFullSettings(const CTextFullSettings& oSrc);
+    CTextFullSettings& operator =(const CTextFullSettings& oSrc);
+    ~CTextFullSettings();
+	
+    std::wstring ApplyProperties(CTextAttributesEx* pTextAttributes);
+};
 }

@@ -1,5 +1,6 @@
 #include "VisualSoundAtom.h"
 
+using namespace PPT;
 
 void CRecordVisualSoundAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

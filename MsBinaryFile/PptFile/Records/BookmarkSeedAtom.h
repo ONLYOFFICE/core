@@ -34,23 +34,12 @@
 
 namespace PPT
 {
-	class CRecordBookmarkSeedAtom : public CUnknownRecord
-	{
-	public:
-		INT m_nBookmarkID;
+class CRecordBookmarkSeedAtom : public CUnknownRecord
+{
+public:
+    INT m_nBookmarkID = -1;
 
-		CRecordBookmarkSeedAtom()
-		{
-		}
 
-		~CRecordBookmarkSeedAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		}
-
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+};
 }

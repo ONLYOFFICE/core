@@ -1,5 +1,6 @@
 #include "TimeNodeAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeNodeAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

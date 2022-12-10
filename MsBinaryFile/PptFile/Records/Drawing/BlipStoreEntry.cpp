@@ -1,5 +1,7 @@
 #include "BlipStoreEntry.h"
 
+using namespace PPT;
+
 CRecordBlipStoreEntry::CRecordBlipStoreEntry()
 {
 

@@ -1,5 +1,6 @@
 #include "TimeScaleBehaviorContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeScaleBehaviorContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

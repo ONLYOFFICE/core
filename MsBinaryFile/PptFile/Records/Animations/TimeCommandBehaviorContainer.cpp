@@ -1,5 +1,6 @@
 #include "TimeCommandBehaviorContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeCommandBehaviorContainer::ReadFromStream(SRecordHeader &thisHeader, POLE::Stream *pStream)
 {

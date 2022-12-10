@@ -35,88 +35,36 @@
 
 #include "../Reader/Records.h"
 
+
 namespace PPT
 {
-	class CPersistDirectoryEntry
+class CPersistDirectoryEntry
+{
+public:
+	_UINT32 m_nPersistID;			// PersistOffsetID[index] = m_nPersistID + index
+	_UINT32 m_nPersistCount;
+
+	std::vector<_UINT32> m_arPersistOffsets;
+
+public:
+
+	CPersistDirectoryEntry() : m_arPersistOffsets()
 	{
-	public:
-		_UINT32 m_nPersistID;			// PersistOffsetID[index] = m_nPersistID + index
-		_UINT32 m_nPersistCount;
+		m_nPersistID = 0;
+		m_nPersistCount = 0;
+	}
 
-		std::vector<_UINT32> m_arPersistOffsets;
+    _UINT32 FromStream(POLE::Stream* pStream);
+};
 
-	public:
+class CRecordPersistDirectoryAtom : public CUnknownRecord
+{
+	std::vector<CPersistDirectoryEntry> m_arEntries;
 
-		CPersistDirectoryEntry() : m_arPersistOffsets()
-		{
-			m_nPersistID = 0;
-			m_nPersistCount = 0;
-		}
+public:
 
-		_UINT32 FromStream(POLE::Stream* pStream)
-		{
-			_UINT32 nFlag = StreamUtils::ReadDWORD(pStream);
-			m_nPersistID = (nFlag & 0x000FFFFF);			// 20 bit
-			m_nPersistCount = (nFlag & 0xFFF00000) >> 20;	// 12 bit
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
-			m_arPersistOffsets.clear();
-
-			for (_UINT32 index = 0; index < m_nPersistCount; ++index)
-			{
-				_UINT32 Mem = StreamUtils::ReadDWORD(pStream);
-				m_arPersistOffsets.push_back(Mem);
-			}
-
-			return 4 * (m_nPersistCount + 1);
-		}
-	};
-
-	class CRecordPersistDirectoryAtom : public CUnknownRecord
-	{
-		std::vector<CPersistDirectoryEntry> m_arEntries;
-
-	public:
-
-		CRecordPersistDirectoryAtom() : m_arEntries()
-		{
-		}
-
-		~CRecordPersistDirectoryAtom()
-		{
-			m_arEntries.clear();
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			_UINT32 nCountRead = 0;
-			_UINT32 nCountEnries = 0;
-			while (nCountRead < m_oHeader.RecLen)
-			{
-				CPersistDirectoryEntry elm;
-				m_arEntries.push_back(elm);
-
-				nCountRead += m_arEntries[nCountEnries].FromStream(pStream);
-				++nCountEnries;
-			}
-		}
-
-		void ToMap(std::map<_UINT32, _UINT32>* pMap)
-		{
-			pMap->clear();
-
-			for (size_t nEntry = 0; nEntry < m_arEntries.size(); ++nEntry)
-			{
-				_UINT32 nPID = m_arEntries[nEntry].m_nPersistID;
-
-				for (size_t nIndex = 0; nIndex < m_arEntries[nEntry].m_nPersistCount; ++nIndex)
-				{
-					_UINT32 nOffset = m_arEntries[nEntry].m_arPersistOffsets[nIndex];
-					pMap->insert(std::pair<_UINT32, _UINT32>(nPID, nOffset));
-					++nPID;
-				}
-			}
-		}
-	};
+    void ToMap(std::map<_UINT32, _UINT32>* pMap);
+};
 }

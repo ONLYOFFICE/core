@@ -1,5 +1,6 @@
 #include "ChartBuildContainer.h"
 
+using namespace PPT;
 
 CRecordChartBuildContainer::CRecordChartBuildContainer()
 {

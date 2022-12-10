@@ -1,5 +1,6 @@
 #include "TimeBehaviorContainer.h"
 
+using namespace PPT;
 
 CRecordTimeBehaviorContainer::CRecordTimeBehaviorContainer() :
     m_pStringList(nullptr),

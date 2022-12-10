@@ -1,5 +1,6 @@
 #include "TimeConditionAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeConditionAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

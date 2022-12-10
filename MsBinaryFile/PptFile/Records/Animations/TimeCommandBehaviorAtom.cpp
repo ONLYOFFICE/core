@@ -1,5 +1,6 @@
 #include "TimeCommandBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeCommandBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

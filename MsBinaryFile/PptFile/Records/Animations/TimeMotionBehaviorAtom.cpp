@@ -1,5 +1,6 @@
 #include "TimeMotionBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeMotionBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

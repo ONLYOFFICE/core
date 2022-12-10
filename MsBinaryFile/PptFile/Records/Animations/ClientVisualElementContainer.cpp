@@ -1,5 +1,6 @@
 #include "ClientVisualElementContainer.h"
 
+using namespace PPT;
 
 CRecordClientVisualElementContainer::CRecordClientVisualElementContainer()
 {

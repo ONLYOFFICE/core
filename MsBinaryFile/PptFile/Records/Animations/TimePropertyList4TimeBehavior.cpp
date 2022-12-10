@@ -1,5 +1,6 @@
 #include "TimePropertyList4TimeBehavior.h"
 
+using namespace PPT;
 
 CRecordTimePropertyList4TimeBehavior::~CRecordTimePropertyList4TimeBehavior()
 {

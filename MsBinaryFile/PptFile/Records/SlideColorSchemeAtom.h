@@ -30,61 +30,35 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
+
 
 namespace PPT
 {
-	class CRecordSplitMenuColorRecord : public CUnknownRecord
-	{
-	public:
-		ODRAW::SColorAtom m_oFillColor;
-		ODRAW::SColorAtom m_oLineColor;
-		ODRAW::SColorAtom m_oShadowColor;
-		ODRAW::SColorAtom m_o3DColor;
+class CRecordSplitMenuColorRecord: public CUnknownRecord
+{
+public:
+    ODRAW::SColorAtom m_oFillColor;
+    ODRAW::SColorAtom m_oLineColor;
+    ODRAW::SColorAtom m_oShadowColor;
+    ODRAW::SColorAtom m_o3DColor;
+	
+    CRecordSplitMenuColorRecord();
+    ~CRecordSplitMenuColorRecord();
 
-		CRecordSplitMenuColorRecord()
-		{
-		}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 
-		~CRecordSplitMenuColorRecord()
-		{
-		}
+class CRecordMostRecentlyUserColors : public CUnknownRecord
+{
+public:
+    std::vector<ODRAW::SColorAtom>	m_oColors;
+	
 
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
+    CRecordMostRecentlyUserColors();
+    ~CRecordMostRecentlyUserColors();
 
-			NSStreamReader::Read(pStream, m_oFillColor);
-			NSStreamReader::Read(pStream, m_oLineColor);
-			NSStreamReader::Read(pStream, m_oShadowColor);
-			NSStreamReader::Read(pStream, m_o3DColor);
-		}
-	};
-
-	class CRecordMostRecentlyUserColors : public CUnknownRecord
-	{
-	public:
-		std::vector<ODRAW::SColorAtom>	m_oColors;
-
-		CRecordMostRecentlyUserColors()
-		{
-		}
-
-		~CRecordMostRecentlyUserColors()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			for (unsigned int i = 0; i < m_oHeader.RecLen / 4; i++)
-			{
-				ODRAW::SColorAtom color;
-				NSStreamReader::Read(pStream, color);
-
-				m_oColors.push_back(color);
-			}
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

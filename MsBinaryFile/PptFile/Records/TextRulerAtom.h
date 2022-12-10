@@ -30,36 +30,22 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
+
 
 namespace PPT
 {
-	class CRecordTextRulerAtom : public CUnknownRecord
-	{
-	public:
-		PPT::CTextRuler m_oTextRuler;
+class CRecordTextRulerAtom : public CUnknownRecord
+{
+public:
+	PPT::CTextRuler m_oTextRuler;
 
-	public:
+public:
+    CRecordTextRulerAtom();
+    ~CRecordTextRulerAtom();
 
-		CRecordTextRulerAtom()
-		{
-		}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
-		~CRecordTextRulerAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-			LONG lOffset = 0;
-			StreamUtils::StreamPosition(lOffset, pStream);
-
-			NSStreamReader::Read(pStream, m_oTextRuler);
-
-			// на всякий случай...
-			StreamUtils::StreamSeek(lOffset + m_oHeader.RecLen, pStream);
-		}
-
-	};
+};
 }

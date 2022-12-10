@@ -1,5 +1,6 @@
 #include "BookmarkEntityAtom.h"
 
+using namespace PPT;
 
 void CRecordBookmarkEntityAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

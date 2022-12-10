@@ -1,5 +1,6 @@
 #include "TimeVariant4Behavior.h"
 
+using namespace PPT;
 
 //-------------------------------------------------------------------------------
 #define CREATE_BY_Instanse(RECORD_Instanse, CLASS_RECORD_NAME)					\

@@ -1,6 +1,6 @@
 #include "ExtTimeNodeContainer.h"
 
-
+using namespace PPT;
 
 CRecordExtTimeNodeContainer::CRecordExtTimeNodeContainer():
     m_pTimePropertyList(nullptr),

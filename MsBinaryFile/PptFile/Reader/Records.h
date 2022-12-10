@@ -56,7 +56,7 @@ namespace PPT
 	public:
 		unsigned char           RecVersion;
 		unsigned short          RecInstance;
-        PPT::RecordType	RecType;
+        RecordType	RecType;
 		_UINT32                 RecLen;
 
 		bool bBadHeader;

@@ -1,5 +1,6 @@
 #include "TimeAnimationValueListEntry.h"
 
+using namespace PPT;
 
 CRecordTimeAnimationValueListEntry::CRecordTimeAnimationValueListEntry()
 {

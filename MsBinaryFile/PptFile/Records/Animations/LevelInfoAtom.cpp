@@ -1,5 +1,6 @@
 #include "LevelInfoAtom.h"
 
+using namespace PPT;
 
 CRecordLevelInfoAtom::CRecordLevelInfoAtom()
 {

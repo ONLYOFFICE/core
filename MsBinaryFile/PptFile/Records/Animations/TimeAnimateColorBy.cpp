@@ -1,5 +1,6 @@
 #include "TimeAnimateColorBy.h"
 
+using namespace PPT;
 
 unsigned long TimeAnimateColorBy::FRGB(BYTE alpha)
 {

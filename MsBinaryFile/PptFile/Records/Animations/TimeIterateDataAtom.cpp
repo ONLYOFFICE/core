@@ -1,5 +1,6 @@
 #include "TimeIterateDataAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeIterateDataAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

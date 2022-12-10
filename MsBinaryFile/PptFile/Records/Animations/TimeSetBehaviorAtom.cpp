@@ -1,5 +1,6 @@
 #include "TimeSetBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeSetBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

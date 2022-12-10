@@ -1,5 +1,6 @@
 #include "TimeStringListContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeStringListContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -31,43 +31,16 @@
  */
 #pragma once
 
-
 #include "../../Reader/Records.h"
 #include "../../Enums/_includer.h"
 #include "TimeVariant.h"
 
 
-//-------------------------------------------------------------------------------
-#define CREATE_BY_Instanse(RECORD_Instanse, CLASS_RECORD_NAME)					\
-    case RECORD_Instanse: { pRecord = new CLASS_RECORD_NAME(); break; }				\
-//-------------------------------------------------------------------------------
-
-
 namespace PPT
 {
-//TODO
 class FactoryTimeVariant4Behavior
 {
 public:
-    static IRecord* createByInstanse(unsigned short recInstance)
-    {
-        IRecord* pRecord = nullptr;
-
-        switch (recInstance)
-        {
-        CREATE_BY_Instanse(TL_TBPID_UnknownPropertyList,    CRecordTimeVariantString)
-        CREATE_BY_Instanse(TL_TBPID_RuntimeContext,         CRecordTimeRuntimeContext)
-        CREATE_BY_Instanse(TL_TBPID_MotionPathEditRelative, CRecordTimeVariantBool)
-        CREATE_BY_Instanse(TL_TBPID_ColorColorModel,        CRecordTimeColorModel)
-        CREATE_BY_Instanse(TL_TBPID_ColorDirection,         CRecordTimeColorDirection)
-        CREATE_BY_Instanse(TL_TBPID_Override,               CRecordTimeOverride)
-        CREATE_BY_Instanse(TL_TBPID_PathEditRotationAngle,  CRecordTimeVariantFloat)
-        CREATE_BY_Instanse(TL_TBPID_PathEditRotationX,      CRecordTimeVariantFloat)
-        CREATE_BY_Instanse(TL_TBPID_PathEditRotationY,      CRecordTimeVariantFloat)
-        CREATE_BY_Instanse(TL_TBPID_PointsTypes,            CRecordTimePointsTypes)
-        }
-
-        return pRecord;
-    }
+    static IRecord* createByInstanse(unsigned short recInstance);
 };
 }

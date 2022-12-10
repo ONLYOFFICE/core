@@ -30,63 +30,34 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
+
 
 namespace PPT
 {
-	class CRecordDocumentAtom : public CUnknownRecord
-	{
-	public:
-		ODRAW::SPointAtom m_oSlideSize;
-		ODRAW::SPointAtom m_oNotesSize;
+class CRecordDocumentAtom : public CUnknownRecord
+{
+public:
+    ODRAW::SPointAtom m_oSlideSize;
+    ODRAW::SPointAtom m_oNotesSize;
 
-		PPT::SRatioAtom m_oServerZoom;
+	SRatioAtom m_oServerZoom; 
+	
+	UINT m_nNotesMasterPersistIDRef;
+	UINT m_nHandoutMasterPersistIDRef;
+	
+	USHORT	m_nFirstSlideNum; 
+	USHORT	m_nSlideSizeType;
 
-		UINT m_nNotesMasterPersistIDRef;
-		UINT m_nHandoutMasterPersistIDRef;
+	BOOL1 m_bSaveWithFonts;  
+	BOOL1 m_bOmitTitlePlace;
 
-		USHORT	m_nFirstSlideNum;
-		USHORT	m_nSlideSizeType;
+	BOOL1 m_bRightToLeft;
 
-		BOOL1 m_bSaveWithFonts;
-		BOOL1 m_bOmitTitlePlace;
+	BOOL1 m_bShowComments;
 
-		BOOL1 m_bRightToLeft;
 
-		BOOL1 m_bShowComments;
-
-		CRecordDocumentAtom()
-		{
-		}
-
-		~CRecordDocumentAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			m_oSlideSize.X = StreamUtils::ReadLONG(pStream);
-			m_oSlideSize.Y = StreamUtils::ReadLONG(pStream);
-
-			m_oNotesSize.X = StreamUtils::ReadLONG(pStream);
-			m_oNotesSize.Y = StreamUtils::ReadLONG(pStream);
-
-			m_oServerZoom.Number = StreamUtils::ReadLONG(pStream);
-			m_oServerZoom.Denom = StreamUtils::ReadLONG(pStream);
-
-			m_nNotesMasterPersistIDRef = (UINT)StreamUtils::ReadDWORD(pStream);
-			m_nHandoutMasterPersistIDRef = (UINT)StreamUtils::ReadDWORD(pStream);
-
-			m_nFirstSlideNum = StreamUtils::ReadWORD(pStream);
-			m_nSlideSizeType = StreamUtils::ReadWORD(pStream);
-
-			m_bSaveWithFonts = StreamUtils::ReadBYTE(pStream);
-			m_bOmitTitlePlace = StreamUtils::ReadBYTE(pStream);
-			m_bRightToLeft = StreamUtils::ReadBYTE(pStream);
-			m_bShowComments = StreamUtils::ReadBYTE(pStream);
-		}
-
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

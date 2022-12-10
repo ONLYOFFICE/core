@@ -44,17 +44,9 @@ public:
     ChartBuildEnum  m_ChartBuild;
     BYTE            m_fAnimBackground;
 
-    CRecordChartBuildAtom(){}
-    ~CRecordChartBuildAtom(){}
+    CRecordChartBuildAtom();
+    ~CRecordChartBuildAtom();
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_ChartBuild        = (ChartBuildEnum)StreamUtils::ReadDWORD(pStream);
-        m_fAnimBackground   = StreamUtils::ReadBYTE(pStream);
-
-        StreamUtils::StreamSkip(3, pStream);
-    }
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 }

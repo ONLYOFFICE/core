@@ -47,13 +47,7 @@ typedef struct _FILETIME {
 class CRecordSlideTime10Atom : public CUnknownRecord
 {
 public:
-void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-{
-    m_oHeader = oHeader;
-
-    m_oFileTime.dwLowDateTime = StreamUtils::ReadDWORD(pStream);
-    m_oFileTime.dwHighDateTime = StreamUtils::ReadDWORD(pStream);
-}
+void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 
 public:
     FILETIME m_oFileTime;

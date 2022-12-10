@@ -1,5 +1,6 @@
 #include "TimeEffectBehaviorContainer.h"
 
+using namespace PPT;
 
 void CRecordTimeEffectBehaviorContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

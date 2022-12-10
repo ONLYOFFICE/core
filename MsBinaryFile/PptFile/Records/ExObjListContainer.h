@@ -34,21 +34,9 @@
 
 namespace PPT
 {
-	class CRecordExObjListContainer : public CRecordsContainer
-	{
-	public:
-
-		CRecordExObjListContainer()
-		{
-		}
-
-		~CRecordExObjListContainer()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			CRecordsContainer::ReadFromStream(oHeader, pStream);
-		}
-	};
+class CRecordExObjListContainer : public CRecordsContainer
+{
+public:
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

@@ -1,5 +1,6 @@
 #include "ParaBuildContainer.h"
 
+using namespace PPT;
 
 CRecordParaBuildContainer::CRecordParaBuildContainer()
 {

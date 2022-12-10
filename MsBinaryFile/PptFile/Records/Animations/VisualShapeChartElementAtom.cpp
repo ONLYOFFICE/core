@@ -1,5 +1,6 @@
 #include "VisualShapeChartElementAtom.h"
 
+using namespace PPT;
 
 void CRecordVisualShapeChartElementAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

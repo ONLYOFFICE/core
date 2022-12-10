@@ -1,5 +1,7 @@
 #include "ColorSchemeAtom.h"
 
+using namespace PPT;
+using namespace ODRAW;
 
 void CRecordColorSchemeAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

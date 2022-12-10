@@ -31,7 +31,11 @@
  */
 #pragma once
 #include "../../XlsFile/Format/Crypt/Decryptor.h"
+#include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordEncryptedSummary : public CUnknownRecord
 {
 public:
@@ -45,7 +49,7 @@ public:
 	bool			fStream;
 	std::wstring	StreamName;
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream)
+    virtual void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream)
 	{
 		m_oHeader = oHeader;
 
@@ -193,3 +197,4 @@ public:
 		//int sz_header = (pos_end_record - pos_start_record);
 	}
 };
+}

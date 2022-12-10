@@ -1,5 +1,6 @@
 #include "TimeRotationBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeRotationBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

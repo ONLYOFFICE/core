@@ -1,5 +1,6 @@
 #include "SubEffectContainer.h"
 
+using namespace PPT;
 
 //--------------------------------------------------------------------------------
 #define SUBEFFECT_CASE(RECORD_TYPE, P_VAR, CLASS_RECORD_NAME, FLAG)				\

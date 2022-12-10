@@ -1,5 +1,6 @@
 #include "VisualPageAtom.h"
 
+using namespace PPT;
 
 void CRecordVisualPageAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

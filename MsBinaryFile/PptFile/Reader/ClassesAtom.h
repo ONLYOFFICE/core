@@ -32,6 +32,7 @@
 #pragma once
 
 #include "../Records/CurrentUserAtom.h"
+#include "../Records/UserEditAtom.h"
 
 namespace PPT
 {
@@ -50,7 +51,7 @@ public:
 
     CUserEdit& operator =(const CUserEdit& oSrc);
 
-    void FromAtom(PPT::CRecordUserEditAtom* pAtom);
+    void FromAtom(CRecordUserEditAtom* pAtom);
 };
 
 class CCurrentUser

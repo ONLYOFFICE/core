@@ -30,14 +30,19 @@
  *
  */
 #pragma once
-#include "ClassesAtom.h"
 
+#include "ClassesAtom.h"
 #include "../Records/Animations/_includer.h"
 #include "../Enums/_includer.h"
 #include "../Records/ExObjListContainer.h"
 #include "../Records/CryptSession10Container.h"
-
+#include "../Records/DocumentRecords.h"
+#include "../Records/SlideContainer.h"
+#include "../Records/Drawing/BlipStoreContainer.h"
+#include "../Records/Drawing/GroupShapeContainer.h"
 #include "SlideInfo.h"
+
+
 namespace PPT
 {
 class CPPTDocumentInfo;
@@ -83,7 +88,7 @@ public:
     std::vector<CRecordBlipStoreContainer*>			m_arrBlipStore;
     std::vector<CFontProperty>						m_arrFonts;
 
-    PPT::CTextStyles							m_oDefaultTextStyle;
+    CTextStyles							m_oDefaultTextStyle;
 
     vector_string									m_PlaceholdersReplaceString[3]; //0-dates, 1 - headers, 2 - footers
 
@@ -157,10 +162,10 @@ public:
     void LoadExVideo(CRecordsContainer* pExObject);
     void LoadExAudio(CRecordsContainer* pExObject);
 
-    void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, PPT::CTheme* pTheme);
+    void LoadAutoNumbering(CRecordGroupShapeContainer* pGroupContainer, CTheme* pTheme);
     void LoadBulletBlip(CShapeElement* pShape);
     void LoadAutoNumBullet(CShapeElement* pShape, int slideID);
-    void CreateDefaultStyle(PPT::CTextStyles& pStyle, PPT::CTheme* pTheme);
+    void CreateDefaultStyle(CTextStyles& pStyle, CTheme* pTheme);
     void CorrectColorScheme(std::vector<CColor>& oScheme);
 
     void ConvertLayoutType(SSlideLayoutAtom & layoutRecord, std::wstring & type, std::wstring & name);
@@ -168,7 +173,7 @@ public:
     void AddAnimation		(_UINT32 dwSlideID, double Width, double Height, CElementPtr pElement);
     void AddAudioTransition (_UINT32 dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 
-    int			AddNewLayout(PPT::CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
+    int			AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool addShapes, bool bMasterObjects);
 
     CElementPtr	AddNewLayoutPlaceholder		(CLayout *pLayout,	int placeholderType, int placeholderSizePreset = -1);
 

@@ -1,5 +1,6 @@
 #include "TimeSequenceDataAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeSequenceDataAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

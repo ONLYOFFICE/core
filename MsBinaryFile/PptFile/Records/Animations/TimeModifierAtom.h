@@ -40,15 +40,8 @@ namespace PPT
 class CRecordTimeModifierAtom : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader	=	oHeader;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-        m_nType		=	StreamUtils::ReadDWORD(pStream);
-        m_Value		=	StreamUtils::ReadFLOAT(pStream);
-    }
-
-public:
 
     unsigned long m_nType;		//	0x00000000  Repeat count.
     //	0x00000001  Repeat duration.

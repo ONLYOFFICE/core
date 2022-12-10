@@ -32,42 +32,18 @@
 #pragma once
 #include "../Reader/Records.h"
 
-enum BuildTypeEnum : _UINT32
+namespace PPT
 {
-    TL_BuildParagraph,
-    TL_BuildChart,
-    TL_BuildDiagram
-};
-
 class CRecordBuildAtom : public CUnknownRecord
 {
 public:
-    BuildTypeEnum   m_BuildType;
-    _UINT32         m_BuildId;
-    _UINT32         m_ShapeIdRef;
-    bool            m_fExpanded;
-    bool            m_fUIExpanded;
-public:
+    BuildTypeEnum   m_BuildType = TL_BuildParagraph;
+    _UINT32         m_BuildId = 0;
+    _UINT32         m_ShapeIdRef = 0;
+    bool            m_fExpanded = false;
+    bool            m_fUIExpanded = false;
 
-    CRecordBuildAtom()
-    {
-    }
 
-    ~CRecordBuildAtom()
-    {
-    }
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_BuildType         = (BuildTypeEnum)StreamUtils::ReadDWORD(pStream);
-        m_BuildId           = StreamUtils::ReadDWORD(pStream);
-        m_ShapeIdRef        = StreamUtils::ReadDWORD(pStream);
-
-        m_fExpanded         = StreamUtils::ReadBYTE(pStream);
-        m_fUIExpanded       = StreamUtils::ReadBYTE(pStream);
-
-        StreamUtils::StreamSkip(2, pStream);
-    }
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)override;
 };
+}

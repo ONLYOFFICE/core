@@ -1,5 +1,6 @@
 #include "TimeScaleBehaviorAtom.h"
 
+using namespace PPT;
 
 void CRecordTimeScaleBehaviorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

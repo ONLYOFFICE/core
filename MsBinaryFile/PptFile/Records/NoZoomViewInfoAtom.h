@@ -34,25 +34,15 @@
 
 namespace PPT
 {
-	class CRecordNoZoomViewInfoAtom : public CUnknownRecord
-	{
-	public:
-		SScalingAtom m_oCurScale;
-		ODRAW::SPointAtom m_nOrigin;
+class CRecordNoZoomViewInfoAtom : public CUnknownRecord
+{
+public:
+	SScalingAtom m_oCurScale;
+    ODRAW::SPointAtom m_nOrigin;
 
-		BOOL1 m_bDraftMode;
+    BOOL1 m_bDraftMode;
 
-		CRecordNoZoomViewInfoAtom()
-		{
-		}
 
-		~CRecordNoZoomViewInfoAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

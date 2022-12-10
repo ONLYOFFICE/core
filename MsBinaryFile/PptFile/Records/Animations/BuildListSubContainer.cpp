@@ -1,5 +1,6 @@
 #include "BuildListSubContainer.h"
 
+using namespace PPT;
 
 CRecordBuildListSubContainer::CRecordBuildListSubContainer()
 {

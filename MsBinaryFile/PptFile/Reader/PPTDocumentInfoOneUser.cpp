@@ -34,16 +34,15 @@
 
 #include "PPTDocumentInfo.h"
 
-#include "../Records/ExMIDIAudioContainer.h"
-#include "../Records/ExCDAudioContainer.h"
-#include "../Records/ExWAVAudioLinkContainer.h"
-#include "../Records/ExWAVAudioEmbeddedContainer.h"
+#include "../Records/RecordsIncluder.h"
 
-#include "../Records/ExObjListContainer.h"
-#include "../Records/SoundCollectionContainer.h"
-#include "../Records/SoundContainer.h"
+//#include "../Records/ExObjListContainer.h"
+//#include "../Records/SoundCollectionContainer.h"
+//#include "../Records/SoundContainer.h"
 #include "../Enums/_includer.h"
 
+using namespace PPT;
+using namespace ODRAW;
 
 CPPTUserInfo::CPPTUserInfo() :	CDocument(),
     m_oUser(),

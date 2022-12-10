@@ -42,7 +42,7 @@ struct SSlidePersist
     _UINT32 m_nPsrRef;
     _UINT32 m_nSlideID;
 
-    std::vector<CTextFullSettings> m_arTextAttrs;
+    std::vector<CTextFullSettings*> m_arTextAttrs;
 
     SSlidePersist();
     SSlidePersist(const SSlidePersist& oSrc);

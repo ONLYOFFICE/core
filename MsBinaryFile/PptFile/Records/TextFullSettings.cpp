@@ -48,7 +48,7 @@ std::wstring CTextFullSettings::ApplyProperties(CTextAttributesEx *pTextAttribut
     pTextAttributes->m_lStyleThemeIndex	= m_lStyleThemeIndex;
 
     if (NULL != m_pTextStyleProp)
-        PPT_FORMAT::ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes);
+        ConvertPPTTextToEditorStructure(m_pTextStyleProp->m_arrPFs, m_pTextStyleProp->m_arrCFs, m_strText, *pTextAttributes);
 
     if (NULL != m_pTextRuler)
         pTextAttributes->m_oRuler = m_pTextRuler->m_oTextRuler;

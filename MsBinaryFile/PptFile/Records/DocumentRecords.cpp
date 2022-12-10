@@ -63,7 +63,9 @@ void CRecordDocument::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStre
             oPersist.m_nPsrRef = pAtom->m_arSlides[index]->m_nPsrRef;
             oPersist.m_nSlideID = pAtom->m_arSlides[index]->m_nSlideID;
 
-            oPersist.m_arTextAttrs.insert(oPersist.m_arTextAttrs.end(), pAtom->m_arTextPlaceHolders[index].begin(),pAtom->m_arTextPlaceHolders[index].end());
+//            oPersist.m_arTextAttrs.insert(oPersist.m_arTextAttrs.end(), pAtom->m_arTextPlaceHolders[index].begin(),pAtom->m_arTextPlaceHolders[index].end());
+            for (auto& textPlaceHolder : pAtom->m_arTextPlaceHolders[index])
+                            oPersist.m_arTextAttrs.push_back(&textPlaceHolder);
 
             pArray->push_back(oPersist);
         }

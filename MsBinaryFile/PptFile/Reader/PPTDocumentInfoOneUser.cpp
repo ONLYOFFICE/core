@@ -649,7 +649,12 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
         pNotesWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 
     pNotesWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
-    pNotesWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+//    pNotesWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+    pNotesWrapper->m_arTextPlaceHolders.clear();
+        for (auto* pTextAttr : pRecordSlide->m_oPersist.m_arTextAttrs)
+            if (pTextAttr)
+                pNotesWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
+
 
     std::vector<CRecordNotesAtom*> oArrayNotesAtoms;
     pRecordSlide->GetRecordsByType(&oArrayNotesAtoms, false, true);
@@ -851,7 +856,11 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 
     pSlideWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
-    pSlideWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+//    pSlideWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+    pSlideWrapper->m_arTextPlaceHolders.clear();
+        for (auto* pTextAttr : pRecordSlide->m_oPersist.m_arTextAttrs)
+            if (pTextAttr)
+                pSlideWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
 
     // записываем шрифты
     std::vector<CRecordSlideAtom*> oArraySlideAtoms;
@@ -1548,7 +1557,11 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
     if (pPairMaster1 != m_mapMasters.end())
     {
         indexUser = pPairMaster1->second->m_IndexUser;
-        pMasterWrapper->m_arTextPlaceHolders = pPairMaster1->second->m_oPersist.m_arTextAttrs;
+//        pMasterWrapper->m_arTextPlaceHolders = pPairMaster1->second->m_oPersist.m_arTextAttrs;
+        pMasterWrapper->m_arTextPlaceHolders.clear();
+                for (auto* pTextAttr : pPairMaster1->second->m_oPersist.m_arTextAttrs)
+                    if (pTextAttr)
+                        pMasterWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
     }
     if (m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures.empty() == false)
         pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
@@ -1905,7 +1918,12 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
     CSlideInfo* pMasterWrapper	= &m_arMasterWrapper[m_arMasterWrapper.size() - 1];
 
-    pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;
+//    pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;
+    pMasterWrapper->m_arTextPlaceHolders.clear();
+        for (auto* pTextAttr : pCurMaster->m_oPersist.m_arTextAttrs)
+            if (pTextAttr)
+                pMasterWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
+
     pMasterWrapper->m_mapFilePictures		= &m_pDocumentInfo->m_mapStoreImageFile;
 
     if (m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures.empty() == false)

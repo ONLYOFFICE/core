@@ -34,6 +34,10 @@
 
 using namespace PPT;
 
+FontCollectionEntry::FontCollectionEntry()
+{
+
+}
 void FontCollectionEntry::ReadFromStream(POLE::Stream *pStream)
 {
     StreamUtils::StreamSkip(76, pStream);

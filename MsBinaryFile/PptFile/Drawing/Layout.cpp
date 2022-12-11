@@ -145,7 +145,7 @@ LONG PPT::CLayout::GetCountPlaceholderWithType(LONG lType)
     return lFound;
 }
 
-CColor PPT::CLayout::GetColor(const LONG &lIndexScheme)
+ODRAW::CColor PPT::CLayout::GetColor(const LONG &lIndexScheme)
 {
     if (lIndexScheme < (LONG)m_arColorScheme.size())
     {

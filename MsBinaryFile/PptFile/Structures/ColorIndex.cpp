@@ -30,6 +30,7 @@
  *
  */
 #include "ColorIndex.h"
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::ColorIndex::clear()
 {

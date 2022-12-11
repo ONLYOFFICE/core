@@ -30,7 +30,7 @@
  *
  */
 #include "RectStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::RectStruct::ReadFromStream(POLE::Stream *pStream)
 {

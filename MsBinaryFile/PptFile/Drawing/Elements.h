@@ -71,9 +71,8 @@ public:
     CImageElement();
     virtual ~CImageElement();
     virtual CElementPtr CreateDublicate();
+
     std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false);
-
-
     std::wstring ConvertPPTtoPPTX(/*CPPTShape* pPPTShape, */const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false);
 
     std::wstring DownloadImage(const std::wstring& strFile);
@@ -105,12 +104,7 @@ public:
     void CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
 
     std::wstring ConvertPPTShapeToPPTX(bool bIsNamespace = false);
-
-#ifndef OPTIMIZE_COMPILE_CONVERT_PPT_TO_PPTX
     std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false);
-#else
-    std::wstring ConvertPPTtoPPTX(CPPTShape* pPPTShape, const NSGuidesVML::CFormParam& pCoef, bool bIsNamespace = false);
-#endif
 };
 
 class CAudioElement : public CImageElement

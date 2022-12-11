@@ -131,12 +131,13 @@ bool PPT::CBulletAutoNum::isDefault() const
     return type.get_value_or(L"arabicPeriod") == L"arabicPeriod" &&
             (startAt.is_init() ? *startAt == 1 : true);
 }
-
+PPT::CFontProperties::CFontProperties()
+{
+}
 PPT::CFontProperties::CFontProperties(const CFontProperties &oSrc)
 {
     *this = oSrc;
 }
-
 PPT::CFontProperties &PPT::CFontProperties::operator=(const CFontProperties &oSrc)
 {
     font	= oSrc.font;

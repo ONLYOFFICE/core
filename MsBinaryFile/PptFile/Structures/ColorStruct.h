@@ -36,7 +36,7 @@
 
 namespace PPT
 {
-struct ColorStruct
+struct ColorStruct : public IStruct
 {
     BYTE m_red;
     BYTE m_green;

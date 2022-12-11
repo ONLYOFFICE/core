@@ -55,7 +55,6 @@ HEADERS += \
 	../../../PptFile/Reader/ReadStructures.h \
 	../../../PptFile/Reader/Records.h \
 	../../../PptFile/Reader/RoundTripExtractor.h \
-	../../../PptFile/Reader/Slide.h \
 	../../../PptFile/Reader/SlideInfo.h \
 	../../../PptFile/Reader/SlidePersist.h \
 	../../../PptFile/Records/Animations/AnimationInfoAtom.h \

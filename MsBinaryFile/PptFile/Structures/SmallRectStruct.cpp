@@ -30,7 +30,7 @@
  *
  */
 #include "SmallRectStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::SmallRectStruct::ReadFromStream(POLE::Stream *pStream)
 {

@@ -31,9 +31,14 @@
  */
 #include "ParaBuildLevel.h"
 
-using namespace PPT;
+PPT::CRecordParaBuildLevel::CRecordParaBuildLevel()
+{
+}
+PPT::CRecordParaBuildLevel::~CRecordParaBuildLevel()
+{
+}
 
-void CRecordParaBuildLevel::ReadFromStream(POLE::Stream *pStream)
+void PPT::CRecordParaBuildLevel::ReadFromStream(POLE::Stream *pStream)
 {
     SRecordHeader oHeader;
 

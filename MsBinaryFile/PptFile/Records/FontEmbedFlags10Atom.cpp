@@ -31,6 +31,7 @@
  */
 #include "FontEmbedFlags10Atom.h"
 
+using namespace PPT;
 
 void CRecordFontEmbedFlags10Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

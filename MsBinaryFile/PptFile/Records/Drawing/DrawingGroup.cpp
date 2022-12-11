@@ -31,6 +31,7 @@
  */
 #include "DrawingGroup.h"
 
+using namespace PPT;
 
 CRecordDrawingGroup::CRecordDrawingGroup() : m_arrIDs()
 {

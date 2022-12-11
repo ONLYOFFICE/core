@@ -31,6 +31,7 @@
  */
 #include "MasterTextPropAtom.h"
 
+using namespace PPT;
 
 CRecordMasterTextPropAtom::SMasterTextPropRun::SMasterTextPropRun()
 {

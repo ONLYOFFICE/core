@@ -29,8 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #include "DocInfoListContainer.h"
+
+using namespace PPT;
 
 void DocInfoListSubContainerOrAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

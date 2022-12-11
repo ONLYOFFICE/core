@@ -37,7 +37,7 @@
 #include "../SoundContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordAnimationInfoContainer: public CUnknownRecord
 {
@@ -45,20 +45,9 @@ public:
     CRecordAnimationInfoAtom    m_AnimationAtom;
     CRecordSoundContainer       m_AnimationSound;
 
-    CRecordAnimationInfoContainer(){}
-    ~CRecordAnimationInfoContainer(){}
+    CRecordAnimationInfoContainer();
+    ~CRecordAnimationInfoContainer();
 
-    virtual void ReadFromStream(SRecordHeader & thisHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = thisHeader;
-
-        SRecordHeader oHeader;
-
-        if (oHeader.ReadFromStream(pStream))
-            m_AnimationAtom.ReadFromStream ( oHeader, pStream );
-
-        if (m_oHeader.RecLen != 36 && oHeader.ReadFromStream(pStream))
-            m_AnimationSound.ReadFromStream ( oHeader, pStream );
-    }
+    virtual void ReadFromStream(SRecordHeader & thisHeader, POLE::Stream* pStream);
 };
 }

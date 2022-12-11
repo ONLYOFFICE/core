@@ -31,6 +31,7 @@
  */
 #include "HeadersFootersAtom.h"
 
+using namespace PPT;
 
 void CRecordHeadersFootersAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -42,7 +42,7 @@ class CStringWriter;
 class CSlideShowInfo;
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CDocument;
 	class CShapeWriter;

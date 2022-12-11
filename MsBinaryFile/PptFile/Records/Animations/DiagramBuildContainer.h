@@ -36,30 +36,15 @@
 #include "DiagramBuildAtom.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordDiagramBuildContainer : public CRecordBuildListSubContainer
 {
 public:
-    CRecordDiagramBuildContainer()
-    {
+    CRecordDiagramBuildContainer();
+    ~CRecordDiagramBuildContainer();
 
-    }
-
-    ~CRecordDiagramBuildContainer()
-    {
-
-    }
-
-    void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override
-    {
-        CRecordBuildListSubContainer::ReadFromStream(header, pStream);
-
-        SRecordHeader diagramBuildAtomHeader;
-
-        if (diagramBuildAtomHeader.ReadFromStream(pStream))
-            m_oDiagramBuildAtom.ReadFromStream (diagramBuildAtomHeader, pStream);
-    }
+    void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override;
 
 public:
     CRecordDiagramBuildAtom     m_oDiagramBuildAtom;

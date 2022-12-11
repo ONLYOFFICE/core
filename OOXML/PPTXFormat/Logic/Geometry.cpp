@@ -42,7 +42,7 @@ namespace PPTX
 		{
 			if (!pOOXToVMLRenderer) return;
 
-			PPT_FORMAT::CShapeElement* lpShapeElement = NULL;
+			PPT::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
 				const PPTX::Logic::PrstGeom & lpGeom = this->as<PPTX::Logic::PrstGeom>();
@@ -51,7 +51,7 @@ namespace PPTX
 				if(_lspt == OOXMLShapes::sptNil) 
 					return;
 
-				lpShapeElement = new PPT_FORMAT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
+				lpShapeElement = new PPT::CShapeElement(NSBaseShape::pptx, (int)_lspt);
 				std::wstring strAdjustValues = lpGeom.GetODString();
 				
 				lpShapeElement->m_pShape->getBaseShape()->LoadAdjustValuesList(strAdjustValues);
@@ -60,7 +60,7 @@ namespace PPTX
 			{
 				const PPTX::Logic::CustGeom & lpGeom = this->as<PPTX::Logic::CustGeom>();
 				std::wstring strShape = lpGeom.GetODString();
-				lpShapeElement = new PPT_FORMAT::CShapeElement(strShape);
+				lpShapeElement = new PPT::CShapeElement(strShape);
 			}
 
 			if (lpShapeElement == NULL)

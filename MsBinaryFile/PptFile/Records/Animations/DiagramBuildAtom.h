@@ -36,21 +36,16 @@
 #include "../../Enums/_includer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordDiagramBuildAtom : public CUnknownRecord
 {
 public:
     DiagramBuildEnum  m_oDiagramBuild;
 
-    CRecordDiagramBuildAtom(){}
-    ~CRecordDiagramBuildAtom(){}
+    CRecordDiagramBuildAtom();
+    ~CRecordDiagramBuildAtom();
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_oDiagramBuild        = (DiagramBuildEnum)StreamUtils::ReadDWORD(pStream);
-    }
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 }

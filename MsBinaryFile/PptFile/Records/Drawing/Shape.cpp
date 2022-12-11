@@ -31,6 +31,7 @@
  */
 #include "Shape.h"
 
+using namespace PPT;
 
 CRecordShape::CRecordShape()
 {

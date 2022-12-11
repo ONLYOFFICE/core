@@ -31,6 +31,7 @@
  */
 #include "DocumentAtom.h"
 
+using namespace PPT;
 
 void CRecordDocumentAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

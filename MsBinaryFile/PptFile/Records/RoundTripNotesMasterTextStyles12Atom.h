@@ -32,31 +32,19 @@
 #pragma once
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordRoundTripNotesMasterTextStyles12Atom : public CUnknownRecord
 {
 public:
 	std::pair<boost::shared_array<unsigned char>, _INT32> data;
 	
-	CRecordRoundTripNotesMasterTextStyles12Atom()
-	{
-	}
+    CRecordRoundTripNotesMasterTextStyles12Atom();
 
-	~CRecordRoundTripNotesMasterTextStyles12Atom()
-	{
-	}
+    ~CRecordRoundTripNotesMasterTextStyles12Atom();
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		
-		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
-		pStream->read(data.first.get(), data.second);
-
-//                std::string filename = "notes/" + std::to_string(data.second) + ".zip";
-//                std::ofstream file(filename, std::ios::binary | std::ios::out);
-//                file.write((char*)data.first.get(), data.second);
-//                file.close();
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 };
 
 class CRecordRoundTripCustomTableStyles12Atom : public CUnknownRecord
@@ -64,19 +52,10 @@ class CRecordRoundTripCustomTableStyles12Atom : public CUnknownRecord
 public:
 	std::pair<boost::shared_array<unsigned char>, _INT32> data;
 	
-	CRecordRoundTripCustomTableStyles12Atom()
-	{
-	}
+    CRecordRoundTripCustomTableStyles12Atom();
 
-	~CRecordRoundTripCustomTableStyles12Atom()
-	{
-	}
+    ~CRecordRoundTripCustomTableStyles12Atom();
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		
-		data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
-		pStream->read(data.first.get(), data.second);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 };
+}

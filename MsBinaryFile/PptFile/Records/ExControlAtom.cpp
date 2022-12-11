@@ -31,6 +31,7 @@
  */
 #include "ExControlAtom.h"
 
+using namespace PPT;
 
 void CRecordExControlAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

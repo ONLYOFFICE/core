@@ -30,25 +30,19 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 #include "CFMasks.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
-
 struct STextCFException9
 {
     SCFMasks        m_masks;
     nullable_uint   m_pp10runid;    // 4 bits
 
 
-    void ReadFromStream(POLE::Stream* pStream)
-    {
-        m_masks.ReadFromStream(pStream);
-
-        if (m_masks.m_pp10ext)
-            m_pp10runid = 0xF & StreamUtils::ReadDWORD(pStream);
-    }
+    void ReadFromStream(POLE::Stream* pStream);
 };
 }

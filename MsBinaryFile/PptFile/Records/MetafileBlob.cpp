@@ -31,6 +31,7 @@
  */
 #include "MetafileBlob.h"
 
+using namespace PPT;
 
 CRecordMetafileBlob::CRecordMetafileBlob() :
     m_nMM(-1), m_nExtX(-1), m_nExtY(-1), m_pData(nullptr)

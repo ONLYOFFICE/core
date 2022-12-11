@@ -34,29 +34,17 @@
 
 #include "../../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordLevelInfoAtom : public CUnknownRecord
 {
 public:
-    CRecordLevelInfoAtom()
-    {
-
-    }
-
-    ~CRecordLevelInfoAtom()
-    {
-
-    }
-
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader	=	oHeader;
-
-        m_nLevel	=	StreamUtils::ReadDWORD ( pStream );
-    }
-
-
     _UINT32	m_nLevel;
+
+    CRecordLevelInfoAtom();
+    ~CRecordLevelInfoAtom();
+
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream );
+
 };
 }

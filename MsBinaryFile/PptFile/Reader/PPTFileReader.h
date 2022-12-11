@@ -33,6 +33,8 @@
 
 #include "PPTDocumentInfo.h"
 
+namespace PPT
+{
 class CPPTFileReader
 {
 public: 
@@ -75,3 +77,4 @@ public:
 	CPPTDocumentInfo			m_oDocumentInfo;
 	int							m_nPresentationCodePage;
 };
+}

@@ -31,6 +31,7 @@
  */
 #include "CString.h"
 
+using namespace PPT;
 
 void CRecordCString::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

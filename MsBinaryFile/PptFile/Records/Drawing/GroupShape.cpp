@@ -31,6 +31,7 @@
  */
 #include "GroupShape.h"
 
+using namespace PPT;
 
 CRecordGroupShape::CRecordGroupShape()
 {

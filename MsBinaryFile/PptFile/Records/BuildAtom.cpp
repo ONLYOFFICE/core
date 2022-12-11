@@ -31,6 +31,8 @@
  */
 #include "BuildAtom.h"
 
+using namespace PPT;
+
 void CRecordBuildAtom::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
 {
     m_oHeader = oHeader;

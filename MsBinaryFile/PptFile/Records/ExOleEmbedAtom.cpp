@@ -31,6 +31,7 @@
  */
 #include "ExOleEmbedAtom.h"
 
+using namespace PPT;
 
 void CRecordExOleEmbedAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

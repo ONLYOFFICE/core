@@ -31,6 +31,7 @@
  */
 #include "InteractiveInfoAtom.h"
 
+using namespace PPT;
 
 void CRecordInteractiveInfoAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

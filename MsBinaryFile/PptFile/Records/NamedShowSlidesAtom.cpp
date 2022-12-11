@@ -31,6 +31,7 @@
  */
 #include "NamedShowSlidesAtom.h"
 
+using namespace PPT;
 
 void CRecordNamedShowSlidesAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

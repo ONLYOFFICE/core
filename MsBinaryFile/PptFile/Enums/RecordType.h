@@ -34,7 +34,7 @@
 #include <string>
 
 
-namespace PPT_FORMAT {
+namespace PPT {
 
 enum RecordType : unsigned short
 {

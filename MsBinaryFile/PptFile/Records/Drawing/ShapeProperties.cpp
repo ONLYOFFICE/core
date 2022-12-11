@@ -31,6 +31,7 @@
  */
 #include "ShapeProperties.h"
 
+using namespace PPT;
 
 CRecordShapeProperties::CRecordShapeProperties()
 {

@@ -31,7 +31,7 @@
  */
 #include "StylesWriter.h"
 
-void CStylesWriter::ConvertStyles(PPT_FORMAT::CTextStyles &oStyles, PPT_FORMAT::CStringWriter &oWriter, int nCount)
+void CStylesWriter::ConvertStyles(PPT::CTextStyles &oStyles, PPT::CStringWriter &oWriter, int nCount)
 {
     for (int i = 0; i < nCount; ++i)
     {
@@ -40,16 +40,16 @@ void CStylesWriter::ConvertStyles(PPT_FORMAT::CTextStyles &oStyles, PPT_FORMAT::
     }
 }
 
-std::wstring CStylesWriter::ConvertStyleLevel(PPT_FORMAT::CTextStyleLevel &oLevel, const int &nLevel)
+std::wstring CStylesWriter::ConvertStyleLevel(PPT::CTextStyleLevel &oLevel, const int &nLevel)
 {
-    PPT_FORMAT::CStringWriter oWriter;
+    PPT::CStringWriter oWriter;
     ConvertStyleLevel(oLevel, oWriter, nLevel);
     return oWriter.GetData();
 }
 
-std::wstring CStylesWriter::ConvertStyles(PPT_FORMAT::CTextStyles &oStyles, int nCount)
+std::wstring CStylesWriter::ConvertStyles(PPT::CTextStyles &oStyles, int nCount)
 {
-    PPT_FORMAT::CStringWriter oWriter;
+    PPT::CStringWriter oWriter;
     ConvertStyles(oStyles, oWriter, nCount);
     return oWriter.GetData();
 }

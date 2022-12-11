@@ -31,6 +31,7 @@
  */
 #include "DrawingRecord.h"
 
+using namespace PPT;
 
 CRecordDrawingRecord::CRecordDrawingRecord()
 {

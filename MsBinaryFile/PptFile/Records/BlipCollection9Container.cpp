@@ -31,6 +31,7 @@
  */
 #include "BlipCollection9Container.h"
 
+using namespace PPT;
 
 void CRecordBlipCollection9Container::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

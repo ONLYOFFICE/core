@@ -34,7 +34,7 @@
 
 #include "../../Reader/Records.h"
 #include "TimeVariant.h"
-namespace PPT_FORMAT
+namespace PPT
 {
 struct TimeNodeTimeFilter : public CRecordTimeVariantString
 {

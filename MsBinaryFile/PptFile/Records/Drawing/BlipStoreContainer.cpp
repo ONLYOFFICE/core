@@ -32,6 +32,7 @@
 #include "BlipStoreContainer.h"
 #include "BlipStoreEntry.h"
 
+using namespace PPT;
 
 CRecordBlipStoreContainer::CRecordBlipStoreContainer()
 {

@@ -30,25 +30,17 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
+namespace PPT
+{
 class CRecordKinsokuLeadingAtom : public CUnknownRecord
 {
 public:
     std::wstring m_arKinsokuLeading;
 
-    CRecordKinsokuLeadingAtom()
-    {
-    }
 
-    ~CRecordKinsokuLeadingAtom()
-    {
-    }
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_arKinsokuLeading = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen - sizeof (oHeader));
-    }
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
+}

@@ -34,21 +34,15 @@
 #include "../Reader/Records.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordLinkedShape10Atom : public CUnknownRecord
 {
 public:
-void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-{
-    m_oHeader = oHeader;
-
-    m_nShapeIdRef           = StreamUtils::ReadLONG(pStream);
-    m_nLinkedShapeIdRef     = StreamUtils::ReadLONG(pStream);
-}
-
-public:
     _UINT32  m_nShapeIdRef;
     _UINT32  m_nLinkedShapeIdRef;
+
+
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 };
 }

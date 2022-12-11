@@ -37,7 +37,7 @@
 	#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #endif
 
-std::wstring PPT_FORMAT::CImageElement::DownloadImage(const std::wstring& strFile)
+std::wstring PPT::CImageElement::DownloadImage(const std::wstring& strFile)
 {
 #ifndef DISABLE_FILE_DOWNLOADER
     NSNetwork::NSFileTransport::CFileDownloader oDownloader(strFile, true);
@@ -54,7 +54,7 @@ std::wstring PPT_FORMAT::CImageElement::DownloadImage(const std::wstring& strFil
 #endif
     return m_strImageFileName;
 }
-void PPT_FORMAT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
+void PPT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
 	LONG lOldIndex = oColor.m_lSchemeIndex;
 	if (-1 == oColor.m_lSchemeIndex)
@@ -83,9 +83,9 @@ void PPT_FORMAT::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, C
 	oColor.m_lSchemeIndex = lOldIndex;
 }
 
-void PPT_FORMAT::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
+void PPT::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 {
-	PPT_FORMAT::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
+	PPT::CTextAttributesEx* pAttributes = &m_pShape->m_oText;
 	int nCountColors = 0;
 	if (NULL != pTheme)
 		nCountColors = (int)pTheme->m_arColorScheme.size();
@@ -143,10 +143,10 @@ void PPT_FORMAT::CShapeElement::SetupTextProperties(CSlide* pSlide, CTheme* pThe
 	}
 }
 
-bool PPT_FORMAT::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
+bool PPT::CShapeElement::SetUpTextPlaceholder(std::wstring newText)
 {
 	bool result = false;
-	PPT_FORMAT::CTextAttributesEx* pText = &m_pShape->m_oText;
+	PPT::CTextAttributesEx* pText = &m_pShape->m_oText;
 
 	for (size_t p = 0 ; p < pText->m_arParagraphs.size(); p++) //тут по всем -> 1-(33).ppt
 	{

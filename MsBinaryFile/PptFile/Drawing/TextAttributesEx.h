@@ -32,137 +32,72 @@
 #pragma once
 
 #if !defined(_WIN32) && !defined (_WIN64)
-    #include "../../../DesktopEditor/graphics/aggplustypes.h"
+#include "../../../DesktopEditor/graphics/aggplustypes.h"
 #else
-    #include <windows.h>
+#include <windows.h>
 #endif
 
 #include "Structures.h"
 #include "TextStructures.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CTheme;
-	class CLayout;
-	
-	class CTextAttributesEx
-	{
-	public:
-		LONG	m_lTextMasterType; // only ppt property
-		_UINT32	m_lTextType;
-		
-		int		m_lStyleThemeIndex;
-		
-		int		m_lPlaceholderType;
-		int		m_lPlaceholderID;
+class CTheme;
+class CLayout;
+
+class CTextAttributesEx
+{
+public:
+    LONG	m_lTextMasterType; // only ppt property
+    _UINT32	m_lTextType;
+
+    int		m_lStyleThemeIndex;
+
+    int		m_lPlaceholderType;
+    int		m_lPlaceholderID;
 
 
-		// граница
-        Aggplus::RECT m_oBounds;
+    // граница
+    Aggplus::RECT m_oBounds;
 
-		// настройки по-умолчанию
-		ODRAW::CTextAttributes			m_oAttributes;
-		std::vector<CParagraph>	m_arParagraphs;
-        std::wstring m_originalText;
+    // настройки по-умолчанию
+    ODRAW::CTextAttributes			m_oAttributes;
+    std::vector<CParagraph>	m_arParagraphs;
+    std::wstring m_originalText;
 
-        bool	m_bVertical;
-		bool	m_bAutoFit;
+    bool	m_bVertical;
+    bool	m_bAutoFit;
 
-		int 	m_nTextFlow;
-
-
-		int		m_lWrapMode; // 0 - square, default; 1 - none wrap
+    int 	m_nTextFlow;
 
 
-		// для ппт. чтобы не менять счас ничего
-		CTextRuler				m_oRuler;
+    int		m_lWrapMode; // 0 - square, default; 1 - none wrap
 
-		CTextStyles				m_oLayoutStyles;
-		CTextStyles				m_oStyles;
 
-		// из пптх
-		bool					m_bIsSlideFontRef;
-		int						m_lFontRef;
+    // для ппт. чтобы не менять счас ничего
+    CTextRuler				m_oRuler;
 
-		CTextAttributesEx() :
-			m_oAttributes(),
-			m_arParagraphs(),
-			m_oRuler(),
-			m_oLayoutStyles(),
-			m_oStyles()
-		{
-			m_lTextType			= -1;
-			m_lPlaceholderType	= -1;
-			m_lPlaceholderID	= -1;
+    CTextStyles				m_oLayoutStyles;
+    CTextStyles				m_oStyles;
 
-			m_lStyleThemeIndex	= -1;
+    // из пптх
+    bool					m_bIsSlideFontRef;
+    int						m_lFontRef;
 
-			m_lFontRef			= -1;
-			m_bIsSlideFontRef	= false;
-					
-			m_oBounds.left		= 0;
-			m_oBounds.top		= 0;
-			m_oBounds.right		= 50;
-			m_oBounds.bottom	= 50;
+    CTextAttributesEx();
+    CTextAttributesEx& operator =(const CTextAttributesEx& oSrc);
 
-			m_bVertical			= false;
-			m_bAutoFit			= false;
-			m_lWrapMode			= 0;
-			m_nTextFlow			= -1;
+    CTextAttributesEx(const CTextAttributesEx& oSrc);
 
-			m_lTextMasterType	= -1;
-		}
-		CTextAttributesEx& operator =(const CTextAttributesEx& oSrc)
-		{
-			m_oBounds		= oSrc.m_oBounds;
+    ~CTextAttributesEx();
 
-			m_lTextType			= oSrc.m_lTextType;
-			m_lPlaceholderType	= oSrc.m_lPlaceholderType;
-			m_lPlaceholderID	= oSrc.m_lPlaceholderID;
+    void NormalizeString(std::wstring& strText);
 
-			m_lFontRef			= oSrc.m_lFontRef;
-			m_bIsSlideFontRef	= oSrc.m_bIsSlideFontRef;
+    void RecalcParagraphsPPT();
+    void ApplyThemeStyle	(CTheme* pTheme = NULL);
 
-			m_oAttributes	= oSrc.m_oAttributes;
-			m_bVertical		= oSrc.m_bVertical;
-			m_lWrapMode		= oSrc.m_lWrapMode;
-			m_bAutoFit		= oSrc.m_bAutoFit;
-			m_nTextFlow		= oSrc.m_nTextFlow;
-
-			m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
-			m_oRuler = oSrc.m_oRuler;
-
-			m_oLayoutStyles		= oSrc.m_oLayoutStyles;
-			m_oStyles			= oSrc.m_oStyles;
-
-			m_lTextMasterType = oSrc.m_lTextMasterType;
-
-			return *this;
-		}
-
-		CTextAttributesEx(const CTextAttributesEx& oSrc)
-		{
-			*this = oSrc;
-		}
-
-		~CTextAttributesEx()
-		{
-			m_arParagraphs.clear();
-		}
-
-        inline void NormalizeString(std::wstring& strText)
-		{
-            strText = XmlUtils::EncodeXmlString(strText);
-		}
-
-		void RecalcParagraphsPPT();
-		void ApplyThemeStyle	(CTheme* pTheme = NULL);
-		
-		void ApplyRuler			(CTheme* pTheme);
-		void ApplyRuler			(CTextPFRun* pPar, WORD lIndentLevel);
-		bool IsEmptyText()
-		{
-			return (0 == m_arParagraphs.size()) ? true : false;
-		}
-	};
+    void ApplyRuler			(CTheme* pTheme);
+    void ApplyRuler			(CTextPFRun* pPar, WORD lIndentLevel);
+    bool IsEmptyText();
+};
 }

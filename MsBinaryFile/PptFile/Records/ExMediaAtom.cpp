@@ -31,6 +31,7 @@
  */
 #include "ExMediaAtom.h"
 
+using namespace PPT;
 
 void CRecordExMediaAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -35,14 +35,14 @@
 #include "../Drawing/TextStructures.h"
 #include "ImageManager.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class BulletsConverter
 {
 public:
     BulletsConverter(CRelsGenerator* pRels = nullptr);
     void FillPPr(PPTX::Logic::TextParagraphPr& oPPr, CParagraph &paragraph);
-    void ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, PPT_FORMAT::CTextPFRun* pPF);
+    void ConvertPFRun(PPTX::Logic::TextParagraphPr &oPPr, PPT::CTextPFRun* pPF);
 
 private:
     void ConvertTabStops(std::vector<PPTX::Logic::Tab>& arrTabs, std::vector<std::pair<int, int>>& arrTabStops);

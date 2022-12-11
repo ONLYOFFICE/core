@@ -31,6 +31,7 @@
  */
 #include "ExWAVAudioEmbeddedContainer.h"
 
+using namespace PPT;
 
 void CRecordWAVAudioEmbeddedContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -31,6 +31,7 @@
  */
 #include "GuideAtom.h"
 
+using namespace PPT;
 
 void CRecordGuideAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

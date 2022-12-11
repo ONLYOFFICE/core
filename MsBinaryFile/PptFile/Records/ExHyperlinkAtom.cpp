@@ -31,6 +31,7 @@
  */
 #include "ExHyperlinkAtom.h"
 
+using namespace PPT;
 
 void CRecordExHyperlinkAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

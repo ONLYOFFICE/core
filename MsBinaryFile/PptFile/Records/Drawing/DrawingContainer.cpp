@@ -31,6 +31,7 @@
  */
 #include "DrawingContainer.h"
 
+using namespace PPT;
 
 CRecordDrawingContainer::CRecordDrawingContainer()
 {

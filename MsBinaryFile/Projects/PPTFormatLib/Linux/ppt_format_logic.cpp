@@ -247,3 +247,5 @@
 #include "../../../PptFile/Records/ZoomViewInfoAtom.cpp"
 #include "../../../PptFile/Structures/FontCollectionEntry.cpp"
 #include "../../../PptFile/Structures/PointStruct.cpp"
+#include "../../../PptFile/Structures/ColorIndexStruct.cpp"
+#include "../../../PptFile/Structures/DateTimeStruct.cpp"

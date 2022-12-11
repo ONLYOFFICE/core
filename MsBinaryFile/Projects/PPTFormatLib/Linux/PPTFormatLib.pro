@@ -503,6 +503,8 @@ SOURCES += \
         ../../../PptFile/Records/ViewInfoAtom.cpp \
         ../../../PptFile/Records/ZoomViewInfoAtom.cpp \
         ../../../PptFile/Structures/PointStruct.cpp \
+        ../../../PptFile/Structures/ColorIndexStruct.cpp \
+        ../../../PptFile/Structures/DateTimeStruct.cpp \
         ../../../PptFile/Structures/FontCollectionEntry.cpp
  }
 

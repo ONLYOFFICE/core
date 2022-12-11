@@ -30,7 +30,7 @@
  *
  */
 #include "WideColorStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::WideColorStruct::ReadFromStream(POLE::Stream *pStream)
 {

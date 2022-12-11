@@ -30,7 +30,7 @@
  *
  */
 #include "ColorIndexStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 PPT::ColorIndexStruct::ColorIndexStruct()
 {

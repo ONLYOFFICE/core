@@ -30,7 +30,7 @@
  *
  */
 #include "RatioStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::RatioStruct::ReadFromStream(POLE::Stream *pStream)
 {

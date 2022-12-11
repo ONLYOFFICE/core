@@ -30,7 +30,7 @@
  *
  */
 #include "PointStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::PointStruct::ReadFromStream(POLE::Stream *pStream)
 {

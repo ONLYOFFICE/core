@@ -30,7 +30,7 @@
  *
  */
 #include "TmsfTimeStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 void PPT::TmsfTimeStruct::ReadFromStream(POLE::Stream *pStream)
 {

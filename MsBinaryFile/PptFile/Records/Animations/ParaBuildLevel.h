@@ -42,7 +42,7 @@ class CRecordParaBuildLevel
 {
 public:
     CRecordParaBuildLevel ();
-    ~CRecordParaBuildLevel();
+    ~CRecordParaBuildLevel(); 
 
     virtual void ReadFromStream ( POLE::Stream* pStream );
 

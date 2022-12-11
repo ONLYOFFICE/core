@@ -30,7 +30,7 @@
  *
  */
 #include "ColorStruct.h"
-
+#include "../../../OOXML/SystemUtility/File.h"
 
 PPT::ColorStruct::ColorStruct()
 {

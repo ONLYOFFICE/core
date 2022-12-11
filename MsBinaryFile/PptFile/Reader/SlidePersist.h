@@ -32,21 +32,21 @@
 #pragma once
 
 #include "../../../DesktopEditor/common/ASCVariant.h"
-
 #include <vector>
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CTextFullSettings;
-	struct SSlidePersist
-	{
-		_UINT32 m_nPsrRef;
-		_UINT32 m_nSlideID;
+class CTextFullSettings;
+struct SSlidePersist
+{
+    _UINT32 m_nPsrRef;
+    _UINT32 m_nSlideID;
 
-		std::vector<CTextFullSettings> m_arTextAttrs;
+    std::vector<CTextFullSettings*> m_arTextAttrs;
 
-		SSlidePersist();
-		SSlidePersist(const SSlidePersist& oSrc);
-		std::wstring ToString();
-		SSlidePersist& operator =(const SSlidePersist& oSrc);
-	};
+    SSlidePersist();
+    SSlidePersist(const SSlidePersist& oSrc);
+    std::wstring ToString();
+    SSlidePersist& operator =(const SSlidePersist& oSrc);
+};
 }

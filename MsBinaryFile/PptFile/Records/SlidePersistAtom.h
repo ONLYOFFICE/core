@@ -30,47 +30,28 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CRecordSlidePersistAtom : public CUnknownRecord
-	{
-	public:
-		_UINT32 m_nPsrRef;
+class CRecordSlidePersistAtom : public CUnknownRecord
+{
+public:
+	_UINT32 m_nPsrRef;
+	
+	bool m_bShouldCollapse;
+	bool m_bNonOutlineData;
 
-		bool m_bShouldCollapse;
-		bool m_bNonOutlineData;
+	INT m_nNumberText;
+	_UINT32 m_nSlideID;
 
-		INT m_nNumberText;
-		_UINT32 m_nSlideID;
+    CRecordSlidePersistAtom();
 
-		CRecordSlidePersistAtom()
-		{
-		}
+    ~CRecordSlidePersistAtom();
 
-		~CRecordSlidePersistAtom()
-		{
-		}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			m_nPsrRef = StreamUtils::ReadDWORD(pStream);
-
-			BYTE Mem = 0;
-			Mem = StreamUtils::ReadBYTE(pStream);
-			m_bShouldCollapse = ((Mem & 0x02) == 0x02);
-			m_bNonOutlineData = ((Mem & 0x04) == 0x04);
-
-			StreamUtils::StreamSkip(3, pStream);
-
-			m_nNumberText = (INT)StreamUtils::ReadLONG(pStream);
-			m_nSlideID = StreamUtils::ReadDWORD(pStream);
-
-			StreamUtils::StreamSkip(4, pStream);
-		}
-
-	};
+};
 }

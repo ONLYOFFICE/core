@@ -36,14 +36,14 @@
 #include "../PPTXWriter/ImageManager.h"
 
 
-namespace PPT_FORMAT 
+namespace PPT 
 {
 	namespace Converter 
 	{
 		class Transition
 		{
 		public:
-			Transition(const PPT_FORMAT::CSlideShowInfo &SSInfo, CRelsGenerator* pRels);
+			Transition(const PPT::CSlideShowInfo &SSInfo, CRelsGenerator* pRels);
 			PPTX::Logic::Transition Convert();
 
 		private:
@@ -60,8 +60,8 @@ namespace PPT_FORMAT
 			void WriteAudioRId();
 
 		private:
-			const PPT_FORMAT::CSlideShowInfo &slideShowInfo;
-			const PPT_FORMAT::CTransition &oldTransition;
+			const PPT::CSlideShowInfo &slideShowInfo;
+			const PPT::CTransition &oldTransition;
 			
 			CRelsGenerator* pRels;
 

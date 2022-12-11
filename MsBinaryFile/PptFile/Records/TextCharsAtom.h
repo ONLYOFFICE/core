@@ -30,30 +30,21 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CRecordTextCharsAtom : public CUnknownRecord
-	{
-	public:
-		std::wstring m_strText;
+class CRecordTextCharsAtom : public CUnknownRecord
+{
+public:
+	std::wstring m_strText;
 
-	public:
+public:
+    CRecordTextCharsAtom();
+    ~CRecordTextCharsAtom();
 
-		CRecordTextCharsAtom()
-		{
-		}
-
-		~CRecordTextCharsAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-			m_strText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen / 2);
-		}
-
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

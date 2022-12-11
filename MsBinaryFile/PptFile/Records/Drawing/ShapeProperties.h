@@ -34,34 +34,16 @@
 #include "../../Reader/Records.h"
 #include "../../../Common/Vml/PPTShape/ElementSettings.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordShapeProperties : public CUnknownRecord
-	{
-	public:
-		CProperties m_oProperties;
+class CRecordShapeProperties : public CUnknownRecord
+{
+public:
+	CProperties m_oProperties;
 
-		CRecordShapeProperties()
-		{
-		}
+    CRecordShapeProperties();
+    ~CRecordShapeProperties();
 
-		~CRecordShapeProperties()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			LONG lPosition = 0;
-			StreamUtils::StreamPosition(lPosition, pStream);
-
-			m_oProperties.FromStream(pStream, m_oHeader.RecInstance);
-			_UINT32 dwLen = m_oProperties.GetLen();
-
-			// это на всякий случай, может там напридумывают проперти с complex - 
-			// которые мы не поддерживаем...
-			StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+};
 }

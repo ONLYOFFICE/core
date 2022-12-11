@@ -31,6 +31,7 @@
  */
 #include "Comment10Container.h"
 
+using namespace PPT;
 
 void CRecordComment10AuthorAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
@@ -128,5 +129,3 @@ void CRecordComment10Container::ReadFromStream(SRecordHeader &oHeader, POLE::Str
 
     StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
 }
-
-

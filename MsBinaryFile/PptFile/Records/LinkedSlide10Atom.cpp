@@ -31,6 +31,7 @@
  */
 #include "LinkedSlide10Atom.h"
 
+using namespace PPT;
 
 void CRecordLinkedSlide10Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

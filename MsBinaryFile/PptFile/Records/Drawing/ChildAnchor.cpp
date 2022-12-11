@@ -31,6 +31,8 @@
  */
 #include "ChildAnchor.h"
 
+using namespace PPT;
+
 CRecordChildAnchor::CRecordChildAnchor()
 {
 

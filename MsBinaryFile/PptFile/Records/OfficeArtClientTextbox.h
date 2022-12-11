@@ -32,15 +32,9 @@
 #pragma once
 #include "../Reader/Records.h"
 
-
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordOfficeArtClientTextbox : public CRecordsContainer
-	{
-	public:
-		CRecordOfficeArtClientTextbox()
-		{
-
-		}
-	};
+class CRecordOfficeArtClientTextbox : public CRecordsContainer
+{
+};
 }

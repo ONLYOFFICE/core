@@ -31,6 +31,7 @@
  */
 #include "FontEntityAtom.h"
 
+using namespace PPT;
 
 void CRecordFontEntityAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

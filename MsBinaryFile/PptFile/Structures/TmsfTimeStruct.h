@@ -35,7 +35,7 @@
 
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct TmsfTimeStruct : public IStruct
 {
@@ -44,12 +44,7 @@ struct TmsfTimeStruct : public IStruct
     BYTE m_nSecond;
     BYTE m_nFrame;
 
-    void ReadFromStream(POLE::Stream *pStream) override
-    {
-        m_nTrack    = StreamUtils::ReadBYTE(pStream);
-        m_nMinute   = StreamUtils::ReadBYTE(pStream);
-        m_nSecond   = StreamUtils::ReadBYTE(pStream);
-        m_nFrame    = StreamUtils::ReadBYTE(pStream);
-    }
+
+    void ReadFromStream(POLE::Stream *pStream) override;
 };
 }

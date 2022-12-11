@@ -32,40 +32,31 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CRecordDocRoutingSlipAtom : public CUnknownRecord
+class CRecordDocRoutingSlipAtom : public CUnknownRecord
+{
+public:
+	struct SDocRoutingSlipAtom
 	{
-	public:
-		struct SDocRoutingSlipAtom
-		{
-			USHORT      m_nType;
-			USHORT      m_nLength;
-			std::wstring m_strText;
-		};
-
-		UINT m_nLength;
-		UINT m_nRecipientCount;
-		UINT m_nCurrentRecipient;
-		USHORT m_usFlags;
-
-		SDocRoutingSlipAtom m_oOriginatorString;
-		SDocRoutingSlipAtom m_oRgRecipientRoutingSlipStrings;
-		SDocRoutingSlipAtom m_oSubjectString;
-		SDocRoutingSlipAtom m_oMessageString;
-
-		CRecordDocRoutingSlipAtom()
-		{
-		}
-
-		~CRecordDocRoutingSlipAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		}
-
+        USHORT      m_nType;
+        USHORT      m_nLength;
+        std::wstring m_strText;
 	};
+
+	UINT m_nLength;
+	UINT m_nRecipientCount;
+	UINT m_nCurrentRecipient;
+	USHORT m_usFlags;
+
+	SDocRoutingSlipAtom m_oOriginatorString;
+	SDocRoutingSlipAtom m_oRgRecipientRoutingSlipStrings;
+	SDocRoutingSlipAtom m_oSubjectString;
+	SDocRoutingSlipAtom m_oMessageString;
+
+
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+
+};
 }

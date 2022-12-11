@@ -33,7 +33,7 @@
 #include "../../../DesktopEditor/common/Types.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 enum AnimAfterEffectEnum : BYTE
 {

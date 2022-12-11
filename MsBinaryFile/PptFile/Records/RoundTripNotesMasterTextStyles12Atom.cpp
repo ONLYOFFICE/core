@@ -29,18 +29,43 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "BuildAtom.h"
+#include "RoundTripNotesMasterTextStyles12Atom.h"
 
-void CRecordBuildAtom::ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+using namespace PPT;
+
+CRecordRoundTripNotesMasterTextStyles12Atom::CRecordRoundTripNotesMasterTextStyles12Atom()
+{
+}
+
+CRecordRoundTripNotesMasterTextStyles12Atom::~CRecordRoundTripNotesMasterTextStyles12Atom()
+{
+}
+
+void CRecordRoundTripNotesMasterTextStyles12Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {
     m_oHeader = oHeader;
 
-    m_BuildType         = (BuildTypeEnum)StreamUtils::ReadDWORD(pStream);
-    m_BuildId           = StreamUtils::ReadDWORD(pStream);
-    m_ShapeIdRef        = StreamUtils::ReadDWORD(pStream);
+    data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+    pStream->read(data.first.get(), data.second);
 
-    m_fExpanded         = StreamUtils::ReadBYTE(pStream);
-    m_fUIExpanded       = StreamUtils::ReadBYTE(pStream);
+    //                std::string filename = "notes/" + std::to_string(data.second) + ".zip";
+    //                std::ofstream file(filename, std::ios::binary | std::ios::out);
+    //                file.write((char*)data.first.get(), data.second);
+    //                file.close();
+}
 
-    StreamUtils::StreamSkip(2, pStream);
+CRecordRoundTripCustomTableStyles12Atom::CRecordRoundTripCustomTableStyles12Atom()
+{
+}
+
+CRecordRoundTripCustomTableStyles12Atom::~CRecordRoundTripCustomTableStyles12Atom()
+{
+}
+
+void CRecordRoundTripCustomTableStyles12Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    m_oHeader = oHeader;
+
+    data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
+    pStream->read(data.first.get(), data.second);
 }

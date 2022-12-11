@@ -29,25 +29,34 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "RegGroupItems.h"
+
+using namespace PPT;
 
 
-#include "../../Reader/Records.h"
-#include "AnimationInfoAtom.h"
-#include "../SoundContainer.h"
-
-
-namespace PPT
+CRecordRegGroupItems::CRecordRegGroupItems()
 {
-class CRecordAnimationInfoContainer: public CUnknownRecord
+}
+
+CRecordRegGroupItems::~CRecordRegGroupItems()
 {
-public:
-    CRecordAnimationInfoAtom    m_AnimationAtom;
-    CRecordSoundContainer       m_AnimationSound;
+}
 
-    CRecordAnimationInfoContainer();
-    ~CRecordAnimationInfoContainer();
+void CRecordRegGroupItems::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
+{
+    m_oHeader = oHeader;
 
-    virtual void ReadFromStream(SRecordHeader & thisHeader, POLE::Stream* pStream);
-};
+    m_arItemsNew.clear();
+    m_arItemsOld.clear();
+
+    LONG lCount = (LONG)(oHeader.RecLen / 4);
+
+    for (LONG i = 0; i < lCount; ++i)
+    {
+        WORD w1 = StreamUtils::ReadWORD(pStream);
+        WORD w2 = StreamUtils::ReadWORD(pStream);
+
+        m_arItemsNew.push_back(w1);
+        m_arItemsOld.push_back(w2);
+    }
 }

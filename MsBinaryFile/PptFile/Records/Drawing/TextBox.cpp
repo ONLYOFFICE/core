@@ -31,6 +31,7 @@
  */
 #include "TextBox.h"
 
+using namespace PPT;
 
 CRecordTextBox::CRecordTextBox()
 {

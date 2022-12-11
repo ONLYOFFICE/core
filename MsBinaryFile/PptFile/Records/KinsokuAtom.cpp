@@ -31,6 +31,7 @@
  */
 #include "KinsokuAtom.h"
 
+using namespace PPT;
 
 void CRecordKinsokuAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

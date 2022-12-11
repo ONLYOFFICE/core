@@ -31,6 +31,7 @@
  */
 #include "KinsokuLeadingAtom.h"
 
+using namespace PPT;
 
 void CRecordKinsokuLeadingAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -31,6 +31,7 @@
  */
 #include "ExObjListAtom.h"
 
+using namespace PPT;
 
 void CRecordExObjListAtom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

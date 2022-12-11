@@ -30,35 +30,21 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
-	class CRecordTextSIExceptionAtom : public CUnknownRecord
-	{
-	public:
-		CTextSIRun m_oSIRun;
+class CRecordTextSIExceptionAtom : public CUnknownRecord
+{
+public:
+	CTextSIRun m_oSIRun;
+	
 
-		CRecordTextSIExceptionAtom()
-		{
-		}
+    CRecordTextSIExceptionAtom();
+    ~CRecordTextSIExceptionAtom();
 
-		~CRecordTextSIExceptionAtom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			m_oHeader = oHeader;
-
-			LONG lPosition = 0;
-			StreamUtils::StreamPosition(lPosition, pStream);
-
-			NSStreamReader::Read(pStream, m_oSIRun, false);
-
-			// это на всякий случай...
-			StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
-		}
-
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

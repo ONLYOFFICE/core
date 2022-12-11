@@ -31,12 +31,23 @@
  */
 #pragma once
 
+#include "IStruct.h"
+#include <string>
 
-#include "../Reader/Records.h"
 
+namespace PPT
+{
+struct FontCollectionEntry : public IStruct
+{
+    std::wstring lfFaceName;
+    BYTE lfCharSet = 0;
+    bool fEmbedSubsetted = false;
+    bool rasterFontType = false;
+    bool deviceFontType = false;
+    bool truetypeFontType = false;
+    bool fNoFontSubstitution = false;
 
-// TODO
-//class nope : public CUnknownRecord
-//{
-
-//};
+    FontCollectionEntry();
+    void ReadFromStream(POLE::Stream * pStream) override;
+};
+}

@@ -32,7 +32,7 @@
 #pragma once
 #include "../Records/RoundTrip.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class RoundTripExtractor
 {

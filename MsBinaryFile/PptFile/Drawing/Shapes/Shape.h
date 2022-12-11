@@ -63,7 +63,7 @@ public:
 	long					m_lLimoX;
 	long					m_lLimoY;
 
-	PPT_FORMAT::CTextAttributesEx m_oText;
+	PPT::CTextAttributesEx m_oText;
 
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;

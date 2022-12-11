@@ -32,7 +32,7 @@
 #pragma once
 #include "../../../OOXML/SystemUtility/File.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
     static std::wstring	g_bstr_nodeopen				= L"<";
     static std::wstring	g_bstr_nodeclose			= L">";

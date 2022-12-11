@@ -2040,7 +2040,7 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 
     std::wstring strStyleAdvenced = L"";
 
-	PPT_FORMAT::CShapeElement oShapeElem;
+	PPT::CShapeElement oShapeElem;
 	CPPTShape* pPPTShape = NULL;
 	bool bSetShape = false;
 

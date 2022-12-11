@@ -29,45 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#include "../Reader/Records.h"
+#include "FontCollectionEntry.h"
+#include "../../../OOXML/SystemUtility/File.h"
 
-enum BuildTypeEnum : _UINT32
+using namespace PPT;
+
+void FontCollectionEntry::ReadFromStream(POLE::Stream *pStream)
 {
-    TL_BuildParagraph,
-    TL_BuildChart,
-    TL_BuildDiagram
-};
-
-class CRecordBuildAtom : public CUnknownRecord
-{
-public:
-    BuildTypeEnum   m_BuildType;
-    _UINT32         m_BuildId;
-    _UINT32         m_ShapeIdRef;
-    bool            m_fExpanded;
-    bool            m_fUIExpanded;
-public:
-
-    CRecordBuildAtom()
-    {
-    }
-
-    ~CRecordBuildAtom()
-    {
-    }
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_BuildType         = (BuildTypeEnum)StreamUtils::ReadDWORD(pStream);
-        m_BuildId           = StreamUtils::ReadDWORD(pStream);
-        m_ShapeIdRef        = StreamUtils::ReadDWORD(pStream);
-
-        m_fExpanded         = StreamUtils::ReadBYTE(pStream);
-        m_fUIExpanded       = StreamUtils::ReadBYTE(pStream);
-
-        StreamUtils::StreamSkip(2, pStream);
-    }
-};
+    StreamUtils::StreamSkip(76, pStream);
+}

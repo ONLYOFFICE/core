@@ -31,6 +31,7 @@
  */
 #include "LinkedShape10Atom.h"
 
+using namespace PPT;
 
 void CRecordLinkedShape10Atom::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

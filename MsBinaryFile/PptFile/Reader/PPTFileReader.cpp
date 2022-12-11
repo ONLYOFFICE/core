@@ -50,6 +50,8 @@
 #define DOCUMENT_SUMMARY_STREAM		L"DocumentSummaryInformation"
 #define SUMMARY_STREAM				L"SummaryInformation"
 
+using namespace PPT;
+
 CPPTFileReader::CPPTFileReader(POLE::Storage *pStorage, std::wstring strTemp):
 	   m_pStorage(pStorage),  
        m_bIsPPTFile(false),

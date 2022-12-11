@@ -37,37 +37,14 @@
 #include "TimeBehaviorContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeCommandBehaviorContainer : public CUnknownRecord
 {
 public:
-    CRecordTimeCommandBehaviorContainer ()
-    {
+    void ReadFromStream(SRecordHeader &thisHeader, POLE::Stream *pStream) override;
 
-    }
 
-    ~CRecordTimeCommandBehaviorContainer ()
-    {
-
-    }
-
-    void ReadFromStream(SRecordHeader &thisHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = thisHeader;
-
-        SRecordHeader oHeader;
-        if (oHeader.ReadFromStream(pStream))
-            m_oCommandBehaviorAtom.ReadFromStream ( oHeader, pStream );
-
-        if (oHeader.ReadFromStream(pStream))
-            m_oVarCommand.ReadFromStream ( oHeader, pStream );
-
-        if (oHeader.ReadFromStream(pStream))
-            m_oBevavior.ReadFromStream ( oHeader, pStream );
-    }
-
-public:
     CRecordTimeCommandBehaviorAtom  m_oCommandBehaviorAtom;
     CRecordTimeVariantString        m_oVarCommand;
     CRecordTimeBehaviorContainer    m_oBevavior;

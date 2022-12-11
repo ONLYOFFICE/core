@@ -31,6 +31,7 @@
  */
 #include "ExCDAudioContainer.h"
 
+using namespace PPT;
 
 void CRecordExCDAudioContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -31,6 +31,7 @@
  */
 #include "ClientAnchor.h"
 
+using namespace PPT;
 
 CRecordClientAnchor::CRecordClientAnchor()
 {

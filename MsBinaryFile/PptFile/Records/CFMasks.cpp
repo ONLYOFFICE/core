@@ -31,6 +31,7 @@
  */
 #include "CFMasks.h"
 
+using namespace PPT;
 
 void SCFMasks::ReadFromStream(POLE::Stream *pStream)
 {

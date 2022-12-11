@@ -32,25 +32,15 @@
 #pragma once
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordGridSpacing10Atom : public CUnknownRecord
-	{
-	public:
-		INT m_nX;
-		INT m_nY;
+class CRecordGridSpacing10Atom : public CUnknownRecord
+{
+public:
+    INT m_nX = 0;
+    INT m_nY = 0;
 
-		CRecordGridSpacing10Atom()
-		{
-		}
 
-		~CRecordGridSpacing10Atom()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			return CUnknownRecord::ReadFromStream(oHeader, pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+};
 }

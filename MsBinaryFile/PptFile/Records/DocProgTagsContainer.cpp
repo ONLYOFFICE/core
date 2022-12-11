@@ -31,6 +31,7 @@
  */
 #include "DocProgTagsContainer.h"
 
+using namespace PPT;
 
 CRecordPP9DocBinaryTagExtension::~CRecordPP9DocBinaryTagExtension()
 {

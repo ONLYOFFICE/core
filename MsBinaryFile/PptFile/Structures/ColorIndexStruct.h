@@ -34,32 +34,18 @@
 #include "IStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
-struct ColorIndexStruct : public IStruct  {
-
+struct ColorIndexStruct : public IStruct
+{
     BYTE m_red;
     BYTE m_green;
     BYTE m_blue;
     BYTE m_index;
 
-    ColorIndexStruct()
-    {
-        clear();
-    }
+    ColorIndexStruct();
 
-    void clear()
-    {
-        m_red = m_green = m_blue = 0;
-        m_index = 0;
-    }
-
-    void ReadFromStream(POLE::Stream * pStream)
-    {
-        m_red       = StreamUtils::ReadBYTE(pStream);
-        m_green     = StreamUtils::ReadBYTE(pStream);
-        m_blue      = StreamUtils::ReadBYTE(pStream);
-        m_index     = StreamUtils::ReadBYTE(pStream);
-    }
+    void clear();
+    void ReadFromStream(POLE::Stream *pStream) override;
 };
 }

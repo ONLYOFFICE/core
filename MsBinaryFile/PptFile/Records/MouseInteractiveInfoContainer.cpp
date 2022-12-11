@@ -31,6 +31,7 @@
  */
 #include "MouseInteractiveInfoContainer.h"
 
+using namespace PPT;
 
 void CRecordMouseInteractiveInfoContainer::ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream)
 {

@@ -32,24 +32,15 @@
 #pragma once
 #include "GroupShapeContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-	class CRecordDrawingContainer : public CRecordsContainer
-	{
-	public:
+class CRecordDrawingContainer : public CRecordsContainer
+{
+public:
+	
+    CRecordDrawingContainer();
+    ~CRecordDrawingContainer();
 
-		CRecordDrawingContainer()
-		{
-		}
-
-		~CRecordDrawingContainer()
-		{
-		}
-
-		virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-		{
-			CRecordsContainer::ReadFromStream(oHeader, pStream);
-		}
-	};
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
+};
 }
-

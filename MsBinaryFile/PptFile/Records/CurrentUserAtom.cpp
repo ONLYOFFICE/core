@@ -31,6 +31,7 @@
  */
 #include "CurrentUserAtom.h"
 
+using namespace PPT;
 
 CRecordCurrentUserAtom::CRecordCurrentUserAtom() : m_nToken(0)
 {

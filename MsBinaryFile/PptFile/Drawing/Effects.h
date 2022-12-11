@@ -34,7 +34,7 @@
 #include <vector>
 #include <string>
 
-namespace PPT_FORMAT
+namespace PPT
 {
     class CEffect
     {

@@ -70,7 +70,7 @@ static inline std::wstring BoolToString(bool bValue)
     return bValue ? L"1" : L"0";
 }
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CExFilesInfo
 {

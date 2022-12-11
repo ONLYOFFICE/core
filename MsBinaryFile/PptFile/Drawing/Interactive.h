@@ -34,7 +34,7 @@
 
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CTextRange
 {

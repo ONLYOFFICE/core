@@ -270,7 +270,7 @@ public:
     }
 
 
-    void ConvertPath ( std::wstring strPath, PPT_FORMAT::CPath &oPath )
+    void ConvertPath ( std::wstring strPath, PPT::CPath &oPath )
     {
 
         m_arParts.clear();

@@ -70,7 +70,7 @@
 //#include "../../DataTypes/verticalalign.h"
 //#include "../../DataTypes/wrapoption.h"
 
-#include "../../Formulas/formulasconvert.h"
+//#include "../../Formulas/formulasconvert.h"
 
 #include "../../Common/errors.h"
 #include "../../Common/logging.h"
@@ -80,12 +80,12 @@
 #include "../../Common/CPSharedPtr.h"
 #include "../../Common/CPWeakPtr.h"
 
-#include "../../Common/xml/nodetype.h"
-#include "../../Common/xml/sax.h"
-#include "../../Common/xml/utils.h"
-#include "../../Common/xml/xmlelement.h"
-#include "../../Common/xml/simple_xml_writer.h"
-#include "../../Common/xml/xmlchar.h"
-#include "../../Common/xml/attributes.h"
+//#include "../../Common/xml/nodetype.h"
+//#include "../../Common/xml/sax.h"
+//#include "../../Common/xml/utils.h"
+//#include "../../Common/xml/xmlelement.h"
+//#include "../../Common/xml/simple_xml_writer.h"
+//#include "../../Common/xml/xmlchar.h"
+//#include "../../Common/xml/attributes.h"
 
 #endif

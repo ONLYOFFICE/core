@@ -72,13 +72,13 @@
 
 //#include "../../Formulas/formulasconvert.h"
 
-#include "../../Common/errors.h"
-#include "../../Common/logging.h"
-#include "../../Common/CPNoncopyable.h"
-#include "../../Common/CPOptional.h"
-#include "../../Common/CPScopedPtr.h"
-#include "../../Common/CPSharedPtr.h"
-#include "../../Common/CPWeakPtr.h"
+//#include "../../Common/errors.h"
+//#include "../../Common/logging.h"
+//#include "../../Common/CPNoncopyable.h"
+//#include "../../Common/CPOptional.h"
+//#include "../../Common/CPScopedPtr.h"
+//#include "../../Common/CPSharedPtr.h"
+//#include "../../Common/CPWeakPtr.h"
 
 //#include "../../Common/xml/nodetype.h"
 //#include "../../Common/xml/sax.h"

@@ -219,39 +219,36 @@ namespace ZLibZipUtils
   }
   static int do_extract_currentfile( unzFile uf, const WCHAR* unzip_dir, const int* popt_extract_without_path, int* popt_overwrite, const char* password )
   {   	  
-	char filename_inzipA[256];
-	wchar_t filename_inzip[256];
-
-    wchar_t* filename_withoutpath = NULL;
-    wchar_t* p = NULL;
+	char filename_inzipA[4096];
     int err = UNZ_OK;
-
     unz_file_info file_info;
 
     err = unzGetCurrentFileInfo(uf,&file_info,filename_inzipA,sizeof(filename_inzipA),NULL,0,NULL,0);
 
+	wchar_t wsep = FILE_SEPARATOR_CHAR == '\\' ? L'\\' : L'/';
     std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzipA);
-	wcscpy(filename_inzip , filenameW.c_str());
+	std::wstring filenameW_withoutpath;
 
-	std::wstring output = std::wstring(unzip_dir) + L"/" + std::wstring(filename_inzip);
-	for(int i = 0; i < output.size(); i++)
-	  if(output[i] == L'\\')
-		  output[i] = L'/';;
+	for(int i = 0; i < filenameW.size(); i++)
+	  if(filenameW[i] == L'/' && wsep != filenameW[i])
+		  filenameW[i] = wsep;
+
+	std::wstring output = std::wstring(unzip_dir) + wsep + filenameW;
 
     if (err!=UNZ_OK)
     {
       return err;
     }
 
-    p = filename_withoutpath = filename_inzip;
-    while ((*p) != '\0')
-    {
-      if (((*p)=='/') || ((*p)=='\\'))
-        filename_withoutpath = p+1;
-      p++;
-    }
+	size_t pos = 0;
+	for(int i = 0; i < filenameW.size(); i++)
+	  if (filenameW[i] == wsep)
+		pos = i + 1;
 
-    if ((*filename_withoutpath)=='\0')
+	if(pos < filenameW.size())
+		filenameW_withoutpath = filenameW.substr(pos, filenameW.size() - pos);
+
+	if (filenameW_withoutpath.empty())
     {
       if ((*popt_extract_without_path)==0)
       {
@@ -266,7 +263,7 @@ namespace ZLibZipUtils
 	  if ((*popt_extract_without_path)==0)
 		  write_filename = output.c_str();
       else
-        write_filename = filename_withoutpath;
+		write_filename = (std::wstring(unzip_dir) + wsep + filenameW_withoutpath).c_str();
 
       err = unzOpenCurrentFilePassword(uf, password);
       if (((*popt_overwrite)==0) && (err==UNZ_OK))
@@ -322,13 +319,9 @@ namespace ZLibZipUtils
 
         // some zipfile don't contain directory alone before file 
         if ((fout == NULL) && ((*popt_extract_without_path)==0) &&
-		    (filename_withoutpath!=(wchar_t*)filename_inzip))
+			(filenameW_withoutpath!=filenameW))
         {
-
-          char c=*(filename_withoutpath-1);
-          *(filename_withoutpath-1)='\0';
           makedir(write_filename);
-          *(filename_withoutpath-1)=c;
 
 		  if(oFile.CreateFileW(write_filename))
           {

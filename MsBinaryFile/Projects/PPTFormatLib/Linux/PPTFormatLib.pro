@@ -506,5 +506,15 @@ SOURCES += \
         ../../../PptFile/Structures/ColorIndexStruct.cpp \
         ../../../PptFile/Structures/DateTimeStruct.cpp \
         ../../../PptFile/Structures/FontCollectionEntry.cpp
- }
+        ../../../PptFile/Structures/ColorIndex.cpp \
+        ../../../PptFile/Structures/ColorStruct.cpp \
+        ../../../PptFile/Structures/RatioStruct.cpp \
+        ../../../PptFile/Structures/RectStruct.cpp \
+        ../../../PptFile/Structures/ScalingStruct.cpp \
+        ../../../PptFile/Structures/SmallRectStruct.cpp \
+        ../../../PptFile/Structures/TmsfTimeStruct.cpp \
+        ../../../PptFile/Structures/WideColorStruct.cpp
+}
+
+
 

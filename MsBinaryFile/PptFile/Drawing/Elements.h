@@ -35,11 +35,6 @@
 #include "Shapes/Shape.h"
 #include "../../Common/Vml/PPTShape/Ppt2PptxShapeConverter.h"
 
-namespace PPTX2EditorAdvanced
-{
-OOXMLShapes::ShapeType GetShapeTypeFromStr(const std::wstring& str);
-}
-
 
 namespace PPT
 {

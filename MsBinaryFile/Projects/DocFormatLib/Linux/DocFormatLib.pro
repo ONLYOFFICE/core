@@ -25,7 +25,6 @@ DEFINES +=  UNICODE \
 
 SOURCES +=  \
 	../../../DocFile/Main/DocFormatLib.cpp \
-	../../../../Common/3dParty/pole/pole.cpp \
 	../../../DocFile/EncryptionHeader.cpp \
 	../../../DocFile/DrawingPrimitives.cpp \
 	../../../DocFile/Spa.cpp \

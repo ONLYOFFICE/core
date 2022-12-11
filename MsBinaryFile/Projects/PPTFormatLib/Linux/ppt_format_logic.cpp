@@ -65,7 +65,6 @@
 #include "../../../PptFile/Drawing/TextStructures.cpp"
 #include "../../../PptFile/Drawing/Theme.cpp"
 #include "../../../PptFile/Main/PPTFormatLib.cpp"
-#include "../../../../Common/3dParty/pole/pole.cpp"
 #include "../../../PptFile/Reader/ClassesAtom.cpp"
 #include "../../../PptFile/Reader/ExtXmlUtils.cpp"
 #include "../../../PptFile/Reader/PPTDocumentInfo.cpp"

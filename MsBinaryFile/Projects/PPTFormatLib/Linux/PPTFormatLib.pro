@@ -322,7 +322,6 @@ SOURCES += \
 	../../../PptFile/Drawing/TextStructures.cpp \
 	../../../PptFile/Drawing/Theme.cpp \
 	../../../PptFile/Main/PPTFormatLib.cpp \
-	../../../../Common/3dParty/pole/pole.cpp \
 	../../../PptFile/Reader/ClassesAtom.cpp \
 	../../../PptFile/Reader/ExtXmlUtils.cpp \
 	../../../PptFile/Reader/PPTDocumentInfo.cpp \

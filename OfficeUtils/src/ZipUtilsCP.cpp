@@ -233,8 +233,6 @@ namespace ZLibZipUtils
 	  if(filenameW[i] == L'/' && wsep != filenameW[i])
 		  filenameW[i] = wsep;
 
-	std::wstring output = std::wstring(unzip_dir) + wsep + filenameW;
-
     if (err!=UNZ_OK)
     {
       return err;
@@ -247,6 +245,9 @@ namespace ZLibZipUtils
 
 	if(pos < filenameW.size())
 		filenameW_withoutpath = filenameW.substr(pos, filenameW.size() - pos);
+
+	std::wstring output = std::wstring(unzip_dir) + wsep + filenameW;
+	std::wstring output_withoutpath = std::wstring(unzip_dir) + wsep + filenameW_withoutpath;
 
 	if (filenameW_withoutpath.empty())
     {
@@ -263,7 +264,7 @@ namespace ZLibZipUtils
 	  if ((*popt_extract_without_path)==0)
 		  write_filename = output.c_str();
       else
-		write_filename = (std::wstring(unzip_dir) + wsep + filenameW_withoutpath).c_str();
+		write_filename = output_withoutpath.c_str();
 
       err = unzOpenCurrentFilePassword(uf, password);
       if (((*popt_overwrite)==0) && (err==UNZ_OK))

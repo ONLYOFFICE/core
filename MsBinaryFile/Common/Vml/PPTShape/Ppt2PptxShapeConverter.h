@@ -32,9 +32,14 @@
 #pragma once
 #include "PptFormula.h"
 #include "../Path.h"
-
+#include "../PPTXShape/PptxShape.h"
 
 #include "../../../../OOXML/Binary/Presentation/XmlWriter.h"
+
+namespace PPTX2EditorAdvanced
+{
+    OOXMLShapes::ShapeType GetShapeTypeFromStr(const std::wstring& str);
+}
 
 namespace NSGuidesVML
 {

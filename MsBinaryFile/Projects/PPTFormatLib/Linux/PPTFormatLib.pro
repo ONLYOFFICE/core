@@ -298,7 +298,10 @@ SOURCES += \
 	../../../PptFile/PPTXWriter/ShapeWriter.cpp \
 	../../../PptFile/PPTXWriter/TableWriter.cpp \
 	../../../PptFile/PPTXWriter/TxBodyConverter.cpp \
-	../../../PptFile/Records/Drawing/ArtBlip.cpp \
+        ../../../PptFile/PPTXWriter/StylesWriter.cpp \
+        ../../../PptFile/PPTXWriter/BulletsConverter.cpp \
+        ../../../PptFile/PPTXWriter/ImageManager.cpp \
+        ../../../PptFile/Records/Drawing/ArtBlip.cpp \
 	../../../PptFile/Records/Drawing/ShapeContainer.cpp \
 	../../../PptFile/Records/Animations/TimeVariant.cpp \
 	../../../PptFile/Records/BlipEntityAtom.cpp \
@@ -313,14 +316,13 @@ SOURCES += \
 	../../../PptFile/Converter/Animation/intermediate_anim.cpp \
 	../../../PptFile/Converter/timing.cpp \
 	../../../PptFile/Converter/transition.cpp \
-        ../../../PptFile/PPTXWriter/BulletsConverter.cpp \
         ../../../PptFile/Drawing/Element.cpp \
         ../../../PptFile/Drawing/Slide.cpp \
+        ../../../PptFile/Drawing/Layout.cpp \
         ../../../PptFile/Drawing/TextStructures.cpp \
         ../../../PptFile/Drawing/Theme.cpp \
         ../../../PptFile/Main/PPTFormatLib.cpp \
         ../../../../Common/3dParty/pole/pole.cpp \
-        ../../../PptFile/PPTXWriter/ImageManager.cpp \
         ../../../PptFile/Reader/ClassesAtom.cpp \
         ../../../PptFile/Reader/ExtXmlUtils.cpp \
         ../../../PptFile/Reader/PPTDocumentInfo.cpp \
@@ -500,6 +502,7 @@ SOURCES += \
         ../../../PptFile/Records/VBAInfoAtom.cpp \
         ../../../PptFile/Records/ViewInfoAtom.cpp \
         ../../../PptFile/Records/ZoomViewInfoAtom.cpp \
+        ../../../PptFile/Structures/PointStruct.cpp \
         ../../../PptFile/Structures/FontCollectionEntry.cpp
  }
 

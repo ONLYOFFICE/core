@@ -66,6 +66,7 @@ namespace OOX
 			nullable_string				m_oSqref;
 			std::vector<std::wstring>	m_arSecurityDescriptors;
 		};
+
 		class CProtectedRanges : public WritingElementWithChilds<CProtectedRange>
 		{
 		public:
@@ -83,6 +84,7 @@ namespace OOX
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			virtual EElementType getType() const;
 		};
+
 		class CCellWatch : public WritingElement
 		{
 		public:
@@ -105,6 +107,7 @@ namespace OOX
 
 			nullable_string m_oR;
 		};
+
 		class CCellWatches : public WritingElementWithChilds<CCellWatch>
 		{
 		public:
@@ -124,6 +127,7 @@ namespace OOX
 			virtual EElementType getType() const;
 
 		};
+
 		class CPageMargins : public WritingElement
 		{
 		public:
@@ -153,6 +157,7 @@ namespace OOX
 			nullable<SimpleTypes::CInch>	m_oHeader;
 			nullable<SimpleTypes::CInch>	m_oFooter;
 		};
+
 		class CPageSetup : public WritingElement
 		{
 		public:
@@ -194,6 +199,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>							m_oUsePrinterDefaults;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>			m_oVerticalDpi;
 		};
+
 		class CPrintOptions : public WritingElement
 		{
 		public:
@@ -222,6 +228,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>	m_oHorizontalCentered;
 			nullable<SimpleTypes::COnOff>	m_oVerticalCentered;
 		};
+
 		class CDimension : public WritingElement
 		{
 		public:
@@ -246,6 +253,7 @@ namespace OOX
 		public:
 			nullable_string	m_oRef;
 		};
+
 		class CSheetFormatPr : public WritingElement
 		{
 		public:
@@ -278,6 +286,7 @@ namespace OOX
 				nullable_bool		m_oThickTop;
 				nullable_bool		m_oZeroHeight;
 		};
+
 		class CPane : public WritingElement
 		{
 		public:
@@ -306,6 +315,7 @@ namespace OOX
 			nullable<SimpleTypes::CDouble>						m_oXSplit;
 			nullable<SimpleTypes::CDouble>						m_oYSplit;
 		};
+
 		class CSelection : public WritingElement
 		{
 		public:
@@ -381,6 +391,7 @@ namespace OOX
 				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScalePageLayoutView;
 				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oZoomScaleSheetLayoutView;
 		};
+
 		class CSheetViews : public WritingElementWithChilds<CSheetView>
 		{
 		public:
@@ -424,6 +435,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oAutoPageBreaks;
 			nullable<SimpleTypes::COnOff>		m_oFitToPage;
 		};
+
 		class COutlinePr : public WritingElement
 		{
 		public:
@@ -451,6 +463,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oSummaryBelow;
 			nullable<SimpleTypes::COnOff>		m_oSummaryRight;
 		};
+
 		class CSheetPr : public WritingElement
 		{
 		public:
@@ -487,6 +500,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oTransitionEntry;
 			nullable<SimpleTypes::COnOff>		m_oTransitionEvaluation;
 		};
+
 		class CHeaderFooterElement : public WritingElement
 		{
 		public:
@@ -670,6 +684,7 @@ namespace OOX
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oManualBreakCount;
 		};
+
 		class CSheetProtection : public WritingElement
 		{
 		public:
@@ -714,6 +729,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>		m_oSheet;
 			nullable<SimpleTypes::COnOff>		m_oSort;
 		};
+
 		class CDataRef : public WritingElement
 		{
 		public:
@@ -739,6 +755,7 @@ namespace OOX
 			nullable_string							m_oRef;
 			nullable_string							m_oSheet;
 		};
+
 		class CDataRefs : public WritingElementWithChilds<CDataRef>
 		{
 		public:
@@ -762,6 +779,7 @@ namespace OOX
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCount;
 		};
+
 		class CDataConsolidate : public WritingElement
 		{
 		public:

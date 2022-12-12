@@ -33,18 +33,18 @@
 	"compile_files_array": [
 	{
 		"name": "k",
-		"folder": "../../../../../../common/",
+		"folder": "../../../../../common/",
 		"files": ["Base64.cpp", "File.cpp"]
 	},
 	{
 		"name": "s",
-		"folder": "../../../../../../../Common/3dParty/openssl/common",
+		"folder": "../../../../../../Common/3dParty/openssl/common/",
 		"files": ["common_openssl.cpp"]
 	},
 	{
 		"name": "a",
-		"folder": "./",
-		"files": ["openssl/apps/openssl.c", "./main.cpp"]
+		"folder": "./../",
+		"files": ["./main.cpp"]
 	}
 	],
 	"sources": ["./openssl/libcrypto.a"]

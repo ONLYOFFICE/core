@@ -1,6 +1,6 @@
 import sys
-sys.path.append("../../../../../../../../build_tools/scripts")
-sys.path.append("../../../../../../../Common/js")
+sys.path.append("../../../../../../../build_tools/scripts")
+sys.path.append("../../../../../../Common/js")
 import base
 import os
 import codecs
@@ -27,7 +27,7 @@ if not base.is_dir("openssl"):
   base.cmd("git", ["clone",  "--depth=1", "--branch", "OpenSSL_1_1_1f", "https://github.com/openssl/openssl.git"])
   # correct for wasm builds
   common.apply_patch("./openssl/crypto/rand/rand_lib.c", "./../module/patches/openssl1.patch")
-  base.copy_file("../../../../../../../Common/3dParty/openssl/openssl/apps/progs.h", "./openssl/apps/progs.h")
+  base.copy_file("../../../../../../Common/3dParty/openssl/openssl/apps/progs.h", "./openssl/apps/progs.h")
 
 # compile openssl
 if not base.is_file("./openssl/libcrypto.a"):  

@@ -37,6 +37,11 @@
 #include "../../../OOXML/DocxFormat/Math/oMathContent.h"
 #include "../../../OOXML/DocxFormat/Math/oMathBottomNodes.h"
 
+OOXMathReader::OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem)
+{
+	m_ooxElem = ooxElem;
+	m_oCharProperty.SetDefault();
+}
 bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath)
 {
 	if (!ooxMath) return false;

@@ -22,6 +22,12 @@ DEFINES +=  DONT_WRITE_EMBEDDED_FONTS
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+!disable_precompiled_header:CONFIG += precompile_header
+precompile_header {
+    PRECOMPILED_HEADER = precompiled.h
+    HEADERS += precompiled.h
+}
+
 core_release {
 SOURCES += \
 	xlsb_format_logic.cpp

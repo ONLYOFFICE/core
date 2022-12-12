@@ -45,54 +45,19 @@ namespace PPTX
 	class HandoutMaster : public WrapperFile, public PPTX::FileContainer
 	{
 	public:
-		HandoutMaster(OOX::Document* pMain): WrapperFile(pMain), PPTX::FileContainer(pMain)
-		{
-		}
-		HandoutMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), PPTX::FileContainer(pMain)
-		{
-			read(filename, map);
-		}
-		virtual ~HandoutMaster()
-		{
-		}
+		HandoutMaster(OOX::Document* pMain);
+		HandoutMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~HandoutMaster();
 
 	public:
-		virtual void read(const OOX::CPath& filename, FileMap& map)
-		{
-			//FileContainer::read(filename, map);
-			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile(filename.m_strFilename);
-
-			cSld = oNode.ReadNode(_T("p:cSld"));
-			cSld.SetParentFilePointer(this);
-
-			clrMap = oNode.ReadNode(_T("p:clrMap"));
-			clrMap.SetParentFilePointer(this);
-
-			hf = oNode.ReadNode(_T("p:hf"));
-
-			if (hf.is_init())
-				hf->SetParentFilePointer(this);
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{
-			WrapperFile::write(filename, directory, content);
-			FileContainer::write(filename, directory, content);
-		}
+		virtual void read(const OOX::CPath& filename, FileMap& map);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
 	public:
-		virtual const OOX::FileType type() const
-		{
-			return OOX::Presentation::FileTypes::HandoutMaster;
-		}
-		virtual const OOX::CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const OOX::CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
+
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
 	public:
 		Logic::CSld			cSld;

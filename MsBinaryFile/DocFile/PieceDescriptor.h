@@ -41,32 +41,7 @@ namespace DocFileFormat
 		friend class PieceTable;
 	public:
 		/// Parses the bytes to retrieve a PieceDescriptor
-		PieceDescriptor(unsigned char *bytes, unsigned int size, int code_page_) : fc(0), code_page(code_page_), cpStart(0), cpEnd(0)
-		{
-			if (8 == size)
-			{
-				//get the fc value
-				unsigned int fcValue = FormatUtils::BytesToUInt32(bytes, 2, size);
-
-				//get the flag
-				bool flag = FormatUtils::BitmaskToBool((int)fcValue, 0x40000000);
-
-				//delete the flag
-				fcValue = fcValue & 0xBFFFFFFF;
-
-				//find encoding and offset
-				if (flag)
-				{
-					code_page = ENCODING_WINDOWS_1250;
-					this->fc = (unsigned int)( fcValue / 2 );
-				}
-				else
-				{
-					code_page = (code_page == ENCODING_WINDOWS_1250 ? ENCODING_UTF16 : code_page_);
-					this->fc = fcValue;
-				}
-			}
-		}
+		PieceDescriptor(unsigned char *bytes, unsigned int size, int code_page_);
 
 	public:
 		/// File offset of beginning of piece.

@@ -41,28 +41,20 @@ class RtfTable : public ITextItem, public ItemContainer< RtfTableRowPtr >
 {
 public: 
 	RtfTableProperty m_oProperty;
-
 	std::vector<int> m_aTableGrid;
-	int GetType( )
-	{
-		return TYPE_RTF_TABLE;
-	}
-	RtfTable()
-	{
-	}
-	RtfTable(const RtfTable& oTabl)
-	{
-	}
-	RtfTable& operator=(const RtfTable& oTabl)
-	{
-		return *this;
-	}
+
+	RtfTable();
+	RtfTable(const RtfTable& oTabl);
+
+	int GetType( );
+	RtfTable& operator=(const RtfTable& oTabl);
 
 	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	std::wstring RenderToRtf(RenderParameter oRenderParameter);
 
 	void CalculateGridProp();
 	void CalculateCellx(RtfDocument& oDocument);
+
 private: 
 	void AddToArray(std::vector<int>& aArray, int nValue);
 };

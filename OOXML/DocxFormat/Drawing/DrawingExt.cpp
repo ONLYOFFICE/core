@@ -177,7 +177,8 @@ namespace OOX
 		{
 			ReadAttributes( oReader );
 
-            if ((m_sUri.IsInit()) && (*m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}"	||
+            if ((m_sUri.IsInit()) && (*m_sUri == L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}" ||
+									  *m_sUri == L"{63B3BB69-23CF-44E3-9099-C40C66FF867C}"	||
                                       *m_sUri == L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}"	|| 
 									  *m_sUri == L"{504A1905-F514-4f6f-8877-14C23A59335A}"	|| 
 									  *m_sUri == L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}"	||
@@ -198,7 +199,7 @@ namespace OOX
 									  *m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
+				while (oReader.ReadNextSiblingNode(nCurDepth))
 				{
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (sName == L"compatExt")//2.3.1.2 compatExt
@@ -219,12 +220,12 @@ namespace OOX
 					}
 					else if (sName == L"conditionalFormattings")
 					{
-						if ( oReader.IsEmptyNode() )
+						if (oReader.IsEmptyNode())
 							continue;
 
 						int nCurDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
-						{						
+						while (oReader.ReadNextSiblingNode(nCurDepth1))
+						{
 							m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(oReader));
 						}
 					}
@@ -268,11 +269,11 @@ namespace OOX
 					}
 					else if (sName == L"slicerCachePivotTables")
 					{
-						if ( oReader.IsEmptyNode() )
+						if (oReader.IsEmptyNode())
 							continue;
 
 						int nCurDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nCurDepth1 ) )
+						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
 							m_oSlicerCachePivotTables.push_back(new OOX::Spreadsheet::CSlicerCachePivotTable(oReader));
 						}
@@ -293,10 +294,17 @@ namespace OOX
 					{
 						m_oPresenceInfo = oReader;
 					}
-                    else if (sName == L"pivotCacheDefinition")
-                    {
-                        m_oPivotCacheDefinitionExt = oReader;
-                    }
+					else if (sName == L"pivotCacheDefinition")
+					{
+						m_oPivotCacheDefinitionExt = oReader;
+					}
+					else if (sName == L"externalReference")
+					{
+						WritingElement_ReadAttributes_Start_No_NS(oReader)
+							WritingElement_ReadAttributes_Read_if(oReader, L"fileId", m_oFileId)
+							WritingElement_ReadAttributes_Read_else_if(oReader, L"portalName", m_oPortalName)
+						WritingElement_ReadAttributes_End_No_NS(oReader)
+					}
 				}
 			}
 			else
@@ -443,6 +451,19 @@ namespace OOX
                 m_oPivotCacheDefinitionExt->toXML(writer, L"x14:pivotCacheDefinition");
                 sResult += writer.GetData().c_str();
             }
+			if (m_oFileId.IsInit() || m_oPortalName.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				writer.StartNode(L"externalReference");
+				writer.StartAttributes();
+				
+				if (m_oFileId.IsInit()) writer.WriteAttribute(L"fileId", *m_oFileId);
+				if (m_oPortalName.IsInit()) writer.WriteAttribute(L"portalName", *m_oPortalName);
+
+				writer.EndAttributes();
+				writer.EndNode(L"externalReference");
+				sResult += writer.GetData().c_str();
+			}
 			if (m_oId.IsInit())
 			{
 				sResult += L"<" + sNamespace + L"id>" + m_oId.get2() + L"</" + sNamespace + L"id>";
@@ -482,12 +503,12 @@ namespace OOX
 			int nCurDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nCurDepth ) )
 			{
-									std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-									if ( _T("ext") == sName )
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if ( _T("ext") == sName )
 				{
-											OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
-											if (oExt)
-												m_arrExt.push_back( oExt );
+					OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
+					if (oExt)
+						m_arrExt.push_back( oExt );
 				}
 			}
 		}

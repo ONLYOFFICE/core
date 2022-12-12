@@ -338,12 +338,10 @@ public:
 		NSStringUtils::CStringBuilder oBuilder;
 		oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
 
-		std::wstring sFileDst = sDirectoryDst + L"/page.zip";
-
 		oBuilder.WriteEncodeXmlString(m_file);
 		oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 
-		oBuilder.WriteEncodeXmlString(sFileDst);
+		oBuilder.WriteEncodeXmlString(sDirectoryDst);
 		oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 		oBuilder.WriteString(std::to_wstring(AVS_OFFICESTUDIO_FILE_IMAGE));
 		oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
@@ -354,7 +352,7 @@ public:
 		oBuilder.WriteEncodeXmlString(sProcess + L"/fonts");
 		oBuilder.WriteString(L"</m_sFontDir>");
 
-		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
+		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
 		oBuilder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
 
 		if (!m_pInternal->m_sConvertParams.empty())
@@ -383,15 +381,6 @@ public:
 			NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();
-
-		if (0 == nReturnCode)
-		{
-			CTemporaryCS oCS(&m_pInternal->m_oCS_OfficeUtils);
-
-			COfficeUtils oUtils;
-			if (S_OK == oUtils.ExtractToDirectory(sFileDst, sDirectoryDst, NULL, 0))
-				NSFile::CFileBinary::Remove(sFileDst);
-		}
 
 		int checkCode = crcEqual;
 

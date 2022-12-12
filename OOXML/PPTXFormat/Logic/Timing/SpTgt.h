@@ -47,126 +47,12 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(SpTgt)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				spid = node.GetAttribute(_T("spid"));
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-				XmlUtils::CXmlNode oNode;
-                bg = node.GetNode(_T("p:bg"), oNode);
-
-				XmlUtils::CXmlNode oNodeMem;
-				if (node.GetNode(_T("p:subSp"), oNodeMem))
-				{
-                    XmlMacroReadAttributeBase(oNodeMem, L"spid", subSpid);
-				}
-				else if (node.GetNode(_T("p:oleChartEl"), oNodeMem))
-				{
-                    XmlMacroReadAttributeBase(oNodeMem, L"type", type);
-                    XmlMacroReadAttributeBase(oNodeMem, L"lvl", lvl);
-				}
-				else
-				{
-					txEl		= node.ReadNode(_T("p:txEl"));
-					graphicEl	= node.ReadNode(_T("p:graphicEl"));
-				}
-
-				Normalize();
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("spid"), spid);
-				
-                if ((bg.IsInit()) && (*bg))
-				{
-					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, _T("<p:bg/>"));
-				}
-				if (subSpid.IsInit())
-				{
-					XmlUtils::CAttribute oAttr2;
-					oAttr2.Write(_T("spid"), subSpid);
-
-					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, XmlUtils::CreateNode(_T("p:subSp"), oAttr2));
-				}
-				if (type.IsInit())
-				{
-					XmlUtils::CAttribute oAttr2;
-					oAttr2.WriteLimitNullable(_T("type"), type);
-					oAttr2.Write(_T("lvl"), lvl);
-
-					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, XmlUtils::CreateNode(_T("p:oleChartEl"), oAttr2));
-				}
-				if (txEl.IsInit())
-				{
-					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, txEl->toXML());
-				}
-				if (graphicEl.IsInit())
-				{
-					return XmlUtils::CreateNode(_T("p:spTgt"), oAttr, graphicEl->toXML());
-				}
-				return XmlUtils::CreateNode(_T("p:spTgt"), oAttr);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, spid);
-				pWriter->WriteString2(1, subSpid);
-				pWriter->WriteBool2(2, bg);
-				pWriter->WriteLimit2(3, type);
-				pWriter->WriteInt2(4, lvl);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, txEl);
-				pWriter->WriteRecord2(1, graphicEl);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	spid = pReader->GetString2();
-					else if (1 == _at)	subSpid = pReader->GetString2();
-					else if (2 == _at)	bg = pReader->GetBool();
-					else if (3 == _at)	type = pReader->GetUChar();
-					else if (4 == _at)	lvl = pReader->GetLong();
-				}
-				while (pReader->GetPos() < end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-						case 0:
-						{
-							txEl.Init();
-							txEl->fromPPTY(pReader);
-						}break;
-						case 1:
-						{
-							graphicEl.Init();
-							graphicEl->fromPPTY(pReader);
-						}break;
-						default:
-						{
-							pReader->SkipRecord();
-						}break;
-					}
-				}
-				pReader->Seek(end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			std::wstring								spid;
 
@@ -179,19 +65,10 @@ namespace PPTX
 
 			nullable<TxEl>								txEl;
 			nullable<GraphicEl>							graphicEl;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if (txEl.IsInit())
-					txEl->SetParentPointer(this);
-				if (graphicEl.IsInit())
-					graphicEl->SetParentPointer(this);
-			}
 
-			AVSINLINE void Normalize()
-			{
-				lvl.normalize_positive();
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -37,16 +37,10 @@ namespace DocFileFormat
 	{
 	public:
 		// Creates a new EmuValue for the given value.
-		EmuValue (int value = 0)
-		{
-			m_Value = value;
-		}
+		EmuValue (int value = 0);
 
 		// Converts the EMU to pt
-		double ToPoints() const
-		{
-			return (double) m_Value / 12700.0;
-		}
+		double ToPoints() const;
 
 		// Converts the EMU to twips
 		inline double ToTwips () const
@@ -70,7 +64,6 @@ namespace DocFileFormat
 		}
 
 	private:
-
 		int m_Value;
 	};
 }

@@ -13,12 +13,6 @@
     <Filter Include="Sheets">
       <UniqueIdentifier>{7f1bf07b-6870-4bdb-b8a3-3961359104c1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sheets\Reader">
-      <UniqueIdentifier>{63082177-c204-4667-ba6f-ded707e17637}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Sheets\Writer">
-      <UniqueIdentifier>{ee9f01b6-8750-426f-9c7e-76016233b4d7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Presentation">
       <UniqueIdentifier>{d6e1d4f4-07d7-416b-863b-17408f3cd8e3}</UniqueIdentifier>
     </Filter>
@@ -46,11 +40,14 @@
     <Filter Include="Common\Xml">
       <UniqueIdentifier>{eb4f16d3-cf7a-423a-ac35-fb7ff9f4ddcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sheets\Reader">
+      <UniqueIdentifier>{ee9f01b6-8750-426f-9c7e-76016233b4d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sheets\Writer">
+      <UniqueIdentifier>{63082177-c204-4667-ba6f-ded707e17637}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.cpp">
-      <Filter>Document</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp">
       <Filter>Document</Filter>
     </ClCompile>
@@ -76,22 +73,19 @@
       <Filter>Document\Reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CSVReader.cpp">
-      <Filter>Sheets\Reader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReader.cpp">
       <Filter>Sheets\Writer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Writer\CSVWriter.cpp">
-      <Filter>Sheets\Writer</Filter>
+      <Filter>Sheets\Reader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Common\Common.cpp">
       <Filter>Sheets</Filter>
@@ -134,6 +128,75 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.cpp">
+      <Filter>Common\Vml\PptShape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\CalculatorCRC32.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\Converter.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesMaster.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesTheme.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\FontCutter.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp">
+      <Filter>Presentation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\ChartWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\CommentsWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DefaultThemeWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DocumentRelsWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DocumentWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\fontTableWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\HeaderFooterWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\MediaWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\NumberingWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\SettingWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\StylesWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.cpp">
+      <Filter>Document\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReader.cpp">
+      <Filter>Sheets\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp">
+      <Filter>Document</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp">
+      <Filter>Document\Writer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp">
+      <Filter>Presentation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -207,25 +270,25 @@
       <Filter>Document\Reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.h">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CSVReader.h">
-      <Filter>Sheets\Reader</Filter>
+      <Filter>Sheets\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryCommonReader.h">
-      <Filter>Sheets\Writer</Filter>
+      <Filter>Sheets\Reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReader.h">
-      <Filter>Sheets\Writer</Filter>
+      <Filter>Sheets\Reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\CSVWriter.h">
-      <Filter>Sheets\Writer</Filter>
+      <Filter>Sheets\Reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Common\BinReaderWriterDefines.h">
       <Filter>Sheets</Filter>

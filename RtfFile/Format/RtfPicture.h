@@ -62,52 +62,16 @@ public:
 	
 	std::wstring dump_shape_properties;
 
-	RtfPicture()
-	{
-		m_bIsCopy = false;
-		SetDefault();
-	}
-	~RtfPicture()
-	{
-		SetDefault();
-		for (size_t i = 0; i < m_aTempFiles.size(); i++ ) 
-			Utils::RemoveDirOrFile( m_aTempFiles[i] );
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PICTURE;
-	}
-	bool IsValid()
-	{
-        return !m_sPicFilename.empty() && dt_none != eDataType;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		eDataType = dt_none;
-		DEFAULT_PROPERTY( m_nWidth )
-		DEFAULT_PROPERTY( m_nWidthGoal )
-		DEFAULT_PROPERTY( m_nHeight )
-		DEFAULT_PROPERTY( m_nHeightGoal )
+	RtfPicture();
+	~RtfPicture();
 
-		DEFAULT_PROPERTY_DEF( m_dScaleX, 100 )
-		DEFAULT_PROPERTY_DEF( m_dScaleY, 100 )
-		DEFAULT_PROPERTY( m_bScaled )
+	int GetType();
+	bool IsValid();
 
-		DEFAULT_PROPERTY( m_nCropL )
-		DEFAULT_PROPERTY( m_nCropT )
-		DEFAULT_PROPERTY( m_nCropR )
-		DEFAULT_PROPERTY( m_nCropB )
-		
-		m_sPicFilename = L"";
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
     std::wstring GenerateWMF(RenderParameter oRenderParameter);
@@ -115,73 +79,6 @@ public:
     //static bool LoadPicture( IUnknown** piImage, std::wstring sPath );
     //static bool SavePicture( IUnknown* piImage, std::wstring sPath, long nFormat );
 	
-    static DataType GetPictureType( std::wstring sFilename )
-	{
-		BYTE	pBuffer[ 100 ];
-		DWORD	dwBytesRead = 0;
-
-		NSFile::CFileBinary file;
-		if (file.OpenFile(sFilename) == false) return dt_none;
-
-		file.ReadFile(pBuffer, 100);
-		dwBytesRead = (DWORD)file.GetPosition();
-		file.CloseFile();
-
-		//jpeg	
-		// Hex: FF D8 FF
-		if ( (3 <= dwBytesRead) && (0xFF == pBuffer[0]) && (0xD8 == pBuffer[1]) && (0xFF == pBuffer[2]) )
-			return dt_jpg;
-
-		//png 
-		//Hex: 89 50 4E 47 0D 0A 1A 0A 00 00 00 0D 49 48 44 52
-		//ASCII: .PNG........IHDR
-		if ( (16 <= dwBytesRead) && (0x89 == pBuffer[0]) && (0x50 == pBuffer[1]) && (0x4E == pBuffer[2]) && (0x47 == pBuffer[3])
-			&& (0x0D == pBuffer[4]) && (0x0A == pBuffer[5]) && (0x1A == pBuffer[6]) && (0x0A == pBuffer[7])
-			&& (0x00 == pBuffer[8]) && (0x00 == pBuffer[9]) && (0x00 == pBuffer[10]) && (0x0D == pBuffer[11])
-			&& (0x49 == pBuffer[12]) && (0x48 == pBuffer[13]) && (0x44 == pBuffer[14]) && (0x52 == pBuffer[15]))
-			return dt_png;
-		//wmf (aldus placeable header (apm))
-		//Hex: D7 CD C6 9A 00 00
-		if ( 6 <= dwBytesRead )
-		{
-			if ( ((0xD7 == pBuffer[0]) && (0xCD == pBuffer[1]) && (0xC6 == pBuffer[2]) && (0x9A == pBuffer[3])&& (0x00 == pBuffer[4]) && (0x00 == pBuffer[5]) ) )
-				return dt_apm;
-		}
-		//wmf
-		//or for Windows 3.x
-		//Hex: 01 00 09 00 00 03
-		if ( 6 <= dwBytesRead )
-		{
-			if ( ((0xD7 == pBuffer[0]) && (0xCD == pBuffer[1]) && (0xC6 == pBuffer[2]) && (0x9A == pBuffer[3])&& (0x00 == pBuffer[4]) && (0x00 == pBuffer[5]) ) || 
-				((0x01 == pBuffer[0]) && (0x00 == pBuffer[1]) && (0x09 == pBuffer[2]) && (0x00 == pBuffer[3]) && (0x00 == pBuffer[4]) && (0x03 == pBuffer[5]) ))
-				return dt_wmf;
-		}
-		//emf
-		//Hex: 01 00 00 00
-		if ( (4 <= dwBytesRead) && (0x01 == pBuffer[0]) && (0x00 == pBuffer[1]) && (0x00 == pBuffer[2]) && (0x00 == pBuffer[3]) )
-			return dt_emf;
-
-		if ('<' == pBuffer[0] &&
-			's' == pBuffer[1] &&
-			'v' == pBuffer[2] &&
-			'g' == pBuffer[3])
-		{
-			return dt_svg;;
-		}
-
-		if ('<' == pBuffer[0] &&
-			'?' == pBuffer[1] &&
-			'x' == pBuffer[2] &&
-			'm' == pBuffer[3] &&
-			'l' == pBuffer[4])
-		{
-			std::string test((char*)pBuffer, dwBytesRead);
-			if (std::string::npos != test.find("<svg"))
-			{
-				return dt_svg;;
-			}
-		}
-		return dt_none;
-	}
+	static DataType GetPictureType( std::wstring sFilename );
 };
 typedef boost::shared_ptr<RtfPicture> RtfPicturePtr;

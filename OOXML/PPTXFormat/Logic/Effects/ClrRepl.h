@@ -48,95 +48,23 @@ namespace PPTX
 			WritingElement_AdditionConstructors(ClrRepl)
 			PPTX_LOGIC_BASE2(ClrRepl)
 
-			ClrRepl& operator=(const ClrRepl& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			ClrRepl& operator=(const ClrRepl& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				Color = oSrc.Color;
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_clrRepl;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring strName = oReader.GetName();
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-					Color.fromXML(oReader);
-				}
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Color.GetColorFrom(node);
-				FillParentPointersForChilds();
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:clrRepl>") + Color.toXML() + _T("</a:clrRepl>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:clrRepl");
-				pWriter->EndAttributes();
-				Color.toXmlWriter(pWriter);
-				pWriter->EndNode(L"a:clrRepl");
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_CLRREPL);
-
-				pWriter->WriteRecord1(0, Color);
-
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1);
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Color.fromPPTY(pReader);
-							break;
-						}
-						default:
-							break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}	
 		public:
 			UniColor Color;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Color.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -34,18 +34,10 @@
 #include <vector>
 #include "ShapeContainer.h"
 
+
+namespace PPT
+{
 class CRecordGroupShapeContainer : public CRecordsContainer
 {
-public:
-	
-	CRecordGroupShapeContainer()
-	{
-	}
-
-	~CRecordGroupShapeContainer()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
-
 };
+}

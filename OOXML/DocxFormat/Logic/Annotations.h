@@ -31,9 +31,6 @@
  */
 #pragma once
 
-#ifndef OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_
-#define OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_
-
 #include "../../Base/Nullable.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
@@ -55,57 +52,17 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CCommentRangeEnd)
 
-			CCommentRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			CCommentRangeEnd(CCommentRangeEnd *pOther) : WritingElement(NULL)
-			{
-				m_oDisplacedByCustomXml = pOther->m_oDisplacedByCustomXml;
-				m_oId                   = pOther->m_oId;
-			}
-			virtual ~CCommentRangeEnd()
-			{
-			}
+			CCommentRangeEnd(OOX::Document *pMain = NULL);
+			CCommentRangeEnd(CCommentRangeEnd *pOther);
+			virtual ~CCommentRangeEnd();
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
-
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:commentRangeEnd";
-
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_commentRangeEnd;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
@@ -121,59 +78,23 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CCommentRangeStart)
 
-			CCommentRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCommentRangeStart()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			CCommentRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CCommentRangeStart();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:commentRangeStart ";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_commentRangeStart;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
 			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
 			nullable<SimpleTypes::CDecimalNumber>			m_oId;
 		};
-
-
 	
 	// Revisisons 17.13.5
 
@@ -185,51 +106,19 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlDelRangeEnd)
 
-			CCustomXmlDelRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlDelRangeEnd()
-			{
-			}
+			CCustomXmlDelRangeEnd(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlDelRangeEnd();
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, L"w:id", m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlDelRangeEnd";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlDelRangeEnd;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
@@ -240,78 +129,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlDelRangeStart)
-			CCustomXmlDelRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlDelRangeStart()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
-				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
-				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlDelRangeStart ";
+			CCustomXmlDelRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlDelRangeStart();
 
-				if ( m_sAuthor.IsInit() )
-				{
-					sResult += L"w:author=\"";
-                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\" ";
-				}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oDate.IsInit() )
-				{
-					sResult += L"w:date=\"";
-                    sResult += m_oDate->ToString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_oID.IsInit() )
-				{
-					sResult += L"w:id=\"";
-                    sResult += m_oID->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_sUserId.IsInit() )
-				{
-					sResult += L"oouserid=\"";
-                    sResult += m_sUserId.get2();
-					sResult += L"\" ";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlDelRangeStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
             nullable<std::wstring>					m_sAuthor;
@@ -320,6 +149,7 @@ namespace OOX
             nullable<std::wstring>					m_sUserId;
 
 		};
+
 		//--------------------------------------------------------------------------------
 		// CCustomXmlInsRangeEnd 17.13.5.6 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -327,50 +157,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlInsRangeEnd)
-			CCustomXmlInsRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlInsRangeEnd()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlInsRangeEnd";
+			CCustomXmlInsRangeEnd(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlInsRangeEnd();
 
-				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"/>";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlInsRangeEnd;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
@@ -381,78 +181,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlInsRangeStart)
-			CCustomXmlInsRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlInsRangeStart()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
-				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
-				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlInsRangeStart ";
+			CCustomXmlInsRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlInsRangeStart();
 
-				if ( m_sAuthor.IsInit() )
-				{
-					sResult += L"w:author=\"";
-                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\" ";
-				}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oDate.IsInit() )
-				{
-					sResult += L"w:date=\"";
-                    sResult += m_oDate->GetValue();
-					sResult += L"\" ";
-				}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_oID.IsInit() )
-				{
-					sResult += L"w:id=\"";
-                    sResult += m_oID->ToString();
-                    sResult += L"\" ";
-				}
-
-				if ( m_sUserId.IsInit() )
-				{
-					sResult += L"oouserid=\"";
-                    sResult += m_sUserId.get2();
-					sResult += L"\" ";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlInsRangeStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oID )
-                WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
             nullable<std::wstring>					m_sAuthor;
@@ -460,6 +200,7 @@ namespace OOX
 			nullable<SimpleTypes::CDecimalNumber>	m_oID;
             nullable<std::wstring>					m_sUserId;
 		};
+
 		//--------------------------------------------------------------------------------
 		// CCustomXmlMoveFromRangeEnd 17.13.5.8 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -467,48 +208,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveFromRangeEnd)
-			CCustomXmlMoveFromRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlMoveFromRangeEnd()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlMoveFromRangeEnd";
+			CCustomXmlMoveFromRangeEnd(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlMoveFromRangeEnd();
 
-				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"/>";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlMoveFromRangeEnd;
-			}
 		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
@@ -519,78 +232,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveFromRangeStart)
-			CCustomXmlMoveFromRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlMoveFromRangeStart()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
-				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
-				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlMoveFromRangeStart ";
+			CCustomXmlMoveFromRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlMoveFromRangeStart();
 
-				if ( m_sAuthor.IsInit() )
-				{
-					sResult += L"w:author=\"";
-                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\" ";
-				}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_oDate.IsInit() )
-				{
-					sResult += L"w:date=\"";
-                    sResult += m_oDate->ToString();
-					sResult += L"\" ";
-				}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_oID.IsInit() )
-				{
-					sResult += L"w:id=\"";
-                    sResult += m_oID->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_sUserId.IsInit() )
-				{
-					sResult += L"oouserid=\"";
-                    sResult += m_sUserId.get2();
-					sResult += L"\" ";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlMoveFromRangeStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-                WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",    m_sAuthor )
-                WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",      m_oDate )
-                WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",        m_oID )
-                WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",    m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
@@ -600,6 +253,7 @@ namespace OOX
             nullable<std::wstring>					m_sUserId;
 
 		};
+
 		//--------------------------------------------------------------------------------
 		// CCustomXmlMoveToRangeEnd 17.13.5.10 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -607,48 +261,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveToRangeEnd)
-			CCustomXmlMoveToRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlMoveToRangeEnd()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:id", m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlMoveToRangeEnd";
+			CCustomXmlMoveToRangeEnd(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlMoveToRangeEnd();
 
-				ComplexTypes_WriteAttribute_( L" w:id=\"", m_oId );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"/>";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlMoveToRangeEnd;
-			}
 		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
@@ -659,80 +285,19 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCustomXmlMoveToRangeStart)
-			CCustomXmlMoveToRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCustomXmlMoveToRangeStart()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:author", m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, L"w:date",   m_oDate );
-				XmlMacroReadAttributeBase( oNode, L"w:id",     m_oID );
-				XmlMacroReadAttributeBase( oNode, L"oouserid", m_sUserId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			CCustomXmlMoveToRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CCustomXmlMoveToRangeStart();
 
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:customXmlMoveToRangeStart ";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( m_sAuthor.IsInit() )
-				{
-					sResult += L"w:author=\"";
-                    sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\" ";
-				}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_oDate.IsInit() )
-				{
-					sResult += L"w:date=\"";
-                    sResult += m_oDate->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_oID.IsInit() )
-				{
-					sResult += L"w:id=\"";
-                    sResult += m_oID->ToString();
-					sResult += L"\" ";
-				}
-
-				if ( m_sUserId.IsInit() )
-				{
-					sResult += L"oouserid=\"";
-                    sResult += m_sUserId.get2();
-					sResult += L"\" ";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_customXmlMoveToRangeStart;
-			}
 		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",   m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",     m_oID )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
 
             nullable<std::wstring>					m_sAuthor;
@@ -741,6 +306,7 @@ namespace OOX
             nullable<std::wstring>					m_sUserId;
 
 		};
+
 		//--------------------------------------------------------------------------------
 		// CMoveFromRangeEnd 17.13.5.23 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -748,50 +314,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveFromRangeEnd)
-			CMoveFromRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CMoveFromRangeEnd()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:moveFromRangeEnd";
+			CMoveFromRangeEnd(OOX::Document *pMain = NULL);
+			virtual ~CMoveFromRangeEnd();
 
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"/>";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_moveFromRangeEnd;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
@@ -806,88 +340,19 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveFromRangeStart)
-			CMoveFromRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CMoveFromRangeStart()
-			{
-			}
+
+			CMoveFromRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CMoveFromRangeStart();
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:author",               m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, L"w:colFirst",             m_oColFirst );
-				XmlMacroReadAttributeBase( oNode, L"w:colLast",              m_oColLast );
-				XmlMacroReadAttributeBase( oNode, L"w:date",                 m_oDate );
-				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
-				XmlMacroReadAttributeBase( oNode, L"w:name",                 m_sName );
-				XmlMacroReadAttributeBase( oNode, L"oouserid",               m_sUserId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:moveFromRangeStart";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_sAuthor.IsInit() )
-				{
-					sResult += L" w:author=\"";
-					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\"";
-				}
-
-				ComplexTypes_WriteAttribute_( L" w:colFirst=\"",             m_oColFirst );
-				ComplexTypes_WriteAttribute_( L" w:colLast=\"",              m_oColLast );
-				ComplexTypes_WriteAttribute_( L" w:date=\"",                 m_oDate );
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
-
-				if ( m_sName.IsInit() )
-				{
-					sResult += L" w:name=\"";
-					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
-					sResult += L"\"";
-				}
-
-				if ( m_sUserId.IsInit() )
-				{
-					sResult += L" oouserid=\"";
-					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
-					sResult += L"\"";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_moveFromRangeStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",               m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colFirst",             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",                 m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",              m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
@@ -908,51 +373,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveToRangeEnd)
-			CMoveToRangeEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CMoveToRangeEnd()
-			{
-			}
+
+			CMoveToRangeEnd(OOX::Document *pMain = NULL);
+			virtual ~CMoveToRangeEnd();
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:moveToRangeEnd";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_moveToRangeEnd;
-			}
 		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
 
 			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
@@ -966,90 +400,21 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CMoveToRangeStart)
-			CMoveToRangeStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CMoveToRangeStart()
-			{
-			}
+
+			CMoveToRangeStart(OOX::Document *pMain = NULL);
+			virtual ~CMoveToRangeStart();
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"w:author",               m_sAuthor );
-				XmlMacroReadAttributeBase( oNode, L"w:colFirst",             m_oColFirst );
-				XmlMacroReadAttributeBase( oNode, L"w:colLast",              m_oColLast );
-				XmlMacroReadAttributeBase( oNode, L"w:date",                 m_oDate );
-				XmlMacroReadAttributeBase( oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase( oNode, L"w:id",                   m_oId );
-				XmlMacroReadAttributeBase( oNode, L"w:name",                 m_sName );
-				XmlMacroReadAttributeBase( oNode, L"oouserid",               m_sUserId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:moveToRangeStart";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_sAuthor.IsInit() )
-				{
-					sResult += L" w:author=\"";
-					sResult += XmlUtils::EncodeXmlString(m_sAuthor.get2());
-					sResult += L"\" ";
-				}
-
-				ComplexTypes_WriteAttribute_( L" w:colFirst=\"",             m_oColFirst );
-				ComplexTypes_WriteAttribute_( L" w:colLast=\"",              m_oColLast );
-				ComplexTypes_WriteAttribute_( L" w:date=\"",                 m_oDate );
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
-
-				if ( m_sName.IsInit() )
-				{
-					sResult += L" w:name=\"";
-					sResult += XmlUtils::EncodeXmlString(m_sName.get2());
-					sResult += L"\"";
-				}
-
-				if ( m_sUserId.IsInit() )
-				{
-					sResult += L" oouserid=\"";
-					sResult += XmlUtils::EncodeXmlString(m_sUserId.get2());
-					sResult += L"\"";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_moveToRangeStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",               m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colFirst",             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",                 m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid",				m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
             nullable<std::wstring> m_sAuthor;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColLast;
@@ -1063,39 +428,18 @@ namespace OOX
 		class CMoveFrom : public WritingElementWithChilds<>
 		{
 		public:
-			CMoveFrom(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CMoveFrom(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CMoveFrom(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CMoveFrom()
-			{
-			}
+			CMoveFrom(OOX::Document *pMain = NULL);
+			CMoveFrom(XmlUtils::CXmlNode &oNode);
+			CMoveFrom(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CMoveFrom();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_moveFrom;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<std::wstring>						m_sAuthor;
@@ -1107,39 +451,19 @@ namespace OOX
 		class CMoveTo : public WritingElementWithChilds<>
 		{
 		public:
-			CMoveTo(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CMoveTo(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CMoveTo(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CMoveTo()
-			{
-			}
+			CMoveTo(OOX::Document *pMain = NULL);
+			CMoveTo(XmlUtils::CXmlNode &oNode);
+			CMoveTo(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CMoveTo();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_moveTo;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
@@ -1151,7 +475,7 @@ namespace OOX
 			// Childs
 		};
 	
-// Bookmarks 17.13.6
+	// Bookmarks 17.13.6
 
 		//--------------------------------------------------------------------------------
 		// CBookmarkEnd 17.13.6.1 (Part 1)
@@ -1160,56 +484,19 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBookmarkEnd)
-			CBookmarkEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			CBookmarkEnd(CBookmarkEnd* pOther)
-			{
-				m_oDisplacedByCustomXml = pOther->m_oDisplacedByCustomXml;
-				m_oId                   = pOther->m_oId;
-			}
-			virtual ~CBookmarkEnd()
-			{
-			}
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_oId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			CBookmarkEnd(OOX::Document *pMain = NULL);
+			CBookmarkEnd(CBookmarkEnd* pOther);
+			virtual ~CBookmarkEnd();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:bookmarkEnd";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_bookmarkEnd;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
@@ -1223,72 +510,19 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CBookmarkStart)
-			CBookmarkStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			CBookmarkStart(CBookmarkStart *pOther)
-			{
-				m_oColFirst             = pOther->m_oColFirst;
-				m_oColLast              = pOther->m_oColLast;
-				m_oDisplacedByCustomXml = pOther->m_oDisplacedByCustomXml;
-				m_oId                   = pOther->m_oId;
-				m_sName                 = pOther->m_sName;
-			}
-			virtual ~CBookmarkStart()
-			{
-			}
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, L"w:colFirst",             m_oColFirst );
-				XmlMacroReadAttributeBase(oNode, L"w:colLast",              m_oColLast );
-				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_oId );
-				XmlMacroReadAttributeBase(oNode, L"w:name",                 m_sName );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			CBookmarkStart(OOX::Document *pMain = NULL);
+			CBookmarkStart(CBookmarkStart *pOther);
+			virtual ~CBookmarkStart();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:bookmarkStart";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ComplexTypes_WriteAttribute_( L" w:colFirst=\"",             m_oColFirst );
-				ComplexTypes_WriteAttribute_( L" w:colLast=\"",              m_oColLast );
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute_( L" w:id=\"",                   m_oId );
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_sName.IsInit() )
-				{
-					sResult += L" w:name=\"" + XmlUtils::EncodeXmlString(m_sName.get2()) + L"\"";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_bookmarkStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:colFirst",             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",					m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:name",                 m_sName )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
@@ -1308,60 +542,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPermEnd)
-			CPermEnd(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CPermEnd()
-			{
-			}
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_sId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			CPermEnd(OOX::Document *pMain = NULL);
+			virtual ~CPermEnd();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:permEnd";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				if ( m_sId.IsInit() )
-				{
-					sResult += L" w:id=\"";
-                    sResult += m_sId.get2();
-					sResult += L"\"";
-				}
-
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_permEnd;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_sId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
             nullable<std::wstring>							m_sId;
 		};
@@ -1373,65 +567,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPermStart)
-			CPermStart(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CPermStart()
-			{
-			}
 
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, L"w:colFirst",             m_oColFirst );
-				XmlMacroReadAttributeBase(oNode, L"w:colLast",              m_oColLast );
-				XmlMacroReadAttributeBase(oNode, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml );
-				XmlMacroReadAttributeBase(oNode, L"w:ed",                   m_sEd );
-				XmlMacroReadAttributeBase(oNode, L"w:edGrp",                m_oEdGrp );
-				XmlMacroReadAttributeBase(oNode, L"w:id",                   m_sId );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
+			CPermStart(OOX::Document *pMain = NULL);
+			virtual ~CPermStart();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring      toXML() const
-			{
-                std::wstring sResult = L"<w:permStart";
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				ComplexTypes_WriteAttribute_( L" w:colFirst=\"", m_oColFirst );
-				ComplexTypes_WriteAttribute_( L" w:colLast=\"", m_oColLast );
-				ComplexTypes_WriteAttribute_( L" w:displacedbyCustomXml=\"", m_oDisplacedByCustomXml );
-				ComplexTypes_WriteAttribute2_(L" w:ed=\"", m_sEd);
-				ComplexTypes_WriteAttribute_( L" w:edGrp=\"", m_oEdGrp );
-				ComplexTypes_WriteAttribute2_(L" w:id=\"", m_sId);
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				sResult += L"/>";
-
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_permStart;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"w:colFirst",             m_oColFirst )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:colLast",              m_oColLast )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:displacedbyCustomXml", m_oDisplacedByCustomXml )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:ed",                   m_sEd )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:edGrp",                m_oEdGrp )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",                   m_sId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CDecimalNumber>			m_oColFirst;
 			nullable<SimpleTypes::CDecimalNumber>			m_oColLast;
 			nullable<SimpleTypes::CDisplacedByCustomXml>	m_oDisplacedByCustomXml;
@@ -1450,95 +599,39 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CProofErr)
-			CProofErr(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CProofErr()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase(oNode, L"w:type", m_oType );
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) 
-			{
-				ReadAttributes( oReader );
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual std::wstring toXML() const
-			{
-                std::wstring sResult = L"<w:proofErr ";
+			CProofErr(OOX::Document *pMain = NULL);
+			virtual ~CProofErr();
 
-				if ( m_oType.IsInit() )
-				{
-					sResult += L"w:type=\"";
-                    sResult += m_oType->ToString();
-					sResult += L"\" ";
-				}
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				sResult += L"/>";
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
-				return sResult;
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_w_proofErr;
-			}
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:type", m_oType )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			nullable<SimpleTypes::CProofErr> m_oType;
 		};
 
 		class CIns : public WritingElementWithChilds<>
 		{
 		public:
-			CIns(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CIns(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CIns(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CIns()
-			{
-			}
+			CIns(OOX::Document *pMain = NULL);
+			CIns(XmlUtils::CXmlNode &oNode);
+			CIns(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CIns();;
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
             virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_ins;
-			}
+			virtual EElementType getType() const;
 
 		private: 
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 
@@ -1550,47 +643,25 @@ namespace OOX
 
 			// Childs
 		};
+
 		class CDel : public WritingElementWithChilds<>
 		{
 		public:
-			CDel(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CDel(XmlUtils::CXmlNode &oNode)
-			{
-				fromXML( oNode );
-			}
-			CDel(XmlUtils::CXmlLiteReader& oReader)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CDel()
-			{
-			}
+			CDel(OOX::Document *pMain = NULL);
+			CDel(XmlUtils::CXmlNode &oNode);
+			CDel(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CDel();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
             virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_del;
-			}
+			virtual EElementType getType() const;
 
 		private: 
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if( oReader, L"w:author", m_sAuthor )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date", m_oDate )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id", m_oId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"oouserid", m_sUserId )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			// Attributes
             nullable<std::wstring>					m_sAuthor;
 			nullable<SimpleTypes::CDateTime>		m_oDate;
@@ -1599,8 +670,9 @@ namespace OOX
 
 			// Childs
 		};
+
 	// Revisions 17.13.5
+
 	} // Logic
 } // OOX
 
-#endif /* OOX_LOGIC_RANGE_MURKUP_ELEMENTS_INCLUDE_H_ */

@@ -142,47 +142,16 @@ public:
     int             m_nCodePage;
     int             m_nPitch;
 
-	RtfFont()
-	{
-		SetDefault();
-	}
-	int GetType()
-	{
-		return TYPE_RTF_FONT;
-	}
-	bool operator==( const RtfFont& oFont)
-	{
-		return m_eFontTheme == oFont.m_eFontTheme	&& m_eFontFamily	== oFont.m_eFontFamily	&& 
-				m_sPanose	== oFont.m_sPanose		&& m_nID			== oFont.m_nID			&& 
-				m_sName		== oFont.m_sName		&& m_sAltName		== oFont.m_sAltName		&& 
-				m_nCharset	== oFont.m_nCharset		&& m_nCodePage		== oFont.m_nCodePage	&& 
-				m_nPitch	== oFont.m_nPitch;
-	}
-	bool IsValid()
-	{
-		return PROP_DEF != m_nID;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-		m_nPitch = 0;
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY_DEF( m_eFontTheme, ft_none )
-		DEFAULT_PROPERTY_DEF( m_eFontFamily, ff_fnil )
-		DEFAULT_PROPERTY_DEF( m_sPanose, L"" )
-		DEFAULT_PROPERTY	( m_nID )
-		DEFAULT_PROPERTY_DEF( m_sName, L"" )
-		DEFAULT_PROPERTY_DEF( m_sAltName, L"" )
-		DEFAULT_PROPERTY	( m_nCharset )
-		DEFAULT_PROPERTY	( m_nCodePage )
-		DEFAULT_PROPERTY_DEF( m_nPitch, 2 )
-	}
+	RtfFont();
+
+	int GetType();
+	bool operator==( const RtfFont& oFont);
+	bool IsValid();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
@@ -205,458 +174,57 @@ public:
 	int			m_index;
 
 //--------------------------------------------------------
-	RtfColor()
-	{
-		SetDefault();
-	}	
-	RtfColor(int nHex)
-	{
-		SetHEX( nHex );
-	}
-	RtfColor(BYTE r, BYTE g, BYTE b)
-	{
-		SetRGB( r, g, b );
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetAuto()
-	{
-		m_bAuto		= true;
-	}
-	void SetDefault()
-	{
-		m_bAuto		= false;
-
-		m_byteRed	= 0;
-		m_byteGreen = 0;
-		m_byteBlue	= 0;
-
-		m_byteShade	= 0;
-		m_byteTint	= 255;
-		m_eTheme	= RtfColor::TC_NONE;
-		m_index		= -1;
-	}
-    BYTE GetR()
-	{
-		return m_byteRed;
-	}
-    BYTE GetG()
-	{
-		return m_byteGreen;
-	}
-    BYTE GetB()
-	{
- 		return m_byteBlue;
-	}
+	RtfColor();
+	RtfColor(int nHex);
+	RtfColor(BYTE r, BYTE g, BYTE b);
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetAuto();
+	void SetDefault();
+	BYTE GetR();
+	BYTE GetG();
+	BYTE GetB();
 	
-	bool operator==(const RtfColor& oColor)
-	{
-		return  m_byteRed == oColor.m_byteRed && m_byteGreen == oColor.m_byteGreen && m_byteBlue == oColor.m_byteBlue &&
-				m_eTheme == oColor.m_eTheme && m_byteTint	== oColor.m_byteTint && m_byteShade == oColor.m_byteShade;
-	}
-	const RtfColor& operator=( const RtfColor& oColor )
-	{
-		m_byteRed	= oColor.m_byteRed;
-		m_byteGreen	= oColor.m_byteGreen;
-		m_byteBlue	= oColor.m_byteBlue;
+	bool operator==(const RtfColor& oColor);
+	const RtfColor& operator=( const RtfColor& oColor );
 
-		m_eTheme	= oColor.m_eTheme;
-		m_byteShade	= oColor.m_byteShade;
-		m_byteTint	= oColor.m_byteTint;
-
-		m_bAuto		= oColor.m_bAuto;
-		return (*this);
-	}
-
-	void SetHEX(int color)
-	{
-		SetDefault();
-		
-		m_byteRed	= (color&0xFF0000) >> 16;
-		m_byteGreen = (color&0xFF00) >> 8;
-		m_byteBlue	= (color&0xFF);
-	}
-	int GetRGB()const
-	{
-		return (m_byteRed << 16) | (m_byteGreen << 8) | m_byteBlue;
-	}	
-	void SetRGB(unsigned int color)
-	{
-		SetDefault();
-
-		m_byteRed	= (color & 0xFF);
-		m_byteGreen = (color & 0xFF00)		>> 8;
-		m_byteBlue	= (color & 0xFF0000)	>> 16;
-	}
-	void SetRGB(BYTE red, BYTE green, BYTE blue)
-	{
-		SetDefault();
-
-		m_byteRed	= red;
-		m_byteGreen = green;
-		m_byteBlue	= blue;
-	}
-	void GetHSL(double &dH, double &dS,double &dL)
-	{
-		RGB2HSL(m_byteRed, m_byteGreen, m_byteBlue, dH, dS, dL);
-	}
-	void SetHSL(double dH, double dS,double dL)
-	{
-		HSL2RGB(dH, dS, dL, m_byteRed, m_byteGreen, m_byteBlue);
-	}
-	void SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
-	{
-		m_byteRed	= (BYTE)(nRedPer	* 255 / 100);
-		m_byteGreen = (BYTE)(nGreenPer	* 255 / 100);
-		m_byteBlue	= (BYTE)(nBluePer	* 255 / 100);
-	}
-    void SetHEXString(std::wstring hex)
-	{
-		if ( L"auto" != hex )
-		{
-			int color	= Strings::ToColor(hex);
-		
-			SetRGB(color);
-		}
-		else
-			SetDefault();
-	}
-    std::wstring ToHexColor(bool bBGR = false)
-	{
-		if (m_bAuto) return L"auto";
-
-		std::wstring sRed	= XmlUtils::ToString(m_byteRed,		L"%02X");
-		std::wstring sGreen = XmlUtils::ToString(m_byteGreen,	L"%02X");;
-		std::wstring sBlue	= XmlUtils::ToString(m_byteBlue,	L"%02X");
-
-		if (bBGR)	return sBlue + sGreen + sRed ;
-		else		return sRed + sGreen + sBlue ;
-	}
+	void SetHEX(int color);
+	int GetRGB()const;
+	void SetRGB(unsigned int color);
+	void SetRGB(BYTE red, BYTE green, BYTE blue);
+	void GetHSL(double &dH, double &dS,double &dL);
+	void SetHSL(double dH, double dS,double dL);
+	void SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer);
+	void SetHEXString(std::wstring hex);
+	std::wstring ToHexColor(bool bBGR = false);
 	
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
-    BYTE SetShade(BYTE bShade)
-	{
-		m_byteShade = bShade;
-		double dH, dS, dL;
-		GetHSL(dH, dS, dL);
-		dL = dL * bShade / 255.;
-		SetHSL(dH, dS, dL);
-		return bShade;
-	}
-	BYTE SetTint(BYTE bTint)
-	{
-		m_byteTint = bTint;
 
-		double dH,  dS,  dL;
-		GetHSL(dH, dS,dL);
-		dL = dL * bTint / 255. + (1 - bTint / 255.); 
-		SetHSL(dH, dS, dL);
-		return bTint;
-	 }
-    static bool GetHighlightByColor( RtfColor oOutputColor,std::wstring& oStr ) //todo
-	{
-		if		( oOutputColor ==  RtfColor(0x000000) ) {oStr = L"black";		return true;}
-		else if ( oOutputColor ==  RtfColor(0x0000FF) ) {oStr = L"blue";		return true;}
-		else if ( oOutputColor ==  RtfColor(0x00FFFF) ) {oStr = L"cyan";		return true;}
-		else if ( oOutputColor ==  RtfColor(0x00008B) ) {oStr = L"darkBlue";	return true;}
-		else if ( oOutputColor ==  RtfColor(0x008B8B) ) {oStr = L"darkCyan";	return true;}
-		else if ( oOutputColor ==  RtfColor(0xA9A9A9) ) {oStr = L"darkGray";	return true;}
-		else if ( oOutputColor ==  RtfColor(0x006400) ) {oStr = L"darkGreen";	return true;}
-		else if ( oOutputColor ==  RtfColor(0x800080) ) {oStr = L"darkMagenta";	return true;}
-		else if ( oOutputColor ==  RtfColor(0x8B0000) ) {oStr = L"darkRed";		return true;}
-		else if ( oOutputColor ==  RtfColor(0x808000) ) {oStr = L"darkYellow";	return true;}
-		else if ( oOutputColor ==  RtfColor(0x00FF00) ) {oStr = L"green";		return true;}
-		else if ( oOutputColor ==  RtfColor(0xD3D3D3) ) {oStr = L"lightGray";	return true;}
-		else if ( oOutputColor ==  RtfColor(0xFF00FF) ) {oStr = L"magenta";		return true;}
-		else if ( oOutputColor ==  RtfColor(0xFF0000) ) {oStr = L"red";			return true;}
-		else if ( oOutputColor ==  RtfColor(0xFFFFFF) ) {oStr = L"white";		return true;}
-		else if ( oOutputColor ==  RtfColor(0xFFFF00) ) {oStr = L"yellow";		return true;}
-		return false;
-	}
-    static RtfColor GetColorByPreset( std::wstring oStr )
-	{
-		if		( oStr == L"aliceBlue" )	return RtfColor(240,248,255);
-		else if ( oStr == L"aniqueWhite" )	return RtfColor(250,235,215);
-		else if ( oStr == L"aqua" )			return RtfColor(0,255,255);
-		else if ( oStr == L"aquamarine" )	return RtfColor(127,255,212);
-		else if ( oStr == L"azure" )		return RtfColor(240,255,255);
-		else if ( oStr == L"beige" )		return RtfColor(245,245,220);
-		else if ( oStr == L"bisque" )		return RtfColor(255,228,196);
-		else if ( oStr == L"black" )		return RtfColor(0,0,0);
-		else if ( oStr == L"blanchedAlmond" ) return RtfColor(255,235,205);
-		else if ( oStr == L"blueViolet" )	return RtfColor(138,43,226);
-		else if ( oStr == L"brown" )		return RtfColor(165,42,42);
-		else if ( oStr == L"burlyWood" )	return RtfColor(222,184,135);
+	BYTE SetShade(BYTE bShade);
+	BYTE SetTint(BYTE bTint);
 
-		else if ( oStr == L"cyan" )			return RtfColor(0,255,255);
-		else if ( oStr == L"gold" )			return RtfColor(255,215,0);
-		else if ( oStr == L"green" )		return RtfColor(0,128,0);
-		else if ( oStr == L"grey" )			return RtfColor(128,128,128);
-		else if ( oStr == L"red" )			return RtfColor(255,0,0);
-		else if ( oStr == L"yellow" )		return RtfColor(255,255,0);
+	static bool GetHighlightByColor( RtfColor oOutputColor,std::wstring& oStr ); //todo
+	static RtfColor GetColorByPreset( std::wstring oStr );
+	static std::wstring GetPresetByColor( RtfColor oCol ); //стр. 3320
+	static bool GetThemeByString( std::wstring sTheme, _ThemeColor & oOutTheme );
+	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val, _ThemeColor & oOutTheme );
+	static bool GetStringByTheme( std::wstring sTheme , _ThemeColor& oOutTheme );
 
-		return RtfColor(0,0,0);
-	}
-    static std::wstring GetPresetByColor( RtfColor oCol ) //стр. 3320
-	{
-		if		( oCol == RtfColor(240,248,255))	return L"aliceBlue";
-		else if ( oCol == RtfColor(250,235,215))	return L"aniqueWhite";
-		else if ( oCol == RtfColor(0,255,255))		return L"aqua";
-		else if ( oCol == RtfColor(127,255,212))	return L"aquamarine";
-		else if ( oCol == RtfColor(240,255,255))	return L"azure";
-		else if ( oCol == RtfColor(245,245,220))	return L"beige";
-		else if ( oCol == RtfColor(255,228,196))	return L"bisque";
-		else if ( oCol == RtfColor(0,0,0))			return L"black";
-		else if ( oCol == RtfColor(255,235,205))	return L"blanchedAlmond";
-		else if ( oCol == RtfColor(138,43,226))		return L"blueViolet";
-		else if ( oCol == RtfColor(165,42,42))		return L"brown";
-		else if ( oCol == RtfColor(222,184,135))	return L"burlyWood";
+	std::wstring GetHighLight();
 
-		else if ( oCol == RtfColor(0,255,255))		return L"cyan";
-		else if ( oCol == RtfColor(255,215,0))		return L"gold";
-		else if ( oCol == RtfColor(0,128,0))		return L"green";
-		else if ( oCol == RtfColor(128,128,128))	return L"grey";
-		else if ( oCol == RtfColor(255,0,0))		return L"red";
-		else if ( oCol == RtfColor(255,255,0))		return L"yellow";
-
-		return L"black";
-	}
-    static bool GetThemeByString( std::wstring sTheme, _ThemeColor & oOutTheme )
-	{
-		if		( sTheme == L"accent1" )	{oOutTheme = caccentone;		return true;}
-		else if ( sTheme == L"accent2" )	{oOutTheme = caccenttwo;		return true;}
-		else if ( sTheme == L"accent3" )	{oOutTheme = caccentthree;		return true;}
-		else if ( sTheme == L"accent4" )	{oOutTheme = caccentfour;		return true;}
-		else if ( sTheme == L"accent5" )	{oOutTheme = caccentfive;		return true;}
-		else if ( sTheme == L"accent6" )	{oOutTheme = caccentsix;		return true;}
-		else if ( sTheme == L"bg1" )		{oOutTheme = cbackgroundone;	return true;}
-		else if ( sTheme == L"bg2" )		{oOutTheme = cbackgroundtwo;	return true;}
-		else if ( sTheme == L"dk1" )		{oOutTheme = cmaindarkone;		return true;}
-		else if ( sTheme == L"dk2" )		{oOutTheme = cmaindarktwo;		return true;}
-		else if ( sTheme == L"folHlink" )	{oOutTheme = cfollowedhyperlink;return true;}
-		else if ( sTheme == L"hlink" )		{oOutTheme = chyperlink;		return true;}
-		else if ( sTheme == L"lt1" )		{oOutTheme = cmainlightone;		return true;}
-		else if ( sTheme == L"lt2" )		{oOutTheme = cmainlighttwo;		return true;}
-		else if ( sTheme == L"phClr" )		{oOutTheme = cmainlighttwo;		return true;}
-        else if ( sTheme == L"tx1" )		{oOutTheme = ctextone;			return true;}
-        else if ( sTheme == L"tx2" )		{oOutTheme = ctexttwo;			return true;}
-		return false;
-	}
-	static bool GetThemeByOOX( SimpleTypes::EShemeColorVal val, _ThemeColor & oOutTheme )
-	{
-        switch(val)
-		{
-		case SimpleTypes::shemecolorvalAccent1:  {oOutTheme = caccentone;			return true;}			
-		case SimpleTypes::shemecolorvalAccent2:  {oOutTheme = caccenttwo;			return true;}		
-		case SimpleTypes::shemecolorvalAccent3:  {oOutTheme = caccentthree;			return true;}				
-		case SimpleTypes::shemecolorvalAccent4:  {oOutTheme = caccentfour;			return true;}			
-		case SimpleTypes::shemecolorvalAccent5:  {oOutTheme = caccentfive;			return true;}			
-		case SimpleTypes::shemecolorvalAccent6:  {oOutTheme = caccentsix;			return true;}				
-		case SimpleTypes::shemecolorvalBg1:      {oOutTheme = cbackgroundone;		return true;}				
-		case SimpleTypes::shemecolorvalBg2:      {oOutTheme = cbackgroundtwo;		return true;}				
-		case SimpleTypes::shemecolorvalDk1:      {oOutTheme = cmaindarkone;			return true;}		
-		case SimpleTypes::shemecolorvalDk2:      {oOutTheme = cmaindarktwo;			return true;}				
-		case SimpleTypes::shemecolorvalFolHlink: {oOutTheme = cfollowedhyperlink;	return true;}			
-		case SimpleTypes::shemecolorvalHlink:    {oOutTheme = chyperlink;			return true;}				
-		case SimpleTypes::shemecolorvalLt1:      {oOutTheme = cmainlightone;		return true;}			
-		case SimpleTypes::shemecolorvalLt2:      {oOutTheme = cmainlighttwo;		return true;}			
-		case SimpleTypes::shemecolorvalPhClr:    {oOutTheme = cmainlighttwo;		return true;} //???			
-		case SimpleTypes::shemecolorvalTx1:      {oOutTheme = ctextone;				return true;}			
-		case SimpleTypes::shemecolorvalTx2:      {oOutTheme = ctexttwo;				return true;}				
-		default :								 {oOutTheme = caccentone;			return true;}
-		}
-		
-		return false;
-	}
-    static bool GetStringByTheme( std::wstring sTheme , _ThemeColor& oOutTheme )
-	{
-		if		( L"accent1"	== sTheme )	{oOutTheme = caccentone;		return true;}
-		else if ( L"accent2"	== sTheme )	{oOutTheme = caccenttwo;		return true;}
-		else if ( L"accent3"	== sTheme )	{oOutTheme = caccentthree;		return true;}
-		else if ( L"accent4"	== sTheme )	{oOutTheme = caccentfour;		return true;}
-		else if ( L"accent5"	== sTheme )	{oOutTheme = caccentfive;		return true;}
-		else if ( L"accent6"	== sTheme )	{oOutTheme = caccentsix;		return true;}
-		else if ( L"bg1"		== sTheme )	{oOutTheme = cbackgroundone;	return true;}
-		else if ( L"bg2"		== sTheme )	{oOutTheme = cbackgroundtwo;	return true;}
-		else if ( L"dk1"		== sTheme )	{oOutTheme = cmaindarkone;		return true;}
-		else if ( L"dk2"		== sTheme )	{oOutTheme = cmaindarktwo;		return true;}
-		else if ( L"folHlink"	== sTheme )	{oOutTheme = cfollowedhyperlink;return true;}
-		else if ( L"hlink"		== sTheme )	{oOutTheme = chyperlink;		return true;}
-		else if ( L"lt1"		== sTheme )	{oOutTheme = cmainlightone;		return true;}
-		else if ( L"lt2"		== sTheme )	{oOutTheme = cmainlighttwo;		return true;}
-		else if ( L"phClr"		== sTheme )	{oOutTheme = cmainlighttwo;		return true;}
-		else if ( L"tx1"		== sTheme )	{oOutTheme = ctextone;			return true;}
-		else if ( L"tx2"		== sTheme )	{oOutTheme = ctexttwo;			return true;}
-		return false;
-	}
-
-    std::wstring GetHighLight()
-	{
-		if (m_bAuto) return L"auto";
-
-		std::vector< RtfColor > sColors;
-
-		sColors.push_back( RtfColor( 0x000000 ) );
-		sColors.push_back( RtfColor( 0x0000FF ) );
-		sColors.push_back( RtfColor( 0x00FFFF ) );
-		sColors.push_back( RtfColor( 0x00008B ) );
-		sColors.push_back( RtfColor( 0x008B8B ) );
-		sColors.push_back( RtfColor( 0xA9A9A9 ) );
-		sColors.push_back( RtfColor( 0x006400 ) );
-		sColors.push_back( RtfColor( 0x800080 ) );
-		sColors.push_back( RtfColor( 0x8B0000 ) );
-		sColors.push_back( RtfColor( 0x808000 ) );
-		sColors.push_back( RtfColor( 0x00FF00 ) );
-		sColors.push_back( RtfColor( 0xD3D3D3 ) );
-		sColors.push_back( RtfColor( 0xFF00FF ) );
-		sColors.push_back( RtfColor( 0xFF0000 ) );
-		sColors.push_back( RtfColor( 0xFFFFFF ) );
-		sColors.push_back( RtfColor( 0xFFFF00 ) );
-
-        long nMinDelta = 0x7FFFFFFF; //MAXLONG;
-		int nIndex = -1;
-		for (int i = 0; i < (int)sColors.size(); i++ )
-		{
-			int nCurDelta = ( sColors[i].GetR() - GetR() ) * ( sColors[i].GetR() - GetR() ) + 
-							( sColors[i].GetG() - GetG() ) * ( sColors[i].GetG() - GetG() ) + 
-							( sColors[i].GetB() - GetB() ) * ( sColors[i].GetB() - GetB() );
-			if ( nCurDelta < nMinDelta )
-			{
-				nIndex = i;
-				nMinDelta = nCurDelta;
-			}
-		}
-		switch ( nIndex )
-		{
-			case 0: return L"black";
-			case 1: return L"blue";
-			case 2: return L"cyan";
-			case 3: return L"darkBlue";
-			case 4: return L"darkCyan";
-			case 5: return L"darkGray";
-			case 6: return L"darkGreen";
-			case 7: return L"darkMagenta";
-			case 8: return L"darkRed";
-			case 9: return L"darkYellow";
-			case 10: return L"green";
-			case 11: return L"lightGray";
-			case 12: return L"magenta";
-			case 13: return L"red";
-			case 14: return L"white";
-			case 15: return L"yellow";
-            default: break;
-        }
-		return L"none";
-	}
 private:
-	inline void RGB2HSL(unsigned char unR, unsigned char unG, unsigned char unB, double& dH, double& dS, double& dL)
-	{
-        int nmin   = (std::min)( unR, (std::min)( unG, unB ) );
-        int nmax   = (std::max)( unR, (std::max)( unG, unB ) );
-        int nDelta = nmax - nmin;
-        double dmax   = ( nmax + nmin ) / 255.0;
-		double dDelta = nDelta / 255.0;
+	void RGB2HSL(unsigned char unR, unsigned char unG, unsigned char unB, double& dH, double& dS, double& dL);
+	void HSL2RGB(double dH, double dS, double dL, unsigned char &unR, unsigned char& unG, unsigned char& unB);
+	double Hue2RGB(double dV1, double dV2, double dH);
 
-        dL = dmax / 2.0;
-
-		if ( 0 == nDelta ) //This is a gray, no chroma...
-		{
-			dH = 0.0;
-			dS = 0.0;
-		}
-		else //Chromatic data...
-		{
-            if ( dL < 0.5 ) dS = dDelta / dmax;
-            else            dS = dDelta / ( 2.0 - dmax );
-
-			dDelta = dDelta * 1530.0;
-
-            double dR = ( nmax - unR ) / dDelta;
-            double dG = ( nmax - unG ) / dDelta;
-            double dB = ( nmax - unB ) / dDelta;
-
-            if      ( unR == nmax ) dH = dB - dG;
-            else if ( unG == nmax ) dH = c_d_1_3 + dR - dB;
-            else if ( unB == nmax ) dH = c_d_2_3 + dG - dR;
-
-			if ( dH < 0.0 ) dH += 1.0;
-			if ( dH > 1.0 ) dH -= 1.0;
-		}
-	}
-
-	inline void HSL2RGB(double dH, double dS, double dL, unsigned char &unR, unsigned char& unG, unsigned char& unB)
-	{
-		if ( 0 == dS )
-		{
-			unR = static_cast<unsigned char>(255 * dL);
-			unG = static_cast<unsigned char>(255 * dL);
-			unB = static_cast<unsigned char>(255 * dL);
-		}
-		else
-		{
-			double dV2;
-			if ( dL < 0.5 ) dV2 = dL * ( 1.0 + dS );
-			else            dV2 = dL + dS - dS * dL;
-
-			double dV1 = 2.0 * dL - dV2;
-
-			unR	= static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH + c_d_1_3 ) );
-			unG	= static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH ) );
-			unB = static_cast<unsigned char>(255 * Hue2RGB( dV1, dV2, dH - c_d_1_3 ) );
-		} 
-	}
-	inline double Hue2RGB(double dV1, double dV2, double dH)
-	{
-		if ( dH < 0.0 ) dH += 1.0;
-		if ( dH > 1.0 ) dH -= 1.0;
-		if ( dH < c_d_1_6 ) return dV1 + ( dV2 - dV1 ) * 6.0 * dH;
-		if ( dH < 0.5     ) return dV2;
-		if ( dH < c_d_2_3 ) return dV1 + ( dV2 - dV1 ) * ( c_d_2_3 - dH ) * 6.0;
-		return dV1;
-	}
 	const double c_d_1_6 = 1.0 / 6.0;
 	const double c_d_1_3 = 1.0 / 3.0;
 	const double c_d_2_3 = 2.0 / 3.0;
 				
-	std::wstring WriteOOXAttribute( std::wstring sParam )
-	 {
-         std::wstring sResult;
-         if ( m_eTheme == TC_NONE )
-         {
-             if ( L"" == sParam )
-             {
-                 sResult = L"color = \"";
-                 sResult += ToHexColor();
-                 sResult += L"\"";
-             }
-             else if ( L"Fill" == sParam )
-             {
-                 sResult = L"fill = \"";
-                 sResult += ToHexColor();
-                 sResult += L"\"";
-             }
-         }
-         else
-         {
-             std::wstring sTheme;
-             if ( true == GetStringByTheme( sTheme, m_eTheme ) )
-             {
-                sResult += L"theme"		+ sParam + L"Color=\""	+ sTheme + L"\"";
-                sResult += L" theme"	+ sParam + L"Shade=\""	+ std::to_wstring(m_byteShade) + L"\"";
-                sResult += L" theme"	+ sParam + L"Tint=\""	+ std::to_wstring(m_byteTint) + L"\"";
-			 }
-         }
-         return sResult;
-	 }
-
+	std::wstring WriteOOXAttribute( std::wstring sParam );
 };
+
 class RtfShading
 {
 public: 
@@ -681,97 +249,52 @@ public:
 	int m_nForeColor;
 	int m_nBackColor;
 
-	RtfShading()
-	{
-		SetDefault();
-	}
-	bool operator==( const RtfShading& oChar )
-	{
-		return m_eType == oChar.m_eType && m_nValue == oChar.m_nValue && m_nForeColor == oChar.m_nForeColor && m_nBackColor == oChar.m_nBackColor;
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SHADING;
-	}
-	void SetDefaultRtf( )
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX( )
-	{
-		SetDefault();
-	}
-	void SetDefault( )
-	{
-		DEFAULT_PROPERTY_DEF( m_eType, st_none )
-		DEFAULT_PROPERTY( m_nValue )
-		DEFAULT_PROPERTY( m_nForeColor )
-		DEFAULT_PROPERTY( m_nBackColor )
-	}
-	void Merge( RtfShading& oParPr )
-	{
-		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-		if ( st_none != oParPr.m_eType || PROP_DEF != oParPr.m_nValue || PROP_DEF != oParPr.m_nForeColor || PROP_DEF != oParPr.m_nBackColor )
-		{
-			m_eType			= oParPr.m_eType;
-			m_nValue		= oParPr.m_nValue;
-			m_nForeColor	= oParPr.m_nForeColor;
-			m_nBackColor	= oParPr.m_nBackColor;
-		}
-	}
+	RtfShading();
+
+	bool operator==( const RtfShading& oChar );
+	bool IsValid();
+	int GetType();
+
+	void SetDefaultRtf( );
+	void SetDefaultOOX( );
+	void SetDefault( );
+
+	void Merge( RtfShading& oParPr );
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfShadingPar : public RtfShading
 {
 public: 
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SHADING_PARAGRAPH;
-	}
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
+
 class RtfShadingChar : public RtfShading
 {
 public: 
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SHADING_CHAR;
-	}
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfShadingCell : public RtfShading
 {
 public: 
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SHADING_CELL;
-	}
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfShadingRow : public RtfShading
 {
 public:
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SHADING_CELL;
-	}
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
 class RtfShadingTableStyle : public RtfShading
 {
 public: 
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_SHADING_TABLESTYLE;
-	}
+	int GetType();
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
 };
 
@@ -816,77 +339,24 @@ public:
 	int m_nSpace;
 	int m_nColor;
 
-	RtfBorder()
-	{
-		SetDefault();
-	}
-	bool operator==( const RtfBorder& oChar )
-	{
-		return m_eType == oChar.m_eType && m_nWidth == oChar.m_nWidth && m_nSpace == oChar.m_nSpace && m_nColor == oChar.m_nColor;
-	}
-	bool IsValid()
-	{
-		return bt_none != m_eType;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_BORDER;
-	}
-	void SetDefaultRtf( )
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX( )
-	{
-		SetDefault();
-	}
-	void SetDefault( )
-	{
-		DEFAULT_PROPERTY_DEF( m_eType, bt_none )
-		DEFAULT_PROPERTY	( m_nWidth )
-		DEFAULT_PROPERTY	( m_nSpace )
-		DEFAULT_PROPERTY	( m_nColor )
-	}
-	void SetEmpty( )
-	{
-		m_eType		= bt_brdrnone;
-		m_nWidth	= 0;
-		m_nSpace	= 0;
-		m_nColor	= -1; //auto
-	}
-	void Merge( RtfBorder& oBorPr )
-	{
-		//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-		if ( bt_none != oBorPr.m_eType || PROP_DEF != oBorPr.m_nWidth || PROP_DEF != oBorPr.m_nSpace || PROP_DEF != oBorPr.m_nColor )
-		{
-			m_eType		= oBorPr.m_eType;
-			m_nWidth	= oBorPr.m_nWidth;
-			m_nSpace	= oBorPr.m_nSpace;
-			m_nColor	= oBorPr.m_nColor;
-		}
-	}
+	RtfBorder();
+	bool operator==( const RtfBorder& oChar );
+
+	bool IsValid();
+	int GetType();
+
+	void SetDefaultRtf( );
+	void SetDefaultOOX( );
+	void SetDefault( );
+	void SetEmpty( );
+
+	void Merge( RtfBorder& oBorPr );
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	
-    static bool GetStringRtfByType( _BorderType nValue, std::wstring& sValue )
-	{
-		sValue = L"\\brdrs";
-		//switch( nValue )
-		//{
-		//default: sResult = L"\\brdrs"; break;
-		////}
-		return false;
-	}
-    static std::wstring GetStringOOXByType( _BorderType nValue, std::wstring& sValue )
-	{
-        std::wstring sResult;
-		sResult = L"single";
-		//switch( nValue )
-		//{
-		//default: sResult = L"single"; break;
-		//}
-		return sResult;
-	}
+	static bool GetStringRtfByType( _BorderType nValue, std::wstring& sValue );
+	static std::wstring GetStringOOXByType( _BorderType nValue, std::wstring& sValue );
 };
 
 class RtfTab : public IRenderableProperty
@@ -912,24 +382,12 @@ public:
 	
 	int m_nTab;		//tbN or \txN	Tab position in twips from the left margin.
 
-	RtfTab()
-	{
-		SetDefault();
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY	( m_nTab );
-		DEFAULT_PROPERTY_DEF( m_eLeader,	tl_none );
-		DEFAULT_PROPERTY_DEF( m_eKind,		tk_tql );
-	}
+	RtfTab();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
@@ -938,53 +396,21 @@ class RtfTabs: public IRenderableProperty
 {
 public: 
 	std::vector<RtfTab> m_aTabs;
-	RtfTabs()
-	{
-		SetDefault();
-	}
-	RtfTabs( const RtfTabs& oTabs )
-	{
-		SetDefault();
-	}
-	const RtfTabs& operator=( const RtfTabs& oTabs )
-	{
-		Merge( oTabs );
-		return (*this);
-	}
-	void Merge( const RtfTabs& oTabs )
-	{
-		m_aTabs.clear();
-		m_aTabs = oTabs.m_aTabs ;
-	}
-	void SetDefault()
-	{
-		m_aTabs.clear();
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
-		{
-			sResult += m_aTabs[i].RenderToRtf( oRenderParameter );
-		}
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-        std::wstring sTabs;
-		for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
-		{
-			sTabs += m_aTabs[i].RenderToOOX( oRenderParameter );
-		}
 
-        std::wstring sResult;
-        if ( !sTabs.empty() )
-            sResult += L"<w:tabs>" + sTabs + L"</w:tabs>";
+	RtfTabs();
+	RtfTabs( const RtfTabs& oTabs );
 
-		return sResult;
-	}
+	const RtfTabs& operator=( const RtfTabs& oTabs );
+
+	void Merge( const RtfTabs& oTabs );
+	void SetDefault();
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 //----------------------------------------------------------------------------------------------------------
+
 class RtfCharProperty;
 typedef boost::shared_ptr<RtfCharProperty> RtfCharPropertyPtr;
 
@@ -1049,160 +475,17 @@ public:
 	RtfBorder			m_poBorder;
 	RtfShadingChar		m_poShading;
 	
-	bool operator==( const RtfCharProperty& oChar )
-	{
-		return m_nAnimated == oChar.m_nAnimated && m_bBold == oChar.m_bBold && m_bCaps == oChar.m_bCaps && m_nScalex == oChar.m_nScalex && 
-				m_nCharStyle == oChar.m_nCharStyle && m_nDown == oChar.m_nDown && m_bEmbo == oChar.m_bEmbo && m_nCharacterSpacing == oChar.m_nCharacterSpacing && 
-				m_nFitText == oChar.m_nFitText && m_nFont == oChar.m_nFont && m_nFont2 == oChar.m_nFont2 && m_nFont3 == oChar.m_nFont3 && 
-				m_nFontSize == oChar.m_nFontSize && m_bItalic == oChar.m_bItalic && m_bImprint == oChar.m_bImprint && m_nKerning == oChar.m_nKerning && 
-				m_bRightToLeft == oChar.m_bRightToLeft && m_nComplexScript == oChar.m_nComplexScript && m_bOutline == oChar.m_bOutline && m_bScaps == oChar.m_bScaps && 
-				m_bShadow == oChar.m_bShadow && m_bStrike == oChar.m_bStrike && m_bSub == oChar.m_bSub && m_bSuper == oChar.m_bSuper && 
-				m_bHidden == oChar.m_bHidden && m_nHightlited == oChar.m_nHightlited && m_nForeColor == oChar.m_nForeColor && 
-				m_eUnderStyle == oChar.m_eUnderStyle && m_nUnderlineColor == oChar.m_nUnderlineColor && m_nUp == oChar.m_nUp &&
-				m_poBorder == oChar.m_poBorder && m_poShading == oChar.m_poShading && m_nDeleted == oChar.m_nDeleted &&
-				m_nRevised == oChar.m_nRevised && m_nCrAuth == oChar.m_nCrAuth && m_nRevauthDel == oChar.m_nRevauthDel &&
-				m_nRevdttm == oChar.m_nRevdttm && m_nRevdttmDel == oChar.m_nRevdttmDel && m_nCrDate == oChar.m_nCrDate;
-	}
+	bool operator==( const RtfCharProperty& oChar );
 
-	RtfCharProperty()
-	{
-		m_bListLevel = false;
-		SetDefault();
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_CHAR;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-		
-		m_poShading.SetDefaultRtf();
-		m_poBorder.SetDefaultRtf();
-		
-		if (false == m_bListLevel)
-			m_nFontSize = 24;
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-		
-		m_poShading.SetDefaultOOX();
-		m_poBorder.SetDefaultOOX();
-		
-		if (false == m_bListLevel)
-			m_nFontSize = 20;
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY	( m_nAnimated )
-		DEFAULT_PROPERTY	( m_bBold )
-		DEFAULT_PROPERTY	( m_bCaps )
-		DEFAULT_PROPERTY	( m_nScalex )
-		DEFAULT_PROPERTY	( m_nCharStyle )
-		DEFAULT_PROPERTY	( m_nDown )
-		DEFAULT_PROPERTY	( m_bEmbo )
-		DEFAULT_PROPERTY	( m_nCharacterSpacing )
-		DEFAULT_PROPERTY	( m_nFitText )
-		DEFAULT_PROPERTY	( m_nFont )
-		DEFAULT_PROPERTY	( m_nFont2 )
-		DEFAULT_PROPERTY	( m_nFont3 )
-		DEFAULT_PROPERTY	( m_nFontSize )
-		DEFAULT_PROPERTY	( m_bItalic )
-		DEFAULT_PROPERTY	( m_bImprint )
-		DEFAULT_PROPERTY	( m_nKerning )
-		DEFAULT_PROPERTY	( m_bRightToLeft )
-		DEFAULT_PROPERTY	( m_bOutline )
-		DEFAULT_PROPERTY	( m_bScaps )
-		DEFAULT_PROPERTY	( m_bShadow )
-		DEFAULT_PROPERTY	( m_bStrike )
-		DEFAULT_PROPERTY	( m_nStriked )
-		DEFAULT_PROPERTY	( m_bSub )
-		DEFAULT_PROPERTY	( m_bSuper )
-		DEFAULT_PROPERTY	( m_bHidden )
-		DEFAULT_PROPERTY	( m_nHightlited )
-		DEFAULT_PROPERTY	( m_nForeColor )
-		DEFAULT_PROPERTY_DEF( m_eUnderStyle, uls_none )
-		DEFAULT_PROPERTY	( m_nUnderlineColor )
-		DEFAULT_PROPERTY	( m_nUp )
-		DEFAULT_PROPERTY	( m_nComplexScript )
-		DEFAULT_PROPERTY	( m_nLanguage )
-		DEFAULT_PROPERTY	( m_nLanguageAsian )
-		
-		DEFAULT_PROPERTY	( m_nCrAuth)
-		DEFAULT_PROPERTY	( m_nCrDate)
+	RtfCharProperty();
+	int GetType();
 
-		DEFAULT_PROPERTY	( m_nDeleted)
-		DEFAULT_PROPERTY	( m_nRevised)
-		DEFAULT_PROPERTY	( m_nRevauth)
-		DEFAULT_PROPERTY	( m_nRevdttm)
-		DEFAULT_PROPERTY	( m_nRevauthDel)
-		DEFAULT_PROPERTY	( m_nRevdttmDel)
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
-		DEFAULT_PROPERTY	( m_nInsrsid)
+	void Merge( RtfCharProperty& oCharPr, bool bAll = true );
 
-		m_poShading.SetDefault();
-		m_poBorder.SetDefault();
-
-		m_pOldCharProp = RtfCharPropertyPtr();
-	}
-	void Merge( RtfCharProperty& oCharPr, bool bAll = true )
-	{
-		MERGE_PROPERTY( m_nAnimated,	oCharPr )
-		MERGE_PROPERTY( m_bBold,		oCharPr )
-		MERGE_PROPERTY( m_bCaps,		oCharPr )
-		MERGE_PROPERTY( m_nScalex,		oCharPr )
-		MERGE_PROPERTY( m_nDown,		oCharPr )
-		MERGE_PROPERTY( m_bEmbo,		oCharPr )
-		MERGE_PROPERTY( m_nCharacterSpacing, oCharPr )
-		MERGE_PROPERTY( m_nFitText,		oCharPr )
-		MERGE_PROPERTY( m_nFont,		oCharPr )
-		MERGE_PROPERTY( m_nFont2,		oCharPr )
-		MERGE_PROPERTY( m_nFont3,		oCharPr )
-		MERGE_PROPERTY( m_nFontSize,	oCharPr )
-		MERGE_PROPERTY( m_bItalic,		oCharPr )
-		MERGE_PROPERTY( m_bImprint,		oCharPr )
-		MERGE_PROPERTY( m_nKerning,		oCharPr )
-		MERGE_PROPERTY( m_bRightToLeft, oCharPr )
-		MERGE_PROPERTY( m_nLanguage,	oCharPr )
-		MERGE_PROPERTY( m_nLanguageAsian,oCharPr )
-		MERGE_PROPERTY( m_bOutline,		oCharPr )
-		MERGE_PROPERTY( m_bScaps,		oCharPr )
-		MERGE_PROPERTY( m_bShadow,		oCharPr )
-		MERGE_PROPERTY( m_bSub,			oCharPr )
-		MERGE_PROPERTY( m_bSuper,		oCharPr )
-		MERGE_PROPERTY( m_bHidden,		oCharPr )
-		MERGE_PROPERTY( m_nForeColor,	oCharPr )
-		MERGE_PROPERTY( m_nCrAuth,		oCharPr )
-		MERGE_PROPERTY( m_nCrDate,		oCharPr )
-		MERGE_PROPERTY( m_nDeleted,		oCharPr )
-		MERGE_PROPERTY( m_nRevised,		oCharPr )
-		MERGE_PROPERTY( m_nRevauth,		oCharPr )
-		MERGE_PROPERTY( m_nRevdttm,		oCharPr )
-		MERGE_PROPERTY( m_nRevauthDel,	oCharPr )
-		MERGE_PROPERTY( m_nRevdttmDel,	oCharPr )
-		MERGE_PROPERTY( m_nInsrsid,		oCharPr )
-
-		if (bAll)
-		{
-			MERGE_PROPERTY( m_nCharStyle,	oCharPr )
-			MERGE_PROPERTY( m_bStrike,		oCharPr )
-			MERGE_PROPERTY( m_nStriked,		oCharPr )			 
-			MERGE_PROPERTY( m_nHightlited,	oCharPr )
-			//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-			if ( uls_none != oCharPr.m_eUnderStyle || PROP_DEF != oCharPr.m_nUnderlineColor )
-			{
-				m_eUnderStyle = oCharPr.m_eUnderStyle;
-				m_nUnderlineColor = oCharPr.m_nUnderlineColor;
-			}
-		}
-		MERGE_PROPERTY_DEF	( m_bSub, oCharPr, uls_none )
-		MERGE_PROPERTY		( m_nUp, oCharPr )
-		MERGE_PROPERTY		( m_nComplexScript, oCharPr )
-		
-		m_poBorder.Merge( oCharPr.m_poBorder );
-		m_poShading.Merge( oCharPr.m_poShading );
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
@@ -1230,207 +513,19 @@ public:
 	
 	RtfCharProperty m_oCharProp; //Char
 
-	RtfListLevelProperty()
-	{
-		m_oCharProp.m_bListLevel = true;
+	RtfListLevelProperty();
 
-		SetDefault();
-	}
-	bool IsValid()
-	{
-		//return -1 != m_nFollow && -1 != m_nStart && -1 != m_nNumberType && -1 != m_nJustification &&
-        //	false == m_sText.empty() && false == m_sNumber.empty();
-        return  PROP_DEF != m_nNumberType && false == m_sText.empty();
-	}
-    std::wstring GenerateListText()
-	 {//заменяем на булеты
-        std::wstring sResult;
+	bool IsValid();
+	std::wstring GenerateListText();
+	void SetDefault();
 
-        char cBullet[1];  cBullet[0] = (char)149;
-
-        std::string sBullet = cBullet;
-        std::wstring swBullet(sBullet.begin(), sBullet.end());
-
-		sResult += swBullet.c_str();
-        //std::wstring sOOXNumber = GetLevelTextOOX();
-        //for (size_t i = 0; i < sOOXNumber.length(); i++ )
-        //	if ( sOOXNumber[i] == '%' && i != sOOXNumber.length() - 1 )
-		//	{
-		//		sResult += swBullet;
-		//		i++;
-		//	}
-		//	else
-		//		sResult.AppendChar( sOOXNumber[i] );
-		return sResult;
-	 }
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY	( m_nSpace )
-		DEFAULT_PROPERTY	( m_nLevel )
-		DEFAULT_PROPERTY	( m_nNumberType )
-		DEFAULT_PROPERTY	( m_bTentative )
-		DEFAULT_PROPERTY	( m_nJustification )
-		DEFAULT_PROPERTY	( m_nFollow )
-		DEFAULT_PROPERTY	( m_nStart )
-		DEFAULT_PROPERTY_DEF( m_sText, L"" )
-		DEFAULT_PROPERTY_DEF( m_sNumber, L"" )
-		DEFAULT_PROPERTY	( m_nNoRestart )
-		DEFAULT_PROPERTY	( m_nLegal )
-		DEFAULT_PROPERTY	( m_nPictureIndex )
-		DEFAULT_PROPERTY	( m_nFirstIndent )
-		DEFAULT_PROPERTY	( m_nIndent )
-		DEFAULT_PROPERTY	( m_nIndentStart )
-
-		m_oTabs.SetDefault();
-		m_oCharProp.SetDefault();
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
     std::wstring RenderToOOX2(RenderParameter oRenderParameter, int lvl = PROP_DEF);
 
-    static std::wstring GetFormat( int nNumFormat)
-	{
-        std::wstring sResult;
-		switch(nNumFormat)
-		{
-			case 0: sResult = L"decimal";			break;
-			case 1: sResult = L"upperRoman";		break;
-			case 2: sResult = L"lowerRoman";		break;
-			case 3: sResult = L"upperLetter";		break;
-			case 4: sResult = L"lowerLetter";		break;
-			case 5: sResult = L"ordinal";			break;
-			case 6: sResult = L"cardinalText";		break;
-			case 7: sResult = L"ordinalText";		break;
-			case 8: sResult = L"hex";				break;
-			case 9: sResult = L"chicago";			break;
-			case 10: sResult = L"ideographDigital";	break;
-			case 11: sResult = L"japaneseCounting";	break;
-			case 12: sResult = L"aiueo";			break;
-			case 13: sResult = L"iroha";			break;
-			case 14: sResult = L"decimalFullWidth";	break;
-			case 15: sResult = L"decimalHalfWidth";	break;
-			case 16: sResult = L"japaneseLegal";	break;
-			case 17: sResult = L"japaneseDigitalTenThousand";	break;
-			case 18: sResult = L"decimalEnclosedCircle";		break;
-			case 19: sResult = L"decimalFullWidth2";			break;
-			case 20: sResult = L"aiueoFullWidth";	break;
-			case 21: sResult = L"irohaFullWidth";	break;
-			case 22: sResult = L"decimalZero";		break;
-			case 23: sResult = L"bullet";			break;
-			case 24: sResult = L"ganada";			break;
-			case 25: sResult = L"chosung";			break;
-			case 26: sResult = L"decimalEnclosedFullstop";		break;
-			case 27: sResult = L"decimalEnclosedParen";			break;
-			case 28: sResult = L"decimalEnclosedCircleChinese";	break;
-			case 29: sResult = L"ideographEnclosedCircle";		break;
-			case 30: sResult = L"ideographTraditional";			break;
-			case 31: sResult = L"ideographZodiac";				break;
-			case 32: sResult = L"ideographZodiacTraditional";	break;
-			case 33: sResult = L"taiwaneseCounting";			break;
-			case 34: sResult = L"ideographLegalTraditional";	break;
-			case 35: sResult = L"taiwaneseCountingThousand";	break;
-			case 36: sResult = L"taiwaneseDigital";				break;
-			case 37: sResult = L"chineseCounting";				break;
-			case 38: sResult = L"chineseLegalSimplified";		break;
-			case 39: sResult = L"chineseCountingThousand";		break;
-			case 40: sResult = L"chineseCounting";				break;
-			case 41: sResult = L"koreanDigital";		break;
-			case 42: sResult = L"koreanCounting";		break;
-			case 43: sResult = L"koreanLegal";			break;
-			case 44: sResult = L"koreanDigital2";		break;
-			case 45: sResult = L"hebrew1";				break;
-			case 46: sResult = L"arabicAlpha";			break;
-			case 47: sResult = L"hebrew2";				break;
-			case 48: sResult = L"arabicAbjad";			break;
-			case 49: sResult = L"hindiVowels";			break;
-			case 50: sResult = L"hindiConsonants";		break;
-			case 51: sResult = L"hindiNumbers";			break;
-			case 52: sResult = L"hindiCounting";		break;
-			case 53: sResult = L"thaiLetters";			break;
-			case 54: sResult = L"thaiNumbers";			break;
-			case 55: sResult = L"thaiCounting";			break;
-			case 56: sResult = L"vietnameseCounting";	break;
-			case 57: sResult = L"numberInDash";			break;
-			case 58: sResult = L"russianLower";			break;
-			case 59: sResult = L"russianUpper";			break;
+	static std::wstring GetFormat( int nNumFormat);
+	static int GetFormat( std::wstring sFormat);
 
-			case 70: sResult = L"chicago";				break;
-
-			case 255: sResult = L"none";				break;
-			default: sResult = L"decimal";
-		}
-		return sResult;
-	}
-    static int GetFormat( std::wstring sFormat)
-	{
-		if		( L"aiueo" == sFormat )							return 12;
-		else if ( L"aiueoFullWidth" == sFormat )				return 20;
-		else if ( L"arabicAbjad" == sFormat )					return 48;
-		else if ( L"arabicAlpha" == sFormat )					return 46;
-		else if ( L"bahtText" == sFormat )						return 0;
-		else if ( L"bullet" == sFormat )						return 23;
-		else if ( L"cardinalText" == sFormat )					return 6;
-		else if ( L"chicago" == sFormat )						return 9;
-		else if ( L"chineseCounting" == sFormat )				return 37;
-		else if ( L"chineseCountingThousand" == sFormat )		return 39;
-		else if ( L"chineseLegalSimplified" == sFormat )		return 38;
-		else if ( L"chosung" == sFormat )						return 25;
-		else if ( L"custom" == sFormat )						return 0;
-		else if ( L"decimal" == sFormat )						return 0;
-		else if ( L"decimalEnclosedCircle" == sFormat )			return 18;
-		else if ( L"decimalEnclosedCircleChinese" == sFormat )	return 28;
-		else if ( L"decimalEnclosedFullstop" == sFormat )		return 26;
-		else if ( L"decimalEnclosedParen" == sFormat )			return 27;
-		else if ( L"decimalFullWidth" == sFormat )				return 14;
-		else if ( L"decimalFullWidth2" == sFormat )				return 19;
-		else if ( L"decimalHalfWidth" == sFormat )				return 15;
-		else if ( L"decimalZero" == sFormat )					return 22;
-		else if ( L"dollarText" == sFormat )					return 0;
-		else if ( L"ganada" == sFormat )						return 24;
-		else if ( L"hebrew1" == sFormat )						return 45;
-		else if ( L"hebrew1" == sFormat )						return 45;
-		else if ( L"hebrew2" == sFormat )						return 47;
-		else if ( L"hex" == sFormat )							return 8;
-		else if ( L"hindiConsonants" == sFormat )				return 50;
-		else if ( L"hindiCounting" == sFormat )					return 52;
-		else if ( L"hindiNumbers" == sFormat )					return 51;
-		else if ( L"hindiVowels" == sFormat )					return 49;
-		else if ( L"ideographDigital" == sFormat )				return 10;
-		else if ( L"ideographEnclosedCircle" == sFormat )		return 29;
-		else if ( L"ideographLegalTraditional" == sFormat )		return 34;
-		else if ( L"ideographTraditional" == sFormat )			return 30;
-		else if ( L"ideographZodiac" == sFormat )				return 31;
-		else if ( L"ideographZodiacTraditional" == sFormat )	return 32;
-		else if ( L"iroha" == sFormat )							return 13;
-		else if ( L"irohaFullWidth" == sFormat )				return 21;
-		else if ( L"japaneseCounting" == sFormat )				return 11;
-		else if ( L"japaneseDigitalTenThousand" == sFormat )	return 17;
-		else if ( L"japaneseLegal" == sFormat )					return 16;
-		else if ( L"koreanCounting" == sFormat )				return 42;
-		else if ( L"koreanDigital" == sFormat )					return 41;
-		else if ( L"koreanDigital2" == sFormat )				return 44;
-		else if ( L"koreanLegal" == sFormat )					return 43;
-		else if ( L"lowerLetter" == sFormat )					return 4;
-		else if ( L"lowerRoman" == sFormat )					return 2;
-		else if ( L"none" == sFormat )							return 255;
-		else if ( L"numberInDash" == sFormat )					return 57;
-		else if ( L"ordinal" == sFormat )						return 5;
-		else if ( L"ordinalText" == sFormat )					return 7;
-		else if ( L"russianLower" == sFormat )					return 58;
-		else if ( L"russianUpper" == sFormat )					return 59;
-		else if ( L"taiwaneseCounting" == sFormat )				return 33;
-		else if ( L"taiwaneseCountingThousand" == sFormat )		return 35;
-		else if ( L"taiwaneseDigital" == sFormat )				return 36;
-		else if ( L"thaiCounting" == sFormat )					return 55;
-		else if ( L"thaiLetters" == sFormat )					return 53;
-		else if ( L"thaiNumbers" == sFormat )					return 54;
-		else if ( L"upperLetter" == sFormat )					return 3;
-		else if ( L"upperRoman" == sFormat )					return 1;
-		else if ( L"vietnameseCounting" == sFormat )			return 56;
-		else if ( L"chicago" == sFormat )						return 70;
-		
-		return 0; //decimal
-	}
     std::wstring GetLevelTextOOX();
     void SetLevelTextOOX(std::wstring sText);
 };
@@ -1444,27 +539,15 @@ public:
 	int		m_bListHybrid;		//listhybrid	Present if the list has 9 levels, each of which is the equivalent of a simple list. Only one of \listsimpleN and \listhybrid should be present. Word 2000 and newer versions will write lists with the \listhybrid property.
     std::wstring m_sName;		//listname	The argument for \listname is a string that is the name of this list. Names allow ListNum fields to specify the list to which they belong. This is a destination control word.
 
-	RtfListProperty()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY	( m_nID )
-		DEFAULT_PROPERTY	( m_nTemplateId )
-		DEFAULT_PROPERTY	( m_nListSimple )
-		DEFAULT_PROPERTY	( m_bListHybrid )
-		DEFAULT_PROPERTY_DEF( m_sName, L"" )
+	RtfListProperty();
 
-		m_aArray.clear();
-	}
-	bool IsValid()
-	{
-		return (PROP_DEF != m_nID) ;		//&& (L"" != m_sName);
-	}
+	void SetDefault();
+	bool IsValid();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfListOverrideProperty : IRenderableProperty
 {
 public: 
@@ -1484,97 +567,30 @@ public:
 				}
 		};
 		std::vector<ListOverrideLevel> m_aOverrideLevels;
-		ListOverrideLevels()
-		{
-		}
-		ListOverrideLevels( const ListOverrideLevels& oOverLevel )
-		{
-			(*this) = oOverLevel;
-		}
-		ListOverrideLevels& operator=( const ListOverrideLevels& oOverLevel )
-		{
-			m_aOverrideLevels.clear();
-			m_aOverrideLevels = oOverLevel.m_aOverrideLevels;
-			return (*this);
-		}
-		void SetDefault()
-		{
-			m_aOverrideLevels.clear();
-		}
-        std::wstring RenderToRtf(RenderParameter oRenderParameter)
-		{
-            std::wstring sResult;
-			int nOverrideCount = (int)m_aOverrideLevels.size();
-			for (int i = 0; i < nOverrideCount; i++ )
-				if ( PROP_DEF == m_aOverrideLevels[i].m_nLevelIndex )
-                    nOverrideCount--;
-            sResult += L"\\listoverridecount" + std::to_wstring( nOverrideCount );
-			for (int i = 0; i < nOverrideCount; i++ )
-			{
-				if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
-				{
-					sResult += L"{\\lfolevel";
-					
-					if ( PROP_DEF != m_aOverrideLevels[i].m_nLevelIndex )
-                        sResult += L"\\listoverrideformat" + std::to_wstring( m_aOverrideLevels[i].m_nLevelIndex );
-					if ( PROP_DEF != m_aOverrideLevels[i].m_nStart )
-                        sResult += L"\\listoverridestartat" + std::to_wstring( m_aOverrideLevels[i].m_nStart );
-					
-					sResult += m_aOverrideLevels[i].m_oLevel.RenderToRtf(oRenderParameter);
-					sResult += L"}";
-				}
-			}
-			return sResult;
-		}
-        std::wstring RenderToOOX(RenderParameter oRenderParameter)
-		{
-            std::wstring sResult;
-			int index_prev = -1, index;
-			for (size_t i = 0; i < m_aOverrideLevels.size(); i++ )
-			{
-				ListOverrideLevel& OverrideLevel = m_aOverrideLevels[i];
-				if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
-				{
-					index = OverrideLevel.m_nLevelIndex;
-				}
-				else
-				{
-					index = ++index_prev;
-				}
-                sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(index) + L"\">";
-				if ( PROP_DEF != OverrideLevel.m_nStart )
-                    sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
-				sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
-				sResult += L"</w:lvlOverride>";
 
-				index_prev = index;
-			}
-			return sResult;
-		}
+		ListOverrideLevels();
+		ListOverrideLevels( const ListOverrideLevels& oOverLevel );
+		ListOverrideLevels& operator=( const ListOverrideLevels& oOverLevel );
+
+		void SetDefault();
+
+		std::wstring RenderToRtf(RenderParameter oRenderParameter);
+		std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	};
+
 	int m_nListID;		//listidN	Should exactly match the \listid of one of the lists in the List table. The value N is a long integer.
 	int m_nIndex;		//lsN	The (1-based) index of this \listoverride in the \listoverride table. This value should never be zero inside a \listoverride and must be unique for all \listoverride’s within a document. The valid values are from 1 to 2000. The value 0 means no list.
 	
 	ListOverrideLevels m_oOverrideLevels;
 
-	RtfListOverrideProperty()
-	{
-		SetDefault();
-	}
-	bool IsValid()
-	{
-		return PROP_DEF != m_nListID && PROP_DEF != m_nIndex;
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY( m_nListID )
-		DEFAULT_PROPERTY( m_nIndex )
-		m_oOverrideLevels.SetDefault();
-	}
+	RtfListOverrideProperty();
+
+	bool IsValid();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
-
 
 class RtfStyle;
 typedef boost::shared_ptr<RtfStyle> RtfStylePtr;
@@ -1603,108 +619,26 @@ public:
 	int m_nPriority;
 	int m_bUnhiddenWhenUse;
 
-	RtfStyle()
-	{
-		SetDefault();
-	}
-	bool IsValid()
-	{
-		return PROP_DEF != m_nID;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_STYLE;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-		m_eType = stParagraph;
-		m_nID = 0;
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY_DEF( m_eType, st_none )
-		DEFAULT_PROPERTY_DEF( m_sName, L"" )
-		DEFAULT_PROPERTY_DEF( m_sID, L"" )
-		DEFAULT_PROPERTY	( m_nID )
-		DEFAULT_PROPERTY	( m_bAdditive )
-		DEFAULT_PROPERTY	( m_nBasedOn )
-		DEFAULT_PROPERTY	( m_nNext )
-		DEFAULT_PROPERTY	( m_bHidden )
-		DEFAULT_PROPERTY	( m_nLink )
-		DEFAULT_PROPERTY	( m_bLocked )
-		DEFAULT_PROPERTY	( m_bPersonal )
-		DEFAULT_PROPERTY	( m_bCompose )
-		DEFAULT_PROPERTY	( m_bReply )
-		DEFAULT_PROPERTY	( m_nSemiHidden )
-		DEFAULT_PROPERTY	( m_bQFormat )
-		DEFAULT_PROPERTY	( m_nPriority )
-		DEFAULT_PROPERTY	( m_bUnhiddenWhenUse )
-	}
+	RtfStyle();
 
-	virtual void Merge( RtfStylePtr oStyle )
-	{
-		RtfStyle& oCurStyle = *oStyle;
-		
-		MERGE_PROPERTY_DEF	( m_eType, oCurStyle, st_none )
-		MERGE_PROPERTY_DEF	( m_sName, oCurStyle, L"" )
-		MERGE_PROPERTY		( m_nID, oCurStyle )
-		MERGE_PROPERTY_DEF	( m_sID, oCurStyle, L"" )
+	bool IsValid();
+	int GetType();
 
-		MERGE_PROPERTY		( m_bAdditive, oCurStyle )
-		MERGE_PROPERTY		( m_nBasedOn, oCurStyle )
-		MERGE_PROPERTY		( m_nNext, oCurStyle )
-		MERGE_PROPERTY		( m_bHidden, oCurStyle )
-		MERGE_PROPERTY		( m_nLink, oCurStyle )
-		MERGE_PROPERTY		( m_bLocked, oCurStyle )
-		MERGE_PROPERTY		( m_bPersonal, oCurStyle )
-		MERGE_PROPERTY		( m_bCompose, oCurStyle )
-		MERGE_PROPERTY		( m_bReply, oCurStyle )
-		MERGE_PROPERTY		( m_nSemiHidden, oCurStyle )
-		MERGE_PROPERTY		( m_bQFormat, oCurStyle )
-		MERGE_PROPERTY		( m_nPriority, oCurStyle )
-		MERGE_PROPERTY		( m_bUnhiddenWhenUse, oCurStyle )
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
-	bool operator==( const RtfStyle& oProperty )
-	{
-		return m_eType == oProperty.m_eType && m_nID == oProperty.m_nID && m_nBasedOn == oProperty.m_nBasedOn && 
-			m_nNext == oProperty.m_nNext && m_bHidden == oProperty.m_bHidden && m_nLink == oProperty.m_nLink && 
-			m_bLocked == oProperty.m_bLocked && m_bPersonal == oProperty.m_bPersonal && m_bCompose == oProperty.m_bCompose && 
-			m_bReply == oProperty.m_bReply && m_nSemiHidden == oProperty.m_nSemiHidden && m_bQFormat == oProperty.m_bQFormat && 
-			m_nPriority == oProperty.m_nPriority && m_bUnhiddenWhenUse == oProperty.m_bUnhiddenWhenUse;
-	}
-    std::wstring RenderToRtfBegin( RenderParameter oRenderParameter )
-	{
-		if ( false == IsValid() )
-			return L"";
+	virtual void Merge( RtfStylePtr oStyle );
 
-        std::wstring sResult;
-		switch( m_eType )
-		{
-            case stParagraph :	sResult += L"{\\s"      + std::to_wstring( m_nID);                  break;
-            case stCharacter :	sResult += L"{\\*\\cs"  + std::to_wstring( m_nID);                  break;
-            case stSection :	sResult += L"{\\*\\ds"  + std::to_wstring( m_nID);                  break;
-            case stTable :		sResult += L"{\\*\\ts"  + std::to_wstring( m_nID) + L"\\tsrowd";    break;
-            default: break;
-        }
-		return sResult;
-	}
+	bool operator==( const RtfStyle& oProperty );
+	std::wstring RenderToRtfBegin( RenderParameter oRenderParameter );
+
     std::wstring RenderToRtfEnd( RenderParameter oRenderParameter );
     std::wstring RenderToOOXBegin(RenderParameter oRenderParameter);
     std::wstring RenderToOOXEnd(RenderParameter oRenderParameter);
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-		return L"";
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return L"";
-	}
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfTableProperty: public IRenderableProperty
@@ -1818,168 +752,15 @@ public:
 	int m_nRowBandSize;		//tscbandshN	Count of rows in a row band
 	int m_nColBandSize;		//tscbandsvN	Count of cells in a cell band
 
+	RtfTableProperty();
 
-	RtfTableProperty()
-	{
-		SetDefault();
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY( m_bBidi )
-		DEFAULT_PROPERTY( m_nAutoFit )
-		DEFAULT_PROPERTY( m_nGraph )
+	bool IsValid();
+	void Merge( RtfTableProperty& oTablePr );
 
-		DEFAULT_PROPERTY( nTableIndent )
-		DEFAULT_PROPERTY( eTableIndentUnit )
-
-		m_eJust = rj_none;
-
-		DEFAULT_PROPERTY( m_nWrapLeft )
-		DEFAULT_PROPERTY( m_nWrapRight )
-		DEFAULT_PROPERTY( m_nWrapTop )
-		DEFAULT_PROPERTY( m_nWrapBottom )
-		DEFAULT_PROPERTY( m_bOverlap )
-
-		DEFAULT_PROPERTY_DEF( m_eHRef, hr_none )
-		DEFAULT_PROPERTY_DEF( m_eVRef, vr_none )
-		DEFAULT_PROPERTY_DEF( m_eHPos, hp_none )
-		DEFAULT_PROPERTY_DEF( m_eVPos, vp_none )
-		DEFAULT_PROPERTY( m_nHPos )
-		DEFAULT_PROPERTY( m_nVPos )
-
-		DEFAULT_PROPERTY( m_nLeft )
-		DEFAULT_PROPERTY( m_nWidth )
-		
-		m_eWidthUnit = mu_none;
-
-		//m_nDefCellMarBottom = 0;
-		//m_nDefCellMarRight = 108;
-		//m_nDefCellMarLeft = 108;
-		//m_nDefCellMarTop = 0;
-		DEFAULT_PROPERTY( m_nDefCellMarBottom )
-		DEFAULT_PROPERTY( m_nDefCellMarRight )
-		DEFAULT_PROPERTY( m_nDefCellMarLeft )
-		DEFAULT_PROPERTY( m_nDefCellMarTop )
-
-		//m_eDefCellMarBottomUnit = 3;
-		//m_eDefCellMarRightUnit = 3;
-		//m_eDefCellMarLeftUnit = 3;
-		//m_eDefCellMarTopUnit = 3;
-		DEFAULT_PROPERTY( m_eDefCellMarBottomUnit )
-		DEFAULT_PROPERTY( m_eDefCellMarRightUnit )
-		DEFAULT_PROPERTY( m_eDefCellMarLeftUnit )
-		DEFAULT_PROPERTY( m_eDefCellMarTopUnit )
-
-		DEFAULT_PROPERTY( m_nDefCellSpBottom )
-		DEFAULT_PROPERTY( m_nDefCellSpLeft )
-		DEFAULT_PROPERTY( m_nDefCellSpRight )
-		DEFAULT_PROPERTY( m_nDefCellSpTop )
-
-		DEFAULT_PROPERTY( m_eDefCellSpBottomUnit )
-		DEFAULT_PROPERTY( m_eDefCellSpLeftUnit )
-		DEFAULT_PROPERTY( m_eDefCellSpRightUnit )
-		DEFAULT_PROPERTY( m_eDefCellSpTopUnit )
-
-		m_oBorderLeft.SetEmpty();
-		m_oBorderRight.SetEmpty();
-		m_oBorderTop.SetEmpty();
-		m_oBorderBottom.SetEmpty();
-		m_oBorderVert.SetEmpty();
-		m_oBorderHor.SetEmpty();
-
-		m_oShading.SetDefault();
-
-		DEFAULT_PROPERTY( m_nStyle )
-
-		DEFAULT_PROPERTY( m_bAutoFirstRow )
-		DEFAULT_PROPERTY( m_bAutoLastRow )
-		DEFAULT_PROPERTY( m_bAutoFirstCol )
-		DEFAULT_PROPERTY( m_bAutoLastCol )
-		DEFAULT_PROPERTY( m_bAutoNoRowBand )
-		DEFAULT_PROPERTY( m_bAutoNoColBand )
-
-		DEFAULT_PROPERTY( m_nRowBandSize )
-		DEFAULT_PROPERTY( m_nColBandSize )
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	void Merge( RtfTableProperty& oTablePr )
-	{
-		MERGE_PROPERTY( m_bBidi,			oTablePr )
-		MERGE_PROPERTY( m_nAutoFit,			oTablePr )
-		MERGE_PROPERTY( m_nGraph,			oTablePr )
-		MERGE_PROPERTY( nTableIndent,		oTablePr )
-		MERGE_PROPERTY( eTableIndentUnit,	oTablePr )
-
-		MERGE_PROPERTY_DEF( m_eJust,	oTablePr, rj_none )
-
-		MERGE_PROPERTY( m_nWrapLeft,	oTablePr )
-		MERGE_PROPERTY( m_nWrapRight,	oTablePr )
-		MERGE_PROPERTY( m_nWrapTop,		oTablePr )
-		MERGE_PROPERTY( m_nWrapBottom,	oTablePr )
-		MERGE_PROPERTY( m_bOverlap,		oTablePr )
-
-		MERGE_PROPERTY_DEF( m_eHRef,	oTablePr, hr_none )
-		MERGE_PROPERTY_DEF( m_eVRef,	oTablePr, vr_none )
-		MERGE_PROPERTY_DEF( m_eHPos,	oTablePr, hp_none )
-		MERGE_PROPERTY_DEF( m_eVPos,	oTablePr, vp_none )
-		MERGE_PROPERTY( m_nHPos,		oTablePr )
-		MERGE_PROPERTY( m_nVPos,		oTablePr )
-
-		MERGE_PROPERTY( m_nLeft,					oTablePr )
-		MERGE_PROPERTY( m_nWidth,					oTablePr )
-		
-		MERGE_PROPERTY_DEF( m_eWidthUnit,			oTablePr, mu_none )
-
-		MERGE_PROPERTY( m_nDefCellMarBottom,		oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarRight,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarLeft,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellMarTop,			oTablePr )
-		MERGE_PROPERTY( m_eDefCellMarBottomUnit,	oTablePr )
-		MERGE_PROPERTY( m_eDefCellMarRightUnit,		oTablePr )
-		MERGE_PROPERTY( m_eDefCellMarLeftUnit,		oTablePr )
-		MERGE_PROPERTY( m_eDefCellMarTopUnit,		oTablePr )
-
-		MERGE_PROPERTY( m_nDefCellSpBottom,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpLeft,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpRight,			oTablePr )
-		MERGE_PROPERTY( m_nDefCellSpTop,			oTablePr )
-		MERGE_PROPERTY( m_eDefCellSpBottomUnit,		oTablePr )
-		MERGE_PROPERTY( m_eDefCellSpLeftUnit,		oTablePr )
-		MERGE_PROPERTY( m_eDefCellSpRightUnit,		oTablePr )
-		MERGE_PROPERTY( m_eDefCellSpTopUnit,		oTablePr )
-
-		m_oBorderLeft.Merge	( oTablePr.m_oBorderLeft );
-		m_oBorderRight.Merge( oTablePr.m_oBorderRight );
-		m_oBorderTop.Merge	( oTablePr.m_oBorderTop );
-		m_oBorderBottom.Merge( oTablePr.m_oBorderBottom );
-		m_oBorderVert.Merge	( oTablePr.m_oBorderVert );
-		m_oBorderHor.Merge	( oTablePr.m_oBorderHor );
-		m_oShading.Merge	( oTablePr.m_oShading );
-
-		MERGE_PROPERTY( m_nStyle, oTablePr )
-
-		MERGE_PROPERTY( m_bAutoFirstRow, oTablePr )
-		MERGE_PROPERTY( m_bAutoLastRow, oTablePr )
-		MERGE_PROPERTY( m_bAutoFirstCol, oTablePr )
-		MERGE_PROPERTY( m_bAutoLastCol, oTablePr )
-		MERGE_PROPERTY( m_bAutoNoRowBand, oTablePr )
-		MERGE_PROPERTY( m_bAutoNoColBand, oTablePr )
-
-		MERGE_PROPERTY( m_nRowBandSize, oTablePr )
-		MERGE_PROPERTY( m_nColBandSize, oTablePr )
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
@@ -2046,92 +827,18 @@ public:
 	int			m_nVerSpace;		// dfrmtxtxN	N is the horizontal distance in twips from text on both sides of the frame.
 	int			m_nAllSpace;		// dfrmtxtyN	N is the vertical distance in twips from text on both sides of the frame.
 
-	RtfFrame()
-	{
-		SetDefault();
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY		( m_nWidth )
-		DEFAULT_PROPERTY		( m_nHeight )
-		DEFAULT_PROPERTY_DEF	( m_eHRef, hr_none )
-		DEFAULT_PROPERTY_DEF	( m_eVRef, vr_none )
-		DEFAULT_PROPERTY_DEF	( m_eHPos, hp_none )
-		DEFAULT_PROPERTY_DEF	( m_eVPos, vp_none )
-		DEFAULT_PROPERTY		( m_nHPos )
-		DEFAULT_PROPERTY		( m_nVPos )
-		DEFAULT_PROPERTY		( m_bLockAnchor )
-		DEFAULT_PROPERTY_DEF	( m_eWrap, tw_none )
-		DEFAULT_PROPERTY		( m_DropcapType )
-		DEFAULT_PROPERTY		( m_DropcapLines )
-		DEFAULT_PROPERTY		( m_nHorSpace )
-		DEFAULT_PROPERTY		( m_nVerSpace )
-		DEFAULT_PROPERTY		( m_nAllSpace )
-	}
-	void Merge( RtfFrame& oFramePr )
-	{
-		MERGE_PROPERTY		( m_nWidth, oFramePr )
-		MERGE_PROPERTY		( m_nHeight, oFramePr )
-		MERGE_PROPERTY_DEF	( m_eHRef, oFramePr, hr_none )
-		MERGE_PROPERTY_DEF	( m_eVRef, oFramePr, vr_none )
-		MERGE_PROPERTY_DEF	( m_eHPos, oFramePr, hp_none )
-		MERGE_PROPERTY_DEF	( m_eVPos, oFramePr, vp_none )
-		MERGE_PROPERTY		( m_bLockAnchor, oFramePr )
-		MERGE_PROPERTY_DEF	( m_eWrap, oFramePr, tw_none )
-		MERGE_PROPERTY		( m_DropcapType, oFramePr )
-		MERGE_PROPERTY		( m_DropcapLines, oFramePr )
-		MERGE_PROPERTY		( m_nHorSpace, oFramePr )
-		MERGE_PROPERTY		( m_nVerSpace, oFramePr )
-		MERGE_PROPERTY		( m_nAllSpace, oFramePr )
-	}
+	RtfFrame();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
+
+	void Merge( RtfFrame& oFramePr );
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 	
-	void ApplyParagraphProp( RtfTableProperty& oProp )
-	{
-		m_nHPos = oProp.m_nHPos;
-		m_nVPos = oProp.m_nVPos;
-		switch ( oProp.m_eHRef )
-		{
-			case RtfTableProperty::hr_phmrg: m_eHRef = hr_phmrg;break;
-			case RtfTableProperty::hr_phpg: m_eHRef = hr_phpg;break;
-            case RtfTableProperty::hr_phcol: m_eHRef = hr_phcol;break;
-            default: break;
-        }
-		switch ( oProp.m_eVRef )
-		{
-			case RtfTableProperty::vr_pvmrg: m_eVRef = vr_pvmrg;break;
-			case RtfTableProperty::vr_pvpg: m_eVRef = vr_pvpg;break;
-			case RtfTableProperty::vr_pvpara: m_eVRef = vr_pvpara;break;
-            default: break;
-        }
-		switch ( oProp.m_eHPos )
-		{
-			case RtfTableProperty::hp_posxc: m_eHPos = hp_posxc;break;
-			case RtfTableProperty::hp_posxi: m_eHPos = hp_posxi;break;
-			case RtfTableProperty::hp_posxo: m_eHPos = hp_posxo;break;
-			case RtfTableProperty::hp_posxl: m_eHPos = hp_posxl;break;
-			case RtfTableProperty::hp_posxr: m_eHPos = hp_posxr;break;
-            default: break;
-        }
-		switch ( oProp.m_eVPos )
-		{
-			case RtfTableProperty::vp_posyc: m_eVPos = vp_posyc;break;
-			case RtfTableProperty::vp_posyin: m_eVPos = vp_posyin;break;
-			case RtfTableProperty::vp_posyout: m_eVPos = vp_posyout;break;
-			case RtfTableProperty::vp_posyt: m_eVPos = vp_posyt;break;
-			case RtfTableProperty::vp_posyb: m_eVPos = vp_posyb;break;
-            default: break;
-        }
-	}
+	void ApplyParagraphProp( RtfTableProperty& oProp );
 };
 
 class RtfCellProperty;
@@ -2215,166 +922,20 @@ public:
 	int m_bStyleSWCell;		// tscswcell	SW cell.
 	int m_bStyleSECell;		// tscsecell	SE cell.
 
-	RtfCellProperty()
-	{
-		SetDefault();
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-		m_nSpan = 1;
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY( m_bMergeFirst )
-		DEFAULT_PROPERTY( m_bMerge )
-		DEFAULT_PROPERTY( m_bMergeFirstVertical )
-		DEFAULT_PROPERTY( m_bMergeVertical )
-		DEFAULT_PROPERTY( m_bFitText )
-		DEFAULT_PROPERTY( m_bNoWrap )
+	RtfCellProperty();
 
-		DEFAULT_PROPERTY( m_nPaddingLeft )
-		DEFAULT_PROPERTY( m_ePaddingLeftUnit )
-		DEFAULT_PROPERTY( m_nPaddingRight )
-		DEFAULT_PROPERTY( m_ePaddingRightUnit )
-		DEFAULT_PROPERTY( m_nPaddingTop )
-		DEFAULT_PROPERTY( m_ePaddingTopUnit )
-		DEFAULT_PROPERTY( m_nPaddingBottom )
-		DEFAULT_PROPERTY( m_ePaddingBottomUnit )
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
-		DEFAULT_PROPERTY( m_nSpacingLeft )
-		DEFAULT_PROPERTY( m_eSpacingLeftUnit )
-		DEFAULT_PROPERTY( m_nSpacingRight )
-		DEFAULT_PROPERTY( m_eSpacingRightUnit )
-		DEFAULT_PROPERTY( m_nSpacingTop )
-		DEFAULT_PROPERTY( m_eSpacingTopUnit )
-		DEFAULT_PROPERTY( m_nSpacingBottom )
-		DEFAULT_PROPERTY( m_eSpacingBottomUnit )
+	bool IsValid();
+	void Merge( RtfCellProperty& oCellPr );
 
-		m_eWidthUnit = mu_none;
-		DEFAULT_PROPERTY( m_nWidth )
-		DEFAULT_PROPERTY( m_bHideMark )
-
-		m_oBorderDiagonalLR.SetDefault();
-		m_oBorderDiagonalRL.SetDefault();
-		m_oBorderLeft.SetDefault();
-		m_oBorderTop.SetDefault();
-		m_oBorderRight.SetDefault();
-		m_oBorderBottom.SetDefault();
-		m_oBorderInsideH.SetDefault();
-		m_oBorderInsideV.SetDefault();
-		
-		m_oShading.SetDefault();
-		DEFAULT_PROPERTY( m_nShadingPctFrom )
-		DEFAULT_PROPERTY( m_eAlign )
-
-		m_oCellFlow = cf_none;
-
-		DEFAULT_PROPERTY( m_nCellx )
-		DEFAULT_PROPERTY( m_nSpan )
-
-		DEFAULT_PROPERTY( m_bStyleFirstRow )
-		DEFAULT_PROPERTY( m_bStyleLastRow )
-		DEFAULT_PROPERTY( m_bStyleFirstCol )
-		DEFAULT_PROPERTY( m_bStyleLastCol )
-		DEFAULT_PROPERTY( m_bStyleOddRowBand )
-		DEFAULT_PROPERTY( m_bStyleEvenRowBand )
-		DEFAULT_PROPERTY( m_bStyleOddColBand )
-		DEFAULT_PROPERTY( m_bStyleEvenColBand )
-		DEFAULT_PROPERTY( m_bStyleNWCell )
-		DEFAULT_PROPERTY( m_bStyleNECell )
-		DEFAULT_PROPERTY( m_bStyleSWCell )
-		DEFAULT_PROPERTY( m_bStyleSECell )
-	}
-	bool IsValid()
-	{
-		return PROP_DEF != m_nCellx;
-	}
-
-	void Merge( RtfCellProperty& oCellPr )
-	{
-		MERGE_PROPERTY( m_bMergeFirst,			oCellPr )
-		MERGE_PROPERTY( m_bMerge,				oCellPr )
-		MERGE_PROPERTY( m_bMergeFirstVertical,	oCellPr )
-		MERGE_PROPERTY( m_bMergeVertical,		oCellPr )
-
-		MERGE_PROPERTY( m_bFitText, oCellPr )
-		MERGE_PROPERTY( m_bNoWrap,	oCellPr )
-
-		MERGE_PROPERTY( m_nPaddingLeft,			oCellPr )
-		MERGE_PROPERTY( m_ePaddingLeftUnit,		oCellPr )
-		MERGE_PROPERTY( m_nPaddingRight,		oCellPr )
-		MERGE_PROPERTY( m_ePaddingRightUnit,	oCellPr )
-		MERGE_PROPERTY( m_nPaddingTop,			oCellPr )
-		MERGE_PROPERTY( m_ePaddingTopUnit,		oCellPr )
-		MERGE_PROPERTY( m_nPaddingBottom,		oCellPr )
-		MERGE_PROPERTY( m_ePaddingBottomUnit,	oCellPr )
-
-		MERGE_PROPERTY( m_nSpacingLeft,			oCellPr )
-		MERGE_PROPERTY( m_eSpacingLeftUnit,		oCellPr )
-		MERGE_PROPERTY( m_nSpacingRight,		oCellPr )
-		MERGE_PROPERTY( m_eSpacingRightUnit,	oCellPr )
-		MERGE_PROPERTY( m_nSpacingTop,			oCellPr )
-		MERGE_PROPERTY( m_eSpacingTopUnit,		oCellPr )
-		MERGE_PROPERTY( m_nSpacingBottom,		oCellPr )
-		MERGE_PROPERTY( m_eSpacingBottomUnit,	oCellPr )
-
-		MERGE_PROPERTY( m_eWidthUnit,	oCellPr )
-		MERGE_PROPERTY( m_nWidth,		oCellPr )
-		MERGE_PROPERTY( m_bHideMark,	oCellPr )
-
-		m_oBorderDiagonalLR.Merge( oCellPr.m_oBorderDiagonalLR );
-		m_oBorderDiagonalRL.Merge( oCellPr.m_oBorderDiagonalRL );
-		m_oBorderLeft.Merge( oCellPr.m_oBorderLeft );
-		m_oBorderTop.Merge( oCellPr.m_oBorderTop );
-		m_oBorderRight.Merge( oCellPr.m_oBorderRight );
-		m_oBorderBottom.Merge( oCellPr.m_oBorderBottom );
-		m_oBorderInsideH.Merge( oCellPr.m_oBorderInsideH );
-		m_oBorderInsideV.Merge( oCellPr.m_oBorderInsideV );
-		
-		m_oShading.Merge( oCellPr.m_oShading );
-		MERGE_PROPERTY	( m_nShadingPctFrom, oCellPr)
-
-		MERGE_PROPERTY( m_eAlign, oCellPr )
-		MERGE_PROPERTY( m_oCellFlow, oCellPr )
-
-		MERGE_PROPERTY( m_nCellx, oCellPr )
-		MERGE_PROPERTY( m_nSpan, oCellPr )
-
-		MERGE_PROPERTY( m_bStyleFirstRow, oCellPr )
-		MERGE_PROPERTY( m_bStyleLastRow, oCellPr )
-		MERGE_PROPERTY( m_bStyleFirstCol, oCellPr )
-		MERGE_PROPERTY( m_bStyleLastCol, oCellPr )
-		MERGE_PROPERTY( m_bStyleOddRowBand, oCellPr )
-		MERGE_PROPERTY( m_bStyleEvenRowBand, oCellPr )
-		MERGE_PROPERTY( m_bStyleOddColBand, oCellPr )
-		MERGE_PROPERTY( m_bStyleEvenColBand, oCellPr )
-		MERGE_PROPERTY( m_bStyleNWCell, oCellPr )
-		MERGE_PROPERTY( m_bStyleNECell, oCellPr )
-		MERGE_PROPERTY( m_bStyleSWCell, oCellPr )
-		MERGE_PROPERTY( m_bStyleSECell, oCellPr )
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
-    bool GetAlignFromStringRtf(  std::wstring & oAlign, CellAlign& oOutput )
-	{
-		if ( L"clvertalt" == oAlign ) { oOutput = ca_Top; return true;}
-		else if ( L"clvertalc" == oAlign ){ oOutput = ca_Center; return true;}
-		else if ( L"clvertalb" == oAlign ){ oOutput = ca_Bottom; return true;}
-		return false;
-	}
-    bool GetAlignFromStringOOX(  std::wstring & oAlign, CellAlign& oOutput )
-	{
-		if ( L"top" == oAlign ) { oOutput = ca_Top; return true;}
-		else if ( L"center" == oAlign ){ oOutput = ca_Center; return true;}
-		else if ( L"bottom" == oAlign ){ oOutput = ca_Bottom; return true;}
-		return false;
-	}
 
+	bool GetAlignFromStringRtf(  std::wstring & oAlign, CellAlign& oOutput );
+	bool GetAlignFromStringOOX(  std::wstring & oAlign, CellAlign& oOutput );
 };
 
 class RtfRowProperty;
@@ -2421,110 +982,15 @@ public:
 
 	RtfRowPropertyPtr	m_pOldRowProperty;
 
-	RtfRowProperty()
-	{
-		SetDefault();
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-//не SetEmpty() !!!		
-		m_oBorderLeft.SetDefault();
-		m_oBorderRight.SetDefault();
-		m_oBorderTop.SetDefault();
-		m_oBorderBottom.SetDefault();
-		m_oBorderVert.SetDefault();
-		m_oBorderHor.SetDefault();	
-	}
+	RtfRowProperty();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
 	//5.5 Доверенность_MO_Q139.rtf
-	void SetDefault()
-	{
-		RtfTableProperty::SetDefault();
-		DEFAULT_PROPERTY( m_nIndex )
-		DEFAULT_PROPERTY( m_nBandIndex )
-		DEFAULT_PROPERTY( m_bLastRow )
-		DEFAULT_PROPERTY( m_nAutoFit )
-		DEFAULT_PROPERTY( m_bIsHeader )
-		DEFAULT_PROPERTY( m_bKeep )
-		DEFAULT_PROPERTY( m_nRightToLeft )
+	void SetDefault();
 
-		DEFAULT_PROPERTY( m_nHeight )
-
-		DEFAULT_PROPERTY( m_nWidthStartInvCell )
-		DEFAULT_PROPERTY( m_nWidthEndInvCell )
-		
-		m_eWidthStartInvCellUnit	= mu_none;
-		m_eWidthEndInvCellUnit		= mu_none;
-		
-		DEFAULT_PROPERTY( m_nGridBefore )
-		DEFAULT_PROPERTY( m_nGridAfter )
-		m_aArray.clear();
-
-		DEFAULT_PROPERTY( m_bStyleFirstRow )
-		DEFAULT_PROPERTY( m_bStyleLastRow )
-		DEFAULT_PROPERTY( m_bStyleFirstCol )
-		DEFAULT_PROPERTY( m_bStyleLastCol )
-		DEFAULT_PROPERTY( m_bStyleOddRowBand )
-		DEFAULT_PROPERTY( m_bStyleEvenRowBand )
-		DEFAULT_PROPERTY( m_bStyleOddColBand )
-		DEFAULT_PROPERTY( m_bStyleEvenColBand )
-		DEFAULT_PROPERTY( m_bStyleNWCell )
-		DEFAULT_PROPERTY( m_bStyleNECell )
-		DEFAULT_PROPERTY( m_bStyleSWCell )
-		DEFAULT_PROPERTY( m_bStyleSECell )
-	
-		DEFAULT_PROPERTY( m_nTrAuth)
-		DEFAULT_PROPERTY( m_nTrDate)
-
-		m_pOldRowProperty = RtfRowPropertyPtr();
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	void Merge( RtfRowProperty& oRowPr )
-	{
-		RtfTableProperty::Merge( oRowPr );
-
-		MERGE_PROPERTY( m_nIndex,		oRowPr )
-		MERGE_PROPERTY( m_nBandIndex,	oRowPr )
-		MERGE_PROPERTY( m_bLastRow,		oRowPr )
-		MERGE_PROPERTY( m_nRightToLeft,	oRowPr )
-
-		MERGE_PROPERTY( m_nAutoFit,		oRowPr )
-		MERGE_PROPERTY( m_bIsHeader,	oRowPr )
-		MERGE_PROPERTY( m_bKeep,		oRowPr )
-
-		MERGE_PROPERTY( m_nHeight,		oRowPr )
-
-		MERGE_PROPERTY		( m_nWidthStartInvCell,		oRowPr )
-		MERGE_PROPERTY_DEF	( m_eWidthStartInvCellUnit,	oRowPr, mu_none )
-		MERGE_PROPERTY		( m_nWidthEndInvCell,		oRowPr )
-		MERGE_PROPERTY_DEF	( m_eWidthEndInvCellUnit,	oRowPr, mu_none )
-
-		MERGE_PROPERTY_DEF	( m_nGridBefore,		oRowPr, mu_none )
-		MERGE_PROPERTY_DEF	( m_nGridAfter,			oRowPr, mu_none )
-
-		MERGE_PROPERTY( m_bStyleFirstRow,		oRowPr )
-		MERGE_PROPERTY( m_bStyleLastRow,		oRowPr )
-		MERGE_PROPERTY( m_bStyleFirstCol,		oRowPr )
-		MERGE_PROPERTY( m_bStyleLastCol,		oRowPr )
-		MERGE_PROPERTY( m_bStyleOddRowBand,		oRowPr )
-		MERGE_PROPERTY( m_bStyleEvenRowBand,	oRowPr )
-		MERGE_PROPERTY( m_bStyleOddColBand,		oRowPr )
-		MERGE_PROPERTY( m_bStyleEvenColBand,	oRowPr )
-		MERGE_PROPERTY( m_bStyleNWCell,			oRowPr )
-		MERGE_PROPERTY( m_bStyleNECell,			oRowPr )
-		MERGE_PROPERTY( m_bStyleSWCell,			oRowPr )
-		MERGE_PROPERTY( m_bStyleSECell,			oRowPr )
-		
-		MERGE_PROPERTY( m_nTrAuth,				oRowPr )
-		MERGE_PROPERTY( m_nTrDate,				oRowPr )
-	}
+	bool IsValid();
+	void Merge( RtfRowProperty& oRowPr );
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
@@ -2653,180 +1119,22 @@ public:
 	int m_nPrDate;
 	
 	RtfCharProperty		m_oCharProperty;
-//--------------------------------------------------------------------------------------------------------------
-	RtfParagraphProperty()
-	{
-		SetDefault();
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-		
-		m_nSpaceBefore = 0; // 137.rtf
-		//4.1 Наряд_R7_M133.rtf
-		m_nSpaceAfter = 0;
-		m_nSpaceBetween = 240;
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY( m_bAutoHyphenation )
-		DEFAULT_PROPERTY( m_bInTable )
-		DEFAULT_PROPERTY( m_nItap )
-		DEFAULT_PROPERTY( m_bKeep )
-		DEFAULT_PROPERTY( m_bKeepNext )
-		DEFAULT_PROPERTY( m_bPageBB )
-		DEFAULT_PROPERTY( m_nOutlinelevel )
-		DEFAULT_PROPERTY( m_nStyle )
-		DEFAULT_PROPERTY( m_eAlign )
 
-		m_eFontAlign = fa_none;
+	//--------------------------------------------------------------------------------------------------------------
 
-		DEFAULT_PROPERTY( m_nIndFirstLine )
-		DEFAULT_PROPERTY( m_nIndLeft)
-		DEFAULT_PROPERTY( m_nIndRight)
-		DEFAULT_PROPERTY( m_nIndStart )
-		DEFAULT_PROPERTY( m_nIndEnd )
-		DEFAULT_PROPERTY( m_bIndRightAuto )
-		DEFAULT_PROPERTY( m_bIndMirror )
+	RtfParagraphProperty();
+	bool IsValid();
 
-		DEFAULT_PROPERTY( m_nSpaceBefore )
-		
-		DEFAULT_PROPERTY( m_nSpaceAfter )
-		DEFAULT_PROPERTY( m_nSpaceBeforeAuto )
-		DEFAULT_PROPERTY( m_nSpaceAfterAuto )
-		DEFAULT_PROPERTY( m_nSpaceAfterLine )
-		DEFAULT_PROPERTY( m_nSpaceBeforeLine )
-		DEFAULT_PROPERTY( m_nSpaceBetween )
-		DEFAULT_PROPERTY( m_nSpaceMultiLine )
-		DEFAULT_PROPERTY( m_bContextualSpacing )
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
 
-		DEFAULT_PROPERTY( m_bRtl )
-		DEFAULT_PROPERTY( m_bNoWordWrap )
-		DEFAULT_PROPERTY( m_bSnapToGrid )
+	void Merge( RtfParagraphProperty& oParPr );
 
-		m_eTextBoxWrap = tbw_none;
-
-		DEFAULT_PROPERTY( m_nListId )
-		DEFAULT_PROPERTY( m_nListLevel )
-
-		m_oShading.SetDefault();
-
-		m_oBorderTop.SetDefault();
-		m_oBorderLeft.SetDefault();
-		m_oBorderBottom.SetDefault();
-		m_oBorderRight.SetDefault(); 
-		m_oBorderBox.SetDefault();
-		m_oBorderBar.SetDefault();
-
-		m_oFrame.SetDefault();
-		DEFAULT_PROPERTY( m_bOverlap )
-		m_eTextFollow = tf_none;
-		m_oTabs.SetDefault();
-
-		DEFAULT_PROPERTY( m_nTableStyle )
-		DEFAULT_PROPERTY( m_bStyleFirstRow )
-		DEFAULT_PROPERTY( m_bStyleLastRow )
-		DEFAULT_PROPERTY( m_bStyleFirstCollumn )
-		DEFAULT_PROPERTY( m_bStyleLastCollumn )
-		DEFAULT_PROPERTY( m_bStyleOddRowBand )
-		DEFAULT_PROPERTY( m_bStyleOddColBand )
-		DEFAULT_PROPERTY( m_bStyleEvenRowBand )
-		DEFAULT_PROPERTY( m_bStyleEvenColBand )
-		DEFAULT_PROPERTY( m_bStyleNWCell )
-		DEFAULT_PROPERTY( m_bStyleNECell )
-		DEFAULT_PROPERTY( m_bStyleSWCell )
-		DEFAULT_PROPERTY( m_bStyleSECell )
-
-		DEFAULT_PROPERTY( m_nPrAuth)
-		DEFAULT_PROPERTY( m_nPrDate)
-		
-		m_oCharProperty.SetDefault();
-
-		m_bHidden			= false;
-		m_bOldList			= false;
-		m_pOldParagraphProp = RtfParagraphPropertyPtr();
-	}
-	void Merge( RtfParagraphProperty& oParPr )
-	{
-		MERGE_PROPERTY		( m_bAutoHyphenation,	oParPr )
-		MERGE_PROPERTY		( m_bInTable,			oParPr )
-		MERGE_PROPERTY		( m_nItap,				oParPr )
-		MERGE_PROPERTY		( m_bKeep,				oParPr )
-		MERGE_PROPERTY		( m_bKeepNext,			oParPr )
-		MERGE_PROPERTY		( m_bPageBB,			oParPr )
-		MERGE_PROPERTY		( m_nOutlinelevel,		oParPr )
-		MERGE_PROPERTY		( m_nStyle,				oParPr )
-		MERGE_PROPERTY		( m_eAlign,				oParPr )
-		MERGE_PROPERTY_DEF	( m_eFontAlign,			oParPr, fa_none )
-		MERGE_PROPERTY		( m_nIndFirstLine,		oParPr )
-		MERGE_PROPERTY		( m_nIndLeft,			oParPr )
-		MERGE_PROPERTY		( m_nIndRight,			oParPr )
-		MERGE_PROPERTY		( m_nIndStart,			oParPr )
-		MERGE_PROPERTY		( m_nIndEnd,			oParPr )
-		MERGE_PROPERTY		( m_bIndRightAuto,		oParPr )
-		MERGE_PROPERTY		( m_bIndMirror,			oParPr )
-
-		MERGE_PROPERTY		( m_nSpaceBefore,		oParPr )
-		MERGE_PROPERTY		( m_nSpaceAfter,		oParPr )
-		MERGE_PROPERTY		( m_nSpaceBeforeAuto,	oParPr )
-		MERGE_PROPERTY		( m_nSpaceAfterAuto,	oParPr )
-		MERGE_PROPERTY		( m_nSpaceBeforeLine,	oParPr )
-		MERGE_PROPERTY		( m_nSpaceAfterLine,	oParPr )
-		MERGE_PROPERTY		( m_nSpaceBetween,		oParPr )
-		MERGE_PROPERTY		( m_nSpaceMultiLine,	oParPr )
-		MERGE_PROPERTY		( m_bSnapToGrid,		oParPr )
-		MERGE_PROPERTY		( m_bContextualSpacing, oParPr )
-
-		MERGE_PROPERTY		( m_bRtl,			oParPr )
-		MERGE_PROPERTY		( m_bNoWordWrap,	oParPr )
-		MERGE_PROPERTY_DEF	( m_eTextBoxWrap,	oParPr, tbw_none )
-
-		MERGE_PROPERTY		( m_nListId,	oParPr )
-		MERGE_PROPERTY		( m_nListLevel, oParPr )
-
-		m_oShading.Merge		( oParPr.m_oShading		);
-		m_oBorderTop.Merge		( oParPr.m_oBorderTop	);
-		m_oBorderLeft.Merge		( oParPr.m_oBorderLeft	);
-		m_oBorderBottom.Merge	( oParPr.m_oBorderBottom );
-		m_oBorderRight.Merge	( oParPr.m_oBorderRight );
-		m_oBorderBox.Merge		( oParPr.m_oBorderBox	);
-		m_oBorderBar.Merge		( oParPr.m_oBorderBar	);
-		m_oFrame.Merge			( oParPr.m_oFrame );
-		m_oTabs.Merge			( oParPr.m_oTabs );
-
-		MERGE_PROPERTY			( m_bOverlap,		oParPr )
-		MERGE_PROPERTY_DEF		( m_eTextFollow,	oParPr, tf_none )
-		
-		MERGE_PROPERTY( m_nTableStyle,			oParPr )
-		MERGE_PROPERTY( m_bStyleFirstRow,		oParPr )
-		MERGE_PROPERTY( m_bStyleLastRow,		oParPr )
-		MERGE_PROPERTY( m_bStyleFirstCollumn,	oParPr )
-		MERGE_PROPERTY( m_bStyleLastCollumn,	oParPr )
-		MERGE_PROPERTY( m_bStyleOddRowBand,		oParPr )
-		MERGE_PROPERTY( m_bStyleEvenRowBand,	oParPr )
-		MERGE_PROPERTY( m_bStyleOddColBand,		oParPr )
-		MERGE_PROPERTY( m_bStyleEvenColBand,	oParPr )
-		MERGE_PROPERTY( m_bStyleNWCell,			oParPr )
-		MERGE_PROPERTY( m_bStyleNECell,			oParPr )
-		MERGE_PROPERTY( m_bStyleSWCell,			oParPr )
-		MERGE_PROPERTY( m_bStyleSECell,			oParPr )
-
-		MERGE_PROPERTY( m_nPrAuth,				oParPr )
-		MERGE_PROPERTY( m_nPrDate,				oParPr )
-
-		//m_oCharProperty.Merge( oParPr.m_oCharProperty );
-	}
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 //class RtfParagraphPropertyWithTable: public RtfParagraphProperty
 //{
 //public: RtfRowProperty m_oRowProperty;
@@ -2857,6 +1165,7 @@ public:
 //			return sResult;
 //		}
 //};
+
 class RtfTime: public IRenderableProperty
 {
 public: 
@@ -2866,34 +1175,18 @@ public:
 	int m_nHour;
 	int m_nMin;
 	int m_nSecond;
-	RtfTime()
-	{
-		SetDefault();
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		DEFAULT_PROPERTY( m_nYear )
-		DEFAULT_PROPERTY( m_nMonth )
-		DEFAULT_PROPERTY( m_nDay )
-		DEFAULT_PROPERTY( m_nHour )
-		DEFAULT_PROPERTY( m_nMin )
-		DEFAULT_PROPERTY( m_nSecond )
-	}
+
+	RtfTime();
+	bool IsValid();
+
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfInformation: public IRenderableProperty
 {
 public:
@@ -2925,50 +1218,14 @@ public:
 	int m_nNumberOfCharactersWithSpace;
 	int m_nNumberOfCharactersWithoutSpace;
 	int m_nInternalId;
-	RtfInformation()
-	{
-		SetDefault();
-	}
-	bool IsValid()
-	{
-		return true;
-	}
-	void SetDefaultRtf()
-	{
-		SetDefault();
-	}
-	void SetDefaultOOX()
-	{
-		SetDefault();
-	}
-	void SetDefault()
-	{
-		m_sTitle = L"";
-		m_sSubject = L"";
-		m_sAuthor = L"";
-		m_sManager = L"";
-		m_sCompany = L"";
-		m_sOperator = L"";
-		m_sCategory = L"";
-		m_sKeywords = L"";
-		m_sComment = L"";
-		m_sDocCom = L"";
-		m_sLinkBase = L"";
-		m_oCreateTime.SetDefault();
-		m_oRevTime.SetDefault();
-		m_oPrintTime.SetDefault();
-		m_oBackupTime.SetDefault();
 
-		DEFAULT_PROPERTY( m_nVersion )
-		DEFAULT_PROPERTY( m_nInternalVersion )
-		DEFAULT_PROPERTY( m_nEndingTime )
+	RtfInformation();
+	bool IsValid();
 
-		DEFAULT_PROPERTY( m_nNumberOfPages )
-		DEFAULT_PROPERTY( m_nNumberOfWords )
-		DEFAULT_PROPERTY( m_nNumberOfCharactersWithSpace )
-		DEFAULT_PROPERTY( m_nNumberOfCharactersWithoutSpace )
-		DEFAULT_PROPERTY( m_nInternalId )
-	}
+	void SetDefaultRtf();
+	void SetDefaultOOX();
+	void SetDefault();
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
@@ -2978,38 +1235,29 @@ class RtfCharStyle: public RtfStyle
 public: 
 	RtfCharProperty m_oCharProp;
 
-	RtfCharStyle()
-	{
-	   SetDefault();
-	   m_eType = stCharacter;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_STYLE_CHAR;
-	}
+	RtfCharStyle();
+
+	int GetType();
 	void Merge( RtfStylePtr oStyle );
+
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfParagraphStyle: public RtfCharStyle
 {
 public: 
 	RtfParagraphProperty m_oParProp;
 
-	RtfParagraphStyle()
-	{
-	   SetDefault();
-	   m_eType = stParagraph;
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_STYLE_PARAGRAPH;
-	}
+	RtfParagraphStyle();
+
+	int GetType();
 	void Merge( RtfStylePtr oStyle );
 	
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 //---------------------------------------------------------------------------------------
 class RtfTableStyle;
 typedef boost::shared_ptr<RtfTableStyle> RtfTableStylePtr;
@@ -3034,37 +1282,16 @@ public:
 	RtfTableStylePtr m_oNECell;
 	RtfTableStylePtr m_oSWCell;
 	RtfTableStylePtr m_oSECell;
-	RtfTableStyle()
-	{
-		SetDefault();
-		m_eType = stTable;
-	}
-	void SetDefault()
-	{
-	   RtfStyle::SetDefault();
-		m_oFirstRow = RtfTableStylePtr();
-		m_oLastRow = RtfTableStylePtr();
-		m_oFirstCol = RtfTableStylePtr();
-		m_oLastCol = RtfTableStylePtr();
-		m_oBandHorEven = RtfTableStylePtr();
-		m_oBandVerEven = RtfTableStylePtr();
-		m_oBandHorOdd = RtfTableStylePtr();
-		m_oBandVerOdd = RtfTableStylePtr();
-		m_oNWCell = RtfTableStylePtr();
-		m_oNECell = RtfTableStylePtr();
-		m_oSWCell = RtfTableStylePtr();
-		m_oSECell = RtfTableStylePtr();
-	}
-	int GetType()
-	{
-		return TYPE_RTF_PROPERTY_STYLE_TABLE;
-	}
+
+	RtfTableStyle();
+
+	void SetDefault();
+	int GetType();
 	void Merge( RtfStylePtr oStyle );
 	
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
-
 
 //typedef boost::shared_ptr<RtfTableStyleProperty>	RtfTableStylePropertyPtr;
 typedef boost::shared_ptr<RtfCharStyle>				RtfCharStylePtr;

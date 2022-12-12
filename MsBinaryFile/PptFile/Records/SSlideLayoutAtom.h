@@ -30,25 +30,23 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordSSlideLayoutAtom : public CUnknownRecord
 {
 public:
 	INT m_nGeom;
 	BYTE m_pPlaceHolderID[8];
 	
-	CRecordSSlideLayoutAtom()
-	{
-	}
 
-	~CRecordSSlideLayoutAtom()
-	{
-	}
+    CRecordSSlideLayoutAtom();
+    ~CRecordSSlideLayoutAtom();
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
 };
+}

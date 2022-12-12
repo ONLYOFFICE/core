@@ -43,63 +43,14 @@ namespace PPTX
 		class TLTriggerEvent : public BaseLimit
 		{
 		public:
-			TLTriggerEvent()
-			{
-				m_strValue = _T("begin");
-			}
+			TLTriggerEvent();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("begin") == strValue) ||
-					(_T("end") == strValue) ||
-					(_T("onBegin") == strValue) ||
-					(_T("onClick") == strValue) ||
-					(_T("onDblClick") == strValue) ||
-					(_T("onEnd") == strValue) ||
-					(_T("onMouseOut") == strValue) ||
-					(_T("onMouseOver") == strValue) ||
-					(_T("onNext") == strValue) ||
-					(_T("onPrev") == strValue) ||
-					(_T("onStopAudio") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"begin" == m_strValue)		return 0;
-				if (L"end" == m_strValue)		return 1;
-				if (L"onBegin" == m_strValue)	return 2;
-				if (L"onClick" == m_strValue)	return 3;
-				if (L"onDblClick" == m_strValue)	return 4;
-				if (L"onEnd" == m_strValue)			return 5;
-				if (L"onMouseOut" == m_strValue)	return 6;
-				if (L"onMouseOver" == m_strValue)	return 7;
-				if (L"onNext" == m_strValue)		return 8;
-				if (L"onPrev" == m_strValue)		return 9;
-				if (L"onStopAudio" == m_strValue)	return 10;
+			virtual void set(const std::wstring& strValue);
 
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"begin"; break;
-				case 1: m_strValue = L"end"; break;
-				case 2: m_strValue = L"onBegin"; break;
-				case 3: m_strValue = L"onClick"; break;
-				case 4: m_strValue = L"onDblClick"; break;
-				case 5: m_strValue = L"onEnd"; break;
-				case 6: m_strValue = L"onMouseOut"; break;
-				case 7: m_strValue = L"onMouseOver"; break;
-				case 8: m_strValue = L"onNext"; break;
-				case 9: m_strValue = L"onPrev"; break;
-				case 10: m_strValue = L"onStopAudio"; break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -41,6 +41,19 @@ using namespace MathEquation;
 #define GET_BARLINE_TYPE(nVariation)  (0 == nVariation? bartypeLine : bartypeDoubleLine)
 #define GET_BARARROW_TYPE(nVariation) (0 == nVariation? bartypeArrowLeft : (1 == nVariation? bartypeArrowRight : bartypeArrowDouble))
 
+CEquationReader::CEquationReader(const wchar_t* wsFilePath) : m_oStorage(wsFilePath), pStm(NULL), pS(NULL), nHAlign(0), nVAlign(0)
+{
+	InitSizes();
+}
+
+CEquationReader::~CEquationReader()
+{
+	if (NULL != pS)
+		delete pS;
+	if (NULL != pStm)
+		delete pStm;
+}
+
 void CEquationReader::InitSizes()
 {
 	//todo обработать open(true/false)

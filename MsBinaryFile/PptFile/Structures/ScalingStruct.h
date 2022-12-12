@@ -35,17 +35,13 @@
 #include "RatioStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 struct ScalingStruct : public IStruct
 {
     RatioStruct m_x;
     RatioStruct m_y;
 
-    void ReadFromStream(POLE::Stream* pStream) override
-    {
-        m_x.ReadFromStream(pStream);
-        m_y.ReadFromStream(pStream);
-    }
+    void ReadFromStream(POLE::Stream* pStream) override;
 };
 }

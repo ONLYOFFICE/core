@@ -32,7 +32,7 @@
 #pragma once
 #include "Elements.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
     class CAudioPart
     {

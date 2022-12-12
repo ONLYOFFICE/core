@@ -44,21 +44,13 @@ namespace OOX
 	public:
 		JsaProject( OOX::Document *pMain );
 		JsaProject(OOX::Document *pMain, const CPath& filename);
-		virtual ~JsaProject()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::JsaProject;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual ~JsaProject();
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	};

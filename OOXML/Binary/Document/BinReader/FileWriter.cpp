@@ -76,5 +76,19 @@ void FileWriter::WriteGlossary()
 {
 	m_oGlossary.Write(true);
 }
+int FileWriter::getNextDocPr()
+{
+	m_nDocPrIndex++;
+	return m_nDocPrIndex;
+}
+void FileWriter::AddSetting(std::wstring sSetting)
+{
+	if (m_bGlossaryMode) m_oGlossary.settings.AddSetting(sSetting);
+	else m_oMain.settings.AddSetting(sSetting);
+}
+bool FileWriter::IsEmptyGlossary()
+{
+	return m_oGlossary.document.m_oContent.GetSize() < 1;
+}
 }
 

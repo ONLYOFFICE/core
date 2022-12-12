@@ -48,78 +48,27 @@ namespace PPTX
 		{
 		public:
 			WritingElement_AdditionConstructors(UniFill)
-			UniFill()
-			{
-				m_type = notInit;
-				Fill.reset();
-			}
 
-			virtual OOX::EElementType getType() const
-			{
-				if (Fill.IsInit())
-					return Fill->getType();
-				return OOX::et_Unknown;
-			}	
+			UniFill();
+			virtual OOX::EElementType getType() const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			void GetFillFrom(XmlUtils::CXmlNode& element);
-			virtual std::wstring toXML() const
-			{
-				if (Fill.IsInit())
-					return Fill->toXML();
-				return _T("");
-			}
+			virtual std::wstring toXML() const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (Fill.is_init())
-					Fill->toPPTY(pWriter);
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (Fill.is_init())
-					Fill->toXmlWriter(pWriter);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual bool is_init()const{return (Fill.IsInit());};
+			virtual bool is_init() const;
 			
 			template<class T> AVSINLINE const bool	is() const	{ return Fill.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Fill.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return Fill.as<T>(); }
 
-			const UniFill& operator+=(const UniFill& fill)
-			{
-				if(!fill.is_init())
-					return (*this);
-				*this = fill;
-				return (*this);
-			}
-			void Merge(UniFill& fill)const
-			{
-				if(!fill.is_init())
-				{
-					fill = *this;
-					return;
-				} 
-
-				if(m_type != fill.m_type)
-				{
-					fill = *this;
-					return;
-				}
-				if(m_type == solidFill)
-				{
-					as<SolidFill>().Merge(fill.as<SolidFill>());
-					return;
-				}
-				if(m_type == gradFill)
-				{
-					as<GradFill>().Merge(fill.as<GradFill>());
-					return;
-				}
-			}
+			const UniFill& operator+=(const UniFill& fill);
+			void Merge(UniFill& fill) const;
 
 			smart_ptr<WrapperWritingElement>	Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
@@ -127,11 +76,7 @@ namespace PPTX
 			std::wstring						m_namespace;
 
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(is_init())
-					Fill->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

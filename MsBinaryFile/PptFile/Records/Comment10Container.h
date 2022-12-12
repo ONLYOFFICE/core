@@ -36,17 +36,12 @@
 #include "../Structures/PointStruct.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordComment10AuthorAtom : public CUnknownRecord
 {
 public:
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        m_sCommentAuthor = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 
 public:
     std::wstring m_sCommentAuthor;
@@ -55,12 +50,7 @@ public:
 class CRecordComment10TextAtom : public CUnknownRecord
 {
 public:
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        m_sCommentText = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 
 public:
     std::wstring m_sCommentText;
@@ -69,12 +59,7 @@ public:
 class CRecordComment10AuthorInitialAtom : public CUnknownRecord
 {
 public:
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        m_sCommentAuthorInitials = StreamUtils::ReadStringW(pStream, m_oHeader.RecLen);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 
 public:
     std::wstring m_sCommentAuthorInitials;
@@ -83,17 +68,10 @@ public:
 class CRecordComment10Atom : public CUnknownRecord
 {
 public:
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        m_nIndex = StreamUtils::ReadLONG(pStream);
-        m_oDatetime.ReadFromStream(pStream);
-        m_oAnchor.ReadFromStream(pStream);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 
 public:
-    _INT32          m_nIndex;
+    _INT32          m_nIndex = -1;
     DateTimeStruct  m_oDatetime;
     PointStruct     m_oAnchor;
 };
@@ -103,70 +81,11 @@ class CRecordComment10Container : public CUnknownRecord
 {
 public:
 
-    CRecordComment10Container() :
-        m_pCommentAuthorAtom(nullptr),
-        m_pCommentTextAtom(nullptr),
-        m_pCommentAuthorInitialsAtom(nullptr),
+    CRecordComment10Container();
 
-        m_haveAuthorAtom(false),
-        m_haveTextAtom(false),
-        m_haveAuthorInitialAtom(false)
-    {}
+    ~CRecordComment10Container();
 
-    ~CRecordComment10Container()
-    {
-        RELEASEOBJECT(m_pCommentAuthorAtom)
-        RELEASEOBJECT(m_pCommentTextAtom)
-        RELEASEOBJECT(m_pCommentAuthorInitialsAtom)
-    }
-
-    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = oHeader;
-
-        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
-
-        _UINT32 lCurLen(0);
-        SRecordHeader ReadHeader;
-
-        while (lCurLen < m_oHeader.RecLen) {
-            if ( ReadHeader.ReadFromStream(pStream) == false )
-            {
-                break;
-            }
-
-            lCurLen += 8 + ReadHeader.RecLen;
-
-            if (ReadHeader.RecType == RT_CString) {
-                switch (ReadHeader.RecInstance) {
-                case 0:
-                    m_pCommentAuthorAtom = new CRecordComment10AuthorAtom();
-                    m_pCommentAuthorAtom->ReadFromStream(ReadHeader, pStream);
-                    m_haveAuthorAtom = true;
-                    break;
-                case 1:
-                    m_pCommentTextAtom = new CRecordComment10TextAtom();
-                    m_pCommentTextAtom->ReadFromStream(ReadHeader, pStream);
-                    m_haveTextAtom = true;
-                    break;
-
-                case 2:
-                    m_pCommentAuthorInitialsAtom = new CRecordComment10AuthorInitialAtom();
-                    m_pCommentAuthorInitialsAtom->ReadFromStream(ReadHeader, pStream);
-                    m_haveAuthorInitialAtom = true;
-                    break;
-                default:
-                    break;
-                }
-
-            } else
-            {
-                m_oCommentAtom.ReadFromStream(ReadHeader, pStream);
-            }
-        }
-
-        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
-    }
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 
 public:
     CRecordComment10AuthorAtom*          m_pCommentAuthorAtom;          // OPTIONAL

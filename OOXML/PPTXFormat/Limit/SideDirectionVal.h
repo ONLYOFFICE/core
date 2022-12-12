@@ -40,41 +40,14 @@ namespace PPTX
 		class SideDirectionVal : public BaseLimit
 		{
 		public:
-			SideDirectionVal()
-			{
-				m_strValue = _T("l");
-			}
+			SideDirectionVal();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("d") == strValue) ||
-					(_T("l") == strValue) ||
-					(_T("r") == strValue) ||
-					(_T("u") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"d" == m_strValue)		return 4;
-				if (L"l" == m_strValue)		return 5;
-				if (L"r" == m_strValue)		return 6;
-				if (L"u" == m_strValue)		return 7;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 4: m_strValue = L"d"; break;
-				case 5: m_strValue = L"l"; break;
-				case 6: m_strValue = L"r"; break;
-				case 7: m_strValue = L"u"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

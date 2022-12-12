@@ -30,6 +30,10 @@
  *
  */
 #pragma once
+
+#include <string>
+#include "../../../DesktopEditor/common/Types.h"
+
 namespace NSBinPptxRW
 {
 	const double eps     = 0.001;

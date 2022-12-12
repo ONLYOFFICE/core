@@ -52,6 +52,16 @@ const double g_cdMaxWriteOoxPercent = 0.30;
     #pragma comment(lib, "Gdi32.lib")
 #endif
 
+RtfConvertationManager::RtfConvertationManager( )
+{
+	m_nUserLCID = -1;
+
+	m_poOOXWriter = NULL;
+	m_poOOXReader = NULL;
+
+	m_poRtfWriter = NULL;
+	m_poRtfReader = NULL;
+}
 _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath )
 {
     m_bParseFirstItem = true;

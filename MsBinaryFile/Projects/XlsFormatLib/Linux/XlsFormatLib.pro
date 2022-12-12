@@ -23,19 +23,15 @@ DEFINES +=  UNICODE \
         _UNICODE \
         DONT_WRITE_EMBEDDED_FONTS
 
-CONFIG(debug, debug|release){
-
-message(Debug)
-DEFINES += _DEBUG
-}
-
-core_mac {
-LIBS += $$DESTDIR -lUnicodeConverter
-}
-
 INCLUDEPATH += ../../../XlsFile/Format
 INCLUDEPATH += ../../../Common
 INCLUDEPATH += ../../../../OOXML/XlsbFormat
+
+!disable_precompiled_header:CONFIG += precompile_header
+precompile_header {
+    PRECOMPILED_HEADER = precompiled.h
+    HEADERS += precompiled.h
+}
 
 core_release {
 SOURCES += \

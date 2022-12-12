@@ -41,46 +41,21 @@ namespace OOX
 	class OleObject : public Media
 	{
 	public:
-		OleObject(OOX::Document *pMain, bool bMsPackage = false, bool bDocument = true) : Media (pMain, bDocument)
-		{
-			m_bMsPackage = bMsPackage;
-		}
-		OleObject(OOX::Document *pMain, const OOX::CPath& filename, bool bMsPackage = false) : Media (pMain)
-		{
-			m_bMsPackage = bMsPackage;
-			read(filename);
-		}
-		virtual const FileType type() const
-		{
-			if (m_bMsPackage)	return OOX::FileTypes::MicrosoftOfficeUnknown;
-			else				return OOX::FileTypes::OleObject;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
-		void set_filename_cache(const std::wstring & file_path)
-		{
-			m_filenameCache = file_path;
-		}
-		void set_filename_cache(CPath & file_path)
-		{
-			m_filenameCache = file_path;
-		}
-		void set_MsPackage(bool val)
-		{
-			m_bMsPackage = val;
-		}
-		CPath filename_cache()
-		{
-			return m_filenameCache;
-		}
-		bool isMsPackage() {return m_bMsPackage;}
+		OleObject(OOX::Document *pMain, bool bMsPackage = false, bool bDocument = true);
+		OleObject(OOX::Document *pMain, const OOX::CPath& filename, bool bMsPackage = false);
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
+		void set_filename_cache(const std::wstring & file_path);
+		void set_filename_cache(CPath & file_path);
+		void set_MsPackage(bool val);
+
+		CPath filename_cache();
+		bool isMsPackage();
+
 	protected:
 		CPath	m_filenameCache; //image
 		bool	m_bMsPackage;

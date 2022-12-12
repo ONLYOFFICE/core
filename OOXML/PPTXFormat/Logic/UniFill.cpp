@@ -38,6 +38,17 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		UniFill::UniFill()
+		{
+			m_type = notInit;
+			Fill.reset();
+		}
+		OOX::EElementType UniFill::getType() const
+		{
+			if (Fill.IsInit())
+				return Fill->getType();
+			return OOX::et_Unknown;
+		}
 		void UniFill::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
@@ -78,7 +89,6 @@ namespace PPTX
 				Fill.reset();
 			}	
 		}
-
 		void UniFill::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
@@ -119,7 +129,6 @@ namespace PPTX
 				Fill.reset();
 			}
 		}
-
 		void UniFill::GetFillFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNodes oNodes;
@@ -175,7 +184,6 @@ namespace PPTX
 			m_type = notInit;
 			Fill.reset();
 		}
-
 		void UniFill::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG read_start = pReader->GetPos();
@@ -626,6 +634,61 @@ namespace PPTX
 
 			pReader->Seek(read_end);
 		}
+		std::wstring UniFill::toXML() const
+		{
+			if (Fill.IsInit())
+				return Fill->toXML();
+			return _T("");
+		}
+		void UniFill::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			if (Fill.is_init())
+				Fill->toPPTY(pWriter);
+		}
+		void UniFill::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (Fill.is_init())
+				Fill->toXmlWriter(pWriter);
+		}
+		bool UniFill::is_init() const
+		{
+			return (Fill.IsInit());
+		}
+		const UniFill& UniFill::operator+=(const UniFill& fill)
+		{
+			if(!fill.is_init())
+				return (*this);
+			*this = fill;
+			return (*this);
+		}
+		void UniFill::Merge(UniFill& fill)const
+		{
+			if(!fill.is_init())
+			{
+				fill = *this;
+				return;
+			}
 
+			if(m_type != fill.m_type)
+			{
+				fill = *this;
+				return;
+			}
+			if(m_type == solidFill)
+			{
+				as<SolidFill>().Merge(fill.as<SolidFill>());
+				return;
+			}
+			if(m_type == gradFill)
+			{
+				as<GradFill>().Merge(fill.as<GradFill>());
+				return;
+			}
+		}
+		void UniFill::FillParentPointersForChilds()
+		{
+			if(is_init())
+				Fill->SetParentPointer(this);
+		}
 	} // namespace Logic
 } // namespace PPTX

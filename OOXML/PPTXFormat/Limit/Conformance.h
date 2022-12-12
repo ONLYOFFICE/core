@@ -39,32 +39,14 @@ namespace PPTX
 		class Conformance : public BaseLimit
 		{
 		public:
-			Conformance()
-			{
-				m_strValue = L"transitional";
-			}
+			Conformance();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((L"strict" == strValue) ||	(L"transitional" == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"strict" == m_strValue)		return 0;
-				if (L"transitional" == m_strValue)	return 1;
-				return 1;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				if (src == 0) m_strValue = L"strict";
-				else if (src == 1) m_strValue = L"transitional";
-			}
+			virtual void set(const std::wstring& strValue);
 
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

@@ -44,27 +44,16 @@ namespace PPTX
 	class FileMap
 	{
 	public:
-		FileMap()
-		{
-		}
+		FileMap();
+		~FileMap();
 
-		~FileMap()
-		{
-		}
         std::map<std::wstring, smart_ptr<OOX::File>> m_map;
 
-        AVSINLINE std::map<std::wstring, smart_ptr<OOX::File>>::iterator find(const OOX::CPath& path)
-		{
-            return m_map.find(path.m_strFilename);
-		}
+		std::map<std::wstring, smart_ptr<OOX::File>>::iterator find(const OOX::CPath& path);
+		void add(const OOX::CPath& key, const smart_ptr<OOX::File>& value);
 
-		AVSINLINE void add(const OOX::CPath& key, const smart_ptr<OOX::File>& value)
-		{
-            m_map[key.m_strFilename] = value;
-		}
-
-        AVSINLINE bool empty() const {return m_map.empty();}
-        AVSINLINE size_t size() const {return m_map.size();}
+		bool empty() const;
+		size_t size() const;
 	};
 } // namespace PPTX
 

@@ -55,737 +55,92 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Rtl)
 			PPTX_LOGIC_BASE2(Rtl)
 
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_rtl;
-			}			
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
+			virtual OOX::EElementType getType () const;
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{			
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(L"<a:rtl/>");				
-			}
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 
 		class UFillTx : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(UFillTx)
-			
-			UFillTx(std::wstring name = L"a:uFillTx")
-			{
-				m_name = name;
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_uFillTx;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
-				
-				Fill.GetFillFrom(node);
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = oReader.GetName();
-				
-				if ( oReader.IsEmptyNode() )
-					return;
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					
-					Fill.fromXML(oReader);
-				}	
+			UFillTx(std::wstring name = L"a:uFillTx");
 
-				FillParentPointersForChilds();
-			}
+			virtual OOX::EElementType getType () const;
 
-			void Merge(nullable<UFillTx>& uFillTx)const
-			{
-				if(!uFillTx.is_init())
-					uFillTx = UFillTx();
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				uFillTx->m_name = m_name;
-				
-				if(Fill.is_init())	
-					uFillTx->Fill = Fill;
-			}
+			void Merge(nullable<UFillTx>& uFillTx) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{			
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-				
-				pWriter->WriteRecord1(0, Fill);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Fill.fromPPTY(pReader);
-						}break;
-						default:
-						{
-						}break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(m_name);
-				pWriter->EndAttributes();
-				Fill.toXmlWriter(pWriter);
-				pWriter->EndNode(m_name);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			UniFill				Fill;
 			std::wstring		m_name;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Fill.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 
 		class Highlight : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(Highlight)
-			
-			Highlight()
-			{
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_highlight;
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Color.GetColorFrom(node);
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					
-					Color.fromXML(oReader);
-				}	
+			Highlight();
 
-				FillParentPointersForChilds();
-			}
+			virtual OOX::EElementType getType () const;
 
-			void Merge(nullable<Highlight>& highlight)const
-			{
-				if(!highlight.is_init())
-					highlight = Highlight();
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if(Color.is_init())	
-					highlight->Color = Color;
-			}
+			void Merge(nullable<Highlight>& highlight) const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{			
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-				
-				pWriter->WriteRecord1(0, Color);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-				}
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Color.fromPPTY(pReader);
-						}break;
-						default:
-						{
-						}break;
-					}
-				}
-				pReader->Seek(_end_rec);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:highlight");
-				pWriter->EndAttributes();
-					Color.toXmlWriter(pWriter);
-				pWriter->EndNode(L"a:highlight");
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			UniColor Color;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Color.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 
 		class RunProperties : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(RunProperties)
-			
-			RunProperties()
-			{
-				m_name = L"a:rPr";
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_rPr;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_name = oReader.GetName();
 
-				ReadAttributes( oReader );
+			RunProperties();
+			virtual OOX::EElementType getType () const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-					
-					if (L"blipFill"	== sName	||
-						L"gradFill"	== sName	||
-						L"grpFill"	== sName	||
-						L"noFill"	== sName	||
-						L"pattFill"	== sName	||
-						L"solidFill" == sName )
-					{
-						Fill.fromXML(oReader);
-					}
-					else if ( L"ln" == sName )
-						ln = oReader;
-					else if ( L"cs" == sName )
-						cs = oReader;					
-					else if ( L"ea" == sName )
-						ea = oReader;				
-					else if ( L"latin" == sName )
-						latin = oReader;			
-					else if ( L"sym" == sName )
-						sym = oReader;		
-					else if ( L"uFill" == sName )
-						uFill = oReader;		
-					else if ( L"uFillTx" == sName )
-						uFillTx = oReader;		
-					else if ( L"hlinkClick" == sName )
-						hlinkClick = oReader;			
-					else if (L"hlinkMouseOver" == sName)
-						hlinkMouseOver = oReader;
-					else if ( L"rtl" == sName )
-						rtl = oReader;
-					else if (L"highlight" == sName)
-						highlight = oReader;
-					else if (	L"effectDag"	== sName	||
-								L"effectLst"	== sName)
-					{
-						EffectList.fromXML(oReader);		
-					}
-					else if ( L"a:extLst"		== sName )
-					{
-						if ( oReader.IsEmptyNode() )
-							continue;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void Merge(nullable<RunProperties>& props) const;
 
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							Ext element;
-							element.fromXML(oReader);
-							extLst.push_back (element);
-						}
-					}
-				}			
-				FillParentPointersForChilds();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name = node.GetName();
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-				XmlMacroReadAttributeBase(node, L"altLang", altLang);
-				XmlMacroReadAttributeBase(node, L"b", b);
-				XmlMacroReadAttributeBase(node, L"bmk", bmk);
-				XmlMacroReadAttributeBase(node, L"cap", cap);
-				XmlMacroReadAttributeBase(node, L"dirty", dirty);
-				XmlMacroReadAttributeBase(node, L"err", err);
-				XmlMacroReadAttributeBase(node, L"i", i);
-				XmlMacroReadAttributeBase(node, L"kern", kern);
-				XmlMacroReadAttributeBase(node, L"kumimoji", kumimoji);
-				XmlMacroReadAttributeBase(node, L"lang", lang);
-				XmlMacroReadAttributeBase(node, L"noProof", noProof);
-				XmlMacroReadAttributeBase(node, L"normalizeH", normalizeH);
-				XmlMacroReadAttributeBase(node, L"smtClean", smtClean);
-				XmlMacroReadAttributeBase(node, L"smtId", altLang);
-				XmlMacroReadAttributeBase(node, L"strike", strike);
-				XmlMacroReadAttributeBase(node, L"sz", sz);
-				XmlMacroReadAttributeBase(node, L"u", u);
-				XmlMacroReadAttributeBase(node, L"baseline", baseline);
-				XmlMacroReadAttributeBase(node, L"spc", spc);
-
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(L"*", oNodes))
-				{
-					int nCount = oNodes.GetCount();
-					for (int j = 0; j < nCount; ++j)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(j, oNode);
-
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (L"ln" == strName)
-							ln = oNode;
-						else if (L"latin" == strName)
-							latin = oNode;
-						else if (L"ea" == strName)
-							ea = oNode;
-						else if (L"cs" == strName)
-							cs = oNode;
-						else if (L"sym" == strName)
-							sym = oNode;
-						else if (L"hlinkClick" == strName)
-							hlinkClick = oNode;
-						else if (L"hlinkMouseOver" == strName)
-							hlinkMouseOver = oNode;
-						else if (L"rtl" == strName)
-							rtl = oNode;
-						else if (L"uFill" == strName)
-							uFill = oNode;
-						else if (L"uFillTx" == strName)
-							uFillTx = oNode;
-						else if (L"highlight" == strName)
-							highlight = oNode;
-					}
-				}
-
-				Fill.GetFillFrom(node);
-				EffectList.GetEffectListFrom(node);
-
-				Normalize();
-				
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-					WritingElement_ReadAttributes_Read_if	  ( oReader, L"altLang",	altLang)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"b",			b)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"bmk",		bmk)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"cap",		cap)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"dirty",		dirty)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"err",		err)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"i",			i)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"kern",		kern)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"kumimoji",	kumimoji)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"lang",		lang)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"noProof",	noProof)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"normalizeH",	normalizeH)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"smtClean",	smtClean)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"smtId",		smtId)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"strike",		strike)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"sz",			sz)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"u",			u)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"baseline",	baseline)
-					WritingElement_ReadAttributes_Read_else_if( oReader, L"spc",		spc)
-				WritingElement_ReadAttributes_End	( oReader )		
-				
-				Normalize();
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(m_name);
-
-				pWriter->StartAttributes();
-
-				pWriter->WriteAttribute(L"kumimoji", kumimoji);
-				pWriter->WriteAttribute(L"lang", lang);
-				pWriter->WriteAttribute(L"altLang", altLang);
-				pWriter->WriteAttribute(L"sz", sz);
-				pWriter->WriteAttribute(L"b", b);
-				pWriter->WriteAttribute(L"i", i);
-				pWriter->WriteAttribute(L"u", u);
-				pWriter->WriteAttribute(L"strike", strike);
-				pWriter->WriteAttribute(L"kern", kern);
-				pWriter->WriteAttribute(L"cap", cap);
-				pWriter->WriteAttribute(L"spc", spc);
-				pWriter->WriteAttribute(L"normalizeH", normalizeH);
-				pWriter->WriteAttribute(L"baseline", baseline);
-				pWriter->WriteAttribute(L"noProof", noProof);
-				pWriter->WriteAttribute(L"dirty", dirty);
-				pWriter->WriteAttribute(L"err", err);
-				pWriter->WriteAttribute(L"smtClean", smtClean);
-				pWriter->WriteAttribute(L"smtId", smtId);
-				pWriter->WriteAttribute(L"bmk", bmk);
-
-				pWriter->EndAttributes();
-
-				pWriter->Write(ln);
-				Fill.toXmlWriter(pWriter);
-				EffectList.toXmlWriter(pWriter);				
-				pWriter->Write(highlight);
-				pWriter->Write(uFill);
-				pWriter->Write(uFillTx);
-				pWriter->Write(latin);
-				pWriter->Write(ea);
-				pWriter->Write(cs);
-				pWriter->Write(sym);
-				pWriter->Write(hlinkClick);
-				pWriter->Write(hlinkMouseOver);
-				pWriter->Write(rtl);
-
-				pWriter->EndNode(m_name);
-			}
-
-
-			void Merge(nullable<RunProperties>& props)const
-			{
-				if(!props.is_init())
-					props = new RunProperties();
-
-				if(ln.is_init())
-					ln->Merge(props->ln);
-				if(Fill.is_init())
-					props->Fill = Fill;
-				if(uFill.is_init())
-					uFill->Merge(props->uFill);
-				if(uFillTx.is_init())
-					uFillTx->Merge(props->uFillTx);
-				if (highlight.is_init())
-					highlight->Merge(props->highlight);
-
-	//			EffectProperties EffectList;
-				//uLn (Underline Stroke)  §21.1.2.3.14 
-				//uLnTx (Underline Follows Text)  §21.1.2.3.15 
-
-				if(latin.is_init())	latin->Merge(props->latin);
-				if(ea.is_init())	ea->Merge(props->ea);
-				if(cs.is_init())	cs->Merge(props->cs);
-				if(sym.is_init())	sym->Merge(props->sym);
-	/*
-				nullable_property<Hyperlink> hlinkClick;
-				nullable_property<Hyperlink> hlinkMouseOver;
-	*/
-				if(rtl.is_init())		props->rtl		= new Logic::Rtl();
-				if(altLang.is_init())	props->altLang	= *altLang;
-				if(b.is_init())			props->b		= *b;
-				if(baseline.is_init())	props->baseline = *baseline;
-				if(bmk.is_init())		props->bmk		= *bmk;
-				if(cap.is_init())		props->cap		= *cap;
-				if(dirty.is_init())		props->dirty	= *dirty;
-				if(err.is_init())		props->err		= *err;
-				if(i.is_init())			props->i		= *i;
-				if(kern.is_init())		props->kern		= *kern;
-				if(kumimoji.is_init())	props->kumimoji = *kumimoji;
-				if(lang.is_init())		props->lang		= *lang;
-				if(noProof.is_init())	props->noProof	= *noProof;
-				if(normalizeH.is_init())props->normalizeH = *normalizeH;
-				if(smtClean.is_init())	props->smtClean = *smtClean;
-				if(smtId.is_init())		props->smtId	= *smtId;
-				if(spc.is_init())		props->spc		= *spc;
-				if(strike.is_init())	props->strike	= *strike;
-				if(sz.is_init())		props->sz		= *sz;
-				if(u.is_init())			props->u		= *u;
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-				pWriter->WriteString2(0,	altLang);
-				pWriter->WriteBool2	(1,		b);
-				pWriter->WriteInt2	(2,		baseline);
-				pWriter->WriteString2(3,	bmk);
-				pWriter->WriteLimit2(4,		cap);
-				pWriter->WriteBool2	(5,		dirty);
-				pWriter->WriteBool2	(6,		err);
-				pWriter->WriteBool2	(7,		i);
-				pWriter->WriteInt2	(8,		kern);
-				pWriter->WriteBool2	(9,		kumimoji);
-				pWriter->WriteString2(10,	lang);
-				pWriter->WriteBool2	(11,	noProof);
-				pWriter->WriteBool2	(12,	normalizeH);
-				pWriter->WriteBool2	(13,	smtClean);
-				pWriter->WriteInt2	(14,	smtId);
-				pWriter->WriteInt2	(15,	spc);
-				pWriter->WriteLimit2(16,	strike);
-				pWriter->WriteInt2	(17,	sz);
-				pWriter->WriteLimit2(18,	u);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, ln);
-				pWriter->WriteRecord1(1, Fill);
-				pWriter->WriteRecord1(2, EffectList);
-
-				pWriter->WriteRecord2(3, latin);
-				pWriter->WriteRecord2(4, ea);
-				pWriter->WriteRecord2(5, cs);
-				pWriter->WriteRecord2(6, sym);
-
-				pWriter->WriteRecord2(7, hlinkClick);
-				pWriter->WriteRecord2(8, hlinkMouseOver);
-				pWriter->WriteRecord2(9, rtl);
-				
-				pWriter->WriteRecord2(10, uFill);
-				pWriter->WriteRecord2(11, uFillTx);
-
-				pWriter->WriteRecord2(12, highlight);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // start attributes
-
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
-						case 0:
-						{
-							altLang = pReader->GetString2();
-						}break;
-						case 1:
-						{
-							b = pReader->GetBool();
-						}break;
-						case 2:
-						{
-							baseline = pReader->GetLong();
-						}break;
-						case 3:
-						{
-							bmk = pReader->GetString2();
-						}break;
-						case 4:
-						{
-							cap = pReader->GetUChar();
-						}break;
-						case 5:
-						{
-							dirty = pReader->GetBool();
-						}break;
-						case 6:
-						{
-							err = pReader->GetBool();
-						}break;
-						case 7:
-						{
-							i = pReader->GetBool();
-						}break;
-						case 8:
-						{
-							kern = pReader->GetLong();
-						}break;
-						case 9:
-						{
-							kumimoji = pReader->GetBool();
-						}break;
-						case 10:
-						{
-							lang = pReader->GetString2();
-						}break;
-						case 11:
-						{
-							noProof = pReader->GetBool(); // noproof
-						}break;
-						case 12:
-						{
-							normalizeH = pReader->GetBool();
-						}break;
-						case 13:
-						{
-							smtClean = pReader->GetBool();
-						}break;
-						case 14:
-						{
-							smtId = pReader->GetLong();
-						}break;
-						case 15:
-						{
-							spc = pReader->GetLong();
-						}break;
-						case 16:
-						{
-							strike = pReader->GetUChar();
-						}break;
-						case 17:
-						{
-							sz = pReader->GetLong();
-						}break;
-						case 18:
-						{
-							u = pReader->GetUChar();
-						}break;
-						default:
-							break;
-					}
-				}
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							ln = new Logic::Ln();
-							ln->fromPPTY(pReader);
-						}break;
-						case 1:
-						{
-							Fill.fromPPTY(pReader);
-						}break;
-						case 2:
-						{
-							EffectList.fromPPTY(pReader);
-						}break;
-						case 3:
-						{
-							latin = new Logic::TextFont();
-							latin->m_name = L"a:latin";
-							latin->fromPPTY(pReader);
-						}break;
-						case 4:
-						{
-							ea = new Logic::TextFont();
-							ea->m_name = L"a:ea";
-							ea->fromPPTY(pReader);
-						}break;
-						case 5:
-						{
-							cs = new Logic::TextFont();
-							cs->m_name = L"a:cs";
-							cs->fromPPTY(pReader);
-						}break;
-						case 6:
-						{
-							sym = new Logic::TextFont();
-							sym->m_name = L"a:sym";
-							sym->fromPPTY(pReader);
-						}break;
-						case 7:
-						{
-							hlinkClick = new Logic::Hyperlink(L"hlinkClick");
-							hlinkClick->fromPPTY(pReader);							
-						}break;
-						case 8:
-						{
-							hlinkMouseOver = new Logic::Hyperlink(L"hlinkMouseOver");
-							hlinkMouseOver->fromPPTY(pReader);
-						}break;
-						case 9:
-						{
-							rtl = new Logic::Rtl();
-							rtl->fromPPTY(pReader);
-						}break;
-						case 10:
-						{
-							uFill = new Logic::UFillTx(L"a:uFill");
-							uFill->fromPPTY(pReader);
-						}break;
-						case 11:
-						{
-							uFillTx = new Logic::UFillTx(L"a:uFillTx");
-							uFillTx->fromPPTY(pReader);
-						}break;
-						case 12:
-						{
-							highlight = new Logic::Highlight();
-							highlight->fromPPTY(pReader);
-						}break;					
-						default:
-						{
-							pReader->SkipRecord();
-						}
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
-
-			//uLn (Underline Stroke)  §21.1.2.3.14 
-			//uLnTx (Underline Follows Text)  §21.1.2.3.15 
+			//uLn (Underline Stroke)  §21.1.2.3.14
+			//uLnTx (Underline Follows Text)  §21.1.2.3.15
 			nullable<Ln>						ln;
 			UniFill								Fill;
 			EffectProperties					EffectList;
-			
+
 			std::vector<Ext>					extLst;
 
 			nullable<Highlight>					highlight;
@@ -820,54 +175,13 @@ namespace PPTX
 			nullable_limit<Limit::TextUnderline> u;
 
 			std::wstring						m_name;
-		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(ln.is_init())
-					ln->SetParentPointer(this);
-				Fill.SetParentPointer(this);
-				EffectList.SetParentPointer(this);
-				if(latin.is_init())
-					latin->SetParentPointer(this);
-				if(ea.is_init())
-					ea->SetParentPointer(this);
-				if(cs.is_init())
-					cs->SetParentPointer(this);
-				if(sym.is_init())
-					sym->SetParentPointer(this);
-				if(hlinkClick.is_init())
-					hlinkClick->SetParentPointer(this);
-				if(hlinkMouseOver.is_init())
-					hlinkMouseOver->SetParentPointer(this);
-				if(rtl.is_init())
-					rtl->SetParentPointer(this);
-				if(uFill.is_init())
-					uFill->SetParentPointer(this);
-				if(uFillTx.is_init())
-					uFillTx->SetParentPointer(this);
-				if (highlight.is_init())
-					highlight->SetParentPointer(this);
-			}
 
-			AVSINLINE void Normalize()
-			{
-				kern.normalize(0, 400000);
-				smtId.normalize_positive();
-				spc.normalize(-400000, 400000);
-				sz.normalize(10, 400000);
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 
 		public:
-			PPTX::Logic::UniColor GetColor()const
-			{
-				if (Fill.is<SolidFill>())
-					return Fill.as<SolidFill>().Color;
-				if (Fill.is<GradFill>())
-					return Fill.as<GradFill>().GetFrontColor();
-
-				UniColor oUniColor;
-				return oUniColor;
-			}
+			PPTX::Logic::UniColor GetColor() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

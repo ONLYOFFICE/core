@@ -41,28 +41,14 @@ namespace OOX
 	class Video : public Media
 	{
 	public:
-		Video(OOX::Document* pMain, bool bDocument = true) : Media (pMain, bDocument)
-		{
-		}
-		Video(OOX::Document* pMain, const CPath& filename, bool bExternal = false) : Media(pMain, filename, bExternal)
-		{
-		}
-		virtual ~Video()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::Video;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
+		Video(OOX::Document* pMain, bool bDocument = true);
+		Video(OOX::Document* pMain, const CPath& filename, bool bExternal = false);
+		virtual ~Video();
+
+		virtual const FileType type() const;
+
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 	};
 } // namespace OOX
 

@@ -32,11 +32,11 @@
 
 #include "../Workbook/Workbook.h"
 
-#include "../Comments/Comments.h"
-#include "DataValidation.h"
-
+#include "../../DocxFormat/VmlDrawing.h"
 #include "../Styles/Styles.h"
 #include "../SharedStrings/SharedStrings.h"
+#include "DataValidation.h"
+#include "../Comments/ThreadedComments.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"
@@ -249,103 +249,104 @@ namespace OOX
 			return false;
 		}
 //-----------------------------------------------------------------------------------------------------
-	class r1c1_formula_convert
-	{
-	public:
-		static size_t base_row;
-		static size_t base_col;
 
-		r1c1_formula_convert()
-		{}
-
-		static std::wstring replace_ref(boost::wsmatch const & what)
+		class r1c1_formula_convert
 		{
-			const size_t sz = what.size();
+		public:
+			static size_t base_row;
+			static size_t base_col;
 
-			std::wstring result = what[0].str();
+			r1c1_formula_convert()
+			{}
 
-			std::wstring sCell = sz > 1 ? what[1].str() : L"";
-			std::wstring sRow = sz > 2 ? what[2].str() : L"";
-			std::wstring sCol = sz > 3 ? what[3].str() : L"";
-
-			size_t row = boost::lexical_cast<size_t>(sRow);
-			size_t col = boost::lexical_cast<size_t>(sCol);
-
-			return getCellAddress(row, col, true, true);
-		}
-		static std::wstring replace_ref_from_base(boost::wsmatch const & what)
-		{
-			const size_t sz = what.size();
-
-			std::wstring result = what[0].str();
-
-			std::wstring s1 = sz > 1 ? what[1].str() : L"";
-			std::wstring s2 = sz > 2 ? what[2].str() : L"";
-			std::wstring s3 = sz > 3 ? what[3].str() : L"";
-			std::wstring s4 = sz > 4 ? what[4].str() : L"";
-			std::wstring s5 = sz > 5 ? what[5].str() : L"";
-
-			//size_t row = sRow.empty() ? 0 : boost::lexical_cast<size_t>(sRow);
-			//size_t col = sCol.empty() ? 0 : boost::lexical_cast<size_t>(sCol);
-
-			size_t row = 0, col = 0;
-
-			bool bAbsoluteCol = false, bAbsoluteRow = false;
-
-			if (s2.empty())
+			static std::wstring replace_ref(boost::wsmatch const & what)
 			{
-				row = base_row;
+				const size_t sz = what.size();
+
+				std::wstring result = what[0].str();
+
+				std::wstring sCell = sz > 1 ? what[1].str() : L"";
+				std::wstring sRow = sz > 2 ? what[2].str() : L"";
+				std::wstring sCol = sz > 3 ? what[3].str() : L"";
+
+				size_t row = boost::lexical_cast<size_t>(sRow);
+				size_t col = boost::lexical_cast<size_t>(sCol);
+
+				return getCellAddress(row, col, true, true);
 			}
-			else if (0 == s2.find(L"["))
+			static std::wstring replace_ref_from_base(boost::wsmatch const & what)
 			{
-				row = boost::lexical_cast<size_t>(s2.substr(1, s2.length() - 2)) + base_row;
+				const size_t sz = what.size();
+
+				std::wstring result = what[0].str();
+
+				std::wstring s1 = sz > 1 ? what[1].str() : L"";
+				std::wstring s2 = sz > 2 ? what[2].str() : L"";
+				std::wstring s3 = sz > 3 ? what[3].str() : L"";
+				std::wstring s4 = sz > 4 ? what[4].str() : L"";
+				std::wstring s5 = sz > 5 ? what[5].str() : L"";
+
+				//size_t row = sRow.empty() ? 0 : boost::lexical_cast<size_t>(sRow);
+				//size_t col = sCol.empty() ? 0 : boost::lexical_cast<size_t>(sCol);
+
+				size_t row = 0, col = 0;
+
+				bool bAbsoluteCol = false, bAbsoluteRow = false;
+
+				if (s2.empty())
+				{
+					row = base_row;
+				}
+				else if (0 == s2.find(L"["))
+				{
+					row = boost::lexical_cast<size_t>(s2.substr(1, s2.length() - 2)) + base_row;
+				}
+				else
+				{
+					row = boost::lexical_cast<size_t>(s2);
+					bAbsoluteRow = true;
+				}
+				if (s4.empty())
+				{
+					col = base_col;
+				}
+				else if (0 == s4.find(L"["))
+				{
+					col = boost::lexical_cast<size_t>(s4.substr(1, s4.length() - 2)) + base_col;
+				}
+				else
+				{
+					col = boost::lexical_cast<size_t>(s4);
+					bAbsoluteCol = true;
+				}
+				return getCellAddress(row, col, bAbsoluteRow, bAbsoluteCol);
 			}
-			else
-			{
-				row = boost::lexical_cast<size_t>(s2);
-				bAbsoluteRow = true;
-			}
-			if (s4.empty())
-			{
-				col = base_col;
-			}
-			else if (0 == s4.find(L"["))
-			{
-				col = boost::lexical_cast<size_t>(s4.substr(1, s4.length() - 2)) + base_col;
-			}
-			else
-			{
-				col = boost::lexical_cast<size_t>(s4);
-				bAbsoluteCol = true;
-			}
-			return getCellAddress(row, col, bAbsoluteRow, bAbsoluteCol);
-		}
 
 
-		std::wstring convert(const std::wstring& expr)
-		{
-			//boost::wregex findRef(L"(\R(\\d+)\C(\\d+))"); //easy
-			boost::wregex findRefFromBase(L"(\R((\\[?\-?\\d+\\]?)?)\C((\\[?\-?\\d+\\]?)?))");
+			std::wstring convert(const std::wstring& expr)
+			{
+				//boost::wregex findRef(L"(\R(\\d+)\C(\\d+))"); //easy
+				boost::wregex findRefFromBase(L"(\R((\\[?\-?\\d+\\]?)?)\C((\\[?\-?\\d+\\]?)?))");
 
-			//std::wstring result = boost::regex_replace(
-			//	expr,
-			//	findRef,
-			//	&replace_ref,
-			//	boost::match_default | boost::format_all);
-			
-			std::wstring result = boost::regex_replace(
-  				expr,
-				findRefFromBase,
-				&replace_ref_from_base,
-				boost::match_default | boost::format_all);
+				//std::wstring result = boost::regex_replace(
+				//	expr,
+				//	findRef,
+				//	&replace_ref,
+				//	boost::match_default | boost::format_all);
 
-			return result;
-		}
-	};
-	size_t	r1c1_formula_convert::base_col = 1;
-	size_t	r1c1_formula_convert::base_row = 1;
+				std::wstring result = boost::regex_replace(
+					expr,
+					findRefFromBase,
+					&replace_ref_from_base,
+					boost::match_default | boost::format_all);
 
-	CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
+				return result;
+			}
+		};
+		size_t	r1c1_formula_convert::base_col = 1;
+		size_t	r1c1_formula_convert::base_row = 1;
+
+		CFormulaXLSB::CFormulaXLSB():m_oFormula(256),m_oRef(256),m_oR1(256),m_oR2(256)
 		{
 			Clean();
 		}
@@ -540,6 +541,7 @@ namespace OOX
 				oStream.WriteULONG(m_nSi);
 			}
 		}
+
 		CCellXLSB::CCellXLSB():m_oValue(256)
 		{
 			Clean();
@@ -723,6 +725,7 @@ namespace OOX
 
 			oStream.XlsbEndRecord();
 		}
+
 		CRowXLSB::CRowXLSB()
 		{
 			Clean();
@@ -876,6 +879,28 @@ namespace OOX
 			}
 		}
 
+		CFormula::CFormula()
+		{
+		}
+		CFormula::~CFormula()
+		{
+		}
+		void CFormula::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		void CFormula::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			m_sText = oReader.GetText3();
+		}
+		std::wstring CFormula::toXML() const
+		{
+			return L"";
+		}
 		void CFormula::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(_T("<f"));
@@ -895,7 +920,6 @@ namespace OOX
 			writer.WriteEncodeXmlString(m_sText);
 			writer.WriteString(_T("</f>"));
 		}
-
 		void CFormula::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream)
 		{
 			BYTE nFlags = oStream.GetUChar();
@@ -970,7 +994,6 @@ namespace OOX
 				m_oT->SetValue(SimpleTypes::Spreadsheet::cellformulatypeShared);
 			}
 		}
-
         void CFormula::fromBin(BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType)
         {
             m_oT.Init();
@@ -1056,7 +1079,43 @@ namespace OOX
 
             }
         }
+		EElementType CFormula::getType () const
+		{
+			return et_x_Formula;
+		}
+		void CFormula::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_StartChar( oReader )
 
+				WritingElement_ReadAttributes_Read_ifChar		( oReader, "t",		m_oT )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "si",	m_oSi )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "aca",	m_oAca )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "bx",    m_oBx )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ca",    m_oCa )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "del1",	m_oDel1 )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "del2",	m_oDel2 )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "dt2D",	m_oDt2D )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "dtr",	m_oDtr )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r1",	m_oR1 )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r2",	m_oR2 )
+				WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ref",	m_oRef )
+
+			WritingElement_ReadAttributes_EndChar( oReader )
+		}
+
+		CCell::CCell(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CCell::~CCell()
+		{
+		}
+		void CCell::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CCell::toXML() const
+		{
+			return _T("");
+		}
         bool CCell::parseRef(std::wstring sRef, int& nRow, int& nCol)
 		{
 			std::string sResA(sRef.begin(), sRef.end());
@@ -1224,155 +1283,6 @@ namespace OOX
 					data_comment.fromXML2(oReader);
 					
 					pComment->m_oText = data_comment.m_oRichText.GetPointerEmptyNullable();
-				}
-			}
-		}
-		void CData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if ( oReader.GetAttributesCount() <= 0 ) return;
-
-			WritingElement_ReadAttributes_StartChar( oReader )
-				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Type", m_oType )
-			WritingElement_ReadAttributes_EndChar( oReader )
-		}
-		void CData::fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes( oReader );
-
-			if(SimpleTypes::Spreadsheet::celltypeStr != m_oType->GetValue())
-			{
-				m_oValue = oReader;
-				if (SimpleTypes::Spreadsheet::celltypeDate == m_oType->GetValue())
-				{
-					double value = 0;
-					if (parseDate(m_oValue->m_sText, value))
-					{
-						m_oValue->m_sText = std::to_wstring(value);
-						m_oType.reset(); // по стилю
-					}
-				}
-				return;
-			}
-			fromXML2(oReader);
-		}
-		void CData::dump(const std::wstring &text)
-		{
-			if (text.empty()) return;
-
-			if (false == m_oRichText.IsInit())
-				m_oRichText.Init();
-
-			CText *pText = new CText();
-			pText->m_sText = text;
-
-			CRun *pRun = new CRun();
-			pRun->m_arrItems.push_back(pText);
-			
-			if (bBold.IsInit() || bItalic.IsInit() || bUnderline.IsInit()|| nFontSize.IsInit() || bSubscript.IsInit() || bSuperscript.IsInit() ||
-				(sColor.IsInit() && *sColor != L"#333333"))
-			{
-				pRun->m_oRPr = new CRPr();
-
-				if (bBold.IsInit())
-				{
-					pRun->m_oRPr->m_oBold.Init();
-					pRun->m_oRPr->m_oBold->m_oVal.FromBool(*bBold);
-				}
-				if (bItalic.IsInit())
-				{
-					pRun->m_oRPr->m_oItalic.Init();
-					pRun->m_oRPr->m_oItalic->m_oVal.FromBool(*bItalic);
-				}
-				if (bUnderline.IsInit())
-				{
-					pRun->m_oRPr->m_oUnderline.Init(); pRun->m_oRPr->m_oUnderline->m_oUnderline.Init();
-					pRun->m_oRPr->m_oUnderline->m_oUnderline->SetValue(SimpleTypes::Spreadsheet::underlineSingle);
-				}
-				if (sColor.IsInit())
-				{
-					pRun->m_oRPr->m_oColor.Init(); 
-					pRun->m_oRPr->m_oColor->m_oRgb = new SimpleTypes::Spreadsheet::CHexColor(*sColor);
-				}
-				if (nFontSize.IsInit())
-				{
-					pRun->m_oRPr->m_oSz.Init(); pRun->m_oRPr->m_oSz->m_oVal.Init();
-					pRun->m_oRPr->m_oSz->m_oVal->SetValue(*nFontSize);
-				}
-				if (bSubscript.IsInit() || bSuperscript.IsInit())
-				{
-					pRun->m_oRPr->m_oVertAlign.Init(); pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign.Init();
-					if (bSubscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSubscript);
-					if (bSuperscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSuperscript);
-				}
-			}
-			m_oRichText->m_arrItems.push_back(pRun);
-		}
-		void CData::fromXML2(XmlUtils::CXmlLiteReader& oReader)
-		{
-			if ( oReader.IsEmptyNode() )
-				return;
-
-			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode2( nCurDepth ) )
-			{
-				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
-
-				if ( strcmp("B", sName) == 0)
-				{
-					bBold = true;
-					fromXML2(oReader);
-
-					//dump(oReader.GetText());
-					bBold.reset();
-				}
-				else if ( strcmp("I", sName) == 0)
-				{
-					bItalic = true;
-					fromXML2(oReader);
-
-					//dump(oReader.GetText());
-					bItalic.reset();
-				}
-				else if ( strcmp("U", sName) == 0)
-				{
-					bUnderline = true;
-					fromXML2(oReader);
-
-					//dump(oReader.GetText());
-					bUnderline.reset();
-				}
-				else if ( strcmp("Sub", sName) == 0)
-				{
-					bSubscript = true;
-					fromXML2(oReader);
-
-					//dump(oReader.GetText());
-					bSubscript.reset();
-				}
-				else if ( strcmp("Sup", sName) == 0)
-				{
-					bSuperscript  = true;
-					fromXML2(oReader);
-
-					//dump(oReader.GetText());
-					bSuperscript.reset();
-				}
-				else if ( strcmp("Font", sName) == 0)
-				{
-					WritingElement_ReadAttributes_Start_No_NS( oReader )
-						WritingElement_ReadAttributes_Read_if ( oReader, L"Color",	sColor )
-						WritingElement_ReadAttributes_Read_if ( oReader, L"Size",	nFontSize )
-					WritingElement_ReadAttributes_End_No_NS( oReader )
-					
-					fromXML2(oReader);
-
-					//dump(oReader.GetText());
-					sColor.reset();
-					nFontSize.reset();
-				}
-				else if (strcmp("#text", sName) == 0)
-				{
-					dump(oReader.GetText());
 				}
 			}
 		}
@@ -1759,12 +1669,10 @@ namespace OOX
 
 			oStream.Seek(nEnd);
 		}
-
         void CCell::fromBin(XLS::BaseObjectPtr& obj)
         {
             ReadAttributes(obj);           
         }
-
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
@@ -1796,7 +1704,6 @@ namespace OOX
 			WritingElement_ReadAttributes_EndChar( oReader )
 
 		}
-
         void CCell::ReadAttributes(BaseObjectPtr& obj)
         {
             auto ptr = static_cast<XLSB::CELL*>(obj.get());
@@ -1993,7 +1900,312 @@ namespace OOX
                 }
             } 
         }
+		EElementType CCell::getType () const
+		{
+			return et_x_Cell;
+		}
+		bool CCell::isInitRef() const
+		{
+			return m_oRef.IsInit() || (m_oRow.IsInit() && m_oCol.IsInit());
+		}
+		std::wstring CCell::getRef() const
+		{
+			if (m_oRef.IsInit())
+			{
+				const std::string& s = m_oRef.get();
+				return std::wstring(s.begin(), s.end());
+			}
+			else if (m_oRow.IsInit() && m_oCol.IsInit())
+			{
+				return combineRef(*m_oRow, *m_oCol);
+			}
+			else
+			{
+				return L"A1";
+			}
+		}
+		void CCell::setRef(const std::wstring& sRef)
+		{
+			m_oRef = std::string(sRef.begin(), sRef.end());
+		}
+		bool CCell::getRowCol(int& nRow, int& nCol) const
+		{
+			bool bRes = false;
+			nRow = 0;
+			nCol = 0;
+			if (m_oRow.IsInit() && m_oCol.IsInit())
+			{
+				bRes = true;
+				nRow = *m_oRow;
+				nCol = *m_oCol;
+			}
+			else if (m_oRef.IsInit())
+			{
+				if (parseRefA(m_oRef->c_str(), nRow, nCol))
+				{
+					bRes = true;
+					nRow--;
+					nCol--;
+				}
+			}
+			return bRes;
+		}
+		void CCell::setRowCol(int nRow, int nCol)
+		{
+			m_oRow = nRow;
+			m_oCol= nCol;
+		}
+		bool CCell::parse3DRef(const std::wstring& sRef, std::wstring& workbook, std::wstring& sheetFrom, std::wstring& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2)
+		{
+			bool bRes = false;
+			int nIndex = (int)sRef.find('!');
+			std::wstring sCellRef;
 
+			if (std::wstring::npos != nIndex)
+			{
+				std::wstring sSheetPrefix = sRef.substr(0, nIndex);
+				if (sSheetPrefix.length() > 0 && '\'' == sSheetPrefix[0] && '\'' == sSheetPrefix[sSheetPrefix.length() - 1])
+				{
+					sSheetPrefix = sSheetPrefix.substr(1, sSheetPrefix.length() - 2);
+				}
+				NSStringExt::Replace(sSheetPrefix, L"''", L"'");
+
+				int nIndexWbStart = (int)sSheetPrefix.find('[');
+				int nIndexWbEnd = (int)sSheetPrefix.find(']');
+
+				if (-1 != nIndexWbStart && -1 != nIndexWbEnd)
+				{
+					workbook = sSheetPrefix.substr(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
+					sSheetPrefix = sSheetPrefix.substr(nIndexWbEnd + 1, sSheetPrefix.length() - nIndexWbEnd - 1);
+				}
+				int nIndexColon = (int)sSheetPrefix.find(':');
+				if (-1 != nIndexColon)
+				{
+					sheetFrom = sSheetPrefix.substr(0, nIndexColon);
+					sheetTo = sSheetPrefix.substr(nIndexColon + 1, sSheetPrefix.length() - nIndexColon - 1);
+				}
+				else
+				{
+					sheetFrom = sSheetPrefix;
+				}
+				sCellRef = sRef.substr(nIndex + 1, sRef.length() - nIndex - 1);
+			}
+			else
+			{
+				sCellRef = sRef;
+			}
+			NSStringExt::Replace(sCellRef, L"$", L"");
+			int nIndexColon = (int)sCellRef.find(':');
+			if (std::wstring::npos != nIndexColon)
+			{
+				bRes = parseRef(sCellRef.substr(0, nIndexColon), nRow1, nCol1) && parseRef(sCellRef.substr(nIndexColon + 1, sCellRef.length() - nIndexColon - 1), nRow2, nCol2);
+			}
+			else
+			{
+				bRes = parseRef(sCellRef, nRow1, nCol1);
+				nRow2 = nRow1;
+				nCol2 = nCol1;
+			}
+			return bRes;
+		}
+
+		CData::CData()
+		{
+		}
+		CData::~CData()
+		{
+		}
+		void CData::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CData::toXML() const
+		{
+			return L"";
+		}
+		void CData::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+		}
+		EElementType CData::getType () const
+		{
+			return et_x_Data;
+		}
+		void CData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.GetAttributesCount() <= 0 ) return;
+
+			WritingElement_ReadAttributes_StartChar( oReader )
+				WritingElement_ReadAttributes_Read_ifChar ( oReader, "ss:Type", m_oType )
+			WritingElement_ReadAttributes_EndChar( oReader )
+		}
+		void CData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if(SimpleTypes::Spreadsheet::celltypeStr != m_oType->GetValue())
+			{
+				m_oValue = oReader;
+				if (SimpleTypes::Spreadsheet::celltypeDate == m_oType->GetValue())
+				{
+					double value = 0;
+					if (parseDate(m_oValue->m_sText, value))
+					{
+						m_oValue->m_sText = std::to_wstring(value);
+						m_oType.reset(); // по стилю
+					}
+				}
+				return;
+			}
+			fromXML2(oReader);
+		}
+		void CData::dump(const std::wstring &text)
+		{
+			if (text.empty()) return;
+
+			if (false == m_oRichText.IsInit())
+				m_oRichText.Init();
+
+			CText *pText = new CText();
+			pText->m_sText = text;
+
+			CRun *pRun = new CRun();
+			pRun->m_arrItems.push_back(pText);
+
+			if (bBold.IsInit() || bItalic.IsInit() || bUnderline.IsInit()|| nFontSize.IsInit() || bSubscript.IsInit() || bSuperscript.IsInit() ||
+				(sColor.IsInit() && *sColor != L"#333333"))
+			{
+				pRun->m_oRPr = new CRPr();
+
+				if (bBold.IsInit())
+				{
+					pRun->m_oRPr->m_oBold.Init();
+					pRun->m_oRPr->m_oBold->m_oVal.FromBool(*bBold);
+				}
+				if (bItalic.IsInit())
+				{
+					pRun->m_oRPr->m_oItalic.Init();
+					pRun->m_oRPr->m_oItalic->m_oVal.FromBool(*bItalic);
+				}
+				if (bUnderline.IsInit())
+				{
+					pRun->m_oRPr->m_oUnderline.Init(); pRun->m_oRPr->m_oUnderline->m_oUnderline.Init();
+					pRun->m_oRPr->m_oUnderline->m_oUnderline->SetValue(SimpleTypes::Spreadsheet::underlineSingle);
+				}
+				if (sColor.IsInit())
+				{
+					pRun->m_oRPr->m_oColor.Init();
+					pRun->m_oRPr->m_oColor->m_oRgb = new SimpleTypes::Spreadsheet::CHexColor(*sColor);
+				}
+				if (nFontSize.IsInit())
+				{
+					pRun->m_oRPr->m_oSz.Init(); pRun->m_oRPr->m_oSz->m_oVal.Init();
+					pRun->m_oRPr->m_oSz->m_oVal->SetValue(*nFontSize);
+				}
+				if (bSubscript.IsInit() || bSuperscript.IsInit())
+				{
+					pRun->m_oRPr->m_oVertAlign.Init(); pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign.Init();
+					if (bSubscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSubscript);
+					if (bSuperscript.IsInit())	pRun->m_oRPr->m_oVertAlign->m_oVerticalAlign->SetValue(SimpleTypes::verticalalignrunSuperscript);
+				}
+			}
+			m_oRichText->m_arrItems.push_back(pRun);
+		}
+		void CData::fromXML2(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode2( nCurDepth ) )
+			{
+				const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
+
+				if ( strcmp("B", sName) == 0)
+				{
+					bBold = true;
+					fromXML2(oReader);
+
+					//dump(oReader.GetText());
+					bBold.reset();
+				}
+				else if ( strcmp("I", sName) == 0)
+				{
+					bItalic = true;
+					fromXML2(oReader);
+
+					//dump(oReader.GetText());
+					bItalic.reset();
+				}
+				else if ( strcmp("U", sName) == 0)
+				{
+					bUnderline = true;
+					fromXML2(oReader);
+
+					//dump(oReader.GetText());
+					bUnderline.reset();
+				}
+				else if ( strcmp("Sub", sName) == 0)
+				{
+					bSubscript = true;
+					fromXML2(oReader);
+
+					//dump(oReader.GetText());
+					bSubscript.reset();
+				}
+				else if ( strcmp("Sup", sName) == 0)
+				{
+					bSuperscript  = true;
+					fromXML2(oReader);
+
+					//dump(oReader.GetText());
+					bSuperscript.reset();
+				}
+				else if ( strcmp("Font", sName) == 0)
+				{
+					WritingElement_ReadAttributes_Start_No_NS( oReader )
+						WritingElement_ReadAttributes_Read_if ( oReader, L"Color",	sColor )
+						WritingElement_ReadAttributes_Read_if ( oReader, L"Size",	nFontSize )
+					WritingElement_ReadAttributes_End_No_NS( oReader )
+
+					fromXML2(oReader);
+
+					//dump(oReader.GetText());
+					sColor.reset();
+					nFontSize.reset();
+				}
+				else if (strcmp("#text", sName) == 0)
+				{
+					dump(oReader.GetText());
+				}
+			}
+		}
+
+		CRow::CRow(OOX::Document *pMain) : WritingElementWithChilds<CCell>(pMain)
+		{
+		}
+		CRow::~CRow()
+		{
+		}
+		void CRow::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CRow::toXML() const
+		{
+			return _T("");
+		}
+		void CRow::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXMLStart(writer);
+
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+
+			toXMLEnd(writer);
+		}
 		void CRow::toXMLStart(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(_T("<row"));
@@ -2054,7 +2266,6 @@ namespace OOX
 				}
 			}
 		}
-
         void CRow::fromBin(XLS::BaseObjectPtr& obj)
         {
             ReadAttributes(obj);
@@ -2078,7 +2289,6 @@ namespace OOX
                 m_arrItems.push_back(pCell);
             }*/
         }
-
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
@@ -2279,7 +2489,6 @@ namespace OOX
 				}
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
-
         void CRow::ReadAttributes(XLS::BaseObjectPtr& obj)
         {
             auto ptr = static_cast<XLSB::Parenthesis_CELLTABLE*>(obj.get());
@@ -2328,7 +2537,44 @@ namespace OOX
                 }
             }
         }
+		EElementType CRow::getType () const
+		{
+			return et_x_Row;
+		}
 
+		CSheetData::CSheetData(OOX::Document *pMain) : WritingElementWithChilds<CRow>(pMain)
+		{
+		}
+		CSheetData::~CSheetData()
+		{
+		}
+		void CSheetData::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CSheetData::toXML() const
+		{
+			return _T("");
+		}
+		void CSheetData::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXMLStart(writer);
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			toXMLEnd(writer);
+		}
+		void CSheetData::toXMLStart(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<sheetData>"));
+		}
+		void CSheetData::toXMLEnd(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("</sheetData>"));
+		}
         void CSheetData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start(oReader)
@@ -2341,7 +2587,6 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_if(oReader, L"x:FullRows", m_nFullRows)
 			WritingElement_ReadAttributes_End(oReader)
 		}
-
 		void CSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -2574,473 +2819,705 @@ namespace OOX
 				it = mapStyleMerges.begin();
 			}
 		}
-//---------------------------------------------------------------------------------------------------------------------
+		void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
+		{
+			//ReadAttributes(obj);
+			auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
 
-        void CSheetData::fromBin(XLS::BaseObjectPtr& obj)
+			for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
+			{
+			  CRow *pRow = new CRow(m_pMainDocument);
+			  pRow->fromBin(*it);
+			  m_arrItems.push_back(pRow);
+
+			  it = ptr->m_arParenthesis_CELLTABLE.erase(it);
+			}
+
+			/*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+			{
+				CRow *pRow = new CRow(m_pMainDocument);
+				pRow->fromBin(Parenthesis_CELLTABLE);
+
+				m_arrItems.push_back(pRow);
+			}*/
+		}
+		EElementType CSheetData::getType () const
+		{
+			return et_x_SheetData;
+		}
+//-----------------------------------------------------------------------------------------
+        void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
         {
-            //ReadAttributes(obj);
-            auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
+            if ( oReader.IsEmptyNode() )
+                return;
 
-            for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
+            CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
+
+            if (!xlsx_flat) return;
+
+            if (false == m_oSheetViews.IsInit())
             {
-              CRow *pRow = new CRow(m_pMainDocument);
-              pRow->fromBin(*it);
-              m_arrItems.push_back(pRow);
+                m_oSheetViews.Init();
+                m_oSheetViews->m_arrItems.push_back(new CSheetView());
+            }
+            nullable_int active_pane;
+            nullable_bool bFreeze;
+            nullable_int xSplit, ySplit;
 
-              it = ptr->m_arParenthesis_CELLTABLE.erase(it);
+            nullable_int active_pane_number;
+            nullable_int left_column_visible;
+            nullable_int page_break_zoom;
+            std::map<int, nullable<CPane>> mapPanes;
+
+            nullable_string sDataHeader, sDataFooter;
+
+            int nDocumentDepth = oReader.GetDepth();
+            while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
+            {
+                std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                if (L"PageSetup" == sName)
+                {
+                    if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+
+                    int nDocumentDepth1 = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+                    {
+                        std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                        if (L"Header" == sName1)
+                        {
+                            if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oHeader)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataHeader)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                        else if (L"Footer" == sName1)
+                        {
+                            if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oFooter)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataFooter)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                        else if (L"Layout" == sName1)
+                        {
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"x:Orientation", m_oPageSetup->m_oOrientation)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                        else if (L"PageMargins" == sName1)
+                        {
+                            if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
+
+                            WritingElement_ReadAttributes_Start_No_NS(oReader)
+                                WritingElement_ReadAttributes_Read_if(oReader, L"Top", m_oPageMargins->m_oTop)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Left", m_oPageMargins->m_oLeft)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Right", m_oPageMargins->m_oRight)
+                                WritingElement_ReadAttributes_Read_else_if(oReader, L"Bottom", m_oPageMargins->m_oBottom)
+                            WritingElement_ReadAttributes_End_No_NS(oReader)
+                        }
+                    }
+                }
+                else if (L"Panes" == sName)
+                {
+                    int nDocumentDepth1 = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+                    {
+                        std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                        if (L"Pane" == sName1)
+                        {
+                            nullable<CPane> pane; pane.Init();
+                            nullable_int number;
+
+                            int nDocumentDepth2 = oReader.GetDepth();
+                            nullable_int col, row;
+                            while (oReader.ReadNextSiblingNode(nDocumentDepth2))
+                            {
+                                std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
+                                if (L"Number" == sName2)
+                                {
+                                    number = oReader.GetText2();
+                                }
+                                else if (L"ActiveRow" == sName2)
+                                {
+                                    row = oReader.GetText2();
+                                }
+                                else if (L"ActiveCol" == sName2)
+                                {
+                                    col = oReader.GetText2();
+                                }
+                                else if (L"RangeSelection" == sName2)
+                                {
+                                    r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
+                                    r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
+
+                                    r1c1_formula_convert convert;
+
+                                    std::wstring ref = convert.convert(oReader.GetText2());
+
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
+
+                                    size_t pos_split = ref.find(L":");
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell =
+                                        pos_split != std::wstring::npos ? ref.substr(0, pos_split) : ref;
+                                }
+                            }
+                            if (col.IsInit() && row.IsInit())
+                            {
+                                if (m_oSheetViews->m_arrItems.back()->m_arrItems.empty())
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
+
+                                m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
+
+                                if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
+                                {
+                                    m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;
+                                }
+                            }
+                            if (number.IsInit())
+                            {
+                                mapPanes.insert(std::make_pair(*number, pane));
+                            }
+                        }
+                    }
+                }
+                else if (L"SplitHorizontal" == sName)
+                {
+                    ySplit = oReader.GetText2();
+                }
+                else if (L"SplitVertical" == sName)
+                {
+                    xSplit = oReader.GetText2();
+                }
+                else if (L"DoNotDisplayGridlines" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oShowGridLines.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oShowGridLines->FromBool(false);
+                }
+                else if (L"Selected" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oTabSelected.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oTabSelected->FromBool(true);
+                }
+                else if (L"FreezePanes" == sName)
+                {
+                    bFreeze = true;
+                }
+                else if (L"ActivePane" == sName)
+                {
+                    active_pane_number = oReader.GetText2();
+                }
+                else if (L"Print" == sName)
+                {
+                    if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
+                    if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();
+
+                    int nDocumentDepth1 = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+                    {
+                        std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+
+                        if (L"FitHeight" == sName1)
+                        {
+                            m_oPageSetup->m_oFitToHeight = oReader.GetText2();
+                        }
+                        else if (L"DraftQuality" == sName1)
+                        {
+                            m_oPageSetup->m_oDraft.Init();
+                        }
+                        else if (L"Gridlines" == sName1)
+                        {
+                            m_oPrintOptions->m_oGridLines = true;
+                        }
+                        else if (L"Scale" == sName1)
+                        {
+                            m_oPageSetup->m_oScale = oReader.GetText2();
+                        }
+                        else if (L"HorizontalResolution" == sName1)
+                        {
+                            m_oPageSetup->m_oHorizontalDpi = oReader.GetText2();
+                        }
+                        else if (L"VerticalResolution" == sName1)
+                        {
+                            m_oPageSetup->m_oVerticalDpi = oReader.GetText2();
+                        }
+                        else if (L"PaperSizeIndex" == sName1)
+                        {
+                            m_oPageSetup->m_oPaperSize = oReader.GetText2();
+                        }
+                    }
+                }
+                else if (L"FitToPage" == sName)
+                {
+                    if (!m_oSheetPr.IsInit()) m_oSheetPr.Init();
+                    if (!m_oSheetPr->m_oPageSetUpPr.IsInit()) m_oSheetPr->m_oPageSetUpPr.Init();
+
+                    m_oSheetPr->m_oPageSetUpPr->m_oFitToPage.Init();
+                    m_oSheetPr->m_oPageSetUpPr->m_oFitToPage->FromBool(true);
+                }
+                else if (L"ProtectObjects" == sName)
+                {
+
+                }
+                else if (L"ProtectScenarios" == sName)
+                {
+
+                }
+                else if (L"ProtectContents" == sName)
+                {
+
+                }
+                else if (L"LeftColumnVisible" == sName)
+                {
+                    left_column_visible = oReader.GetText2();
+                }
+                else if (L"PageBreakZoom" == sName)
+                {
+                    page_break_zoom = oReader.GetText2();
+                }
+                else if (L"DoNotDisplayColHeaders" == sName)
+                {
+
+                }
+                else if (L"ViewableRange" == sName)
+                {
+
+                }
+                else if (L"GridlineColor" == sName)
+                {
+
+                }
+                else if (L"Unsynced" == sName)
+                {
+
+                }
+                else if (L"DisplayPageBreak" == sName)
+                {
+
+                }
+                else if (L"ShowPageBreakZoom" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oView = SimpleTypes::Spreadsheet::sheetviewPageBreakPreview;
+                }
+                else if (L"DefaultRowHeight" == sName)
+                {
+
+                }
+                else if (L"DefaultColumnWidth" == sName)
+                {
+
+                }
+                else if (L"Visible" == sName)
+                {
+
+                }
+                else if (L"DisplayRightToLeft" == sName)
+                {
+
+                }
+                else if (L"DisplayFormulas" == sName)
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oShowFormulas = true;
+                }
+                else if (L"ActiveRow" == sName)
+                {
+
+                }
+                else if (L"ActiveColumn" == sName)
+                {
+
+                }
+                else if (L"TabColorIndex" == sName)
+                {
+                    if (false == m_oSheetPr.IsInit()) m_oSheetPr.Init();
+                    m_oSheetPr->m_oTabColor.Init();  m_oSheetPr->m_oTabColor->m_oIndexed = oReader.GetText2();
+                }
             }
 
-            /*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
+            if (m_oPageMargins.IsInit())
             {
-                CRow *pRow = new CRow(m_pMainDocument);
-                pRow->fromBin(Parenthesis_CELLTABLE);
+                if (!m_oPageMargins->m_oFooter.IsInit())
+                {
+                    m_oPageMargins->m_oFooter.Init();
+                    m_oPageMargins->m_oFooter->SetValue(0.5);
+                }
+                if (!m_oPageMargins->m_oHeader.IsInit())
+                {
+                    m_oPageMargins->m_oHeader.Init();
+                    m_oPageMargins->m_oHeader->SetValue(0.5);
+                }
+            }
 
-                m_arrItems.push_back(pRow);
-            }*/
+            if (active_pane_number.IsInit())
+            {
+                std::map<int, nullable<CPane>>::iterator pFind = mapPanes.find(*active_pane_number);
+                if (pFind != mapPanes.end())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane = pFind->second;
+                }
+            }
+            if (m_oSheetViews->m_arrItems.back()->m_oPane.IsInit())
+            {
+                m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane.Init();
+                m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane->SetValue(SimpleTypes::Spreadsheet::activepaneBottomLeft);
+                if (bFreeze.IsInit())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oState.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oState->SetValue(SimpleTypes::Spreadsheet::panestateFrozen);
+                }
+                if (ySplit.IsInit())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit->SetValue(*ySplit);
+                }
+                if (xSplit.IsInit())
+                {
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit.Init();
+                    m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit->SetValue(*xSplit);
+                }
+            }
         }
+//----------------------------------------------------------------------------------------
+        void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
+        {
+            ReadAttributes( oReader );
 
-        //---------------------------------------------------------------------------------------------------------------------
-		void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+            if ( oReader.IsEmptyNode() )
+                return;
+
+            int nCurDepth = oReader.GetDepth();
+            while (oReader.ReadNextSiblingNode(nCurDepth))
+            {
+                std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+                if (L"formula1" == sName)
+                {
+                    m_oFormula1 = oReader;
+                }
+                else if (L"formula2" == sName)
+                {
+                    m_oFormula2 = oReader;
+                }
+                else if (L"sqref" == sName)
+                {
+                    m_oSqRef = oReader.GetText2();
+                }
+        //--------------------------------------------------- xml spreadsheet 2002
+                else if (L"Range" == sName)
+                {
+                    r1c1_formula_convert::base_row = 1;
+                    r1c1_formula_convert::base_col = 1;
+
+                    r1c1_formula_convert convert;
+
+                    m_oSqRef = convert.convert(oReader.GetText2());
+                }
+                else if (L"Type" == sName)
+                {
+                    m_oType = oReader.GetText2();
+
+                    m_oAllowBlank.Init();
+                    m_oAllowBlank->FromBool(true);
+
+                    m_oShowInputMessage.Init();
+                    m_oShowInputMessage->FromBool(true);
+                }
+                else if (L"Value" == sName)
+                {
+                    r1c1_formula_convert::base_row = 1;
+                    r1c1_formula_convert::base_col = 1;
+
+                    r1c1_formula_convert convert;
+
+                    m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
+                    m_oFormula1->m_sText = convert.convert(oReader.GetText3());
+
+                    //if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
+                    //{
+                    //	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
+                    //	if (xlsx_flat)
+                    //	{
+                    //		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
+                    //		if (pSheet->m_oName.IsInit())
+                    //		{
+                    //			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
+                    //		}
+                    //	}
+                    //}
+                }
+            }
+        }
+//-----------------------------------------------------------------------------------------
+        void CDefinedName::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+        {
+            nullable_string oRefersTo;
+            WritingElement_ReadAttributes_Start( oReader )
+                WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"customMenu",		m_oCustomMenu )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"description",	m_oDescription )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"function",		m_oFunction )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"functionGroupId",m_oFunctionGroupId )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"help",			m_oHelp )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"hidden",			m_oHidden )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"localSheetId",	m_oLocalSheetId )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"name",			m_oName )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"publishToServer",m_oPublishToServer )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"shortcutKey ",	m_oShortcutKey  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"statusBar",		m_oStatusBar  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"vbProcedure",	m_oVbProcedure  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"workbookParameter",	m_oWorkbookParameter  )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"xlm",			m_oXlm  )
+
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:Name",		m_oName )
+                WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:RefersTo",	oRefersTo )
+            WritingElement_ReadAttributes_End( oReader )
+
+            if (oRefersTo.IsInit())
+            {
+                r1c1_formula_convert::base_row = 1;
+                r1c1_formula_convert::base_col = 1;
+
+                r1c1_formula_convert convert;
+
+                m_oRef = convert.convert(oRefersTo->substr(1));
+            }
+        }
+		void CWorksheet::PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing)
 		{
-			nullable_string oRefersTo;
-			WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader, L"comment",		m_oComment )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"customMenu",		m_oCustomMenu )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"description",	m_oDescription )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"function",		m_oFunction )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"functionGroupId",m_oFunctionGroupId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"help",			m_oHelp )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"hidden",			m_oHidden )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"localSheetId",	m_oLocalSheetId )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"name",			m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"publishToServer",m_oPublishToServer )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"shortcutKey ",	m_oShortcutKey  )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"statusBar",		m_oStatusBar  )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"vbProcedure",	m_oVbProcedure  )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"workbookParameter",	m_oWorkbookParameter  )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"xlm",			m_oXlm  )
-
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:Name",		m_oName )
-				WritingElement_ReadAttributes_Read_else_if( oReader, L"ss:RefersTo",	oRefersTo )
-			WritingElement_ReadAttributes_End( oReader )
-
-			if (oRefersTo.IsInit())
+			OOX::CVmlDrawing* pVmlDrawing = NULL;
+			if (NULL != pLegacyDrawing && pLegacyDrawing->m_oId.IsInit())
 			{
-				r1c1_formula_convert::base_row = 1;
-				r1c1_formula_convert::base_col = 1;
-				
-				r1c1_formula_convert convert;
+				OOX::RId oRId(pLegacyDrawing->m_oId->GetValue());
 
-				m_oRef = convert.convert(oRefersTo->substr(1));
-			}
-		}
-//----------------------------------------------------------------------------------------------------------------------------
-void CDataValidation::fromXML(XmlUtils::CXmlLiteReader& oReader)
-{
-	ReadAttributes( oReader );
+				smart_ptr<OOX::File> oVmlDrawing = IFileContainer::Find(oRId);
 
-	if ( oReader.IsEmptyNode() )
-		return;
-
-	int nCurDepth = oReader.GetDepth();
-	while (oReader.ReadNextSiblingNode(nCurDepth))
-	{
-		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-		if (L"formula1" == sName)
-		{
-			m_oFormula1 = oReader;
-		}
-		else if (L"formula2" == sName)
-		{
-			m_oFormula2 = oReader;
-		}
-		else if (L"sqref" == sName)
-		{
-			m_oSqRef = oReader.GetText2();
-		}
-//--------------------------------------------------- xml spreadsheet 2002
-		else if (L"Range" == sName)
-		{
-			r1c1_formula_convert::base_row = 1;
-			r1c1_formula_convert::base_col = 1;
-			
-			r1c1_formula_convert convert;
-
-			m_oSqRef = convert.convert(oReader.GetText2());
-		}
-		else if (L"Type" == sName)
-		{
-			m_oType = oReader.GetText2();
-
-			m_oAllowBlank.Init();
-			m_oAllowBlank->FromBool(true);
-
-			m_oShowInputMessage.Init();
-			m_oShowInputMessage->FromBool(true);
-		}
-		else if (L"Value" == sName)
-		{
-			r1c1_formula_convert::base_row = 1;
-			r1c1_formula_convert::base_col = 1;
-			
-			r1c1_formula_convert convert;
-
-			m_oFormula1 = new CDataValidationFormula(m_pMainDocument);
-			m_oFormula1->m_sText = convert.convert(oReader.GetText3());
-
-			//if (m_oFormula1->m_sText.find(L"!") == std::wstring::npos)
-			//{
-			//	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(m_pMainDocument);
-			//	if (xlsx_flat)
-			//	{
-			//		CSheet *pSheet = xlsx_flat->m_pWorkbook->m_oSheets->m_arrItems.back();
-			//		if (pSheet->m_oName.IsInit())
-			//		{
-			//			m_oFormula1->m_sText = *pSheet->m_oName + L"!" + m_oFormula1->m_sText;
-			//		}
-			//	}
-			//}
-		}
-	}
-}
-//----------------------------------------------------------------------------------------------------------------------------
-void CWorksheet::ReadWorksheetOptions(XmlUtils::CXmlLiteReader& oReader)
-{
-	if ( oReader.IsEmptyNode() )
-		return;
-	
-	CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
-
-	if (!xlsx_flat) return;
-
-	if (false == m_oSheetViews.IsInit())
-	{
-		m_oSheetViews.Init();		
-		m_oSheetViews->m_arrItems.push_back(new CSheetView());
-	}		
-	nullable_int active_pane;
-	nullable_bool bFreeze;
-	nullable_int xSplit, ySplit;
-
-	nullable_int active_pane_number;
-	nullable_int left_column_visible;
-	nullable_int page_break_zoom;
-	std::map<int, nullable<CPane>> mapPanes;
-
-	nullable_string sDataHeader, sDataFooter;
-
-	int nDocumentDepth = oReader.GetDepth();
-	while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
-	{
-		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-		if (L"PageSetup" == sName)
-		{
-			if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
-
-			int nDocumentDepth1 = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
-			{
-				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
-
-				if (L"Header" == sName1)
+				if (oVmlDrawing.IsInit() && OOX::FileTypes::VmlDrawing == oVmlDrawing->type())
 				{
-					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
-
-					WritingElement_ReadAttributes_Start_No_NS(oReader)
-						WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oHeader)
-						WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataHeader)
-					WritingElement_ReadAttributes_End_No_NS(oReader)
-				}
-				else if (L"Footer" == sName1)
-				{
-					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
-
-					WritingElement_ReadAttributes_Start_No_NS(oReader)
-						WritingElement_ReadAttributes_Read_if(oReader, L"Margin", m_oPageMargins->m_oFooter)
-						WritingElement_ReadAttributes_Read_else_if(oReader, L"Data", sDataFooter)
-					WritingElement_ReadAttributes_End_No_NS(oReader)
-				}
-				else if (L"Layout" == sName1)
-				{
-					WritingElement_ReadAttributes_Start_No_NS(oReader)
-						WritingElement_ReadAttributes_Read_if(oReader, L"x:Orientation", m_oPageSetup->m_oOrientation)
-					WritingElement_ReadAttributes_End_No_NS(oReader)
-				}
-				else if (L"PageMargins" == sName1)
-				{
-					if (false == m_oPageMargins.IsInit()) m_oPageMargins.Init();
-
-					WritingElement_ReadAttributes_Start_No_NS(oReader)
-						WritingElement_ReadAttributes_Read_if(oReader, L"Top", m_oPageMargins->m_oTop)
-						WritingElement_ReadAttributes_Read_else_if(oReader, L"Left", m_oPageMargins->m_oLeft)
-						WritingElement_ReadAttributes_Read_else_if(oReader, L"Right", m_oPageMargins->m_oRight)
-						WritingElement_ReadAttributes_Read_else_if(oReader, L"Bottom", m_oPageMargins->m_oBottom)
-					WritingElement_ReadAttributes_End_No_NS(oReader)
+					pVmlDrawing = static_cast<OOX::CVmlDrawing*>(oVmlDrawing.GetPointer());
 				}
 			}
-		}
-		else if (L"Panes" == sName)
-		{
-			int nDocumentDepth1 = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+			//2.3.7.3.1 Reconciliation
+			//if Corresponding placeholder is not found, Delete the entire comment thread.
+			if (!pComments || !pVmlDrawing)
+				return;
+			std::unordered_map<std::wstring, int> mapCheckCopyThreadedComments;
+			std::vector<std::wstring> & arAuthors = pComments->m_oAuthors->m_arrItems;
+
+			if (pComments->m_oCommentList.IsInit())
 			{
-				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+				std::vector<OOX::Spreadsheet::CComment*> & aComments = pComments->m_oCommentList->m_arrItems;
 
-				if (L"Pane" == sName1)
+				for (size_t i = 0; i < aComments.size(); ++i)
 				{
-					nullable<CPane> pane; pane.Init();
-					nullable_int number;
+					OOX::Spreadsheet::CComment* pComment = aComments[i];
 
-					int nDocumentDepth2 = oReader.GetDepth();
-					nullable_int col, row;
-					while (oReader.ReadNextSiblingNode(nDocumentDepth2))
+					if (!pComment) continue;
+
+					bool bThreadedCommentCopy = false;
+					OOX::Spreadsheet::CThreadedComment* pThreadedComment = NULL;
+					if (pThreadedComments)
 					{
-						std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
-						if (L"Number" == sName2)
+						std::unordered_map<std::wstring, CThreadedComment*>::iterator pFind = pThreadedComments->m_mapTopLevelThreadedComments.end();
+
+						bool isPlaceholder = false;
+						if (pComment->m_oAuthorId.IsInit())
 						{
-							number = oReader.GetText2();
+							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
+
+							if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+							{
+								const std::wstring& sAuthor = arAuthors[nAuthorId];
+								if (0 == sAuthor.compare(0, 3, L"tc="))
+								{
+									isPlaceholder = true;
+									std::wstring sGUID = sAuthor.substr(3);
+									//todo IsZero() is added to fix comments with zero ids(5.4.0)(bug 42947). Remove after few releases
+									if (L"{00000000-0000-0000-0000-000000000000}" == sGUID && pComment->m_oRef.IsInit())
+									{
+										for (std::unordered_map<std::wstring, CThreadedComment*>::iterator it = pThreadedComments->m_mapTopLevelThreadedComments.begin(); it != pThreadedComments->m_mapTopLevelThreadedComments.end(); ++it)
+										{
+											if (it->second->ref.IsInit() && pComment->m_oRef->GetValue() == it->second->ref.get())
+											{
+												pFind = it;
+												break;
+											}
+										}
+									}
+									else
+									{
+										pFind = pThreadedComments->m_mapTopLevelThreadedComments.find(sGUID);
+									}
+
+								}
+							}
 						}
-						else if (L"ActiveRow" == sName2)
+						if (pThreadedComments->m_mapTopLevelThreadedComments.end() != pFind)
 						{
-							row = oReader.GetText2();
+							pThreadedComment = pFind->second;
+							if (mapCheckCopyThreadedComments.end() != mapCheckCopyThreadedComments.find(pThreadedComment->id->ToString()))
+							{
+								bThreadedCommentCopy = true;
+							}
+							else
+							{
+								mapCheckCopyThreadedComments[pThreadedComment->id->ToString()] = 1;
+							}
 						}
-						else if (L"ActiveCol" == sName2)
+						else if (isPlaceholder)
 						{
-							col = oReader.GetText2();
-						}
-						else if (L"RangeSelection" == sName2)
-						{
-							r1c1_formula_convert::base_row = xlsx_flat->m_nLastReadRow;
-							r1c1_formula_convert::base_col = xlsx_flat->m_nLastReadCol;
-
-							r1c1_formula_convert convert;
-
-							std::wstring ref = convert.convert(oReader.GetText2());
-
-							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
-							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = ref;
-
-							size_t pos_split = ref.find(L":");
-							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell =
-								pos_split != std::wstring::npos ? ref.substr(0, pos_split) : ref;
+							continue;
 						}
 					}
-					if (col.IsInit() && row.IsInit())
+
+					if (pComment->m_oRef.IsInit() && pComment->m_oAuthorId.IsInit())
 					{
-						if (m_oSheetViews->m_arrItems.back()->m_arrItems.empty())
-							m_oSheetViews->m_arrItems.back()->m_arrItems.push_back(new CSelection());
-
-						m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell = getCellAddress(*row + 1, *col + 1);
-
-						if (false == m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref.IsInit())
+						int nRow, nCol;
+						if (CCell::parseRef(pComment->m_oRef->GetValue(), nRow, nCol))
 						{
-							m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oSqref = m_oSheetViews->m_arrItems.back()->m_arrItems.back()->m_oActiveCell;
+							CCommentItem* pCommentItem = new CCommentItem();
+							pCommentItem->m_nRow = nRow - 1;
+							pCommentItem->m_nCol = nCol - 1;
+
+							unsigned int nAuthorId = pComment->m_oAuthorId->GetValue();
+
+							if (nAuthorId >= 0 && nAuthorId < arAuthors.size())
+							{
+								pCommentItem->m_sAuthor = arAuthors[nAuthorId];
+							}
+							OOX::Spreadsheet::CSi* pSi = pComment->m_oText.GetPointerEmptyNullable();
+							if (NULL != pSi)
+								pCommentItem->m_oText.reset(pSi);
+
+							pCommentItem->m_pThreadedComment = pThreadedComment;
+							pCommentItem->m_bThreadedCommentCopy = bThreadedCommentCopy;
+
+							std::wstring sNewId = std::to_wstring(pCommentItem->m_nRow.get()) + L"-" + std::to_wstring(pCommentItem->m_nCol.get());
+							m_mapComments[sNewId] = pCommentItem;
 						}
-					}
-					if (number.IsInit())
-					{
-						mapPanes.insert(std::make_pair(*number, pane));
 					}
 				}
 			}
-		}
-		else if (L"SplitHorizontal" == sName)
-		{
-			ySplit = oReader.GetText2();
-		}
-		else if (L"SplitVertical" == sName)
-		{
-			xSplit = oReader.GetText2();
-		}
-		else if (L"DoNotDisplayGridlines" == sName)
-		{
-			m_oSheetViews->m_arrItems.back()->m_oShowGridLines.Init();
-			m_oSheetViews->m_arrItems.back()->m_oShowGridLines->FromBool(false);
-		}
-		else if (L"Selected" == sName)
-		{
-			m_oSheetViews->m_arrItems.back()->m_oTabSelected.Init();
-			m_oSheetViews->m_arrItems.back()->m_oTabSelected->FromBool(true);
-		}
-		else if (L"FreezePanes" == sName)
-		{
-			bFreeze = true;
-		}
-		else if (L"ActivePane" == sName)
-		{
-			active_pane_number = oReader.GetText2();
-		}
-		else if (L"Print" == sName)
-		{
-			if (false == m_oPageSetup.IsInit()) m_oPageSetup.Init();
-			if (false == m_oPrintOptions.IsInit()) m_oPrintOptions.Init();			
 
-			int nDocumentDepth1 = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nDocumentDepth1))
+			for (size_t i = 0; i < pVmlDrawing->m_arrItems.size(); ++i)
 			{
-				std::wstring sName1 = XmlUtils::GetNameNoNS(oReader.GetName());
+				OOX::Vml::CShape* pShape = dynamic_cast<OOX::Vml::CShape*>(pVmlDrawing->m_arrItems[i]);
 
-				if (L"FitHeight" == sName1)
-				{
-					m_oPageSetup->m_oFitToHeight = oReader.GetText2();
+				if (pShape == NULL) continue;
+
+				if (pShape->m_sId.IsInit())
+				{//mark shape as used
+					boost::unordered_map<std::wstring, OOX::CVmlDrawing::_vml_shape>::iterator pFind = pVmlDrawing->m_mapShapes.find(pShape->m_sId.get());
+					if (pFind != pVmlDrawing->m_mapShapes.end())
+					{
+						pFind->second.bUsed = true;
+					}
 				}
-				else if (L"DraftQuality" == sName1)
+				for (size_t j = 0; j < pShape->m_arrItems.size(); ++j)
 				{
-					m_oPageSetup->m_oDraft.Init();
-				}
-				else if (L"Gridlines" == sName1)
-				{
-					m_oPrintOptions->m_oGridLines = true;
-				}
-				else if (L"Scale" == sName1)
-				{
-					m_oPageSetup->m_oScale = oReader.GetText2();
-				}
-				else if (L"HorizontalResolution" == sName1)
-				{
-					m_oPageSetup->m_oHorizontalDpi = oReader.GetText2();
-				}
-				else if (L"VerticalResolution" == sName1)
-				{
-					m_oPageSetup->m_oVerticalDpi = oReader.GetText2();
-				}
-				else if (L"PaperSizeIndex" == sName1)
-				{
-					m_oPageSetup->m_oPaperSize = oReader.GetText2();
+					OOX::WritingElement* pElem = pShape->m_arrItems[j];
+
+					if (!pElem) continue;
+
+					if (OOX::et_v_ClientData == pElem->getType())
+					{
+						OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pElem);
+						if (pClientData->m_oRow.IsInit() && pClientData->m_oColumn.IsInit())
+						{
+							int nRow = pClientData->m_oRow->GetValue();
+							int nCol = pClientData->m_oColumn->GetValue();
+							std::wstring sId = std::to_wstring(nRow) + L"-" + std::to_wstring(nCol);
+
+							std::map<std::wstring, CCommentItem*>::const_iterator pPair = m_mapComments.find(sId);
+							if (pPair != m_mapComments.end())
+							{
+								CCommentItem* pCommentItem = pPair->second;
+								if (pShape->m_sGfxData.IsInit())
+									pCommentItem->m_sGfxdata = *pShape->m_sGfxData;
+								std::vector<int> m_aAnchor;
+								pClientData->getAnchorArray(m_aAnchor);
+								if (8 <= m_aAnchor.size())
+								{
+									pCommentItem->m_nLeft = abs(m_aAnchor[0]);
+									pCommentItem->m_nLeftOffset = abs(m_aAnchor[1]);
+									pCommentItem->m_nTop = abs(m_aAnchor[2]);
+									pCommentItem->m_nTopOffset = abs(m_aAnchor[3]);
+									pCommentItem->m_nRight = abs(m_aAnchor[4]);
+									pCommentItem->m_nRightOffset = abs(m_aAnchor[5]);
+									pCommentItem->m_nBottom = abs(m_aAnchor[6]);
+									pCommentItem->m_nBottomOffset = abs(m_aAnchor[7]);
+								}
+								pCommentItem->m_bMove = pClientData->m_oMoveWithCells;
+								pCommentItem->m_bSize = pClientData->m_oSizeWithCells;
+								pCommentItem->m_bVisible = pClientData->m_oVisible;
+
+								if (pShape->m_oFillColor.IsInit())
+								{
+									BYTE r = pShape->m_oFillColor->Get_R();
+									BYTE g = pShape->m_oFillColor->Get_G();
+									BYTE b = pShape->m_oFillColor->Get_B();
+
+									std::wstringstream sstream;
+									sstream << boost::wformat(L"%02X%02X%02X") % r % g % b;
+
+									pCommentItem->m_sFillColorRgb = sstream.str();
+								}
+
+								for (size_t k = 0; k < pShape->m_oStyle->m_arrProperties.size(); ++k)
+								{
+									if (pShape->m_oStyle->m_arrProperties[k] == NULL) continue;
+
+									SimpleTypes::Vml::CCssProperty *oProperty = pShape->m_oStyle->m_arrProperties[k].get();
+									if (SimpleTypes::Vml::cssptMarginLeft == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dLeftMM = oPoint.ToMm();
+										}
+									}
+									else if (SimpleTypes::Vml::cssptMarginTop == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dTopMM = oPoint.ToMm();
+										}
+									}
+									else if (SimpleTypes::Vml::cssptWidth == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dWidthMM = oPoint.ToMm();
+										}
+									}
+									else if (SimpleTypes::Vml::cssptHeight == oProperty->get_Type())
+									{
+										SimpleTypes::Vml::UCssValue oUCssValue = oProperty->get_Value();
+										if (SimpleTypes::Vml::cssunitstypeUnits == oUCssValue.oValue.eType)
+										{
+											SimpleTypes::CPoint oPoint;
+											oPoint.FromPoints(oUCssValue.oValue.dValue);
+											pCommentItem->m_dHeightMM = oPoint.ToMm();
+										}
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-		else if (L"FitToPage" == sName)
-		{
-			if (!m_oSheetPr.IsInit()) m_oSheetPr.Init();
-			if (!m_oSheetPr->m_oPageSetUpPr.IsInit()) m_oSheetPr->m_oPageSetUpPr.Init();
-
-			m_oSheetPr->m_oPageSetUpPr->m_oFitToPage.Init();
-			m_oSheetPr->m_oPageSetUpPr->m_oFitToPage->FromBool(true);
-		}
-		else if (L"ProtectObjects" == sName)
-		{
-
-		}
-		else if (L"ProtectScenarios" == sName)
-		{
-
-		}
-		else if (L"ProtectContents" == sName)
-		{
-
-		}
-		else if (L"LeftColumnVisible" == sName)
-		{
-			left_column_visible = oReader.GetText2();
-		}
-		else if (L"PageBreakZoom" == sName)
-		{
-			page_break_zoom = oReader.GetText2();
-		}
-		else if (L"DoNotDisplayColHeaders" == sName)
-		{
-
-		}
-		else if (L"ViewableRange" == sName)
-		{
-
-		}
-		else if (L"GridlineColor" == sName)
-		{
-
-		}
-		else if (L"Unsynced" == sName)
-		{
-
-		}
-		else if (L"DisplayPageBreak" == sName)
-		{
-
-		}
-		else if (L"ShowPageBreakZoom" == sName)
-		{
-			m_oSheetViews->m_arrItems.back()->m_oView = SimpleTypes::Spreadsheet::sheetviewPageBreakPreview;
-		}
-		else if (L"DefaultRowHeight" == sName)
-		{
-
-		}
-		else if (L"DefaultColumnWidth" == sName)
-		{
-
-		}
-		else if (L"Visible" == sName)
-		{
-
-		}
-		else if (L"DisplayRightToLeft" == sName)
-		{
-
-		}
-		else if (L"DisplayFormulas" == sName)
-		{
-			m_oSheetViews->m_arrItems.back()->m_oShowFormulas = true;
-		}
-		else if (L"ActiveRow" == sName)
-		{
-
-		}
-		else if (L"ActiveColumn" == sName)
-		{
-
-		}
-		else if (L"TabColorIndex" == sName)
-		{
-			if (false == m_oSheetPr.IsInit()) m_oSheetPr.Init();
-			m_oSheetPr->m_oTabColor.Init();  m_oSheetPr->m_oTabColor->m_oIndexed = oReader.GetText2();
-		}
-	}
-
-	if (m_oPageMargins.IsInit())
-	{
-		if (!m_oPageMargins->m_oFooter.IsInit())
-		{
-			m_oPageMargins->m_oFooter.Init();
-			m_oPageMargins->m_oFooter->SetValue(0.5);
-		}
-		if (!m_oPageMargins->m_oHeader.IsInit())
-		{
-			m_oPageMargins->m_oHeader.Init();
-			m_oPageMargins->m_oHeader->SetValue(0.5);
-		}
-	}
-
-	if (active_pane_number.IsInit())
-	{
-		std::map<int, nullable<CPane>>::iterator pFind = mapPanes.find(*active_pane_number);
-		if (pFind != mapPanes.end())
-		{
-			m_oSheetViews->m_arrItems.back()->m_oPane = pFind->second;
-		}
-	}
-	if (m_oSheetViews->m_arrItems.back()->m_oPane.IsInit())
-	{
-		m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane.Init();
-		m_oSheetViews->m_arrItems.back()->m_oPane->m_oActivePane->SetValue(SimpleTypes::Spreadsheet::activepaneBottomLeft);
-		if (bFreeze.IsInit())
-		{
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oState.Init();
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oState->SetValue(SimpleTypes::Spreadsheet::panestateFrozen);
-		}
-		if (ySplit.IsInit())
-		{
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit.Init();
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oYSplit->SetValue(*ySplit);
-		}
-		if (xSplit.IsInit())
-		{
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit.Init();
-			m_oSheetViews->m_arrItems.back()->m_oPane->m_oXSplit->SetValue(*xSplit);
-		}
-	}
-}
-
 	} //Spreadsheet
 } // OOX

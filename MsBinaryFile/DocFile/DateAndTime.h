@@ -53,64 +53,13 @@ namespace DocFileFormat
 		short weekday;
 
     public:
-		DateAndTime()
-		{
-			setDefaultValues();
-		}
-		DateAndTime( _UINT32 val )
-		{
-			unsigned char* bytes = ((unsigned char*) &val);
+		DateAndTime();
+		DateAndTime( _UINT32 val );
+		DateAndTime( unsigned char* bytes, int size );
+		DateAndTime& operator=(const DateAndTime& oSrc);
+		std::wstring getString();
 
-			minutes	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 0, 6 );
-			hour	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 6, 5 );
-			day		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 11, 5 );
-			month	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 16, 4 );
-			year	= (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 20, 9 ) );
-			weekday	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, 4 ), 29, 3 );
-		}
-		DateAndTime( unsigned char* bytes, int size )
-		{
-			if ( size == 4 )
-			{
-			  minutes	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 0, 6 );
-			  hour		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 6, 5 );
-			  day		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 11, 5 );
-			  month		= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 16, 4 );
-			  year		= (short)( 1900 + FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 20, 9 ) );
-			  weekday	= (short)FormatUtils::GetIntFromBits( FormatUtils::BytesToInt32( bytes, 0, size ), 29, 3 );
-			}
-			else
-			{
-			  //throw new ByteParseException("Cannot parse the struct DTTM, the length of the struct doesn't match");
-			}
-		}
-		DateAndTime& operator=(const DateAndTime& oSrc)
-		{
-			minutes = oSrc.minutes;
- 			hour = oSrc.hour;
-			day = oSrc.day;
-			month = oSrc.month;
-			year = oSrc.year;
- 			weekday = oSrc.weekday;
-			
-			return (*this);
-		}
-		std::wstring getString()
-		{
-			return std::to_wstring(year) + L"-"	+	(month < 9 ? L"0" : L"" )	+ std::to_wstring(month)	+ L"-" + 
-													(day < 9 ? L"0" : L"" )		+ std::to_wstring(day)		+ L"T" +
-													(hour < 9 ? L"0" : L"" )	+ std::to_wstring(hour)		+ L":" +
-													(minutes < 9 ? L"0" : L"" )	+ std::to_wstring(minutes)	+ L":00Z";
-		}
       private:
-	    void setDefaultValues()
-        {
-          day = 0;
-          hour = 0;
-          minutes = 0;
-          month = 0;
-          weekday = 0;
-          year = 0;
-        }
+		void setDefaultValues();
   };
 }

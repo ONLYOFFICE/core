@@ -60,8 +60,6 @@ namespace DocFileFormat
 	  unsigned int rgfcSize;
 
     public:
-	  FormattedDiskPage(): Type(Character), WordStream(NULL), crun(0), rgfc(NULL), rgfcSize(0)
-	  {
-	  }
+	  FormattedDiskPage();
   };
 }

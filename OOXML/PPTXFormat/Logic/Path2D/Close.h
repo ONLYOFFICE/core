@@ -39,50 +39,26 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class Close : public PathBase
 		{
 		public:
 			WritingElement_AdditionConstructors(Close)
 			PPTX_LOGIC_BASE2(Close)
 
-			Close& operator=(const Close& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Close& operator=(const Close& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_close;
-			}			
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(_T("<a:close/>"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(GEOMETRY_TYPE_PATH_CLOZE);
-				pWriter->EndRecord();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		
 		public:
-			virtual std::wstring GetODString()const
-			{
-				return _T("<close/>");
-			}
+			virtual std::wstring GetODString() const;
 		};
 	} // namespace Logic
 } // namespace PPTX

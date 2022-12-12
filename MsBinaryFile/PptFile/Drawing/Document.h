@@ -34,7 +34,7 @@
 #include "AudioOverlay.h"
 #include "Slide.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CDocument
 {

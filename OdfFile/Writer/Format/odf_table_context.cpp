@@ -155,7 +155,13 @@ void odf_table_context::set_table_styled(bool val)
 {
 	impl_->current_table().styled = val;
 }
+bool odf_table_context::is_styled(int row, int col)
+{
+	if (impl_->empty()) return false;
+	if (!impl_->current_table().styled) return false;
 
+	return impl_->styles_context()->table_styles().is_styled(row, col);
+}
 bool odf_table_context::is_styled()
 {
 	if (impl_->empty()) return false;
@@ -171,7 +177,7 @@ void odf_table_context::set_table_size(size_t cols, size_t rows)
 void odf_table_context::start_table(office_element_ptr &elm, bool styled)
 {
 	table_table * table = dynamic_cast<table_table *>(elm.get());
-	if (!table)return;	
+	if (!table) return;	
 	
 	odf_table_state state;
 	

@@ -56,6 +56,31 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		SmartArt::SmartArt()
+		{
+		}
+		SmartArt& SmartArt::operator=(const SmartArt& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			return *this;
+		}
+		OOX::EElementType SmartArt::getType () const
+		{
+			return OOX::et_dgm_DiagrammParts;
+		}
+		void SmartArt::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+		}
+		void SmartArt::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"r:dm", id_data);
+			XmlMacroReadAttributeBase(node, L"r:cs", id_color);
+			XmlMacroReadAttributeBase(node, L"r:lo", id_layout);
+			XmlMacroReadAttributeBase(node, L"r:qs", id_style);
+		}
 		smart_ptr<OOX::File> SmartArt::FindDiagramDrawing(OOX::CDiagramData* pDiagramData) const
 		{
 			if (!pDiagramData) return NULL;
@@ -397,6 +422,67 @@ namespace PPTX
 		{
 			pWriter->WriteString(toXML());
 		}
+		void SmartArt::FillParentPointersForChilds()
+		{
+		}
+		void SmartArt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, (L"r:cs"), id_color)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:dm"), id_data)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:lo"), id_layout)
+				WritingElement_ReadAttributes_Read_else_if(oReader, (L"r:qs"), id_style)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+
+		ChartRec::ChartRec()
+		{
+		}
+		ChartRec::ChartRec(const ChartRec& oSrc)
+		{
+			*this = oSrc;
+		}
+		ChartRec& ChartRec::operator=(const ChartRec& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			return *this;
+		}
+		void ChartRec::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"id", id_data )
+			WritingElement_ReadAttributes_End_No_NS	( oReader )
+		}
+		void ChartRec::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			std::wstring ns = XmlUtils::GetNamespace(oReader.GetName());
+
+			m_bChartEx = false;
+
+			ReadAttributes( oReader );
+			FillParentPointersForChilds();
+
+			if (ns == L"cx")
+			{
+				m_bChartEx = true;
+			}
+		}
+		void ChartRec::fromXML(XmlUtils::CXmlNode& node)
+		{
+			m_bChartEx = false;
+
+			std::wstring ns = XmlUtils::GetNamespace(node.GetName());
+
+			XmlMacroReadAttributeBase(node, L"r:id", id_data);
+			FillParentPointersForChilds();
+
+			if (ns == L"cx")
+			{
+				m_bChartEx = true;
+			}
+		}
 		void ChartRec::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			OOX::IFileContainer* pRels = pWriter->GetRels().GetPointer();
@@ -596,7 +682,6 @@ namespace PPTX
 		{
 			pWriter->WriteString(toXML());
 		}
-
 		void ChartRec::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			ULONG lLen = pReader->GetLong();
@@ -648,6 +733,9 @@ namespace PPTX
 			}
 			oDrawingConverter.m_pReader			= pOldReader;
 			oDrawingConverter.m_pImageManager	= pOldImageManager;
+		}
+		void ChartRec::FillParentPointersForChilds()
+		{
 		}
 	} // namespace Logic
 } // namespace PPTX

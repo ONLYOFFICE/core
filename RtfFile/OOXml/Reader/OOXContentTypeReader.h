@@ -30,46 +30,51 @@
  *
  */
 #pragma once
+
 #include "RtfDocument.h"
 #include "XmlUtils.h"
 
 class OOXContentTypeReader
 {
-private: std::wstring m_sFilepath;
-private: XmlUtils::CXmlLiteReader m_oReader;
+private:
+	std::wstring m_sFilepath;
 
-public: OOXContentTypeReader(std::wstring sFilePath)
+private:
+	XmlUtils::CXmlLiteReader m_oReader;
+
+public:
+	OOXContentTypeReader(std::wstring sFilePath)
+	{
+		m_sFilepath = sFilePath;
+		m_oReader.OpenFromFile(m_sFilepath);
+		m_oReader.ReadRootNode("Relationships");
+		m_oReader.ReadNodeList("Relationship");
+	}
+	bool GetByType(std::wstring  sType, std::vector<std::wstring>& aOutArray)
+	{
+		aOutArray.clear();
+		for(int i=0;i<oParam.oReader->GetLengthList();i++)
 		{
-			m_sFilepath = sFilePath;
-			m_oReader.OpenFromFile(m_sFilepath);
-			m_oReader.ReadRootNode("Relationships");
-			m_oReader.ReadNodeList("Relationship");
-		}
-public: bool GetByType(std::wstring  sType, std::vector<std::wstring>& aOutArray)
-		{
-			aOutArray.clear();
-			for(int i=0;i<oParam.oReader->GetLengthList();i++)
+			if(oParam.oReader->ReadNodeAttribute(i,"Type") == sType)
 			{
-				if(oParam.oReader->ReadNodeAttribute(i,"Type") == sType)
-				{
-                    std::wstring sResult = oParam.oReader->ReadNodeAttribute(i, "Target");
-					sResult = sResult.Replace('/','\\');
-                    aOutArray += sResult;
-				}
+				std::wstring sResult = oParam.oReader->ReadNodeAttribute(i, "Target");
+				sResult = sResult.Replace('/','\\');
+				aOutArray += sResult;
 			}
-			return aOutArray.size() > 0;
 		}
+		return aOutArray.size() > 0;
+	}
 public: std::wstring GetByID(std::wstring  sId)
+	{
+		for(int i=0;i<oParam.oReader->GetLengthList();i++)
 		{
-			for(int i=0;i<oParam.oReader->GetLengthList();i++)
+			if(oParam.oReader->ReadNodeAttribute(i,"Id") == sId)
 			{
-				if(oParam.oReader->ReadNodeAttribute(i,"Id") == sId)
-				{
-					std::wstring sResult = oParam.oReader->ReadNodeAttribute(i,"Target");
-					sResult = sResult.Replace('/','\\');
-					return sResult;
-				}
+				std::wstring sResult = oParam.oReader->ReadNodeAttribute(i,"Target");
+				sResult = sResult.Replace('/','\\');
+				return sResult;
 			}
-			return "";
 		}
+		return "";
+	}
 };

@@ -32,12 +32,12 @@ public:
 	std::vector<int> GetImages() const;
 	int GetPdf() const;
 
-	bool isDocument(int format) const;
-	bool isPresentation(int format) const;
-	bool isSpreadsheet(int format) const;
-	bool isCrossplatform(int format) const;
-	bool isImage(int format) const;
-	bool isPdf(int format) const;
+	bool IsDocument(int format) const;
+	bool IsPresentation(int format) const;
+	bool IsSpreadsheet(int format) const;
+	bool IsCrossplatform(int format) const;
+	bool IsImage(int format) const;
+	bool IsPdf(int format) const;
 
 	// all formats
 	void SetDefault();
@@ -45,7 +45,7 @@ public:
 	// all writable formats
 	void SetOutput();
 
-	std::vector<int> allFormats() const;
+	std::vector<int> AllFormats() const;
 
 private:
 	std::vector<int> m_documents;
@@ -75,28 +75,27 @@ public:
 	Cx2tTester(const std::wstring& configPath);
 	~Cx2tTester();
 
-	void setConfig(const std::wstring& configPath);
+	void SetConfig(const std::wstring& configPath);
 	void Start();
 
-	void writeReportHeader();
-	void writeReport(const Report& report);
-	void writeReports(const std::vector<Report>& reports);
-	void writeTime();
+	void WriteReportHeader();
+	void WriteReport(const Report& report);
+	void WriteReports(const std::vector<Report>& reports);
+	void WriteTime();
 
-	bool isAllBusy();
-	bool isAllFree();
+	bool IsAllBusy();
+	bool IsAllFree();
 
 	NSCriticalSection::CRITICAL_SECTION m_coresCS;
 	NSCriticalSection::CRITICAL_SECTION m_reportCS;
 	NSCriticalSection::CRITICAL_SECTION m_outputCS;
-	NSCriticalSection::CRITICAL_SECTION m_utilsCS;
 
 	int m_currentProc;
 	int m_maxProc;
 
 private:
 	// parse string like "docx txt" into vector of formats
-	std::vector<int> parseExtensionsString(std::wstring extensions, const CFormatsList& fl);
+	std::vector<int> ParseExtensionsString(std::wstring extensions, const CFormatsList& fl);
 
 	// takes from config
 	std::wstring m_reportFile;
@@ -142,7 +141,7 @@ public:
 	void SetOutputFormats(const std::vector<int> outputFormats);
 	void SetFontsDirectory(const std::wstring& fontsDirectory);
 	void SetX2tPath(const std::wstring& x2tPath);
-	void SetOnlyErrors(bool bIsErrorsOnly);
+	void SetErrorsOnly(bool bIsErrorsOnly);
 	void SetDeleteOk(bool bIsDeleteOk);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 	void SetFilesCount(int totalFiles, int currFile);

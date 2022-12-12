@@ -45,54 +45,19 @@ namespace PPTX
 			PPTX_LOGIC_BASE(NotesSz)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				cx = node.ReadAttributeInt(L"cx");
-				cy = node.ReadAttributeInt(L"cy");
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				Normalize();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("cx"), cx);
-				oAttr.Write(_T("cy"), cy);
-
-				return XmlUtils::CreateNode(_T("p:notesSz"), oAttr);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				
-				pWriter->WriteInt1(0, cx);
-				pWriter->WriteInt1(1, cy);
-				
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:notesSz"));
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("cx"), cx);
-				pWriter->WriteAttribute(_T("cy"), cy);
-				pWriter->EndAttributes();
-				pWriter->EndNode(_T("p:notesSz"));
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		public:
 			int cx;
 			int cy;
-		protected:
-			virtual void FillParentPointersForChilds(){};
 
-			AVSINLINE void Normalize()
-			{
-				if (cx < 0)
-					cx = 0;
-				if (cy < 0)
-					cy = 0;
-			}
+		protected:
+			virtual void FillParentPointersForChilds();
+			void Normalize();
 		};
 	} // namespace nsPresentation
 } // namespace PPTX

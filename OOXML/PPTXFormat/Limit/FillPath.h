@@ -40,51 +40,14 @@ namespace PPTX
 		class FillPath : public BaseLimit
 		{
 		public:
-			FillPath()
-			{
-				m_strValue = _T("circle");
-			}
+			FillPath();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("circle") == strValue) ||
-					(_T("rect") == strValue) ||
-					(_T("shape") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("circle") == m_strValue)
-					return 0;
-				if (_T("rect") == m_strValue)
-					return 1;
-				if (_T("shape") == m_strValue)
-					return 2;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("circle");
-					break;
-				case 1:
-					m_strValue = _T("rect");
-					break;
-				case 2:
-					m_strValue = _T("shape");
-					break;
-				default:
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

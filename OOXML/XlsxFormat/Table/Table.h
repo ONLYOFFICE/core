@@ -69,10 +69,12 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<std::wstring > m_oAltText;
 			nullable<std::wstring > m_oAltTextSummary;
 		};
+
 		class CTableStyleInfo : public WritingElement
 		{
 		public:
@@ -103,6 +105,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<std::wstring > m_oName;
 			nullable<SimpleTypes::COnOff > m_oShowColumnStripes;
@@ -110,6 +113,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff > m_oShowLastColumn;
 			nullable<SimpleTypes::COnOff > m_oShowRowStripes;
 		};
+
 		class CTableColumn : public WritingElement
 		{
 		public:
@@ -139,6 +143,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable_string												m_oDataCellStyle;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oDataDxfId;
@@ -159,6 +164,7 @@ namespace OOX
 																		//xmlColumnPr;
 																		//ext
 		};
+
 		class CTableColumns : public WritingElementWithChilds<CTableColumn>
 		{
 		public:
@@ -190,9 +196,11 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(std::vector<XLS::BaseObjectPtr>& obj);
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
+
 		class CTable : public WritingElement
 		{
 		public:
@@ -224,6 +232,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable_string										m_oComment;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oConnectionId;
@@ -255,6 +264,7 @@ namespace OOX
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
 		};
+
 		class CTablePart : public WritingElement
 		{
 		public:
@@ -284,9 +294,11 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRId;
 		};
+
 		class CTableParts : public WritingElementWithChilds<CTablePart>
 		{
 		public:
@@ -317,9 +329,11 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCount;
 		};
+
 		//необработанные child:
 		//<extLst>
 		class CTableFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
@@ -364,11 +378,14 @@ namespace OOX
 			}
 
 			nullable<CTable>	m_oTable;
+
 		private:
 			CPath				m_oReadPath;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}
 		};
+
 	} //Spreadsheet
 } // namespace OOX

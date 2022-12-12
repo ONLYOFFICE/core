@@ -34,51 +34,12 @@
 
 #include "../../Reader/Records.h"
 #include "ParaBuildContainer.h"
+#include "BuildListSubContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
-class CRecordBuildListContainer : public CUnknownRecord
+class CRecordBuildListContainer : public CRecordsContainer
 {
-public:
-
-    CRecordBuildListContainer ()
-    {
-
-    }
-
-    virtual ~CRecordBuildListContainer()
-    {
-        for ( size_t i = 0; i < n_arrRgChildRec.size(); ++i )
-            RELEASEOBJECT (n_arrRgChildRec[i]);
-    }
-
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        LONG lPos(0); StreamUtils::StreamPosition(lPos, pStream);
-
-        _UINT32 lCurLen(0);
-        SRecordHeader ReadHeader;
-
-        while (lCurLen < m_oHeader.RecLen) {
-            if ( ReadHeader.ReadFromStream(pStream) == false )
-            {
-                break;
-            }
-
-            lCurLen += 8 + ReadHeader.RecLen;
-
-            IRecord* pBuildListSubContainer = CreateByType(ReadHeader);
-            pBuildListSubContainer->ReadFromStream(ReadHeader, pStream);
-
-            n_arrRgChildRec.push_back(pBuildListSubContainer);
-        }
-
-        StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);
-    }
-public:
-    std::vector <IRecord*>	n_arrRgChildRec;
 };
 }

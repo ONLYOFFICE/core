@@ -118,4 +118,3 @@ global_info->sTheme = \
 }
 
 } // namespace XLS
-

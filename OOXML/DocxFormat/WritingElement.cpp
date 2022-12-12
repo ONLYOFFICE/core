@@ -34,6 +34,15 @@
 
 namespace OOX
 {
+	Document::Document() {}
+	Document::~Document() {}
+
+	WritingElement::WritingElement(OOX::Document *pMain) : m_pMainDocument(pMain)
+	{
+	}
+	WritingElement::~WritingElement()
+	{
+	}
 	void WritingElement::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
 		pReader->SkipRecord();

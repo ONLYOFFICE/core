@@ -42,8 +42,9 @@ namespace PPTX
 		class RunBase : public WrapperWritingElement
 		{
 		public:
-			RunBase(){}
-			virtual ~RunBase(){}
+			RunBase();
+			virtual ~RunBase();
+
 			virtual std::wstring GetText()const =0;
 		};
 	} // namespace Logic

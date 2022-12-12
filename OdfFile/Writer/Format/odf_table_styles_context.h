@@ -141,6 +141,8 @@ public:
 		void get_table_cell_properties	(int col, int row,	style_table_cell_properties *props);
 		void get_text_properties		(int col, int row,	style_text_properties		*props);
 		void get_paragraph_properties	(int col, int row,	style_paragraph_properties	*props);
+
+		bool is_styled(int col, int row);
 		
 		_CP_OPT(std::wstring)  get_table_insideV();
 		_CP_OPT(std::wstring)  get_table_insideH();

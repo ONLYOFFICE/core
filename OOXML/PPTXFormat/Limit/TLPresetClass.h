@@ -43,48 +43,14 @@ namespace PPTX
 		class TLPresetClass : public BaseLimit
 		{
 		public:
-			TLPresetClass()
-			{
-				m_strValue = _T("exit");
-			}
+			TLPresetClass();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("emph") == strValue) ||
-					(_T("entr") == strValue) ||
-					(_T("exit") == strValue) ||
-					(_T("mediacall") == strValue) ||
-					(_T("path") == strValue) ||
-					(_T("verb") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"emph" == m_strValue)	return 0;
-				if (L"entr" == m_strValue)	return 1;
-				if (L"exit" == m_strValue)	return 2;
-				if (L"mediacall" == m_strValue)	return 3;
-				if (L"path" == m_strValue)		return 4;
-				if (L"verb" == m_strValue)		return 5;
+			virtual void set(const std::wstring& strValue);
 
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"emph"; break;
-				case 1: m_strValue = L"entr"; break;
-				case 2: m_strValue = L"exit"; break;
-				case 3: m_strValue = L"mediacall"; break;
-				case 4: m_strValue = L"path"; break;
-				case 5: m_strValue = L"verb"; break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

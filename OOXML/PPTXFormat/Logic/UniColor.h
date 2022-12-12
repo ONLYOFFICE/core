@@ -69,41 +69,25 @@ namespace PPTX
 			virtual DWORD GetBGRA(DWORD BGRA = 0)const;
 			virtual DWORD GetABGR(DWORD ABGR = 0)const;
 
-			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB = 0)
-			{
-				if (Color.is_init())
-					return Color->GetRGBColor(_oTheme,_oClrMap, ARGB);
-				return 0;
-			}
+			virtual DWORD GetRGBColor(NSCommon::smart_ptr<PPTX::Theme>& _oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& _oClrMap, DWORD ARGB = 0);
+
 			void SetRGBColor(const BYTE& R, const BYTE& G, const BYTE& B);
 
 			virtual std::wstring toXML() const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (Color.is_init())
-					Color->toPPTY(pWriter);
-			}
-
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (Color.is_init())
-					Color->toXmlWriter(pWriter);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			smart_ptr<ColorBase> Color;
 //hslClr (Hue, Saturation, Luminance Color Model)  ยง20.1.2.3.13 
 //scrgbClr (RGB Color Model - Percentage Variant)  ยง20.1.2.3.30 
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					Color->SetParentPointer(pParent);
-			};
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 		};
 	} // namespace Logic
 } // namespace PPTX

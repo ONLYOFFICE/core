@@ -44,21 +44,12 @@
 #include "WorkbookPr.h"
 #include "ExternalReferences.h"
 
-#include "../../XlsbFormat/WorkBookStream.h"
-
-#include "../../XlsbFormat/Biff12_unions/BOOKVIEWS.h"
-#include "../../XlsbFormat/Biff12_unions/BUNDLESHS.h"
-#include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
-#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
-#include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
-#include "../../XlsbFormat/Biff12_records/FileVersion.h"
-#include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
-
 namespace OOX
 {
 	namespace Spreadsheet
 	{
 		class CPersonList;
+
 	//необработанные child:
 		//<customWorkbookViews>
 		//<extLst>
@@ -70,67 +61,27 @@ namespace OOX
 		//<smartTagTypes>
 		//<webPublishing>
 		//<webPublishObjects>
+
 		class CWorkbookPivotCache : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CWorkbookPivotCache)
 			WritingElement_XlsbConstructors(CWorkbookPivotCache)
-			CWorkbookPivotCache()
-			{
-			}
-			virtual ~CWorkbookPivotCache()
-			{
-			}
+			CWorkbookPivotCache();
+			virtual ~CWorkbookPivotCache();
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<pivotCache");
-					WritingStringNullableAttrInt(L"cacheId", m_oCacheId, m_oCacheId->GetValue());
-					WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				writer.WriteString(L"/>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::PIVOTCACHEID*>(obj.get());
-                if(ptr != nullptr)
-                {
-                    ReadAttributes(ptr->m_BrtBeginPivotCacheID);
-                }
-            }
-			virtual EElementType getType() const
-			{
-				return et_x_WorkbookPivotCache;
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::BeginPivotCacheID*>(obj.get());
-                if(ptr != nullptr)
-                {
-                    m_oCacheId = ptr->idSx;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-                    if(!ptr->irstcacheRelID.value.value().empty())
-                        m_oRid = ptr->irstcacheRelID.value.value();
-                }
-            }
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, _T("cacheId"), m_oCacheId)
-					WritingElement_ReadAttributes_Read_else_if(oReader, _T("r:id"), m_oRid)
-				WritingElement_ReadAttributes_End(oReader)
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			}
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType() const;
+
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 	//----------
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oCacheId;
 			nullable<SimpleTypes::CRelationshipId>			m_oRid;
@@ -141,72 +92,21 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CWorkbookPivotCaches)
             WritingElement_XlsbConstructors(CWorkbookPivotCaches)
-			CWorkbookPivotCaches(OOX::Document *pMain = NULL) : WritingElementWithChilds<CWorkbookPivotCache>(pMain)
-			{
-			}
-			virtual ~CWorkbookPivotCaches()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if (m_arrItems.empty()) return;
+			CWorkbookPivotCaches(OOX::Document *pMain = NULL);
+			virtual ~CWorkbookPivotCaches();
 
-				writer.WriteString(L"<pivotCaches>");
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				for (size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					if (m_arrItems[i])
-					{
-						m_arrItems[i]->toXML(writer);
-					}
-				}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				writer.WriteString(L"</pivotCaches>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if (oReader.IsEmptyNode())
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if (L"pivotCaches" == sName)
-					{
-						CWorkbookPivotCache *pPivotCache = new CWorkbookPivotCache();
-						m_arrItems.push_back(pPivotCache);
-
-						pPivotCache->fromXML(oReader);
-					}
-				}
-			}
-
-            void fromBin(XLS::BaseObjectPtr& obj)
-			{
-                auto ptr = static_cast<XLSB::PIVOTCACHEIDS*>(obj.get());
-                if(ptr != nullptr)
-                {
-                    for(auto &item : ptr->m_arPIVOTCACHEID)
-                        m_arrItems.push_back(new CWorkbookPivotCache(item));
-                }
-
-			}
-
-			virtual EElementType getType() const
-			{
-				return et_x_WorkbookPivotCaches;
-			}
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType() const;
 		};
+
 //-----------------------------------------------------------------------------------------------------------
+
 		class CWorkbook : public OOX::File, public OOX::IFileContainer, public WritingElement
 		{
 		public:
@@ -215,46 +115,25 @@ namespace OOX
 			virtual ~CWorkbook();
 
 			void readBin(const CPath& oPath);
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
+			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			virtual std::wstring toXML() const;
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-			virtual const OOX::FileType type() const
-			{
-				if (m_bMacroEnabled)	return OOX::Spreadsheet::FileTypes::WorkbookMacro;
-				else					return OOX::Spreadsheet::FileTypes::Workbook;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			virtual EElementType getType () const
-			{
-				return et_x_Workbook;
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			virtual EElementType getType () const;
+			const CPath& GetReadPath();
+
 			void PrepareToWrite();
 			LONG GetActiveSheetIndex();
+
 			CPath											m_oReadPath;
 
 			nullable<OOX::Spreadsheet::CWorkbookProtection>	m_oWorkbookProtection;
@@ -273,6 +152,7 @@ namespace OOX
 			CPersonList*									m_pPersonList;
 			bool											m_bMacroEnabled;
 		};
+
 	} //Spreadsheet
 } // namespace OOX
 

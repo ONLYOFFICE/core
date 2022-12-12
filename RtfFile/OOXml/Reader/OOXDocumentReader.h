@@ -31,10 +31,7 @@
  */
 #pragma once
 
-//#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
-
-//#include "../../../OOXML/DocxFormat/Document.h"
 
 namespace OOX
 {
@@ -48,6 +45,7 @@ private:
 	RtfDocument*		m_poDocument = NULL;
 
 	OOX::CDocument* m_ooxDocument = NULL;
+
 public: 
 	OOXDocumentReader(OOX::CDocument* ooxDocument);
 	~OOXDocumentReader();

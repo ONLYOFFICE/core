@@ -43,35 +43,14 @@ namespace PPTX
 		class TLOrigin : public BaseLimit
 		{
 		public:
-			TLOrigin()
-			{
-				m_strValue = _T("parent");
-			}
+			TLOrigin();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("parent") == strValue) ||
-					(_T("layout") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"parent" == m_strValue)	return 0;
-				if (L"layout" == m_strValue)	return 1;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"parent"; break;
-				case 1: m_strValue = L"layout"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

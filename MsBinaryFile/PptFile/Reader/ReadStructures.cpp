@@ -36,11 +36,11 @@
 #include "../../DocFile/MemoryStream.h"
 #include "../../../OfficeCryptReader/source/CryptTransform.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-static CColor GetStandartPaletteColor(int index)
+static ODRAW::CColor GetStandartPaletteColor(int index)
 {
-    CColor color;
+    ODRAW::CColor color;
     static BYTE palette [56][3] =
     {
         {	0	,	0	,	0	},
@@ -102,11 +102,74 @@ static CColor GetStandartPaletteColor(int index)
     color.SetRGB(palette[index][0], palette[index][1], palette[index][2]);
     return color;
 }
-}
 
 namespace NSStreamReader
 {
-void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation)
+void Read(POLE::Stream* pStream, PPT::CTextRuler& oRun)
+{
+    double dScaleX = 625 * 2.54;
+    //1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
+
+    _UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
+    BYTE flag1 = (BYTE)(dwFlags);
+    BYTE flag2 = (BYTE)(dwFlags >> 8);
+    BYTE flag3 = (BYTE)(dwFlags >> 16);
+    BYTE flag4 = (BYTE)(dwFlags >> 24);
+
+    bool bDefaultTabSize_ = (0x01 == (0x01 & flag1));
+    bool bCLevels_ = (0x02 == (0x02 & flag1));
+    bool bTabStops_ = (0x04 == (0x04 & flag1));
+
+    bool bLeftMargin1_ = (0x08 == (0x08 & flag1));
+    bool bLeftMargin2_ = (0x10 == (0x10 & flag1));
+    bool bLeftMargin3_ = (0x20 == (0x20 & flag1));
+    bool bLeftMargin4_ = (0x40 == (0x40 & flag1));
+    bool bLeftMargin5_ = (0x80 == (0x80 & flag1));
+
+    bool bIndent1_ = (0x01 == (0x01 & flag2));
+    bool bIndent2_ = (0x02 == (0x02 & flag2));
+    bool bIndent3_ = (0x04 == (0x04 & flag2));
+    bool bIndent4_ = (0x08 == (0x08 & flag2));
+    bool bIndent5_ = (0x10 == (0x10 & flag2));
+
+    if (bCLevels_)
+        oRun.CLevels = StreamUtils::ReadSHORT(pStream);
+    if (bDefaultTabSize_)
+        oRun.DefaultTabSize = (long)(StreamUtils::ReadSHORT(pStream) * dScaleX);
+
+    if (bTabStops_)
+    {
+        WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
+        oRun.tabsStops.clear();
+
+        for (WORD i = 0; i < tabStopsCount; ++i)
+        {
+            WORD tabPos = StreamUtils::ReadWORD(pStream);
+            WORD tabType = StreamUtils::ReadWORD(pStream);
+
+            if ((tabPos & 0xff00) == 0xff00)
+                break;
+            tabType = 0x0000;
+            oRun.tabsStops.push_back(std::pair<int, int>(tabPos * dScaleX, tabType));
+        }
+    }
+
+    if (bLeftMargin1_)	oRun.LeftMargin1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+    if (bIndent1_)		oRun.Indent1 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+    if (bLeftMargin2_)	oRun.LeftMargin2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+    if (bIndent2_)		oRun.Indent2 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+    if (bLeftMargin3_)	oRun.LeftMargin3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+    if (bIndent3_)		oRun.Indent3 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+    if (bLeftMargin4_)	oRun.LeftMargin4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+    if (bIndent4_)		oRun.Indent4 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+
+    if (bLeftMargin5_)	oRun.LeftMargin5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+    if (bIndent5_)		oRun.Indent5 = StreamUtils::ReadSHORT(pStream) * dScaleX;
+}
+void Read(POLE::Stream* pStream, PPT::CTextSIRun& oRun, bool bIsIndentation)
 {
     if (bIsIndentation)
     {
@@ -117,16 +180,16 @@ void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentati
     BYTE flag1 = (BYTE)(dwFlags);
     BYTE flag2 = (BYTE)(dwFlags >> 8);
 
-    oRun.bSpell					= (0x01 == (0x01 & flag1));
-    oRun.bLang					= (0x02 == (0x02 & flag1));
-    oRun.bAltLang				= (0x04 == (0x04 & flag1));
+    oRun.bSpell = (0x01 == (0x01 & flag1));
+    oRun.bLang = (0x02 == (0x02 & flag1));
+    oRun.bAltLang = (0x04 == (0x04 & flag1));
     // unused
     // unused
-    oRun.bPp10ext				= (0x20 == (0x20 & flag1));
-    oRun.bBidi					= (0x40 == (0x40 & flag1));
+    oRun.bPp10ext = (0x20 == (0x20 & flag1));
+    oRun.bBidi = (0x40 == (0x40 & flag1));
     // unused
     // reserved
-    oRun.bSmartTag				= (0x02 == (0x02 & flag2));
+    oRun.bSmartTag = (0x02 == (0x02 & flag2));
 
     if (oRun.bSpell)
     {
@@ -157,93 +220,69 @@ void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentati
     }
 
     /*if (bSmartTag)
-        {
+            {
             _UINT32 tabStopsCount = StreamUtils::ReadDWORD(pStream);
             arSmartTags.clear();
 
             for (int i = 0; i < (int)tabStopsCount; ++i)
             {
-                arSmartTags.Add(StreamUtils::ReadDWORD(pStream));
+            arSmartTags.Add(StreamUtils::ReadDWORD(pStream));
             }
-        }*/
+            }*/
 }
 
-void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun)
+void Read(POLE::Stream *pStream, ODRAW::SPointAtom &oAtom)
 {
-    double dScaleX				= 625 * 2.54 ;
-    //1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
+    oAtom.X = StreamUtils::ReadLONG(pStream);
+    oAtom.Y = StreamUtils::ReadLONG(pStream);
+}
 
-    _UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
-    BYTE flag1 = (BYTE)(dwFlags);
-    BYTE flag2 = (BYTE)(dwFlags >> 8);
-    BYTE flag3 = (BYTE)(dwFlags >> 16);
-    BYTE flag4 = (BYTE)(dwFlags >> 24);
+void Read(POLE::Stream *pStream, ODRAW::SColorAtom &oAtom)
+{
+    oAtom.R = StreamUtils::ReadBYTE(pStream);
+    oAtom.G = StreamUtils::ReadBYTE(pStream);
+    oAtom.B = StreamUtils::ReadBYTE(pStream);
+    oAtom.Index = StreamUtils::ReadBYTE(pStream);
 
-    bool bDefaultTabSize_				= (0x01 == (0x01 & flag1));
-    bool bCLevels_						= (0x02 == (0x02 & flag1));
-    bool bTabStops_						= (0x04 == (0x04 & flag1));
+    oAtom.bPaletteIndex = oAtom.bPaletteRGB = oAtom.bSystemRGB = oAtom.bSysIndex = oAtom.bSchemeIndex = false;
 
-    bool bLeftMargin1_					= (0x08 == (0x08 & flag1));
-    bool bLeftMargin2_					= (0x10 == (0x10 & flag1));
-    bool bLeftMargin3_					= (0x20 == (0x20 & flag1));
-    bool bLeftMargin4_					= (0x40 == (0x40 & flag1));
-    bool bLeftMargin5_					= (0x80 == (0x80 & flag1));
-
-    bool bIndent1_						= (0x01 == (0x01 & flag2));
-    bool bIndent2_						= (0x02 == (0x02 & flag2));
-    bool bIndent3_						= (0x04 == (0x04 & flag2));
-    bool bIndent4_						= (0x08 == (0x08 & flag2));
-    bool bIndent5_						= (0x10 == (0x10 & flag2));
-
-    if (bCLevels_)
-        oRun.CLevels = StreamUtils::ReadSHORT(pStream);
-    if (bDefaultTabSize_)
-        oRun.DefaultTabSize = (long)(StreamUtils::ReadSHORT(pStream) * dScaleX);
-
-    if (bTabStops_)
+    if (oAtom.Index != 0xFF)
     {
-        WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
-        oRun.tabsStops.clear();
-
-        for (WORD i = 0; i < tabStopsCount; ++i)
-        {
-            WORD tabPos		= StreamUtils::ReadWORD(pStream) ;
-            WORD tabType	= StreamUtils::ReadWORD(pStream) ;
-
-            if ((tabPos & 0xff00) == 0xff00)
-                break;
-            tabType = 0x0000;
-            oRun.tabsStops.push_back( std::pair<int, int>(tabPos * dScaleX, tabType));
-        }
+        oAtom.bPaletteRGB = (oAtom.Index == 0xFE);
+        oAtom.bSchemeIndex = (oAtom.Index != 0xFE);
     }
-
-    if (bLeftMargin1_)	oRun.LeftMargin1	= StreamUtils::ReadSHORT(pStream) * dScaleX;
-    if (bIndent1_)		oRun.Indent1		= StreamUtils::ReadSHORT(pStream) * dScaleX;
-
-    if (bLeftMargin2_)	oRun.LeftMargin2	= StreamUtils::ReadSHORT(pStream) * dScaleX;
-    if (bIndent2_)		oRun.Indent2		= StreamUtils::ReadSHORT(pStream) * dScaleX;
-
-    if (bLeftMargin3_)	oRun.LeftMargin3	= StreamUtils::ReadSHORT(pStream) * dScaleX;
-    if (bIndent3_)		oRun.Indent3		= StreamUtils::ReadSHORT(pStream) * dScaleX;
-
-    if (bLeftMargin4_)	oRun.LeftMargin4	= StreamUtils::ReadSHORT(pStream) * dScaleX;
-    if (bIndent4_)		oRun.Indent4		= StreamUtils::ReadSHORT(pStream) * dScaleX;
-
-    if (bLeftMargin5_)	oRun.LeftMargin5	= StreamUtils::ReadSHORT(pStream) * dScaleX;
-    if (bIndent5_)		oRun.Indent5		= StreamUtils::ReadSHORT(pStream) * dScaleX;
-}
 }
 
+}
+
+CTextPFRunRecord::CTextPFRunRecord() : m_oRun()
+{
+    m_lLevel = -1;
+    m_lCount = 0;
+}
+
+CTextPFRunRecord::CTextPFRunRecord(const CTextPFRunRecord &oSrc)
+{
+    *this = oSrc;
+}
+
+CTextPFRunRecord &CTextPFRunRecord::operator=(const CTextPFRunRecord &oSrc)
+{
+    m_oRun = oSrc.m_oRun;
+    m_lLevel = oSrc.m_lLevel;
+    m_lCount = oSrc.m_lCount;
+    return *this;
+}
 
 void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 {
-    double dScaleX				= 625 * 2.54 ;
+    double dScaleX = 625 * 2.54;
     //1/576 inch = 72/576 pt = 360000 *72 * 2.54 /(72*576) emu
 
     if (bIsIndentation)
     {
-        m_lCount	= StreamUtils::ReadLONG(pStream);
-        m_lLevel	= (LONG)StreamUtils::ReadWORD(pStream);
+        m_lCount = StreamUtils::ReadLONG(pStream);
+        m_lLevel = (LONG)StreamUtils::ReadWORD(pStream);
 
         if (m_lLevel > 0x0004)
             m_lLevel = 0x0004;
@@ -256,62 +295,63 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
     BYTE flag4 = (BYTE)(dwFlags >> 24);
 
     //флаги чтения
-    bool hasBullet_				= (0x01 == (0x01 & flag1));
-    bool bulletHasFont_			= (0x02 == (0x02 & flag1));
-    bool bulletHasColor_		= (0x04 == (0x04 & flag1));
-    bool bulletHasSize_			= (0x08 == (0x08 & flag1));
+    bool hasBullet_ = (0x01 == (0x01 & flag1));
+    bool bulletHasFont_ = (0x02 == (0x02 & flag1));
+    bool bulletHasColor_ = (0x04 == (0x04 & flag1));
+    bool bulletHasSize_ = (0x08 == (0x08 & flag1));
 
-    bool bulletFontRef_			= (0x10 == (0x10 & flag1));
-    bool bulletColor_			= (0x20 == (0x20 & flag1));
-    bool bulletSize_			= (0x40 == (0x40 & flag1));
-    bool bulletChar_			= (0x80 == (0x80 & flag1));
+    bool bulletFontRef_ = (0x10 == (0x10 & flag1));
+    bool bulletColor_ = (0x20 == (0x20 & flag1));
+    bool bulletSize_ = (0x40 == (0x40 & flag1));
+    bool bulletChar_ = (0x80 == (0x80 & flag1));
 
-    bool leftMargin_			= (0x01 == (0x01 & flag2));
+    bool leftMargin_ = (0x01 == (0x01 & flag2));
     // reserved
-    bool indent_				= (0x04 == (0x04 & flag2));
-    bool textAlignment_			= (0x08 == (0x08 & flag2));
-    bool lineSpacing_			= (0x10 == (0x10 & flag2));
-    bool spaceBefore_			= (0x20 == (0x20 & flag2));
-    bool spaceAfter_			= (0x40 == (0x40 & flag2));
-    bool defaultTabSize_		= (0x80 == (0x80 & flag2));
+    bool indent_ = (0x04 == (0x04 & flag2));
+    bool textAlignment_ = (0x08 == (0x08 & flag2));
+    bool lineSpacing_ = (0x10 == (0x10 & flag2));
+    bool spaceBefore_ = (0x20 == (0x20 & flag2));
+    bool spaceAfter_ = (0x40 == (0x40 & flag2));
+    bool defaultTabSize_ = (0x80 == (0x80 & flag2));
 
-    bool fontAlign_				= (0x01 == (0x01 & flag3));
-    bool charWrap_				= (0x02 == (0x02 & flag3));
-    bool wordWrap_				= (0x04 == (0x04 & flag3));
-    bool overflow_				= (0x08 == (0x08 & flag3));
-    bool tabStops_				= (0x10 == (0x10 & flag3));
-    bool textDirection_			= (0x20 == (0x20 & flag3));
+    bool fontAlign_ = (0x01 == (0x01 & flag3));
+    bool charWrap_ = (0x02 == (0x02 & flag3));
+    bool wordWrap_ = (0x04 == (0x04 & flag3));
+    bool overflow_ = (0x08 == (0x08 & flag3));
+    bool tabStops_ = (0x10 == (0x10 & flag3));
+    bool textDirection_ = (0x20 == (0x20 & flag3));
     //reserved
-    bool bulletBlip_			= (0x80 == (0x80 & flag3));
+    bool bulletBlip_ = (0x80 == (0x80 & flag3));
 
-    bool bulletScheme_			= (0x01 == (0x01 & flag4));
-    bool bulletHasScheme_		= (0x02 == (0x02 & flag4));
+    bool bulletScheme_ = (0x01 == (0x01 & flag4));
+    bool bulletHasScheme_ = (0x02 == (0x02 & flag4));
 
-    WORD bulletFlag				= 0;
+    WORD bulletFlag = 0;
 
     if (hasBullet_ || bulletHasFont_ || bulletHasColor_ || bulletHasSize_)
     {
-        bulletFlag	= StreamUtils::ReadWORD(pStream);
+        bulletFlag = StreamUtils::ReadWORD(pStream);
         if (bulletFlag & 0x0F)
         {
-            m_oRun.hasBullet	= (bool)(0x01 == (bulletFlag & 0x01));
-        }else
+            m_oRun.hasBullet = (bool)(0x01 == (bulletFlag & 0x01));
+        }
+        else
             m_oRun.hasBullet = false;
     }
 
     if (bulletChar_)
     {
-        unsigned short	utf16	= (unsigned short)StreamUtils::ReadWORD(pStream);
+        unsigned short	utf16 = (unsigned short)StreamUtils::ReadWORD(pStream);
 
         if (utf16 > 0x0013)
         {
             if (sizeof(wchar_t) == 2)
             {
-                m_oRun.bulletChar		= utf16;
+                m_oRun.bulletChar = utf16;
             }
             else
             {
-                std::wstring	utf32	= NSFile::CUtf8Converter::GetWStringFromUTF16(&utf16, 1);
+                std::wstring	utf32 = NSFile::CUtf8Converter::GetWStringFromUTF16(&utf16, 1);
                 if (!utf32.empty())
                     m_oRun.bulletChar = utf32.c_str()[0];
             }
@@ -320,7 +360,7 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
     }
     if (bulletFontRef_)
     {
-        m_oRun.bulletFontRef	= StreamUtils::ReadWORD(pStream);
+        m_oRun.bulletFontRef = StreamUtils::ReadWORD(pStream);
 
         if (bulletFlag & 0x0F)
         {
@@ -330,7 +370,7 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
     }
     if (bulletSize_)
     {
-        m_oRun.bulletSize		= StreamUtils::ReadWORD(pStream);
+        m_oRun.bulletSize = StreamUtils::ReadWORD(pStream);
 
         if (bulletFlag & 0x0F)
         {
@@ -340,7 +380,7 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
     }
     if (bulletColor_)
     {
-        SColorAtom oColorAtom;
+        ODRAW::SColorAtom oColorAtom;
         NSStreamReader::Read(pStream, oColorAtom);
 
         ODRAW::CColor oColor;
@@ -369,13 +409,13 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
         }
     }
 
-    if (textAlignment_)		m_oRun.textAlignment	=	StreamUtils::ReadWORD(pStream);
-    if (lineSpacing_)		m_oRun.lineSpacing		= - StreamUtils::ReadSHORT(pStream);
-    if (spaceBefore_)		m_oRun.spaceBefore		= - StreamUtils::ReadSHORT(pStream);
-    if (spaceAfter_)		m_oRun.spaceAfter		= - StreamUtils::ReadSHORT(pStream);
-    if (leftMargin_)		m_oRun.leftMargin		=	StreamUtils::ReadSHORT(pStream)			* dScaleX;
-    if (indent_)			m_oRun.indent			=	StreamUtils::ReadSHORT(pStream)			* dScaleX;
-    if (defaultTabSize_)	m_oRun.defaultTabSize	= (_INT32)StreamUtils::ReadWORD(pStream)	* dScaleX;
+    if (textAlignment_)		m_oRun.textAlignment = StreamUtils::ReadWORD(pStream);
+    if (lineSpacing_)		m_oRun.lineSpacing = -StreamUtils::ReadSHORT(pStream);
+    if (spaceBefore_)		m_oRun.spaceBefore = -StreamUtils::ReadSHORT(pStream);
+    if (spaceAfter_)		m_oRun.spaceAfter = -StreamUtils::ReadSHORT(pStream);
+    if (leftMargin_)		m_oRun.leftMargin = StreamUtils::ReadSHORT(pStream)			* dScaleX;
+    if (indent_)			m_oRun.indent = StreamUtils::ReadSHORT(pStream)			* dScaleX;
+    if (defaultTabSize_)	m_oRun.defaultTabSize = (_INT32)StreamUtils::ReadWORD(pStream)	* dScaleX;
     if (tabStops_)
     {
         WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
@@ -385,13 +425,13 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
 
         for (int i = 0; i < (int)tabStopsCount; ++i)
         {
-            WORD tabPos		= StreamUtils::ReadWORD(pStream);
-            WORD tabType	= StreamUtils::ReadWORD(pStream);
+            WORD tabPos = StreamUtils::ReadWORD(pStream);
+            WORD tabType = StreamUtils::ReadWORD(pStream);
 
             if ((tabPos & 0xff00) == 0xff00)
                 break;
 
-            m_oRun.tabStops.push_back( std::pair<int, int> (tabPos * dScaleX, tabType) );
+            m_oRun.tabStops.push_back(std::pair<int, int>(tabPos * dScaleX, tabType));
         }
 
         //if (0 < m_oRun.tabStops.size())
@@ -399,23 +439,39 @@ void CTextPFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
     }
 
     if (fontAlign_)
-        m_oRun.fontAlign	= StreamUtils::ReadWORD(pStream);
+        m_oRun.fontAlign = StreamUtils::ReadWORD(pStream);
 
     if (charWrap_ || wordWrap_ || overflow_)
     {
-        m_oRun.wrapFlags	= StreamUtils::ReadWORD(pStream);
+        m_oRun.wrapFlags = StreamUtils::ReadWORD(pStream);
     }
 
     if (textDirection_)
         m_oRun.textDirection = StreamUtils::ReadWORD(pStream);
 }
 
+CTextCFRunRecord::CTextCFRunRecord() : m_oRun()
+{
+    m_lCount = 0;
+}
+
+CTextCFRunRecord::CTextCFRunRecord(const CTextCFRunRecord &oSrc)
+{
+    *this = oSrc;
+}
+
+CTextCFRunRecord &CTextCFRunRecord::operator=(const CTextCFRunRecord &oSrc)
+{
+    m_oRun = oSrc.m_oRun;
+    m_lCount = oSrc.m_lCount;
+    return *this;
+}
 
 void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation)
 {
     if (bIsIndentation)
     {
-        m_lCount	= StreamUtils::ReadLONG(pStream);
+        m_lCount = StreamUtils::ReadLONG(pStream);
     }
 
     _UINT32 dwFlags = StreamUtils::ReadDWORD(pStream);
@@ -424,32 +480,32 @@ void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
     BYTE flag3 = (BYTE)(dwFlags >> 16);
     BYTE flag4 = (BYTE)(dwFlags >> 24);
 
-    bool hasBold				= (0x01 == (0x01 & flag1));
-    bool hasItalic				= (0x02 == (0x02 & flag1));
-    bool hasUnderline			= (0x04 == (0x04 & flag1));
+    bool hasBold = (0x01 == (0x01 & flag1));
+    bool hasItalic = (0x02 == (0x02 & flag1));
+    bool hasUnderline = (0x04 == (0x04 & flag1));
     // unused
-    bool hasShadow				= (0x10 == (0x10 & flag1));
-    bool hasFehint				= (0x20 == (0x20 & flag1));
+    bool hasShadow = (0x10 == (0x10 & flag1));
+    bool hasFehint = (0x20 == (0x20 & flag1));
     // unused
-    bool hasKimi				= (0x80 == (0x80 & flag1));
+    bool hasKimi = (0x80 == (0x80 & flag1));
 
     // unused
-    bool hasEmboss				= (0x02 == (0x02 & flag2));
+    bool hasEmboss = (0x02 == (0x02 & flag2));
     // unused
-    BYTE hasStyle				= ((0x3C & flag2) >> 2);
+    BYTE hasStyle = ((0x3C & flag2) >> 2);
     // unused
 
-    bool typeface_				= (0x01 == (0x01 & flag3));
-    bool size_					= (0x02 == (0x02 & flag3));
-    bool color_					= (0x04 == (0x04 & flag3));
-    bool BaseLineOffset_		= (0x08 == (0x08 & flag3));
-    bool EAFontRef_				= (0x20 == (0x20 & flag3));
-    bool AnsiFontRef_			= (0x40 == (0x40 & flag3));
-    bool SymbolFontRef_			= (0x80 == (0x80 & flag3));
+    bool typeface_ = (0x01 == (0x01 & flag3));
+    bool size_ = (0x02 == (0x02 & flag3));
+    bool color_ = (0x04 == (0x04 & flag3));
+    bool BaseLineOffset_ = (0x08 == (0x08 & flag3));
+    bool EAFontRef_ = (0x20 == (0x20 & flag3));
+    bool AnsiFontRef_ = (0x40 == (0x40 & flag3));
+    bool SymbolFontRef_ = (0x80 == (0x80 & flag3));
 
-    bool hasNewEATypeface		= (0x01 == (0x01 & flag4));
-    bool hasCsTypeface			= (0x02 == (0x02 & flag4));
-    bool hasPp11ext				= (0x04 == (0x04 & flag4));
+    bool hasNewEATypeface = (0x01 == (0x01 & flag4));
+    bool hasCsTypeface = (0x02 == (0x02 & flag4));
+    bool hasPp11ext = (0x04 == (0x04 & flag4));
 
     bool bIsFontStylePresent = (hasBold || hasItalic || hasUnderline || hasShadow ||
                                 hasFehint || hasKimi || hasEmboss || hasStyle != 0);
@@ -482,7 +538,7 @@ void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
 
     if (color_)
     {
-        SColorAtom oColorAtom;
+        ODRAW::SColorAtom oColorAtom;
         NSStreamReader::Read(pStream, oColorAtom);
 
         ODRAW::CColor oColor;
@@ -511,10 +567,8 @@ void CTextCFRunRecord::LoadFromStream(POLE::Stream* pStream, bool bIsIndentation
 }
 
 
-namespace PPT_FORMAT
-{
 void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
-                                     std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes)
+                                     std::wstring& strText, PPT::CTextAttributesEx& oAttributes)
 {
     int nCountPFs = (int)oArrayPF.size();
     int nCountCFs = (int)oArrayCF.size();
@@ -524,7 +578,7 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
 
     int nCurrentPF = 0;
     int nCurrentCF = 0;
-    int nOffsetCF  = 0;
+    int nOffsetCF = 0;
 
     int nIndexLast = strText.length();
     int nIndexText = 0;
@@ -533,13 +587,13 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
     {
         CParagraph elm;
         oAttributes.m_arParagraphs.push_back(elm);
-        PPT_FORMAT::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
+        PPT::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
-        pPar->m_lTextLevel			= oArrayPF[nIndexPF].m_lLevel;
-        pPar->m_oPFRun				= oArrayPF[nIndexPF].m_oRun;
+        pPar->m_lTextLevel = oArrayPF[nIndexPF].m_lLevel;
+        pPar->m_oPFRun = oArrayPF[nIndexPF].m_oRun;
 
-        pPar->m_lTextType			= oAttributes.m_lTextType;
-        pPar->m_lStyleThemeIndex	= oAttributes.m_lStyleThemeIndex;
+        pPar->m_lTextType = oAttributes.m_lTextType;
+        pPar->m_lStyleThemeIndex = oAttributes.m_lStyleThemeIndex;
 
         int nCountInPF = oArrayPF[nIndexPF].m_lCount;
 
@@ -551,7 +605,7 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
             int nCountAdd = oArrayCF[nCurrentCF].m_lCount - nOffsetCF;
 
             int nCountAddTrue = nCountAdd;
-            if (nIndexText +  nCountAdd > nIndexLast)
+            if (nIndexText + nCountAdd > nIndexLast)
             {
                 nCountAddTrue = nIndexLast - nIndexText;
                 if (nCountAddTrue < 0) nCountAddTrue = 0;
@@ -561,11 +615,11 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
             {
                 nOffsetCF += nCountInPF;
 
-                PPT_FORMAT::CSpan oSpan;
-                oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
+                PPT::CSpan oSpan;
+                oSpan.m_oRun = oArrayCF[nCurrentCF].m_oRun;
 
                 nCountAddTrue = nCountInPF;
-                if (nIndexText +  nCountInPF > nIndexLast)
+                if (nIndexText + nCountInPF > nIndexLast)
                 {
                     nCountAddTrue = nIndexLast - nIndexText;
                     if (nCountAddTrue < 0) nCountAddTrue = 0;
@@ -583,8 +637,8 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
             {
                 nOffsetCF = 0;
 
-                PPT_FORMAT::CSpan oSpan;
-                oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
+                PPT::CSpan oSpan;
+                oSpan.m_oRun = oArrayCF[nCurrentCF].m_oRun;
 
                 if (nCountAddTrue > 0)
                 {
@@ -599,8 +653,8 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
             {
                 nOffsetCF = 0;
 
-                PPT_FORMAT::CSpan oSpan;
-                oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
+                PPT::CSpan oSpan;
+                oSpan.m_oRun = oArrayCF[nCurrentCF].m_oRun;
 
                 if (nCountAddTrue > 0)
                 {
@@ -615,8 +669,11 @@ void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, st
         }
     }
 }
-}
 //------------------------------------------------------------------------------------
+CMetaHeader::CMetaHeader()
+{
+}
+
 void CMetaHeader::FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor)
 {
     BYTE	pData[34];
@@ -628,20 +685,20 @@ void CMetaHeader::FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecry
     }
     MemoryStream memStream(pData, 34, false);
 
-    cbSize			= memStream.ReadUInt32();
+    cbSize = memStream.ReadUInt32();
 
-    rcBounds.left	= memStream.ReadInt32();
-    rcBounds.top	= memStream.ReadInt32();
-    rcBounds.right	= memStream.ReadInt32();
+    rcBounds.left = memStream.ReadInt32();
+    rcBounds.top = memStream.ReadInt32();
+    rcBounds.right = memStream.ReadInt32();
     rcBounds.bottom = memStream.ReadInt32();
 
-    ptSize.x		= memStream.ReadInt32();
-    ptSize.y		= memStream.ReadInt32();
+    ptSize.x = memStream.ReadInt32();
+    ptSize.y = memStream.ReadInt32();
 
-    cbSave			= memStream.ReadUInt32();
+    cbSave = memStream.ReadUInt32();
 
-    compression		= memStream.ReadByte();
-    filter			= memStream.ReadByte();
+    compression = memStream.ReadByte();
+    filter = memStream.ReadByte();
 }
 
 void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
@@ -649,40 +706,40 @@ void CMetaHeader::ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader)
     if (NULL == pHeader)
         return;
 
-    pHeader->iType				= 0x00000001;
-    pHeader->nSize				= 88;
+    pHeader->iType = 0x00000001;
+    pHeader->nSize = 88;
 
-    pHeader->rclBounds.left		= rcBounds.left;
-    pHeader->rclBounds.top		= rcBounds.top;
-    pHeader->rclBounds.right	= rcBounds.right;
-    pHeader->rclBounds.bottom	= rcBounds.bottom;
-
-    // нужно перевести в мм
-    pHeader->rclFrame.left		= rcBounds.left;
-    pHeader->rclFrame.top		= rcBounds.top;
-    pHeader->rclFrame.right		= rcBounds.right;
-    pHeader->rclFrame.bottom	= rcBounds.bottom;
-
-    pHeader->dSignature			= 0x464D4520;
-    pHeader->nVersion			= 0x00010000;
-    pHeader->nBytes				= cbSize;
-
-    pHeader->nRecords			= 1;
-    pHeader->nHandles			= 0;
-
-    pHeader->sReserved			= 0;
-
-    pHeader->nDescription		= 0;
-    pHeader->offDescription		= 0;
-
-    pHeader->nPalEntries		= 0;
-
-    pHeader->szlDevice.cx		= 200;
-    pHeader->szlDevice.cy		= 200;
+    pHeader->rclBounds.left = rcBounds.left;
+    pHeader->rclBounds.top = rcBounds.top;
+    pHeader->rclBounds.right = rcBounds.right;
+    pHeader->rclBounds.bottom = rcBounds.bottom;
 
     // нужно перевести в мм
-    pHeader->szlMillimeters.cx	= 100;
-    pHeader->szlMillimeters.cy	= 100;
+    pHeader->rclFrame.left = rcBounds.left;
+    pHeader->rclFrame.top = rcBounds.top;
+    pHeader->rclFrame.right = rcBounds.right;
+    pHeader->rclFrame.bottom = rcBounds.bottom;
+
+    pHeader->dSignature = 0x464D4520;
+    pHeader->nVersion = 0x00010000;
+    pHeader->nBytes = cbSize;
+
+    pHeader->nRecords = 1;
+    pHeader->nHandles = 0;
+
+    pHeader->sReserved = 0;
+
+    pHeader->nDescription = 0;
+    pHeader->offDescription = 0;
+
+    pHeader->nPalEntries = 0;
+
+    pHeader->szlDevice.cx = 200;
+    pHeader->szlDevice.cy = 200;
+
+    // нужно перевести в мм
+    pHeader->szlMillimeters.cx = 100;
+    pHeader->szlMillimeters.cy = 100;
 }
 
 void CMetaHeader::ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader)
@@ -690,31 +747,31 @@ void CMetaHeader::ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader)
     if (NULL == pHeader)
         return;
 
-    pHeader->Key				= 0x9AC6CDD7;
-    pHeader->Hmf				= 0;
+    pHeader->Key = 0x9AC6CDD7;
+    pHeader->Hmf = 0;
 
-    pHeader->BoundingBox.Left	= (short)rcBounds.left;
-    pHeader->BoundingBox.Top	= (short)rcBounds.top;
-    pHeader->BoundingBox.Right	= (short)rcBounds.right;
+    pHeader->BoundingBox.Left = (short)rcBounds.left;
+    pHeader->BoundingBox.Top = (short)rcBounds.top;
+    pHeader->BoundingBox.Right = (short)rcBounds.right;
     pHeader->BoundingBox.Bottom = (short)rcBounds.bottom;
 
-    pHeader->Inch				= 1440; // 1:1
-    pHeader->Reserved			= 0;
+    pHeader->Inch = 1440; // 1:1
+    pHeader->Reserved = 0;
 
-    pHeader->Checksum			= 0;
-    pHeader->Checksum			^= (pHeader->Key & 0x0000FFFFL);
-    pHeader->Checksum			^= ((pHeader->Key & 0xFFFF0000L) >> 16);
+    pHeader->Checksum = 0;
+    pHeader->Checksum ^= (pHeader->Key & 0x0000FFFFL);
+    pHeader->Checksum ^= ((pHeader->Key & 0xFFFF0000L) >> 16);
 
-    pHeader->Checksum			^= pHeader->Hmf;
+    pHeader->Checksum ^= pHeader->Hmf;
 
-    pHeader->Checksum			^= pHeader->BoundingBox.Left;
-    pHeader->Checksum			^= pHeader->BoundingBox.Top;
-    pHeader->Checksum			^= pHeader->BoundingBox.Right;
-    pHeader->Checksum			^= pHeader->BoundingBox.Bottom;
+    pHeader->Checksum ^= pHeader->BoundingBox.Left;
+    pHeader->Checksum ^= pHeader->BoundingBox.Top;
+    pHeader->Checksum ^= pHeader->BoundingBox.Right;
+    pHeader->Checksum ^= pHeader->BoundingBox.Bottom;
 
-    pHeader->Checksum			^= pHeader->Inch;
-    pHeader->Checksum			^= (pHeader->Reserved & 0x0000FFFFL);
-    pHeader->Checksum			^= ((pHeader->Reserved & 0xFFFF0000L) >> 16);
+    pHeader->Checksum ^= pHeader->Inch;
+    pHeader->Checksum ^= (pHeader->Reserved & 0x0000FFFFL);
+    pHeader->Checksum ^= ((pHeader->Reserved & 0xFFFF0000L) >> 16);
 }
 
 #define CLIPSIZE 12
@@ -736,7 +793,7 @@ void CMetaHeader::ToPICTHeader(BYTE *& pHeader, int & size)
 
 
     //Skip picSize and put out picFrame (10 bytes).
-    picPtr = (short *) pHeader;
+    picPtr = (short *)pHeader;
 
     *picPtr++ = (short)myRowBytes;
 
@@ -752,7 +809,7 @@ void CMetaHeader::ToPICTHeader(BYTE *& pHeader, int & size)
     *picPtr++ = 0xFFFF;	/* Put out PICT header version. */
     *picPtr++ = 0xFFFF;
     //The rest of the header is ignored--0 it out.
-    for(int iii = 10; iii > 0; iii--)
+    for (int iii = 10; iii > 0; iii--)
         *picPtr++ = 0;		/* Write out 24 bytes of 0. */
 
     /* Put out current port's clip region. */
@@ -791,4 +848,93 @@ void CMetaHeader::ToPICTHeader(BYTE *& pHeader, int & size)
     //}
     int sz = ((BYTE*)picPtr - pHeader);
     size = sz;
+}
+
+CMetaFileBuffer::CMetaFileBuffer()
+{
+    m_bIsCompressed = false;
+    m_bIsValid = false;
+
+    m_pMetaHeader = NULL;
+    m_pMetaFile = NULL;
+
+    m_lMetaHeaderSize = 0;
+    m_lMetaFileSize = 0;
+}
+
+CMetaFileBuffer::~CMetaFileBuffer()
+{
+    RELEASEARRAYOBJECTS(m_pMetaHeader);
+    RELEASEARRAYOBJECTS(m_pMetaFile);
+
+    if (m_bIsCompressed)
+        RELEASEARRAYOBJECTS(m_pMetaFile);
+    m_bIsCompressed = false;
+}
+
+void CMetaFileBuffer::SetHeader(BYTE *pHeader, LONG lSize)
+{
+    m_pMetaHeader = pHeader;
+    m_lMetaHeaderSize = lSize;
+}
+
+void CMetaFileBuffer::SetData(BYTE *pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
+{
+    m_bIsCompressed = bIsCompressed;
+    if (!m_bIsCompressed)
+    {
+        m_pMetaFile = pCompress;
+        m_lMetaFileSize = lUncompressSize;
+    }
+    else
+    {
+        ULONG lSize = lUncompressSize;
+        m_pMetaFile = new BYTE[lUncompressSize];
+        bool bRes = NSZip::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
+        if (bRes)
+        {
+            m_lMetaFileSize = (LONG)lSize;
+            m_bIsCompressed = true;
+        }
+        else
+        {
+            RELEASEARRAYOBJECTS(m_pMetaFile);
+
+            m_pMetaFile = pCompress;
+            m_lMetaFileSize = lUncompressSize;
+            m_bIsCompressed = false;
+        }
+    }
+}
+
+void CMetaFileBuffer::ToFile(NSFile::CFileBinary *pFile)
+{
+    if (NULL != m_pMetaHeader)
+    {
+        pFile->WriteFile(m_pMetaHeader, m_lMetaHeaderSize);
+    }
+    if (NULL != m_pMetaFile)
+    {
+        pFile->WriteFile(m_pMetaFile, m_lMetaFileSize);
+    }
+}
+
+void SScalingAtom::FromStream(POLE::Stream *pStream)
+{
+    X.FromStream(pStream);
+    Y.FromStream(pStream);
+}
+
+void SRatioAtom::FromStream(POLE::Stream *pStream)
+{
+    Number = StreamUtils::ReadLONG(pStream);
+    Denom = StreamUtils::ReadLONG(pStream);
+}
+
+void SFileIdCluster::ReadFromStream(POLE::Stream *pStream)
+{
+    DrawingGroupID = (UINT)StreamUtils::ReadDWORD(pStream);
+    CurrentShapeID = (UINT)StreamUtils::ReadDWORD(pStream);
+}
+
 }

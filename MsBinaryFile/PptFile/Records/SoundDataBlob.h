@@ -32,6 +32,9 @@
 #pragma once
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordSoundDataBlob : public CUnknownRecord
 {
 	BYTE* m_pData;
@@ -39,45 +42,14 @@ class CRecordSoundDataBlob : public CUnknownRecord
 
 public:
 	
-	CRecordSoundDataBlob()
-	{
-		m_pData = NULL;
-		m_lSize = 0;
-	}
+    CRecordSoundDataBlob();
 
-	~CRecordSoundDataBlob()
-	{
-		ReleaseData();
-	}
+    ~CRecordSoundDataBlob();
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		m_lSize = m_oHeader.RecLen;
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
-		if (0 < m_lSize)
-		{
-			m_pData = new BYTE[m_lSize];
-			pStream->read(m_pData, m_lSize);
-		}
-	}
+    void ReleaseData();
 
-	void ReleaseData()
-	{
-		RELEASEARRAYOBJECTS(m_pData);
-	}
-
-	void SaveToFile(std::wstring strFile)
-	{
-		if ((NULL == m_pData) || (0 >= m_lSize))
-			return;
-
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(strFile);
-
-		oFile.WriteFile((BYTE*)m_pData, (DWORD)m_lSize);
-		oFile.CloseFile();
-
-		ReleaseData();
-	}
+    void SaveToFile(std::wstring strFile);
 };
+}

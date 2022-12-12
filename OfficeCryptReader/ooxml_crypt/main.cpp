@@ -34,33 +34,185 @@
 #include "./../../DesktopEditor/common/File.h"
 #include "./../../Common/3dParty/openssl/common/common_openssl.h"
 #include <iostream>
-
-// examples:
-// ooxml_crypt --file=D:/cryptor/1.docx --password=111
-// ooxml_crypt --file=D:/cryptor/1.docx --add={user-id-1}\ndata1
-// ooxml_crypt --file=D:/cryptor/1.docx --remove={user-id-1}
-// ooxml_crypt --file=D:/cryptor/1.docx --remove={user-id-1}\ndata1
-// ooxml_crypt --file=D:/cryptor/1.docx --add={user-id-1}\ndata11
-// ooxml_crypt --file=D:/cryptor/1.docx --info=
+#include <map>
+#include <vector>
 
 void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
 {
-    size_t posn = 0;
-    while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
-    {
-        text.replace(posn, replaceFrom.length(), replaceTo);
-        posn += replaceTo.length();
-    }
+	size_t posn = 0;
+	while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+	{
+		text.replace(posn, replaceFrom.length(), replaceTo);
+		posn += replaceTo.length();
+	}
 }
 void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo)
 {
-    size_t posn = 0;
-    while (std::string::npos != (posn = text.find(replaceFrom, posn)))
-    {
-        text.replace(posn, replaceFrom.length(), replaceTo);
-        posn += replaceTo.length();
-    }
+	size_t posn = 0;
+	while (std::string::npos != (posn = text.find(replaceFrom, posn)))
+	{
+		text.replace(posn, replaceFrom.length(), replaceTo);
+		posn += replaceTo.length();
+	}
 }
+
+enum RecordType
+{
+	rtNone     = 0,
+	rtAdd      = 1,
+	rtRemove   = 3,
+	rtEncrypt  = 4,
+	rtDecrypt  = 5,
+	rtPrint    = 6,
+	rtMaster   = 7
+};
+
+class CRecord
+{
+public:
+	RecordType Type = rtNone;
+	std::map<std::wstring, std::wstring> Items;
+
+public:
+	CRecord(RecordType type = rtNone)
+	{
+		Type = type;
+	}
+
+	CRecord(const CRecord& rec)
+	{
+		Type = rec.Type;
+		Items = rec.Items;
+	}
+	CRecord& operator=(const CRecord& rec)
+	{
+		Type = rec.Type;
+		Items = rec.Items;
+		return *this;
+	}
+
+	static RecordType getType(const std::wstring& key)
+	{
+		if (key == L"--add")
+			return rtAdd;
+		if (key == L"--remove")
+			return rtRemove;
+		if (key == L"--encrypt")
+			return rtEncrypt;
+		if (key == L"--decrypt")
+			return rtDecrypt;
+		if (key == L"--print")
+			return rtPrint;
+		if (key == L"--master")
+			return rtMaster;
+		return rtNone;
+	}
+
+	std::wstring getValue(const std::wstring& key)
+	{
+		std::map<std::wstring, std::wstring>::iterator iter = Items.find(key);
+		if (iter == Items.end())
+			return L"";
+		return iter->second;
+	}
+
+	void addItem(std::wstring& key)
+	{
+		if (0 == key.find(L"--"))
+			key = key.substr(2);
+
+		std::wstring::size_type pos = key.find(L"=");
+		if (std::wstring::npos != pos)
+		{
+			Items.insert(std::pair<std::wstring, std::wstring>(key.substr(0, pos), key.substr(pos + 1)));
+		}
+	}
+
+	bool isValid()
+	{
+		switch (Type)
+		{
+		case rtAdd:
+		{
+			if (!getValue(L"user").empty() && (!getValue(L"data").empty() || !getValue(L"key").empty()))
+				return true;
+			break;
+		}
+		case rtRemove:
+		{
+			if (!getValue(L"user").empty())
+				return true;
+			break;
+		}
+		case rtEncrypt:
+		{
+			return true;
+		}
+		case rtDecrypt:
+		{
+			return true;
+		}
+		case rtPrint:
+		{
+			return true;
+		}
+		case rtMaster:
+		{
+			if (!getValue(L"user").empty() && !getValue(L"key").empty())
+				return true;
+			return true;
+		}
+		default:
+			break;
+		}
+
+		std::string sCommandName = U_TO_UTF8(getName());
+		if (sCommandName.empty())
+		{
+			std::cout << "unknown command" << std::endl;
+		}
+		else
+		{
+			std::cout << "bad command: " << sCommandName << std::endl;
+		}
+
+		return false;
+	}
+
+	std::wstring getName()
+	{
+		switch (Type)
+		{
+		case rtAdd:
+		{
+			return L"add";
+		}
+		case rtRemove:
+		{
+			return L"remove";
+		}
+		case rtEncrypt:
+		{
+			return L"encrypt";
+		}
+		case rtDecrypt:
+		{
+			return L"decrypt";
+		}
+		case rtPrint:
+		{
+			return L"printinfo";
+		}
+		case rtMaster:
+		{
+			return L"master";
+		}
+		default:
+			break;
+		}
+		return L"";
+	}
+};
 
 #ifdef WIN32
 int wmain(int argc, wchar_t** argv)
@@ -68,247 +220,303 @@ int wmain(int argc, wchar_t** argv)
 int main(int argc, char** argv)
 #endif
 {
-    if (argc <= 0)
-        return 0;
+	if (argc <= 0)
+		return 0;
 
-    std::wstring file_path;
-    std::wstring password;
-    bool is_print_info = false;
-    bool is_decrypt = false;
-    std::string user;
-    std::wstring user_key_file;
+	std::wstring file_path;
+	std::wstring file_password;
 
-    std::vector<std::string> add_records;
-    std::vector<std::string> remove_records;
+	CRecord EncryptRecord;
+	CRecord DecryptRecord;
+	CRecord PrintRecord;
+	CRecord MasterRecord;
+	std::vector<CRecord> Records;
 
-    for (int i = 0; i < argc; ++i)
-    {
+	CRecord CurrentRecord;
+
+	for (int i = 0; i < argc; ++i)
+	{
+		std::string param;
 #ifdef WIN32
-        std::wstring param(argv[i]);
+		param = U_TO_UTF8(std::wstring(argv[i]));
 #else
-        std::string paramA(argv[i]);
-        std::wstring param = UTF8_TO_U(paramA);
+		param = std::string(argv[i]);
 #endif
 
-        std::wstring::size_type len = param.length();
-        if (2 > len)
-            continue;
+		if (param == "--help")
+		{
+			std::cout << "1) encrypt/decrypt" << std::endl;
+			std::cout << "decrypt command removes all user info" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --encrypt --password=password" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --decrypt --password=password" << std::endl;
+			std::cout << std::endl;
 
-        const wchar_t* param_str = param.c_str();
-        if (param_str[0] != '-' || param_str[1] != '-')
-            continue;
+			std::cout << "2) print info" << std::endl;
+			std::cout << "ooxml_crypt --print" << std::endl;
+			std::cout << std::endl;
 
-        std::wstring::size_type pos = param.find('=');
-        if (std::wstring::npos == pos)
-            continue;
+			std::cout << "3) add/remove records" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --add --user=user --data=data" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --remove --user=user" << std::endl;
+			std::cout << std::endl;
 
-        std::wstring key = param.substr(2, pos - 2);
-        std::wstring value = param.substr(pos + 1);
+			std::cout << "4) generate record" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --add --user=user --key=pem_file_public_key --password=password" << std::endl;
+			std::cout << std::endl;
 
-        if (key == L"file")
-        {
-            file_path = value;
-        }
-        else if (key == L"add")
-        {
-            if (!value.empty())
-            {
-                if (value.c_str()[value.length() - 1] == '\n')
-                    value = value.substr(0, value.length() - 1);
+			std::cout << "5) work without password" << std::endl;
+			std::cout << "ooxml_crypt --file=path_to_document --add --user=user --key=pem_file --master --user=user --key=pem_file_private_key" << std::endl;
+			std::cout << std::endl;
 
-                string_replace(value, L";;;", L"\n");
-                add_records.push_back(U_TO_UTF8(value));
-            }
-        }
-        else if (key == L"remove")
-        {
-            if (!value.empty())
-            {
-                if (value.c_str()[value.length() - 1] == '\n')
-                    value = value.substr(0, value.length() - 1);
-                string_replace(value, L";;;", L"\n");
-                remove_records.push_back(U_TO_UTF8(value));
-            }
-        }
-        else if (key == L"password")
-        {
-            password = value;
-        }
-        else if (key == L"info")
-        {
-            is_print_info = true;
-        }
-        else if (key == L"decrypt")
-        {
-            is_decrypt = true;
-        }
-        else if (key == L"user")
-        {
-            user = U_TO_UTF8(value);
-        }
-        else if (key == L"key")
-        {
-            user_key_file = value;
-        }
-    }
+			return 0;
+		}
+	}
 
-    if (file_path.empty() || !NSFile::CFileBinary::Exists(file_path))
-    {
-        std::cout << "error: file not exist" << std::endl;
-        return 1;
-    }
+	for (int i = 0; i <= argc; ++i)
+	{
+		// чтобы не дублировать код
+		std::wstring param = L"--print";
 
-    if (!password.empty())
-    {
-        // encrypt file
-        ECMACryptFile file;
-        bool result = file.EncryptOfficeFile(file_path, file_path, password);
-        if (!result)
-        {
-            std::cout << "error: file is not encrypted" << std::endl;
-            return 0;
-        }
-        return 2;
-    }
+		if (i < argc)
+		{
+#ifdef WIN32
+			param = std::wstring(argv[i]);
+#else
+			std::string paramA(argv[i]);
+			param = UTF8_TO_U(paramA);
+#endif
+		}
 
-    ECMACryptFile file;
-    std::string docinfo = file.ReadAdditional(file_path, L"DocumentID");
+		std::wstring::size_type len = param.length();
+		if (2 > len)
+			continue;
 
-    if (is_print_info)
-    {
-        std::cout << docinfo << std::endl;
-        return 0;
-    }
+		if (0 == param.find(L"--file="))
+		{
+			file_path = param.substr(7);
+			continue;
+		}
+		if (0 == param.find(L"--password="))
+		{
+			file_password = param.substr(11);
+			continue;
+		}
 
-    const char* doc_info_str = docinfo.c_str();
-    const char* doc_info_str_end = doc_info_str + docinfo.length();
+		RecordType rtCurrent = CRecord::getType(param);
+		if (rtNone != rtCurrent)
+		{
+			if (CurrentRecord.Type != rtNone &&	CurrentRecord.isValid())
+			{
+				switch (CurrentRecord.Type)
+				{
+				case rtDecrypt:
+				{
+					DecryptRecord = CurrentRecord;
+					break;
+				}
+				case rtEncrypt:
+				{
+					EncryptRecord = CurrentRecord;
+					break;
+				}
+				case rtPrint:
+				{
+					PrintRecord = CurrentRecord;
+					break;
+				}
+				case rtAdd:
+				case rtRemove:
+				{
+					Records.push_back(CurrentRecord);
+					break;
+				}
+				case rtMaster:
+				{
+					MasterRecord = CurrentRecord;
+				}
+				default:
+					break;
+				}
+			}
 
-    if (is_decrypt)
-    {
-        std::string encrypted_password = "";
+			CurrentRecord.Type = rtCurrent;
+			CurrentRecord.Items.clear();
+		}
+		else if (CurrentRecord.Type != rtNone)
+		{
+			CurrentRecord.addItem(param);
+		}
+	}
 
-        // находим нужную запись
-        while (doc_info_str < doc_info_str_end)
-        {
-            const char* rec_start = doc_info_str;
+	if (file_path.empty() || !NSFile::CFileBinary::Exists(file_path))
+	{
+		std::cout << "error: file not exist" << std::endl;
+		return 1;
+	}
 
-            // 1) ищем старт записи
-            while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
-                ++doc_info_str;
+	if (DecryptRecord.Type == rtDecrypt)
+	{
+		ECMACryptFile file;
+		bool bDataIntegrity = false;
+		bool result = file.DecryptOfficeFile(file_path, file_path, file_password, bDataIntegrity);
+		if (!result)
+		{
+			std::cout << "error: file is not decrypted" << std::endl;
+			return 1;
+		}
+		return 0;
+	}
 
-            if (user == std::string(rec_start, doc_info_str - rec_start))
-            {
-                 rec_start = doc_info_str;
+	if (EncryptRecord.Type == rtEncrypt)
+	{
+		ECMACryptFile file;
+		bool result = file.EncryptOfficeFile(file_path, file_path, file_password, L"ONLYOFFICE CryptoEngine (Version 1)\n\n");
+		if (!result)
+		{
+			std::cout << "error: file is not encrypted" << std::endl;
+			return 1;
+		}
+	}
 
-                 while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
-                     ++doc_info_str;
+	ECMACryptFile file;
+	std::string docinfo = file.ReadAdditional(file_path, L"DocumentID");
+	std::string docinfoOld = docinfo;
 
-                encrypted_password = std::string(rec_start, doc_info_str - rec_start);
-            }
+	// декодируем пароль (если надо)
+	if (MasterRecord.Type == rtMaster && file_password.empty())
+	{
+		std::string user = U_TO_UTF8(MasterRecord.getValue(L"user"));
+		std::wstring keyW = MasterRecord.getValue(L"key");
 
-            // идем в конец записи
-            while (doc_info_str < doc_info_str_end)
-            {
-                if (*doc_info_str++ == '\n')
-                {
-                    if (*doc_info_str == '\n')
-                    {
-                        ++doc_info_str;
-                        break;
-                    }
-                }
-            }
-        }
+		std::string::size_type pos = docinfo.find(user);
+		while (pos != std::string::npos)
+		{
+			std::string::size_type posEndUser = docinfo.find("\n", pos);
+			if (posEndUser == std::string::npos)
+				break;
 
-        std::string private_key_content;
-        NSFile::CFileBinary::ReadAllTextUtf8A(user_key_file, private_key_content);
+			std::string userCur = docinfo.substr(pos, posEndUser - pos);
+			if (user == userCur)
+			{
+				std::string::size_type posEndUser2 = docinfo.find("\n", posEndUser + 1);
+				if (posEndUser2 == std::string::npos)
+					break;
 
-        std::string passwordA;
-        NSOpenSSL::RSA_DecryptPrivate_desktop((unsigned char*)private_key_content.c_str(), encrypted_password, passwordA);
-        std::wstring password = UTF8_TO_U(passwordA);
+				std::string data = docinfo.substr(posEndUser + 1, posEndUser2 - posEndUser - 1);
 
-        // encrypt file
-        ECMACryptFile file;
-        bool bDataIntegrity;
-        bool result = file.DecryptOfficeFile(file_path, file_path, password, bDataIntegrity);
-        if (!result)
-        {
-            std::cout << "error: file is not decrypted" << std::endl;
-            return 0;
-        }
-        return 2;
-    }
+				std::string private_key_content;
+				NSFile::CFileBinary::ReadAllTextUtf8A(keyW, private_key_content);
 
-    std::string sResult = "";
-    sResult.reserve(1000);
+				std::string password;
+				if (NSOpenSSL::RSA_DecryptPrivate_desktop((unsigned char*)private_key_content.c_str(), data, password))
+				{
+					file_password = UTF8_TO_U(password);
+					break;
+				}
+			}
 
-    while (doc_info_str < doc_info_str_end)
-    {
-        const char* rec_start = doc_info_str;
+			pos = docinfo.find(user);
+		}
+	}
 
-        // 1) ищем старт записи
-        while (doc_info_str < doc_info_str_end && *doc_info_str != '\n')
-            ++doc_info_str;
+	// сначала удаляем
+	for (std::vector<CRecord>::iterator iter = Records.begin(); iter != Records.end(); iter++)
+	{
+		CRecord& rec = *iter;
+		if (rec.Type != rtRemove)
+			continue;
 
-        std::string::size_type len_first = doc_info_str - rec_start;
+		std::string user = U_TO_UTF8(rec.getValue(L"user"));
 
-        // 2) ищем конец записи
-        while (doc_info_str < doc_info_str_end)
-        {
-            if (*doc_info_str++ == '\n')
-            {
-                if (*doc_info_str == '\n')
-                {
-                    ++doc_info_str;
-                    break;
-                }
-            }
-        }
+		std::string::size_type pos = docinfo.find(user);
+		while (pos != std::string::npos)
+		{
+			std::string::size_type posEnd = docinfo.find("\n\n", pos);
+			if (posEnd == std::string::npos)
+				break;
 
-        bool isAdd = true;
-        std::string sRec = std::string(rec_start, (doc_info_str - rec_start - 2));
+			docinfo = docinfo.substr(0, pos) + docinfo.substr(posEnd + 2);
+			pos = docinfo.find(user);
+		}
+	}
 
-        // 3) проверяем запись на удаление
-        for (std::vector<std::string>::iterator iter = remove_records.begin(); iter != remove_records.end(); iter++)
-        {
-            if (*iter == std::string(rec_start, len_first))
-            {
-                isAdd = false;
-            }
-            else if (*iter == sRec)
-            {
-                isAdd = false;
-            }
-        }
+	// теперь добавляем
+	for (std::vector<CRecord>::iterator iter = Records.begin(); iter != Records.end(); iter++)
+	{
+		CRecord& rec = *iter;
+		if (rec.Type != rtAdd)
+			continue;
 
-        // 4) проверяем запись на удаление
-        for (std::vector<std::string>::iterator iter = add_records.begin(); iter != add_records.end(); iter++)
-        {
-            if (*iter == sRec)
-            {
-                isAdd = false;
-            }
-        }
+		std::string user = U_TO_UTF8(rec.getValue(L"user"));
+		if (user.empty())
+			continue;
 
-        if (isAdd)
-        {
-            sResult += sRec;
-            sResult += "\n\n";
-        }
-    }
+		std::string data = U_TO_UTF8(rec.getValue(L"data"));
 
-    for (std::vector<std::string>::iterator iter = add_records.begin(); iter != add_records.end(); iter++)
-    {
-        sResult += *iter;
-        sResult += "\n\n";
-    }
+		if (!data.empty())
+		{
+			// записи не дублируем
+			std::string::size_type pos = docinfo.find(user);
+			while (pos != std::string::npos)
+			{
+				std::string::size_type posEnd = docinfo.find("\n\n", pos);
+				if (posEnd == std::string::npos)
+					break;
 
-    bool result = file.WriteAdditional(file_path, L"DocumentID", sResult);
-    if (!result)
-    {
-        std::cout << "error: docinfo not writed" << std::endl;
-        return 3;
-    }
+				std::string user_record = docinfo.substr(pos, posEnd - pos + 2);
+				if (std::string::npos != user_record.find(data))
+				{
+					data = "";
+					break;
+				}
 
-    return 0;
+				pos = docinfo.find(user);
+			}
+		}
+
+		if (!data.empty())
+		{
+			docinfo += user;
+			docinfo += "\n";
+			docinfo += data;
+			docinfo += "\n\n";
+
+			continue;
+		}
+
+		std::wstring keyW = rec.getValue(L"key");
+		if (NSFile::CFileBinary::Exists(keyW))
+		{
+			std::string public_key_content;
+			NSFile::CFileBinary::ReadAllTextUtf8A(keyW, public_key_content);
+
+			if (NSOpenSSL::RSA_EncryptPublic_desktop((unsigned char*)public_key_content.c_str(), U_TO_UTF8(file_password), data))
+			{
+				docinfo += user;
+				docinfo += "\n";
+				docinfo += data;
+				docinfo += "\n\n";
+			}
+		}
+	}
+
+	if (docinfo != docinfoOld)
+	{
+		bool result = file.WriteAdditional(file_path, L"DocumentID", docinfo);
+		if (!result)
+		{
+			std::cout << "error: docinfo not writed" << std::endl;
+			return 1;
+		}
+	}
+
+	if (PrintRecord.Type == rtPrint)
+	{
+		ECMACryptFile file;
+		std::string docinfo = file.ReadAdditional(file_path, L"DocumentID");
+
+		std::cout << docinfo << std::endl;
+	}
+
+	return 0;
 }

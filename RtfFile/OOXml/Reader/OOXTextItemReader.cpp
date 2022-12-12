@@ -38,6 +38,11 @@
 #include "OOXTableReader.h"
 #include "OOXParagraphReader.h"
 
+#include "../../../OOXML/DocxFormat/Logic/Sdt.h"
+#include "../../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+
 OOXTextItemReader::OOXTextItemReader()
 {
 	m_oTextItems = TextItemContainerPtr(new TextItemContainer());

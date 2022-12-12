@@ -30,26 +30,18 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordExObjListAtom : public CUnknownRecord
 {
 public:
-	INT m_nObjectIdSeed;
+    _INT32 m_nObjectIdSeed = -1;
 
-	CRecordExObjListAtom()
-	{
-	}
 
-	~CRecordExObjListAtom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		m_nObjectIdSeed = StreamUtils::ReadDWORD(pStream);
-	}
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
+}

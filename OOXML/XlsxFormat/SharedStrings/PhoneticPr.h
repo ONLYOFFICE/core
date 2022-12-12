@@ -30,13 +30,10 @@
  *
  */
 #pragma once
-#ifndef OOX_PHONETIC_FILE_INCLUDE_H_
-#define OOX_PHONETIC_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
 
 #include "Text.h"
-#include "../../XlsbFormat/Biff12_structures/PhRun.h"
 
 namespace OOX
 {
@@ -47,176 +44,52 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPhonetic)
-			CPhonetic()
-			{
-			}
-			virtual ~CPhonetic()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CPhonetic();
+			virtual ~CPhonetic();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            void fromBin(XLS::BiffStructure& obj)
-            {
-                ReadAttributes(obj);
-            }
-			virtual EElementType getType () const
-			{
-				return et_x_PhoneticPr;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void fromBin(XLS::BiffStructure& obj);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BiffStructure& obj);
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("alignment"),      m_oAlignment )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("fontId"),      m_oFontId )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("type"),      m_oType )
-
-					WritingElement_ReadAttributes_End( oReader )
-			}
-
-            void ReadAttributes(XLS::BiffStructure& obj)
-            {
-                auto ptr = static_cast<XLSB::PhRun*>(&obj);
-
-                if(ptr != nullptr)
-                {
-                    switch(ptr->alcH)
-                    {
-                        case 0:
-                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentNoControl;
-                            break;
-                        case 1:
-                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentLeft;
-                            break;
-                        case 2:
-                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentCenter;
-                            break;
-                        case 3:
-                            m_oAlignment = SimpleTypes::Spreadsheet::phoneticalignmentDistributed;
-                            break;
-                    }
-
-                    switch(ptr->phType)
-                    {
-                        case 0:
-                            m_oType = SimpleTypes::Spreadsheet::phonetictypeHalfwidthKatakana;
-                            break;
-                        case 1:
-                            m_oType = SimpleTypes::Spreadsheet::phonetictypeFullwidthKatakana;
-                            break;
-                        case 2:
-                            m_oType = SimpleTypes::Spreadsheet::phonetictypeHiragana;
-                            break;
-                        case 3:
-                            m_oType = SimpleTypes::Spreadsheet::phonetictypeNoConversion;
-                            break;
-                    }
-
-                    m_oFontId = ptr->ifnt;
-
-                }
-            }
 		public:
-				nullable<SimpleTypes::Spreadsheet::CPhoneticAlignment>		m_oAlignment;
-				nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oFontId;
-				nullable<SimpleTypes::Spreadsheet::CPhoneticType>			m_oType;
+			nullable<SimpleTypes::Spreadsheet::CPhoneticAlignment>		m_oAlignment;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>				m_oFontId;
+			nullable<SimpleTypes::Spreadsheet::CPhoneticType>			m_oType;
 		};
 
 		class CRPh : public WritingElementWithChilds<CText>
 		{
 		public:
 			WritingElement_AdditionConstructors(CRPh)
-			CRPh()
-			{
-			}
-			virtual ~CRPh()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CRPh();
+			virtual ~CRPh();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-					if ( _T("t") == sName )
-						m_arrItems.push_back( new CText( oReader ));
-				}
-			}
-
-            void fromBin(XLS::BiffStructure& obj, std::wstring& str)
-            {
-                auto ptr = new CText();
-                ptr->fromBin(str);
-                m_arrItems.push_back(ptr);
-                ReadAttributes(obj);
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_rPh;
-			}
+			void fromBin(XLS::BiffStructure& obj, std::wstring& str);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BiffStructure& obj);
 
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("eb"),      m_oEb )
-				WritingElement_ReadAttributes_Read_if     ( oReader, _T("sb"),      m_oSb )
-
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
-            void ReadAttributes(XLS::BiffStructure& obj)
-            {
-                auto ptr = static_cast<XLSB::PhRun*>(&obj);
-
-                if(ptr != nullptr)
-                {
-                    m_oEb = ptr->ichMom;
-                    m_oSb = ptr->ichFirst;
-                }
-            }
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oEb;
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oSb;
 		};
+
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_PHONETIC_FILE_INCLUDE_H_

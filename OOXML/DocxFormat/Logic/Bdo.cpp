@@ -56,7 +56,35 @@ namespace OOX
 		// CBdo 17.3.1.22 (Part 1)
 		//--------------------------------------------------------------------------------	
 
-		void    CBdo::fromXML(XmlUtils::CXmlNode& oNode)
+		CBdo::CBdo(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+		}
+		CBdo::CBdo(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oNode );
+		}
+		CBdo::CBdo(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oReader );
+		}
+		CBdo::~CBdo()
+		{
+		}
+
+		const CBdo& CBdo::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CBdo& CBdo::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+
+		void CBdo::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:val"), m_oVal );
 
@@ -146,7 +174,6 @@ namespace OOX
 				}
 			}
 		}
-
 		void CBdo::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -234,7 +261,6 @@ namespace OOX
 			}
 		}
 
-
 		std::wstring CBdo::toXML() const
 		{
 			std::wstring sResult = _T("<w:bdo ");
@@ -254,6 +280,18 @@ namespace OOX
 			sResult += _T("</w:bdo>");
 
 			return sResult;
+		}
+		EElementType CBdo::getType() const
+		{
+			return et_w_bdo;
+		}
+
+		void CBdo::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Читаем атрибуты
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:val"), m_oVal )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	} // namespace Logic

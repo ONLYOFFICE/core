@@ -30,39 +30,17 @@
  *
  */
 #pragma once
-#include "OOXFontReader.h"
-#include "../../Format/RtfProperty.h"
 
+#include "OOXFontReader.h"
+#include "../../../OOXML/PPTXFormat/Theme/FontScheme.h"
 
 class OOXFontSchemeReader
 {
 private:
 	PPTX::nsTheme::FontScheme * m_ooxFontScheme;
+
 public: 
-	OOXFontSchemeReader(PPTX::nsTheme::FontScheme * ooxFontScheme)
-	{
-		m_ooxFontScheme = ooxFontScheme;
-	}
-	bool Parse( ReaderParameter oParam )
-	{
-		if (m_ooxFontScheme == NULL) return false;
-		
-		oParam.oReader->m_smajorAscii = m_ooxFontScheme->majorFont.latin.typeface;
-		oParam.oReader->m_smajorHAnsi = m_ooxFontScheme->majorFont.latin.typeface;
-		
-		oParam.oReader->m_smajorEastAsia	= m_ooxFontScheme->majorFont.ea.typeface;
-		oParam.oReader->m_smajorBidi		= m_ooxFontScheme->majorFont.cs.typeface;
+	OOXFontSchemeReader(PPTX::nsTheme::FontScheme * ooxFontScheme);
 
-		oParam.oReader->m_sminorAscii = m_ooxFontScheme->minorFont.latin.typeface;
-		oParam.oReader->m_sminorHAnsi = m_ooxFontScheme->minorFont.latin.typeface;
-
-		oParam.oReader->m_sminorEastAsia = m_ooxFontScheme->minorFont.ea.typeface;
-		oParam.oReader->m_sminorBidi = m_ooxFontScheme->minorFont.cs.typeface;
-		//for (long i=0 ; i < m_ooxFontScheme->m_oMinorFont.m_arrFont.size(); i++)
-		//{
-		//}
-
-
-		return true;
-	}
+	bool Parse( ReaderParameter oParam );
 };

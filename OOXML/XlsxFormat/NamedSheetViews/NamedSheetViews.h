@@ -205,47 +205,27 @@ namespace OOX
 		class CNamedSheetViewFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CNamedSheetViewFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-			}
-			CNamedSheetViewFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::
-IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-				read( oRootPath, oPath );
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
+			CNamedSheetViewFile(OOX::Document* pMain);
+			CNamedSheetViewFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+
+			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
+
 			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::NamedSheetView;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath();
 
 			nullable<CNamedSheetViews> m_oNamedSheetViews;
+
 		private:
 			CPath m_oReadPath;
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 	} //Spreadsheet
 } // namespace OOX

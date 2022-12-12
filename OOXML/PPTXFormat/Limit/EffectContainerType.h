@@ -40,35 +40,14 @@ namespace PPTX
 		class EffectContainerType : public BaseLimit
 		{
 		public:
-			EffectContainerType()
-			{
-				m_strValue = _T("sib");
-			}
+			EffectContainerType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("sib") == strValue) ||
-					(_T("tree") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("sib") == m_strValue)
-					return 0;
-				if (_T("tree") == m_strValue)
-					return 1;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& val)
-			{
-				if (val == 0)	m_strValue = L"sib";
-				else			m_strValue = L"tree";
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& val);
 		};
 	} // namespace Limit
 } // namespace PPTX

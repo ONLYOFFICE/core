@@ -31,13 +31,13 @@
 */
 #include "TableWriter.h"
 #include "TxBodyConverter.h"
-#include <iostream>
 #include <numeric>
 #include <algorithm>
 
 #define VECSUM(cont) \
     std::accumulate(cont.begin(), cont.end(), decltype(cont)::value_type(0))
 
+using namespace PPT;
 
 TableWriter::TableWriter(CTableElement *pTableElement, CRelsGenerator* pRels) :
     m_pTableElement(pTableElement), m_pRels(pRels) {}
@@ -78,11 +78,11 @@ void TableWriter::FillXfrm(PPTX::Logic::Xfrm &oXFRM)
     oXFRM.node_name = L"p:xfrm";
     double multip1 = m_pTableElement->m_bAnchorEnabled ? 1587.5 : 1;
 
-    oXFRM.offX = round(m_pTableElement->m_rcAnchor.left * multip1);
-    oXFRM.offY = round(m_pTableElement->m_rcAnchor.top  * multip1);
+    oXFRM.offX = PPT::round(m_pTableElement->m_rcAnchor.left * multip1);
+    oXFRM.offY = PPT::round(m_pTableElement->m_rcAnchor.top  * multip1);
 
-    oXFRM.extX = round(m_pTableElement->m_rcAnchor.GetWidth()  * multip1);
-    oXFRM.extY = round(m_pTableElement->m_rcAnchor.GetHeight() * multip1);
+    oXFRM.extX = PPT::round(m_pTableElement->m_rcAnchor.GetWidth()  * multip1);
+    oXFRM.extY = PPT::round(m_pTableElement->m_rcAnchor.GetHeight() * multip1);
 }
 
 void TableWriter::FillTable(PPTX::Logic::Table &oTable)
@@ -135,7 +135,7 @@ std::vector<int> ProtoTable::getWidth(const std::vector<CElementPtr>& arrCells, 
     for (const auto& w : mapLeftWidth)
     {
         double value = isWidth ? w.second : w.first;
-        gridWidth.push_back(round(value * multip));
+        gridWidth.push_back(PPT::round(value * multip));
     }
     if (tableWidth != -1)
     {
@@ -175,7 +175,7 @@ std::vector<int> ProtoTable::getHeight(const std::vector<CElementPtr>& arrCells,
     for (const auto& h : mapTopHeight)
     {
         double value = isHeight ? h.second : h.first;
-        gridHeight.push_back(round(value * multip));
+        gridHeight.push_back(PPT::round(value * multip));
     }
     if (tableHeight != -1)
     {
@@ -519,7 +519,7 @@ int TCell::getHeight() const
     double multip = pShape->m_bAnchorEnabled ? 1587.5 : 1;
     double height = pShape->m_rcChildAnchor.bottom - pShape->m_rcChildAnchor.top;
 
-    return round(height * multip);
+    return PPT::round(height * multip);
 }
 
 void TCell::setPParent(TCell *pParent)
@@ -588,10 +588,10 @@ void TCell::FillTcPr(PPTX::Logic::TableCellProperties &oTcPr)
         oTcPr.AnchorCtr = true;
     }
 
-    oTcPr.MarB = round(pShape->m_dTextMarginBottom); // 0
-    oTcPr.MarT = round(pShape->m_dTextMarginY); // 12512
-    oTcPr.MarL = round(pShape->m_dTextMarginX);
-    oTcPr.MarR = round(pShape->m_dTextMarginRight);
+    oTcPr.MarB = PPT::round(pShape->m_dTextMarginBottom); // 0
+    oTcPr.MarT = PPT::round(pShape->m_dTextMarginY); // 12512
+    oTcPr.MarL = PPT::round(pShape->m_dTextMarginX);
+    oTcPr.MarR = PPT::round(pShape->m_dTextMarginRight);
 
     if (true)
     {

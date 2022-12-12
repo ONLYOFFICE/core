@@ -43,38 +43,14 @@ namespace PPTX
 		class TLMasterRelation : public BaseLimit
 		{
 		public:
-			TLMasterRelation()
-			{
-				m_strValue = _T("sameClick");
-			}
+			TLMasterRelation();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("lastClick") == strValue) ||
-					(_T("nextClick") == strValue) ||
-					(_T("sameClick") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"lastClick" == m_strValue)	return 0;
-				if (L"nextClick" == m_strValue)	return 1;
-				if (L"sameClick" == m_strValue)	return 2;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"lastClick"; break;
-				case 1: m_strValue = L"nextClick"; break;
-				case 2: m_strValue = L"sameClick"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

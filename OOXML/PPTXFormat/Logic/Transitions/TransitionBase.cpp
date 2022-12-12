@@ -46,26 +46,21 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		TransitionBase::TransitionBase()
 		{
 		}
-
 		TransitionBase::~TransitionBase()
 		{
 		}
-
 		TransitionBase::TransitionBase(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const TransitionBase& TransitionBase::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
 		void TransitionBase::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			std::wstring strName = oNode.GetName();
@@ -120,28 +115,198 @@ namespace PPTX
 			
 			return _T("");
 		}
+		void TransitionBase::FillParentPointersForChilds(){}
+		void TransitionBase::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				base->SetParentPointer(pParent);
+		}
 
 		//////////////////////////////////////////////////////////////////
+		TransitionSerialize::TransitionSerialize()
+		{
+		}
+		TransitionSerialize::~TransitionSerialize()
+		{
+		}
 		TransitionSerialize::TransitionSerialize(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 		}
-
 		const TransitionSerialize& TransitionSerialize::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
 			return *this;
 		}
-
+		TransitionSerialize& TransitionSerialize::operator =(const TransitionSerialize& src)
+		{
+			//проверка на самоприсваивание
+			if (this == &src) {
+				return *this;
+			}
+			m_strNodeName = src.m_strNodeName;
+			m_strAttributesNames = src.m_strAttributesNames;
+			m_strAttributesValues = src.m_strAttributesValues;
+			return *this;
+		}
 		void TransitionSerialize::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_strNodeName = node.GetName();
             node.GetAllAttributes(m_strAttributesNames, m_strAttributesValues);
 		}
-
 		std::wstring TransitionSerialize::toXML() const
 		{	
 			return _T("");
 		}
+		void TransitionSerialize::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+					case 0:
+					{
+						m_strNodeName = pReader->GetString2();
+						break;
+					}
+					case 1:
+					{
+						m_strAttributesNames.push_back(pReader->GetString2());
+						break;
+					}
+					case 2:
+					{
+						m_strAttributesValues.push_back(pReader->GetString2());
+						break;
+					}
+					default:
+						break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void TransitionSerialize::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			pWriter->WriteString1(0, m_strNodeName);
+
+
+			std::list<std::wstring>::const_iterator pos1 = m_strAttributesNames.begin();
+			while (pos1 != m_strAttributesNames.end())
+			{
+				const std::wstring& s = *pos1;
+				pWriter->WriteString1(1, s);
+				pos1++;
+			}
+
+			std::list<std::wstring>::const_iterator pos2 = m_strAttributesValues.begin();
+			while (pos2 != m_strAttributesValues.end())
+			{
+				const std::wstring& s = *pos2;;
+				pWriter->WriteString1(2, s);
+				pos2++;
+			}
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void TransitionSerialize::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(m_strNodeName);
+
+			pWriter->StartAttributes();
+
+			//и нафига тогда листы?? - примем аксиомно что размеры одинаковые
+			//size_t c1 = m_strAttributesNames.GetCount();
+			//size_t c2 = m_strAttributesValues.GetCount();
+
+			//if (c1 == c2)
+			{
+				std::list<std::wstring>::const_iterator pos1 = m_strAttributesNames.begin();
+				std::list<std::wstring>::const_iterator pos2 = m_strAttributesValues.begin();
+
+				while (pos1 != m_strAttributesNames.end() && pos2 != m_strAttributesValues.end())
+				{
+					const std::wstring& s1 = *pos1;
+					const std::wstring& s2 = *pos2;
+
+					pWriter->WriteAttribute(s1, s2);
+
+					pos1++;
+					pos2++;
+				}
+			}
+
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(m_strNodeName);
+		}
+		void TransitionSerialize::toXmlWriterOld(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			std::wstring name = m_strNodeName;
+			if ((name != _T("p:random")) &&
+				(name != _T("p:circle")) &&
+				(name != _T("p:dissolve")) &&
+				(name != _T("p:diamond")) &&
+				(name != _T("p:newsflash")) &&
+				(name != _T("p:plus")) &&
+				(name != _T("p:wedge")) &&
+				(name != _T("p:blinds")) &&
+				(name != _T("p:checker")) &&
+				(name != _T("p:comb")) &&
+				(name != _T("p:randomBar")) &&
+				(name != _T("p:cover")) &&
+				(name != _T("p:pull")) &&
+				(name != _T("p:cut")) &&
+				(name != _T("p:fade")) &&
+				(name != _T("p:push")) &&
+				(name != _T("p:wipe")) &&
+				(name != _T("p:strips")) &&
+				(name != _T("p:wheel")) &&
+				(name != _T("p:split")) &&
+				(name != _T("p:zoom")))
+			{
+				pWriter->WriteString(_T("<p:fade/>"));
+				return;
+			}
+
+			pWriter->StartNode(name);
+
+			pWriter->StartAttributes();
+
+			//size_t c1 = m_strAttributesNames.GetCount();
+			//size_t c2 = m_strAttributesValues.GetCount();
+
+			//if (c1 == c2)
+			{
+				std::list<std::wstring>::const_iterator pos1 = m_strAttributesNames.begin();
+				std::list<std::wstring>::const_iterator pos2 = m_strAttributesValues.begin();
+
+				while (pos1 != m_strAttributesNames.end() && pos2 != m_strAttributesValues.end())
+				{
+					const std::wstring& s1 = *pos1;
+					const std::wstring& s2 = *pos2;
+
+					pWriter->WriteAttribute(s1, s2);
+
+					pos1++;
+					pos2++;
+				}
+			}
+
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(name);
+		}
+		void TransitionSerialize::FillParentPointersForChilds(){}
 	} // namespace Logic
 } // namespace PPTX

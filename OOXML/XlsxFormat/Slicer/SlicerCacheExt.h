@@ -61,6 +61,7 @@ namespace OOX
 			nullable_string m_oUniqueName;
 			nullable_uint m_oCount;
 		};
+
 		class CSlicerCacheHideNoData : public WritingElement
 		{
 		public:
@@ -86,6 +87,7 @@ namespace OOX
 			//Members
 			std::vector<CSlicerCacheOlapLevelName> m_oSlicerCacheOlapLevelName;
 		};
+
 		class CTableSlicerCache : public WritingElement
 		{
 		public:
@@ -116,6 +118,7 @@ namespace OOX
 			//Members
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 		class CSlicerStyleElement : public WritingElement
 		{
 		public:
@@ -141,6 +144,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::CSlicerStyleType> m_oType;
 			nullable_uint m_oDxfId;
 		};
+
 		class CSlicerCache : public WritingElement
 		{
 		public:
@@ -165,6 +169,7 @@ namespace OOX
 			//Attributes
 			nullable<SimpleTypes::CRelationshipId> m_oRId;
 		};
+
 		class CSlicerRef : public WritingElement
 		{
 		public:
@@ -189,6 +194,7 @@ namespace OOX
 			//Attributes
 			nullable<SimpleTypes::CRelationshipId> m_oRId;
 		};
+
 		class CSlicerStyle : public WritingElement
 		{
 		public:
@@ -215,6 +221,7 @@ namespace OOX
 			//Members
 			std::vector<CSlicerStyleElement> m_oSlicerStyleElements;
 		};
+
 		class CSlicerCaches : public WritingElement
 		{
 		public:
@@ -236,6 +243,7 @@ namespace OOX
 			//Members
 			std::vector<CSlicerCache> m_oSlicerCache;
 		};
+
 		class CSlicerRefs : public WritingElement
 		{
 		public:
@@ -257,6 +265,7 @@ namespace OOX
 			//Members
 			std::vector<CSlicerRef> m_oSlicer;
 		};
+
 		class CSlicerStyles : public WritingElement
 		{
 		public:
@@ -283,6 +292,7 @@ namespace OOX
 			//Members
 			std::vector<CSlicerStyle> m_oSlicerStyle;
 		};
+
 		class CDrawingSlicer : public WritingElement
 		{
 		public:
@@ -306,5 +316,6 @@ namespace OOX
 			//Members
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_oExtLst;
 		};
+
 	} //Spreadsheet
 } // namespace OOX

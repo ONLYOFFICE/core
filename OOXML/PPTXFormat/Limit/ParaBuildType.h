@@ -40,41 +40,14 @@ namespace PPTX
 		class ParaBuildType : public BaseLimit
 		{
 		public:
-			ParaBuildType()
-			{
-				m_strValue = _T("whole");
-			}
+			ParaBuildType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("allAtOnce") == strValue) ||
-					(_T("cust") == strValue) ||
-					(_T("p") == strValue) ||
-					(_T("whole") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"allAtOnce" == m_strValue)	return 0;
-				if (L"cust" == m_strValue)		return 1;
-				if (L"p" == m_strValue)			return 2;
-				if (L"whole" == m_strValue)		return 3;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"allAtOnce"; break;
-				case 1: m_strValue = L"cust"; break;
-				case 2: m_strValue = L"p"; break;
-				case 3: m_strValue = L"whole"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

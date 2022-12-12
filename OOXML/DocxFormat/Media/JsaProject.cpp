@@ -78,6 +78,22 @@ namespace OOX
 		read(filename);
 	}
 
+	JsaProject::~JsaProject()
+	{
+	}
+	const FileType JsaProject::type() const
+	{
+		return FileTypes::JsaProject;
+	}
+	const CPath JsaProject::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath JsaProject::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+
 	void JsaProject::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
 		BYTE* pData = NULL;

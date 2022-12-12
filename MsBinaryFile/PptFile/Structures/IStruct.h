@@ -31,10 +31,13 @@
  */
 #pragma once
 
-#include  "../../../OOXML/Base/Base.h"
+#include  "../../../Common/3dParty/pole/pole.h"
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../OOXML/Base/Base.h" // it used
 
-namespace PPT_FORMAT {
+
+namespace PPT
+{
 struct IStruct {
     virtual void ReadFromStream (POLE::Stream* pStream) = 0;
 };

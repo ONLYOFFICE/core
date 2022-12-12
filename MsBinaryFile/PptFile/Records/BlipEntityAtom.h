@@ -33,6 +33,8 @@
 #include "../Reader/Records.h"
 #include "Drawing/ArtBlip.h"
 
+namespace PPT
+{
 class CRecordBlipEntityAtom : public CUnknownRecord
 {
 public:
@@ -54,3 +56,4 @@ private:
     CRecordOfficeArtBlip m_oBlip;
     std::wstring m_tmpFolder;
 };
+}

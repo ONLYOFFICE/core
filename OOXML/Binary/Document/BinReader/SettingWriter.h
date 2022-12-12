@@ -42,22 +42,11 @@ namespace Writers
 	{
         std::wstring					m_sDir;
 		NSStringUtils::CStringBuilder	m_oSettingWriter;
-	public:
-        SettingWriter(std::wstring sDir) : m_sDir(sDir)
-		{
-		}
-		void Write(bool bGlossary = false)
-		{
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + L"settings.xml";
 
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(filePath.GetPath());
-			oFile.WriteStringUTF8(m_oSettingWriter.GetData());
-			oFile.CloseFile();
-		}
-        void AddSetting(std::wstring sSetting)
-		{
-			m_oSettingWriter.WriteString(sSetting);
-		}
+	public:
+		SettingWriter(std::wstring sDir);
+
+		void Write(bool bGlossary = false);
+		void AddSetting(std::wstring sSetting);
 	};
 }

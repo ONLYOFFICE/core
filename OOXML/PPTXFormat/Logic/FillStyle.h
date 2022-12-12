@@ -46,61 +46,18 @@ namespace PPTX
 			PPTX_LOGIC_BASE(FillStyle)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Fill.GetFillFrom(node);
-				FillParentPointersForChilds();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:fill>") + Fill.toXML() + _T("</a:fill>");
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:fill"));
-				pWriter->EndAttributes();
-
-				Fill.toXmlWriter(pWriter);
-
-				pWriter->EndNode(_T("a:fill"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteRecord1(0, Fill);
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							Fill.fromPPTY(pReader);							
-							break;
-						}
-						default:
-							break;
-					}
-				}				
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 		public:
 			UniFill Fill;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Fill.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 
 	} // namespace Logic

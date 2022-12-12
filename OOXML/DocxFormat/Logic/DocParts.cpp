@@ -41,6 +41,15 @@ namespace OOX
 {
 	namespace Logic
 	{
+		CDocParts::CDocParts(OOX::Document *pMain) : WritingElementWithChilds<CDocPart>(pMain)
+		{
+		}
+		CDocParts::~CDocParts()
+		{
+		}
+		void CDocParts::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
 		void CDocParts::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -73,6 +82,18 @@ namespace OOX
 			}
 			sResult += L"</w:docParts>";
 			return sResult;
+		}
+		EElementType CDocParts::getType() const
+		{
+			return et_w_docParts;
+		}
+
+		CDocPart::CDocPart(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CDocPart::~CDocPart() {}
+		void CDocPart::fromXML(XmlUtils::CXmlNode& node)
+		{
 		}
 		void CDocPart::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -108,6 +129,14 @@ namespace OOX
 
 			sResult += L"</w:docPart>";
 			return sResult;
+		}
+		EElementType CDocPart::getType() const
+		{
+			return et_w_docPart;
+		}
+
+		CDocPartBody::CDocPartBody(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
 		}
 		void CDocPartBody::fromXML(XmlUtils::CXmlNode& oNode)
 		{
@@ -276,6 +305,18 @@ namespace OOX
 			sResult += L"</w:docPartBody>";
 			return sResult;
 		}
+		EElementType CDocPartBody::getType() const
+		{
+			return et_w_docPartBody;
+		}
+
+		CDocPartPr::CDocPartPr(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CDocPartPr::~CDocPartPr() {}
+		void CDocPartPr::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
 		void CDocPartPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -317,6 +358,18 @@ namespace OOX
 			sResult += L"</w:docPartPr>";
 			return sResult;
 		}
+		EElementType CDocPartPr::getType() const
+		{
+			return et_w_docPartPr;
+		}
+
+		CDocPartCategory::CDocPartCategory(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CDocPartCategory::~CDocPartCategory() {}
+		void CDocPartCategory::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
 		void CDocPartCategory::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -344,6 +397,15 @@ namespace OOX
 			sResult += L"</w:category>";
 			return sResult;
 		}
+		EElementType CDocPartCategory::getType() const
+		{
+			return et_w_docPartCategory;
+		}
+
+		CDocPartBehaviors::CDocPartBehaviors(OOX::Document *pMain) : WritingElementWithChilds<ComplexTypes::Word::CDocPartBehavior>(pMain)
+		{
+		}
+		CDocPartBehaviors::~CDocPartBehaviors() {}
 		void CDocPartBehaviors::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -360,6 +422,9 @@ namespace OOX
 				}
 			}
 		}
+		void CDocPartBehaviors::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
 		std::wstring CDocPartBehaviors::toXML() const
 		{
 			std::wstring sResult = L"<w:behaviors>";
@@ -375,6 +440,15 @@ namespace OOX
 			sResult += L"</w:behaviors>";
 			return sResult;
 		}
+		EElementType CDocPartBehaviors::getType() const
+		{
+			return et_w_docPartBehaviors;
+		}
+
+		CDocPartTypes::CDocPartTypes(OOX::Document *pMain) : WritingElementWithChilds<ComplexTypes::Word::String>(pMain)
+		{
+		}
+		CDocPartTypes::~CDocPartTypes() {}
 		void CDocPartTypes::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
@@ -393,6 +467,9 @@ namespace OOX
 				}
 			}
 		}
+		void CDocPartTypes::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
 		std::wstring CDocPartTypes::toXML() const
 		{
 			std::wstring sResult = L"<w:types>";
@@ -408,5 +485,16 @@ namespace OOX
 			sResult += L"</w:types>";
 			return sResult;
 		}
+		EElementType CDocPartTypes::getType() const
+		{
+			return et_w_docPartTypes;
+		}
+		void CDocPartTypes::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_ReadSingle(oReader, L"w:all", m_oAll)
+			WritingElement_ReadAttributes_End(oReader)
+		}
+
 	} // namespace Logic
 } // namespace OOX

@@ -32,27 +32,99 @@
 #include "TextAttributesEx.h"
 #include "Theme.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 
-    void CTextAttributesEx::RecalcParagraphsPPT()
+CTextAttributesEx::CTextAttributesEx() :
+    m_oAttributes(),
+    m_arParagraphs(),
+    m_oRuler(),
+    m_oLayoutStyles(),
+    m_oStyles()
+{
+    m_lTextType			= -1;
+    m_lPlaceholderType	= -1;
+    m_lPlaceholderID	= -1;
+
+    m_lStyleThemeIndex	= -1;
+
+    m_lFontRef			= -1;
+    m_bIsSlideFontRef	= false;
+
+    m_oBounds.left		= 0;
+    m_oBounds.top		= 0;
+    m_oBounds.right		= 50;
+    m_oBounds.bottom	= 50;
+
+    m_bVertical			= false;
+    m_bAutoFit			= false;
+    m_lWrapMode			= 0;
+    m_nTextFlow			= -1;
+
+    m_lTextMasterType	= -1;
+}
+
+CTextAttributesEx &CTextAttributesEx::operator =(const CTextAttributesEx &oSrc)
+{
+    m_oBounds		= oSrc.m_oBounds;
+
+    m_lTextType			= oSrc.m_lTextType;
+    m_lPlaceholderType	= oSrc.m_lPlaceholderType;
+    m_lPlaceholderID	= oSrc.m_lPlaceholderID;
+
+    m_lFontRef			= oSrc.m_lFontRef;
+    m_bIsSlideFontRef	= oSrc.m_bIsSlideFontRef;
+
+    m_oAttributes	= oSrc.m_oAttributes;
+    m_bVertical		= oSrc.m_bVertical;
+    m_lWrapMode		= oSrc.m_lWrapMode;
+    m_bAutoFit		= oSrc.m_bAutoFit;
+    m_nTextFlow		= oSrc.m_nTextFlow;
+
+    m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
+    m_oRuler = oSrc.m_oRuler;
+
+    m_oLayoutStyles		= oSrc.m_oLayoutStyles;
+    m_oStyles			= oSrc.m_oStyles;
+
+    m_lTextMasterType = oSrc.m_lTextMasterType;
+
+    return *this;
+}
+
+CTextAttributesEx::CTextAttributesEx(const CTextAttributesEx &oSrc)
+{
+    *this = oSrc;
+}
+
+CTextAttributesEx::~CTextAttributesEx()
+{
+    m_arParagraphs.clear();
+}
+
+void CTextAttributesEx::NormalizeString(std::wstring &strText)
+{
+    strText = XmlUtils::EncodeXmlString(strText);
+}
+
+void CTextAttributesEx::RecalcParagraphsPPT()
+{
+    for (size_t i = 0; i < m_arParagraphs.size(); ++i)
     {
-        for (size_t i = 0; i < m_arParagraphs.size(); ++i)
+        bool split_paragraph = false;
+        for (size_t j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
         {
-            bool split_paragraph = false;
-            for (size_t j = 0; j < m_arParagraphs[i].m_arSpans.size(); ++j)
+            size_t lCountCFs	= m_arParagraphs[i].m_arSpans.size();
+            size_t s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
+
+            size_t lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)13);
+
+            if( !split_paragraph && lFoundEnter != std::wstring::npos &&
+                    (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
             {
-                size_t lCountCFs	= m_arParagraphs[i].m_arSpans.size();
-                size_t s_size		= m_arParagraphs[i].m_arSpans[j].m_strText.length();
-
-                size_t lFoundEnter = m_arParagraphs[i].m_arSpans[j].m_strText.find((wchar_t)13);
-
-                if( !split_paragraph && lFoundEnter != std::wstring::npos &&
-                        (s_size > 1 || (s_size == 1 && m_arParagraphs[i].m_arSpans.size() > 1)))
-                {
-                    split_paragraph = true;
-                    // разбиваем параграф
-                    CParagraph oNewPar = m_arParagraphs[i];
+                split_paragraph = true;
+                // разбиваем параграф
+                CParagraph oNewPar = m_arParagraphs[i];
 
                     if (lCountCFs - (j + 1) > 0)
                     {
@@ -116,7 +188,7 @@ namespace PPT_FORMAT
 
                 nullable_bool		hasBullet;
 
-                nullable_base<CColor>	bulletColor;
+                nullable_base<ODRAW::CColor>	bulletColor;
                 nullable_base<WORD>		bulletFontRef;
                 nullable_base<WORD>		bulletSize;
                 nullable_base<WCHAR>	bulletChar;
@@ -450,6 +522,11 @@ namespace PPT_FORMAT
         default:
             break;
         };
+    }
+
+    bool CTextAttributesEx::IsEmptyText()
+    {
+        return (0 == m_arParagraphs.size()) ? true : false;
     }
 
 }

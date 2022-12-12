@@ -32,6 +32,46 @@
 #include "RtfGlobalTables.h"
 #include "RtfDocument.h"
 
+int RtfFontTable::DirectAddItem( RtfFont piRend)
+{
+	m_aArray.push_back(piRend);
+	return (int)m_aArray.size() - 1;
+}
+bool RtfFontTable::GetFont( int nId, RtfFont& oFont)
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( nId == m_aArray[i].m_nID )
+		{
+			oFont =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+bool RtfFontTable::GetFont( std::wstring sName, RtfFont& oFont )
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( sName == m_aArray[i].m_sName )
+		{
+			oFont =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+std::wstring RtfFontTable::RenderToOOX(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	if( !m_aArray.empty())
+	{
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+
+	}
+	return sResult;
+}
 std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 {
 	////записывает default charset и codepage
@@ -47,7 +87,7 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 	//		}
 	//}
 	
-    std::wstring sResult;
+	std::wstring sResult;
 	if( m_aArray.size() > 0 )
 	{
 		sResult += _T("{\\fonttbl");
@@ -56,7 +96,248 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 		
 		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
-            sResult += m_aArray[i].RenderToRtf( oNewParameter );
+			sResult += m_aArray[i].RenderToRtf( oNewParameter );
+		}
+		sResult += _T("}");
+	}
+	return sResult;
+}
+
+RtfColorTable::RtfColorTable()
+{
+}
+int RtfColorTable::DirectAddItem( RtfColor piRend)
+{
+	m_aArray.push_back(piRend);
+	return (int)m_aArray.size() - 1;
+}
+int RtfColorTable::AddItem( RtfColor piRend)
+{
+	int nIndex = ItemSingleContainer<RtfColor>::AddItem( piRend );
+	return nIndex + 1;
+}
+bool RtfColorTable::GetColor( int nId, RtfColor& oColor)
+{
+	if( nId >= 0 && nId < (int)m_aArray.size() )
+	{
+		oColor = m_aArray[nId];
+		return true;
+	}
+	return false;
+}
+bool RtfColorTable::GetColor( RtfColor::_ThemeColor oTheme, RtfColor& oColor)
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+		if( oTheme == m_aArray[i].m_eTheme )
+		{
+			oColor = m_aArray[i];
+			return true;
+		}
+	return false;
+}
+bool RtfColorTable::GetColor( std::wstring sTheme, RtfColor& oColor)
+{
+	RtfColor::_ThemeColor oTheme = RtfColor::TC_NONE;
+
+	if( true == RtfColor::GetThemeByString(sTheme,oTheme  ) )
+	{
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
+			if( oTheme == m_aArray[i].m_eTheme )
+			{
+				oColor = m_aArray[i];
+				return true;
+			}
+		}
+	}
+	return false;
+}
+bool RtfColorTable::GetColor( RtfColor oColor , int & nId)
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( m_aArray[i] == oColor )
+		{
+			nId = (int)i + 1;
+			return true;
+		}
+	}
+	return false;
+}
+std::wstring RtfColorTable::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	if( m_aArray.size() > 0 )
+	{
+		sResult += _T("{\\colortbl;");
+		RenderParameter oNewParameter = oRenderParameter;
+		oNewParameter.nType = RENDER_TO_RTF_PARAM_COLOR_TBL;
+
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
+			sResult += m_aArray[i].RenderToRtf( oNewParameter );
+		}
+
+		sResult += _T("}");
+	}
+	return sResult;
+}
+std::wstring RtfColorTable::RenderToOOX(RenderParameter oRenderParameter)
+{
+	return _T("");
+}
+
+bool RtfStyleTable::GetStyle( int nId, RtfStylePtr& oStyle)
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( nId == m_aArray[i]->m_nID )
+		{
+			oStyle =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+bool RtfStyleTable::GetStyle( std::wstring sName, RtfStylePtr& oStyle )
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( sName == m_aArray[i]->m_sID )
+		{
+			oStyle =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+RtfStylePtr RtfStyleTable::GetStyleResulting( RtfStylePtr oInputStyle )
+{
+	RtfStylePtr				oResultStyle;
+	RtfStyle::_StyleType	eStyleType	= RtfStyle::st_none;
+
+	int nStyleId = oInputStyle->m_nID;
+	int nLinked = PROP_DEF;
+	int nBaseOn = oInputStyle->m_nBasedOn;
+
+	if( RtfStyle::stCharacter == oInputStyle->m_eType )
+	{
+		eStyleType		= RtfStyle::stCharacter;
+		oResultStyle	= RtfCharStylePtr( new RtfCharStyle() );
+	}
+	else if( RtfStyle::stParagraph == oInputStyle->m_eType )
+	{
+		eStyleType		= RtfStyle::stParagraph;
+		oResultStyle	= RtfParagraphStylePtr( new RtfParagraphStyle() );
+		nLinked			= oInputStyle->m_nLink;//linked будем смотреть только у стилей параграфа, чтобы избежать рекурсии
+	}
+	else if( RtfStyle::stTable == oInputStyle->m_eType )
+	{
+		eStyleType		= RtfStyle::stTable;
+		oResultStyle	= RtfTableStylePtr( new RtfTableStyle() );
+	}
+	else
+		return oInputStyle;	//ОПАСНО .. потом может другим затереться todooo
+
+	RtfStylePtr oLinkedStyle;
+	//if( PROP_DEF != nLinked && nStyleId != nLinked)
+	//{
+	// RtfStylePtr oTemStyle;
+	// if( true == GetStyle( nLinked, oTemStyle) )
+	//	oLinkedStyle = GetStyleResulting( oTemStyle );
+	//}
+	RtfStylePtr oBaseStyle;
+	if( PROP_DEF != nBaseOn && nStyleId != nBaseOn)
+	{
+		RtfStylePtr oTemStyle;
+		if( true == GetStyle( nBaseOn, oTemStyle) )
+			oBaseStyle = GetStyleResulting( oTemStyle );
+	}
+
+	//Опытным путем установлено - Base старше Link
+	if( NULL != oLinkedStyle )
+	{
+		oResultStyle->Merge( oLinkedStyle );
+	}
+	if( NULL != oBaseStyle )
+	{
+		oResultStyle->Merge( oBaseStyle );
+	}
+	oResultStyle->Merge( oInputStyle );
+
+	return oResultStyle;
+}
+std::wstring RtfStyleTable::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	if( m_aArray.size() > 0 )
+	{
+		sResult += _T("{\\stylesheet");
+
+		for (size_t i = 0; i < m_aArray.size(); i++ )
+		{
+			std::wstring str = m_aArray[i]->RenderToRtf( oRenderParameter );
+			sResult += str + _T("\n\n");
+		}
+
+		sResult += _T("}");
+	}
+	return sResult;
+}
+std::wstring RtfStyleTable::RenderToOOX(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
+	}
+	return sResult;
+}
+
+bool RtfListTable::GetList( std::wstring sName, RtfListProperty& oListProperty )
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( sName == m_aArray[i].m_sName )
+		{
+			oListProperty =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+bool RtfListTable::GetList( int nId, RtfListProperty& oListProperty )
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( nId == m_aArray[i].m_nID )
+		{
+			oListProperty =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+std::wstring RtfListTable::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	if( m_aArray.size() > 0 )
+	{
+		sResult += _T("{\\*\\listtable ");
+		if( m_aPictureList.GetCount() > 0 )
+		{
+			sResult += _T("{\\*\\listpicture");
+			for (int i = 0; i < m_aPictureList.GetCount(); i++ )
+			{
+				sResult +=  m_aPictureList[i]->RenderToRtf( oRenderParameter );
+			}
+			sResult += _T("}");
+		}
+		for (size_t i = 0; i < m_aArray.size(); i++)
+		{
+			sResult += _T("{");
+			sResult += m_aArray[i].RenderToRtf( oRenderParameter );
+			sResult += _T("}");
 		}
 		sResult += _T("}");
 	}
@@ -64,16 +345,16 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 }
 std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 {
-    std::wstring sResult;
+	std::wstring sResult;
 	if( m_aArray.size() > 0 )
 	{
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE;
 		for (int i = 0; i < m_aPictureList.GetCount(); i++ )
 		{
-            sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";
+			sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";
 			sResult += m_aPictureList[i]->RenderToOOX(oNewParam);
-            sResult += L"</w:numPicBullet>";
+			sResult += L"</w:numPicBullet>";
 		}
 		for (size_t i = 0; i < m_aArray.size(); i++)
 			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
@@ -91,9 +372,38 @@ std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
+
+bool RtfListOverrideTable::GetList( int nId, RtfListOverrideProperty& oListOverrideProperty )
+{
+	for (size_t i = 0; i < m_aArray.size(); i++ )
+	{
+		if( nId == m_aArray[i].m_nIndex )
+		{
+			oListOverrideProperty =  m_aArray[i];
+			return true;
+		}
+	}
+	return false;
+}
+std::wstring RtfListOverrideTable::RenderToRtf(RenderParameter oRenderParameter)
+{
+	std::wstring sResult;
+	if( m_aArray.size() > 0 )
+	{
+		sResult += _T("{\\*\\listoverridetable");
+		for (size_t i = 0; i < m_aArray.size(); i++)
+		{
+			sResult += _T("{");
+			sResult += m_aArray[i].RenderToRtf( oRenderParameter );
+			sResult += _T("}");
+		}
+		sResult += _T("}");
+	}
+	return sResult;
+}
 std::wstring RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 {
-    std::wstring sResult;
+	std::wstring sResult;
 	if( !m_aArray.empty())
 	{
 		RenderParameter oNewParam = oRenderParameter;
@@ -113,6 +423,7 @@ std::wstring RtfListOverrideTable::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	return sResult;
 }
+
 std::wstring RtfRevisionTable::RenderToRtf(RenderParameter oRenderParameter)
 {
 	if (m_aArray.empty()) return L"";
@@ -141,4 +452,22 @@ std::wstring RtfRevisionTable::RenderToRtf(RenderParameter oRenderParameter)
 	sResult += _T("}");
 
 	return sResult;
+}
+std::wstring RtfRevisionTable::RenderToOOX(RenderParameter oRenderParameter)
+{
+	return L"";
+}
+int RtfRevisionTable::AddAuthor(std::wstring author)
+{
+	int i = Find(author);
+	if (i < 0)
+		i = AddItem(author);
+	return i;
+}
+std::wstring RtfRevisionTable::GetAuthor(int ind)
+{
+	if (ind == PROP_DEF || ind > (int)m_aArray.size())
+		return L"";
+
+	return XmlUtils::EncodeXmlStringExtend(m_aArray[ind]);
 }

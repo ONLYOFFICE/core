@@ -42,250 +42,84 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(CFromTo)
-		CFromTo()
-		{
-		}
-		virtual ~CFromTo()
-		{
-		}
-		virtual void fromXML(XmlUtils::CXmlNode& node)
-		{
-		}
-        virtual std::wstring toXML() const
-		{
-			return L"";
-		}
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-		{
-			toXML2(writer, m_sName);
-		}
-		virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
-		{
-			writer.WriteString(L"<");
-			writer.WriteString(sName);
-			writer.WriteString(L">");
+		CFromTo();
+		virtual ~CFromTo();
 
-			if(m_oX.IsInit())
-			{
-				WritingStringValDouble(L"cdr:x", m_oX.get());
-			}
-			if(m_oY.IsInit())
-			{
-				WritingStringValDouble(L"cdr:y", m_oY.get());
-			}
-			writer.WriteString(L"</");
-			writer.WriteString(sName);
-			writer.WriteString(L">");
-		}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes( oReader );
+		virtual void fromXML(XmlUtils::CXmlNode& node);
+		virtual std::wstring toXML() const;
 
-			m_sName = oReader.GetName();
-			
-			if ( oReader.IsEmptyNode() )
-				return;
+		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+		virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 
-			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nCurDepth ) )
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-				if ( _T("x") == sName )
-					m_oX = oReader.GetText2();
-				else if ( _T("y") == sName )
-					m_oY = oReader.GetText2();
-			}
-		}
-
-		virtual EElementType getType () const
-		{
-			return et_cdr_FromTo;
-		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		virtual EElementType getType () const;
 
 	private:
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-		}
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 	public:
 		std::wstring	m_sName;
 		nullable_double	m_oX;
 		nullable_double	m_oY;
 	};
+
 	class CExt : public WritingElement
 	{
 	public:
 		WritingElement_AdditionConstructors(CExt)
-		CExt()
-		{
-		}
-		virtual ~CExt()
-		{
-		}
-		virtual void fromXML(XmlUtils::CXmlNode& node)
-		{
-		}
-        virtual std::wstring toXML() const
-		{
-			return L"";
-		}
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-		{
-			writer.WriteString(L"<cdr:ext>");
+		CExt();
+		virtual ~CExt();
 
-			if(m_oCx.IsInit())
-			{
-				WritingStringValDouble(L"cdr:cx", m_oCx.get());
-			}
-			if(m_oCy.IsInit())
-			{
-				WritingStringValDouble(L"cdr:cy", m_oCy.get());
-			}
-			writer.WriteString(L"</cdr:ext>");
-		}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes( oReader );
+		virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			if ( oReader.IsEmptyNode() )
-				return;
+		virtual std::wstring toXML() const;
+		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
-			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nCurDepth ) )
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-				if ( _T("cx") == sName )
-					m_oCx = oReader.GetText2();
-				else if ( _T("cy") == sName )
-					m_oCy = oReader.GetText2();
-			}
-		}
-
-		virtual EElementType getType () const
-		{
-			return et_cdr_FromTo;
-		}
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		virtual EElementType getType () const;
 
 	private:
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-		}
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 	public:
 		nullable_double	m_oCx;
 		nullable_double	m_oCy;
 	};
+
 	class CSizeAnchor : public WritingElement
 	{
 	public:
 		WritingElement_AdditionConstructors(CSizeAnchor)
-        CSizeAnchor()
-		{
-		}
-		virtual ~CSizeAnchor()
-		{
-		}
+		CSizeAnchor();
+		virtual ~CSizeAnchor();
+
 		virtual void fromXML(XmlUtils::CXmlNode& node) = 0;
         virtual std::wstring toXML() const = 0;
 		virtual void toXML(NSStringUtils::CStringBuilder& writer) const = 0;
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) = 0;
 		virtual EElementType getType () const = 0;
 
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-		}
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		nullable<OOX::CFromTo>				m_oFrom;
 		nullable<PPTX::Logic::SpTreeElem>	m_oElement;
 	};
+
 	class CRelSizeAnchor : public CSizeAnchor
 	{
 	public:
 		WritingElement_AdditionConstructors(CRelSizeAnchor)
-        CRelSizeAnchor()
-		{
-		}
-		virtual ~CRelSizeAnchor()
-		{
-		}
-		virtual void fromXML(XmlUtils::CXmlNode& node)
-		{
-		}
-        virtual std::wstring toXML() const
-		{
-			return _T("");
-		}
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-		{
-			writer.WriteString(L"<cdr:relSizeAnchor>");
-			if (m_oFrom.IsInit())
-			{
-				m_oFrom->m_sName = L"cdr:from";
-				m_oFrom->toXML(writer);
-			}
-			if (m_oTo.IsInit())
-			{
-				m_oTo->m_sName = L"cdr:to";
-				m_oTo->toXML(writer);
-			}
-			if (m_oElement.IsInit())
-			{
-				NSBinPptxRW::CXmlWriter xmlWriter;
-				xmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_CHART_DRAWING;
-				
-				m_oElement->toXmlWriter(&xmlWriter);
-			
-				writer.WriteString(xmlWriter.GetXmlString());
-			}
-			writer.WriteString(L"</cdr:relSizeAnchor>");
-		}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes( oReader );
+		CRelSizeAnchor();
+		virtual ~CRelSizeAnchor();
 
-			if ( oReader.IsEmptyNode() )
-				return;
+		virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nCurDepth ) )
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+		virtual std::wstring toXML() const;
+		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
-				if ( L"from" == sName )
-					m_oFrom = oReader;
-				else if ( L"to" == sName )
-					m_oTo = oReader;
-                else if (L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName)
-				{	
-					//Demo-2010WinterOlympics2.xlsx - AlternateContent
-					m_oElement = oReader;
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-					if (m_oElement.IsInit())
-					{
-						//smart_ptr<PPTX::Logic::Shape> shape = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
-						//if (shape.IsInit())
-						//{
-						//	m_nId = shape->nvSpPr.cNvPr.id;
-						//	if (shape->nvSpPr.cNvPr.vmlSpid.IsInit())
-						//	{
-						//		//ссылка на объект или шейп в vmlDrawing
-						//		m_sVmlSpId = shape->nvSpPr.cNvPr.vmlSpid.get();
-						//	}
-						//}
-						//smart_ptr<PPTX::Logic::GraphicFrame> frame = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::GraphicFrame>();
-						//if ((frame.IsInit()) && (frame->vmlSpid.IsInit()))
-						//{
-						//	//ссылка на объект или шейп в vmlDrawing
-						//	m_sVmlSpId = frame->vmlSpid.get();
-						//}
-					}
-				}
-			}
-		}
-
-		virtual EElementType getType () const
-		{
-			return et_cdr_RelSizeAnchor;
-		}
+		virtual EElementType getType () const;
 
 		nullable<OOX::CFromTo> m_oTo;
 	};
@@ -294,89 +128,17 @@ namespace OOX
 	{
 	public:
 		WritingElement_AdditionConstructors(CAbsSizeAnchor)
-        CAbsSizeAnchor()
-		{
-		}
-		virtual ~CAbsSizeAnchor()
-		{
-		}
-		virtual void fromXML(XmlUtils::CXmlNode& node)
-		{
-		}
-        virtual std::wstring toXML() const
-		{
-			return _T("");
-		}
-		virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-		{
-			writer.WriteString(L"<cdr:absSizeAnchor>");
-			if (m_oFrom.IsInit())
-			{
-				m_oFrom->m_sName = L"cdr:from";
-				m_oFrom->toXML(writer);
-			}
-			if (m_oExt.IsInit())
-			{
-				m_oExt->toXML(writer);
-			}
-			if (m_oElement.IsInit())
-			{
-				NSBinPptxRW::CXmlWriter xmlWriter;
-				xmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_CHART_DRAWING;
-				
-				m_oElement->toXmlWriter(&xmlWriter);
-			
-				writer.WriteString(xmlWriter.GetXmlString());
-			}
-			writer.WriteString(L"</cdr:absSizeAnchor>");
-		}
-		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-		{
-			ReadAttributes( oReader );
+		CAbsSizeAnchor();
+		virtual ~CAbsSizeAnchor();
 
-			if ( oReader.IsEmptyNode() )
-				return;
+		virtual void fromXML(XmlUtils::CXmlNode& node);
 
-			int nCurDepth = oReader.GetDepth();
-			while( oReader.ReadNextSiblingNode( nCurDepth ) )
-			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+		virtual std::wstring toXML() const;
+		virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
-				if ( L"from" == sName )
-					m_oFrom = oReader;
-				else if ( L"ext" == sName )
-					m_oExt = oReader;
-                else if (L"graphicFrame" == sName || L"pic" == sName || L"sp" == sName || L"grpSp" == sName || L"cxnSp" == sName || L"AlternateContent" == sName)
-				{	
-					//Demo-2010WinterOlympics2.xlsx - AlternateContent
-					m_oElement = oReader;
+		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-					if (m_oElement.IsInit())
-					{
-						//smart_ptr<PPTX::Logic::Shape> shape = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
-						//if (shape.IsInit())
-						//{
-						//	m_nId = shape->nvSpPr.cNvPr.id;
-						//	if (shape->nvSpPr.cNvPr.vmlSpid.IsInit())
-						//	{
-						//		//ссылка на объект или шейп в vmlDrawing
-						//		m_sVmlSpId = shape->nvSpPr.cNvPr.vmlSpid.get();
-						//	}
-						//}
-						//smart_ptr<PPTX::Logic::GraphicFrame> frame = m_oElement->GetElem().smart_dynamic_cast<PPTX::Logic::GraphicFrame>();
-						//if ((frame.IsInit()) && (frame->vmlSpid.IsInit()))
-						//{
-						//	//ссылка на объект или шейп в vmlDrawing
-						//	m_sVmlSpId = frame->vmlSpid.get();
-						//}
-					}
-				}
-			}
-		}
-		virtual EElementType getType () const
-		{
-			return et_cdr_AbsSizeAnchor;
-		}
+		virtual EElementType getType () const;
 
 		nullable<OOX::CExt> m_oExt;
 	};
@@ -384,117 +146,27 @@ namespace OOX
 	class CChartDrawing : public OOX::WritingElementWithChilds<OOX::CSizeAnchor>, public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CChartDrawing(OOX::Document* pMain, bool bDocument = true) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-		{
-			m_bDocument = bDocument;
-		}
-		CChartDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-		{
-			m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
-			read( oRootPath, oPath );
-		}
-		virtual ~CChartDrawing()
-		{
-		}
-		virtual void ClearItems()
-		{
-		}
-		virtual void read(const CPath& oPath)
-		{
-			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-			CPath oRootPath;
-			read(oRootPath, oPath);
-		}
-		void fromXML(XmlUtils::CXmlNode &)
-		{
-		}
-		std::wstring toXML() const
-		{
-			return _T("");
-		}
-		virtual void read(const CPath& oRootPath, const CPath& oPath)
-		{
-			m_oReadPath = oPath;
-			IFileContainer::Read( oRootPath, oPath );
-			XmlUtils::CXmlLiteReader oReader;
+		CChartDrawing(OOX::Document* pMain, bool bDocument = true);
+		CChartDrawing(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+		virtual ~CChartDrawing();
 
-			if ( !oReader.FromFile( oPath.GetPath() ) )
-				return;
+		virtual void ClearItems();
 
-			if ( !oReader.ReadNextNode() )
-				return;
+		virtual void read(const CPath& oPath);
+		void fromXML(XmlUtils::CXmlNode &);
+		std::wstring toXML() const;
+		virtual void read(const CPath& oRootPath, const CPath& oPath);
+		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-			if ( L"userShapes" != sName ) return;
-			
-			ReadAttributes( oReader );
+		virtual const OOX::FileType type() const;
 
-			if ( !oReader.IsEmptyNode() )
-			{
-				int nCurDepth = oReader.GetDepth();
-				while ( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					sName = XmlUtils::GetNameNoNS(oReader.GetName());
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 
-					CSizeAnchor *pItem = NULL;
+		const CPath GetReadPath();
 
-					if ( L"relSizeAnchor" == sName )
-					{
-						pItem = new CRelSizeAnchor( oReader );
-					}
-					else if ( L"absSizeAnchor" == sName ) 
-					{
-						pItem = new CAbsSizeAnchor( oReader );
-					}
-					if ( pItem )
-						m_arrItems.push_back( pItem );
-				}
-			}
-		}
-		virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-		{
-			NSStringUtils::CStringBuilder sXml;
-			sXml.WriteString(L"<c:userShapes \
-xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" \
-xmlns:cdr=\"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing\" \
-xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
-xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\"\
->");
-			
-			for (size_t i = 0; i < m_arrItems.size(); ++i)
-			{
-				m_arrItems[i]->toXML(sXml);
-			}
-			sXml.WriteString(L"</c:userShapes>");
-
-            NSFile::CFileBinary::SaveToFile( oPath.GetPath(), sXml.GetData() );
-			oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-
-			IFileContainer::Write(oPath, oDirectory, oContent);
-		}
-		virtual const OOX::FileType type() const
-		{
-			return OOX::FileTypes::ChartDrawing;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			//if (m_bDocument) return type().DefaultDirectory();
-			//else	
-				return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
-		const CPath GetReadPath()
-		{
-			return m_oReadPath;
-		}
-	private:
-	
-		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-		}
+	private:	
+		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		bool m_bDocument = false;
 

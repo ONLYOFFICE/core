@@ -40,6 +40,7 @@
 #include "../../../OOXML/DocxFormat/FontTable.h"
 #include "../../../OOXML/DocxFormat/Numbering.h"
 #include "../../../OOXML/DocxFormat/Styles.h"
+#include "../../../OOXML/DocxFormat/Comments.h"
 #include "../../../OOXML/DocxFormat/Settings/WebSettings.h"
 #include "../../../OOXML/DocxFormat/Settings/Settings.h"
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
@@ -47,7 +48,19 @@
 
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
+#include "../../../OOXML/DocxFormat/Logic/Sdt.h"
 #include "../../../OOXML/DocxFormat/Logic/Pict.h"
+#include "../../../OOXML/DocxFormat/Logic/Table.h"
+#include "../../../OOXML/DocxFormat/Logic/Hyperlink.h"
+#include "../../../OOXML/DocxFormat/Logic/AlternateContent.h"
+#include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
+#include "../../../OOXML/DocxFormat/Logic/Bdo.h"
+#include "../../../OOXML/DocxFormat/Logic/Dir.h"
+#include "../../../OOXML/DocxFormat/Logic/SmartTag.h"
+#include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../OOXML/DocxFormat/Logic/FldSimple.h"
+#include "../../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../../OOXML/DocxFormat/Logic/RunProperty.h"
 
 #include "VmlShapeTypes2Oox.h"
 
@@ -5085,13 +5098,33 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
     //nullable<ComplexTypes::Word::COnOff2 > m_oHideMark;
 	return true;
 }
-bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr, int col)
+bool DocxConverter::IsOdfTableCellPresent(OOX::Logic::CTableCellProperties *oox_table_cell_pr)
 {
-	bool is_base_styled = odt_context->table_context()->is_styled();
+	if (!oox_table_cell_pr) return false;
+
+	if (oox_table_cell_pr->m_oShd.IsInit()) return true;
+	if (oox_table_cell_pr->m_oTcBorders.IsInit()) return true;
+	if (oox_table_cell_pr->m_oTextDirection.IsInit()) return true;
+	if (oox_table_cell_pr->m_oVAlign.IsInit()) return true;
+	if (oox_table_cell_pr->m_oTcMar.IsInit()) return true;
+	if (oox_table_cell_pr->m_oTcFitText.IsInit()) return true;
+	if (oox_table_cell_pr->m_oNoWrap.IsInit()) return true;
 	
-	if (col < 0)col = odt_context->table_context()->current_column()+1;
+	if (oox_table_cell_pr->m_oTcW.IsInit() && oox_table_cell_pr->m_oTcW->m_oW.IsInit() &&
+		oox_table_cell_pr->m_oTcW->m_oType.IsInit() && oox_table_cell_pr->m_oTcW->m_oType->GetValue() == SimpleTypes::tblwidthDxa)
+		return true;
+	
+	//if (oox_table_cell_pr->m_oCnfStyle.IsInit()) return true;
+
+	return false;
+}
+bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr, int col)
+{	
+	if (col < 0)col = odt_context->table_context()->current_column() + 1;
 	int			row = odt_context->table_context()->current_row();
 		
+	bool is_base_styled = odt_context->table_context()->is_styled(row , col);
+
 	odf_writer::style_table_cell_properties * parent_cell_properties = NULL;
 
 	std::wstring parent_name = odt_context->table_context()->get_default_cell_properties();
@@ -5103,12 +5136,13 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 			parent_cell_properties = style_->content_.get_style_table_cell_properties();
 		}
 	}
+	bool bTableCellPropsPresent = IsOdfTableCellPresent(oox_table_cell_pr);
+
+	if (!bTableCellPropsPresent && is_base_styled == false && parent_cell_properties == NULL) return false;
 	
-	if (oox_table_cell_pr == NULL && is_base_styled == false && parent_cell_properties == NULL) return false;
+	odt_context->styles_context()->create_style(L"", odf_types::style_family::TableCell, true, false, -1); 	
 	
-	odt_context->styles_context()->create_style(L"",odf_types::style_family::TableCell, true, false, -1); 	
-	
-	odf_writer::style_table_cell_properties *cell_properties		= odt_context->styles_context()->last_state()->get_table_cell_properties();
+	odf_writer::style_table_cell_properties *cell_properties = odt_context->styles_context()->last_state()->get_table_cell_properties();
 
 	if (cell_properties == NULL) return false;
 
@@ -5116,9 +5150,6 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	{
 		odf_writer::style_text_properties		*text_properties		= odt_context->styles_context()->last_state()->get_text_properties();
 		odf_writer::style_paragraph_properties	*paragraph_properties	= odt_context->styles_context()->last_state()->get_paragraph_properties();
-		
-		if (col < 0) col=odt_context->table_context()->current_column()+1;
-		int row=odt_context->table_context()->current_row();
 		
 		odt_context->styles_context()->table_styles().get_table_cell_properties (col, row, cell_properties);
 		odt_context->styles_context()->table_styles().get_text_properties		(col, row, text_properties);

@@ -229,7 +229,9 @@ namespace BinXlsxRW
 		SlicerCachesExt = 19,
 		SlicerCache = 20,
 		Protection = 21,
-		OleSize = 22
+		OleSize = 22,
+		ExternalFileId = 23,
+		ExternalPortalName = 24
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,

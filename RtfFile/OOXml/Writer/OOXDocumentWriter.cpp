@@ -40,6 +40,16 @@
 #include "OOXFootnoteWriter.h"
 #include "OOXStylesWriter.h"
 
+OOXDocumentWriter::OOXDocumentWriter( OOXWriter& oWriter,RtfDocument& oDocument ): m_oWriter(oWriter), m_oDocument(oDocument)
+{
+	m_oFileWriter = NULL;
+	m_bFirst = true;
+}
+OOXDocumentWriter::~OOXDocumentWriter()
+{
+	RELEASEOBJECT( m_oFileWriter );
+}
+
 std::wstring OOXDocumentWriter::CreateXmlStart()
 {
 	//пишем Footnotes
@@ -423,4 +433,18 @@ bool OOXDocumentWriter::SaveByItemEnd()
 	}
     RELEASEOBJECT( m_oFileWriter );
 	return true;
+}
+
+int OOXDocumentWriter::GetCountSections()
+{
+	return m_oDocument.GetCount();
+}
+int OOXDocumentWriter::GetCount()
+{
+	int nCount = 0;
+	for( int i = 0; i < m_oDocument.GetCount(); i++ )
+	{
+		nCount += m_oDocument[i].props->GetCount();
+	}
+	return nCount;
 }

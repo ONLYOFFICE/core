@@ -30,23 +30,18 @@
  *
  */
 #pragma once
+
 #include "../../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordTextBox : public CUnknownRecord
 {
 public:
-	
-	CRecordTextBox()
-	{
-	}
+    CRecordTextBox();
+    ~CRecordTextBox();
 
-	~CRecordTextBox()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 };
+}

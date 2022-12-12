@@ -32,12 +32,8 @@
 #pragma once
 
 #include "OOXFontReader.h"
-#include "OOXReaderBasic.h"
 #include "OOXColorReader.h"
-#include "OOXShadingReader.h"
-#include "OOXBorderReader.h"
 
-#include "../../Format/RtfDocument.h"
 #include "../../Format/RtfProperty.h"
 
 class OOXrPrReader
@@ -47,20 +43,12 @@ private:
 
 	PPTX::Logic::RunProperties *	m_drawingRunProps;
 	OOX::Logic::CRunProperty *		m_ooxRunProps;
+
 public: 
 	bool m_bDefStyle;
 	
-	OOXrPrReader(OOX::Logic::CRunProperty *ooxRunProps)
-	{
-		m_bDefStyle			= true;
-		m_ooxRunProps		= ooxRunProps;
-		m_drawingRunProps	= NULL;
-	}
-	OOXrPrReader(PPTX::Logic::RunProperties *ooxRunProps)
-	{
-		m_bDefStyle			= true;
-		m_ooxRunProps		= NULL;
-		m_drawingRunProps	= ooxRunProps;
-	}	
-	bool Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProperty);
+	OOXrPrReader(OOX::Logic::CRunProperty *ooxRunProps);
+	OOXrPrReader(PPTX::Logic::RunProperties *ooxRunProps);
+
+	bool Parse( ReaderParameter oParam, RtfCharProperty& oOutputProperty);
 };

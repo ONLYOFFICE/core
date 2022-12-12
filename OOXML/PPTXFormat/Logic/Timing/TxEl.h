@@ -44,91 +44,19 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TxEl)
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNode oNode;
-				if (node.GetNode(_T("p:charRg"), oNode))
-				{
-					charRg = true;
-                    XmlMacroReadAttributeBase(oNode, L"st", st);
-                    XmlMacroReadAttributeBase(oNode, L"end", end);
-				}
-				else if(node.GetNode(_T("p:pRg"), oNode))
-				{
-					charRg = false;
-                    XmlMacroReadAttributeBase(oNode, L"st", st);
-                    XmlMacroReadAttributeBase(oNode, L"end", end);
-				}
-				else
-				{
-					charRg.reset();
-					st.reset();
-					end.reset();
-				}
-			}
-			virtual std::wstring toXML() const
-			{
-				if (charRg.IsInit())
-				{
-					XmlUtils::CAttribute oAttr;
-					oAttr.Write(_T("st"), st);
-					oAttr.Write(_T("end"), end);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-					std::wstring strName = _T("p:pRg");
-					if (*charRg)
-						strName = _T("p:charRg");	
-
-					return XmlUtils::CreateNode(_T("p:txEl"), XmlUtils::CreateNode(strName, oAttr));
-				}
-				return _T("<p:txEl/>");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(toXML());
-			}
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-					pWriter->WriteBool2(0, charRg);
-					pWriter->WriteSize_t2(1, st);
-					pWriter->WriteSize_t2(2, end);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				pReader->Skip(1); // attribute start
-				while (true)
-				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					else if (0 == _at)	charRg = pReader->GetBool();
-					else if (1 == _at)	st = pReader->GetULong();
-					else if (2 == _at)	end = pReader->GetULong();
-				}
-				while (pReader->GetPos() < _end)
-				{
-					BYTE _rec = pReader->GetUChar();
-
-					switch (_rec)
-					{
-					default:
-					{
-						pReader->SkipRecord();
-					}break;
-					}
-				}
-				pReader->Seek(_end);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			nullable_sizet	st;
 			nullable_sizet	end;
 			nullable_bool	charRg;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

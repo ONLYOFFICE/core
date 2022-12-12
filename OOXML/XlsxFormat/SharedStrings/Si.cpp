@@ -30,6 +30,7 @@
  *
  */
 #include "Si.h"
+#include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
@@ -37,7 +38,161 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
+		CSi::CSi()
+		{
+		}
+		CSi::~CSi()
+		{
+		}
+		void CSi::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
+		std::wstring CSi::toXML() const
+		{
+			return _T("");
+		}
+		void CSi::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(_T("<si>"));
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteString(_T("</si>"));
+		}
+		void CSi::toXML2(NSStringUtils::CStringBuilder& writer) const
+		{
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (  m_arrItems[i] )
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+		}
+		std::wstring CSi::ToString()
+		{
+			std::wstring sRes;
 
+			for ( size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if ( m_arrItems[i] == NULL) continue;
+
+				OOX::Spreadsheet::WritingElement* we = m_arrItems[i];
+
+				if(OOX::et_x_r == we->getType())
+				{
+					OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
+
+					for ( std::vector<CText*>::iterator it1 = pRun->m_arrItems.begin(); it1 != pRun->m_arrItems.end(); it1++)
+					{
+						CText* pText = *it1;
+						if (pText)
+						{
+							sRes.append(pText->ToString());
+						}
+					}
+				}
+				else if(OOX::et_x_t == we->getType())
+				{
+					CText* pText = static_cast<CText*>(we);
+					sRes.append(pText->ToString());
+				}
+			}
+			return sRes;
+		}
+		void CSi::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes( oReader );
+
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				WritingElement *pItem = NULL;
+				if ( _T("phoneticPr") == sName )
+					pItem = new CPhonetic( oReader );
+				else if ( _T("r") == sName )
+					pItem = new CRun( oReader );
+				else if ( _T("rPh") == sName )
+					pItem = new CRPh( oReader );
+				else if ( _T("t") == sName )
+					pItem = new CText( oReader );
+
+				if ( NULL != pItem )
+					m_arrItems.push_back( pItem );
+			}
+		}
+		void CSi::fromBin(XLS::BiffStructure& obj, bool flagIsComment)
+		{
+			auto ptr = static_cast<XLSB::RichStr*>(&obj);
+			CText* text             = nullptr;
+			CPhonetic* phoneticPr   = nullptr;
+			CRPh* rPh               = nullptr;
+			CRun* r                 = nullptr;
+			if(ptr != nullptr)
+			{
+				if(ptr->rgsStrRun.empty() || flagIsComment)
+				{
+					text = new CText();
+					text->fromBin(ptr->str.value());
+					m_arrItems.push_back(text);
+				}
+				else
+				{
+					int index = 0;
+					std::wstring str;
+					for(auto &strRun : ptr->rgsStrRun)
+					{
+						++index;
+						//если сначала пробелы (может, не только для пробелов так)
+						if(index == 1 && strRun.ich != 0)
+						{
+							auto r0 = new CRun();
+							str = ptr->str.value().substr(0, strRun.ich);
+
+							auto text = new CText();
+							text->fromBin(str);
+							r0->m_arrItems.push_back(text);
+
+							m_arrItems.push_back(r0);
+						}
+						r = new CRun();
+						if(strRun.ich < ptr->str.value().size())
+						{
+							str = ptr->str.value().substr(strRun.ich, index == ptr->rgsStrRun.size()?ptr->str.value().size() - strRun.ich:ptr->rgsStrRun[index].ich - strRun.ich);
+						}
+						r->fromBin(str, strRun.ifnt);
+						m_arrItems.push_back(r);
+					}
+				}
+
+				for(auto &phRun : ptr->rgsPhRun)
+				{
+					phoneticPr = new CPhonetic();
+					phoneticPr->fromBin(phRun);
+					m_arrItems.push_back(phoneticPr);
+
+					rPh = new CRPh();
+					rPh->fromBin(phRun, ptr->phoneticStr.value());
+					m_arrItems.push_back(rPh);
+				}
+			}
+		}
+		EElementType CSi::getType () const
+		{
+			return et_x_Si;
+		}
+		void CSi::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+		}
 		void CSi::fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream)
 		{
 			_UINT32 nCount = oStream.GetULong();
@@ -69,7 +224,6 @@ namespace OOX
 				}
 			}
 		}
-
 		void CSi::toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream)
 		{
 			//it's not by XLSB format

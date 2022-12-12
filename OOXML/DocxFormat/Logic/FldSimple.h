@@ -38,7 +38,7 @@
 #include "../WritingElement.h"
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../DocxFormat/Logic/FldChar.h"
+#include "FldChar.h"
 
 namespace OOX
 {
@@ -50,60 +50,25 @@ namespace OOX
 		class CFldSimple : public WritingElementWithChilds<>
 		{
 		public:
-			CFldSimple(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain)
-			{
-			}
-			CFldSimple(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CFldSimple(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CFldSimple()
-			{
-			}
-			const CFldSimple &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CFldSimple &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
-			virtual void ClearItems()
-			{
-				m_oDirty.SetValue( SimpleTypes::onoffFalse );
-				m_oFldLock.SetValue( SimpleTypes::onoffFalse );
-				m_sInstr.reset();
+			CFldSimple(OOX::Document *pMain = NULL);
+			CFldSimple(XmlUtils::CXmlNode &oNode);
+			CFldSimple(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CFldSimple();
 
-				WritingElementWithChilds::ClearItems();
-			}
+			const CFldSimple &operator =(const XmlUtils::CXmlNode& oNode);
+			const CFldSimple &operator =(const XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void ClearItems();
+
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
-			virtual EElementType getType() const
-			{
-				return et_w_fldSimple;
-			}
-		private:
+			virtual EElementType getType() const;
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:dirty"),   m_oDirty )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:fldLock"), m_oFldLock )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:instr"),   m_sInstr )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
 			SimpleTypes::COnOff								m_oDirty;
 			SimpleTypes::COnOff								m_oFldLock;
 			nullable<std::wstring>							m_sInstr;

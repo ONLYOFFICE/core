@@ -48,10 +48,38 @@ namespace OOX
 {
 	namespace Logic
 	{
-		void    CDir::fromXML(XmlUtils::CXmlNode& oNode)
+		CDir::CDir(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 		}
-		void    CDir::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		CDir::CDir(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oNode );
+		}
+		CDir::CDir(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			fromXML( oReader );
+		}
+		CDir::~CDir()
+		{
+		}
+
+		const CDir& CDir::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CDir& CDir::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+
+		void CDir::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		void CDir::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
 
@@ -146,7 +174,6 @@ namespace OOX
 			}
 		}
 
-
 		std::wstring CDir::toXML() const
 		{
 			std::wstring sResult = _T("<w:dir");
@@ -167,6 +194,18 @@ namespace OOX
 			sResult += _T("</w:dir>");
 
 			return sResult;
+		}
+		EElementType CDir::getType() const
+		{
+			return et_w_dir;
+		}
+
+		void CDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			// Читаем атрибуты
+			WritingElement_ReadAttributes_Start( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oVal )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 	} // namespace Logic

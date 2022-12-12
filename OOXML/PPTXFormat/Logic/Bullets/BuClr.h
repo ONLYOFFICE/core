@@ -46,70 +46,27 @@ namespace PPTX
 			WritingElement_AdditionConstructors(BuClr)
 			PPTX_LOGIC_BASE2(BuClr)
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual OOX::EElementType getType () const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					Color.fromXML(oReader);
-				}
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_buClr;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
+			BuClr& operator=(const BuClr& oSrc);
 
-			BuClr& operator=(const BuClr& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			virtual DWORD GetRGBA() const;
+			virtual DWORD GetARGB() const;
+			virtual DWORD GetBGRA() const;
+			virtual DWORD GetABGR() const;
 
-				Color = oSrc.Color;
-				return *this;
-			}
-
-			virtual DWORD GetRGBA()const{return Color.GetRGBA();};
-			virtual DWORD GetARGB()const{return Color.GetARGB();};
-			virtual DWORD GetBGRA()const{return Color.GetBGRA();};
-			virtual DWORD GetABGR()const{return Color.GetABGR();};
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				Color.GetColorFrom(node);
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(L"a:buClr");
-				pWriter->EndAttributes();
-				Color.toXmlWriter(pWriter);
-				pWriter->EndNode(L"a:buClr");
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_COLOR_CLR);
-				pWriter->WriteRecord1(0, Color);
-				pWriter->EndRecord();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			UniColor Color;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				Color.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -33,9 +33,6 @@
 
 #include "../CommonInclude.h"
 
-#include "../../XlsbFormat/Biff12_records/BundleSh.h"
-
-
 namespace OOX
 {
 	namespace Spreadsheet
@@ -47,86 +44,27 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CSheet)
             WritingElement_XlsbConstructors(CSheet)
-			CSheet(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}           
-			virtual ~CSheet()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return (L"");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString((L"<sheet"));
-				WritingStringNullableAttrEncodeXmlString(L"name", m_oName, m_oName.get());
-				WritingStringNullableAttrInt(L"sheetId", m_oSheetId, m_oSheetId->GetValue());
-				WritingStringNullableAttrString(L"state", m_oState, m_oState->ToString());
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				writer.WriteString((L"/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CSheet(OOX::Document *pMain = NULL);
+			virtual ~CSheet();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType () const
-			{
-				return et_x_Sheet;
-			}
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType () const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, (L"r:id"),				m_oRid )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"relationships:id"),	m_oRid )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"name"),				m_oName )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"sheetId"),			m_oSheetId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, (L"state"),			m_oState )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::BundleSh*>(obj.get());
-                m_oRid                = ptr->strRelID.value.value();
-                m_oName               = ptr->strName.value();
-                m_oSheetId            = ptr->iTabID;
-
-                switch(ptr->hsState)
-                {
-                    case XLSB::BundleSh::ST_SheetState::VISIBLE:
-                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVisible;
-                        break;
-                    case XLSB::BundleSh::ST_SheetState::HIDDEN:
-                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleHidden;
-                        break;
-                    case XLSB::BundleSh::ST_SheetState::VERYHIDDEN:
-                        m_oState = SimpleTypes::Spreadsheet::EVisibleType::visibleVeryHidden;
-                        break;
-                }
-
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
-				nullable<SimpleTypes::CRelationshipId>				m_oRid;
-				nullable_string										m_oName;
-				nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oSheetId;
-				nullable<SimpleTypes::Spreadsheet::CVisibleType>	m_oState;
+			nullable<SimpleTypes::CRelationshipId>				m_oRid;
+			nullable_string										m_oName;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oSheetId;
+			nullable<SimpleTypes::Spreadsheet::CVisibleType>	m_oState;
 
 		};
 
@@ -135,78 +73,21 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CSheets)
             WritingElement_XlsbVectorConstructors(CSheets)
-			CSheets(OOX::Document *pMain = NULL) : WritingElementWithChilds<CSheet>(pMain)
-			{
-			}            
-			virtual ~CSheets()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return (L"");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString((L"<sheets>"));
-				
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				
-				writer.WriteString((L"</sheets>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CSheets(OOX::Document *pMain = NULL);
+			virtual ~CSheets();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				int nCurDepth = oReader.GetDepth();
-				
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-					if ( (L"sheet") == sName ) 
-					{
-						CSheet* pSheet = new CSheet( oReader );
-						
-						m_arrItems.push_back( pSheet );
-					}
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			virtual EElementType getType () const;
 
-				}
-			}
-
-            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                //ReadAttributes(obj);
-
-                if (obj.empty())
-                    return;
-
-                for(auto &sheet : obj)
-                {
-                    m_arrItems.push_back(new CSheet(sheet));
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_Sheets;
-			}
-		
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 	} //Spreadsheet
 } // namespace OOX

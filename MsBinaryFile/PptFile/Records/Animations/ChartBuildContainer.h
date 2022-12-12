@@ -32,41 +32,19 @@
 #pragma once
 
 
-#include "../../Reader/Records.h"
-#include "BuildAtom.h"
-#include "ChartBuildAtom.h"
+#include "BuildListSubContainer.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
-class CRecordChartBuildContainer : public CUnknownRecord
+class CRecordChartBuildContainer : public CRecordBuildListSubContainer
 {
 public:
-    CRecordChartBuildContainer()
-    {
+    CRecordChartBuildContainer();
+    ~CRecordChartBuildContainer();
 
-    }
-
-    ~CRecordChartBuildContainer()
-    {
-
-    }
-
-    void ReadFromStream(SRecordHeader &thisHeader, POLE::Stream *pStream) override
-    {
-        m_oHeader = thisHeader;
-
-
-        SRecordHeader oHeader;
-        if (oHeader.ReadFromStream(pStream))
-            m_oBuildAtom.ReadFromStream ( oHeader, pStream );
-
-        if (oHeader.ReadFromStream(pStream))
-            m_oChartBuildAtom.ReadFromStream ( oHeader, pStream );
-
-    }
+    void ReadFromStream(SRecordHeader &header, POLE::Stream *pStream) override;
 
 public:
-    CRecordBuildAtom        m_oBuildAtom;
     CRecordChartBuildAtom   m_oChartBuildAtom;
 };
 }

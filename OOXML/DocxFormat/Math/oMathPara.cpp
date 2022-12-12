@@ -30,10 +30,15 @@
  *
  */
 #include "oMathPara.h"
+#include "../Logic/Run.h"
+
 namespace OOX
 {	
 	namespace Logic
 	{
+		COMathPara::COMathPara(OOX::Document *pMain) : WritingElementWithChilds<WritingElement>(pMain)
+		{
+		}
 		COMathPara::~COMathPara()
 		{
 		}
@@ -52,6 +57,59 @@ namespace OOX
 			sResult += _T("</m:oMathPara>");
 
 			return sResult;
+		}
+		void COMathPara::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlUtils::CXmlNodes oChilds;
+			if ( oNode.GetNodes( _T("*"), oChilds ) )
+			{
+				XmlUtils::CXmlNode oItem;
+				for ( int nIndex = 0; nIndex < oChilds.GetCount(); nIndex++ )
+				{
+					if ( oChilds.GetAt( nIndex, oItem ) )
+					{
+						std::wstring sName = oItem.GetName();
+						WritingElement *pItem = NULL;
+
+						if ( _T("w:r") == sName )
+							pItem = new CRun( oItem );
+						else if ( _T("m:oMath") == sName )
+							pItem = new COMath( oItem );
+						else if ( _T("m:oMathParaPr") == sName )
+							pItem = new COMathParaPr( oItem );
+
+						if ( pItem )
+							m_arrItems.push_back( pItem );
+					}
+				}
+			}
+		}
+		void COMathPara::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if ( oReader.IsEmptyNode() )
+				return;
+
+			int nCurDepth = oReader.GetDepth();
+			while( oReader.ReadNextSiblingNode( nCurDepth ) )
+			{
+				std::wstring sName = oReader.GetName();
+				WritingElement *pItem = NULL;
+
+				if ( _T("m:oMath") == sName )
+					pItem = new COMath( oReader );
+				else if ( _T("m:oMathParaPr") == sName )
+					pItem = new COMathParaPr( oReader );
+				else if ( _T("w:r") == sName )
+					pItem = new CRun( oReader );
+
+				if ( pItem )
+					m_arrItems.push_back( pItem );
+
+			}
+		}
+		EElementType COMathPara::getType() const
+		{
+			return et_m_oMathPara;
 		}
 	}//namespace Logic
 }//namespace OOX

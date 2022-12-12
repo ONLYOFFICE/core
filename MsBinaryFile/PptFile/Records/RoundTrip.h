@@ -32,66 +32,27 @@
 #pragma once
 #include "../Reader/Records.h"
 
-#include <fstream>
-//static UINT nRTCounter = 1;
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CUnknownRoundTrip : public CUnknownRecord
 {
 public:
     std::pair<boost::shared_array<unsigned char>, _INT32> data;
 
-    CUnknownRoundTrip()
-    {
-    }
 
-    ~CUnknownRoundTrip()
-    {
-    }
-
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
-        pStream->read(data.first.get(), data.second);
-
-//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".zip";
-//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-//        file.write((char*)data.first.get(), data.second);
-//        file.close();
-    }
-
-    void ReadFromStream(SRecordHeader & oHeader, const CFStreamPtr &pStream)
-    {
-        m_oHeader = oHeader;
-
-        data = std::make_pair(boost::shared_array<unsigned char>(new unsigned char[m_oHeader.RecLen]), m_oHeader.RecLen);
-        pStream->read(data.first.get(), data.second);
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+    void ReadFromStream(SRecordHeader & oHeader, const XLS::CFStreamPtr &pStream) override;
 };
 
 class CUnknownRoundTripID : public CUnknownRecord
 {
 public:
-    UINT m_dwID;
+    UINT m_dwID = -1;
 
-    CUnknownRoundTripID(): m_dwID(-1){}
-    ~CUnknownRoundTripID(){}
 
-    virtual inline std::wstring getStrID()const
-    { return std::to_wstring(m_dwID);}
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        m_dwID = StreamUtils::ReadDWORD(pStream);
-
-//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + "_ID_" + std::to_string(m_dwID) + ".txt";
-//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-//        file << m_dwID;
-//        file.close();
-    }
+    virtual std::wstring getStrID()const;
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 
 // .zip
@@ -112,27 +73,8 @@ public:
     RoundTripColorMapping12Atom(){}
     ~RoundTripColorMapping12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        m_colorMapping = StreamUtils::ReadStringA(pStream, m_oHeader.RecLen);
-
-//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) + ".xml";
-//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-//        file << m_colorMapping;
-//        file.close();
-    }
-    std::wstring getPClrMap()const
-    {
-        auto iter = m_colorMapping.find("<a:clrMap");
-        if (iter == (UINT)-1)
-            return std::wstring(L"");
-
-        auto subStr = m_colorMapping.substr(iter);
-        subStr[1] = 'p';
-
-        return std::wstring(subStr.begin(), subStr.end());
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
+    std::wstring getPClrMap()const;
 };
 
 // ID
@@ -146,21 +88,7 @@ public:
         m_mainMasterId(-1), m_contentMasterInstanceId(-1) {}
     ~RoundTripContentMasterId12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_mainMasterId = StreamUtils::ReadDWORD(pStream);
-        m_contentMasterInstanceId = StreamUtils::ReadWORD(pStream);
-
-        StreamUtils::StreamSkip(2, pStream);
-
-//        std::string filename = std::to_string(nRTCounter++) + "_" + GetRecordName(m_oHeader.RecType) +
-//                "_" + std::to_string(m_mainMasterId) + "_" + std::to_string(m_contentMasterInstanceId) + ".txt";
-//        std::ofstream file("RoundTrips/" + filename, std::ios::out);
-//        file << m_mainMasterId << "\t" << m_contentMasterInstanceId;
-//        file.close();
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 class RoundTripShapeId12Atom : public CUnknownRoundTripID {};
 class RoundTripCompositeMasterId12Atom : public CUnknownRoundTripID {};
@@ -168,18 +96,11 @@ class RoundTripOriginalMainMasterId12Atom : public CUnknownRoundTripID{};
 class RoundTripHFPlaceholder12Atom : public CUnknownRoundTripID
 {
 public:
-    PlaceholderEnum m_nPlacementID;
+    PlaceholderEnum m_nPlacementID = PT_None;
 
-    RoundTripHFPlaceholder12Atom(): m_nPlacementID(PT_None){}
-    ~RoundTripHFPlaceholder12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        m_nPlacementID = (PlaceholderEnum)StreamUtils::ReadBYTE(pStream);
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
-}
 
 class RoundTripHeaderFooterDefaults12Atom : public CUnknownRecord
 {
@@ -189,34 +110,17 @@ public:
     bool m_fIncludeHeader;
     bool m_fIncludeSlideNumber;
 
-    RoundTripHeaderFooterDefaults12Atom(){}
-    ~RoundTripHeaderFooterDefaults12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        BYTE flags = StreamUtils::ReadBYTE(pStream);
-
-        m_fIncludeDate          = flags & 0x01;
-        m_fIncludeFooter        = flags & 0x02;
-        m_fIncludeHeader        = flags & 0x04;
-        m_fIncludeSlideNumber   = flags & 0x08;
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 
 class RoundTripDocFlags12Atom : public CUnknownRecord
 {
 public:
     bool m_fCompressPicturesOnSave;
-    RoundTripDocFlags12Atom(){}
-    ~RoundTripDocFlags12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
 
-        m_fCompressPicturesOnSave = StreamUtils::ReadBYTE(pStream) & 0x01;
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
 };
 
@@ -226,47 +130,26 @@ public:
     UINT m_shapeCheckSum;
     UINT m_textCheckSum;
 
-    RoundTripShapeCheckSumForCL12Atom(){}
-    ~RoundTripShapeCheckSumForCL12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_shapeCheckSum = StreamUtils::ReadDWORD(pStream);
-        m_textCheckSum  = StreamUtils::ReadDWORD(pStream);
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 
 class RoundTripNewPlaceholderId12Atom : public CUnknownRecord
 {
 public:
-    PlaceholderEnum m_newPlaceholderId;
+    PlaceholderEnum m_newPlaceholderId = PT_None;
 
-    RoundTripNewPlaceholderId12Atom(): m_newPlaceholderId(PT_None){}
-    ~RoundTripNewPlaceholderId12Atom(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        m_newPlaceholderId = (PlaceholderEnum)StreamUtils::ReadBYTE(pStream);
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 
 class RoundTripAnimationHashAtom12Atom : public CUnknownRecord
 {
 public:
-    UINT m_animationChecksum;
+    UINT m_animationChecksum = -1;
 
-    RoundTripAnimationHashAtom12Atom(): m_animationChecksum(-1){}
-    ~RoundTripAnimationHashAtom12Atom(){}
 
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-        m_animationChecksum = StreamUtils::ReadDWORD(pStream);
-
-    }
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 
 class RoundTripSlideSyncInfoAtom12 : public CUnknownRecord
@@ -275,16 +158,9 @@ public:
     UINT m_dateTimeModified;
     UINT m_dateTimeInserted;
 
-    RoundTripSlideSyncInfoAtom12(){}
-    ~RoundTripSlideSyncInfoAtom12(){}
 
-    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_oHeader = oHeader;
-
-        m_dateTimeModified = StreamUtils::ReadDWORD(pStream);
-        m_dateTimeInserted  = StreamUtils::ReadDWORD(pStream);
-    }
+    void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
 
 class RoundTripSlideSyncInfo12Container : public CRecordsContainer {};
+}

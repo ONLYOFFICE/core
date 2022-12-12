@@ -49,191 +49,25 @@ namespace PPTX
 	class NotesMaster : public WrapperFile, public FileContainer
 	{
 	public:
-		NotesMaster(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)
-		{
-		}
-		NotesMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map) : WrapperFile(pMain), FileContainer(pMain)
-		{
-			read(filename, map);
-		}
-		virtual ~NotesMaster()
-		{
-		}
+		NotesMaster(OOX::Document* pMain);
+		NotesMaster(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
+		virtual ~NotesMaster();
 
-		virtual void read(const OOX::CPath& filename, FileMap& map)
-		{
-			//FileContainer::read(filename, map);
-		
-			XmlUtils::CXmlNode oNode;
-			oNode.FromXmlFile(filename.m_strFilename);
+		virtual void read(const OOX::CPath& filename, FileMap& map);
+		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content) const;
 
-			cSld = oNode.ReadNode(_T("p:cSld"));
-			cSld.SetParentFilePointer(this);
+		virtual const OOX::FileType type() const;
 
-			clrMap = oNode.ReadNode(_T("p:clrMap"));
-			clrMap.SetParentFilePointer(this);
+		virtual const OOX::CPath DefaultDirectory() const;
+		virtual const OOX::CPath DefaultFileName() const;
 
-			hf = oNode.ReadNode(_T("p:hf"));
-			if (hf.IsInit())
-				hf->SetParentFilePointer(this);
+		void ApplyRels();
 
-			notesStyle = oNode.ReadNode(_T("p:notesStyle"));
-			if (notesStyle.is_init())
-				notesStyle->SetParentFilePointer(this);
-		}
-		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
-		{
-			WrapperFile::write(filename, directory, content);
-			FileContainer::write(filename, directory, content);
-		}
-		virtual const OOX::FileType type() const
-		{
-			return OOX::Presentation::FileTypes::NotesMaster;
-		}
-		virtual const OOX::CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const OOX::CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		void ApplyRels()
-		{
-            theme_= (FileContainer::Get(OOX::FileTypes::Theme)).smart_dynamic_cast<PPTX::Theme>();
-
-            if (theme_.IsInit())
-			{
-                theme_->SetColorMap(clrMap);
-
-				tableStyles_ = (theme_->presentation->Get(OOX::Presentation::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
-			}
-		}
-
-		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->StartRecord(NSBinPptxRW::NSMainTables::NotesMasters);
-
-			pWriter->WriteRecord1(0, cSld);
-			pWriter->WriteRecord1(1, clrMap);
-			pWriter->WriteRecord2(2, hf);
-			pWriter->WriteRecord2(3, notesStyle);
-
-			pWriter->EndRecord();
-		}
-
-		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-			pWriter->StartNode(_T("p:notesMaster"));
-
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:r"), PPTX::g_Namespaces.r.m_strLink);
-			pWriter->WriteAttribute(_T("xmlns:p"), PPTX::g_Namespaces.p.m_strLink);
-			pWriter->EndAttributes();
-
-			cSld.toXmlWriter(pWriter);
-
-			clrMap.toXmlWriter(pWriter);
-			pWriter->Write(hf);
-			pWriter->Write(notesStyle);
-
-			pWriter->EndNode(_T("p:notesMaster"));
-		}
-
-		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			pReader->Skip(1); // type
-			LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-			while (pReader->GetPos() < end)
-			{
-				BYTE _rec = pReader->GetUChar();
-
-				switch (_rec)
-				{
-					case 0:
-					{
-						cSld.fromPPTY(pReader);
-						break;
-					}
-					case 1:
-					{
-						clrMap.fromPPTY(pReader);
-						break;
-					}
-					case 2:
-					{
-						hf = new Logic::HF();
-						hf->fromPPTY(pReader);
-						break;
-					}
-					case 3:
-					{
-						notesStyle = new Logic::TextListStyle(L"p:notesStyle");
-						notesStyle->fromPPTY(pReader);
-						break;
-					}
-					default:
-					{
-						pReader->SkipRecord();
-						break;
-					}
-				}
-			}
-
-			pReader->Seek(end);
-		}
-		virtual void GetLevelUp(WrapperWritingElement* pElem)
-		{
-			Logic::Shape	*pShape	= dynamic_cast<PPTX::Logic::Shape*>(pElem);
-			Logic::Pic		*pPic	= dynamic_cast<PPTX::Logic::Pic*>(pElem);
-			
-			if (!pShape && !pPic) return;
-
-			Logic::NvPr *pNvPr = NULL;
-			
-			if (pShape)	pNvPr = &pShape->nvSpPr.nvPr;
-			if (pPic)	pNvPr = &pPic->nvPicPr.nvPr;
-
-			if (!pNvPr) return;
-			if (pNvPr->ph.is_init() == false) return;
-
-			std::wstring idx = pNvPr->ph->idx.get_value_or(L"");
-			std::wstring type = pNvPr->ph->type.get_value_or(L"body");
-			
-			if (type == L"ctrTitle") type = L"title";
-
-			for (size_t i = 0; i < cSld.spTree.SpTreeElems.size(); ++i)
-			{
-				smart_ptr<Logic::Shape> pMasterShape = cSld.spTree.SpTreeElems[i].GetElem().smart_dynamic_cast<Logic::Shape>();
-
-				if (pMasterShape.IsInit())
-				{
-					if (pMasterShape->nvSpPr.nvPr.ph.is_init())
-					{
-						std::wstring lIdx	= pMasterShape->nvSpPr.nvPr.ph->idx.get_value_or(_T(""));
-						std::wstring lType	= pMasterShape->nvSpPr.nvPr.ph->type.get_value_or(_T("body"));
-						
-						if (lType == L"ctrTitle") lType = L"title";
-
-						if ((type == lType) && (idx == lIdx) && !idx.empty())
-						{
-							if (pShape)	pShape->SetLevelUpElement(pMasterShape.GetPointer());
-							if (pPic)	pPic->SetLevelUpElement(pMasterShape.GetPointer());
-							return;
-						}
-						else if ((type == lType) && idx.empty() && lIdx.empty())
-						{
-							if (pShape)	pShape->SetLevelUpElement(pMasterShape.GetPointer());
-							if (pPic)	pPic->SetLevelUpElement(pMasterShape.GetPointer());
-							return;
-						}
-					}
-				}
-			}
-		}
+		virtual void GetLevelUp(WrapperWritingElement* pElem);
 
         smart_ptr<Theme>				theme_;
 		smart_ptr<TableStyles>			tableStyles_;

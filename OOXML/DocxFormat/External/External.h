@@ -36,38 +36,21 @@
 #include "../File.h"
 #include "../FileTypes.h"
 
-
 namespace OOX
 {
 	class External : public File
 	{
 	public:
-		External(OOX::Document* pMain) : File(pMain)
-		{
-		}
-		External(OOX::Document* pMain, const CPath& uri) : File(pMain)
-		{
-			read(uri);
-		}
-		~External()
-		{
-		}
-		virtual void read(const CPath& uri)
-		{
-			m_uri = uri;
-		}
-		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const
-		{
-		}
-		CPath Uri() const
-		{
-			return m_uri;
-		}
-		void set_Uri(CPath & file_path)
-		{
-			m_uri				= file_path;
-			m_sOutputFilename	= file_path.GetFilename();
-		}
+		External(OOX::Document* pMain);
+		External(OOX::Document* pMain, const CPath& uri);
+		~External();
+
+		virtual void read(const CPath& uri);
+		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
+
+		CPath Uri() const;
+		void set_Uri(CPath & file_path);
+
 	protected:
 		CPath m_uri;
 	};

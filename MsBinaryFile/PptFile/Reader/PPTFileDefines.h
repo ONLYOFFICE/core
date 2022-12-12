@@ -37,7 +37,7 @@
 
 #include "../../../DesktopEditor/common/ASCVariant.h"
 
-typedef BYTE BOOL1;
+typedef unsigned char BOOL1;
 
 #define		PSFLAG_CONTAINER							0xFF
 

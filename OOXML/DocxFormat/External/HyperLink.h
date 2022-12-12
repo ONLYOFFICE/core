@@ -35,36 +35,18 @@
 
 #include "External.h"
 
-
 namespace OOX
 {
 	class HyperLink : public External
 	{
 	public:
-		HyperLink(OOX::Document* pMain) : External(pMain)
-		{
-			bHyperlink = true;
-		}
-		HyperLink(OOX::Document* pMain, const CPath& uri) : External(pMain)
-		{
-			bHyperlink = true;
-			read(uri);
-		}
-		~HyperLink()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::HyperLink;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		HyperLink(OOX::Document* pMain);
+		HyperLink(OOX::Document* pMain, const CPath& uri);
+		~HyperLink();
+
+		virtual const FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
 
 		bool bHyperlink; // in pptx link to slide perhaps
 	};

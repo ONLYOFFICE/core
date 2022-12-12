@@ -31,22 +31,9 @@
  */
 #pragma once
 
-#include "../Xlsx.h"
-#include "../../XlsbFormat/Xlsb.h"
+
 #include "../Worksheets/Worksheet.h"
 #include "../SharedStrings/Si.h"
-
-#include "../../XlsbFormat/CommentsStream.h"
-
-#include "../../XlsbFormat/Biff12_unions/COMMENTS.h"
-#include "../../XlsbFormat/Biff12_unions/COMMENTAUTHORS.h"
-#include "../../XlsbFormat/Biff12_unions/COMMENTLIST.h"
-#include "../../XlsbFormat/Biff12_unions/COMMENT.h"
-
-#include "../../XlsbFormat/Biff12_records/CommentAuthor.h"
-#include "../../XlsbFormat/Biff12_records/BeginComment.h"
-#include "../../XlsbFormat/Biff12_records/CommentText.h"
-#include "../../XlsbFormat/Biff12_records/LegacyDrawing.h"
 
 #include "../Styles/Styles.h"
 
@@ -81,187 +68,58 @@ namespace OOX
 			nullable_string m_sGfxdata;
 			nullable_bool	m_bVisible;
 			nullable_string m_sFillColorRgb;
-			CCommentItem()
-			{
-				m_pThreadedComment = NULL;
-				m_bThreadedCommentCopy = false;
-			}
-			bool IsValid()
-			{
-				return m_nRow.IsInit() && m_nCol.IsInit() && m_sAuthor.IsInit();
-			}
+
+			CCommentItem();
+			bool IsValid();
 		};
+
 		class CAuthors : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CAuthors)
             WritingElement_XlsbConstructors(CAuthors)
-			CAuthors()
-			{
-			}
-			virtual ~CAuthors()
-			{
-				ClearItems();
-			}
-			virtual void ClearItems()
-			{
-				m_arrItems.clear();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<authors>");
+			CAuthors();
+			virtual ~CAuthors();
 
-				for ( size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					writer.WriteString(L"<author>");
-						writer.WriteEncodeXmlString(m_arrItems[i]);
-					writer.WriteString(L"</author>");
-				}
-				writer.WriteString(L"</authors>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void ClearItems();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			void fromBin(XLS::BaseObjectPtr& obj);
 
-					if ( L"author" == sName )
-					{
-						m_arrItems.push_back(oReader.GetText3());
-					}
-				}
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::COMMENTAUTHORS*>(obj.get());
-                if (ptr != nullptr)
-                {
-                    for(auto author : ptr->m_arBrtCommentAuthor)
-                    {
-                        m_arrItems.push_back(static_cast<XLSB::CommentAuthor*>(author.get())->author.value());
-                    }
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_Authors;
-			}
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			std::vector<std::wstring>  m_arrItems;
 		};
+
 		class CComment : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CComment)
             WritingElement_XlsbConstructors(CComment)
-			CComment()
-			{
-			}
-			virtual ~CComment()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_oRef.IsInit() && m_oAuthorId.IsInit() && m_oText.IsInit())
-				{
-					writer.WriteString(L"<comment");
-					WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef->ToString());
-					WritingStringNullableAttrInt(L"authorId", m_oAuthorId, m_oAuthorId->GetValue());
-					WritingStringNullableAttrString(L"xr:uid", m_oUid, m_oUid->ToString());
-					writer.WriteString(L">");
-					
-					writer.WriteString(L"<text>");
-					m_oText->toXML2(writer);
-					writer.WriteString(L"</text>");
-					writer.WriteString(L"</comment>");
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CComment();
+			virtual ~CComment();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			void fromBin(XLS::BaseObjectPtr& obj);
 
-					if ( _T("text") == sName )
-                        m_oText = oReader;
-				}
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::COMMENT*>(obj.get());
-                if (ptr != nullptr)
-                {
-                    ReadAttributes(ptr->m_BrtBeginComment);
-
-                    auto ptrCommentText = static_cast<XLSB::CommentText*>(ptr->m_BrtCommentText.get());
-                    if(ptrCommentText != nullptr)
-                    {
-                        CSi* pItem = new CSi();
-                        pItem->fromBin(ptrCommentText->text, true);
-                        //auto text = new CText();
-                        //text->fromBin(ptrCommentText->text.str.value());
-                        //pItem->m_arrItems.push_back(text);
-                        m_oText = pItem;
-                    }
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_Comment;
-			}
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"ref",      m_oRef )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"authorId", m_oAuthorId )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"xr:uid", m_oUid )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::BeginComment*>(obj.get());
-                if (ptr != nullptr)
-                {
-                    m_oRef      = ptr->rfx.toString();
-                    m_oAuthorId = ptr->iauthor;
-                    m_oUid      = ptr->guid;
-                }
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oRef;
 			nullable<SimpleTypes::CUnsignedDecimalNumber > m_oAuthorId;
@@ -269,276 +127,78 @@ namespace OOX
 
             nullable<CSi> m_oText;
 		};
+
 		class CCommentList : public WritingElementWithChilds<CComment>
 		{
 		public:
 			WritingElement_AdditionConstructors(CCommentList)
             WritingElement_XlsbConstructors(CCommentList)
-			CCommentList()
-			{
-			}
-			virtual ~CCommentList()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<commentList>");
+			CCommentList();
+			virtual ~CCommentList();
 
-				for ( size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-					if (  m_arrItems[i] )
-					{
-						m_arrItems[i]->toXML(writer);
-					}
-				}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				writer.WriteString(L"</commentList>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			void fromBin(XLS::BaseObjectPtr& obj);
 
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( L"comment" == sName )
-						m_arrItems.push_back(new CComment(oReader));
-				}
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::COMMENTLIST*>(obj.get());
-                if (ptr != nullptr)
-                {
-                    for(auto comment : ptr->m_arCOMMENT)
-                    {
-                        m_arrItems.push_back(new CComment(comment));
-                    }
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_CommentList;
-			}
+			virtual EElementType getType () const;
 
         private:
-            void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-            {
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
         };
+
 		class CComments : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CComments(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-				
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
-				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
-				{
-					xlsx->m_arWorksheets.back()->m_pComments = this;
-				}
-			}
-			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-				
-				CXlsx* xlsx = dynamic_cast<CXlsx*>(pMain);
-				if ((xlsx) && (!xlsx->m_arWorksheets.empty()))
-				{
-					xlsx->m_arWorksheets.back()->m_pComments = this;
-                }
-				read( oRootPath, oPath );
-			}
-			virtual ~CComments()
-			{
-			}
-            void readBin(const CPath& oPath)
-            {
-                CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-                if (xlsb)
-                {
-                    XLSB::CommentsStreamPtr commentsStream(new XLSB::CommentsStream);
+			CComments(OOX::Document* pMain);
+			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CComments();
 
-                    xlsb->ReadBin(oPath, commentsStream.get());
+			void readBin(const CPath& oPath);
+			virtual void read(const CPath& oPath);
+			virtual void read(const CPath& oRootPath, const CPath& oPath);
+			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-                    if (commentsStream != nullptr)
-                    {
-                        auto ptr = static_cast<XLSB::COMMENTS*>(commentsStream->m_COMMENTS.get());
-                        if (ptr != nullptr)
-                        {
-                            if(ptr->m_COMMENTAUTHORS != nullptr)
-                                m_oAuthors = ptr->m_COMMENTAUTHORS;
+			virtual const OOX::FileType type() const;
 
-                            if(ptr->m_COMMENTLIST != nullptr)
-                                m_oCommentList = ptr->m_COMMENTLIST;
-                        }
-                    }
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
 
-                    //commentsStream.reset();
-                }
-            }
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-			virtual void read(const CPath& oRootPath, const CPath& oPath)
-			{
-				m_oReadPath = oPath;
-				IFileContainer::Read( oRootPath, oPath );
+			const CPath& GetReadPath();
 
-                if( m_oReadPath.GetExtention() == _T(".bin"))
-                {
-                    readBin(m_oReadPath);
-                    return;
-                }
-
-				XmlUtils::CXmlLiteReader oReader;
-
-				if ( !oReader.FromFile( oPath.GetPath() ) )
-					return;
-
-				if ( !oReader.ReadNextNode() )
-					return;
-
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if ( L"comments" == sName )
-				{
-					ReadAttributes( oReader );
-
-					if ( !oReader.IsEmptyNode() )
-					{
-						int nStylesDepth = oReader.GetDepth();
-						while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
-						{
-							sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-							if ( L"authors" == sName )
-								m_oAuthors = oReader;
-							else if ( L"commentList" == sName )
-								m_oCommentList = oReader;
-						}
-					}
-				}		
-			}
-			virtual void write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				NSStringUtils::CStringBuilder sXml;
-				sXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
-<comments xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
-xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
-xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\" \
-mc:Ignorable=\"xr\">");
-				if(m_oAuthors.IsInit())
-					m_oAuthors->toXML(sXml);
-				if(m_oCommentList.IsInit())
-					m_oCommentList->toXML(sXml);
-				sXml.WriteString(L"</comments>");
-
-				std::wstring sPath = oPath.GetPath();
-				NSFile::CFileBinary::SaveToFile(sPath, sXml.GetData());
-
-				oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
-				IFileContainer::Write(oPath, oDirectory, oContent);
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::Comments;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath()
-			{
-				return m_oReadPath;
-			}
 		private:
 			CPath m_oReadPath;
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<CAuthors >		m_oAuthors;
 			nullable<CCommentList > m_oCommentList;
 		};
+
 		class CLegacyDrawingWorksheet : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CLegacyDrawingWorksheet)
             WritingElement_XlsbConstructors(CLegacyDrawingWorksheet)
-			CLegacyDrawingWorksheet()
-			{
-			}
-			virtual ~CLegacyDrawingWorksheet()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_oId.IsInit())
-				{
-					writer.WriteString(L"<legacyDrawing r:id=\"");
-					writer.WriteString(m_oId->ToString());
-					writer.WriteString(L"\"/>");					
-				}
-				
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CLegacyDrawingWorksheet();
+			virtual ~CLegacyDrawingWorksheet();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
-			virtual EElementType getType () const
-			{
-				return et_x_LegacyDrawingWorksheet;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void fromBin(XLS::BaseObjectPtr& obj);
+
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_Read_if ( oReader, L"id", m_oId )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::LegacyDrawing*>(obj.get());
-                if(ptr != nullptr)
-                    m_oId = ptr->stRelId.value.value();
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 		};

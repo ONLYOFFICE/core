@@ -37,29 +37,10 @@ namespace DocFileFormat
 {
 	class SectionPropertyExceptions: public PropertyExceptions
 	{
-		public:  
+	public:
 		/// Parses the bytes to retrieve a SectionPropertyExceptions
-		SectionPropertyExceptions( unsigned char* bytes, int size, int nWordVersion ):
-				PropertyExceptions( bytes, size, nWordVersion ), isBidi(false)
-		{
-			if (nWordVersion >= 2)
-			{
-				ReadExceptions(bytes, size, nWordVersion);
-			}
-			for ( std::list<SinglePropertyModifier>::iterator iter = grpprl->begin(); iter != grpprl->end(); iter++ )
-			{
-				SinglePropertyModifier sprm( *iter );
-				  
-				if( sprm.OpCode == sprmSFBiDi && sprm.Arguments[0] != 0) 
-				{
-					isBidi = true;
-				}
-			}
-		}
-
-		virtual ~SectionPropertyExceptions()
-		{
-		}
+		SectionPropertyExceptions( unsigned char* bytes, int size, int nWordVersion );
+		virtual ~SectionPropertyExceptions();
 
 		bool isBidi;
 	};

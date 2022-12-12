@@ -474,7 +474,7 @@ namespace DocFileFormat
 		return encodingChars;
 	}
 
-	inline bool PieceTable::ReadSymbolsBuffer(int pos, int size, int coding, POLE::Stream* word, std::vector<wchar_t>* encodingChars)
+	bool PieceTable::ReadSymbolsBuffer(int pos, int size, int coding, POLE::Stream* word, std::vector<wchar_t>* encodingChars)
 	{
 		unsigned char* bytes = new unsigned char[size];
 		if (NULL == bytes)

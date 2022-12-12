@@ -31,7 +31,6 @@
  */
 #pragma once
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/HLink.h"
 
 namespace OOX
 {
@@ -43,78 +42,30 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CHyperlink)
-			CHyperlink(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CHyperlink()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return (L"");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString((L"<hyperlink"));
-				WritingStringNullableAttrEncodeXmlString(L"display", m_oDisplay, m_oDisplay.get());
-				WritingStringNullableAttrString(L"r:id", m_oRid, m_oRid->ToString());
-				WritingStringNullableAttrEncodeXmlString(L"location", m_oLocation, m_oLocation.get());
-				WritingStringNullableAttrEncodeXmlString(L"ref", m_oRef, m_oRef.get());
-				WritingStringNullableAttrEncodeXmlString(L"tooltip", m_oTooltip, m_oTooltip.get());
-				writer.WriteString((L"/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CHyperlink(OOX::Document *pMain = NULL);
+			virtual ~CHyperlink();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual EElementType getType () const
-			{
-				return et_x_Hyperlink;
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType () const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if		( oReader, (L"display"),	m_oDisplay)
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"r:id"),		m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"relationships:id"), m_oRid )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"location"),	m_oLocation )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"ref"),		m_oRef )
-					WritingElement_ReadAttributes_Read_else_if	( oReader, (L"tooltip"),	m_oTooltip )
-				WritingElement_ReadAttributes_End( oReader )
-			}
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::HLink*>(obj.get());
-                m_oDisplay          = ptr->display.value();
-                m_oRid              = ptr->relId.value.value();
-                m_oLocation         = ptr->location.value();
-                m_oRef              = ptr->rfx.toString();
-                m_oTooltip          = ptr->tooltip.value();
-
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
-				nullable_string							m_oDisplay;
-				nullable<SimpleTypes::CRelationshipId>	m_oRid;
-				nullable_string							m_oLocation;
-				nullable_string							m_oRef;
-				nullable_string							m_oTooltip;
-				
-				nullable_string							m_oLink;
+			nullable_string							m_oDisplay;
+			nullable<SimpleTypes::CRelationshipId>	m_oRid;
+			nullable_string							m_oLocation;
+			nullable_string							m_oRef;
+			nullable_string							m_oTooltip;
+
+			nullable_string							m_oLink;
 		};
 
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
@@ -122,72 +73,18 @@ namespace OOX
 		public:
             WritingElement_AdditionConstructors(CHyperlinks)
             WritingElement_XlsbVectorConstructors(CHyperlinks)
-			CHyperlinks(OOX::Document *pMain = NULL) : WritingElementWithChilds<CHyperlink>(pMain)
-			{
-			}
-			virtual ~CHyperlinks()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return (L"");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_arrItems.empty()) return;
+			CHyperlinks(OOX::Document *pMain = NULL);
+			virtual ~CHyperlinks();
 
-				writer.WriteString((L"<hyperlinks>"));
-					
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				
-				writer.WriteString((L"</hyperlinks>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-					if ( (L"hyperlink") == sName )
-					{
-						CHyperlink *pHyperlink = new CHyperlink();
-						m_arrItems.push_back(pHyperlink);
-
-						pHyperlink->fromXML(oReader);
-					}
-				}
-			}
-            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                if (obj.empty())
-                    return;
-
-                for(auto &hyperlink : obj)
-                {
-                    CHyperlink *pHyperlink = new CHyperlink(m_pMainDocument);
-                    m_arrItems.push_back(pHyperlink);
-
-                    pHyperlink->fromBin(hyperlink);
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_Hyperlinks;
-			}
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			virtual EElementType getType () const;
 		};
+
 	} //Spreadsheet
 } // namespace OOX

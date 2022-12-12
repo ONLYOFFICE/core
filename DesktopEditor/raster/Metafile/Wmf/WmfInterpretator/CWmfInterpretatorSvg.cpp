@@ -833,7 +833,7 @@ namespace MetaFile
 		return m_oXmlWriter.GetXmlString();
 	}
 
-	void CWmfInterpretatorSvg::IncludeSvg(const std::wstring &wsSvg, const TRectD &oRect, const TRectD &oClipRect, const TPointD &oTranslate)
+	void CWmfInterpretatorSvg::IncludeSvg(const std::wstring &wsSvg, const TRectD &oRect, const TRectD &oClipRect, TXForm *pTransform)
 	{
 		if (wsSvg.empty())
 			return;
@@ -846,24 +846,31 @@ namespace MetaFile
 		if (std::wstring::npos == unSecondPos)
 			return;
 
-		m_oXmlWriter.WriteNodeBegin(L"g", true);
+		TRectD oNewClipRect(oClipRect);
 
-		if (0 != oTranslate.x || 0 != oTranslate.y)
-			m_oXmlWriter.WriteAttribute(L"transform", L"translate(" + ConvertToWString(oTranslate.x) + L',' + ConvertToWString(oTranslate.y) + L')');
+		if (oNewClipRect.dLeft > oNewClipRect.dRight)
+			std::swap(oNewClipRect.dLeft, oNewClipRect.dRight);
 
-		m_oXmlWriter.WriteNodeEnd(L"g", true, false);
+		if (oNewClipRect.dTop > oNewClipRect.dBottom)
+			std::swap(oNewClipRect.dTop, oNewClipRect.dBottom);
+
+		NodeAttributes arNodeAttributes;
+
+		AddTransform(arNodeAttributes, pTransform);
+
+		WriteNodeBegin(L"g", arNodeAttributes);
 
 		wsNewSvg.erase(unFirstPos, unSecondPos - unFirstPos);
 
 		std::wstring wsClip = L"x=\"" + ConvertToWString(oRect.dLeft) + L"\" y=\"" + ConvertToWString(oRect.dTop) + L"\" " +
 		                      L"width=\"" + ConvertToWString(oRect.dRight - oRect.dLeft) + L"\" height=\"" + ConvertToWString(oRect.dBottom - oRect.dTop) + L"\" " +
-		                      L"viewBox=\"" + ConvertToWString(oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dTop) + L' ' + ConvertToWString(oClipRect.dRight - oClipRect.dLeft) + L' ' + ConvertToWString(oClipRect.dBottom - oClipRect.dTop) + L'\"';
+		                      L"viewBox=\"" + ConvertToWString(oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dTop) + L' ' + ConvertToWString(oNewClipRect.dRight - oNewClipRect.dLeft) + L' ' + ConvertToWString(oNewClipRect.dBottom - oNewClipRect.dTop) + L'\"';
 
 		wsNewSvg.insert(unFirstPos, wsClip);
 
 		m_oXmlWriter.WriteString(wsNewSvg);
 
-		m_oXmlWriter.WriteNodeEnd(L"g");
+		WriteNodeEnd(L"g");
 	}
 
 	void CWmfInterpretatorSvg::WriteNode(const std::wstring &wsNodeName, const NodeAttributes &arAttributes, const std::wstring &wsValueNode)
@@ -885,6 +892,24 @@ namespace MetaFile
 
 			m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
 		}
+	}
+
+	void CWmfInterpretatorSvg::WriteNodeBegin(const std::wstring &wsNodeName, const NodeAttributes &arAttributes)
+	{
+		m_oXmlWriter.WriteNodeBegin(wsNodeName, !arAttributes.empty());
+
+		if (!arAttributes.empty())
+		{
+			for (const NodeAttribute& oAttribute : arAttributes)
+				m_oXmlWriter.WriteAttribute(oAttribute.first, oAttribute.second);
+
+			m_oXmlWriter.WriteNodeEnd(wsNodeName, true, false);
+		}
+	}
+
+	void CWmfInterpretatorSvg::WriteNodeEnd(const std::wstring &wsNodeName)
+	{
+		m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
 	}
 
 	void CWmfInterpretatorSvg::WriteText(const std::wstring &wsText, double dX, double dY, const TWmfRect& oBounds)
@@ -1157,7 +1182,7 @@ namespace MetaFile
 
 		if (bScale && !bTranslate)
 		{
-			wsValue = L"scale(" +	std::to_wstring(oOldTransform.M11) + L',' + std::to_wstring(oOldTransform.M22) + L')';
+			wsValue = L"scale(" +	ConvertToWString(oOldTransform.M11) + L',' + ConvertToWString(oOldTransform.M22) + L')';
 		}
 		else if (bTranslate && !bScale)
 		{
@@ -1165,10 +1190,10 @@ namespace MetaFile
 		}
 		else if (bScale && bTranslate)
 		{
-			wsValue = L"matrix(" +	std::to_wstring(oOldTransform.M11) + L',' +
-			                        std::to_wstring(oOldTransform.M12) + L',' +
-			                        std::to_wstring(oOldTransform.M21) + L',' +
-			                        std::to_wstring(oOldTransform.M22) + L',' +
+			wsValue = L"matrix(" +	ConvertToWString(oOldTransform.M11) + L',' +
+			                        ConvertToWString(oOldTransform.M12) + L',' +
+			                        ConvertToWString(oOldTransform.M21) + L',' +
+			                        ConvertToWString(oOldTransform.M22) + L',' +
 			                        ConvertToWString(oOldTransform.Dx) + L',' + ConvertToWString(oOldTransform.Dy) + L')';
 		}
 		else return;

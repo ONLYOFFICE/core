@@ -42,7 +42,7 @@ class CStringWriter;
 class CSlideShowInfo;
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 	class CDocument;
 	class CShapeWriter;
@@ -89,7 +89,7 @@ namespace PPT_FORMAT
 //		void WriteRelsMaster    (std::wstring path, int type, )
         void WriteSlide			(int nIndexSlide);
 		void WriteNotes			(int nIndexNotes);
-        void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, const std::unordered_set<int> &realShapesId, int nIndexSlide);
+        void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID);
 		
         void WriteTransition	(CStringWriter& oWriter, CSlideShowInfo& oSSInfo);
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);

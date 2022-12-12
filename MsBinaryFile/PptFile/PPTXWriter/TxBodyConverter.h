@@ -34,7 +34,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/TxBody.h"
 #include "ShapeWriter.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class TxBodyConverter
 {

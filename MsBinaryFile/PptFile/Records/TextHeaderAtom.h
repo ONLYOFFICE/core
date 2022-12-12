@@ -32,25 +32,19 @@
 #pragma once
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordTextHeaderAtom : public CUnknownRecord
 {
 public:
 	UINT m_nTextType;
 
 public:
-	
-	CRecordTextHeaderAtom()
-	{
-	}
+    CRecordTextHeaderAtom();
+    ~CRecordTextHeaderAtom();
 
-	~CRecordTextHeaderAtom()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-		m_nTextType = (UINT)StreamUtils::ReadDWORD(pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 
 };
+}

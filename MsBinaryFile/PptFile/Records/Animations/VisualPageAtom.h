@@ -31,24 +31,17 @@
  */
 #pragma once
 
-
 #include "../../Reader/Records.h"
 #include "../../Enums/_includer.h"
 
-namespace PPT_FORMAT
+
+namespace PPT
 {
 class CRecordVisualPageAtom : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
-        m_eType				=	(TimeVisualElementEnum) StreamUtils::ReadDWORD ( pStream );
-    }
-
-
-public:
 
     TimeVisualElementEnum	m_eType;
 };

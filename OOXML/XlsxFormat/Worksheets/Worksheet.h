@@ -75,22 +75,12 @@ namespace OOX
 			virtual ~CWorksheet();
 
             void readBin(const CPath& oPath);
-
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. instead use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
+			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -99,22 +89,12 @@ namespace OOX
 			
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
-			virtual const OOX::FileType type() const
-			{
-                return m_bIsChartSheet?OOX::Spreadsheet::FileTypes::Chartsheets:OOX::Spreadsheet::FileTypes::Worksheet;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			const CPath& GetReadPath() const
-			{
-				return m_oReadPath;
-			}
+			virtual const OOX::FileType type() const;
+
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			const CPath& GetReadPath() const;
 			void ClearItems();
 
             const OOX::RId AddHyperlink (std::wstring& sHref);
@@ -170,14 +150,16 @@ namespace OOX
 
 			std::map<std::wstring, CConditionalFormattingRule*> m_mapConditionalFormattingEx;
 //--------------------------------------------------------------------------------------------
+
 			std::map<std::wstring, CCommentItem*> m_mapComments;
 			std::map<std::wstring, unsigned int> m_mapStyleMerges2003;
+
 		private:
 			void PrepareDataValidations();
 			void PrepareConditionalFormatting();
 			void PrepareComments(OOX::Spreadsheet::CComments* pComments, OOX::Spreadsheet::CThreadedComments* pThreadedComments, OOX::Spreadsheet::CLegacyDrawingWorksheet* pLegacyDrawing);
-
 		};
+
 	} //Spreadsheet
 } // namespace OOX
 

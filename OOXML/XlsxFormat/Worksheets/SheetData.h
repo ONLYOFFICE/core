@@ -62,6 +62,7 @@ namespace OOX
 			_UINT32 getXLSBSize() const;
 			_UINT16 toXLSB(NSBinPptxRW::CXlsbBinaryWriter& oStream, bool bIsBlankFormula);
 			void toXLSBExt(NSBinPptxRW::CXlsbBinaryWriter& oStream);
+
 		public:
 			bool m_bIsInit;
 			CStringXLSB m_oFormula;
@@ -80,6 +81,7 @@ namespace OOX
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 		class CCellXLSB
 		{
 		public:
@@ -96,9 +98,11 @@ namespace OOX
 			CTextXLSB m_oValue;
 			CFormulaXLSB m_oFormula;
 			nullable<CSi> m_oRichText;
+
 		protected:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 		class CRowXLSB
 		{
 		public:
@@ -122,63 +126,27 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
-
 		class CFormula : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CFormula)
-			CFormula()
-			{
-			}
-			virtual ~CFormula()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+			CFormula();
+			virtual ~CFormula();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				if ( oReader.IsEmptyNode() )
-                    return;
-
-				m_sText = oReader.GetText3();
-			}
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
-			virtual EElementType getType () const
-			{
-				return et_x_Formula;
-			}
+
+			virtual EElementType getType () const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_StartChar( oReader )
-
-					WritingElement_ReadAttributes_Read_ifChar		( oReader, "t",		m_oT )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "si",	m_oSi )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "aca",	m_oAca )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "bx",    m_oBx )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ca",    m_oCa )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "del1",	m_oDel1 )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "del2",	m_oDel2 )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "dt2D",	m_oDt2D )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "dtr",	m_oDtr )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r1",	m_oR1 )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "r2",	m_oR2 )
-					WritingElement_ReadAttributes_Read_else_ifChar	( oReader, "ref",	m_oRef )
-
-				WritingElement_ReadAttributes_EndChar( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
 			nullable<SimpleTypes::COnOff>							m_oAca;
@@ -201,28 +169,18 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CData)
-			CData()
-			{
-			}
-			virtual ~CData()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
+			CData();
+			virtual ~CData();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 					void fromXML2(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType () const
-			{
-				return et_x_Data;
-			}
+
+			virtual EElementType getType () const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -247,134 +205,27 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCell)
-			CCell(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCell()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
+			CCell(OOX::Document *pMain = NULL);
+			virtual ~CCell();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
             void fromBin(XLS::BaseObjectPtr& obj);
 
-			virtual EElementType getType () const
-			{
-				return et_x_Cell;
-			}
+			virtual EElementType getType () const;
 
-			bool isInitRef() const
-			{
-				return m_oRef.IsInit() || (m_oRow.IsInit() && m_oCol.IsInit());
-			}
-			std::wstring getRef() const
-			{
-				if (m_oRef.IsInit())
-				{
-					const std::string& s = m_oRef.get();
-					return std::wstring(s.begin(), s.end());
-				}
-				else if (m_oRow.IsInit() && m_oCol.IsInit())
-				{
-					return combineRef(*m_oRow, *m_oCol);
-				}
-				else
-				{
-					return L"A1";
-				}
-			}
-			void setRef(const std::wstring& sRef) 
-			{
-				m_oRef = std::string(sRef.begin(), sRef.end());
-			}
-			bool getRowCol(int& nRow, int& nCol) const
-			{
-				bool bRes = false;
-				nRow = 0;
-				nCol = 0;
-				if (m_oRow.IsInit() && m_oCol.IsInit())
-				{
-					bRes = true;
-					nRow = *m_oRow;
-					nCol = *m_oCol;
-				}
-				else if (m_oRef.IsInit())
-				{
-					if (parseRefA(m_oRef->c_str(), nRow, nCol))
-					{
-						bRes = true;
-						nRow--;
-						nCol--;
-					}
-				}
-				return bRes;
-			}
-			void setRowCol(int nRow, int nCol)
-			{
-				m_oRow = nRow;
-				m_oCol= nCol;
-			}
+			bool isInitRef() const;
+			std::wstring getRef() const;
+			void setRef(const std::wstring& sRef);
+			bool getRowCol(int& nRow, int& nCol) const;
+			void setRowCol(int nRow, int nCol);
 
-			static bool parse3DRef(const std::wstring& sRef, std::wstring& workbook, std::wstring& sheetFrom, std::wstring& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2)
-			{
-				bool bRes = false;
-				int nIndex = (int)sRef.find('!');
-				std::wstring sCellRef;
-
-				if (std::wstring::npos != nIndex)
-				{
-					std::wstring sSheetPrefix = sRef.substr(0, nIndex);
-					if (sSheetPrefix.length() > 0 && '\'' == sSheetPrefix[0] && '\'' == sSheetPrefix[sSheetPrefix.length() - 1])
-					{
-						sSheetPrefix = sSheetPrefix.substr(1, sSheetPrefix.length() - 2);
-					}
-					NSStringExt::Replace(sSheetPrefix, L"''", L"'");
-
-					int nIndexWbStart = (int)sSheetPrefix.find('[');
-					int nIndexWbEnd = (int)sSheetPrefix.find(']');
-
-					if (-1 != nIndexWbStart && -1 != nIndexWbEnd)
-					{
-						workbook = sSheetPrefix.substr(nIndexWbStart + 1, nIndexWbEnd - nIndexWbStart - 1);
-						sSheetPrefix = sSheetPrefix.substr(nIndexWbEnd + 1, sSheetPrefix.length() - nIndexWbEnd - 1);
-					}
-					int nIndexColon = (int)sSheetPrefix.find(':');
-					if (-1 != nIndexColon)
-					{
-						sheetFrom = sSheetPrefix.substr(0, nIndexColon);
-						sheetTo = sSheetPrefix.substr(nIndexColon + 1, sSheetPrefix.length() - nIndexColon - 1);
-					}
-					else
-					{
-						sheetFrom = sSheetPrefix;
-					}
-					sCellRef = sRef.substr(nIndex + 1, sRef.length() - nIndex - 1);
-				}
-				else
-				{
-					sCellRef = sRef;
-				}
-				NSStringExt::Replace(sCellRef, L"$", L"");
-				int nIndexColon = (int)sCellRef.find(':');
-				if (std::wstring::npos != nIndexColon)
-				{
-					bRes = parseRef(sCellRef.substr(0, nIndexColon), nRow1, nCol1) && parseRef(sCellRef.substr(nIndexColon + 1, sCellRef.length() - nIndexColon - 1), nRow2, nCol2);
-				}
-				else
-				{
-					bRes = parseRef(sCellRef, nRow1, nCol1);
-					nRow2 = nRow1;
-					nCol2 = nCol1;
-				}
-				return bRes;
-			}
+			static bool parse3DRef(const std::wstring& sRef, std::wstring& workbook, std::wstring& sheetFrom, std::wstring& sheetTo, int& nRow1, int& nCol1, int& nRow2, int& nCol2);
 			static bool parseRef(std::wstring sRef, int& nRow, int& nCol);
 			static bool parseRefA(const char* sRef, int& nRow, int& nCol);
 			static bool parseRefColA(const char* sRef, _UINT32& nCol);
@@ -419,33 +270,13 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRow)
-			CRow(OOX::Document *pMain = NULL) : WritingElementWithChilds<CCell>(pMain)
-			{
-			}
-			virtual ~CRow()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXMLStart(writer);
-				
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				
-				toXMLEnd(writer);
-			}
+			CRow(OOX::Document *pMain = NULL);
+			virtual ~CRow();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
 			void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
 			void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -454,15 +285,11 @@ namespace OOX
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;            
                         void fromBin(XLS::BaseObjectPtr& obj);
 
-			virtual EElementType getType () const
-			{
-				return et_x_Row;
-			}
+			virtual EElementType getType () const;
 
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-                        void ReadAttributes(XLS::BaseObjectPtr& obj);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
 
 		public:
@@ -485,54 +312,28 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CSheetData)
             //WritingElement_XlsbConstructors(CSheetData)
-			CSheetData(OOX::Document *pMain = NULL) : WritingElementWithChilds<CRow>(pMain)
-			{
-			}
-			virtual ~CSheetData()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXMLStart(writer);
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
-				toXMLEnd(writer);
-			}
-			virtual void toXMLStart(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<sheetData>"));
-			}
-			virtual void toXMLEnd(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("</sheetData>"));
-			}
+			CSheetData(OOX::Document *pMain = NULL);
+			virtual ~CSheetData();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXMLStart(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXMLEnd(NSStringUtils::CStringBuilder& writer) const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
-
             void fromBin(XLS::BaseObjectPtr& obj);
 
-			virtual EElementType getType () const
-			{
-				return et_x_SheetData;
-			}
+			virtual EElementType getType () const;
 		
 			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oXlsbPos;
 		
 			std::map<int, std::map<int, unsigned int>>	m_mapStyleMerges2003; // map(row, map(col, style))
 			void StyleFromMapStyleMerges2003(std::map<int, unsigned int> &mapStyleMerges);
 			void AfterRead();
+
 		private:
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
@@ -549,8 +350,8 @@ namespace OOX
 			nullable_int m_nExpandedRowCount;
 			nullable_int m_nFullColumns;
 			nullable_int m_nFullRows;
-
 		};
+
 	} //Spreadsheet
 } // namespace OOX
 

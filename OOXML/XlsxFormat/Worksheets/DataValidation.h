@@ -44,61 +44,41 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidationFormula)
-			CDataValidationFormula(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CDataValidationFormula()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				toXML2(writer, false);
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual EElementType getType () const
-			{
-				return et_x_DataValidationFormula;
-			}
+			CDataValidationFormula(OOX::Document *pMain = NULL);
+			virtual ~CDataValidationFormula();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;			
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);				
+			virtual EElementType getType () const;
 
 			std::wstring m_sNodeName;
 			std::wstring m_sText;
 		};
+
 		class CDataValidation : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidation)
             WritingElement_XlsbConstructors(CDataValidation)
-			CDataValidation(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CDataValidation()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+			CDataValidation(OOX::Document *pMain = NULL);
+			virtual ~CDataValidation();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
 
 			bool IsExtended();
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_DataValidation;
-			}
+			virtual EElementType getType () const;
+
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 
@@ -123,41 +103,35 @@ namespace OOX
 			nullable<CDataValidationFormula>				m_oFormula1;
 			nullable<CDataValidationFormula>				m_oFormula2;
 		};
+
 		class CDataValidations : public WritingElementWithChilds<CDataValidation>
 		{
 		public:
 			WritingElement_AdditionConstructors(CDataValidations)
             WritingElement_XlsbConstructors(CDataValidations)
-			CDataValidations(OOX::Document *pMain = NULL) : WritingElementWithChilds<CDataValidation>(pMain)
-			{
-			}
-			virtual ~CDataValidations()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return L"";
-			}
+			CDataValidations(OOX::Document *pMain = NULL);
+			virtual ~CDataValidations();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 					void toXML2(NSStringUtils::CStringBuilder& writer, bool bExtendedWrite) const;
+
             void fromBin(XLS::BaseObjectPtr& obj);
-			virtual EElementType getType () const
-			{
-				return et_x_DataValidations;
-			}
+			virtual EElementType getType () const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+
 		public:
 			mutable nullable_int							m_oCount;
 			nullable<SimpleTypes::COnOff>					m_oDisablePrompts;
 			nullable<SimpleTypes::CDecimalNumber>			m_oXWindow;
 			nullable<SimpleTypes::CDecimalNumber>			m_oYWindow;
 		};
+
 	} //Spreadsheet
 } // namespace OOX

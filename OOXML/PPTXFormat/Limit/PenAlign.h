@@ -41,38 +41,14 @@ namespace PPTX
 		class PenAlign : public BaseLimit
 		{
 		public:
-			PenAlign()
-			{
-				m_strValue = _T("ctr");
-			}
+			PenAlign();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("ctr") == strValue) ||
-					(_T("in") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("ctr") == m_strValue)
-					return 0;
-				if (_T("in") == m_strValue)
-					return 1;
-				return 0;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{	
-				if (1 == src)
-					m_strValue = _T("in");
-				else
-					m_strValue = _T("ctr");
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

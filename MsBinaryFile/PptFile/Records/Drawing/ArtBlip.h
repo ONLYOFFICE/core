@@ -33,9 +33,11 @@
 
 #include "../../Reader/Records.h"
 
+
+
+namespace PPT
+{
 class CPPTDocumentInfo;
-
-
 class CRecordOfficeArtBlip  : public CUnknownRecord
 {
 public:
@@ -44,14 +46,9 @@ public:
 	std::wstring		m_sFileName;
 	std::wstring		m_strTmpDirectory;
 
-	CRecordOfficeArtBlip()
-	{
-		m_oDocumentInfo = NULL;
-	}
+    CRecordOfficeArtBlip();
 
-	~CRecordOfficeArtBlip()
-	{
-	}
+    ~CRecordOfficeArtBlip();
 
 	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
@@ -65,17 +62,8 @@ public:
 
 	//BYTE* m_pScan0;
 	
-	CRecordBitmapBlip()
-	{
-	}
-
-	~CRecordBitmapBlip()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		return CUnknownRecord::ReadFromStream(oHeader, pStream);
-	}
-
+    CRecordBitmapBlip();
+    ~CRecordBitmapBlip();
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 };
+}

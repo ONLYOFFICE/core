@@ -30,9 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_RUN_FILE_INCLUDE_H_
-#define OOX_RUN_FILE_INCLUDE_H_
-
 #include "../CommonInclude.h"
 
 #include "Text.h"
@@ -47,78 +44,24 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CRun)
-			CRun()
-			{
-			}
-			virtual ~CRun()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<r>"));
-				if(m_oRPr.IsInit())
-					m_oRPr->toXML(writer);
-				
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-                {
-                    if (  m_arrItems[i] )
-                    {
-                        m_arrItems[i]->toXML(writer);
-                    }
-                }
+			CRun();
+			virtual ~CRun();
 
-				writer.WriteString(_T("</r>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-
-					if ( _T("rPr") == sName )
-						m_oRPr = oReader;
-					else if ( _T("t") == sName )
-						m_arrItems.push_back( new CText( oReader ));
-				}
-			}
-
-            void fromBin(std::wstring& str, unsigned short fontindex)
-            {
-                auto ptr = new CText();
-                ptr->fromBin(str);
-                m_arrItems.push_back(ptr);
-
-                m_oRPr.Init();
-                m_oRPr->m_nFontIndex.Init();
-                m_oRPr->m_nFontIndex = fontindex;
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_r;
-			}
+			void fromBin(std::wstring& str, unsigned short fontindex);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<CRPr>	m_oRPr;
 		};
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_RUN_FILE_INCLUDE_H_

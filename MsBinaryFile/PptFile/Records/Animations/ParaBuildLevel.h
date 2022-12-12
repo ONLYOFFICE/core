@@ -36,34 +36,15 @@
 #include "LevelInfoAtom.h"
 #include "ExtTimeNodeContainer.h"
 
-
+namespace PPT
+{
 class CRecordParaBuildLevel
 {
 public:
-    CRecordParaBuildLevel () : m_nRecordLen(0)
-    {
-    }
+    CRecordParaBuildLevel ();
+    ~CRecordParaBuildLevel(); 
 
-    ~CRecordParaBuildLevel()
-    {
-    }
-
-    virtual void ReadFromStream ( POLE::Stream* pStream )
-    {
-        SRecordHeader oHeader;
-
-        if (oHeader.ReadFromStream(pStream))
-        {
-            m_oLevelInfoAtom.ReadFromStream ( oHeader, pStream );
-            m_nRecordLen += oHeader.RecLen + 8;
-        }
-
-        if (oHeader.ReadFromStream(pStream))
-        {
-            m_oTimeNode.ReadFromStream ( oHeader, pStream );
-            m_nRecordLen += oHeader.RecLen + 8;
-        }
-    }
+    virtual void ReadFromStream ( POLE::Stream* pStream );
 
     _UINT32 getRecordLen()const {return m_nRecordLen;}
 
@@ -71,5 +52,6 @@ public:
     CRecordExtTimeNodeContainer     m_oTimeNode;	// ExtTimeNodeContainer
 
 private:
-    _UINT32 m_nRecordLen;
+    _UINT32 m_nRecordLen = 0;
 };
+}

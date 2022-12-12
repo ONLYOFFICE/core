@@ -40,19 +40,11 @@ namespace DocFileFormat
     public:
       static const int STRUCTURE_SIZE = 2;
 
-	  EndnoteDescriptor(): aEndIdx(0), bUsed(false) {}
+	  EndnoteDescriptor();
 
-	  virtual ~EndnoteDescriptor()
-	  {
-	  }  
-      virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length )
-      {
-        EndnoteDescriptor *newObject = new EndnoteDescriptor();
+	  virtual ~EndnoteDescriptor();
 
-		newObject->aEndIdx = reader->ReadInt16();
-
-		return static_cast<ByteStructure*>( newObject );
-      }
+	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 
 	  bool bUsed;
 	  short aEndIdx;

@@ -37,6 +37,46 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		void HeadingVariant::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(_T("i4"));
+			if (oNode.IsValid())
+			{
+				m_type		= L"i4";
+				m_iContent	= oNode.GetTextExt();
+			}
+			else
+			{
+				m_type		 = L"lpstr";
+				m_strContent =	 node.ReadNodeNoNS(_T("lpstr")).GetTextExt();
+			}
+		}
+		std::wstring HeadingVariant::toXML() const
+		{
+			if (m_type.IsInit() && (m_type->get() == _T("i4")))
+			{
+				return _T("<vt:variant><vt:i4>") + std::to_wstring(*m_iContent) + _T("</vt:i4></vt:variant>");
+			}
+			return _T("<vt:variant><vt:lpstr>") + *m_strContent + _T("</vt:lpstr></vt:variant>");
+		}
+		void HeadingVariant::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("vt:variant"));
+			pWriter->EndAttributes();
+
+			if (m_type.IsInit() && (m_type->get() == _T("i4")))
+			{
+				pWriter->WriteNodeValue(_T("vt:i4"), *m_iContent);
+			}
+			else
+			{
+				pWriter->WriteNodeValue(_T("vt:lpstr"), *m_strContent);
+			}
+
+			pWriter->EndNode(_T("vt:variant"));
+		}
+		void HeadingVariant::FillParentPointersForChilds() {}
+
 		void CVariantVStream::fromXML(XmlUtils::CXmlNode& node)
 		{
 			XmlMacroReadAttributeBase(node, _T("version"), m_strVersion);
@@ -606,7 +646,6 @@ namespace PPTX
 		{
 			return m_eBaseType.IsInit() ? m_eBaseType.get() : vtEmpty;
 		}
-
 
 		void CustomProperty::fromXML(XmlUtils::CXmlNode& node)
 		{

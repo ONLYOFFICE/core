@@ -265,17 +265,10 @@ namespace DocFileFormat
 
 	class Handle
 	{
-	public: 
+	public:
+		Handle();
+		Handle(std::wstring pos, std::wstring xRange);
 
-		Handle()
-		{ 
-		}
-
-		Handle(std::wstring pos, std::wstring xRange) 
-		{
-			position	=	pos;
-			xrange		=	xRange;
-		}
 		std::wstring position;
 		std::wstring xrange;
 		std::wstring switchHandle;
@@ -288,18 +281,10 @@ namespace DocFileFormat
 	{
 	public:
 
-		ShapeType (unsigned int typeCode) : Filled(true), Stroked(true), TypeCode(typeCode), Joins(miter), ShapeConcentricFill(false)
-		{
-		}
+		ShapeType (unsigned int typeCode);
+		virtual ~ShapeType();
 
-		virtual ~ShapeType()
-		{
-		}
-
-		unsigned int GetTypeCode() const
-		{
-			return TypeCode;
-		}
+		unsigned int GetTypeCode() const;
     
 		/// This string describes a sequence of commands that define the shape’s path.
 		/// This string describes both the pSegmentInfo array and pVertices array in the shape’s geometry properties.

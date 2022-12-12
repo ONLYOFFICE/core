@@ -37,51 +37,19 @@
 #include <memory>
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeAnimationValueListContainer : public CUnknownRecord
 {
 public:
 
-    ~CRecordTimeAnimationValueListContainer()
-    {
-        for (auto pEntry : m_arrEntry)
-        {
-            RELEASEOBJECT(pEntry);
-        }
-    }
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
-
-        LONG lPos		=	0;
-        StreamUtils::StreamPosition ( lPos, pStream );
-
-        UINT lCurLen	=	0;
-
-        SRecordHeader ReadHeader;
-        while ( lCurLen < m_oHeader.RecLen )
-        {
-            if ( ReadHeader.ReadFromStream(pStream) == false )
-            {
-                break;
-            }
-
-            lCurLen += 8 + ReadHeader.RecLen;
-
-            auto  Entry = new CRecordTimeAnimationEntry;
-            Entry->ReadFromStream ( lCurLen, ReadHeader, pStream );
-
-            m_arrEntry.push_back ( Entry );
-
-        }
-
-        StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
-    }
+    CRecordTimeAnimationValueListContainer();
+    ~CRecordTimeAnimationValueListContainer();
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream ) override;
 
 public:
 
-    std::vector<CRecordTimeAnimationEntry*>	m_arrEntry;
+    std::vector<CRecordTimeAnimationValueListEntry*>	m_arrEntry;
 };
 
 }

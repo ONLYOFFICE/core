@@ -43,6 +43,9 @@
     #define DIB_RGB_COLORS  0x00
 #endif
 
+#define MINACCURACY 2
+#define MAXACCURACY 10
+
 namespace MetaFile
 {
 	unsigned char GetLowestBit(unsigned int ulValue)
@@ -1012,8 +1015,8 @@ namespace MetaFile
 		return sTmpFile;
 	}
 
-	    std::wstring StringNormalization(std::wstring wsString)
-	    {
+	std::wstring StringNormalization(std::wstring wsString)
+	{
 		std::wstring wsText;
 		for (wchar_t wChar : wsString)
 		    if (wChar == L'<')
@@ -1033,14 +1036,45 @@ namespace MetaFile
 
 		    else wsText += wChar;
 		return wsText;
-		}
+	}
 
-		std::wstring ConvertToWString(double dValue, unsigned int unAccuracy)
+	static int GetMinAccuracy(double dValue)
+	{
+		if (dValue == (int)dValue)
+			return 0;
+
+		if (dValue < 0.)
+			dValue = -dValue;
+
+		if (dValue > 1.)
+			return MINACCURACY;
+
+		unsigned int unAccuracy = 0;
+
+		while (unAccuracy < MAXACCURACY)
 		{
-			std::wstringstream owsStream;
-			owsStream << std::fixed << std::setprecision(unAccuracy) << dValue;
+			dValue *= 10;
 
-			return owsStream.str();
+			if (dValue >= 1.)
+				break;
+
+			++unAccuracy;
 		}
+
+		if (MAXACCURACY == unAccuracy)
+			return 0;
+		else
+			return unAccuracy + 3;
+	}
+
+	std::wstring ConvertToWString(double dValue, int nAccuracy)
+	{
+		int nNewAccuracy = (-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
+
+		std::wstringstream owsStream;
+		owsStream << std::fixed << std::setprecision(nNewAccuracy) << dValue;
+
+		return owsStream.str();
+	}
 
 }

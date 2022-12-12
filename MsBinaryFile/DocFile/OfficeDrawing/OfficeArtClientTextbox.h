@@ -40,24 +40,11 @@ namespace DocFileFormat
 	public:
 		static const unsigned short TYPE_CODE_0xF00D = 0xF00D;
 
-		OfficeArtClientTextbox () : Record()
-		{
+		OfficeArtClientTextbox ();
+		OfficeArtClientTextbox (IBinaryReader* reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~OfficeArtClientTextbox();
 
-		}
-
-		OfficeArtClientTextbox (IBinaryReader* reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : Record(reader, size, typeCode, version, instance), m_nIndex(0)
-		{
-			unsigned int number	=	Reader->ReadUInt16();
-			m_nIndex			=	Reader->ReadUInt16();
-		}
-		virtual ~OfficeArtClientTextbox()
-		{
-
-		}
-		virtual Record* NewObject(IBinaryReader* reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance)
-		{
-			return new OfficeArtClientTextbox(reader, bodySize, typeCode, version, instance);
-		}
+		virtual Record* NewObject(IBinaryReader* reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance);
 
 		int	m_nIndex = 0;
 	};

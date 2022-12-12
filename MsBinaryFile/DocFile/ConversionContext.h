@@ -39,15 +39,8 @@ namespace DocFileFormat
 	class ConversionContext
 	{
 	public:
-		ConversionContext (WordDocument* doc, WordprocessingDocument* docx)
-		{
-			_doc = doc;
-			_docx = docx;
-		}
-
-		virtual ~ConversionContext()
-		{
-		}
+		ConversionContext (WordDocument* doc, WordprocessingDocument* docx);
+		virtual ~ConversionContext();
 
 		inline void AddRsid(const std::wstring& rsid)
 		{

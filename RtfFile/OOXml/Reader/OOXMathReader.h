@@ -32,9 +32,7 @@
 #pragma once
 
 #include "OOXReaderBasic.h"
-
 #include "../../Format/RtfMath.h"
-
 #include "../../../OOXML/DocxFormat/WritingElement.h"
 
 class OOXMathReader
@@ -45,13 +43,8 @@ private:
 public: 
 	RtfCharProperty m_oCharProperty;
 
-	OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem)
-	{
-		m_ooxElem = ooxElem;
-		m_oCharProperty.SetDefault();
-	}
+	OOXMathReader(OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElem);
 
 	bool ParseElement(ReaderParameter oParam , OOX::WritingElement * ooxMath, RtfMathPtr & rtfMath);
-
 	bool Parse(ReaderParameter oParam, RtfMath& oOutput);
 };

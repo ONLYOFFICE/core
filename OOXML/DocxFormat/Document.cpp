@@ -32,10 +32,31 @@
 #pragma once
 #include "Document.h"
 
+#include "Math/oMathPara.h"
+#include "Math/OMath.h"
+
+#include "Logic/Annotations.h"
+#include "Logic/Hyperlink.h"
+#include "Logic/Paragraph.h"
+#include "Logic/Sdt.h"
+#include "Logic/Table.h"
+
+#include "External/HyperLink.h"
+
 namespace OOX
 {
 	namespace Logic
 	{
+		CBackground::CBackground(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CBackground::~CBackground()
+		{
+		}
+		EElementType CBackground::getType() const
+		{
+			return et_w_background;
+		}
 		void CBackground::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlMacroReadAttributeBase(oNode, L"w:color", m_oColor);
@@ -125,6 +146,23 @@ namespace OOX
 			WritingElement_ReadAttributes_End(oReader)
 		}
 
+		CBgPict::CBgPict(OOX::Document *pMain) : WritingElement(pMain)
+		{
+		}
+		CBgPict::~CBgPict()
+		{
+		}
+		void CBgPict::fromXML(XmlUtils::CXmlNode& oNode)
+		{
+		}
+		std::wstring CBgPict::toXML() const
+		{
+			return L"";
+		}
+		EElementType CBgPict::getType() const
+		{
+			return et_w_bgPict;
+		}
 		void CBgPict::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -306,11 +344,13 @@ namespace OOX
 				{
 					OOX::CDocument *doc = docx->m_bGlossaryRead ? docx->m_oGlossary.document : docx->m_oMain.document;
 					
-					OOX::CDocument::_section section;
-					section.sect = m_oSectPr.GetPointer();
-					section.end_elm = doc->m_arrItems.size();
-
-					doc->m_arrSections.push_back(section);
+					if (doc->m_arrSections.empty())
+					{
+						OOX::CDocument::_section section;
+						doc->m_arrSections.push_back(section);
+					}
+					doc->m_arrSections.back().sect = m_oSectPr.GetPointer();
+					doc->m_arrSections.back().end_elm = doc->m_arrItems.size(); //активный рутовый еще не добавлен
 				}
 //-------------------------------------------------------------------------
 			}
@@ -471,6 +511,50 @@ mc:Ignorable=\"w14 w15 wp14\">";
 		sXml += L"</w:body></w:document>";
 
 		return sXml;
+	}
+	CDocument::~CDocument()
+	{
+		ClearItems();
+	}
+	const CDocument& CDocument::operator =(const XmlUtils::CXmlNode& oNode)
+	{
+		fromXML( (XmlUtils::CXmlNode&)oNode );
+		return *this;
+	}
+	const CDocument& CDocument::operator =(const XmlUtils::CXmlLiteReader& oReader)
+	{
+		fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+		return *this;
+	}
+	void CDocument::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	const OOX::FileType CDocument::type() const
+	{
+		if (m_bMacroEnabled)	return FileTypes::DocumentMacro;
+		else					return FileTypes::Document;
+	}
+	const CPath CDocument::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CDocument::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CDocument::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+	void CDocument::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDocument::getType() const
+	{
+		return et_w_document;
 	}
 
 } // namespace OOX

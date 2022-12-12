@@ -47,41 +47,19 @@ namespace PPTX
 		class BaseLimit
 		{
 		public:
-			BaseLimit(const std::wstring& str = L"") : m_strValue(str)
-			{
-			}
-			BaseLimit(const BaseLimit& oSrc)
-			{
-				*this = oSrc;
-			}
+			BaseLimit(const std::wstring& str = L"");
+			BaseLimit(const BaseLimit& oSrc);
+			virtual ~BaseLimit();
 
-            virtual ~BaseLimit() {}
-
-			BaseLimit& operator=(const BaseLimit& oSrc)
-			{
-				m_strValue = oSrc.m_strValue;
-				return *this;
-			}
-
-			void operator=(const std::wstring& str)
-			{
-				set(str);
-			}
-			AVSINLINE void _set(const std::wstring& strValue)
-			{
-				set(strValue);
-			}
+			BaseLimit& operator=(const BaseLimit& oSrc);
+			void operator=(const std::wstring& str);
 
 			virtual void set(const std::wstring& strValue) = 0;
+			void _set(const std::wstring& strValue);
 
-			AVSINLINE std::wstring& get() 
-			{
-				return m_strValue;
-			}
-			AVSINLINE const std::wstring& get() const 
-			{
-				return m_strValue;
-			}
+			std::wstring& get();
+			const std::wstring& get() const;
+
 			virtual BYTE GetBYTECode() const = 0;
 			virtual void SetBYTECode(const BYTE& src) = 0;
 

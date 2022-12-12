@@ -41,130 +41,46 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CFromTo)
-			CFromTo()
-			{
-			}
-			virtual ~CFromTo()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const
-			{
-				writer.WriteString(L"<");
-				writer.WriteString(sName);
-				writer.WriteString(L">");
-				if(m_oCol.IsInit())
-				{
-					WritingStringValInt(L"xdr:col", m_oCol->GetValue());
-				}
-				if(m_oColOff.IsInit())
-				{
-					WritingStringValInt64(L"xdr:colOff", m_oColOff->ToEmu());
-				}
-				if(m_oRow.IsInit())
-				{
-					WritingStringValInt(L"xdr:row", m_oRow->GetValue());
-				}
-				if(m_oRowOff.IsInit())
-				{
-					WritingStringValInt64(L"xdr:rowOff", m_oRowOff->ToEmu());
-				}
-				writer.WriteString(L"</");
-				writer.WriteString(sName);
-				writer.WriteString(L">");
-			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CFromTo();
+			virtual ~CFromTo();
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const std::wstring& sName) const;
 
-					if ( L"col" == sName )
-						m_oCol = oReader.GetText2();
-					else if ( L"colOff" == sName )
-						m_oColOff = oReader.GetText2();
-					else if ( L"row" == sName )
-						m_oRow = oReader.GetText2();
-					else if ( L"rowOff" == sName )
-						m_oRowOff = oReader.GetText2();
-				}
-			}
-
-			virtual EElementType getType () const
-			{
-				return et_x_FromTo;
-			}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oCol;
 			nullable<SimpleTypes::CEmu> m_oColOff;
 			nullable<SimpleTypes::CUnsignedDecimalNumber> m_oRow;
 			nullable<SimpleTypes::CEmu> m_oRowOff;
 		};
+
 		class CExt : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CExt)
-			CExt()
-			{
-			}
-			virtual ~CExt()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return L"";
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(L"<xdr:ext");
-				WritingStringNullableAttrInt64(L"cx", m_oCx, m_oCx->ToEmu());
-				WritingStringNullableAttrInt64(L"cy", m_oCy, m_oCy->ToEmu());
-				writer.WriteString(L"/>");
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CExt();
+			virtual ~CExt();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual EElementType getType () const
-			{
-				return et_x_Ext;
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if( oReader, L"cx", m_oCx )
-					WritingElement_ReadAttributes_Read_if( oReader, L"cy", m_oCy )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CEmu> m_oCx;
 			nullable<SimpleTypes::CEmu> m_oCy;

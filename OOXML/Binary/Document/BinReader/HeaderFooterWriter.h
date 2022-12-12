@@ -33,33 +33,10 @@
 
 #include "../../Sheets/Common/Common.h"
 #include "../../../Common/SimpleTypes_Word.h"
-#include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace Writers
 {
-	class ContentWriter
-	{
-	public:		
-		NSStringUtils::CStringBuilder	m_oBackground;
-		NSStringUtils::CStringBuilder	m_oContent;
-		NSStringUtils::CStringBuilder	m_oSecPr;
-	};
-	class HdrFtrItem
-	{
-	public:
-		HdrFtrItem(SimpleTypes::EHdrFtr _eType)
-		{
-			eType = _eType;
-		}
-		bool IsEmpty()
-		{
-            return m_sFilename.empty();
-		}
-        std::wstring			m_sFilename;
-		ContentWriter			Header;
-        std::wstring			rId;
-		SimpleTypes::EHdrFtr	eType;
-	};
+
 static  std::wstring g_string_xml_start = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 static  std::wstring g_string_xmlns = L"xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
@@ -79,18 +56,39 @@ xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
 mc:Ignorable=\"w14 w15 wp14\">";
-   
-	static  std::wstring g_string_hdr_Start = g_string_xml_start + L"<w:hdr " + g_string_xmlns;
-    static  std::wstring g_string_hdr_End = L"</w:hdr>";
 
-    static  std::wstring g_string_ftr_Start = g_string_xml_start + L"<w:ftr " + g_string_xmlns;
-    static  std::wstring g_string_ftr_End = L"</w:ftr>";
+	static  std::wstring g_string_hdr_Start = g_string_xml_start + L"<w:hdr " + g_string_xmlns;
+	static  std::wstring g_string_hdr_End = L"</w:hdr>";
+
+	static  std::wstring g_string_ftr_Start = g_string_xml_start + L"<w:ftr " + g_string_xmlns;
+	static  std::wstring g_string_ftr_End = L"</w:ftr>";
 
 	static  std::wstring g_string_footnotes_Start = g_string_xml_start + L"<w:footnotes " + g_string_xmlns;
 	static  std::wstring g_string_footnotes_End = L"</w:footnotes>";
 
 	static  std::wstring g_string_endnotes_Start = g_string_xml_start + L"<w:endnotes " + g_string_xmlns;
-    static  std::wstring g_string_endnotes_End = L"</w:endnotes>";
+	static  std::wstring g_string_endnotes_End = L"</w:endnotes>";
+	class ContentWriter
+
+	{
+	public:		
+		NSStringUtils::CStringBuilder	m_oBackground;
+		NSStringUtils::CStringBuilder	m_oContent;
+		NSStringUtils::CStringBuilder	m_oSecPr;
+	};
+
+	class HdrFtrItem
+	{
+	public:
+		HdrFtrItem(SimpleTypes::EHdrFtr _eType);
+
+		bool IsEmpty();
+
+        std::wstring			m_sFilename;
+		ContentWriter			Header;
+        std::wstring			rId;
+		SimpleTypes::EHdrFtr	eType;
+	};
 
 	class HeaderFooterWriter 
 	{
@@ -99,115 +97,36 @@ mc:Ignorable=\"w14 w15 wp14\">";
 		std::vector<HdrFtrItem*> m_aHeaders;
 		std::vector<HdrFtrItem*> m_aFooters;
 
-		HeaderFooterWriter( std::wstring sDir) : m_sDir(sDir) 
-		{
-		}
-		~HeaderFooterWriter()
-		{
-			for (size_t i = 0, length = m_aHeaders.size(); i < length; ++i)
-				delete m_aHeaders[i];
-			m_aHeaders.clear();
-			
-			for (size_t i = 0, length = m_aFooters.size(); i < length; ++i)
-				delete m_aFooters[i];
-			m_aFooters.clear();
-		}
-		void Write(bool bGlossary = false)
-		{
-			for (size_t i = 0, length = m_aHeaders.size(); i < length; ++i)
-			{
-				HdrFtrItem* pHeader = m_aHeaders[i];
-				WriteItem(L"header", pHeader->m_sFilename, pHeader->Header, true);
-			}
-			for (size_t i = 0, length = m_aFooters.size(); i < length; ++i)
-			{
-				HdrFtrItem* pFooter = m_aFooters[i];
-				WriteItem(L"footer", pFooter->m_sFilename, pFooter->Header, false);
-			}
-		}
-        void WriteItem( std::wstring sHeader,  std::wstring& sFilename, ContentWriter& m_oWriter, bool bHeader)
-		{
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR + sFilename;
+		HeaderFooterWriter( std::wstring sDir);
+		~HeaderFooterWriter();
 
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(filePath.GetPath());
-
-			if (bHeader)
-				oFile.WriteStringUTF8(g_string_hdr_Start);
-			else
-				oFile.WriteStringUTF8(g_string_ftr_Start);
-			oFile.WriteStringUTF8(m_oWriter.m_oContent.GetData());
-			if (bHeader)
-				oFile.WriteStringUTF8(g_string_hdr_End);
-			else
-				oFile.WriteStringUTF8(g_string_ftr_End);
-			oFile.CloseFile();
-		}
+		void Write(bool bGlossary = false);
+		void WriteItem( std::wstring sHeader,  std::wstring& sFilename, ContentWriter& m_oWriter, bool bHeader);
 	};
+
 	class FootnotesWriter
 	{
          std::wstring m_sDir;
+
 	public:
 		ContentWriter	m_oNotesWriter;
 
-        FootnotesWriter( std::wstring sDir ):m_sDir(sDir)
-		{
-		}
-		void Write(bool bGlossary = false)
-		{
-			if(IsEmpty()) return;
-
-			std::wstring sFilename = getFilename();
-
-             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + sFilename;
-
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW (filePath);
-			oFile.WriteStringUTF8 (g_string_footnotes_Start);
-			oFile.WriteStringUTF8 (m_oNotesWriter.m_oContent.GetData());
-			oFile.WriteStringUTF8 (g_string_footnotes_End);
-			oFile.CloseFile();
-		}
-		std::wstring getFilename()
-		{
-			return L"footnotes.xml";
-		}
-		bool IsEmpty()
-		{
-			return !(m_oNotesWriter.m_oContent.GetCurSize() > 0);
-		}
+		FootnotesWriter( std::wstring sDir );
+		void Write(bool bGlossary = false);
+		std::wstring getFilename();
+		bool IsEmpty();
 	};
+
 	class EndnotesWriter
 	{
 		std::wstring m_sDir;
+
 	public:
 		ContentWriter	m_oNotesWriter;
 
-        EndnotesWriter( std::wstring sDir ) : m_sDir(sDir) 
-		{
-		}
-		void Write(bool bGlossary = false)
-		{
-			if(IsEmpty()) return;
-
-			std::wstring sFilename = getFilename();
-
-             std::wstring filePath = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"") + FILE_SEPARATOR_STR + sFilename;
-
-			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(filePath);
-			oFile.WriteStringUTF8(g_string_endnotes_Start);
-			oFile.WriteStringUTF8(m_oNotesWriter.m_oContent.GetData());
-			oFile.WriteStringUTF8(g_string_endnotes_End);
-			oFile.CloseFile();
-		}
-		std::wstring getFilename()
-		{
-			return L"endnotes.xml";
-		}
-		bool IsEmpty()
-		{
-			return !(m_oNotesWriter.m_oContent.GetCurSize() > 0);
-		}
+		EndnotesWriter( std::wstring sDir );
+		void Write(bool bGlossary = false);
+		std::wstring getFilename();
+		bool IsEmpty();
 	};
 }

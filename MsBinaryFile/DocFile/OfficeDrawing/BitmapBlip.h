@@ -47,43 +47,11 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF029 = 0xF029;
 
 	public:
-		BitmapBlip() : Record(), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL)
-		{
-		}
+		BitmapBlip();
+		BitmapBlip(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance);
+		virtual ~BitmapBlip();
 
-		BitmapBlip(IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance) : 
-			Record(_reader, size, typeCode, version, instance ), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL), pvBitsSize(0)
-		{
-			m_rgbUid = Reader->ReadBytes(16, true);
-
-			if ((instance == 0x46B) || (instance == 0x6E3) || (instance == 0x6E1) || (instance == 0x7A9) || (instance == 0x6E5))
-			{
-				m_rgbUidPrimary = Reader->ReadBytes(16, true);
-			}
-
-			m_bTag = Reader->ReadByte();
-
-			pvBitsSize = (size - 17);
-
-			if (m_rgbUidPrimary)
-			{
-				pvBitsSize -= 16;  
-			}
-
-			m_pvBits = Reader->ReadBytes((int)(pvBitsSize), true);
-		}
-
-		virtual ~BitmapBlip()
-		{
-			RELEASEARRAYOBJECTS(m_rgbUid);
-			RELEASEARRAYOBJECTS(m_rgbUidPrimary);
-			RELEASEARRAYOBJECTS(m_pvBits);
-		}
-
-		virtual Record* NewObject(IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance)
-		{
-			return new BitmapBlip(_reader, bodySize, typeCode, version, instance);
-		}
+		virtual Record* NewObject(IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance);
 
 	public:
 

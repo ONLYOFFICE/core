@@ -53,6 +53,7 @@ namespace OOX
 	{
 	public:
 		ActiveXObject() {}
+		virtual ~ActiveXObject() {}
 		static ActiveXObject* Create(const std::wstring &class_id);
 		static ActiveXObject* Create(_UINT16 type);
 		virtual void Parse(unsigned char* pData, DWORD size) = 0;
@@ -116,6 +117,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectScroll);
 		}
+		virtual ~ActiveXObjectScroll() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectButton : public ActiveXObject
@@ -126,6 +128,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectButton);
 		}
+		virtual ~ActiveXObjectButton() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectImage : public ActiveXObject
@@ -136,6 +139,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectImage);
 		}
+		virtual ~ActiveXObjectImage() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 		virtual std::wstring toXml();
 
@@ -153,6 +157,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectLabel);
 		}
+		virtual ~ActiveXObjectLabel() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectSpin : public ActiveXObject
@@ -163,6 +168,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectSpin);
 		}
+		virtual ~ActiveXObjectSpin() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	
@@ -174,6 +180,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectDialog);
 		}
+		virtual ~ActiveXObjectFormControl() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 		
 // FormDataBlock
@@ -210,6 +217,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectGBox);
 		}
+		virtual ~ActiveXObjectFrame() {}
 	};
 	class ActiveXObjectMorphData : public ActiveXObject
 	{
@@ -222,6 +230,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(type);
 		}
+		virtual ~ActiveXObjectMorphData() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 	};
 	class ActiveXObjectTabStrip : public ActiveXObject
@@ -232,6 +241,7 @@ namespace OOX
 			m_oObjectType.Init();
 			m_oObjectType->SetValue(SimpleTypes::Spreadsheet::objectTabStrip);
 		}
+		virtual ~ActiveXObjectTabStrip() {}
 		virtual void Parse(unsigned char* pData, DWORD size);
 		virtual std::wstring toXml();
 

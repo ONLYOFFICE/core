@@ -33,23 +33,17 @@
 
 #include "../Reader/Records.h"
 
-namespace PPT_FORMAT
+namespace PPT
 {
 typedef _UINT32 SlideIdRef;
 
 class CRecordLinkedSlide10Atom : public CUnknownRecord
 {
 public:
-void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override
-{
-    m_oHeader = oHeader;
-
-    m_nLinkedSlideIdRef = StreamUtils::ReadLONG(pStream);
-    m_cLinkedShapes     = StreamUtils::ReadLONG(pStream);
-}
-
-public:
     SlideIdRef  m_nLinkedSlideIdRef;
     _INT32      m_cLinkedShapes;
+
+
+    void ReadFromStream(SRecordHeader &oHeader, POLE::Stream *pStream) override;
 };
 }

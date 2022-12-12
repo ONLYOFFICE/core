@@ -76,3 +76,49 @@ std::wstring RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 {
 	return L"";
 }
+
+int RtfDocument::GetZIndex()
+{
+	return m_nZIndexLast++;
+}
+void RtfDocument::SetZIndex(int val)
+{
+	if (m_nZIndexLast < val)
+		m_nZIndexLast = val;
+}
+void RtfDocument::SetShapeId( int nShapeId )//todoo -> map
+{
+	for (size_t i = 0; i < m_aShapeId.size(); i++ )
+	{
+		if( nShapeId == m_aShapeId[i] )
+			return;
+	}
+	m_aShapeId.push_back( nShapeId );
+}
+int RtfDocument::GetShapeId(  int& nShapeId  )
+{
+	if( PROP_DEF != nShapeId )
+		return nShapeId;
+	int nNewShapeId;
+	while( true )
+	{
+		bool bUnique = true;
+		nNewShapeId = m_oIdGenerator.Generate_ShapeId();
+
+		for (size_t i = 0; i < m_aShapeId.size(); i++ )
+		{
+			if( nNewShapeId == m_aShapeId[i] )
+			{
+				bUnique = false;
+				break;
+			}
+		}
+		if( true == bUnique )
+		{
+			nShapeId = nNewShapeId;
+			m_aShapeId.push_back( nNewShapeId );
+			break;
+		}
+	}
+	return nShapeId;
+}

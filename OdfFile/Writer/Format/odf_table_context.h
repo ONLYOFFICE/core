@@ -55,6 +55,7 @@ public:
 	
 	void set_table_styled(bool val);
 	bool is_styled();
+	bool is_styled(int row, int col);
 
 	void set_table_size(size_t cols, size_t rows);
 

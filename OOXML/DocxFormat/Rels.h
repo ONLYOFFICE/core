@@ -56,111 +56,26 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CRelationShip)
 
-            CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal = false) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
-			{
-				XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
+			CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal = false);
+			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal);
+			virtual ~CRelationShip();
 
-				if (bExternal)
-				{
-					m_sMode = L"External";
-				}
-			}
-
-            CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal) : m_rId(rId)
-			{
-                m_sMode = new std::wstring(L"External" );
-
-				if (pExternal.IsInit())
-				{
-					m_oTarget	= pExternal->Uri();
-					m_sType		= pExternal->type().RelationType();
-				}
-			}
-
-            virtual ~CRelationShip()
-			{
-			}
 			
-            virtual void  fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void  fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
-            virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-				XmlMacroReadAttributeBase( oNode, L"Id",         m_rId );
-				XmlMacroReadAttributeBase( oNode, L"Target",     m_oTarget );
-				XmlMacroReadAttributeBase( oNode, L"Type",       m_sType );
-				XmlMacroReadAttributeBase( oNode, L"TargetMode", m_sMode );
-			}
-            virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(L"Id",         m_rId.ToString() );
-				oAttr.Write(L"Type",       m_sType );
-                std::wstring sTarget = m_oTarget.m_strFilename;
-
-                XmlUtils::replace_all(sTarget,L"\\",L"/");
-				sTarget = XmlUtils::EncodeXmlString(sTarget);
-				oAttr.Write(L"Target", sTarget);
-				if(m_sMode.IsInit())
-					oAttr.Write(L"TargetMode", m_sMode.get() );
-				
-				return XmlUtils::CreateNode(L"Relationship", oAttr );
-			}
-
-			virtual EElementType getType() const
-			{
-				return OOX::et_Relationship;
-			}
+			virtual std::wstring toXML() const;
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-                std::wstring sTempTarget;
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-				WritingElement_ReadAttributes_Read_if     ( oReader,L"Id",         m_rId )
-				WritingElement_ReadAttributes_Read_else_if( oReader,L"Target",     sTempTarget )
-				WritingElement_ReadAttributes_Read_else_if( oReader,L"Type",       m_sType )
-				WritingElement_ReadAttributes_Read_else_if( oReader,L"TargetMode", m_sMode )
-				WritingElement_ReadAttributes_End( oReader )
-
-				//External rels не нормализуем, иначе искажаются пути в гиперссылках.
-				if(IsExternal())
-					m_oTarget.SetName(sTempTarget, false);
-				else
-					m_oTarget.SetName(sTempTarget, true);
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
-            const std::wstring Type() const
-			{
-				return m_sType;
-			}
-			const CPath   Filename() const
-			{
-				return m_oTarget;
-			}
-			const CPath   Target() const
-			{
-				return m_oTarget;
-			}
-			const bool    IsExternal()const
-			{
-				if ( !m_sMode.IsInit() )
-					return false;
-                return ( *m_sMode == L"External");
-			}
-
-            const RId rId() const
-			{
-				return m_rId;
-			}
+			const std::wstring Type() const;
+			const CPath   Filename() const;
+			const CPath   Target() const;
+			const bool    IsExternal() const;
+			const RId rId() const;
 
 		private:
 			RId						m_rId;
@@ -174,153 +89,22 @@ namespace OOX
 	class CRels
 	{
 	public:
+		CRels();
+		CRels(const CPath& oFilePath);
+		~CRels();
 
-		CRels()
-		{
-		}
-		CRels(const CPath& oFilePath)
-		{
-			Read( oFilePath );
-		}
-		~CRels()
-		{
-            for (size_t i = 0; i < m_arRelations.size(); ++i)
-			{
-				if ( m_arRelations[i] ) delete m_arRelations[i];
-			}
-			m_arRelations.clear();
-			m_mapRelations.clear();
-		}
+		void Read (const CPath& oFilePath);
+		void Write(const CPath& oFilePath) const;
 
-		void Read (const CPath& oFilePath)
-		{
-            CPath oRelsPath = CreateFileName( oFilePath );
+		void Registration(const RId& rId, const FileType& oType, const CPath& oPath, bool bExternal = false);
+		void Registration(const RId& rId, const smart_ptr<External> pExternal);
 
-            XmlUtils::CXmlLiteReader oReader;
-
-            if ( !oReader.FromFile( oRelsPath.GetPath() ) )
-                return;
-
-            if ( !oReader.ReadNextNode() )
-                return;
-
-            std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-            if (L"Relationships" == sName )
-            {
-                if ( !oReader.IsEmptyNode() )
-                {
-                    int nRelationshipsDepth = oReader.GetDepth();
-                    while ( oReader.ReadNextSiblingNode( nRelationshipsDepth ) )
-                    {
-                        sName = XmlUtils::GetNameNoNS(oReader.GetName());
-                        if (L"Relationship" == sName )
-                        {
-                            OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip(oReader);
-                            if (pRel) 
-							{
-								std::wstring rid = pRel->rId().get();
-								
-								m_arRelations.push_back(pRel);			
-								m_mapRelations.insert(std::make_pair( rid, pRel) );
-							}
-                        }
-                    }
-                }
-            }
-		}
-		void Write(const CPath& oFilePath) const
-		{
-			if ( m_mapRelations.empty() )return;
-			CPath oFile = CreateFileName( oFilePath );
-			CSystemUtility::CreateDirectories( oFile.GetDirectory() );
-
-			XmlUtils::CXmlWriter oWriter;
-
-			oWriter.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
-
-            oWriter.WriteNodeBegin(L"Relationships", true );
-			oWriter.WriteAttribute(L"xmlns",L"http://schemas.openxmlformats.org/package/2006/relationships" );
-            oWriter.WriteNodeEnd(L"Relationships", true, false );
-
-			for (size_t i = 0; i < m_arRelations.size(); ++i)
-			{
-				if ( m_arRelations[i] )
-					oWriter.WriteString( m_arRelations[i]->toXML() );
-			}
-
-			oWriter.WriteNodeEnd(L"Relationships");
-
-			NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
-		}
-
-
-		void Registration(const RId& rId, const FileType& oType, const CPath& oPath, bool bExternal = false)
-		{
-			if( FileTypes::Unknow == oType ) return;
-
-			std::wstring strFileName = oPath.m_strFilename;
-           
-			std::wstring strDir = oPath.GetDirectory() +L"";
-
-			Rels::CRelationShip* pRel = NULL;
-
-			if ( L"" == oPath.GetExtention() )
-			{
-				if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject" )
-				{
-					strFileName += (strFileName.empty() ? L"" : L".bin");
-					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName, bExternal );
-				}
-				else if ( oType.RelationType() == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" )
-				{
-					strFileName += L".wmf" ;					
-					pRel = new Rels::CRelationShip( rId, oType.RelationType(), strDir + strFileName, bExternal );
-				}
-			}
-			else
-			{
-				pRel = new Rels::CRelationShip( rId, oType.RelationType(), oPath.GetPath(), bExternal);
-				
-			}
-			if (pRel)
-			{
-				m_arRelations.push_back(pRel);
-				m_mapRelations.insert( std::make_pair( rId.get(), pRel));
-			}
-		}
-		void Registration(const RId& rId, const smart_ptr<External> pExternal)
-		{
-			Rels::CRelationShip* pRel = new Rels::CRelationShip( rId, pExternal );
-			
-			m_arRelations.push_back(pRel);
-			m_mapRelations.insert( std::make_pair( rId.get(), pRel) );
-		}
-		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip)
-		{
-			(*ppRelationShip) = NULL;
-
-            boost::unordered_map<std::wstring, Rels::CRelationShip*>::iterator pFind = m_mapRelations.find(rId.get());
-			if (pFind != m_mapRelations.end())
-			{
-				(*ppRelationShip) = pFind->second;
-			}
-		}
+		void GetRel(const RId& rId, Rels::CRelationShip** ppRelationShip);
 
 	private:
-
-		const CPath CreateFileName(const CPath& oFilePath) const
-		{
-            std::wstring strTemp = oFilePath.GetDirectory()  + FILE_SEPARATOR_STR +L"_rels" + FILE_SEPARATOR_STR;
-
-			if (L"" == oFilePath.GetFilename() )	strTemp +=L".rels";
-			else										strTemp += ( oFilePath.GetFilename() +L".rels" );
-
-            CPath pathTemp = strTemp;
-			return pathTemp.GetPath();
-		}
+		const CPath CreateFileName(const CPath& oFilePath) const;
 
 	public:
-
 		std::vector<Rels::CRelationShip*>				m_arRelations;
 		boost::unordered_map<std::wstring, Rels::CRelationShip*>	m_mapRelations;
 	};

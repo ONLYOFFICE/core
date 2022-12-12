@@ -47,6 +47,16 @@
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 
+OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
+{
+	init();
+}
+OOX::Spreadsheet::CXlsx::CXlsx(const CPath& oFilePath) : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
+{
+	init();
+
+	Read( oFilePath );
+}
 OOX::Spreadsheet::CXlsx::~CXlsx()
 {
     if(bDeleteWorkbook)			RELEASEOBJECT(m_pWorkbook);
@@ -228,6 +238,11 @@ void OOX::Spreadsheet::CXlsx::CreateStyles ()
 		RELEASEOBJECT(m_pStyles);
 	m_pStyles = new CStyles(NULL);
 	bDeleteStyles = true;
+}
+
+PPTX::Theme* OOX::Spreadsheet::CXlsx::GetTheme () const
+{
+	return (PPTX::Theme  *)(m_pTheme.GetPointer());
 }
 
 void OOX::Spreadsheet::CXlsx::PrepareWorkbook()

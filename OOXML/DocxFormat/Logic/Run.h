@@ -31,58 +31,28 @@
  */
 #pragma once
 
-#include "RunProperty.h"
-#include "RunContent.h"
-#include "FldChar.h"
-#include "FldSimple.h"
-
-#include "../Drawing/Drawing.h"
-#include "../Comments.h"
-#include "Pict.h"
-#include "Annotations.h"
-#include "AlternateContent.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+#include "../../Base/Nullable.h"
+#include "../WritingElement.h"
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+        class CRunProperty;
 		//--------------------------------------------------------------------------------
 		// CRun 17.3.2.25 (Part 1)
 		//--------------------------------------------------------------------------------	
 		class CRun : public WritingElementWithChilds<>
 		{
 		public:
-			CRun(OOX::Document *pMain = NULL) : WritingElementWithChilds<>(pMain) 
-			{
-				m_oRunProperty = NULL;
-			}
-			CRun(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oNode );
-			}
-			CRun(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-			{
-				fromXML( oReader );
-			}
-			virtual ~CRun()
-			{
-				ClearItems();
-			}
-			const CRun &operator =(const XmlUtils::CXmlNode& oNode)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlNode&)oNode );
-				return *this;
-			}
-			const CRun &operator =(const XmlUtils::CXmlLiteReader& oReader)
-			{
-				ClearItems();
-				
-				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
-				return *this;
-			}
+			CRun(OOX::Document *pMain = NULL);
+			CRun(XmlUtils::CXmlNode &oNode);
+			CRun(XmlUtils::CXmlLiteReader& oReader);
+			virtual ~CRun();
+
+			const CRun &operator =(const XmlUtils::CXmlNode& oNode);
+			const CRun &operator =(const XmlUtils::CXmlLiteReader& oReader);
 
 			virtual void ClearItems();
 
@@ -94,14 +64,11 @@ namespace OOX
 			WritingElement* fromXMLElem(XmlUtils::CXmlLiteReader& oReader);
 			void fromXMLText(XmlUtils::CXmlLiteReader& oReader);
 			
-			virtual EElementType getType() const
-			{
-				return et_w_r;
-			}
+			virtual EElementType getType() const;
 
 		private:
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			nullable<SimpleTypes::CLongHexNumber>	m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber>	m_oRsidR;

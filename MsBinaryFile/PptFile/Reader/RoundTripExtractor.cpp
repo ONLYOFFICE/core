@@ -34,6 +34,8 @@
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include <boost/regex.hpp>
 
+using namespace PPT;
+
 RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt) :
     m_roundTripRecord(rt), m_hasError(false)
 {

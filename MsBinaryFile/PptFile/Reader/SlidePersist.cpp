@@ -33,27 +33,30 @@
 
 #include "../Records/TextFullSettings.h"
 
-SSlidePersist::SSlidePersist() : m_arTextAttrs()
+namespace PPT
 {
-}
+	SSlidePersist::SSlidePersist() : m_arTextAttrs()
+	{
+	}
 
-SSlidePersist::SSlidePersist(const SSlidePersist& oSrc)
-{
-	*this = oSrc;
-}
+	SSlidePersist::SSlidePersist(const SSlidePersist& oSrc)
+	{
+		*this = oSrc;
+	}
 
-//std::wstring SSlidePersist::ToString()
-//{
-//    std::wstring str = _T("");
-//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
-//	return str;
-//}
+	//std::wstring SSlidePersist::ToString()
+	//{
+	//    std::wstring str = _T("");
+	//	str.Format(_T("<SlideInfo PsrRef='%d' SlideID='%d' />"), m_nPsrRef, m_nSlideID);
+	//	return str;
+	//}
 
-SSlidePersist& SSlidePersist::operator =(const SSlidePersist& oSrc)
-{
-	m_nPsrRef	= oSrc.m_nPsrRef;
-	m_nSlideID = oSrc.m_nSlideID;
+	SSlidePersist& SSlidePersist::operator =(const SSlidePersist& oSrc)
+	{
+		m_nPsrRef = oSrc.m_nPsrRef;
+		m_nSlideID = oSrc.m_nSlideID;
 
-	m_arTextAttrs = oSrc.m_arTextAttrs;
-	return (*this);
+		m_arTextAttrs = oSrc.m_arTextAttrs;
+		return (*this);
+	}
 }

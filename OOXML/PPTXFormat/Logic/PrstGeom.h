@@ -47,132 +47,26 @@ namespace PPTX
 			WritingElement_AdditionConstructors(PrstGeom)
 			PPTX_LOGIC_BASE2(PrstGeom)
 
-			PrstGeom& operator=(const PrstGeom& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			PrstGeom& operator=(const PrstGeom& oSrc);
+			virtual OOX::EElementType getType() const;
 
-				prst = oSrc.prst;
-				avLst = oSrc.avLst;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				return *this;
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_prstGeom;
-			}			
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-					
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-
-					if (sName == L"a:avLst")
-					{
-						if ( oReader.IsEmptyNode() )
-							continue;
-
-						int nParentDepth1 = oReader.GetDepth();
-						while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
-						{
-							std::wstring sName1 = oReader.GetName();
-							
-							if (sName1 == L"a:gd")
-							{
-								Gd gd;
-								avLst.push_back(gd);
-								avLst.back().fromXML(oReader);
-							}
-						}
-					}
-				}
-			
-				FillParentPointersForChilds();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("prst"), prst)
-				WritingElement_ReadAttributes_End( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlMacroReadAttributeBase(node, L"prst", prst);
-
-				XmlUtils::CXmlNode nodeList = node.ReadNode(_T("a:avLst"));
-				XmlMacroLoadArray(nodeList, _T("a:gd"), avLst, Gd);
-
-				FillParentPointersForChilds();
-			}
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("prst"), prst.get());
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(_T("a:avLst"), avLst);
-
-				return XmlUtils::CreateNode(_T("a:prstGeom"), oAttr, oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:prstGeom"));
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("prst"), prst.get());
-				pWriter->EndAttributes();
-				
-				if (avLst.size() == 0)
-					pWriter->WriteString(_T("<a:avLst/>"));
-				else
-					pWriter->WriteArray(_T("a:avLst"), avLst);
-
-				pWriter->EndNode(_T("a:prstGeom"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(GEOMETRY_TYPE_PRST);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString1(0, prst.get());
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecordArray(0, 1, avLst);
-
-				pWriter->EndRecord();
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			Limit::ShapeType	prst;
 			std::vector<Gd>		avLst;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				size_t count = avLst.size();
-				for (size_t i = 0; i < count; ++i)
-					avLst[i].SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
+
 		public:
-			virtual std::wstring GetODString()const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("prst"), prst.get());
-
-				std::wstring strXml = _T("");
-				size_t nCount = avLst.size();
-				for (size_t i = 0; i < nCount; ++i)
-					strXml += avLst[i].GetODString();
-
-				return XmlUtils::CreateNode(_T("prstGeom"), oAttr, strXml);
-			}
+			virtual std::wstring GetODString()const;
 		};
 	} // namespace Logic
 } // namespace PPTX

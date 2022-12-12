@@ -48,61 +48,26 @@ namespace OOX
 		class CXlsxFlat : public OOX::Document, public OOX::File, public WritingElement
 		{
 		public:
-
 			CXlsxFlat();
 			CXlsxFlat(const CPath& oFilePath);
 			virtual ~CXlsxFlat();
 
-			virtual void read(const CPath& oFilePath)
-			{
-				XmlUtils::CXmlLiteReader oReader;
-				
-				if ( !oReader.FromFile( oFilePath.GetPath() ) )
-					return;
+			virtual void read(const CPath& oFilePath);
+			virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-				if ( !oReader.ReadNextNode() )
-					return;
+			virtual const OOX::FileType type() const;
 
-				fromXML(oReader);
-			}
-			virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
-			{
-				std::wstring sXml = toXML();
-				
-				NSFile::CFileBinary file;
-				file.CreateFileW(oFilePath.GetPath());
-				file.WriteStringUTF8(sXml);
-				file.CloseFile();
-			}
-			virtual const OOX::FileType type() const
-			{
-				return OOX::Spreadsheet::FileTypes::SpreadsheetFlat;
-			}
-			virtual const CPath DefaultDirectory() const
-			{
-				return type().DefaultDirectory();
-			}
-			virtual const CPath DefaultFileName() const
-			{
-				return type().DefaultFileName();
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& oNode)
-			{
-			}
+			virtual const CPath DefaultDirectory() const;
+			virtual const CPath DefaultFileName() const;
+
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual std::wstring toXML() const
-			{
-				std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
 
-				return sXml;
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-			}
-			virtual EElementType getType() const
-			{
-				return et_x_SpreadsheetFlat;
-			}
+			virtual std::wstring toXML() const;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			virtual EElementType getType() const;
+
 	//-----------------------------------------------------------------------
 
 			nullable<CWorkbook>			m_pWorkbook;
@@ -115,6 +80,7 @@ namespace OOX
 			std::pair<double, double> getMaxDigitSize();
 
 			std::wstring m_strFontDirectory;
+
 		private:
 			std::pair<double, double> m_maxDigitSize;
 		};

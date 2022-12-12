@@ -42,111 +42,40 @@ namespace OOX
 	class RId
 	{
 	public:
-		RId() : m_id(0)
-		{
-			bNumber = false;
-		}
-		RId(const unsigned int id) : m_id(id)
-		{
-			bNumber = true;
-		}
-		RId(const std::wstring& rid)
-		{
-			(*this) = rid;
-		}
-		RId(const RId& oSrc)
-		{
-			(*this) = oSrc;
-		}
+		RId();
+		RId(const unsigned int id);
+		RId(const std::wstring& rid);
+		RId(const RId& oSrc);
 
-		const RId& operator= (const std::wstring& rid)
-		{
-			//Учитывает только rid начинающиеся с rId, остальные сохраняем так как есть
-			//Tогда не будет проблем с добавление новый id, мы всегда будем генерировать их с префиксом rId
-			std::wstring sFindString(_T("rId"));
-			size_t nFindStringLength = sFindString.length();
-			
-			if(0 == rid.find(sFindString) && rid.length() > nFindStringLength && 0 != isdigit(rid[nFindStringLength]))
-			{
-				std::wstring strParam = rid.substr(nFindStringLength);
-				m_id = XmlUtils::GetUInteger(strParam);
-				bNumber = true;
-			}
-			else
-			{
-				m_id = 0;
-				m_sId = rid;
-				bNumber = false;
-			}
-			
-			return *this;
-		}
+		const RId& operator= (const std::wstring& rid);
+		const RId& operator= (const RId& oSrc);
+		const bool operator ==(const RId& lhs) const;
+		const bool operator !=(const RId& lhs) const;
+		const bool operator < (const RId& lhs) const;
+		const bool operator <=(const RId& lhs) const;
+		const bool operator >(const RId& lhs) const;
+		const bool operator >=(const RId& lhs) const;
 
-		const RId& operator= (const RId& oSrc)
-		{
-			m_id	= oSrc.m_id;
-			m_sId	= oSrc.m_sId;
-			bNumber = oSrc.bNumber;
-			return *this;
-		}
+		std::wstring get() const;
+		unsigned int getNumber() const;
 
-		const bool operator ==(const RId& lhs) const
-		{
-			return m_id == lhs.m_id && m_sId == lhs.m_sId;
-		}
-		const bool operator !=(const RId& lhs) const
-		{
-			return !operator ==(lhs);
-		}
-		const bool operator < (const RId& lhs) const
-		{
-			return m_id < lhs.m_id;
-		}
-		const bool operator <=(const RId& lhs) const
-		{
-			return m_id <= lhs.m_id;
-		}
-		const bool operator >(const RId& lhs) const
-		{
-			return m_id > lhs.m_id;
-		}
-		const bool operator >=(const RId& lhs) const
-		{
-			return m_id >= lhs.m_id;
-		}
+		const RId	next() const;
 
-		AVSINLINE std::wstring get() const 
-		{
-			return ToString();
-		}
-		AVSINLINE unsigned int getNumber() const { return m_id; }
+		const std::wstring ToString() const;
 
-		const RId	next() const
-		{
-			bNumber	= true;
-			return RId(m_id + 1);
-		}
-		
-		const std::wstring ToString() const
-		{
-			if(!m_sId.empty())
-				return m_sId;
-			else if (bNumber)
-                return _T("rId") + std::to_wstring((unsigned int)m_id);
-			else
-				return L"";
-		}
 		template<typename T>
 		void toPPTY(BYTE type, T pWriter) const
 		{
 			pWriter->WriteBYTE(type);
             pWriter->WriteStringW(ToString());
 		}
+
         private:
-		unsigned int	m_id;
-		std::wstring	m_sId;
-		mutable bool	bNumber;
+			unsigned int	m_id;
+			std::wstring	m_sId;
+			mutable bool	bNumber;
 	};
+
 } // namespace OOX
 
 #endif // OOX_RID_INCLUDE_H_

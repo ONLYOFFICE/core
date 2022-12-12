@@ -46,119 +46,27 @@ namespace PPTX
 			WritingElement_AdditionConstructors(Run)
 			PPTX_LOGIC_BASE2(Run)
 
-			Run& operator=(const Run& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			Run& operator=(const Run& oSrc);
 
-				rPr = oSrc.rPr;
-				text = oSrc.text;
+			virtual OOX::EElementType getType () const;
 
-				return *this;
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_r;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				int nParentDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nParentDepth ) )
-				{
-					std::wstring sName = oReader.GetName();
-					if ( L"a:rPr" == sName )
-					{
-						rPr =  oReader ;
-					}
-					else if ( L"a:t" == sName )
-					{
-						if (!text.IsInit())
-							text = oReader.GetText2();
-					}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-				}
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				XmlUtils::CXmlNodes oNodes;
-				if (node.GetNodes(_T("*"), oNodes))
-				{
-					int count = oNodes.GetCount();
-					for (int i = 0; i < count; ++i)
-					{
-						XmlUtils::CXmlNode oNode;
-						oNodes.GetAt(i, oNode);
+			virtual std::wstring GetText() const;
+			void SetText(const std::wstring& srcText);
 
-						std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-
-						if (_T("rPr") == strName)
-						{
-							rPr = oNode;
-						}
-						else if (_T("t") == strName)
-						{
-							if (!text.IsInit())
-								text = oNode.GetTextExt();
-						}
-					}
-				}
-				
-				FillParentPointersForChilds();
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("a:r"));
-				pWriter->EndAttributes();
-
-				if (rPr.is_init())
-					rPr->m_name = _T("a:rPr");
-				pWriter->Write(rPr);
-
-				if (text.is_init())
-				{
-					pWriter->WriteString(_T("<a:t>"));
-					pWriter->WriteStringXML(*text);
-					pWriter->WriteString(_T("</a:t>"));
-				}
-				
-				pWriter->EndNode(_T("a:r"));
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(PARRUN_TYPE_RUN);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteString2(0, text);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord2(0, rPr);
-
-				pWriter->EndRecord();
-
-
-                if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
-					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
-			}
-
-			virtual std::wstring GetText()const{return text.get_value_or(_T(""));};
-			void SetText(const std::wstring& srcText)
-			{
-				text = srcText;
-			}
 		public:
 			nullable<RunProperties> rPr;
+
 		private:
 			nullable_string			text;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				if(rPr.IsInit())
-					rPr->SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

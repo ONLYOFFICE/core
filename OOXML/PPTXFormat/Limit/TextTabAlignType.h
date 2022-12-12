@@ -40,58 +40,14 @@ namespace PPTX
 		class TextTabAlignType : public BaseLimit
 		{
 		public:
-			TextTabAlignType()
-			{
-				m_strValue = _T("r");
-			}
+			TextTabAlignType();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("ctr") == strValue) ||
-					(_T("dec") == strValue) ||
-					(_T("l") == strValue) ||
-					(_T("r") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("ctr") == m_strValue)
-					return 0;
-				if (_T("dec") == m_strValue)
-					return 1;
-				if (_T("l") == m_strValue)
-					return 2;
-				if (_T("r") == m_strValue)
-					return 3;
-				return 2;
-			}
-
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0:
-					m_strValue = _T("ctr");
-					break;
-				case 1:
-					m_strValue = _T("dec");
-					break;
-				case 2:
-					m_strValue = _T("l");
-					break;
-				case 3:
-					m_strValue = _T("r");
-					break;
-				default:
-					m_strValue = _T("l");
-					break;
-				}
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

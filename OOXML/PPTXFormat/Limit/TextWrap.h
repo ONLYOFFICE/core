@@ -40,37 +40,14 @@ namespace PPTX
 		class TextWrap : public BaseLimit
 		{
 		public:
-                        TextWrap(const BYTE& src = 1)
-			{
-                                SetBYTECode(src);
-			}
+			TextWrap(const BYTE& src = 1);
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("none") == strValue) ||
-					(_T("square") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const
-			{
-				if (_T("none") == m_strValue)
-					return 0;
-				if (_T("square") == m_strValue)
-					return 1;
-				return 1;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				if (0 == src)
-					m_strValue = _T("none");
-				else
-					m_strValue = _T("square");
-			}
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

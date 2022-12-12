@@ -52,6 +52,7 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Math/oMathContent.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 
@@ -5123,6 +5124,18 @@ int Binary_DocumentTableReader::ReadParagraphContent(BYTE type, long length, voi
 		READ1_DEF(length, res, this->ReadBookmarkEnd, &oBookmarkEnd);
 		GetRunStringWriter().WriteString(oBookmarkEnd.toXML());
 	}
+	else if (c_oSerParType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		GetRunStringWriter().WriteString(oPerm.toXML());
+	}
+	else if (c_oSerParType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		GetRunStringWriter().WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5534,7 +5547,7 @@ int Binary_DocumentTableReader::ReadBookmarkStart(BYTE type, long length, void* 
 	else if ( c_oSerBookmark::DisplacedByCustomXml == type )
 	{
 		pBookmarkStart->m_oDisplacedByCustomXml.Init();
-		pBookmarkStart->m_oDisplacedByCustomXml->SetValue((SimpleTypes::EDisplacedByCustomXml)m_oBufferedStream.GetUChar());
+		pBookmarkStart->m_oDisplacedByCustomXml->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
 	else if ( c_oSerBookmark::ColFirst == type )
 	{
@@ -5568,7 +5581,63 @@ int Binary_DocumentTableReader::ReadBookmarkEnd(BYTE type, long length, void* po
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-
+int Binary_DocumentTableReader::ReadPermStart(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CPermStart* pPerm = static_cast<OOX::Logic::CPermStart*>(poResult);
+	if (c_oSerPermission::Id == type)
+	{
+		pPerm->m_sId.Init();
+		*pPerm->m_sId = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerPermission::DisplacedByCustomXml == type)
+	{
+		pPerm->m_oDisplacedByCustomXml.Init();
+		pPerm->m_oDisplacedByCustomXml->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerPermission::ColFirst == type)
+	{
+		pPerm->m_oColFirst.Init();
+		pPerm->m_oColFirst->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerPermission::ColLast == type)
+	{
+		pPerm->m_oColLast.Init();
+		pPerm->m_oColLast->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerPermission::Ed == type)
+	{
+		pPerm->m_sId.Init();
+		*pPerm->m_sId = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerPermission::EdGroup == type)
+	{
+		pPerm->m_oEdGrp.Init();
+		pPerm->m_oEdGrp->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	
+	return res;
+}
+int Binary_DocumentTableReader::ReadPermEnd(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Logic::CPermEnd* pPerm = static_cast<OOX::Logic::CPermEnd*>(poResult);
+	if (c_oSerPermission::Id == type)
+	{
+		pPerm->m_sId.Init();
+		*pPerm->m_sId = m_oBufferedStream.GetString3(length);
+	}
+	else if (c_oSerPermission::DisplacedByCustomXml == type)
+	{
+		pPerm->m_oDisplacedByCustomXml.Init();
+		pPerm->m_oDisplacedByCustomXml->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int Binary_DocumentTableReader::ReadHyperlink(BYTE type, long length, void* poResult)
 {		
 	int res = c_oSerConstants::ReadOk;

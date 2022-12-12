@@ -35,145 +35,127 @@
 #include "SlidePersist.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-using namespace PPT_FORMAT;
-
 namespace CRYPT
 {
-	class ECMADecryptor;
+class ECMADecryptor;
 }
-/**************************************************************
-теперь все структуры...
-которые участвуют в записях
-**************************************************************/
-struct SRatioAtom 
-{ 
-	LONG Number; 
-	LONG Denom; 
+namespace PPT
+{
+struct SRatioAtom
+{
+    LONG Number;
+    LONG Denom;
 
-	void FromStream(POLE::Stream* pStream)
-	{
-		Number	= StreamUtils::ReadLONG(pStream);
-		Denom	= StreamUtils::ReadLONG(pStream);
-	}
-}; 
- 
-struct SScalingAtom 
-{ 
-	SRatioAtom X; 
-	SRatioAtom Y; 
+    void FromStream(POLE::Stream* pStream);
+};
 
-	void FromStream(POLE::Stream* pStream)
-	{
-		X.FromStream(pStream);
-		Y.FromStream(pStream);
-	}
+struct SScalingAtom
+{
+    SRatioAtom X;
+    SRatioAtom Y;
+
+    void FromStream(POLE::Stream* pStream);
 };
 
 struct SSlideLayoutAtom
 {
-	INT		m_nGeom;
-	BYTE	m_pPlaceHolderID[8];
-	_UINT64 m_hash;
+    INT		m_nGeom;
+    BYTE	m_pPlaceHolderID[8];
+    _UINT64 m_hash;
 };
 
 struct SFileIdCluster
 {
-	UINT DrawingGroupID;
-	UINT CurrentShapeID;
+    UINT DrawingGroupID;
+    UINT CurrentShapeID;
 
-	void ReadFromStream(POLE::Stream* pStream)
-	{
-		DrawingGroupID = (UINT)StreamUtils::ReadDWORD(pStream);
-		CurrentShapeID = (UINT)StreamUtils::ReadDWORD(pStream);
-	}
+    void ReadFromStream(POLE::Stream* pStream);
 };
 #if !defined(_WIN32) && !defined (_WIN64)
-    #ifndef customTagPoint
-        #define customTagPoint
-        typedef struct tagPOINT
-        {
-            _INT32  x;
-            _INT32  y;
-        } POINT;
-        typedef struct tagRECT
-        {
-            _INT32    left;
-            _INT32    top;
-            _INT32    right;
-            _INT32    bottom;
-        } RECT;
-        typedef struct tagSIZE
-        {
-            _INT32 cx;
-            _INT32 cy;
-        }SIZE;
-     #endif
+#ifndef customTagPoint
+#define customTagPoint
+typedef struct tagPOINT
+{
+    _INT32  x;
+    _INT32  y;
+} POINT;
+typedef struct tagRECT
+{
+    _INT32    left;
+    _INT32    top;
+    _INT32    right;
+    _INT32    bottom;
+} RECT;
+typedef struct tagSIZE
+{
+    _INT32 cx;
+    _INT32 cy;
+}SIZE;
+#endif
 #endif
 
 namespace Gdiplus
 {
-    typedef struct
-    {
-        short           Left;
-        short           Top;
-        short           Right;
-        short           Bottom;
-    } PWMFRect16;
+typedef struct
+{
+    short           Left;
+    short           Top;
+    short           Right;
+    short           Bottom;
+} PWMFRect16;
 
-    typedef struct
-    {
-        _UINT32   iType;              // Record type EMR_HEADER
-        _UINT32   nSize;              // Record size in bytes.  This may be greater
-                                    // than the sizeof(ENHMETAHEADER).
-        RECT   rclBounds;          // Inclusive-inclusive bounds in device units
-        RECT   rclFrame;           // Inclusive-inclusive Picture Frame .01mm unit
-        _UINT32   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
-        _UINT32   nVersion;           // Version number
-        _UINT32   nBytes;             // Size of the metafile in bytes
-        _UINT32   nRecords;           // Number of records in the metafile
-        WORD    nHandles;           // Number of handles in the handle table
-                                    // Handle index zero is reserved.
-        WORD    sReserved;          // Reserved.  Must be zero.
-        _UINT32   nDescription;       // Number of chars in the unicode desc string
-                                    // This is 0 if there is no description string
-        _UINT32   offDescription;     // Offset to the metafile description record.
-                                    // This is 0 if there is no description string
-        _UINT32   nPalEntries;        // Number of entries in the metafile palette.
-        SIZE   szlDevice;          // Size of the reference device in pels
-        SIZE   szlMillimeters;     // Size of the reference device in millimeters
-    } ENHMETAHEADER3;
+typedef struct
+{
+    _UINT32   iType;              // Record type EMR_HEADER
+    _UINT32   nSize;              // Record size in bytes.  This may be greater
+    // than the sizeof(ENHMETAHEADER).
+    RECT   rclBounds;          // Inclusive-inclusive bounds in device units
+    RECT   rclFrame;           // Inclusive-inclusive Picture Frame .01mm unit
+    _UINT32   dSignature;         // Signature.  Must be ENHMETA_SIGNATURE.
+    _UINT32   nVersion;           // Version number
+    _UINT32   nBytes;             // Size of the metafile in bytes
+    _UINT32   nRecords;           // Number of records in the metafile
+    WORD    nHandles;           // Number of handles in the handle table
+    // Handle index zero is reserved.
+    WORD    sReserved;          // Reserved.  Must be zero.
+    _UINT32   nDescription;       // Number of chars in the unicode desc string
+    // This is 0 if there is no description string
+    _UINT32   offDescription;     // Offset to the metafile description record.
+    // This is 0 if there is no description string
+    _UINT32   nPalEntries;        // Number of entries in the metafile palette.
+    SIZE   szlDevice;          // Size of the reference device in pels
+    SIZE   szlMillimeters;     // Size of the reference device in millimeters
+} ENHMETAHEADER3;
 
-    typedef struct
-    {
-        _UINT32          Key;            // GDIP_WMF_PLACEABLEKEY
-        short           Hmf;            // Metafile HANDLE number (always 0)
-        PWMFRect16      BoundingBox;    // Coordinates in metafile units
-        short           Inch;           // Number of metafile units per inch
-        _UINT32          Reserved;       // Reserved (always 0)
-        short           Checksum;       // Checksum value for previous 10 WORDs
-    }WmfPlaceableFileHeader;
+typedef struct
+{
+    _UINT32          Key;            // GDIP_WMF_PLACEABLEKEY
+    short           Hmf;            // Metafile HANDLE number (always 0)
+    PWMFRect16      BoundingBox;    // Coordinates in metafile units
+    short           Inch;           // Number of metafile units per inch
+    _UINT32          Reserved;       // Reserved (always 0)
+    short           Checksum;       // Checksum value for previous 10 WORDs
+}WmfPlaceableFileHeader;
 }
 
 class CMetaHeader
 {
 
 public:
-	_UINT32 cbSize;
-	RECT rcBounds;
-	POINT ptSize;
-	_UINT32 cbSave;
-	BYTE compression;
-	BYTE filter;
+    _UINT32 cbSize;
+    RECT rcBounds;
+    POINT ptSize;
+    _UINT32 cbSave;
+    BYTE compression;
+    BYTE filter;
 
 public:
-	CMetaHeader()
-	{
-	}
-	void FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor = NULL);
+    CMetaHeader();
+    void FromStream(POLE::Stream* pStream, CRYPT::ECMADecryptor *pDecryptor = NULL);
 
-	void ToEMFHeader	(Gdiplus::ENHMETAHEADER3* pHeader);
-	void ToWMFHeader	(Gdiplus::WmfPlaceableFileHeader* pHeader);	
-	void ToPICTHeader	(BYTE *& pHeader, int & size);
+    void ToEMFHeader(Gdiplus::ENHMETAHEADER3* pHeader);
+    void ToWMFHeader(Gdiplus::WmfPlaceableFileHeader* pHeader);
+    void ToPICTHeader(BYTE *& pHeader, int & size);
 };
 
 class CMetaFileBuffer
@@ -182,165 +164,62 @@ public:
     bool			m_bIsCompressed;
 
     bool			m_bIsValid;
-	std::wstring	m_sExtension;
+    std::wstring	m_sExtension;
 private:
-	BYTE* m_pMetaHeader;
-	BYTE* m_pMetaFile;
+    BYTE* m_pMetaHeader;
+    BYTE* m_pMetaFile;
 
-	LONG m_lMetaHeaderSize;
-	LONG m_lMetaFileSize;
+    LONG m_lMetaHeaderSize;
+    LONG m_lMetaFileSize;
 
 public:
-	CMetaFileBuffer()
-	{
-		m_bIsCompressed		= false;
-        m_bIsValid			= false;
+    CMetaFileBuffer();
+    ~CMetaFileBuffer();
 
-		m_pMetaHeader		= NULL;
-		m_pMetaFile			= NULL;
+    void SetHeader(BYTE* pHeader, LONG lSize);
 
-		m_lMetaHeaderSize	= 0;
-		m_lMetaFileSize		= 0;
-	}
-	~CMetaFileBuffer()
-	{
-		RELEASEARRAYOBJECTS(m_pMetaHeader);
-		RELEASEARRAYOBJECTS(m_pMetaFile);
+    void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed);
 
-		if (m_bIsCompressed)
-			RELEASEARRAYOBJECTS(m_pMetaFile);
-		m_bIsCompressed = false;
-	}
-
-	void SetHeader(BYTE* pHeader, LONG lSize)
-	{
-		m_pMetaHeader		= pHeader;
-		m_lMetaHeaderSize	= lSize;
-	}
-
-    void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
-	{
-		m_bIsCompressed = bIsCompressed;
-		if (!m_bIsCompressed)
-		{
-			m_pMetaFile		= pCompress;
-			m_lMetaFileSize = lUncompressSize;
-		}
-		else
-		{
-			ULONG lSize = lUncompressSize;
-			m_pMetaFile = new BYTE[lUncompressSize];
-            bool bRes	= NSZip::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
-			if (bRes)
-			{
-				m_lMetaFileSize = (LONG)lSize;
-				m_bIsCompressed = true;
-			}
-			else
-			{
-				RELEASEARRAYOBJECTS(m_pMetaFile);
-			
-				m_pMetaFile		= pCompress;
-				m_lMetaFileSize = lUncompressSize;
-				m_bIsCompressed = false;
-			}
-		}
-	}
-
-	void ToFile(NSFile::CFileBinary* pFile)
-	{
-		if (NULL != m_pMetaHeader)
-		{
-			pFile->WriteFile(m_pMetaHeader, m_lMetaHeaderSize);
-		}
-		if (NULL != m_pMetaFile)
-		{
-			pFile->WriteFile(m_pMetaFile, m_lMetaFileSize);
-		}
-	}
+    void ToFile(NSFile::CFileBinary* pFile);
 };
 
 namespace NSStreamReader
 {
-	static inline void Read(POLE::Stream* pStream, SPointAtom& oAtom)
-	{
-		oAtom.X = StreamUtils::ReadLONG(pStream);
-		oAtom.Y = StreamUtils::ReadLONG(pStream);
-	}
+void Read(POLE::Stream* pStream, ODRAW::SPointAtom& oAtom);
 
-	static inline void Read(POLE::Stream* pStream, SColorAtom& oAtom)
-	{
-		oAtom.R				= StreamUtils::ReadBYTE(pStream);
-		oAtom.G				= StreamUtils::ReadBYTE(pStream);
-		oAtom.B				= StreamUtils::ReadBYTE(pStream);
-		oAtom.Index			= StreamUtils::ReadBYTE(pStream);
+void Read(POLE::Stream* pStream, ODRAW::SColorAtom& oAtom);
 
-		oAtom.bPaletteIndex	= oAtom.bPaletteRGB = oAtom.bSystemRGB	= oAtom.bSysIndex = oAtom.bSchemeIndex = false;
-
-		if (oAtom.Index != 0xFF)
-		{
-			oAtom.bPaletteRGB	= (oAtom.Index == 0xFE);
-			oAtom.bSchemeIndex	= (oAtom.Index != 0xFE);
-		}
-	}
-	
-	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextSIRun& oRun, bool bIsIndentation = true);
-	void Read(POLE::Stream* pStream, PPT_FORMAT::CTextRuler& oRun);
+void Read(POLE::Stream* pStream, PPT::CTextSIRun& oRun, bool bIsIndentation = true);
+void Read(POLE::Stream* pStream, PPT::CTextRuler& oRun);
 }
 
 class CTextPFRunRecord
 {
 public:
-	PPT_FORMAT::CTextPFRun	m_oRun;
-	LONG					m_lLevel;
-	LONG					m_lCount;
+    PPT::CTextPFRun	m_oRun;
+    LONG					m_lLevel;
+    LONG					m_lCount;
 
-	CTextPFRunRecord() : m_oRun()
-	{
-		m_lLevel = -1;
-		m_lCount = 0;
-	}
-	CTextPFRunRecord(const CTextPFRunRecord& oSrc)
-	{
-		*this = oSrc;
-	}
-	CTextPFRunRecord& operator=(const CTextPFRunRecord& oSrc)
-	{
-		m_oRun		= oSrc.m_oRun;
-		m_lLevel	= oSrc.m_lLevel;
-		m_lCount	= oSrc.m_lCount;
-		return *this;
-	}
+    CTextPFRunRecord();
+    CTextPFRunRecord(const CTextPFRunRecord& oSrc);
+    CTextPFRunRecord& operator=(const CTextPFRunRecord& oSrc);
 
-	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
+    void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
 };
 
 class CTextCFRunRecord
 {
 public:
-	PPT_FORMAT::CTextCFRun	m_oRun;
-	LONG					m_lCount;
+    PPT::CTextCFRun	m_oRun;
+    LONG					m_lCount;
 
-	CTextCFRunRecord() : m_oRun()
-	{
-		m_lCount = 0;
-	}
-	CTextCFRunRecord(const CTextCFRunRecord& oSrc)
-	{
-		*this = oSrc;
-	}
-	CTextCFRunRecord& operator=(const CTextCFRunRecord& oSrc)
-	{
-		m_oRun		= oSrc.m_oRun;
-		m_lCount	= oSrc.m_lCount;
-		return *this;
-	}
+    CTextCFRunRecord();
+    CTextCFRunRecord(const CTextCFRunRecord& oSrc);
+    CTextCFRunRecord& operator=(const CTextCFRunRecord& oSrc);
 
-	void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
+    void LoadFromStream(POLE::Stream* pStream, bool bIsIndentation = true);
 };
 
-namespace PPT_FORMAT
-{
-    void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
-        std::wstring& strText, PPT_FORMAT::CTextAttributesEx& oAttributes);
+void ConvertPPTTextToEditorStructure(std::vector<CTextPFRunRecord>& oArrayPF, std::vector<CTextCFRunRecord>& oArrayCF,
+                                     std::wstring& strText, PPT::CTextAttributesEx& oAttributes);
 }

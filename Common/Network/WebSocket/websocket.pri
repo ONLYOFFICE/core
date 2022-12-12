@@ -2,9 +2,59 @@ core_mac:CONFIG += apple_platform
 core_ios:CONFIG += apple_platform
 
 apple_platform {
-	CONFIG += socketrocket
+    CONFIG += socketrocket
 } else {
-	CONFIG += ixwebsocket
+    CONFIG += ixwebsocket
+}
+
+CONFIG += libsocketio
+
+libsocketio:CONFIG += use_openssl
+ixwebsocket:CONFIG += use_openssl
+
+use_openssl {
+    include($$PWD/../../3dParty/ixwebsocket/openssl.pri)
+}
+
+libsocketio {
+    SOCKET_IO_LIB=$$PWD/../../3dParty/socketio/socket.io-client-cpp
+
+    INCLUDEPATH += \
+        $$SOCKET_IO_LIB/lib/websocketpp \
+        $$SOCKET_IO_LIB/lib/rapidjson/include \
+        $$SOCKET_IO_LIB/lib/asio/asio/include
+
+    HEADERS += \
+        $$SOCKET_IO_LIB/src/internal/sio_client_impl.h \
+        $$SOCKET_IO_LIB/src/internal/sio_packet.h \
+        $$SOCKET_IO_LIB/src/sio_message.h \
+        $$SOCKET_IO_LIB/src/sio_socket.h \
+        $$SOCKET_IO_LIB/src/sio_client.h
+
+    SOURCES += \
+        $$SOCKET_IO_LIB/src/internal/sio_client_impl.cpp \
+        $$SOCKET_IO_LIB/src/internal/sio_packet.cpp \
+        $$SOCKET_IO_LIB/src/sio_socket.cpp \
+        $$SOCKET_IO_LIB/src/sio_client.cpp
+
+    DEFINES += \
+        BOOST_DATE_TIME_NO_LIB \
+        BOOST_REGEX_NO_LIB \
+        ASIO_STANDALONE \
+        \
+        _WEBSOCKETPP_CPP11_STL_ \
+        _WEBSOCKETPP_CPP11_FUNCTIONAL_ \
+        _WEBSOCKETPP_CPP11_TYPE_TRAITS_ \
+        _WEBSOCKETPP_CPP11_CHRONO_ \
+        \
+        "SIO_TLS=1"
+
+    include($$PWD/../../3dParty/boost/boost.pri)
+
+    DEFINES += USE_IOWEBSOCKET
+
+    HEADERS += $$PWD/src/socketio/socketio_internal.h
+    SOURCES += $$PWD/src/socketio/socketio_internal.cpp
 }
 
 HEADERS += \

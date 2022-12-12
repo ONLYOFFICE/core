@@ -33,6 +33,7 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
+#include "../RId.h"
 
 namespace OOX
 {
@@ -149,7 +150,10 @@ namespace OOX
 			
 			std::vector<OOX::Spreadsheet::CConditionalFormatting*>	m_arrConditionalFormatting;
 
-			nullable<OOX::CPresenceInfo>		m_oPresenceInfo;
+			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
+
+			nullable_string m_oFileId;
+			nullable_string m_oPortalName;
 		};
 
 		//--------------------------------------------------------------------------------

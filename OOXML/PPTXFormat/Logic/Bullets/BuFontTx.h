@@ -45,52 +45,19 @@ namespace PPTX
 			WritingElement_AdditionConstructors(BuFontTx)
 			PPTX_LOGIC_BASE2(BuFontTx)
 
-			BuFontTx& operator=(const BuFontTx& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			BuFontTx& operator=(const BuFontTx& oSrc);
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual OOX::EElementType getType () const;
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				}
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_buFontTx;
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_End	( oReader )
-			}
-
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(L"<a:buFontTx/>");				
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(BULLET_TYPE_TYPEFACE_TX);
-				pWriter->EndRecord();
-			}
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

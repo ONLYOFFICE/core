@@ -51,6 +51,14 @@ namespace OOX
 {
 	namespace Logic
 	{
+		//--------------------------------------------------------------------------------
+		// StylisticSets
+		//--------------------------------------------------------------------------------
+
+		CStylisticSets::CStylisticSets(OOX::Document *pMain) : WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>(pMain)
+		{
+		}
+		CStylisticSets::~CStylisticSets() {}
 		void CStylisticSets::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -67,6 +75,9 @@ namespace OOX
 				}
 			}
 		}
+		void CStylisticSets::fromXML(XmlUtils::CXmlNode& node)
+		{
+		}
 		std::wstring CStylisticSets::toXML() const
 		{
 			std::wstring sResult = L"<w14:stylisticSets>";
@@ -82,6 +93,11 @@ namespace OOX
 			sResult += L"</w14:stylisticSets>";
 			return sResult;
 		}
+		EElementType CStylisticSets::getType() const
+		{
+			return et_w_stylisticSets;
+		}
+
 		//--------------------------------------------------------------------------------
 		// RPrChange 
 		//--------------------------------------------------------------------------------	
@@ -192,6 +208,41 @@ namespace OOX
 			WritingElement_ReadAttributes_End( oReader )
 		}
 
+		//--------------------------------------------------------------------------------
+		// RunProperty
+		//--------------------------------------------------------------------------------
+
+		CRunProperty::CRunProperty()
+		{
+			m_pText = NULL;
+			m_bRPRChange = false;
+		}
+		CRunProperty::~CRunProperty()
+		{
+			RELEASEOBJECT(m_pText);
+		}
+		CRunProperty::CRunProperty(const XmlUtils::CXmlNode &oNode)
+		{
+			m_pText = NULL;
+			m_bRPRChange = false;
+			fromXML( (XmlUtils::CXmlNode &)oNode );
+		}
+		CRunProperty::CRunProperty(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			m_pText = NULL;
+			m_bRPRChange = false;
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+		}
+		const CRunProperty& CRunProperty::operator=(const XmlUtils::CXmlNode &oNode)
+		{
+			fromXML( (XmlUtils::CXmlNode &)oNode );
+			return *this;
+		}
+		const CRunProperty& CRunProperty::operator=(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
 		void CRunProperty::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			fromXML(oReader, NULL);
@@ -346,7 +397,6 @@ namespace OOX
 				m_oRFonts->m_sAscii = *m_oFontName->m_sVal;
 			}
 		}
-
 		void CRunProperty::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			if ( L"w:rPr" != oNode.GetName() )
@@ -503,7 +553,6 @@ namespace OOX
 			if (!pWriter) return;
 			pWriter->WriteString(toXML());
 		}
-
         std::wstring CRunProperty::toXML() const
 		{
             std::wstring sResult = L"<w:rPr>";
@@ -730,7 +779,10 @@ namespace OOX
 
 			return oProperties;
 		}
-
+		EElementType CRunProperty::getType() const
+		{
+			return et_w_rPr;
+		}
 
 
 	} // Logic

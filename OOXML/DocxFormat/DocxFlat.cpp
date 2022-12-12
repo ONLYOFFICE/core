@@ -47,7 +47,6 @@
 
 namespace OOX
 {
-
 	CDocxFlat::CDocxFlat() : File(dynamic_cast<Document*>(this))
 	{
 	}
@@ -56,6 +55,42 @@ namespace OOX
 		read( oFilePath );
 	}
 	CDocxFlat::~CDocxFlat()
+	{
+	}
+	void CDocxFlat::read(const CPath& oFilePath)
+	{
+		XmlUtils::CXmlLiteReader oReader;
+
+		if ( !oReader.FromFile( oFilePath.GetPath() ) )
+			return;
+
+		if ( !oReader.ReadNextNode() )
+			return;
+
+		fromXML(oReader);
+	}
+	void CDocxFlat::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		std::wstring sXml = toXML();
+
+		NSFile::CFileBinary file;
+		file.CreateFileW(oFilePath.GetPath());
+		file.WriteStringUTF8(sXml);
+		file.CloseFile();
+	}
+	const OOX::FileType CDocxFlat::type() const
+	{
+		return FileTypes::DocumentFlat;
+	}
+	const CPath CDocxFlat::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CDocxFlat::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void CDocxFlat::fromXML(XmlUtils::CXmlNode& oNode)
 	{
 	}
 	void CDocxFlat::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
@@ -161,6 +196,16 @@ namespace OOX
 			m_pDocument->Add(file);
 		}
 	}
+	std::wstring CDocxFlat::toXML() const
+	{
+		std::wstring sXml = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+
+		return sXml;
+	}
+	EElementType CDocxFlat::getType() const
+	{
+		return et_w_wordDocument;
+	}
 	void CDocxFlat::ReadDocumentProperties(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -260,4 +305,5 @@ namespace OOX
 		else
 			return NULL;
 	}
+
 }

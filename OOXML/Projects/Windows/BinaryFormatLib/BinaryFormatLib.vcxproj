@@ -21,24 +21,45 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptFormula.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\ChartWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\CommentsWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\CustomXmlWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DefaultThemeWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DocumentRelsWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DocumentWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\FileWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\fontTableWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\HeaderFooterWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\MediaWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\NumberingWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\ReaderClasses.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinReader\Readers.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\SettingWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\StylesWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinWriters.cpp" />
-    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.cpp" />
     <ClCompile Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.cpp" />
     <ClCompile Include="..\..\..\Binary\MathEquation\MathEquation.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\CalculatorCRC32.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\Converter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesMaster.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesTheme.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\FontCutter.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Common\Common.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp" />
@@ -545,6 +566,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <OutDir>$(SolutionDir)$(Configuration)</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

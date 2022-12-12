@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_COLS_FILE_INCLUDE_H_
-#define OOX_COLS_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_unions/COLINFOS.h"
 
 namespace OOX
 {
@@ -46,86 +43,33 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CCol)
-				CCol(OOX::Document *pMain = NULL) : WritingElement(pMain)
-			{
-			}
-			virtual ~CCol()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<col"));
-				WritingStringNullableAttrBool(L"bestFit", m_oBestFit);
-				WritingStringNullableAttrBool(L"collapsed", m_oCollapsed);
-				WritingStringNullableAttrBool(L"customWidth", m_oCustomWidth);
-				WritingStringNullableAttrBool(L"hidden", m_oHidden);
-				WritingStringNullableAttrInt(L"min", m_oMin, m_oMin->GetValue());
-				WritingStringNullableAttrInt(L"max", m_oMax, m_oMax->GetValue());
-				WritingStringNullableAttrInt(L"outlineLevel", m_oOutlineLevel, m_oOutlineLevel->GetValue());
-				WritingStringNullableAttrBool(L"phonetic", m_oPhonetic);
-				WritingStringNullableAttrInt(L"style", m_oStyle, m_oStyle->GetValue());
-				WritingStringNullableAttrDouble(L"width", m_oWidth, m_oWidth->GetValue());
-				writer.WriteString(_T("/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes(oReader);
+			CCol(OOX::Document *pMain = NULL);
+			virtual ~CCol();
 
-				if (!oReader.IsEmptyNode())
-					oReader.ReadTillEnd();
-			}
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual EElementType getType() const
-			{
-				return et_x_Col;
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType() const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader); // -> Worksheet.cpp
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::ColInfo*>(obj.get());
-                m_oBestFit                  = ptr->fBestFit;
-                m_oCollapsed                = ptr->fCollapsed;
-                m_oCustomWidth              = ptr->fUserSet;
-                m_oHidden                   = ptr->fHidden;
-                m_oMax                      = ptr->colLast + 1;
-                m_oMin                      = ptr->colFirst + 1;
-                m_oOutlineLevel             = ptr->iOutLevel;
-                m_oPhonetic                 = ptr->fPhonetic;
-                m_oStyle                    = ptr->ixfeXLSB;
-
-                if (ptr->coldx > 0)
-                {
-                        m_oWidth            = (double)ptr->coldx / 256.;
-                }
-
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
-				nullable<SimpleTypes::COnOff>					m_oBestFit;
-				nullable<SimpleTypes::COnOff>					m_oCollapsed;
-				nullable<SimpleTypes::COnOff>					m_oCustomWidth;
-				nullable<SimpleTypes::COnOff>					m_oHidden;
-				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMax;
-				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMin;
-				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oOutlineLevel;
-				nullable<SimpleTypes::COnOff>					m_oPhonetic;
-				nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oStyle;
-				nullable<SimpleTypes::CDouble>					m_oWidth;
+			nullable<SimpleTypes::COnOff>					m_oBestFit;
+			nullable<SimpleTypes::COnOff>					m_oCollapsed;
+			nullable<SimpleTypes::COnOff>					m_oCustomWidth;
+			nullable<SimpleTypes::COnOff>					m_oHidden;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMax;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oMin;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oOutlineLevel;
+			nullable<SimpleTypes::COnOff>					m_oPhonetic;
+			nullable<SimpleTypes::CUnsignedDecimalNumber>	m_oStyle;
+			nullable<SimpleTypes::CDouble>					m_oWidth;
 		};
 
 		class CCols  : public WritingElementWithChilds<CCol>
@@ -133,87 +77,21 @@ namespace OOX
 		public:
 			WritingElement_AdditionConstructors(CCols)
             WritingElement_XlsbVectorConstructors(CCols)
-			CCols(OOX::Document *pMain = NULL) : WritingElementWithChilds<CCol>(pMain)
-			{
-			}
-			virtual ~CCols()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				if(m_arrItems.empty()) return;
+			CCols(OOX::Document *pMain = NULL);
+			virtual ~CCols();
 
-				writer.WriteString(_T("<cols>"));
-					
-                for ( size_t i = 0; i < m_arrItems.size(); ++i)
-				{
-                    if ( m_arrItems[i] )
-					{
-                        m_arrItems[i]->toXML(writer);
-					}
-				}
-				
-				writer.WriteString(_T("</cols>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			virtual EElementType getType () const;
 
-					if ( _T("col") == sName )
-					{
-						CCol *pCol = new CCol(m_pMainDocument);
-						pCol->fromXML(oReader);
-
-						m_arrItems.push_back(pCol);
-					}
-				}
-			}
-            void fromBin(std::vector<XLS::BaseObjectPtr>& obj)
-            {
-                //ReadAttributes(obj);
-
-                if (obj.empty())
-                    return;
-
-                for(auto &COLINFOS : obj)
-                {
-                    auto ptr = static_cast<XLSB::COLINFOS*>(COLINFOS.get());
-                    for(auto &col : ptr->m_arBrtColInfo)
-                    {
-                        CCol *pCol = new CCol(m_pMainDocument);
-                        pCol->fromBin(col);
-
-                        m_arrItems.push_back(pCol);
-                    }
-                }
-            }
-
-			virtual EElementType getType () const
-			{
-				return et_x_Cols;
-			}
-		
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
+
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_COLS_FILE_INCLUDE_H_

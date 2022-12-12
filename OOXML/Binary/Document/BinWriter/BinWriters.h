@@ -41,6 +41,7 @@
 #include "../../../DocxFormat/FontTable.h"
 #include "../../../DocxFormat/Numbering.h"
 #include "../../../DocxFormat/Styles.h"
+#include "../../../DocxFormat/Comments.h"
 #include "../../../DocxFormat/Settings/Settings.h"
 #include "../../../DocxFormat/External/HyperLink.h"
 #include "../../../DocxFormat/Media/VbaProject.h"
@@ -50,6 +51,14 @@
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/Footnote.h"
 #include "../../../DocxFormat/Endnote.h"
+#include "../../../DocxFormat/Math/OMath.h"
+#include "../../../DocxFormat/Math/oMathPara.h"
+#include "../../../DocxFormat/Logic/Sdt.h"
+#include "../../../DocxFormat/Logic/Table.h"
+#include "../../../DocxFormat/Logic/Paragraph.h"
+#include "../../../DocxFormat/Logic/Annotations.h"
+#include "../../../DocxFormat/Logic/Hyperlink.h"
+#include "../../../DocxFormat/Logic/FldSimple.h"
 
 namespace NSBinPptxRW
 {
@@ -90,25 +99,11 @@ namespace BinDocxRW
 		OOX::IFileContainer*	m_pCurRels;
 		std::map<int, bool>		m_mapIgnoreComments;
 
-		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream, DocWrapper::FontProcessor* pFontProcessor, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager)
-			:
-			m_pCBufferedStream(pCBufferedStream), 
-			m_pFontProcessor(pFontProcessor), 
-			m_pOfficeDrawingConverter(pOfficeDrawingConverter), 
-			m_pEmbeddedFontsManager(pEmbeddedFontsManager)
-		{
-			m_pMain		= NULL;
-			m_pSettings = NULL;
-			m_pTheme	= NULL;
-			m_pCurRels	= NULL;
-			m_pStyles	= NULL;
-			m_pNumbering = NULL;
+		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream,
+					 DocWrapper::FontProcessor* pFontProcessor,
+					 NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter,
+					 NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager);
 
-			m_pEmbeddedStyles = NULL;
-			m_pEmbeddedNumbering = NULL;
-
-			m_bLocalStyles = m_bLocalNumbering = false;
-		}
 		std::wstring AddEmbeddedStyle(const std::wstring & styleId);
 	};
 	class ParamsDocumentWriter
@@ -350,6 +345,8 @@ namespace BinDocxRW
 		template<typename T> void WriteMoveRangeEnd(const T& elem);
 		void WriteComment(OOX::EElementType eType, nullable<SimpleTypes::CDecimalNumber>& oId);
 		void WriteFldChar(OOX::Logic::CFldChar* pFldChar);
+		void WritePermission(OOX::Logic::CPermStart* pPerm);
+		void WritePermission(OOX::Logic::CPermEnd* pPerm);
 		void WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple);
 		void WriteFldSimpleContent(OOX::Logic::CFldSimple* pFldSimple);
 		void WriteFFData(const OOX::Logic::CFFData& oFFData);

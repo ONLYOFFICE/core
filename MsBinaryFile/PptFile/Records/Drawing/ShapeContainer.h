@@ -58,9 +58,8 @@
 
 #define FIXED_POINT_unsigned(val) (double)((WORD)(val >> 16) + ((WORD)(val) / 65536.0))
 
-using namespace ODRAW;
-using namespace PPT_FORMAT;
-
+namespace PPT
+{
 class CPPTElement
 {
 public:
@@ -84,60 +83,18 @@ public:
 
     bool bGroupShape;
 
-    CRecordShapeContainer()
-    {
-        bGroupShape = false;
+    CRecordShapeContainer();
 
-        m_pStream = NULL;
+    ~CRecordShapeContainer();
 
-    }
-
-    ~CRecordShapeContainer()
-    {
-        m_pStream = NULL;
-    }
-
-    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-    {
-        m_pStream = pStream;
-        CRecordsContainer::ReadFromStream(oHeader, pStream);
-    }
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream);
 
     CElementPtr GetElement (bool inGroup, CExMedia* pMapIDs,
                             CTheme* pTheme, CLayout* pLayout,
                             CSlideInfo* pThemeWrapper, CSlideInfo* pSlideWrapper, CSlide* pSlide = NULL);
 
-    PPT_FORMAT::ElementType GetTypeElem(eSPT eType)
-    {
-        switch (eType)
-        {
-            //case sptMin:
-        case sptMax:
-        case sptNil:
-            {
-                return etShape;
-            }
-        case sptPictureFrame:
-            {
-                return etPicture;
-            }
-        default:
-            {
-                return etShape;
-            }
-        };
-        return etShape;
-    }
-    AVSINLINE std::wstring GetFileName(std::wstring strFilePath)
-    {
-        int nIndex = strFilePath.rfind(wchar_t('\\'));
-        if (-1 != nIndex)
-        {
-            return strFilePath.substr(nIndex + 1);
-        }
-        return strFilePath;
-    }
+    ElementType GetTypeElem(eSPT eType);
+    std::wstring GetFileName(std::wstring strFilePath);
 
 protected:
 
@@ -153,3 +110,4 @@ protected:
     void ConvertStyleTextProp9(CTextAttributesEx *pText);
 };
 
+}

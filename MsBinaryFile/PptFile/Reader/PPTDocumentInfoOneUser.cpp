@@ -30,20 +30,18 @@
  *
  */
 #include <boost/make_shared.hpp>
-#include <iostream>
 
 #include "PPTDocumentInfo.h"
 
-#include "../Records/ExMIDIAudioContainer.h"
-#include "../Records/ExCDAudioContainer.h"
-#include "../Records/ExWAVAudioLinkContainer.h"
-#include "../Records/ExWAVAudioEmbeddedContainer.h"
+#include "../Records/RecordsIncluder.h"
 
-#include "../Records/ExObjListContainer.h"
-#include "../Records/SoundCollectionContainer.h"
-#include "../Records/SoundContainer.h"
+//#include "../Records/ExObjListContainer.h"
+//#include "../Records/SoundCollectionContainer.h"
+//#include "../Records/SoundContainer.h"
 #include "../Enums/_includer.h"
 
+using namespace PPT;
+using namespace ODRAW;
 
 CPPTUserInfo::CPPTUserInfo() :	CDocument(),
     m_oUser(),
@@ -212,7 +210,7 @@ void CPPTUserInfo::DecryptStream(POLE::Stream *pStream, int block)
     pStreamTmp->flush();
     pStreamTmp->seek(0);
 
-    m_arStreamDecrypt.push_back(CFStreamPtr(new CFStream(pStreamTmp)));
+    m_arStreamDecrypt.push_back(XLS::CFStreamPtr(new XLS::CFStream(pStreamTmp)));
 }
 
 bool CPPTUserInfo::ReadDocumentPersists(POLE::Stream* pStream)
@@ -453,7 +451,7 @@ void CPPTUserInfo::ReadExtenalObjects(std::wstring strFolderMem)
     // так... теперь берем всю инфу о ExObject -----------------------------
     m_oExMedia.m_strPresentationDirectory	= strFolderMem;
 
-    PPT_FORMAT::CExFilesInfo oInfo;
+    PPT::CExFilesInfo oInfo;
 
     oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory;
     oInfo.m_dwID		= 0xFFFFFFFF;
@@ -517,7 +515,7 @@ void CPPTUserInfo::FromDocument()
         oArrayInfo[0]->GetRecordsByType(&oStyles, false, false);
 
         if (0 != oStyles.size())
-            m_oDefaultTextStyle.SetStyles((PPT_FORMAT::CTextStyles*)oStyles[0]);
+            m_oDefaultTextStyle.SetStyles((PPT::CTextStyles*)oStyles[0]);
 
         std::vector<CRecordTextSIExceptionAtom*> oSI;
         oArrayInfo[0]->GetRecordsByType(&oSI, false, false);
@@ -650,7 +648,12 @@ void CPPTUserInfo::LoadNotes(_UINT32 dwNoteID, CSlide* pNotes)
         pNotesWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 
     pNotesWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
-    pNotesWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+//    pNotesWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+    pNotesWrapper->m_arTextPlaceHolders.clear();
+        for (auto* pTextAttr : pRecordSlide->m_oPersist.m_arTextAttrs)
+            if (pTextAttr)
+                pNotesWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
+
 
     std::vector<CRecordNotesAtom*> oArrayNotesAtoms;
     pRecordSlide->GetRecordsByType(&oArrayNotesAtoms, false, true);
@@ -810,7 +813,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
 
         pTransition->m_bAudioPresent	= pAtom->m_bSound;
 
-        PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
+        PPT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
         if (NULL != pInfo)
         {
             pTransition->m_oAudio.m_strAudioFileName = pInfo->m_strFilePath;
@@ -830,7 +833,7 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
     CSlideShowSlideInfoAtom* pAtom	= &pRecordSlide->m_oSlideShowSlideInfoAtom;
     if (pAtom->m_bSound)
     {
-        PPT_FORMAT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
+        PPT::CExFilesInfo* pInfo	= m_oExMedia.LockAudioFromCollection(pAtom->m_nSoundRef);
         if (NULL != pInfo)
             AddAudioTransition (pAtom->m_nSoundRef, pTransition, pInfo->m_strFilePath);
     }
@@ -852,7 +855,11 @@ void CPPTUserInfo::LoadSlide(_UINT32 dwSlideID, CSlide* pSlide)
         pSlideWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
 
     pSlideWrapper->m_mapFilePictures	= &m_pDocumentInfo->m_mapStoreImageFile;
-    pSlideWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+//    pSlideWrapper->m_arTextPlaceHolders = pRecordSlide->m_oPersist.m_arTextAttrs;
+    pSlideWrapper->m_arTextPlaceHolders.clear();
+        for (auto* pTextAttr : pRecordSlide->m_oPersist.m_arTextAttrs)
+            if (pTextAttr)
+                pSlideWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
 
     // записываем шрифты
     std::vector<CRecordSlideAtom*> oArraySlideAtoms;
@@ -1254,7 +1261,7 @@ int CPPTUserInfo::AddNewLayout(CTheme* pTheme, CRecordSlide* pRecordSlide, bool 
 
     int ind = pTheme->m_arLayouts.size();
 
-    pTheme->m_arLayouts.push_back(boost::make_shared<PPT_FORMAT::CLayout>());
+    pTheme->m_arLayouts.push_back(boost::make_shared<PPT::CLayout>());
     CLayout *pLayout = pTheme->m_arLayouts.back().get();
 
     pLayout->m_bUseThemeColorScheme = true;
@@ -1457,7 +1464,7 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
 
     m_mapMasterToTheme.insert(std::pair<_UINT32, LONG>(dwMasterID, lIndexTheme));
 
-    m_arThemes.push_back(boost::make_shared<PPT_FORMAT::CTheme>());
+    m_arThemes.push_back(boost::make_shared<PPT::CTheme>());
     CTheme* pTheme = m_arThemes[lIndexTheme].get();
 
     std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
@@ -1549,7 +1556,11 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
     if (pPairMaster1 != m_mapMasters.end())
     {
         indexUser = pPairMaster1->second->m_IndexUser;
-        pMasterWrapper->m_arTextPlaceHolders = pPairMaster1->second->m_oPersist.m_arTextAttrs;
+//        pMasterWrapper->m_arTextPlaceHolders = pPairMaster1->second->m_oPersist.m_arTextAttrs;
+        pMasterWrapper->m_arTextPlaceHolders.clear();
+                for (auto* pTextAttr : pPairMaster1->second->m_oPersist.m_arTextAttrs)
+                    if (pTextAttr)
+                        pMasterWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
     }
     if (m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures.empty() == false)
         pMasterWrapper->m_parEmptyPictures	= &m_pDocumentInfo->m_arUsers[indexUser]->m_arOffsetPictures;
@@ -1568,8 +1579,8 @@ void CPPTUserInfo::LoadMainMaster(_UINT32 dwMasterID)
         if ((0 > lType) || (lType > 8))
             continue;
 
-        pMasterWrapper->m_pStyles[lType] = new PPT_FORMAT::CTextStyles();
-        pMasterWrapper->m_pStyles[lType]->SetStyles((PPT_FORMAT::CTextStyles*)oArrayTextMasters[i]);
+        pMasterWrapper->m_pStyles[lType] = new PPT::CTextStyles();
+        pMasterWrapper->m_pStyles[lType]->SetStyles((PPT::CTextStyles*)oArrayTextMasters[i]);
 
         CTheme::CalculateStyle(pTheme, pMasterWrapper->m_pStyles[lType].get());
     }
@@ -1715,7 +1726,7 @@ void CPPTUserInfo::LoadMaster(_typeMaster type, CRecordSlide* pMaster, CSlideInf
         }
     }
 
-    pTheme = boost::make_shared<PPT_FORMAT::CTheme>(type);
+    pTheme = boost::make_shared<PPT::CTheme>(type);
 
     std::vector<CRecordHeadersFootersContainer*> oArrayHeadersFootersInfo;
     pMaster->GetRecordsByType(&oArrayHeadersFootersInfo, true, false);
@@ -1906,7 +1917,12 @@ void CPPTUserInfo::LoadNoMainMaster(_UINT32 dwMasterID)
 
     CSlideInfo* pMasterWrapper	= &m_arMasterWrapper[m_arMasterWrapper.size() - 1];
 
-    pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;
+//    pMasterWrapper->m_arTextPlaceHolders	= pCurMaster->m_oPersist.m_arTextAttrs;
+    pMasterWrapper->m_arTextPlaceHolders.clear();
+        for (auto* pTextAttr : pCurMaster->m_oPersist.m_arTextAttrs)
+            if (pTextAttr)
+                pMasterWrapper->m_arTextPlaceHolders.push_back(*pTextAttr);
+
     pMasterWrapper->m_mapFilePictures		= &m_pDocumentInfo->m_mapStoreImageFile;
 
     if (m_pDocumentInfo->m_arUsers[pCurMaster->m_IndexUser]->m_arOffsetPictures.empty() == false)
@@ -2297,7 +2313,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
             if ((3 <= oArrayStrings.size()) && (1 == oArrayData.size()))
             {
-                PPT_FORMAT::CExFilesInfo oInfo;
+                PPT::CExFilesInfo oInfo;
 
                 oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
                 oInfo.m_dwID		= (_UINT32)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
@@ -2348,10 +2364,10 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         _UINT32 dwKeySound	= oArrayAudioEmbedded[nIndex]->m_nSoundID;
         _UINT32 dwKeyObj		= oArrayAudioEmbedded[nIndex]->m_oMedia.m_nExObjID;
 
-        PPT_FORMAT::CExFilesInfo* pInfo = m_oExMedia.LockAudioFromCollection(dwKeySound);
+        PPT::CExFilesInfo* pInfo = m_oExMedia.LockAudioFromCollection(dwKeySound);
         if (NULL != pInfo)
         {
-            PPT_FORMAT::CExFilesInfo oAudio;
+            PPT::CExFilesInfo oAudio;
 
             oAudio.m_dwID			= dwKeyObj;
             oAudio.m_strFilePath	= pInfo->m_strFilePath;
@@ -2364,7 +2380,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
     {
         _UINT32 dwKeyObj			= oArrayAudioCD[nIndex]->m_oMedia.m_nExObjID;
 
-        PPT_FORMAT::CExFilesInfo* pInfo		= m_oExMedia.LockAudio(dwKeyObj);
+        PPT::CExFilesInfo* pInfo		= m_oExMedia.LockAudio(dwKeyObj);
 
         if (NULL != pInfo)
         {
@@ -2384,7 +2400,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
         if (!pExHyperlink || !pExHyperlink->hasCString())
             continue;
 
-        PPT_FORMAT::CExFilesInfo oInfo;
+        PPT::CExFilesInfo oInfo;
         oInfo.m_dwID = pExHyperlink->m_exHyperlinkAtom.m_nHyperlinkID;
 
         bool wasSlide = false;
@@ -2457,7 +2473,7 @@ void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 
     if ((1 == oArrayExMedia.size()) && (1 == oArrayCString.size()))
     {
-        PPT_FORMAT::CExFilesInfo oInfo;
+        PPT::CExFilesInfo oInfo;
 
         oInfo.m_dwID			= oArrayExMedia[0]->m_nExObjID;
         oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
@@ -2480,7 +2496,7 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 
     if ((1 == oArrayExMedia.size()) && (1 == oArrayCString.size()))
     {
-        PPT_FORMAT::CExFilesInfo oInfo;
+        PPT::CExFilesInfo oInfo;
 
         oInfo.m_dwID			= oArrayExMedia[0]->m_nExObjID;
         oInfo.m_strFilePath		= oArrayCString[0]->m_strText;
@@ -2563,21 +2579,210 @@ void CPPTUserInfo::AddAudioTransition (_UINT32 refID, CTransition* pTransition, 
     // ??? недоделка ???
 }
 
-void CPPTUserInfo::CreateDefaultStyle(PPT_FORMAT::CTextStyles& pStyle, PPT_FORMAT::CTheme* pTheme)
+void CPPTUserInfo::CreateDefaultStyle(PPT::CTextStyles& pStyle, PPT::CTheme* pTheme)
 {
     for (int i = 0; i < 10; ++i)
     {
         if (!pStyle.m_pLevels[i].is_init())
-            pStyle.m_pLevels[i] = new PPT_FORMAT::CTextStyleLevel();
+            pStyle.m_pLevels[i] = new PPT::CTextStyleLevel();
 
-        PPT_FORMAT::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
-        PPT_FORMAT::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
+        PPT::CTextPFRun* pPF = &pStyle.m_pLevels[i]->m_oPFRun;
+        PPT::CTextCFRun* pCF = &pStyle.m_pLevels[i]->m_oCFRun;
 
         pCF->Language		= m_wLanguage;
 
         pCF->Size			= 18;
 
-        pCF->font.font = new PPT_FORMAT::CFontProperty(pTheme->m_arFonts.size() > 1 ? pTheme->m_arFonts[1] : pTheme->m_arFonts[0]);
+        pCF->font.font = new PPT::CFontProperty(pTheme->m_arFonts.size() > 1 ? pTheme->m_arFonts[1] : pTheme->m_arFonts[0]);
+    }
+}
+
+void CPPTUserInfo::CorrectColorScheme(std::vector<CColor> &oScheme)
+{
+    if (oScheme.size() < 1) return;
+
+    std::vector<CColor> oArrayMem;
+    oArrayMem.push_back(oScheme[0]);//0
+    oArrayMem.push_back(oScheme[1]);//1
+    oArrayMem.push_back(oScheme[2]);//2
+    oArrayMem.push_back(oScheme[3]);//3
+    oArrayMem.push_back(oScheme[0]);//4
+    oArrayMem.push_back(oScheme[4]);//5 //accent1
+    oArrayMem.push_back(oScheme[5]);//6 //accent2
+    oArrayMem.push_back(CColor(0xAAAAAA));//(oScheme[0]);//7 //accent3
+    oArrayMem.push_back(CColor(0xDCDCDC));//(oScheme[5]);//8 //accent4
+    oArrayMem.push_back(CColor(0xDBF1FA));//(oScheme[4]);//9 //accent5
+    oArrayMem.push_back(CColor(0x4B9DCA));//(oScheme[7]);//10 //accent6
+    oArrayMem.push_back(oScheme[6]);//11 //hlink
+    oArrayMem.push_back(oScheme[7]);//12 //folHlink
+    oArrayMem.push_back(oScheme[0]);//13 //lt1
+    oArrayMem.push_back(oScheme[1]);//14 //dk1
+    oArrayMem.push_back(oScheme[2]);//15 //lt2
+    oArrayMem.push_back(oScheme[3]);//16 //dk2
+
+    //0x00 //Background color
+    //0x01 //Text color
+    //0x02 //Shadow color
+    //0x03 //Title text color
+    //0x04 //Fill color
+    //0x05 //Accent 1 color
+    //0x06 //Accent 2 color
+    //0x07 //Accent 3 color
+
+    oScheme  = oArrayMem;
+}
+
+void CPPTUserInfo::ConvertLayoutType(SSlideLayoutAtom &layoutRecord, std::wstring &type, std::wstring &name)
+{
+    name = L"Blank Slide";
+    type = L"blank";
+
+    switch (layoutRecord.m_nGeom)
+    {
+    case SL_TitleSlide:
+    case SL_MasterTitle:
+    {
+        name = L"Title Slide";
+        type = L"title";
+    }break;
+    case SL_TitleBody:
+    {
+        name = L"Title and Object Slide";
+        type = L"obj";
+
+        int ind = 0;
+        if (layoutRecord.m_pPlaceHolderID[0] == 13 && layoutRecord.m_pPlaceHolderID[1] != 0) ind++;
+        PlaceholderEnum phbody = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[ind];
+        switch (phbody)
+        {
+        case PT_MasterTitle:	type = L"title";	name = L"Title and Object Slide";		break;
+        case PT_Table:			type = L"tbl";		name = L"Title and Table Slide";		break;
+        case PT_OrgChart:		type = L"dgm";		name = L"Title and Diagramma Slide";	break;
+        case PT_Graph:			type = L"chart";	name = L"Title and Chart Slide";		break;
+        default:
+            break;
+        }
+    }break;
+    case SL_TitleOnly:
+    {
+        name = L"Title Only Slide";
+        type = L"titleOnly";
+    }break;
+    case SL_TwoColumns:
+    {
+        PlaceholderEnum leftType  = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+        PlaceholderEnum rightType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
+
+        name = L"Two Objects Slide";
+        type = L"twoObj";
+
+        if (leftType == PT_Body && rightType == PT_Object)
+        {
+            name = L"Text And Object Slide";
+            type = L"txAndObj";
+        }
+        else if (leftType == PT_Object && rightType == PT_Body)
+        {
+            name = L"Object And Text Slide";
+            type = L"objAndTx";
+        }
+        else if (leftType == PT_Body && rightType == PT_ClipArt)
+        {
+            name = L"Text And ClipArt Slide";
+            type = L"txAndClipArt";
+        }
+        else if (leftType == PT_ClipArt && rightType == PT_Body)
+        {
+            name = L"ClipArt And Text Slide";
+            type = L"clipArtAndTx";
+        }
+        else if (leftType == PT_Body && rightType == PT_Graph)
+        {
+            name = L"Text And Chart Slide";
+            type = L"txAndChart";
+        }
+        else if (leftType == PT_Graph && rightType == PT_Body)
+        {
+            name = L"Chart And Text Slide";
+            type = L"chartAndTx";
+        }
+        else if (leftType == PT_Body && rightType == PT_Media)
+        {
+            name = L"Text And Media Slide";
+            type = L"txAndMedia";
+        }
+        else if (leftType == PT_Media && rightType == PT_Body)
+        {
+            name = L"Media And Text Slide";
+            type = L"mediaAndTx";
+        }
+    }break;
+    case SL_TwoRows:
+    {
+        PlaceholderEnum topType	= (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+        PlaceholderEnum bottomType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
+
+        if (topType == PT_Body && bottomType == PT_Object)
+        {
+            name = L"Text Over Object Slide";
+            type = L"txOverObj";
+        }
+        else
+        {
+            name = L"Object Over Text Slide";
+            type = L"objOverTx";
+        }
+    }break;
+    case SL_ColumnTwoRows:
+    {
+        PlaceholderEnum leftType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[1];
+
+        if (leftType == PT_Object)
+        {
+            type = L"objAndTwoObj";
+        }
+        else
+        {
+            type = L"txAndTwoObj";
+        }
+    }break;
+    case SL_TwoRowsColumn:
+    {
+        PlaceholderEnum rightType = (PlaceholderEnum)layoutRecord.m_pPlaceHolderID[2];
+
+        if (rightType == PT_Object)
+        {
+            type = L"twoObjAndObj";
+        }
+        else
+        {
+            type = L"twoObjAndTx";
+        }
+    }break;
+    case SL_TwoColumnsRow:
+    {
+        type = L"twoObjOverTx";
+    }break;
+    case SL_FourObjects:
+    {
+        type = L"fourObj";
+    }break;
+    case SL_BigObject:
+    {
+        name = L"Object Only Slide";
+        type = L"objOnly";
+    }break;
+    case SL_VerticalTitleBody:
+    {
+        type = L"vertTitleAndTx";
+    }break;
+    case SL_VerticalTwoRows:
+    {
+        type = L"vertTx";
+    }break;
+    case SL_Blank:
+    default:
+        break;
     }
 }
 
@@ -2622,28 +2827,28 @@ void CPPTUserInfo::LoadBulletBlip(CShapeElement *pShape)
     auto& arrPars = pShape->m_pShape->m_oText.m_arParagraphs;
 
     // TODO need to find BlipEntity;
-     IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
-     auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
-     if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
-         return;
+    IRecord* pRecPPT9 = arrDocInfoCont[0]->getDocBinaryTagExtension(___PPT9);
+    auto* pProgBinaryTag = dynamic_cast<CRecordPP9DocBinaryTagExtension*>(pRecPPT9);
+    if (pProgBinaryTag == nullptr || !pProgBinaryTag->m_blipCollectionContainer.is_init())
+        return;
 
-     const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
- //    const auto& arrAutoNum      = pProgBinaryTag->m_outlineTextPropsContainer.get()
-     if(arrBlipEntity.empty())
-         return;
+    const auto& arrBlipEntity = pProgBinaryTag->m_blipCollectionContainer.get().m_rgBlipEntityAtom;
+    //    const auto& arrAutoNum      = pProgBinaryTag->m_outlineTextPropsContainer.get()
+    if(arrBlipEntity.empty())
+        return;
 
-     for (auto& par : arrPars)
-     {
-         if (par.m_oPFRun.bulletBlip.IsInit())
-         {
-             auto& buBlip = par.m_oPFRun.bulletBlip.get();
-             if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
-             {
-                 buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
-             }
-         }
+    for (auto& par : arrPars)
+    {
+        if (par.m_oPFRun.bulletBlip.IsInit())
+        {
+            auto& buBlip = par.m_oPFRun.bulletBlip.get();
+            if (buBlip.bulletBlipRef >= 0 && (UINT)buBlip.bulletBlipRef < arrBlipEntity.size())
+            {
+                buBlip.tmpImagePath = arrBlipEntity[buBlip.bulletBlipRef]->getTmpImgPath();
+            }
+        }
 
-     }
+    }
 }
 
 void CPPTUserInfo::LoadAutoNumBullet(CShapeElement *pShape, int slideID)

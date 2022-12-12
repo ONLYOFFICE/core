@@ -35,6 +35,25 @@
 #include "RtfDocument.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
+RtfOle::RtfOle()
+{
+	SetDefault();
+}
+RtfOle::~RtfOle()
+{
+	SetDefault();
+}
+
+int RtfOle::GetType( )
+{
+	return TYPE_RTF_OLE;
+}
+bool RtfOle::IsValid()
+{
+	return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && L"" != m_sOleFilename;
+			/*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
+}
+
 std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if( false == IsValid() )	return L"";
@@ -232,4 +251,21 @@ std::wstring RtfOle::RenderToRtf(RenderParameter oRenderParameter)
 	//}
 	sResult += L"}";
 	return sResult;
+}
+
+void RtfOle::SetFilename( std::wstring sFilename )
+{
+	m_sOleFilename = sFilename;
+}
+void RtfOle::SetDefault()
+{
+	m_eOleType	 = ot_none;
+	m_nShapeId	= PROP_DEF;
+	m_nWidth	= PROP_DEF;
+	m_nHeight	= PROP_DEF;
+
+	Utils::RemoveDirOrFile( m_sOleFilename );
+	m_sOleFilename = L"";
+
+	m_oCharProperty.SetDefault();
 }

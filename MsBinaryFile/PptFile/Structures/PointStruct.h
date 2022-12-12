@@ -34,16 +34,12 @@
 #include "IStruct.h"
 
 
-namespace PPT_FORMAT {
+namespace PPT {
 struct PointStruct : public IStruct
 {
     _UINT32 m_x;
     _UINT32 m_y;
 
-    void ReadFromStream(POLE::Stream *pStream) override
-    {
-        m_x = StreamUtils::ReadLONG(pStream);
-        m_y = StreamUtils::ReadLONG(pStream);
-    }
+    void ReadFromStream(POLE::Stream *pStream) override;
 };
 }

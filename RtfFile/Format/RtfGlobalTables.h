@@ -36,245 +36,43 @@
 class RtfFontTable : public IDocumentElement, public ItemSingleContainer<RtfFont>
 {
 public:
-	int DirectAddItem( RtfFont piRend)
-	{
-		m_aArray.push_back(piRend);
-		return (int)m_aArray.size() - 1;
-	}
-	bool GetFont( int nId, RtfFont& oFont)
-	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			if( nId == m_aArray[i].m_nID )
-			{
-				oFont =  m_aArray[i];
-				return true;
-			}
-		}
-		return false;
-	 }
-    bool GetFont( std::wstring sName, RtfFont& oFont )
-	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			if( sName == m_aArray[i].m_sName )
-			{
-				oFont =  m_aArray[i];
-				return true;
-			}
-		}
-		return false;
-	 }
-    std::wstring RenderToRtf(RenderParameter oRenderParameter);
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		if( !m_aArray.empty())
-		{
-			for (size_t i = 0; i < m_aArray.size(); i++ )
-				sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+	int DirectAddItem( RtfFont piRend);
 
-		}
-		return sResult;
-	}
+	bool GetFont( int nId, RtfFont& oFont);
+	bool GetFont( std::wstring sName, RtfFont& oFont );
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfColorTable : public IDocumentElement, public ItemSingleContainer<RtfColor>
 {
 public: 
-	RtfColorTable()
-	{
-	}
-	int DirectAddItem( RtfColor piRend)
-	{
-		m_aArray.push_back(piRend);
-		return (int)m_aArray.size() - 1;
-	}
-	int AddItem( RtfColor piRend)
-	{
-		int nIndex = ItemSingleContainer<RtfColor>::AddItem( piRend );
-		return nIndex + 1;
-	}
-	bool GetColor( int nId, RtfColor& oColor)
-	{
-		if( nId >= 0 && nId < (int)m_aArray.size() )
-		{
-			 oColor = m_aArray[nId];
-			 return true;
-		}
-		return false;
-	}
-	bool GetColor( RtfColor::_ThemeColor oTheme, RtfColor& oColor)
-	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		if( oTheme == m_aArray[i].m_eTheme )
-		{
-			oColor = m_aArray[i];
-			return true;
-		}
-		return false;
-	}
-    bool GetColor( std::wstring sTheme, RtfColor& oColor)
-	{
-		 RtfColor::_ThemeColor oTheme = RtfColor::TC_NONE;
-		
-		 if( true == RtfColor::GetThemeByString(sTheme,oTheme  ) )
-		 {
-			 for (size_t i = 0; i < m_aArray.size(); i++ )
-			 {
-				if( oTheme == m_aArray[i].m_eTheme )
-				{
-					oColor = m_aArray[i];
-					return true;
-				}
-			 }
-		 }
-		 return false;
-	}
-	bool GetColor( RtfColor oColor , int & nId)
-	 {
-		 for (size_t i = 0; i < m_aArray.size(); i++ )
-		 {
-			 if( m_aArray[i] == oColor )
-			 {
-				nId = (int)i + 1;
-				return true;
-			 }
-		 }
-		 return false;
-	 }
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		if( m_aArray.size() > 0 )
-		{
-			sResult += _T("{\\colortbl;");
-			RenderParameter oNewParameter = oRenderParameter;
-			oNewParameter.nType = RENDER_TO_RTF_PARAM_COLOR_TBL;
-			
-			for (size_t i = 0; i < m_aArray.size(); i++ )
-            {
-                sResult += m_aArray[i].RenderToRtf( oNewParameter );
-            }
-			
-			sResult += _T("}");
-		}
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return _T("");
-	}
+	RtfColorTable();
+
+	int DirectAddItem( RtfColor piRend);
+	int AddItem( RtfColor piRend);
+
+	bool GetColor( int nId, RtfColor& oColor);
+	bool GetColor( RtfColor::_ThemeColor oTheme, RtfColor& oColor);
+	bool GetColor( std::wstring sTheme, RtfColor& oColor);
+	bool GetColor( RtfColor oColor , int & nId);
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfStyleTable : public IDocumentElement, public ItemContainer<RtfStylePtr>
 {
 public: 
-	bool GetStyle( int nId, RtfStylePtr& oStyle)
-	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			if( nId == m_aArray[i]->m_nID )
-			{
-				oStyle =  m_aArray[i];
-				return true;
-			}
-		}
-		return false;
-	 }
-    bool GetStyle( std::wstring sName, RtfStylePtr& oStyle )
-	 {
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			if( sName == m_aArray[i]->m_sID )
-			{
-				oStyle =  m_aArray[i];
-				return true;
-			}
-		}
-		return false;
-	 }
-	RtfStylePtr GetStyleResulting( RtfStylePtr oInputStyle )
-	 {
-		RtfStylePtr				oResultStyle;
-		RtfStyle::_StyleType	eStyleType	= RtfStyle::st_none;
-		
-		int nStyleId = oInputStyle->m_nID;
-		int nLinked = PROP_DEF;
-		int nBaseOn = oInputStyle->m_nBasedOn;
-		
-		if( RtfStyle::stCharacter == oInputStyle->m_eType )
-		{
-			eStyleType		= RtfStyle::stCharacter;
-			oResultStyle	= RtfCharStylePtr( new RtfCharStyle() );
-		}
-		else if( RtfStyle::stParagraph == oInputStyle->m_eType )
-		{
-			eStyleType		= RtfStyle::stParagraph;
-			oResultStyle	= RtfParagraphStylePtr( new RtfParagraphStyle() );
-			nLinked			= oInputStyle->m_nLink;//linked будем смотреть только у стилей параграфа, чтобы избежать рекурсии
-		}
-		else if( RtfStyle::stTable == oInputStyle->m_eType )
-		{
-			eStyleType		= RtfStyle::stTable;
-			oResultStyle	= RtfTableStylePtr( new RtfTableStyle() );
-		}
-		else
-			return oInputStyle;	//ОПАСНО .. потом может другим затереться todooo
+	bool GetStyle( int nId, RtfStylePtr& oStyle);
+	bool GetStyle( std::wstring sName, RtfStylePtr& oStyle );
+	RtfStylePtr GetStyleResulting( RtfStylePtr oInputStyle );
 
-		 RtfStylePtr oLinkedStyle;
-		 //if( PROP_DEF != nLinked && nStyleId != nLinked)
-		 //{
-			// RtfStylePtr oTemStyle;
-			// if( true == GetStyle( nLinked, oTemStyle) )
-			//	oLinkedStyle = GetStyleResulting( oTemStyle );
-		 //}
-		 RtfStylePtr oBaseStyle;
-		 if( PROP_DEF != nBaseOn && nStyleId != nBaseOn)
-		 {
-			 RtfStylePtr oTemStyle;
-			 if( true == GetStyle( nBaseOn, oTemStyle) )
-				oBaseStyle = GetStyleResulting( oTemStyle );
-		 }
-		
-		 //Опытным путем установлено - Base старше Link
-		if( NULL != oLinkedStyle )
-		{
-			oResultStyle->Merge( oLinkedStyle );
-		}
-		if( NULL != oBaseStyle )
-		{
-			oResultStyle->Merge( oBaseStyle );
-		}
-		oResultStyle->Merge( oInputStyle );
-
-		return oResultStyle;
-	}
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		if( m_aArray.size() > 0 )
-		{
-			sResult += _T("{\\stylesheet");
-			
-			for (size_t i = 0; i < m_aArray.size(); i++ )
-            {
-                std::wstring str = m_aArray[i]->RenderToRtf( oRenderParameter );
-                sResult += str + _T("\n\n");
-            }
-			
-			sResult += _T("}");
-		}
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
-		}
-		return sResult;
-	}
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 //class RtfLatentStyleTable : public IDocumentElement, public ItemContainer<RtfStyleException>
 //{
 //public: int m_nCount;
@@ -357,119 +155,35 @@ public:
 //			return oXmlWriter.GetXmlString();
 //		}
 //};
+
 class RtfListTable : public IDocumentElement, public ItemContainer<RtfListProperty>
 {
 public:
 	ItemContainer<RtfShapePtr> m_aPictureList;
-    bool GetList( std::wstring sName, RtfListProperty& oListProperty )
-	 {
-		 for (size_t i = 0; i < m_aArray.size(); i++ )
-		 {
-			 if( sName == m_aArray[i].m_sName )
-			 {
-				oListProperty =  m_aArray[i];
-				return true;
-			 }
-		 }
-		 return false;
-	 }
-	bool GetList( int nId, RtfListProperty& oListProperty )
-	 {
-		 for (size_t i = 0; i < m_aArray.size(); i++ )
-		 {
-			 if( nId == m_aArray[i].m_nID )
-			 {
-				oListProperty =  m_aArray[i];
-				return true;
-			 }
-		 }
-		 return false;
-	 }
-    std::wstring RenderToRtf(RenderParameter oRenderParameter)
-	{
-        std::wstring sResult;
-		if( m_aArray.size() > 0 )
-		{
-			sResult += _T("{\\*\\listtable ");
-			if( m_aPictureList.GetCount() > 0 )
-			{
-				sResult += _T("{\\*\\listpicture");
-				for (int i = 0; i < m_aPictureList.GetCount(); i++ )
-                {
-					sResult +=  m_aPictureList[i]->RenderToRtf( oRenderParameter );
-                }
-				sResult += _T("}");
-			}
-			for (size_t i = 0; i < m_aArray.size(); i++)
-            {
-				sResult += _T("{");
-				sResult += m_aArray[i].RenderToRtf( oRenderParameter );
- 				sResult += _T("}");
-           }
-			sResult += _T("}");
-		}
-		return sResult;
-	}
-    std::wstring RenderToOOX(RenderParameter oRenderParameter);
+
+	bool GetList( std::wstring sName, RtfListProperty& oListProperty );
+	bool GetList( int nId, RtfListProperty& oListProperty );
+
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
+
 class RtfListOverrideTable : public IDocumentElement, public ItemContainer<RtfListOverrideProperty>
 {
 public: 
-	bool GetList( int nId, RtfListOverrideProperty& oListOverrideProperty )
-	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-		{
-			 if( nId == m_aArray[i].m_nIndex )
-			 {
-				oListOverrideProperty =  m_aArray[i];
-				return true;
-			 }
-		}
-		return false;
-	}
-        std::wstring RenderToRtf(RenderParameter oRenderParameter)
-		{
-            std::wstring sResult;
-			if( m_aArray.size() > 0 )
-			{
-				sResult += _T("{\\*\\listoverridetable");
-				for (size_t i = 0; i < m_aArray.size(); i++)
-                {
- 					sResult += _T("{");
-                    sResult += m_aArray[i].RenderToRtf( oRenderParameter );
-					sResult += _T("}");
-                }
-				sResult += _T("}");
-			}
-			return sResult;
-		}
-        std::wstring RenderToOOX(RenderParameter oRenderParameter);
+	bool GetList( int nId, RtfListOverrideProperty& oListOverrideProperty );
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
 class RtfRevisionTable : public IDocumentElement, public ItemContainer<std::wstring>
 {
 public:
-    std::wstring RenderToRtf(RenderParameter oRenderParameter);
-    std::wstring RenderToOOX(RenderParameter oRenderParameter)
-	{
-		return L"";
-	}
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	std::wstring RenderToOOX(RenderParameter oRenderParameter);
 
-    int AddAuthor(std::wstring author)
-	{
-		int i = Find(author);
-		if (i < 0)
-			i = AddItem(author);
-		return i;
-	}
-    std::wstring GetAuthor(int ind)
-	{
-		if (ind == PROP_DEF || ind > (int)m_aArray.size())
-			return L"";
-		
-		return XmlUtils::EncodeXmlStringExtend(m_aArray[ind]);
-	}
-	
+	int AddAuthor(std::wstring author);
+	std::wstring GetAuthor(int ind);
 };
 
 //class RtfRSIDTable : public IDocumentElement, public ItemContainer<rsidString>

@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef OOX_CALCPR_FILE_INCLUDE_H_
-#define OOX_CALCPR_FILE_INCLUDE_H_
 
 #include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/CalcProp.h"
 
 namespace OOX
 {
@@ -45,97 +42,21 @@ namespace OOX
     public:
         WritingElement_AdditionConstructors(CCalcPr)
         WritingElement_XlsbConstructors(CCalcPr)
-            CCalcPr()
-			{
-			}
-            virtual ~CCalcPr()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<calcPr"));
-				WritingStringNullableAttrInt(L"calcId", m_oCalcId, m_oCalcId->GetValue());
-				WritingStringNullableAttrString(L"calcMode", m_oCalcMode, m_oCalcMode->ToString());
-				WritingStringNullableAttrBool(L"fullCalcOnLoad", m_oFullCalcOnLoad);
-				WritingStringNullableAttrString(L"refMode", m_oRefMode, m_oRefMode->ToString());
-				WritingStringNullableAttrBool(L"iterate", m_oIterate);
-				WritingStringNullableAttrInt(L"iterateCount", m_oIterateCount, m_oIterateCount->GetValue());
-				WritingStringNullableAttrDouble(L"iterateDelta", m_oIterateDelta, m_oIterateDelta->GetValue());
-				WritingStringNullableAttrBool(L"fullPrecision", m_oFullPrecision);
-				WritingStringNullableAttrBool(L"calcCompleted", m_oCalcCompleted);
-				WritingStringNullableAttrBool(L"calcOnSave", m_oCalcOnSave);
-				WritingStringNullableAttrBool(L"concurrentCalc", m_oConcurrentCalc);
-				WritingStringNullableAttrInt(L"concurrentManualCount", m_oConcurrentManualCount, m_oConcurrentManualCount->GetValue());
-				WritingStringNullableAttrBool(L"forceFullCalc", m_oForceFullCalc);
-				writer.WriteString(_T("/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CCalcPr();
+			virtual ~CCalcPr();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-            void fromBin(XLS::BaseObjectPtr& obj)
-            {
-                ReadAttributes(obj);
-            }
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual EElementType getType () const
-			{
-				return et_x_CalcPr;
-			}
+			void fromBin(XLS::BaseObjectPtr& obj);
+			virtual EElementType getType () const;
 
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
-
-				WritingElement_ReadAttributes_Read_if		( oReader, _T("calcId"),				m_oCalcId )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("calcMode"),				m_oCalcMode )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fullCalcOnLoad"),		m_oFullCalcOnLoad )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("refMode"),				m_oRefMode )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("iterate"),				m_oIterate )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("iterateCount"),			m_oIterateCount )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("iterateDelta"),			m_oIterateDelta )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("fullPrecision"),			m_oFullPrecision )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("calcCompleted"),			m_oCalcCompleted )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("calcOnSave"),			m_oCalcOnSave )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("concurrentCalc"),		m_oConcurrentCalc )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("concurrentManualCount"), m_oConcurrentManualCount )
-				WritingElement_ReadAttributes_Read_else_if	( oReader, _T("forceFullCalc"),			m_oForceFullCalc )
-
-				WritingElement_ReadAttributes_End( oReader )
-			}
-
-            void ReadAttributes(XLS::BaseObjectPtr& obj)
-            {
-                auto ptr = static_cast<XLSB::CalcProp*>(obj.get());
-                m_oCalcId                   = ptr->recalcID;
-                m_oCalcMode                 = (SimpleTypes::Spreadsheet::ECalcMode)ptr->fAutoRecalc;
-                m_oFullCalcOnLoad           = ptr->fFullCalcOnLoad;
-                m_oRefMode                  = (SimpleTypes::Spreadsheet::ERefMode)!ptr->fRefA1;
-                m_oIterate                  = ptr->fIter;
-                m_oIterateCount             = ptr->cCalcCount;
-                m_oIterateDelta             = ptr->xnumDelta.data.value;
-                m_oFullPrecision            = ptr->fFullPrec;
-                m_oCalcCompleted            = ptr->fSomeUncalced;
-                m_oCalcOnSave               = ptr->fSaveRecalc;
-                m_oConcurrentCalc           = ptr->fMTREnabled;
-                m_oConcurrentManualCount    = ptr->cUserThreadCount;
-                m_oForceFullCalc            = ptr->fNoDeps;
-
-            }
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			void ReadAttributes(XLS::BaseObjectPtr& obj);
 
 		public:
 			nullable<SimpleTypes::CUnsignedDecimalNumber>		m_oCalcId;
@@ -156,4 +77,3 @@ namespace OOX
 	} //Spreadsheet
 } // namespace OOX
 
-#endif // OOX_CALCPR_FILE_INCLUDE_H_

@@ -39,54 +39,27 @@ namespace PPTX
 {
 	namespace Logic
 	{
-
 		class AlphaCeiling : public WrapperWritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(AlphaCeiling)
 			PPTX_LOGIC_BASE2(AlphaCeiling)
 			
-			AlphaCeiling& operator=(const AlphaCeiling& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			AlphaCeiling& operator=(const AlphaCeiling& oSrc);
 
-				return *this;
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(EFFECT_TYPE_ALPHACEILING);
-				pWriter->EndRecord();
-			}
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				pReader->Skip(4); // len
-				BYTE _type = pReader->GetUChar(); 
-				LONG _e = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			virtual OOX::EElementType getType() const;
 
-				pReader->Seek(_e);
-			}
-			virtual OOX::EElementType getType() const
-			{
-				return OOX::et_a_alphaCeiling;
-			}	
-			void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(L"<a:alphaCeiling/>");
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("<a:alphaCeiling/>");
-			}
+			void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual std::wstring toXML() const;
+
 		protected:
-			virtual void FillParentPointersForChilds(){};
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

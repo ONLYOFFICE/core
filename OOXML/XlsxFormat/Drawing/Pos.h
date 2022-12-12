@@ -45,50 +45,20 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionConstructors(CPos)
-			CPos()
-			{
-			}
-			virtual ~CPos()
-			{
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<xdr:pos"));
-				WritingStringNullableAttrInt64(L"x", m_oX, m_oX->ToEmu());
-				WritingStringNullableAttrInt64(L"y", m_oY, m_oY->ToEmu());
-				writer.WriteString(_T("/>"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			CPos();
+			virtual ~CPos();
 
-				if ( !oReader.IsEmptyNode() )
-					oReader.ReadTillEnd();
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual EElementType getType () const
-			{
-				return et_x_FromTo;
-			}
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType () const;
 
 		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				// Читаем атрибуты
-				WritingElement_ReadAttributes_Start( oReader )
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("x"),      m_oX )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("y"),      m_oY )
-
-					WritingElement_ReadAttributes_End( oReader )
-			}
 		public:
 			nullable<SimpleTypes::CEmu>			m_oX;
 			nullable<SimpleTypes::CEmu>			m_oY;

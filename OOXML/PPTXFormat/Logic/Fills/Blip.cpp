@@ -30,8 +30,8 @@
  *
  */
 
-
 #include "Blip.h"
+
 #include "./../../Slide.h"
 #include "./../../SlideMaster.h"
 #include "./../../SlideLayout.h"
@@ -42,6 +42,45 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		Blip::Blip(std::wstring ns)
+		{
+			m_namespace = ns;
+			mediaExternal = false;
+		}
+		Blip& Blip::operator=(const Blip& oSrc)
+		{
+			parentFile		= oSrc.parentFile;
+			parentElement	= oSrc.parentElement;
+
+			Effects = oSrc.Effects;
+
+			cstate	= oSrc.cstate;
+			embed	= oSrc.embed;
+			link	= oSrc.link;
+
+			m_namespace		= oSrc.m_namespace;
+
+			oleRid			= oSrc.oleRid;
+			oleFilepathBin	= oSrc.oleFilepathBin;
+
+			mediaRid		= oSrc.mediaRid;
+			mediaFilepath	= oSrc.mediaFilepath;
+			mediaExternal	= oSrc.mediaExternal;
+
+			return *this;
+		}
+		OOX::EElementType Blip::getType() const
+		{
+			return OOX::et_a_blip;
+		}
+		void Blip::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start_No_NS( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"embed", embed)
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"link", link )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"cstate", cstate )
+			WritingElement_ReadAttributes_End_No_NS( oReader )
+		}
 		void Blip::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			m_namespace = XmlUtils::GetNamespace(oReader.GetName());
@@ -77,7 +116,6 @@ namespace PPTX
 
 			FillParentPointersForChilds();
 		}
-
 		std::wstring Blip::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
@@ -94,14 +132,12 @@ namespace PPTX
 			std::wstring strName = (_T("") == m_namespace) ? _T("blip") : (m_namespace + _T(":blip"));
 			return XmlUtils::CreateNode(strName, oAttr, oValue);
 		}
-
 		void Blip::FillParentPointersForChilds()
 		{
 			size_t count = Effects.size();
 			for(size_t i = 0; i < count; ++i)
 				Effects[i].SetParentPointer(this);
 		}
-
 		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
 			if(embed.IsInit())
@@ -173,7 +209,6 @@ namespace PPTX
 
 			pWriter->EndNode(strName);
 		}
-		
 		void Blip::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -252,7 +287,6 @@ namespace PPTX
 
 			pWriter->EndRecord();
 		}
-
 		void Blip::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _s2 = pReader->GetPos();

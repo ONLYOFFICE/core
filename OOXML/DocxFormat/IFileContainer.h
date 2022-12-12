@@ -118,6 +118,7 @@ namespace OOX
 		void SetGlobalNumberByType(const std::wstring& sOverrideType, int val);
 		int GetGlobalNumberByType(const std::wstring& sOverrideType);
 		void AssignOutputFilename(smart_ptr<OOX::File>& pFile);
+
 	private:
 		const RId				GetMaxRId();
 

@@ -43,42 +43,26 @@ namespace OOX
 	public:
 		Media(OOX::Document *pMain, bool bDocument = true);
 		Media(OOX::Document *pMain, const CPath& filename, bool bExternal = false);
-		virtual ~Media()
-		{
-		}
-		virtual const FileType type() const
-		{
-			return FileTypes::Media;
-		}
+		virtual ~Media();
+
+		virtual const FileType type() const;
+
 		virtual void read(const CPath& filename);
 		virtual void write(const CPath& filename, const CPath& directory, CContentTypes& content) const;
 
 		void set_filename(const std::wstring & file_path, bool bExternal);
 		void set_filename(CPath & file_path, bool bExternal, bool bDefault = false);
 
-		bool IsExist()
-		{
-			return m_bExist;
-		}
-		bool IsExternal()
-		{
-			return m_bExternal;
-		}
-		CPath filename()
-		{
-			return m_filename;
-		}
+		bool IsExist();
+		bool IsExternal();
+		CPath filename();
+
 		virtual void copy_to(const CPath& path) const;
-		virtual const CPath DefaultDirectory() const
-		{
-			if (m_bDocument) return type().DefaultDirectory();
-			else	return L"../" + type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return m_filename.GetFilename();
-		}
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
 		std::vector<BYTE> m_Data;
+
 	protected:
 		CPath	m_filename;
 		bool	m_bExist;

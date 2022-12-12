@@ -30,12 +30,10 @@
  *
  */
 #pragma once
-#ifndef OOX_TEXT_FILE_INCLUDE_H_
-#define OOX_TEXT_FILE_INCLUDE_H_
+
 
 #include "../CommonInclude.h"
 #include "../../../DesktopEditor/common/StringExt.h"
-#include "../../XlsbFormat/Biff12_structures/RichStr.h"
 
 namespace OOX
 {
@@ -71,120 +69,38 @@ namespace OOX
 			_UINT32 m_nValue;
 			CStringXLSB m_oValue;
 		};
+
 		//необработано:
 		class CText : public WritingElement
 		{
 		public:
 			WritingElement_AdditionConstructors(CText)
-			CText() {}
-			virtual ~CText() {}
+			CText();
+			virtual ~CText();
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-            {
-			}
-			virtual std::wstring toXML() const
-			{
-				return _T("");
-			}
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const
-			{
-				writer.WriteString(_T("<t"));
-				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
-					writer.WriteString(_T(" xml:space=\"preserve\""));
-				writer.WriteString(_T(">"));
-				writer.WriteEncodeXmlStringHHHH(m_sText);
-				writer.WriteString(_T("</t>"));
-			}
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const
-			{
-				writer.WriteString(_T("<"));
-				writer.WriteString(name);
-				if(std::wstring::npos != m_sText.find(' ') || std::wstring::npos != m_sText.find('\n'))
-					writer.WriteString(_T(" xml:space=\"preserve\""));
-				writer.WriteString(_T(">"));
-				writer.WriteEncodeXmlStringHHHH(m_sText);
-				writer.WriteString(_T("</"));
-				writer.WriteString(name);
-				writer.WriteString(_T(">"));
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				ReadAttributes( oReader );
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				if ( oReader.IsEmptyNode() )
-					return;
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void toXML2(NSStringUtils::CStringBuilder& writer, const wchar_t* name) const;
 
-				int nDepth = oReader.GetDepth();
-				XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
-				while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
-				{
-					if (eNodeType == XmlUtils::XmlNodeType_Text || eNodeType == XmlUtils::XmlNodeType_Whitespace || eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE)
-					{
-						std::string sTemp = oReader.GetTextA();
-						wchar_t* pUnicodes = NULL;
-						LONG lOutputCount = 0;
-						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8WithHHHH((BYTE*)sTemp.c_str(), (LONG)sTemp.length(), pUnicodes, lOutputCount);
-						m_sText.append(pUnicodes);
-						RELEASEARRAYOBJECTS(pUnicodes);
-					}
-				}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				trimString(m_sText, GetSpace());
-			}
-            void fromBin(std::wstring& str)
-            {
-                m_sText = str;
-                m_oSpace.Init();
-                m_oSpace->SetValue(SimpleTypes::xmlspacePreserve);
-            }
+			void fromBin(std::wstring& str);
+
 			static void trimString(std::wstring& sVal, SimpleTypes::EXmlSpace eSpace);
-			std::wstring ToString() const
-			{
-				return m_sText;
-			}
+			std::wstring ToString() const;
+
 			SimpleTypes::EXmlSpace GetSpace() const;
-			virtual EElementType getType() const
-			{
-				return et_x_t;
-			}
+			virtual EElementType getType() const;
+
 		private:
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				if ( oReader.GetAttributesCount() <= 0 )
-					return;
-
-				if ( !oReader.MoveToFirstAttribute() )
-					return;
-
-				std::wstring wsName = XmlUtils::GetNameNoNS(oReader.GetName());
-				while( !wsName.empty() )
-				{
-					if ( _T("space") == wsName )
-					{
-						m_oSpace = oReader.GetText();
-						break;
-					}
-
-					if ( !oReader.MoveToNextAttribute() )
-						break;
-
-					wsName = XmlUtils::GetNameNoNS(oReader.GetName());
-				}
-
-				oReader.MoveToElement();
-			}
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-
-			// Attributes
-			nullable<SimpleTypes::CXmlSpace>		m_oSpace;
-
-			// Value
-			std::wstring                             m_sText;
+			nullable<SimpleTypes::CXmlSpace>	m_oSpace;
+			std::wstring						m_sText;
 
 		};
 	} //Spreadsheet
 } // namespace OOX
-
-#endif // OOX_TEXT_FILE_INCLUDE_H_

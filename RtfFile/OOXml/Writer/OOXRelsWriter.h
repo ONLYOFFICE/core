@@ -45,67 +45,10 @@ private:
     RtfDocument&                m_oDocument;
 
 public:		
-    OOXRelsWriter( std::wstring sFileName, RtfDocument& oDocument ):m_oDocument(oDocument)
-	{
-		m_sFileName = sFileName;
-	}
+	OOXRelsWriter( std::wstring sFileName, RtfDocument& oDocument );
 
-    std::wstring AddRelationship( std::wstring sType, std::wstring sTarget, bool bTargetModeInternal = true )
-	{
-		for (size_t i = 0 ;i < m_aTargets.size(); i++ )
-		{
-			if( sTarget == m_aTargets[i] )
-				return m_aIDs[i];
-		}
-		m_aTargets.push_back( sTarget );
-		m_aTypes.push_back( sType );
-        std::wstring sId = m_oDocument.m_oIdGenerator.Generate_rId();
-		m_aIDs.push_back( sId );
-		m_aModes.push_back( bTargetModeInternal );
-		return sId;
-	}
-    std::wstring CreateXml()
-	{
-        std::wstring sResult;
-        sResult += _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
-
-		sResult += _T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-		
-		for (size_t i = 0; i < m_aTargets.size(); i++ )
-		{
-            sResult += _T("<Relationship Id=\"");
-			sResult += m_aIDs[i];
-			sResult += _T("\" Type=\"");
-			sResult += m_aTypes[i];
-			sResult += _T("\" Target=\"");
-			sResult += m_aTargets[i];
-			sResult += _T("\"");
-			if( false == m_aModes[i] )
-				sResult += _T(" TargetMode=\"External\"");
-			sResult += _T("/>");
-		}
-		sResult += _T("</Relationships>");
-		return sResult;
-	}
-
-    bool Save( std::wstring sFolder )
-	{
-		if( m_aTargets.size() < 1 )return false;
-		
-        std::wstring pathRels = sFolder + FILE_SEPARATOR_STR + _T("_rels");
-        NSDirectory::CreateDirectory(pathRels) ;
-
-		NSFile::CFileBinary file;
-        if (file.CreateFile(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
-
-        std::wstring sXml = CreateXml();
-
-        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
-
-        file.WriteFile((void*)sXmlUTF.c_str(), (DWORD)sXmlUTF.length());
-		file.CloseFile();
-        
-        return true;
-	}
+	std::wstring AddRelationship( std::wstring sType, std::wstring sTarget, bool bTargetModeInternal = true );
+	std::wstring CreateXml();
+	bool Save( std::wstring sFolder );
 };
 typedef boost::shared_ptr<OOXRelsWriter> OOXRelsWriterPtr;

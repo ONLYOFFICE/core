@@ -29,12 +29,63 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "../Math/oMathPara.h"
+#include "../Math/OMath.h"
+
 #include "Table.h" 
 #include "Paragraph.h"
 #include "Annotations.h"
 #include "Sdt.h"
-#include "../Math/oMathPara.h"
-#include "../Math/OMath.h"
+#include "Hyperlink.h"
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		//--------------------------------------------------------------------------------
+		// TblGridCol 17.4.16 (Part 1)
+		//--------------------------------------------------------------------------------
+
+		CTblGridCol::CTblGridCol()
+		{
+		}
+		CTblGridCol::~CTblGridCol()
+		{
+		}
+		void CTblGridCol::FromXML(XmlUtils::CXmlNode& oNode)
+		{
+			XmlMacroReadAttributeBase( oNode, L"w:w", m_oW );
+		}
+		void CTblGridCol::FromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			ReadAttributes(oReader);
+
+			if ( !oReader.IsEmptyNode() )
+				oReader.ReadTillEnd();
+		}
+		std::wstring CTblGridCol::ToString() const
+		{
+			std::wstring sResult;
+
+			if ( m_oW.IsInit() )
+			{
+				sResult += L"w:w=\"";
+				sResult += m_oW->ToString();
+				sResult += L"\" ";
+			}
+
+			return sResult;
+		}
+		void CTblGridCol::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+			{
+				// Читаем атрибуты
+				WritingElement_ReadAttributes_Start( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"w:w", m_oW )
+				WritingElement_ReadAttributes_End( oReader )
+			}
+
+	} // Word
+} // ComplexTypes
 
 namespace OOX
 {
@@ -129,13 +180,17 @@ namespace OOX
 
 			return sResult;
 		}
-
+		EElementType CTblGridChange::getType() const
+		{
+			return et_w_tblGridChange;
+		}
 		void CTblGridChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_oId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
+
 		//--------------------------------------------------------------------------------
 		// CTblPrExChange 
 		//--------------------------------------------------------------------------------	
@@ -240,7 +295,10 @@ namespace OOX
 
 			return sResult;
 		}
-
+		EElementType CTblPrExChange::getType() const
+		{
+			return et_w_tblPrExChange;
+		}
 		void CTblPrExChange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
@@ -250,6 +308,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
+
 		//--------------------------------------------------------------------------------
 		// CTbl 17.4.38 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -259,6 +318,46 @@ namespace OOX
 //        <w:moveFrom>
 //        <w:moveTo>
 
+		CTbl::CTbl(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+			m_oTableProperties = NULL;
+			m_nCountRow = 0;
+		}
+		CTbl::CTbl(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			m_oTableProperties	= NULL;
+			m_nCountRow = 0;
+			fromXML( oNode );
+		}
+		CTbl::CTbl(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			m_oTableProperties = NULL;
+			m_nCountRow = 0;
+			fromXML( oReader );
+		}
+		CTbl::~CTbl()
+		{
+		}
+		const CTbl& CTbl::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CTbl& CTbl::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CTbl::ClearItems()
+		{
+			m_oTblGrid.reset();
+			m_oTableProperties = NULL;
+			m_nCountRow = 0;
+
+			WritingElementWithChilds::ClearItems();
+		}
 		void CTbl::fromXML(XmlUtils::CXmlNode& oNode)
 		{
 			XmlUtils::CXmlNodes oChilds;
@@ -343,8 +442,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		void CTbl::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if ( oReader.IsEmptyNode() )
@@ -474,6 +571,10 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CTbl::getType() const
+		{
+			return et_w_tbl;
+		}
 
 		//--------------------------------------------------------------------------------
 		// CTr 17.4.79 (Part 1)
@@ -484,6 +585,49 @@ namespace OOX
 //        <w:moveFrom>
 //        <w:moveTo>
 
+		CTr::CTr(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+			m_nCountCell = 0;
+			m_pTableRowProperties = NULL;
+		}
+		CTr::CTr(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			m_nCountCell = 0;
+			m_pTableRowProperties = NULL;
+			fromXML( oNode );
+		}
+		CTr::CTr(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			m_nCountCell = 0;
+			m_pTableRowProperties = NULL;
+			fromXML( oReader );
+		}
+		CTr::~CTr()
+		{
+		}
+		const CTr& CTr::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CTr& CTr::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CTr::ClearItems()
+		{
+			m_pTableRowProperties = NULL;
+			m_oRsidDel.reset();
+			m_oRsidR.reset();
+			m_oRsidRPr.reset();
+			m_oRsidTr.reset();
+
+			WritingElementWithChilds::ClearItems();
+
+		}
 		void CTr::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:rsidDel"), m_oRsidDel );
@@ -591,8 +735,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		void CTr::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -721,8 +863,6 @@ namespace OOX
 			}
 			m_nCountCell = nNumCol;
 		}
-
-
 		std::wstring CTr::toXML() const
 		{
 			std::wstring sResult = _T("<w:tr ");
@@ -746,6 +886,10 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CTr::getType() const
+		{
+			return et_w_tr;
+		}
 		void CTr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
@@ -755,6 +899,7 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:rsidTr"),  m_oRsidTr )
 			WritingElement_ReadAttributes_End( oReader )
 		}
+
 		//--------------------------------------------------------------------------------
 		// CTc 17.4.66 (Part 1)
 		//--------------------------------------------------------------------------------
@@ -764,6 +909,48 @@ namespace OOX
 //        <w:moveFrom>
 //        <w:moveTo>
 
+		CTc::CTc(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		{
+			m_nNumCol = 0;
+			m_pTableCellProperties = NULL;
+		}
+		CTc::CTc(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
+		{
+			m_nNumCol = 0;
+			m_pTableCellProperties = NULL;
+			fromXML( oNode );
+		}
+		CTc::CTc(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
+		{
+			m_nNumCol = 0;
+			m_pTableCellProperties = NULL;
+			fromXML( oReader );
+		}
+		CTc::~CTc()
+		{
+		}
+		const CTc& CTc::operator =(const XmlUtils::CXmlNode& oNode)
+		{
+			ClearItems();
+
+			fromXML( (XmlUtils::CXmlNode&)oNode );
+			return *this;
+		}
+		const CTc& CTc::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		{
+			ClearItems();
+
+			fromXML( (XmlUtils::CXmlLiteReader&)oReader );
+			return *this;
+		}
+		void CTc::ClearItems()
+		{
+			m_pTableCellProperties = NULL;
+			m_nNumCol = 0;
+			m_sId.reset();
+
+			WritingElementWithChilds::ClearItems();
+		}
 		void CTc::fromXML(XmlUtils::CXmlNode& oNode)
 		{
             XmlMacroReadAttributeBase( oNode, _T("w:id"), m_sId );
@@ -850,8 +1037,6 @@ namespace OOX
 				}
 			}
 		}
-
-
 		void CTc::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes( oReader );
@@ -958,7 +1143,6 @@ namespace OOX
 				}
 			}
 		}
-
 		std::wstring CTc::toXML() const
 		{
 			std::wstring sResult;
@@ -984,11 +1168,16 @@ namespace OOX
 
 			return sResult;
 		}
+		EElementType CTc::getType() const
+		{
+			return et_w_tc;
+		}
 		void CTc::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_ReadSingle( oReader, _T("w:id"), m_sId )
 			WritingElement_ReadAttributes_End( oReader )
 		}
+
 	} // namespace Logic
 } // namespace OOX

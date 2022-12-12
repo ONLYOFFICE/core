@@ -43,35 +43,14 @@ namespace PPTX
 		class TLPrevAc : public BaseLimit
 		{
 		public:
-			TLPrevAc()
-			{
-				m_strValue = _T("none");
-			}
+			TLPrevAc();
 
 			_USE_STRING_OPERATOR
 				
-			virtual void set(const std::wstring& strValue)
-			{
-				if ((_T("none") == strValue) ||
-					(_T("skipTimed") == strValue))
-				{
-					m_strValue = strValue;
-				}
-			}
-			virtual BYTE GetBYTECode() const
-			{
-				if (L"none" == m_strValue)	return 0;
-				if (L"skipTimed" == m_strValue)	return 1;
-				return 0;
-			}
-			virtual void SetBYTECode(const BYTE& src)
-			{
-				switch (src)
-				{
-				case 0: m_strValue = L"none"; break;
-				case 1: m_strValue = L"skipTimed"; break;
-				}
-			}
+			virtual void set(const std::wstring& strValue);
+
+			virtual BYTE GetBYTECode() const;
+			virtual void SetBYTECode(const BYTE& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

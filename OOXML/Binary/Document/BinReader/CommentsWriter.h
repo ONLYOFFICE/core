@@ -51,6 +51,7 @@ namespace Writers
 	{
         std::wstring	m_sDir;
 		std::wstring	m_sFileName;
+
 	public:
 		std::wstring	m_sComment;
         std::wstring	m_sCommentExt;
@@ -64,134 +65,11 @@ namespace Writers
 		std::wstring	m_sDocumentPeople;
 		std::wstring	m_sContentUserData;
 
-		CommentsWriter(std::wstring sDir) : m_sDir(sDir)
-		{
-		}
-		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sContentExtensible, std::wstring& sCommentsIds, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentContentExtensible, std::wstring& sDocumentCommentsIds, std::wstring& sDocumentPeople,std::wstring&  sContentUserData)
-		{
-			m_sComment		= sComment;
-			m_sCommentExt	= sCommentExt;
-			m_sContentExtensible	= sContentExtensible;
-			m_sCommentsIds	= sCommentsIds;
-			m_sPeople		= sPeople;
-			m_sDocumentComment		= sDocumentComment;
-			m_sDocumentCommentExt	= sDocumentCommentExt;
-			m_sDocumentContentExtensible	= sDocumentContentExtensible;
-			m_sDocumentCommentsIds	= sDocumentCommentsIds;
-			m_sDocumentPeople		= sDocumentPeople;
-			m_sContentUserData		= sContentUserData;
-		}
-		std::wstring getFilename()
-		{
-			return OOX::FileTypes::Comments.DefaultFileName().GetPath();
-		}
-		void Write(bool bGlossary = false)
-		{
-			std::wstring sDir = m_sDir + FILE_SEPARATOR_STR + L"word" + (bGlossary ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"" ) + FILE_SEPARATOR_STR;
-            if(false == m_sComment.empty())
-			{
-				OOX::CPath filePath = sDir + OOX::FileTypes::Comments.DefaultFileName().GetPath();
+		CommentsWriter(std::wstring sDir);
 
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(filePath.GetPath());
-					oFile.WriteStringUTF8(g_string_comment_Start);
-					oFile.WriteStringUTF8(m_sComment);
-					oFile.WriteStringUTF8(g_string_comment_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sCommentExt.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsExt.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentExt_Start);
-				oFile.WriteStringUTF8(m_sCommentExt);
-				oFile.WriteStringUTF8(g_string_commentExt_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sContentExtensible.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsExtensible.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentExtensible_Start);
-				oFile.WriteStringUTF8(m_sContentExtensible);
-				oFile.WriteStringUTF8(g_string_commentExtensible_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sCommentsIds.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsIds.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentsIds_Start);
-				oFile.WriteStringUTF8(m_sCommentsIds);
-				oFile.WriteStringUTF8(g_string_commentsIds_End);
-				oFile.CloseFile();
-			}
-            if(false == m_sPeople.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::People.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_people_Start);
-				oFile.WriteStringUTF8(m_sPeople);
-				oFile.WriteStringUTF8(g_string_people_End);
-				oFile.CloseFile();
-			}
+		void setElements(std::wstring& sComment, std::wstring& sCommentExt, std::wstring& sContentExtensible, std::wstring& sCommentsIds, std::wstring& sPeople, std::wstring& sDocumentComment, std::wstring& sDocumentCommentExt, std::wstring& sDocumentContentExtensible, std::wstring& sDocumentCommentsIds, std::wstring& sDocumentPeople,std::wstring&  sContentUserData);
+		std::wstring getFilename();
 
-			if(false == m_sDocumentComment.empty())
-			{
-				OOX::CPath filePath = sDir + OOX::FileTypes::DocumentComments.DefaultFileName().GetPath();
-
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(filePath.GetPath());
-					oFile.WriteStringUTF8(g_string_comment_Start);
-					oFile.WriteStringUTF8(m_sDocumentComment);
-					oFile.WriteStringUTF8(g_string_comment_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sDocumentCommentExt.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentCommentsExt.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentExt_Start);
-				oFile.WriteStringUTF8(m_sDocumentCommentExt);
-				oFile.WriteStringUTF8(g_string_commentExt_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sDocumentContentExtensible.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentCommentsExtensible.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentExtensible_Start);
-				oFile.WriteStringUTF8(m_sDocumentContentExtensible);
-				oFile.WriteStringUTF8(g_string_commentExtensible_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sDocumentCommentsIds.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentCommentsIds.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentsIds_Start);
-				oFile.WriteStringUTF8(m_sDocumentCommentsIds);
-				oFile.WriteStringUTF8(g_string_commentsIds_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sDocumentPeople.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::DocumentPeople.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_people_Start);
-				oFile.WriteStringUTF8(m_sDocumentPeople);
-				oFile.WriteStringUTF8(g_string_people_End);
-				oFile.CloseFile();
-			}
-			if(false == m_sContentUserData.empty())
-			{
-				NSFile::CFileBinary oFile;
-				oFile.CreateFileW(sDir + OOX::FileTypes::CommentsUserData.DefaultFileName().GetPath());
-				oFile.WriteStringUTF8(g_string_commentExtensible_Start);
-				oFile.WriteStringUTF8(m_sContentUserData);
-				oFile.WriteStringUTF8(g_string_commentExtensible_End);
-				oFile.CloseFile();
-			}
-		}
+		void Write(bool bGlossary = false);
 	};
 }

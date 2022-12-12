@@ -32,20 +32,11 @@
 #pragma once
 #include "../Reader/Records.h"
 
+namespace PPT
+{
 class CRecordExMIDIAudioContainer : public CRecordsContainer
 {
 public:
-	
-	CRecordExMIDIAudioContainer()
-	{
-	}
-
-	~CRecordExMIDIAudioContainer()
-	{
-	}
-
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		CRecordsContainer::ReadFromStream(oHeader, pStream);
-	}
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
+}

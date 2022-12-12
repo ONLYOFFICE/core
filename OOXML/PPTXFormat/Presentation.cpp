@@ -428,7 +428,7 @@ namespace PPTX
 		pWriter->EndNode(L"p:presentation");
 	}
 
-	AVSINLINE void Presentation::Normalize()
+	void Presentation::Normalize()
 	{
 		attrBookmarkIdSeed.normalize(1, 2147483647);
 		attrFirstSlideNum.normalize_positive();

@@ -29,3 +29,27 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include "FileMap.h"
+
+namespace PPTX
+{
+	FileMap::FileMap()
+	{
+	}
+	FileMap::~FileMap()
+	{
+	}
+
+	std::map<std::wstring, smart_ptr<OOX::File>>::iterator FileMap::find(const OOX::CPath& path)
+	{
+		return m_map.find(path.m_strFilename);
+	}
+	void FileMap::add(const OOX::CPath& key, const smart_ptr<OOX::File>& value)
+	{
+		m_map[key.m_strFilename] = value;
+	}
+
+	bool FileMap::empty() const {return m_map.empty();}
+	size_t FileMap::size() const {return m_map.size();}
+} // namespace PPTX

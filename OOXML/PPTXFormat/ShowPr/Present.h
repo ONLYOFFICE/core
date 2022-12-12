@@ -45,23 +45,14 @@ namespace PPTX
 			PPTX_LOGIC_BASE(Present)
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-			}
-            virtual std::wstring toXML() const
-			{
-				return _T("<p:present/>");
-			}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->WriteString(_T("<p:present/>"));
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
 		protected:
-            virtual void FillParentPointersForChilds(){}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsShowPr
 } // namespace PPTX

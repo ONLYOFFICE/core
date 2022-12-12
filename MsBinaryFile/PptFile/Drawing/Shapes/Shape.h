@@ -36,8 +36,6 @@
 #include "../../../Common/Vml/PPTXShape/PptxShape.h"
 #include "../../../Common/Vml/PPTShape/PptShape.h"
 
-using namespace PPT_FORMAT;
-
 /***************************************************************
 вот, создавая автофигуру, или любой другой элемент
 officedrawing, наследуясь от этого класса, в конструкторе
@@ -65,7 +63,7 @@ public:
 	long					m_lLimoX;
 	long					m_lLimoY;
 
-        CTextAttributesEx                       m_oText;
+	PPT::CTextAttributesEx m_oText;
 
 	double					m_dWidthLogic;
 	double					m_dHeightLogic;

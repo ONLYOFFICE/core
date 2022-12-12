@@ -38,32 +38,12 @@ namespace Writers
 	class DocumentRelsWriter
 	{
         std::wstring	m_sDir;
+
 	public:
-		DocumentRelsWriter(std::wstring sDir) : m_sDir(sDir), m_bHasCustomProperties(false)
-		{
-		}
-		void Write(bool bGlossary = false)
-		{
-            std::wstring s_Common;
+		DocumentRelsWriter(std::wstring sDir);
 
-			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
-<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"> \
-<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/> \
-<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/> \
-<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>");
-			if (m_bHasCustomProperties)
-			{
-				s_Common += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/custom-properties\" Target=\"docProps/custom.xml\"/>";
-			}
-			s_Common += L"</Relationships>";
+		void Write(bool bGlossary = false);
 
-            OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + _T(".rels");
-
-            NSFile::CFileBinary oFile;
-            oFile.CreateFileW(fileName.GetPath());
-            oFile.WriteStringUTF8(s_Common);
-			oFile.CloseFile();
-		}
 		bool m_bHasCustomProperties = false;
 	};
 }

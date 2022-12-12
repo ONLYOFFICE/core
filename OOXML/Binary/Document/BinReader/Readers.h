@@ -320,6 +320,8 @@ public:
 	int ReadTextInput(BYTE type, long length, void* poResult);
 	int ReadBookmarkStart(BYTE type, long length, void* poResult);
 	int ReadBookmarkEnd(BYTE type, long length, void* poResult);
+	int ReadPermStart(BYTE type, long length, void* poResult);
+	int ReadPermEnd(BYTE type, long length, void* poResult);	
 	int ReadHyperlink(BYTE type, long length, void* poResult);
 	int ReadMathLong(BYTE type, long length, void* poResult);
 	int ReadMathArgOut(long length);
@@ -505,8 +507,8 @@ private:
 	bool							m_bMacro = false;
 	bool							m_bMacroRead = false;
 public:
-		BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
-		int ReadFile();
-		int ReadMainTable();
+	BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
+	int ReadFile();
+	int ReadMainTable();
 };
 }

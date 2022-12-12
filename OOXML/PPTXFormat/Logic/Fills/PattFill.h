@@ -46,127 +46,19 @@ namespace PPTX
 		public:
 			WritingElement_AdditionConstructors(PattFill)
 			
-			PattFill(std::wstring ns = L"a")
-			{
-				m_namespace = ns;
-			}
-			PattFill& operator=(const PattFill& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			PattFill(std::wstring ns = L"a");
 
-				prst = oSrc.prst;
+			PattFill& operator=(const PattFill& oSrc);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-				fgClr = oSrc.fgClr;
-				bgClr = oSrc.bgClr;
+			virtual OOX::EElementType getType () const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-				return *this;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				m_namespace = XmlUtils::GetNamespace(oReader.GetName());
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
 
-				ReadAttributes( oReader );
-
-				if ( oReader.IsEmptyNode() )
-					return;
-
-				int nCurDepth = oReader.GetDepth();
-				while( oReader.ReadNextSiblingNode( nCurDepth ) )
-				{
-                    std::wstring sName = oReader.GetName();
-					if (sName == L"a:fgClr")
-						fgClr.fromXMLParent(oReader);
-					if (sName == L"a:bgClr")
-						bgClr.fromXMLParent(oReader);
-				}
-				FillParentPointersForChilds();	
-			}
-			virtual OOX::EElementType getType () const
-			{
-				return OOX::et_a_pattFill;
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start_No_NS( oReader )
-					WritingElement_ReadAttributes_ReadSingle ( oReader, _T("prst"), prst )
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-			}
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_namespace = XmlUtils::GetNamespace(node.GetName());
-
-				XmlMacroReadAttributeBase(node, L"prst", prst);
-				
-				XmlUtils::CXmlNode oNode;
-				if (node.GetNode(_T("a:fgClr"), oNode))
-					fgClr.GetColorFrom(oNode);
-				if (node.GetNode(_T("a:bgClr"), oNode))
-					bgClr.GetColorFrom(oNode);
-
-				FillParentPointersForChilds();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.WriteLimitNullable(_T("prst"), prst);
-
-				XmlUtils::CNodeValue oValue;
-				if (fgClr.is_init())
-				{
-					oValue.Write(_T("a:fgClr"), fgClr);
-				}
-				if (bgClr.is_init())
-				{
-					oValue.Write(_T("a:bgClr"), bgClr);
-				}
-
-				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
-				return XmlUtils::CreateNode(strName, oAttr, oValue);
-			}
-
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring strName = (_T("") == m_namespace) ? _T("pattFill") : (m_namespace + _T(":pattFill"));
-				pWriter->StartNode(strName);
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("prst"), prst);
-				pWriter->EndAttributes();
-
-				if (fgClr.is_init())
-				{
-					pWriter->StartNode(_T("a:fgClr"));
-					pWriter->EndAttributes();
-					fgClr.toXmlWriter(pWriter);
-					pWriter->EndNode(_T("a:fgClr"));
-				}
-
-				if (bgClr.is_init())
-				{
-					pWriter->StartNode(_T("a:bgClr"));
-					pWriter->EndAttributes();
-					bgClr.toXmlWriter(pWriter);
-					pWriter->EndNode(_T("a:bgClr"));
-				}
-
-				pWriter->EndNode(strName);
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(FILL_TYPE_PATT);
-
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteLimit2(0, prst);
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-
-				pWriter->WriteRecord1(0, fgClr);
-				pWriter->WriteRecord1(1, bgClr);
-				
-				pWriter->EndRecord();
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
 		public:
 			nullable_limit<Limit::PattFillVal> prst;
@@ -175,12 +67,9 @@ namespace PPTX
 			UniColor bgClr;
 
 			std::wstring m_namespace;
+
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				fgClr.SetParentPointer(this);
-				bgClr.SetParentPointer(this);
-			}
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -30,33 +30,21 @@
  *
  */
 #pragma once
+
 #include "../Reader/Records.h"
 
+
+namespace PPT
+{
 class CRecordTextPFExceptionAtom : public CUnknownRecord
 {
 public:
 	CTextPFRunRecord m_oPFRun;
 	
-	CRecordTextPFExceptionAtom()
-	{
-	}
 
-	~CRecordTextPFExceptionAtom()
-	{
-	}
+    CRecordTextPFExceptionAtom();
+    ~CRecordTextPFExceptionAtom();
 
-	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
-	{
-		m_oHeader = oHeader;
-
-		LONG lPosition = 0;
-		StreamUtils::StreamPosition(lPosition, pStream);
-
-        m_oPFRun.LoadFromStream(pStream, m_oHeader.RecLen == 12);
-
-		// это на всякий случай...
-		POLE::uint64 current_pos = pStream->tell();
-		StreamUtils::StreamSeek(lPosition + m_oHeader.RecLen, pStream);
-	}
-
+    virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream) override;
 };
+}

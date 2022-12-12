@@ -36,7 +36,8 @@
 
 namespace PdfReader
 {
-	bool GetCidToUnicodeMemoryMap(const char* name, const unsigned int*& data, unsigned int& size);
+    bool GetCidToUnicodeMemoryMap(const char* name, const unsigned int*& data, unsigned int& size);
+    bool GetMemoryCMap(const char* name, const char*& data, unsigned int& size);
 }
 
 #endif //_PDF_READER_USE_CMAP_MEMORY_H

@@ -35,13 +35,9 @@
 #include "../Base/Nullable.h"
 
 #include "WritingElement.h"
+#include "IFileContainer.h"
 
-#include "Logic/Annotations.h"
-#include "Logic/Paragraph.h"
-#include "Logic/Sdt.h"
-#include "Logic/Table.h"
-#include "Math/oMathPara.h"
-#include "Math/OMath.h"
+#include "../Common/SimpleTypes_Word.h"
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>
@@ -78,7 +74,6 @@ namespace OOX
 		const CPath& GetReadPath();
 		virtual EElementType getType() const;
 
-		void AddParagraph(Logic::CParagraph *pPara);
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 //--------------------------------------------------------------------------

@@ -37,27 +37,13 @@
 #include "TimeBehaviorContainer.h"
 
 
-namespace PPT_FORMAT
+namespace PPT
 {
 class CRecordTimeRotationBehaviorContainer  : public CUnknownRecord
 {
 public:
-    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
-    {
-        m_oHeader			=	oHeader;
+    virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream );
 
-        SRecordHeader ReadHeader;
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-            m_oRotationBehaviorAtom.ReadFromStream ( ReadHeader, pStream );
-
-        if ( ReadHeader.ReadFromStream(pStream) )
-            m_oBehavior.ReadFromStream ( ReadHeader, pStream );
-    }
-
-
-
-public:
 
     CRecordTimeRotationBehaviorAtom         m_oRotationBehaviorAtom;
     CRecordTimeBehaviorContainer			m_oBehavior;

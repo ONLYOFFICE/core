@@ -34,5 +34,5 @@ if not base.is_file("./openssl/libcrypto.a"):
   base.print_info("Compile openssl...")
   os.chdir("./openssl")
   #run_as_bash("./compile_openssl.sh", ["./config no-shared no-asm no-ssl2 no-ssl3", "source ./../emsdk/emsdk_env.sh", "export CC=emcc", "export CXX=emcc", "make"])
-  run_as_bash("./compile_openssl.sh", ["source ./../../../../../../Common/js/emsdk/emsdk_env.sh", "emconfigure ./config no-shared no-asm no-threads", "sed -i 's|^CROSS_COMPILE.*$|CROSS_COMPILE=|g' Makefile", "emmake make build_generated libssl.a libcrypto.a"])
+  run_as_bash("./compile_openssl.sh", ["source ./../../../../../../../Common/js/emsdk/emsdk_env.sh", "emconfigure ./config no-shared no-asm no-threads", "sed -i 's|^CROSS_COMPILE.*$|CROSS_COMPILE=|g' Makefile", "emmake make build_generated libssl.a libcrypto.a"])
   os.chdir("../")

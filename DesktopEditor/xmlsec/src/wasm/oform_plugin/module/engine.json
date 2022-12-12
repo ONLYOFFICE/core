@@ -2,10 +2,11 @@
 	"name": "engine",
 	"res_folder": "./deploy",
 	"wasm": true,
-	"asm": false,
+	"asm": true,
+	"embed_mem_file": true,
 	"run_before": "before.py",
 	"run_after": "after.py",
-	"base_js_content": "./engine.js",
+	"base_js_content": "./engine_base.js",
 
 	"compiler_flags": [
 		"-O3",

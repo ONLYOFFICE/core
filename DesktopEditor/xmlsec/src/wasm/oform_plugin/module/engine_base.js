@@ -1,7 +1,12 @@
 (function(window, undefined){
 
 	//desktop_fetch
-	//string_utf8
+
+    //polyfill
+
+    //string_utf8
+
+    //module
 
 	function CryptoJS()
 	{

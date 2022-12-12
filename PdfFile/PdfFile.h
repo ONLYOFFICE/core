@@ -102,6 +102,7 @@ public:
     // --- READER ---
 
     int GetError();
+    void SetCMapData(BYTE* pData, DWORD nSizeData);
 
     virtual bool LoadFromFile  (const std::wstring& file, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
     virtual bool LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options = L"", const std::wstring& owner_password = L"", const std::wstring& user_password = L"");

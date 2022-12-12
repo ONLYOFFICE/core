@@ -2,31 +2,49 @@
 #define _CMAP_WASM_SERIALIZE_H
 
 #include "serialize.h"
+#include "../../../../../common/File.h"
+#include "../../../../../common/Directory.h"
 
-static DWORD GetLength(BYTE* x)
-{
-    return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
-}
+#include <vector>
 
 namespace NSWasm
 {
 void CMapDirToFile()
 {
+    std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMap/CMap");
+
     CData oRes;
-    oRes.SkipLen();
-
-
-    oRes.WriteLen();
-    BYTE* bRes = oRes.GetBuffer();
-    oRes.ClearWithoutAttack();
-
-    DWORD nLength = GetLength(bRes);
-    DWORD i = 4;
-    nLength -= 4;
-    while (i < nLength)
+    for (const std::wstring& sFile : arrFiles)
     {
+        BYTE* pData = NULL;
+        DWORD nSize;
+        NSFile::CFileBinary oFile;
+        if (oFile.ReadAllBytes(sFile, &pData, nSize))
+        {
+            std::wstring sFileName = NSFile::GetFileName(sFile);
+            BYTE* pStr = NULL;
+            LONG nStrSize;
+            NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), (LONG)sFileName.length(), pStr, nStrSize);
+            oRes.WriteString(pStr, nStrSize);
+            RELEASEARRAYOBJECTS(pStr);
 
+            oRes.AddInt(nSize);
+            oRes.Write(pData, nSize);
+
+            oFile.CloseFile();
+        }
+
+        RELEASEARRAYOBJECTS(pData);
     }
+
+    NSFile::CFileBinary oFile;
+    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/CMapData"))
+    {
+        oFile.WriteFile(oRes.GetBuffer(), oRes.GetSize());
+        oFile.CloseFile();
+    }
+
+    oRes.Clear();
 }
 }
 

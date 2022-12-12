@@ -28,7 +28,19 @@
 #include "CMap.h"
 
 #ifdef CMAP_USE_MEMORY
-#include "../../Resources/BaseFonts.h"
+#include "../../SrcReader/Adaptors.h"
+#endif
+
+#if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
+#include "../../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "emscripten.h"
+EM_JS(char*, js_get_cmap_stream_id, (unsigned char* data, unsigned char* status), {
+    return self.AscViewer.CheckCMapStreamId(data, status);
+});
+EM_JS(int, js_free_cmap_id, (unsigned char* data), {
+    self.AscViewer.Free(data);
+    return 1;
+});
 #endif
 
 //------------------------------------------------------------------------
@@ -81,21 +93,62 @@ CMap *CMap::parse(CMapCache *cache, GString *collectionA,
   FILE *f;
   CMap *cMap;
 
-#ifdef CMAP_USE_MEMORY
-  const char* pDataCMap = NULL;
-  unsigned int nSizeCMap = 0;
-  if (PdfReader::GetBaseCMap(cMapNameA->getCString(), pDataCMap, nSizeCMap)) {
-    Object obj;
-    obj.initNull();
-    BaseStream *str = new MemStream((char*)pDataCMap, 0, nSizeCMap, &obj);
-    if (!str)
-      return NULL;
-    cMap = new CMap(collectionA->copy(), cMapNameA->copy());
-    cMap->parse2(cache, &getCharFromStream, str);
-    delete str;
-    return cMap;
+  if (cMapNameA->cmp("Identity") && cMapNameA->cmp("Identity-H") && cMapNameA->cmp("Identity-V"))
+  {
+#if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
+  BYTE nStatus = 0;
+  NSWasm::CData oRes;
+  oRes.SkipLen();
+  oRes.WriteString((unsigned char*)cMapNameA->getCString(), (unsigned int)cMapNameA->getLength());
+  oRes.WriteLen();
+  char* pFontId = js_get_cmap_stream_id(oRes.GetBuffer(), &nStatus);
+  if (!nStatus)
+  {
+       // CMap не загружен
+       js_free_cmap_id((unsigned char*)pFontId);
+       return NULL;
   }
+  else
+  {
+      std::string wsFileNameA(pFontId);
+      std::wstring wsFileName = UTF8_TO_U(wsFileNameA);
+      NSFonts::IFontStream* pStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(wsFileName);
+      if (pStream)
+      {
+          BYTE* pDataCMap = NULL;
+          LONG nSizeCMap = 0;
+          pStream->GetMemory(pDataCMap, nSizeCMap);
+
+          Object obj;
+          obj.initNull();
+          BaseStream *str = new MemStream((char*)pDataCMap, 0, nSizeCMap, &obj);
+          if (!str)
+            return NULL;
+          cMap = new CMap(collectionA->copy(), cMapNameA->copy());
+          cMap->parse2(cache, &getCharFromStream, str);
+          delete str;
+          return cMap;
+      }
+  }
+  js_free_cmap_id((unsigned char*)pFontId);
+#endif
+
+#ifdef CMAP_USE_MEMORY
+    char* pDataCMap = NULL;
+    unsigned int nSizeCMap = 0;
+    if (((GlobalParamsAdaptor*)globalParams)->GetCMap(cMapNameA->getCString(), pDataCMap, nSizeCMap)) {
+      Object obj;
+      obj.initNull();
+      BaseStream *str = new MemStream(pDataCMap, 0, nSizeCMap, &obj);
+      if (!str)
+        return NULL;
+      cMap = new CMap(collectionA->copy(), cMapNameA->copy());
+      cMap->parse2(cache, &getCharFromStream, str);
+      delete str;
+      return cMap;
+    }
 #endif // CMAP_USE_MEMORY
+  }
 
   if (!(f = globalParams->findCMapFile(collectionA, cMapNameA))) {
 

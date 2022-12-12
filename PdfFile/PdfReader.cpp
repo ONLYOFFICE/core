@@ -101,6 +101,12 @@ CPdfReader::~CPdfReader()
     RELEASEOBJECT(globalParams);
     RELEASEINTERFACE(m_pFontManager);
 }
+void CPdfReader::SetCMapData(BYTE* pData, DWORD nSizeData)
+{
+#ifdef CMAP_USE_MEMORY
+    ((GlobalParamsAdaptor*)globalParams)->CMapDataFromMemory(pData, nSizeData);
+#endif
+}
 bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 {
     RELEASEINTERFACE(m_pFontManager);

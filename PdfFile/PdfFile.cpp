@@ -674,6 +674,12 @@ int CPdfFile::GetError()
         return 1;
     return m_pInternal->pReader->GetError();
 }
+void CPdfFile::SetCMapData(BYTE* pData, DWORD nSizeData)
+{
+    if (!m_pInternal->pReader)
+        return;
+    m_pInternal->pReader->SetCMapData(pData, nSizeData);
+}
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {

@@ -51,6 +51,7 @@ public:
 
     std::wstring GetTempDirectory();
     void SetTempDirectory(const std::wstring& directory);
+    void SetCMapData(BYTE* pData, DWORD nSizeData);
 
     void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);

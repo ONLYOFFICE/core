@@ -434,8 +434,8 @@ void Cx2tTester::Start()
 			|| (m_outputFormatsList.IsSpreadsheet(format) && m_inputFormatsList.IsSpreadsheet(input_format))
 			//presentations -> presentations
 			|| (m_outputFormatsList.IsPresentation(format) && m_inputFormatsList.IsPresentation(input_format))
-			// crossplatform -> documents
-			|| (m_outputFormatsList.IsDocument(format) && m_inputFormatsList.IsCrossplatform(input_format))
+			// xps -> docx
+			|| (format == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX && input_format == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS)
 			// pdf -> docx
 			|| (format == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX && m_inputFormatsList.IsPdf(input_format))
 			// all formats -> images

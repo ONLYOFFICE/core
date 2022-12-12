@@ -1,5 +1,5 @@
 {
-	"name": "openssl",
+	"name": "engine",
 	"res_folder": "./deploy",
 	"wasm": true,
 	"asm": false,
@@ -18,28 +18,28 @@
 	"exported_functions": [
 		"_malloc",
 		"_free",
-		"_Crypto_CreateCertificate",
-		"_Crypto_LoadCert",
-		"_Crypto_LoadKey",
-		"_Crypto_DestroyCertificate",
-		"_Crypto_CreateKeys"
+		"_Crypto_Malloc",
+		"_Crypto_Free",
+		"_Crypto_CreateKeys",
+		"_Crypto_Sign",
+		"_Crypto_ChangePassword"
 	],
 	"include_path": [
 		"openssl/include", "openssl", "emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
 	],
 	"define": [
-		"__linux__", "_LINUX"
+		"__linux__", "_LINUX", "DISABLE_XMLSEC"
 	],
 	"compile_files_array": [
 	{
 		"name": "k",
-		"folder": "../../../../common/",
+		"folder": "../../../../../../common/",
 		"files": ["Base64.cpp", "File.cpp"]
 	},
 	{
 		"name": "s",
-		"folder": "../../../../xmlsec/src/src/",
-		"files": ["CertificateCommon.cpp"]
+		"folder": "../../../../../../../Common/3dParty/openssl/common",
+		"files": ["common_openssl.cpp"]
 	},
 	{
 		"name": "a",

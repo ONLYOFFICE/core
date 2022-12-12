@@ -7,6 +7,12 @@ CONFIG -= app_bundle
 
 DEFINES += TEST_AS_EXECUTABLE
 
+CONFIG += oform_only
+
+oform_only {
+    DEFINES += DISABLE_XMLSEC
+}
+
 CORE_ROOT_DIR = $$PWD/../../../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
@@ -18,15 +24,17 @@ SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/common/File.cpp \
 	$$CORE_ROOT_DIR/DesktopEditor/common/Base64.cpp
 
-HEADERS += \
-    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/Certificate.h \
-	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/CertificateCommon.h
+oform_only {
+    HEADERS += \
+	    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/Certificate.h \
+		$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/include/CertificateCommon.h
 
-SOURCES += \
-    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp
+    SOURCES += \
+	    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp
 
-DEFINES += SUPPORT_OFORM
-HEADERS += $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/Certificate_oform.h
+    DEFINES += SUPPORT_OFORM
+	HEADERS += $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/Certificate_oform.h
+}
 
 # OPENSSL
 CONFIG += open_ssl_common

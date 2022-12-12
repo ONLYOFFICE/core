@@ -38,7 +38,7 @@ void CMapDirToFile()
     }
 
     NSFile::CFileBinary oFile;
-    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/CMapData"))
+    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMapMemory/CMapData"))
     {
         oFile.WriteFile(oRes.GetBuffer(), oRes.GetSize());
         oFile.CloseFile();

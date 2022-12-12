@@ -217,7 +217,7 @@ int main()
 
     BYTE* pCMapData = NULL;
     DWORD nCMapDataLength;
-    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/CMapData", &pCMapData, nCMapDataLength))
+    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMapMemory/CMapData", &pCMapData, nCMapDataLength))
     {
         SetCMapData(test, pCMapData, nCMapDataLength);
         oFile.CloseFile();

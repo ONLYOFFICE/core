@@ -76,9 +76,20 @@
         this.pos += len;
         return val;
     };
+    CBinaryReader.prototype.readData = function()
+    {
+        var len = this.readInt();
+        var val = this.data.slice(this.pos, this.pos + len);
+        this.pos += len;
+        return val;
+    };
     CBinaryReader.prototype.isValid = function()
     {
         return (this.pos < this.limit) ? true : false;
+    };
+    CBinaryReader.prototype.Skip = function(nPos)
+    {
+        this.pos += nPos;
     };
 
     function CFile()
@@ -482,4 +493,58 @@
         Module["_free"](idPointer);
     }
 
+    self["AscViewer"]["CheckCMapStreamId"] = function(data, status) {
+        // аналогично self["AscViewer"]["CheckStreamId"](data, status);
+        // но входящий параметр data содержит только string
+        // CMapToMemory вместо fontToMemory
+    }
+
+    // file - содержимое CMapData файла
+    // name - reader.readString() из data в CheckCMapStreamId
+    function CMapToMemory(file, name)
+    {
+        var idBuffer = name.toUtf8();
+        var idPointer = Module["_malloc"](idBuffer.length);
+        Module["HEAP8"].set(idBuffer, idPointer);
+
+        var nExist = Module["_IsFontBinaryExist"](idPointer);
+        if (nExist != 0)
+        {
+            Module["_free"](idPointer);
+            return;
+        }
+
+        var buffer = new Uint8Array(file);
+        var reader = new CBinaryReader(buffer, 0, buffer.length);
+
+        var CMapData = null;
+        while (reader.isValid())
+        {
+            var CMapName = reader.readString();
+            if (CMapName == name)
+            {
+                CMapData = reader.readData();
+                break;
+            }
+            else
+            {
+                var CMapLength = reader.readInt();
+                reader.Skip(CMapLength);
+            }
+        }
+        
+        if (CMapData == null)
+        {
+            Module["_free"](idPointer);
+            return;
+        }
+
+        var streamPointer = Module["_malloc"](CMapData.length);
+        Module["HEAP8"].set(CMapData.buffer, streamPointer);
+
+        Module["_SetFontBinary"](idPointer, streamPointer, CMapData.size);
+
+        Module["_free"](streamPointer);
+        Module["_free"](idPointer);
+    }
 })(window, undefined);

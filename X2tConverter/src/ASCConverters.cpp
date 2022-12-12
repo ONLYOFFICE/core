@@ -3903,6 +3903,10 @@ namespace NExtractTools
 					{
 						sFileTo = sTo;
 					}
+					else if(!bIsZip)
+					{
+						sFileTo = sTo + FILE_SEPARATOR_STR + L"image" + std::to_wstring(i+1) + sFileToExt;
+					}
 					else
 					{
 						sFileTo = sThumbnailDir + FILE_SEPARATOR_STR + L"image" + std::to_wstring(i+1) + sFileToExt;

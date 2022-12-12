@@ -3868,6 +3868,7 @@ namespace NExtractTools
 					{
 						if (!NSDirectory::Exists(sTo))
 							NSDirectory::CreateDirectory(sTo);
+						sThumbnailDir = sTo;
 					}
 					sFileToExt = getExtentionByRasterFormat(nRasterFormat);
 				}
@@ -3902,10 +3903,6 @@ namespace NExtractTools
 					if (bIsOnlyFirst)
 					{
 						sFileTo = sTo;
-					}
-					else if(!bIsZip)
-					{
-						sFileTo = sTo + FILE_SEPARATOR_STR + L"image" + std::to_wstring(i+1) + sFileToExt;
 					}
 					else
 					{

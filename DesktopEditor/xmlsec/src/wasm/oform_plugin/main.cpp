@@ -12,6 +12,56 @@
 #define WASM_EXPORT __attribute__((visibility("default")))
 #endif
 
+namespace NSInternal
+{
+	int CheckEncryptedVersion(const std::string& input, int& offset)
+	{
+		offset = 0;
+		// VER%NUMBER%; version from 100 to 999
+		if (input.length() > 7)
+		{
+			const char* input_ptr = input.c_str();
+			if (input_ptr[0] == 'V' && input_ptr[1] == 'E' && input_ptr[2] == 'R')
+			{
+				input_ptr += 3;
+				int nVersion = 0;
+				for (int i = 0; i < 4; ++i)
+				{
+					if (*input_ptr == ';')
+					{
+						offset = 3 + i + 1;
+						return nVersion;
+					}
+
+					nVersion *= 10;
+					nVersion += (*input_ptr - '0');
+					++input_ptr;
+				}
+				return nVersion;
+			}
+		}
+		return 1;
+	}
+
+	std::string DecodePrivateKey(const std::string& sPrivateKeyEnc, const std::string& sPassword, const std::string& sSalt)
+	{
+		int nHeaderLen = 0;
+		int nVersion = CheckEncryptedVersion(sPrivateKeyEnc, nHeaderLen);
+
+		std::string sPrivateKey;
+		bool bIsSuccess = false;
+		if (nVersion == 2)
+			bIsSuccess = NSOpenSSL::AES_Decrypt_desktop_GCM(sPassword, sPrivateKeyEnc, sPrivateKey, sSalt, nHeaderLen);
+		else
+			bIsSuccess = NSOpenSSL::AES_Decrypt_desktop(sPassword, sPrivateKeyEnc, sPrivateKey, sSalt);
+
+		if (!bIsSuccess)
+			return "";
+
+		return sPrivateKey;
+	}
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -169,57 +219,14 @@ WASM_EXPORT char* Crypto_CreateKeys(const char* alg, const char* password, const
 	return result;
 }
 
-int CheckEncryptedVersion(const std::string& input, int& offset)
+WASM_EXPORT char* Crypto_Sign(const char* privateKeyEnc, const char* password, const char* salt, const char* data, int dataLen)
 {
-	offset = 0;
-	// VER%NUMBER%; version from 100 to 999
-	if (input.length() > 7)
-	{
-		const char* input_ptr = input.c_str();
-		if (input_ptr[0] == 'V' && input_ptr[1] == 'E' && input_ptr[2] == 'R')
-		{
-			input_ptr += 3;
-			int nVersion = 0;
-			for (int i = 0; i < 4; ++i)
-			{
-				if (*input_ptr == ';')
-				{
-					offset = 3 + i + 1;
-					return nVersion;
-				}
-
-				nVersion *= 10;
-				nVersion += (*input_ptr - '0');
-				++input_ptr;
-			}
-			return nVersion;
-		}
-	}
-	return 1;
-}
-
-WASM_EXPORT char* Crypto_Sign(const char* privateKeyEncPtr, const char* password, const char* salt, const char* data, int dataLen)
-{
-	std::string sPrivateKeyEnc(privateKeyEncPtr);
+	std::string sPrivateKey = NSInternal::DecodePrivateKey(std::string(privateKeyEnc), std::string(password), std::string(salt));
+	if (sPrivateKey.empty())
+		return NULL;
 
 	if (0 == dataLen)
 		dataLen = (int)strlen(data);
-
-	int nHeaderLen = 0;
-	int nVersion = CheckEncryptedVersion(sPrivateKeyEnc, nHeaderLen);
-
-	std::string sSalt = std::string(salt);
-	std::string sPassword(password);
-
-	std::string sPrivateKey;
-	bool bIsSuccess = false;
-	if (nVersion == 2)
-		bIsSuccess = NSOpenSSL::AES_Decrypt_desktop_GCM(sPassword, sPrivateKeyEnc, sPrivateKey, sSalt, nHeaderLen);
-	else
-		bIsSuccess = NSOpenSSL::AES_Decrypt_desktop(sPassword, sPrivateKeyEnc, sPrivateKey, sSalt);
-
-	if (!bIsSuccess)
-		return NULL;
 
 	NSOpenSSL::CMemoryData dataSign = NSOpenSSL::Sign((const unsigned char*)data, dataLen, sPrivateKey);
 
@@ -229,36 +236,23 @@ WASM_EXPORT char* Crypto_Sign(const char* privateKeyEncPtr, const char* password
 
 	if (FALSE == NSBase64::Base64Encode(dataSign.Data, (int)dataSign.Size, (BYTE*)pDataSignBase64, &nDataSignBase64Len, NSBase64::B64_BASE64_FLAG_NOCRLF))
 	{
+		dataSign.Free();
 		Crypto_Free((void*)pDataSignBase64);
 		return NULL;
 	}
 
+	dataSign.Free();
 	return pDataSignBase64;
 }
 
 WASM_EXPORT char* Crypto_ChangePassword(const char* privateKeyEnc, const char* passwordOld, const char* passwordNew, const char* salt)
 {
-	std::string sPrivateKeyEnc(privateKeyEnc);
-
-	int nHeaderLen = 0;
-	int nVersion = CheckEncryptedVersion(sPrivateKeyEnc, nHeaderLen);
-
-	std::string sSalt = std::string(salt);
-	std::string sPasswordOld(passwordOld);
-	std::string sPasswordNew(passwordNew);
-
-	std::string sPrivateKey;
-	bool bIsSuccess = false;
-	if (nVersion == 2)
-		bIsSuccess = NSOpenSSL::AES_Decrypt_desktop_GCM(sPasswordOld, sPrivateKeyEnc, sPrivateKey, sSalt, nHeaderLen);
-	else
-		bIsSuccess = NSOpenSSL::AES_Decrypt_desktop(sPasswordOld, sPrivateKeyEnc, sPrivateKey, sSalt);
-
-	if (!bIsSuccess)
+	std::string sPrivateKey = NSInternal::DecodePrivateKey(std::string(privateKeyEnc), std::string(passwordOld), std::string(salt));
+	if (sPrivateKey.empty())
 		return NULL;
 
-	sPrivateKeyEnc = "";
-	NSOpenSSL::AES_Encrypt_desktop_GCM(sPasswordNew, sPrivateKey, sPrivateKeyEnc, sSalt);
+	std::string sPrivateKeyEnc = "";
+	NSOpenSSL::AES_Encrypt_desktop_GCM(std::string(passwordNew), sPrivateKey, sPrivateKeyEnc, std::string(salt));
 
 	size_t nEncLen = sPrivateKeyEnc.length();
 	char* result = (char*)Crypto_Malloc((unsigned int)(nEncLen + 1));

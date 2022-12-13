@@ -65,6 +65,7 @@ public:
 	{
 		std::wstring inputFile;
 		std::wstring outputFile;
+		std::wstring direction;
 		DWORD time;
 		int inputSize;
 		int outputSize;

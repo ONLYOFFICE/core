@@ -86,7 +86,7 @@
 	};
 	CryptoJS.prototype.onLoad = function()
 	{
-		CryptoJS.prototype.isModuleInit = true;
+		this.isModuleInit = true;
 	};
 
 	CryptoJS.prototype.generateKeys = function(password, salt)
@@ -201,7 +201,7 @@
 		return privateKeyString;
 	};
 
-	window.CryptoJS = CryptoJS;
+	window.cryptoJS = new CryptoJS();
 
     //module
 

@@ -38,75 +38,75 @@ namespace PPTX
 	{		
 		RectAlign::RectAlign()
 		{
-			m_strValue = _T("tl");
+			m_strValue = L"tl");
 		}
 		void RectAlign::set(const std::wstring& strValue)
 		{
-			if ((_T("b") == strValue) ||
-				(_T("bl") == strValue) ||
-				(_T("br") == strValue) ||
-				(_T("ctr") == strValue) ||
-				(_T("l") == strValue) ||
-				(_T("r") == strValue) ||
-				(_T("t") == strValue) ||
-				(_T("tl") == strValue) ||
-				(_T("tr") == strValue))
+			if ((L"b" == strValue) ||
+				(L"bl" == strValue) ||
+				(L"br" == strValue) ||
+				(L"ctr" == strValue) ||
+				(L"l" == strValue) ||
+				(L"r" == strValue) ||
+				(L"t" == strValue) ||
+				(L"tl" == strValue) ||
+				(L"tr" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE RectAlign::GetBYTECode() const
+		unsigned char RectAlign::GetBYTECode() const
 		{
-			if (_T("b") == m_strValue)
+			if (L"b" == m_strValue)
 				return 0;
-			if (_T("bl") == m_strValue)
+			if (L"bl" == m_strValue)
 				return 1;
-			if (_T("br") == m_strValue)
+			if (L"br" == m_strValue)
 				return 2;
-			if (_T("ctr") == m_strValue)
+			if (L"ctr" == m_strValue)
 				return 3;
-			if (_T("l") == m_strValue)
+			if (L"l" == m_strValue)
 				return 4;
-			if (_T("r") == m_strValue)
+			if (L"r" == m_strValue)
 				return 5;
-			if (_T("t") == m_strValue)
+			if (L"t" == m_strValue)
 				return 6;
-			if (_T("tl") == m_strValue)
+			if (L"tl" == m_strValue)
 				return 7;
-			if (_T("tr") == m_strValue)
+			if (L"tr" == m_strValue)
 				return 8;
 			return 7;
 		}
-		void RectAlign::SetBYTECode(const BYTE& src)
+		void RectAlign::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("b");
+				m_strValue = L"b";
 				break;
 			case 1:
-				m_strValue = _T("bl");
+				m_strValue = L"bl";
 				break;
 			case 2:
-				m_strValue = _T("br");
+				m_strValue = L"br";
 				break;
 			case 3:
-				m_strValue = _T("ctr");
+				m_strValue = L"ctr";
 				break;
 			case 4:
-				m_strValue = _T("l");
+				m_strValue = L"l";
 				break;
 			case 5:
-				m_strValue = _T("r");
+				m_strValue = L"r";
 				break;
 			case 6:
-				m_strValue = _T("t");
+				m_strValue = L"t";
 				break;
 			case 7:
-				m_strValue = _T("tl");
+				m_strValue = L"tl";
 				break;
 			case 8:
-				m_strValue = _T("tr");
+				m_strValue = L"tr";
 				break;
 			default:
 				break;

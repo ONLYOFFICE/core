@@ -38,45 +38,45 @@ namespace PPTX
 	{		
 		Flip::Flip()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void Flip::set(const std::wstring& strValue)
 		{
-			if ((_T("none") == strValue) ||
-				(_T("x") == strValue) ||
-				(_T("xy") == strValue) ||
-				(_T("y") == strValue))
+			if ((L"none" == strValue) ||
+				(L"x" == strValue) ||
+				(L"xy" == strValue) ||
+				(L"y" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE Flip::GetBYTECode() const
+		unsigned char Flip::GetBYTECode() const
 		{
-			if (_T("none") == m_strValue)
+			if (L"none" == m_strValue)
 				return 0;
-			if (_T("x") == m_strValue)
+			if (L"x" == m_strValue)
 				return 1;
-			if (_T("y") == m_strValue)
+			if (L"y" == m_strValue)
 				return 2;
-			if (_T("xy") == m_strValue)
+			if (L"xy" == m_strValue)
 				return 3;
 			return 0;
 		}
-		void Flip::SetBYTECode(const BYTE& src)
+		void Flip::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 				break;
 			case 1:
-				m_strValue = _T("x");
+				m_strValue = L"x";
 				break;
 			case 2:
-				m_strValue = _T("y");
+				m_strValue = L"y";
 				break;
 			case 3:
-				m_strValue = _T("xy");
+				m_strValue = L"xy";
 				break;
 			default:
 				break;

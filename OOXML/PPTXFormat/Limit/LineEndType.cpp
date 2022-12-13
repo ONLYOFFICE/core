@@ -38,57 +38,57 @@ namespace PPTX
 	{		
 		LineEndType::LineEndType()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void LineEndType::set(const std::wstring& strValue)
 		{
-			if ((_T("none") == strValue) ||
-				(_T("arrow") == strValue) ||
-				(_T("diamond") == strValue) ||
-				(_T("oval") == strValue) ||
-				(_T("stealth") == strValue) ||
-				(_T("triangle") == strValue))
+			if ((L"none" == strValue) ||
+				(L"arrow" == strValue) ||
+				(L"diamond" == strValue) ||
+				(L"oval" == strValue) ||
+				(L"stealth" == strValue) ||
+				(L"triangle" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE LineEndType::GetBYTECode() const
+		unsigned char LineEndType::GetBYTECode() const
 		{
-			if (_T("none") == m_strValue)
+			if (L"none" == m_strValue)
 				return 0;
-			if (_T("arrow") == m_strValue)
+			if (L"arrow" == m_strValue)
 				return 1;
-			if (_T("diamond") == m_strValue)
+			if (L"diamond" == m_strValue)
 				return 2;
-			if (_T("oval") == m_strValue)
+			if (L"oval" == m_strValue)
 				return 3;
-			if (_T("stealth") == m_strValue)
+			if (L"stealth" == m_strValue)
 				return 4;
-			if (_T("triangle") == m_strValue)
+			if (L"triangle" == m_strValue)
 				return 5;
 			return 0;
 		}
-		void LineEndType::SetBYTECode(const BYTE& src)
+		void LineEndType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 				break;
 			case 1:
-				m_strValue = _T("arrow");
+				m_strValue = L"arrow";
 				break;
 			case 2:
-				m_strValue = _T("diamond");
+				m_strValue = L"diamond";
 				break;
 			case 3:
-				m_strValue = _T("oval");
+				m_strValue = L"oval";
 				break;
 			case 4:
-				m_strValue = _T("stealth");
+				m_strValue = L"stealth";
 				break;
 			case 5:
-				m_strValue = _T("triangle");
+				m_strValue = L"triangle";
 				break;
 			default:
 				break;

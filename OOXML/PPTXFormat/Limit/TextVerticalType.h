@@ -40,13 +40,11 @@ namespace PPTX
 		{
 		public:
 			TextVerticalType();
-
-			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			virtual unsigned char GetBYTECode() const;
+			virtual void SetBYTECode(const unsigned char& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

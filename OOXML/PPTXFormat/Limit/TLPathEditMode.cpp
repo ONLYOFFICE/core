@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLPathEditMode::TLPathEditMode()
 		{
-			m_strValue = _T("relative");
+			m_strValue = L"relative";
 		}
 		void TLPathEditMode::set(const std::wstring& strValue)
 		{
-			if ((_T("fixed") == strValue) ||
-				(_T("relative") == strValue))
+			if ((L"fixed" == strValue) ||
+				(L"relative" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLPathEditMode::GetBYTECode() const
+		unsigned char TLPathEditMode::GetBYTECode() const
 		{
 			if (L"fixed" == m_strValue)	return 0;
 			if (L"relative" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLPathEditMode::SetBYTECode(const BYTE& src)
+		void TLPathEditMode::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

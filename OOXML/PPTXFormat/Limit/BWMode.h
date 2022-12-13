@@ -40,14 +40,12 @@ namespace PPTX
 		class BWMode : public BaseLimit
 		{
 		public:
-			BWMode();
-
-			_USE_STRING_OPERATOR
+			BWMode();			
 				
 			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			virtual unsigned char GetBYTECode() const;
+			virtual void SetBYTECode(const unsigned char& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

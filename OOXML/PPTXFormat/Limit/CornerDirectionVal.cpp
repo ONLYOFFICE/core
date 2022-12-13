@@ -42,15 +42,15 @@ namespace PPTX
 		}
 		void CornerDirectionVal::set(const std::wstring& strValue)
 		{
-			if ((_T("ld") == strValue) ||
-				(_T("lu") == strValue) ||
-				(_T("rd") == strValue) ||
-				(_T("ru") == strValue))
+			if ((L"ld" == strValue) ||
+				(L"lu" == strValue) ||
+				(L"rd" == strValue) ||
+				(L"ru" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE CornerDirectionVal::GetBYTECode() const
+		unsigned char CornerDirectionVal::GetBYTECode() const
 		{
 			if (L"ld" == m_strValue)	return 0;
 			if (L"lu" == m_strValue)	return 1;
@@ -58,7 +58,7 @@ namespace PPTX
 			if (L"ru" == m_strValue)	return 3;
 			return 0;
 		}
-		void CornerDirectionVal::SetBYTECode(const BYTE& src)
+		void CornerDirectionVal::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

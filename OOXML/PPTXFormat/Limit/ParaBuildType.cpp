@@ -38,19 +38,19 @@ namespace PPTX
 	{		
 		ParaBuildType::ParaBuildType()
 		{
-			m_strValue = _T("whole");
+			m_strValue = L"whole";
 		}
 		void ParaBuildType::set(const std::wstring& strValue)
 		{
-			if ((_T("allAtOnce") == strValue) ||
-				(_T("cust") == strValue) ||
-				(_T("p") == strValue) ||
-				(_T("whole") == strValue))
+			if ((L"allAtOnce" == strValue) ||
+				(L"cust" == strValue) ||
+				(L"p" == strValue) ||
+				(L"whole" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE ParaBuildType::GetBYTECode() const
+		unsigned char ParaBuildType::GetBYTECode() const
 		{
 			if (L"allAtOnce" == m_strValue)	return 0;
 			if (L"cust" == m_strValue)		return 1;
@@ -58,7 +58,7 @@ namespace PPTX
 			if (L"whole" == m_strValue)		return 3;
 			return 0;
 		}
-		void ParaBuildType::SetBYTECode(const BYTE& src)
+		void ParaBuildType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

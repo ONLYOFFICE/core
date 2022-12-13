@@ -49,14 +49,14 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE IterateType::GetBYTECode() const
+		unsigned char IterateType::GetBYTECode() const
 		{
 			if (L"el" == m_strValue)	return 0;
 			if (L"lt" == m_strValue)	return 1;
 			if (L"wd" == m_strValue)	return 2;
 			return 0;
 		}
-		void IterateType::SetBYTECode(const BYTE& src)
+		void IterateType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

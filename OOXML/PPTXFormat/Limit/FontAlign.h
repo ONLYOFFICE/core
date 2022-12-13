@@ -41,13 +41,11 @@ namespace PPTX
 		{
 		public:
 			FontAlign();
-
-			_USE_STRING_OPERATOR
 				
 			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& val);
+			virtual unsigned char GetBYTECode() const;
+			virtual void SetBYTECode(const unsigned char& val);
 		};
 	} // namespace Limit
 } // namespace PPTX

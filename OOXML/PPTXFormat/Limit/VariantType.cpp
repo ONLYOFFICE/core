@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		VariantType::VariantType()
 		{
-			m_strValue = _T("lpstr");
+			m_strValue = L"lpstr";
 		}
 		void VariantType::set(const std::wstring& strValue)
 		{
-			if ((_T("lpstr") == strValue) ||
-				(_T("i4") == strValue))
+			if ((L"lpstr" == strValue) ||
+				(L"i4" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE VariantType::GetBYTECode() const
+		unsigned char VariantType::GetBYTECode() const
 		{
 			if (L"lpstr" == m_strValue)	return 0;
 			if (L"i4" == m_strValue)	return 1;
 			return 0;
 		}
-		void VariantType::SetBYTECode(const BYTE& src)
+		void VariantType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

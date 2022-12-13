@@ -44,7 +44,7 @@ namespace PPTX
 		{
 			m_strValue = strValue;
 		}
-		BYTE BevelType::GetBYTECode() const
+		unsigned char BevelType::GetBYTECode() const
 		{
 			if (L"angle" == m_strValue)			return 0;
 			if (L"artDeco" == m_strValue)		return 1;
@@ -60,7 +60,7 @@ namespace PPTX
 			if (L"softRound" == m_strValue)		return 11;
 			return 0;
 		}
-		void BevelType::SetBYTECode(const BYTE& val)
+		void BevelType::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{

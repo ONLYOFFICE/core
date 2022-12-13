@@ -38,21 +38,21 @@ namespace PPTX
 	{		
 		TLPresetClass::TLPresetClass()
 		{
-			m_strValue = _T("exit");
+			m_strValue = L"exit";
 		}
 		void TLPresetClass::set(const std::wstring& strValue)
 		{
-			if ((_T("emph") == strValue) ||
-				(_T("entr") == strValue) ||
-				(_T("exit") == strValue) ||
-				(_T("mediacall") == strValue) ||
-				(_T("path") == strValue) ||
-				(_T("verb") == strValue))
+			if ((L"emph" == strValue) ||
+				(L"entr" == strValue) ||
+				(L"exit" == strValue) ||
+				(L"mediacall" == strValue) ||
+				(L"path" == strValue) ||
+				(L"verb" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLPresetClass::GetBYTECode() const
+		unsigned char TLPresetClass::GetBYTECode() const
 		{
 			if (L"emph" == m_strValue)	return 0;
 			if (L"entr" == m_strValue)	return 1;
@@ -63,7 +63,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLPresetClass::SetBYTECode(const BYTE& src)
+		void TLPresetClass::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

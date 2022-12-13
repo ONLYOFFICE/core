@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		OnOff::OnOff()
 		{
-			m_strValue = _T("def");
+			m_strValue = L"def";
 		}
 		void OnOff::set(const std::wstring& strValue)
 		{
-			if ((_T("on") == strValue) ||
-				(_T("off") == strValue) ||
-				(_T("def") == strValue))
+			if ((L"on" == strValue) ||
+				(L"off" == strValue) ||
+				(L"def" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE OnOff::GetBYTECode() const
+		unsigned char OnOff::GetBYTECode() const
 		{
-			if (_T("on") == m_strValue)
+			if (L"on" == m_strValue)
 				return 0;
-			if (_T("off") == m_strValue)
+			if (L"off" == m_strValue)
 				return 1;
-			if (_T("def") == m_strValue)
+			if (L"def" == m_strValue)
 				return 2;
 			return 2;
 		}
-		void OnOff::SetBYTECode(const BYTE& src)
+		void OnOff::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("on");
+				m_strValue = L"on";
 				break;
 			case 1:
-				m_strValue = _T("off");
+				m_strValue = L"off";
 				break;
 			default:
-				m_strValue = _T("def");
+				m_strValue = L"def";
 				break;
 			}
 		}

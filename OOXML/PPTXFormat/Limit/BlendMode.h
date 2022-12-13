@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class BlendMode : public BaseLimit
-		{
-		public:
-			BlendMode();
-
-			_USE_STRING_OPERATOR
-			
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& val);
-		};
+		DEFINE_LIMIT_BASE(BlendMode)
 	} // namespace Limit
 } // namespace PPTX

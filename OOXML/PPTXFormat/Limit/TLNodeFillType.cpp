@@ -38,9 +38,9 @@ namespace PPTX
 	{		
 		TLNodeFillType::TLNodeFillType()
 		{
-			m_strValue = _T("hold");
+			m_strValue = L"hold";
 		}
-		TLNodeFillType::TLNodeFillType(UINT fill)
+		TLNodeFillType::TLNodeFillType(unsigned int fill)
 		{
 			if (    fill == 0       ||
 					fill == 3) m_strValue = L"hold";
@@ -51,15 +51,15 @@ namespace PPTX
 
 		void TLNodeFillType::set(const std::wstring& strValue)
 		{
-			if ((_T("freeze") == strValue) ||
-				(_T("hold") == strValue) ||
-				(_T("remove") == strValue) ||
-				(_T("transition") == strValue))
+			if ((L"freeze" == strValue) ||
+				(L"hold" == strValue) ||
+				(L"remove" == strValue) ||
+				(L"transition" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLNodeFillType::GetBYTECode() const
+		unsigned char TLNodeFillType::GetBYTECode() const
 		{
 			if (L"freeze" == m_strValue)		return 0;
 			if (L"hold" == m_strValue)			return 1;
@@ -67,7 +67,7 @@ namespace PPTX
 			if (L"transition" == m_strValue)	return 3;
 			return 0;
 		}
-		void TLNodeFillType::SetBYTECode(const BYTE& src)
+		void TLNodeFillType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

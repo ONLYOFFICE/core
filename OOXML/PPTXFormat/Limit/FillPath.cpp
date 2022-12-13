@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		FillPath::FillPath()
 		{
-			m_strValue = _T("circle");
+			m_strValue = L"circle";
 		}
 		void FillPath::set(const std::wstring& strValue)
 		{
-			if ((_T("circle") == strValue) ||
-				(_T("rect") == strValue) ||
-				(_T("shape") == strValue))
+			if ((L"circle" == strValue) ||
+				(L"rect" == strValue) ||
+				(L"shape" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE FillPath::GetBYTECode() const
+		unsigned char FillPath::GetBYTECode() const
 		{
-			if (_T("circle") == m_strValue)
+			if (L"circle" == m_strValue)
 				return 0;
-			if (_T("rect") == m_strValue)
+			if (L"rect" == m_strValue)
 				return 1;
-			if (_T("shape") == m_strValue)
+			if (L"shape" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void FillPath::SetBYTECode(const BYTE& src)
+		void FillPath::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("circle");
+				m_strValue = L"circle";
 				break;
 			case 1:
-				m_strValue = _T("rect");
+				m_strValue = L"rect";
 				break;
 			case 2:
-				m_strValue = _T("shape");
+				m_strValue = L"shape";
 				break;
 			default:
 				break;

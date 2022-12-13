@@ -41,14 +41,12 @@ namespace PPTX
 		{
 		public:
 			TLNodeFillType();
-			TLNodeFillType(UINT fill);
-
-			_USE_STRING_OPERATOR
+			TLNodeFillType(unsigned int fill);
 				
 			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			virtual unsigned char GetBYTECode() const;
+			virtual void SetBYTECode(const unsigned char& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

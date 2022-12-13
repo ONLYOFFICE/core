@@ -38,25 +38,25 @@ namespace PPTX
 	{		
 			TLCommandType::TLCommandType()
 			{
-				m_strValue = _T("verb");
+				m_strValue = L"verb";
 			}							
 			void TLCommandType::set(const std::wstring& strValue)
 			{
-				if ((_T("call") == strValue) ||
-					(_T("evt") == strValue) ||
-					(_T("verb") == strValue))
+				if ((L"call" == strValue) ||
+					(L"evt" == strValue) ||
+					(L"verb" == strValue))
 				{
 					m_strValue = strValue;
 				}
 			}
-			BYTE TLCommandType::GetBYTECode() const
+			unsigned char TLCommandType::GetBYTECode() const
 			{
 				if (L"call" == m_strValue)	return 0;
 				if (L"evt" == m_strValue)	return 1;
 				if (L"verb" == m_strValue)	return 2;
 				return 0;
 			}
-			void TLCommandType::SetBYTECode(const BYTE& src)
+			void TLCommandType::SetBYTECode(const unsigned char& src)
 			{
 				switch (src)
 				{

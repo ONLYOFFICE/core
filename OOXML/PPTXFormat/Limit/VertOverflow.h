@@ -40,14 +40,12 @@ namespace PPTX
 		class VertOverflow : public BaseLimit
 		{
 		public:
-			VertOverflow();
-
-			_USE_STRING_OPERATOR
+			VertOverflow();			
 			
 			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			virtual unsigned char GetBYTECode() const;
+			virtual void SetBYTECode(const unsigned char& src);
 		};
 	} // namespace Limit
 } // namespace PPTX

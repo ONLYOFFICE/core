@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLOrigin::TLOrigin()
 		{
-			m_strValue = _T("parent");
+			m_strValue = L"parent";
 		}
 		void TLOrigin::set(const std::wstring& strValue)
 		{
-			if ((_T("parent") == strValue) ||
-				(_T("layout") == strValue))
+			if ((L"parent" == strValue) ||
+				(L"layout" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLOrigin::GetBYTECode() const
+		unsigned char TLOrigin::GetBYTECode() const
 		{
 			if (L"parent" == m_strValue)	return 0;
 			if (L"layout" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLOrigin::SetBYTECode(const BYTE& src)
+		void TLOrigin::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

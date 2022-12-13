@@ -38,27 +38,27 @@ namespace PPTX
 	{
 		FrameShape::FrameShape()
 		{
-			m_strValue = _T("frameStyle1");
+			m_strValue = L"frameStyle1";
 		}
 		void FrameShape::set(const std::wstring& strValue)
 		{
-			if ((_T("frameStyle1") == strValue) ||
-				(_T("frameStyle2") == strValue) ||
-				(_T("frameStyle3") == strValue) ||
-				(_T("frameStyle4") == strValue) ||
-				(_T("frameStyle5") == strValue) ||
-				(_T("frameStyle6") == strValue) ||
-				(_T("frameStyle7") == strValue))
+			if ((L"frameStyle1" == strValue) ||
+				(L"frameStyle2" == strValue) ||
+				(L"frameStyle3" == strValue) ||
+				(L"frameStyle4" == strValue) ||
+				(L"frameStyle5" == strValue) ||
+				(L"frameStyle6" == strValue) ||
+				(L"frameStyle7" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE FrameShape::GetBYTECode() const
+		unsigned char FrameShape::GetBYTECode() const
 		{
 			//not using yet
 			return 0;
 		}
-		void FrameShape::SetBYTECode(const BYTE& src)
+		void FrameShape::SetBYTECode(const unsigned char& src)
 		{
 			//not using yet
 		}

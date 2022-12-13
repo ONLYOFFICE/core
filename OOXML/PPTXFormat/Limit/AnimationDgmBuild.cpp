@@ -50,12 +50,12 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE AnimationDgmBuild::GetBYTECode() const
+		unsigned char AnimationDgmBuild::GetBYTECode() const
 		{
 			//not using yet
 			return 0;
 		}
-		void AnimationDgmBuild::SetBYTECode(const BYTE& src)
+		void AnimationDgmBuild::SetBYTECode(const unsigned char& src)
 		{
 			//not using yet
 		}

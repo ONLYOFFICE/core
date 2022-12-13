@@ -31,14 +31,24 @@
  */
 #pragma once
 
-#include "../../Base/Base.h"
-#include "../../../DesktopEditor/common/Types.h"
+#include <string>
 
+// TODO delete define
 #define _USE_STRING_OPERATOR                            \
-    virtual void operator=(const std::wstring& value)	\
-    {                                                   \
-        set(value);                                     \
-    }
+	virtual void operator=(const std::wstring& value)	\
+	{                                                   \
+		set(value);                                     \
+	}
+
+#define DEFINE_LIMIT_BASE(Class)											\
+class Class : public BaseLimit                                              \
+{                                                                           \
+public:                                                                     \
+	Class();																\
+	virtual void set(const std::wstring& strValue);							\
+	virtual unsigned char GetBYTECode() const;								\
+	virtual void SetBYTECode(const unsigned char& val);						\
+};
 
 namespace PPTX
 {
@@ -55,13 +65,10 @@ namespace PPTX
 			void operator=(const std::wstring& str);
 
 			virtual void set(const std::wstring& strValue) = 0;
-			void _set(const std::wstring& strValue);
-
-			std::wstring& get();
 			const std::wstring& get() const;
 
-			virtual BYTE GetBYTECode() const = 0;
-			virtual void SetBYTECode(const BYTE& src) = 0;
+			virtual unsigned char GetBYTECode() const = 0;
+			virtual void SetBYTECode(const unsigned char& src) = 0;
 
 		protected:
 			std::wstring m_strValue;

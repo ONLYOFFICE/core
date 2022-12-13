@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		LineCap::LineCap()
 		{
-			m_strValue = _T("flat");
+			m_strValue = L"flat";
 		}
 		void LineCap::set(const std::wstring& strValue)
 		{
-			if ((_T("flat") == strValue) ||
-				(_T("rnd") == strValue) ||
-				(_T("sq") == strValue))
+			if ((L"flat" == strValue) ||
+				(L"rnd" == strValue) ||
+				(L"sq" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE LineCap::GetBYTECode() const
+		unsigned char LineCap::GetBYTECode() const
 		{
-			if (_T("flat") == m_strValue)
+			if (L"flat" == m_strValue)
 				return 0;
-			if (_T("rnd") == m_strValue)
+			if (L"rnd" == m_strValue)
 				return 1;
-			if (_T("sq") == m_strValue)
+			if (L"sq" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void LineCap::SetBYTECode(const BYTE& src)
+		void LineCap::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 1:
-				m_strValue = _T("rnd");
+				m_strValue = L"rnd");
 				break;
 			case 2:
-				m_strValue = _T("sq");
+				m_strValue = L"sq");
 				break;
 			default:
-				m_strValue = _T("flat");
+				m_strValue = L"flat");
 				break;
 			}
 		}

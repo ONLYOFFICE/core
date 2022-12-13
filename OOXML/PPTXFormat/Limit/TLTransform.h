@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLTRANSFORM_INCLUDE_H_
-#define PPTX_LIMIT_TLTRANSFORM_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -43,16 +40,12 @@ namespace PPTX
 		class TLTransform : public BaseLimit
 		{
 		public:
-			TLTransform();
-
-			_USE_STRING_OPERATOR
+			TLTransform();			
 				
 			virtual void set(const std::wstring& strValue);
 
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			virtual unsigned char GetBYTECode() const;
+			virtual void SetBYTECode(const unsigned char& src);
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_TLTRANSFORM_INCLUDE_H_

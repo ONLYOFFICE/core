@@ -38,25 +38,25 @@ namespace PPTX
 	{		
 		TLMasterRelation::TLMasterRelation()
 		{
-			m_strValue = _T("sameClick");
+			m_strValue = L"sameClick";
 		}
 		void TLMasterRelation::set(const std::wstring& strValue)
 		{
-			if ((_T("lastClick") == strValue) ||
-				(_T("nextClick") == strValue) ||
-				(_T("sameClick") == strValue))
+			if ((L"lastClick" == strValue) ||
+				(L"nextClick" == strValue) ||
+				(L"sameClick")== strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLMasterRelation::GetBYTECode() const
+		unsigned char TLMasterRelation::GetBYTECode() const
 		{
 			if (L"lastClick" == m_strValue)	return 0;
 			if (L"nextClick" == m_strValue)	return 1;
 			if (L"sameClick" == m_strValue)	return 2;
 			return 0;
 		}
-		void TLMasterRelation::SetBYTECode(const BYTE& src)
+		void TLMasterRelation::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

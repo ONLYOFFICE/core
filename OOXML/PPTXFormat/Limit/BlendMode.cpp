@@ -51,7 +51,7 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE BlendMode::GetBYTECode() const
+		unsigned char BlendMode::GetBYTECode() const
 		{
 			if (L"darken" == m_strValue)		return 0;
 			if (L"lighten" == m_strValue)	return 1;
@@ -60,7 +60,7 @@ namespace PPTX
 			if (L"screen" == m_strValue)		return 4;
 			return 4;
 		}
-		void BlendMode::SetBYTECode(const BYTE& val)
+		void BlendMode::SetBYTECode(const unsigned char& val)
 		{
 			switch(val)
 			{

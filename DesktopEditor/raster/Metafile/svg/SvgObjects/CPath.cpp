@@ -11,7 +11,8 @@ namespace SVG
 
 	CPath::~CPath()
 	{
-
+		for (IPathElement* pPathElement : m_arElements)
+			delete pPathElement;
 	}
 
 	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
@@ -38,12 +39,10 @@ namespace SVG
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );
 
-		PathPoint oLastPoint = {0, 0};
+		for (IPathElement* oElement : m_arElements)
+			oElement->Draw(pRenderer);
 
-		for (const CPathElement& oElement : m_arElements)
-			oElement.Draw(pRenderer, oLastPoint);
-
-		pRenderer->DrawPath (c_nWindingFillMode/* | c_nStroke*/);
+		pRenderer->DrawPath (/*c_nWindingFillMode | */c_nStroke);
 		pRenderer->EndCommand (c_nPathType);
 		pRenderer->PathCommandEnd();
 
@@ -64,7 +63,8 @@ namespace SVG
 		std::wstring::const_iterator oFirstPos = wsValue.begin();
 		std::wstring::const_iterator oSecondPos = oFirstPos;
 
-		std::wstring wsMoveValue = L"";
+		IPathElement *pLastElement = NULL;
+		IPathElement *pMoveElement = NULL;
 
 		while (true)
 		{
@@ -80,103 +80,150 @@ namespace SVG
 				case L'M':
 				case L'm':
 				{
-					wsMoveValue = std::wstring(oFirstPos + 1, oSecondPos);
+					IPathElement *pElement = new CMoveElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
 
-					CPathElement oElement(EPathElement::Move, iswlower(*oFirstPos));
-					oElement.ReadFromString(wsMoveValue);
+					m_arElements.push_back(pElement);
 
-					m_arElements.push_back(oElement);
+					pLastElement = pElement;
+					pMoveElement = pElement;
 
 					break;
 				}
 				case L'L':
 				case L'l':
 				{
-					CPathElement oElement(EPathElement::Line, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CLineElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'H':
 				case L'h':
 				{
-					CPathElement oElement(EPathElement::HorizantalL, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CHLineElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'V':
 				case L'v':
 				{
-					CPathElement oElement(EPathElement::VerticalL, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CVLineElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'C':
 				case L'c':
 				{
-					CPathElement oElement(EPathElement::Curve, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CCBezierElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'S':
 				case L's':
 				{
-					CPathElement oElement(EPathElement::SBezier, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CSBezierElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'Q':
 				case L'q':
 				{
-					CPathElement oElement(EPathElement::QBezier, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CQBezierElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'T':
 				case L't':
 				{
-					CPathElement oElement(EPathElement::QBezier, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CTBezierElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'A':
 				case L'a':
 				{
-					CPathElement oElement(EPathElement::Arc, iswlower(*oFirstPos));
-					oElement.ReadFromString(std::wstring(oFirstPos + 1, oSecondPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CArcElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+
+					m_arElements.push_back(pElement);
+
+					pLastElement = pElement;
 
 					break;
 				}
 				case L'Z':
 				case L'z':
 				{
-					CPathElement oElement(EPathElement::Close, iswlower(*oFirstPos));
+					if (NULL == pMoveElement)
+						return;
 
-					m_arElements.push_back(oElement);
+					IPathElement *pElement = new CCloseElement();
+					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pMoveElement);
 
-					return;
+					m_arElements.push_back(pElement);
+
+					pLastElement = pMoveElement;
+
+					break;
 				}
 			}
 

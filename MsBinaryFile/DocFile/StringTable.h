@@ -39,6 +39,8 @@
 
 namespace DocFileFormat
 {
+	template<class T> class StringTableEx;
+
 	template<class T> class StringTable: public IVisitable
 	{
 		friend class WordDocument;
@@ -47,43 +49,41 @@ namespace DocFileFormat
 		friend class StyleSheetMapping;	
 		friend class DocumentMapping;
  		friend class NumberingMapping;
+		friend class StringTableEx<T>;
  
     private:
-		bool						fExtend;
-		int							cbData;
-		unsigned short				cbExtra;
+		bool						fExtend = false;
+		int							cbData = 0;
+		unsigned short				cbExtra = 0;
+		int							code_page = 1250;
 		
 		std::vector<ByteStructure*>	Data;
-
 		std::vector<unsigned char*>	DataExtra;
-		int							code_page;
 	public:
+		StringTable()
+		{
+		}		
 		virtual ~StringTable()
 		{
-			for ( size_t i = 0; i < this->Data.size(); ++i )
+			for ( size_t i = 0; i < Data.size(); ++i )
 			{
-				RELEASEOBJECT( this->Data[i] );
+				RELEASEOBJECT( Data[i] );
 
-				if (false == this->DataExtra.empty())
+				if (false == DataExtra.empty())
 				{
-					if (this->DataExtra[i])
+					if (DataExtra[i])
 					{
-						delete []this->DataExtra[i];
-						this->DataExtra[i] = NULL;
+						delete []DataExtra[i];
+						DataExtra[i] = NULL;
 					}	
 				}
 			}
-
 		}
-
-		StringTable( VirtualStreamReader *reader, int code_page_ ): 
-                            code_page(code_page_), fExtend(false), cbData(0), cbExtra(0)
+		StringTable( VirtualStreamReader *reader, int code_page_ ) : code_page(code_page_)
 		{
             parse( reader, (unsigned int)reader->GetPosition(), 0, false );
 		}
-
-		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, int nWordVersion, bool bReadExta = false) :
-												code_page(1250), fExtend(false), cbData(0), cbExtra(0)
+		StringTable( POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, int nWordVersion, bool bReadExta = false) 
 		{
 			if ( lcb > 0 )
 			{
@@ -97,9 +97,9 @@ namespace DocFileFormat
 
 		ByteStructure* operator [] ( size_t index ) const
 		{
-			if ( index < this->Data.size() )
+			if ( index < Data.size() )
 			{
-				return this->Data.at( index );
+				return Data.at( index );
 			}
 			else
 			{
@@ -109,46 +109,38 @@ namespace DocFileFormat
 
 	private:
 		
-		void parse( VirtualStreamReader *reader, unsigned int fc, unsigned int lcb = 0, bool bReadExta = false )
+		virtual void parse( VirtualStreamReader *reader, unsigned int fc, unsigned int lcb = 0, bool bReadExta = false )
 		{
 			if ( reader == NULL )		return;
 			if (fc > reader->GetSize()) return;
 
-			this->cbData = lcb;
-			
+			cbData = lcb;
+
 			int count_elements = 0;
-			//read fExtend
+
 			if ( reader->ReadUInt16() == 0xFFFF )
 			{
 				//if the first 2 bytes are 0xFFFF the STTB contains unicode characters
-				this->fExtend = true;
+				fExtend = true;
 				code_page = ENCODING_UTF16;
 			}
 			else
 			{
 				//else the STTB contains 1byte characters and the fExtend field is non-existend
 				//seek back to the beginning
-				this->fExtend = false;
+				fExtend = false;
 				code_page = ENCODING_WINDOWS_1250;
 
 				reader->Seek( (int)fc, 0/*STREAM_SEEK_SET*/ );
 			}
 
-			//read cData
 			long cDataStart = reader->GetPosition();
 			unsigned short cb = 0, elem_sz = 0;
 			
-			//if (reader->nWordVersion == 2)
-			//{
-			//	unsigned char * bytes = reader->ReadBytes(lcb, true);
-			//	reader->Seek( (int)fc, 0/*STREAM_SEEK_SET*/ );
-			//	delete []bytes;
-			//}
-
 			if (reader->nWordVersion > 0)
 			{
 				cb = reader->ReadUInt16();
-				this->cbData = cb; // all size 
+				cbData = cb; // all size 
 			}
 			else if (reader->nWordVersion == 0)
 			{
@@ -159,35 +151,28 @@ namespace DocFileFormat
 				}
 				else
 				{
-					//cData is a 4byte signed Integer, so we need to seek back
 					reader->Seek( (int)( fc + cDataStart ), 0/*STREAM_SEEK_SET*/ );
-					this->cbData = reader->ReadInt32();
+					cbData = reader->ReadInt32();
 				}
 			}
 
-			//read cbExtra
 			if (reader->nWordVersion == 0)
 			{
-				this->cbExtra = reader->ReadUInt16();
+				cbExtra = reader->ReadUInt16();
 			}
 
-			if (lcb > 0 && (lcb/* - fc*/) != this->cbData + this->cbExtra)
+			while (true)	
 			{
-				//???? 
-			}
-
-			while(true)	//read the strings and extra datas
-			{
-				if (reader->GetPosition() >= fc + this->cbData + this->cbExtra && count_elements < 1)
+				if (reader->GetPosition() >= fc + cbData + cbExtra && count_elements < 1)
 					break; //1995 and older
 
-				if (this->Data.size() == count_elements && count_elements > 0)
+				if (Data.size() == count_elements && count_elements > 0)
 					break; //1997 and newer
 
 				int cchData = 0;
 				int cbData = 0;
         
-				if ( this->fExtend )
+				if ( fExtend )
 				{
 					cchData = (int)reader->ReadUInt16();
 					cbData = cchData * 2;
@@ -200,7 +185,7 @@ namespace DocFileFormat
 
 				long posBeforeType = reader->GetPosition();
 
-				this->Data.push_back( T().ConstructObject( reader, cbData ) );
+				Data.push_back( T().ConstructObject( reader, cbData ) );
 
 				reader->Seek( (int)( posBeforeType + cbData ), 0/*STREAM_SEEK_SET */);
 	        
@@ -214,6 +199,96 @@ namespace DocFileFormat
 					reader->ReadBytes( cbExtra, false );
 				}
 			}
+		}
+	};
+	template<class T> class StringTableEx : public StringTable<T>
+	{
+	public:
+		StringTableEx(VirtualStreamReader *reader, int code_page_) : StringTable::code_page(code_page_)
+		{
+			parse(reader, (unsigned int)reader->GetPosition(), 0, true);
+		}
+
+		StringTableEx(POLE::Stream* tableStream, unsigned int fc, unsigned int lcb, int nWordVersion)
+		{
+			if (lcb > 0)
+			{
+				VirtualStreamReader reader(tableStream, fc, nWordVersion);
+
+				parse(&reader, fc, lcb, true);
+			}
+		}
+	private:
+		virtual void parse(VirtualStreamReader *reader, unsigned int fc, unsigned int lcb = 0, bool bReadExta = false)
+		{
+			if (reader == NULL)		return;
+			if (fc > reader->GetSize()) return;
+
+			if (reader->ReadUInt16() == 0xFFFF)
+			{
+				fExtend = true;
+				code_page = ENCODING_UTF16;
+			}
+			else
+			{
+				fExtend = false;
+				code_page = ENCODING_WINDOWS_1250;
+			}
+
+			_UINT32 cDataStart = reader->GetPosition(), count_elements = 0;
+			_UINT32 cb = 0, elem_sz = 0;
+
+			cb = reader->ReadUInt32();
+			if (cb != 0xFFFF)
+			{
+				count_elements = cb;
+				cbData = 0;
+			}
+			else
+			{
+				cbData = cb;
+			}
+
+			cbExtra = reader->ReadUInt16();
+
+			while (true)
+			{
+				if (reader->GetPosition() >= fc + lcb)
+					break; 
+
+				int cchData = 0;
+
+				if (fExtend)
+				{
+					cchData = (int)reader->ReadUInt16();
+					if (cchData > 0) cchData -= 2; //???  cchData (2 bytes): This value MUST be 0
+				}
+				else
+				{
+					cchData = (int)reader->ReadByte(); //??
+				}
+
+				if (cchData > 0)
+				{
+					Data.push_back(T().ConstructObject(reader, cchData));
+					
+					if (bReadExta)
+					{
+						unsigned char* pData = reader->ReadBytes(cbExtra, true);
+						DataExtra.push_back(pData);
+					}
+					else
+					{
+						reader->ReadBytes(cbExtra, false);
+					}
+				}
+				else
+				{
+					Data.push_back(T().ConstructObject(reader, cbExtra));
+
+				}
+			}
+			reader->Seek((int)(fc + lcb), 0/*STREAM_SEEK_SET */);
 		}
 	};
 }

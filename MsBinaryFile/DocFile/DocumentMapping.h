@@ -75,7 +75,6 @@ namespace DocFileFormat
 		
 		virtual ~DocumentMapping();
 		virtual void Apply( IVisitable* visited ) = 0;
-
 //--------------------------------- 4571833.doc
 		std::wstring	m_shapeIdOwner;
 		std::wstring	getOLEObject() { return _lastOLEObject; }
@@ -95,29 +94,24 @@ namespace DocFileFormat
 		void writeTextElement	( const std::wstring& text, const std::wstring& textType );
         void writeTextStart		( const std::wstring& textType, bool preserve_space);
 		void writeTextEnd		( const std::wstring& textType );
-		void writeField			(const std::wstring& sFieldString, int cpFieldStart, int cpFieldEnd);
-
-		
-		std::vector<int> searchBookmarks( std::vector<wchar_t>* chars, int initialCp );
-		std::vector<int> searchAnnot(std::vector<wchar_t>* chars, int initialCp);
-
+		void writeField			(const std::wstring& sFieldString, int cpFieldStart, int cpFieldEnd);		
+	
 		ParagraphPropertyExceptions* findValidPapx( int fc );
-	// Splits a list of characters into several lists
 		std::list<std::vector<wchar_t> >* splitCharList( std::vector<wchar_t>* chars, std::vector<int>* splitIndices );
-	// Writes the table starts at the given cp value
 		int writeTable		( int initialCp, unsigned int nestingLevel );
-	// Builds a list that contains the width of the several columns of the table.
 		bool buildTableGrid( int initialCp, unsigned int nestingLevel, std::vector<short>& grid);
-	// Finds the FC of the next row end mark.
 		int findRowEndFc		( int initialCp, int& rowEndCp, unsigned int nestingLevel );
-	// Finds the FC of the next row end mark.
 		int findRowEndFc		( int initialCp, unsigned int nestingLevel );
-	// Writes the table row that starts at the given cp value and ends at the next row end mark
+
 		int writeTableRow		( int initialCp, std::vector<short>* grid, unsigned int nestingLevel );
-	// Writes the table cell that starts at the given cp value and ends at the next cell end mark
 		int writeTableCell		( int initialCp, TablePropertyExceptions* tapx, std::vector<short>* grid, int& gridIndex, int cellIndex, unsigned int nestingLevel );
+		
 		int findCellEndCp		( int initialCp, unsigned int nestingLevel );
 		
+		std::vector<int> searchBookmarks(std::vector<wchar_t>* chars, int initialCp);
+		std::vector<int> searchAnnotation(std::vector<wchar_t>* chars, int initialCp);
+		std::vector<int> searchPermission(std::vector<wchar_t>* chars, int initialCp);
+
 		bool writeBookmarks		( int cp );
 		bool writeBookmarkStart	( short id );
 		bool writeBookmarkEnd	( short id );
@@ -127,11 +121,13 @@ namespace DocFileFormat
 		bool writeAnnotations	( int cp );
 		bool writeAnnotationStart( short id );
 		bool writeAnnotationEnd	( short id );
-	// Checks if the CHPX is special
+
+		bool writePermissions(int cp);
+		bool writePermissionStart(short id, size_t index);
+		bool writePermissionEnd(short id);
+
 		bool isSpecial( CharacterPropertyExceptions* chpx );
-	// Finds the SEPX that is valid for the given CP.
 		SectionPropertyExceptions* findValidSepx( int cp );
-	// Searches the given vector for the next FieldEnd character.
 		int searchNextTextMark( std::vector<wchar_t>* chars, int initialCp, wchar_t mark );
 		Symbol	getSymbol ( const CharacterPropertyExceptions* chpx );
 
@@ -153,6 +149,7 @@ namespace DocFileFormat
 		int								_footnoteNr;
 		int								_endnoteNr;
 		int								_commentNr;
+		int								_permissionNr;
 		bool							_isTextBoxContent;
 //		int								_isSectionPageBreak; //0 - not set, 1 -page break, 2 - continues, -1 - already
 		bool							_writeWebHidden;
@@ -171,7 +168,7 @@ namespace DocFileFormat
 			//bool bInstrText = false;
 			bool bEnd = false;
 		};
-		std::vector<fieldLevels>		_fieldLevels;
-		bool							_bContentWrite;
+		std::vector<fieldLevels> _fieldLevels;
+		bool _bContentWrite;
 	};
 }

@@ -38,34 +38,50 @@ namespace DocFileFormat
 {
   class BookmarkFirst: public ByteStructure
   {
-    private:
-		short ibkl;
-		short bkc;
+  public:
+	  _UINT32 id = 0;
+	  unsigned char itcFirst = 0;
+	  bool fPub = false;
+	  unsigned char itcLim = 0;
+	  bool fNative = false;
+	  bool fCol = false;
 
-    public:
-      static const int STRUCTURE_SIZE = 4;
+	  static const int STRUCTURE_SIZE = 6;
 
 	  BookmarkFirst();
-
-	  short GetIndex() const;
-	  short GetInformation() const;
-	
 	  virtual ~BookmarkFirst();
 
-	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+	  virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
   };
 
-  class AtnBookmarkFirst: public ByteStructure
+  class AtnBookmark : public ByteStructure
   {
-public:
-	unsigned short	bmc;
-	unsigned int	lTag;
+  public:
+	  unsigned short	bmc = 0;
+	  unsigned int	lTag = 0;
 
-	static const int STRUCTURE_SIZE = 10;
+	  static const int STRUCTURE_SIZE = 10;
 
-	  AtnBookmarkFirst();
-	  virtual ~AtnBookmarkFirst();
+	  AtnBookmark();
+	  virtual ~AtnBookmark();
 
-	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+	  virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
+  };
+
+  class ProtInfoBookmark : public ByteStructure
+  {
+  public:
+	  _UINT32 id = 0;
+
+	  _UINT16 uidSel = 0;
+	  _UINT16 iProt = 0;
+
+	  unsigned short i = 0;
+	  unsigned short fUseMe = 0;
+
+	  ProtInfoBookmark();
+	  virtual ~ProtInfoBookmark();
+
+	  virtual ByteStructure* ConstructObject(VirtualStreamReader* reader, int length);
   };
 }

@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class FrameShape : public BaseLimit
-		{
-		public:
-			FrameShape();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(FrameShape)
 	} // namespace Limit
 } // namespace PPTX

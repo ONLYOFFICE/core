@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class LineEndSize : public BaseLimit
-		{
-		public:
-			LineEndSize();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(LineEndSize)
 	} // namespace Limit
 } // namespace PPTX

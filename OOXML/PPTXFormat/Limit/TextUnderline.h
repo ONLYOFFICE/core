@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TextUnderline : public BaseLimit
-		{
-		public:
-			TextUnderline();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(TextUnderline)
 	} // namespace Limit
 } // namespace PPTX

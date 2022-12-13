@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TLChartSubElement : public BaseLimit
-		{
-		public:
-			TLChartSubElement();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(TLChartSubElement)
 	} // namespace Limit
 } // namespace PPTX

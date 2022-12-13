@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class IterateType : public BaseLimit
-		{
-		public:
-			IterateType();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(IterateType)
 	} // namespace Limit
 } // namespace PPTX

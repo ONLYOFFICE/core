@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class BlipCompression : public BaseLimit
-		{
-		public:
-			BlipCompression();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& val);
-		};
+		DEFINE_LIMIT_BASE(BlipCompression)
 	} // namespace Limit
 } // namespace PPTX

@@ -75,7 +75,7 @@ namespace PPTX
 
 		PlaceholderType::PlaceholderType()
 		{
-			m_strValue = L"obj");
+			m_strValue = L"obj";
 		}
 		void PlaceholderType::set(const std::wstring& strValue)
 		{

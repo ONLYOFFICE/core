@@ -61,17 +61,17 @@ namespace PPTX
 			{
 				// word clrmap
 				if (L"light1" == strValue)
-					m_strValue = _T("lt1";
+					m_strValue = L"lt1";
 				else if (L"light2" == strValue)
-					m_strValue = _T("lt2";
+					m_strValue = L"lt2";
 				else if (L"dark1" == strValue)
-					m_strValue = _T("dk1";
+					m_strValue = L"dk1";
 				else if (L"dark2" == strValue)
-					m_strValue = _T("dk2";
-				else if (L"hyperlink") == strValue)
-					m_strValue = _T("hlink";
+					m_strValue = L"dk2";
+				else if (L"hyperlink" == strValue)
+					m_strValue = L"hlink";
 				else if (L"followedHyperlink" == strValue)
-					m_strValue = _T("folHlink";
+					m_strValue = L"folHlink";
 			}
 		}
 		unsigned char ColorSchemeIndex::GetBYTECode() const

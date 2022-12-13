@@ -38,7 +38,7 @@ namespace PPTX
 	{		
 		TextAutonumberScheme::TextAutonumberScheme()
 		{
-			m_strValue = L"arabicPlain");
+			m_strValue = L"arabicPlain";
 		}
 		void TextAutonumberScheme::set(const std::wstring& strValue)
 		{

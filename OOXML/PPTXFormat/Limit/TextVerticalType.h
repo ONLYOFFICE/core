@@ -36,15 +36,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TextVerticalType : public BaseLimit
-		{
-		public:
-			TextVerticalType();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(TextVerticalType)
 	} // namespace Limit
 } // namespace PPTX

@@ -38,7 +38,7 @@ namespace PPTX
 	{		
 		TextShapeType::TextShapeType()
 		{
-			m_strValue = L"textNoShape");
+			m_strValue = L"textNoShape";
 		}
 		void TextShapeType::set(const std::wstring& strValue)
 		{

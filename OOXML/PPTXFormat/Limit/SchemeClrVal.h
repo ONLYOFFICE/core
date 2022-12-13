@@ -37,16 +37,7 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class SchemeClrVal : public BaseLimit
-		{
-		public:
-			SchemeClrVal();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& code);
-		};
+		DEFINE_LIMIT_BASE(SchemeClrVal)
 	} // namespace Limit
 } // namespace PPTX
 

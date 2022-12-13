@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TLPrevAc : public BaseLimit
-		{
-		public:
-			TLPrevAc();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(TLPrevAc)
 	} // namespace Limit
 } // namespace PPTX

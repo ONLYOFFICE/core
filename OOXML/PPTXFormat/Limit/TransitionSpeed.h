@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TransitionSpeed : public BaseLimit
-		{
-		public:
-			TransitionSpeed();			
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(TransitionSpeed)
 	} // namespace Limit
 } // namespace PPTX

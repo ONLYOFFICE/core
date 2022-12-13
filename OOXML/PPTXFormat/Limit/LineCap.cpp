@@ -64,13 +64,13 @@ namespace PPTX
 			switch (src)
 			{
 			case 1:
-				m_strValue = L"rnd");
+				m_strValue = L"rnd";
 				break;
 			case 2:
-				m_strValue = L"sq");
+				m_strValue = L"sq";
 				break;
 			default:
-				m_strValue = L"flat");
+				m_strValue = L"flat";
 				break;
 			}
 		}

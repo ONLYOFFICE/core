@@ -38,7 +38,7 @@ namespace PPTX
 	{		
 		TextTabAlignType::TextTabAlignType()
 		{
-			m_strValue = L"r");
+			m_strValue = L"r";
 		}
 		void TextTabAlignType::set(const std::wstring& strValue)
 		{

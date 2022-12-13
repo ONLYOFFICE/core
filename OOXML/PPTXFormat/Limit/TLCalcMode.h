@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TLCalcMode : public BaseLimit
-		{
-		public:
-			TLCalcMode();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(TLCalcMode)
 	} // namespace Limit
 } // namespace PPTX

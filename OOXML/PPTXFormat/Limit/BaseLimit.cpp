@@ -35,7 +35,7 @@
 namespace PPTX
 {
 	namespace Limit
-	{		
+	{
 		BaseLimit::BaseLimit(const std::wstring& str) : m_strValue(str)
 		{
 		}

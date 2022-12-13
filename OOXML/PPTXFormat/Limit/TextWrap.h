@@ -41,11 +41,8 @@ namespace PPTX
 		{
 		public:
 			TextWrap(const unsigned char& src = 1);
-				
-			virtual void set(const std::wstring& strValue);
 
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
+			DEFINE_LIMIT_PVIRTUAL
 		};
 	} // namespace Limit
 } // namespace PPTX

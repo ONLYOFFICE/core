@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class PattFillVal : public BaseLimit
-		{
-		public:
-			PattFillVal();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(PattFillVal)
 	} // namespace Limit
 } // namespace PPTX

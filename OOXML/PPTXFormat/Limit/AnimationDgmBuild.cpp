@@ -38,14 +38,14 @@ namespace PPTX
 	{		
 		AnimationDgmBuild::AnimationDgmBuild()
 		{
-			m_strValue = _T("allAtOnce");
+			m_strValue = L"allAtOnce";
 		}
 		void AnimationDgmBuild::set(const std::wstring& strValue)
 		{
-			if ((strValue == _T("allAtOnce")) ||
-				(strValue == _T("lvlAtOnce")) ||
-				(strValue == _T("lvlOne")) ||
-				(strValue == _T("one")))
+			if ((strValue == L"allAtOnce") ||
+				(strValue == L"lvlAtOnce") ||
+				(strValue == L"lvlOne") ||
+				(strValue == L"one"))
 			{
 				m_strValue = strValue;
 			}

@@ -38,7 +38,7 @@ namespace PPTX
 	{		
 		RectAlign::RectAlign()
 		{
-			m_strValue = L"tl");
+			m_strValue = L"tl";
 		}
 		void RectAlign::set(const std::wstring& strValue)
 		{

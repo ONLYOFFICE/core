@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class ColorSchemeIndex : public BaseLimit
-		{
-		public:
-			ColorSchemeIndex();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& val);
-		};
+		DEFINE_LIMIT_BASE(ColorSchemeIndex)
 	} // namespace Limit
 } // namespace PPTX

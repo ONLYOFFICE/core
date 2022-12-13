@@ -217,7 +217,7 @@ namespace PPTX
 			case 52: m_strValue = L"weave"; break;
 			case 53: m_strValue = L"zigZag"; break;
 			default:
-				m_strValue = L"cross");
+				m_strValue = L"cross";
 				break;
 			}
 		}

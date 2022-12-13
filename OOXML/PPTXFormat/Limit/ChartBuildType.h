@@ -37,16 +37,7 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class ChartBuildType : public BaseLimit
-		{
-		public:
-			ChartBuildType();
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(ChartBuildType)
 	} // namespace Limit
 } // namespace PPTX
 

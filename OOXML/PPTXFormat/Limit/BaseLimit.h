@@ -40,15 +40,19 @@
 		set(value);                                     \
 	}
 
-#define DEFINE_LIMIT_BASE(Class)											\
-class Class : public BaseLimit                                              \
-{                                                                           \
-public:                                                                     \
-	Class();																\
+#define DEFINE_LIMIT_PVIRTUAL												\
+	using BaseLimit::operator=;												\
 	virtual void set(const std::wstring& strValue);							\
 	virtual unsigned char GetBYTECode() const;								\
-	virtual void SetBYTECode(const unsigned char& val);						\
-};
+	virtual void SetBYTECode(const unsigned char& val);
+
+#define DEFINE_LIMIT_BASE(Class)											\
+	class Class : public BaseLimit                                          \
+	{                                                                       \
+	public:                                                                 \
+		Class();															\
+		DEFINE_LIMIT_PVIRTUAL												\
+	};
 
 namespace PPTX
 {
@@ -62,6 +66,7 @@ namespace PPTX
 			virtual ~BaseLimit();
 
 			BaseLimit& operator=(const BaseLimit& oSrc);
+
 			void operator=(const std::wstring& str);
 
 			virtual void set(const std::wstring& strValue) = 0;

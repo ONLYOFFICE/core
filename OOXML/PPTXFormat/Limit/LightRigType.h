@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class LightRigType : public BaseLimit
-		{
-		public:
-			LightRigType();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& val);
-		};
+		DEFINE_LIMIT_BASE(LightRigType)
 	} // namespace Limit
 } // namespace PPTX

@@ -38,7 +38,7 @@ namespace PPTX
 	{		
 		CornerDirectionVal::CornerDirectionVal()
 		{
-			m_strValue = _T("lu");
+			m_strValue = L"lu";
 		}
 		void CornerDirectionVal::set(const std::wstring& strValue)
 		{

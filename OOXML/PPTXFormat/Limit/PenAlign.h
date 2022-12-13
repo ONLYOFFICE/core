@@ -37,15 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class PenAlign : public BaseLimit
-		{
-		public:
-			PenAlign();
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual unsigned char GetBYTECode() const;
-			virtual void SetBYTECode(const unsigned char& src);
-		};
+		DEFINE_LIMIT_BASE(PenAlign)
 	} // namespace Limit
 } // namespace PPTX

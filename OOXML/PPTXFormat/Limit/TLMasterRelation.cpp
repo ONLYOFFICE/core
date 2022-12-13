@@ -44,7 +44,7 @@ namespace PPTX
 		{
 			if ((L"lastClick" == strValue) ||
 				(L"nextClick" == strValue) ||
-				(L"sameClick")== strValue))
+				(L"sameClick" == strValue))
 			{
 				m_strValue = strValue;
 			}

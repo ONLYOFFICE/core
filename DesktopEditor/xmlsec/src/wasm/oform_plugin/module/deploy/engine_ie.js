@@ -246,6 +246,202 @@ Uint8Array.prototype.copyWithin = Uint8Array.prototype.copyWithin || function(ta
 
 })();
 
+	function toBase64(buf)
+	{
+		if(typeof buf === "string") 
+		{
+			let old = buf;
+			buf = [];
+			for (let i = 0, len = old.length; i < len; i++)
+				buf.push(old.charCodeAt(i));
+		}
+
+		const chars = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
+		const chars_map = [
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1,  0,  1,  2,  3,  4,  5,  6,  7,  8, -1, -1, -1, -1, -1, -1,
+			-1,  9, 10, 11, 12, 13, 14, 15, 16, -1, 17, 18, 19, 20, 21, -1,
+			22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, -1, -1, -1, -1, -1,
+			-1, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, -1, 44, 45, 46,
+			47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+			-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1
+		];
+
+		let result = [];
+		for (let i = 0, len = buf.length; i < len; i++)
+		{
+			let carry = buf[i];
+			for (let j = 0; j < result.length; ++j) 
+			{
+				const x = (chars_map[result[j]] << 8) + carry;
+				result[j] = chars.charCodeAt(x % 58);
+				carry = (x / 58) >> 0;
+			}
+			while (carry)
+			{
+				result.push(chars.charCodeAt(carry % 58));
+				carry = (carry / 58) >> 0;
+			}
+		}
+
+		let char1 = "1".charCodeAt(0);
+		for (let i = 0, len = buf.length; i < len; i++)
+		{
+			if (buf[i])
+				break;
+			else
+				result.push(char1);
+		}
+
+		result.reverse();
+		return String.fromCharCode.apply(null, result);
+	}
+
+	function random(length)
+	{
+		let byteArray = new Uint8Array(length);
+		let engine = window.crypto || window.msCrypto;
+		if (engine)
+			engine.getRandomValues(byteArray);
+		else
+		{
+			for (let i = 0; i < length; i++)
+				byteArray[i] = (Math.random() * 256) >> 0;
+		}
+		return byteArray;
+	}
+
+    function CryptoJS()
+	{
+		this.isModuleInit = false;
+	};
+	CryptoJS.prototype.onLoad = function()
+	{
+		CryptoJS.prototype.isModuleInit = true;
+	};
+
+	CryptoJS.prototype.generateKeys = function(password, salt)
+	{
+		if (!this.isModuleInit)
+			return null;
+
+		if (!salt)
+			salt = toBase64(random(32));
+
+		let algPtr = "ed25519".toUtf8Pointer();
+		let passwordPtr = password.toUtf8Pointer();
+		let saltPtr = salt.toUtf8Pointer();
+
+		let keys = Module["_Crypto_CreateKeys"](algPtr.ptr, passwordPtr.ptr, saltPtr.ptr);
+
+		algPtr.free();
+		passwordPtr.free();
+		saltPtr.free();
+
+		if (keys === 0)
+			return null;
+
+		let heap = Module["HEAP8"];
+
+		let currentStart = keys;
+		let currentEnd = currentStart;
+		while (heap[currentEnd] != 0)
+			currentEnd++;
+		let publicKey = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+
+		currentStart = currentEnd + 1;
+		currentEnd = currentStart;
+		while (heap[currentEnd] != 0)
+			currentEnd++;
+		let privateKey = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+
+		Module["_Crypto_Free"](keys);
+
+		return {
+			"salt" : salt,
+			"privateKey" : privateKey,
+			"publicKey" : publicKey
+		};
+	};
+
+	CryptoJS.prototype.sign = function(privateKey, password, salt, xml)
+	{
+		if (!this.isModuleInit)
+			return null;
+
+		let privateKeyPtr = privateKey.toUtf8Pointer();
+		let passwordPtr = password.toUtf8Pointer();
+		let saltPtr = salt.toUtf8Pointer();
+		let xmlPtr = xml.toUtf8Pointer();
+
+		let signData = Module["_Crypto_Sign"](privateKeyPtr.ptr, passwordPtr.ptr, saltPtr.ptr, 
+			xmlPtr.ptr, xmlPtr.length);
+
+		privateKeyPtr.free();
+		passwordPtr.free();
+		saltPtr.free();
+		xmlPtr.free();
+
+		if (signData === 0)
+			return null;
+
+		let heap = Module["HEAP8"];
+
+		let currentStart = signData;
+		let currentEnd = currentStart;
+		while (heap[currentEnd] != 0)
+			currentEnd++;
+		
+		let signString = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+
+		Module["_Crypto_Free"](signData);
+		return signString;
+	};
+
+	CryptoJS.prototype.changePassword = function(privateKey, passwordOld, passwordNew, salt)
+	{
+		if (!this.isModuleInit)
+			return null;
+
+		let privateKeyPtr = privateKey.toUtf8Pointer();
+		let passwordOldPtr = passwordOld.toUtf8Pointer();
+		let passwordNewPtr = passwordNew.toUtf8Pointer();
+		let saltPtr = salt.toUtf8Pointer();
+
+		let privateKeyEnc = Module["_Crypto_Sign"](privateKeyPtr.ptr, 
+			passwordOldPtr.ptr, passwordNewPtr.ptr, saltPtr.length);
+
+		privateKeyPtr.free();
+		passwordOldPtr.free();
+		passwordNewPtr.free();
+		saltPtr.free();	
+
+		if (privateKeyEnc === 0)
+			return null;
+
+		let heap = Module["HEAP8"];
+
+		let currentStart = privateKeyEnc;
+		let currentEnd = currentStart;
+		while (heap[currentEnd] != 0)
+			currentEnd++;
+		
+		let privateKeyString = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+
+		Module["_Crypto_Free"](privateKeyEnc);
+		return privateKeyString;
+	};
+
+	window.CryptoJS = CryptoJS;
 
     var Module=typeof Module!="undefined"?Module:{};
 var Promise=function(){function noop(){}function bind(fn,thisArg){return function(){fn.apply(thisArg,arguments)}}function Promise(fn){if(!(this instanceof Promise))throw new TypeError("Promises must be constructed via new");if(typeof fn!="function")throw new TypeError("not a function");this._state=0;this._handled=false;this._value=undefined;this._deferreds=[];doResolve(fn,this)}function handle(self,deferred){while(self._state===3)self=self._value;if(self._state===0){self._deferreds.push(deferred);
@@ -323,27 +519,6 @@ dependenciesFulfilled=function runCaller(){if(!calledRun)run();if(!calledRun)dep
 function run(args){args=args||arguments_;if(runDependencies>0)return;preRun();if(runDependencies>0)return;function doRun(){if(calledRun)return;calledRun=true;Module["calledRun"]=true;if(ABORT)return;initRuntime();if(Module["onRuntimeInitialized"])Module["onRuntimeInitialized"]();postRun()}if(Module["setStatus"]){Module["setStatus"]("Running...");setTimeout(function(){setTimeout(function(){Module["setStatus"]("")},1);doRun()},1)}else doRun()}
 if(Module["preInit"]){if(typeof Module["preInit"]=="function")Module["preInit"]=[Module["preInit"]];while(Module["preInit"].length>0)Module["preInit"].pop()()}run();
 
-
-	function CryptoJS()
-	{
-		this.isModuleInit = false;
-	};
-	CryptoJS.prototype.onLoad = function()
-	{
-		CryptoJS.prototype.isModuleInit = true;
-	};
-	CryptoJS.prototype.isModuleInit = false;
-
-	window.Asc = window.Asc || {};
-	window.Asc.cryptoJS = new CryptoJS();
-	window.Asc.CryptoErrors = {
-		OPEN_SSL_WARNING_OK 		: 0,
-		OPEN_SSL_WARNING_ERR        : 1,
-		OPEN_SSL_WARNING_ALL_OK     : 2,
-		OPEN_SSL_WARNING_PASS       : 4,
-		OPEN_SSL_WARNING_NOVERIFY   : 8
-	};
-
 	var Module=typeof Module!="undefined"?Module:{};
 var Promise=function(){function noop(){}function bind(fn,thisArg){return function(){fn.apply(thisArg,arguments)}}function Promise(fn){if(!(this instanceof Promise))throw new TypeError("Promises must be constructed via new");if(typeof fn!="function")throw new TypeError("not a function");this._state=0;this._handled=false;this._value=undefined;this._deferreds=[];doResolve(fn,this)}function handle(self,deferred){while(self._state===3)self=self._value;if(self._state===0){self._deferreds.push(deferred);
 return}self._handled=true;Promise._immediateFn(function(){var cb=self._state===1?deferred.onFulfilled:deferred.onRejected;if(cb===null){(self._state===1?resolve:reject)(deferred.promise,self._value);return}var ret;try{ret=cb(self._value)}catch(e){reject(deferred.promise,e);return}resolve(deferred.promise,ret)})}function resolve(self,newValue){try{if(newValue===self)throw new TypeError("A promise cannot be resolved with itself.");if(newValue&&(typeof newValue=="object"||typeof newValue=="function")){var then=
@@ -419,45 +594,6 @@ var _Crypto_Sign=Module["_Crypto_Sign"]=function(){return(_Crypto_Sign=Module["_
 dependenciesFulfilled=function runCaller(){if(!calledRun)run();if(!calledRun)dependenciesFulfilled=runCaller};
 function run(args){args=args||arguments_;if(runDependencies>0)return;preRun();if(runDependencies>0)return;function doRun(){if(calledRun)return;calledRun=true;Module["calledRun"]=true;if(ABORT)return;initRuntime();if(Module["onRuntimeInitialized"])Module["onRuntimeInitialized"]();postRun()}if(Module["setStatus"]){Module["setStatus"]("Running...");setTimeout(function(){setTimeout(function(){Module["setStatus"]("")},1);doRun()},1)}else doRun()}
 if(Module["preInit"]){if(typeof Module["preInit"]=="function")Module["preInit"]=[Module["preInit"]];while(Module["preInit"].length>0)Module["preInit"].pop()()}run();
-
-
-	// AES
-	CryptoJS.prototype.AES_Encrypt = function(password, message)
-	{
-		// generate salt & encrypt message
-	};
-	CryptoJS.prototype.AES_Encrypt = function(password, salt, message)
-	{
-
-	};
-
-	CryptoJS.prototype.AES_Decrypt = function(password, message)
-	{
-	};
-
-	// Signature
-	CryptoJS.prototype.CreateED25519Keys = function()
-	{
-
-	};
-
-	CryproJS.prototype.Sign = function(privateKey, message)
-	{
-
-	};
-
-	CryproJS.prototype.Verify = function(publicKey, message)
-	{
-
-	};
-
-	// Certificate & keys
-	CryproJS.prototype.loadCert = function(data, password)
-	{
-	};
-	CryproJS.prototype.loadKey = function(data, password)
-	{
-	};
 
 })(window, undefined);
 

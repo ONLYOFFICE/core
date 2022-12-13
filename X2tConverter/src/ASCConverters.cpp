@@ -3868,6 +3868,7 @@ namespace NExtractTools
 					{
 						if (!NSDirectory::Exists(sTo))
 							NSDirectory::CreateDirectory(sTo);
+						sThumbnailDir = sTo;
 					}
 					sFileToExt = getExtentionByRasterFormat(nRasterFormat);
 				}

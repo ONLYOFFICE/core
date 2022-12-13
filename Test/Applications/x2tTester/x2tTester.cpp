@@ -492,40 +492,40 @@ void Cx2tTester::WriteReportHeader()
 {
 	CTemporaryCS CS(&m_reportCS);
 	m_reportStream.WriteStringUTF8(L"Input file\t", true);
-	m_reportStream.WriteStringUTF8(L"Output file\t", true);
-	m_reportStream.WriteStringUTF8(L"Direction\t", true);
-	m_reportStream.WriteStringUTF8(L"Time\t", true);
-	m_reportStream.WriteStringUTF8(L"Input size\t", true);
-	m_reportStream.WriteStringUTF8(L"Output size\t", true);
-	m_reportStream.WriteStringUTF8(L"Exit code\t", true);
-	m_reportStream.WriteStringUTF8(L"Log\n", true);
+	m_reportStream.WriteStringUTF8(L"Output file\t", false);
+	m_reportStream.WriteStringUTF8(L"Direction\t", false);
+	m_reportStream.WriteStringUTF8(L"Time\t", false);
+	m_reportStream.WriteStringUTF8(L"Input size\t", false);
+	m_reportStream.WriteStringUTF8(L"Output size\t", false);
+	m_reportStream.WriteStringUTF8(L"Exit code\t", false);
+	m_reportStream.WriteStringUTF8(L"Log\n", false);
 }
 void Cx2tTester::WriteReport(const Report& report)
 {
 	CTemporaryCS CS(&m_reportCS);
 
-	m_reportStream.WriteStringUTF8(report.inputFile + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.direction + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.log + L"\n", true);
+	m_reportStream.WriteStringUTF8(report.inputFile + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.direction + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 }
 void Cx2tTester::WriteReports(const std::vector<Report>& reports)
 {
 	CTemporaryCS CS(&m_reportCS);
 	for(auto& report : reports)
 	{
-		m_reportStream.WriteStringUTF8(report.inputFile + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.direction + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.log + L"\n", true);
+		m_reportStream.WriteStringUTF8(report.inputFile + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.direction + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 	}
 }
 void Cx2tTester::WriteTime()

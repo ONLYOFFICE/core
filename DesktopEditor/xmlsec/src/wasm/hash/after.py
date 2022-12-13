@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../../../../../../build_tools/scripts')
+sys.path.append('../../../../../../build_tools/scripts')
 import base
 import os
 

@@ -1,6 +1,6 @@
 window.onload = function()
 {
-	let url = "./engine";
+	let url = "./deploy/engine";
 	let useWasm = false;
 	let webAsmObj = window["WebAssembly"];
 	if (typeof webAsmObj === "object" && typeof webAsmObj["Memory"] === "function")

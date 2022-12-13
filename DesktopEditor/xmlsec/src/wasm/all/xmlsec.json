@@ -2,9 +2,10 @@
 	"name": "openssl",
 	"res_folder": "./deploy",
 	"wasm": true,
-	"asm": false,
+	"asm": true,
+	"embed_mem_file": true,
 	"run_before": "before.py",
-	"run_after": "import sys;sys.path.append(\"../../../../../../build_tools/scripts\");import base;base.replaceInFile(\"./deploy/openssl.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/openssl.js\", \"__ATPOSTRUN__ = [];\", \"__ATPOSTRUN__=[function(){self.onEngineInit();}];\");base.replaceInFile(\"./deploy/openssl.js\", \"function getBinaryPromise()\", \"function getBinaryPromise2()\");base.copy_file(\"./index.html\", \"./deploy/index.html\");base.copy_file(\"./code.js\", \"./deploy/code.js\")",
+	"run_after": "after.py",
 	"base_js_content": "./engine.js",
 
 	"compiler_flags": [
@@ -31,15 +32,21 @@
 		"_XmlSignature_Sign"
 	],
 	"include_path": [
-		"./xml/libxml2/include", "./xml/libxml2/include/libxml", "./xml/build/qt", "../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../../OfficeUtils/src/zlib-1.2.11", "../../../../../OfficeUtils/src", "openssl/include", "openssl", "emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
+		"./../3rdParty/openssl/include", "./../3rdParty/openssl",
+		"./../../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "./../../../../../OfficeUtils/src/zlib-1.2.11", "./../../../../../OfficeUtils/src",
+		"./../3rdParty/xml/libxml2/include", "./../3rdParty/xml/libxml2/include/libxml", "./../3rdParty/xml/build/qt",
+		"emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
 	],
 	"define": [
-		"HAVE_VA_COPY", "LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", "LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", "LIBXML_C14N_ENABLED", "LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", "IN_LIBXML", "LIBXML_STATIC", "BUILD_ZLIB_AS_SOURCES", "__linux__", "_LINUX"
+		"HAVE_VA_COPY", "LIBXML_READER_ENABLED", "LIBXML_PUSH_ENABLED", "LIBXML_HTML_ENABLED", "LIBXML_XPATH_ENABLED", "LIBXML_OUTPUT_ENABLED", 
+		"LIBXML_C14N_ENABLED", "LIBXML_SAX1_ENABLED", "LIBXML_TREE_ENABLED", "LIBXML_XPTR_ENABLED", "IN_LIBXML", "LIBXML_STATIC", 
+		"BUILD_ZLIB_AS_SOURCES", 
+		"__linux__", "_LINUX"
 	],
 	"compile_files_array": [
 	{
 		"name": "x",
-		"folder": "./xml/",
+		"folder": "./../3rdParty/xml/",
 		"files": ["build/qt/libxml2_all.c", "build/qt/libxml2_all2.c", "src/xmllight.cpp", "src/xmldom.cpp"]
 	},
 	{
@@ -70,8 +77,8 @@
 	{
 		"name": "a",
 		"folder": "./",
-		"files": ["openssl/apps/openssl.c", "../main.cpp"]
+		"files": ["main.cpp"]
 	}
 	],
-	"sources": ["./openssl/libcrypto.a"]
+	"sources": ["./../3rdParty/openssl/libcrypto.a"]
 }

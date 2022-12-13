@@ -116,13 +116,13 @@
 		let currentEnd = currentStart;
 		while (heap[currentEnd] != 0)
 			currentEnd++;
-		let publicKey = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+		let publicKey = "".fromUtf8(heap, currentStart, currentEnd - currentStart);
 
 		currentStart = currentEnd + 1;
 		currentEnd = currentStart;
 		while (heap[currentEnd] != 0)
 			currentEnd++;
-		let privateKey = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+		let privateKey = "".fromUtf8(heap, currentStart, currentEnd - currentStart);
 
 		Module["_Crypto_Free"](keys);
 
@@ -161,7 +161,7 @@
 		while (heap[currentEnd] != 0)
 			currentEnd++;
 		
-		let signString = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+		let signString = "".fromUtf8(heap, currentStart, currentEnd - currentStart);
 
 		Module["_Crypto_Free"](signData);
 		return signString;
@@ -177,8 +177,8 @@
 		let passwordNewPtr = passwordNew.toUtf8Pointer();
 		let saltPtr = salt.toUtf8Pointer();
 
-		let privateKeyEnc = Module["_Crypto_Sign"](privateKeyPtr.ptr, 
-			passwordOldPtr.ptr, passwordNewPtr.ptr, saltPtr.length);
+		let privateKeyEnc = Module["_Crypto_ChangePassword"](privateKeyPtr.ptr, 
+			passwordOldPtr.ptr, passwordNewPtr.ptr, saltPtr.ptr);
 
 		privateKeyPtr.free();
 		passwordOldPtr.free();
@@ -195,7 +195,7 @@
 		while (heap[currentEnd] != 0)
 			currentEnd++;
 		
-		let privateKeyString = String.fromUtf8(heap, currentStart, currentEnd - currentStart);
+		let privateKeyString = "".fromUtf8(heap, currentStart, currentEnd - currentStart);
 
 		Module["_Crypto_Free"](privateKeyEnc);
 		return privateKeyString;

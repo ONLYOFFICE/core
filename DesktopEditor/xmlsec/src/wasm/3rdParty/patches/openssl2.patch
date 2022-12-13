@@ -1,0 +1,11 @@
+<<<<<<<
+#ifndef OPENSSL_NO_MD2
+# define OPENSSL_NO_MD2
+#endif
+=======
+#ifndef OPENSSL_MD2_ENABLED
+#ifndef OPENSSL_NO_MD2
+# define OPENSSL_NO_MD2
+#endif
+#endif
+>>>>>>>

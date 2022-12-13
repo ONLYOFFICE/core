@@ -3,7 +3,7 @@
 	"res_folder": "./deploy",
 	"wasm": true,
 	"asm": true,
-	"run_before": "",
+	"run_before": "before.py",
 	"run_after": "after.py",
 	"base_js_content": "./hash_base.js",
 	"embed_mem_file": true,
@@ -28,45 +28,45 @@
 	],
 	
 	"include_path": [
-		"./", "./../openssl/include"
+		"./", "./../3rdParty/openssl/include"
 	],
 	"define": [
-		"WIN32", "DNDEBUG"
+		"WIN32", "DNDEBUG", "OPENSSL_MD2_ENABLED"
 	],
 	"compile_files_array": [
 	{
 		"name": "a1",
-		"folder": "../openssl/crypto/sha/",
+		"folder": "./../3rdParty/openssl/crypto/sha/",
 		"files": ["keccak1600.c", "sha1_one.c", "sha1dgst.c", "sha256.c", "sha512.c"]
 	},
 	{
 		"name": "a2",
-		"folder": "../openssl/crypto/md2/",
+		"folder": "./../3rdParty/openssl/crypto/md2/",
 		"files": ["md2_dgst.c", "md2_one.c"]
 	},
 	{
 		"name": "a3",
-		"folder": "../openssl/crypto/md4/",
+		"folder": "./../3rdParty/openssl/crypto/md4/",
 		"files": ["md4_dgst.c", "md4_one.c"]
 	},
 	{
 		"name": "a4",
-		"folder": "../openssl/crypto/md5/",
+		"folder": "./../3rdParty/openssl/crypto/md5/",
 		"files": ["md5_dgst.c", "md5_one.c"]
 	},
 	{
 		"name": "a5",
-		"folder": "../openssl/crypto/ripemd/",
+		"folder": "./../3rdParty/openssl/crypto/ripemd/",
 		"files": ["rmd_dgst.c", "rmd_one.c"]
 	},
 	{
 		"name": "a6",
-		"folder": "../openssl/crypto/whrlpool/",
+		"folder": "./../3rdParty/openssl/crypto/whrlpool/",
 		"files": ["wp_block.c", "wp_dgst.c"]
 	},
 	{
 		"name": "a7",
-		"folder": "../openssl/crypto/",
+		"folder": "./../3rdParty/openssl/crypto/",
 		"files": ["mem_clr.c"]
 	},
 	{

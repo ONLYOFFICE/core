@@ -6,5 +6,6 @@ base.replaceInFile("./deploy/engine.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[fu
 base.replaceInFile("./deploy/engine.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){window.cryptoJS.onLoad();}];");
 base.replaceInFile("./deploy/engine.js", "function getBinaryPromise()", "function getBinaryPromise2()");
 
-base.copy_file("./index.html", "./deploy/index.html");
-base.copy_file("./code.js", "./deploy/code.js")
+base.replaceInFile("./deploy/engine_ie.js", "__ATPOSTRUN__=[];", "__ATPOSTRUN__=[function(){window.cryptoJS.onLoad();}];");
+base.replaceInFile("./deploy/engine_ie.js", "__ATPOSTRUN__ = [];", "__ATPOSTRUN__=[function(){window.cryptoJS.onLoad();}];");
+base.replaceInFile("./deploy/engine_ie.js", "function getBinaryPromise()", "function getBinaryPromise2()");

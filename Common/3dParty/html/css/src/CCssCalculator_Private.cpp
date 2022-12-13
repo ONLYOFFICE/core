@@ -431,7 +431,7 @@ namespace NSCSS
             {
                 oFindId = m_mData.find(sId);
 
-                if (oFindId != m_mData.end())
+				if (oFindId != m_mData.end() && NULL != m_mStatictics)
                 {
                     std::map<StatistickElement, unsigned int>::const_iterator oFindCountId = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
 
@@ -450,7 +450,7 @@ namespace NSCSS
                 }
             }
 
-            if (!arClasses.empty())
+			if (!arClasses.empty())
             {
                 if (!bIsSettings)
                 {
@@ -508,18 +508,23 @@ namespace NSCSS
             for (const CElement* oElement : arFindElements)
                 pStyle->AddStyle(oElement->GetStyle(), i + 1);
 
-            std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
+			if (NULL != m_mStatictics)
+			{
+				std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
 
-            if (oFindCountStyle != m_mStatictics->end())
-            {
-                if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
-                   (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
-                    pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
-                else if (!bIsSettings)
-                    pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
-            }
-            else if (bIsSettings)
-                pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+				if (oFindCountStyle != m_mStatictics->end())
+				{
+					if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
+					   (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
+						pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
+					else if (!bIsSettings)
+						pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+				}
+				else if (bIsSettings)
+					pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+			}
+			else
+				pStyle->AddStyle(arSelectors[i].m_sStyle, i + 1, true);
         }
 
         if (!bIsSettings)

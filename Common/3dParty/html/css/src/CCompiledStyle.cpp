@@ -581,6 +581,7 @@ namespace NSCSS
                 }
                 CASE(L"text-color"):
                 CASE(L"color"):
+				CASE(L"stroke"):
                 {
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)
@@ -946,6 +947,7 @@ namespace NSCSS
                 }
                 // BACKGROUND
                 CASE(L"background-color"):
+				CASE(L"fill"):
                 {
                     const size_t unPositionImp = pPropertie.second.find(L"!i");
                     if (unPositionImp == std::wstring::npos)

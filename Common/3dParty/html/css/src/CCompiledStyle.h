@@ -11,7 +11,7 @@
 
 namespace NSCSS
 {
-    class CSSCALCULATOR_EXPORT CCompiledStyle
+	class CCompiledStyle
     {
         std::set<std::wstring> m_arParentsStyles;
         std::wstring m_sId;

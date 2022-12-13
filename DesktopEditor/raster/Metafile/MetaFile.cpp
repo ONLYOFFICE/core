@@ -350,11 +350,16 @@ namespace MetaFile
 	#endif
 		// Это не svm
 	#ifdef METAFILE_SUPPORT_SVG
+		if (m_oSvgFile2.OpenFromFile(wsFilePath) == true)
+		{
+
+		}
 		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_lType = c_lMetaSvg;
 			return true;
 		}
+
 	#endif
 
 		return false;
@@ -484,7 +489,8 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_SVG
 			case c_lMetaSvg:
 			{
-				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+//				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
+				m_oSvgFile2.Draw(pRenderer, dX, dY, dWidth, dHeight);
 				break;
 			}
 		#endif

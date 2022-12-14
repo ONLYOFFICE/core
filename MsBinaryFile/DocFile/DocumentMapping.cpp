@@ -951,12 +951,12 @@ namespace DocFileFormat
 				Spa* pSpa =	NULL;
 				if (typeid(*this) == typeid(MainDocumentMapping))
 				{
-					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStruct(cp));
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlex->GetStructByCP(cp));
 				}
 				else if ((typeid(*this) == typeid(HeaderMapping) ) || ( typeid(*this) == typeid(FooterMapping)))
 				{
 					int headerCp = ( cp - m_document->FIB->m_RgLw97.ccpText - m_document->FIB->m_RgLw97.ccpFtn );
-					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStruct(headerCp));
+					pSpa = static_cast<Spa*>(m_document->OfficeDrawingPlexHeader->GetStructByCP(headerCp));
 				}
 
 				bool bPicture = false;
@@ -1091,7 +1091,7 @@ namespace DocFileFormat
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w:commentReference", true );
 
-					AnnotationReferenceDescriptor* atrdPre10 = dynamic_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->GetStruct(cp));
+					AnnotationReferenceDescriptor* atrdPre10 = dynamic_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->GetStructByCP(cp));
 
 					if (atrdPre10)
 					{

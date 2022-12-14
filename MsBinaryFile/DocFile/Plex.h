@@ -112,7 +112,7 @@ namespace DocFileFormat
 
 			return NULL;
 		}
-		inline ByteStructure* GetStruct(int cp)
+		inline ByteStructure* GetStructByCP(int cp)
 		{
 			std::map<int, size_t>::iterator pFind = mapCP.find(cp);
 

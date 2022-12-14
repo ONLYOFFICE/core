@@ -37,6 +37,14 @@
 
 using namespace ODRAW;
 
+static double FixedPointToDouble(unsigned int op)
+{
+	short			Integral	= op >> 16;
+	unsigned short Fractional	= op - (Integral << 16);
+
+	return Integral + (Fractional / 65536.0);
+}
+
 #define DEFINE_PPTSHAPE_BASE(Class)											\
 	class Class : public CPPTShape                                          \
 	{                                                                       \

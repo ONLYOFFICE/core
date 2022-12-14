@@ -41,14 +41,6 @@
 
 using namespace ODRAW;
 
-static  double FixedPointToDouble(unsigned int op)
-{
-	short			Integral	= op >> 16;
-	unsigned short Fractional	= op - (Integral << 16);
-
-	return Integral + (Fractional / 65536.0);
-}
-
 _3dOptions::_3dOptions() : bEnabled(false), bMetallic(false), bExtrusionColor(false), bLightFace(true),
 	bConstrainRotation(true), bRotationCenterAuto(false), bParallel(true), bFillHarsh(true), bKeyHarsh(true),
 	nRenderMode(0), dSpecularAmt(0), nEdgeThickness(0x0000319C), nExtrudeForward(0), nExtrudeBackward(0x0006F9F0),

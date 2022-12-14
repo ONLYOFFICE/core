@@ -269,7 +269,7 @@ namespace DocFileFormat
 
 					if (bReadExta)
 					{
-						unsigned char* pData = reader->ReadBytes(cbExtra, true);
+						unsigned char* pData = reader->ReadBytes(StringTable<T>::cbExtra, true);
 						StringTable<T>::DataExtra.push_back(pData);
 					}
 					else

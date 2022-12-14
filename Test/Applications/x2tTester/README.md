@@ -33,7 +33,8 @@ You need to create an xml configuration file. It must contain:
 	# (non-required) is take params for csv/txt conversions from filename (default - 1).
 	<filenameCsvTxtParams> </filenameCsvTxtParams>
 
-		# params in any order, in any place
+		# params in any order, in any place, delimiter is unicode code in hex
+		# encoding is case sensitive
 		# input file with csv:
 		filename[cp(codepage)][del%(unicode code)]
 		# example:

@@ -43,23 +43,15 @@ namespace DocFileFormat
 
 	template<class T> class StringTable: public IVisitable
 	{
-		friend class WordDocument;
-		friend class CharacterPropertiesMapping;
-		friend class FontTableMapping;
-		friend class StyleSheetMapping;	
-		friend class DocumentMapping;
- 		friend class NumberingMapping;
-		friend class StringTableEx<T>;
- 
-    private:
-		bool						fExtend = false;
-		int							cbData = 0;
-		unsigned short				cbExtra = 0;
-		int							code_page = 1250;
+	public:
+		bool			fExtend = false;
+		int				cbData = 0;
+		unsigned short	cbExtra = 0;
+		int				code_page = 1250;
 		
 		std::vector<ByteStructure*>	Data;
 		std::vector<unsigned char*>	DataExtra;
-	public:
+		
 		StringTable()
 		{
 		}		
@@ -228,13 +220,13 @@ namespace DocFileFormat
 
 			if (reader->ReadUInt16() == 0xFFFF)
 			{
-				fExtend = true;
-				code_page = ENCODING_UTF16;
+				StringTable<T>::fExtend = true;
+				StringTable<T>::code_page = ENCODING_UTF16;
 			}
 			else
 			{
-				fExtend = false;
-				code_page = ENCODING_WINDOWS_1250;
+				StringTable<T>::fExtend = false;
+				StringTable<T>::code_page = ENCODING_WINDOWS_1250;
 			}
 
 			_UINT32 cDataStart = reader->GetPosition(), count_elements = 0;
@@ -244,14 +236,14 @@ namespace DocFileFormat
 			if (cb != 0xFFFF)
 			{
 				count_elements = cb;
-				cbData = 0;
+				StringTable<T>::cbData = 0;
 			}
 			else
 			{
-				cbData = cb;
+				StringTable<T>::cbData = cb;
 			}
 
-			cbExtra = reader->ReadUInt16();
+			StringTable<T>::cbExtra = reader->ReadUInt16();
 
 			while (true)
 			{
@@ -260,7 +252,7 @@ namespace DocFileFormat
 
 				int cchData = 0;
 
-				if (fExtend)
+				if (StringTable<T>::fExtend)
 				{
 					cchData = (int)reader->ReadUInt16();
 					if (cchData > 0) cchData -= 2; //???  cchData (2 bytes): This value MUST be 0
@@ -272,22 +264,23 @@ namespace DocFileFormat
 
 				if (cchData > 0)
 				{
-					Data.push_back(T().ConstructObject(reader, cchData));
-					
+					ByteStructure* object = T().ConstructObject(reader, cchData);
+					StringTable<T>::Data.push_back(object);
+
 					if (bReadExta)
 					{
 						unsigned char* pData = reader->ReadBytes(cbExtra, true);
-						DataExtra.push_back(pData);
+						StringTable<T>::DataExtra.push_back(pData);
 					}
 					else
 					{
-						reader->ReadBytes(cbExtra, false);
+						reader->ReadBytes(StringTable<T>::cbExtra, false);
 					}
 				}
 				else
 				{
-					Data.push_back(T().ConstructObject(reader, cbExtra));
-
+					ByteStructure* object = T().ConstructObject(reader, StringTable<T>::cbExtra);
+					StringTable<T>::Data.push_back(object);
 				}
 			}
 			reader->Seek((int)(fc + lcb), 0/*STREAM_SEEK_SET */);

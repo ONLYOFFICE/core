@@ -19,6 +19,9 @@ include(../../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+#LIMITS
+include($$PWD/../../../PPTXFormat/Limit/pro/pptx_limits.pri)
+
 DEFINES += UNICODE \
     _UNICODE \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
@@ -308,6 +311,7 @@ SOURCES += \
 	../../../PPTXFormat/HandoutMaster.cpp \
 	../../../PPTXFormat/Core.cpp \
 	../../../PPTXFormat/App.cpp \
+	../../../PPTXFormat/WrapperWritingElement.cpp \
 	../../../PPTXFormat/Comments.cpp \
 	../../../PPTXFormat/CommentAuthors.cpp
 }
@@ -315,6 +319,7 @@ SOURCES += \
 SOURCES += \
 	pptx_format.cpp \
 	../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
+	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
@@ -378,97 +383,7 @@ SOURCES += \
 	../../../PPTXFormat/Presentation/EmbeddedFontDataId.cpp \
 	../../../PPTXFormat/Presentation/Kinsoku.cpp \
 	../../../PPTXFormat/Presentation/SectionLst.cpp \
-	../../../PPTXFormat/Presentation/SldSz.cpp \
-	\
-	../../../PPTXFormat/Limit/AlbumLayout.cpp \
-	../../../PPTXFormat/Limit/AnimationDgmBuild.cpp \
-	../../../PPTXFormat/Limit/BaseLimit.cpp \
-	../../../PPTXFormat/Limit/BevelType.cpp \
-	../../../PPTXFormat/Limit/BlendMode.cpp \
-	../../../PPTXFormat/Limit/BlipCompression.cpp \
-	../../../PPTXFormat/Limit/BWMode.cpp \
-	../../../PPTXFormat/Limit/CameraType.cpp \
-	../../../PPTXFormat/Limit/ChartBuild.cpp \
-	../../../PPTXFormat/Limit/ChartBuildType.cpp \
-	../../../PPTXFormat/Limit/ColorSchemeIndex.cpp \
-	../../../PPTXFormat/Limit/CompoundLine.cpp \
-	../../../PPTXFormat/Limit/Conformance.cpp \
-	../../../PPTXFormat/Limit/ContentStatus.cpp \
-	../../../PPTXFormat/Limit/CornerDirectionVal.cpp \
-	../../../PPTXFormat/Limit/DgmBuild.cpp \
-	../../../PPTXFormat/Limit/DgmBuildType.cpp \
-	../../../PPTXFormat/Limit/EffectContainerType.cpp \
-	../../../PPTXFormat/Limit/EightDirectionVal.cpp \
-	../../../PPTXFormat/Limit/FillPath.cpp \
-	../../../PPTXFormat/Limit/Flip.cpp \
-	../../../PPTXFormat/Limit/FontAlign.cpp \
-	../../../PPTXFormat/Limit/FontStyleIndex.cpp \
-	../../../PPTXFormat/Limit/FrameShape.cpp \
-	../../../PPTXFormat/Limit/HorzOverflow.cpp \
-	../../../PPTXFormat/Limit/InOutDirectionVal.cpp \
-	../../../PPTXFormat/Limit/IterateType.cpp \
-	../../../PPTXFormat/Limit/LastView.cpp \
-	../../../PPTXFormat/Limit/LightRigType.cpp \
-	../../../PPTXFormat/Limit/LineCap.cpp \
-	../../../PPTXFormat/Limit/LineEndSize.cpp \
-	../../../PPTXFormat/Limit/LineEndType.cpp \
-	../../../PPTXFormat/Limit/Material.cpp \
-	../../../PPTXFormat/Limit/OnOff.cpp \
-	../../../PPTXFormat/Limit/Orient.cpp \
-	../../../PPTXFormat/Limit/ParaBuildType.cpp \
-	../../../PPTXFormat/Limit/PathFillMode.cpp \
-	../../../PPTXFormat/Limit/PattFillVal.cpp \
-	../../../PPTXFormat/Limit/PenAlign.cpp \
-	../../../PPTXFormat/Limit/PlaceholderSize.cpp \
-	../../../PPTXFormat/Limit/PlaceholderType.cpp \
-	../../../PPTXFormat/Limit/PresetShadowVal.cpp \
-	../../../PPTXFormat/Limit/PrstClrVal.cpp \
-	../../../PPTXFormat/Limit/PrstDashVal.cpp \
-	../../../PPTXFormat/Limit/RectAlign.cpp \
-	../../../PPTXFormat/Limit/SchemeClrVal.cpp \
-	../../../PPTXFormat/Limit/ShapeType.cpp \
-	../../../PPTXFormat/Limit/SideDirectionVal.cpp \
-	../../../PPTXFormat/Limit/SlideLayoutType.cpp \
-	../../../PPTXFormat/Limit/SlideSize.cpp \
-	../../../PPTXFormat/Limit/SplitterBarState.cpp \
-	../../../PPTXFormat/Limit/SysClrVal.cpp \
-	../../../PPTXFormat/Limit/TextAlign.cpp \
-	../../../PPTXFormat/Limit/TextAnchor.cpp \
-	../../../PPTXFormat/Limit/TextAutonumberScheme.cpp \
-	../../../PPTXFormat/Limit/TextCaps.cpp \
-	../../../PPTXFormat/Limit/TextShapeType.cpp \
-	../../../PPTXFormat/Limit/TextStrike.cpp \
-	../../../PPTXFormat/Limit/TextTabAlignType.cpp \
-	../../../PPTXFormat/Limit/TextUnderline.cpp \
-	../../../PPTXFormat/Limit/TextVerticalType.cpp \
-	../../../PPTXFormat/Limit/TextWrap.cpp \
-	../../../PPTXFormat/Limit/TLAccumulate.cpp \
-	../../../PPTXFormat/Limit/TLAdditive.cpp \
-	../../../PPTXFormat/Limit/TLCalcMode.cpp \
-	../../../PPTXFormat/Limit/TLChartSubElement.cpp \
-	../../../PPTXFormat/Limit/TLColorDirection.cpp \
-	../../../PPTXFormat/Limit/TLColorSpace.cpp \
-	../../../PPTXFormat/Limit/TLCommandType.cpp \
-	../../../PPTXFormat/Limit/TLMasterRelation.cpp \
-	../../../PPTXFormat/Limit/TLNextAc.cpp \
-	../../../PPTXFormat/Limit/TLNodeFillType.cpp \
-	../../../PPTXFormat/Limit/TLNodeType.cpp \
-	../../../PPTXFormat/Limit/TLOrigin.cpp \
-	../../../PPTXFormat/Limit/TLOverride.cpp \
-	../../../PPTXFormat/Limit/TLPathEditMode.cpp \
-	../../../PPTXFormat/Limit/TLPresetClass.cpp \
-	../../../PPTXFormat/Limit/TLPrevAc.cpp \
-	../../../PPTXFormat/Limit/TLRestart.cpp \
-	../../../PPTXFormat/Limit/TLRuntimeTrigger.cpp \
-	../../../PPTXFormat/Limit/TLSyncBehavior.cpp \
-	../../../PPTXFormat/Limit/TLTransform.cpp \
-	../../../PPTXFormat/Limit/TLTransition.cpp \
-	../../../PPTXFormat/Limit/TLTriggerEvent.cpp \
-	../../../PPTXFormat/Limit/TLValueType.cpp \
-	../../../PPTXFormat/Limit/TransitionSpeed.cpp \
-	../../../PPTXFormat/Limit/VariantType.cpp \
-	../../../PPTXFormat/Limit/VertOverflow.cpp
-
+	../../../PPTXFormat/Presentation/SldSz.cpp
 
 HEADERS += \
 	pptx_format.h \
@@ -476,95 +391,7 @@ HEADERS += \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h \
 	../../../PPTXFormat/FileTypes.h \
 	../../../PPTXFormat/Namespaces.h \
-	../../../PPTXFormat/WritingVector.h \
-	../../../PPTXFormat/Limit/AlbumLayout.h \
-	../../../PPTXFormat/Limit/AnimationDgmBuild.h \
-	../../../PPTXFormat/Limit/BaseLimit.h \
-	../../../PPTXFormat/Limit/BevelType.h \
-	../../../PPTXFormat/Limit/BlendMode.h \
-	../../../PPTXFormat/Limit/BlipCompression.h \
-	../../../PPTXFormat/Limit/BWMode.h \
-	../../../PPTXFormat/Limit/CameraType.h \
-	../../../PPTXFormat/Limit/ChartBuild.h \
-	../../../PPTXFormat/Limit/ChartBuildType.h \
-	../../../PPTXFormat/Limit/ColorSchemeIndex.h \
-	../../../PPTXFormat/Limit/CompoundLine.h \
-	../../../PPTXFormat/Limit/Conformance.h \
-	../../../PPTXFormat/Limit/ContentStatus.h \
-	../../../PPTXFormat/Limit/CornerDirectionVal.h \
-	../../../PPTXFormat/Limit/DgmBuild.h \
-	../../../PPTXFormat/Limit/DgmBuildType.h \
-	../../../PPTXFormat/Limit/EffectContainerType.h \
-	../../../PPTXFormat/Limit/EightDirectionVal.h \
-	../../../PPTXFormat/Limit/FillPath.h \
-	../../../PPTXFormat/Limit/Flip.h \
-	../../../PPTXFormat/Limit/FontAlign.h \
-	../../../PPTXFormat/Limit/FontStyleIndex.h \
-	../../../PPTXFormat/Limit/FrameShape.h \
-	../../../PPTXFormat/Limit/HorzOverflow.h \
-	../../../PPTXFormat/Limit/InOutDirectionVal.h \
-	../../../PPTXFormat/Limit/IterateType.h \
-	../../../PPTXFormat/Limit/LastView.h \
-	../../../PPTXFormat/Limit/LightRigType.h \
-	../../../PPTXFormat/Limit/LineCap.h \
-	../../../PPTXFormat/Limit/LineEndSize.h \
-	../../../PPTXFormat/Limit/LineEndType.h \
-	../../../PPTXFormat/Limit/Material.h \
-	../../../PPTXFormat/Limit/OnOff.h \
-	../../../PPTXFormat/Limit/Orient.h \
-	../../../PPTXFormat/Limit/ParaBuildType.h \
-	../../../PPTXFormat/Limit/PathFillMode.h \
-	../../../PPTXFormat/Limit/PattFillVal.h \
-	../../../PPTXFormat/Limit/PenAlign.h \
-	../../../PPTXFormat/Limit/PlaceholderSize.h \
-	../../../PPTXFormat/Limit/PlaceholderType.h \
-	../../../PPTXFormat/Limit/PresetShadowVal.h \
-	../../../PPTXFormat/Limit/PrstClrVal.h \
-	../../../PPTXFormat/Limit/PrstDashVal.h \
-	../../../PPTXFormat/Limit/RectAlign.h \
-	../../../PPTXFormat/Limit/SchemeClrVal.h \
-	../../../PPTXFormat/Limit/ShapeType.h \
-	../../../PPTXFormat/Limit/SideDirectionVal.h \
-	../../../PPTXFormat/Limit/SlideLayoutType.h \
-	../../../PPTXFormat/Limit/SlideSize.h \
-	../../../PPTXFormat/Limit/SplitterBarState.h \
-	../../../PPTXFormat/Limit/SysClrVal.h \
-	../../../PPTXFormat/Limit/TextAlign.h \
-	../../../PPTXFormat/Limit/TextAnchor.h \
-	../../../PPTXFormat/Limit/TextAutonumberScheme.h \
-	../../../PPTXFormat/Limit/TextCaps.h \
-	../../../PPTXFormat/Limit/TextShapeType.h \
-	../../../PPTXFormat/Limit/TextStrike.h \
-	../../../PPTXFormat/Limit/TextTabAlignType.h \
-	../../../PPTXFormat/Limit/TextUnderline.h \
-	../../../PPTXFormat/Limit/TextVerticalType.h \
-	../../../PPTXFormat/Limit/TextWrap.h \
-	../../../PPTXFormat/Limit/TLAccumulate.h \
-	../../../PPTXFormat/Limit/TLAdditive.h \
-	../../../PPTXFormat/Limit/TLCalcMode.h \
-	../../../PPTXFormat/Limit/TLChartSubElement.h \
-	../../../PPTXFormat/Limit/TLColorDirection.h \
-	../../../PPTXFormat/Limit/TLColorSpace.h \
-	../../../PPTXFormat/Limit/TLCommandType.h \
-	../../../PPTXFormat/Limit/TLMasterRelation.h \
-	../../../PPTXFormat/Limit/TLNextAc.h \
-	../../../PPTXFormat/Limit/TLNodeFillType.h \
-	../../../PPTXFormat/Limit/TLNodeType.h \
-	../../../PPTXFormat/Limit/TLOrigin.h \
-	../../../PPTXFormat/Limit/TLOverride.h \
-	../../../PPTXFormat/Limit/TLPathEditMode.h \
-	../../../PPTXFormat/Limit/TLPresetClass.h \
-	../../../PPTXFormat/Limit/TLPrevAc.h \
-	../../../PPTXFormat/Limit/TLRestart.h \
-	../../../PPTXFormat/Limit/TLRuntimeTrigger.h \
-	../../../PPTXFormat/Limit/TLSyncBehavior.h \
-	../../../PPTXFormat/Limit/TLTransform.h \
-	../../../PPTXFormat/Limit/TLTransition.h \
-	../../../PPTXFormat/Limit/TLTriggerEvent.h \
-	../../../PPTXFormat/Limit/TLValueType.h \
-	../../../PPTXFormat/Limit/TransitionSpeed.h \
-	../../../PPTXFormat/Limit/VariantType.h \
-	../../../PPTXFormat/Limit/VertOverflow.h \
+	\
 	../../../PPTXFormat/Logic/Bullets/BuAutoNum.h \
 	../../../PPTXFormat/Logic/Bullets/BuBlip.h \
 	../../../PPTXFormat/Logic/Bullets/BuChar.h \
@@ -579,12 +406,14 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Bullets/BuSzPct.h \
 	../../../PPTXFormat/Logic/Bullets/BuSzPts.h \
 	../../../PPTXFormat/Logic/Bullets/BuSzTx.h \
+	\
 	../../../PPTXFormat/Logic/Colors/ColorBase.h \
 	../../../PPTXFormat/Logic/Colors/ColorModifier.h \
 	../../../PPTXFormat/Logic/Colors/PrstClr.h \
 	../../../PPTXFormat/Logic/Colors/SchemeClr.h \
 	../../../PPTXFormat/Logic/Colors/SrgbClr.h \
 	../../../PPTXFormat/Logic/Colors/SysClr.h \
+	\
 	../../../PPTXFormat/Logic/Effects/AlphaBiLevel.h \
 	../../../PPTXFormat/Logic/Effects/AlphaCeiling.h \
 	../../../PPTXFormat/Logic/Effects/AlphaFloor.h \
@@ -614,6 +443,7 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Effects/SoftEdge.h \
 	../../../PPTXFormat/Logic/Effects/TintEffect.h \
 	../../../PPTXFormat/Logic/Effects/XfrmEffect.h \
+	\
 	../../../PPTXFormat/Logic/Fills/Blip.h \
 	../../../PPTXFormat/Logic/Fills/BlipFill.h \
 	../../../PPTXFormat/Logic/Fills/GradFill.h \
@@ -622,9 +452,11 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Fills/SolidFill.h \
 	../../../PPTXFormat/Logic/Fills/Stretch.h \
 	../../../PPTXFormat/Logic/Fills/Tile.h \
+	\
 	../../../PPTXFormat/Logic/Media/AudioCD.h \
 	../../../PPTXFormat/Logic/Media/MediaFile.h \
 	../../../PPTXFormat/Logic/Media/WavAudioFile.h \
+	\
 	../../../PPTXFormat/Logic/Path2D/ArcTo.h \
 	../../../PPTXFormat/Logic/Path2D/Close.h \
 	../../../PPTXFormat/Logic/Path2D/CubicBezTo.h \
@@ -632,17 +464,20 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Path2D/MoveTo.h \
 	../../../PPTXFormat/Logic/Path2D/PathBase.h \
 	../../../PPTXFormat/Logic/Path2D/QuadBezTo.h \
+	\
 	../../../PPTXFormat/Logic/Runs/Br.h \
 	../../../PPTXFormat/Logic/Runs/Fld.h \
 	../../../PPTXFormat/Logic/Runs/MathParaWrapper.h \
 	../../../PPTXFormat/Logic/Runs/Run.h \
 	../../../PPTXFormat/Logic/Runs/RunBase.h \
+	\
 	../../../PPTXFormat/Logic/Table/Table.h \
 	../../../PPTXFormat/Logic/Table/TableCell.h \
 	../../../PPTXFormat/Logic/Table/TableCellProperties.h \
 	../../../PPTXFormat/Logic/Table/TableCol.h \
 	../../../PPTXFormat/Logic/Table/TableProperties.h \
 	../../../PPTXFormat/Logic/Table/TableRow.h \
+	\
 	../../../PPTXFormat/Logic/Timing/Anim.h \
 	../../../PPTXFormat/Logic/Timing/AnimClr.h \
 	../../../PPTXFormat/Logic/Timing/AnimEffect.h \
@@ -683,6 +518,7 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Timing/TnLst.h \
 	../../../PPTXFormat/Logic/Timing/TxEl.h \
 	../../../PPTXFormat/Logic/Timing/Video.h \
+	\
 	../../../PPTXFormat/Logic/Transitions/CornerDirectionTransition.h \
 	../../../PPTXFormat/Logic/Transitions/EightDirectionTransition.h \
 	../../../PPTXFormat/Logic/Transitions/EmptyTransition.h \
@@ -696,6 +532,7 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Transitions/TransitionBase.h \
 	../../../PPTXFormat/Logic/Transitions/WheelTransition.h \
 	../../../PPTXFormat/Logic/Transitions/ZoomTransition.h \
+	\
 	../../../PPTXFormat/Logic/Controls.h \
 	../../../PPTXFormat/Logic/Ah.h \
 	../../../PPTXFormat/Logic/AhBase.h \
@@ -793,17 +630,20 @@ HEADERS += \
 	../../../PPTXFormat/Logic/UniPath2D.h \
 	../../../PPTXFormat/Logic/Xfrm.h \
 	../../../PPTXFormat/Logic/XmlId.h \
+	\
 	../../../PPTXFormat/Presentation/EmbeddedFont.h \
 	../../../PPTXFormat/Presentation/EmbeddedFontDataId.h \
 	../../../PPTXFormat/Presentation/Kinsoku.h \
 	../../../PPTXFormat/Presentation/NotesSz.h \
 	../../../PPTXFormat/Presentation/PhotoAlbum.h \
 	../../../PPTXFormat/Presentation/SldSz.h \
+	\
 	../../../PPTXFormat/Theme/ClrScheme.h \
 	../../../PPTXFormat/Theme/ExtraClrScheme.h \
 	../../../PPTXFormat/Theme/FmtScheme.h \
 	../../../PPTXFormat/Theme/FontScheme.h \
 	../../../PPTXFormat/Theme/ThemeElements.h \
+	\
 	../../../PPTXFormat/ViewProps/CSldViewPr.h \
 	../../../PPTXFormat/ViewProps/CViewPr.h \
 	../../../PPTXFormat/ViewProps/GridSpacing.h \
@@ -819,6 +659,7 @@ HEADERS += \
 	../../../PPTXFormat/ViewProps/Sld.h \
 	../../../PPTXFormat/ViewProps/SlideViewPr.h \
 	../../../PPTXFormat/ViewProps/SorterViewPr.h \
+	\
 	../../../PPTXFormat/App.h \
 	../../../PPTXFormat/CommentAuthors.h \
 	../../../PPTXFormat/Comments.h \
@@ -843,6 +684,7 @@ HEADERS += \
 	../../../PPTXFormat/ViewProps.h \
 	../../../PPTXFormat/WrapperFile.h \
 	../../../PPTXFormat/WrapperWritingElement.h \
+	\
 	../../../Binary/Presentation/BinaryFileReaderWriter.h \
 	../../../Binary/Presentation/BinReaderWriterDefines.h \
 	../../../Binary/Presentation/BinWriters.h \
@@ -855,9 +697,11 @@ HEADERS += \
 	../../../Binary/Presentation/WMFToImageConverter.h \
 	../../../Binary/Presentation/DefaultNotesMaster.h \
 	../../../Binary/Presentation/DefaultNotesTheme.h \
+	\
 	../../../Base/Nullable.h \
 	../../../../HtmlRenderer/include/ASCSVGWriter.h \
 	../../../../Common/FileDownloader/FileDownloader.h \
+	\
 	../../../PPTXFormat/ShowPr/Browse.h \
 	../../../PPTXFormat/ShowPr/CustShow.h \
 	../../../PPTXFormat/ShowPr/Kiosk.h \
@@ -865,6 +709,7 @@ HEADERS += \
 	../../../PPTXFormat/ShowPr/ShowPr.h \
 	../../../PPTXFormat/ShowPr/SldAll.h \
 	../../../PPTXFormat/ShowPr/SldRg.h \
+	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentBorderCallout2Type.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout1Type.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout2Type.h \

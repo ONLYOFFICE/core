@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,47 +29,59 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <string>
-
-#define DEFINE_LIMIT_PVIRTUAL												\
-	using BaseLimit::operator=;												\
-	virtual void set(const std::wstring& strValue);							\
-	virtual unsigned char GetBYTECode() const;								\
-	virtual void SetBYTECode(const unsigned char& val);
-
-#define DEFINE_LIMIT_BASE(Class)											\
-	class Class : public BaseLimit                                          \
-	{                                                                       \
-	public:                                                                 \
-		Class();															\
-		DEFINE_LIMIT_PVIRTUAL												\
-	};
+#include "WrapperWritingElement.h"
 
 namespace PPTX
 {
-	namespace Limit
+	WrapperWritingElement::WrapperWritingElement(OOX::Document *pMain) :  OOX::WritingElement(pMain), parentElement(NULL), parentFile(NULL)
 	{
-		class BaseLimit
-		{
-		public:
-			BaseLimit(const std::wstring& str = L"");
-			BaseLimit(const BaseLimit& oSrc);
-			virtual ~BaseLimit();
+	}
+	WrapperWritingElement::~WrapperWritingElement()
+	{
+	}
+	void WrapperWritingElement::FillParentPointersForChilds()
+	{
+	}
+	void WrapperWritingElement::SetParentPointer(const WrapperWritingElement* pParent)
+	{
+		parentElement	= pParent;
+		parentFile		= parentElement->parentFile;
 
-			BaseLimit& operator=(const BaseLimit& oSrc);
-			void operator=(const std::wstring& str);
+		FillParentPointersForChilds();
+	}
+	void WrapperWritingElement::SetParentFilePointer(const WrapperFile* pFile)
+	{
+		parentFile = pFile;
+		FillParentPointersForChilds();
+	}
+	WrapperWritingElement const* const	WrapperWritingElement::GetParentPointer() const
+	{
+		return parentElement;
+	}
+	WrapperFile const* const WrapperWritingElement::GetParentFilePointer() const
+	{
+		return parentFile;
+	}
+	void WrapperWritingElement::fromXMLString(std::wstring strXml)
+	{
+		XmlUtils::CXmlNode oNode;
+		oNode.FromXmlString(strXml);
+		fromXML(oNode);
+	}
+	OOX::EElementType WrapperWritingElement::getType() const
+	{
+		return OOX::et_Unknown;
+	}
 
-			virtual void set(const std::wstring& strValue) = 0;
-			const std::wstring& get() const;
+	void WrapperWritingElement::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+	}
+	std::wstring WrapperWritingElement::toXML() const
+	{
+		NSBinPptxRW::CXmlWriter oWriter;
+		toXmlWriter(&oWriter);
 
-			virtual unsigned char GetBYTECode() const = 0;
-			virtual void SetBYTECode(const unsigned char& src) = 0;
-
-		protected:
-			std::wstring m_strValue;
-		};
-	} // namespace Limit
+		return oWriter.GetXmlString();
+	}
 } // namespace PPTX
-

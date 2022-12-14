@@ -207,7 +207,7 @@ namespace DocFileFormat
 	public:
 		StringTableEx(VirtualStreamReader *reader, int code_page_)
 		{
-			code_page = code_page_;
+			StringTable<T>::code_page = code_page_;
 			parse(reader, (unsigned int)reader->GetPosition(), 0, true);
 		}
 

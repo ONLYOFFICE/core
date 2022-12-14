@@ -33,18 +33,6 @@
 #include "../PptShape.h"
 
 // 121
-class CFlowChartPunchedCardType : public CPPTShape
-{
-public:
-	CFlowChartPunchedCardType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m4321,l21600,r,21600l,21600,,4338xe"); 
-        LoadConnectorsList(_T("Rectangle"));
-        LoadTextRect(_T("0,4321,21600,21600"));
-    }
-};
+DEFINE_PPTSHAPE_BASE(CFlowChartPunchedCardType)
 
 

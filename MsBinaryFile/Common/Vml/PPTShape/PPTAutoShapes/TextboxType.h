@@ -34,14 +34,4 @@
 
 /////////   !!!!!!!!!!!!!!!!!!!!  /////////////
 // 202
-class CTextboxType : public CPPTShape
-{
-public:
-	CTextboxType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m,l,21600r21600,l21600,xe");
-    }
-};
+DEFINE_PPTSHAPE_BASE(CTextboxType)

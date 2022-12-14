@@ -20,7 +20,10 @@ include(../../../../Common/base.pri)
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
 #LIMITS
-include($$PWD/../../../PPTXFormat/Limit/pro/pptx_limits.pri)
+include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
+
+#SHAPES
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/pptx_shapes.pri)
 
 DEFINES += UNICODE \
     _UNICODE \
@@ -36,16 +39,16 @@ INCLUDEPATH += \
 	../../../../../MsBinaryFile/Common/common_xls \
 	../../../XlsbFormat
 
-core_release {
-SOURCES += \
-	pptx_format_logic.cpp
-}
-
 #!disable_precompiled_header:CONFIG += precompile_header
 #precompile_header {
 #    PRECOMPILED_HEADER = precompiled.h
 #    HEADERS += precompiled.h
 #}
+
+core_release {
+SOURCES += \
+	pptx_format_logic.cpp
+}
 
 core_debug {
 SOURCES += \
@@ -708,146 +711,4 @@ HEADERS += \
 	../../../PPTXFormat/ShowPr/Present.h \
 	../../../PPTXFormat/ShowPr/ShowPr.h \
 	../../../PPTXFormat/ShowPr/SldAll.h \
-	../../../PPTXFormat/ShowPr/SldRg.h \
-	\
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentBorderCallout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout1Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout3Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout90Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonBack.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonBeginning.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonBlank.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonDocument.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonEnd.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonHelp.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonHome.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonInfo.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonMovie.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonNext.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonReturn.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonSound.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BentArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BentConnector.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BentUpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BevelType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BlockArcType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout1Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout3Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout90Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BracePairType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BracketPairType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout1Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout3Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout90Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CanType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ChevronType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CircularArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CloudCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CubeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedConnector.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedDownArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedLeftArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedUpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DiamondType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DonutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DownArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DownArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/EllipseRibbon2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/EllipseRibbonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/EllipseType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartAlternateProcessType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartCollateType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartConnectorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDecisionType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDelayType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDisplayType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDocumentType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartExtractType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartInputOutputType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartInternalStorageType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMagneticDiskType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMagneticDrumType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMagneticTapeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartManualInputType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartManualOperationType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMergeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMultidocumentType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartOffpageConnectorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartOnlineStorageType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartOrType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPredefinedProcessType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPreparationType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartProcessType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPunchedCardType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPunchedTapeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartSortType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartSummingJunctionType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartTerminatorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FoldedCornerType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HeartType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HexagonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HomePlateType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HorisontalScrollType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/IrregularSealOneType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/IrregularSealTwo.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/IsoscelesTriangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftBraceType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftBracketType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftRightArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftRightUpArrow.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftUpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LightningBoltType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LineType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/MoonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/NoSmokingType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/NotchedRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/OctagonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ParallelogramType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/PentagonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/PlaqueType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/PlusType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/QuadArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/QuadArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RectangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RibbonDownType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RibbonUpType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightBracetype.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightBracketType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightTriangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RoundedRectangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal4Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal8Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal16Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal24Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal32Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/SmileyFaceType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Startype.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/StraightConnectorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/StripedRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/SunType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/TextboxType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/TrapezoidType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpDownArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpDownArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UturnArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/VerticalScrollType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WaveDoubleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WaveType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WedgeEllipseCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WedgeRectCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WedgeRoundedRectCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout1type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout3type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout90type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/arctype.h
+	../../../PPTXFormat/ShowPr/SldRg.h

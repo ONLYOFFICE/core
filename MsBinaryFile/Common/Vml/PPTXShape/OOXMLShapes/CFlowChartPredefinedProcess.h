@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -34,79 +34,5 @@
 
 namespace OOXMLShapes
 {
-	class CFlowChartPredefinedProcess : public CPPTXShape
-	{
-		public:
-			CFlowChartPredefinedProcess()
-			{
-				LoadFromXML(
-					_T("<ooxml-shape>")
-					_T("<gdLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<gd name=\"x2\" fmla=\"*/ w 7 8\" />")
-					_T("</gdLst>")
-					_T("<cxnLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<cxn ang=\"3cd4\">")
-						_T("<pos x=\"hc\" y=\"t\" />")
-					  _T("</cxn>")
-					  _T("<cxn ang=\"cd2\">")
-						_T("<pos x=\"l\" y=\"vc\" />")
-					  _T("</cxn>")
-					  _T("<cxn ang=\"cd4\">")
-						_T("<pos x=\"hc\" y=\"b\" />")
-					  _T("</cxn>")
-					  _T("<cxn ang=\"0\">")
-						_T("<pos x=\"r\" y=\"vc\" />")
-					  _T("</cxn>")
-					_T("</cxnLst>")
-					_T("<rect l=\"wd8\" t=\"t\" r=\"x2\" b=\"b\" xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\" />")
-					_T("<pathLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<path stroke=\"false\" extrusionOk=\"false\" w=\"1\" h=\"1\">")
-						_T("<moveTo>")
-						  _T("<pt x=\"0\" y=\"0\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"1\" y=\"0\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"1\" y=\"1\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"0\" y=\"1\" />")
-						_T("</lnTo>")
-						_T("<close />")
-					  _T("</path>")
-					  _T("<path fill=\"none\" extrusionOk=\"false\" w=\"8\" h=\"8\">")
-						_T("<moveTo>")
-						  _T("<pt x=\"1\" y=\"0\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"1\" y=\"8\" />")
-						_T("</lnTo>")
-						_T("<moveTo>")
-						  _T("<pt x=\"7\" y=\"0\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"7\" y=\"8\" />")
-						_T("</lnTo>")
-					  _T("</path>")
-					  _T("<path fill=\"none\" w=\"1\" h=\"1\">")
-						_T("<moveTo>")
-						  _T("<pt x=\"0\" y=\"0\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"1\" y=\"0\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"1\" y=\"1\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"0\" y=\"1\" />")
-						_T("</lnTo>")
-						_T("<close />")
-					  _T("</path>")
-					_T("</pathLst>")
-					_T("</ooxml-shape>")
-				);
-			}
-	};
+	DEFINE_SHAPE_CLASS(CFlowChartPredefinedProcess, CPPTXShape)
 }

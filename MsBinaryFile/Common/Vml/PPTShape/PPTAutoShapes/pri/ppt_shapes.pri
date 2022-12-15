@@ -1,11 +1,10 @@
 
 SHAPES_DIR = $$PWD/..
 
-core_release {
+!build_single_objects {
 SOURCES += $$PWD/ppt_shapes.cpp
 }
-
-core_debug {
+else {
 SOURCES += \
 	$$SHAPES_DIR/accentbordercallout1type.cpp \
 	$$SHAPES_DIR/AccentBorderCallout2Type.cpp \

@@ -25,6 +25,9 @@ include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
 #PPTSHAPES
 include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
 
+#PPTXSHAPES
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTXShape/OOXMLShapes/pri/pptx_shapes.pri)
+
 DEFINES += UNICODE \
     _UNICODE \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \

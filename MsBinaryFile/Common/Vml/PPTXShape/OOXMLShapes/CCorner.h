@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -34,79 +34,5 @@
 
 namespace OOXMLShapes
 {
-	class CCorner : public CPPTXShape
-	{
-		public:
-			CCorner()
-			{
-				LoadFromXML(
-					_T("<ooxml-shape>")
-					_T("<avLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<gd name=\"adj1\" fmla=\"val 50000\" />")
-					  _T("<gd name=\"adj2\" fmla=\"val 50000\" />")
-					_T("</avLst>")
-					_T("<gdLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<gd name=\"maxAdj1\" fmla=\"*/ 100000 h ss\" />")
-					  _T("<gd name=\"maxAdj2\" fmla=\"*/ 100000 w ss\" />")
-					  _T("<gd name=\"a1\" fmla=\"pin 0 adj1 maxAdj1\" />")
-					  _T("<gd name=\"a2\" fmla=\"pin 0 adj2 maxAdj2\" />")
-					  _T("<gd name=\"x1\" fmla=\"*/ ss a2 100000\" />")
-					  _T("<gd name=\"dy1\" fmla=\"*/ ss a1 100000\" />")
-					  _T("<gd name=\"y1\" fmla=\"+- b 0 dy1\" />")
-					  _T("<gd name=\"cx1\" fmla=\"*/ x1 1 2\" />")
-					  _T("<gd name=\"cy1\" fmla=\"+/ y1 b 2\" />")
-					  _T("<gd name=\"d\" fmla=\"+- w 0 h\" />")
-					  _T("<gd name=\"it\" fmla=\"?: d y1 t\" />")
-					  _T("<gd name=\"ir\" fmla=\"?: d r x1\" />")
-					_T("</gdLst>")
-					_T("<ahLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<ahXY gdRefY=\"adj1\" minY=\"0\" maxY=\"maxAdj1\">")
-						_T("<pos x=\"l\" y=\"y1\" />")
-					  _T("</ahXY>")
-					  _T("<ahXY gdRefX=\"adj2\" minX=\"0\" maxX=\"maxAdj2\">")
-						_T("<pos x=\"x1\" y=\"t\" />")
-					  _T("</ahXY>")
-					_T("</ahLst>")
-					_T("<cxnLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<cxn ang=\"0\">")
-						_T("<pos x=\"r\" y=\"cy1\" />")
-					  _T("</cxn>")
-					  _T("<cxn ang=\"cd4\">")
-						_T("<pos x=\"hc\" y=\"b\" />")
-					  _T("</cxn>")
-					  _T("<cxn ang=\"cd2\">")
-						_T("<pos x=\"l\" y=\"vc\" />")
-					  _T("</cxn>")
-					  _T("<cxn ang=\"3cd4\">")
-						_T("<pos x=\"cx1\" y=\"t\" />")
-					  _T("</cxn>")
-					_T("</cxnLst>")
-					_T("<rect l=\"l\" t=\"it\" r=\"ir\" b=\"b\" xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\" />")
-					_T("<pathLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
-					  _T("<path>")
-						_T("<moveTo>")
-						  _T("<pt x=\"l\" y=\"t\" />")
-						_T("</moveTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"x1\" y=\"t\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"x1\" y=\"y1\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"r\" y=\"y1\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"r\" y=\"b\" />")
-						_T("</lnTo>")
-						_T("<lnTo>")
-						  _T("<pt x=\"l\" y=\"b\" />")
-						_T("</lnTo>")
-						_T("<close />")
-					  _T("</path>")
-					_T("</pathLst>")
-					_T("</ooxml-shape>")
-				);
-			}
-	};
+	DEFINE_SHAPE_CLASS(CCorner, CPPTXShape)
 }

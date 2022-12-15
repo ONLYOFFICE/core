@@ -1,11 +1,10 @@
 
 LIMITS_DIR = $$PWD/..
 
-core_release {
+!build_single_objects {
 SOURCES += $$PWD/pptx_limits.cpp
 }
-
-core_debug {
+else {
 SOURCES += \
 	$$LIMITS_DIR/AlbumLayout.cpp \
 	$$LIMITS_DIR/AnimationDgmBuild.cpp \

@@ -42,6 +42,22 @@ namespace MetaFile
 		nRight  = 1024;
 		nBottom = 1024;
 	}
+
+	TRect::TRect(const TWmfRect &oRect)
+	{
+		nLeft   = oRect.Left;
+		nTop    = oRect.Top;
+		nRight  = oRect.Right;
+		nBottom = oRect.Bottom;
+	}
+
+	TRect::TRect(const TEmfRectL &oRect)
+	{
+		nLeft   = oRect.lLeft;
+		nTop    = oRect.lTop;
+		nRight  = oRect.lRight;
+		nBottom = oRect.lBottom;
+	}
 	TRect& TRect::operator=(TWmfRect& oRect)
 	{
 		nLeft   = oRect.Left;

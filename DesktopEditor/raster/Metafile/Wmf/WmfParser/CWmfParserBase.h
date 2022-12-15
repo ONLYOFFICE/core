@@ -58,6 +58,8 @@ namespace MetaFile
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
 		double          GetDpi()                         override;
+		IRegion*        GetRegion()                      override;
+		unsigned int    GetArcDirection()                override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);

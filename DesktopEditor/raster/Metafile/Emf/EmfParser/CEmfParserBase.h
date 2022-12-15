@@ -81,6 +81,8 @@ namespace MetaFile
 		bool            IsWindowFlippedX()               override;
 		unsigned int    GetMapMode()                     override;
 		double          GetDpi()                         override;
+		IRegion*        GetRegion()                      override;
+		unsigned int    GetArcDirection()                override;
 		bool            IsViewportFlippedY();
 		bool            IsViewportFlippedX();
 

@@ -96,6 +96,13 @@ namespace MetaFile
 
 		virtual void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, int nClipMode = -1) = 0;
 	};
+
+	class IRegion
+	{
+	public:
+		IRegion(){}
+		virtual ~IRegion(){}
+	};
 }
 
 #endif //_METAFILE_COMMON_METAFILEOBJECTS_H

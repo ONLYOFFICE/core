@@ -207,6 +207,16 @@ class CSvmFile : virtual public IMetaFileBase
 		return 96.;
 	}
 
+	IRegion* GetRegion()
+	{
+		return NULL;
+	}
+
+	unsigned int GetArcDirection()
+	{
+		return AD_CLOCKWISE;
+	}
+
  private:
 	TSvmPoint			m_oCurrnetOffset;
 	BYTE*				m_pBufferData;

@@ -81,6 +81,8 @@ namespace MetaFile
 		virtual bool         IsWindowFlippedX() = 0;
 		virtual unsigned int GetMapMode() = 0;
 		virtual double       GetDpi() = 0;
+		virtual IRegion*     GetRegion() = 0;
+		virtual unsigned int GetArcDirection() = 0;
 
 		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
 		{

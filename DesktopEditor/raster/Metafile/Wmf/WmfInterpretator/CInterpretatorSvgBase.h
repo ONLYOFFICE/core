@@ -6,6 +6,45 @@
 
 namespace MetaFile
 {
+	class CHatchGenerator
+	{
+	public:
+		CHatchGenerator();
+
+		void SetSize(double dWidth, double dHeight);
+		void SetStyleId(unsigned int unStyleId, unsigned int unNumber);
+		void SetStroke(double dWidth, int nColor, char chAlpha = 255);
+		void SetBKColor(int nColor);
+
+		bool GenerateHatch();
+
+		std::wstring GetPatternId();
+		std::wstring GetPattern();
+	private:
+		void AddLine(const TPointD& oPoint1, const TPointD& oPoint2);
+		void AddLines(const std::vector<std::pair<TPointD, TPointD>>& arPoints);
+		void AddPoint(const TPointD& oPoint);
+		void AddPoints(const std::vector<TPointD>& arPoints);
+
+		void GenerateStartPattern();
+		void GenerateBK();
+		void GenerateEndPattern();
+
+		int          m_nHatchStyle;
+		unsigned int m_unNumber;
+
+		double m_dStrokeWidth;
+		int    m_nStrokeColor;
+		char   m_chAlpha;
+
+		double m_dWidth;
+		double m_dHeight;
+
+		int    m_nBKColor;
+
+		NSStringUtils::CStringBuilder m_oStringBuilder;
+	};
+
 	class CInterpretatorSvgBase : public IOutputDevice
 	{
 		public:

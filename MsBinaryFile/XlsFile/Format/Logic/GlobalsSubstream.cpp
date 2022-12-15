@@ -311,10 +311,24 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 			case rt_Backup:			proc.optional<Backup>();		break;
 			case rt_HideObj:		proc.optional<HideObj>();		break;
 			case rt_ExternSheet:	proc.optional<ExternSheet>();	break;
-			case rt_Date1904:		proc.optional<Date1904>();		break;
-			case rt_CalcPrecision:	proc.optional<CalcPrecision>();	break;
+			case rt_CalcPrecision:
+			{
+				if (proc.optional<CalcPrecision>())
+				{
+					m_CalcPrecision = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_RefreshAll:		proc.optional<RefreshAll>();	break;
 			case rt_BookBool:		proc.optional<BookBool>();		break;
+			case rt_Date1904:
+			{
+				if (proc.optional<Date1904>())
+				{
+					m_Date1904 = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_Country:	
 			{
 				if (proc.optional<Country>())

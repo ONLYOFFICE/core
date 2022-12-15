@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 125
-DEFINE_PPTSHAPE_BASE(CFlowChartCollateType)
+DEFINE_SHAPE_CLASS(CFlowChartCollateType, CPPTShape)
 
 

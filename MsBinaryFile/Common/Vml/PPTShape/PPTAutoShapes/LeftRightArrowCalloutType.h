@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 81
-DEFINE_PPTSHAPE_BASE(CLeftRightArrowCalloutType)
+DEFINE_SHAPE_CLASS(CLeftRightArrowCalloutType, CPPTShape)
 
 

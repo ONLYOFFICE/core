@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 97
-DEFINE_PPTSHAPE_BASE(CVerticalScrollType)
+DEFINE_SHAPE_CLASS(CVerticalScrollType, CPPTShape)

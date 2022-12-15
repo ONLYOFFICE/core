@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 188
-DEFINE_PPTSHAPE_BASE(CWaveDoubleType)
+DEFINE_SHAPE_CLASS(CWaveDoubleType, CPPTShape)

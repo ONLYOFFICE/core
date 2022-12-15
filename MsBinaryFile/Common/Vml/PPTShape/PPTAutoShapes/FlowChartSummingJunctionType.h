@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 123
-DEFINE_PPTSHAPE_BASE(CFlowChartSummingJunctionType)
+DEFINE_SHAPE_CLASS(CFlowChartSummingJunctionType, CPPTShape)
 
 

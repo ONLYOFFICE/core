@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 106
-DEFINE_PPTSHAPE_BASE(CCloudCalloutType)
+DEFINE_SHAPE_CLASS(CCloudCalloutType, CPPTShape)

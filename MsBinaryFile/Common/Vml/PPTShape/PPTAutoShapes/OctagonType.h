@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 10
-DEFINE_PPTSHAPE_BASE(COctagonType)
+DEFINE_SHAPE_CLASS(COctagonType, CPPTShape)

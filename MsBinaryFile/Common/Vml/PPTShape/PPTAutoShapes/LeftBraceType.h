@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 87
-DEFINE_PPTSHAPE_BASE(CLeftBraceType)
+DEFINE_SHAPE_CLASS(CLeftBraceType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 71
-DEFINE_PPTSHAPE_BASE(CIrregularSealOneType)
+DEFINE_SHAPE_CLASS(CIrregularSealOneType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 78
-DEFINE_PPTSHAPE_BASE(CRightArrowCalloutType)
+DEFINE_SHAPE_CLASS(CRightArrowCalloutType, CPPTShape)

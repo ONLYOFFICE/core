@@ -33,5 +33,5 @@
 #include "../PptShape.h"
 
 // 177
-DEFINE_PPTSHAPE_BASE(CFlowChartOffpageConnectorType)
+DEFINE_SHAPE_CLASS(CFlowChartOffpageConnectorType, CPPTShape)
 

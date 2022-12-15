@@ -33,5 +33,5 @@
 #include "../PptShape.h"
 
 // 60
-DEFINE_PPTSHAPE_BASE(CSeal32Type)
+DEFINE_SHAPE_CLASS(CSeal32Type, CPPTShape)
 

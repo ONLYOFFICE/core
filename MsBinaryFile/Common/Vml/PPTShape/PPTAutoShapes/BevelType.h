@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 84
-DEFINE_PPTSHAPE_BASE(CBevelType)
+DEFINE_SHAPE_CLASS(CBevelType, CPPTShape)

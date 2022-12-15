@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 120
-DEFINE_PPTSHAPE_BASE(CFlowChartConnectorType)
+DEFINE_SHAPE_CLASS(CFlowChartConnectorType, CPPTShape)

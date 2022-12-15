@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 135
-DEFINE_PPTSHAPE_BASE(CFlowChartDelayType)
+DEFINE_SHAPE_CLASS(CFlowChartDelayType, CPPTShape)
 
 

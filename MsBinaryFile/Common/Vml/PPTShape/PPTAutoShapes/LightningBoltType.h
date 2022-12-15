@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 73
-DEFINE_PPTSHAPE_BASE(CLightningBoltType)
+DEFINE_SHAPE_CLASS(CLightningBoltType, CPPTShape)

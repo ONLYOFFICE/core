@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 108
-DEFINE_PPTSHAPE_BASE(CEllipceRibbon2Type)
+DEFINE_SHAPE_CLASS(CEllipceRibbon2Type, CPPTShape)

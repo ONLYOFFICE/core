@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 55
-DEFINE_PPTSHAPE_BASE(CChevronType)
+DEFINE_SHAPE_CLASS(CChevronType, CPPTShape)

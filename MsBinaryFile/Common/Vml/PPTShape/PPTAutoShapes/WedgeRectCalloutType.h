@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 61
-DEFINE_PPTSHAPE_BASE(CWedgeRectCalloutType)
+DEFINE_SHAPE_CLASS(CWedgeRectCalloutType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 185
-DEFINE_PPTSHAPE_BASE(CBracketPairType)
+DEFINE_SHAPE_CLASS(CBracketPairType, CPPTShape)

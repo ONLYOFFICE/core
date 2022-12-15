@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 56
-DEFINE_PPTSHAPE_BASE(CPentagonType)
+DEFINE_SHAPE_CLASS(CPentagonType, CPPTShape)

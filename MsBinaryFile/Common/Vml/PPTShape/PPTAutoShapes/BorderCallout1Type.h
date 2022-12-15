@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 47
-DEFINE_PPTSHAPE_BASE(CBorderCallout1Type)
+DEFINE_SHAPE_CLASS(CBorderCallout1Type, CPPTShape)

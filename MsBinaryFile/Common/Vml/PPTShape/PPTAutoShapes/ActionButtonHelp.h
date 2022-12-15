@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 191
-DEFINE_PPTSHAPE_BASE(CActionButtonHelpType)
+DEFINE_SHAPE_CLASS(CActionButtonHelpType, CPPTShape)

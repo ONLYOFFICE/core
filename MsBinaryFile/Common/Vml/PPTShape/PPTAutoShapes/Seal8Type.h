@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 58
-DEFINE_PPTSHAPE_BASE(CSeal8Type)
+DEFINE_SHAPE_CLASS(CSeal8Type, CPPTShape)
 
 

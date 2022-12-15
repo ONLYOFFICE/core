@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 99
-DEFINE_PPTSHAPE_BASE(CCircularArrowType)
+DEFINE_SHAPE_CLASS(CCircularArrowType, CPPTShape)
 
 

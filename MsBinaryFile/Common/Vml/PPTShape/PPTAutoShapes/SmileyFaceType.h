@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 96
-DEFINE_PPTSHAPE_BASE(CSmileyFaceType)
+DEFINE_SHAPE_CLASS(CSmileyFaceType, CPPTShape)

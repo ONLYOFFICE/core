@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 133
-DEFINE_PPTSHAPE_BASE(CFlowChartMagneticDrumType)
+DEFINE_SHAPE_CLASS(CFlowChartMagneticDrumType, CPPTShape)
 
 

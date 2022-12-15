@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 128
-DEFINE_PPTSHAPE_BASE(CFlowChartMergeType)
+DEFINE_SHAPE_CLASS(CFlowChartMergeType, CPPTShape)
 
 

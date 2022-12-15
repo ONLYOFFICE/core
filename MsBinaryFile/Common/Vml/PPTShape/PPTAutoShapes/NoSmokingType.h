@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 57
-DEFINE_PPTSHAPE_BASE(CNoSmokingType)
+DEFINE_SHAPE_CLASS(CNoSmokingType, CPPTShape)

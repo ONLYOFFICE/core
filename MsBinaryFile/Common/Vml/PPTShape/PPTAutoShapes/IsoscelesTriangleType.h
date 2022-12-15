@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 5
-DEFINE_PPTSHAPE_BASE(CIsoscelesTriangleType)
+DEFINE_SHAPE_CLASS(CIsoscelesTriangleType, CPPTShape)

@@ -22,8 +22,8 @@ include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 #LIMITS
 include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
 
-#SHAPES
-include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/pptx_shapes.pri)
+#PPTSHAPES
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
 
 DEFINES += UNICODE \
     _UNICODE \
@@ -325,8 +325,8 @@ SOURCES += \
 	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/ElementSettings.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.cpp \

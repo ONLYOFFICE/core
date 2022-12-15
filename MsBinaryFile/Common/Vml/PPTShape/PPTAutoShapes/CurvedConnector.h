@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 38
-DEFINE_PPTSHAPE_BASE(CCurvedConnectorType)
+DEFINE_SHAPE_CLASS(CCurvedConnectorType, CPPTShape)

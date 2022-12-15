@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 7
-DEFINE_PPTSHAPE_BASE(CParallelogramType)
+DEFINE_SHAPE_CLASS(CParallelogramType, CPPTShape)

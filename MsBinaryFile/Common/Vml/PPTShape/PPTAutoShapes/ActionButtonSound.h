@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 199
-DEFINE_PPTSHAPE_BASE(CActionButtonSoundType)
+DEFINE_SHAPE_CLASS(CActionButtonSoundType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 183
-DEFINE_PPTSHAPE_BASE(CSunType)
+DEFINE_SHAPE_CLASS(CSunType, CPPTShape)

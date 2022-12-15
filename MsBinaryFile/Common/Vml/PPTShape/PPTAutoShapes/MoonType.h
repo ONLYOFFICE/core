@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 184
-DEFINE_PPTSHAPE_BASE(CMoonType)
+DEFINE_SHAPE_CLASS(CMoonType, CPPTShape)

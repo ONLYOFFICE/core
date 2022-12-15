@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 63
-DEFINE_PPTSHAPE_BASE(CWedgeEllipseCalloutType)
+DEFINE_SHAPE_CLASS(CWedgeEllipseCalloutType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 21
-DEFINE_PPTSHAPE_BASE(CPlaqueType)
+DEFINE_SHAPE_CLASS(CPlaqueType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 101
-DEFINE_PPTSHAPE_BASE(CUturnArrowType)
+DEFINE_SHAPE_CLASS(CUturnArrowType, CPPTShape)

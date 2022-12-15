@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 65
-DEFINE_PPTSHAPE_BASE(CFoldedCornerType)
+DEFINE_SHAPE_CLASS(CFoldedCornerType, CPPTShape)

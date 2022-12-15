@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 126
-DEFINE_PPTSHAPE_BASE(CFlowChartSortType)
+DEFINE_SHAPE_CLASS(CFlowChartSortType, CPPTShape)
 
 

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 53
-DEFINE_PPTSHAPE_BASE(CRibbonDownType)
+DEFINE_SHAPE_CLASS(CRibbonDownType, CPPTShape)

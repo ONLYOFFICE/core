@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 4
-DEFINE_PPTSHAPE_BASE(CDiamondType)
+DEFINE_SHAPE_CLASS(CDiamondType, CPPTShape)

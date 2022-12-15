@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 11
-DEFINE_PPTSHAPE_BASE(CPlusType)
+DEFINE_SHAPE_CLASS(CPlusType, CPPTShape)

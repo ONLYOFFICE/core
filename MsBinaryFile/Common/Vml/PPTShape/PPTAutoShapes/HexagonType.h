@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 9
-DEFINE_PPTSHAPE_BASE(CHexagonType)
+DEFINE_SHAPE_CLASS(CHexagonType, CPPTShape)

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 3
-DEFINE_PPTSHAPE_BASE(CEllipseType)
+DEFINE_SHAPE_CLASS(CEllipseType, CPPTShape)

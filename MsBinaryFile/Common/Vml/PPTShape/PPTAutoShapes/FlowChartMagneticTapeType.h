@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 131
-DEFINE_PPTSHAPE_BASE(CFlowChartMagneticTapeType)
+DEFINE_SHAPE_CLASS(CFlowChartMagneticTapeType, CPPTShape)
 
 

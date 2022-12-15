@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 16
-DEFINE_PPTSHAPE_BASE(CCubeType)
+DEFINE_SHAPE_CLASS(CCubeType, CPPTShape)

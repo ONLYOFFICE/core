@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 46
-DEFINE_PPTSHAPE_BASE(CAccentCallout3Type)
+DEFINE_SHAPE_CLASS(CAccentCallout3Type, CPPTShape)

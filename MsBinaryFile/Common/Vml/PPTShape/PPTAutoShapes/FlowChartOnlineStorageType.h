@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 130
-DEFINE_PPTSHAPE_BASE(CFlowChartOnlineStorageType)
+DEFINE_SHAPE_CLASS(CFlowChartOnlineStorageType, CPPTShape)
 
 

@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 2
-DEFINE_PPTSHAPE_BASE(CRoundedRectangleType)
+DEFINE_SHAPE_CLASS(CRoundedRectangleType, CPPTShape)

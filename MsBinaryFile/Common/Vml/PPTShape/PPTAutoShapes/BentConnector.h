@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 34
-DEFINE_PPTSHAPE_BASE(CBentConnectorType)
+DEFINE_SHAPE_CLASS(CBentConnectorType, CPPTShape)

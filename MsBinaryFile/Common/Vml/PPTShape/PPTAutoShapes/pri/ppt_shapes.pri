@@ -2,7 +2,7 @@
 SHAPES_DIR = $$PWD/..
 
 core_release {
-SOURCES += $$PWD/pptx_shapes.cpp
+SOURCES += $$PWD/ppt_shapes.cpp
 }
 
 core_debug {

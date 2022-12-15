@@ -45,13 +45,6 @@ static double FixedPointToDouble(unsigned int op)
 	return Integral + (Fractional / 65536.0);
 }
 
-#define DEFINE_PPTSHAPE_BASE(Class)											\
-	class Class : public CPPTShape                                          \
-	{                                                                       \
-	public:                                                                 \
-		Class();															\
-	};
-
 namespace ODRAW
 {
 	struct _textPath 

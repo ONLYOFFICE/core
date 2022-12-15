@@ -34,4 +34,4 @@
 
 /////////   !!!!!!!!!!!!!!!!!!!!  /////////////
 // 202
-DEFINE_PPTSHAPE_BASE(CTextboxType)
+DEFINE_SHAPE_CLASS(CTextboxType, CPPTShape)

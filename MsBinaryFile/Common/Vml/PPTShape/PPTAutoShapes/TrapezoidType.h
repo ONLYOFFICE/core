@@ -33,4 +33,4 @@
 #include "../PptShape.h"
 
 // 8
-DEFINE_PPTSHAPE_BASE(CTrapezoidType)
+DEFINE_SHAPE_CLASS(CTrapezoidType, CPPTShape)

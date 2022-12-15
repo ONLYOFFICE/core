@@ -33,6 +33,6 @@
 #include "../PptShape.h"
 
 // 15
-DEFINE_PPTSHAPE_BASE(CHomePlateType)
+DEFINE_SHAPE_CLASS(CHomePlateType, CPPTShape)
 
 

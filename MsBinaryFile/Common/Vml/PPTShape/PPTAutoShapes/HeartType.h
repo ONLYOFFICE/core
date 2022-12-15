@@ -33,7 +33,7 @@
 #include "../PptShape.h"
 
 // 74
-DEFINE_PPTSHAPE_BASE(CHeartType)
+DEFINE_SHAPE_CLASS(CHeartType, CPPTShape)
 
 
 

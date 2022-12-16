@@ -108,7 +108,8 @@
 	{
 		"name": "wmf",
 		"folder": "../../DesktopEditor/raster/Metafile/Wmf/",
-		"files": ["WmfInterpretator/CWmfInterpretatorSvg.cpp", "WmfInterpretator/CWmfInterpretatorRender.cpp", "WmfInterpretator/CWmfInterpretator.cpp",
+		"files": ["WmfInterpretator/CInterpretatorSvgBase.cpp", "WmfInterpretator/CWmfInterpretatorSvg.cpp", 
+			"WmfInterpretator/CWmfInterpretatorRender.cpp", "WmfInterpretator/CWmfInterpretator.cpp",
 			"WmfParser/CWmfParser.cpp", "WmfParser/CWmfParserBase.cpp",
 			"WmfClip.cpp", "WmfObjects.cpp", "WmfPlayer.cpp"]
 	},

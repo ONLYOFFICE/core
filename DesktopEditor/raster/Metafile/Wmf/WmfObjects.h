@@ -255,7 +255,7 @@ namespace MetaFile
 		TWmfPointS     Width;
 		TWmfColor      Color;
 	};
-	class CWmfRegion : public CWmfObjectBase
+	class CWmfRegion : public CWmfObjectBase, public IRegion
 	{
 	public:
 		CWmfRegion()

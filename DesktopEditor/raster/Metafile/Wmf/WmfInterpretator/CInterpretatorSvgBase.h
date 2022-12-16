@@ -27,7 +27,7 @@ namespace MetaFile
 		void AddPoint(const TPointD& oPoint);
 		void AddPoints(const std::vector<TPointD>& arPoints);
 
-		void GenerateStartPattern();
+		bool GenerateStartPattern();
 		void GenerateBK();
 		void GenerateEndPattern();
 

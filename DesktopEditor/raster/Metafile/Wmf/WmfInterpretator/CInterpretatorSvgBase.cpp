@@ -25,6 +25,7 @@ namespace MetaFile
 	    { HS_DIAGCROSS,        L"DIAGCROSS"},
 	    { HS_05Percent,        L"05PERCENT"},
 	    { HS_10Percent,        L"10PERCENT"},
+	    { HS_20Percent,        L"20PERCENT"},
 	    { HS_25Percent,        L"25PERCENT"},
 	    { HS_30Percent,        L"30PERCENT"},
 	    { HS_40Percent,        L"40PERCENT"},
@@ -861,7 +862,9 @@ namespace MetaFile
 		if (-1 == m_nHatchStyle)
 			return false;
 
-		GenerateStartPattern();
+		if (!GenerateStartPattern())
+			return false;
+
 		GenerateBK();
 
 		switch(m_nHatchStyle)
@@ -933,9 +936,9 @@ namespace MetaFile
 			case HS_30Percent:
 			{
 				AddPoints({{0.0, 0.5}, {2.0, 0.5}, {4.0, 0.5}, {6.0, 0.5}, {1.0, 1.5}, {5.0, 1.5},
-				           {0.0, 2.5}, {2.0, 2.5}, {4.0, 2.5}, {6.0, 2.5}, {1.0, 3.5}, {5.0, 3.5},
+				           {0.0, 2.5}, {2.0, 2.5}, {4.0, 2.5}, {6.0, 2.5}, {3.0, 3.5}, {7.0, 3.5},
 				           {0.0, 4.5}, {2.0, 4.5}, {4.0, 4.5}, {6.0, 4.5}, {1.0, 5.5}, {5.0, 5.5},
-				           {0.0, 6.5}, {2.0, 6.5}, {4.0, 6.5}, {6.0, 6.5}, {1.0, 7.5}, {5.0, 7.5}});
+				           {0.0, 6.5}, {2.0, 6.5}, {4.0, 6.5}, {6.0, 6.5}, {3.0, 7.5}, {7.0, 7.5}});
 
 				break;
 			}
@@ -959,7 +962,7 @@ namespace MetaFile
 			}
 			case HS_60Percent:
 			{
-				AddLines({{}, {{4.0, 0.5}, {7.0, 0.5}}, {{2.0, 2.5}, {5.0, 2.5}},
+				AddLines({{{0.0, 0.5}, {3.0, 0.5}}, {{4.0, 0.5}, {7.0, 0.5}}, {{2.0, 2.5}, {5.0, 2.5}},
 				          {{6.0, 2.5}, {8.0, 2.5}}, {{0.0, 4.5}, {3.0, 4.5}}, {{4.0, 4.5}, {7.0, 4.5}},
 				          {{2.0, 6.5}, {5.0, 6.5}}, {{6.0, 6.5}, {8.0, 6.5}}});
 
@@ -1004,7 +1007,9 @@ namespace MetaFile
 			}
 			case HS_90Percent:
 			{
-				AddLines({{{-0.5, 7.5},{0.5, 8.5}}, {{-0.5, 3.5}, {4.5, 8.5}}, {{0.0, 0.0}, {8.0, 8.0}}, {{3.5, -0.5}, {8.5, 4.5}}, {{7.5, -0.5}, {8.5, 0.5}}});
+				AddLines({{{0.0, 0.5}, {8.0, 0.5}}, {{0.0, 1.5}, {8.0, 1.5}}, {{0.0, 2.5}, {8.0, 2.5}},
+				          {{0.0, 3.5}, {4.0, 3.5}}, {{5.0, 3.5}, {8.0, 3.5}}, {{1.0, 7.5}, {8.0, 7.5}},
+				          {{0.0, 4.5}, {8.0, 4.5}}, {{0.0, 5.5}, {8.0, 5.5}}, {{0.0, 6.5}, {8.0, 6.5}}});
 
 				break;
 			}
@@ -1026,12 +1031,12 @@ namespace MetaFile
 			}
 			case HS_DNDOWNWARDDIAG:
 			{
-				AddPoints({{7.0, 3.5}, {7.0, 7.5}});
+				AddPoints({{0.0, 3.5}, {7.0, 3.5}, {0.0, 7.5}, {7.0, 7.5}});
 
 				AddLines({{{0.0, 0.5}, {2.0, 0.5}}, {{4.0, 0.5}, {6.0, 0.5}}, {{1.0, 1.5}, {3.0, 1.5}}, {{5.0, 1.5}, {7.0, 1.5}},
-				          {{2.0, 2.5}, {4.0, 2.5}}, {{6.0, 2.5}, {8.0, 2.5}}, {{0.0, 3.5}, {2.0, 3.5}}, {{3.0, 3.5}, {5.0, 3.5}},
+				          {{2.0, 2.5}, {4.0, 2.5}}, {{6.0, 2.5}, {8.0, 2.5}}, {{3.0, 3.5}, {5.0, 3.5}},
 				          {{0.0, 4.5}, {2.0, 4.5}}, {{4.0, 4.5}, {6.0, 4.5}}, {{1.0, 5.5}, {3.0, 5.5}}, {{5.0, 5.5}, {7.0, 5.5}},
-				          {{2.0, 6.5}, {4.0, 6.5}}, {{6.0, 6.5}, {8.0, 6.5}}, {{0.0, 7.5}, {2.0, 7.5}}, {{3.0, 7.5}, {5.0, 7.5}}});
+				          {{2.0, 6.5}, {4.0, 6.5}}, {{6.0, 6.5}, {8.0, 6.5}}, {{3.0, 7.5}, {5.0, 7.5}}});
 
 				break;
 			}
@@ -1050,7 +1055,7 @@ namespace MetaFile
 			{
 				AddPoints({{7.0, 0.5}, {0.0, 7.5}});
 
-				AddLines({{{0.0, 0.5}, {0.0, 0.5}}, {{0.0, 1.5}, {3.0, 1.5}}, {{1.0, 2.5}, {4.0, 2.5}}, {{2.0, 3.5}, {5.0, 3.5}},
+				AddLines({{{0.0, 0.5}, {2.0, 0.5}}, {{0.0, 1.5}, {3.0, 1.5}}, {{1.0, 2.5}, {4.0, 2.5}}, {{2.0, 3.5}, {5.0, 3.5}},
 				          {{3.0, 4.5}, {6.0, 4.5}}, {{4.0, 5.5}, {7.0, 5.5}}, {{5.0, 6.5}, {8.0, 6.5}}, {{6.0, 7.5}, {8.0, 7.5}}});
 
 				break;
@@ -1156,7 +1161,7 @@ namespace MetaFile
 				AddPoints({{0.0, 0.5}, {7.0, 0.5}, {1.0, 1.5}, {6.0, 1.5}, {2.0, 2.5}, {5.0, 2.5},
 				           {0.0, 4.5}, {7.0, 4.5}, {1.0, 5.5}, {6.0, 5.5}, {2.0, 6.5}, {5.0, 6.5}});
 
-				AddLines({{{3.0, 3.5}, {5.0, 3.5}}, {{3.0, 6.5}, {5.0, 6.5}}});
+				AddLines({{{3.0, 3.5}, {5.0, 3.5}}, {{3.0, 7.5}, {5.0, 7.5}}});
 
 				break;
 			}
@@ -1181,7 +1186,7 @@ namespace MetaFile
 			}
 			case HS_HORIZBRICK:
 			{
-				AddLines({{{0.0, 0.5}, {8.0, 0.5}}, {{0.5, 0.5}, {0.5, 4.5}}, {{0.0, 4.5}, {8.0, 1.5}}, {{4.5, 4.5}, {4.5, 8.0}}});
+				AddLines({{{0.0, 0.5}, {8.0, 0.5}}, {{0.5, 0.5}, {0.5, 4.5}}, {{0.0, 4.5}, {8.0, 4.5}}, {{4.5, 4.5}, {4.5, 8.0}}});
 
 				break;
 			}
@@ -1201,7 +1206,7 @@ namespace MetaFile
 				           {0.0, 2.5}, {2.0, 2.5}, {4.0, 2.5}, {6.0, 2.5},
 				           {1.0, 3.5}, {3.0, 3.5}, {5.0, 3.5}, {7.0, 3.5}});
 
-				AddLine({0.0, 6.0}, {4.0, 6.0});
+				AddLines({{{0.0, 4.5}, {4.0, 4.5}}, {{0.0, 5.5}, {4.0, 5.5}}, {{0.0, 6.5}, {4.0, 6.5}}, {{0.0, 7.5}, {4.0, 7.5}}});
 
 				break;
 			}
@@ -1360,15 +1365,22 @@ namespace MetaFile
 			AddPoint(oPoint);
 	}
 
-	void CHatchGenerator::GenerateStartPattern()
+	bool CHatchGenerator::GenerateStartPattern()
 	{
+		std::wstring wsPatternId = GetPatternId();
+
+		if (wsPatternId.empty())
+			return false;
+
 		m_oStringBuilder.WriteNodeBegin(L"pattern", true);
-		m_oStringBuilder.WriteAttribute(L"id", GetPatternId());
+		m_oStringBuilder.WriteAttribute(L"id", wsPatternId);
 		m_oStringBuilder.WriteAttribute(L"width", ((0 != m_dWidth)  ? ConvertToWString((m_dStrokeWidth * 8.) / m_dWidth) : L"1"));
-		m_oStringBuilder.WriteAttribute(L"height", ((0 != m_dWidth)  ? ConvertToWString((m_dStrokeWidth * 8.) / m_dWidth) : L"1"));
+		m_oStringBuilder.WriteAttribute(L"height", ((0 != m_dHeight)  ? ConvertToWString((m_dStrokeWidth * 8.) / m_dHeight) : L"1"));
 		m_oStringBuilder.WriteAttribute(L"patternUnits", L"objectBoundingBox");
 		m_oStringBuilder.WriteAttribute(L"shape-rendering", L"crispEdges");
 		m_oStringBuilder.WriteNodeEnd(L"pattern", true, false);
+
+		return true;
 	}
 
 	void CHatchGenerator::GenerateBK()

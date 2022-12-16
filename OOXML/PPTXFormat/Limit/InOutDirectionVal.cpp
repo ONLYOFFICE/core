@@ -48,13 +48,13 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE InOutDirectionVal::GetBYTECode() const
+		unsigned char InOutDirectionVal::GetBYTECode() const
 		{
 			if (L"in" == m_strValue)	return 0;
 			if (L"out" == m_strValue)	return 1;
 			return 0;
 		}
-		void InOutDirectionVal::SetBYTECode(const BYTE& src)
+		void InOutDirectionVal::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

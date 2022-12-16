@@ -270,7 +270,6 @@
 #include "../../../PPTXFormat/Logic/Effects/TintEffect.cpp"
 #include "../../../PPTXFormat/Logic/Effects/XfrmEffect.cpp"
 
-
 #include "../../../PPTXFormat/Presentation.cpp"
 #include "../../../PPTXFormat/FileContainer.cpp"
 #include "../../../PPTXFormat/FileTypes.cpp"
@@ -292,5 +291,6 @@
 #include "../../../PPTXFormat/HandoutMaster.cpp"
 #include "../../../PPTXFormat/Core.cpp"
 #include "../../../PPTXFormat/App.cpp"
+#include "../../../PPTXFormat/WrapperWritingElement.cpp"
 #include "../../../PPTXFormat/Comments.cpp"
 #include "../../../PPTXFormat/CommentAuthors.cpp"

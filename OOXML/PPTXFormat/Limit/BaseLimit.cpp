@@ -35,7 +35,7 @@
 namespace PPTX
 {
 	namespace Limit
-	{		
+	{
 		BaseLimit::BaseLimit(const std::wstring& str) : m_strValue(str)
 		{
 		}
@@ -43,7 +43,9 @@ namespace PPTX
 		{
 			*this = oSrc;
 		}
-		BaseLimit::~BaseLimit() {}
+		BaseLimit::~BaseLimit()
+		{
+		}
 		BaseLimit& BaseLimit::operator=(const BaseLimit& oSrc)
 		{
 			m_strValue = oSrc.m_strValue;
@@ -52,14 +54,6 @@ namespace PPTX
 		void BaseLimit::operator=(const std::wstring& str)
 		{
 			set(str);
-		}
-		void BaseLimit::_set(const std::wstring& strValue)
-		{
-			set(strValue);
-		}
-		std::wstring& BaseLimit::get()
-		{
-			return m_strValue;
 		}
 		const std::wstring& BaseLimit::get() const
 		{

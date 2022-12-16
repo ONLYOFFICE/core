@@ -44,7 +44,7 @@ namespace PPTX
 		{
 			m_strValue = strValue;
 		}
-		BYTE CameraType::GetBYTECode() const
+		unsigned char CameraType::GetBYTECode() const
 		{
 			if (m_strValue == L"isometricBottomDown")		return 0;
 			if (m_strValue == L"isometricBottomUp")			return 1;
@@ -110,7 +110,7 @@ namespace PPTX
 			if (m_strValue == L"perspectiveRight")				return 61;
 			return 0;
 		}
-		void CameraType::SetBYTECode(const BYTE& val)
+		void CameraType::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{

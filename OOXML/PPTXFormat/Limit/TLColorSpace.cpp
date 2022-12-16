@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLColorSpace::TLColorSpace()
 		{
-			m_strValue = _T("rgb");
+			m_strValue = L"rgb";
 		}
 		void TLColorSpace::set(const std::wstring& strValue)
 		{
-			if ((_T("rgb") == strValue) ||
-				(_T("hsl") == strValue))
+			if ((L"rgb" == strValue) ||
+				(L"hsl" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLColorSpace::GetBYTECode() const
+		unsigned char TLColorSpace::GetBYTECode() const
 		{
 			if (L"rgb" == m_strValue)	return 0;
 			if (L"hsl" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLColorSpace::SetBYTECode(const BYTE& src)
+		void TLColorSpace::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

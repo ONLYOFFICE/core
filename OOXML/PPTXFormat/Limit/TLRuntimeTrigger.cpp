@@ -38,18 +38,18 @@ namespace PPTX
 	{		
 		TLRuntimeTrigger::TLRuntimeTrigger()
 		{
-			m_strValue = _T("first");
+			m_strValue = L"first";
 		}
 		void TLRuntimeTrigger::set(const std::wstring& strValue)
 		{
-			if ((_T("all") == strValue) ||
-				(_T("first") == strValue) ||
-				(_T("last") == strValue))
+			if ((L"all" == strValue) ||
+				(L"first" == strValue) ||
+				(L"last" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLRuntimeTrigger::GetBYTECode() const
+		unsigned char TLRuntimeTrigger::GetBYTECode() const
 		{
 			if (L"all" == m_strValue)	return 0;
 			if (L"first" == m_strValue)	return 1;
@@ -57,7 +57,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLRuntimeTrigger::SetBYTECode(const BYTE& src)
+		void TLRuntimeTrigger::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

@@ -33,24 +33,12 @@
 
 #include "BaseLimit.h"
 
-
 namespace PPTX
 {
 	namespace Limit
 	{
 		int GetPhType(const std::wstring& strType);
 
-		class PlaceholderType : public BaseLimit
-		{
-		public:
-			PlaceholderType();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(PlaceholderType)
 	} // namespace Limit
 } // namespace PPTX

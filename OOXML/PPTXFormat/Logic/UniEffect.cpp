@@ -71,7 +71,6 @@ namespace PPTX
 		{
 			Effect.reset();
 		}
-
 		UniEffect::~UniEffect()
 		{
 		}
@@ -134,6 +133,37 @@ namespace PPTX
 		UniEffect::UniEffect(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
+		}
+
+		OOX::EElementType UniEffect::getType () const
+		{
+			if (Effect.is_init())
+				return Effect->getType();
+			else return OOX::et_Unknown;
+		}
+
+		std::wstring UniEffect::toXML() const
+		{
+			if (Effect.IsInit())
+				return Effect->toXML();
+			return _T("");
+		}
+		void UniEffect::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			if (Effect.is_init())
+				Effect->toXmlWriter(pWriter);
+		}
+		void UniEffect::InitPointer(WrapperWritingElement* pElem)
+		{
+			Effect = pElem;
+		}
+		void UniEffect::SetParentPointer(const WrapperWritingElement* pParent)
+		{
+			if(is_init())
+				Effect->SetParentPointer(pParent);
+		}
+		void UniEffect::FillParentPointersForChilds()
+		{
 		}
 
 		const UniEffect& UniEffect::operator =(XmlUtils::CXmlNode& node)

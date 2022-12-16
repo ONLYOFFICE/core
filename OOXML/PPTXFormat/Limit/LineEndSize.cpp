@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		LineEndSize::LineEndSize()
 		{
-			m_strValue = _T("med");
+			m_strValue = L"med";
 		}
 		void LineEndSize::set(const std::wstring& strValue)
 		{
-			if ((_T("lg") == strValue) ||
-				(_T("med") == strValue) ||
-				(_T("sm") == strValue))
+			if ((L"lg" == strValue) ||
+				(L"med" == strValue) ||
+				(L"sm" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE LineEndSize::GetBYTECode() const
+		unsigned char LineEndSize::GetBYTECode() const
 		{
-			if (_T("lg") == m_strValue)
+			if (L"lg" == m_strValue)
 				return 0;
-			if (_T("med") == m_strValue)
+			if (L"med" == m_strValue)
 				return 1;
-			if (_T("sm") == m_strValue)
+			if (L"sm" == m_strValue)
 				return 2;
 			return 1;
 		}
-		void LineEndSize::SetBYTECode(const BYTE& src)
+		void LineEndSize::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("lg");
+				m_strValue = L"lg";
 				break;
 			case 1:
-				m_strValue = _T("med");
+				m_strValue = L"med";
 				break;
 			case 2:
-				m_strValue = _T("sm");
+				m_strValue = L"sm";
 				break;
 			default:
 				break;

@@ -38,37 +38,37 @@ namespace PPTX
 	{		
 		DgmBuildType::DgmBuildType()
 		{
-			m_strValue = _T("whole");
+			m_strValue = L"whole";
 		}
 		void DgmBuildType::set(const std::wstring& strValue)
 		{
-			if ((_T("allAtOnce") == strValue) ||
-				(_T("breadthByLvl") == strValue) ||
-				(_T("breadthByNode") == strValue) ||
-				(_T("ccw") == strValue) ||
-				(_T("ccwIn") == strValue) ||
-				(_T("ccwOut") == strValue) ||
-				(_T("cust") == strValue) ||
-				(_T("cw") == strValue) ||
-				(_T("cwIn") == strValue) ||
-				(_T("cwOut") == strValue) ||
-				(_T("depthByBranch") == strValue) ||
-				(_T("depthByNode") == strValue) ||
-				(_T("down") == strValue) ||
-				(_T("inByRing") == strValue) ||
-				(_T("outByRing") == strValue) ||
-				(_T("up") == strValue) ||
-				(_T("whole") == strValue))
+			if ((L"allAtOnce" == strValue) ||
+				(L"breadthByLvl" == strValue) ||
+				(L"breadthByNode" == strValue) ||
+				(L"ccw" == strValue) ||
+				(L"ccwIn" == strValue) ||
+				(L"ccwOut" == strValue) ||
+				(L"cust" == strValue) ||
+				(L"cw" == strValue) ||
+				(L"cwIn" == strValue) ||
+				(L"cwOut" == strValue) ||
+				(L"depthByBranch" == strValue) ||
+				(L"depthByNode" == strValue) ||
+				(L"down" == strValue) ||
+				(L"inByRing" == strValue) ||
+				(L"outByRing" == strValue) ||
+				(L"up" == strValue) ||
+				(L"whole" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE DgmBuildType::GetBYTECode() const
+		unsigned char DgmBuildType::GetBYTECode() const
 		{
 			//not using yet
 			return 0;
 		}
-		void DgmBuildType::SetBYTECode(const BYTE& src)
+		void DgmBuildType::SetBYTECode(const unsigned char& src)
 		{
 			//not using yet
 		}

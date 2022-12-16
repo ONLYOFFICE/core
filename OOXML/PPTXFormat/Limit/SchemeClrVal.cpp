@@ -63,7 +63,7 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE SchemeClrVal::GetBYTECode() const
+		unsigned char SchemeClrVal::GetBYTECode() const
 		{
 			if (L"accent1" == m_strValue)	return 0;
 			if (L"accent2" == m_strValue)	return 1;
@@ -85,7 +85,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void SchemeClrVal::SetBYTECode(const BYTE& code)
+		void SchemeClrVal::SetBYTECode(const unsigned char& code)
 		{
 			switch (code)
 			{

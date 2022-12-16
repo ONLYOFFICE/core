@@ -38,48 +38,48 @@ namespace PPTX
 	{		
 		TextTabAlignType::TextTabAlignType()
 		{
-			m_strValue = _T("r");
+			m_strValue = L"r";
 		}
 		void TextTabAlignType::set(const std::wstring& strValue)
 		{
-			if ((_T("ctr") == strValue) ||
-				(_T("dec") == strValue) ||
-				(_T("l") == strValue) ||
-				(_T("r") == strValue))
+			if ((L"ctr" == strValue) ||
+				(L"dec" == strValue) ||
+				(L"l" == strValue) ||
+				(L"r" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextTabAlignType::GetBYTECode() const
+		unsigned char TextTabAlignType::GetBYTECode() const
 		{
-			if (_T("ctr") == m_strValue)
+			if (L"ctr" == m_strValue)
 				return 0;
-			if (_T("dec") == m_strValue)
+			if (L"dec" == m_strValue)
 				return 1;
-			if (_T("l") == m_strValue)
+			if (L"l" == m_strValue)
 				return 2;
-			if (_T("r") == m_strValue)
+			if (L"r" == m_strValue)
 				return 3;
 			return 2;
 		}
-		void TextTabAlignType::SetBYTECode(const BYTE& src)
+		void TextTabAlignType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("ctr");
+				m_strValue = L"ctr";
 				break;
 			case 1:
-				m_strValue = _T("dec");
+				m_strValue = L"dec";
 				break;
 			case 2:
-				m_strValue = _T("l");
+				m_strValue = L"l";
 				break;
 			case 3:
-				m_strValue = _T("r");
+				m_strValue = L"r";
 				break;
 			default:
-				m_strValue = _T("l");
+				m_strValue = L"l";
 				break;
 			}
 		}

@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class OnOff : public BaseLimit
-		{
-		public:
-			OnOff();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(OnOff)
 	} // namespace Limit
 } // namespace PPTX

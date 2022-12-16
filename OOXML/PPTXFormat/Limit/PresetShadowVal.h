@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class PresetShadowVal : public BaseLimit
-		{
-		public:
-			PresetShadowVal();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(PresetShadowVal)
 	} // namespace Limit
 } // namespace PPTX

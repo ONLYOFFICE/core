@@ -38,22 +38,22 @@ namespace PPTX
 	{		
 		DgmBuild::DgmBuild()
 		{
-			m_strValue = _T("sp");
+			m_strValue = L"sp";
 		}
 		void DgmBuild::set(const std::wstring& strValue)
 		{
-			if ((_T("bg") == strValue) ||
-				(_T("sp") == strValue))
+			if ((L"bg" == strValue) ||
+				(L"sp" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE DgmBuild::GetBYTECode() const
+		unsigned char DgmBuild::GetBYTECode() const
 		{
 			//not using yet
 			return 0;
 		}
-		void DgmBuild::SetBYTECode(const BYTE& src)
+		void DgmBuild::SetBYTECode(const unsigned char& src)
 		{
 			//not using yet
 		}

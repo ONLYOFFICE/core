@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class PlaceholderSize : public BaseLimit
-		{
-		public:
-			PlaceholderSize();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(PlaceholderSize)
 	} // namespace Limit
 } // namespace PPTX

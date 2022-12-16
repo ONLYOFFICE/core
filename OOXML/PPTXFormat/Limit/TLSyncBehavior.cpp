@@ -48,13 +48,13 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLSyncBehavior::GetBYTECode() const
+		unsigned char TLSyncBehavior::GetBYTECode() const
 		{
 			if (L"canSlip" == m_strValue)	return 0;
 			if (L"locked" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLSyncBehavior::SetBYTECode(const BYTE& val)
+		void TLSyncBehavior::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{

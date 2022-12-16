@@ -38,30 +38,30 @@ namespace PPTX
 	{		
 		HorzOverflow::HorzOverflow()
 		{
-			m_strValue = _T("clip");
+			m_strValue = L"clip";
 		}
 		void HorzOverflow::set(const std::wstring& strValue)
 		{
-			if ((_T("clip") == strValue) ||
-				(_T("overflow") == strValue))
+			if ((L"clip" == strValue) ||
+				(L"overflow" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE HorzOverflow::GetBYTECode() const
+		unsigned char HorzOverflow::GetBYTECode() const
 		{
-			if (_T("clip") == m_strValue)
+			if (L"clip" == m_strValue)
 				return 0;
-			if (_T("overflow") == m_strValue)
+			if (L"overflow" == m_strValue)
 				return 1;
 			return 0;
 		}
-		void HorzOverflow::SetBYTECode(const BYTE& src)
+		void HorzOverflow::SetBYTECode(const unsigned char& src)
 		{
 			if (1 == src)
-				m_strValue = _T("overflow");
+				m_strValue = L"overflow";
 			else
-				m_strValue = _T("clip");
+				m_strValue = L"clip";
 		}
 	} // namespace Limit
 } // namespace PPTX

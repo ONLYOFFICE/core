@@ -57,7 +57,7 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE BWMode::GetBYTECode() const
+		unsigned char BWMode::GetBYTECode() const
 		{
 			if (L"auto" == m_strValue)		return 0;
 			if (L"black" == m_strValue)		return 1;
@@ -72,7 +72,7 @@ namespace PPTX
 			if (L"white" == m_strValue)		return 10;
 			return 0;
 		}
-		void BWMode::SetBYTECode(const BYTE& src)
+		void BWMode::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

@@ -68,6 +68,114 @@
 
 namespace PPTX
 {
+	namespace Limit
+	{
+		OLEDrawAspectType::OLEDrawAspectType()
+		{
+			m_strValue = L"Content";
+		}
+		void OLEDrawAspectType::set(const std::wstring& strValue)
+		{
+			if ((L"Content" == strValue) ||
+				(L"Icon" == strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		unsigned char OLEDrawAspectType::GetBYTECode() const
+		{
+			if (L"Content" == m_strValue)
+				return 0;
+			if (L"Icon" == m_strValue)
+				return 1;
+			return 0;
+		}
+		void OLEDrawAspectType::SetBYTECode(const unsigned char& src)
+		{
+			switch (src)
+			{
+			case 0:
+				m_strValue = L"Content";
+				break;
+			case 1:
+				m_strValue = L"Icon";
+				break;
+			default:
+				break;
+			}
+		}
+
+		OLEType::OLEType()
+		{
+			m_strValue = L"Embed";
+		}
+		void OLEType::set(const std::wstring& strValue)
+		{
+			if ((L"Embed" == strValue) ||
+				(L"Link" == strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		unsigned char OLEType::GetBYTECode() const
+		{
+			if (L"Embed" == m_strValue)
+				return 0;
+			if (L"Link" == m_strValue)
+				return 1;
+			return 0;
+		}
+		void OLEType::SetBYTECode(const unsigned char& src)
+		{
+			switch (src)
+			{
+			case 0:
+				m_strValue = L"Embed";
+				break;
+			case 1:
+				m_strValue = L"Link";
+				break;
+			default:
+				break;
+			}
+		}
+
+		OLEUpdateMode::OLEUpdateMode()
+		{
+			m_strValue = L"Always";
+		}
+		void OLEUpdateMode::set(const std::wstring& strValue)
+		{
+			if ((L"Always" == strValue) ||
+				(L"OnCall" == strValue))
+			{
+				m_strValue = strValue;
+			}
+		}
+		unsigned char OLEUpdateMode::GetBYTECode() const
+		{
+			if (L"Always" == m_strValue)
+				return 0;
+			if (L"OnCall" == m_strValue)
+				return 1;
+			return 0;
+		}
+		void OLEUpdateMode::SetBYTECode(const unsigned char& src)
+		{
+			switch (src)
+			{
+			case 0:
+				m_strValue = L"Always";
+				break;
+			case 1:
+				m_strValue = L"OnCall";
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
 	namespace Logic
 	{
 		void COLEObject::fromXML(XmlUtils::CXmlNode& node)
@@ -102,7 +210,6 @@ namespace PPTX
 				m_OleObjectFile->set_filename_cache	(ole_image);
 			}
 		}
-
 		std::wstring COLEObject::toXML() const
 		{
 			return L"";
@@ -344,7 +451,6 @@ namespace PPTX
 				pWriter->EndRecord();
 			}
 		}
-
 		void COLEObject::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -584,7 +690,6 @@ namespace PPTX
 		{
 			return m_sProgId.IsInit() && (m_sData.IsInit() || m_oId.IsInit() || m_OleObjectFile.IsInit());
 		}
-
 		smart_ptr<OOX::OleObject> COLEObject::GetOleObject(const OOX::RId& oRId, OOX::IFileContainer* pRels) const
 		{
 			smart_ptr<OOX::OleObject> ole_file = m_OleObjectFile;
@@ -622,6 +727,10 @@ namespace PPTX
 			}
 			return sRes;
 		}
+		OOX::EElementType COLEObject::getType () const
+		{
+			return OOX::et_pic;
+		}
 
 		Pic::Pic(std::wstring ns)
 		{
@@ -641,7 +750,10 @@ namespace PPTX
 			m_pLevelUp	= NULL;
 			fromXML(oReader);
 		}		
-		
+		OOX::EElementType Pic::getType () const
+		{
+			return OOX::et_pic;
+		}
 		const Pic& Pic::operator =(XmlUtils::CXmlNode& node)
 		{
 			fromXML(node);
@@ -677,7 +789,6 @@ namespace PPTX
 			}
 			FillParentPointersForChilds();
 		}
-
 		void Pic::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_namespace = XmlUtils::GetNamespace(node.GetName());
@@ -724,7 +835,6 @@ namespace PPTX
 			
 			FillParentPointersForChilds();
 		}
-
 		std::wstring Pic::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
@@ -738,7 +848,6 @@ namespace PPTX
 
 			return XmlUtils::CreateNode(m_namespace + L":pic", oAttr, oValue);
 		}
-		
 		void Pic::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			if(oleObject.IsInit())
@@ -864,7 +973,6 @@ namespace PPTX
 			}
 			pWriter->EndRecord();
 		}
-
 		void Pic::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			std::wstring namespace_ = m_namespace;
@@ -955,8 +1063,6 @@ namespace PPTX
 				}
 			}
 		}
-
-
 		void Pic::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -1123,7 +1229,6 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 		}
-
 		void Pic::FillLevelUp()
 		{
 			if ((m_pLevelUp == NULL) && (nvPicPr.nvPr.ph.IsInit()))
@@ -1145,7 +1250,6 @@ namespace PPTX
 				}
 			}
 		}
-
 		void Pic::Merge(Pic& pic, bool bIsSlidePlaceholder)
 		{
 			if (m_pLevelUp)
@@ -1163,7 +1267,6 @@ namespace PPTX
 				pic.style->SetParentFilePointer(parentFile);
 			}
 		}
-
 		void Pic::FillParentPointersForChilds()
 		{
 			nvPicPr.SetParentPointer(this);
@@ -1174,7 +1277,6 @@ namespace PPTX
 			if (oleObject.IsInit())
 				oleObject->SetParentPointer(this);
 		}
-
 		void Pic::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.bottom	= 0;
@@ -1192,7 +1294,6 @@ namespace PPTX
 			if(parentIs<Logic::SpTree>())
 				parentAs<Logic::SpTree>().NormalizeRect(pRect);
 		}
-
 		std::wstring Pic::GetFullPicName()const
 		{
 			if (blipFill.blip.IsInit())
@@ -1235,7 +1336,6 @@ namespace PPTX
 			}
 			return file;
 		}
-
 		DWORD Pic::GetFill(UniFill& fill)const
 		{
 			DWORD BGRA = 0;
@@ -1257,7 +1357,6 @@ namespace PPTX
 				spPr.Fill.Merge(fill);
 			return BGRA;
 		}
-
 		DWORD Pic::GetLine(Ln& line)const
 		{
 			DWORD BGRA = 0;
@@ -1279,8 +1378,6 @@ namespace PPTX
 				spPr.ln->Merge(line);
 			return BGRA;
 		}
-
-		
 		double Pic::GetStTrim () const
 		{
 			double trim = 0.0;
@@ -1307,7 +1404,6 @@ namespace PPTX
 
 			return trim;
 		}
-
 		double Pic::GetEndTrim () const
 		{
 			double trim = -1.0;
@@ -1334,7 +1430,6 @@ namespace PPTX
 
 			return trim;
 		}
-
 		long Pic::GetRefId() const
 		{
 			return (long) nvPicPr.cNvPr.id;
@@ -1606,6 +1701,12 @@ namespace PPTX
 				blipFill.blip->oleRid = oleObject->m_oId->get();
 			}
             XmlMacroReadAttributeBase(node, L"spid",	oleObject->m_sShapeId);
+		}
+		void Pic::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		{
+			WritingElement_ReadAttributes_Start(oReader)
+				WritingElement_ReadAttributes_Read_if(oReader, _T("macro"), macro)
+			WritingElement_ReadAttributes_End(oReader)
 		}
 	} // namespace Logic
 } // namespace PPTX

@@ -44,7 +44,7 @@ namespace PPTX
 		{
 			m_strValue = strValue;
 		}
-		BYTE Material::GetBYTECode() const
+		unsigned char Material::GetBYTECode() const
 		{
 			if (L"clear" == m_strValue)
 				return 0;
@@ -79,7 +79,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void Material::SetBYTECode(const BYTE& val)
+		void Material::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{

@@ -44,7 +44,7 @@ namespace PPTX
 		{
 			m_strValue = strValue;
 		}
-		BYTE LightRigType::GetBYTECode() const
+		unsigned char LightRigType::GetBYTECode() const
 		{
 			if (L"balanced" == m_strValue)		return 0;
 			if (L"brightRoom" == m_strValue)	return 1;
@@ -75,7 +75,7 @@ namespace PPTX
 			if (L"twoPt" == m_strValue)			return 26;
 			return 0;
 		}
-		void LightRigType::SetBYTECode(const BYTE& val)
+		void LightRigType::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{
@@ -107,7 +107,6 @@ namespace PPTX
 				case 25:	m_strValue = L"threePt";	break;
 				case 26:	m_strValue = L"twoPt";		break;
 				default:	m_strValue = L"balanced";
-
 			}
 		}
 	} // namespace Limit

@@ -38,24 +38,24 @@ namespace PPTX
 	{		
 		TLTransform::TLTransform()
 		{
-			m_strValue = _T("pt");
+			m_strValue = L"pt";
 		}
 		void TLTransform::set(const std::wstring& strValue)
 		{
-			if ((_T("img") == strValue) ||
-				(_T("pt") == strValue))
+			if ((L"img" == strValue) ||
+				(L"pt" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLTransform::GetBYTECode() const
+		unsigned char TLTransform::GetBYTECode() const
 		{
 			if (L"img" == m_strValue)	return 0;
 			if (L"pt" == m_strValue)	return 1;
 
 			return 0;
 		}
-		void TLTransform::SetBYTECode(const BYTE& src)
+		void TLTransform::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

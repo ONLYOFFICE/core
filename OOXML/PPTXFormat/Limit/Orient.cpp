@@ -38,28 +38,28 @@ namespace PPTX
 	{		
 		Orient::Orient()
 		{
-			m_strValue = _T("vert");
+			m_strValue = L"vert";
 		}
 		void Orient::set(const std::wstring& strValue)
 		{
-			if ((_T("horz") == strValue) ||
-				(_T("vert") == strValue))
+			if ((L"horz" == strValue) ||
+				(L"vert" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE Orient::GetBYTECode() const
+		unsigned char Orient::GetBYTECode() const
 		{
-			if (_T("horz") == m_strValue)
+			if (L"horz" == m_strValue)
 				return 0;
 			return 1;
 		}
-		void Orient::SetBYTECode(const BYTE& src)
+		void Orient::SetBYTECode(const unsigned char& src)
 		{
 			if (0 == src)
-				m_strValue = _T("horz");
+				m_strValue = L"horz";
 			else
-				m_strValue = _T("vert");
+				m_strValue = L"vert";
 		}
 	} // namespace Limit
 } // namespace PPTX

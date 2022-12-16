@@ -304,7 +304,7 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			this->m_pPointer = new Type();
-			this->m_pPointer->_set(value);
+			this->m_pPointer->set(value);
 		}
 		void operator=(Type* pType)
 		{

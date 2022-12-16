@@ -124,33 +124,33 @@ namespace PPTX
 
 			if (m_name == L"w:clrSchemeMapping")
 			{
-				lColorIndex._set(node.GetAttribute(L"w:bg1"));				m_arColorMap.push_back(std::make_pair(L"bg1", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:t1"));				m_arColorMap.push_back(std::make_pair(L"tx1", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:bg2"));				m_arColorMap.push_back(std::make_pair(L"bg2", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:t2"));				m_arColorMap.push_back(std::make_pair(L"tx2", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:accent1"));			m_arColorMap.push_back(std::make_pair(L"accent1", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:accent2"));			m_arColorMap.push_back(std::make_pair(L"accent2", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:accent3"));			m_arColorMap.push_back(std::make_pair(L"accent3", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:accent4"));			m_arColorMap.push_back(std::make_pair(L"accent4", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:accent5"));			m_arColorMap.push_back(std::make_pair(L"accent5", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:accent6"));			m_arColorMap.push_back(std::make_pair(L"accent6", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:hyperlink"));		m_arColorMap.push_back(std::make_pair(L"hlink", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"w:followedHyperlink"));m_arColorMap.push_back(std::make_pair(L"folHlink", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:bg1"));				m_arColorMap.push_back(std::make_pair(L"bg1", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:t1"));				m_arColorMap.push_back(std::make_pair(L"tx1", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:bg2"));				m_arColorMap.push_back(std::make_pair(L"bg2", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:t2"));				m_arColorMap.push_back(std::make_pair(L"tx2", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:accent1"));			m_arColorMap.push_back(std::make_pair(L"accent1", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:accent2"));			m_arColorMap.push_back(std::make_pair(L"accent2", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:accent3"));			m_arColorMap.push_back(std::make_pair(L"accent3", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:accent4"));			m_arColorMap.push_back(std::make_pair(L"accent4", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:accent5"));			m_arColorMap.push_back(std::make_pair(L"accent5", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:accent6"));			m_arColorMap.push_back(std::make_pair(L"accent6", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:hyperlink"));		m_arColorMap.push_back(std::make_pair(L"hlink", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"w:followedHyperlink"));m_arColorMap.push_back(std::make_pair(L"folHlink", lColorIndex));
 			}
 			else
 			{
-				lColorIndex._set(node.GetAttribute(L"bg1"));		m_arColorMap.push_back(std::make_pair(L"bg1", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"tx1"));		m_arColorMap.push_back(std::make_pair(L"tx1", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"bg2"));		m_arColorMap.push_back(std::make_pair(L"bg2", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"tx2"));		m_arColorMap.push_back(std::make_pair(L"tx2", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"accent1"));	m_arColorMap.push_back(std::make_pair(L"accent1", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"accent2"));	m_arColorMap.push_back(std::make_pair(L"accent2", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"accent3"));	m_arColorMap.push_back(std::make_pair(L"accent3", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"accent4"));	m_arColorMap.push_back(std::make_pair(L"accent4", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"accent5"));	m_arColorMap.push_back(std::make_pair(L"accent5", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"accent6"));	m_arColorMap.push_back(std::make_pair(L"accent6", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"hlink"));		m_arColorMap.push_back(std::make_pair(L"hlink", lColorIndex));
-				lColorIndex._set(node.GetAttribute(L"folHlink"));	m_arColorMap.push_back(std::make_pair(L"folHlink", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"bg1"));		m_arColorMap.push_back(std::make_pair(L"bg1", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"tx1"));		m_arColorMap.push_back(std::make_pair(L"tx1", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"bg2"));		m_arColorMap.push_back(std::make_pair(L"bg2", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"tx2"));		m_arColorMap.push_back(std::make_pair(L"tx2", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"accent1"));	m_arColorMap.push_back(std::make_pair(L"accent1", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"accent2"));	m_arColorMap.push_back(std::make_pair(L"accent2", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"accent3"));	m_arColorMap.push_back(std::make_pair(L"accent3", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"accent4"));	m_arColorMap.push_back(std::make_pair(L"accent4", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"accent5"));	m_arColorMap.push_back(std::make_pair(L"accent5", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"accent6"));	m_arColorMap.push_back(std::make_pair(L"accent6", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"hlink"));		m_arColorMap.push_back(std::make_pair(L"hlink", lColorIndex));
+				lColorIndex.set(node.GetAttribute(L"folHlink"));	m_arColorMap.push_back(std::make_pair(L"folHlink", lColorIndex));
 			}
 		}
 		std::wstring ClrMap::toXML() const

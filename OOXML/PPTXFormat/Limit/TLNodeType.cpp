@@ -38,24 +38,24 @@ namespace PPTX
 	{
 		TLNodeType::TLNodeType()
 		{
-			m_strValue = _T("tmRoot");
+			m_strValue = L"tmRoot";
 		}
 		void TLNodeType::set(const std::wstring& strValue)
 		{
-			if ((_T("afterEffect") == strValue) ||
-				(_T("afterGroup") == strValue) ||
-				(_T("clickEffect") == strValue) ||
-				(_T("clickPar") == strValue) ||
-				(_T("interactiveSeq") == strValue) ||
-				(_T("mainSeq") == strValue) ||
-				(_T("tmRoot") == strValue) ||
-				(_T("withEffect") == strValue) ||
-				(_T("withGroup") == strValue))
+			if ((L"afterEffect" == strValue) ||
+				(L"afterGroup" == strValue) ||
+				(L"clickEffect" == strValue) ||
+				(L"clickPar" == strValue) ||
+				(L"interactiveSeq" == strValue) ||
+				(L"mainSeq" == strValue) ||
+				(L"tmRoot" == strValue) ||
+				(L"withEffect" == strValue) ||
+				(L"withGroup" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLNodeType::GetBYTECode() const
+		unsigned char TLNodeType::GetBYTECode() const
 		{
 			if (L"afterEffect" == m_strValue)	return 0;
 			if (L"afterGroup" == m_strValue)	return 1;
@@ -68,7 +68,7 @@ namespace PPTX
 			if (L"withGroup" == m_strValue)		return 8;
 			return 0;
 		}
-		void TLNodeType::SetBYTECode(const BYTE& src)
+		void TLNodeType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

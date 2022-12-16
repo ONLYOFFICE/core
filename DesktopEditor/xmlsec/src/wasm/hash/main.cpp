@@ -1,13 +1,16 @@
 #include <memory>
-#include "../openssl/include/openssl/sha.h"
-#include "../openssl/include/openssl/md2.h"
-#include "../openssl/include/openssl/md4.h"
-#include "../openssl/include/openssl/md5.h"
-#include "../openssl/include/openssl/whrlpool.h"
-#include "../openssl/include/openssl/ripemd.h"
+#include <string.h>
+#define OPENSSL_MD2_ENABLED
+
+#include "./../3rdParty/openssl/include/openssl/sha.h"
+#include "./../3rdParty/openssl/include/openssl/md2.h"
+#include "./../3rdParty/openssl/include/openssl/md4.h"
+#include "./../3rdParty/openssl/include/openssl/md5.h"
+#include "./../3rdParty/openssl/include/openssl/whrlpool.h"
+#include "./../3rdParty/openssl/include/openssl/ripemd.h"
 
 #ifdef OOXML_SUPPORT_SHA3_512
-#include "../openssl/include/openssl/evp.h"
+#include "./../3rdParty/openssl/include/openssl/evp.h"
 #endif
 
 #ifdef _WIN32
@@ -519,7 +522,6 @@ WASM_EXPORT unsigned char* hash2(char* password, char* salt, int spinCount, int 
 #endif
 
 #ifdef TEST_AS_EXECUTABLE
-#include <string>
 int main()
 {
 	std::string data = "test";

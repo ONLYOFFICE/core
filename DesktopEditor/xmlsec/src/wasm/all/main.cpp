@@ -1,10 +1,10 @@
-#include "../../../common/File.h"
+#include "../../../../common/File.h"
 
-#include "../include/Certificate.h"
-#include "../include/CertificateCommon.h"
+#include "../../include/Certificate.h"
+#include "../../include/CertificateCommon.h"
 
-#include "../include/OOXMLSigner.h"
-#include "../include/OOXMLVerifier.h"
+#include "../../include/OOXMLSigner.h"
+#include "../../include/OOXMLVerifier.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)

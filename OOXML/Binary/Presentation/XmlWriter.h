@@ -82,6 +82,7 @@ namespace NSBinPptxRW
 		std::wstring m_strAttributesMain;
         std::wstring m_strNodes;
 		nullable_int64 m_zIndex;
+		std::wstring m_strId;
 
 		double m_dX = 0;
 		double m_dY = 0;

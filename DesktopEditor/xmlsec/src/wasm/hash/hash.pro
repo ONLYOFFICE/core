@@ -5,9 +5,11 @@ TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
 
-DEFINES += TEST_AS_EXECUTABLE
+DEFINES += \
+    TEST_AS_EXECUTABLE \
+    OPENSSL_MD2_ENABLED
 
-OPENSSL_DIR = $$PWD/../openssl
+OPENSSL_DIR = $$PWD/../3rdParty/openssl
 
 INCLUDEPATH += \
     $$OPENSSL_DIR/include \
@@ -50,11 +52,11 @@ openssl_sha3 {
     DEFINES += OOXML_SUPPORT_SHA3_512
 
     SOURCES += \
-	    $$OPENSSL_DIR/crypto/evp/digest.c \
-		$$OPENSSL_DIR/crypto/mem.c
+        $$OPENSSL_DIR/crypto/evp/digest.c \
+        $$OPENSSL_DIR/crypto/mem.c
 
     INCLUDEPATH += $$OPENSSL_DIR/include
-	INCLUDEPATH += $$OPENSSL_DIR/include/openssl
+    INCLUDEPATH += $$OPENSSL_DIR/include/openssl
 
 }
 

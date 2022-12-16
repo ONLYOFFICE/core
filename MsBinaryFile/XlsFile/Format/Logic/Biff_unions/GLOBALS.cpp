@@ -55,18 +55,12 @@
 
 namespace XLS
 {
-
-
 GLOBALS::GLOBALS() : is_dialog(false)
 {
 }
-
-
 GLOBALS::~GLOBALS()
 {
 }
-
-
 BaseObjectPtr GLOBALS::clone()
 {
 	return BaseObjectPtr(new GLOBALS(*this));
@@ -88,9 +82,23 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 
 		switch(type)
 		{
-			case rt_CalcMode:		proc.optional<CalcMode>();			break;
+			case rt_CalcMode:
+			{
+				if (proc.optional<CalcMode>())
+				{
+					m_CalcMode = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CalcCount:		proc.optional<CalcCount>();			break;
-			case rt_CalcRefMode:	proc.optional<CalcRefMode>();		break;
+			case rt_CalcRefMode:
+			{
+				if (proc.optional<CalcRefMode>())
+				{
+					m_CalcRefMode = elements_.back();
+					elements_.pop_back();
+				}
+			}break;
 			case rt_CalcIter:		proc.optional<CalcIter>();			break;
 			case rt_CalcDelta:		proc.optional<CalcDelta>();			break;
 			case rt_CalcSaveRecalc:	proc.optional<CalcSaveRecalc>();	break;
@@ -148,8 +156,21 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 
 	return true;
 }
+int GLOBALS::serialize_calcPr(std::wostream & stream)
+{
+	if (!m_CalcMode) return 0;
 
-int GLOBALS::serialize(std::wostream & stream)
+	CP_XML_WRITER(stream)
+	{
+		CP_XML_NODE(L"sheetCalcPr")
+		{
+			XLS::CalcMode *calcMode = dynamic_cast<XLS::CalcMode *>(m_CalcMode.get());
+			CP_XML_ATTR(L"fullCalcOnLoad", calcMode->nAutoRecalc > 0 ? 1 : 0);
+		}
+	}
+	return 0;
+}
+int GLOBALS::serialize_formatPr(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
     {

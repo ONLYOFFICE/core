@@ -35,9 +35,6 @@
 
 namespace XLS
 {
-
-
-// Logical representation of CalcSaveRecalc record in BIFF8
 class CalcSaveRecalc: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CalcSaveRecalc)
@@ -47,11 +44,10 @@ public:
 	~CalcSaveRecalc();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeCalcSaveRecalc;
+	static const ElementType type = typeCalcSaveRecalc;
 
 //-----------------------------
 	Boolean<unsigned short> fSaveRecalc;

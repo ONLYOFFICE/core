@@ -1,9 +1,9 @@
-#include "../../../../common/File.h"
-#include "../../../../../Common/3dParty/openssl/common/common_openssl.h"
+#include "../../../../../common/File.h"
+#include "../../../../../../Common/3dParty/openssl/common/common_openssl.h"
 
 #ifndef DISABLE_XMLSEC
-#include "../../include/Certificate.h"
-#include "../../include/CertificateCommon.h"
+#include "../../../include/Certificate.h"
+#include "../../../include/CertificateCommon.h"
 #endif
 
 #ifdef _WIN32

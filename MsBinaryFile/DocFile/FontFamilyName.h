@@ -56,33 +56,23 @@ namespace DocFileFormat
 	friend class NumberingMapping;
   
     private:
-      /// When true, font is a TrueType font
-      bool fTrueType;
-      /// Font family id
-      unsigned char ff;
-      /// Base weight of font
-      short wWeight;
-      /// Character set identifier
-      unsigned char chs;
-      /// Pitch request
-      unsigned char prq;
-      /// Name of font
-      std::wstring xszFtn;
-      /// Alternative name of the font
-      std::wstring xszAlt;
-      /// Panose
-      unsigned char *panose;
-	  /// Panose size
-	  unsigned int panoseSize;
-      /// Font sinature
-      FontSignature fs;
+      bool fTrueType;			// When true, font is a TrueType font
+      unsigned char ff;			// Font family id
+      short wWeight;			// Base weight of font
+      unsigned char chs;		// Character set identifier
+      unsigned char prq;		// Pitch request
+      std::wstring xszFtn;		// Name of font
+      std::wstring xszAlt;		// Alternative name of the font
+      unsigned char *panose;	// Panose
+	  unsigned int panoseSize;	// Panose size     
+      FontSignature fs;			// Font sinature
 	  
+	  long searchTerminationZero( VirtualStreamReader *reader );
     public:
 	  FontFamilyName();
 	  virtual ~FontFamilyName();
       virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
 	
     private:
-	  long searchTerminationZero( VirtualStreamReader *reader );
   };
 }

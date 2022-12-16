@@ -7,7 +7,7 @@ CONFIG -= app_bundle
 
 DEFINES += TEST_AS_EXECUTABLE
 
-CORE_ROOT_DIR = $$PWD/../../../..
+CORE_ROOT_DIR = $$PWD/../../../../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
@@ -94,9 +94,9 @@ SOURCES += \
 # SIGN
 SOURCES += \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/XmlTransform.cpp \
-	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp \
+    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/CertificateCommon.cpp \
     $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/OOXMLSigner.cpp \
-	$$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/OOXMLVerifier.cpp
+    $$CORE_ROOT_DIR/DesktopEditor/xmlsec/src/src/OOXMLVerifier.cpp
 
 core_windows {
     LIBS += -lcrypt32
@@ -107,6 +107,12 @@ core_windows {
     LIBS += -lRpcrt4
     LIBS += -lShell32
 }
+
+core_linux {
+    LIBS += -ldl
+}
+
+DEFINES += SUPPORT_OPENSSL
 
 # OPENSSL
 include($$CORE_ROOT_DIR/Common/3dParty/openssl/openssl.pri)

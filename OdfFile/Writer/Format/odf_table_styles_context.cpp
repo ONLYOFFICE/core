@@ -205,8 +205,9 @@ void odf_table_styles_context::set_current_dimension(int col, int row)
 }
 void odf_table_styles_context::end_table()
 {
-	if (current_used_.empty()) 
-		current_used_.pop_back();
+	if (current_used_.empty()) return;
+	
+	current_used_.pop_back();
 }
 _CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideV()
 {
@@ -220,8 +221,8 @@ _CP_OPT(std::wstring)  odf_table_styles_context::get_table_insideH()
 }
 void odf_table_styles_context::get_table_cell_properties (int col, int row, style_table_cell_properties* cell_props)
 {
-	if (current_used_.size() < 1) return;
-	if (cell_props == NULL)			return;
+	if (current_used_.empty()) return;
+	if (cell_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 	
@@ -276,7 +277,7 @@ void odf_table_styles_context::get_table_cell_properties (int col, int row, styl
 void odf_table_styles_context::get_table_properties (style_table_properties* table_props)
 {
 	if (current_used_.empty()) return;
-	if (table_props == NULL)	  return;
+	if (table_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 
@@ -293,7 +294,7 @@ bool odf_table_styles_context::is_paragraph_properties()
 void odf_table_styles_context::get_paragraph_properties (style_paragraph_properties* para_props)
 {
 	if (current_used_.empty()) return;
-	if (para_props == NULL)	  return;
+	if (para_props == NULL) return;
 
 	table_format_state & state = table_format_array_[current_used_.back().table_style_];
 

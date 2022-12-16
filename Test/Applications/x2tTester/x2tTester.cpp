@@ -406,8 +406,8 @@ void Cx2tTester::Start()
 	{
 		std::wstring& input_file = files[i];
 
-		std::wstring input_ext = NSFile::GetFileExtention(input_file);
-		int input_format = COfficeFileFormatChecker::GetFormatByExtension(L'.' + input_ext);
+		std::wstring input_ext = L'.' + NSFile::GetFileExtention(input_file);
+		int input_format = COfficeFileFormatChecker::GetFormatByExtension(input_ext);
 
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
 		std::wstring output_files_directory = m_outputDirectory;
@@ -434,8 +434,8 @@ void Cx2tTester::Start()
 			|| (m_outputFormatsList.IsSpreadsheet(format) && m_inputFormatsList.IsSpreadsheet(input_format))
 			//presentations -> presentations
 			|| (m_outputFormatsList.IsPresentation(format) && m_inputFormatsList.IsPresentation(input_format))
-			// crossplatform -> documents
-			|| (m_outputFormatsList.IsDocument(format) && m_inputFormatsList.IsCrossplatform(input_format))
+			// xps -> docx
+			|| (format == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX && input_format == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS)
 			// pdf -> docx
 			|| (format == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX && m_inputFormatsList.IsPdf(input_format))
 			// all formats -> images
@@ -491,38 +491,41 @@ void Cx2tTester::Start()
 void Cx2tTester::WriteReportHeader()
 {
 	CTemporaryCS CS(&m_reportCS);
-	m_reportStream.WriteStringUTF8(L"Input file\t", false);
-	m_reportStream.WriteStringUTF8(L"Output file\t", true);
-	m_reportStream.WriteStringUTF8(L"Time\t", true);
-	m_reportStream.WriteStringUTF8(L"Input size\t", true);
-	m_reportStream.WriteStringUTF8(L"Output size\t", true);
-	m_reportStream.WriteStringUTF8(L"Exit code\t", true);
-	m_reportStream.WriteStringUTF8(L"Log\n", true);
+	m_reportStream.WriteStringUTF8(L"Input file\t", true);
+	m_reportStream.WriteStringUTF8(L"Output file\t", false);
+	m_reportStream.WriteStringUTF8(L"Direction\t", false);
+	m_reportStream.WriteStringUTF8(L"Time\t", false);
+	m_reportStream.WriteStringUTF8(L"Input size\t", false);
+	m_reportStream.WriteStringUTF8(L"Output size\t", false);
+	m_reportStream.WriteStringUTF8(L"Exit code\t", false);
+	m_reportStream.WriteStringUTF8(L"Log\n", false);
 }
 void Cx2tTester::WriteReport(const Report& report)
 {
 	CTemporaryCS CS(&m_reportCS);
 
-	m_reportStream.WriteStringUTF8(report.inputFile + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", true);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", true);
-	m_reportStream.WriteStringUTF8(report.log + L"\n", true);
+	m_reportStream.WriteStringUTF8(report.inputFile + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.outputFile + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.direction + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
+	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 }
 void Cx2tTester::WriteReports(const std::vector<Report>& reports)
 {
 	CTemporaryCS CS(&m_reportCS);
 	for(auto& report : reports)
 	{
-		m_reportStream.WriteStringUTF8(report.inputFile + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", true);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", true);
-		m_reportStream.WriteStringUTF8(report.log + L"\n", true);
+		m_reportStream.WriteStringUTF8(report.inputFile + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.outputFile + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.direction + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
+		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 	}
 }
 void Cx2tTester::WriteTime()
@@ -626,8 +629,8 @@ DWORD CConverter::ThreadProc()
 	std::vector<Cx2tTester::Report> reports;
 
 	std::wstring input_filename = NSFile::GetFileName(m_inputFile);
-	std::wstring input_ext = NSFile::GetFileExtention(input_filename);
-	std::wstring input_filename_no_ext = input_filename.substr(0, input_filename.size() - input_ext.size() - 1);
+	std::wstring input_ext = L'.' + NSFile::GetFileExtention(input_filename);
+	std::wstring input_filename_no_ext = input_filename.substr(0, input_filename.size() - input_ext.size());
 
 	DWORD time_file_start = NSTimers::GetTickCount();
 
@@ -753,6 +756,7 @@ DWORD CConverter::ThreadProc()
 			Cx2tTester::Report report;
 			report.inputFile = input_filename;
 			report.outputFile = output_filename;
+			report.direction = input_ext.substr(1, input_ext.size() - 1) + L"-" + output_ext.substr(1, output_ext.size() - 1);
 			report.time = NSTimers::GetTickCount() - time_file_start;
 			report.inputSize = input_size;
 			report.outputSize = output_size;

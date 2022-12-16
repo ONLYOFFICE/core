@@ -3,8 +3,6 @@
 
 #include "../WmfParser/CWmfParserBase.h"
 #include "CWmfInterpretatorBase.h"
-#include "../../../../xml/include/xmlwriter.h"
-
 #include "CInterpretatorSvgBase.h"
 
 namespace MetaFile

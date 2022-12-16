@@ -1,6 +1,14 @@
 #include "CInterpretatorSvgBase.h"
-
 #include "../../../BgraFrame.h"
+
+#include <algorithm>
+#include <cmath>
+
+#ifndef MININT8
+#define MAXUINT8    ((unsigned char)~((unsigned char)0))
+#define MAXINT8     ((char)(MAXUINT8 >> 1))
+#define MININT8     ((char)~MAXINT8)
+#endif
 
 namespace MetaFile
 {
@@ -836,7 +844,7 @@ namespace MetaFile
 		m_unNumber    = unNumber;
 	}
 
-	void CHatchGenerator::SetStroke(double dWidth, int nColor, char chAlpha)
+	void CHatchGenerator::SetStroke(double dWidth, int nColor, unsigned char chAlpha)
 	{
 		m_dStrokeWidth = dWidth;
 		m_nStrokeColor = nColor;

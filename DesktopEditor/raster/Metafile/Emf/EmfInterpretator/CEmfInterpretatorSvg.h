@@ -4,7 +4,6 @@
 #include "../../Common/MetaFileUtils.h"
 #include "CEmfInterpretatorBase.h"
 #include "../EmfParser/CEmfParserBase.h"
-#include "../../../../xml/include/xmlwriter.h"
 
 #include "../../Wmf/WmfInterpretator/CInterpretatorSvgBase.h"
 

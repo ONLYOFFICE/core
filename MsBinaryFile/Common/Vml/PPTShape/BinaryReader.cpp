@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,22 +29,67 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BaseShape.h"
+#include "BinaryReader.h"
+#include "../../../../OOXML/Base/Base.h"
 
-#include "CustomShape.h"
-
-namespace NSCustomShapesConvert
+namespace ODRAW
 {
-CBaseShape* CBaseShape::CreateByType( int ShapeType)
-{
-    return CCustomShape::CreateByType((oox::MSOSPT)ShapeType);
-}
+	CBinaryReader::CBinaryReader(BYTE* pBuffer, DWORD lCount)
+	{
+		m_pBuffer = pBuffer;
+		m_lCount = lCount;
 
-bool CBaseShape::SetType( int ShapeType)
-{
+		m_lOrigin = 0;
+	}
+	CBinaryReader::~CBinaryReader()
+	{
+		m_pBuffer = NULL;
+		m_lCount = 0;
+	}
+	LONG CBinaryReader::ReadLONG() // int32 подразумевается
+	{
+		DWORD lOldOrigin = m_lOrigin;
+		m_lOrigin += 4;
 
-    return ((CCustomShape*)this)->SetShapeType((oox::MSOSPT)ShapeType);
-}
+		BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
+
+		return *(_INT32*)(m_pBuffer + lOldOrigin);
+	}
+	DWORD CBinaryReader::ReadDWORD()
+	{
+		DWORD lOldOrigin = m_lOrigin;
+		m_lOrigin += 4;
+
+		BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
+
+		return *(DWORD*)(m_pBuffer + lOldOrigin);
+	}
+	WORD CBinaryReader::ReadWORD()
+	{
+		DWORD lOldOrigin = m_lOrigin;
+		m_lOrigin += 2;
+
+		BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
+
+		return *(WORD*)(m_pBuffer + lOldOrigin);
+	}
+	SHORT CBinaryReader::ReadSHORT()
+	{
+		DWORD lOldOrigin = m_lOrigin;
+		m_lOrigin += 2;
+
+		BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
+
+		return *(short*)(m_pBuffer + lOldOrigin);
+	}
+	double CBinaryReader::ReadDOUBLE()
+	{
+		DWORD lOldOrigin = m_lOrigin;
+		m_lOrigin += sizeof(double);
+
+		BINARY_READER_CHECK_OUT_RANGE(m_lOrigin, m_lCount)
+
+		return *(SHORT*)(m_pBuffer + lOldOrigin);
+	}
 }

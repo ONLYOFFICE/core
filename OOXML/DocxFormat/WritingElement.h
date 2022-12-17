@@ -41,6 +41,7 @@ namespace NSBinPptxRW
 	class CBinaryFileReader;
 	class CXmlWriter;
 }
+
 namespace OOX
 {
 #define WritingElement_AdditionConstructors(Class) \

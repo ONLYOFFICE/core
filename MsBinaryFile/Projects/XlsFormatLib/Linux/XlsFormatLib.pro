@@ -828,7 +828,12 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logging/Logger.cpp \
 	../../../Common/ODraw/FormulaShape.cpp \
 	../../../Common/ODraw/CustomShape.cpp \
-	../../../Common/ODraw/BaseShape_1.cpp \
+	../../../Common/ODraw/BaseShape.cpp \
+	../../../Common/ODraw/CustomGeomShape.cpp \
+	../../../Common/ODraw/CustomShapeConvert.cpp \
+	../../../Common/ODraw/GraphicsPath.cpp \
+	../../../Common/ODraw/PathShape.cpp \
+	../../../Common/ODraw/XmlWriter.cpp \
 	../../../XlsFile/Converter/ConvertXls2Xlsx.cpp \
 	../../../XlsFile/Converter/external_items.cpp \
 	../../../XlsFile/Converter/mediaitems_utils.cpp \

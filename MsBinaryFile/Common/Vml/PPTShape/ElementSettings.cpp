@@ -37,9 +37,26 @@
 #include "../../../PptFile/Reader/Records.h"
 #include "../../../PptFile/Reader/PPTFileDefines.h"
 
+#include "../../../PptFile/Records/Drawing/ArtBlip.h"
+
 // это класс, использующийся для передачи свойств объектов,
 // например - указатель на картинку... (по PID'у)
 
+CProperty::CProperty()
+{
+	m_ePID = ODRAW::ePropertyId_left;
+	m_bIsBlip = false;
+	m_bComplex = false;
+	m_lValue = 0;
+	m_pOptions = NULL;
+
+	m_bIsTruncated = false;
+}
+CProperty::~CProperty()
+{
+	if (m_pOptions)	delete []m_pOptions;
+	m_pOptions = NULL;
+}
 void CProperty::FromStream(POLE::Stream* pStream)
 {
 	// читаем из стрима...
@@ -53,7 +70,6 @@ void CProperty::FromStream(POLE::Stream* pStream)
 
 	m_lValue = StreamUtils::ReadDWORD(pStream);
 }
-
 void CProperty::ComplexFromStream(POLE::Stream* pStream)
 {
 	if (m_bComplex && m_lValue > 0)
@@ -141,7 +157,14 @@ void CProperty::ComplexFromStream(POLE::Stream* pStream)
 	}
 }
 
-
+CProperties::CProperties() : m_arProperties()
+{
+}
+CProperties::~CProperties()
+{
+	m_lCount = 0;
+	m_arProperties.clear();
+}
 void CProperties::FromStream(POLE::Stream* pStream, long lCount)
 {
 	m_lCount = lCount;
@@ -158,8 +181,6 @@ void CProperties::FromStream(POLE::Stream* pStream, long lCount)
 		m_arProperties[lIndex].ComplexFromStream(pStream);
 	}
 }
-
-
 size_t CProperties::GetLen()
 {
 	size_t dwLen = 6 * m_lCount;

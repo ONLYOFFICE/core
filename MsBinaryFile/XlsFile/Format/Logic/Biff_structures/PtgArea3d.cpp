@@ -68,7 +68,7 @@ void PtgArea3d::loadFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 	
 	if (global_info->Version < 0x0600)
-	{
+	{//biff5/7
 		unsigned short	rwFirst, rwLast;
 		unsigned char	colFirst, colLast;
 
@@ -90,14 +90,13 @@ void PtgArea3d::loadFields(CFRecord& record)
 
 	}
     else if (global_info->Version < 0x0800)
-    {
+    {//biff8
         record >> ixti;
         record >> area;
         area_rel = area;
     }
-
     else
-    {
+    {//biff12
         record >> ixti;
         record >> areaXlsb;
     }
@@ -124,10 +123,10 @@ void PtgArea3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool f
 	if (global_info->Version < 0x0600)
 	{
 		ixti = ixals;
-		if (ixals == 0xffff)
+		if (((short)ixals) < 0)
 		{
 			std::wstring strRange;
-			if(-1 == itabFirst)
+			if (-1 == itabFirst)
 			{
 				strRange = L"#REF";
 			}

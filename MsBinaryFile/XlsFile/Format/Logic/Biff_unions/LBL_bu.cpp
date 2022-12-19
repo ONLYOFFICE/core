@@ -42,24 +42,17 @@
 
 namespace XLS
 {
-
-
 LBL::LBL()
 {
 	isSerialize = false;
 }
-
-
 LBL::~LBL()
 {
 }
-
-
 BaseObjectPtr LBL::clone()
 {
 	return BaseObjectPtr(new LBL(*this));
 }
-
 
 // LBL = Lbl [NameCmt] [NameFnGrp12] [NamePublish]
 const bool LBL::loadContent(BinProcessor& proc)

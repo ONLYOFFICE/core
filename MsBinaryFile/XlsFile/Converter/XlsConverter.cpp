@@ -1229,6 +1229,10 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 		if (type_object == 0) 
 			continue;
 
+		if (obj->cmo.fUIObj)
+		{
+			continue; // automatically inserted by the application
+		}
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
 			convert(obj->old_version.anchor.get());

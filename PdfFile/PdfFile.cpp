@@ -674,11 +674,29 @@ int CPdfFile::GetError()
         return 1;
     return m_pInternal->pReader->GetError();
 }
-void CPdfFile::SetCMapData(BYTE* pData, DWORD nSizeData)
+bool CPdfFile::IsNeedCMap()
+{
+    if (!m_pInternal->pReader)
+        return false;
+    return m_pInternal->pReader->IsNeedCMap();
+}
+void CPdfFile::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 {
     if (!m_pInternal->pReader)
         return;
-    m_pInternal->pReader->SetCMapData(pData, nSizeData);
+    m_pInternal->pReader->SetCMapMemory(pData, nSizeData);
+}
+void CPdfFile::SetCMapFolder(const std::wstring& sFolder)
+{
+    if (!m_pInternal->pReader)
+        return;
+    m_pInternal->pReader->SetCMapFolder(sFolder);
+}
+void CPdfFile::SetCMapFile(const std::wstring& sFile)
+{
+    if (!m_pInternal->pReader)
+        return;
+    m_pInternal->pReader->SetCMapFile(sFile);
 }
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)

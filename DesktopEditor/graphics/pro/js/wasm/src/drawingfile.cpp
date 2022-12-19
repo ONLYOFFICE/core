@@ -6,7 +6,6 @@
 #include "../../../../../common/File.h"
 #include "drawingfile.h"
 #include "serialize.h"
-#include "CMapSerialize.h"
 
 #ifdef _WIN32
 #define WASM_EXPORT __declspec(dllexport)
@@ -150,6 +149,10 @@ WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
     return pGraphics->DestroyText();
 }
+WASM_EXPORT int  IsNeedCMap(CGraphicsFileDrawing* pGraphics)
+{
+    return pGraphics->IsNeedCMap() ? 1 : 0;
+}
 WASM_EXPORT void SetCMapData(CGraphicsFileDrawing* pGraphics, BYTE* data, int size)
 {
     pGraphics->SetCMapData(data, size);
@@ -171,8 +174,6 @@ int main()
 #define DJVU_TEST 0
 #define PDF_TEST  1
 #if PDF_TEST
-    NSWasm::CMapDirToFile();
-
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
@@ -215,12 +216,16 @@ int main()
     int height = GetLength(info + test_page * 12 + 12);
     std::cout << "Page " << test_page << " width " << width << " height " << height << " dpi " << GetLength(info + test_page * 12 + 16) << std::endl;
 
-    BYTE* pCMapData = NULL;
-    DWORD nCMapDataLength;
-    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMapMemory/CMapData", &pCMapData, nCMapDataLength))
+    // Тест WASM_EXPORT SetCMapData
+    if (IsNeedCMap(test))
     {
-        SetCMapData(test, pCMapData, nCMapDataLength);
-        oFile.CloseFile();
+        BYTE* pCMapData = NULL;
+        DWORD nCMapDataLength;
+        if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMapMemory/CMapData", &pCMapData, nCMapDataLength))
+        {
+            SetCMapData(test, pCMapData, nCMapDataLength);
+            oFile.CloseFile();
+        }
     }
 
     BYTE* res = NULL;

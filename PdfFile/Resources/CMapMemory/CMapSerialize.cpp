@@ -1,19 +1,14 @@
-#ifndef _CMAP_WASM_SERIALIZE_H
-#define _CMAP_WASM_SERIALIZE_H
-
-#include "serialize.h"
-#include "../../../../../common/File.h"
-#include "../../../../../common/Directory.h"
+#include "../../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #include <vector>
 
-namespace NSWasm
+int main()
 {
-void CMapDirToFile()
-{
-    std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMap/CMap");
+    std::vector<std::wstring> arrFiles = NSDirectory::GetFiles(NSFile::GetProcessDirectory() + L"/../../CMap/CMap");
 
-    CData oRes;
+    NSWasm::CData oRes;
     for (const std::wstring& sFile : arrFiles)
     {
         BYTE* pData = NULL;
@@ -38,14 +33,12 @@ void CMapDirToFile()
     }
 
     NSFile::CFileBinary oFile;
-    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMapMemory/CMapData"))
+    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/../CMapData"))
     {
         oFile.WriteFile(oRes.GetBuffer(), oRes.GetSize());
         oFile.CloseFile();
     }
 
     oRes.Clear();
+    return 0;
 }
-}
-
-#endif // _CMAP_WASM_SERIALIZE_H

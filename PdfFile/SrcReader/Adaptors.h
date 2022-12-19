@@ -50,13 +50,13 @@ public:
     }
 
     void SetCMapFolder(const std::wstring &wsFolder);
-    void SetCMapMemory();
-    void CMapDataFromFile(const std::wstring &wsFile);
-    void CMapDataFromMemory(BYTE* pData, DWORD nSizeData);
+    void SetCMapFile(const std::wstring &wsFile);
+    void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
 private:
 
 	void AddNameToUnicode(const char* sFile);
+    void AddAllCMap(GString* sFolder);
 	void AddCMapFolder(const char* sCollection, GString* sFolder);
 };
 

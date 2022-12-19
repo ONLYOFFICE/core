@@ -20,7 +20,7 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 include(../../freetype.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, PdfFile, HtmlRenderer)
+ADD_DEPENDENCY(UnicodeConverter, kernel, HtmlRenderer)
 
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/DesktopEditor/agg-2.4/include \
@@ -659,6 +659,5 @@ SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 
 HEADERS += \
     ../wasm/src/drawingfile.h \
-    ../wasm/src/serialize.h \
-    ../wasm/src/CMapSerialize.h
+    ../wasm/src/serialize.h
 SOURCES += ../wasm/src/drawingfile.cpp

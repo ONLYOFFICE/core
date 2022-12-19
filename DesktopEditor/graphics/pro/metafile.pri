@@ -70,6 +70,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
     HEADERS += \
 	    $$METAFILE_PATH/svg/SVGFramework.h \
 		$$METAFILE_PATH/svg/SVGTransformer.h \
+		$$METAFILE_PATH/svg/SvgTypes.h \
 		$$METAFILE_PATH/svg/CSvgFile.h \
 		$$METAFILE_PATH/svg/CSvgParser.h \
 		$$METAFILE_PATH/svg/CSvgStorage.h \
@@ -77,6 +78,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/SvgObjects/CLine.h \
 		$$METAFILE_PATH/svg/SvgObjects/CRect.h \
 		$$METAFILE_PATH/svg/SvgObjects/CCircle.h \
+		$$METAFILE_PATH/svg/SvgObjects/CEllipse.h \
 		$$METAFILE_PATH/svg/SvgObjects/CPath.h \
 		$$METAFILE_PATH/svg/SvgObjects/CStyle.h \
 		$$METAFILE_PATH/svg/SvgObjects/CObjectBase.h \
@@ -92,6 +94,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/SvgObjects/CLine.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CRect.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CCircle.cpp \
+		$$METAFILE_PATH/svg/SvgObjects/CEllipse.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CPath.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp
 

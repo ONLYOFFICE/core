@@ -2,6 +2,7 @@
 #define CPATH_H
 
 #include "CObjectBase.h"
+#include "../SvgTypes.h"
 
 namespace SVG
 {
@@ -28,48 +29,18 @@ namespace SVG
 		Close,
 	};
 
-	struct PathPoint
-	{
-		double dX;
-		double dY;
-
-		PathPoint& operator+=(const PathPoint& oPoint)
-		{
-			dX += oPoint.dX;
-			dY += oPoint.dY;
-
-			return *this;
-		}
-
-		PathPoint& operator-=(const PathPoint& oPoint)
-		{
-			dX -= oPoint.dX;
-			dY -= oPoint.dY;
-
-			return *this;
-		}
-
-		PathPoint operator+(const PathPoint& oPoint)
-		{
-			return PathPoint{dX + oPoint.dX, dY + oPoint.dY};
-		}
-
-		PathPoint operator-(const PathPoint& oPoint)
-		{
-			return PathPoint{dX - oPoint.dX, dY - oPoint.dY};
-		}
-	};
-
 	class IPathElement
 	{
 	public:
 		IPathElement() {};
+		virtual ~IPathElement() {};
 
 		virtual EPathElement GetType() const = 0;
 		virtual bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) = 0;
 		virtual void Draw(IRenderer* pRenderer) const = 0;
+
 	private:
-		virtual PathPoint GetPoint(int nIndex) const = 0;
+		virtual Point GetPoint(int nIndex) const = 0;
 
 		std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
 		{
@@ -105,7 +76,7 @@ namespace SVG
 		friend class CArcElement;
 		friend class CCloseElement;
 
-		std::vector<PathPoint> m_arPoints;
+		std::vector<Point> m_arPoints;
 	};
 
 	class CMoveElement : public IPathElement
@@ -128,13 +99,13 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
 
-			PathPoint oTranslatePoint = {0, 0};
+			Point oTranslatePoint = {0, 0};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
 				oTranslatePoint = pPrevElement->GetPoint(-1);
 
 			for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-				m_arPoints.push_back(PathPoint{arValues[unIndex] + oTranslatePoint.dX, arValues[unIndex + 1] + oTranslatePoint.dY});
+				m_arPoints.push_back(Point{arValues[unIndex] + oTranslatePoint.dX, arValues[unIndex + 1] + oTranslatePoint.dY});
 
 			return true;
 		}
@@ -144,15 +115,15 @@ namespace SVG
 			if (m_arPoints.empty())
 				return;
 
-			PathPoint oPoint = GetPoint(-1);
+			Point oPoint = GetPoint(-1);
 
 			pRenderer->PathCommandMoveTo(oPoint.dX, oPoint.dY);
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -181,13 +152,13 @@ namespace SVG
 			if (!bRelativeCoordinate || NULL == pPrevElement)
 			{
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-					m_arPoints.push_back(PathPoint{arValues[unIndex], arValues[unIndex + 1]});
+					m_arPoints.push_back(Point{arValues[unIndex], arValues[unIndex + 1]});
 
 				return true;
 			}
 			else if(bRelativeCoordinate && NULL != pPrevElement)
 			{
-				PathPoint oCurrentPoint = pPrevElement->GetPoint(-1);
+				Point oCurrentPoint = pPrevElement->GetPoint(-1);
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
 				{
@@ -212,10 +183,10 @@ namespace SVG
 				pRenderer->PathCommandLineTo(m_arPoints[unIndex].dX, m_arPoints[unIndex].dY);
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -241,18 +212,18 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
 
-			PathPoint oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : PathPoint{0, 0});
+			Point oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : Point{0, 0});
 
 			if (!bRelativeCoordinate || NULL == pPrevElement)
 			{
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-					m_arPoints.push_back(PathPoint{oPrevPoint.dX, arValues[unIndex]});
+					m_arPoints.push_back(Point{oPrevPoint.dX, arValues[unIndex]});
 
 				return true;
 			}
 			else if(bRelativeCoordinate && NULL != pPrevElement)
 			{
-				PathPoint oCurrentPoint = oPrevPoint;
+				Point oCurrentPoint = oPrevPoint;
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
 				{
@@ -287,18 +258,18 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
 
-			PathPoint oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : PathPoint{0, 0});
+			Point oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : Point{0, 0});
 
 			if (!bRelativeCoordinate || NULL == pPrevElement)
 			{
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-					m_arPoints.push_back(PathPoint{arValues[unIndex], oPrevPoint.dY});
+					m_arPoints.push_back(Point{arValues[unIndex], oPrevPoint.dY});
 
 				return true;
 			}
 			else if(bRelativeCoordinate && NULL != pPrevElement)
 			{
-				PathPoint oCurrentPoint = oPrevPoint;
+				Point oCurrentPoint = oPrevPoint;
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
 				{
@@ -317,6 +288,21 @@ namespace SVG
 	{
 	public:
 		CCBezierElement(){}
+		virtual ~CCBezierElement() {};
+
+		CCBezierElement(double dX1, double dY1, double dX2, double dY2, double dXE, double dYE)
+		{
+			m_arPoints.push_back(Point{dX1, dY1});
+			m_arPoints.push_back(Point{dX2, dY2});
+			m_arPoints.push_back(Point{dXE, dYE});
+		}
+
+		CCBezierElement& operator+=(const CCBezierElement& oCBezierElement)
+		{
+			m_arPoints.insert(m_arPoints.end(), oCBezierElement.m_arPoints.begin(), oCBezierElement.m_arPoints.end());
+
+			return *this;
+		}
 
 		EPathElement GetType() const override
 		{
@@ -337,24 +323,24 @@ namespace SVG
 			{
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 6)
 				{
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 2], arValues[unIndex + 3]});
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 4], arValues[unIndex + 5]});
+					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
+					m_arPoints.push_back(Point{arValues[unIndex + 2], arValues[unIndex + 3]});
+					m_arPoints.push_back(Point{arValues[unIndex + 4], arValues[unIndex + 5]});
 				}
 
 				return true;
 			}
 			else if (bRelativeCoordinate && NULL != pPrevElement)
 			{
-				PathPoint oPoint1{0, 0};
-				PathPoint oPoint2{0, 0};
-				PathPoint oCurrentPoint = pPrevElement->GetPoint(-1);
+				Point oPoint1{0, 0};
+				Point oPoint2{0, 0};
+				Point oCurrentPoint = pPrevElement->GetPoint(-1);
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 6)
 				{
-					oPoint1 = oCurrentPoint + PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]};
-				    oPoint2 = oCurrentPoint + PathPoint{arValues[unIndex + 2], arValues[unIndex + 3]};
-			        oCurrentPoint += PathPoint{arValues[unIndex + 4], arValues[unIndex + 5]};
+					oPoint1 = oCurrentPoint + Point{arValues[unIndex + 0], arValues[unIndex + 1]};
+				    oPoint2 = oCurrentPoint + Point{arValues[unIndex + 2], arValues[unIndex + 3]};
+			        oCurrentPoint += Point{arValues[unIndex + 4], arValues[unIndex + 5]};
 
 		            m_arPoints.push_back(oPoint1);
 					m_arPoints.push_back(oPoint2);
@@ -376,12 +362,23 @@ namespace SVG
 				pRenderer->PathCommandCurveTo(m_arPoints[unIndex + 0].dX, m_arPoints[unIndex + 0].dY,
 				                              m_arPoints[unIndex + 1].dX, m_arPoints[unIndex + 1].dY,
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
+
+		}
+
+		void Rotate(double dAngle, Point oCenter)
+		{
+			Matrix rotate =	Matrix::Rotate(Point{oCenter.dX, oCenter.dY}, -dAngle * M_PI / 180);
+
+			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() - 1; ++unIndex)
+			{
+				m_arPoints[unIndex] = rotate.Transform(m_arPoints[unIndex]);
+			}
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -407,12 +404,12 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 4))
 				return false;
 
-			PathPoint oFirstPoint = pPrevElement->GetPoint(-1);
+			Point oFirstPoint = pPrevElement->GetPoint(-1);
 
 			if (EPathElement::SBezier == pPrevElement->GetType() ||
 			    EPathElement::CBezier == pPrevElement->GetType())
 			{
-				PathPoint oPoint = pPrevElement->GetPoint(-2);
+				Point oPoint = pPrevElement->GetPoint(-2);
 
 				oFirstPoint += oFirstPoint - oPoint;
 			}
@@ -422,23 +419,23 @@ namespace SVG
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
 				{
 					m_arPoints.push_back(oFirstPoint);
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 2], arValues[unIndex + 3]});
+					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
+					m_arPoints.push_back(Point{arValues[unIndex + 2], arValues[unIndex + 3]});
 				}
 
 				return true;
 			}
 			else
 			{
-				PathPoint oPoint1 = oFirstPoint;
-				PathPoint oPoint2{0, 0};
-				PathPoint oCurrentPoint = pPrevElement->GetPoint(-1);
+				Point oPoint1 = oFirstPoint;
+				Point oPoint2{0, 0};
+				Point oCurrentPoint = pPrevElement->GetPoint(-1);
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
 				{
 					oPoint1 += oCurrentPoint;
-					oPoint2 = oCurrentPoint + PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]};
-				    oCurrentPoint += PathPoint{arValues[unIndex + 2], arValues[unIndex + 3]};
+					oPoint2 = oCurrentPoint + Point{arValues[unIndex + 0], arValues[unIndex + 1]};
+				    oCurrentPoint += Point{arValues[unIndex + 2], arValues[unIndex + 3]};
 
 			        m_arPoints.push_back(oPoint1);
 					m_arPoints.push_back(oPoint2);
@@ -462,10 +459,10 @@ namespace SVG
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -491,30 +488,30 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 4))
 				return false;
 
-			PathPoint oLastPoint = pPrevElement->GetPoint(-1);
+			Point oLastPoint = pPrevElement->GetPoint(-1);
 
 			if (!bRelativeCoordinate)
 			{
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
 				{
 					m_arPoints.push_back(oLastPoint);
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 2], arValues[unIndex + 3]});
+					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
+					m_arPoints.push_back(Point{arValues[unIndex + 2], arValues[unIndex + 3]});
 				}
 
 				return true;
 			}
 			else
 			{
-				PathPoint oPoint1 = oLastPoint;
-				PathPoint oPoint2{0, 0};
-				PathPoint oCurrentPoint = oLastPoint;
+				Point oPoint1 = oLastPoint;
+				Point oPoint2{0, 0};
+				Point oCurrentPoint = oLastPoint;
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
 				{
 					oPoint1 += oCurrentPoint;
-					oPoint2 = oCurrentPoint + PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]};
-				    oCurrentPoint += PathPoint{arValues[unIndex + 2], arValues[unIndex + 3]};
+					oPoint2 = oCurrentPoint + Point{arValues[unIndex + 0], arValues[unIndex + 1]};
+				    oCurrentPoint += Point{arValues[unIndex + 2], arValues[unIndex + 3]};
 
 			        m_arPoints.push_back(oPoint1);
 					m_arPoints.push_back(oPoint2);
@@ -538,10 +535,10 @@ namespace SVG
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -567,12 +564,12 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
 
-			PathPoint oFirstPoint  = pPrevElement->GetPoint(-1);
+			Point oFirstPoint  = pPrevElement->GetPoint(-1);
 
 			if (EPathElement::TBezier != pPrevElement->GetType() &&
 			    EPathElement::QBezier != pPrevElement->GetType())
 			{
-				PathPoint oSecondPoint = PathPoint{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
+				Point oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
 
 			    if (bRelativeCoordinate)
 					oSecondPoint += oFirstPoint;
@@ -583,7 +580,7 @@ namespace SVG
 				return true;
 		    }
 
-		    PathPoint oSecondPoint = pPrevElement->GetPoint(-2);
+		    Point oSecondPoint = pPrevElement->GetPoint(-2);
 
 			oSecondPoint = oFirstPoint + (oFirstPoint - oSecondPoint);
 
@@ -593,22 +590,22 @@ namespace SVG
 				{
 					m_arPoints.push_back(oFirstPoint);
 					m_arPoints.push_back(oSecondPoint);
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]});
+					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
 				}
 
 				return true;
 			}
 			else
 	        {
-			    PathPoint oPoint1 = oFirstPoint;
-				PathPoint oPoint2 = oSecondPoint;
-				PathPoint oCurrentPoint = oFirstPoint;
+			    Point oPoint1 = oFirstPoint;
+				Point oPoint2 = oSecondPoint;
+				Point oCurrentPoint = oFirstPoint;
 
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
 				{
 					oPoint1 += oCurrentPoint;
 					oPoint2 = oCurrentPoint;
-					oCurrentPoint += PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]};
+					oCurrentPoint += Point{arValues[unIndex + 0], arValues[unIndex + 1]};
 
 				    m_arPoints.push_back(oPoint1);
 					m_arPoints.push_back(oPoint2);
@@ -632,10 +629,10 @@ namespace SVG
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -661,18 +658,24 @@ namespace SVG
 			if (arValues.empty() || 0 != (arValues.size() % 7))
 				return false;
 
+			Point oLastPoint{0, 0};
+
 			if (NULL != pPrevElement)
-				m_oLastPoint = pPrevElement->GetPoint(-1);
+				oLastPoint = pPrevElement->GetPoint(-1);
 
 			if (!bRelativeCoordinate || NULL == pPrevElement)
 			{
 				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 7)
 				{
-					m_arRadius.push_back(PathPoint{arValues[unIndex + 0], arValues[unIndex + 1]});
+					m_arRadius.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
 					m_arXAxisRotation.push_back(arValues[unIndex + 2]);
 					m_arLargeArcFlag.push_back(arValues[unIndex + 3]);
 					m_arSweepFlag.push_back(arValues[unIndex + 4]);
-					m_arPoints.push_back(PathPoint{arValues[unIndex + 5], arValues[unIndex + 6]});
+					m_arPoints.push_back(oLastPoint);
+
+					oLastPoint = Point{arValues[unIndex + 5], arValues[unIndex + 6]};
+
+				    m_arPoints.push_back(oLastPoint);
 				}
 			}
 
@@ -684,89 +687,263 @@ namespace SVG
 			if (m_arPoints.empty())
 				return;
 
-			PathPoint LastPoint = m_oLastPoint;
-
 			//TODO: данные вычисления неверные, поэтому необходимо написать реализацию заново
 
-			for (unsigned int unIndex = 0; unIndex < m_arPoints.size(); unIndex += 2)
+			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() / 2; ++unIndex)
 			{
 				int	LargeFlag		=	static_cast<int> ( m_arLargeArcFlag[unIndex] );
 				int	SweepFlag		=	static_cast<int> ( m_arSweepFlag[unIndex] );
 
-				PathPoint End		=	m_arPoints[unIndex];
+				Point Start     =   m_arPoints[2 * unIndex];
+				Point End		=	m_arPoints[2 * unIndex + 1];
 
-				PathPoint Center	=	GetCenter ( LargeFlag, SweepFlag, m_arRadius[unIndex], LastPoint, End );
+				Point Center	=	GetCenter ( LargeFlag, SweepFlag, m_arRadius[unIndex], Start, End );
 
-				double dStartAngle	=	GetAngle ( Center.dX, Center.dY, LastPoint.dX, LastPoint.dY );
+				double dStartAngle	=	GetAngle ( Center.dX, Center.dY, Start.dX, Start.dY );
 				double dEndAngle	=	GetAngle ( Center.dX, Center.dY, End.dX, End.dY );
 
 				double dSweep	=	0.0;
 
-				if ( GetArcAngles ( LargeFlag, SweepFlag, dStartAngle, dEndAngle, dSweep ) )
+				GetArcAngles ( LargeFlag, SweepFlag, dStartAngle, dEndAngle, dSweep );
+
+				if (0.0 != m_arXAxisRotation[unIndex])
+				{
+					CCBezierElement oCBezierElement = ConvertToCBezier(Center.dX - m_arRadius[unIndex].dX, Center.dY - m_arRadius[unIndex].dY, m_arRadius[unIndex].dX * 2.0, m_arRadius[unIndex].dY * 2.0, dStartAngle, dSweep);
+
+					oCBezierElement.Rotate(-m_arXAxisRotation[unIndex], Center);
+
+					oCBezierElement.Draw(pRenderer);
+				}
+				else
 				{
 					pRenderer->PathCommandArcTo(Center.dX - m_arRadius[unIndex].dX, Center.dY - m_arRadius[unIndex].dY, m_arRadius[unIndex].dX * 2.0, m_arRadius[unIndex].dY * 2.0, dStartAngle, dSweep);
 				}
-
-//				RenderArcAppx (element->GetX ( i + 1 ), Center, Point ( element->GetX ( i ), element->GetY ( i ) ), dStartAngle, dSweep);
-
-//				if (0.0 != m_arXAxisRotation[unIndex])
-//				{
-//					Matrix rotate			=	Matrix::RotateAtPoint(Point(Center.X, Center.Y), -dRotAngle * M_PI / 180);
-
-//					CArcToCubicBezier oSplitter(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle - dRotAngle, dSweep);
-//					for (size_t i = 0; i < oSplitter.GetCurves().size(); ++i)
-//					{
-//						CubicBezier oBezier	=	oSplitter.GetCurves()[i];
-
-//						Point oPointU		=	rotate.TranformPoint(oBezier.m_Points[0]);
-//						Point oPointV		=	rotate.TranformPoint(oBezier.m_Points[1]);
-//						Point oPointE		=	rotate.TranformPoint(oBezier.m_Points[2]);
-
-//						m_render->PathCommandCurveTo(oPointU.X, oPointU.Y,	oPointV.X, oPointV.Y, oPointE.X, oPointE.Y);
-//					}
-//				}
-//				else
-//				{
-//				    pRenderer->PathCommandArcTo(Center.dX - m_arRadius[unIndex].dX, Center.dY - m_arRadius[unIndex].dY, m_arRadius[unIndex].dX * 2.0, m_arRadius[unIndex].dY * 2.0, dStartAngle, dSweep);
-//				}
-
-				LastPoint = End;
 			}
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+	    Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return PathPoint{0, 0};
+				return Point{0, 0};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
 
-		PathPoint GetCenter(int LargeFlag, int SweepFlag, PathPoint Radi, PathPoint P1, PathPoint P2) const
+		// Данная часть кода взята из GraphicsPath.cpp
+		CCBezierElement ConvertToCBezier(double dX, double dY, double dWidth, double dHeight, double dStartAngle, double dSweepAngle) const
+		{
+			double dNewStartAngle = -dStartAngle;
+			double dNewSweepAngle = -dSweepAngle;
+
+			INT bClockDirection = FALSE;
+			double dEndAngle = 360 - ( dNewSweepAngle + dNewStartAngle );
+			double dSrtAngle = 360 - dNewStartAngle;
+			if( dNewSweepAngle > 0 )
+				bClockDirection = TRUE;
+
+			if( fabs(dNewSweepAngle) >= 360 ) // Целый эллипс
+			{
+				return Ellipse(dX + dWidth / 2, dY + dHeight / 2, dWidth / 2, dHeight / 2);
+			}
+			else // Дуга эллипса
+			{
+				return EllipseArc(dX + dWidth / 2, dY + dHeight / 2, dWidth / 2, dHeight / 2, dSrtAngle, dEndAngle, bClockDirection);
+			}
+		}
+
+		CCBezierElement Ellipse(double dX, double dY, double dXRad, double dYRad) const
+		{
+			double c_fKappa = 0.552;
+
+			CCBezierElement oCBezierElement;
+
+			oCBezierElement.m_arPoints.push_back(Point{dX - dXRad, dY + dYRad * c_fKappa});
+			oCBezierElement.m_arPoints.push_back(Point{dX - dXRad * c_fKappa, dY + dYRad});
+			oCBezierElement.m_arPoints.push_back(Point{dX, dY + dYRad});
+
+			oCBezierElement.m_arPoints.push_back(Point{dX + dXRad * c_fKappa, dY + dYRad});
+			oCBezierElement.m_arPoints.push_back(Point{dX + dXRad, dY + dYRad * c_fKappa});
+			oCBezierElement.m_arPoints.push_back(Point{dX + dXRad, dY});
+
+			oCBezierElement.m_arPoints.push_back(Point{dX + dXRad, dY - dYRad * c_fKappa});
+			oCBezierElement.m_arPoints.push_back(Point{dX + dXRad * c_fKappa, dY - dYRad});
+			oCBezierElement.m_arPoints.push_back(Point{dX, dY - dYRad});
+
+			oCBezierElement.m_arPoints.push_back(Point{dX - dXRad * c_fKappa, dY - dYRad});
+			oCBezierElement.m_arPoints.push_back(Point{dX - dXRad, dY - dYRad * c_fKappa});
+			oCBezierElement.m_arPoints.push_back(Point{dX - dXRad, dY});
+
+			return oCBezierElement;
+		}
+
+		CCBezierElement EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, INT bClockDirection) const
+		{
+			CCBezierElement oCBezierElement;
+
+			while ( dAngle1 < 0 )
+				dAngle1 += 360;
+
+			while ( dAngle1 > 360 )
+				dAngle1 -= 360;
+
+			while ( dAngle2 < 0 )
+				dAngle2 += 360;
+
+			while ( dAngle2 >= 360 )
+				dAngle2 -= 360;
+
+			if ( !bClockDirection )
+			{
+				if ( dAngle1 <= dAngle2 )
+					oCBezierElement = EllipseArc2( dX, dY, dXRad, dYRad, dAngle1, dAngle2, FALSE );
+				else
+				{
+					oCBezierElement += EllipseArc2( dX, dY, dXRad, dYRad, dAngle1, 360, FALSE );
+					oCBezierElement += EllipseArc2( dX, dY, dXRad, dYRad, 0, dAngle2, FALSE );
+				}
+			}
+			else
+			{
+				if ( dAngle1 >= dAngle2 )
+					oCBezierElement = EllipseArc2( dX, dY, dXRad, dYRad, dAngle1, dAngle2, TRUE );
+				else
+				{
+					oCBezierElement += EllipseArc2( dX, dY, dXRad, dYRad, dAngle1, 0, TRUE );
+					oCBezierElement += EllipseArc2( dX, dY, dXRad, dYRad, 360, dAngle2, TRUE );
+				}
+			}
+			return oCBezierElement;
+		}
+
+		CCBezierElement EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection) const
+		{
+			// переведем углы в радианы
+			CCBezierElement oCBezierElement;
+
+			double dAngle1 = fAngle1 * M_PI / 180;
+			double dAngle2 = fAngle2 * M_PI / 180;
+
+			// Выясним в каких четвертях находятся начальная и конечная точки
+			unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1;
+			unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
+			nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
+			nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
+
+			double fEndX = 0.0, fEndY = 0.0;
+
+			// Дальше рисуем по четверям
+
+			double dStartAngle = dAngle1;
+			double dEndAngle = 0;
+
+			if ( !bClockDirection )
+			{
+				for( unsigned int nIndex = nFirstPointQuard; nIndex <= nSecondPointQuard; nIndex++ )
+				{
+					if ( nIndex == nSecondPointQuard )
+						dEndAngle = dAngle2;
+					else
+						dEndAngle = (90 * (nIndex ) ) * 3.141592f / 180;
+					if ( !( nIndex == nFirstPointQuard ) )
+						dStartAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
+
+					oCBezierElement += EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+				}
+			}
+			else
+			{
+				for( unsigned int nIndex = nFirstPointQuard; nIndex >= nSecondPointQuard; nIndex-- )
+				{
+					if ( nIndex == nFirstPointQuard )
+						dStartAngle = dAngle1;
+					else
+						dStartAngle = (90 * (nIndex ) ) * 3.141592f / 180;
+					if ( !( nIndex == nSecondPointQuard ) )
+						dEndAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
+					else
+						dEndAngle = dAngle2;
+
+					oCBezierElement += EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+				}
+			}
+
+			return oCBezierElement;
+		}
+
+		CCBezierElement EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection) const
+		{
+			// Рассчитаем начальную, конечную и контрольные точки
+			double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
+			double fCX1 = 0.0, fCX2 = 0.0, fCY1 = 0.0, fCY2 = 0.0;
+
+			double fAlpha = sin( dAngle2 - dAngle1 ) * ( sqrt( 4.0 + 3.0 * tan( (dAngle2 - dAngle1) / 2.0 ) * tan( (dAngle2 - dAngle1) / 2.0 ) ) - 1.0 ) / 3.0;
+
+			fX1 = fX + fXRad * cos( dAngle1 );
+			fY1 = fY + fYRad * sin( dAngle1 );
+
+			fX2 = fX + fXRad * cos( dAngle2 );
+			fY2 = fY + fYRad * sin( dAngle2 );
+
+			fCX1 = fX1 - fAlpha * fXRad * sin ( dAngle1 );
+			fCY1 = fY1 + fAlpha * fYRad * cos ( dAngle1 );
+
+			fCX2 = fX2 + fAlpha * fXRad * sin ( dAngle2 );
+			fCY2 = fY2 - fAlpha * fYRad * cos ( dAngle2 );
+
+			CCBezierElement oCBezierElement;
+
+			if ( !bClockDirection )
+			{
+				oCBezierElement = CCBezierElement(fCX1, fCY1, fCX2, fCY2, fX2, fY2);
+
+				*pfXCur = fX2;
+				*pfYCur = fY2;
+			}
+			else
+			{
+				oCBezierElement = CCBezierElement(fCX2, fCY2, fCX1, fCY1, fX1, fY1);
+
+				*pfXCur = fX1;
+				*pfYCur = fY1;
+			}
+
+			return oCBezierElement;
+		}
+
+		double AngToEllPrm(double fAngle, double fXRad, double fYRad) const
+		{
+			// Функция для перевода реального угла в параметрическое задание эллписа
+			// т.е. x= a cos(t) y = b sin(t) - параметрическое задание эллписа.
+			// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
+			return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
+		}
+		//-------------------------
+
+		Point GetCenter(int LargeFlag, int SweepFlag, Point Radi, Point P1, Point P2) const
 		{
 			double RadF	=	Radi.dY / Radi.dX;
 
-			PathPoint Begin	=	PathPoint { P1.dX * RadF, P1.dY };
-			PathPoint End	=	PathPoint { P2.dX * RadF, P2.dY };
+			Point Begin	=	Point { P1.dX * RadF, P1.dY };
+			Point End	=	Point { P2.dX * RadF, P2.dY };
 
-			PathPoint Mid	=	PathPoint { ( Begin.dX + End.dX ) * 0.5, ( Begin.dY + End.dY ) * 0.5 };
-			PathPoint Vec	=	PathPoint { Begin.dX - End.dX, Begin.dY - End.dY };
+			Point Mid	=	Point { ( Begin.dX + End.dX ) * 0.5, ( Begin.dY + End.dY ) * 0.5 };
+			Point Vec	=	Point { Begin.dX - End.dX, Begin.dY - End.dY };
 
 			double HChord	=  sqrt ( Vec.dX * Vec.dX + Vec.dY * Vec.dY ) * 0.5;
 
-			PathPoint Rot;
+			Point Rot;
 
 			if ( LargeFlag == SweepFlag )
-				Rot		=	PathPoint { -Vec.dY, Vec.dX };
+				Rot		=	Point { -Vec.dY, Vec.dX };
 			else
-				Rot		=	PathPoint { Vec.dY, -Vec.dX };
+				Rot		=	Point { Vec.dY, -Vec.dX };
 
 			Rot.dX		/=	( HChord * 2.0 );
 			Rot.dY		/=	( HChord * 2.0 );
 
 			double Ch	=	sqrt ( abs ( Radi.dY * Radi.dY - HChord * HChord ) );
 
-			return PathPoint { ( Mid.dX + Ch * Rot.dX ) / RadF, Mid.dY + Ch * Rot.dY };
+			return Point { ( Mid.dX + Ch * Rot.dX ) / RadF, Mid.dY + Ch * Rot.dY };
 		}
 
 		double GetAngle(const double& CX, const double& CY, const double& X, const double& Y) const
@@ -866,12 +1043,10 @@ namespace SVG
 			return true;
 		}
 
-		std::vector<PathPoint> m_arRadius;
+		std::vector<Point>     m_arRadius;
 		std::vector<double>    m_arXAxisRotation;
 		std::vector<double>    m_arLargeArcFlag;
 		std::vector<double>    m_arSweepFlag;
-
-		PathPoint              m_oLastPoint;
 	};
 
 	class CCloseElement : public IPathElement
@@ -897,9 +1072,9 @@ namespace SVG
 			pRenderer->PathCommandClose();
 		}
 	private:
-		PathPoint GetPoint(int nIndex) const override
+		Point GetPoint(int nIndex) const override
 		{
-			return (m_arPoints.empty()) ? PathPoint{0, 0} : m_arPoints.back();
+			return (m_arPoints.empty()) ? Point{0, 0} : m_arPoints.back();
 		}
 	};
 

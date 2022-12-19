@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CHeader.h"
 #include "SvgObjects/CCircle.h"
 #include "SvgObjects/CRect.h"
@@ -81,6 +82,8 @@ namespace SVG
 			pObject = new CRect(pParent);
 		else if (L"circle" == wsElementName)
 			pObject = new CCircle(pParent);
+		else if (L"ellipse" == wsElementName)
+			pObject = new CEllipse(pParent);
 		else if (L"path" == wsElementName)
 			pObject = new CPath(pParent);
 

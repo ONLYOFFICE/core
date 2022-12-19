@@ -40,6 +40,7 @@ namespace SVG
 		friend class CLine;
 		friend class CRect;
 		friend class CCircle;
+		friend class CEllipse;
 		friend class CPath;
 
 		CObjectBase* m_pParent;

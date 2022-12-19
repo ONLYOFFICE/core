@@ -42,6 +42,8 @@ namespace SVG
 		friend class CCircle;
 		friend class CEllipse;
 		friend class CPath;
+		friend class CText;
+		friend class CTspan;
 
 		CObjectBase* m_pParent;
 		CStyle   m_oStyle;

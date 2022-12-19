@@ -303,6 +303,7 @@ namespace MetaFile
 
 	#ifdef METAFILE_SUPPORT_SVG
 		m_oSvgFile.SetFontManager(m_pFontManager);
+		m_oSvgFile2.SetFontManager(m_pFontManager);
 	#endif
 
 		//------------------------------------------------------

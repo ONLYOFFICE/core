@@ -1,6 +1,7 @@
 #ifndef SVGUTILS_H
 #define SVGUTILS_H
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <map>
@@ -283,6 +284,13 @@ namespace SVG
 			}
 
 			return strDecoded;
+		}
+
+		static std::wstring TrimExtraEnding(const std::wstring& wsString)
+		{
+			std::wstring::const_reverse_iterator itEndPos =  std::find_if(wsString.rbegin(), wsString.rend(), [](const wchar_t& wChar){ return !iswspace(wChar);});
+
+			return std::wstring(wsString.begin(), itEndPos.base());
 		}
 	};
 

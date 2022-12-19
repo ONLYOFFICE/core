@@ -10,11 +10,12 @@
 #include "SvgObjects/CRect.h"
 #include "SvgObjects/CLine.h"
 #include "SvgObjects/CPath.h"
+#include "SvgObjects/CText.h"
 
 namespace SVG
 {
 	CSvgParser::CSvgParser()
-	    : m_pStorage(NULL)
+	    : m_pStorage(NULL), m_pFontManager(NULL)
 	{
 
 	}
@@ -22,6 +23,11 @@ namespace SVG
 	CSvgParser::~CSvgParser()
 	{
 
+	}
+
+	void CSvgParser::SetFontManager(NSFonts::IFontManager *pFontManager)
+	{
+		m_pFontManager = pFontManager;
 	}
 
 	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CSvgStorage* pStorage)
@@ -86,6 +92,8 @@ namespace SVG
 			pObject = new CEllipse(pParent);
 		else if (L"path" == wsElementName)
 			pObject = new CPath(pParent);
+		else if (L"text" == wsElementName)
+			pObject = new CText(pParent, m_pFontManager);
 
 		if (NULL != pObject)
 		{

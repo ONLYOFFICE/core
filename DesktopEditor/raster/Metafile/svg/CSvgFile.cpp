@@ -5,7 +5,7 @@
 CSvgFile::CSvgFile()
     : m_pParser(NULL), m_pStorage(NULL)
 {
-
+	Init();
 }
 
 CSvgFile::~CSvgFile()
@@ -51,7 +51,8 @@ void CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
-
+	if (NULL != m_pParser)
+		m_pParser->SetFontManager(pFontManager);
 }
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight) const

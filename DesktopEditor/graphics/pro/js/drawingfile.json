@@ -32,7 +32,9 @@
 		"_InitializeFontsBase64",
 		"_SetFontBinary",
 		"_IsFontBinaryExist",
-		"_DestroyTextInfo"
+		"_DestroyTextInfo",
+		"_IsNeedCMap",
+		"_SetCMapData"
 	],
 	"include_path": [
 		"wasm/src/lib", "../../../agg-2.4/include", "../../../cximage/jasper/include", "../../../cximage/jpeg", "../../../cximage/png", "freetype-2.10.4/include", "freetype-2.10.4/include/freetype", "../../../../OfficeUtils/src/zlib-1.2.11", "../../../../OfficeUtils/src", "../../../../Common/3dParty/icu/icu/source/common", "../../../xml/libxml2/include", "../../../xml/build/qt", "../../../../OfficeUtils/src/zlib-1.2.11/contrib/minizip", "../../../../PdfFile/lib/goo", "../../../../PdfFile/lib/fofi", "../../../../PdfFile/lib/splash", "../../../../PdfFile/lib",

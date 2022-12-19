@@ -147,6 +147,23 @@
     {
         return this._isNeedPassword;
     };
+    CFile.prototype["setCMap"] = function()
+    {
+        if (!this.nativeFile)
+            return false;
+
+        var _isNeed = Module["_IsNeedCMap"](this.nativeFile);
+        if (_isNeed == 0)
+            return false;
+
+        // CMapData - данные из файла CMapData
+        var CMapData = [];
+        var streamPointer = Module["_malloc"](CMapData.length);
+        Module["HEAP8"].set(CMapData, streamPointer);
+
+        Module["_SetCMapData"](this.nativeFile, streamPointer, CMapData.length);
+        return true;
+    };
     CFile.prototype["getInfo"] = function()
     {
         if (!this.nativeFile)
@@ -488,137 +505,6 @@
         //streams[stream_index] = AscFonts.updateFontStreamNative(streamPointer, stream.size);
 
         Module["_SetFontBinary"](idPointer, streamPointer, stream.size);
-
-        Module["_free"](streamPointer);
-        Module["_free"](idPointer);
-    }
-
-    self["AscViewer"]["CheckCMapStreamId"] = function(data, status) {
-        // аналогично self["AscViewer"]["CheckStreamId"](data, status);
-        // но входящий параметр data содержит только string
-        // CMapToMemory вместо fontToMemory
-        // Потом объединю с CheckStreamId
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, data, 4);
-        var len = lenArray[0];
-        len -= 4;
-
-        var buffer = new Uint8Array(Module["HEAP8"].buffer, data + 4, len);
-        var reader = new CBinaryReader(buffer, 0, len);
-
-        var name = reader.readString();
-
-        var file = null; // Получение файла CMapData // AscFonts.pickFont(name, style);
-        var fileId = file.GetID();
-        var fileStatus = file.GetStatus();
-
-        if (fileStatus == 0)
-        {
-            // CMapData загружен
-            var fileData = null; // Получение данных из file // AscFonts.getFontStream(file.GetStreamIndex());
-            CMapToMemory(fileData, name);
-        }
-        else
-        {
-            self.fontStreams[fileId] = self.fontStreams[fileId] || {};
-            self.fontStreams[fileId].pages = self.fontStreams[fileId].pages || [];
-            addToArrayAsDictionary(self.fontStreams[fileId].pages, self.drawingFileCurrentPageIndex);
-
-            if (self.drawingFile)
-            {
-                addToArrayAsDictionary(self.drawingFile.pages[self.drawingFileCurrentPageIndex].fonts, fileId);
-            }
-
-            if (fileStatus != 2)
-            {
-                // Ассинхронная загрузка CMapData файла
-                var _t = file;
-                // file.LoadFontAsync("../../../../fonts/", function(){
-                file.load("CMapData", function(){
-                    var fileData = null; // Получение данных из file
-                    CMapToMemory(fileData, name);
-
-                    // Переотрисовка станицы
-                    var pages = self.fontStreams[fileId].pages;
-                    delete self.fontStreams[fileId];
-                    var pagesRepaint = [];
-                    for (var i = 0, len = pages.length; i < len; i++)
-                    {
-                        var pageObj = self.drawingFile.pages[pages[i]];
-                        var fonts = pageObj.fonts;
-                        
-                        for (var j = 0, len_fonts = fonts.length; j < len_fonts; j++)
-                        {
-                            if (fonts[j] == fileId)
-                            {
-                                fonts.splice(j, 1);
-                                break;
-                            }
-                        }
-                        if (0 == fonts.length)
-                            pagesRepaint.push(pages[i]);
-                    }
-
-                    if (pagesRepaint.length > 0)
-                    {
-                        if (self.drawingFile.onRepaintPages)
-                            self.drawingFile.onRepaintPages(pagesRepaint);
-                    }
-                });
-            }
-        }
-
-        var memoryBuffer = fileId.toUtf8();
-        var pointer = Module["_malloc"](memoryBuffer.length);
-        Module.HEAP8.set(memoryBuffer, pointer);
-        Module["HEAP8"][status] = (fileStatus == 0) ? 1 : 0;
-        return pointer;
-    }
-
-    // file - содержимое CMapData файла
-    // name - reader.readString() из data в CheckCMapStreamId
-    // Получает name CMap файл из CMapData и отправляет в wasm-модуль
-    function CMapToMemory(file, name)
-    {
-        var idBuffer = name.toUtf8();
-        var idPointer = Module["_malloc"](idBuffer.length);
-        Module["HEAP8"].set(idBuffer, idPointer);
-
-        var nExist = Module["_IsFontBinaryExist"](idPointer);
-        if (nExist != 0)
-        {
-            Module["_free"](idPointer);
-            return;
-        }
-
-        var buffer = new Uint8Array(file);
-        var reader = new CBinaryReader(buffer, 0, buffer.length);
-
-        var CMapData = null;
-        while (reader.isValid())
-        {
-            var CMapName = reader.readString();
-            if (CMapName == name)
-            {
-                CMapData = reader.readData();
-                break;
-            }
-            else
-            {
-                var CMapLength = reader.readInt();
-                reader.Skip(CMapLength);
-            }
-        }
-        
-        if (CMapData == null)
-        {
-            Module["_free"](idPointer);
-            return;
-        }
-
-        var streamPointer = Module["_malloc"](CMapData.length);
-        Module["HEAP8"].set(CMapData.buffer, streamPointer);
-
-        Module["_SetFontBinary"](idPointer, streamPointer, CMapData.size);
 
         Module["_free"](streamPointer);
         Module["_free"](idPointer);

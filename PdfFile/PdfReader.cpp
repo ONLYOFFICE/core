@@ -78,7 +78,7 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 #endif
 
 #ifdef CMAP_USE_MEMORY
-    ((GlobalParamsAdaptor*)globalParams)->SetCMapMemory();
+    ((GlobalParamsAdaptor*)globalParams)->SetCMapMemory(NULL, 0);
 #endif
 
     m_eError = errNone;
@@ -100,6 +100,91 @@ CPdfReader::~CPdfReader()
     RELEASEOBJECT(m_pPDFDocument);
     RELEASEOBJECT(globalParams);
     RELEASEINTERFACE(m_pFontManager);
+}
+bool CPdfReader::IsNeedCMap()
+{
+    std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
+      "GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
+      "UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
+      "UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
+      "HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H",
+      "HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H",
+      "CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H",
+      "UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V", "78-EUC-H", "78-EUC-V",
+      "78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V",
+      "90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V",
+      "EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H",
+      "UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H",
+      "UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H",
+      "UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V",
+      "UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V",
+      "WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman", "KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H",
+      "KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
+      "UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
+      "UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
+
+    if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+        return false;
+
+    XRef* xref = m_pPDFDocument->getXRef();
+    if (!xref)
+        return false;
+
+    for (int nNum = 0, nCount = xref->getSize(); nNum < nCount; ++nNum)
+    {
+        XRefEntry *pEntry = xref->getEntry(nNum);
+        if (!pEntry || xrefEntryFree == pEntry->type)
+            continue;
+
+        Object oTemp;
+        if (!xref->fetch(nNum, pEntry->gen, &oTemp))
+            continue;
+
+        if (!oTemp.isDict())
+        {
+            oTemp.free();
+            continue;
+        }
+
+        Object oFont;
+        if (!oTemp.dictLookup("Type", &oFont) || !oFont.isName() || strcmp(oFont.getName(), "Font"))
+        {
+            oTemp.free();
+            oFont.free();
+            continue;
+        }
+        oFont.free();
+
+        Object oEncoding;
+        if (!oTemp.dictLookup("Encoding", &oEncoding) || !oEncoding.isName())
+        {
+            oTemp.free();
+            oEncoding.free();
+            continue;
+        }
+        oTemp.free();
+
+        char* sName = oEncoding.getName();
+        if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
+        {
+            oEncoding.free();
+            return true;
+        }
+        oEncoding.free();
+    }
+    return false;
+}
+void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
+{
+    ((GlobalParamsAdaptor*)globalParams)->SetCMapMemory(pData, nSizeData);
+}
+void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
+{
+    ((GlobalParamsAdaptor*)globalParams)->SetCMapFolder(sFolder);
+}
+void CPdfReader::SetCMapFile(const std::wstring& sFile)
+{
+    ((GlobalParamsAdaptor*)globalParams)->SetCMapFile(sFile);
 }
 bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 {

@@ -120,7 +120,12 @@ DWORD GetLength(BYTE* x)
 bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int& nSize)
 {
     if (!m_bCMapData)
-        return false;
+    {
+        if (m_wsCMapFolder.empty())
+            SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
+        if (!m_bCMapData)
+            return false;
+    }
 
     DWORD i = 0;
     while (i < m_nCMapDataLength)

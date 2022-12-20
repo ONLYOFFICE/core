@@ -147,22 +147,22 @@
     {
         return this._isNeedPassword;
     };
-    CFile.prototype["setCMap"] = function()
+    CFile.prototype["isNeedCMap"] = function()
     {
         if (!this.nativeFile)
             return false;
 
-        var _isNeed = Module["_IsNeedCMap"](this.nativeFile);
-        if (_isNeed == 0)
-            return false;
+        var isNeed = Module["_IsNeedCMap"](this.nativeFile);
+        return (isNeed === 1) ? true : false;
+    };
+    CFile.prototype["setCMap"] = function(memoryBuffer)
+    {
+        if (!this.nativeFile)
+            return;
 
-        // CMapData - данные из файла CMapData
-        var CMapData = [];
-        var streamPointer = Module["_malloc"](CMapData.length);
-        Module["HEAP8"].set(CMapData, streamPointer);
-
-        Module["_SetCMapData"](this.nativeFile, streamPointer, CMapData.length);
-        return true;
+        var pointer = Module["_malloc"](memoryBuffer.length);
+        Module.HEAP8.set(memoryBuffer, pointer);
+        Module["_SetCMapData"](this.nativeFile, pointer, memoryBuffer.length);
     };
     CFile.prototype["getInfo"] = function()
     {

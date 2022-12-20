@@ -33,7 +33,7 @@ int main()
     }
 
     NSFile::CFileBinary oFile;
-    if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/../CMapData"))
+	if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/../cmap.bin"))
     {
         oFile.WriteFile(oRes.GetBuffer(), oRes.GetSize());
         oFile.CloseFile();

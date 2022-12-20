@@ -102,9 +102,7 @@ void GlobalParamsAdaptor::SetCMapFile(const std::wstring &wsFile)
     AddAllCMap(NULL);
 
 #ifndef BUILDING_WASM_MODULE
-    NSFile::CFileBinary oFile;
-    oFile.ReadAllBytes(wsFile, &m_bCMapData, m_nCMapDataLength);
-    oFile.CloseFile();
+	NSFile::CFileBinary::ReadAllBytes(wsFile, &m_bCMapData, m_nCMapDataLength);
 #endif
 }
 void GlobalParamsAdaptor::SetCMapMemory(BYTE* pData, DWORD nSizeData)

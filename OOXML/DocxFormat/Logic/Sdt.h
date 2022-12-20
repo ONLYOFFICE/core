@@ -579,6 +579,7 @@ namespace OOX
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
 			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
+			nullable<SimpleTypes::CRelationshipId> m_oOformRid; // Not from specification
 		};
 
 		//--------------------------------------------------------------------------------

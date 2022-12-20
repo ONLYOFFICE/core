@@ -191,9 +191,9 @@ BinDocxRW::CDocxSerializer::~CDocxSerializer()
 	RELEASEOBJECT(m_pParamsWriter);
 	RELEASEOBJECT(m_pCurFileWriter);
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, const std::wstring& sDstPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
+bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, const std::wstring& sSrcPath, const std::wstring& sXMLOptions, const std::wstring& sTempPath)
 {
-	OOX::CPath pathMain(sSrcFileName);
+	OOX::CPath pathMain(sDstFileName);
     
 	OOX::CPath pathMedia = pathMain.GetDirectory() + FILE_SEPARATOR_STR + _T("media");
 	NSDirectory::CreateDirectory(pathMedia.GetPath());
@@ -242,7 +242,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	{
 		oBufferedStream.WriteStringUtf8(oBinaryFileWriter.WriteFileHeader(0, g_nFormatVersionNoBase64));
 	}
-	oBinaryFileWriter.intoBindoc(sDstPath);
+	oBinaryFileWriter.intoBindoc(sSrcPath);
 	
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
@@ -251,7 +251,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
 	if (m_bIsNoBase64 || m_bIsNoBase64Save)
 	{
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(sSrcFileName);
+		oFile.CreateFileW(sDstFileName);
 		oFile.WriteFile(pbBinBuffer, nBinBufferLen);
 		oFile.CloseFile();
 	}
@@ -263,7 +263,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sSrcFileName, co
         if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
 		{
 			NSFile::CFileBinary oFile;
-			oFile.CreateFileW(sSrcFileName);
+			oFile.CreateFileW(sDstFileName);
 			oFile.WriteStringUTF8(oBinaryFileWriter.WriteFileHeader(nBinBufferLen, g_nFormatVersion));
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();

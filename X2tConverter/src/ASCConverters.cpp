@@ -424,13 +424,13 @@ namespace NExtractTools
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM == *params.m_nFormatTo)
 			{
-				std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform\"/>";
-				nRes = addContentType(sResultDocxDir, sCT);
+				//std::wstring sCT = L"<Default Extension=\"oform\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.oform\"/>";
+				//nRes = addContentType(sResultDocxDir, sCT);
 			}
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF == *params.m_nFormatTo)
 			{
-				std::wstring sCT = L"<Default Extension=\"docxf\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
-				nRes = addContentType(sResultDocxDir, sCT);
+				//std::wstring sCT = L"<Default Extension=\"docxf\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.docxf\"/>";
+				//nRes = addContentType(sResultDocxDir, sCT);
 			}
 		}
 		if(SUCCEEDED_X2T(nRes))

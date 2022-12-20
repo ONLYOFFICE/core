@@ -142,7 +142,8 @@ extern int g_nCurFormatVersion;
 		DocumentComments = 17,
 		CustomProperties = 18,
 		Glossary	= 19,
-		Customs		= 20
+		Customs		= 20,
+		OForm		= 21
 	};}
 	namespace c_oSerSigTypes{enum c_oSerSigTypes
 	{
@@ -1268,7 +1269,8 @@ extern int g_nCurFormatVersion;
 		TextFormPrFormatVal     = 81,
 		TextFormPrFormatSymbols = 82,	
 		ComplexFormPr     = 90,
-		ComplexFormPrType = 91
+		ComplexFormPrType = 91,
+		OformMaster = 92
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

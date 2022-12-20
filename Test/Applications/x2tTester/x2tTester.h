@@ -19,6 +19,7 @@
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 class CFormatsList
 {
@@ -125,6 +126,10 @@ private:
 	bool m_bIsErrorsOnly;
 	bool m_bIsTimestamp;
 	bool m_bIsDeleteOk;
+	bool m_bIsfilenameCsvTxtParams;
+
+	std::wstring m_defaultCsvTxtEndcoding;
+	std::wstring m_defaultCsvDelimiter;
 
 	DWORD m_timeStart;
 };
@@ -145,6 +150,8 @@ public:
 	void SetErrorsOnly(bool bIsErrorsOnly);
 	void SetDeleteOk(bool bIsDeleteOk);
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
+	void SetCsvTxtEncoding(int csvTxtEncoding);
+	void SetCsvDelimiter(std::wstring csvDelimiter);
 	void SetFilesCount(int totalFiles, int currFile);
 
 	virtual DWORD ThreadProc();
@@ -163,6 +170,9 @@ private:
 
 	std::wstring m_x2tPath;
 	std::wstring m_errorsXmlDirectory;
+
+	int m_csvTxtEncoding;
+	std::wstring m_csvDelimiter;
 
 	bool m_bIsErrorsOnly;
 	bool m_bIsDeleteOk;

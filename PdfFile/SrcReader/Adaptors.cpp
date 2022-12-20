@@ -66,6 +66,9 @@ void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 }
 void GlobalParamsAdaptor::AddAllCMap(GString* sFolder)
 {
+    if (cidToUnicodes->lookup("Adobe-GB1"))
+        return;
+
     cidToUnicodes->add(new GString("Adobe-GB1"), sFolder ? sFolder->copy()->append("/Adobe-GB1.cidToUnicode") : new GString());
     cidToUnicodes->add(new GString("Adobe-CNS1"), sFolder ? sFolder->copy()->append("/Adobe-CNS1.cidToUnicode") : new GString());
     cidToUnicodes->add(new GString("Adobe-Korea1"), sFolder ? sFolder->copy()->append("/Adobe-Korea1.cidToUnicode") : new GString());

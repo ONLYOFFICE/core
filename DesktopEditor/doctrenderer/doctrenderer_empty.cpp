@@ -188,4 +188,8 @@ namespace NSDoctRenderer
 		std::vector<std::wstring> stub;
 		return stub;
 	}
+
+	void CDoctrenderer::CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir)
+	{
+	}
 }

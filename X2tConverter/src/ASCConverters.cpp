@@ -3584,7 +3584,121 @@ namespace NExtractTools
        }
        return nRes;
    }
-    _UINT32 PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, NSFonts::IApplicationFonts* pApplicationFonts)
+
+	std::string checkPrintPages(InputParams& params)
+	{
+		if (NULL == params.m_sJsonParams)
+			return "";
+
+		std::wstring::size_type posNativeOptions = params.m_sJsonParams->find(L"\"nativeOptions\"");
+		if (std::wstring::npos == posNativeOptions)
+			return "";
+
+		std::wstring::size_type posNativePages = params.m_sJsonParams->find(L"\"pages\":\"", posNativeOptions);
+		if (std::wstring::npos == posNativePages)
+			return "";
+
+		posNativePages += 9;
+		std::wstring::size_type posNativePages2 = params.m_sJsonParams->find(L"\"", posNativePages);
+		if (std::wstring::npos == posNativePages2)
+			return "";
+
+		std::wstring sPages = params.m_sJsonParams->substr(posNativePages, posNativePages2 - posNativePages);
+		if (L"all" == sPages)
+			return "";
+
+		if (L"current" == sPages)
+		{
+			std::wstring::size_type posCurrentPage = params.m_sJsonParams->find(L"\"currentPage\":", posNativeOptions);
+			if (std::wstring::npos == posCurrentPage)
+				return "";
+
+			posCurrentPage += 14;
+			std::wstring::size_type posCurrentPage2 = params.m_sJsonParams->find(L",", posCurrentPage);
+			std::wstring::size_type posCurrentPage3 = params.m_sJsonParams->find(L"}", posCurrentPage);
+
+			if (std::wstring::npos == posCurrentPage2)
+			{
+				if (std::wstring::npos == posCurrentPage3)
+					return "";
+				posCurrentPage2 = posCurrentPage3;
+			}
+			else if (std::wstring::npos != posCurrentPage3 && posCurrentPage3 < posCurrentPage2)
+				posCurrentPage2 = posCurrentPage3;
+
+			if (std::wstring::npos == posCurrentPage2)
+				return "";
+
+			sPages = params.m_sJsonParams->substr(posCurrentPage, posCurrentPage2 - posCurrentPage);
+		}
+
+		return U_TO_UTF8(sPages);
+	}
+
+	std::vector<bool> getPrintPages(const std::string& sPages, int nPagesCount)
+	{
+		const char* buffer = sPages.c_str();
+
+		size_t nCur = 0;
+		size_t nLen = sPages.length();
+
+		std::vector<bool> arPages;
+		for (int i = 0; i < nPagesCount; ++i)
+			arPages.push_back(false);
+
+		while (nCur < nLen)
+		{
+			size_t cur = nCur;
+			while (cur < nLen && buffer[cur] != ',')
+				++cur;
+
+			int nStart = 0;
+			int nEnd = 0;
+
+			size_t curRec = nCur;
+			while (curRec < cur)
+			{
+				char c = buffer[curRec++];
+				if (c >= '0' && c <= '9')
+					nStart = 10 * nStart + (c - '0');
+
+				if (c == '-')
+					break;
+			}
+
+			if (nStart == 0)
+				nStart = 1;
+
+			if (curRec == cur)
+				nEnd = nStart;
+			else
+			{
+				while (curRec < cur)
+				{
+					char c = buffer[curRec++];
+					if (c >= '0' && c <= '9')
+						nEnd = 10 * nEnd + (c - '0');
+
+					if (c == '-')
+						break;
+				}
+
+				if (0 == nEnd || nEnd > nPagesCount)
+					nEnd = nPagesCount;
+			}
+
+			for (int i = nStart; i <= nEnd; ++i)
+				arPages[i - 1] = true;
+
+			nCur = cur;
+			if (nCur < nLen)
+				++nCur;
+		}
+
+		return arPages;
+	}
+
+	_UINT32 PdfDjvuXpsToRenderer(IOfficeDrawingFile** ppReader, IRenderer* pRenderer, const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, NSFonts::IApplicationFonts* pApplicationFonts, const std::string& sPages = "")
    {
        _UINT32 nRes = 0;
        IOfficeDrawingFile* pReader = NULL;
@@ -3613,8 +3727,17 @@ namespace NExtractTools
            if(bResult)
            {
                int nPagesCount = pReader->GetPagesCount();
+
+			   bool bIsUsePages = sPages.empty() ? false : true;
+			   std::vector<bool> arPages;
+			   if (bIsUsePages)
+				   arPages = getPrintPages(sPages, nPagesCount);
+
                for (int i = 0; i < nPagesCount; ++i)
                {
+				   if (bIsUsePages && !arPages[i])
+					   continue;
+
                    pRenderer->NewPage();
                    pRenderer->BeginCommand(c_nPageType);
 
@@ -4722,6 +4845,7 @@ namespace NExtractTools
        }
        return nRes;
    }
+
 	_UINT32 fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params)
    {
        _UINT32 nRes = 0;
@@ -4729,7 +4853,9 @@ namespace NExtractTools
        initApplicationFonts(pApplicationFonts, params);
        if(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
        {
-           if(nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword())
+		   std::string sPages = checkPrintPages(params);
+
+		   if(nFormatFrom == nFormatTo && !params.getIsPDFA() && params.getPassword() == params.getSavePassword() && sPages.empty())
            {
                 NSFile::CFileBinary::Copy(sFrom, sTo);
            }
@@ -4748,7 +4874,7 @@ namespace NExtractTools
 					pdfWriter.SetPassword(password);
               
 				IOfficeDrawingFile* pReader = NULL;
-				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts);
+				nRes = PdfDjvuXpsToRenderer(&pReader, &pdfWriter, sFrom, nFormatFrom, sTo, sTemp, params, pApplicationFonts, sPages);
 				pdfWriter.SaveToFile(sTo);
 				RELEASEOBJECT(pReader);
            }
@@ -5611,7 +5737,7 @@ namespace NExtractTools
 		}
 
 		//clean up v8
-        NSDoctRenderer::CDocBuilder::Dispose();
+		NSDoctRenderer::CDocBuilder::Dispose();
 		if (SUCCEEDED_X2T(result) && oInputParams.m_bOutputConvertCorrupted)
 		{
 			return AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED;
@@ -5620,6 +5746,16 @@ namespace NExtractTools
 		{
 			return result;
 		}
+	}
+
+	void createJSCaches()
+	{
+		NSDoctRenderer::CDocBuilder::Initialize();
+
+		NSDoctRenderer::CDoctrenderer oDoctRenderer;
+		oDoctRenderer.CreateCache(L"", L"");
+
+		NSDoctRenderer::CDocBuilder::Dispose();
 	}
 
 	_UINT32 FromFile(const std::wstring& file)

@@ -130,47 +130,48 @@ bool CPdfReader::IsNeedCMap()
     if (!xref)
         return false;
 
-    int nPages = m_pPDFDocument->getNumPages();
-    for (int i = 1; i <= nPages; ++i)
+    for (int nNum = 0, nCount = xref->getSize(); nNum < nCount; ++nNum)
     {
-        Page* pPage = m_pPDFDocument->getCatalog()->getPage(i);
-        if (!pPage)
+        XRefEntry *pEntry = xref->getEntry(nNum);
+        if (!pEntry || xrefEntryFree == pEntry->type)
             continue;
 
-        Dict* pResourceDict = pPage->getResourceDict();
-        if (!pResourceDict)
+        Object oTemp;
+        if (!xref->fetch(nNum, pEntry->gen, &oTemp))
             continue;
 
-        Object objFontNF, objFont;
-        if (!pResourceDict->lookupNF("Font", &objFontNF) || !objFontNF.fetch(xref, &objFont) || !objFont.isDict())
+        if (!oTemp.isDict())
         {
-            objFontNF.free();
-            objFont.free();
+            oTemp.free();
             continue;
         }
-        objFontNF.free();
 
-        for (int j = 0, nFontLength = objFont.dictGetLength(); j < nFontLength; ++j)
+        Object oFont;
+        if (!oTemp.dictLookup("Type", &oFont) || !oFont.isName() || strcmp(oFont.getName(), "Font"))
         {
-            Object objFNF, objF, objEncoding;
-            if (objFont.dictGetValNF(j, &objFNF) && objFNF.fetch(xref, &objF) && objF.isDict() && objF.dictLookup("Encoding", &objEncoding) && objEncoding.isName())
-            {
-                char* sName = objEncoding.getName();
-                if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
-                {
-                    objFNF.free();
-                    objF.free();
-                    objEncoding.free();
-                    return true;
-                }
-            }
-            objFNF.free();
-            objF.free();
-            objEncoding.free();
+            oTemp.free();
+            oFont.free();
+            continue;
         }
-        objFont.free();
+        oFont.free();
+
+        Object oEncoding;
+        if (!oTemp.dictLookup("Encoding", &oEncoding) || !oEncoding.isName())
+        {
+            oTemp.free();
+            oEncoding.free();
+            continue;
+        }
+        oTemp.free();
+
+        char* sName = oEncoding.getName();
+        if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
+        {
+            oEncoding.free();
+            return true;
+        }
+        oEncoding.free();
     }
-
     return false;
 }
 void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)

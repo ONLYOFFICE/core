@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,8 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 #include "../PptShape.h"
 
-// 185
-DEFINE_SHAPE_CLASS(CBracketPairType, CPPTShape)
+#ifdef USE_CUSTOM_SHAPES
+	DEFINE_SHAPE_CLASS(CBracketPairType, CCustomShape)
+#else
+	DEFINE_SHAPE_CLASS(CBracketPairType, CPPTShape)
+#endif

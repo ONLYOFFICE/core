@@ -36,37 +36,34 @@
 #include "../../XlsFile/Converter/ShapeType.h"
 #include "../../Common/Vml/PPTShape/Enums.h"
 
-namespace NSCustomShapesConvert
+class CCustomShape : public NSCustomShapesConvert::CBaseShape
 {
-	class CCustomShape : public NSCustomShapesConvert::CBaseShape
-	{
-	public:
-		oox::MSOSPT								m_eType;
-		NSCustomShapesConvert::CFormulasManager	m_oManager;
+public:
+	oox::MSOSPT								m_eType;
+	NSCustomShapesConvert::CFormulasManager	m_oManager;
 
-		NSCustomShapesConvert::CCustomVML		m_oCustomVML;
+	NSCustomShapesConvert::CCustomVML		m_oCustomVML;
 
-		std::wstring							m_strPathLimoX;
-		std::wstring							m_strPathLimoY;
+	std::wstring							m_strPathLimoX;
+	std::wstring							m_strPathLimoY;
 
-		std::vector<std::wstring> m_arStringTextRects;
+	std::vector<std::wstring> m_arStringTextRects;
 
-		CCustomShape();
-		~CCustomShape();
+	CCustomShape();
+	~CCustomShape();
 
-		virtual void AddGuide(const std::wstring& strGuide);
+	virtual void AddGuide(const std::wstring& strGuide);
 
-		virtual bool LoadAdjustHandlesList(const std::wstring& xml);
-		virtual bool LoadConnectorsList(const std::wstring& xml);
-		virtual bool LoadTextRect(const std::wstring& xml);
-		virtual bool LoadPathList(const std::wstring& xml);
+	virtual bool LoadAdjustHandlesList(const std::wstring& xml);
+	virtual bool LoadConnectorsList(const std::wstring& xml);
+	virtual bool LoadTextRect(const std::wstring& xml);
+	virtual bool LoadPathList(const std::wstring& xml);
 
-		virtual bool SetAdjustment(long index, long value);
-		virtual void ReCalculate();
+	virtual bool SetAdjustment(long index, long value);
+	virtual void ReCalculate();
 
-		static CCustomShape* CreateByType(oox::MSOSPT type);
+	static CCustomShape* CreateByType(oox::MSOSPT type);
 
-		virtual bool SetProperties(CBaseShape* Shape);
-		bool SetShapeType(oox::MSOSPT type);
-	};
-}
+	virtual bool SetProperties(CBaseShape* Shape);
+	bool SetShapeType(oox::MSOSPT type);
+};

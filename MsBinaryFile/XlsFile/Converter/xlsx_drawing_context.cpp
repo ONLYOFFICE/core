@@ -1765,7 +1765,7 @@ bool xlsx_drawing_context::is_lined_shape(_drawing_state_ptr & drawing_state)
 
 std::wstring xlsx_drawing_context::convert_custom_shape(_drawing_state_ptr & drawing_state)
 {
-	NSCustomShapesConvert::CCustomShape * shape = NSCustomShapesConvert::CCustomShape::CreateByType(drawing_state->shape_id);
+	CCustomShape * shape = CCustomShape::CreateByType(drawing_state->shape_id);
 	if (shape == NULL) return L"";
 
 	std::wstring strResult;

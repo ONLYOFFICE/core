@@ -401,11 +401,11 @@ SOURCES += \
 HEADERS += \
 	pptx_format.h \
 	\
+	../../../../MsBinaryFile/Common/Vml/Common.h \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.h \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.h \
 	../../../../MsBinaryFile/Common/Vml/Path.h \
-	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \
-	../../../../MsBinaryFile/Common/Vml/Common.h \
+	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \	
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.h \

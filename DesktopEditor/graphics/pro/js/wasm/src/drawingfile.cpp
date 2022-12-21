@@ -4,6 +4,7 @@
 #include "../../../../pro/Graphics.h"
 #include "../../../../../common/Base64.h"
 #include "../../../../../common/File.h"
+#include "../../../../../fontengine/ApplicationFontsWorker.h"
 #include "drawingfile.h"
 #include "serialize.h"
 
@@ -174,12 +175,19 @@ int main()
 #define DJVU_TEST 0
 #define PDF_TEST  1
 #if PDF_TEST
+
+    CApplicationFontsWorker oWorker;
+    oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
+    oWorker.m_bIsNeedThumbnails = false;
+    NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+    RELEASEINTERFACE(pFonts);
+
     BYTE* pPdfData = NULL;
     DWORD nPdfBytesCount;
     NSFile::CFileBinary oFile;
-    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/font_selection.bin", &pPdfData, nPdfBytesCount))
+    if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/font64_selection2.bin", &pPdfData, nPdfBytesCount))
     {
-        InitializeFontsBin(pPdfData, nPdfBytesCount);
+        InitializeFontsBase64(pPdfData, nPdfBytesCount);
         RELEASEARRAYOBJECTS(pPdfData);
         oFile.CloseFile();
     }
@@ -221,7 +229,7 @@ int main()
     {
         BYTE* pCMapData = NULL;
         DWORD nCMapDataLength;
-        if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/../../../../../../../../PdfFile/Resources/CMapMemory/CMapData", &pCMapData, nCMapDataLength))
+        if (oFile.ReadAllBytes(NSFile::GetProcessDirectory() + L"/cmap.bin", &pCMapData, nCMapDataLength))
         {
             SetCMapData(test, pCMapData, nCMapDataLength);
             oFile.CloseFile();

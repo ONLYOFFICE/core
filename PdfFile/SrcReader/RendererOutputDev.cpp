@@ -58,16 +58,6 @@
 #define FONTS_USE_AFM_SETTINGS
 #else
 #define FONTS_USE_ONLY_MEMORY_STREAMS
-#ifndef TEST_AS_EXECUTABLE
-#include "emscripten.h"
-EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
-    return self.AscViewer.CheckStreamId(data, status);
-});
-EM_JS(int, js_free_id, (unsigned char* data), {
-    self.AscViewer.Free(data);
-    return 1;
-});
-#endif
 #endif
 
 #if defined(_MSC_VER)
@@ -1382,44 +1372,18 @@ namespace PdfReader
                     wsFileName = pFontInfo->m_wsFontPath;
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
-                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
-                    BYTE nStatus = 0;
-                    NSWasm::CData oRes;
-                    oRes.SkipLen();
-                    std::string sNameA = U_TO_UTF8(pFontInfo->m_wsFontName);
-                    oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
-                    oRes.AddInt(pFontInfo->m_bBold);
-                    oRes.AddInt(pFontInfo->m_bItalic);
-                    oRes.WriteLen();
-                    char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
-                    if (!nStatus)
-                    {
-                        // шрифт не загружен.
-                        m_pFontList->Remove(*pFont->getID());
-                        js_free_id((unsigned char*)pFontId);
-                        return;
-                    }
-                    else
-                    {
-                        std::string wsFileNameA(pFontId);
-                        wsFileName = UTF8_TO_U(wsFileNameA);
-                        oMemoryFontStream.fromStream(wsFileName);
-                    }
-                    js_free_id((unsigned char*)pFontId);
-                #else
-                #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-                    // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками
-                    DWORD dwSize = 0;
-                    NSFile::CFileBinary::ReadAllBytes(wsFileName, &oMemoryFontStream.m_pData, dwSize);
-                    oMemoryFontStream.m_nSize = (int)dwSize;
-                    NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(wsFileName, oMemoryFontStream.m_pData, (LONG)oMemoryFontStream.m_nSize, true);
-                #endif
+                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE) || defined(FONTS_USE_ONLY_MEMORY_STREAMS)
+                    oMemoryFontStream.fromStream(wsFileName);
                 #endif
 
                     bFontSubstitution = true;
                 }
                 else // В крайнем случае, в данном шрифте просто не пишем ничего
                 {
+                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
+                    m_pFontList->Remove(*pFont->getID());
+                    return;
+                #endif
                     pEntry->bAvailable = true;
                     return;
                 }

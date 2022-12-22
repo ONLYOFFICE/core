@@ -400,7 +400,7 @@
 		var index = 0;
 		for (var i = 0; i < nRangesCount; i++)
 		{
-			if (!infos[fonts[index + 2]]
+			if (!infos[fonts[index + 2]])
 				return;
 			nLength += (infos[fonts[index + 2]][0].length + 1); // Длина строки + null символ в конце
 			nLength += 4; // int fonts[index]

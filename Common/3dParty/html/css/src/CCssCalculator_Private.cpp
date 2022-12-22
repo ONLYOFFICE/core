@@ -533,8 +533,243 @@ namespace NSCSS
             m_mUsedStyles[arSelectors] = pStyle;
         }
 
-        return *pStyle;
-    }
+		return *pStyle;
+	}
+
+	bool CCssCalculator_Private::GetCompiledStyle(CCompiledStyle &oStyle, const std::vector<CNode> &arSelectors, const bool &bIsSettings, const UnitMeasure &unitMeasure)
+	{
+		if (arSelectors.empty())
+			return false;
+
+		if (unitMeasure != Default)
+			SetUnitMeasure(unitMeasure);
+
+		if (!bIsSettings)
+		{
+			const std::map<std::vector<CNode>, CCompiledStyle*>::iterator oItem = m_mUsedStyles.find(arSelectors);
+
+			if (oItem != m_mUsedStyles.end())
+			{
+				oStyle = *oItem->second;
+				return true;
+			}
+		}
+		else if (NULL == m_mStatictics || m_mStatictics->empty())
+		{
+			oStyle.SetDpi(m_nDpi);
+			oStyle.SetUnitMeasure(m_UnitMeasure);
+			oStyle.SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+
+			oStyle.SetSizeDeviceWindow(m_oDeviceWindow);
+			oStyle.SetSizeSourceWindow(m_oSourceWindow);
+
+			return false;
+		}
+
+		oStyle.SetDpi(m_nDpi);
+		oStyle.SetUnitMeasure(m_UnitMeasure);
+
+		oStyle.SetSizeDeviceWindow(m_oDeviceWindow);
+		oStyle.SetSizeSourceWindow(m_oSourceWindow);
+
+		std::vector<std::wstring> arWords;
+		arWords.reserve(arSelectors.size() * 2);
+
+		std::vector<std::wstring> arNextNodes;
+		arNextNodes.reserve(arSelectors.size() * 2);
+
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+		{
+			arWords.push_back(oNode->m_sName);
+
+			if (oNode->m_sName == L"td")
+				oStyle.m_pMargin.SetPermission(false);
+
+			if (oNode->m_sName == L"table")
+				oStyle.m_pBorder.Block();
+
+			if (!oNode->m_sClass.empty())
+			{
+				if (oNode->m_sClass.find(L' ') != std::wstring::npos)
+				{
+					std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_sClass, L" ");
+
+					if (arClasses.size() > 1)
+						arClasses.resize(unique(arClasses.begin(),arClasses.end()) - arClasses.begin());
+					switch (arClasses.size())
+					{
+						case 1:
+						{
+							arWords.push_back(L'.' + arClasses[0]);
+							break;
+						}
+						case 2:
+						{
+							arWords.push_back(L'.' + arClasses[0] + L" ." + arClasses[1]);
+							break;
+						}
+						case 3:
+						{
+							arWords.push_back(L'.' + arClasses[0] + L" ." + arClasses[1] + L" ." + arClasses[2]);
+							break;
+						}
+						default:
+						{
+							arWords.push_back(std::accumulate(arClasses.begin(), arClasses.end(), std::wstring(),
+							                                  [](std::wstring sRes, const std::wstring& sClass)
+							                                    {return sRes += L'.' + sClass + L' ';}));
+							break;
+						}
+					}
+				}
+				else
+					arWords.push_back(L'.' + oNode->m_sClass);
+			}
+			if (!oNode->m_sId.empty())
+				arWords.push_back(L'#' + oNode->m_sId);
+		}
+
+		std::vector<CElement*> arElements;
+
+		for (size_t i = 0; i < arSelectors.size(); ++i)
+		{
+			std::wstring sName, sId;
+			std::vector<std::wstring> arClasses;
+
+			if (arWords.back()[0] == L'#')
+			{
+				sId = arWords.back();
+				arWords.pop_back();
+				arNextNodes.push_back(sId);
+			}
+
+			if (arWords.back()[0] == L'.')
+			{
+				arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arWords.back(), L" ");
+				arNextNodes.push_back(arWords.back());
+				arWords.pop_back();
+			}
+
+			sName = arWords.back();
+			arWords.pop_back();
+			arNextNodes.push_back(sName);
+			oStyle.AddParent(sName);
+
+			const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(sName);
+			std::map<std::wstring, CElement*>::const_iterator oFindId;
+			std::vector<CElement*> arFindElements;
+
+			if (!sId.empty())
+			{
+				oFindId = m_mData.find(sId);
+
+				if (oFindId != m_mData.end() && NULL != m_mStatictics)
+				{
+					std::map<StatistickElement, unsigned int>::const_iterator oFindCountId = m_mStatictics->find(StatistickElement{StatistickElement::IsId, sId});
+
+					if ((m_mStatictics->end() != oFindCountId) &&
+					   (((bIsSettings && oFindCountId->second < MaxNumberRepetitions) ||
+					     (!bIsSettings && oFindCountId->second >= MaxNumberRepetitions))))
+					{
+						if (!oFindId->second->Empty())
+							arFindElements.push_back(oFindId->second);
+					}
+
+					const std::vector<CElement*> arTempPrev = oFindId->second->GetPrevElements(arNextNodes.rbegin() + ((arClasses.empty()) ? 1 : 2), arNextNodes.rend());
+
+					if (!arTempPrev.empty())
+						arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+				}
+			}
+
+			if (!arClasses.empty())
+			{
+				if (!bIsSettings)
+				{
+					for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
+					{
+						const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
+						if (oFindClass != m_mData.end())
+						{
+							if (!oFindClass->second->Empty())
+								arFindElements.push_back(oFindClass->second);
+
+							const std::vector<CElement*> arTempPrev = oFindClass->second->GetPrevElements(arNextNodes.rbegin() + 2, arNextNodes.rend());
+							const std::vector<CElement*> arTempKins = oFindClass->second->GetNextOfKin(sName);
+
+							if (!arTempPrev.empty())
+								arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+							if (!arTempKins.empty())
+								arFindElements.insert(arFindElements.end(), arTempKins.begin(), arTempKins.end());
+						}
+					}
+				}
+			}
+
+			if (oFindName != m_mData.end())
+			{
+				if (!bIsSettings)
+				{
+					if (!oFindName->second->Empty())
+						arFindElements.push_back(oFindName->second);
+
+					const std::vector<CElement*> arTempPrev = oFindName->second->GetPrevElements(arNextNodes.rbegin() + 1, arNextNodes.rend());
+					const std::vector<CElement*> arTempKins = oFindName->second->GetNextOfKin(sName, arClasses);
+
+					if (!arTempPrev.empty())
+						arFindElements.insert(arFindElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+					if (!arTempKins.empty())
+						arFindElements.insert(arFindElements.end(), arTempKins.begin(), arTempKins.end());
+				}
+			}
+
+
+			if (arFindElements.size() > 1)
+			{
+				std::sort(arFindElements.rbegin(), arFindElements.rend(),
+				          [](CElement* oFirstElement, CElement* oSecondElement)
+				          {
+					          return oFirstElement->GetWeight() > oSecondElement->GetWeight();
+				          });
+			}
+
+			oStyle.AddStyle(arSelectors[i].m_mAttrs, i + 1);
+
+			for (const CElement* oElement : arFindElements)
+				oStyle.AddStyle(oElement->GetStyle(), i + 1);
+
+			if (NULL != m_mStatictics)
+			{
+				std::map<StatistickElement, unsigned int>::const_iterator oFindCountStyle = m_mStatictics->find(StatistickElement{StatistickElement::IsStyle, arSelectors[i].m_sStyle});
+
+				if (oFindCountStyle != m_mStatictics->end())
+				{
+					if ((bIsSettings && oFindCountStyle->second <  MaxNumberRepetitions) ||
+					   (!bIsSettings && oFindCountStyle->second >= MaxNumberRepetitions))
+						oStyle.AddStyle(arSelectors[i].m_sStyle, i + 1,  true);
+					else if (!bIsSettings)
+						oStyle.AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+				}
+				else if (bIsSettings)
+					oStyle.AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+			}
+			else
+				oStyle.AddStyle(arSelectors[i].m_sStyle, i + 1, true);
+		}
+
+		if (!bIsSettings)
+		{
+			oStyle.SetID(arSelectors.back().m_sName + ((!arSelectors.back().m_sClass.empty()) ? L'.' + arSelectors.back().m_sClass : L"") + ((arSelectors.back().m_sId.empty()) ? L"" : L'#' + arSelectors.back().m_sId) + L'-' + std::to_wstring(++m_nCountNodes));
+
+			CCompiledStyle *pTemp = new CCompiledStyle(oStyle);
+
+			m_mUsedStyles[arSelectors] = pTemp;
+		}
+
+		return true;
+	}
 
     void CCssCalculator_Private::AddStyles(const std::string &sStyle)
     {

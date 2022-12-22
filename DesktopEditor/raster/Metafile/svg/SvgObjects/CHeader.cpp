@@ -2,15 +2,13 @@
 
 namespace SVG
 {
-	CHeader::CHeader(CObjectBase *pParent)
-	    : CObjectBase(pParent)
+	CHeader::CHeader(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
 	{
 
 	}
 
 	CHeader::~CHeader()
 	{
-		std::wcout << L"DELETE LINE" << std::endl;
 	}
 
 	bool CHeader::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)

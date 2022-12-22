@@ -93,6 +93,7 @@ namespace NSCSS
         void AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode = true);
         void AddStyle(const std::map<std::wstring, std::wstring>& mStyle, const unsigned int unLevel, const bool& bHardMode = true);
         void AddStyle(const std::wstring& sStyle, const unsigned int unLevel, const bool& bHardMode = false);
+		virtual void AddOtherStyle(const std::pair<std::wstring, std::wstring>& oStyle, const unsigned int unLevel, const bool& bHardMode = true) {};
         void AddParent(const std::wstring& sParentName);
 
         std::vector<std::wstring> GetParentsName() const;

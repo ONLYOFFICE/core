@@ -11,8 +11,8 @@
 
 namespace SVG
 {
-	CText::CText(CObjectBase* pParent, NSFonts::IFontManager* pFontManager)
-	    : CObjectBase(pParent), m_pFontManager(pFontManager), m_oCoord({0, 0})
+	CText::CText(CObjectBase *pParent, CGeneralStyle* pBaseStyle, NSFonts::IFontManager* pFontManager)
+	    : CObjectBase(pParent, pBaseStyle), m_pFontManager(pFontManager), m_oCoord({0, 0})
 	{}
 
 	CText::~CText()
@@ -37,7 +37,7 @@ namespace SVG
 
 		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 
-		UpdateStyle(oNode);
+		SaveNodeData(oNode);
 
 		XmlUtils::CXmlNodes arChilds;
 

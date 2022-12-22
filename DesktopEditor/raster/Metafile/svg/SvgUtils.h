@@ -475,7 +475,7 @@ namespace SVG
 	class ColorParser
 	{
 	public:
-		long ColorFromString(const std::wstring& sColor)
+		long ColorFromString(const std::wstring& sColor) const
 		{
 			if (sColor.length() < 4)
 				return 0;
@@ -509,7 +509,7 @@ namespace SVG
 			return m_oTable.Find(sColor);
 		}
 
-		long ColorFromRgbString(const std::wstring& Rgb)
+		long ColorFromRgbString(const std::wstring& Rgb) const
 		{
 			bool PCT = false;
 			double Color [ 4 ]	=	{ 0.0, 0.0, 0.0, 255 };
@@ -562,7 +562,7 @@ namespace SVG
 			return ( ( (int) (Color [ 0 ]) ) | ( (int) (Color [ 1 ]) << 8 ) | (int) (Color [ 2 ]) << 16 );
 		}
 
-		long ColorFromHexString(const std::wstring& Hex)
+		long ColorFromHexString(const std::wstring& Hex) const
 		{
 			std::wstring value	=	Hex.substr (1);
 			const wchar_t* buf = value.c_str();

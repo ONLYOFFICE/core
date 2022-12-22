@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CEllipse::CEllipse(CObjectBase *pParent) : CObjectBase(pParent)
+	CEllipse::CEllipse(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
 	{}
 
 	bool CEllipse::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
@@ -15,7 +15,7 @@ namespace SVG
 		m_dRx = oNode.GetAttributeDouble(L"rx");
 		m_dRy = oNode.GetAttributeDouble(L"ry");
 
-		UpdateStyle(oNode);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -47,8 +47,5 @@ namespace SVG
 	{
 		if (NULL == pRenderer)
 			return;
-
-		pRenderer->put_BrushColor1(m_oStyle.GetFillL());
-		pRenderer->put_PenColor(m_oStyle.GetStrokeColor());
 	}
 }

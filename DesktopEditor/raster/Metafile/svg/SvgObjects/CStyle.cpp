@@ -4,9 +4,32 @@
 
 namespace SVG
 {
-	CStyle::CStyle()
+	CGeneralStyle::CGeneralStyle()
 	{
 
+	}
+
+	CGeneralStyle::~CGeneralStyle()
+	{
+
+	}
+
+	void CGeneralStyle::AddStyle(const std::wstring &wsStyle)
+	{
+		m_oCssCalculator.AddStyles(wsStyle);
+	}
+
+	CStyle CGeneralStyle::GetStyle(const std::vector<NSCSS::CNode>& arNodes) const
+	{
+		CStyle oStyle;
+		m_oCssCalculator.GetCompiledStyle(oStyle, arNodes);
+
+		return oStyle;
+	}
+
+	CStyle::CStyle()
+	{
+		m_pBackground.SavebWithoutProcessing();
 	}
 
 	CStyle::~CStyle()
@@ -14,36 +37,26 @@ namespace SVG
 
 	}
 
-	void CStyle::SetStyle(const std::vector<NSCSS::CNode> &arXmlNodes)
+	void CStyle::AddOtherStyle(const std::pair<std::wstring, std::wstring> &oStyle, const unsigned int unLevel, const bool &bHardMode)
 	{
-		NSCSS::CCompiledStyle oCompiledStyle = m_oCssCalculator.GetCompiledStyle(arXmlNodes);
-
-		m_lStrokeColor = m_oColorParser.ColorFromString(L'#' + oCompiledStyle.m_pText.GetColor());
-		m_lFillColor = m_oColorParser.ColorFromString(L'#' + oCompiledStyle.m_pBackground.GetColorHex());
-	}
-
-	void CStyle::SetStyle(const std::wstring &wsStyle)
-	{
-		std::wstring::size_type unFind = wsStyle.find(L"stroke:");
-
-		if (std::wstring::npos != unFind)
+		if (L"fill" == oStyle.first)
 		{
-			m_lStrokeColor = m_oColorParser.ColorFromString(L"rgb(200, 0, 0)");
+			const size_t unPositionImp = oStyle.second.find(L"!i");
+			if (unPositionImp == std::wstring::npos)
+			{
+				m_pBackground.SetColor(oStyle.second, unLevel, bHardMode);
+			}
+			else if (unPositionImp != 0)
+			{
+				m_pBackground.SetColor(oStyle.second.substr(0, unPositionImp - 1), unLevel, true);
+				m_pBackground.SetImportantBackground(true);
+			}
 		}
 	}
 
-	void CStyle::SetStrokeColor(const std::wstring &wsStrokeColor)
+	std::wstring CStyle::GetFill() const
 	{
-		m_lStrokeColor = m_oColorParser.ColorFromString(wsStrokeColor);
+		return m_pBackground.GetColorHex();
 	}
 
-	long CStyle::GetStrokeColor() const
-	{
-		return m_lStrokeColor;
-	}
-
-	long CStyle::GetFillL() const
-	{
-		return m_lFillColor;
-	}
 }

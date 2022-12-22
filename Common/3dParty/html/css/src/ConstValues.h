@@ -2523,12 +2523,13 @@ namespace NSCSS
             {
                 std::wstring sColor;
                 bool bInBorder;
+				bool bWithoutProcessing;
 
                 std::vector<bool> bImportants;
                 std::vector<unsigned int> arLevels;
             public:
 
-                Background() : bInBorder(false), bImportants({false}), arLevels({0}){}
+				Background() : bInBorder(false), bWithoutProcessing(false), bImportants({false}), arLevels({0}){}
 
                 void ClearImportants()
                 {
@@ -2544,6 +2545,11 @@ namespace NSCSS
                 {
                     return bInBorder;
                 }
+
+				void SavebWithoutProcessing()
+				{
+					bWithoutProcessing = true;
+				}
 
                 Background operator+=(const Background& oBackground)
                 {
@@ -2619,14 +2625,20 @@ namespace NSCSS
                         std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), towlower);
 
                         if (sNewColor == L"transparent")
-                            return;
+						{
+							if (bWithoutProcessing)
+								sColor = L"transparent";
 
+							return;
+						}
                         const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
                         if (oHEX != NSMaps::mColors.end())
                         {
                             arLevels[0] = unLevel;
                             sColor = oHEX->second;
                         }
+						else if (bWithoutProcessing)
+							sColor = sNewColor;
                     }
                 }
 

@@ -13,7 +13,7 @@ namespace SVG
 	class CText : public CObjectBase
 	{
 	public:
-		CText(CObjectBase* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
+		CText(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL, NSFonts::IFontManager* pFontManager = NULL);
 		virtual ~CText();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;

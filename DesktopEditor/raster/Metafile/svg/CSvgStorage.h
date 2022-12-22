@@ -2,6 +2,7 @@
 #define CSVGSTORAGE_H
 
 #include "SvgObjects/CObjectBase.h"
+#include "SvgObjects/CStyle.h"
 
 namespace SVG
 {
@@ -18,9 +19,13 @@ namespace SVG
 		void AddObject(CObjectBase* pObject);
 		CObjectBase* GetFirstObject();
 
+		void AddStyle(const std::wstring& wsStyle);
+		CGeneralStyle* GetStyle();
+
 		bool Draw(IRenderer *pRenderer) const;
 	private:
 		std::vector<CObjectBase*> m_arObjects;
+		CGeneralStyle             m_oStyle;
 	};
 }
 

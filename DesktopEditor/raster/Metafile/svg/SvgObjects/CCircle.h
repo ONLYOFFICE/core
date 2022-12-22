@@ -8,7 +8,7 @@ namespace SVG
 	class CCircle : public CObjectBase
 	{
 	public:
-		CCircle(CObjectBase* pParent = NULL);
+		CCircle(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
 		virtual ~CCircle();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;

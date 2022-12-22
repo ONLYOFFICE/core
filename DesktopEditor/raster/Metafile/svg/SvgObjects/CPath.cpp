@@ -4,7 +4,7 @@
 
 namespace SVG
 {
-	CPath::CPath(CObjectBase *pParent) : CObjectBase(pParent)
+	CPath::CPath(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
 	{
 
 	}
@@ -24,7 +24,7 @@ namespace SVG
 
 		ReadFromString(wsPoints);
 
-		UpdateStyle(oNode);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -53,9 +53,6 @@ namespace SVG
 	{
 		if (NULL == pRenderer)
 			return;
-
-		pRenderer->put_BrushColor1(m_oStyle.GetFillL());
-		pRenderer->put_PenColor(m_oStyle.GetStrokeColor());
 	}
 
 	void CPath::ReadFromString(const std::wstring &wsValue)

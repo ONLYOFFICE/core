@@ -20,6 +20,7 @@ namespace NSCSS
         ~CCssCalculator();
 
         CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Default) const;
+		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Default) const;
 
         // void AddStyle(const std::vector<std::string>& sSelectors, const std::string& sStyle);
         void AddStyles        (const std::string&  sStyle);

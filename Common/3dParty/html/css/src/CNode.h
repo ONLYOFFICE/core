@@ -47,6 +47,9 @@ namespace NSCSS
             if(m_sStyle != oNode.m_sStyle)
                 return m_sStyle < oNode.m_sStyle;
 
+			if (m_mAttrs != oNode.m_mAttrs)
+				return m_mAttrs < oNode.m_mAttrs;
+
             return false;
         }
 
@@ -55,7 +58,8 @@ namespace NSCSS
             return((m_sId == oNode.m_sId)       &&
                    (m_sName == oNode.m_sName)   &&
                    (m_sClass == oNode.m_sClass) &&
-                   (m_sStyle == oNode.m_sStyle));
+			       (m_sStyle == oNode.m_sStyle) &&
+			       (m_mAttrs == oNode.m_mAttrs));
         }
     };
 }

@@ -15,7 +15,7 @@ namespace SVG
 	void CSvgStorage::Clear()
 	{
 		for (CObjectBase* pObject : m_arObjects)
-			delete pObject;
+			delete pObject;	
 	}
 
 	bool CSvgStorage::Empty() const
@@ -37,12 +37,21 @@ namespace SVG
 		return m_arObjects.front();
 	}
 
+	void CSvgStorage::AddStyle(const std::wstring& wsStyle)
+	{
+		m_oStyle.AddStyle(wsStyle);
+	}
+
+	CGeneralStyle *CSvgStorage::GetStyle()
+	{
+		return &m_oStyle;
+	}
+
 	bool CSvgStorage::Draw(IRenderer *pRenderer) const
 	{
 		for (CObjectBase* pObject : m_arObjects)
 		{
-			if (!pObject->Draw(pRenderer))
-				return false;
+			pObject->Draw(pRenderer);
 		}
 
 		return true;

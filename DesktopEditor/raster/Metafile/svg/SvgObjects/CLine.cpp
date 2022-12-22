@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CLine::CLine(CObjectBase* pParent) : CObjectBase(pParent)
+	CLine::CLine(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
 	{
 
 	}
@@ -21,7 +21,7 @@ namespace SVG
 		m_dX2 = oNode.GetAttributeDouble(L"x2");
 		m_dY2 = oNode.GetAttributeDouble(L"y2");
 
-		UpdateStyle(oNode);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -50,9 +50,7 @@ namespace SVG
 
 	void CLine::ApplyStyle(IRenderer *pRenderer)
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || NULL == m_pStyle)
 			return;
-
-		pRenderer->put_PenColor(m_oStyle.GetStrokeColor());
 	}
 }

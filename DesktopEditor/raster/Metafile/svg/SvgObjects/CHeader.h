@@ -8,7 +8,7 @@ namespace SVG
 	class CHeader : public CObjectBase
 	{
 	public:
-		CHeader(CObjectBase* pParent = NULL);
+		CHeader(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
 		virtual ~CHeader();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;

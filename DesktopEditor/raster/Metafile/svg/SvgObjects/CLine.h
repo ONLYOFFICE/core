@@ -8,7 +8,7 @@ namespace SVG
 	class CLine : public CObjectBase
 	{
 	public:
-		CLine(CObjectBase* pParent = NULL);
+		CLine(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
 		virtual ~CLine();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;

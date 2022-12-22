@@ -2,7 +2,7 @@
 #define COBJECTBASE_H
 
 #include "../../../xml/include/xmlutils.h"
-#include "./../IRenderer.h"
+#include "../../IRenderer.h"
 #include "CStyle.h"
 
 namespace SVG
@@ -10,29 +10,30 @@ namespace SVG
 	class CObjectBase
 	{
 	public:
-		CObjectBase(CObjectBase* pParent = NULL) : m_pParent(pParent) {};
+		CObjectBase(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL) : m_pParent(pParent), m_pStyle(pBaseStyle) {};
 		virtual ~CObjectBase(){};
 
 		virtual bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) = 0;
 		virtual bool Draw(IRenderer* pRenderer) = 0;
 	private:
-		void UpdateStyle(XmlUtils::CXmlNode& oNode)
+		void SaveNodeData(XmlUtils::CXmlNode& oNode)
 		{
+			if (NULL == m_pStyle)
+				return;
+
 			NSCSS::CNode oXmlNode;
 
-			oXmlNode.m_sName  = oNode.GetName();
-			oXmlNode.m_sClass = oNode.GetAttribute(L"class");
-			oXmlNode.m_sId    = oNode.GetAttribute(L"id");
-			oXmlNode.m_sStyle = oNode.GetAttribute(L"style");
+			m_oXmlNode.m_sName  = oNode.GetName();
+			m_oXmlNode.m_sClass = oNode.GetAttribute(L"class");
+			m_oXmlNode.m_sId    = oNode.GetAttribute(L"id");
+			m_oXmlNode.m_sStyle = oNode.GetAttribute(L"style");
 
 			std::vector<std::wstring> arProperties, arValues;
 
 			oNode.GetAllAttributes(arProperties, arValues);
 
 			for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-				oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
-
-			m_oStyle.SetStyle({oXmlNode});
+				m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
 		};
 
 		virtual void ApplyStyle(IRenderer* pRenderer) = 0;
@@ -45,8 +46,9 @@ namespace SVG
 		friend class CText;
 		friend class CTspan;
 
-		CObjectBase* m_pParent;
-		CStyle   m_oStyle;
+		CObjectBase    *m_pParent;
+		const CGeneralStyle  *m_pStyle;
+		NSCSS::CNode    m_oXmlNode;
 	};
 }
 

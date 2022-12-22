@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CCircle::CCircle(CObjectBase *pParent) : CObjectBase(pParent)
+	CCircle::CCircle(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
 	{
 
 	}
@@ -21,7 +21,7 @@ namespace SVG
 		m_dCy = oNode.GetAttributeDouble(L"cy");
 		m_dR  = oNode.GetAttributeDouble(L"r");
 
-		UpdateStyle(oNode);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -53,9 +53,6 @@ namespace SVG
 	{
 		if (NULL == pRenderer)
 			return;
-
-		pRenderer->put_BrushColor1(m_oStyle.GetFillL());
-		pRenderer->put_PenColor(m_oStyle.GetStrokeColor());
 	}
 
 }

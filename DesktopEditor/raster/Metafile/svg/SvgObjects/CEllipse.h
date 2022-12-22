@@ -9,7 +9,7 @@ namespace SVG
 	class CEllipse : public CObjectBase
 	{
 	public:
-		CEllipse(CObjectBase* pParent = NULL);
+		CEllipse(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) override;

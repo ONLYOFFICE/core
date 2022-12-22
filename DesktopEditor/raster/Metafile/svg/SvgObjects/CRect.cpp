@@ -1,8 +1,9 @@
 #include "CRect.h"
+#include "CStyle.h"
 
 namespace SVG
 {
-	CRect::CRect(CObjectBase *pParent) : CObjectBase(pParent)
+	CRect::CRect(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
 	{
 
 	}
@@ -27,7 +28,7 @@ namespace SVG
 		if (0 == m_dWidth || 0 == m_dHeight)
 			return false;
 
-		UpdateStyle(oNode);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -84,10 +85,12 @@ namespace SVG
 
 	void CRect::ApplyStyle(IRenderer *pRenderer)
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || NULL == m_pStyle)
 			return;
 
-		pRenderer->put_BrushColor1(m_oStyle.GetFillL());
+		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+
+		std::wstring oFill = oStyle.GetFill();
 	}
 
 }

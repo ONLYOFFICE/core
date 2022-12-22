@@ -7,27 +7,32 @@
 
 namespace SVG
 {
-	static ColorParser m_oColorParser;
+	static const ColorParser m_oColorParser;
 
-	class CStyle
+	class CStyle;
+
+	class CGeneralStyle
+	{
+	public:
+		CGeneralStyle();
+		~CGeneralStyle();
+
+		void AddStyle(const std::wstring& wsStyle);
+		CStyle GetStyle(const std::vector<NSCSS::CNode>& arNodes) const;
+
+	private:
+		NSCSS::CCssCalculator m_oCssCalculator;
+	};
+
+	class CStyle : public NSCSS::CCompiledStyle
 	{
 	public:
 		CStyle();
 		~CStyle();
 
-		void SetStyle(const std::vector<NSCSS::CNode>& arXmlNodes);
+		virtual void AddOtherStyle(const std::pair<std::wstring, std::wstring>& oStyle, const unsigned int unLevel, const bool& bHardMode = true);
 
-		void SetStyle(const std::wstring& wsStyle);
-
-		void SetStrokeColor(const std::wstring& wsStrokeColor);
-		long GetStrokeColor() const;
-
-		long GetFillL() const;
-
-	private:
-		NSCSS::CCssCalculator m_oCssCalculator;
-		long m_lStrokeColor;
-		long m_lFillColor;
+		std::wstring GetFill() const;
 	};
 }
 

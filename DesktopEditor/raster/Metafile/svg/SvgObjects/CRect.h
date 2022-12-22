@@ -8,7 +8,7 @@ namespace SVG
 	class CRect : public CObjectBase
 	{
 	public:
-		CRect(CObjectBase* pParent = NULL);
+		CRect(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
 		virtual ~CRect();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;

@@ -363,6 +363,17 @@ namespace SVG
 				                              m_arPoints[unIndex + 1].dX, m_arPoints[unIndex + 1].dY,
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
 
+//			pRenderer->PathCommandMoveTo(m_arPoints.back().dX, m_arPoints.back().dY);
+//			pRenderer->PathCommandArcTo(m_arPoints.back().dX - 1, m_arPoints.back().dY - 1, 2, 2, 0, 360);
+//			pRenderer->PathCommandMoveTo(m_arPoints.front().dX, m_arPoints.front().dY);
+
+//			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() - 1; ++unIndex)
+//			{
+//				pRenderer->PathCommandLineTo(m_arPoints[unIndex].dX, m_arPoints[unIndex].dY);
+
+//				pRenderer->PathCommandArcTo(m_arPoints[unIndex].dX - 1, m_arPoints[unIndex].dY - 1, 2, 2, 0, 360);
+//				pRenderer->PathCommandMoveTo(m_arPoints[unIndex].dX, m_arPoints[unIndex].dY);
+//			}
 		}
 
 		void Rotate(double dAngle, Point oCenter)
@@ -1081,7 +1092,7 @@ namespace SVG
 	class CPath : public CObjectBase
 	{
 	public:
-		CPath(CObjectBase* pParent = NULL);
+		CPath(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
 		virtual ~CPath();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;

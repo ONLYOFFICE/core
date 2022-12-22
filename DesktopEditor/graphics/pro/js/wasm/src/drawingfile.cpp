@@ -46,6 +46,11 @@ WASM_EXPORT void InitializeFontsBase64(BYTE* pDataSrc, int nLenSrc)
 		RELEASEARRAYOBJECTS(pDataDst);
 	}
 }
+WASM_EXPORT void InitializeFontsRanges(BYTE* pDataSrc)
+{
+    if (g_applicationFonts && pDataSrc)
+        g_applicationFonts->InitializeRanges(pDataSrc);
+}
 WASM_EXPORT void SetFontBinary(char* path, BYTE* data, int size)
 {
 	NSFonts::IFontsMemoryStorage* pStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();

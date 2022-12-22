@@ -367,6 +367,15 @@
     {
         Module["_free"](pointer);
     };
+	
+	function IntToUint8(n)
+	{
+		var byte1 = n & 0xff;
+		var byte2 = (n >> 8) & 0xff;
+		var byte3 = (n >> 16) & 0xff;
+		var byte4 = (n >> 24) & 0xff;
+		return new Uint8Array([byte1, byte2, byte3, byte4]);
+	}
 
     self["AscViewer"]["CDrawingFile"] = CFile;
 	self["AscViewer"]["InitializeFonts"] = function() {
@@ -378,6 +387,58 @@
 		Module["_InitializeFontsBase64"](pointer, memoryBuffer.length);
 		Module["_free"](pointer);
 		delete window["g_fonts_selection_bin"];
+
+		if (!window["__fonts_ranges"] || !window["__fonts_infos"])
+			return;
+
+		var fonts = window["__fonts_ranges"];
+		var infos = window["__fonts_infos"];
+		var nRangesCount = window["__fonts_ranges"].length / 3;
+
+		// Вычисление длины для ranges
+		var nLength = 4; // В начале записано int количество ranges
+		var index = 0;
+		for (var i = 0; i < nRangesCount; i++)
+		{
+			if (!infos[fonts[index + 2]]
+				return;
+			nLength += (infos[fonts[index + 2]][0].length + 1); // Длина строки + null символ в конце
+			nLength += 4; // int fonts[index]
+			nLength += 4; // int fonts[index + 1]
+			index += 3;
+		}
+
+		// Создание и заполнение Uint8Array ranges
+		var Ranges = new Uint8Array(nLength);
+		Ranges.set(IntToUint8(nRangesCount));
+		index = 0;
+		var j = 4;
+		for (var i = 0; i < nRangesCount; i++)
+		{
+			var sFontName = infos[fonts[index + 2]][0].toUtf8();
+			Ranges.set(sFontName, j);
+		    j += sFontName.length;
+			Ranges[j++] = 0;
+			Ranges.set(IntToUint8(fonts[index]), j);
+			j += 4;
+			Ranges.set(IntToUint8(fonts[index + 1]), j);
+			j += 4;
+			index += 3;
+		}
+
+		// Проверка
+		var reader = new CBinaryReader(Ranges, 0, nLength);
+		var nL = reader.readInt();
+
+		// Отправка ranges
+		var pointer = Module["_malloc"](Ranges.length);
+		Module.HEAP8.set(Ranges, pointer);
+		Module["_InitializeFontsRanges"](pointer);
+		Module["_free"](pointer);
+
+		// Удаление...
+		// delete window["__fonts_ranges"];
+		// delete window["__fonts_infos"];
 	};
     self["AscViewer"]["Free"] = function(pointer) {
 		Module["_free"](pointer);

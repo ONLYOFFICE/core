@@ -345,7 +345,7 @@ void draw_polygon::reset_polygon_path()
 //-------------------------------------------------------------------------------------------
 void draw_equation_attlist::serialize(CP_ATTR_NODE)
 {	
-	CP_XML_ATTR_OPT(L"draw:name", draw_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name", draw_name_);
 	CP_XML_ATTR_OPT(L"draw:formula", draw_formula_);
 }
 void draw_handle_attlist::serialize(CP_ATTR_NODE)

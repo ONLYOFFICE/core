@@ -98,7 +98,6 @@ public:
 
     _CP_OPT(unsigned int) text_c_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_s);
 
 // text:tab
@@ -124,7 +123,6 @@ public:
 
     _CP_OPT(unsigned int) text_tab_ref_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_tab);
 
 // text:line-break
@@ -146,7 +144,6 @@ public:
     text_line_break() {};
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_line_break);
 
 // text:bookmark
@@ -159,9 +156,6 @@ public:
 
     static const ElementType type = typeTextBookmark;
     
-
-public:
-
 	text_bookmark() {}
     text_bookmark(const std::wstring & Name) : text_name_(Name){};
 
@@ -172,7 +166,6 @@ public:
 
     std::wstring text_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark);
 
 // text:bookmark-start
@@ -185,8 +178,6 @@ public:
 
     static const ElementType type = typeTextBookmarkStart;
     
-
-public:
     text_bookmark_start() {}
     text_bookmark_start(const std::wstring & Name) : text_name_(Name){};
 
@@ -197,7 +188,6 @@ public:
 
     std::wstring text_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark_start);
 
 // text:bookmark-end
@@ -209,9 +199,7 @@ public:
     static const wchar_t * name;
 
     static const ElementType type = typeTextBookmarkEnd;
-    
 
-public:
     text_bookmark_end() {} ;
     text_bookmark_end(const std::wstring & Name) : text_name_(Name){};
 
@@ -222,7 +210,6 @@ public:
 
     std::wstring text_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_bookmark_end);
 
 // text:reference-mark
@@ -234,9 +221,7 @@ public:
     static const wchar_t * name;
 
     static const ElementType type = typeTextReferenceMark;
-    
 
-public:
     text_reference_mark() {};
     text_reference_mark(const std::wstring & Name) : text_name_(Name){};
     
@@ -247,7 +232,6 @@ public:
 
     std::wstring text_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_reference_mark);
 
 // text:reference-mark-start
@@ -260,8 +244,6 @@ public:
 
     static const ElementType type = typeTextReferenceMarkStart;
     
-
-public:
     text_reference_mark_start() {}
     text_reference_mark_start(const std::wstring & Name) : text_name_(Name){}
 
@@ -272,7 +254,6 @@ public:
 
     std::wstring text_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_reference_mark_start);
 
 // text:reference-mark-end
@@ -285,8 +266,6 @@ public:
 
     static const ElementType type = typeTextReferenceMarkEnd;
     
-
-public:
     text_reference_mark_end() {};
     text_reference_mark_end(const std::wstring & Name) : text_name_(Name){};
 
@@ -297,7 +276,6 @@ public:
 
 	std::wstring text_name_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_reference_mark_end);
 
 // text:span
@@ -325,7 +303,6 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_span);
 
 // text:a
@@ -338,8 +315,6 @@ public:
 
     static const ElementType type = typeTextA;
     
-
-public:
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element( const office_element_ptr & child_element);
 
@@ -359,7 +334,6 @@ public:
 
     office_element_ptr_array				paragraph_content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_a);
 
 // text:note-citation
@@ -385,7 +359,6 @@ public:
     office_element_ptr_array	content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_note_citation);
 
 // text:note-body
@@ -410,7 +383,6 @@ public:
 
 	office_element_ptr_array    content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_note_body);
 
 
@@ -441,7 +413,6 @@ public:
     office_element_ptr		text_note_body_;
   
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_note);
 
 // text:ruby
@@ -468,7 +439,6 @@ public:
     office_element_ptr	text_ruby_text_;
   
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_ruby);
 
 class common_field_fixed_attlist
@@ -503,7 +473,6 @@ public:
     office_element_ptr_array content_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_title);
 
 // text:placeholder
@@ -526,7 +495,6 @@ public:
 
     office_element_ptr_array content_;
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_placeholder);
 
 // text:page-number
@@ -555,7 +523,6 @@ public:
 
     office_element_ptr_array text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_page_number);
 
 // text:page-count
@@ -579,7 +546,6 @@ public:
 
     office_element_ptr_array text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_page_count);
 
 // text:date 
@@ -606,7 +572,6 @@ public:
 
     office_element_ptr_array	text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_date);
 
 // text:time 
@@ -633,7 +598,6 @@ public:
 
     office_element_ptr_array		text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_time);
 
 // text:file-name 
@@ -657,7 +621,6 @@ public:
 
     office_element_ptr_array text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_file_name);
 
 // text:sequence
@@ -729,7 +692,6 @@ public:
 
     office_element_ptr_array text_;    
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(text_sheet_name);
 
 //---------------------------------------------------------------------------------------------------
@@ -911,8 +873,6 @@ public:
     static const wchar_t * name;
 
     static const ElementType	type		= typeTextBibliographyMark;
-    
-	
 
 	virtual void create_child_element	(const std::wstring & Ns, const std::wstring & Name){}
 	virtual void add_child_element		( const office_element_ptr & child_element){}

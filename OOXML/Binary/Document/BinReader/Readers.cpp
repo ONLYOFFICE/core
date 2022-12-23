@@ -6344,7 +6344,13 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 }
 int Binary_DocumentTableReader::ReadMathCtrlPrDelIns(BYTE type, long length, void* poResult)
 {
-	return oBinary_rPrReader.ReadrPrChange2(type, length, poResult);
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CTrackChange* trackChange = static_cast<ComplexTypes::Word::CTrackChange*>(poResult);
+
+	READ1_TRACKREV_2(type, length, trackChange)
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
 }
 
 int Binary_DocumentTableReader::ReadMathDelimiter(BYTE type, long length, void* poResult)

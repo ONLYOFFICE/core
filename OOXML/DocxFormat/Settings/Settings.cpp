@@ -833,7 +833,7 @@ namespace Settings
 		sResult += m_oFormatting.ToAttribute( L"w:formatting");
 		sResult += m_oEnforcment.ToAttribute( L"w:enforcement");
 
-		if (m_oCryptProviderType.IsInit())
+		if (m_oCryptProviderType.IsInit() || m_oCryptAlgorithmSid.IsInit())
 		{
 			ComplexTypes_WriteAttribute(L"w:cryptProviderType=\"", m_oCryptProviderType);
 			sResult += m_oAlgIdExt.ToAttribute(L"w:algIdEx");
@@ -1737,7 +1737,7 @@ namespace Settings
 
 		sResult += m_oRecommended.ToAttribute( L"w:recommended");
 
-		if (m_oCryptProviderType.IsInit())
+		if (m_oCryptProviderType.IsInit() || m_oCryptAlgorithmSid.IsInit())
 		{
 			ComplexTypes_WriteAttribute(L"w:cryptProviderType=\"", m_oCryptProviderType);
 			sResult += m_oAlgIdExt.ToAttribute(L"w:algIdEx");

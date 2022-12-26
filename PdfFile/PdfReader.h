@@ -52,6 +52,11 @@ public:
     std::wstring GetTempDirectory();
     void SetTempDirectory(const std::wstring& directory);
 
+    bool IsNeedCMap();
+    void SetCMapMemory(BYTE* pData, DWORD nSizeData);
+    void SetCMapFolder(const std::wstring& sFolder);
+    void SetCMapFile(const std::wstring& sFile);
+
     void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
     std::wstring GetInfo();

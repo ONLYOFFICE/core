@@ -477,6 +477,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 					count--;
 				}			
 			}break;
+			case rt_Lbl_BIFF34:
 			case rt_Lbl:
 			{
 				count = proc.repeated<LBL>(0, 0);

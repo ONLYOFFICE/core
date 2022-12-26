@@ -210,6 +210,9 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsErrorsOnly = false;
 	m_bIsTimestamp = true;
 	m_bIsDeleteOk = false;
+	m_bIsfilenameCsvTxtParams = true;
+	m_defaultCsvDelimiter = L";";
+	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList.SetDefault();
 	m_outputFormatsList.SetOutput();
 	SetConfig(configPath);
@@ -277,10 +280,13 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"outputDirectory") m_outputDirectory = node.GetText();
 			else if(name == L"x2tPath") m_x2tPath = node.GetText();
 			else if(name == L"cores") m_maxProc = std::stoi(node.GetText());
-			else if(name == L"errorsOnly") m_bIsErrorsOnly = std::stoi(node.GetText());
-			else if(name == L"timestamp") m_bIsTimestamp = std::stoi(node.GetText());
-			else if(name == L"deleteOk") m_bIsDeleteOk = std::stoi(node.GetText());
-			else if(name == L"inputFilesList")
+			else if(name == L"errorsOnly" && !node.GetText().empty()) m_bIsErrorsOnly = std::stoi(node.GetText());
+			else if(name == L"timestamp" && !node.GetText().empty()) m_bIsTimestamp = std::stoi(node.GetText());
+			else if(name == L"deleteOk" && !node.GetText().empty()) m_bIsDeleteOk = std::stoi(node.GetText());
+			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty())  m_bIsfilenameCsvTxtParams = std::stoi(node.GetText());
+			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
+			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
+			else if(name == L"inputFilesList" && !node.GetText().empty())
 			{
 				XmlUtils::CXmlNode files_list_root;
 				XmlUtils::CXmlNodes files_list_nodes;
@@ -300,14 +306,14 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 					std::cerr << "Input files list is not open!" << std::endl;
 				}
 			}
-			else if(name == L"input")
+			else if(name == L"input" && !node.GetText().empty())
 			{
 				default_input_formats = false;
 				std::wstring extensions = node.GetText();
 				extensions += L' ';
 				m_inputFormats = ParseExtensionsString(extensions, m_inputFormatsList);
 			}
-			else if(name == L"output")
+			else if(name == L"output" && !node.GetText().empty())
 			{
 				default_output_formats = false;
 				std::wstring extensions = node.GetText();
@@ -405,6 +411,7 @@ void Cx2tTester::Start()
 	for(int i = 0; i < files.size(); i++)
 	{
 		std::wstring& input_file = files[i];
+		std::wstring input_filename = NSFile::GetFileName(input_file);
 
 		std::wstring input_ext = L'.' + NSFile::GetFileExtention(input_file);
 		int input_format = COfficeFileFormatChecker::GetFormatByExtension(input_ext);
@@ -449,6 +456,38 @@ void Cx2tTester::Start()
 			}
 		}
 
+		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
+		std::wstring csvDelimiter = m_defaultCsvDelimiter;
+
+		// setup csv & txt additional params
+		if(m_bIsfilenameCsvTxtParams
+				|| input_format == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT
+				|| input_format == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
+		{
+			std::wstring find_str = L"[cp";
+			size_t pos1 = input_filename.find(find_str);
+			size_t pos2 = input_filename.find(L"]", pos1 + 1);
+			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+				csvTxtEncodingS = input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size());
+		}
+
+		int csvTxtEncoding;
+		for(auto &val : NSUnicodeConverter::Encodings)
+			if(val.Name == U_TO_UTF8(csvTxtEncodingS))
+			{
+				csvTxtEncoding = val.Index;
+				break;
+			}
+
+		if(m_bIsfilenameCsvTxtParams || input_format == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
+		{
+			std::wstring find_str = L"[del%";
+			size_t pos1 = input_filename.find(find_str);
+			size_t pos2 = input_filename.find(L"]", pos1 + 1);
+			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+				csvDelimiter = (wchar_t)std::stoi(input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size()), nullptr, 16);
+		}
+
 		// setup folder for output files
 		if(NSDirectory::Exists(output_files_directory))
 			NSDirectory::DeleteDirectory(output_files_directory);
@@ -473,6 +512,8 @@ void Cx2tTester::Start()
 		converter->SetErrorsOnly(m_bIsErrorsOnly);
 		converter->SetDeleteOk(m_bIsDeleteOk);
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
+		converter->SetCsvTxtEncoding(csvTxtEncoding);
+		converter->SetCsvDelimiter(csvDelimiter);
 		converter->SetFilesCount(files.size(), i + 1);
 		converter->DestroyOnFinish();
 		m_currentProc++;
@@ -617,6 +658,14 @@ void CConverter::SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory)
 {
 	m_errorsXmlDirectory = errorsXmlDirectory;
 }
+void CConverter::SetCsvTxtEncoding(int csvTxtEncoding)
+{
+	m_csvTxtEncoding = csvTxtEncoding;
+}
+void CConverter::SetCsvDelimiter(std::wstring csvDelimiter)
+{
+	m_csvDelimiter = csvDelimiter;
+}
 void CConverter::SetFilesCount(int totalFiles, int currFile)
 {
 	m_totalFiles = totalFiles;
@@ -691,6 +740,23 @@ DWORD CConverter::ThreadProc()
 				builder.WriteString(L"4");
 			builder.WriteString(L"</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
 		}
+
+		// csv & txt needs encoding param
+		if(m_inputFormat == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT || m_inputFormat == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
+		{
+			builder.WriteString(L"<m_nCsvTxtEncoding>");
+			builder.WriteEncodeXmlString(std::to_wstring(m_csvTxtEncoding));
+			builder.WriteString(L"</m_nCsvTxtEncoding>");
+		}
+
+		// csv needs delimiter param
+		if(m_inputFormat == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
+		{
+			builder.WriteString(L"<m_nCsvDelimiterChar>");
+			builder.WriteEncodeXmlString(m_csvDelimiter);
+			builder.WriteString(L"</m_nCsvDelimiterChar>");
+		}
+
 
 		builder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
 

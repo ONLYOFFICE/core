@@ -99,12 +99,3 @@ bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pDat
 	return false;
 #endif
 }
-
-bool PdfReader::GetBaseCMap(const char* sName, const char*& pData, unsigned int& nSize)
-{
-#ifdef CMAP_USE_MEMORY
-    return GetMemoryCMap(sName, pData, nSize);
-#else
-    return false;
-#endif
-}

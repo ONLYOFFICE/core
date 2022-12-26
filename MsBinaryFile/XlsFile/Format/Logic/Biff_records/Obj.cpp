@@ -189,6 +189,8 @@ void Obj::readFields(CFRecord& record)
 		}	
 		else if(OBJ_DropdownList == cmo.ot)
 		{
+			cmo.fUIObj = true;
+
 			old_version.bFill = true;
 			record >> old_version.fill;
 			record >> old_version.line;		

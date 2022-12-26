@@ -76,9 +76,20 @@
         this.pos += len;
         return val;
     };
+    CBinaryReader.prototype.readData = function()
+    {
+        var len = this.readInt();
+        var val = this.data.slice(this.pos, this.pos + len);
+        this.pos += len;
+        return val;
+    };
     CBinaryReader.prototype.isValid = function()
     {
         return (this.pos < this.limit) ? true : false;
+    };
+    CBinaryReader.prototype.Skip = function(nPos)
+    {
+        this.pos += nPos;
     };
 
     function CFile()
@@ -135,6 +146,23 @@
     CFile.prototype["isNeedPassword"] = function()
     {
         return this._isNeedPassword;
+    };
+    CFile.prototype["isNeedCMap"] = function()
+    {
+        if (!this.nativeFile)
+            return false;
+
+        var isNeed = Module["_IsNeedCMap"](this.nativeFile);
+        return (isNeed === 1) ? true : false;
+    };
+    CFile.prototype["setCMap"] = function(memoryBuffer)
+    {
+        if (!this.nativeFile)
+            return;
+
+        var pointer = Module["_malloc"](memoryBuffer.length);
+        Module.HEAP8.set(memoryBuffer, pointer);
+        Module["_SetCMapData"](this.nativeFile, pointer, memoryBuffer.length);
     };
     CFile.prototype["getInfo"] = function()
     {
@@ -481,5 +509,4 @@
         Module["_free"](streamPointer);
         Module["_free"](idPointer);
     }
-
 })(window, undefined);

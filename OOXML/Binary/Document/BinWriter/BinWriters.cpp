@@ -7827,6 +7827,16 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtComplexFormPr(oStdPr.m_oComplexFormPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oStdPr.m_oOformRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find(oStdPr.m_oOformRid->GetValue());
+		if (pFile.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::OformMaster);
+			m_oBcw.m_oStream.WriteStringW3(pFile->m_sOutputFilename);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
 {
@@ -9349,11 +9359,11 @@ void BinaryFileWriter::WriteTableEnd(int nCurPos)
 	//Seek вобратно в MainTable
 	m_oBcw.m_oStream.SetPosition(nCurPos);
 }
-void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
+void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 {
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = m_oBcw.m_oStream;
 
-	OOX::CDocx		*pDocx = new OOX::CDocx(OOX::CPath(sDir));
+	OOX::CDocx		*pDocx = new OOX::CDocx(OOX::CPath(sSrcPath));
 	OOX::CDocxFlat	*pDocxFlat = NULL;
 
 	OOX::CDocument	*pDocument = NULL;
@@ -9378,7 +9388,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	{
 		if (pDocx) delete pDocx; pDocx = NULL;
 
-		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sDir));
+		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sSrcPath));
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
 			pDocument = pDocxFlat->m_pDocument.GetPointer();
@@ -9529,10 +9539,33 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 			pDocx->m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
 			m_oBcw.m_oStream.EndRecord();
 
-			this->WriteTableEnd(nCurPos);
-			
+			this->WriteTableEnd(nCurPos);			
 
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		std::wstring pathOForm = sSrcPath + FILE_SEPARATOR_STR + L"oform";
+		if (NSDirectory::Exists(pathOForm))
+		{
+			std::wstring pathOForm_tmp_zip = NSFile::CFileBinary::CreateTempFileWithUniqueName(sSrcPath, L"oform");
+			COfficeUtils oCOfficeUtils(NULL);
+			if (S_OK == oCOfficeUtils.CompressFileOrDirectory(pathOForm, pathOForm_tmp_zip))
+			{
+				BYTE *pDataOForm = NULL;
+				DWORD nDataOForm = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(pathOForm_tmp_zip, &pDataOForm, nDataOForm) && (pDataOForm))
+				{
+					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::OForm);
+
+					m_oBcw.WriteBytesArray(pDataOForm, nDataOForm);
+					
+					this->WriteTableEnd(nCurPos);
+
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+
+					delete[]pDataOForm;
+				}
+				NSFile::CFileBinary::Remove(pathOForm_tmp_zip);
+			}
 		}
 	}
 

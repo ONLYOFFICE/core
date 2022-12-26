@@ -42,7 +42,7 @@ namespace PPTX
 		class Path : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Path)
+			WritingElement_AdditionMethods(Path)
 			PPTX_LOGIC_BASE2(Path)
 
 			virtual OOX::EElementType getType () const;

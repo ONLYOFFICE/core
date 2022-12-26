@@ -44,7 +44,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(CNvPicPr)
+			WritingElement_AdditionMethods(CNvPicPr)
 
 			CNvPicPr(std::wstring ns = L"p");
 			CNvPicPr& operator=(const CNvPicPr& oSrc);

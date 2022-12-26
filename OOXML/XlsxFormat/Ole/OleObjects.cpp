@@ -377,7 +377,9 @@ namespace OOX
 
 				if ( (L"oleObject") == sName )
 				{
-					COleObject* pOleObject = new COleObject(oReader);
+					COleObject* pOleObject = new COleObject();
+					*pOleObject = oReader;
+
 					if(pOleObject->m_oShapeId.IsInit())
 					{
 						m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
@@ -402,7 +404,9 @@ namespace OOX
 								std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 								if ( (L"oleObject") == sSubSubName )
 								{
-									COleObject* pOleObject = new COleObject(oReader);
+									COleObject* pOleObject = new COleObject();
+									*pOleObject = oReader;
+
 									if(pOleObject->m_oShapeId.IsInit())
 									{
 										m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;

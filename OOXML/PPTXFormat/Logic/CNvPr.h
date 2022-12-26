@@ -43,7 +43,7 @@ namespace PPTX
 		class CNvPr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNvPr)
+			WritingElement_AdditionMethods(CNvPr)
 
 			CNvPr(std::wstring ns = L"p");
 

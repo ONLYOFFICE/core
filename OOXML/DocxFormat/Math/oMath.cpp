@@ -42,15 +42,7 @@ namespace OOX
 		CMathArgNodes::CMathArgNodes(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 			m_eType = et_Unknown;
-		}
-		CMathArgNodes::CMathArgNodes(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CMathArgNodes::CMathArgNodes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CMathArgNodes::~CMathArgNodes()
 		{
 		}
@@ -102,99 +94,99 @@ namespace OOX
 						WritingElement *pItem = NULL;
 						
 						if ( _T("m:acc") == sName )
-							pItem = new OOX::Logic::CAcc( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CAcc, oItem)
 						else if ( _T("m:argPr") == sName )
-							pItem = new OOX::Logic::CArgPr( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CArgPr, oItem)
 						else if ( _T("m:bar") == sName )
-							pItem = new OOX::Logic::CBar( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CBar, oItem)
 						else if ( _T("w:bookmarkEnd") == sName )
-							pItem = new OOX::Logic::CBookmarkEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CBookmarkEnd, oItem)
 						else if ( _T("w:bookmarkStart") == sName )
-							pItem = new OOX::Logic::CBookmarkStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CBookmarkStart, oItem)
 						else if ( _T("m:borderBox") == sName )
-							pItem = new OOX::Logic::CBorderBox( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CBorderBox, oItem)
 						else if ( _T("m:box") == sName )
-							pItem = new OOX::Logic::CBox( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CBox, oItem)
 						else if ( _T("w:commentRangeEnd") == sName )
-							pItem = new OOX::Logic::CCommentRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCommentRangeEnd, oItem)
 						else if ( _T("w:commentRangeStart") == sName )
-							pItem = new OOX::Logic::CCommentRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCommentRangeStart, oItem)
 						else if ( _T("m:ctrlPr") == sName )
-							pItem = new OOX::Logic::CCtrlPr( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCtrlPr, oItem)
 						else if ( _T("w:customXmlDelRangeEnd") == sName ) 
-							pItem = new OOX::Logic::CCustomXmlDelRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlDelRangeEnd, oItem)
 						else if ( _T("w:customXmlDelRangeStart") == sName )
-							pItem = new OOX::Logic::CCustomXmlDelRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlDelRangeStart, oItem)
 						else if ( _T("w:customXmlInsRangeEnd") == sName )
-							pItem = new OOX::Logic::CCustomXmlInsRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlInsRangeEnd, oItem)
 						else if ( _T("w:customXmlInsRangeStart") == sName )
-							pItem = new OOX::Logic::CCustomXmlInsRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlInsRangeStart, oItem)
 						else if ( _T("w:customXmlMoveFromRangeEnd") == sName )
-							pItem = new OOX::Logic::CCustomXmlMoveFromRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveFromRangeEnd, oItem)
 						else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-							pItem = new OOX::Logic::CCustomXmlMoveFromRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveFromRangeStart, oItem)
 						else if ( _T("w:customXmlMoveToRangeEnd") == sName )
-							pItem = new OOX::Logic::CCustomXmlMoveToRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveToRangeEnd, oItem)
 						else if ( _T("w:customXmlMoveToRangeStart") == sName )
-							pItem = new OOX::Logic::CCustomXmlMoveToRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveToRangeStart, oItem)
 						else if ( _T("m:d") == sName )
-							pItem = new OOX::Logic::CDelimiter( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CDelimiter, oItem)
 						else if ( _T("w:del") == sName )
-							pItem = new CDel( oItem );
+							AssignPtrXmlContent(pItem, CDel, oItem)
 						else if ( _T("m:eqArr") == sName )
-							pItem = new OOX::Logic::CEqArr( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CEqArr, oItem)
 						else if ( _T("m:f") == sName )
-							pItem = new OOX::Logic::CFraction( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CFraction, oItem)
 						else if ( _T("m:func") == sName )
-							pItem = new OOX::Logic::CFunc( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CFunc, oItem)
 						else if ( _T("m:groupChr") == sName )
-							pItem = new CGroupChr( oItem );
+							AssignPtrXmlContent(pItem, CGroupChr, oItem)
 						else if ( _T("w:ins") == sName )
-							pItem = new CIns( oItem );
+							AssignPtrXmlContent(pItem, CIns, oItem)
 						else if ( _T("m:limLow") == sName )
-							pItem = new OOX::Logic::CLimLow( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CLimLow, oItem)
 						else if ( _T("m:limUpp") == sName )
-							pItem = new OOX::Logic::CLimUpp( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CLimUpp, oItem)
 						else if ( _T("m:m") == sName )
-							pItem = new OOX::Logic::CMatrix( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMatrix, oItem)
 						else if ( _T("w:moveFrom") == sName )
-							pItem = new OOX::Logic::CMoveFrom( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMoveFrom, oItem)
 						else if ( _T("w:moveFromRangeEnd") == sName )
-							pItem = new OOX::Logic::CMoveFromRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMoveFromRangeEnd, oItem)
 						else if ( _T("w:moveFromRangeStart") == sName )
-							pItem = new OOX::Logic::CMoveFromRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMoveFromRangeStart, oItem)
 						else if ( _T("w:moveTo") == sName )
-							pItem = new CMoveTo( oItem );
+							AssignPtrXmlContent(pItem, CMoveTo, oItem)
 						else if ( _T("w:moveToRangeEnd") == sName )
-							pItem = new OOX::Logic::CMoveToRangeEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMoveToRangeEnd, oItem)
 						else if ( _T("w:moveToRangeStart") == sName )
-							pItem = new OOX::Logic::CMoveToRangeStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMoveToRangeStart, oItem)
 						else if ( _T("m:nary") == sName )
-							pItem = new OOX::Logic::CNary( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CNary, oItem)
 						else if ( _T("m:oMath") == sName )
-							pItem = new OOX::Logic::COMath( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::COMath, oItem)
 						else if ( _T("m:oMathPara") == sName )
-							pItem = new OOX::Logic::COMathPara( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::COMathPara, oItem)
 						else if ( _T("w:permEnd") == sName )
-							pItem = new OOX::Logic::CPermEnd( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CPermEnd, oItem)
 						else if ( _T("w:permStart") == sName )
-							pItem = new OOX::Logic::CPermStart( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CPermStart, oItem)
 						else if ( _T("m:phant") == sName )
-							pItem = new OOX::Logic::CPhant( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CPhant, oItem)
 						else if ( _T("w:proofErr") == sName )
-							pItem = new OOX::Logic::CProofErr( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CProofErr, oItem)
 						else if ( _T("m:r") == sName )
-							pItem = new OOX::Logic::CMRun( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CMRun, oItem)
 						else if ( _T("m:rad") == sName )
-							pItem = new OOX::Logic::CRad( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CRad, oItem)
 						else if ( _T("m:sPre") == sName )
-							pItem = new OOX::Logic::CSPre( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CSPre, oItem)
 						else if ( _T("m:sSub") == sName )
-							pItem = new OOX::Logic::CSSub( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CSSub, oItem)
 						else if ( _T("m:sSubSup") == sName )
-							pItem = new OOX::Logic::CSSubSup( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CSSubSup, oItem)
 						else if ( _T("m:sSup") == sName )
-							pItem = new OOX::Logic::CSSup( oItem );
+							AssignPtrXmlContent(pItem, OOX::Logic::CSSup, oItem)
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -237,99 +229,99 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:acc") == sName )
-					pItem = new OOX::Logic::CAcc( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CAcc, oReader)
 				else if ( _T("m:argPr") == sName )
-					pItem = new OOX::Logic::CArgPr( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CArgPr, oReader)
 				else if ( _T("m:bar") == sName )
-					pItem = new OOX::Logic::CBar( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CBar, oReader)
 				else if ( _T("w:bookmarkEnd") == sName )
-					pItem = new OOX::Logic::CBookmarkEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CBookmarkEnd, oReader)
 				else if ( _T("w:bookmarkStart") == sName )
-					pItem = new OOX::Logic::CBookmarkStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CBookmarkStart, oReader)
 				else if ( _T("m:borderBox") == sName )
-					pItem = new OOX::Logic::CBorderBox( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CBorderBox, oReader)
 				else if ( _T("m:box") == sName )
-					pItem = new OOX::Logic::CBox( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CBox, oReader)
 				else if ( _T("w:commentRangeEnd") == sName )
-					pItem = new OOX::Logic::CCommentRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCommentRangeEnd, oReader)
 				else if ( _T("w:commentRangeStart") == sName )
-					pItem = new OOX::Logic::CCommentRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCommentRangeStart, oReader)
 				else if ( _T("m:ctrlPr") == sName )
-					pItem = new OOX::Logic::CCtrlPr( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCtrlPr, oReader)
 				else if ( _T("w:customXmlDelRangeEnd") == sName ) 
-					pItem = new OOX::Logic::CCustomXmlDelRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlDelRangeEnd, oReader)
 				else if ( _T("w:customXmlDelRangeStart") == sName )
-					pItem = new OOX::Logic::CCustomXmlDelRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlDelRangeStart, oReader)
 				else if ( _T("w:customXmlInsRangeEnd") == sName )
-					pItem = new OOX::Logic::CCustomXmlInsRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlInsRangeEnd, oReader)
 				else if ( _T("w:customXmlInsRangeStart") == sName )
-					pItem = new OOX::Logic::CCustomXmlInsRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlInsRangeStart, oReader)
 				else if ( _T("w:customXmlMoveFromRangeEnd") == sName )
-					pItem = new OOX::Logic::CCustomXmlMoveFromRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveFromRangeEnd, oReader)
 				else if ( _T("w:customXmlMoveFromRangeStart") == sName )
-					pItem = new OOX::Logic::CCustomXmlMoveFromRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveFromRangeStart, oReader)
 				else if ( _T("w:customXmlMoveToRangeEnd") == sName )
-					pItem = new OOX::Logic::CCustomXmlMoveToRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveToRangeEnd, oReader)
 				else if ( _T("w:customXmlMoveToRangeStart") == sName )
-					pItem = new OOX::Logic::CCustomXmlMoveToRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CCustomXmlMoveToRangeStart, oReader)
 				else if ( _T("m:d") == sName )
-					pItem = new OOX::Logic::CDelimiter( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CDelimiter, oReader)
 				else if ( _T("w:del") == sName )
-					pItem = new CDel( oReader );
+					AssignPtrXmlContent(pItem, CDel, oReader)
 				else if ( _T("m:eqArr") == sName )
-					pItem = new OOX::Logic::CEqArr( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CEqArr, oReader)
 				else if ( _T("m:f") == sName )
-					pItem = new OOX::Logic::CFraction( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CFraction, oReader)
 				else if ( _T("m:func") == sName )
-					pItem = new OOX::Logic::CFunc( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CFunc, oReader)
 				else if ( _T("m:groupChr") == sName )
-					pItem = new CGroupChr( oReader );
+					AssignPtrXmlContent(pItem, CGroupChr, oReader)
 				else if ( _T("w:ins") == sName )
-					pItem = new CIns( oReader );
+					AssignPtrXmlContent(pItem, CIns, oReader)
 				else if ( _T("m:limLow") == sName )
-					pItem = new OOX::Logic::CLimLow( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CLimLow, oReader)
 				else if ( _T("m:limUpp") == sName )
-					pItem = new OOX::Logic::CLimUpp( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CLimUpp, oReader)
 				else if ( _T("m:m") == sName )
-					pItem = new OOX::Logic::CMatrix( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMatrix, oReader)
 				else if ( _T("w:moveFrom") == sName )
-					pItem = new OOX::Logic::CMoveFrom( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMoveFrom, oReader)
 				else if ( _T("w:moveFromRangeEnd") == sName )
-					pItem = new OOX::Logic::CMoveFromRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMoveFromRangeEnd, oReader)
 				else if ( _T("w:moveFromRangeStart") == sName )
-					pItem = new OOX::Logic::CMoveFromRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMoveFromRangeStart, oReader)
 				else if ( _T("w:moveTo") == sName )
-					pItem = new CMoveTo( oReader );
+					AssignPtrXmlContent(pItem, CMoveTo, oReader)
 				else if ( _T("w:moveToRangeEnd") == sName )
-					pItem = new OOX::Logic::CMoveToRangeEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMoveToRangeEnd, oReader)
 				else if ( _T("w:moveToRangeStart") == sName )
-					pItem = new OOX::Logic::CMoveToRangeStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMoveToRangeStart, oReader)
 				else if ( _T("m:nary") == sName )
-					pItem = new OOX::Logic::CNary( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CNary, oReader)
 				else if ( _T("m:oMath") == sName )
-					pItem = new OOX::Logic::COMath( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::COMath, oReader)
 				else if ( _T("m:oMathPara") == sName )
-					pItem = new OOX::Logic::COMathPara( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::COMathPara, oReader)
 				else if ( _T("w:permEnd") == sName )
-					pItem = new OOX::Logic::CPermEnd( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CPermEnd, oReader)
 				else if ( _T("w:permStart") == sName )
-					pItem = new OOX::Logic::CPermStart( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CPermStart, oReader)
 				else if ( _T("m:phant") == sName )
-					pItem = new OOX::Logic::CPhant( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CPhant, oReader)
 				else if ( _T("w:proofErr") == sName )
-					pItem = new OOX::Logic::CProofErr( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CProofErr, oReader)
 				else if ( _T("m:r") == sName )
-					pItem = new OOX::Logic::CMRun( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CMRun, oReader)
 				else if ( _T("m:rad") == sName )
-					pItem = new OOX::Logic::CRad( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CRad, oReader)
 				else if ( _T("m:sPre") == sName )
-					pItem = new OOX::Logic::CSPre( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CSPre, oReader)
 				else if ( _T("m:sSub") == sName )
-					pItem = new OOX::Logic::CSSub( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CSSub, oReader)
 				else if ( _T("m:sSubSup") == sName )
-					pItem = new OOX::Logic::CSSubSup( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CSSubSup, oReader)
 				else if ( _T("m:sSup") == sName )
-					pItem = new OOX::Logic::CSSup( oReader );
+					AssignPtrXmlContent(pItem, OOX::Logic::CSSup, oReader)
 
 				if ( pItem )
 					m_arrItems.push_back( pItem );

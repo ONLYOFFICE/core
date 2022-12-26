@@ -54,6 +54,11 @@ namespace PPTX
 			fromXML(node);
 			return *this;
 		}
+		const Xfrm& Xfrm::operator =(XmlUtils::CXmlLiteReader& oReader)
+		{
+			fromXML(oReader);
+			return *this;
+		}
 		Xfrm::Xfrm(const Xfrm& oSrc)
 		{
 			*this = oSrc;

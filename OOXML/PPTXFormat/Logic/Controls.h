@@ -44,7 +44,7 @@ namespace PPTX
 		class Control : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Control)
+			PPTX_LOGIC_BASE_NC(Control)
 			Control(OOX::Document *pMain = NULL) : WrapperWritingElement(pMain)
 			{
 			}
@@ -79,7 +79,7 @@ namespace PPTX
 		class Controls : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(Controls)
+			PPTX_LOGIC_BASE_NC(Controls)
 			
 			Controls(OOX::Document *pMain = NULL) : WrapperWritingElement(pMain)
 			{

@@ -44,7 +44,7 @@ namespace PPTX
 		class EffectStyle : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(EffectStyle)
+			WritingElement_AdditionMethods(EffectStyle)
 			PPTX_LOGIC_BASE2(EffectStyle)
 
 			EffectStyle& operator=(const EffectStyle& oSrc)

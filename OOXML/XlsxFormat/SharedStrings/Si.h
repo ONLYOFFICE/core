@@ -51,7 +51,7 @@ namespace OOX
 		class CSi : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSi)
+			WritingElement_AdditionMethods(CSi)
 			CSi();
 			virtual ~CSi();
 

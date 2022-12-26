@@ -46,7 +46,7 @@ namespace OOX
 		class CAlternateContent : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAlternateContent)
+			WritingElement_AdditionMethods(CAlternateContent)
 
 			CAlternateContent(OOX::Document *pMain = NULL);
 			virtual ~CAlternateContent();

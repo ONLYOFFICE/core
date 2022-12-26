@@ -51,7 +51,7 @@ namespace OOX
 		class CAnchorLock : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAnchorLock)
+			WritingElement_AdditionMethods(CAnchorLock)
 			CAnchorLock(OOX::Document *pMain = NULL);
 			virtual ~CAnchorLock();
 
@@ -68,7 +68,7 @@ namespace OOX
 		class CBorder : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorder)
+			WritingElement_AdditionMethods(CBorder)
 			CBorder(OOX::Document *pMain = NULL);
 			virtual ~CBorder();
 
@@ -94,7 +94,7 @@ namespace OOX
 		class CWrap : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrap)
+			WritingElement_AdditionMethods(CWrap)
 			CWrap(OOX::Document *pMain = NULL);
 			virtual ~CWrap();
 

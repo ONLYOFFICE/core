@@ -45,7 +45,7 @@ namespace PPTX
 		class Cell3D : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Cell3D)
+			WritingElement_AdditionMethods(Cell3D)
 
 			Cell3D();
 

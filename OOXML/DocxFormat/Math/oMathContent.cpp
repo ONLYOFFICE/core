@@ -75,7 +75,10 @@ namespace OOX
 						if ( _T("m:chr") == sName )
 							m_oChr = new OOX::Logic::CChr( oItem );
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -123,9 +126,15 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:accPr") == sName )
-							m_oAccPr = new OOX::Logic::CAccPr( oItem );
+						{
+							m_oAccPr = new OOX::Logic::CAccPr();
+							*m_oAccPr = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -231,7 +240,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:pos") == sName )
 							m_oPos = new OOX::Logic::CPos( oItem );
 
@@ -282,10 +294,15 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:barPr") == sName )
-							m_oBarPr = new OOX::Logic::CBarPr( oItem );
+						{
+							m_oBarPr = new OOX::Logic::CBarPr();
+							*m_oBarPr = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -333,7 +350,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:hideBot") == sName )
 							m_oHideBot = new OOX::Logic::CHideBot( oItem );
 						else if ( _T("m:hideLeft") == sName )
@@ -412,10 +432,15 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:borderBoxPr") == sName )
-							m_oBorderBoxPr = new OOX::Logic::CBorderBoxPr( oItem );
+						{
+							m_oBorderBoxPr = new OOX::Logic::CBorderBoxPr();
+							*m_oBorderBoxPr = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -504,9 +529,15 @@ namespace OOX
 						if ( _T("m:aln") == sName )
 							m_oAln = new OOX::Logic::CAln( oItem );
 						else if ( _T("m:brk") == sName )
-							m_oBrk = new OOX::Logic::CBrk( oItem );
+						{
+							m_oBrk = new OOX::Logic::CBrk();
+							*m_oBrk = oItem;
+						}
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:diff") == sName )
 							m_oDiff = new OOX::Logic::CDiff( oItem );
 						else if ( _T("m:noBreak") == sName )
@@ -569,10 +600,15 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:boxPr") == sName )
-							m_oBoxPr = new OOX::Logic::CBoxPr( oItem );
+						{
+							m_oBoxPr = new OOX::Logic::CBoxPr();
+							*m_oBoxPr = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -622,7 +658,10 @@ namespace OOX
 						if ( _T("m:begChr") == sName )
 							m_oBegChr = new OOX::Logic::CBegChr( oItem );
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:endChr") == sName )
 							m_oEndChr = new OOX::Logic::CEndChr( oItem );
 						else if ( _T("m:grow") == sName )
@@ -731,7 +770,10 @@ namespace OOX
 						if ( _T("m:baseJc") == sName )
 							m_oBaseJc = new OOX::Logic::CBaseJc( oItem );
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:maxDist") == sName )
 							m_oMaxDist = new OOX::Logic::CMaxDist( oItem );
 						else if ( _T("m:objDist") == sName )
@@ -797,9 +839,9 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:eqArrPr") == sName )
-							pItem = new CEqArrPr( oItem );
+							AssignPtrXmlContent(pItem, CEqArrPr, oItem)
 						else if ( _T("m:e") == sName )
-							pItem = new CElement( oItem );
+							AssignPtrXmlContent(pItem, CElement, oItem)
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -820,10 +862,10 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:eqArrPr") == sName )
-					pItem = new CEqArrPr( oReader );
+					AssignPtrXmlContent(pItem, CEqArrPr, oReader)
 				else if ( _T("m:e") == sName )
 				{
-					pItem = new CElement( oReader );
+					AssignPtrXmlContent(pItem, CElement, oReader)
 					m_lRow++;
 				}
 				if ( pItem )
@@ -877,7 +919,10 @@ namespace OOX
 						if ( _T("m:type") == sName )
 							m_oType = new OOX::Logic::CType( oItem );
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -939,11 +984,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:den") == sName )
-							m_oDen = new OOX::Logic::CDen( oItem );
+						{
+							m_oDen = new OOX::Logic::CDen();
+							*m_oDen = oItem;
+						}
 						else if ( _T("m:fPr") == sName )
-							m_oFPr = new OOX::Logic::CFPr( oItem );
+						{
+							m_oFPr = new OOX::Logic::CFPr();
+							*m_oFPr = oItem;
+						}
 						else if ( _T("m:num") == sName )
-							m_oNum = new OOX::Logic::CNum( oItem );
+						{
+							m_oNum = new OOX::Logic::CNum();
+							*m_oNum = oItem;
+						}
 					}
 				}
 			}
@@ -993,7 +1047,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -1050,11 +1107,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 						else if ( _T("m:fName") == sName )
-							m_oFName = new OOX::Logic::CFName( oItem );
+						{
+							m_oFName = new OOX::Logic::CFName();
+							*m_oFName = oItem;
+						}
 						else if ( _T("m:funcPr") == sName )
-							m_oFuncPr = new OOX::Logic::CFuncPr( oItem );
+						{
+							m_oFuncPr = new OOX::Logic::CFuncPr();
+							*m_oFuncPr = oItem;
+						}
 					}
 				}
 			}
@@ -1106,7 +1172,10 @@ namespace OOX
 						if ( _T("m:chr") == sName )
 							m_oChr = new OOX::Logic::CChr( oItem );
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:pos") == sName )
 							m_oPos = new OOX::Logic::CPos( oItem );
 						else if ( _T("m:vertJc") == sName )
@@ -1182,9 +1251,15 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 						else if ( _T("m:groupChrPr") == sName )
-							m_oGroupChrPr = new OOX::Logic::CGroupChrPr( oItem );
+						{
+							m_oGroupChrPr = new OOX::Logic::CGroupChrPr();
+							*m_oGroupChrPr = oItem;
+						}
 					}
 				}
 			}
@@ -1232,7 +1307,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -1290,11 +1368,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 						else if ( _T("m:lim") == sName )
-							m_oLim = new OOX::Logic::CLim( oItem );
+						{
+							m_oLim = new OOX::Logic::CLim();
+							*m_oLim = oItem;
+						}
 						else if ( _T("m:limLowPr") == sName )
-							m_oLimLowPr = new OOX::Logic::CLimLowPr( oItem );
+						{
+							m_oLimLowPr = new OOX::Logic::CLimLowPr();
+							*m_oLimLowPr = oItem;
+						}
 					}
 				}
 			}
@@ -1344,7 +1431,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -1534,7 +1624,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:mcPr") == sName )
-							m_oMcPr = new OOX::Logic::CMcPr( oItem );
+						{
+							m_oMcPr = new OOX::Logic::CMcPr();
+							*m_oMcPr = oItem;
+						}
 					}
 				}
 			}
@@ -1580,7 +1673,7 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:mc") == sName )
-							pItem = new Logic::CMc( oItem );
+							AssignPtrXmlContent(pItem, Logic::CMc, oItem)
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -1600,7 +1693,7 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:mc") == sName )
-					pItem = new Logic::CMc( oReader );
+					AssignPtrXmlContent(pItem, Logic::CMc, oReader)
 
 				if ( pItem )
 					m_arrItems.push_back( pItem );
@@ -1634,15 +1727,7 @@ namespace OOX
 
 		CMPr::CMPr()
 		{
-		}
-		CMPr::CMPr(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CMPr::CMPr(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		EElementType CMPr::getType() const
 		{
 			return et_m_mPr;
@@ -1676,7 +1761,7 @@ namespace OOX
 
 						if ( _T("m:e") == sName )
 						{
-							pItem = new Logic::CElement( oItem );
+							AssignPtrXmlContent(pItem, Logic::CElement, oItem)
 							m_lCol++;
 						}
 
@@ -1701,7 +1786,7 @@ namespace OOX
 
 				if ( _T("m:e") == sName )
 				{
-					pItem = new Logic::CElement( oReader );
+					AssignPtrXmlContent(pItem, Logic::CElement, oReader)
 					m_lCol++;
 				}
 
@@ -1762,10 +1847,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:mPr") == sName )
-							pItem = new CMPr( oItem );
+							AssignPtrXmlContent(pItem, CMPr, oItem)
 						else if ( _T("m:mr") == sName )
 						{
-							pItem = new CMr( oItem );
+							AssignPtrXmlContent(pItem, CMr, oItem)
 							m_lRow++;
 						}
 						if (pItem)
@@ -1787,10 +1872,10 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:mPr") == sName )
-					pItem = new CMPr( oReader );
+					AssignPtrXmlContent(pItem, CMPr, oReader)
 				else if ( _T("m:mr") == sName )
 				{
-					pItem = new CMr( oReader );
+					AssignPtrXmlContent(pItem, CMr, oReader)
 					m_lRow++;
 				}
 
@@ -1859,13 +1944,25 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 						else if ( _T("m:naryPr") == sName )
-							m_oNaryPr = new OOX::Logic::CNaryPr( oItem );
+						{
+							m_oNaryPr = new OOX::Logic::CNaryPr();
+							*m_oNaryPr = oItem;
+						}
 						else if ( _T("m:sub") == sName )
-							m_oSub = new OOX::Logic::CSub( oItem );
+						{
+							m_oSub = new OOX::Logic::CSub();
+							*m_oSub = oItem;
+						}
 						else if ( _T("m:sup") == sName )
-							m_oSup = new OOX::Logic::CSup( oItem );
+						{
+							m_oSup = new OOX::Logic::CSup();
+							*m_oSup = oItem;
+						}
 					}
 				}
 			}
@@ -1975,7 +2072,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:show") == sName )
 							m_oShow = new OOX::Logic::CShow( oItem );
 						else if ( _T("m:transp") == sName )
@@ -2067,9 +2167,15 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 						else if ( _T("m:phantPr") == sName )
-							m_oPhantPr = new OOX::Logic::CPhantPr( oItem );
+						{
+							m_oPhantPr = new OOX::Logic::CPhantPr();
+							*m_oPhantPr = oItem;
+						}
 					}
 				}
 			}
@@ -2566,7 +2672,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if ( _T("m:degHide") == sName )
 							m_oDegHide = new OOX::Logic::CDegHide( oItem );
 					}
@@ -2629,11 +2738,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:radPr") == sName )
-							m_oRadPr = new OOX::Logic::CRadPr( oItem );
+						{
+							m_oRadPr = new OOX::Logic::CRadPr();
+							*m_oRadPr = oItem;
+						}
 						else if ( _T("m:deg") == sName )
-							m_oDeg = new OOX::Logic::CDeg( oItem );
+						{
+							m_oDeg = new OOX::Logic::CDeg();
+							*m_oDeg = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 
 					}
 				}
@@ -2700,7 +2818,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -2757,14 +2878,25 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:sPrePr") == sName )
-							m_oSPrePr = new OOX::Logic::CSPrePr( oItem );
+						{
+							m_oSPrePr = new OOX::Logic::CSPrePr();
+							*m_oSPrePr = oItem;
+						}
 						else if ( _T("m:sub") == sName )
-							m_oSub = new OOX::Logic::CSub( oItem );
+						{
+							m_oSub = new OOX::Logic::CSub();
+							*m_oSub = oItem;
+						}
 						else if ( _T("m:sup") == sName )
-							m_oSup = new OOX::Logic::CSup( oItem );
+						{
+							m_oSup = new OOX::Logic::CSup();
+							*m_oSup = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -2836,7 +2968,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -2892,12 +3027,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:sSubPr") == sName )
-							m_oSSubPr = new OOX::Logic::CSSubPr( oItem );
+						{
+							m_oSSubPr = new OOX::Logic::CSSubPr();
+							*m_oSSubPr = oItem;
+						}
 						else if ( _T("m:sub") == sName )
-							m_oSub = new OOX::Logic::CSub( oItem );
+						{
+							m_oSub = new OOX::Logic::CSub();
+							*m_oSub = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -2965,7 +3108,10 @@ namespace OOX
 						if ( _T("m:alnScr") == sName )
 							m_oAlnScr = new OOX::Logic::CAlnScr( oItem );
 						else if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -3026,14 +3172,25 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:sSubSupPr") == sName )
-							m_oSSubSupPr = new OOX::Logic::CSSubSupPr( oItem );
+						{
+							m_oSSubSupPr = new OOX::Logic::CSSubSupPr();
+							*m_oSSubSupPr = oItem;
+						}
 						else if ( _T("m:sup") == sName )
-							m_oSup = new OOX::Logic::CSup( oItem );
+						{
+							m_oSup = new OOX::Logic::CSup();
+							*m_oSup = oItem;
+						}
 						else if ( _T("m:sub") == sName )
-							m_oSub = new OOX::Logic::CSub( oItem );
+						{
+							m_oSub = new OOX::Logic::CSub();
+							*m_oSub = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -3104,7 +3261,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:ctrlPr") == sName )
-							m_oCtrlPr = new OOX::Logic::CCtrlPr( oItem );
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 					}
 				}
 			}
@@ -3160,12 +3320,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("m:sSupPr") == sName )
-							m_oSSupPr = new OOX::Logic::CSSupPr( oItem );
+						{
+							m_oSSupPr = new OOX::Logic::CSSupPr();
+							*m_oSSupPr = oItem;
+						}
 						else if ( _T("m:sup") == sName )
-							m_oSup = new OOX::Logic::CSup( oItem );
+						{
+							m_oSup = new OOX::Logic::CSup();
+							*m_oSup = oItem;
+						}
 						else if ( _T("m:e") == sName )
-							m_oElement = new OOX::Logic::CElement( oItem );
-
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 					}
 				}
 			}
@@ -3345,7 +3513,10 @@ namespace OOX
 						if (L"m:aln" == sName)
 							m_oAln = new OOX::Logic::CAln(oItem);
 						else if (L"m:brk" == sName)
-							m_oBrk = new OOX::Logic::CBrk(oItem);
+						{
+							m_oBrk = new OOX::Logic::CBrk();
+							m_oBrk = oItem;
+						}
 						else if (L"m:lit" == sName)
 							m_oLit = new OOX::Logic::CLit(oItem);
 						else if (L"m:nor" == sName)
@@ -3420,7 +3591,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if (L"m:ctrlPr" == sName)
-							m_oCtrlPr = new OOX::Logic::CCtrlPr(oItem);
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if (L"m:chr" == sName)
 							m_oChr = new OOX::Logic::CChr(oItem);
 						else if (L"m:grow" == sName)
@@ -3506,9 +3680,15 @@ namespace OOX
 						else if (L"m:cSp" == sName)
 							m_oCSp = new OOX::Logic::CCSp(oItem);
 						else if (L"m:ctrlPr" == sName)
-							m_oCtrlPr = new OOX::Logic::CCtrlPr(oItem);
+						{
+							m_oCtrlPr = new OOX::Logic::CCtrlPr();
+							*m_oCtrlPr = oItem;
+						}
 						else if (L"m:mcs" == sName)
-							m_oMcs = new OOX::Logic::CMcs(oItem);
+						{
+							m_oMcs = new OOX::Logic::CMcs();
+							*m_oMcs = oItem;
+						}
 						else if (L"m:plcHide" == sName)
 							m_oPlcHide = new OOX::Logic::CPlcHide(oItem);
 						else if (L"m:rSp" == sName)
@@ -3745,7 +3925,10 @@ namespace OOX
 						if (L"w:rP" == sName)
 							m_oRPr = new OOX::Logic::CRunProperty(oItem);
 						else if (L"a:rPr" == sName)
-							m_oARPr = new PPTX::Logic::RunProperties(oItem);
+						{
+							m_oARPr = new PPTX::Logic::RunProperties();
+							*m_oARPr = oItem;
+						}
 						else if (L"w:ins" == sName)
 							m_oIns = new OOX::Logic::CRPrChange(oItem);
 						else if (L"w:del" == sName)
@@ -3813,10 +3996,10 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if (L"m:dPr" == sName)
-							pItem = new CDelimiterPr(oItem);
+							AssignPtrXmlContent(pItem, CDelimiterPr, oItem)
 						else if (L"m:e" == sName)
 						{
-							pItem = new CElement(oItem);
+							AssignPtrXmlContent(pItem, CElement, oItem)
 							//нужно заранее знать колисество столбцов для отрисовки
 							m_lColumn++;
 						}
@@ -3841,10 +4024,10 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if (L"m:dPr" == sName)
-					pItem = new CDelimiterPr(oReader);
+					AssignPtrXmlContent(pItem, CDelimiterPr, oReader)
 				else if (L"m:e" == sName)
 				{
-					pItem = new CElement(oReader);
+					AssignPtrXmlContent(pItem, CElement, oReader)
 					//нужно заранее знать колисество столбцов для отрисовки
 					m_lColumn++;
 				}
@@ -3980,11 +4163,20 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if (L"m:e" == sName)
-							m_oElement = new OOX::Logic::CElement(oItem);
+						{
+							m_oElement = new OOX::Logic::CElement();
+							*m_oElement = oItem;
+						}
 						else if (L"m:lim" == sName)
-							m_oLim = new OOX::Logic::CLim(oItem);
+						{
+							m_oLim = new OOX::Logic::CLim();
+							*m_oLim = oItem;
+						}
 						else if (L"m:limUppPr" == sName)
-							m_oLimUppPr = new OOX::Logic::CLimUppPr(oItem);
+						{
+							m_oLimUppPr = new OOX::Logic::CLimUppPr();
+							*m_oLimUppPr = oItem;
+						}
 					}
 				}
 			}

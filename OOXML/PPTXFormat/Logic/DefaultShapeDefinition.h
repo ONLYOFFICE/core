@@ -46,7 +46,7 @@ namespace PPTX
 		class DefaultShapeDefinition : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(DefaultShapeDefinition)
+			WritingElement_AdditionMethods(DefaultShapeDefinition)
 			
 			DefaultShapeDefinition();
 			DefaultShapeDefinition& operator=(const DefaultShapeDefinition& oSrc);

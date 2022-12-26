@@ -45,7 +45,7 @@ namespace PPTX
 		class EffectDag : public WrapperWritingElement
 		{
 		public:			
-			WritingElement_AdditionConstructors(EffectDag)
+			WritingElement_AdditionMethods(EffectDag)
 			PPTX_LOGIC_BASE2(EffectDag)
 			
 			EffectDag& operator=(const EffectDag& oSrc)

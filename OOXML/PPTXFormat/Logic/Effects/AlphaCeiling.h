@@ -42,7 +42,7 @@ namespace PPTX
 		class AlphaCeiling : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaCeiling)
+			WritingElement_AdditionMethods(AlphaCeiling)
 			PPTX_LOGIC_BASE2(AlphaCeiling)
 			
 			AlphaCeiling& operator=(const AlphaCeiling& oSrc);

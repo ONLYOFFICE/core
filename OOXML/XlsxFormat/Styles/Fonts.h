@@ -42,7 +42,7 @@ namespace OOX
 		class CFont : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFont)
+			WritingElement_AdditionMethods(CFont)
             WritingElement_XlsbConstructors(CFont)
 			CFont();
 			virtual ~CFont();
@@ -83,7 +83,7 @@ namespace OOX
 		class CFonts : public WritingElementWithChilds<CFont>
 		{
 		public:
-			WritingElement_AdditionConstructors(CFonts)
+			WritingElement_AdditionMethods(CFonts)
             WritingElement_XlsbVectorConstructors(CFonts)
 			CFonts();
 			virtual ~CFonts();

@@ -56,9 +56,9 @@ namespace PPTX
 			std::wstring strName = oReader.GetName();
 
 			if (strName == _T("a:buClrTx"))
-				m_Color.reset(new Logic::BuClrTx(oReader));
+				m_Color.reset(CreatePtrXmlContent<Logic::BuClrTx>(oReader));
 			else if (strName == _T("a:buClr"))
-				m_Color.reset(new Logic::BuClr(oReader));
+				m_Color.reset(CreatePtrXmlContent<Logic::BuClr>(oReader));
 			else
 				m_Color.reset();
 		}
@@ -67,9 +67,9 @@ namespace PPTX
 			std::wstring strName = node.GetName();
 
 			if (strName == _T("a:buClrTx"))
-				m_Color.reset(new Logic::BuClrTx(node));
+				m_Color.reset(CreatePtrXmlContent<Logic::BuClrTx>(node));
 			else if (strName == _T("a:buClr"))
-				m_Color.reset(new Logic::BuClr(node));
+				m_Color.reset(CreatePtrXmlContent<Logic::BuClr>(node));
 			else
 				m_Color.reset();
 		}
@@ -77,9 +77,9 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:buClrTx"), oNode))
-				m_Color.reset(new Logic::BuClrTx(oNode));
+				m_Color.reset(CreatePtrXmlContent<Logic::BuClrTx>(oNode));
 			else if (element.GetNode(_T("a:buClr"), oNode))
-				m_Color.reset(new Logic::BuClr(oNode));
+				m_Color.reset(CreatePtrXmlContent<Logic::BuClr>(oNode));
 			else
 				m_Color.reset();
 		}

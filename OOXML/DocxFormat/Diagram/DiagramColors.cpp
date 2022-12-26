@@ -74,7 +74,9 @@ namespace OOX
 					}
 					else if (L"dgm:styleLbl" == sName)
 					{
-						m_arStyleLbl.push_back(new Diagram::CColorStyleLbl(oReader));
+						Diagram::CColorStyleLbl* pColorStyleLbl = new Diagram::CColorStyleLbl();
+						*pColorStyleLbl = oReader;
+						m_arStyleLbl.push_back(pColorStyleLbl);
 					}
 					else if (L"dgm:extLst" == sName)
 					{

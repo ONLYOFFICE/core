@@ -74,7 +74,11 @@ namespace PPTX
 					else if (_T("endParaRPr") == strName)
 						endParaRPr = oNode;
 					else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName) || (_T("m") == strName))
-						RunElems.push_back(RunElem(oNode));
+					{
+						RunElem elem;
+						elem = oNode;
+						RunElems.push_back(elem);
+					}
 					else if (_T("AlternateContent") == strName)
 					{
 						//code as in SpTreeElem.cpp
@@ -121,7 +125,11 @@ namespace PPTX
 				else if (_T("endParaRPr") == strName)
 					endParaRPr = oReader;
 				else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName) || (_T("m") == strName))
-					RunElems.push_back(RunElem(oReader));
+				{
+					RunElem elem;
+					elem = oReader;
+					RunElems.push_back(elem);
+				}
 				else if (_T("AlternateContent") == strName)
 				{
 					if ( oReader.IsEmptyNode() )

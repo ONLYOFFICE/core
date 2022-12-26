@@ -139,17 +139,20 @@ namespace OOX
 
 						if ( (L"absoluteAnchor") == sName )
 						{
-							pItem = new CCellAnchor( oReader );
+							pItem = new CCellAnchor();
+							*pItem = oReader;
 							pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
 						}
 						else if ( (L"oneCellAnchor") == sName )
 						{
-							pItem = new CCellAnchor( oReader );
+							pItem = new CCellAnchor();
+							*pItem = oReader;
 							pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
 						}
 						else if ( (L"twoCellAnchor") == sName )
 						{
-							pItem = new CCellAnchor( oReader );
+							pItem = new CCellAnchor();
+							*pItem = oReader;
 							pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 						}
 						else if ( (L"AlternateContent") == sName)
@@ -174,17 +177,20 @@ namespace OOX
 									sName = XmlUtils::GetNameNoNS(oReader.GetName());
 									if ( (L"absoluteAnchor") == sName )
 									{
-										pItem = new CCellAnchor( oReader );
+										pItem = new CCellAnchor();
+										*pItem = oReader;
 										pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
 									}
 									else if ( (L"oneCellAnchor") == sName )
 									{
-										pItem = new CCellAnchor( oReader );
+										pItem = new CCellAnchor();
+										*pItem = oReader;
 										pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
 									}
 									else if ( (L"twoCellAnchor") == sName )
 									{
-										pItem = new CCellAnchor( oReader );
+										pItem = new CCellAnchor();
+										*pItem = oReader;
 										pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);
 									}
 								}nCurDepth--;

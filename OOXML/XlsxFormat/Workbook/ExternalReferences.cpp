@@ -133,8 +133,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( (L"externalReference") == sName )
-					m_arrItems.push_back( new CExternalReference( oReader ));
-
+				{
+					CExternalReference* pExternalReference = new CExternalReference();
+					*pExternalReference = oReader;
+					m_arrItems.push_back(pExternalReference);
+				}
 			}
 		}
 		void CExternalReferences::fromBin(std::vector<XLS::BaseObjectPtr>& obj)

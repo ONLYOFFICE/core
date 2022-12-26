@@ -42,7 +42,7 @@ namespace OOX
 		class CSheet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheet)
+			WritingElement_AdditionMethods(CSheet)
             WritingElement_XlsbConstructors(CSheet)
 			CSheet(OOX::Document *pMain = NULL);
 			virtual ~CSheet();
@@ -71,7 +71,7 @@ namespace OOX
 		class CSheets : public WritingElementWithChilds<CSheet>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheets)
+			WritingElement_AdditionMethods(CSheets)
             WritingElement_XlsbVectorConstructors(CSheets)
 			CSheets(OOX::Document *pMain = NULL);
 			virtual ~CSheets();

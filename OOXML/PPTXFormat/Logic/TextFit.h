@@ -44,7 +44,7 @@ namespace PPTX
 		public:
 			enum eFit {FitEmpty = 0, FitNo = 1, FitSpAuto = 2, FitNormAuto = 3};
 
-			WritingElement_AdditionConstructors(TextFit)
+			WritingElement_AdditionMethods(TextFit)
 
 			TextFit();
 			

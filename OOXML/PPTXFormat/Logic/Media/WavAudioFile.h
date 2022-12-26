@@ -43,7 +43,7 @@ namespace PPTX
 		class WavAudioFile : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(WavAudioFile)
+			WritingElement_AdditionMethods(WavAudioFile)
 			
 			WavAudioFile(const std::wstring & name = L"wavAudioFile");
 

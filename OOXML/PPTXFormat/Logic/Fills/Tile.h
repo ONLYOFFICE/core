@@ -45,7 +45,7 @@ namespace PPTX
 		class Tile : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Tile)
+			WritingElement_AdditionMethods(Tile)
 			PPTX_LOGIC_BASE2(Tile)
 
 			Tile& operator=(const Tile& oSrc);

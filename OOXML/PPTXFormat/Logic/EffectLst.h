@@ -50,7 +50,7 @@ namespace PPTX
 		class EffectLst : public WrapperWritingElement
 		{
 		public:			
-			WritingElement_AdditionConstructors(EffectLst)
+			WritingElement_AdditionMethods(EffectLst)
 			PPTX_LOGIC_BASE2(EffectLst)
 
             EffectLst& operator=(const EffectLst& oSrc);

@@ -58,7 +58,7 @@ namespace OOX
 		class CDefault : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDefault)
+			WritingElement_AdditionMethods(CDefault)
 			CDefault();
 			CDefault(const std::wstring& sExtension);
 			virtual ~CDefault();
@@ -79,7 +79,7 @@ namespace OOX
 		class COverride : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COverride)
+			WritingElement_AdditionMethods(COverride)
 			COverride();
 			COverride(const std::wstring& sType, const CPath& oPath);
 			virtual ~COverride();

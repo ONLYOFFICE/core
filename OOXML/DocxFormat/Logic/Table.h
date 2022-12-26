@@ -74,10 +74,9 @@ namespace OOX
 		class CTblGridChange : public WritingElement
 		{
 		public:
-			CTblGridChange(OOX::Document *pMain = NULL);
-			CTblGridChange(XmlUtils::CXmlNode &oNode);
-			CTblGridChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblGridChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblGridChange();
+
 			const CTblGridChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblGridChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -213,10 +212,9 @@ namespace OOX
 		class CTblPrExChange : public WritingElement
 		{
 		public:
-			CTblPrExChange(OOX::Document *pMain = NULL);
-			CTblPrExChange(XmlUtils::CXmlNode &oNode);
-			CTblPrExChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblPrExChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblPrExChange();
+
 			const CTblPrExChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrExChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -363,9 +361,7 @@ namespace OOX
 		class CTbl : public WritingElementWithChilds<>
 		{
 		public:
-			CTbl(OOX::Document *pMain = NULL);
-			CTbl(XmlUtils::CXmlNode &oNode);
-			CTbl(XmlUtils::CXmlLiteReader& oReader);
+			CTbl(OOX::Document *pMain = NULL);			
 			virtual ~CTbl();
 
 			const CTbl &operator =(const XmlUtils::CXmlNode& oNode);
@@ -393,8 +389,6 @@ namespace OOX
 		{
 		public:
 			CTr(OOX::Document *pMain = NULL);
-			CTr(XmlUtils::CXmlNode &oNode);
-			CTr(XmlUtils::CXmlLiteReader& oReader);
 			virtual ~CTr();
 
 			const CTr &operator =(const XmlUtils::CXmlNode& oNode);
@@ -429,9 +423,7 @@ namespace OOX
 		class CTc : public WritingElementWithChilds<>
 		{
 		public:
-			CTc(OOX::Document *pMain = NULL);
-			CTc(XmlUtils::CXmlNode &oNode);
-			CTc(XmlUtils::CXmlLiteReader& oReader);
+			CTc(OOX::Document *pMain = NULL);			
 			virtual ~CTc();
 
 			const CTc &operator =(const XmlUtils::CXmlNode& oNode);

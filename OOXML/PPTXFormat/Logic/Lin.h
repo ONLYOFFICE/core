@@ -42,7 +42,7 @@ namespace PPTX
 		class Lin : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Lin)
+			WritingElement_AdditionMethods(Lin)
 			PPTX_LOGIC_BASE2(Lin)
 
 			virtual OOX::EElementType getType () const;

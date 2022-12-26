@@ -56,11 +56,11 @@ namespace PPTX
 			std::wstring strName = oReader.GetName();
 
 			if (strName == _T("a:buSzTx"))
-				m_Size.reset(new Logic::BuSzTx(oReader));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzTx>(oReader));
 			else if (strName == _T("a:buSzPct"))
-				m_Size.reset(new Logic::BuSzPct(oReader));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPct>(oReader));
 			else if (strName == _T("a:buSzPts"))
-				m_Size.reset(new Logic::BuSzPts(oReader));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPts>(oReader));
 			else
 				m_Size.reset();
 		}
@@ -69,11 +69,11 @@ namespace PPTX
 			std::wstring strName = node.GetName();
 
 			if (strName == _T("a:buSzTx"))
-				m_Size.reset(new Logic::BuSzTx(node));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzTx>(node));
 			else if (strName == _T("a:buSzPct"))
-				m_Size.reset(new Logic::BuSzPct(node));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPct>(node));
 			else if (strName == _T("a:buSzPts"))
-				m_Size.reset(new Logic::BuSzPts(node));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPts>(node));
 			else
 				m_Size.reset();
 		}
@@ -81,11 +81,11 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 			if(element.GetNode(_T("a:buSzTx"), oNode))
-				m_Size.reset(new Logic::BuSzTx(oNode));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzTx>(oNode));
 			else if(element.GetNode(_T("a:buSzPct"), oNode))
-				m_Size.reset(new Logic::BuSzPct(oNode));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPct>(oNode));
 			else if(element.GetNode(_T("a:buSzPts"), oNode))
-				m_Size.reset(new Logic::BuSzPts(oNode));
+				m_Size.reset(CreatePtrXmlContent<Logic::BuSzPts>(oNode));
 			else
 				m_Size.reset();
 		}

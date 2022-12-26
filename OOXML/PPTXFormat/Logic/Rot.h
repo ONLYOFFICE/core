@@ -43,7 +43,7 @@ namespace PPTX
 		class Rot : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Rot)
+			WritingElement_AdditionMethods(Rot)
 			PPTX_LOGIC_BASE2(Rot)
 
 			virtual OOX::EElementType getType() const;

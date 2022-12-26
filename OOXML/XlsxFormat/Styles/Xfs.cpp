@@ -389,7 +389,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("xf") == sName )
-					m_arrItems.push_back( new CXfs( oReader ));
+				{
+					CXfs* pXfs = new CXfs();
+					*pXfs = oReader;
+					m_arrItems.push_back( pXfs );
+				}
 			}
 		}
 		void CCellXfs::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
@@ -462,7 +466,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("xf") == sName )
-					m_arrItems.push_back( new CXfs( oReader ));
+				{
+					CXfs* pXfs = new CXfs();
+					*pXfs = oReader;
+					m_arrItems.push_back( pXfs );
+				}
 			}
 		}
 		EElementType CCellStyleXfs::getType () const

@@ -60,230 +60,47 @@ namespace NSCustomShapesConvert
 	public:
 		NSStringUtils::CStringBuilder m_oWriter;
 
-		CXmlWriter() : m_oWriter()
-		{
-		}
-		~CXmlWriter()
-		{
-		}
+		CXmlWriter();
+		~CXmlWriter();
 		
-		std::wstring GetXmlString()
-		{
-			return m_oWriter.GetData();
-		}
-		void ClearNoAttack()
-		{
-			m_oWriter.ClearNoAttack();
-		}
-		int GetSize()
-		{
-			return (int)m_oWriter.GetCurSize();
-		}
+		std::wstring GetXmlString();
+		void ClearNoAttack();
+		int GetSize();
 		
 		// write value
-		void WriteString(const std::wstring& strValue)
-		{
-			m_oWriter.WriteString(strValue);
-		}
-		void WriteStringXML(std::wstring strValue)
-		{
-			m_oWriter.WriteEncodeXmlString(strValue);
-		}
-		void WriteDouble(const double& val)
-		{
-			m_oWriter.WriteString(XmlUtils::ToString(val));
-		}
-		void WriteLONG(const long& val)
-		{
-			m_oWriter.WriteString(XmlUtils::ToString(val));
-
-		}
-		void WriteINT(const int& val)
-		{
-			m_oWriter.WriteString(XmlUtils::ToString(val));
-
-		}
-		void WriteDWORD(const DWORD& val)
-		{
-			m_oWriter.WriteString(XmlUtils::ToString(val));
-
-		}
-		void WriteDWORD_hex(const DWORD& val)
-		{
-			m_oWriter.WriteString(XmlUtils::ToString(val));
-
-		}		
-		void WriteBool(const bool& val)
-		{
-			m_oWriter.WriteString(XmlUtils::ToString(val));
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			m_oWriter.WriteString(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttribute2(const std::wstring& strAttributeName, const std::wstring& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			m_oWriter.WriteEncodeXmlString(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const double& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteDouble(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const int& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteINT(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const bool& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteBool(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const LONG& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteLONG(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttribute(const std::wstring& strAttributeName, const DWORD& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteDWORD(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
-		void WriteAttributeDWORD_hex(const std::wstring& strAttributeName, const DWORD& val)
-		{
-			m_oWriter.WriteString(g_bstr_node_space);
-			m_oWriter.WriteString(strAttributeName);
-			m_oWriter.WriteString(g_bstr_node_equal);
-			m_oWriter.WriteString(g_bstr_node_quote);
-			WriteDWORD_hex(val);
-			m_oWriter.WriteString(g_bstr_node_quote);
-		}
+		void WriteString(const std::wstring& strValue);
+		void WriteStringXML(std::wstring strValue);
+		void WriteDouble(const double& val);
+		void WriteLONG(const long& val);
+		void WriteINT(const int& val);
+		void WriteDWORD(const DWORD& val);
+		void WriteDWORD_hex(const DWORD& val);
+		void WriteBool(const bool& val);
+		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& val);
+		void WriteAttribute2(const std::wstring& strAttributeName, const std::wstring& val);
+		void WriteAttribute(const std::wstring& strAttributeName, const double& val);
+		void WriteAttribute(const std::wstring& strAttributeName, const int& val);
+		void WriteAttribute(const std::wstring& strAttributeName, const bool& val);
+		void WriteAttribute(const std::wstring& strAttributeName, const LONG& val);
+		void WriteAttribute(const std::wstring& strAttributeName, const DWORD& val);
+		void WriteAttributeDWORD_hex(const std::wstring& strAttributeName, const DWORD& val);
 		// document methods
-        void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false)
-		{
-			m_oWriter.WriteString(g_bstr_nodeopen);
-			m_oWriter.WriteString(strNodeName);
-			
-			if (!bAttributed)
-				m_oWriter.WriteString(g_bstr_nodeclose);
-		}
-        void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true)
-		{
-			if (bEmptyNode)
-			{
-				if (bEndNode)
-					m_oWriter.WriteString(g_bstr_nodeclose_slash);
-				else
-					m_oWriter.WriteString(g_bstr_nodeclose);
-			}
-			else
-			{
-				m_oWriter.WriteString(g_bstr_nodeopen_slash);
-				m_oWriter.WriteString(strNodeName);
-				m_oWriter.WriteString(g_bstr_nodeclose);
-			}
-		}
+		void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false);
+		void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true);
 		// write node values
-		void WriteNodeValue(const std::wstring& strNodeName, const std::wstring& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteString(val);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNodeValue(const std::wstring& strNodeName, const bool& val)
-		{
-			WriteNodeBegin(strNodeName);
-			
-			if (val)
-				WriteString(_T("1"));
-			else
-				WriteString(_T("0"));
-
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNodeValue(const std::wstring& strNodeName, const double& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDouble(val);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNodeValue(const std::wstring& strNodeName, const LONG& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteLONG(val);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNodeValue(const std::wstring& strNodeName, const int& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteINT(val);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNodeValue(const std::wstring& strNodeName, const DWORD& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDWORD(val);
-			WriteNodeEnd(strNodeName);
-		}
-		void WriteNodeValueDWORD_hex(const std::wstring& strNodeName, const DWORD& val)
-		{
-			WriteNodeBegin(strNodeName);
-			WriteDWORD_hex(val);
-			WriteNodeEnd(strNodeName);
-		}
+		void WriteNodeValue(const std::wstring& strNodeName, const std::wstring& val);
+		void WriteNodeValue(const std::wstring& strNodeName, const bool& val);
+		void WriteNodeValue(const std::wstring& strNodeName, const double& val);
+		void WriteNodeValue(const std::wstring& strNodeName, const LONG& val);
+		void WriteNodeValue(const std::wstring& strNodeName, const int& val);
+		void WriteNodeValue(const std::wstring& strNodeName, const DWORD& val);
+		void WriteNodeValueDWORD_hex(const std::wstring& strNodeName, const DWORD& val);
 		
 	public:
-
-		void StartNode(const std::wstring& name)
-		{
-			m_oWriter.WriteString(g_bstr_nodeopen);
-			m_oWriter.WriteString(name);
-		}
-		void StartAttributes()
-		{
-			// none			
-		}
-		void EndAttributes()
-		{
-			m_oWriter.WriteString(g_bstr_nodeclose);
-		}
-		void EndNode(const std::wstring& name)
-		{
-			m_oWriter.WriteString(g_bstr_nodeopen_slash);
-			m_oWriter.WriteString(name);
-			m_oWriter.WriteString(g_bstr_nodeclose);
-		}
+		void StartNode(const std::wstring& name);
+		void StartAttributes();
+		void EndAttributes();
+		void EndNode(const std::wstring& name);
 
 		template<typename T>
 		void WriteArray(const std::wstring& strName, const std::vector<T>& arr)
@@ -313,20 +130,6 @@ namespace NSCustomShapesConvert
 
 		// -------------------------------------------------------------------------------------
 
-		void ReplaceString(std::wstring from, std::wstring to)
-		{
-			// ужасная функция. вызывать ее не надо. не для этого класс писался.
-			std::wstring sCur = m_oWriter.GetData();
-
-			size_t start_pos = 0;
-			while((start_pos = sCur .find(from, start_pos)) != std::wstring::npos) 
-			{
-				sCur .replace(start_pos, from.length(), to);
-				start_pos += to.length(); 
-			}
-
-			ClearNoAttack();
-			WriteString(sCur);
-		}
+		void ReplaceString(std::wstring from, std::wstring to);
 	};
 }

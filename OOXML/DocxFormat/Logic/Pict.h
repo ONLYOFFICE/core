@@ -44,7 +44,7 @@ namespace OOX
 		class CBinData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBinData)
+			WritingElement_AdditionMethods(CBinData)
 
 			CBinData(OOX::Document *pMain = NULL);
 			virtual ~CBinData();
@@ -69,7 +69,7 @@ namespace OOX
 		class CControl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControl)
+			WritingElement_AdditionMethods(CControl)
 
 			CControl(OOX::Document *pMain = NULL);
 			virtual ~CControl();
@@ -95,7 +95,7 @@ namespace OOX
 		class CPicture : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPicture)
+			WritingElement_AdditionMethods(CPicture)
 
 			CPicture(OOX::Document *pMain = NULL);
 			virtual ~CPicture();
@@ -124,7 +124,7 @@ namespace OOX
 		class CObject : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CObject)
+			WritingElement_AdditionMethods(CObject)
 
 			CObject(OOX::Document *pMain = NULL);
 			virtual ~CObject();

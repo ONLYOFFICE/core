@@ -43,7 +43,7 @@ namespace PPTX
 		class Blip : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Blip)
+			WritingElement_AdditionMethods(Blip)
 
 			Blip(std::wstring ns = L"a");
 			Blip& operator=(const Blip& oSrc);

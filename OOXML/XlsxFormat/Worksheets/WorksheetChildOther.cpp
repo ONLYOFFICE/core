@@ -226,7 +226,11 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if (L"protectedRange" == sName)
-						m_arrItems.push_back(new CProtectedRange(oReader));
+					{
+						CProtectedRange* pProtectedRange = new CProtectedRange();
+						*pProtectedRange = oReader;
+						m_arrItems.push_back(pProtectedRange);
+					}
 				}
 			}
 			void CProtectedRanges::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
@@ -323,7 +327,11 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if (L"cellWatch" == sName)
-						m_arrItems.push_back(new CCellWatch(oReader));
+					{
+						CCellWatch* pCellWatch = new CCellWatch();
+						*pCellWatch = oReader;
+						m_arrItems.push_back(pCellWatch);
+					}
 				}
 			}
 			void CCellWatches::fromBin(std::vector<XLS::BaseObjectPtr>& obj)
@@ -962,7 +970,9 @@ namespace OOX
 						m_oPane = oReader;
 					if (L"selection" == sName)
 					{
-						m_arrItems.push_back(new CSelection(oReader));
+						CSelection* pSelection = new CSelection();
+						*pSelection = oReader;
+						m_arrItems.push_back(pSelection);
 					}
 				}
 			}
@@ -1103,7 +1113,11 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( L"sheetView" == sName )
-						m_arrItems.push_back( new CSheetView( oReader ));
+					{
+						CSheetView* pSheetView = new CSheetView();
+						*pSheetView = oReader;
+						m_arrItems.push_back(pSheetView);
+					}
 				}
 			}
 			void CSheetViews::fromBin(XLS::BaseObjectPtr& obj)
@@ -1816,7 +1830,11 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( L"brk" == sName )
-						m_arrItems.push_back( new CBreak( oReader ));
+					{
+						CBreak* pBreak = new CBreak();
+						*pBreak = oReader;
+						m_arrItems.push_back(pBreak);
+					}
 				}
 			}
 			void CRowColBreaks::fromBin(XLS::BaseObjectPtr& obj)
@@ -2151,7 +2169,11 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( L"dataRef" == sName )
-						m_arrItems.push_back( new CDataRef( oReader ));
+					{
+						CDataRef* pDataRef = new CDataRef();
+						*pDataRef = oReader;
+						m_arrItems.push_back(pDataRef);
+					}
 				}
 			}
 			void CDataRefs::fromBin(XLS::BaseObjectPtr& obj)

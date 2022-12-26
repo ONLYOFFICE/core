@@ -44,7 +44,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(FillEffect)
+			WritingElement_AdditionMethods(FillEffect)
 			PPTX_LOGIC_BASE2(FillEffect)
 			
 			FillEffect& operator=(const FillEffect& oSrc);

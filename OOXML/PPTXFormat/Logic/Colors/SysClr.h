@@ -42,7 +42,7 @@ namespace PPTX
 		class SysClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(SysClr)
+			WritingElement_AdditionMethods(SysClr)
 			PPTX_LOGIC_BASE2(SysClr)
 
 			virtual DWORD GetRGBA(DWORD RGBA) const;

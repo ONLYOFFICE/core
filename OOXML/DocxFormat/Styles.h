@@ -83,9 +83,7 @@ namespace OOX
 		class CTableStyleProperties : public WritingElement
 		{
 		public:
-			CTableStyleProperties();
-			CTableStyleProperties(XmlUtils::CXmlNode &oNode);
-			CTableStyleProperties(XmlUtils::CXmlLiteReader& oReader);
+			CTableStyleProperties();			
 			virtual ~CTableStyleProperties();
 
 			const CTableStyleProperties& operator=(const XmlUtils::CXmlNode &oNode);
@@ -134,9 +132,7 @@ namespace OOX
 	{
 	public:
 
-		CDocDefaults();
-		CDocDefaults(XmlUtils::CXmlNode &oNode);
-		CDocDefaults(XmlUtils::CXmlLiteReader& oReader);
+		CDocDefaults();		
 		virtual ~CDocDefaults();
 
 		const CDocDefaults& operator=(const XmlUtils::CXmlNode &oNode);
@@ -159,9 +155,7 @@ namespace OOX
 	{
 	public:
 
-		CLatentStyles();
-		CLatentStyles(XmlUtils::CXmlNode &oNode);
-		CLatentStyles(XmlUtils::CXmlLiteReader& oReader);
+		CLatentStyles();	
 		virtual ~CLatentStyles();
 
 		const CLatentStyles& operator=(const XmlUtils::CXmlNode &oNode);
@@ -194,9 +188,7 @@ namespace OOX
 	{
 	public:
 
-		CStyle(OOX::Document *pMain = NULL);
-		CStyle(XmlUtils::CXmlNode &oNode);
-		CStyle(XmlUtils::CXmlLiteReader& oReader);
+		CStyle(OOX::Document *pMain = NULL);		
 		virtual ~CStyle();
 
 		void ClearItems();
@@ -249,6 +241,7 @@ namespace OOX
 	class CStyles : public OOX::File, public WritingElement
 	{
 	public:
+		CStyles();
 		CStyles(OOX::Document *pMain);
 		CStyles(OOX::Document *pMain, const CPath& oPath);
 		CStyles(XmlUtils::CXmlNode& oNode);

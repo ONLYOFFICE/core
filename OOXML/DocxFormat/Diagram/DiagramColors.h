@@ -41,7 +41,7 @@ namespace OOX
 		class CClrLst : public WritingElementWithChilds<PPTX::Logic::UniColor>
 		{
 		public:
-			WritingElement_AdditionConstructors(CClrLst)
+			WritingElement_AdditionMethods(CClrLst)
 			CClrLst() {}
 			virtual ~CClrLst() {}
 			virtual std::wstring toXML() const
@@ -75,7 +75,7 @@ namespace OOX
 		class CColorStyleLbl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorStyleLbl)
+			WritingElement_AdditionMethods(CColorStyleLbl)
 
 			CColorStyleLbl() {}
 			virtual ~CColorStyleLbl() {}

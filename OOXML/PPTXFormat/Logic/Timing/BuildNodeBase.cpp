@@ -60,13 +60,13 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("bldP"))
-				m_node.reset(new Logic::BldP(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldP>(node));
 			else if (name == _T("bldDgm"))
-				m_node.reset(new Logic::BldDgm(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldDgm>(node));
 			else if (name == _T("bldGraphic"))
-				m_node.reset(new Logic::BldGraphic(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldGraphic>(node));
 			else if (name == _T("bldOleChart"))
-				m_node.reset(new Logic::BldOleChart(node));
+				m_node.reset(CreatePtrXmlContent<Logic::BldOleChart>(node));
 			else m_node.reset();
 		}
 		void BuildNodeBase::GetBuildNodeFrom(XmlUtils::CXmlNode& element)
@@ -74,13 +74,13 @@ namespace PPTX
 			XmlUtils::CXmlNode oNode;
 			
 			if (element.GetNode(_T("p:bldP"), oNode))
-				m_node.reset(new Logic::BldP(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldP>(oNode));
 			else if (element.GetNode(_T("p:bldDgm"), oNode))
-				m_node.reset(new Logic::BldDgm(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldDgm>(oNode));
 			else if (element.GetNode(_T("p:bldGraphic"), oNode))
-				m_node.reset(new Logic::BldGraphic(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldGraphic>(oNode));
 			else if (element.GetNode(_T("p:bldOleChart"), oNode))
-				m_node.reset(new Logic::BldOleChart(oNode));
+				m_node.reset(CreatePtrXmlContent<Logic::BldOleChart>(oNode));
 			else m_node.reset();
 		}
 		std::wstring BuildNodeBase::toXML() const

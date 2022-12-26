@@ -42,7 +42,7 @@ namespace PPTX
 		class TextFont : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TextFont)
+			WritingElement_AdditionMethods(TextFont)
 
 			TextFont();
 			virtual ~TextFont();

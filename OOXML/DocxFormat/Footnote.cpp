@@ -98,7 +98,8 @@ namespace OOX
 				sName = oReader.GetName();
 				if ( _T("w:footnote") == sName )
 				{
-					CFtnEdn *pFootnote = new CFtnEdn( oReader );
+					CFtnEdn *pFootnote = new CFtnEdn();
+					*pFootnote = oReader;
 					if (pFootnote)
 					{
 						m_arrFootnote.push_back( pFootnote );

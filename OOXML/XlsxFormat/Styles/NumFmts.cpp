@@ -148,7 +148,9 @@ namespace OOX
 
 				if (L"numFmt" == sName)
 				{
-					m_arrItems.push_back(new CNumFmt(oReader));
+					CNumFmt* pNumFmt = new CNumFmt();
+					*pNumFmt = oReader;
+					m_arrItems.push_back(pNumFmt);
 
 					if (m_arrItems.back()->m_oNumFmtId.IsInit())
 					{

@@ -169,9 +169,7 @@ namespace OOX
 		class CFFCheckBox : public WritingElement
 		{
 		public:
-			CFFCheckBox();
-			CFFCheckBox(XmlUtils::CXmlNode &oNode);
-			CFFCheckBox(XmlUtils::CXmlLiteReader& oReader);
+			CFFCheckBox();			
 			virtual ~CFFCheckBox();
 
 			const CFFCheckBox &operator=(const XmlUtils::CXmlNode &oNode);
@@ -197,9 +195,7 @@ namespace OOX
 		class CFFDDList : public WritingElement
 		{
 		public:
-			CFFDDList();
-			CFFDDList(XmlUtils::CXmlNode &oNode);
-			CFFDDList(XmlUtils::CXmlLiteReader& oReader);
+			CFFDDList();			
 			virtual ~CFFDDList();
 
 			virtual void ClearItems();
@@ -225,9 +221,7 @@ namespace OOX
 		class CFFTextInput : public WritingElement
 		{
 		public:
-			CFFTextInput();
-			CFFTextInput(XmlUtils::CXmlNode &oNode);
-			CFFTextInput(XmlUtils::CXmlLiteReader& oReader);
+			CFFTextInput();			
 			virtual ~CFFTextInput();
 
 			const CFFTextInput &operator=(const XmlUtils::CXmlNode &oNode);
@@ -251,9 +245,7 @@ namespace OOX
 		class CFFData : public WritingElement
 		{
 		public:
-			CFFData();
-			CFFData(XmlUtils::CXmlNode &oNode);
-			CFFData(XmlUtils::CXmlLiteReader& oReader);
+			CFFData();			
 			virtual ~CFFData();
 
 			const CFFData &operator=(const XmlUtils::CXmlNode &oNode);
@@ -287,9 +279,7 @@ namespace OOX
 		class CFldChar : public WritingElement
 		{
 		public:
-			CFldChar(OOX::Document *pMain = NULL);
-			CFldChar(XmlUtils::CXmlNode &oNode);
-			CFldChar(XmlUtils::CXmlLiteReader& oReader);
+			CFldChar(OOX::Document *pMain = NULL);			
 			virtual ~CFldChar();
 
 			const CFldChar &operator=(const XmlUtils::CXmlNode &oNode);

@@ -24,6 +24,7 @@ include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
 
 #PPTSHAPES
 include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes_cpp.pri)
 
 #PPTXSHAPES
 include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTXShape/OOXMLShapes/pri/pptx_shapes.pri)
@@ -328,11 +329,17 @@ SOURCES += \
 	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
+	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/ElementSettings.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/BinaryReader.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/CustomGeomShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/Ppt2PptxShapeConverter.cpp \
+	\
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/Pptx2PptShapeConverter.cpp \
 	\
 	../../../../MsBinaryFile/PptFile/Drawing/TextAttributesEx.cpp \
 	../../../../MsBinaryFile/PptFile/Drawing/Elements.cpp \
@@ -393,6 +400,28 @@ SOURCES += \
 
 HEADERS += \
 	pptx_format.h \
+	\
+	../../../../MsBinaryFile/Common/Vml/Common.h \
+	../../../../MsBinaryFile/Common/Vml/BaseShape.h \
+	../../../../MsBinaryFile/Common/Vml/toVmlConvert.h \
+	../../../../MsBinaryFile/Common/Vml/Path.h \
+	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \	
+	\
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/ElementSettings.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/BinaryReader.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/CustomGeomShape.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/Ppt2PptxShapeConverter.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/Enums.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShapeEnum.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PresetShapesHeader.h \
+	\
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.h \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.h \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PresetShapesHeader.h \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/Pptx2PptShapeConverter.h \
+	\
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h \
 	../../../PPTXFormat/FileTypes.h \

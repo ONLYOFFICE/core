@@ -43,7 +43,7 @@ namespace PPTX
 		class Duotone : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Duotone)
+			WritingElement_AdditionMethods(Duotone)
 			PPTX_LOGIC_BASE2(Duotone)
 
 			Duotone& operator=(const Duotone& oSrc);

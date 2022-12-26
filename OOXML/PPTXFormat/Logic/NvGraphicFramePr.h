@@ -46,7 +46,7 @@ namespace PPTX
 		class NvGraphicFramePr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(NvGraphicFramePr)
+			WritingElement_AdditionMethods(NvGraphicFramePr)
 
 			NvGraphicFramePr(std::wstring ns = L"p");
 

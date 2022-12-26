@@ -56,7 +56,9 @@ namespace PPTX
 
 					if (strName == L"control")
 					{
-						Control elem(oNode);
+						Control elem;
+						elem = oNode;
+
 						arrControls.push_back(elem);
 					}
 					else if (L"AlternateContent" == strName)
@@ -80,12 +82,16 @@ namespace PPTX
 							XmlUtils::CXmlNode oNodeChoiceControl;
 							if (oNodeChoice.GetNode(L"p:control", oNodeChoiceControl))
 							{
-								Control elem(oNodeChoiceControl);
+								Control elem;
+								elem = oNodeChoiceControl;
+
 								arrControls.push_back(elem);
 								continue;
 							}
 						}
-						Control elem(oNodeFallbackControl);
+						Control elem;
+						elem = oNodeFallbackControl;
+
 						arrControls.push_back(elem);
 					}
 				}

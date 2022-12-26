@@ -47,7 +47,7 @@ namespace PPTX
 		class CustGeom : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CustGeom)
+			WritingElement_AdditionMethods(CustGeom)
 			PPTX_LOGIC_BASE2(CustGeom)
 
 			CustGeom& operator=(const CustGeom& oSrc);

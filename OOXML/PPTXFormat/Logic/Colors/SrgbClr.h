@@ -42,7 +42,7 @@ namespace PPTX
 		class SrgbClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(SrgbClr)
+			WritingElement_AdditionMethods(SrgbClr)
 			PPTX_LOGIC_BASE2(SrgbClr)
 
 			virtual OOX::EElementType getType() const;

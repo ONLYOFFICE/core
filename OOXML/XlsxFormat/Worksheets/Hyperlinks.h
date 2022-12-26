@@ -41,7 +41,7 @@ namespace OOX
 		class CHyperlink : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CHyperlink)
+			WritingElement_AdditionMethods(CHyperlink)
 			CHyperlink(OOX::Document *pMain = NULL);
 			virtual ~CHyperlink();
 
@@ -71,7 +71,7 @@ namespace OOX
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
 		{
 		public:
-            WritingElement_AdditionConstructors(CHyperlinks)
+            WritingElement_AdditionMethods(CHyperlinks)
             WritingElement_XlsbVectorConstructors(CHyperlinks)
 			CHyperlinks(OOX::Document *pMain = NULL);
 			virtual ~CHyperlinks();

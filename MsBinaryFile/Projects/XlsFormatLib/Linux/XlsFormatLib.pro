@@ -19,9 +19,13 @@ include(../../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+#PPTSHAPES
+include($$PWD/../../../Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
+
 DEFINES +=  UNICODE \
-        _UNICODE \
-        DONT_WRITE_EMBEDDED_FONTS
+			_UNICODE \
+			DONT_WRITE_EMBEDDED_FONTS \
+			USE_CUSTOM_SHAPES
 
 INCLUDEPATH += ../../../XlsFile/Format
 INCLUDEPATH += ../../../Common
@@ -367,6 +371,7 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logic/Biff_records/SXPair.cpp \
 	../../../XlsFile/Format/Logic/Biff_records/SXRng.cpp \
 	../../../XlsFile/Format/Logic/Biff_records/SxIsxoper.cpp \
+	\
 	../../../XlsFile/Format/Logic/Biff_structures/AddinUdf.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/AF12Criteria.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/AFDOper.cpp \
@@ -649,6 +654,7 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logic/Biff_structures/Feat11Fmla.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/Feat11WSSListInfo.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/Feat11XMap.cpp \
+	\
 	../../../XlsFile/Format/Logic/Biff_unions/AI.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/AUTOFILTER_bu.cpp \
@@ -782,10 +788,12 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logic/Biff_unions/SXFORMULA_bu.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/SXOPER.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/SXRANGE.cpp \
+	\
 	../../../Common/SummaryInformation/PropertyFactory.cpp \
 	../../../Common/SummaryInformation/PropertySet.cpp \
 	../../../Common/SummaryInformation/PropertySetStream.cpp \
 	../../../Common/SummaryInformation/CodePageOle.cpp \
+	\
 	../../../XlsFile/Format/Logic/EncryptionStream.cpp \
 	../../../XlsFile/Format/Logic/AnyObject.cpp \
 	../../../XlsFile/Format/Logic/AnySubstream.cpp \
@@ -817,6 +825,7 @@ SOURCES +=  \
 	../../../XlsFile/Format/Binary/CFStreamCacheReader.cpp \
 	../../../XlsFile/Format/Binary/CFStreamCacheWriter.cpp \
 	../../../XlsFile/Format/Binary/CompoundFile.cpp \
+	\
 	../../../XlsFile/Format/Crypt/rtl/cipher.cpp \
 	../../../XlsFile/Format/Crypt/rtl/digest.cpp \
 	../../../XlsFile/Format/Crypt/BiffDecoder_RCF.cpp \
@@ -824,11 +833,19 @@ SOURCES +=  \
 	../../../XlsFile/Format/Crypt/Decryptor.cpp \
 	../../../XlsFile/Format/Crypt/RC4Crypt.cpp \
 	../../../XlsFile/Format/Crypt/XORCrypt.cpp \
+	\
 	../../../XlsFile/Format/Logging/Log.cpp \
 	../../../XlsFile/Format/Logging/Logger.cpp \
+	\
 	../../../Common/ODraw/FormulaShape.cpp \
 	../../../Common/ODraw/CustomShape.cpp \
-	../../../Common/ODraw/BaseShape_1.cpp \
+	../../../Common/ODraw/BaseShape.cpp \
+	../../../Common/ODraw/CustomGeomShape.cpp \
+	../../../Common/ODraw/CustomShapeConvert.cpp \
+	../../../Common/ODraw/GraphicsPath.cpp \
+	../../../Common/ODraw/PathShape.cpp \
+	../../../Common/ODraw/XmlWriter.cpp \
+	\
 	../../../XlsFile/Converter/ConvertXls2Xlsx.cpp \
 	../../../XlsFile/Converter/external_items.cpp \
 	../../../XlsFile/Converter/mediaitems_utils.cpp \
@@ -1166,6 +1183,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_records/XFCRC.h \
 	../../../XlsFile/Format/Logic/Biff_records/XFExt.h \
 	../../../XlsFile/Format/Logic/Biff_records/YMult.h \
+	\
 	../../../XlsFile/Format/Binary/BinSmartPointers.h \
 	../../../XlsFile/Format/Binary/CFRecord.h \
 	../../../XlsFile/Format/Binary/CFRecordType.h \
@@ -1173,6 +1191,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Binary/CFStreamCacheReader.h \
 	../../../XlsFile/Format/Binary/CFStreamCacheWriter.h \
 	../../../XlsFile/Format/Binary/CompoundFile.h \
+	\
 	../../../XlsFile/Format/Crypt/rtl/cipher.h \
 	../../../XlsFile/Format/Crypt/rtl/digest.h \
 	../../../XlsFile/Format/Crypt/BiffDecoder_RCF.h \
@@ -1181,8 +1200,10 @@ HEADERS +=  \
 	../../../XlsFile/Format/Crypt/Decryptor.h \
 	../../../XlsFile/Format/Crypt/RC4Crypt.h \
 	../../../XlsFile/Format/Crypt/XORCrypt.h \
+	\
 	../../../XlsFile/Format/Logging/Log.h \
 	../../../XlsFile/Format/Logging/Logger.h \
+	\
 	../../../XlsFile/Format/Logic/Biff_structures/AddinUdf.h \
 	../../../XlsFile/Format/Logic/Biff_structures/AF12Criteria.h \
 	../../../XlsFile/Format/Logic/Biff_structures/AF12CellIcon.h \
@@ -1473,6 +1494,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_structures/ODRAW/OfficeArtSplitMenuColorContainer.h \
 	../../../XlsFile/Format/Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h \
 	../../../XlsFile/Format/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h \
+	\
 	../../../XlsFile/Format/Logic/Biff_unions/AI.h \
 	../../../XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL.h \
 	../../../XlsFile/Format/Logic/Biff_unions/AUTOFILTER.h \
@@ -1599,12 +1621,15 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_unions/UNKNOWNFRT.h \
 	../../../XlsFile/Format/Logic/Biff_unions/WINDOW.h \
 	../../../XlsFile/Format/Logic/Biff_unions/XFS.h \
+	\
 	../../../Common/SummaryInformation/Property.h \
 	../../../Common/SummaryInformation/PropertyFactory.h \
 	../../../Common/SummaryInformation/PropertySet.h \
 	../../../Common/SummaryInformation/PropertySetStream.h \
+	\
 	../../../Common/Utils/OptPtr.h \
 	../../../Common/Utils/simple_xml_writer.h \
+	\
 	../../../XlsFile/Converter/ConvertXls2Xlsx.h \
 	../../../XlsFile/Converter/external_items.h \
 	../../../XlsFile/Converter/mediaitems_utils.h \
@@ -1627,6 +1652,7 @@ HEADERS +=  \
 	../../../XlsFile/Converter/xlsx_textcontext.h \
 	../../../XlsFile/Converter/xlsx_external_context.h \
 	../../../XlsFile/Converter/xlsx_activeX_context.h \
+	\
 	../../../XlsFile/Format/Logic/EncryptionStream.h \
 	../../../XlsFile/Format/Logic/AnyObject.h \
 	../../../XlsFile/Format/Logic/AnySubstream.h \
@@ -1649,6 +1675,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_structures/SharedProperty.h \
 	../../../XlsFile/Converter/xlsx_chart_context.h \
 	../../../XlsFile/Format/Logic/Biff_records/FrtWrapper.h \
+	\
 	../../../Common/ODraw/BaseShape.h \
 	../../../Common/ODraw/BinaryReader.h \
 	../../../Common/ODraw/CustomGeomShape.h \
@@ -1658,147 +1685,7 @@ HEADERS +=  \
 	../../../Common/ODraw/PathShape.h \
 	../../../Common/ODraw/PPTShapeEnum.h \
 	../../../Common/ODraw/PresetShapesHeader.h \
-	../../../Common/ODraw/oldAutoShapes/accentbordercallout1type.h \
-	../../../Common/ODraw/oldAutoShapes/accentbordercallout3type.h \
-	../../../Common/ODraw/oldAutoShapes/accentbordercallout90type.h \
-	../../../Common/ODraw/oldAutoShapes/AccentBorderCallout2Type.h \
-	../../../Common/ODraw/oldAutoShapes/AccentCallout1Type.h \
-	../../../Common/ODraw/oldAutoShapes/AccentCallout2Type.h \
-	../../../Common/ODraw/oldAutoShapes/AccentCallout3Type.h \
-	../../../Common/ODraw/oldAutoShapes/AccentCallout90Type.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonBack.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonBeginning.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonBlank.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonDocument.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonEnd.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonHelp.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonHome.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonInfo.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonMovie.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonNext.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonReturn.h \
-	../../../Common/ODraw/oldAutoShapes/ActionButtonSound.h \
-	../../../Common/ODraw/oldAutoShapes/arctype.h \
-	../../../Common/ODraw/oldAutoShapes/BentArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/BentConnector.h \
-	../../../Common/ODraw/oldAutoShapes/BentUpArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/BevelType.h \
-	../../../Common/ODraw/oldAutoShapes/BlockArcType.h \
-	../../../Common/ODraw/oldAutoShapes/BorderCallout1Type.h \
-	../../../Common/ODraw/oldAutoShapes/BorderCallout2Type.h \
-	../../../Common/ODraw/oldAutoShapes/BorderCallout3Type.h \
-	../../../Common/ODraw/oldAutoShapes/BorderCallout90Type.h \
-	../../../Common/ODraw/oldAutoShapes/BracePairType.h \
-	../../../Common/ODraw/oldAutoShapes/BracketPairType.h \
-	../../../Common/ODraw/oldAutoShapes/Callout1Type.h \
-	../../../Common/ODraw/oldAutoShapes/Callout2Type.h \
-	../../../Common/ODraw/oldAutoShapes/Callout3Type.h \
-	../../../Common/ODraw/oldAutoShapes/Callout90Type.h \
-	../../../Common/ODraw/oldAutoShapes/CanType.h \
-	../../../Common/ODraw/oldAutoShapes/ChevronType.h \
-	../../../Common/ODraw/oldAutoShapes/CircularArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/CloudCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/CubeType.h \
-	../../../Common/ODraw/oldAutoShapes/CurvedConnector.h \
-	../../../Common/ODraw/oldAutoShapes/CurvedDownArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/CurvedLeftArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/CurvedRightArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/CurvedUpArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/DiamondType.h \
-	../../../Common/ODraw/oldAutoShapes/DonutType.h \
-	../../../Common/ODraw/oldAutoShapes/DownArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/DownArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/EllipseRibbon2Type.h \
-	../../../Common/ODraw/oldAutoShapes/EllipseRibbonType.h \
-	../../../Common/ODraw/oldAutoShapes/EllipseType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartAlternateProcessType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartCollateType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartConnectorType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartDecisionType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartDelayType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartDisplayType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartDocumentType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartExtractType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartInputOutputType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartInternalStorageType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartMagneticDiskType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartMagneticDrumType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartMagneticTapeType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartManualInputType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartManualOperationType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartMergeType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartMultidocumentType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartOffpageConnectorType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartOnlineStorageType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartOrType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartPredefinedProcessType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartPreparationType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartProcessType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartPunchedCardType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartPunchedTapeType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartSortType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartSummingJunctionType.h \
-	../../../Common/ODraw/oldAutoShapes/FlowChartTerminatorType.h \
-	../../../Common/ODraw/oldAutoShapes/FoldedCornerType.h \
-	../../../Common/ODraw/oldAutoShapes/HeartType.h \
-	../../../Common/ODraw/oldAutoShapes/HexagonType.h \
-	../../../Common/ODraw/oldAutoShapes/HomePlateType.h \
-	../../../Common/ODraw/oldAutoShapes/HorisontalScrollType.h \
-	../../../Common/ODraw/oldAutoShapes/IrregularSealOneType.h \
-	../../../Common/ODraw/oldAutoShapes/IrregularSealTwo.h \
-	../../../Common/ODraw/oldAutoShapes/IsoscelesTriangleType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftBraceType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftBracketType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftRightArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftRightArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/LeftRightUpArrow.h \
-	../../../Common/ODraw/oldAutoShapes/LeftUpArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/LightningBoltType.h \
-	../../../Common/ODraw/oldAutoShapes/LineType.h \
-	../../../Common/ODraw/oldAutoShapes/MoonType.h \
-	../../../Common/ODraw/oldAutoShapes/NoSmokingType.h \
-	../../../Common/ODraw/oldAutoShapes/NotchedRightArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/OctagonType.h \
-	../../../Common/ODraw/oldAutoShapes/ParallelogramType.h \
-	../../../Common/ODraw/oldAutoShapes/PentagonType.h \
-	../../../Common/ODraw/oldAutoShapes/PlaqueType.h \
-	../../../Common/ODraw/oldAutoShapes/PlusType.h \
-	../../../Common/ODraw/oldAutoShapes/QuadArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/QuadArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/RectangleType.h \
-	../../../Common/ODraw/oldAutoShapes/RibbonDownType.h \
-	../../../Common/ODraw/oldAutoShapes/RibbonUpType.h \
-	../../../Common/ODraw/oldAutoShapes/RightArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/RightArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/RightBracetype.h \
-	../../../Common/ODraw/oldAutoShapes/RightBracketType.h \
-	../../../Common/ODraw/oldAutoShapes/RightTriangleType.h \
-	../../../Common/ODraw/oldAutoShapes/RoundedRectangleType.h \
-	../../../Common/ODraw/oldAutoShapes/Seal4Type.h \
-	../../../Common/ODraw/oldAutoShapes/Seal8Type.h \
-	../../../Common/ODraw/oldAutoShapes/Seal16Type.h \
-	../../../Common/ODraw/oldAutoShapes/Seal24Type.h \
-	../../../Common/ODraw/oldAutoShapes/Seal32Type.h \
-	../../../Common/ODraw/oldAutoShapes/SmileyFaceType.h \
-	../../../Common/ODraw/oldAutoShapes/Startype.h \
-	../../../Common/ODraw/oldAutoShapes/StraightConnectorType.h \
-	../../../Common/ODraw/oldAutoShapes/StripedRightArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/SunType.h \
-	../../../Common/ODraw/oldAutoShapes/TextboxType.h \
-	../../../Common/ODraw/oldAutoShapes/TrapezoidType.h \
-	../../../Common/ODraw/oldAutoShapes/UpArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/UpArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/UpDownArrowCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/UpDownArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/UturnArrowType.h \
-	../../../Common/ODraw/oldAutoShapes/VerticalScrollType.h \
-	../../../Common/ODraw/oldAutoShapes/WaveDoubleType.h \
-	../../../Common/ODraw/oldAutoShapes/WaveType.h \
-	../../../Common/ODraw/oldAutoShapes/WedgeEllipseCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/WedgeRectCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/WedgeRoundedRectCalloutType.h \
+	\
 	../../../Common/ODraw/XmlWriter.h \
 	../../../Common/ODraw/CustomShape.h \
 	../../../XlsFile/Format/Logic/Biff_structures/AFDOperBoolErr.h \

@@ -45,7 +45,7 @@ namespace OOX
 		class CExtAnchor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExtAnchor)
+			WritingElement_AdditionMethods(CExtAnchor)
 			CExtAnchor();
 			virtual ~CExtAnchor();
 
@@ -72,7 +72,7 @@ namespace OOX
 		class COleObjectPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObjectPr)
+			WritingElement_AdditionMethods(COleObjectPr)
 			COleObjectPr();
 			virtual ~COleObjectPr();
 
@@ -107,7 +107,7 @@ namespace OOX
 		class COleObject : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObject)
+			WritingElement_AdditionMethods(COleObject)
 			WritingElement_XlsbConstructors(COleObject)
 			COleObject();
 			virtual ~COleObject();
@@ -145,7 +145,7 @@ namespace OOX
 		class COleObjects : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleObjects)
+			WritingElement_AdditionMethods(COleObjects)
 			WritingElement_XlsbConstructors(COleObjects)
 			COleObjects();
 			virtual ~COleObjects();

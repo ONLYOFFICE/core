@@ -98,7 +98,7 @@ namespace OOX
 								case 'a':
 									if ( _T("v:arc") == sName )
 									{
-										pItem = new OOX::Vml::CArc(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CArc, oSubReader)
 										bReadyElement = true;
 
 									}
@@ -106,66 +106,66 @@ namespace OOX
 								case 'c':
 									if ( _T("v:curve") == sName )
 									{
-										pItem = new OOX::Vml::CCurve(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CCurve, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'g':
 									if ( _T("v:group") == sName )
 									{
-										pItem = new OOX::Vml::CGroup(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CGroup, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'i':
 									if ( _T("v:image") == sName )
 									{
-										pItem = new OOX::Vml::CImage( oSubReader );
+										AssignPtrXmlContent(pItem, OOX::Vml::CImage, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'l':
 									if ( _T("v:line") == sName )
 									{
-										pItem = new OOX::Vml::CLine(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CLine, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'o':
 									if ( _T("v:oval") == sName )
 									{
-										pItem = new OOX::Vml::COval(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::COval, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'p':
 									if ( _T("v:polyline") == sName )
 									{
-										pItem = new OOX::Vml::CPolyLine(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CPolyLine, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 'r':
 									if ( _T("v:rect") == sName )
 									{
-										pItem = new OOX::Vml::CRect(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CRect, oSubReader)
 										bReadyElement = true;
 									}
 									else if ( _T("v:roundrect") == sName )
 									{
-										pItem =  new OOX::Vml::CRoundRect(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CRoundRect, oSubReader)
 										bReadyElement = true;
 									}
 									break;
 								case 's':
 									if ( _T("v:shape") == sName )
 									{
-										pItem = new OOX::Vml::CShape(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CShape, oSubReader)
 										bReadyElement = true;
 									}
 									else if ( _T("v:shapetype") == sName )
 									{
-										pItem = new OOX::Vml::CShapeType(oSubReader);
+										AssignPtrXmlContent(pItem, OOX::Vml::CShapeType, oSubReader)
 									}
 									break;
 								}								

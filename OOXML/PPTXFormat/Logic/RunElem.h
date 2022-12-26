@@ -47,7 +47,7 @@ namespace PPTX
 		class RunElem : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(RunElem)
+			WritingElement_AdditionMethods(RunElem)
 
 			RunElem();
 

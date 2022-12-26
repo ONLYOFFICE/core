@@ -226,7 +226,9 @@ namespace OOX
 						int nCurDepth1 = oReader.GetDepth();
 						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
-							m_arrConditionalFormatting.push_back(new OOX::Spreadsheet::CConditionalFormatting(oReader));
+							OOX::Spreadsheet::CConditionalFormatting* pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
+							*pConditionalFormatting = oReader;
+							m_arrConditionalFormatting.push_back(pConditionalFormatting);
 						}
 					}
 					else if (sName == L"dataValidations")
@@ -275,7 +277,9 @@ namespace OOX
 						int nCurDepth1 = oReader.GetDepth();
 						while (oReader.ReadNextSiblingNode(nCurDepth1))
 						{
-							m_oSlicerCachePivotTables.push_back(new OOX::Spreadsheet::CSlicerCachePivotTable(oReader));
+							OOX::Spreadsheet::CSlicerCachePivotTable* pSlicerCachePivotTable = new OOX::Spreadsheet::CSlicerCachePivotTable();
+							*pSlicerCachePivotTable = oReader;
+							m_oSlicerCachePivotTables.push_back(pSlicerCachePivotTable);
 						}
 					}
 					else if (sName == L"tableSlicerCache")
@@ -506,7 +510,9 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("ext") == sName )
 				{
-					OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension(oReader);
+					OOX::Drawing::COfficeArtExtension *oExt = new OOX::Drawing::COfficeArtExtension();
+					*oExt = oReader;
+
 					if (oExt)
 						m_arrExt.push_back( oExt );
 				}

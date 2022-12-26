@@ -48,13 +48,13 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if(name == _T("r"))
-				Elem.reset(new Logic::Run(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::Run>(oReader));
 			else if(name == _T("fld"))
-				Elem.reset(new Logic::Fld(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::Fld>(oReader));
 			else if(name == _T("br"))
-				Elem.reset(new Logic::Br(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::Br>(oReader));
 			else if(name == _T("m"))
-				Elem.reset(new Logic::MathParaWrapper(oReader));
+				Elem.reset(CreatePtrXmlContent<Logic::MathParaWrapper>(oReader));
 			else
 				Elem.reset();
 		}
@@ -63,13 +63,13 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if(name == _T("r"))
-				Elem.reset(new Logic::Run(node));
+				Elem.reset(CreatePtrXmlContent<Logic::Run>(node));
 			else if(name == _T("fld"))
-				Elem.reset(new Logic::Fld(node));
+				Elem.reset(CreatePtrXmlContent<Logic::Fld>(node));
 			else if(name == _T("br"))
-				Elem.reset(new Logic::Br(node));
+				Elem.reset(CreatePtrXmlContent<Logic::Br>(node));
 			else if(name == _T("m"))
-				Elem.reset(new Logic::MathParaWrapper(node));
+				Elem.reset(CreatePtrXmlContent<Logic::MathParaWrapper>(node));
 			else
 				Elem.reset();
 		}

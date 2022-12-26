@@ -214,27 +214,26 @@ namespace NSCustomShapesConvert
 
 	struct SHandle
 	{
-            Aggplus::POINT gdRef;
-			SPointType gdRefType;
-			SPointExist bRefExist;
-			SPointExist bRefPolarExist;
+		Aggplus::POINT gdRef;
+		SPointType gdRefType;
+		SPointExist bRefExist;
+		SPointExist bRefPolarExist;
 
-            Aggplus::POINT Max;
-			SPointType MaxType;
-			SPointExist bMaxExist;
-			SPointExist bMaxPolarExist;
+		Aggplus::POINT Max;
+		SPointType MaxType;
+		SPointExist bMaxExist;
+		SPointExist bMaxPolarExist;
 
-            Aggplus::POINT Min;
-			SPointType MinType;
-			SPointExist bMinExist;
-			SPointExist bMinPolarExist;
+		Aggplus::POINT Min;
+		SPointType MinType;
+		SPointExist bMinExist;
+		SPointExist bMinPolarExist;
 
-            Aggplus::POINT Pos;
-			SPointType PosType;
+		Aggplus::POINT Pos;
+		SPointType PosType;
 
-            Aggplus::POINT PolarCentre;
-			SPointType PolarCentreType;
-
+		Aggplus::POINT PolarCentre;
+		SPointType PolarCentreType;
 	};
 	class CFormulasManager;
 	class CFormula
@@ -256,74 +255,12 @@ private:
 		long m_lCountRecurs;
 
 	public:
-		CFormula()
-		{
-			m_eFormulaType = ftSum;
-			m_lIndex = 0;
-			m_lParam1 = 0;	m_eType1 = ptValue;
-			m_lParam2 = 0;	m_eType2 = ptValue;
-			m_lParam3 = 0;	m_eType3 = ptValue;
+		CFormula();
+		CFormula(int nIndex);
 
-			m_lCountRecurs = 0;
-		}
+		CFormula& operator =(const CFormula& oSrc);
 
-		CFormula(int nIndex)
-		{
-			m_eFormulaType = ftSum;
-			m_lIndex = nIndex;
-			m_lParam1 = 0;	m_eType1 = ptValue;
-			m_lParam2 = 0;	m_eType2 = ptValue;
-			m_lParam3 = 0;	m_eType3 = ptValue;
-
-			m_lCountRecurs = 0;
-		}
-
-		CFormula& operator =(const CFormula& oSrc)
-		{
-			m_eFormulaType	= oSrc.m_eFormulaType;
-			m_lIndex		= oSrc.m_lIndex;
-
-			m_lParam1		= oSrc.m_lParam1;
-			m_eType1		= oSrc.m_eType1;
-			
-			m_lParam2		= oSrc.m_lParam2;
-			m_eType2		= oSrc.m_eType2;
-			
-			m_lParam3		= oSrc.m_lParam3;
-			m_eType3		= oSrc.m_eType3;
-
-			m_lCountRecurs = 0;
-			return (*this);
-		}
-
-		void FromString(std::wstring strFormula, long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
-		{
-			std::vector<std::wstring> oArrayParams;
-			NSStringUtils::ParseString(_T(" "), strFormula, oArrayParams);
-			size_t nCount = oArrayParams.size();
-			if (nCount == 0)
-				return;
-
-			bool bRes = true;
-			m_eFormulaType = GetFormula(oArrayParams[0], bRes);
-
-			ParamType ptType = ptValue;
-			if (1 < nCount)
-			{
-				m_lParam1 = GetValue(oArrayParams[1], ptType, bRes, lShapeWidth, lShapeHeight);
-				m_eType1 = ptType;		
-			}
-			if (2 < nCount)
-			{
-				m_lParam2 = GetValue(oArrayParams[2], ptType, bRes, lShapeWidth, lShapeHeight);
-				m_eType2 = ptType;		
-			}
-			if (3 < nCount)
-			{
-				m_lParam3 = GetValue(oArrayParams[3], ptType, bRes, lShapeWidth, lShapeHeight);
-				m_eType3 = ptType;		
-			}
-		}
+		void FromString(std::wstring strFormula, long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML);
         LONG CalculateFormula(CFormulasManager* pManager);
 	};
 
@@ -339,71 +276,15 @@ private:
 		long m_lShapeHeight;
 
 	public:
-		CFormulasManager() : m_arFormulas(), m_arResults()
-		{
-			m_pAdjustments	= NULL;
-			m_lShapeWidth	= ShapeSizeVML;
-			m_lShapeHeight	= ShapeSizeVML;
-		}
-		CFormulasManager& operator =(const CFormulasManager& oSrc)
-		{
-			m_pAdjustments	= oSrc.m_pAdjustments;
-			m_lShapeWidth	= oSrc.m_lShapeWidth;
-			m_lShapeHeight	= oSrc.m_lShapeHeight;
+		CFormulasManager();
+		CFormulasManager& operator =(const CFormulasManager& oSrc);
 
-			m_arResults.clear();
-			for (size_t nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
-			{
-				m_arResults.push_back(oSrc.m_arResults[nIndex]);
-			}
-			m_arFormulas.clear();
-			for (size_t nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
-			{
-				m_arFormulas.push_back(oSrc.m_arFormulas[nIndex]);
-			}
-			
-			return (*this);
-		}
+		void Clear();
+		void Clear(std::vector<LONG>* pAdjusts);
 
-		void Clear()
-		{
-			m_pAdjustments	= NULL;
+		void AddFormula(std::wstring strFormula);
+		void AddFormula(CFormula oFormula);
 
-
-			m_arFormulas.clear();
-			m_arResults.clear();
-		}
-
-		void Clear(std::vector<LONG>* pAdjusts)
-		{
-			m_pAdjustments = pAdjusts;
-			
-			//m_arFormulas.clear();
-			//m_arResults.clear();
-			for (size_t nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
-			{
-				m_arResults[nIndex] = 0xFFFFFFFF;
-			}
-		}
-		void AddFormula(std::wstring strFormula)
-		{
-			CFormula oFormula((int)m_arFormulas.size());
-			oFormula.FromString(strFormula, m_lShapeWidth, m_lShapeHeight);
-			m_arFormulas.push_back(oFormula);
-			m_arResults.push_back(0xFFFFFFFF);
-		}
-		void AddFormula(CFormula oFormula)
-		{
-			oFormula.m_lIndex = (int)m_arFormulas.size();
-			m_arFormulas.push_back(oFormula);
-			m_arResults.push_back(0xFFFFFFFF);
-		}
-		void CalculateResults()
-		{
-			for (size_t index = 0; index < m_arFormulas.size(); ++index)
-			{
-                LONG lResult = m_arFormulas[index].CalculateFormula(this);
-			}
-		}
+		void CalculateResults();
 	};
 }

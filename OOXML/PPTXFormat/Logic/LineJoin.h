@@ -44,7 +44,7 @@ namespace PPTX
 		class LineJoin : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(LineJoin)
+			WritingElement_AdditionMethods(LineJoin)
 			PPTX_LOGIC_BASE2(LineJoin)
 
 			virtual bool is_init() const;

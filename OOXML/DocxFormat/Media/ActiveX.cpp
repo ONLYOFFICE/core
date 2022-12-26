@@ -412,7 +412,8 @@ namespace OOX
 
 					if ( L"ocxPr" == sName )
 					{
-						COcxPr* pOcxPr = new COcxPr(oReader);
+						COcxPr* pOcxPr = new COcxPr();
+						*pOcxPr = oReader;
 						m_arrOcxPr.push_back(pOcxPr);
 					}
 				}

@@ -36,13 +36,6 @@
 
 #include <boost/shared_ptr.hpp>
 
-#define DEFINE_SHAPE_CLASS(Class, BaseClass)											\
-	class Class : public BaseClass                                          \
-	{                                                                       \
-	public:                                                                 \
-		Class();															\
-	};
-
 namespace ODRAW
 {
     using namespace NSBaseShape;

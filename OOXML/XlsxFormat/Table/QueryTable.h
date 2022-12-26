@@ -41,7 +41,7 @@ namespace OOX
 		class CQueryTableField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableField)
+			WritingElement_AdditionMethods(CQueryTableField)
 			WritingElement_XlsbConstructors(CQueryTableField)
 
 			CQueryTableField(){}
@@ -79,7 +79,7 @@ namespace OOX
 		class CQueryTableFields : public WritingElementWithChilds<CQueryTableField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableFields)
+			WritingElement_AdditionMethods(CQueryTableFields)
 			WritingElement_XlsbConstructors(CQueryTableFields)
 
 			CQueryTableFields() {}
@@ -106,7 +106,7 @@ namespace OOX
 		class CQueryTableDeletedField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableDeletedField)
+			WritingElement_AdditionMethods(CQueryTableDeletedField)
 			WritingElement_XlsbConstructors(CQueryTableDeletedField)
 
 			CQueryTableDeletedField() {}
@@ -135,7 +135,7 @@ namespace OOX
 		class CQueryTableDeletedFields : public WritingElementWithChilds<CQueryTableDeletedField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableDeletedFields)
+			WritingElement_AdditionMethods(CQueryTableDeletedFields)
 			WritingElement_XlsbConstructors(CQueryTableDeletedFields)
 			CQueryTableDeletedFields() {}
 			virtual ~CQueryTableDeletedFields() {}
@@ -162,7 +162,7 @@ namespace OOX
 		class CQueryTableRefresh : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTableRefresh)
+			WritingElement_AdditionMethods(CQueryTableRefresh)
 			WritingElement_XlsbConstructors(CQueryTableRefresh)
 			CQueryTableRefresh() {}
 			virtual ~CQueryTableRefresh() {}
@@ -201,7 +201,7 @@ namespace OOX
 		class CQueryTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CQueryTable)
+			WritingElement_AdditionMethods(CQueryTable)
 			WritingElement_XlsbConstructors(CQueryTable)
 			CQueryTable()
 			{

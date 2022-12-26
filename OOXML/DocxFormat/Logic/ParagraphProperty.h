@@ -51,7 +51,7 @@ namespace OOX
 		class CNumPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumPr)
+			WritingElement_AdditionMethods(CNumPr)
 
 			CNumPr();
 			virtual ~CNumPr();
@@ -75,7 +75,7 @@ namespace OOX
 		class CPBdr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPBdr)
+			WritingElement_AdditionMethods(CPBdr)
 
 			CPBdr();
 			virtual ~CPBdr();
@@ -154,7 +154,7 @@ namespace OOX
 		class CTabs : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabs)
+			WritingElement_AdditionMethods(CTabs)
 
 			CTabs(OOX::Document *pMain = NULL);
 			virtual ~CTabs();

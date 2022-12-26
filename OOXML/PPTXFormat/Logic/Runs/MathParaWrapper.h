@@ -48,7 +48,7 @@ namespace PPTX
 		class MathParaWrapper : public RunBase
 		{
 		public:
-			WritingElement_AdditionConstructors(MathParaWrapper)
+			WritingElement_AdditionMethods(MathParaWrapper)
 
 			MathParaWrapper() {}
 			virtual ~MathParaWrapper();

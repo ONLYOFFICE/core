@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,9 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 #include "../PptShape.h"
 
-// 177
-DEFINE_SHAPE_CLASS(CFlowChartOffpageConnectorType, CPPTShape)
-
+#ifdef USE_CUSTOM_SHAPES
+	DEFINE_SHAPE_CLASS(CFlowChartOffpageConnectorType, CCustomShape)
+#else
+	DEFINE_SHAPE_CLASS(CFlowChartOffpageConnectorType, CPPTShape)
+#endif

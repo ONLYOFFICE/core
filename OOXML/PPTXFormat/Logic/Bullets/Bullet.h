@@ -46,7 +46,7 @@ namespace PPTX
 		class Bullet : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Bullet)
+			WritingElement_AdditionMethods(Bullet)
 			PPTX_LOGIC_BASE2(Bullet)
 
 			Bullet& operator=(const Bullet& oSrc);

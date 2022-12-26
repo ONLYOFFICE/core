@@ -274,15 +274,7 @@ namespace OOX
 
 		CFFCheckBox::CFFCheckBox()
 		{
-		}
-		CFFCheckBox::CFFCheckBox(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFCheckBox::CFFCheckBox(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CFFCheckBox::~CFFCheckBox()
 		{
 		}
@@ -347,15 +339,7 @@ namespace OOX
 
 		CFFDDList::CFFDDList()
 		{
-		}
-		CFFDDList::CFFDDList(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFDDList::CFFDDList(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CFFDDList::~CFFDDList()
 		{
 			ClearItems();
@@ -450,15 +434,7 @@ namespace OOX
 
 		CFFTextInput::CFFTextInput()
 		{
-		}
-		CFFTextInput::CFFTextInput(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFTextInput::CFFTextInput(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CFFTextInput::~CFFTextInput()
 		{
 		}
@@ -523,15 +499,7 @@ namespace OOX
 
 		CFFData::CFFData()
 		{
-		}
-		CFFData::CFFData(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFFData::CFFData(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}	
 		CFFData::~CFFData()
 		{
 		}
@@ -615,16 +583,7 @@ namespace OOX
 		// CFldChar 17.16.18 (Part 1)
 		//--------------------------------------------------------------------------------
 
-		CFldChar::CFldChar(OOX::Document *pMain) : WritingElement(pMain) {}
-
-		CFldChar::CFldChar(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CFldChar::CFldChar(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		CFldChar::CFldChar(OOX::Document *pMain) : WritingElement(pMain) {}		
 		CFldChar::~CFldChar()
 		{
 		}

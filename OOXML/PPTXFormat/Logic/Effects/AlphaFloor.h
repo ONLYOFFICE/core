@@ -42,7 +42,7 @@ namespace PPTX
 		class AlphaFloor : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaFloor)
+			WritingElement_AdditionMethods(AlphaFloor)
 			PPTX_LOGIC_BASE2(AlphaFloor)
 
 			AlphaFloor& operator=(const AlphaFloor& oSrc);

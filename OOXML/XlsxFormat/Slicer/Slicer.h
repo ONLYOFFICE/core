@@ -40,7 +40,7 @@ namespace OOX
 		class CSlicer : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicer)
+			WritingElement_AdditionMethods(CSlicer)
             WritingElement_XlsbConstructors(CSlicer)
 			CSlicer(){}
 			virtual ~CSlicer(){}
@@ -77,7 +77,7 @@ namespace OOX
 		class CSlicers : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicers)
+			WritingElement_AdditionMethods(CSlicers)
             WritingElement_XlsbConstructors(CSlicers)
 			CSlicers(){}
 			virtual ~CSlicers(){}

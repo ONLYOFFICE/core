@@ -42,7 +42,7 @@ namespace OOX
 		class CCellStyle : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellStyle)
+			WritingElement_AdditionMethods(CCellStyle)
             WritingElement_XlsbConstructors(CCellStyle)
 			CCellStyle();
 			virtual ~CCellStyle();
@@ -72,7 +72,7 @@ namespace OOX
 		class CCellStyles : public WritingElementWithChilds<CCellStyle>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellStyles)
+			WritingElement_AdditionMethods(CCellStyles)
             WritingElement_XlsbVectorConstructors(CCellStyles)
 			CCellStyles();
 			virtual ~CCellStyles();

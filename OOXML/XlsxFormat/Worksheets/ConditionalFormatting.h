@@ -43,7 +43,7 @@ namespace OOX
 		class CFormulaCF : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormulaCF)
+			WritingElement_AdditionMethods(CFormulaCF)
 
 			CFormulaCF();
 			virtual ~CFormulaCF();
@@ -66,7 +66,7 @@ namespace OOX
 		class CConditionalFormatValueObject : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatValueObject)
+			WritingElement_AdditionMethods(CConditionalFormatValueObject)
             WritingElement_XlsbConstructors(CConditionalFormatValueObject)
 
 			CConditionalFormatValueObject();
@@ -99,7 +99,7 @@ namespace OOX
 		class CConditionalFormatIconSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatIconSet)
+			WritingElement_AdditionMethods(CConditionalFormatIconSet)
             WritingElement_XlsbConstructors(CConditionalFormatIconSet)
 
 			CConditionalFormatIconSet();
@@ -126,7 +126,7 @@ namespace OOX
 		class CColorScale : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorScale)
+			WritingElement_AdditionMethods(CColorScale)
             WritingElement_XlsbConstructors(CColorScale)
 
 			CColorScale();
@@ -157,7 +157,7 @@ namespace OOX
 		class CDataBar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataBar)
+			WritingElement_AdditionMethods(CDataBar)
             WritingElement_XlsbConstructors(CDataBar)
 
 			CDataBar();
@@ -211,7 +211,7 @@ namespace OOX
 		class CIconSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CIconSet)
+			WritingElement_AdditionMethods(CIconSet)
             WritingElement_XlsbConstructors(CIconSet)
 
 			CIconSet();
@@ -253,7 +253,7 @@ namespace OOX
 		class CConditionalFormattingRule : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormattingRule)
+			WritingElement_AdditionMethods(CConditionalFormattingRule)
             WritingElement_XlsbConstructors(CConditionalFormattingRule)
 
 			CConditionalFormattingRule();
@@ -312,7 +312,7 @@ namespace OOX
 		class CConditionalFormatting  : public WritingElementWithChilds<CConditionalFormattingRule>
 		{
 		public:
-			WritingElement_AdditionConstructors(CConditionalFormatting)
+			WritingElement_AdditionMethods(CConditionalFormatting)
             WritingElement_XlsbConstructors(CConditionalFormatting)
 
 			CConditionalFormatting(OOX::Document *pMain = NULL);

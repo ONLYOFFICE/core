@@ -41,7 +41,7 @@ namespace OOX
 		class CNumFmt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumFmt)
+			WritingElement_AdditionMethods(CNumFmt)
             WritingElement_XlsbConstructors(CNumFmt)
 			CNumFmt();
 			virtual ~CNumFmt();
@@ -72,7 +72,7 @@ namespace OOX
 		class CNumFmts : public WritingElementWithChilds<CNumFmt>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumFmts)
+			WritingElement_AdditionMethods(CNumFmts)
             WritingElement_XlsbVectorConstructors(CNumFmts)
 			CNumFmts();
 			virtual ~CNumFmts();

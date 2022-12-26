@@ -1234,7 +1234,8 @@ namespace OOX
 					m_oValue = oReader;
 				else if (strcmp("Data", sName) == 0)
 				{
-					CData data(oReader);
+					CData data;
+					data = oReader;
 
 					m_oType = data.m_oType;
 					m_oValue = data.m_oValue;

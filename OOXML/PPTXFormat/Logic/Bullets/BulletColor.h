@@ -44,7 +44,7 @@ namespace PPTX
 		class BulletColor : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BulletColor)
+			WritingElement_AdditionMethods(BulletColor)
 			PPTX_LOGIC_BASE2(BulletColor)
 
 			BulletColor& operator=(const BulletColor& oColor);

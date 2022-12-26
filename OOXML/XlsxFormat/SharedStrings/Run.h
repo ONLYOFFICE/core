@@ -43,7 +43,7 @@ namespace OOX
 		class CRun : public OOX::Spreadsheet::WritingElementWithChilds<CText>
 		{
 		public:
-			WritingElement_AdditionConstructors(CRun)
+			WritingElement_AdditionMethods(CRun)
 			CRun();
 			virtual ~CRun();
 

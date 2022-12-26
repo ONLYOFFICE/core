@@ -305,7 +305,8 @@ namespace OOX
 				}
 				else if (L"Names" == sName)
 				{
-					CDefinedNames names(oReader);
+					CDefinedNames names;
+					names = oReader;
 
 					CXlsxFlat* xlsx_flat = dynamic_cast<CXlsxFlat*>(WritingElement::m_pMainDocument);
 					if (xlsx_flat)
@@ -330,7 +331,11 @@ namespace OOX
 					}
 				}
 				else if (L"conditionalFormatting" == sName)
-					m_arrConditionalFormatting.push_back(new CConditionalFormatting(oReader));
+				{
+					CConditionalFormatting* pConditionalFormatting = new CConditionalFormatting();
+					*pConditionalFormatting = oReader;
+					m_arrConditionalFormatting.push_back(pConditionalFormatting);
+				}
 				else if (L"sheetFormatPr" == sName)
 					m_oSheetFormatPr = oReader;
 				else if (L"sheetViews" == sName)

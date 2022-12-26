@@ -40,7 +40,7 @@ namespace OOX
             class CPivotCacheDefinitionExt : public WritingElement
             {
             public:
-                WritingElement_AdditionConstructors(CPivotCacheDefinitionExt)
+                WritingElement_AdditionMethods(CPivotCacheDefinitionExt)
                 WritingElement_XlsbConstructors(CPivotCacheDefinitionExt)
                 CPivotCacheDefinitionExt()
                 {

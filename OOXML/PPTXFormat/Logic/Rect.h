@@ -43,7 +43,7 @@ namespace PPTX
 		class Rect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Rect)
+			WritingElement_AdditionMethods(Rect)
 			PPTX_LOGIC_BASE2(Rect)
 
 			virtual OOX::EElementType getType() const;

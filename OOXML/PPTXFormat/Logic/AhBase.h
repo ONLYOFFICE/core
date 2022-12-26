@@ -45,7 +45,7 @@ namespace PPTX
 		class AhBase : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AhBase)
+			WritingElement_AdditionMethods(AhBase)
 			PPTX_LOGIC_BASE2(AhBase)
 
 			virtual OOX::EElementType getType() const;

@@ -14,7 +14,7 @@ namespace SVG
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
 
 		double m_dX1;
 		double m_dY1;

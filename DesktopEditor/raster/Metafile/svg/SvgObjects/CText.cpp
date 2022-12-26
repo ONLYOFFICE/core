@@ -65,7 +65,9 @@ namespace SVG
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		ApplyStyle(pRenderer);
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
 
@@ -75,11 +77,11 @@ namespace SVG
 		return true;
 	}
 
-	void CText::ApplyStyle(IRenderer *pRenderer)
+	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
 		//Временный данные для тестов
-		pRenderer->put_FontName(L"Arial");
-		pRenderer->put_FontSize(1);
+		pRenderer->put_FontName(L"Times New Roman");
+		pRenderer->put_FontSize(12 / 25.4 * 96);
 
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_BrushColor1(0);
@@ -149,14 +151,16 @@ namespace SVG
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		ApplyStyle(pRenderer);
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
 
 		return true;
 	}
 
-	void CTspan::ApplyStyle(IRenderer *pRenderer)
+	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
 		//Временный данные для тестов
 		pRenderer->put_FontName(L"Arial");

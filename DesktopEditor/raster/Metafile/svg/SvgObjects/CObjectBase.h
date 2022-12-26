@@ -36,7 +36,7 @@ namespace SVG
 				m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
 		};
 
-		virtual void ApplyStyle(IRenderer* pRenderer) = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath) = 0;
 
 		friend class CLine;
 		friend class CRect;

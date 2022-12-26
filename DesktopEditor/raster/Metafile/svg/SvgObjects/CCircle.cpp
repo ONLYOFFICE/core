@@ -31,7 +31,9 @@ namespace SVG
 		if (NULL == pRenderer)
 			return false;
 
-		ApplyStyle(pRenderer);
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand (c_nPathType);
@@ -41,7 +43,7 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(m_dCx + m_dR, m_dCy);
 		pRenderer->PathCommandArcTo(m_dCx - m_dR, m_dCy - m_dR, m_dR * 2.0, m_dR * 2.0, 0, 360);
 
-		pRenderer->DrawPath (c_nWindingFillMode);
+		pRenderer->DrawPath (nPathType);
 		pRenderer->EndCommand (c_nPathType);
 
 		pRenderer->PathCommandEnd ();
@@ -49,10 +51,26 @@ namespace SVG
 		return true;
 	}
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer)
+	void CCircle::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
 		if (NULL == pRenderer)
 			return;
+
+		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+
+		int nStrokeColor = oStyle.GetStrokeColorN();
+		if (-1 != nStrokeColor)
+		{
+			nTypePath += c_nStroke;
+			pRenderer->put_PenColor(nStrokeColor);
+		}
+
+		int nFillColor = oStyle.GetFillN();
+		if (-1 != nFillColor)
+		{
+			nTypePath += c_nWindingFillMode;
+			pRenderer->put_BrushColor1(nFillColor);
+		}
 	}
 
 }

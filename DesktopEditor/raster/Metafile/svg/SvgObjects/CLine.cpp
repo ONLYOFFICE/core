@@ -31,7 +31,9 @@ namespace SVG
 		if (NULL == pRenderer)
 			return false;
 
-		ApplyStyle(pRenderer);
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand (c_nPathType);
@@ -41,16 +43,32 @@ namespace SVG
 		pRenderer->PathCommandMoveTo (m_dX1, m_dY1);
 		pRenderer->PathCommandLineTo (m_dX2, m_dY2);
 
-		pRenderer->DrawPath (c_nStroke);
+		pRenderer->DrawPath (nPathType);
 		pRenderer->EndCommand (c_nPathType);
 		pRenderer->PathCommandEnd ();
 
 		return true;
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer)
+	void CLine::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
 		if (NULL == pRenderer || NULL == m_pStyle)
 			return;
+
+		if (NULL == pRenderer)
+			return;
+
+		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+
+		double dStrokeWidth = oStyle.GetStrokeWidth();
+		if (0 < dStrokeWidth)
+			pRenderer->put_PenSize(dStrokeWidth);
+
+		int nStrokeColor = oStyle.GetStrokeColorN();
+		if (-1 != nStrokeColor)
+		{
+			nTypePath += c_nStroke;
+			pRenderer->put_PenColor(nStrokeColor);
+		}
 	}
 }

@@ -32,7 +32,17 @@ namespace SVG
 
 		virtual void AddOtherStyle(const std::pair<std::wstring, std::wstring>& oStyle, const unsigned int unLevel, const bool& bHardMode = true);
 
+		// Fill
 		std::wstring GetFill() const;
+		int GetFillN() const;
+
+		// Stroke
+		double GetStrokeWidth() const;
+		int GetStrokeColorN() const;
+
+	private:
+
+		NSCSS::NSConstValues::NSCssProperties::Stroke m_pStroke;
 	};
 }
 

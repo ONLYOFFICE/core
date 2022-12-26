@@ -16,7 +16,7 @@ namespace SVG
 
 		void GetBounds(double &dX, double &dY, double &dWidth, double &dHeight);
 	private:
-		void ApplyStyle(IRenderer* pRenderer) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
 
 		double m_dX;
 		double m_dY;

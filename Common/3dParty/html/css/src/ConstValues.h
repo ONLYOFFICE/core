@@ -4,11 +4,16 @@
 #include "CssCalculator_global.h"
 #include "StaticFunctions.h"
 #include "CNode.h"
+#include <wchar.h>
 #include <vector>
 #include <iostream>
 
 namespace NSCSS
 {
+    #ifndef RGB
+    #define RGB(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) ) )
+    #endif
+
     typedef enum {
         Default = 0,
         Pixel,
@@ -2675,6 +2680,30 @@ namespace NSCSS
                     return sColor;
                 }
 
+				int GetColorN() const
+				{
+					if (sColor.empty())
+						return -1;
+
+					std::wstring wsR;
+					wsR += sColor[0];
+					wsR += sColor[1];
+
+					std::wstring wsG;
+					wsG += sColor[2];
+					wsG += sColor[3];
+
+					std::wstring wsB;
+					wsB += sColor[4];
+					wsB += sColor[5];
+
+					char chR = stoi(wsR, nullptr, 16);
+					char chG = stoi(wsG, nullptr, 16);
+					char chB = stoi(wsB, nullptr, 16);
+
+					return RGB(chR, chG, chB);
+				}
+
                 std::wstring GetColor() const
                 {
                     std::wstring wsUpperColor = sColor;
@@ -2961,7 +2990,174 @@ namespace NSCSS
                     return wsVerticalAlign;
                 }
             };
-        }
+
+			class Stroke
+			{
+				std::wstring wsColor;
+				double       dWidth;
+
+				std::vector<bool> bImportants;
+				std::vector<unsigned int> arLevels;
+			public:
+				Stroke() : wsColor(), dWidth(0), bImportants({false, false}), arLevels({0, 0}) {}
+
+				void ClearImportants()
+				{
+					bImportants = {false, false};
+				}
+
+				Stroke operator+=(const Stroke& oStroke)
+				{
+					if (oStroke.Empty())
+						return *this;
+
+					wsColor = oStroke.wsColor;
+					dWidth  = oStroke.dWidth;
+
+					return *this;
+				}
+
+				bool Empty() const
+				{
+					return (dWidth <= 0);
+				}
+
+				static void StrokeEquation(Stroke &oFirstStroke, Stroke &oSecondStroke)
+				{
+					if (oFirstStroke.bImportants[0] && !oSecondStroke.bImportants[0] && !oFirstStroke.wsColor.empty())
+						oSecondStroke.wsColor.clear();
+					else if (oSecondStroke.bImportants[0] && !oFirstStroke.bImportants[0] && !oSecondStroke.wsColor.empty())
+						oFirstStroke.wsColor.clear();
+					else if (!oSecondStroke.wsColor.empty())
+					{
+						if (oFirstStroke.arLevels[0] < oSecondStroke.arLevels[0])
+							oFirstStroke.wsColor.clear();
+						else
+							oSecondStroke.wsColor.clear();
+					}
+
+					if (oFirstStroke.bImportants[1] && !oSecondStroke.bImportants[1] && oFirstStroke.dWidth > 0)
+						oSecondStroke.dWidth = 0;
+					else if (oSecondStroke.bImportants[1] && !oFirstStroke.bImportants[1] && oSecondStroke.dWidth > 0)
+						oFirstStroke.dWidth = 0;
+					else if (oSecondStroke.dWidth > 0)
+					{
+						if (oFirstStroke.arLevels[1] < oSecondStroke.arLevels[1])
+							oFirstStroke.dWidth = 0;
+						else
+							oSecondStroke.dWidth = 0;
+					}
+				}
+
+				bool operator==(const Stroke& oStroke) const
+				{
+					return wsColor == oStroke.wsColor && dWidth == oStroke.dWidth;
+				}
+
+				void SetImportantAll(const bool &bImportant)
+				{
+					bImportants = {bImportant, bImportant};
+				}
+
+				void SetImportantColor(const bool &bImportant)
+				{
+					bImportants[0] = bImportant;
+				}
+
+				void SetImportantWidth(const bool &bImportant)
+				{
+					bImportants[1] = bImportant;
+				}
+
+				void SetColor(const std::wstring &wsValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (wsValue.empty() || (bImportants[0] && !bHardMode))
+						return;
+
+					if (wsValue[0] == L'#')
+					{
+						if (wsValue.length() == 7)
+						{
+							arLevels[0] = unLevel;
+							wsColor = wsValue.substr(1, 7);
+						}
+						else if (wsValue.length() == 4)
+						{
+							arLevels[0] = unLevel;
+							wsColor.clear();
+							wsColor += wsValue[1];
+							wsColor += wsValue[1];
+							wsColor += wsValue[2];
+							wsColor += wsValue[2];
+							wsColor += wsValue[3];
+							wsColor += wsValue[3];
+						}
+					}
+					else if (wsValue.substr(0, 3) == L"rgb")
+					{
+						const std::wstring sNewColor = NSCSS::NS_STATIC_FUNCTIONS::ConvertRgbToHex(wsValue);
+						if (!sNewColor.empty())
+						{
+							arLevels[0] = unLevel;
+							wsColor = sNewColor;
+						}
+					}
+					else
+					{
+						std::wstring sNewColor = wsValue;
+						std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), towlower);
+
+						if (sNewColor == L"transparent")
+							return;
+
+						const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSMaps::mColors.find(sNewColor);
+						if (oHEX != NSMaps::mColors.end())
+						{
+							arLevels[0] = unLevel;
+							wsColor = oHEX->second;
+						}
+					}
+				}
+
+				void SetWidth(double dValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (bImportants[1] && !bHardMode && 0 >= dValue)
+						return;
+
+					arLevels[1] = unLevel;
+					dWidth = dValue;
+				}
+
+				double GetWidth() const
+				{
+					return dWidth;
+				}
+
+				int GetColorN() const
+				{
+					if (wsColor.empty())
+						return -1;
+
+					std::wstring wsR;
+					wsR += wsColor[0];
+					wsR += wsColor[1];
+
+					std::wstring wsG;
+					wsG += wsColor[2];
+					wsG += wsColor[3];
+
+					std::wstring wsB;
+					wsB += wsColor[4];
+					wsB += wsColor[5];
+
+					char chR = stoi(wsR, nullptr, 16);
+					char chG = stoi(wsG, nullptr, 16);
+					char chB = stoi(wsB, nullptr, 16);
+
+					return RGB(chR, chG, chB);
+				}
+			};
+		}
 
         const std::vector<std::wstring> arPseudoClasses {
                                                         L"invalid",

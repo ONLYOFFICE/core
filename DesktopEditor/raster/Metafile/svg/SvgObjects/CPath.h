@@ -209,7 +209,7 @@ namespace SVG
 
 			std::vector<double> arValues = ReadDoubleValues(wsValue);
 
-			if (arValues.empty() || 0 != (arValues.size() % 2))
+			if (arValues.empty())
 				return false;
 
 			Point oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : Point{0, 0});
@@ -255,7 +255,7 @@ namespace SVG
 
 			std::vector<double> arValues = ReadDoubleValues(wsValue);
 
-			if (arValues.empty() || 0 != (arValues.size() % 2))
+			if (arValues.empty())
 				return false;
 
 			Point oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : Point{0, 0});
@@ -1098,7 +1098,7 @@ namespace SVG
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
 
 		void ReadFromString(const std::wstring& wsValue);
 

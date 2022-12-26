@@ -13,6 +13,7 @@ namespace NSCSS
 {
 	class CCompiledStyle
     {
+		friend class CStyle;
         std::set<std::wstring> m_arParentsStyles;
         std::wstring m_sId;
 
@@ -21,8 +22,6 @@ namespace NSCSS
 
         CSizeWindow m_oSourceWindow;
         CSizeWindow m_oDeviceWindow;
-
-        std::wstring ConvertUnitMeasure(const std::wstring& sValue, const float& fPreviousValue, ScalingDirection enScalingDirection = ScalingDirectionNone) const;
 
         void Scale(int &nValue, ScalingDirection enScalingDirection) const;
 
@@ -82,6 +81,8 @@ namespace NSCSS
         CCompiledStyle(const CCompiledStyle& oStyle);
 
         ~CCompiledStyle();
+
+		std::wstring ConvertUnitMeasure(const std::wstring& sValue, const float& fPreviousValue, ScalingDirection enScalingDirection = ScalingDirectionNone) const;
 
         void SetDpi(const unsigned short& uiDpi);
         void SetUnitMeasure(const UnitMeasure& enUnitMeasure);

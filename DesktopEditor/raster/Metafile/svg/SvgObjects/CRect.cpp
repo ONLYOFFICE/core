@@ -35,7 +35,9 @@ namespace SVG
 
 	bool CRect::Draw(IRenderer *pRenderer)
 	{
-		ApplyStyle(pRenderer);
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
 
 		if ((fabs(m_dRx) < 0.000001) && (fabs(m_dRy) < 0.000001))
 		{
@@ -48,9 +50,9 @@ namespace SVG
 			pRenderer->PathCommandLineTo(m_dX + m_dWidth, m_dY);
 			pRenderer->PathCommandLineTo(m_dX + m_dWidth, m_dY + m_dHeight);
 			pRenderer->PathCommandLineTo(m_dX, m_dY + m_dHeight);
-			pRenderer->PathCommandLineTo(m_dX, m_dY);
+			pRenderer->PathCommandClose();
 
-			pRenderer->DrawPath(c_nWindingFillMode);
+			pRenderer->DrawPath(nPathType);
 			pRenderer->EndCommand(c_nPathType);
 			pRenderer->PathCommandEnd();
 		}
@@ -75,7 +77,7 @@ namespace SVG
 			pRenderer->PathCommandLineTo(m_dX + m_dWidth, m_dY + m_dRy);
 			pRenderer->PathCommandArcTo(m_dX + m_dWidth, m_dY, m_dRx * 2.0, m_dRy * 2.0, 180.0, 90.0);
 
-			pRenderer->DrawPath(c_nWindingFillMode);
+			pRenderer->DrawPath(nPathType);
 			pRenderer->EndCommand(c_nPathType);
 			pRenderer->PathCommandEnd ();
 		}
@@ -83,14 +85,26 @@ namespace SVG
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer)
+	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
+		if (NULL == pRenderer)
 			return;
 
 		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
 
-		std::wstring oFill = oStyle.GetFill();
+		int nStrokeColor = oStyle.GetStrokeColorN();
+		if (-1 != nStrokeColor)
+		{
+			nTypePath += c_nStroke;
+			pRenderer->put_PenColor(nStrokeColor);
+		}
+
+		int nFillColor = oStyle.GetFillN();
+		if (-1 != nFillColor)
+		{
+			nTypePath += c_nWindingFillMode;
+			pRenderer->put_BrushColor1(nFillColor);
+		}
 	}
 
 }

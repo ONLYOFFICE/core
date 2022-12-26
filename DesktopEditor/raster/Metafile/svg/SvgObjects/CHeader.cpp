@@ -40,7 +40,7 @@ namespace SVG
 		dHeight = m_dHeight;
 	}
 
-	void CHeader::ApplyStyle(IRenderer *pRenderer)
+	void CHeader::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
 
 	}

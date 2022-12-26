@@ -19,7 +19,7 @@ namespace SVG
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
 
 		double GetWidth() const;
 
@@ -44,7 +44,7 @@ namespace SVG
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
 
 		void InheritData(const CText& oText);
 

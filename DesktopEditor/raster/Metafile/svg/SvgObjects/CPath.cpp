@@ -34,7 +34,9 @@ namespace SVG
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
 
-		ApplyStyle(pRenderer);
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );
@@ -42,17 +44,33 @@ namespace SVG
 		for (IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		pRenderer->DrawPath (/*c_nWindingFillMode | */c_nStroke);
+		pRenderer->DrawPath (nPathType);
 		pRenderer->EndCommand (c_nPathType);
 		pRenderer->PathCommandEnd();
 
 		return true;
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer)
+	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
 		if (NULL == pRenderer)
 			return;
+
+		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+
+		int nStrokeColor = oStyle.GetStrokeColorN();
+		if (-1 != nStrokeColor)
+		{
+			nTypePath += c_nStroke;
+			pRenderer->put_PenColor(nStrokeColor);
+		}
+
+//		int nFillColor = oStyle.GetFillN();
+//		if (-1 != nFillColor)
+//		{
+//			nTypePath += c_nWindingFillMode;
+//			pRenderer->put_BrushColor1(nFillColor);
+//		}
 	}
 
 	void CPath::ReadFromString(const std::wstring &wsValue)

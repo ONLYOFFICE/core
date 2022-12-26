@@ -52,11 +52,54 @@ namespace SVG
 				m_pBackground.SetImportantBackground(true);
 			}
 		}
+		else if (L"stroke" == oStyle.first)
+		{
+			const size_t unPositionImp = oStyle.second.find(L"!i");
+			if (unPositionImp == std::wstring::npos)
+			{
+				m_pStroke.SetColor(oStyle.second, unLevel, bHardMode);
+			}
+			else if (unPositionImp != 0)
+			{
+				m_pStroke.SetColor(oStyle.second.substr(0, unPositionImp - 1), unLevel, true);
+				m_pStroke.SetImportantColor(true);
+			}
+		}
+		else if (L"stroke-width" == oStyle.first)
+		{
+			const size_t unPositionImp = oStyle.second.find(L"!i");
+			if (unPositionImp == std::wstring::npos)
+			{
+				const double dValue = wcstof(ConvertUnitMeasure(oStyle.second, 0.0f).c_str(), NULL);
+				m_pStroke.SetWidth(dValue, unLevel, bHardMode);
+			}
+			else if (unPositionImp != 0)
+			{
+				const double dValue = wcstof(ConvertUnitMeasure(oStyle.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
+				m_pStroke.SetWidth(dValue, unLevel, true);
+				m_pStroke.SetImportantWidth(true);
+			}
+		}
 	}
 
 	std::wstring CStyle::GetFill() const
 	{
 		return m_pBackground.GetColorHex();
+	}
+
+	int CStyle::GetFillN() const
+	{
+		return m_pBackground.GetColorN();
+	}
+
+	double CStyle::GetStrokeWidth() const
+	{
+		return m_pStroke.GetWidth();
+	}
+
+	int CStyle::GetStrokeColorN() const
+	{
+		return m_pStroke.GetColorN();
 	}
 
 }

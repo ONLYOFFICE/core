@@ -52,7 +52,7 @@ namespace OOX
 		class CStyle2003 : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStyle2003)
+			WritingElement_AdditionMethods(CStyle2003)
 			CStyle2003(OOX::Document* pMain);
 			virtual ~CStyle2003();
 

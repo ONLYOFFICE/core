@@ -43,7 +43,7 @@ namespace OOX
 		class CListItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CListItem)
+			WritingElement_AdditionMethods(CListItem)
 			
 			CListItem();
 			virtual ~CListItem();
@@ -64,7 +64,7 @@ namespace OOX
 		class CListItems : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CListItems)
+			WritingElement_AdditionMethods(CListItems)
 			
 			CListItems();
 			virtual ~CListItems();
@@ -86,7 +86,7 @@ namespace OOX
 		class CFormControlPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormControlPr)
+			WritingElement_AdditionMethods(CFormControlPr)
 			CFormControlPr();
 			virtual ~CFormControlPr();
 
@@ -143,7 +143,7 @@ namespace OOX
 		class CControlPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControlPr)
+			WritingElement_AdditionMethods(CControlPr)
 			CControlPr();
 			virtual ~CControlPr();
 
@@ -182,7 +182,7 @@ namespace OOX
 		class CControl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControl)
+			WritingElement_AdditionMethods(CControl)
 			WritingElement_XlsbConstructors(CControl)
 			CControl();
 			virtual ~CControl();
@@ -219,7 +219,7 @@ namespace OOX
 		class CControls : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CControls)
+			WritingElement_AdditionMethods(CControls)
 			WritingElement_XlsbConstructors(CControls)
 			CControls();
 			virtual ~CControls();

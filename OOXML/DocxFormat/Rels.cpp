@@ -36,6 +36,9 @@ namespace OOX
 {
 	namespace Rels
 	{
+		CRelationShip::CRelationShip()
+		{
+		}
 		CRelationShip::CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 		{
 			XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
@@ -172,7 +175,9 @@ namespace OOX
 					sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (L"Relationship" == sName )
 					{
-						OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip(oReader);
+						OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip();
+						*pRel = oReader;
+
 						if (pRel)
 						{
 							std::wstring rid = pRel->rId().get();

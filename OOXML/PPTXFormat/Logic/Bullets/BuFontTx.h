@@ -42,7 +42,7 @@ namespace PPTX
 		class BuFontTx : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuFontTx)
+			WritingElement_AdditionMethods(BuFontTx)
 			PPTX_LOGIC_BASE2(BuFontTx)
 
 			BuFontTx& operator=(const BuFontTx& oSrc);

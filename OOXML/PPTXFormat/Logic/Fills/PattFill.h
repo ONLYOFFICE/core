@@ -44,7 +44,7 @@ namespace PPTX
 		class PattFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(PattFill)
+			WritingElement_AdditionMethods(PattFill)
 			
 			PattFill(std::wstring ns = L"a");
 

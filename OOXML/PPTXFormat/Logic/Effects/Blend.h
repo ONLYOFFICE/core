@@ -45,7 +45,7 @@ namespace PPTX
 		class Blend : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Blend)
+			WritingElement_AdditionMethods(Blend)
 			PPTX_LOGIC_BASE2(Blend)
 
 			Blend& operator=(const Blend& oSrc);

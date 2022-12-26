@@ -49,7 +49,7 @@ namespace PPTX
 		class UniPath2D : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(UniPath2D)
+			WritingElement_AdditionMethods(UniPath2D)
 			PPTX_LOGIC_BASE2(UniPath2D)
 
 			virtual OOX::EElementType getType() const;

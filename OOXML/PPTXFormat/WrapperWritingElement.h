@@ -36,12 +36,9 @@
 
 #include "../Binary/Presentation/BinWriters.h"
 
-#define PPTX_LOGIC_BASE(Class)										\
-	Class()	{}														\
+#define PPTX_LOGIC_BASE_NC(Class)									\
 	virtual ~Class() {}												\
-	explicit Class(XmlUtils::CXmlNode& node)	{ fromXML(node); }	\
-    explicit Class(const XmlUtils::CXmlNode& node)	{ fromXML(const_cast<XmlUtils::CXmlNode&> (node)); }	\
-    const Class& operator =(XmlUtils::CXmlNode& node)				\
+	const Class& operator =(XmlUtils::CXmlNode& node)				\
 	{																\
 		fromXML(node);												\
 		return *this;												\
@@ -53,6 +50,9 @@
     }																\
 	Class(const Class& oSrc) { *this = oSrc; }						\
 
+#define PPTX_LOGIC_BASE(Class)										\
+	Class()	{}														\
+	PPTX_LOGIC_BASE_NC(Class)
 
 #define PPTX_LOGIC_BASE2(Class)										\
 	Class()	{}														\
@@ -61,6 +61,20 @@
 
 namespace PPTX
 {
+	#define PTR_WITH_XML(Class, XmlContent) \
+		Class* ptr = new Class();\
+		*ptr = XmlContent;\
+		return ptr;\
+
+	template<typename T> inline T* CreatePtrXmlContent(XmlUtils::CXmlNode& oNode)
+	{
+		PTR_WITH_XML(T, oNode)
+	}
+	template<typename T> inline T* CreatePtrXmlContent(XmlUtils::CXmlLiteReader& oReader)
+	{
+		PTR_WITH_XML(T, oReader)
+	}	
+
 	class WrapperWritingElement : public OOX::WritingElement
 	{
 	public:

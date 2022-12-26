@@ -118,13 +118,13 @@ namespace OOX
 
 				WritingElement *pItem = NULL;
 				if ( _T("phoneticPr") == sName )
-					pItem = new CPhonetic( oReader );
+					AssignPtrXmlContent(pItem, CPhonetic, oReader)
 				else if ( _T("r") == sName )
-					pItem = new CRun( oReader );
+					AssignPtrXmlContent(pItem, CRun, oReader)
 				else if ( _T("rPh") == sName )
-					pItem = new CRPh( oReader );
+					AssignPtrXmlContent(pItem, CRPh, oReader)
 				else if ( _T("t") == sName )
-					pItem = new CText( oReader );
+					AssignPtrXmlContent(pItem, CText, oReader)
 
 				if ( NULL != pItem )
 					m_arrItems.push_back( pItem );
@@ -137,6 +137,7 @@ namespace OOX
 			CPhonetic* phoneticPr   = nullptr;
 			CRPh* rPh               = nullptr;
 			CRun* r                 = nullptr;
+
 			if(ptr != nullptr)
 			{
 				if(ptr->rgsStrRun.empty() || flagIsComment)

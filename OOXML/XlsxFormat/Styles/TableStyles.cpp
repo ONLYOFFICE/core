@@ -212,7 +212,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("tableStyleElement") == sName )
-					m_arrItems.push_back( new CTableStyleElement( oReader ));
+				{
+					CTableStyleElement* pTableStyleElement = new CTableStyleElement();
+					*pTableStyleElement = oReader;
+					m_arrItems.push_back( pTableStyleElement );
+				}
 			}
 		}
 		void CTableStyle::fromBin(XLS::BaseObjectPtr& obj)
@@ -305,7 +309,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("tableStyle") == sName )
-					m_arrItems.push_back( new CTableStyle( oReader ));
+				{
+					CTableStyle* pTableStyle = new CTableStyle();
+					*pTableStyle = oReader;
+					m_arrItems.push_back( pTableStyle );
+				}
 			}
 		}
 		void CTableStyles::fromBin(XLS::BaseObjectPtr& obj)

@@ -46,6 +46,7 @@ namespace OOX
 	class CFontTable : public OOX::File, public WritingElement
 	{
 	public:
+		CFontTable();
 		CFontTable(OOX::Document *pMain);
 		CFontTable(OOX::Document *pMain, const CPath &oFilePath);
 		CFontTable(XmlUtils::CXmlNode& oNode);

@@ -43,7 +43,7 @@ namespace PPTX
 		class AlphaModFix : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaModFix)
+			WritingElement_AdditionMethods(AlphaModFix)
 			PPTX_LOGIC_BASE2(AlphaModFix)
 
 			AlphaModFix& operator=(const AlphaModFix& oSrc);

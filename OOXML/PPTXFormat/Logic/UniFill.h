@@ -47,7 +47,7 @@ namespace PPTX
 		class UniFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(UniFill)
+			WritingElement_AdditionMethods(UniFill)
 
 			UniFill();
 			virtual OOX::EElementType getType() const;

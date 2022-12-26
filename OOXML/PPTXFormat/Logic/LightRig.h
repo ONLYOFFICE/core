@@ -45,7 +45,7 @@ namespace PPTX
 		class LightRig : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(LightRig)
+			WritingElement_AdditionMethods(LightRig)
 			PPTX_LOGIC_BASE2(LightRig)
 
 			virtual OOX::EElementType getType() const;

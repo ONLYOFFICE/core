@@ -44,7 +44,7 @@ namespace PPTX
 		class TextListStyle : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TextListStyle)
+			WritingElement_AdditionMethods(TextListStyle)
 
 			TextListStyle(std::wstring name = L"a:lstStyle");
 

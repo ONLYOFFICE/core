@@ -53,7 +53,7 @@ namespace OOX
 		class CStylisticSets : public WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>
 		{
 		public:
-			WritingElement_AdditionConstructors(CStylisticSets)
+			WritingElement_AdditionMethods(CStylisticSets)
 			CStylisticSets(OOX::Document *pMain = NULL);
 			virtual ~CStylisticSets();
 

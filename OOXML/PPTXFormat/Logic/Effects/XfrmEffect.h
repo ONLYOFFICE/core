@@ -43,7 +43,7 @@ namespace PPTX
 		class XfrmEffect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(XfrmEffect)
+			WritingElement_AdditionMethods(XfrmEffect)
 			PPTX_LOGIC_BASE2(XfrmEffect)
 
 			XfrmEffect& operator=(const XfrmEffect& oSrc);

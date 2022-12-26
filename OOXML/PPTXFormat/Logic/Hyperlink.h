@@ -44,7 +44,7 @@ namespace PPTX
 		class Hyperlink : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Hyperlink)
+			WritingElement_AdditionMethods(Hyperlink)
 
 			Hyperlink(const std::wstring & name = L"hlinkClick");
 			virtual OOX::EElementType getType () const;

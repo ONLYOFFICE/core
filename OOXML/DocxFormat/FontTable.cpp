@@ -38,6 +38,7 @@
 
 namespace OOX
 {
+	CFontTable::CFontTable() {}
 	CFontTable::CFontTable(OOX::Document *pMain) : OOX::File(pMain)
 	{
 		CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
@@ -153,7 +154,8 @@ namespace OOX
 
 			if ( L"w:font" == sName )
 			{
-				CFont *pFont = new CFont(oReader);
+				CFont *pFont = new CFont();
+				*pFont = oReader;
 				if (pFont)
 				{
 					m_arrFonts.push_back( pFont );

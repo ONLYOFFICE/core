@@ -946,7 +946,9 @@ namespace OOX
 
 			if (L"dgm:pt" == sName)
 			{
-				m_arrItems.push_back(new Diagram::CPt(oReader));
+				Diagram::CPt* pPt = new Diagram::CPt();
+				*pPt = oReader;
+				m_arrItems.push_back(pPt);
 			}
 		}
 	}
@@ -1128,7 +1130,12 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 
 			if (L"dgm:cxn" == sName)
-				m_arrItems.push_back(new Diagram::CCxn(oReader));
+			{
+				Diagram::CCxn* pCxn = new Diagram::CCxn();
+				*pCxn = oReader;
+
+				m_arrItems.push_back(pCxn);
+			}
 		}
 	}
 
@@ -1599,7 +1606,12 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 
 			if (L"dgm:cat" == sName)
-				m_arrItems.push_back(new Diagram::CCat(oReader));
+			{
+				Diagram::CCat* pCat = new Diagram::CCat();
+				*pCat = oReader;
+
+				m_arrItems.push_back(pCat);
+			}
 		}
 	}
 

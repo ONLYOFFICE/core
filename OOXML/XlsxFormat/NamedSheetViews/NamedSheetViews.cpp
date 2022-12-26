@@ -180,7 +180,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("sortRule", sName) == 0)
 			{
-				m_arrItems.push_back(new CSortRule(oReader));
+				CSortRule* pSortRule = new CSortRule();
+				*pSortRule = oReader;
+				m_arrItems.push_back(pSortRule);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -289,7 +291,9 @@ namespace Spreadsheet
 				m_oDxf = oReader;
 			else if (strcmp("filter", sName) == 0)
 			{
-				m_arrItems.push_back(new CFilterColumn(oReader));
+				CFilterColumn* pFilterColumn = new CFilterColumn();
+				*pFilterColumn = oReader;
+				m_arrItems.push_back(pFilterColumn);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -429,7 +433,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("columnFilter", sName) == 0)
 			{
-				m_arrItems.push_back(new CColumnFilter(oReader));
+				CColumnFilter* pColumnFilter = new CColumnFilter();
+				*pColumnFilter = oReader;
+				m_arrItems.push_back(pColumnFilter);
 			}
 			else if (strcmp("sortRules", sName) == 0)
 				m_oSortRules = oReader;
@@ -549,7 +555,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("nsvFilter", sName) == 0)
 			{
-				m_arrItems.push_back(new CNsvFilter(oReader));
+				CNsvFilter* pNsvFilter = new CNsvFilter();
+				*pNsvFilter = oReader;
+				m_arrItems.push_back(pNsvFilter);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;
@@ -650,7 +658,9 @@ namespace Spreadsheet
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("namedSheetView", sName) == 0)
 			{
-				m_arrItems.push_back(new CNamedSheetView(oReader));
+				CNamedSheetView* pNamedSheetView = new CNamedSheetView();
+				*pNamedSheetView = oReader;
+				m_arrItems.push_back(pNamedSheetView);
 			}
 			else if (strcmp("extLst", sName) == 0)
 				m_oExtLst = oReader;

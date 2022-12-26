@@ -50,7 +50,7 @@ namespace PPTX
 		class BodyPr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BodyPr)
+			WritingElement_AdditionMethods(BodyPr)
 			
 			BodyPr(std::wstring ns = L"a");
 
@@ -104,7 +104,7 @@ namespace PPTX
 		class LinkedTxbx : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(LinkedTxbx)
+			WritingElement_AdditionMethods(LinkedTxbx)
 
 			LinkedTxbx(std::wstring ns = L"a");
 

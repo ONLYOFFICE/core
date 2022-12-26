@@ -59,7 +59,7 @@ namespace OOX
 		class CMathBottomNodes : public WritingElement
 		{		
 		public:
-			WritingElement_AdditionConstructors(CMathBottomNodes)
+			WritingElement_AdditionMethods(CMathBottomNodes)
 			CMathBottomNodes()
 			{				
 			}

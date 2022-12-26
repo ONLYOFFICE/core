@@ -151,7 +151,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("t") == sName )
-					m_arrItems.push_back( new CText( oReader ));
+				{
+					CText* pText = new CText();
+					*pText = oReader;
+					m_arrItems.push_back(pText);
+				}
 			}
 		}
 		void CRPh::fromBin(XLS::BiffStructure& obj, std::wstring& str)

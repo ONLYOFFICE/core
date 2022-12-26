@@ -48,7 +48,7 @@ namespace OOX
 		class CRgbColor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRgbColor)
+			WritingElement_AdditionMethods(CRgbColor)
             WritingElement_XlsbConstructors(CRgbColor)
 			CRgbColor();
 			virtual ~CRgbColor();
@@ -72,7 +72,7 @@ namespace OOX
 		class CIndexedColors : public WritingElementWithChilds<CRgbColor>
 		{
 		public:
-			WritingElement_AdditionConstructors(CIndexedColors)
+			WritingElement_AdditionMethods(CIndexedColors)
             WritingElement_XlsbVectorConstructors(CIndexedColors)
 			CIndexedColors();
 			virtual ~CIndexedColors();
@@ -98,7 +98,7 @@ namespace OOX
 		class CColor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColor)
+			WritingElement_AdditionMethods(CColor)
 			WritingElement_XlsbConstructors(CColor)
 			CColor(OOX::Document *pMain = NULL);
 			virtual ~CColor();
@@ -133,7 +133,7 @@ namespace OOX
 		class CMruColors : public WritingElementWithChilds<CColor>
 		{
 		public:
-			WritingElement_AdditionConstructors(CMruColors)
+			WritingElement_AdditionMethods(CMruColors)
             WritingElement_XlsbVectorConstructors(CMruColors)
 			CMruColors();
 			virtual ~CMruColors();
@@ -154,7 +154,7 @@ namespace OOX
 		class CCharset : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCharset)
+			WritingElement_AdditionMethods(CCharset)
 			CCharset(OOX::Document *pMain = NULL);
 			virtual ~CCharset();
 
@@ -174,7 +174,7 @@ namespace OOX
 		class CVerticalAlign : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CVerticalAlign)
+			WritingElement_AdditionMethods(CVerticalAlign)
 			CVerticalAlign(OOX::Document *pMain = NULL);
 			virtual ~CVerticalAlign();
 
@@ -194,7 +194,7 @@ namespace OOX
 		class CFontFamily : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFontFamily)
+			WritingElement_AdditionMethods(CFontFamily)
 			CFontFamily(OOX::Document *pMain = NULL);
 			virtual ~CFontFamily();
 
@@ -214,7 +214,7 @@ namespace OOX
 		class CFontScheme : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFontScheme)
+			WritingElement_AdditionMethods(CFontScheme)
 			CFontScheme();
 			virtual ~CFontScheme();
 
@@ -234,7 +234,7 @@ namespace OOX
 		class CUnderline : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CUnderline)
+			WritingElement_AdditionMethods(CUnderline)
 			CUnderline(OOX::Document *pMain = NULL);
 			virtual ~CUnderline();
 
@@ -255,7 +255,7 @@ namespace OOX
 		class CRPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRPr)
+			WritingElement_AdditionMethods(CRPr)
 			CRPr(OOX::Document *pMain = NULL);
 			virtual ~CRPr();
 

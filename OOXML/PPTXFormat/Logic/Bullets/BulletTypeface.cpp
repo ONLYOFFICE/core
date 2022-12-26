@@ -55,9 +55,9 @@ namespace PPTX
 		{
 			std::wstring strName = oReader.GetName();
 			if (strName == _T("a:buFontTx"))
-				m_Typeface.reset(new Logic::BuFontTx(oReader));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::BuFontTx>(oReader));
 			else if (strName == _T("a:buFont"))
-				m_Typeface.reset(new Logic::TextFont(oReader));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::TextFont>(oReader));
 			else
 				m_Typeface.reset();
 		}
@@ -66,9 +66,9 @@ namespace PPTX
 			std::wstring strName = node.GetName();
 
 			if (strName == _T("a:buFontTx"))
-				m_Typeface.reset(new Logic::BuFontTx(node));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::BuFontTx>(node));
 			else if (strName == _T("a:buFont"))
-				m_Typeface.reset(new Logic::TextFont(node));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::TextFont>(node));
 			else
 				m_Typeface.reset();
 		}
@@ -76,9 +76,9 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:buFontTx"), oNode))
-				m_Typeface.reset(new Logic::BuFontTx(oNode));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::BuFontTx>(oNode));
 			else if(element.GetNode(_T("a:buFont"), oNode))
-				m_Typeface.reset(new Logic::TextFont(oNode));
+				m_Typeface.reset(CreatePtrXmlContent<Logic::TextFont>(oNode));
 			else m_Typeface.reset();
 		}
 		bool BulletTypeface::is_init()const{return (m_Typeface.IsInit());};

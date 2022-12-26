@@ -46,9 +46,7 @@ namespace OOX
 		class CRun : public WritingElementWithChilds<>
 		{
 		public:
-			CRun(OOX::Document *pMain = NULL);
-			CRun(XmlUtils::CXmlNode &oNode);
-			CRun(XmlUtils::CXmlLiteReader& oReader);
+			CRun(OOX::Document *pMain = NULL);			
 			virtual ~CRun();
 
 			const CRun &operator =(const XmlUtils::CXmlNode& oNode);

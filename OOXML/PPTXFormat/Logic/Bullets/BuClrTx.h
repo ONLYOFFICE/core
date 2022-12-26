@@ -42,7 +42,7 @@ namespace PPTX
 		class BuClrTx : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuClrTx)
+			WritingElement_AdditionMethods(BuClrTx)
 			PPTX_LOGIC_BASE2(BuClrTx)
 
 			BuClrTx& operator=(const BuClrTx& oSrc);

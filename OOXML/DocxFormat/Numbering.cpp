@@ -398,7 +398,9 @@ namespace OOX
 				{
 					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
 					{
-						OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl(oLvlNode);
+						OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl();
+						*pLvl = oLvlNode;
+
 						if (pLvl)
 						{
 							if (pLvl->m_oIlvl.IsInit())
@@ -423,7 +425,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("w:lvl") == sName )
 				{
-					OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl(oReader);
+					OOX::Numbering::CLvl *pLvl = new OOX::Numbering::CLvl();
+					*pLvl = oReader;
 
 					if (pLvl)
 					{
@@ -600,7 +603,9 @@ namespace OOX
 				{
 					if ( oLvlList.GetAt( nIndex, oLvlNode ) )
 					{
-						OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl (oLvlNode);
+						OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl();
+						*pNumLvl = oLvlNode;
+
 						if (pNumLvl)
 						{
 							if (pNumLvl->m_oIlvl.IsInit())
@@ -626,7 +631,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("w:lvlOverride") == sName )
 				{
-					OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl (oReader);
+					OOX::Numbering::CNumLvl *pNumLvl = new OOX::Numbering::CNumLvl();
+					*pNumLvl = oReader;
+
 					if (pNumLvl)
 					{
 						if (pNumLvl->m_oIlvl.IsInit())
@@ -847,7 +854,9 @@ namespace OOX
 			std::wstring sName = oReader.GetName();
 			if ( L"w:abstractNum" == sName || L"w:listDef" == sName)
 			{
-				OOX::Numbering::CAbstractNum *pAbstractNum = new OOX::Numbering::CAbstractNum(oReader);
+				OOX::Numbering::CAbstractNum *pAbstractNum = new OOX::Numbering::CAbstractNum();
+				*pAbstractNum = oReader;
+
 				if ((pAbstractNum) && (pAbstractNum->m_oAbstractNumId.IsInit()))
 				{
 					m_mapAbstractNum.insert(std::make_pair(*pAbstractNum->m_oAbstractNumId, m_arrAbstractNum.size()));
@@ -856,7 +865,9 @@ namespace OOX
 			}
 			else if ( L"w:num" == sName || L"w:list" == sName)
 			{
-				OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum(oReader);
+				OOX::Numbering::CNum *oNum = new OOX::Numbering::CNum();
+				*oNum = oReader;
+
 				if (oNum)
 				{
 					if (oNum->m_oNumId.IsInit() && (oNum->m_oAbstractNumId.IsInit()) && (oNum->m_oAbstractNumId->m_oVal.IsInit()))
@@ -870,7 +881,9 @@ namespace OOX
 				m_oNumIdMacAtCleanup = oReader;
 			else if ( L"w:numPicBullet" == sName || L"w:listPicBullet" == sName)
 			{
-				OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet(oReader);
+				OOX::Numbering::CNumPicBullet *oNumPic =  new OOX::Numbering::CNumPicBullet();
+				*oNumPic = oReader;
+
 				if (oNumPic) m_arrNumPicBullet.push_back( oNumPic );
 			}
 		}

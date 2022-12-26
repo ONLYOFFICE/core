@@ -40,7 +40,7 @@ namespace OOX
 		class CDiferentData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDiferentData)
+			WritingElement_AdditionMethods(CDiferentData)
 
 			CDiferentData();
 			virtual ~CDiferentData();
@@ -68,7 +68,7 @@ namespace OOX
 		class CLayoutNode : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CLayoutNode)
+			WritingElement_AdditionMethods(CLayoutNode)
 
 			CLayoutNode();
 			virtual ~CLayoutNode();
@@ -96,7 +96,7 @@ namespace OOX
 		class CForEach : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CForEach)
+			WritingElement_AdditionMethods(CForEach)
 
 			CForEach();
 			virtual ~CForEach();
@@ -129,7 +129,7 @@ namespace OOX
 		class CRule : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRule)
+			WritingElement_AdditionMethods(CRule)
 
 			CRule();
 			virtual ~CRule();
@@ -163,7 +163,7 @@ namespace OOX
 		class CRuleLst : public WritingElementWithChilds<CRule>
 		{
 		public:
-			WritingElement_AdditionConstructors(CRuleLst)
+			WritingElement_AdditionMethods(CRuleLst)
 
 			CRuleLst();
 			virtual ~CRuleLst();
@@ -183,7 +183,7 @@ namespace OOX
 		class CConstraint : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConstraint)
+			WritingElement_AdditionMethods(CConstraint)
 
 			CConstraint();
 			virtual ~CConstraint();
@@ -221,7 +221,7 @@ namespace OOX
 		class CConstrLst : public WritingElementWithChilds<CConstraint>
 		{
 		public:
-			WritingElement_AdditionConstructors(CConstrLst)
+			WritingElement_AdditionMethods(CConstrLst)
 
 			CConstrLst();
 			virtual ~CConstrLst();
@@ -241,7 +241,7 @@ namespace OOX
 		class CParam : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CParam)
+			WritingElement_AdditionMethods(CParam)
 
 			CParam();
 			virtual ~CParam();
@@ -268,7 +268,7 @@ namespace OOX
 		class CAlg : public WritingElementWithChilds<CParam>
 		{
 		public:
-			WritingElement_AdditionConstructors(CAlg)
+			WritingElement_AdditionMethods(CAlg)
 
 			CAlg();
 			virtual ~CAlg();
@@ -297,7 +297,7 @@ namespace OOX
 		class CIf : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CIf)
+			WritingElement_AdditionMethods(CIf)
 
 			CIf();
 			virtual ~CIf();
@@ -335,7 +335,7 @@ namespace OOX
 		class CElse : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CElse)
+			WritingElement_AdditionMethods(CElse)
 
 			CElse();
 			virtual ~CElse();
@@ -361,7 +361,7 @@ namespace OOX
 		class CChoose : public WritingElementWithChilds<CIf>
 		{
 		public:
-			WritingElement_AdditionConstructors(CChoose)
+			WritingElement_AdditionMethods(CChoose)
 
 			CChoose();
 			virtual ~CChoose();
@@ -388,7 +388,7 @@ namespace OOX
 		class CPresOf : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPresOf)
+			WritingElement_AdditionMethods(CPresOf)
 
 			CPresOf();
 			virtual ~CPresOf();
@@ -421,7 +421,7 @@ namespace OOX
 		class CShapeAdjust : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CShapeAdjust)
+			WritingElement_AdditionMethods(CShapeAdjust)
 
 			CShapeAdjust();
 			virtual ~CShapeAdjust();
@@ -448,7 +448,7 @@ namespace OOX
 		class CAdjLst : public WritingElementWithChilds<CShapeAdjust>
 		{
 		public:
-			WritingElement_AdditionConstructors(CAdjLst)
+			WritingElement_AdditionMethods(CAdjLst)
 
 			CAdjLst();
 			virtual ~CAdjLst();
@@ -468,7 +468,7 @@ namespace OOX
 		class CShape : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CShape)
+			WritingElement_AdditionMethods(CShape)
 
 			CShape();
 			virtual ~CShape();

@@ -248,7 +248,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("dxf") == sName )
-					m_arrItems.push_back( new CDxf(oReader));
+				{
+					CDxf* pDxf = new CDxf();
+					*pDxf = oReader;
+					m_arrItems.push_back( pDxf );
+				}
 			}
 		}
 		EElementType CDxfs::getType () const

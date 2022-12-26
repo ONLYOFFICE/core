@@ -2094,7 +2094,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("v:f") == sName )
 				{
-					OOX::Vml::CF *oF = new OOX::Vml::CF(oReader);
+					OOX::Vml::CF *oF = new OOX::Vml::CF();
+					*oF = oReader;
 					if (oF) m_arrItems.push_back( oF );
 				}
 			}
@@ -3031,7 +3032,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("v:h") == sName )
 				{
-					OOX::Vml::CH *oH = new OOX::Vml::CH(oReader);
+					OOX::Vml::CH *oH = new OOX::Vml::CH();
+					*oH = oReader;
 					if (oH) m_arrItems.push_back( oH );
 				}
 			}

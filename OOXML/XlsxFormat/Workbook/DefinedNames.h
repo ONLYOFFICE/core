@@ -41,7 +41,7 @@ namespace OOX
 		class CDefinedName : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDefinedName)
+			WritingElement_AdditionMethods(CDefinedName)
 			CDefinedName(OOX::Document *pMain = NULL);
 			virtual ~CDefinedName();
 
@@ -82,7 +82,7 @@ namespace OOX
 		class CDefinedNames : public WritingElementWithChilds<CDefinedName>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDefinedNames)
+			WritingElement_AdditionMethods(CDefinedNames)
             WritingElement_XlsbVectorConstructors(CDefinedNames)
 			CDefinedNames(OOX::Document *pMain = NULL);
 			virtual ~CDefinedNames();

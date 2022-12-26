@@ -253,7 +253,9 @@ namespace OOX
 					}
 					else
 					{
-						m_arStyleEntries.push_back(new CStyleEntry(oReader));
+						CStyleEntry* pStyleEntry = new CStyleEntry();
+						*pStyleEntry = oReader;
+						m_arStyleEntries.push_back(pStyleEntry);
 					}
 				}
 			}

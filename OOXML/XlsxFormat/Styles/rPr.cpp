@@ -114,7 +114,9 @@ namespace OOX
 
 				if ( _T("rgbColor") == sName )
 				{
-					CRgbColor* color = new CRgbColor( oReader );
+					CRgbColor* color = new CRgbColor();
+					*color = oReader;
+
 					mapIndexedColors.insert(std::make_pair(index++, color));
 					m_arrItems.push_back( color );
 				}
@@ -546,7 +548,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("color") == sName )
-					m_arrItems.push_back( new CColor( oReader ));
+				{
+					CColor* pColor = new CColor();
+					*pColor = oReader;
+					m_arrItems.push_back( pColor );
+				}
 			}
 		}
 		void CMruColors::fromBin(std::vector<XLS::BaseObjectPtr>& obj)

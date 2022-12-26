@@ -1174,7 +1174,8 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	{
 		XmlUtils::CXmlNode xmlNode;
 		xmlNode.FromXmlString(strXml);
-		PPTX::Logic::Geometry geom(xmlNode);
+		PPTX::Logic::Geometry geom;
+		geom = xmlNode;
 
 		std::wstring strVmlPath, strVmlRect;
 

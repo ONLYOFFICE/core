@@ -45,7 +45,7 @@ namespace PPTX
 		class Paragraph : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Paragraph)
+			WritingElement_AdditionMethods(Paragraph)
 			PPTX_LOGIC_BASE2(Paragraph)
 
 			Paragraph& operator=(const Paragraph& oSrc);

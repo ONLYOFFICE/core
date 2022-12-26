@@ -78,7 +78,8 @@ namespace OOX
 				{
 					ReadAttributes(oReader, m_oChoiceRequires);
 
-					CRun altRun(oReader);
+					CRun altRun;
+					altRun = oReader;
 					
                     for ( size_t i = 0; i < altRun.m_arrItems.size(); ++i)
                     {
@@ -98,7 +99,8 @@ namespace OOX
 					//	continue; // не зачем баласт читать - берем более современную или оригинальную версию.
 					//}
 					
-					CRun altRun(oReader);
+					CRun altRun;
+					altRun = oReader;
 					
                     for ( size_t i = 0; i < altRun.m_arrItems.size(); ++i)
                     {

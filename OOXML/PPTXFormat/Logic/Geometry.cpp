@@ -147,9 +147,9 @@ namespace PPTX
 			std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (strName == _T("prstGeom"))
-				m_geometry.reset(new Logic::PrstGeom(oReader));
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(oReader));
 			else if (strName == _T("custGeom"))
-				m_geometry.reset(new Logic::CustGeom(oReader));
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(oReader));
 			else
 				m_geometry.reset();
 		}
@@ -158,18 +158,18 @@ namespace PPTX
 			std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (strName == _T("prstGeom"))
-				m_geometry.reset(new Logic::PrstGeom(node));
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(node));
 			else if (strName == _T("custGeom"))
-				m_geometry.reset(new Logic::CustGeom(node));
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(node));
 			else m_geometry.reset();
 		}
 		void Geometry::GetGeometryFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:prstGeom"), oNode))
-				m_geometry.reset(new Logic::PrstGeom(oNode));
+				m_geometry.reset(CreatePtrXmlContent<Logic::PrstGeom>(oNode));
 			else if (element.GetNode(_T("a:custGeom"), oNode))
-				m_geometry.reset(new Logic::CustGeom(oNode));
+				m_geometry.reset(CreatePtrXmlContent<Logic::CustGeom>(oNode));
 			else m_geometry.reset();
 		}
 		std::wstring Geometry::toXML() const

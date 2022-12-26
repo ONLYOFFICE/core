@@ -51,7 +51,7 @@ namespace ChartEx
 	class CStyleEntry : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CStyleEntry)
+		WritingElement_AdditionMethods(CStyleEntry)
 
 		CStyleEntry();
 
@@ -86,7 +86,7 @@ namespace ChartEx
 	class CMarkerLayout : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CMarkerLayout)
+		WritingElement_AdditionMethods(CMarkerLayout)
 
 		CMarkerLayout();
 
@@ -111,7 +111,7 @@ namespace ChartEx
 		CChartStyle();
 		virtual ~CChartStyle();
 
-		WritingElement_AdditionConstructors(CChartStyle)
+		WritingElement_AdditionMethods(CChartStyle)
 
 		virtual void fromXML(XmlUtils::CXmlNode& node);
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

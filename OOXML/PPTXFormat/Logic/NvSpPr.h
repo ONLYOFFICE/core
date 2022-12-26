@@ -46,7 +46,7 @@ namespace PPTX
 		class NvSpPr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(NvSpPr)
+			WritingElement_AdditionMethods(NvSpPr)
 
 			NvSpPr(std::wstring ns = L"p");
 			NvSpPr& operator=(const NvSpPr& oSrc);

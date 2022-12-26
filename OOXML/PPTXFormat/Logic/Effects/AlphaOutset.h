@@ -44,7 +44,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(AlphaOutset)
+			WritingElement_AdditionMethods(AlphaOutset)
 			PPTX_LOGIC_BASE2(AlphaOutset)
 
 			AlphaOutset& operator=(const AlphaOutset& oSrc);

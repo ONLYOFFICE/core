@@ -98,7 +98,10 @@ namespace OOX
 					}
 					else if (L"dgm:styleLbl" == sName)
 					{
-						m_arStyleLbl.push_back(new Diagram::CStyleLbl(oReader));
+						Diagram::CStyleLbl* pStyleLbl = new Diagram::CStyleLbl();
+						*pStyleLbl = oReader;
+
+						m_arStyleLbl.push_back(pStyleLbl);
 					}
 					else if (L"dgm:scene3d" == sName)
 					{

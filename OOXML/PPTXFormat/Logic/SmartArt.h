@@ -45,7 +45,7 @@ namespace PPTX
 		class SmartArt : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SmartArt)
+			WritingElement_AdditionMethods(SmartArt)
 
 			SmartArt();
 			SmartArt& operator=(const SmartArt& oSrc);
@@ -83,7 +83,7 @@ namespace PPTX
 		class ChartRec : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ChartRec)
+			WritingElement_AdditionMethods(ChartRec)
 			
 			ChartRec();
 			ChartRec(const ChartRec& oSrc);

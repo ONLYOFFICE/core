@@ -44,7 +44,7 @@ namespace OOX
 		class COMathPara : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(COMathPara)
+			WritingElement_AdditionMethods(COMathPara)
 
 			COMathPara(OOX::Document *pMain = NULL);
 			virtual ~COMathPara();

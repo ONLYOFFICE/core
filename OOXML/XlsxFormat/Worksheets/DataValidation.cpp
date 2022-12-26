@@ -452,7 +452,9 @@ namespace OOX
 
 				if ( L"dataValidation" == sName )
 				{
-					m_arrItems.push_back( new CDataValidation( oReader ));
+					CDataValidation* pDataValidation = new CDataValidation();
+					*pDataValidation = oReader;
+					m_arrItems.push_back(pDataValidation);
 				}
 			}
 		}

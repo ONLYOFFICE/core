@@ -42,7 +42,7 @@ namespace OOX
 		class CAltTextTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAltTextTable)
+			WritingElement_AdditionMethods(CAltTextTable)
             WritingElement_XlsbConstructors(CAltTextTable)
 			CAltTextTable()
 			{
@@ -78,7 +78,7 @@ namespace OOX
 		class CTableStyleInfo : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyleInfo)
+			WritingElement_AdditionMethods(CTableStyleInfo)
             WritingElement_XlsbConstructors(CTableStyleInfo)
 			CTableStyleInfo()
 			{
@@ -117,7 +117,7 @@ namespace OOX
 		class CTableColumn : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableColumn)
+			WritingElement_AdditionMethods(CTableColumn)
             WritingElement_XlsbConstructors(CTableColumn)
 			CTableColumn()
 			{
@@ -168,7 +168,7 @@ namespace OOX
 		class CTableColumns : public WritingElementWithChilds<CTableColumn>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableColumns)
+			WritingElement_AdditionMethods(CTableColumns)
             WritingElement_XlsbConstructors(CTableColumns)
 			CTableColumns()
 			{
@@ -204,7 +204,7 @@ namespace OOX
 		class CTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTable)
+			WritingElement_AdditionMethods(CTable)
             WritingElement_XlsbConstructors(CTable)
 			CTable()
 			{
@@ -268,7 +268,7 @@ namespace OOX
 		class CTablePart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTablePart)
+			WritingElement_AdditionMethods(CTablePart)
             WritingElement_XlsbConstructors(CTablePart)
 			CTablePart()
 			{
@@ -302,7 +302,7 @@ namespace OOX
 		class CTableParts : public WritingElementWithChilds<CTablePart>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableParts)
+			WritingElement_AdditionMethods(CTableParts)
             WritingElement_XlsbConstructors(CTableParts)
 			CTableParts()
 			{

@@ -42,7 +42,7 @@ namespace PPTX
 		class LineTo : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(LineTo)
+			WritingElement_AdditionMethods(LineTo)
 			PPTX_LOGIC_BASE2(LineTo)
 
 			LineTo& operator=(const LineTo& oSrc);

@@ -269,7 +269,9 @@ namespace OOX
 					m_oVertical = oReader;
 				else if (L"Border" == sName)
 				{
-					CBorderProp* border = new CBorderProp(oReader);
+					CBorderProp* border = new CBorderProp();
+					*border = oReader;
+
 					if ((border) && (border->m_oType.IsInit()))
 					{
 						if (*border->m_oType == L"Bottom")		m_oBottom	= border;
@@ -370,7 +372,9 @@ namespace OOX
 
 				if ( L"border" == sName || L"Border" == sName)
 				{
-					CBorder *pBorder = new CBorder( oReader );
+					CBorder *pBorder = new CBorder();
+					*pBorder = oReader;
+
 					m_arrItems.push_back( pBorder );
 					m_mapBorders.insert(std::make_pair(index++, pBorder));
 				}

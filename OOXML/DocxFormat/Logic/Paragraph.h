@@ -46,9 +46,7 @@ namespace OOX
 		class CParagraph : public WritingElementWithChilds<>
 		{
 		public:
-			CParagraph(OOX::Document *pMain = NULL);
-			CParagraph(XmlUtils::CXmlNode &oNode);
-			CParagraph(XmlUtils::CXmlLiteReader& oReader);
+			CParagraph(OOX::Document *pMain = NULL);			
 			virtual ~CParagraph();
 
 			const CParagraph &operator =(const XmlUtils::CXmlNode& oNode);

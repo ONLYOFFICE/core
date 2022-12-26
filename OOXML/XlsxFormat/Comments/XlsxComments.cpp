@@ -255,7 +255,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( L"comment" == sName )
-					m_arrItems.push_back(new CComment(oReader));
+				{
+					CComment* pComment = new CComment();
+					*pComment = oReader;
+					m_arrItems.push_back(pComment);
+				}
 			}
 		}
 		void CCommentList::fromBin(XLS::BaseObjectPtr& obj)

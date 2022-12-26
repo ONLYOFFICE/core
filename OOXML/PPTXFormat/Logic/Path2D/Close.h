@@ -42,7 +42,7 @@ namespace PPTX
 		class Close : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(Close)
+			WritingElement_AdditionMethods(Close)
 			PPTX_LOGIC_BASE2(Close)
 
 			Close& operator=(const Close& oSrc);

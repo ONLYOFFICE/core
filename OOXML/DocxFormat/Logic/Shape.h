@@ -45,9 +45,7 @@ namespace OOX
 		class CTxbxContent : public WritingElementWithChilds<>
 		{
 		public:
-			CTxbxContent(OOX::Document *pMain = NULL);
-			CTxbxContent(XmlUtils::CXmlNode &oNode);
-			CTxbxContent(XmlUtils::CXmlLiteReader& oReader);
+			CTxbxContent(OOX::Document *pMain = NULL);			
 			virtual ~CTxbxContent();
 
 			const CTxbxContent &operator =(const XmlUtils::CXmlNode& oNode);
@@ -66,9 +64,7 @@ namespace OOX
 		//--------------------------------------------------------------------------------	
 		class CTextBody : public WritingElement
 		{
-		public:
-			CTextBody(XmlUtils::CXmlNode &oNode);
-			CTextBody(XmlUtils::CXmlLiteReader& oReader);
+		public:			
 			CTextBody();
 			virtual ~CTextBody();
 

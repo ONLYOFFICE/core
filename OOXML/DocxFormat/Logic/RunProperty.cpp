@@ -414,7 +414,8 @@ namespace OOX
 				XmlUtils::CXmlNode oChild1;
 				if (oChild.GetNode(L"w:t", oChild1))
 				{
-					m_pText = new CText(oChild1);	//XpertdocOnlineDemoEn.docx
+					//m_pText = new CText();	//XpertdocOnlineDemoEn.docx
+					AssignPtrXmlContent(m_pText, CText, oChild1)
 				}
 			}
 			if ( oNode.GetNode( L"w:bdr", oChild ) )

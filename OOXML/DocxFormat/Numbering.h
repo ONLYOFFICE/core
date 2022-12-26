@@ -149,7 +149,7 @@ namespace OOX
 		class CLvl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLvl)
+			WritingElement_AdditionMethods(CLvl)
 			CLvl();
 			virtual ~CLvl();
 
@@ -188,7 +188,7 @@ namespace OOX
 		class CAbstractNum : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAbstractNum)
+			WritingElement_AdditionMethods(CAbstractNum)
 			CAbstractNum();
 			virtual ~CAbstractNum();
 
@@ -222,7 +222,7 @@ namespace OOX
 		class CNumLvl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumLvl)
+			WritingElement_AdditionMethods(CNumLvl)
 			CNumLvl();
 			virtual ~CNumLvl();
 
@@ -247,7 +247,7 @@ namespace OOX
 		class CNum : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNum)
+			WritingElement_AdditionMethods(CNum)
 			CNum();
 			virtual ~CNum();
 
@@ -274,7 +274,7 @@ namespace OOX
 		class CNumPicBullet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumPicBullet)
+			WritingElement_AdditionMethods(CNumPicBullet)
 			CNumPicBullet();
 			virtual ~CNumPicBullet();
 

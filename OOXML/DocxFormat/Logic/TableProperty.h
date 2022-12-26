@@ -190,7 +190,7 @@ namespace OOX
 		class CTblBorders : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTblBorders)
+			WritingElement_AdditionMethods(CTblBorders)
 
 			CTblBorders();
 			virtual ~CTblBorders();
@@ -232,7 +232,7 @@ namespace OOX
 		class CTblCellMar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTblCellMar)
+			WritingElement_AdditionMethods(CTblCellMar)
 
 			CTblCellMar();
 			virtual ~CTblCellMar();
@@ -273,10 +273,9 @@ namespace OOX
 		class CTblPrChange : public WritingElement
 		{
 		public:
-			CTblPrChange(OOX::Document *pMain = NULL);
-			CTblPrChange(XmlUtils::CXmlNode &oNode);
-			CTblPrChange(XmlUtils::CXmlLiteReader& oReader);
+			CTblPrChange(OOX::Document *pMain = NULL);			
 			virtual ~CTblPrChange();
+
 			const CTblPrChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTblPrChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -305,9 +304,7 @@ namespace OOX
 		class CTableProperty : public WritingElement
 		{
 		public:
-			CTableProperty(OOX::Document *pMain = NULL);
-			CTableProperty(XmlUtils::CXmlNode &oNode);
-			CTableProperty(XmlUtils::CXmlLiteReader& oReader);
+			CTableProperty(OOX::Document *pMain = NULL);			
 			virtual ~CTableProperty();
 
 			const CTableProperty& operator=(const XmlUtils::CXmlNode &oNode);
@@ -404,10 +401,9 @@ namespace OOX
 		class CTrPrChange : public WritingElement
 		{
 		public:
-			CTrPrChange(OOX::Document *pMain = NULL);
-			CTrPrChange(XmlUtils::CXmlNode &oNode);
-			CTrPrChange(XmlUtils::CXmlLiteReader& oReader);
+			CTrPrChange(OOX::Document *pMain = NULL);			
 			virtual ~CTrPrChange();
+
 			const CTrPrChange& operator = (const XmlUtils::CXmlNode &oNode);
 			const CTrPrChange& operator = (const XmlUtils::CXmlLiteReader& oReader);
 
@@ -438,9 +434,7 @@ namespace OOX
 		class CTableRowProperties : public WritingElement
 		{
 		public:
-			CTableRowProperties(OOX::Document *pMain = NULL);
-			CTableRowProperties(XmlUtils::CXmlNode &oNode);
-			CTableRowProperties(XmlUtils::CXmlLiteReader& oReader);
+			CTableRowProperties(OOX::Document *pMain = NULL);			
 			virtual ~CTableRowProperties();
 
 			const CTableRowProperties& operator =(const XmlUtils::CXmlNode &oNode);
@@ -584,7 +578,7 @@ namespace OOX
 		class CHeaders : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CHeaders)
+			WritingElement_AdditionMethods(CHeaders)
 
 			CHeaders(OOX::Document *pMain = NULL);
 			virtual ~CHeaders();
@@ -604,7 +598,7 @@ namespace OOX
 		class CTcBorders : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTcBorders)
+			WritingElement_AdditionMethods(CTcBorders)
 
 			CTcBorders();
 			virtual ~CTcBorders();
@@ -648,7 +642,7 @@ namespace OOX
 		class CTcMar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTcMar)
+			WritingElement_AdditionMethods(CTcMar)
 
 			CTcMar();
 			virtual ~CTcMar();
@@ -688,9 +682,7 @@ namespace OOX
 		class CTcPrChange : public WritingElement
 		{
 		public:
-			CTcPrChange(OOX::Document *pMain = NULL);
-			CTcPrChange(XmlUtils::CXmlNode &oNode);
-			CTcPrChange(XmlUtils::CXmlLiteReader& oReader);
+			CTcPrChange(OOX::Document *pMain = NULL);			
 			virtual ~CTcPrChange();
 
 			const CTcPrChange& operator = (const XmlUtils::CXmlNode &oNode);
@@ -719,9 +711,7 @@ namespace OOX
 		class CTableCellProperties : public WritingElement
 		{
 		public: 
-			CTableCellProperties(OOX::Document *pMain = NULL);
-			CTableCellProperties(XmlUtils::CXmlNode &oNode);
-			CTableCellProperties(XmlUtils::CXmlLiteReader& oReader);
+			CTableCellProperties(OOX::Document *pMain = NULL);			
 			virtual ~CTableCellProperties();
 
 			const CTableCellProperties& operator =(const XmlUtils::CXmlNode &oNode);

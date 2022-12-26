@@ -45,7 +45,7 @@ namespace OOX
 	class CFont : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CFont)
+		WritingElement_AdditionMethods(CFont)
 		
 		CFont();
 		virtual ~CFont();

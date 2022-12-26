@@ -43,7 +43,7 @@ namespace OOX
 		class CCalcCell : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCalcCell)
+			WritingElement_AdditionMethods(CCalcCell)
 			CCalcCell();
 			virtual ~CCalcCell();
 

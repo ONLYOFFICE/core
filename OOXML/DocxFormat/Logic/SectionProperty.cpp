@@ -1396,21 +1396,7 @@ namespace OOX
 		{
 			m_pSecPr.Init();
 			m_pSecPr->m_bSectPrChange = true;
-		}
-		CSectPrChange::CSectPrChange(XmlUtils::CXmlNode& oNode)
-		{
-			m_pSecPr.Init();
-			m_pSecPr->m_bSectPrChange = true;
-
-			fromXML( oNode );
-		}
-		CSectPrChange::CSectPrChange(XmlUtils::CXmlLiteReader& oReader)
-		{
-			m_pSecPr.Init();
-			m_pSecPr->m_bSectPrChange = true;
-
-			fromXML( oReader );
-		}
+		}		
 		CSectPrChange::~CSectPrChange()
 		{
 		}
@@ -1505,17 +1491,7 @@ namespace OOX
 		CSectionProperty::CSectionProperty(OOX::Document *pMain) : WritingElement(pMain)
 		{
 			m_bSectPrChange = false;
-		}
-		CSectionProperty::CSectionProperty(XmlUtils::CXmlNode &oNode)
-		{
-			m_bSectPrChange = false;
-			fromXML( oNode );
-		}
-		CSectionProperty::CSectionProperty(XmlUtils::CXmlLiteReader& oReader)
-		{
-			m_bSectPrChange = false;
-			fromXML( oReader );
-		}
+		}		
 		CSectionProperty::~CSectionProperty()
 		{
 			ClearItems();
@@ -1536,13 +1512,13 @@ namespace OOX
 			}
 			m_arrHeaderReference.clear();
 		}
-		const CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode &oNode)
+		CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode& oNode)
 		{
 			ClearItems();
 			fromXML( (XmlUtils::CXmlNode &)oNode );
 			return *this;
 		}
-		const CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlLiteReader& oReader)
+		CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlLiteReader& oReader)
 		{
 			ClearItems();
 			fromXML( (XmlUtils::CXmlNode &)oReader );

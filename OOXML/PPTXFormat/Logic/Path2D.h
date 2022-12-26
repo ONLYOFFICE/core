@@ -45,7 +45,7 @@ namespace PPTX
 		class Path2D : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Path2D)
+			WritingElement_AdditionMethods(Path2D)
 			PPTX_LOGIC_BASE2(Path2D)
 
 			Path2D& operator=(const Path2D& oSrc);

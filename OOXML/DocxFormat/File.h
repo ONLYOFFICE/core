@@ -43,6 +43,7 @@ namespace OOX
 	class File
 	{
 	public:
+		File();
 		File(OOX::Document *pMain);
 		virtual ~File();
 

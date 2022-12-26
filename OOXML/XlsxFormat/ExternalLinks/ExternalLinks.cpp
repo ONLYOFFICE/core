@@ -187,7 +187,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"definedName" == sName)
 			{
-				m_arrItems.push_back(new CExternalDefinedName(oReader));
+				CExternalDefinedName* pExternalDefinedName = new CExternalDefinedName();
+				*pExternalDefinedName = oReader;
+				m_arrItems.push_back(pExternalDefinedName);
 			}
 		}
 	}
@@ -355,7 +357,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"cell" == sName)
 			{
-				m_arrItems.push_back(new CExternalCell(oReader));
+				CExternalCell* pExternalCell = new CExternalCell();
+				*pExternalCell = oReader;
+				m_arrItems.push_back(pExternalCell);
 			}
 		}
 	}
@@ -420,7 +424,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"row" == sName)
 			{
-				m_arrItems.push_back(new CExternalRow(oReader));
+				CExternalRow* pExternalRow = new CExternalRow();
+				*pExternalRow = oReader;
+				m_arrItems.push_back(pExternalRow);
 			}
 		}
 	}
@@ -487,7 +493,9 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"sheetData" == sName)
 			{
-				m_arrItems.push_back(new CExternalSheetData(oReader));
+				CExternalSheetData* pExternalSheetData = new CExternalSheetData();
+				*pExternalSheetData = oReader;
+				m_arrItems.push_back(pExternalSheetData);
 			}
 		}
 	}
@@ -623,7 +631,9 @@ namespace Spreadsheet
 
 			if (L"val" == sName)
 			{
-				m_arrItems.push_back(new CText(oReader));
+				CText* pText = new CText();
+				*pText = oReader;
+				m_arrItems.push_back(pText);
 			}
 		}
 	}
@@ -753,7 +763,9 @@ namespace Spreadsheet
 
 			if (L"value" == sName)
 			{
-				m_arrItems.push_back(new CDdeValue(oReader));
+				CDdeValue* pDdeValue = new CDdeValue();
+				*pDdeValue = oReader;
+				m_arrItems.push_back(pDdeValue);
 			}
 		}
 	}
@@ -895,7 +907,9 @@ namespace Spreadsheet
 
 			if (L"ddeItem" == sName)
 			{
-				m_arrItems.push_back(new CDdeItem(oReader));
+				CDdeItem* pDdeItem = new CDdeItem();
+				*pDdeItem = oReader;
+				m_arrItems.push_back(pDdeItem);
 			}
 		}
 	}
@@ -1063,7 +1077,9 @@ namespace Spreadsheet
 
 			if (L"oleItem" == sName)
 			{
-				m_arrItems.push_back(new COleItem(oReader));
+				COleItem* pOleItem = new COleItem();
+				*pOleItem = oReader;
+				m_arrItems.push_back(pOleItem);
 			}
 		}
 	}

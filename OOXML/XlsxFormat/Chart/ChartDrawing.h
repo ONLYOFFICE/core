@@ -41,7 +41,7 @@ namespace OOX
 	class CFromTo : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CFromTo)
+		WritingElement_AdditionMethods(CFromTo)
 		CFromTo();
 		virtual ~CFromTo();
 
@@ -66,7 +66,7 @@ namespace OOX
 	class CExt : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CExt)
+		WritingElement_AdditionMethods(CExt)
 		CExt();
 		virtual ~CExt();
 
@@ -89,7 +89,7 @@ namespace OOX
 	class CSizeAnchor : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CSizeAnchor)
+		WritingElement_AdditionMethods(CSizeAnchor)
 		CSizeAnchor();
 		virtual ~CSizeAnchor();
 
@@ -108,7 +108,7 @@ namespace OOX
 	class CRelSizeAnchor : public CSizeAnchor
 	{
 	public:
-		WritingElement_AdditionConstructors(CRelSizeAnchor)
+		WritingElement_AdditionMethods(CRelSizeAnchor)
 		CRelSizeAnchor();
 		virtual ~CRelSizeAnchor();
 
@@ -127,7 +127,7 @@ namespace OOX
 	class CAbsSizeAnchor : public CSizeAnchor
 	{
 	public:
-		WritingElement_AdditionConstructors(CAbsSizeAnchor)
+		WritingElement_AdditionMethods(CAbsSizeAnchor)
 		CAbsSizeAnchor();
 		virtual ~CAbsSizeAnchor();
 

@@ -44,7 +44,7 @@ namespace PPTX
 		class Camera : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Camera)
+			WritingElement_AdditionMethods(Camera)
 			PPTX_LOGIC_BASE2(Camera)
 
 			virtual OOX::EElementType getType() const;

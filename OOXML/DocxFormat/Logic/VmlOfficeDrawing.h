@@ -56,7 +56,7 @@ namespace OOX
 		class CStrokeChild : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStrokeChild)
+			WritingElement_AdditionMethods(CStrokeChild)
 			CStrokeChild(OOX::Document *pMain = NULL);
 			virtual ~CStrokeChild();
 
@@ -109,7 +109,7 @@ namespace OOX
 		class CCallout : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCallout)
+			WritingElement_AdditionMethods(CCallout)
 			CCallout(OOX::Document *pMain = NULL);
 			virtual ~CCallout();
 
@@ -145,7 +145,7 @@ namespace OOX
 		class CClipPath : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CClipPath)
+			WritingElement_AdditionMethods(CClipPath)
 			CClipPath(OOX::Document *pMain = NULL);
 			virtual ~CClipPath();
 
@@ -168,7 +168,7 @@ namespace OOX
 		class CColorMenu : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorMenu)
+			WritingElement_AdditionMethods(CColorMenu)
 			CColorMenu();
 			virtual ~CColorMenu();
 
@@ -195,7 +195,7 @@ namespace OOX
 		class CColorMru : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorMru)
+			WritingElement_AdditionMethods(CColorMru)
 			CColorMru(OOX::Document *pMain = NULL);
 			virtual ~CColorMru();
 
@@ -219,7 +219,7 @@ namespace OOX
 		class CComplex : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CComplex)
+			WritingElement_AdditionMethods(CComplex)
 			CComplex(OOX::Document *pMain = NULL);
 			virtual ~CComplex();
 
@@ -242,7 +242,7 @@ namespace OOX
 		class CRelation : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRelation)
+			WritingElement_AdditionMethods(CRelation)
 			CRelation();
 			virtual ~CRelation();
 
@@ -268,7 +268,7 @@ namespace OOX
 		class CRelationTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRelationTable)
+			WritingElement_AdditionMethods(CRelationTable)
 			CRelationTable();
 			virtual ~CRelationTable();
 
@@ -292,7 +292,7 @@ namespace OOX
 		class CDiagram : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDiagram)
+			WritingElement_AdditionMethods(CDiagram)
 			CDiagram(OOX::Document *pMain = NULL);
 			virtual ~CDiagram();
 
@@ -326,7 +326,7 @@ namespace OOX
 		class CEntry : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CEntry)
+			WritingElement_AdditionMethods(CEntry)
 			CEntry();
 			virtual ~CEntry();
 
@@ -350,7 +350,7 @@ namespace OOX
 		class CEquationXml : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CEquationXml)
+			WritingElement_AdditionMethods(CEquationXml)
 			CEquationXml(OOX::Document *pMain = NULL);
 			virtual ~CEquationXml();
 
@@ -373,7 +373,7 @@ namespace OOX
 		class CExtrusion : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExtrusion)
+			WritingElement_AdditionMethods(CExtrusion)
 			CExtrusion(OOX::Document *pMain = NULL);
 			virtual ~CExtrusion();
 
@@ -428,7 +428,7 @@ namespace OOX
 		class CFieldCodes : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFieldCodes)
+			WritingElement_AdditionMethods(CFieldCodes)
 			CFieldCodes();
 			virtual ~CFieldCodes();
 
@@ -448,7 +448,7 @@ namespace OOX
 		class CFill : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFill)
+			WritingElement_AdditionMethods(CFill)
 			CFill(OOX::Document *pMain = NULL);
 			virtual ~CFill();
 
@@ -472,7 +472,7 @@ namespace OOX
 		class CIdMap : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CIdMap)
+			WritingElement_AdditionMethods(CIdMap)
 			CIdMap();
 			virtual ~CIdMap();
 
@@ -496,7 +496,7 @@ namespace OOX
 		class CInk : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CInk)
+			WritingElement_AdditionMethods(CInk)
 			CInk(OOX::Document *pMain = NULL);
 			virtual ~CInk();
 
@@ -521,7 +521,7 @@ namespace OOX
 		class CLinkType : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLinkType)
+			WritingElement_AdditionMethods(CLinkType)
 			CLinkType();
 			virtual ~CLinkType();
 
@@ -541,7 +541,7 @@ namespace OOX
 		class CLock : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLock)
+			WritingElement_AdditionMethods(CLock)
 			CLock(OOX::Document *pMain = NULL);
 			virtual ~CLock();
 
@@ -576,7 +576,7 @@ namespace OOX
 		class CLockedField : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLockedField)
+			WritingElement_AdditionMethods(CLockedField)
 			CLockedField();
 			virtual ~CLockedField();
 
@@ -595,7 +595,7 @@ namespace OOX
 		class COLEObject : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COLEObject)
+			WritingElement_AdditionMethods(COLEObject)
 			COLEObject(OOX::Document *pMain = NULL);
 			virtual ~COLEObject();
 
@@ -630,7 +630,7 @@ namespace OOX
 		class CProxy : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CProxy)
+			WritingElement_AdditionMethods(CProxy)
 			CProxy();
 			virtual ~CProxy();
 
@@ -656,7 +656,7 @@ namespace OOX
 		class CR : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CR)
+			WritingElement_AdditionMethods(CR)
 			CR();
 			virtual ~CR();
 
@@ -686,7 +686,7 @@ namespace OOX
 		class CRegroupTable : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRegroupTable)
+			WritingElement_AdditionMethods(CRegroupTable)
 			CRegroupTable();
 			virtual ~CRegroupTable();
 
@@ -713,7 +713,7 @@ namespace OOX
 		class CRules : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRules)
+			WritingElement_AdditionMethods(CRules)
 			CRules();
 			virtual ~CRules();
 
@@ -740,7 +740,7 @@ namespace OOX
 		class CShapeLayout : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CShapeLayout)
+			WritingElement_AdditionMethods(CShapeLayout)
 			CShapeLayout(OOX::Document *pMain = NULL);
 			virtual ~CShapeLayout();
 
@@ -769,7 +769,7 @@ namespace OOX
         class CSignatureLine : public PPTX::WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSignatureLine)
+			WritingElement_AdditionMethods(CSignatureLine)
 			CSignatureLine(OOX::Document *pMain = NULL);
 			virtual ~CSignatureLine();
 
@@ -809,7 +809,7 @@ namespace OOX
 		class CSkew : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSkew)
+			WritingElement_AdditionMethods(CSkew)
 			CSkew(OOX::Document *pMain = NULL);
 			virtual ~CSkew();
 

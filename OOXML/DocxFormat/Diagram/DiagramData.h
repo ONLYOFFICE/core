@@ -84,7 +84,7 @@ namespace OOX
 		class CAnimLvl : public Diagram::ComplexType<SimpleTypes::CAnimLvlStr>
 		{
 		public:
-			WritingElement_AdditionConstructors(CAnimLvl)
+			WritingElement_AdditionMethods(CAnimLvl)
 
 			CAnimLvl();
 			virtual EElementType getType() const;
@@ -99,7 +99,7 @@ namespace OOX
 		class CAnimOne : public Diagram::ComplexType<SimpleTypes::CAnimOneStr>
 		{
 		public:
-			WritingElement_AdditionConstructors(CAnimOne)
+			WritingElement_AdditionMethods(CAnimOne)
 
 			CAnimOne();
 			virtual EElementType getType() const;
@@ -114,7 +114,7 @@ namespace OOX
 		class CBulletEnabled : public Diagram::ComplexType<SimpleTypes::CBool>
 		{
 		public:
-			WritingElement_AdditionConstructors(CBulletEnabled)
+			WritingElement_AdditionMethods(CBulletEnabled)
 
 			CBulletEnabled();
 
@@ -130,7 +130,7 @@ namespace OOX
 		class CChMax : public Diagram::ComplexType<SimpleTypes::CDecimalNumber>
 		{
 		public:
-			WritingElement_AdditionConstructors(CChMax)
+			WritingElement_AdditionMethods(CChMax)
 
 			CChMax();
 			virtual EElementType getType() const;
@@ -145,7 +145,7 @@ namespace OOX
 		class CChPref : public Diagram::ComplexType<SimpleTypes::CDecimalNumber>
 		{
 		public:
-			WritingElement_AdditionConstructors(CChPref)
+			WritingElement_AdditionMethods(CChPref)
 
 			CChPref();
 
@@ -161,7 +161,7 @@ namespace OOX
 		class CDirection : public Diagram::ComplexType<SimpleTypes::CDirectionDraw>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDirection)
+			WritingElement_AdditionMethods(CDirection)
 
 			CDirection();
 
@@ -177,7 +177,7 @@ namespace OOX
 		class CHierBranch : public Diagram::ComplexType<SimpleTypes::CHierBranch>
 		{
 		public:
-			WritingElement_AdditionConstructors(CHierBranch)
+			WritingElement_AdditionMethods(CHierBranch)
 
 			CHierBranch();
 
@@ -193,7 +193,7 @@ namespace OOX
 		class COrgChart : public Diagram::ComplexType<SimpleTypes::CBool>
 		{
 		public:
-			WritingElement_AdditionConstructors(COrgChart)
+			WritingElement_AdditionMethods(COrgChart)
 			
 			COrgChart();
 
@@ -209,7 +209,7 @@ namespace OOX
 		class CResizeHandles : public Diagram::ComplexType<SimpleTypes::CResizeHandles>
 		{
 		public:
-			WritingElement_AdditionConstructors(CResizeHandles)
+			WritingElement_AdditionMethods(CResizeHandles)
 			
 			CResizeHandles();
 
@@ -225,7 +225,7 @@ namespace OOX
 		class CVariableList : public WritingElement 
 		{
 		public:
-			WritingElement_AdditionConstructors(CVariableList)
+			WritingElement_AdditionMethods(CVariableList)
 			
 			CVariableList();
 			virtual ~CVariableList();
@@ -257,7 +257,7 @@ namespace OOX
 		class CPropertySet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPropertySet)
+			WritingElement_AdditionMethods(CPropertySet)
 
 			CPropertySet();
 			virtual ~CPropertySet();
@@ -313,7 +313,7 @@ namespace OOX
 		class CPt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPt)
+			WritingElement_AdditionMethods(CPt)
 
 			CPt();
 			virtual ~CPt();
@@ -345,7 +345,7 @@ namespace OOX
 		class CPtLst : public WritingElementWithChilds<OOX::Diagram::CPt>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPtLst)
+			WritingElement_AdditionMethods(CPtLst)
 
 			CPtLst();
 			virtual ~CPtLst();
@@ -364,7 +364,7 @@ namespace OOX
 		class CCxn : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCxn)
+			WritingElement_AdditionMethods(CCxn)
 
 			CCxn();
 			virtual ~CCxn();
@@ -400,7 +400,7 @@ namespace OOX
 		class CCxnLst : public WritingElementWithChilds<OOX::Diagram::CCxn>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCxnLst)
+			WritingElement_AdditionMethods(CCxnLst)
 
 			CCxnLst();
 			virtual ~CCxnLst();
@@ -419,7 +419,7 @@ namespace OOX
 		class CWhole : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWhole)
+			WritingElement_AdditionMethods(CWhole)
 
 			CWhole();
 			virtual ~CWhole();
@@ -442,7 +442,7 @@ namespace OOX
 		class CBg: public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBg)
+			WritingElement_AdditionMethods(CBg)
 
 			CBg();
 			virtual ~CBg();
@@ -465,7 +465,7 @@ namespace OOX
 		class CDataModel : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataModel)
+			WritingElement_AdditionMethods(CDataModel)
 
 			CDataModel();
 			virtual ~CDataModel();
@@ -494,7 +494,7 @@ namespace OOX
 		class CCat : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCat)
+			WritingElement_AdditionMethods(CCat)
 
 			CCat();
 			virtual ~CCat();
@@ -521,7 +521,7 @@ namespace OOX
 		class CCatLst : public WritingElementWithChilds<OOX::Diagram::CCat>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCatLst)
+			WritingElement_AdditionMethods(CCatLst)
 
 			CCatLst();
 			virtual ~CCatLst();
@@ -540,7 +540,7 @@ namespace OOX
 		class CText : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CText)
+			WritingElement_AdditionMethods(CText)
 
 			CText() {}
 			virtual ~CText() {}

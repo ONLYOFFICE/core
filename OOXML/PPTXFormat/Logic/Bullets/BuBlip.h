@@ -41,7 +41,7 @@ namespace PPTX
 		class BuBlip : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuBlip)
+			WritingElement_AdditionMethods(BuBlip)
 			PPTX_LOGIC_BASE2(BuBlip)
 
 			BuBlip& operator=(const BuBlip& oSrc);

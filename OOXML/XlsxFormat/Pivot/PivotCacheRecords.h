@@ -40,7 +40,7 @@ namespace OOX
 		class CPivotCacheRecord : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheRecord)
+			WritingElement_AdditionMethods(CPivotCacheRecord)
             WritingElement_XlsbConstructors(CPivotCacheRecord)
 			CPivotCacheRecord(){}
 			virtual ~CPivotCacheRecord() {}
@@ -64,7 +64,7 @@ namespace OOX
 		class CPivotCacheRecords : public WritingElementWithChilds<CPivotCacheRecord>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheRecords)
+			WritingElement_AdditionMethods(CPivotCacheRecords)
             WritingElement_XlsbConstructors(CPivotCacheRecords)
 			CPivotCacheRecords()
 			{

@@ -42,7 +42,7 @@ namespace PPTX
 		class Reflection : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Reflection)
+			WritingElement_AdditionMethods(Reflection)
 			PPTX_LOGIC_BASE2(Reflection)
 
 			Reflection& operator=(const Reflection& oSrc);

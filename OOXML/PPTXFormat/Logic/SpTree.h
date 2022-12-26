@@ -45,7 +45,7 @@ namespace PPTX
 		class SpTree : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SpTree)
+			WritingElement_AdditionMethods(SpTree)
 
 			SpTree(std::wstring ns = L"p");
 
@@ -80,7 +80,7 @@ namespace PPTX
 		class LockedCanvas : public SpTree
 		{
 		public:
-			WritingElement_AdditionConstructors(LockedCanvas)
+			WritingElement_AdditionMethods(LockedCanvas)
 
 			LockedCanvas();
 

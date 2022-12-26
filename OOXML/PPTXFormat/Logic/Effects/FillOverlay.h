@@ -45,7 +45,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(FillOverlay)
+			WritingElement_AdditionMethods(FillOverlay)
 			PPTX_LOGIC_BASE2(FillOverlay)
 
 			FillOverlay& operator=(const FillOverlay& oSrc);

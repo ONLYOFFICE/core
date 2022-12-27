@@ -92,6 +92,41 @@
         this.pos += nPos;
     };
 
+    function CBinaryWriter()
+    {
+        this.size = 100000;
+        this.dataSize = 0;
+        this.buffer = new Uint8Array(this.size);
+    }
+    CBinaryWriter.prototype.checkAlloc = function(addition)
+    {
+        if ((this.dataSize + addition) <= this.size)
+            return;
+
+        let newSize = Math.max(this.size * 2, this.size + addition);
+        let newBuffer = new Uint8Array(newSize);
+        newBuffer.set(this.buffer, 0);
+
+        this.size = newSize;
+        this.buffer = newBuffer;
+    };
+    CBinaryWriter.prototype.writeUint = function(value)
+    {
+        this.checkAlloc(4);
+        let val = (value>2147483647)?value-4294967296:value;
+        this.buffer[this.dataSize++] = (val) & 0xFF;
+        this.buffer[this.dataSize++] = (val >>> 8) & 0xFF;
+        this.buffer[this.dataSize++] = (val >>> 16) & 0xFF;
+        this.buffer[this.dataSize++] = (val >>> 24) & 0xFF;
+    };
+    CBinaryWriter.prototype.writeString = function(value)
+    {
+        let valueUtf8 = value.toUtf8();
+        this.checkAlloc(valueUtf8.length);
+        this.buffer.set(valueUtf8, this.dataSize);
+        this.dataSize += valueUtf8.length;
+    };
+
     function CFile()
     {
         this.nativeFile = 0;
@@ -368,15 +403,6 @@
         Module["_free"](pointer);
     };
 	
-	function IntToUint8(n)
-	{
-		var byte1 = n & 0xff;
-		var byte2 = (n >> 8) & 0xff;
-		var byte3 = (n >> 16) & 0xff;
-		var byte4 = (n >> 24) & 0xff;
-		return new Uint8Array([byte1, byte2, byte3, byte4]);
-	}
-
     self["AscViewer"]["CDrawingFile"] = CFile;
 	self["AscViewer"]["InitializeFonts"] = function() {
 		if (!window["g_fonts_selection_bin"])
@@ -388,57 +414,25 @@
 		Module["_free"](pointer);
 		delete window["g_fonts_selection_bin"];
 
-		if (!window["__fonts_ranges"] || !window["__fonts_infos"])
-			return;
+		// ranges
+        let rangesBuffer = new CBinaryWriter();
+        let ranges = AscFonts.FontPickerByCharacter.Ranges;
 
-		var fonts = window["__fonts_ranges"];
-		var infos = window["__fonts_infos"];
-		var nRangesCount = window["__fonts_ranges"].length / 3;
+        let rangesCount = ranges.length;
+        rangesBuffer.writeUint(rangesCount);
+        for (let i = 0; i < rangesCount; i++)
+        {
+            rangesBuffer.writeString(ranges[i].Name);
+            rangesBuffer.writeUint(ranges[i].Start);
+            rangesBuffer.writeUint(ranges[i].End);
+        }
 
-		// Вычисление длины для ranges
-		var nLength = 4; // В начале записано int количество ranges
-		var index = 0;
-		for (var i = 0; i < nRangesCount; i++)
-		{
-			if (!infos[fonts[index + 2]])
-				return;
-			nLength += (infos[fonts[index + 2]][0].length + 1); // Длина строки + null символ в конце
-			nLength += 4; // int fonts[index]
-			nLength += 4; // int fonts[index + 1]
-			index += 3;
-		}
-
-		// Создание и заполнение Uint8Array ranges
-		var Ranges = new Uint8Array(nLength);
-		Ranges.set(IntToUint8(nRangesCount));
-		index = 0;
-		var j = 4;
-		for (var i = 0; i < nRangesCount; i++)
-		{
-			var sFontName = infos[fonts[index + 2]][0].toUtf8();
-			Ranges.set(sFontName, j);
-		    j += sFontName.length;
-			Ranges[j++] = 0;
-			Ranges.set(IntToUint8(fonts[index]), j);
-			j += 4;
-			Ranges.set(IntToUint8(fonts[index + 1]), j);
-			j += 4;
-			index += 3;
-		}
-
-		// Проверка
-		var reader = new CBinaryReader(Ranges, 0, nLength);
-		var nL = reader.readInt();
-
-		// Отправка ranges
-		var pointer = Module["_malloc"](Ranges.length);
-		Module.HEAP8.set(Ranges, pointer);
-		Module["_InitializeFontsRanges"](pointer);
-		Module["_free"](pointer);
-
-		// Удаление...
-		// delete window["__fonts_ranges"];
-		// delete window["__fonts_infos"];
+        let rangesFinalLen = rangesBuffer.dataSize;
+        let rangesFinal = new Uint8Array(rangesBuffer.buffer.buffer, 0, rangesFinalLen);
+        pointer = Module["_malloc"](rangesFinalLen);
+        Module.HEAP8.set(rangesFinal, pointer);
+        Module["_InitializeFontsRanges"](pointer, rangesFinalLen);
+        Module["_free"](pointer);
 	};
     self["AscViewer"]["Free"] = function(pointer) {
 		Module["_free"](pointer);

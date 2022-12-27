@@ -162,6 +162,10 @@ namespace SVG
 
 	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
+		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+
+		ApplyTransform(pRenderer, oStyle);
+
 		//Временный данные для тестов
 		pRenderer->put_FontName(L"Arial");
 		pRenderer->put_FontSize(1);

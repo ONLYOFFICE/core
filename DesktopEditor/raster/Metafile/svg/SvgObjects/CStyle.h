@@ -7,6 +7,8 @@
 
 namespace SVG
 {
+    #define SvgColorType NSCSS::NSConstValues::NSCssProperties::ColorType
+
 	static const ColorParser m_oColorParser;
 
 	class CStyle;
@@ -33,16 +35,22 @@ namespace SVG
 		virtual void AddOtherStyle(const std::pair<std::wstring, std::wstring>& oStyle, const unsigned int unLevel, const bool& bHardMode = true);
 
 		// Fill
+		SvgColorType GetFillType() const;
 		std::wstring GetFill() const;
 		int GetFillN() const;
 
 		// Stroke
+		SvgColorType GetStrokeColorType() const;
 		double GetStrokeWidth() const;
 		int GetStrokeColorN() const;
 
+		// Transform
+		void GetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dDx, double& dDy) const;
+
 	private:
 
-		NSCSS::NSConstValues::NSCssProperties::Stroke m_pStroke;
+		NSCSS::NSConstValues::NSCssProperties::Stroke    m_pStroke;
+		NSCSS::NSConstValues::NSCssProperties::Transform m_pTransform;
 	};
 }
 

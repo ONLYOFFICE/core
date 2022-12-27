@@ -52,18 +52,8 @@ namespace SVG
 
 		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
 
-		int nStrokeColor = oStyle.GetStrokeColorN();
-		if (-1 != nStrokeColor)
-		{
-			nTypePath += c_nStroke;
-			pRenderer->put_PenColor(nStrokeColor);
-		}
-
-		int nFillColor = oStyle.GetFillN();
-		if (-1 != nFillColor)
-		{
-			nTypePath += c_nWindingFillMode;
-			pRenderer->put_BrushColor1(nFillColor);
-		}
+		ApplyTransform(pRenderer, oStyle);
+		ApplyStroke(pRenderer, oStyle, nTypePath);
+		ApplyFill(pRenderer, oStyle, nTypePath);
 	}
 }

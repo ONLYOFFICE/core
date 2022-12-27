@@ -296,6 +296,13 @@ namespace NSCSS
                 bold
             };
 
+			typedef enum
+			{
+				ColorNone,
+				ColorUrl,
+				ColorHex
+			} ColorType;
+
             class Font
             {
                 float fSize;
@@ -2591,6 +2598,17 @@ namespace NSCSS
                     return sColor.empty();
                 }
 
+				ColorType GetColorType() const
+				{
+					if (sColor.empty() || L"none" == sColor)
+						return ColorType::ColorNone;
+
+					if (std::wstring::npos != sColor.find(L"url"))
+						return ColorType::ColorUrl;
+
+					return ColorType::ColorHex;
+				}
+
                 void SetColor(const std::wstring &sValue, const unsigned int& unLevel, const bool &bHardMode = false)
                 {
                     if (sValue.empty() || (bImportants[0] && !bHardMode))
@@ -2682,7 +2700,7 @@ namespace NSCSS
 
 				int GetColorN() const
 				{
-					if (sColor.empty())
+					if (sColor.empty() || L"none" == sColor)
 						return -1;
 
 					std::wstring wsR;
@@ -3006,48 +3024,48 @@ namespace NSCSS
 					bImportants = {false, false};
 				}
 
-				Stroke operator+=(const Stroke& oStroke)
-				{
-					if (oStroke.Empty())
-						return *this;
-
-					wsColor = oStroke.wsColor;
-					dWidth  = oStroke.dWidth;
-
-					return *this;
-				}
-
 				bool Empty() const
 				{
 					return (dWidth <= 0);
 				}
 
-				static void StrokeEquation(Stroke &oFirstStroke, Stroke &oSecondStroke)
+				ColorType GetColorType() const
 				{
-					if (oFirstStroke.bImportants[0] && !oSecondStroke.bImportants[0] && !oFirstStroke.wsColor.empty())
-						oSecondStroke.wsColor.clear();
-					else if (oSecondStroke.bImportants[0] && !oFirstStroke.bImportants[0] && !oSecondStroke.wsColor.empty())
-						oFirstStroke.wsColor.clear();
-					else if (!oSecondStroke.wsColor.empty())
-					{
-						if (oFirstStroke.arLevels[0] < oSecondStroke.arLevels[0])
-							oFirstStroke.wsColor.clear();
-						else
-							oSecondStroke.wsColor.clear();
-					}
+					if (wsColor.empty() || L"none" == wsColor)
+						return ColorType::ColorNone;
 
-					if (oFirstStroke.bImportants[1] && !oSecondStroke.bImportants[1] && oFirstStroke.dWidth > 0)
-						oSecondStroke.dWidth = 0;
-					else if (oSecondStroke.bImportants[1] && !oFirstStroke.bImportants[1] && oSecondStroke.dWidth > 0)
-						oFirstStroke.dWidth = 0;
-					else if (oSecondStroke.dWidth > 0)
-					{
-						if (oFirstStroke.arLevels[1] < oSecondStroke.arLevels[1])
-							oFirstStroke.dWidth = 0;
-						else
-							oSecondStroke.dWidth = 0;
-					}
+					if (std::wstring::npos != wsColor.find(L"url"))
+						return ColorType::ColorUrl;
+
+					return ColorType::ColorHex;
 				}
+
+//				static void StrokeEquation(Stroke &oFirstStroke, Stroke &oSecondStroke)
+//				{
+//					if (oFirstStroke.bImportants[0] && !oSecondStroke.bImportants[0] && !oFirstStroke.wsColor.empty())
+//						oSecondStroke.wsColor.clear();
+//					else if (oSecondStroke.bImportants[0] && !oFirstStroke.bImportants[0] && !oSecondStroke.wsColor.empty())
+//						oFirstStroke.wsColor.clear();
+//					else if (!oSecondStroke.wsColor.empty())
+//					{
+//						if (oFirstStroke.arLevels[0] < oSecondStroke.arLevels[0])
+//							oFirstStroke.wsColor.clear();
+//						else
+//							oSecondStroke.wsColor.clear();
+//					}
+
+//					if (oFirstStroke.bImportants[1] && !oSecondStroke.bImportants[1] && oFirstStroke.dWidth > 0)
+//						oSecondStroke.dWidth = 0;
+//					else if (oSecondStroke.bImportants[1] && !oFirstStroke.bImportants[1] && oSecondStroke.dWidth > 0)
+//						oFirstStroke.dWidth = 0;
+//					else if (oSecondStroke.dWidth > 0)
+//					{
+//						if (oFirstStroke.arLevels[1] < oSecondStroke.arLevels[1])
+//							oFirstStroke.dWidth = 0;
+//						else
+//							oSecondStroke.dWidth = 0;
+//					}
+//				}
 
 				bool operator==(const Stroke& oStroke) const
 				{
@@ -3135,7 +3153,7 @@ namespace NSCSS
 
 				int GetColorN() const
 				{
-					if (wsColor.empty())
+					if (wsColor.empty() || L"none" == wsColor)
 						return -1;
 
 					std::wstring wsR;
@@ -3155,6 +3173,147 @@ namespace NSCSS
 					char chB = stoi(wsB, nullptr, 16);
 
 					return RGB(chR, chG, chB);
+				}
+			};
+
+			typedef enum
+			{
+				TransformNone,
+				TransformMatrix,
+				TransformTranslate,
+				TransformScale,
+				TransformRotate
+			} TransformType;
+
+			class Transform
+			{
+				double m_dM11;
+				double m_dM12;
+				double m_dM21;
+				double m_dM22;
+				double m_dDx;
+				double m_dDy;
+
+				std::vector<bool> bImportants;
+				std::vector<unsigned int> arLevels;
+
+				void Clear()
+				{
+					m_dM11 = m_dM12 = m_dM21 = m_dM22 = m_dDx = m_dDy = 0;
+				}
+
+			public:
+				Transform() : m_dM11(0), m_dM12(0), m_dM21(0), m_dM22(0), m_dDx(0), m_dDy(0), bImportants({false}), arLevels({0}) {};
+
+				void ClearImportants()
+				{
+					bImportants = {false};
+				}
+
+				bool Empty() const
+				{
+					return (0 == m_dM11 || 0 == m_dM22);
+				}
+
+				bool operator==(const Transform& oTransform) const
+				{
+					return m_dM11 == oTransform.m_dM11 && m_dM12 == oTransform.m_dM12 && m_dM21 == oTransform.m_dM21 &&
+					       m_dM22 == oTransform.m_dM22 && m_dDx  == oTransform.m_dDx &&  m_dDy  == oTransform.m_dDy;
+				}
+
+				void SetImportantAll(const bool &bImportant)
+				{
+					bImportants = {bImportant};
+				}
+
+				void SetImportantTransform(const bool &bImportant)
+				{
+					bImportants[0] = bImportant;
+				}
+
+				void SetTransform(const std::vector<double>& arValues, TransformType enType, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (arValues.empty() || (bImportants[0] && !bHardMode))
+						return;
+
+					Clear();
+
+					switch (enType)
+					{
+						case TransformType::TransformMatrix:
+						{
+							if (6 != arValues.size())
+								return;
+
+							m_dM11 = arValues[0];
+							m_dM12 = arValues[1];
+							m_dM21 = arValues[2];
+							m_dM22 = arValues[3];
+							m_dDx  = arValues[4];
+							m_dDy  = arValues[5];
+
+							break;
+						}
+						case TransformType::TransformTranslate:
+						{
+							if (2 != arValues.size())
+								return;
+
+							m_dDx = arValues[0];
+							m_dDx = arValues[1];
+
+							m_dM11 = m_dM22 = 1;
+
+							break;
+						}
+						case TransformType::TransformScale:
+						{
+							if (2 != arValues.size())
+								return;
+
+							m_dM11 = arValues[0];
+							m_dM22 = arValues[1];
+
+							break;
+						}
+					}
+
+
+				}
+
+				void GetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dDx, double& dDy) const
+				{
+					if (Empty())
+					{
+						dM11 = dM22 = 1;
+						dM12 = dM21 = dDx = dDy = 0;
+					}
+					else
+					{
+						dM11 = m_dM11;
+						dM12 = m_dM12;
+						dM21 = m_dM21;
+						dM22 = m_dM22;
+						dDx  = m_dDx;
+						dDy  = m_dDy;
+					}
+				}
+
+				static TransformType GetTransformType(const std::wstring& wsValue)
+				{
+					if (std::wstring::npos != wsValue.find(L"matrix"))
+						return TransformType::TransformMatrix;
+
+					if (std::wstring::npos != wsValue.find(L"translate"))
+						return TransformType::TransformTranslate;
+
+					if (std::wstring::npos != wsValue.find(L"scale"))
+						return TransformType::TransformScale;
+
+					if (std::wstring::npos != wsValue.find(L"rotate"))
+						return TransformType::TransformRotate;
+
+					return TransformType::TransformNone;
 				}
 			};
 		}

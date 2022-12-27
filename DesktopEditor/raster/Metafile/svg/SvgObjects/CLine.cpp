@@ -60,15 +60,7 @@ namespace SVG
 
 		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
 
-		double dStrokeWidth = oStyle.GetStrokeWidth();
-		if (0 < dStrokeWidth)
-			pRenderer->put_PenSize(dStrokeWidth);
-
-		int nStrokeColor = oStyle.GetStrokeColorN();
-		if (-1 != nStrokeColor)
-		{
-			nTypePath += c_nStroke;
-			pRenderer->put_PenColor(nStrokeColor);
-		}
+		ApplyTransform(pRenderer, oStyle);
+		ApplyStroke(pRenderer, oStyle, nTypePath);
 	}
 }

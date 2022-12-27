@@ -38,6 +38,40 @@ namespace SVG
 
 		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath) = 0;
 
+		void ApplyStroke(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath)
+		{
+			if (SvgColorType::ColorHex == oStyle.GetStrokeColorType())
+			{
+				nTypePath += c_nStroke;
+				pRenderer->put_PenColor(oStyle.GetStrokeColorN());
+
+				double dStrokeWidth = oStyle.GetStrokeWidth();
+
+				if (0 != dStrokeWidth)
+					pRenderer->put_PenSize(dStrokeWidth);
+			}
+		}
+
+		void ApplyFill(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath)
+		{
+			if (SvgColorType::ColorHex == oStyle.GetFillType())
+			{
+				nTypePath += c_nWindingFillMode;
+				pRenderer->put_BrushColor1(oStyle.GetFillN());
+			}
+		}
+
+		void ApplyTransform(IRenderer* pRenderer, const CStyle& oStyle)
+		{
+			pRenderer->ResetTransform();
+
+			double dM11, dM12, dM21, dM22, dDx, dDy;
+
+			oStyle.GetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+
+			pRenderer->SetTransform(0.89 * dM11 * 25.4 / 96, dM12, dM21, 0.89 * dM22 * 25.4 / 96, dDx, dDy);
+		}
+
 		friend class CLine;
 		friend class CRect;
 		friend class CCircle;

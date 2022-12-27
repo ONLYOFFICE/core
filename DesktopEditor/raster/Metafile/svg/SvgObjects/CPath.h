@@ -3,6 +3,7 @@
 
 #include "CObjectBase.h"
 #include "../SvgTypes.h"
+#include "../SvgUtils.h"
 
 namespace SVG
 {
@@ -42,29 +43,6 @@ namespace SVG
 	private:
 		virtual Point GetPoint(int nIndex) const = 0;
 
-		std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
-		{
-			std::vector<double> arValues;
-
-			std::wstring::const_iterator oFirstPos = wsValue.begin();
-			std::wstring::const_iterator oSecondPos = oFirstPos;
-
-			while (true)
-			{
-				oFirstPos  = std::find_if(oSecondPos, wsValue.end(), [](const wchar_t& wChar){ return iswdigit(wChar) || L'-' == wChar; });
-
-				if (wsValue.end() == oFirstPos)
-					break;
-
-				oSecondPos = std::find_if(oFirstPos + 1,  wsValue.end(), [](const wchar_t& wChar){ return iswspace(wChar) || L',' == wChar; });
-
-				arValues.push_back(std::stod(std::wstring(oFirstPos, oSecondPos)));
-			}
-
-			return arValues;
-
-		}
-
 		friend class CMoveElement;
 		friend class CLineElement;
 		friend class CVLineElement;
@@ -94,7 +72,7 @@ namespace SVG
 			if (wsValue.empty())
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
@@ -144,7 +122,7 @@ namespace SVG
 			if (wsValue.empty())
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
@@ -207,7 +185,7 @@ namespace SVG
 			if (wsValue.empty())
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty())
 				return false;
@@ -253,7 +231,7 @@ namespace SVG
 			if (wsValue.empty())
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty())
 				return false;
@@ -314,7 +292,7 @@ namespace SVG
 			if (wsValue.empty())
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 6))
 				return false;
@@ -410,7 +388,7 @@ namespace SVG
 			if (wsValue.empty() || NULL == pPrevElement)
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 4))
 				return false;
@@ -494,7 +472,7 @@ namespace SVG
 			if (wsValue.empty() || NULL == pPrevElement)
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 4))
 				return false;
@@ -570,7 +548,7 @@ namespace SVG
 			if (wsValue.empty() || NULL == pPrevElement)
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 2))
 				return false;
@@ -664,7 +642,7 @@ namespace SVG
 			if (wsValue.empty())
 				return false;
 
-			std::vector<double> arValues = ReadDoubleValues(wsValue);
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
 
 			if (arValues.empty() || 0 != (arValues.size() % 7))
 				return false;

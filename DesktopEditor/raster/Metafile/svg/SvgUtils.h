@@ -29,6 +29,29 @@ namespace SVG
 	class StrUtils
 	{
 	public:
+		static inline std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
+		{
+			std::vector<double> arValues;
+
+			std::wstring::const_iterator oFirstPos = wsValue.begin();
+			std::wstring::const_iterator oSecondPos = oFirstPos;
+
+			while (true)
+			{
+				oFirstPos  = std::find_if(oSecondPos, wsValue.end(), [](const wchar_t& wChar){ return iswdigit(wChar) || L'-' == wChar; });
+
+				if (wsValue.end() == oFirstPos)
+					break;
+
+				oSecondPos = std::find_if(oFirstPos + 1,  wsValue.end(), [](const wchar_t& wChar){ return iswspace(wChar) || L',' == wChar; });
+
+				arValues.push_back(std::stod(std::wstring(oFirstPos, oSecondPos)));
+			}
+
+			return arValues;
+
+		}
+
 		static inline long LongValue(const std::wstring& value)
 		{
 			size_t len = value.length(); const wchar_t* buf = value.c_str();

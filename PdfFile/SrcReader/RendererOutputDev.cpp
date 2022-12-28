@@ -1420,6 +1420,11 @@ namespace PdfReader
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
                 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                #ifndef TEST_AS_EXECUTABLE
+                    wsFileName = pFontInfo->m_wsFontName;
+                #else
+                    wsFileName = (*wsFileName.begin() == L'/' ? NSFile::GetProcessDirectory() + L"/../../../.." : L"") + wsFileName;
+                #endif
                     if (!wsFileName.empty())
                     {
                         wsFileName = FontWasmLoad(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
@@ -3927,7 +3932,6 @@ namespace PdfReader
             }
         }
 
-        float fAscent = pGState->getFontSize();
         if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
         {
         #ifdef BUILDING_WASM_MODULE
@@ -3936,15 +3940,9 @@ namespace PdfReader
             if (!unGid && !wsUnicodeText.empty() && !sFontPath.empty())
             {
                 unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
-                double dSize, dDpiX, dDpiY;
-                int nFaceIndex;
                 long lStyle;
-                m_pRenderer->get_FontSize(&dSize);
-                m_pRenderer->get_FontFaceIndex(&nFaceIndex);
-                m_pRenderer->get_DpiX(&dDpiX);
-                m_pRenderer->get_DpiY(&dDpiY);
                 m_pRenderer->get_FontStyle(&lStyle);
-                m_pFontManager->LoadFontFromFile(sFontPath, nFaceIndex, dSize, dDpiX, dDpiY);
+                m_pFontManager->LoadFontFromFile(sFontPath, 0, 10, 72, 72);
 
                 NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
                 if (pFontFile)
@@ -3959,7 +3957,7 @@ namespace PdfReader
                         std::wstring sName = m_pFontManager->GetApplication()->GetFontBySymbol(lUnicode);
                         int bBold   = lStyle & 0x01 ? 1 : 0;
                         int bItalic = lStyle & 0x02 ? 1 : 0;
-
+                    #ifdef TEST_AS_EXECUTABLE
                         NSFonts::CFontSelectFormat oFormat;
                         oFormat.wsName  = new std::wstring(sName);
                         oFormat.bBold   = new INT(bBold);
@@ -3968,11 +3966,23 @@ namespace PdfReader
 
                         if (pFontInfo)
                         {
-                            std::wstring wsFileName = pFontInfo->m_wsFontPath;
+                            std::wstring wsFileName = (*pFontInfo->m_wsFontPath.begin() == L'/' ? NSFile::GetProcessDirectory() + L"/../../../.." : L"") + pFontInfo->m_wsFontPath;
                             wsFileName = FontWasmLoad(wsFileName, bBold, bItalic);
                             if (!wsFileName.empty())
                                 m_pRenderer->put_FontPath(wsFileName);
                         }
+                    #else
+                        if (!sName.empty())
+                        {
+                            std::wstring wsFileName = FontWasmLoad(sName, bBold, bItalic);
+                            if (wsFileName.empty())
+                            {
+                                m_pFontList->Remove(*pGState->getFont()->getID());
+                                return;
+                            }
+                            m_pRenderer->put_FontPath(wsFileName);
+                        }
+                    #endif
                     }
                 }
             }

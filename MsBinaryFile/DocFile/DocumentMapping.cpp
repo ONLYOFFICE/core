@@ -1833,10 +1833,10 @@ namespace DocFileFormat
 			{
 				desc->bUsed = true;
 				m_pXmlWriter->WriteNodeBegin( L"w:footnoteReference", true );
-				if (desc->aFtnIdx == 0)
-				{
-					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-				}
+				//if (desc->aFtnIdx == 0)
+				//{
+				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				//}
 				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_footnoteNr++ ) );
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}
@@ -1853,10 +1853,10 @@ namespace DocFileFormat
 			{
 				desc->bUsed = true;
 				m_pXmlWriter->WriteNodeBegin( L"w:endnoteReference", true );
-				if (desc->aEndIdx == 0)
-				{
-					m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
-				}
+				//if (desc->aEndIdx == 0)
+				//{
+				//	m_pXmlWriter->WriteAttribute( L"w:customMarkFollows", L"1");
+				//}
 				m_pXmlWriter->WriteAttribute( L"w:id", FormatUtils::IntToWideString(_endnoteNr++ ));
 				m_pXmlWriter->WriteNodeEnd( L"", true );
 			}

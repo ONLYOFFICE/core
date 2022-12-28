@@ -186,10 +186,11 @@ int main()
 	oWorker.m_bIsNeedThumbnails = false;
 
 	if (!NSDirectory::Exists(oWorker.m_sDirectory))
+	{
 		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
-
-	NSFonts::IApplicationFonts* pFonts = oWorker.Check();
-	RELEASEINTERFACE(pFonts);
+		NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+		RELEASEINTERFACE(pFonts);
+	}
 
 	// INITIALIZE FONTS
 	if (true)
@@ -241,7 +242,6 @@ int main()
 	nLength -= 4;
 
 	int nPagesCount = 0;
-
 	int nTestPage = 0;
 	int nWidth = 100;
 	int nHeight = 100;
@@ -251,8 +251,8 @@ int main()
 		nPagesCount = READ_INT(pInfo + 4);
 		if (nPagesCount > 0)
 		{
-			int nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
-			int nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
+			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
+			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
 			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
 			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << std::endl;
 

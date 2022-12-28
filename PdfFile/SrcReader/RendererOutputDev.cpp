@@ -1374,15 +1374,12 @@ namespace PdfReader
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
                 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-
-				#ifdef BUILDING_WASM_MODULE
-					if (NSWasm::IsJSEnv())
-						 wsFileName = pFontInfo->m_wsFontName;
-				#endif
+                    if (NSWasm::IsJSEnv())
+                        wsFileName = pFontInfo->m_wsFontName;
 
                     if (!wsFileName.empty())
                     {
-						wsFileName = NSWasm::LoadFont(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
+                        wsFileName = NSWasm::LoadFont(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
                         if (wsFileName.empty())
                         {
                             m_pFontList->Remove(*pFont->getID());

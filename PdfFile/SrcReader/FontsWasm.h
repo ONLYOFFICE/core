@@ -44,6 +44,7 @@ EM_JS(int, js_free_id, (unsigned char* data), {
 #endif
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace NSWasm
 {
@@ -92,4 +93,4 @@ namespace NSWasm
 	}
 }
 
-#endif // _PDF_READER_RENDERER_OUTPUTDEV_H
+#endif // _FONTS_WASM_H

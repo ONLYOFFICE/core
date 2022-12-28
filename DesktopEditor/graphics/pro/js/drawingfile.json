@@ -31,6 +31,7 @@
 		"_GetStructure",
 		"_InitializeFontsBin",
 		"_InitializeFontsBase64",
+		"_InitializeFontsRanges",
 		"_SetFontBinary",
 		"_IsFontBinaryExist",
 		"_DestroyTextInfo",

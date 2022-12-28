@@ -8,7 +8,7 @@ CONFIG += console
 CONFIG += object_parallel_to_source
 CONFIG -= app_bundle
 
-DEFINES += TEST_AS_EXECUTABLE \
+DEFINES += TEST_CPP_BINARY \
     GRAPHICS_NO_USE_DYNAMIC_LIBRARY \
     BUILDING_WASM_MODULE \
     CMAP_USE_MEMORY \
@@ -651,6 +651,7 @@ HEADERS +=\
     $$PDF_ROOT_DIR/SrcReader/Adaptors.h \
     $$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
     $$PDF_ROOT_DIR/SrcReader/GfxClip.h \
+    $$PDF_ROOT_DIR/SrcReader/FontsWasm.h \
     $$PDF_ROOT_DIR/PdfReader.h \
     $$PDF_ROOT_DIR/PdfFile.h
 

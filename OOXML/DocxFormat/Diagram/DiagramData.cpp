@@ -948,6 +948,27 @@ namespace OOX
 			{
 				m_arrItems.push_back(new Diagram::CPt(oReader));
 			}
+			else if (L"mc:AlternateContent" == sName)
+			{
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					std::wstring strName = oReader.GetName();
+
+					if (oReader.IsEmptyNode())
+						continue;
+
+					if (strName == L"mc:Choice")
+					{
+						fromXML(oReader);
+						break;
+					}
+					else if (strName == L"mc:Fallback")
+					{
+						fromXML(oReader);
+					}
+				}
+			}
 		}
 	}
 

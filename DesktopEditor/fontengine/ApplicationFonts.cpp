@@ -40,20 +40,6 @@
 #include "../common/ByteBuilder.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
 
-#ifdef BUILDING_WASM_MODULE
-#include "../graphics/pro/js/wasm/src/serialize.h"
-#ifndef TEST_AS_EXECUTABLE
-#include "emscripten.h"
-EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
-    return self.AscViewer.CheckStreamId(data, status);
-});
-EM_JS(int, js_free_id, (unsigned char* data), {
-    self.AscViewer.Free(data);
-    return 1;
-});
-#endif
-#endif
-
 #ifndef min
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
@@ -1116,40 +1102,6 @@ NSFonts::CFontInfo* CFontList::GetByParams(NSFonts::CFontSelectFormat& oSelect, 
         pSelectCorrection->Restore(oSelect);
         RELEASEOBJECT(pSelectCorrection);
     }
-
-#ifdef BUILDING_WASM_MODULE
-    if (pInfoMin && L"" != pInfoMin->m_wsFontPath && !NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(pInfoMin->m_wsFontPath))
-    {
-    #ifndef TEST_AS_EXECUTABLE
-        BYTE nStatus = 0;
-        NSWasm::CData oRes;
-        oRes.SkipLen();
-        std::string sNameA = U_TO_UTF8(pInfoMin->m_wsFontName);
-        oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
-        oRes.AddInt(pInfoMin->m_bBold);
-        oRes.AddInt(pInfoMin->m_bItalic);
-        oRes.WriteLen();
-        char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
-        if (!nStatus)
-        {
-            js_free_id((unsigned char*)pFontId);
-            return NULL;
-        }
-        else
-        {
-            std::string wsFileNameA(pFontId);
-            pInfoMin->m_wsFontPath = UTF8_TO_U(wsFileNameA);
-        }
-        js_free_id((unsigned char*)pFontId);
-    #else
-        // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками
-        DWORD dwSize = 0;
-        BYTE* pData = NULL;
-        if (NSFile::CFileBinary::ReadAllBytes(pInfoMin->m_wsFontPath, &pData, dwSize))
-            NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(pInfoMin->m_wsFontPath, pData, (LONG)dwSize, true);
-    #endif
-    }
-#endif
 
     return pInfoMin;
 }

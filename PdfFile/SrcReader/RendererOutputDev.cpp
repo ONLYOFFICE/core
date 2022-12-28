@@ -58,6 +58,16 @@
 #define FONTS_USE_AFM_SETTINGS
 #else
 #define FONTS_USE_ONLY_MEMORY_STREAMS
+#ifndef TEST_AS_EXECUTABLE
+#include "emscripten.h"
+EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
+    return self.AscViewer.CheckStreamId(data, status);
+});
+EM_JS(int, js_free_id, (unsigned char* data), {
+    self.AscViewer.Free(data);
+    return 1;
+});
+#endif
 #endif
 
 #if defined(_MSC_VER)
@@ -230,6 +240,43 @@ public:
 static int readFromMemoryStream(void* data)
 {
     return ((CMemoryFontStream*)data)->getChar();
+}
+
+std::wstring FontWasmLoad(const std::wstring& sFontPath, int bBold, int bItalic)
+{
+#ifdef BUILDING_WASM_MODULE
+#ifndef TEST_AS_EXECUTABLE
+    BYTE nStatus = 0;
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+    std::string sNameA = U_TO_UTF8(sFontPath);
+    oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
+    oRes.AddInt(bBold);
+    oRes.AddInt(bItalic);
+    oRes.WriteLen();
+    char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
+    std::wstring sRes;
+    if (nStatus)
+    {
+        std::string wsFileNameA(pFontId);
+        sRes = UTF8_TO_U(wsFileNameA);
+    }
+    js_free_id((unsigned char*)pFontId);
+    return sRes;
+#else
+    // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками
+    if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath))
+    {
+        DWORD dwSize = 0;
+        BYTE* pData = NULL;
+        if (NSFile::CFileBinary::ReadAllBytes(sFontPath, &pData, dwSize))
+            NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(sFontPath, pData, (LONG)dwSize, true);
+        else
+            return std::wstring();
+    }
+    return sFontPath;
+#endif
+#endif
 }
 
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial)
@@ -1213,7 +1260,7 @@ namespace PdfReader
                     }
                 }
             }
-        #ifndef BUILDING_WASM_MODULE
+        #ifndef FONTS_USE_ONLY_MEMORY_STREAMS
             else if (PdfReader::GetBaseFont(wsFontBaseName, pData14, nSize14))
             {
                 FILE* pFile = NULL;
@@ -1372,7 +1419,18 @@ namespace PdfReader
                     wsFileName = pFontInfo->m_wsFontPath;
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
-                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE) || defined(FONTS_USE_ONLY_MEMORY_STREAMS)
+                #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
+                    if (!wsFileName.empty())
+                    {
+                        wsFileName = FontWasmLoad(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
+                        if (wsFileName.empty())
+                        {
+                        #ifndef TEST_AS_EXECUTABLE
+                            m_pFontList->Remove(*pFont->getID());
+                            return;
+                        #endif
+                        }
+                    }
                     oMemoryFontStream.fromStream(wsFileName);
                 #endif
 
@@ -1380,10 +1438,6 @@ namespace PdfReader
                 }
                 else // В крайнем случае, в данном шрифте просто не пишем ничего
                 {
-                #if defined(BUILDING_WASM_MODULE) && !defined(TEST_AS_EXECUTABLE)
-                    m_pFontList->Remove(*pFont->getID());
-                    return;
-                #endif
                     pEntry->bAvailable = true;
                     return;
                 }
@@ -3876,6 +3930,54 @@ namespace PdfReader
         float fAscent = pGState->getFontSize();
         if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
         {
+        #ifdef BUILDING_WASM_MODULE
+            std::wstring sFontPath;
+            m_pRenderer->get_FontPath(&sFontPath);
+            if (!unGid && !wsUnicodeText.empty() && !sFontPath.empty())
+            {
+                unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
+                double dSize, dDpiX, dDpiY;
+                int nFaceIndex;
+                long lStyle;
+                m_pRenderer->get_FontSize(&dSize);
+                m_pRenderer->get_FontFaceIndex(&nFaceIndex);
+                m_pRenderer->get_DpiX(&dDpiX);
+                m_pRenderer->get_DpiY(&dDpiY);
+                m_pRenderer->get_FontStyle(&lStyle);
+                m_pFontManager->LoadFontFromFile(sFontPath, nFaceIndex, dSize, dDpiX, dDpiY);
+
+                NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
+                if (pFontFile)
+                {
+                    int nCMapIndex = 0;
+                    int GID = pFontFile->SetCMapForCharCode(lUnicode, &nCMapIndex);
+                    if (GID <= 0 && lUnicode < 0xF000)
+                        GID = pFontFile->SetCMapForCharCode(lUnicode + 0xF000, &nCMapIndex);
+
+                    if (GID <= 0)
+                    {
+                        std::wstring sName = m_pFontManager->GetApplication()->GetFontBySymbol(lUnicode);
+                        int bBold   = lStyle & 0x01 ? 1 : 0;
+                        int bItalic = lStyle & 0x02 ? 1 : 0;
+
+                        NSFonts::CFontSelectFormat oFormat;
+                        oFormat.wsName  = new std::wstring(sName);
+                        oFormat.bBold   = new INT(bBold);
+                        oFormat.bItalic = new INT(bItalic);
+                        NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFormat);
+
+                        if (pFontInfo)
+                        {
+                            std::wstring wsFileName = pFontInfo->m_wsFontPath;
+                            wsFileName = FontWasmLoad(wsFileName, bBold, bItalic);
+                            if (!wsFileName.empty())
+                                m_pRenderer->put_FontPath(wsFileName);
+                        }
+                    }
+                }
+            }
+        #endif
+
             m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
         }
 

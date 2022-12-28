@@ -32,17 +32,12 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Vml.h"
 #include "../../XlsxFormat/Controls/Controls.h"
 
-#include "VmlWord.h"
 #include "Shape.h"
 
 #include "../WritingElement.h"
-#include "../RId.h"
-
 #include "VmlOfficeDrawing.h"
 
 namespace OOX

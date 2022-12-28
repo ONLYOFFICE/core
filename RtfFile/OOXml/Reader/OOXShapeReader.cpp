@@ -41,6 +41,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/Pic.h"
 #include "../../../OOXML/PPTXFormat/Logic/Shape.h"
 #include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
+#include "../../../OOXML/DocxFormat/Logic/VmlWord.h"
 
 #include "../../../OdfFile/Reader/Format/svg_parser.h"
 #include <boost/algorithm/string.hpp>

@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include <string>
 #include "../Base/Base.h"
 
 namespace SimpleTypes

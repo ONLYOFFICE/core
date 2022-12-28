@@ -32,6 +32,7 @@
 #include "../DocxFlat.h"
 #include "Vml.h"
 #include "VmlOfficeDrawing.h"
+#include "VmlWord.h"
 
 #include "Paragraph.h"
 #include "Annotations.h"

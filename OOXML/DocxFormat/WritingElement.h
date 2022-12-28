@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../MsBinaryFile/XlsFile/Format/Logic/BaseObject.h"
 #include "../Base/SmartPtr.h"
 
 namespace NSBinPptxRW

@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include "../../Common/ComplexTypes.h"
-
 #include "oMathBottomNodes.h"
 #include "OMath.h"
 
@@ -43,7 +41,6 @@
 #include "../Logic/Pict.h"
 #include "../Drawing/Drawing.h"
 #include "../../PPTXFormat/Logic/RunProperties.h"
-
 
 namespace OOX
 {	

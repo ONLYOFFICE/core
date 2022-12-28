@@ -34,12 +34,8 @@
 #define OOX_VML_WORD_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/SimpleTypes_Vml.h"
-
 #include "../WritingElement.h"
-#include "../RId.h"
+#include "../../Common/SimpleTypes_Vml.h"
 
 namespace OOX
 {

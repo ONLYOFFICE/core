@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../Drawing/Drawing.h"
-#include "../../Common/SimpleTypes_Word.h"
 
 #include "VmlOfficeDrawing.h"
 #include "Vml.h"

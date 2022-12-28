@@ -34,16 +34,10 @@
 #define OOX_VML_OFFICE_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
 #include "../../Common/ComplexTypes.h"
-
-#include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Vml.h"
 
 #include "../WritingElement.h"
-#include "../RId.h"
-
 #include "../../PPTXFormat/WrapperWritingElement.h"
 
 namespace OOX

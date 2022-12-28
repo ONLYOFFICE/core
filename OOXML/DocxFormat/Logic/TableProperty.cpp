@@ -1474,7 +1474,9 @@ namespace OOX
 				{
 					if ( oHeaders.GetAt( nIndex, oHeader ) )
 					{
-						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oHeader);
+						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String();
+						*oHead = oHeader;
+
 						if (oHead) m_arrHeaders.push_back( oHead );
 					}
 				}
@@ -1492,7 +1494,9 @@ namespace OOX
 
 				if ( L"w:header" == sName )
 				{
-					ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String(oReader);
+					ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String();
+					*oHead = oReader;
+
 					if (oHead) m_arrHeaders.push_back( oHead );
 				}
 			}

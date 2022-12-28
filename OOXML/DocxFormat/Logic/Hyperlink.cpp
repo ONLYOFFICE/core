@@ -375,7 +375,7 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( L"w:matchSrc" == sName )
-							m_oMatchSrc = new ComplexTypes::Word::CMatchSrc( oItem );
+							m_oMatchSrc = PPTX::CreatePtrXmlContent<ComplexTypes::Word::CMatchSrc>(oItem);
 					}
 				}
 			}

@@ -41,14 +41,6 @@
 namespace ComplexTypes
 {
 #define ComplexTypes_AdditionConstructors(Class) \
-	Class(XmlUtils::CXmlNode& oNode)\
-	{\
-		FromXML( oNode );\
-	}\
-	Class(XmlUtils::CXmlLiteReader& oReader)\
-	{\
-		FromXML( oReader );\
-	}\
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
 		FromXML( (XmlUtils::CXmlNode &)oNode );\

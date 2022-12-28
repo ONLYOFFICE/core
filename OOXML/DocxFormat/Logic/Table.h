@@ -150,7 +150,8 @@ namespace OOX
 					{
 						if ( oGridColNodes.GetAt( nIndex, oGridColNode ) )
 						{
-							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oGridColNode);
+							ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
+							*oGridCol = oGridColNode;
 							if (oGridCol) m_arrGridCol.push_back( oGridCol );
 						}
 					}
@@ -169,7 +170,9 @@ namespace OOX
 						m_oTblGridChange = oReader;
 					else if ( L"w:gridCol" == sName )
 					{
-						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol(oReader);
+						ComplexTypes::Word::CTblGridCol *oGridCol = new ComplexTypes::Word::CTblGridCol();
+						*oGridCol = oReader;
+
 						if (oGridCol) m_arrGridCol.push_back( oGridCol );
 					}
 				}

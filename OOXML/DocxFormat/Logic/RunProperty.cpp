@@ -71,7 +71,7 @@ namespace OOX
 
 				if (L"stylisticSet" == sName)
 				{
-					m_arrItems.push_back(new ComplexTypes::Word::CStylisticSet(oReader));
+					m_arrItems.push_back(PPTX::CreatePtrXmlContent<ComplexTypes::Word::CStylisticSet>(oReader));
 				}
 			}
 		}

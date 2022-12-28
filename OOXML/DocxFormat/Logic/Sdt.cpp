@@ -851,7 +851,9 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItemNode ) )
 					{
-						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oItemNode);
+						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem();
+						*oListItem = oItemNode;
+
 						if (oListItem) m_arrListItem.push_back( oListItem );
 					}
 				}
@@ -875,7 +877,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:listItem" == sName )
 				{
-					ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
+					ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem();
+					*oListItem = oReader;
+
 					m_arrListItem.push_back( oListItem );
 				}
 				else if (L"w:format" == sName)
@@ -1076,7 +1080,9 @@ namespace OOX
 				{
 					if ( oChilds.GetAt( nIndex, oItemNode ) )
 					{
-						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oItemNode);
+						ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem();
+						*oListItem = oItemNode;
+
 						if (oListItem) m_arrListItem.push_back( oListItem );
 					}
 				}
@@ -1095,7 +1101,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:listItem" == sName )
 				{
-					ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem(oReader);
+					ComplexTypes::Word::CSdtListItem *oListItem = new ComplexTypes::Word::CSdtListItem();
+					*oListItem = oReader;
+
 					if (oListItem)m_arrListItem.push_back( oListItem );
 				}
 			}

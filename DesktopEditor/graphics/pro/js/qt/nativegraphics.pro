@@ -8,7 +8,7 @@ CONFIG += console
 CONFIG += object_parallel_to_source
 CONFIG -= app_bundle
 
-DEFINES += TEST_AS_EXECUTABLE \
+DEFINES += TEST_CPP_BINARY \
     GRAPHICS_NO_USE_DYNAMIC_LIBRARY \
     BUILDING_WASM_MODULE \
     CMAP_USE_MEMORY \
@@ -627,7 +627,7 @@ SOURCES += \
     $$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
     $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
     $$PDF_ROOT_DIR/PdfReader.cpp \
-    $$PDF_ROOT_DIR/PdfWriter_empty.cpp \
+	$$PDF_ROOT_DIR/PdfWriter_empty.cpp \
     $$PDF_ROOT_DIR/PdfFile.cpp
 
 HEADERS +=\

@@ -99,7 +99,7 @@ use_external_jpeg2000 {
 #CONFIG += build_viewer_module
 build_viewer_module {
     DEFINES += BUILDING_WASM_MODULE \
-               TEST_AS_EXECUTABLE
+	           TEST_CPP_BINARY
 
     HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
     SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
@@ -201,5 +201,4 @@ HEADERS += PdfFile.h \
 SOURCES += PdfFile.cpp \
            PdfWriter.cpp \
            PdfReader.cpp \
-           OnlineOfficeBinToPdf.cpp \
-           PdfWriter_empty.cpp
+		   OnlineOfficeBinToPdf.cpp

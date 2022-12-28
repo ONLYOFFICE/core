@@ -57,17 +57,8 @@
 #ifndef BUILDING_WASM_MODULE
 #define FONTS_USE_AFM_SETTINGS
 #else
+#include "FontsWasm.h"
 #define FONTS_USE_ONLY_MEMORY_STREAMS
-#ifndef TEST_AS_EXECUTABLE
-#include "emscripten.h"
-EM_JS(char*, js_get_stream_id, (unsigned char* data, unsigned char* status), {
-    return self.AscViewer.CheckStreamId(data, status);
-});
-EM_JS(int, js_free_id, (unsigned char* data), {
-    self.AscViewer.Free(data);
-    return 1;
-});
-#endif
 #endif
 
 #if defined(_MSC_VER)
@@ -240,43 +231,6 @@ public:
 static int readFromMemoryStream(void* data)
 {
     return ((CMemoryFontStream*)data)->getChar();
-}
-
-std::wstring FontWasmLoad(const std::wstring& sFontPath, int bBold, int bItalic)
-{
-#ifdef BUILDING_WASM_MODULE
-#ifndef TEST_AS_EXECUTABLE
-    BYTE nStatus = 0;
-    NSWasm::CData oRes;
-    oRes.SkipLen();
-    std::string sNameA = U_TO_UTF8(sFontPath);
-    oRes.WriteString((unsigned char*)sNameA.c_str(), (unsigned int)sNameA.length());
-    oRes.AddInt(bBold);
-    oRes.AddInt(bItalic);
-    oRes.WriteLen();
-    char* pFontId = js_get_stream_id(oRes.GetBuffer(), &nStatus);
-    std::wstring sRes;
-    if (nStatus)
-    {
-        std::string wsFileNameA(pFontId);
-        sRes = UTF8_TO_U(wsFileNameA);
-    }
-    js_free_id((unsigned char*)pFontId);
-    return sRes;
-#else
-    // пока заглушка - тут надо прочитать в стрим, чтобы дальше правильно сработать с кодировками
-    if (!NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFontPath))
-    {
-        DWORD dwSize = 0;
-        BYTE* pData = NULL;
-        if (NSFile::CFileBinary::ReadAllBytes(sFontPath, &pData, dwSize))
-            NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Add(sFontPath, pData, (LONG)dwSize, true);
-        else
-            return std::wstring();
-    }
-    return sFontPath;
-#endif
-#endif
 }
 
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial)
@@ -1420,20 +1374,19 @@ namespace PdfReader
                     eFontType  = pFont->isCIDFont() ? fontCIDType2 : fontTrueType;
 
                 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
-                #ifndef TEST_AS_EXECUTABLE
-                    wsFileName = pFontInfo->m_wsFontName;
-                #else
-                    wsFileName = (*wsFileName.begin() == L'/' ? NSFile::GetProcessDirectory() + L"/../../../.." : L"") + wsFileName;
-                #endif
+
+				#ifdef BUILDING_WASM_MODULE
+					if (NSWasm::IsJSEnv())
+						 wsFileName = pFontInfo->m_wsFontName;
+				#endif
+
                     if (!wsFileName.empty())
                     {
-                        wsFileName = FontWasmLoad(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
+						wsFileName = NSWasm::LoadFont(wsFileName, pFontInfo->m_bBold, pFontInfo->m_bItalic);
                         if (wsFileName.empty())
                         {
-                        #ifndef TEST_AS_EXECUTABLE
                             m_pFontList->Remove(*pFont->getID());
                             return;
-                        #endif
                         }
                     }
                     oMemoryFontStream.fromStream(wsFileName);
@@ -3957,32 +3910,28 @@ namespace PdfReader
                         std::wstring sName = m_pFontManager->GetApplication()->GetFontBySymbol(lUnicode);
                         int bBold   = lStyle & 0x01 ? 1 : 0;
                         int bItalic = lStyle & 0x02 ? 1 : 0;
-                    #ifdef TEST_AS_EXECUTABLE
-                        NSFonts::CFontSelectFormat oFormat;
-                        oFormat.wsName  = new std::wstring(sName);
-                        oFormat.bBold   = new INT(bBold);
-                        oFormat.bItalic = new INT(bItalic);
-                        NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFormat);
 
-                        if (pFontInfo)
-                        {
-                            std::wstring wsFileName = (*pFontInfo->m_wsFontPath.begin() == L'/' ? NSFile::GetProcessDirectory() + L"/../../../.." : L"") + pFontInfo->m_wsFontPath;
-                            wsFileName = FontWasmLoad(wsFileName, bBold, bItalic);
-                            if (!wsFileName.empty())
-                                m_pRenderer->put_FontPath(wsFileName);
-                        }
-                    #else
-                        if (!sName.empty())
-                        {
-                            std::wstring wsFileName = FontWasmLoad(sName, bBold, bItalic);
-                            if (wsFileName.empty())
-                            {
-                                m_pFontList->Remove(*pGState->getFont()->getID());
-                                return;
-                            }
-                            m_pRenderer->put_FontPath(wsFileName);
-                        }
-                    #endif
+						if (!sName.empty())
+						{
+							if (!NSWasm::IsJSEnv())
+							{
+								NSFonts::CFontSelectFormat oFormat;
+								oFormat.wsName  = new std::wstring(sName);
+								oFormat.bBold   = new INT(bBold);
+								oFormat.bItalic = new INT(bItalic);
+								NSFonts::CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFormat);
+
+								sName = pFontInfo->m_wsFontPath;
+							}
+
+							std::wstring wsFileName = NSWasm::LoadFont(sName, bBold, bItalic);
+							if (wsFileName.empty())
+							{
+								m_pFontList->Remove(*pGState->getFont()->getID());
+								return;
+							}
+							m_pRenderer->put_FontPath(wsFileName);
+						}
                     }
                 }
             }

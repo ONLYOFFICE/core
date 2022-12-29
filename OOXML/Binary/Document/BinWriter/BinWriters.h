@@ -59,6 +59,7 @@
 #include "../../../DocxFormat/Logic/Annotations.h"
 #include "../../../DocxFormat/Logic/Hyperlink.h"
 #include "../../../DocxFormat/Logic/FldSimple.h"
+#include "../../../DocxFormat/Logic/DocParts.h"
 
 namespace NSBinPptxRW
 {

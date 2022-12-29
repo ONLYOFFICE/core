@@ -31,9 +31,7 @@
  */
 #pragma once
 
-
 #include "IFileContainer.h"
-#include "FileTypes.h"
 #include "../Common/SimpleTypes_Word.h"
 #include "../../DesktopEditor/common/File.h"
 

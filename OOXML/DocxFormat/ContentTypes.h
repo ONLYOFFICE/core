@@ -35,10 +35,8 @@
 
 #include "../SystemUtility/SystemUtility.h"
 
-#include "FileType.h"
 #include "WritingElement.h"
 #include <boost/unordered_map.hpp>
-
 
 namespace OOX
 {

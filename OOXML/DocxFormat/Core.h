@@ -31,10 +31,8 @@
  */
 #pragma once
 
-#include "Docx.h"
 #include "File.h"
 #include "../Base/Nullable.h"
-#include "../../DesktopEditor/common/SystemUtils.h"
 
 namespace PPTX
 {

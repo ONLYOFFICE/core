@@ -41,9 +41,9 @@ namespace OOX
 	class CSettingsCustom;
 	class CSettings;
 }
-namespace BinDocxRW {
 
-
+namespace BinDocxRW
+{
 class Binary_CommonReader
 {
 protected:

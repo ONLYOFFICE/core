@@ -221,6 +221,9 @@ namespace MetaFile
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 
+		void AddClip(NodeAttributes &arAttributes);
+		void UpdateClip();
+
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};

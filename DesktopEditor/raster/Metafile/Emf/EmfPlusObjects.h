@@ -7,6 +7,12 @@
 #include "../../../common/File.h"
 #include "../Common/MetaFileObjects.h"
 
+#ifndef MININT32
+#define MAXUINT32   ((UINT32)~((UINT32)0))
+#define MAXINT32    ((INT32)(MAXUINT32 >> 1))
+#define MININT32    ((INT32)~MAXINT32)
+#endif
+
 namespace MetaFile
 {
 	typedef enum
@@ -417,7 +423,8 @@ namespace MetaFile
 		{
 			TRectD oRect;
 
-			oRect.dRight = oRect.dBottom = 0;
+			oRect.dRight = oRect.dBottom = MININT32;
+			oRect.dLeft  = oRect.dTop    = MAXINT32;
 
 			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
 			{

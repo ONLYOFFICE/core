@@ -9,10 +9,10 @@
 #include <algorithm>
 #include <cmath>
 
-#ifndef MININT8
-#define MAXUINT8    ((unsigned char)~((unsigned char)0))
-#define MAXINT8     ((char)(MAXUINT8 >> 1))
-#define MININT8     ((char)~MAXINT8)
+#ifndef MININT32
+#define MAXUINT32   ((UINT32)~((UINT32)0))
+#define MAXINT32    ((INT32)(MAXUINT32 >> 1))
+#define MININT32    ((INT32)~MAXINT32)
 #endif
 
 namespace MetaFile
@@ -1067,7 +1067,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddStroke(arAttributes);
-		AddFill(arAttributes);
+		AddFill(arAttributes, std::fabs(oBounds.lRight - oBounds.lLeft), std::fabs(oBounds.lBottom - oBounds.lTop));
 		AddTransform(arAttributes);
 
 		NodeAttributes arGAttributes;
@@ -1542,7 +1542,7 @@ namespace MetaFile
 
 		TRectD oPathRect = pPath->ConvertToRect();
 
-		AddFill(arAttributes, oPathRect.dRight - oPathRect.dLeft, oPathRect.dBottom - oPathRect.dTop);
+		AddFill(arAttributes, std::fabs(oPathRect.dRight - oPathRect.dLeft), std::fabs(oPathRect.dBottom - oPathRect.dTop));
 		AddTransform(arAttributes);
 
 		NodeAttributes arGAttributes;

@@ -4,10 +4,10 @@
 #include <algorithm>
 #include <cmath>
 
-#ifndef MININT8
-#define MAXUINT8    ((unsigned char)~((unsigned char)0))
-#define MAXINT8     ((char)(MAXUINT8 >> 1))
-#define MININT8     ((char)~MAXINT8)
+#ifndef MININT32
+#define MAXUINT32   ((UINT32)~((UINT32)0))
+#define MAXINT32    ((INT32)(MAXUINT32 >> 1))
+#define MININT32    ((INT32)~MAXINT32)
 #endif
 
 namespace MetaFile
@@ -622,18 +622,18 @@ namespace MetaFile
 
 	std::wstring CInterpretatorSvgBase::CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight)
 	{
-		if (NULL == m_pParser || NULL == m_pParser->GetBrush() || NULL == m_pParser->GetPen())
+		if (NULL == m_pParser || NULL == m_pParser->GetBrush())
 			return std::wstring();
 
-		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+		double dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 
-		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+		if (NULL != m_pParser->GetPen())
+		{
+			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-		std::wstring wsStrokeWidth = ConvertToWString(dStrokeWidth);
-		std::wstring wsValue  = ConvertToWString(dStrokeWidth * 8., 6);
-		std::wstring wsValueW = ((0 != dWidth)  ? ConvertToWString((dStrokeWidth * 8.) / dWidth,  6) : L"1");
-		std::wstring wsValueH = ((0 != dHeight) ? ConvertToWString((dStrokeWidth * 8.) / dHeight, 6) : L"1");
+			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+		}
 
 		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
 		std::wstring wsBgColor;
@@ -663,7 +663,7 @@ namespace MetaFile
 
 	std::wstring CInterpretatorSvgBase::CreateDibPatternStyle(IBrush *pBrush)
 	{
-		if (NULL == m_pParser || NULL == pBrush || NULL == m_pParser->GetPen())
+		if (NULL == m_pParser || NULL == pBrush)
 			return std::wstring();
 
 		BYTE* pBuffer = NULL;
@@ -704,10 +704,15 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+		double dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 
-		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+		if (NULL != m_pParser->GetPen())
+		{
+			dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
+
+			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
+		}
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
@@ -759,8 +764,6 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		double dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
-
 		std::wstring wsWidth  = ConvertToWString(oFrame.get_Width()  / m_pParser->GetTransform()->M11);
 		std::wstring wsHeight = ConvertToWString(oFrame.get_Height() / m_pParser->GetTransform()->M22);
 
@@ -799,13 +802,13 @@ namespace MetaFile
 		{
 			wsStyleId = L"RADIALGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
 
-			double dX = MININT8, dY = MININT8;
+			double dX = MININT32, dY = MININT32;
 
 			pBrush->GetCenterPoint(dX, dY);
 
 			std::wstring wsIndlude;
 
-			if (dX != MININT8 || dY != MININT8)
+			if (dX != MININT32 || dY != MININT32)
 			{
 				double dLeft, dTop, dWidth, dHeight;
 
@@ -1374,8 +1377,8 @@ namespace MetaFile
 
 		m_oStringBuilder.WriteNodeBegin(L"pattern", true);
 		m_oStringBuilder.WriteAttribute(L"id", wsPatternId);
-		m_oStringBuilder.WriteAttribute(L"width", ((0 != m_dWidth)  ? ConvertToWString((m_dStrokeWidth * 8.) / m_dWidth) : L"1"));
-		m_oStringBuilder.WriteAttribute(L"height", ((0 != m_dHeight)  ? ConvertToWString((m_dStrokeWidth * 8.) / m_dHeight) : L"1"));
+		m_oStringBuilder.WriteAttribute(L"width",  ((0 != m_dWidth)  ? ConvertToWString((m_dStrokeWidth * 8.) / m_dWidth)  : L"1"));
+		m_oStringBuilder.WriteAttribute(L"height", ((0 != m_dHeight) ? ConvertToWString((m_dStrokeWidth * 8.) / m_dHeight) : L"1"));
 		m_oStringBuilder.WriteAttribute(L"patternUnits", L"objectBoundingBox");
 		m_oStringBuilder.WriteAttribute(L"shape-rendering", L"crispEdges");
 		m_oStringBuilder.WriteNodeEnd(L"pattern", true, false);

@@ -36,8 +36,6 @@
 #include <string>
 #include <vector>
 
-#include "../../../OOXML/SystemUtility/SystemUtility.h"
-
 class TxtFile
 {
 public:

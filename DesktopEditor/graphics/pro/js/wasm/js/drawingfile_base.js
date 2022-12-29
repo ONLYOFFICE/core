@@ -416,15 +416,15 @@
 
 		// ranges
 		let rangesBuffer = new CBinaryWriter();
-		let ranges = AscFonts.FontPickerByCharacter.Ranges;
+		let ranges = AscFonts.getSymbolRanges();
 
 		let rangesCount = ranges.length;
 		rangesBuffer.writeUint(rangesCount);
 		for (let i = 0; i < rangesCount; i++)
 		{
-			rangesBuffer.writeString(ranges[i].Name);
-			rangesBuffer.writeUint(ranges[i].Start);
-			rangesBuffer.writeUint(ranges[i].End);
+			rangesBuffer.writeString(ranges[i].getName());
+			rangesBuffer.writeUint(ranges[i].getStart());
+			rangesBuffer.writeUint(ranges[i].getEnd());
 		}
 
 		let rangesFinalLen = rangesBuffer.dataSize;

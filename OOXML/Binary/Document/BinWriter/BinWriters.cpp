@@ -49,6 +49,9 @@
 #include "../../../../HtmlFile2/htmlfile2.h"
 #include "../../../../RtfFile/Format/ConvertationManager.h"
 
+#include "../../../DocxFormat/App.h"
+#include "../../../DocxFormat/Core.h"
+
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Logic/AlternateContent.h"
 #include "../../../DocxFormat/Logic/Dir.h"

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,12 +29,9 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
 #pragma once
 #include "../PptShape.h"
 
-#ifdef USE_CUSTOM_SHAPES
-	DEFINE_SHAPE_CLASS(CSeal32Type, CCustomShape)
-#else
-	DEFINE_SHAPE_CLASS(CSeal32Type, CPPTShape)
-#endif
+// 60
+DEFINE_SHAPE_CLASS(CSeal32Type, CPPTShape)
+

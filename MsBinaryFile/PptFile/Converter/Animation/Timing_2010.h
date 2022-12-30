@@ -100,6 +100,7 @@ namespace PPT {
 			void FillCBhvr(
 				CRecordTimeBehaviorContainer *pBhvr,
 				PPTX::Logic::CBhvr &oBhvr);
+            void FillTgtEl(PPTX::Logic::TgtEl& tgtEl, CRecordClientVisualElementContainer clientVisualElement);
 			void FillCBhvr(
 				PPTX::Logic::CBhvr &oBhvr, int dur,
 				UINT spid, std::wstring attrname, int delay);
@@ -168,7 +169,7 @@ namespace PPT {
 			PPTX::Logic::BldP   *m_currentBldP = nullptr;
 
 			int cTnId = 1;
-			int cTNLevel = TimeNodeLevel::zero;
+            int cTNLevel = TimeNodeLevel::zero;
 		};
 
 	}

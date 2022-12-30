@@ -76,7 +76,7 @@ void Timing_2010::ConvertBldLst(PPTX::Logic::Timing &timimg, CRecordBuildListCon
         PPTX::Logic::BuildNodeBase oBuildNodeBase;
         auto* pSub = dynamic_cast<CRecordBuildListSubContainer*>(pDBC);
         if (pSub == nullptr)
-            continue;
+            throw TimingExeption("Cannot read BuildListSubContainer");
         if (slideShapes.count(pSub->buildAtom.m_nShapeIdRef) == false)
             continue;
 
@@ -396,33 +396,7 @@ void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CB
         }
     }
 
-    if (pBhvr->m_oClientVisualElement.m_bVisualShapeAtom)
-    {
-        UINT spid = pBhvr->
-                m_oClientVisualElement.
-                m_oVisualShapeAtom.m_nObjectIdRef;
-
-        if (!oBhvr.tgtEl.spTgt.IsInit())
-        {
-            oBhvr.tgtEl.spTgt = new PPTX::Logic::SpTgt;
-            oBhvr.tgtEl.spTgt->spid = std::to_wstring(spid);
-        }
-
-        if (m_currentBldP)
-        {
-            m_currentBldP->spid =
-                    oBhvr.tgtEl.spTgt->spid;
-        }
-        if (pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2 != 0xFFFFFFFF &&
-                pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1 != 0xFFFFFFFF)
-        {
-            oBhvr.tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
-            oBhvr.tgtEl.spTgt->txEl->charRg = false;
-            oBhvr.tgtEl.spTgt->txEl->st     = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData1;
-            oBhvr.tgtEl.spTgt->txEl->end    = pBhvr->m_oClientVisualElement.m_oVisualShapeAtom.m_nData2;
-        }
-    }
-
+    FillTgtEl(oBhvr.tgtEl, pBhvr->m_oClientVisualElement);
 
     if (pBhvr->m_pPropertyList == nullptr)
         return;
@@ -461,6 +435,57 @@ void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CB
         default:
             break;
         }
+    }
+}
+
+void Timing_2010::FillTgtEl(PPTX::Logic::TgtEl &tgtEl, CRecordClientVisualElementContainer clientVisualElement)
+{
+    if (!clientVisualElement.m_bVisualShapeAtom)
+        return;
+
+    if (clientVisualElement.m_oVisualShapeAtom.m_nData2 == 0xFFFFFFFF ||
+        clientVisualElement.m_oVisualShapeAtom.m_nData1 == 0xFFFFFFFF)
+        return;
+
+    if (clientVisualElement.m_oVisualShapeAtom.m_RefType != TL_ET_ShapeType)
+        return; // todo insert next types here
+
+    UINT spid = clientVisualElement.
+            m_oVisualShapeAtom.m_nObjectIdRef;
+
+    if (!tgtEl.spTgt.IsInit())
+    {
+        tgtEl.spTgt = new PPTX::Logic::SpTgt;
+        tgtEl.spTgt->spid = std::to_wstring(spid);
+    }
+
+    if (m_currentBldP)
+    {
+        m_currentBldP->spid =
+                tgtEl.spTgt->spid;
+    }
+
+    if (clientVisualElement.m_oVisualShapeAtom.m_Type == TL_TVET_TextRange)
+    {
+        tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
+        tgtEl.spTgt->txEl->charRg = false;
+        tgtEl.spTgt->txEl->st     = clientVisualElement.m_oVisualShapeAtom.m_nData1;
+        tgtEl.spTgt->txEl->end    = clientVisualElement.m_oVisualShapeAtom.m_nData2;
+    } else if (clientVisualElement.m_oVisualShapeAtom.m_Type == TL_TVET_ChartElement)
+    {
+        tgtEl.spTgt->type = new PPTX::Limit::TLChartSubElement;
+        std::wstring chartBA;
+        switch (clientVisualElement.m_oVisualShapeAtom.m_nData1) {
+        case 0: chartBA = L"gridLegend"; break;
+        case 1: chartBA = L"series"; break;
+        case 2: chartBA = L"category"; break;
+        case 3: chartBA = L"ptInSeries"; break;
+        case 4: chartBA = L"ptInCategory"; break;
+        case 5: chartBA = L"gridLegend"; break;
+        }
+        tgtEl.spTgt->type->set(chartBA);
+        if (clientVisualElement.m_oVisualShapeAtom.m_nData2)
+            tgtEl.spTgt->lvl = clientVisualElement.m_oVisualShapeAtom.m_nData2;
     }
 }
 
@@ -787,7 +812,7 @@ void Timing_2010::ConvertCTnStCondLst(CRecordExtTimeNodeContainer *pETNC, PPTX::
 
 void Timing_2010::FillCond(CRecordTimeConditionContainer *oldCond, PPTX::Logic::Cond &cond)
 {
-    if (oldCond->m_oTimeConditionAtom.m_nTimeDelay != -1)
+    if (oldCond->m_oTimeConditionAtom.m_nTimeDelay != 0xFFFFFFFF)
         cond.delay = std::to_wstring(oldCond->m_oTimeConditionAtom.m_nTimeDelay);
     else
         cond.delay = L"indefinite";
@@ -1111,7 +1136,7 @@ void Timing_2010::FillCTnHeadArgs(CRecordExtTimeNodeContainer *pETNC, PPTX::Logi
     // Write dur
     if (oTimeNodeAtom.m_fDurationProperty)
     {
-        if (oTimeNodeAtom.m_nDuration == -1)
+        if (oTimeNodeAtom.m_nDuration == 0xFFFFFFFF)
             oCTn.dur = L"indefinite";
         else
             oCTn.dur = std::to_wstring(oTimeNodeAtom.m_nDuration);

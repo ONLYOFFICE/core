@@ -45,25 +45,25 @@ while (oReader.ReadNextSiblingNode(nParentDepth))\
 	std::wstring sName = oReader.GetName();\
 	WritingElement *pItem = NULL;\
 	if (L"dgm:alg" == sName)\
-		pItem = new CAlg(oReader);\
+		AssignPtrXmlContent(pItem, CAlg, oReader)\
 	else if (L"dgm:choose" == sName)\
-		pItem = new CChoose(oReader);\
+		AssignPtrXmlContent(pItem, CChoose, oReader)\
 	else if (L"dgm:constrLst" == sName)\
-		pItem = new CConstrLst(oReader);\
+		AssignPtrXmlContent(pItem, CConstrLst, oReader)\
 	else if (L"dgm:forEach" == sName)\
-		pItem = new CForEach(oReader);\
+		AssignPtrXmlContent(pItem, CForEach, oReader)\
 	else if (L"dgm:layoutNode" == sName)\
-		pItem = new CLayoutNode(oReader);\
+		AssignPtrXmlContent(pItem, CLayoutNode, oReader)\
 	else if (L"dgm:presOf" == sName)\
-		pItem = new CPresOf(oReader);\
+		AssignPtrXmlContent(pItem, CPresOf, oReader)\
 	else if (L"dgm:ruleLst" == sName)\
-		pItem = new CRuleLst(oReader);\
+		AssignPtrXmlContent(pItem, CRuleLst, oReader)\
 	else if (L"dgm:shape" == sName)\
-		pItem = new CShape(oReader);\
+		AssignPtrXmlContent(pItem, CShape, oReader)\
 	else if (L"dgm:varLst" == sName)\
-		pItem = new CVariableList(oReader);\
+		AssignPtrXmlContent(pItem, CVariableList, oReader)\
 	else if (L"dgm:extLst" == sName)\
-		pItem = new OOX::Drawing::COfficeArtExtensionList(oReader);\
+		AssignPtrXmlContent(pItem, OOX::Drawing::COfficeArtExtensionList, oReader)\
 	if (pItem)\
 		m_arrItems.push_back(pItem);\
 }}
@@ -1010,7 +1010,9 @@ namespace OOX
 			
 			if (L"dgm:if" == sName)
 			{
-				OOX::Diagram::CIf *pItem = new Diagram::CIf(oReader);
+				OOX::Diagram::CIf *pItem = new Diagram::CIf();
+				*pItem = oReader;
+
 				if (pItem)
 					m_arrItems.push_back(pItem); 
 			}
@@ -1119,7 +1121,9 @@ namespace OOX
 
 			if (L"dgm:param" == sName)
 			{
-				CParam* pItem = new CParam(oReader);
+				CParam* pItem = new CParam();
+				*pItem = oReader;
+
 				if (pItem)
 					m_arrItems.push_back(pItem);
 			}
@@ -1223,7 +1227,9 @@ namespace OOX
 
 			if (L"dgm:constr" == sName)
 			{
-				CConstraint* pItem = new CConstraint(oReader);
+				CConstraint* pItem = new CConstraint();
+				*pItem = oReader;
+
 				if (pItem)
 					m_arrItems.push_back(pItem);
 			}
@@ -1295,7 +1301,9 @@ namespace OOX
 
 			if (L"dgm:rule" == sName)
 			{
-				CRule* pItem = new CRule(oReader);
+				CRule* pItem = new CRule();
+				*pItem = oReader;
+
 				if (pItem)
 					m_arrItems.push_back(pItem);
 			}
@@ -1367,7 +1375,9 @@ namespace OOX
 
 			if (L"dgm:adj" == sName)
 			{
-				CShapeAdjust* pItem = new CShapeAdjust(oReader);
+				CShapeAdjust* pItem = new CShapeAdjust();
+				*pItem = oReader;
+
 				if (pItem)
 					m_arrItems.push_back(pItem);
 			}

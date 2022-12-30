@@ -35,7 +35,7 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../XlsxFormat/WritingElement.h"
+
 namespace OOX
 {
 	namespace Logic
@@ -46,7 +46,7 @@ namespace OOX
 		class CAlternateContent : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAlternateContent)
+			WritingElement_AdditionMethods(CAlternateContent)
 
 			CAlternateContent(OOX::Document *pMain = NULL);
 			virtual ~CAlternateContent();

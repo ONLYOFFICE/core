@@ -39,7 +39,6 @@ class CActionButtonNextType : public CCustomShape
 {
 public:
 	CActionButtonNextType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

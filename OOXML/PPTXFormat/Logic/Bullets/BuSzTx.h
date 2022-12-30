@@ -42,7 +42,7 @@ namespace PPTX
 		class BuSzTx : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuSzTx)
+			WritingElement_AdditionMethods(BuSzTx)
 			PPTX_LOGIC_BASE2(BuSzTx)
 
 			BuSzTx& operator=(const BuSzTx& oSrc);

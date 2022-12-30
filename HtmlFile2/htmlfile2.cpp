@@ -1122,7 +1122,7 @@ private:
                 if(nColspan != 1)
                 {
                         oXml->WriteString(L"<w:gridSpan w:val=\"");
-                        oXml->WriteString(std::to_wstring(nColspan - ((nColspan > 3) ? 1 : 0)));
+                        oXml->WriteString(std::to_wstring(nColspan));
                         oXml->WriteString(L"\"/>");
 
                         j += nColspan - 1;

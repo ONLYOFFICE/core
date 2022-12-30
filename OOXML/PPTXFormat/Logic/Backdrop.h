@@ -42,7 +42,7 @@ namespace PPTX
 		class Backdrop : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Backdrop)
+			WritingElement_AdditionMethods(Backdrop)
 			PPTX_LOGIC_BASE2(Backdrop)
 
 			virtual OOX::EElementType getType() const;

@@ -43,7 +43,7 @@ namespace PPTX
 		class AlphaInv : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaInv)
+			WritingElement_AdditionMethods(AlphaInv)
 			PPTX_LOGIC_BASE2(AlphaInv)
 
 			AlphaInv& operator=(const AlphaInv& oSrc);

@@ -202,7 +202,7 @@ namespace cpdoccore {
 				{
 					CP_XML_NODE(L"c:rotX")
 					{
-						CP_XML_ATTR(L"val", (int)(theta_x + 0.5));
+						CP_XML_ATTR(L"val", (int)(theta_x + 90.5));
 					}
 					CP_XML_NODE(L"c:rotY")
 					{

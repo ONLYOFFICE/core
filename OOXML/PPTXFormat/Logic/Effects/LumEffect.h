@@ -42,7 +42,7 @@ namespace PPTX
 		class LumEffect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(LumEffect)
+			WritingElement_AdditionMethods(LumEffect)
 			PPTX_LOGIC_BASE2(LumEffect)
 
 			LumEffect& operator=(const LumEffect& oSrc);

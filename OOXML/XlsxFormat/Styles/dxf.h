@@ -47,7 +47,7 @@ namespace OOX
 		class CDxf : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDxf)
+			WritingElement_AdditionMethods(CDxf)
             WritingElement_XlsbConstructors(CDxf)
 			CDxf();
 			virtual ~CDxf();
@@ -79,7 +79,7 @@ namespace OOX
 		class CDxfs : public WritingElementWithChilds<CDxf>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDxfs)
+			WritingElement_AdditionMethods(CDxfs)
             WritingElement_XlsbVectorConstructors(CDxfs)
 			CDxfs();
 			virtual ~CDxfs();

@@ -41,7 +41,7 @@ namespace OOX
 		class CExternalReference : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalReference)
+			WritingElement_AdditionMethods(CExternalReference)
 			WritingElement_XlsbConstructors(CExternalReference)
 			CExternalReference();
 			virtual ~CExternalReference();
@@ -66,7 +66,7 @@ namespace OOX
 		class CExternalReferences  : public WritingElementWithChilds<CExternalReference>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalReferences)
+			WritingElement_AdditionMethods(CExternalReferences)
 			WritingElement_XlsbVectorConstructors(CExternalReferences)
 			CExternalReferences();
 			virtual ~CExternalReferences();

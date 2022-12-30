@@ -114,6 +114,17 @@ public:
     {
         return pReader->GetInfo();
     }
+    bool IsNeedCMap()
+    {
+        if (nType == 0)
+            return ((CPdfFile*)pReader)->IsNeedCMap();
+        return false;
+    }
+    void SetCMapData(BYTE* pData, DWORD nSizeData)
+    {
+        if (nType == 0)
+            ((CPdfFile*)pReader)->SetCMapMemory(pData, nSizeData);
+    }
 
     void DestroyText()
     {

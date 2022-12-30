@@ -49,6 +49,10 @@
 #include "../../../../HtmlFile2/htmlfile2.h"
 #include "../../../../RtfFile/Format/ConvertationManager.h"
 
+#include "../../../DocxFormat/App.h"
+#include "../../../DocxFormat/Core.h"
+#include "../../../DocxFormat/FontTable.h"
+
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Logic/AlternateContent.h"
 #include "../../../DocxFormat/Logic/Dir.h"
@@ -4004,64 +4008,64 @@ void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermStart* pPerm)
 {
 	if (!pPerm) return;
 
-	int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::PermStart);
+	int nCurPos2 = m_oBcw.WriteItemStart(c_oSerParType::PermStart);
 
 	if (pPerm->m_sId.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
 		m_oBcw.m_oStream.WriteStringW3(pPerm->m_sId.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pPerm->m_oDisplacedByCustomXml.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::DisplacedByCustomXml);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::DisplacedByCustomXml);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pPerm->m_oDisplacedByCustomXml->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pPerm->m_oColFirst.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::ColFirst);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::ColFirst);
 		m_oBcw.m_oStream.WriteLONG(pPerm->m_oColFirst->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pPerm->m_oColLast.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::ColLast);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::ColLast);
 		m_oBcw.m_oStream.WriteLONG(pPerm->m_oColLast->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pPerm->m_sEd.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Ed);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Ed);
 		m_oBcw.m_oStream.WriteStringW3(pPerm->m_sEd.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pPerm->m_oEdGrp.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::EdGroup);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::EdGroup);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pPerm->m_oEdGrp->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	m_oBcw.WriteItemWithLengthEnd(nCurPos2);
 }
 void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermEnd* pPerm)
 {
 	if (!pPerm) return;
 	
-	int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::PermEnd);
+	int nCurPos2 = m_oBcw.WriteItemStart(c_oSerParType::PermEnd);
 	if (pPerm->m_sId.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
 		m_oBcw.m_oStream.WriteStringW3(pPerm->m_sId.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 	if (pPerm->m_oDisplacedByCustomXml.IsInit())
 	{
-		nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::DisplacedByCustomXml);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::DisplacedByCustomXml);
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pPerm->m_oDisplacedByCustomXml->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	m_oBcw.WriteItemWithLengthEnd(nCurPos2);
 }
 void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 {
@@ -7827,6 +7831,16 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtComplexFormPr(oStdPr.m_oComplexFormPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (oStdPr.m_oOformRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find(oStdPr.m_oOformRid->GetValue());
+		if (pFile.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::OformMaster);
+			m_oBcw.m_oStream.WriteStringW3(pFile->m_sOutputFilename);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+	}
 }
 void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
 {
@@ -9349,11 +9363,11 @@ void BinaryFileWriter::WriteTableEnd(int nCurPos)
 	//Seek вобратно в MainTable
 	m_oBcw.m_oStream.SetPosition(nCurPos);
 }
-void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
+void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 {
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = m_oBcw.m_oStream;
 
-	OOX::CDocx		*pDocx = new OOX::CDocx(OOX::CPath(sDir));
+	OOX::CDocx		*pDocx = new OOX::CDocx(OOX::CPath(sSrcPath));
 	OOX::CDocxFlat	*pDocxFlat = NULL;
 
 	OOX::CDocument	*pDocument = NULL;
@@ -9378,7 +9392,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 	{
 		if (pDocx) delete pDocx; pDocx = NULL;
 
-		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sDir));
+		pDocxFlat = new OOX::CDocxFlat(OOX::CPath(sSrcPath));
 		if ((pDocxFlat) && (pDocxFlat->m_pDocument.IsInit()))
 		{
 			pDocument = pDocxFlat->m_pDocument.GetPointer();
@@ -9529,10 +9543,33 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sDir)
 			pDocx->m_pVbaProject->toPPTY(&m_oBcw.m_oStream);
 			m_oBcw.m_oStream.EndRecord();
 
-			this->WriteTableEnd(nCurPos);
-			
+			this->WriteTableEnd(nCurPos);			
 
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		std::wstring pathOForm = sSrcPath + FILE_SEPARATOR_STR + L"oform";
+		if (NSDirectory::Exists(pathOForm))
+		{
+			std::wstring pathOForm_tmp_zip = NSFile::CFileBinary::CreateTempFileWithUniqueName(sSrcPath, L"oform");
+			COfficeUtils oCOfficeUtils(NULL);
+			if (S_OK == oCOfficeUtils.CompressFileOrDirectory(pathOForm, pathOForm_tmp_zip))
+			{
+				BYTE *pDataOForm = NULL;
+				DWORD nDataOForm = 0;
+				if (NSFile::CFileBinary::ReadAllBytes(pathOForm_tmp_zip, &pDataOForm, nDataOForm) && (pDataOForm))
+				{
+					nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::OForm);
+
+					m_oBcw.WriteBytesArray(pDataOForm, nDataOForm);
+					
+					this->WriteTableEnd(nCurPos);
+
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+
+					delete[]pDataOForm;
+				}
+				NSFile::CFileBinary::Remove(pathOForm_tmp_zip);
+			}
 		}
 	}
 

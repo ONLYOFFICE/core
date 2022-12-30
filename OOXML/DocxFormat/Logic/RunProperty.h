@@ -34,7 +34,6 @@
 #include "../WritingElement.h"
 
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
 
 #include "../../PPTXFormat/Logic/Ln.h"
@@ -53,7 +52,7 @@ namespace OOX
 		class CStylisticSets : public WritingElementWithChilds<ComplexTypes::Word::CStylisticSet>
 		{
 		public:
-			WritingElement_AdditionConstructors(CStylisticSets)
+			WritingElement_AdditionMethods(CStylisticSets)
 			CStylisticSets(OOX::Document *pMain = NULL);
 			virtual ~CStylisticSets();
 

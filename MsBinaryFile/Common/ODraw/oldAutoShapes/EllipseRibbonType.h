@@ -39,7 +39,6 @@ class CEllipceRibbonType : public CCustomShape
 {
 public:
 	CEllipceRibbonType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinMiter;

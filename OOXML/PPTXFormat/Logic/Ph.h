@@ -44,7 +44,7 @@ namespace PPTX
 		class Ph : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Ph)
+			WritingElement_AdditionMethods(Ph)
 
 			Ph();
 				

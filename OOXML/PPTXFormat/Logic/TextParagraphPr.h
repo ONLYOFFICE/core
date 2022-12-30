@@ -51,7 +51,7 @@ namespace PPTX
 		class TextParagraphPr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TextParagraphPr)
+			WritingElement_AdditionMethods(TextParagraphPr)
 
 			TextParagraphPr();
 			TextParagraphPr& operator=(const TextParagraphPr& oSrc);

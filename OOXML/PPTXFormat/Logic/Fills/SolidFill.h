@@ -43,7 +43,7 @@ namespace PPTX
 		class SolidFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SolidFill)
+			WritingElement_AdditionMethods(SolidFill)
 			
 			SolidFill(std::wstring ns = L"a");
 			SolidFill& operator=(const SolidFill& oSrc);

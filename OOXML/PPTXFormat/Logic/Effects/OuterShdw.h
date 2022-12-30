@@ -42,7 +42,7 @@ namespace PPTX
 		class OuterShdw : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(OuterShdw)
+			WritingElement_AdditionMethods(OuterShdw)
 			PPTX_LOGIC_BASE2(OuterShdw)
 
 			OuterShdw& operator=(const OuterShdw& oSrc);

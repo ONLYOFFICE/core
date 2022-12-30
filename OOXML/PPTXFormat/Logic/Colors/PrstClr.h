@@ -43,7 +43,7 @@ namespace PPTX
 		class PrstClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(PrstClr)
+			WritingElement_AdditionMethods(PrstClr)
 			PPTX_LOGIC_BASE2(PrstClr)
 
 			virtual OOX::EElementType getType() const;

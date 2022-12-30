@@ -244,7 +244,7 @@ namespace OOX
 		class CFormPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormPr)
+			WritingElement_AdditionMethods(CFormPr)
 			CFormPr(OOX::Document *pMain = NULL);
 			virtual ~CFormPr();
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -267,7 +267,7 @@ namespace OOX
 		class CTextFormPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTextFormPr)
+			WritingElement_AdditionMethods(CTextFormPr)
 			CTextFormPr(OOX::Document *pMain = NULL);
 			virtual ~CTextFormPr();
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -290,7 +290,7 @@ namespace OOX
 		class CComplexFormPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CComplexFormPr)
+			WritingElement_AdditionMethods(CComplexFormPr)
 			CComplexFormPr(OOX::Document *pMain = NULL);
 			virtual ~CComplexFormPr();
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -310,7 +310,7 @@ namespace OOX
 		class CSdtComboBox : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtComboBox)
+			WritingElement_AdditionMethods(CSdtComboBox)
 			CSdtComboBox(OOX::Document *pMain = NULL);
 			virtual ~CSdtComboBox();
 
@@ -336,7 +336,7 @@ namespace OOX
 		class CDate : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDate)
+			WritingElement_AdditionMethods(CDate)
 			CDate(OOX::Document *pMain = NULL);
 			virtual ~CDate();
 
@@ -364,7 +364,7 @@ namespace OOX
 		class CSdtDocPart : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtDocPart)
+			WritingElement_AdditionMethods(CSdtDocPart)
 			CSdtDocPart(OOX::Document *pMain = NULL);
 			virtual ~CSdtDocPart();
 
@@ -388,7 +388,7 @@ namespace OOX
 		class CSdtDropDownList : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtDropDownList)
+			WritingElement_AdditionMethods(CSdtDropDownList)
 			CSdtDropDownList(OOX::Document *pMain = NULL);
 			virtual ~CSdtDropDownList();
 
@@ -412,7 +412,7 @@ namespace OOX
 		class CPlaceHolder : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPlaceHolder)
+			WritingElement_AdditionMethods(CPlaceHolder)
 			CPlaceHolder(OOX::Document *pMain = NULL);
 			virtual ~CPlaceHolder();
 
@@ -433,7 +433,7 @@ namespace OOX
 		class CSdtEndPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtEndPr)
+			WritingElement_AdditionMethods(CSdtEndPr)
 			CSdtEndPr(OOX::Document *pMain = NULL);
 			virtual ~CSdtEndPr();
 
@@ -450,7 +450,7 @@ namespace OOX
 		class CSdtCheckBoxSymbol : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtCheckBoxSymbol)
+			WritingElement_AdditionMethods(CSdtCheckBoxSymbol)
 			CSdtCheckBoxSymbol(OOX::Document *pMain = NULL);
 			virtual ~CSdtCheckBoxSymbol();
 
@@ -473,7 +473,7 @@ namespace OOX
 		class CSdtCheckBox : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtCheckBox)
+			WritingElement_AdditionMethods(CSdtCheckBox)
 			CSdtCheckBox(OOX::Document *pMain = NULL);
 			virtual ~CSdtCheckBox();
 
@@ -494,7 +494,7 @@ namespace OOX
 		class CSdtPicture : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtPicture)
+			WritingElement_AdditionMethods(CSdtPicture)
 			CSdtPicture(OOX::Document *pMain = NULL);
 			virtual ~CSdtPicture();
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -537,7 +537,7 @@ namespace OOX
 		class CSdtPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtPr)
+			WritingElement_AdditionMethods(CSdtPr)
 			CSdtPr(OOX::Document *pMain = NULL);
 			virtual ~CSdtPr();
 
@@ -579,6 +579,7 @@ namespace OOX
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
 			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
+			nullable<SimpleTypes::CRelationshipId> m_oOformRid; // Not from specification
 		};
 
 		//--------------------------------------------------------------------------------
@@ -587,7 +588,7 @@ namespace OOX
 		class CSdtContent : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdtContent)
+			WritingElement_AdditionMethods(CSdtContent)
 			CSdtContent(OOX::Document *pMain = NULL);
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
@@ -605,7 +606,7 @@ namespace OOX
 		class CSdt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSdt)
+			WritingElement_AdditionMethods(CSdt)
 			CSdt(OOX::Document *pMain = NULL);
 			virtual ~CSdt();
 

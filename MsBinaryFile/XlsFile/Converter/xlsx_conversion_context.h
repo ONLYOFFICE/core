@@ -92,6 +92,7 @@ public:
 	std::wostream					& custom_views()		{ return xlsx_custom_views_; }
 	std::wostream					& workbook_format()		{ return xlsx_workbook_pr_; }	
 	std::wostream					& workbook_protection()	{ return xlsx_workbookProtection_; }
+	std::wostream					& workbook_calcpr()		{ return xlsx_workbookCalcPr_; }
 
 	xlsx_text_context				& get_text_context()	{ return text_context_; }
     xlsx_sheet_context				& get_sheet_context()	{ return sheet_context_; }
@@ -144,6 +145,7 @@ private:
 	std::wstringstream					xlsx_custom_views_;
 	std::wstringstream					xlsx_workbook_pr_;
 	std::wstringstream					xlsx_workbookProtection_;
+	std::wstringstream					xlsx_workbookCalcPr_;
 
     xlsx_drawing_context_handle			xlsx_drawing_context_handle_;
     xlsx_comments_context_handle		xlsx_comments_context_handle_;

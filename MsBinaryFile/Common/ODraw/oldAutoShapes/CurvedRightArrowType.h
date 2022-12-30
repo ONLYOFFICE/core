@@ -39,7 +39,6 @@ class CCurvedRightArrowType : public CCustomShape
 {
 public:
 	CCurvedRightArrowType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinMiter;

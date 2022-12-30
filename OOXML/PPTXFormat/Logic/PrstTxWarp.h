@@ -44,7 +44,7 @@ namespace PPTX
 		class PrstTxWarp : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(PrstTxWarp)
+			WritingElement_AdditionMethods(PrstTxWarp)
 			PPTX_LOGIC_BASE2(PrstTxWarp)
 
 			PrstTxWarp& operator=(const PrstTxWarp& oSrc);

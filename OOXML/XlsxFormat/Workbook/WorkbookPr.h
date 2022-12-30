@@ -40,7 +40,7 @@ namespace OOX
 		class CWorkbookPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookPr)
+			WritingElement_AdditionMethods(CWorkbookPr)
             WritingElement_XlsbConstructors(CWorkbookPr)
 			CWorkbookPr();
 			virtual ~CWorkbookPr();
@@ -82,7 +82,7 @@ namespace OOX
 		class CWorkbookProtection : public WritingElement
 		{
 		public:
-            WritingElement_AdditionConstructors(CWorkbookProtection)
+            WritingElement_AdditionMethods(CWorkbookProtection)
             WritingElement_XlsbConstructors(CWorkbookProtection)
 			CWorkbookProtection();
 			virtual ~CWorkbookProtection();

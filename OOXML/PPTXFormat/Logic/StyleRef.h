@@ -44,7 +44,7 @@ namespace PPTX
 		class StyleRef : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(StyleRef)
+			WritingElement_AdditionMethods(StyleRef)
 
 			StyleRef();
 

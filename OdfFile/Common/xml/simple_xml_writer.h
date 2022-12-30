@@ -320,6 +320,7 @@ typedef xml::writer::element<wchar_t> xml_element;
 
 #define CP_ATTR_NODE xml_element & _xml_node_
 
+#define CP_XML_ATTR_ENCODE_STRING(NAME, VAL) _xml_node_.attr((NAME), XmlUtils::EncodeXmlString(VAL))
 
 #define CP_XML_ATTR_OPT(NAME, VAL) if (VAL)CP_XML_ATTR(NAME, (*VAL))
 #define CP_XML_ATTR_OPT_ENCODE_STRING(NAME, STR) if (STR)CP_XML_ATTR(NAME, XmlUtils::EncodeXmlString(*STR))

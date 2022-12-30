@@ -47,12 +47,7 @@ namespace PPTX
 			explicit UniEffect(XmlUtils::CXmlNode& node);
 			const UniEffect& operator =(XmlUtils::CXmlNode& node);
 
-			virtual OOX::EElementType getType () const
-			{
-				if (Effect.is_init())
-					return Effect->getType();
-				else return OOX::et_Unknown;
-			}
+			virtual OOX::EElementType getType () const;
 			
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -63,34 +58,19 @@ namespace PPTX
 			template<class T> T& as() {return Effect.as<T>();}
 			template<class T> const T& as() const {return static_cast<const T&>(*Effect);}
 
-			virtual std::wstring toXML() const
-			{
-				if (Effect.IsInit())
-					return Effect->toXML();
-				return _T("");
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (Effect.is_init())
-					Effect->toXmlWriter(pWriter);
-			}		
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const ;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			void InitPointer(WrapperWritingElement* pElem)
-			{
-				Effect = pElem;
-			}
-			virtual void SetParentPointer(const WrapperWritingElement* pParent)
-			{
-				if(is_init())
-					Effect->SetParentPointer(pParent);
-			};
-			smart_ptr<WrapperWritingElement> Effect;
-		protected:
-			virtual void FillParentPointersForChilds(){};
+			void InitPointer(WrapperWritingElement* pElem);
+			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 
+			smart_ptr<WrapperWritingElement> Effect;
+
+		protected:
+			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

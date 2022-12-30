@@ -31,10 +31,7 @@
  */
 #pragma once
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {
@@ -46,9 +43,7 @@ namespace OOX
 		class CSmartTag : public WritingElementWithChilds<>
 		{
 		public:
-			CSmartTag(OOX::Document *pMain = NULL);
-			CSmartTag(XmlUtils::CXmlNode &oNode);
-			CSmartTag(XmlUtils::CXmlLiteReader& oReader);
+			CSmartTag(OOX::Document *pMain = NULL);			
 			virtual ~CSmartTag();
 
 			const CSmartTag &operator =(const XmlUtils::CXmlNode& oNode);

@@ -42,7 +42,7 @@ namespace PPTX
 		class HslEffect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(HslEffect)
+			WritingElement_AdditionMethods(HslEffect)
 			PPTX_LOGIC_BASE2(HslEffect)
 
 			HslEffect& operator=(const HslEffect& oSrc);

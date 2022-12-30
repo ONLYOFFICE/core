@@ -49,7 +49,7 @@ namespace PPTX
 		class GrpSpPr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(GrpSpPr)
+			WritingElement_AdditionMethods(GrpSpPr)
 
 			GrpSpPr(std::wstring ns = L"p");
 			GrpSpPr& operator=(const GrpSpPr& oSrc);

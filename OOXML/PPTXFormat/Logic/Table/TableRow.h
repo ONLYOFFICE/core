@@ -43,7 +43,7 @@ namespace PPTX
 		class TableRow : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TableRow)
+			WritingElement_AdditionMethods(TableRow)
 
 			TableRow();
 

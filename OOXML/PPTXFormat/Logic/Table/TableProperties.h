@@ -45,7 +45,7 @@ namespace PPTX
 		class TableProperties : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TableProperties)
+			WritingElement_AdditionMethods(TableProperties)
 			
 			TableProperties();
 

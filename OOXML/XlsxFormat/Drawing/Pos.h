@@ -44,7 +44,7 @@ namespace OOX
 		class CPos : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPos)
+			WritingElement_AdditionMethods(CPos)
 			CPos();
 			virtual ~CPos();
 

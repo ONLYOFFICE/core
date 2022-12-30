@@ -43,7 +43,7 @@ namespace PPTX
 		class AlphaRepl : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaRepl)
+			WritingElement_AdditionMethods(AlphaRepl)
 			PPTX_LOGIC_BASE2(AlphaRepl)
 
 			AlphaRepl& operator=(const AlphaRepl& oSrc);

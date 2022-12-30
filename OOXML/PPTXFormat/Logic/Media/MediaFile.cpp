@@ -36,6 +36,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		MediaFile::MediaFile() {}
 		MediaFile::MediaFile(std::wstring name_)
 		{
 			name = name_;

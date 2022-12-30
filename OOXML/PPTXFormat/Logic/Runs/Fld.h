@@ -44,7 +44,7 @@ namespace PPTX
 		class Fld : public RunBase
 		{
 		public:
-			WritingElement_AdditionConstructors(Fld)			
+			WritingElement_AdditionMethods(Fld)			
 			PPTX_LOGIC_BASE2(Fld)
 
 			Fld& operator=(const Fld& oSrc);

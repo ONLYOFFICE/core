@@ -46,7 +46,7 @@ namespace OOX
 		class CDrawingWorksheet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDrawingWorksheet)
+			WritingElement_AdditionMethods(CDrawingWorksheet)
                         WritingElement_XlsbConstructors(CDrawingWorksheet)
 			CDrawingWorksheet();
 			virtual ~CDrawingWorksheet();

@@ -42,7 +42,7 @@ namespace PPTX
 		class SchemeClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(SchemeClr)
+			WritingElement_AdditionMethods(SchemeClr)
 			PPTX_LOGIC_BASE2(SchemeClr)
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -76,7 +76,7 @@ namespace PPTX
 		class StyleClr : public ColorBase
 		{
 		public:
-			WritingElement_AdditionConstructors(StyleClr)
+			WritingElement_AdditionMethods(StyleClr)
 			PPTX_LOGIC_BASE2(StyleClr)
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

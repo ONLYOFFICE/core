@@ -42,9 +42,7 @@ namespace OOX
 		class CDir : public WritingElementWithChilds<>
 		{
 		public:
-			CDir(OOX::Document *pMain = NULL);
-			CDir(XmlUtils::CXmlNode &oNode);
-			CDir(XmlUtils::CXmlLiteReader& oReader);
+			CDir(OOX::Document *pMain = NULL);			
 			virtual ~CDir();
 
 			const CDir &operator =(const XmlUtils::CXmlNode& oNode);

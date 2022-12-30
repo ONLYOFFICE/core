@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLPrevAc::TLPrevAc()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void TLPrevAc::set(const std::wstring& strValue)
 		{
-			if ((_T("none") == strValue) ||
-				(_T("skipTimed") == strValue))
+			if ((L"none" == strValue) ||
+				(L"skipTimed" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLPrevAc::GetBYTECode() const
+		unsigned char TLPrevAc::GetBYTECode() const
 		{
 			if (L"none" == m_strValue)	return 0;
 			if (L"skipTimed" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLPrevAc::SetBYTECode(const BYTE& src)
+		void TLPrevAc::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

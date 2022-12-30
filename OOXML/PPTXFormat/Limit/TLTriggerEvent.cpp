@@ -38,26 +38,26 @@ namespace PPTX
 	{
 		TLTriggerEvent::TLTriggerEvent()
 		{
-			m_strValue = _T("begin");
+			m_strValue = L"begin";
 		}
 		void TLTriggerEvent::set(const std::wstring& strValue)
 		{
-			if ((_T("begin") == strValue) ||
-				(_T("end") == strValue) ||
-				(_T("onBegin") == strValue) ||
-				(_T("onClick") == strValue) ||
-				(_T("onDblClick") == strValue) ||
-				(_T("onEnd") == strValue) ||
-				(_T("onMouseOut") == strValue) ||
-				(_T("onMouseOver") == strValue) ||
-				(_T("onNext") == strValue) ||
-				(_T("onPrev") == strValue) ||
-				(_T("onStopAudio") == strValue))
+			if ((L"begin" == strValue) ||
+				(L"end" == strValue) ||
+				(L"onBegin" == strValue) ||
+				(L"onClick" == strValue) ||
+				(L"onDblClick" == strValue) ||
+				(L"onEnd" == strValue) ||
+				(L"onMouseOut" == strValue) ||
+				(L"onMouseOver" == strValue) ||
+				(L"onNext" == strValue) ||
+				(L"onPrev" == strValue) ||
+				(L"onStopAudio" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLTriggerEvent::GetBYTECode() const
+		unsigned char TLTriggerEvent::GetBYTECode() const
 		{
 			if (L"begin" == m_strValue)		return 0;
 			if (L"end" == m_strValue)		return 1;
@@ -73,7 +73,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLTriggerEvent::SetBYTECode(const BYTE& src)
+		void TLTriggerEvent::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

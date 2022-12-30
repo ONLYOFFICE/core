@@ -40,7 +40,6 @@ class CAccentCallout3Type : public CCustomShape
 {
 public:
 	CAccentCallout3Type()
-
     {
         m_bConcentricFill = true;
         m_eJoin = ODRAW::lineJoinMiter;

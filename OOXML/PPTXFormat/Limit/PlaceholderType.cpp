@@ -38,157 +38,157 @@ namespace PPTX
 	{
 		int GetPhType(const std::wstring& strType)
 		{
-			if (_T("body") == strType)
+			if (L"body" == strType)
 				return 0;
-			if (_T("chart") == strType)
+			if (L"chart" == strType)
 				return 1;
-			if (_T("clipArt") == strType)
+			if (L"clipArt" == strType)
 				return 2;
-			if (_T("ctrTitle") == strType)
+			if (L"ctrTitle" == strType)
 				return 15;
-			if (_T("dgm") == strType)
+			if (L"dgm" == strType)
 				return 4;
-			if (_T("dt") == strType)
+			if (L"dt" == strType)
 				return 5;
-			if (_T("ftr") == strType)
+			if (L"ftr" == strType)
 				return 6;
-			if (_T("hdr") == strType)
+			if (L"hdr" == strType)
 				return 7;
-			if (_T("media") == strType)
+			if (L"media" == strType)
 				return 8;
-			if (_T("obj") == strType)
+			if (L"obj" == strType)
 				return 9;
-			if (_T("pic") == strType)
+			if (L"pic" == strType)
 				return 10;
-			if (_T("sldImg") == strType)
+			if (L"sldImg" == strType)
 				return 11;
-			if (_T("sldNum") == strType)
+			if (L"sldNum" == strType)
 				return 12;
-			if (_T("subTitle") == strType)
+			if (L"subTitle" == strType)
 				return 0;
-			if (_T("tbl") == strType)
+			if (L"tbl" == strType)
 				return 14;
-			if (_T("title") == strType)
+			if (L"title" == strType)
 				return 15;
 			return 0;
 		}
 
 		PlaceholderType::PlaceholderType()
 		{
-			m_strValue = _T("obj");
+			m_strValue = L"obj";
 		}
 		void PlaceholderType::set(const std::wstring& strValue)
 		{
-			if ((_T("body") == strValue) ||
-				(_T("chart") == strValue) ||
-				(_T("clipArt") == strValue) ||
-				(_T("ctrTitle") == strValue) ||
-				(_T("dgm") == strValue) ||
-				(_T("dt") == strValue) ||
-				(_T("ftr") == strValue) ||
-				(_T("hdr") == strValue) ||
-				(_T("media") == strValue) ||
-				(_T("obj") == strValue) ||
-				(_T("pic") == strValue) ||
-				(_T("sldImg") == strValue) ||
-				(_T("sldNum") == strValue) ||
-				(_T("subTitle") == strValue) ||
-				(_T("tbl") == strValue) ||
-				(_T("title") == strValue))
+			if ((L"body" == strValue) ||
+				(L"chart" == strValue) ||
+				(L"clipArt" == strValue) ||
+				(L"ctrTitle" == strValue) ||
+				(L"dgm" == strValue) ||
+				(L"dt" == strValue) ||
+				(L"ftr" == strValue) ||
+				(L"hdr" == strValue) ||
+				(L"media" == strValue) ||
+				(L"obj" == strValue) ||
+				(L"pic" == strValue) ||
+				(L"sldImg" == strValue) ||
+				(L"sldNum" == strValue) ||
+				(L"subTitle" == strValue) ||
+				(L"tbl" == strValue) ||
+				(L"title" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE PlaceholderType::GetBYTECode() const
+		unsigned char PlaceholderType::GetBYTECode() const
 		{
-			if (_T("body") == m_strValue)
+			if (L"body" == m_strValue)
 				return 0;
-			if (_T("chart") == m_strValue)
+			if (L"chart" == m_strValue)
 				return 1;
-			if (_T("clipArt") == m_strValue)
+			if (L"clipArt" == m_strValue)
 				return 2;
-			if (_T("ctrTitle") == m_strValue)
+			if (L"ctrTitle" == m_strValue)
 				return 3;
-			if (_T("dgm") == m_strValue)
+			if (L"dgm" == m_strValue)
 				return 4;
-			if (_T("dt") == m_strValue)
+			if (L"dt" == m_strValue)
 				return 5;
-			if (_T("ftr") == m_strValue)
+			if (L"ftr" == m_strValue)
 				return 6;
-			if (_T("hdr") == m_strValue)
+			if (L"hdr" == m_strValue)
 				return 7;
-			if (_T("media") == m_strValue)
+			if (L"media" == m_strValue)
 				return 8;
-			if (_T("obj") == m_strValue)
+			if (L"obj" == m_strValue)
 				return 9;
-			if (_T("pic") == m_strValue)
+			if (L"pic" == m_strValue)
 				return 10;
-			if (_T("sldImg") == m_strValue)
+			if (L"sldImg" == m_strValue)
 				return 11;
-			if (_T("sldNum") == m_strValue)
+			if (L"sldNum" == m_strValue)
 				return 12;
-			if (_T("subTitle") == m_strValue)
+			if (L"subTitle" == m_strValue)
 				return 13;
-			if (_T("tbl") == m_strValue)
+			if (L"tbl" == m_strValue)
 				return 14;
-			if (_T("title") == m_strValue)
+			if (L"title" == m_strValue)
 				return 15;
 			return 9;
 		}
-		void PlaceholderType::SetBYTECode(const BYTE& src)
+		void PlaceholderType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("body");
+				m_strValue = L"body";
 				break;
 			case 1:
-				m_strValue = _T("chart");
+				m_strValue = L"chart";
 				break;
 			case 2:
-				m_strValue = _T("clipArt");
+				m_strValue = L"clipArt";
 				break;
 			case 3:
-				m_strValue = _T("ctrTitle");
+				m_strValue = L"ctrTitle";
 				break;
 			case 4:
-				m_strValue = _T("dgm");
+				m_strValue = L"dgm";
 				break;
 			case 5:
-				m_strValue = _T("dt");
+				m_strValue = L"dt";
 				break;
 			case 6:
-				m_strValue = _T("ftr");
+				m_strValue = L"ftr";
 				break;
 			case 7:
-				m_strValue = _T("hdr");
+				m_strValue = L"hdr";
 				break;
 			case 8:
-				m_strValue = _T("media");
+				m_strValue = L"media";
 				break;
 			case 9:
-				m_strValue = _T("obj");
+				m_strValue = L"obj";
 				break;
 			case 10:
-				m_strValue = _T("pic");
+				m_strValue = L"pic";
 				break;
 			case 11:
-				m_strValue = _T("sldImg");
+				m_strValue = L"sldImg";
 				break;
 			case 12:
-				m_strValue = _T("sldNum");
+				m_strValue = L"sldNum";
 				break;
 			case 13:
-				m_strValue = _T("subTitle");
+				m_strValue = L"subTitle";
 				break;
 			case 14:
-				m_strValue = _T("tbl");
+				m_strValue = L"tbl";
 				break;
 			case 15:
-				m_strValue = _T("title");
+				m_strValue = L"title";
 				break;
 			default:
-				m_strValue = _T("obj");
+				m_strValue = L"obj";
 				break;
 			}
 		}

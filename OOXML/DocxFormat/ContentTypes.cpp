@@ -304,12 +304,14 @@ namespace OOX
 
 			if ( _T("Default") == sName )
 			{
-				ContentTypes::CDefault oDefault = oReader;
+				ContentTypes::CDefault oDefault;
+				oDefault = oReader;
 				m_mapDefaults [ oDefault.m_sExtension] = oDefault ;
 			}
 			else if ( _T("Override") == sName )
 			{
-				ContentTypes::COverride oOverride = oReader;
+				ContentTypes::COverride oOverride;
+				oOverride = oReader;
 				m_mapOverrides [oOverride.filename().GetPath()] = oOverride;
 			}
 		}

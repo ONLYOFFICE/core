@@ -44,7 +44,7 @@ namespace PPTX
 		class LineEnd : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(LineEnd)
+			WritingElement_AdditionMethods(LineEnd)
 			PPTX_LOGIC_BASE2(LineEnd)
 
 			virtual OOX::EElementType getType() const;

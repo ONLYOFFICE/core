@@ -40,7 +40,6 @@ class CCloudCalloutType : public CCustomShape
 {
 public:
 	CCloudCalloutType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinRound;

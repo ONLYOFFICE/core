@@ -42,7 +42,7 @@ namespace OOX
 		class CCol : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCol)
+			WritingElement_AdditionMethods(CCol)
 			CCol(OOX::Document *pMain = NULL);
 			virtual ~CCol();
 
@@ -75,7 +75,7 @@ namespace OOX
 		class CCols  : public WritingElementWithChilds<CCol>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCols)
+			WritingElement_AdditionMethods(CCols)
             WritingElement_XlsbVectorConstructors(CCols)
 			CCols(OOX::Document *pMain = NULL);
 			virtual ~CCols();

@@ -39,7 +39,6 @@ class CCubeType : public CCustomShape
 {
 public:
 	CCubeType()
-
     {
         m_bConcentricFill = true;
         m_eJoin = ODRAW::lineJoinMiter;

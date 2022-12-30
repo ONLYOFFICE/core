@@ -44,7 +44,7 @@ namespace PPTX
 		class ClrChange : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ClrChange)
+			WritingElement_AdditionMethods(ClrChange)
 			PPTX_LOGIC_BASE2(ClrChange)
 
 			ClrChange& operator=(const ClrChange& oSrc);

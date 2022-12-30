@@ -40,7 +40,6 @@ class CActionButtonHomeType : public CCustomShape
 {
 public:
 	CActionButtonHomeType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

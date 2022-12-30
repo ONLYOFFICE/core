@@ -39,7 +39,6 @@ class CCallout1Type : public CCustomShape
 {
 public:
 	CCallout1Type()
-
     {
         m_bConcentricFill = true;
         m_eJoin = ODRAW::lineJoinMiter;

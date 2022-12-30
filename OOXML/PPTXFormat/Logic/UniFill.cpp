@@ -56,32 +56,32 @@ namespace PPTX
 			if (name == _T("blipFill"))
 			{
 				m_type = blipFill;
-				Fill.reset(new Logic::BlipFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::BlipFill>(oReader));
 			}
 			else if(name == _T("noFill"))
 			{
 				m_type = noFill;
-				Fill.reset(new Logic::NoFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::NoFill>(oReader));
 			}
 			else if(name == _T("solidFill"))
 			{
 				m_type = solidFill;
-				Fill.reset(new Logic::SolidFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::SolidFill>(oReader));
 			}
 			else if(name == _T("gradFill"))
 			{
 				m_type = gradFill;
-				Fill.reset(new Logic::GradFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::GradFill>(oReader));
 			}
 			else if(name == _T("pattFill"))
 			{
 				m_type = pattFill;
-				Fill.reset(new Logic::PattFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::PattFill>(oReader));
 			}
 			else if(name == _T("grpFill"))
 			{
 				m_type = grpFill;
-				Fill.reset(new Logic::GrpFill(oReader));
+				Fill.reset(CreatePtrXmlContent<Logic::GrpFill>(oReader));
 			}
 			else
 			{
@@ -96,32 +96,32 @@ namespace PPTX
 			if (name == _T("blipFill"))
 			{
 				m_type = blipFill;
-				Fill.reset(new Logic::BlipFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::BlipFill>(node));
 			}
 			else if(name == _T("noFill"))
 			{
 				m_type = noFill;
-				Fill.reset(new Logic::NoFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::NoFill>(node));
 			}
 			else if(name == _T("solidFill"))
 			{
 				m_type = solidFill;
-				Fill.reset(new Logic::SolidFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::SolidFill>(node));
 			}
 			else if(name == _T("gradFill"))
 			{
 				m_type = gradFill;
-				Fill.reset(new Logic::GradFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::GradFill>(node));
 			}
 			else if(name == _T("pattFill"))
 			{
 				m_type = pattFill;
-				Fill.reset(new Logic::PattFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::PattFill>(node));
 			}
 			else if(name == _T("grpFill"))
 			{
 				m_type = grpFill;
-				Fill.reset(new Logic::GrpFill(node));
+				Fill.reset(CreatePtrXmlContent<Logic::GrpFill>(node));
 			}
 			else
 			{
@@ -145,37 +145,37 @@ namespace PPTX
 					if (_T("blipFill") == strName)
 					{
 						m_type = blipFill;
-						Fill.reset(new Logic::BlipFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::BlipFill>(oNode));
 						return;
 					}
 					if (_T("noFill") == strName)
 					{
 						m_type = noFill;
-						Fill.reset(new Logic::NoFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::NoFill>(oNode));
 						return;
 					}
 					if (_T("solidFill") == strName)
 					{
 						m_type = solidFill;
-						Fill.reset(new Logic::SolidFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::SolidFill>(oNode));
 						return;
 					}
 					if (_T("gradFill") == strName)
 					{
 						m_type = gradFill;
-						Fill.reset(new Logic::GradFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::GradFill>(oNode));
 						return;
 					}
 					if (_T("pattFill") == strName)
 					{
 						m_type = pattFill;
-						Fill.reset(new Logic::PattFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::PattFill>(oNode));
 						return;
 					}
 					if (_T("grpFill") == strName)
 					{
 						m_type = grpFill;
-						Fill.reset(new Logic::GrpFill(oNode));
+						Fill.reset(CreatePtrXmlContent<Logic::GrpFill>(oNode));
 						return;
 					}
 				}

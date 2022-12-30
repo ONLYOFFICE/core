@@ -39,7 +39,6 @@ class CDonutType : public CCustomShape
 {
 public:
 	CDonutType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinRound;

@@ -47,13 +47,13 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE Conformance::GetBYTECode() const
+		unsigned char Conformance::GetBYTECode() const
 		{
 			if (L"strict" == m_strValue)		return 0;
 			if (L"transitional" == m_strValue)	return 1;
 			return 1;
 		}
-		void Conformance::SetBYTECode(const BYTE& src)
+		void Conformance::SetBYTECode(const unsigned char& src)
 		{
 			if (src == 0) m_strValue = L"strict";
 			else if (src == 1) m_strValue = L"transitional";

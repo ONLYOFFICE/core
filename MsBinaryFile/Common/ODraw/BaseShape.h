@@ -47,25 +47,9 @@ public:
 	std::wstring radiusrange; 
 
 public:
-	CHandle_()
-	{
-		position = _T("");
-		xrange = _T("");
-		yrange = _T("");
-		switchHandle = _T("");
-		polar = _T("");
-		radiusrange = _T(""); 
-	}
-	CHandle_& operator =(const CHandle_& oSrc)
-	{
-		position		= oSrc.position;
-		xrange			= oSrc.xrange;
-		yrange			= oSrc.yrange;
-		switchHandle	= oSrc.switchHandle;
-		polar			= oSrc.polar;
-		radiusrange		= oSrc.radiusrange;
-		return (*this);
-	}
+	CHandle_();
+
+	CHandle_& operator =(const CHandle_& oSrc);
 };
 
 class CBaseShape
@@ -93,10 +77,9 @@ public:
 	LONG								m_lLimoY;
 	
 	CPath								m_oPath;
+
 public:
-	CBaseShape()
-	{
-	}
+	CBaseShape();
 
 	virtual bool LoadTextRect(const std::wstring& xml)			= 0;
 	virtual bool LoadPathList(const std::wstring& xml)			= 0;
@@ -105,47 +88,7 @@ public:
 	
 	bool SetType(int ShapeType);
 
-	virtual bool SetProperties(CBaseShape* Shape)
-	{
-		if( Shape == NULL)
-			return false;
-
-		m_oPath		= Shape->m_oPath;
-		m_strPath	= Shape->m_strPath;
-		m_strRect	= Shape->m_strRect;
-		
-		m_arAdjustments.clear();
-		for(size_t  i = 0; i < Shape->m_arAdjustments.size(); i++)
-			m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
-
-		m_arGuides.clear();
-		for(size_t  i = 0; i < Shape->m_arGuides.size(); i++)
-			m_arGuides.push_back(Shape->m_arGuides[i]);
-
-		m_eJoin				= Shape->m_eJoin;
-		m_bConcentricFill	= Shape->m_bConcentricFill;
-
-		m_arConnectors.clear();
-		for(size_t  i = 0; i < Shape->m_arConnectors.size(); i++)
-			m_arConnectors.push_back(Shape->m_arConnectors[i]);
-
-		m_arConnectorAngles.clear();
-		for(size_t  i = 0; i < Shape->m_arConnectorAngles.size(); i++)
-			m_arConnectorAngles.push_back(Shape->m_arConnectorAngles[i]);
-
-		m_arTextRects.clear();
-		for(size_t  i = 0; i < Shape->m_arTextRects.size(); i++)
-			m_arTextRects.push_back(Shape->m_arTextRects[i]);
-
-		m_arHandles.clear();
-		for(size_t  i = 0; i < Shape->m_arHandles.size(); i++)
-			m_arHandles.push_back(Shape->m_arHandles[i]);
-
-
-		m_strRect = Shape->m_strRect;
-		m_strTransformXml = Shape->m_strTransformXml;
-		return true;
-	}
+	virtual bool SetProperties(CBaseShape* Shape);
 
 	//virtual bool SetToDublicate(CBaseShape* Shape)
 	//{

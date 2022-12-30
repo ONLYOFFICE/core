@@ -42,7 +42,7 @@ namespace PPTX
 		class Grayscl : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Grayscl)
+			WritingElement_AdditionMethods(Grayscl)
 			PPTX_LOGIC_BASE2(Grayscl)
 
 			Grayscl& operator=(const Grayscl& oSrc);

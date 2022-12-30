@@ -42,7 +42,7 @@ namespace PPTX
 		class AudioCD : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AudioCD)
+			WritingElement_AdditionMethods(AudioCD)
 
 			AudioCD();
 

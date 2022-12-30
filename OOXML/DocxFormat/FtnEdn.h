@@ -51,7 +51,7 @@ namespace OOX
 	class CFtnEdn : public WritingElementWithChilds<>
 	{
 	public:
-		WritingElement_AdditionConstructors(CFtnEdn)
+		WritingElement_AdditionMethods(CFtnEdn)
 		CFtnEdn(OOX::Document *pMain = NULL);
 		virtual ~CFtnEdn();
 

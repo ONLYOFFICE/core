@@ -50,8 +50,8 @@ public:
 
 	static const ElementType	type = typeCalcRefMode;
 
-	std::wstring fRefA1;
-
+//-----------------------------
+	Boolean<unsigned short> fRef;
 };
 
 } // namespace XLS

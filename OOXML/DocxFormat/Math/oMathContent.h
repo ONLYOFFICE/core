@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include "../../Common/ComplexTypes.h"
-
 #include "oMathBottomNodes.h"
 #include "OMath.h"
 
@@ -44,7 +42,6 @@
 #include "../Drawing/Drawing.h"
 #include "../../PPTXFormat/Logic/RunProperties.h"
 
-
 namespace OOX
 {	
 	// Elements 22.1.2
@@ -55,19 +52,13 @@ namespace OOX
 			{\
 			public:\
 				name(OOX::Document *pMain = NULL) : CMathArgNodes(pMain) {m_eType = type;}\
-				name(XmlUtils::CXmlNode& oNode)\
-				{\
-					fromXML( oNode );\
-				}\
-				name(XmlUtils::CXmlLiteReader& oReader)\
-				{\
-					fromXML( oReader );\
-				}\
+				using CMathArgNodes::operator=;\
 				virtual EElementType getType() const\
 				{\
 					return type;\
 				}\
 			};
+
 		CMathArgNodesEx(CDeg, OOX::et_m_deg)
 		CMathArgNodesEx(CDen, OOX::et_m_den)
 		CMathArgNodesEx(CElement, OOX::et_m_e)
@@ -85,7 +76,7 @@ namespace OOX
 		class CCtrlPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCtrlPr)
+			WritingElement_AdditionMethods(CCtrlPr)
 			CCtrlPr();
 			virtual ~CCtrlPr();
 
@@ -107,7 +98,7 @@ namespace OOX
 		class CAccPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAccPr)
+			WritingElement_AdditionMethods(CAccPr)
 			CAccPr();
 			virtual ~CAccPr();
 
@@ -127,7 +118,7 @@ namespace OOX
 		class CAcc : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAcc)
+			WritingElement_AdditionMethods(CAcc)
 			CAcc();
 			virtual ~CAcc();
 
@@ -147,7 +138,7 @@ namespace OOX
 		class CArgPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CArgPr)
+			WritingElement_AdditionMethods(CArgPr)
 			CArgPr();
 			virtual ~CArgPr();
 
@@ -166,7 +157,7 @@ namespace OOX
 		class CBarPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBarPr)
+			WritingElement_AdditionMethods(CBarPr)
 			CBarPr();
 			virtual ~CBarPr();
 
@@ -186,7 +177,7 @@ namespace OOX
 		class CBar : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBar)
+			WritingElement_AdditionMethods(CBar)
 			CBar();
 			virtual ~CBar();
 
@@ -207,7 +198,7 @@ namespace OOX
 		class CBorderBoxPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorderBoxPr)
+			WritingElement_AdditionMethods(CBorderBoxPr)
 			CBorderBoxPr();
 			virtual ~CBorderBoxPr();
 
@@ -234,7 +225,7 @@ namespace OOX
 		class CBorderBox : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorderBox)
+			WritingElement_AdditionMethods(CBorderBox)
 			CBorderBox();;
 			virtual ~CBorderBox();
 
@@ -254,7 +245,7 @@ namespace OOX
 		class CBrk : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBrk)
+			WritingElement_AdditionMethods(CBrk)
 			CBrk();
 			virtual ~CBrk();
 
@@ -277,7 +268,7 @@ namespace OOX
 		class CBoxPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBoxPr)
+			WritingElement_AdditionMethods(CBoxPr)
 			CBoxPr();
 			virtual ~CBoxPr();
 
@@ -301,7 +292,7 @@ namespace OOX
 		class CBox : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBox)
+			WritingElement_AdditionMethods(CBox)
 			CBox();
 			virtual ~CBox();
 
@@ -321,7 +312,7 @@ namespace OOX
 		class CDelimiterPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDelimiterPr)
+			WritingElement_AdditionMethods(CDelimiterPr)
 			CDelimiterPr();
 			virtual ~CDelimiterPr();
 
@@ -345,7 +336,7 @@ namespace OOX
 		class CDelimiter : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDelimiter)
+			WritingElement_AdditionMethods(CDelimiter)
 			CDelimiter();
 			virtual ~CDelimiter();
 
@@ -364,7 +355,7 @@ namespace OOX
 		class CEqArrPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CEqArrPr)
+			WritingElement_AdditionMethods(CEqArrPr)
 			CEqArrPr();
 			virtual ~CEqArrPr();
 
@@ -388,7 +379,7 @@ namespace OOX
 		class CEqArr : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CEqArr)
+			WritingElement_AdditionMethods(CEqArr)
 			CEqArr();
 			virtual ~CEqArr();
 
@@ -407,7 +398,7 @@ namespace OOX
 		class CFPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFPr)
+			WritingElement_AdditionMethods(CFPr)
 			CFPr();
 			virtual ~CFPr();
 
@@ -427,7 +418,7 @@ namespace OOX
 		class CFraction : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFraction)
+			WritingElement_AdditionMethods(CFraction)
 			CFraction();
 			virtual ~CFraction();
 
@@ -448,7 +439,7 @@ namespace OOX
 		class CFuncPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFuncPr)
+			WritingElement_AdditionMethods(CFuncPr)
 			CFuncPr();
 			virtual ~CFuncPr();
 
@@ -467,7 +458,7 @@ namespace OOX
 		class CFunc : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFunc)
+			WritingElement_AdditionMethods(CFunc)
 			CFunc();
 			virtual ~CFunc();
 
@@ -488,7 +479,7 @@ namespace OOX
 		class CGroupChrPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CGroupChrPr)
+			WritingElement_AdditionMethods(CGroupChrPr)
 			CGroupChrPr();
 			virtual ~CGroupChrPr();
 
@@ -510,7 +501,7 @@ namespace OOX
 		class CGroupChr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CGroupChr)
+			WritingElement_AdditionMethods(CGroupChr)
 			CGroupChr();
 			virtual ~CGroupChr();
 
@@ -530,7 +521,7 @@ namespace OOX
 		class CLimLowPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLimLowPr)
+			WritingElement_AdditionMethods(CLimLowPr)
 			CLimLowPr();
 			virtual ~CLimLowPr();
 
@@ -549,7 +540,7 @@ namespace OOX
 		class CLimLow : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLimLow)
+			WritingElement_AdditionMethods(CLimLow)
 			CLimLow();
 			virtual ~CLimLow();
 
@@ -570,7 +561,7 @@ namespace OOX
 		class CLimUppPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLimUppPr)
+			WritingElement_AdditionMethods(CLimUppPr)
 			CLimUppPr();
 			virtual ~CLimUppPr();
 
@@ -589,7 +580,7 @@ namespace OOX
 		class CLimUpp : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLimUpp)
+			WritingElement_AdditionMethods(CLimUpp)
 			CLimUpp();
 			virtual ~CLimUpp();
 
@@ -610,7 +601,7 @@ namespace OOX
 		class CMathFont : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMathFont)
+			WritingElement_AdditionMethods(CMathFont)
 			CMathFont();
 			virtual ~CMathFont();
 
@@ -633,7 +624,7 @@ namespace OOX
 		class CMathPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMathPr)
+			WritingElement_AdditionMethods(CMathPr)
 			CMathPr();
 			virtual ~CMathPr();
 
@@ -667,7 +658,7 @@ namespace OOX
 		class CMcPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMcPr)
+			WritingElement_AdditionMethods(CMcPr)
 			CMcPr();
 			virtual ~CMcPr();
 
@@ -687,7 +678,7 @@ namespace OOX
 		class CMc : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMc)
+			WritingElement_AdditionMethods(CMc)
 			CMc();
 			virtual ~CMc();
 
@@ -706,7 +697,7 @@ namespace OOX
 		class CMcs : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CMcs)
+			WritingElement_AdditionMethods(CMcs)
 			CMcs();
 			virtual ~CMcs();
 
@@ -723,9 +714,8 @@ namespace OOX
 		class CMPr : public WritingElement
 		{
 		public:
-			CMPr();
-			CMPr(XmlUtils::CXmlNode &oNode);
-			CMPr(XmlUtils::CXmlLiteReader& oReader);
+			WritingElement_AdditionMethods(CMPr)
+			CMPr();			
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -750,7 +740,7 @@ namespace OOX
 		class CMr : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CMr)
+			WritingElement_AdditionMethods(CMr)
 			CMr();
 			virtual ~CMr();
 
@@ -771,7 +761,7 @@ namespace OOX
 		class CMatrix : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CMatrix)
+			WritingElement_AdditionMethods(CMatrix)
 			CMatrix();
 			virtual ~CMatrix();
 
@@ -790,7 +780,7 @@ namespace OOX
 		class CNaryPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNaryPr)
+			WritingElement_AdditionMethods(CNaryPr)
 			CNaryPr();
 			virtual ~CNaryPr();
 
@@ -814,7 +804,7 @@ namespace OOX
 		class CNary : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNary)
+			WritingElement_AdditionMethods(CNary)
 			CNary();
 			virtual ~CNary();
 
@@ -836,7 +826,7 @@ namespace OOX
 		class COMathParaPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COMathParaPr)
+			WritingElement_AdditionMethods(COMathParaPr)
 			COMathParaPr();
 			virtual ~COMathParaPr();
 
@@ -855,7 +845,7 @@ namespace OOX
 		class CPhantPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPhantPr)
+			WritingElement_AdditionMethods(CPhantPr)
 			CPhantPr();
 			virtual ~CPhantPr();
 
@@ -879,7 +869,7 @@ namespace OOX
 		class CPhant : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPhant)
+			WritingElement_AdditionMethods(CPhant)
 			CPhant();
 			virtual ~CPhant();
 
@@ -899,7 +889,7 @@ namespace OOX
 		class CMText : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMText)
+			WritingElement_AdditionMethods(CMText)
 			CMText();
 			virtual ~CMText();
 
@@ -923,7 +913,7 @@ namespace OOX
 		class CMRPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMRPr)
+			WritingElement_AdditionMethods(CMRPr)
 			CMRPr();
 			virtual ~CMRPr();
 
@@ -949,7 +939,7 @@ namespace OOX
 		class CMRun : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMRun)
+			WritingElement_AdditionMethods(CMRun)
 			CMRun();
 			virtual ~CMRun();
 
@@ -1005,7 +995,7 @@ namespace OOX
 		class CMDel : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMDel)
+			WritingElement_AdditionMethods(CMDel)
 			CMDel();
 			virtual ~CMDel();
 
@@ -1031,7 +1021,7 @@ namespace OOX
 		class CMIns : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMIns)
+			WritingElement_AdditionMethods(CMIns)
 			CMIns();
 			virtual ~CMIns();
 
@@ -1060,7 +1050,7 @@ namespace OOX
 		class CRadPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRadPr)
+			WritingElement_AdditionMethods(CRadPr)
 			CRadPr();
 			virtual ~CRadPr();
 
@@ -1081,7 +1071,7 @@ namespace OOX
 		class CRad : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRad)
+			WritingElement_AdditionMethods(CRad)
 			CRad();
 			virtual ~CRad();
 
@@ -1103,7 +1093,7 @@ namespace OOX
 		class CSPrePr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSPrePr)
+			WritingElement_AdditionMethods(CSPrePr)
 			CSPrePr();
 			virtual ~CSPrePr();
 
@@ -1123,7 +1113,7 @@ namespace OOX
 		class CSPre : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSPre)
+			WritingElement_AdditionMethods(CSPre)
 			CSPre();
 			virtual ~CSPre();
 
@@ -1146,7 +1136,7 @@ namespace OOX
 		class CSSubPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSubPr)
+			WritingElement_AdditionMethods(CSSubPr)
 			CSSubPr();
 			virtual ~CSSubPr();
 
@@ -1166,7 +1156,7 @@ namespace OOX
 		class CSSub : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSub)
+			WritingElement_AdditionMethods(CSSub)
 			CSSub();
 			virtual ~CSSub();
 
@@ -1188,7 +1178,7 @@ namespace OOX
 		class CSSubSupPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSubSupPr)
+			WritingElement_AdditionMethods(CSSubSupPr)
 			CSSubSupPr();
 			virtual ~CSSubSupPr();
 
@@ -1209,7 +1199,7 @@ namespace OOX
 		class CSSubSup : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSubSup)
+			WritingElement_AdditionMethods(CSSubSup)
 			CSSubSup();
 			virtual ~CSSubSup();
 
@@ -1232,7 +1222,7 @@ namespace OOX
 		class CSSupPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSupPr)
+			WritingElement_AdditionMethods(CSSupPr)
 			CSSupPr();
 			virtual ~CSSupPr();
 
@@ -1252,7 +1242,7 @@ namespace OOX
 		class CSSup : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSSup)
+			WritingElement_AdditionMethods(CSSup)
 			CSSup();
 			virtual ~CSSup();
 

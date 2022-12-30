@@ -23,9 +23,20 @@ class GlobalParamsAdaptor : public GlobalParams
 {
     std::wstring m_wsTempFolder;
     std::wstring m_wsCMapFolder;
+
+    BYTE* m_bCMapData;
+    DWORD m_nCMapDataLength;
 public:
     NSFonts::IFontManager *m_pFontManager;
-    GlobalParamsAdaptor(const char *filename) : GlobalParams(filename) {}
+    GlobalParamsAdaptor(const char *filename) : GlobalParams(filename)
+    {
+        m_bCMapData = NULL;
+        m_nCMapDataLength = 0;
+    }
+    ~GlobalParamsAdaptor()
+    {
+        RELEASEARRAYOBJECTS(m_bCMapData);
+    }
 
     void SetFontManager(NSFonts::IFontManager* pFontManager);
 
@@ -39,10 +50,13 @@ public:
     }
 
     void SetCMapFolder(const std::wstring &wsFolder);
-    void SetCMapMemory();
+    void SetCMapFile(const std::wstring &wsFile);
+    void SetCMapMemory(BYTE* pData, DWORD nSizeData);
+    bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
 private:
 
 	void AddNameToUnicode(const char* sFile);
+    void AddAllCMap(GString* sFolder);
 	void AddCMapFolder(const char* sCollection, GString* sFolder);
 };
 

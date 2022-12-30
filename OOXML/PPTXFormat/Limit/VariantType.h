@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class VariantType : public BaseLimit
-		{
-		public:
-			VariantType();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(VariantType)
 	} // namespace Limit
 } // namespace PPTX

@@ -66,7 +66,7 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE PresetShadowVal::GetBYTECode() const
+		unsigned char PresetShadowVal::GetBYTECode() const
 		{
 			if (L"shdw1" == m_strValue)		return 0;
 			if (L"shdw2" == m_strValue)		return 1;
@@ -91,7 +91,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void PresetShadowVal::SetBYTECode(const BYTE& src)
+		void PresetShadowVal::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

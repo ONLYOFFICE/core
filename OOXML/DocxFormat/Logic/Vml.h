@@ -32,17 +32,12 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/SimpleTypes_Vml.h"
 #include "../../XlsxFormat/Controls/Controls.h"
 
-#include "VmlWord.h"
 #include "Shape.h"
 
 #include "../WritingElement.h"
-#include "../RId.h"
-
 #include "VmlOfficeDrawing.h"
 
 namespace OOX
@@ -56,7 +51,7 @@ namespace OOX
 		class CVmlCommonElements : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CVmlCommonElements)
+			WritingElement_AdditionMethods(CVmlCommonElements)
 
 			CVmlCommonElements(OOX::Document *pMain = NULL);
 			virtual ~CVmlCommonElements();
@@ -148,7 +143,7 @@ namespace OOX
 		class CArc : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CArc)
+			WritingElement_AdditionMethods(CArc)
 
 			CArc(OOX::Document *pMain = NULL);
 			virtual ~CArc();
@@ -173,7 +168,7 @@ namespace OOX
 		class CCurve : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CCurve)
+			WritingElement_AdditionMethods(CCurve)
 
 			CCurve(OOX::Document *pMain = NULL);
 			virtual ~CCurve();
@@ -200,7 +195,7 @@ namespace OOX
 		class CF : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CF)
+			WritingElement_AdditionMethods(CF)
 
 			CF();
 			virtual ~CF();
@@ -225,7 +220,7 @@ namespace OOX
 		class CFill : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFill)
+			WritingElement_AdditionMethods(CFill)
 
 			CFill(OOX::Document *pMain = NULL);
 			virtual ~CFill();
@@ -284,7 +279,7 @@ namespace OOX
 		class CBackground : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CBackground)
+			WritingElement_AdditionMethods(CBackground)
 
 			CBackground(OOX::Document *pMain = NULL);
 			virtual ~CBackground();
@@ -309,7 +304,7 @@ namespace OOX
 		class CFormulas : public WritingElementWithChilds<OOX::Vml::CF>
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormulas)
+			WritingElement_AdditionMethods(CFormulas)
 
 			CFormulas(OOX::Document *pMain = NULL);
 			virtual ~CFormulas();
@@ -330,7 +325,7 @@ namespace OOX
 		class CH : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CH)
+			WritingElement_AdditionMethods(CH)
 
 			CH();
 			virtual ~CH();
@@ -364,7 +359,7 @@ namespace OOX
 		class CHandles : public WritingElementWithChilds<OOX::Vml::CH>
 		{
 		public:
-			WritingElement_AdditionConstructors(CHandles)
+			WritingElement_AdditionMethods(CHandles)
 
 			CHandles(OOX::Document *pMain = NULL);
 			virtual ~CHandles();
@@ -385,7 +380,7 @@ namespace OOX
 		class CImage : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CImage)
+			WritingElement_AdditionMethods(CImage)
 
 			CImage(OOX::Document *pMain = NULL);
 			virtual ~CImage();
@@ -418,7 +413,7 @@ namespace OOX
 		class CImageData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CImageData)
+			WritingElement_AdditionMethods(CImageData)
 
 			CImageData(OOX::Document *pMain = NULL);
 			virtual ~CImageData();
@@ -465,7 +460,7 @@ namespace OOX
 		class CLine : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CLine)
+			WritingElement_AdditionMethods(CLine)
 
 			CLine(OOX::Document *pMain = NULL);
 			virtual ~CLine();
@@ -491,7 +486,7 @@ namespace OOX
 		class COval : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(COval)
+			WritingElement_AdditionMethods(COval)
 
 			COval(OOX::Document *pMain = NULL);
 			virtual ~COval();
@@ -509,7 +504,7 @@ namespace OOX
 		class CPath : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPath)
+			WritingElement_AdditionMethods(CPath)
 
 			CPath(OOX::Document *pMain = NULL);
 			virtual ~CPath();
@@ -547,7 +542,7 @@ namespace OOX
 		class CPolyLine : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CPolyLine)
+			WritingElement_AdditionMethods(CPolyLine)
 
 			CPolyLine(OOX::Document *pMain = NULL);
 			virtual ~CPolyLine();
@@ -572,7 +567,7 @@ namespace OOX
 		class CRect : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CRect)
+			WritingElement_AdditionMethods(CRect)
 
 			CRect(OOX::Document *pMain = NULL);
 			virtual ~CRect();
@@ -591,7 +586,7 @@ namespace OOX
 		class CRoundRect : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CRoundRect)
+			WritingElement_AdditionMethods(CRoundRect)
 
 			CRoundRect(OOX::Document *pMain = NULL);
 			virtual ~CRoundRect();
@@ -615,7 +610,7 @@ namespace OOX
 		class CShadow : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CShadow)
+			WritingElement_AdditionMethods(CShadow)
 
 			CShadow(OOX::Document *pMain = NULL);
 			virtual ~CShadow();
@@ -649,7 +644,7 @@ namespace OOX
 		class CShapeType : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CShapeType)
+			WritingElement_AdditionMethods(CShapeType)
 
 			CShapeType(OOX::Document *pMain = NULL);
 			virtual ~CShapeType();
@@ -676,7 +671,7 @@ namespace OOX
 		class CShape : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CShape)
+			WritingElement_AdditionMethods(CShape)
 
 			CShape(OOX::Document *pMain = NULL);
 			virtual ~CShape();
@@ -703,7 +698,7 @@ namespace OOX
 		class CClientData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CClientData)
+			WritingElement_AdditionMethods(CClientData)
 
 			CClientData(OOX::Document *pMain = NULL);
 			virtual ~CClientData();
@@ -800,7 +795,7 @@ namespace OOX
 		class CStroke : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStroke)
+			WritingElement_AdditionMethods(CStroke)
 
 			CStroke(OOX::Document *pMain = NULL);
 			virtual ~CStroke();
@@ -858,7 +853,7 @@ namespace OOX
 		class CTextbox : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTextbox)
+			WritingElement_AdditionMethods(CTextbox)
 
 			CTextbox(OOX::Document *pMain = NULL);
 			virtual ~CTextbox();
@@ -889,7 +884,7 @@ namespace OOX
 		class CTextPath : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTextPath)
+			WritingElement_AdditionMethods(CTextPath)
 
 			CTextPath(OOX::Document *pMain = NULL);
 			virtual ~CTextPath();
@@ -922,7 +917,7 @@ namespace OOX
 		class CGroup : public CVmlCommonElements
 		{
 		public:
-			WritingElement_AdditionConstructors(CGroup);
+			WritingElement_AdditionMethods(CGroup);
 			
 			CGroup(OOX::Document *pMain = NULL);
 			virtual ~CGroup();
@@ -958,7 +953,7 @@ namespace OOX
 		class CShapeDefaults : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CShapeDefaults)
+			WritingElement_AdditionMethods(CShapeDefaults)
 
 			CShapeDefaults(OOX::Document *pMain = NULL);
 			virtual ~CShapeDefaults();

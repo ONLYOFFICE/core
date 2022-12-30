@@ -39,7 +39,6 @@ class CActionButtonSoundType : public CCustomShape
 {
 public:
 	CActionButtonSoundType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

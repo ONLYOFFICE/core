@@ -297,7 +297,7 @@ public:
 		SetTransform(mass[0], mass[1], mass[2], mass[3], mass[4], mass[5]);
 		return S_OK;
 	}
-	virtual HRESULT SetBaseTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) { return S_OK; };
+	virtual HRESULT SetBaseTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) { return S_OK; }
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) = 0;
 	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)	= 0;
 	virtual HRESULT ResetTransform() = 0;

@@ -39,7 +39,6 @@ class CCurvedUpArrowType : public CCustomShape
 {
 public:
 	CCurvedUpArrowType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinMiter;

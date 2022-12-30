@@ -38,67 +38,67 @@ namespace PPTX
 	{		
 		PrstDashVal::PrstDashVal()
 		{
-			m_strValue = _T("solid");
+			m_strValue = L"solid";
 		}
 		void PrstDashVal::set(const std::wstring& strValue)
 		{
-			if ((_T("dash") == strValue) ||
-				(_T("dashDot") == strValue) ||
-				(_T("dot") == strValue) ||
-				(_T("lgDash") == strValue) ||
-				(_T("lgDashDot") == strValue) ||
-				(_T("lgDashDotDot") == strValue) ||
-				(_T("solid") == strValue) ||
-				(_T("sysDash") == strValue) ||
-				(_T("sysDashDot") == strValue) ||
-				(_T("sysDashDotDot") == strValue) ||
-				(_T("sysDot") == strValue))
+			if ((L"dash" == strValue) ||
+				(L"dashDot" == strValue) ||
+				(L"dot" == strValue) ||
+				(L"lgDash" == strValue) ||
+				(L"lgDashDot" == strValue) ||
+				(L"lgDashDotDot" == strValue) ||
+				(L"solid" == strValue) ||
+				(L"sysDash" == strValue) ||
+				(L"sysDashDot" == strValue) ||
+				(L"sysDashDotDot" == strValue) ||
+				(L"sysDot" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE PrstDashVal::GetBYTECode() const
+		unsigned char PrstDashVal::GetBYTECode() const
 		{
-			if (_T("dash") == m_strValue)
+			if (L"dash" == m_strValue)
 				return 0;
-			if (_T("dashDot") == m_strValue)
+			if (L"dashDot" == m_strValue)
 				return 1;
-			if (_T("dot") == m_strValue)
+			if (L"dot" == m_strValue)
 				return 2;
-			if (_T("lgDash") == m_strValue)
+			if (L"lgDash" == m_strValue)
 				return 3;
-			if (_T("lgDashDot") == m_strValue)
+			if (L"lgDashDot" == m_strValue)
 				return 4;
-			if (_T("lgDashDotDot") == m_strValue)
+			if (L"lgDashDotDot" == m_strValue)
 				return 5;
-			if (_T("solid") == m_strValue)
+			if (L"solid" == m_strValue)
 				return 6;
-			if (_T("sysDash") == m_strValue)
+			if (L"sysDash" == m_strValue)
 				return 7;
-			if (_T("sysDashDot") == m_strValue)
+			if (L"sysDashDot" == m_strValue)
 				return 8;
-			if (_T("sysDashDotDot") == m_strValue)
+			if (L"sysDashDotDot" == m_strValue)
 				return 9;
-			if (_T("sysDot") == m_strValue)
+			if (L"sysDot" == m_strValue)
 				return 10;
 			return 6;
 		}
-		void PrstDashVal::SetBYTECode(const BYTE& src)
+		void PrstDashVal::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
-			case 0: m_strValue = _T("dash"); break;
-			case 1: m_strValue = _T("dashDot"); break;
-			case 2: m_strValue = _T("dot"); break;
-			case 3: m_strValue = _T("lgDash"); break;
-			case 4: m_strValue = _T("lgDashDot"); break;
-			case 5: m_strValue = _T("lgDashDotDot"); break;
-			case 6: m_strValue = _T("solid"); break;
-			case 7: m_strValue = _T("sysDash"); break;
-			case 8: m_strValue = _T("sysDashDot"); break;
-			case 9: m_strValue = _T("sysDashDotDot"); break;
-			case 10: m_strValue = _T("sysDot"); break;
-			default: m_strValue = _T("solid"); break;
+			case 0: m_strValue = L"dash"; break;
+			case 1: m_strValue = L"dashDot"; break;
+			case 2: m_strValue = L"dot"; break;
+			case 3: m_strValue = L"lgDash"; break;
+			case 4: m_strValue = L"lgDashDot"; break;
+			case 5: m_strValue = L"lgDashDotDot"; break;
+			case 6: m_strValue = L"solid"; break;
+			case 7: m_strValue = L"sysDash"; break;
+			case 8: m_strValue = L"sysDashDot"; break;
+			case 9: m_strValue = L"sysDashDotDot"; break;
+			case 10: m_strValue = L"sysDot"; break;
+			default: m_strValue = L"solid"; break;
 			}
 		}
 	} // namespace Limit

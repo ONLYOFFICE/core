@@ -42,7 +42,7 @@ namespace PPTX
 		class MoveTo : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(MoveTo)
+			WritingElement_AdditionMethods(MoveTo)
 			PPTX_LOGIC_BASE2(MoveTo)
 
 			MoveTo& operator=(const MoveTo& oSrc);

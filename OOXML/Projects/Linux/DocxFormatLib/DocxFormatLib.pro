@@ -221,7 +221,6 @@ HEADERS += \
 	../../../DocxFormat/External/HyperLink.h \
 	../../../DocxFormat/Logic/AlternateContent.h \
 	../../../DocxFormat/Logic/Annotations.h \
-	../../../DocxFormat/Logic/BaseLogicSettings.h \
 	../../../DocxFormat/Logic/Bdo.h \
 	../../../DocxFormat/Logic/Dir.h \
 	../../../DocxFormat/Logic/FldChar.h \

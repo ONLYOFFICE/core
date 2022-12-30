@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLColorDirection::TLColorDirection()
 		{
-			m_strValue = _T("cw");
+			m_strValue = L"cw";
 		}
 		void TLColorDirection::set(const std::wstring& strValue)
 		{
-			if ((_T("ccw") == strValue) ||
-				(_T("cw") == strValue))
+			if ((L"ccw" == strValue) ||
+				(L"cw" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLColorDirection::GetBYTECode() const
+		unsigned char TLColorDirection::GetBYTECode() const
 		{
 			if (L"ccw" == m_strValue)	return 0;
 			if (L"cw" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLColorDirection::SetBYTECode(const BYTE& src)
+		void TLColorDirection::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

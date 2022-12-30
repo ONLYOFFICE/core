@@ -33,22 +33,10 @@
 
 #include "BaseLimit.h"
 
-
 namespace PPTX
 {
 	namespace Limit
 	{
-		class LineEndSize : public BaseLimit
-		{
-		public:
-			LineEndSize();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(LineEndSize)
 	} // namespace Limit
 } // namespace PPTX

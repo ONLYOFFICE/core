@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TLSyncBehavior : public BaseLimit
-		{
-		public:
-			TLSyncBehavior();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& val);
-		};
+		DEFINE_LIMIT_BASE(TLSyncBehavior)
 	} // namespace Limit
 } // namespace PPTX

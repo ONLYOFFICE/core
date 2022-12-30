@@ -30,23 +30,13 @@
  *
  */
 #pragma once
+
 #include "BaseLimit.h"
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class ColorSchemeIndex : public BaseLimit
-		{
-		public:
-			ColorSchemeIndex();
-
-			_USE_STRING_OPERATOR
-
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& val);
-		};
+		DEFINE_LIMIT_BASE(ColorSchemeIndex)
 	} // namespace Limit
 } // namespace PPTX

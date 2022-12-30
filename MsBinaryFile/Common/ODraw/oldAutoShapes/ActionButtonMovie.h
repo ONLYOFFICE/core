@@ -39,7 +39,6 @@ class CActionButtonMovieType : public CCustomShape
 {
 public:
 	CActionButtonMovieType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

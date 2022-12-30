@@ -40,7 +40,7 @@ namespace OOX
 		class CStyleLbl : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CStyleLbl)
+			WritingElement_AdditionMethods(CStyleLbl)
 
 			CStyleLbl();
 			virtual ~CStyleLbl();

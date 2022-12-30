@@ -72,11 +72,11 @@ namespace OOX
 						WritingElement *pItem = NULL;
 
 						if ( _T("w:r") == sName )
-							pItem = new CRun( oItem );
+							AssignPtrXmlContent(pItem, CRun, oItem)
 						else if ( _T("m:oMath") == sName )
-							pItem = new COMath( oItem );
+							AssignPtrXmlContent(pItem, COMath, oItem)
 						else if ( _T("m:oMathParaPr") == sName )
-							pItem = new COMathParaPr( oItem );
+							AssignPtrXmlContent(pItem, COMathParaPr, oItem)
 
 						if ( pItem )
 							m_arrItems.push_back( pItem );
@@ -96,11 +96,11 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if ( _T("m:oMath") == sName )
-					pItem = new COMath( oReader );
+					AssignPtrXmlContent(pItem, COMath, oReader)
 				else if ( _T("m:oMathParaPr") == sName )
-					pItem = new COMathParaPr( oReader );
+					AssignPtrXmlContent(pItem, COMathParaPr, oReader)
 				else if ( _T("w:r") == sName )
-					pItem = new CRun( oReader );
+					AssignPtrXmlContent(pItem, CRun, oReader)
 
 				if ( pItem )
 					m_arrItems.push_back( pItem );

@@ -39,7 +39,6 @@ class CBracketPairType : public CCustomShape
 {
 public:
 	CBracketPairType()
-
     {
         m_bConcentricFill = true;
         m_eJoin = ODRAW::lineJoinRound;

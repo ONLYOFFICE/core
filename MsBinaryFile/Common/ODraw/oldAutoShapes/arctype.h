@@ -39,7 +39,6 @@ class CArcType : public CCustomShape
 {
 public:
 	CArcType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinRound;

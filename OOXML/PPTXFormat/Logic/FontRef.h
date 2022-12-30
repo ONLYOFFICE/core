@@ -44,7 +44,7 @@ namespace PPTX
 		class FontRef : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(FontRef)
+			WritingElement_AdditionMethods(FontRef)
 
 			FontRef();
 

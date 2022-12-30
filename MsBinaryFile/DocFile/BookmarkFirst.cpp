@@ -34,45 +34,67 @@
 
 namespace DocFileFormat
 {
+	  AtnBookmark::AtnBookmark()
+	  {
+	  }
+	  AtnBookmark::~AtnBookmark()
+	  {
+	  }
+	  ByteStructure* AtnBookmark::ConstructObject(VirtualStreamReader* reader, int length)
+	  {
+		  AtnBookmark *newObject = new AtnBookmark();
+
+		  newObject->bmc = reader->ReadUInt16(); //0x0100
+		  newObject->lTag = reader->ReadUInt32();
+
+		  unsigned int lTagOld = reader->ReadUInt32();
+
+		  return static_cast<ByteStructure*>(newObject);
+	  }
+//---------------------------------------------------------------------------------------------
+	  ProtInfoBookmark::ProtInfoBookmark()
+	  {
+	  }
+	  ProtInfoBookmark::~ProtInfoBookmark()
+	  {
+	  }
+	  ByteStructure* ProtInfoBookmark::ConstructObject(VirtualStreamReader* reader, int length)
+	  {
+		  ProtInfoBookmark *newObject = new ProtInfoBookmark();
+
+		  newObject->id = reader->ReadUInt32(); 
+		  
+		  newObject->uidSel = reader->ReadUInt16();
+		  newObject->iProt = reader->ReadUInt16();
+		  
+		  newObject->i = reader->ReadUInt16();
+		  newObject->fUseMe = reader->ReadUInt16();
+
+		  return static_cast<ByteStructure*>(newObject);
+	  }
+//---------------------------------------------------------------------------------------------
 	  BookmarkFirst::BookmarkFirst()
 	  {
 	  }
-	  short BookmarkFirst::GetIndex() const
-	  {
-	    return this->ibkl;
-	  }
-	  short BookmarkFirst::GetInformation() const
-	  {
-	    return this->bkc;
-	  }	
 	  BookmarkFirst::~BookmarkFirst()
 	  {
 	  }
-	  ByteStructure* BookmarkFirst::ConstructObject( VirtualStreamReader* reader, int length )
-      {
-        BookmarkFirst *newObject = new BookmarkFirst();
-
-	    newObject->ibkl = reader->ReadInt16();
-        newObject->bkc = reader->ReadInt16();
-
-	    return static_cast<ByteStructure*>( newObject );
-      }    
-
-	  AtnBookmarkFirst::AtnBookmarkFirst()
+	  ByteStructure* BookmarkFirst::ConstructObject(VirtualStreamReader* reader, int length)
 	  {
-	  }
-	  AtnBookmarkFirst::~AtnBookmarkFirst()
-	  {
-	  }
-	  ByteStructure* AtnBookmarkFirst::ConstructObject( VirtualStreamReader* reader, int length )
-      {
-        AtnBookmarkFirst *newObject = new AtnBookmarkFirst();
+		  BookmarkFirst *newObject = new BookmarkFirst();
 
-	    newObject->bmc = reader->ReadUInt16(); //0x0100
-        newObject->lTag = reader->ReadUInt32();
-        
-		unsigned int lTagOld = reader->ReadUInt32();
+		  newObject->id = reader->ReadUInt32();
+		  
+		  newObject->itcFirst = reader->ReadByte();
+		  newObject->fPub = GETBIT(newObject->itcFirst, 7);
+		  newObject->itcFirst = GETBITS(newObject->itcFirst, 0, 6);
+		  
+		  newObject->itcLim = reader->ReadByte();
+		  newObject->fNative = GETBIT(newObject->itcLim, 6);
+		  newObject->fCol = GETBIT(newObject->itcLim, 7);
+		  newObject->itcLim = GETBITS(newObject->itcLim, 0, 5);
 
-	    return static_cast<ByteStructure*>( newObject );
-      }  
+		  return static_cast<ByteStructure*>(newObject);
+	  }
+
 }

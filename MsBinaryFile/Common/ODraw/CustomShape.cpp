@@ -41,23 +41,117 @@
 //-------------------------------------------------------------------------------
 #define CREATE_BY_SPT(SHAPE_TYPE, CLASS_SHAPE_NAME)								\
 	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\
-//-------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------
 
 using namespace ODRAW;
 
 namespace NSCustomShapesConvert
 {
+CCustomShape::CCustomShape() : CBaseShape()
+{
+	m_eType = oox::msosptNotPrimitive;
+}
+CCustomShape::~CCustomShape()
+{
+}
+void CCustomShape::AddGuide(const std::wstring& strGuide)
+{
+	m_oManager.AddFormula(strGuide);
+}
+bool CCustomShape::LoadAdjustHandlesList(const std::wstring& xml)
+{
+	return true;
+}
+bool CCustomShape::LoadConnectorsList(const std::wstring& xml)
+{
+	return true;
+}
+bool CCustomShape::LoadTextRect(const std::wstring& xml)
+{
+	std::vector<std::wstring> oArray;
+	NSStringUtils::ParseString(_T(";"), xml, oArray);
+
+	LONG lCount = (LONG)oArray.size();
+
+	if (lCount <= 0)
+		return true;
+
+	m_arStringTextRects.clear();
+	for (LONG i = 0; i < lCount; ++i)
+	{
+		m_arStringTextRects.push_back(oArray[i]);
+	}
+
+	return true;
+}
+bool CCustomShape::LoadPathList(const std::wstring& xml)
+{
+	m_strPath = xml;
+
+	m_oPath.FromXML(xml, m_oManager);
+	return true;
+}
+bool CCustomShape::SetAdjustment(long index, long value)
+{
+	if (index < (long)m_arAdjustments.size() && index >= 0)
+	{
+		m_arAdjustments[index] =  value;
+		return TRUE;
+	}
+	return FALSE;
+}
+void CCustomShape::ReCalculate()
+{
+	m_oManager.Clear(&m_arAdjustments);
+
+	m_oManager.CalculateResults();
+
+	if (_T("") == m_strPath)
+		return;
+
+	LoadPathList(m_strPath);
+}
+bool CCustomShape::SetProperties(CBaseShape* Shape)
+{
+	if(Shape == NULL)
+		return false;
+
+	m_oManager = ((CCustomShape*)Shape)->m_oManager;
+
+	//m_strPathLimoX = ((CCustomShape*)Shape)->m_strPathLimoX;
+	//m_strPathLimoY = ((CCustomShape*)Shape)->m_strPathLimoY;
+
+	//m_arStringTextRects.clear();
+	//m_arStringTextRects.insert(m_arStringTextRects.end(), ((CCustomShape*)Shape)->m_arStringTextRects.begin(), ((CCustomShape*)Shape)->m_arStringTextRects.end());
+
+	return CBaseShape::SetProperties(Shape);
+}
+bool CCustomShape::SetShapeType(oox::MSOSPT type)
+{
+	CCustomShape* l_pShape = CreateByType(type);
+	if(l_pShape != NULL)
+	{
+		m_eType = type;
+
+		SetProperties(l_pShape);
+		delete l_pShape;
+		return true;
+	}
+
+	m_eType = oox::msosptNotPrimitive;
+	return false;
+}
 CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 {
 	CCustomShape* pShape = NULL;
 	switch (type)
 	{
-// msosptNotchedCircularArrow	0x00000064 A value that SHOULD NOT be used.
-// msosptHostControl			0x000000C9 A value that SHOULD NOT be used.
+		// msosptNotchedCircularArrow	0x00000064 A value that SHOULD NOT be used.
+		// msosptHostControl			0x000000C9 A value that SHOULD NOT be used.
 
-	case sptNotchedCircularArrow:			
-	case sptHostControl:			
-	case 0: { pShape = new CRectangleType(); break; }
+		case sptNotchedCircularArrow:
+		case sptHostControl:
+		case 0: { pShape = new CRectangleType(); break; }
 		//CREATE_BY_SPT(sptMin, CLineType)
 
 		CREATE_BY_SPT(sptAccentBorderCallout90, CAccentBorderCallout90Type)
@@ -92,7 +186,7 @@ CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 		CREATE_BY_SPT(sptActionButtonDocument, CActionButtonDocType)
 		CREATE_BY_SPT(sptActionButtonSound, CActionButtonSoundType)
 		CREATE_BY_SPT(sptActionButtonMovie, CActionButtonMovieType)
-		
+
 		CREATE_BY_SPT(sptArc, CArcType)
 		CREATE_BY_SPT(sptLine, CLineType)
 
@@ -102,7 +196,7 @@ CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 		CREATE_BY_SPT(sptBlockArc, CBlockArcType)
 		CREATE_BY_SPT(sptBracePair, CBracePairType)
 		CREATE_BY_SPT(sptBracketPair, CBracketPairType)
-		
+
 		CREATE_BY_SPT(sptCan, CCanType)
 		CREATE_BY_SPT(sptChevron, CChevronType)
 		CREATE_BY_SPT(sptCircularArrow, CCircularArrowType)
@@ -226,61 +320,61 @@ CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 		CREATE_BY_SPT(sptDoubleWave, CWaveDoubleType)
 
 		case sptBentConnector2:
-		case sptBentConnector3:    
+		case sptBentConnector3:
 		case sptBentConnector4:
 		case sptBentConnector5:
-			{
-				pShape = new CBentConnectorType(); 
-				break;
-			}
+		{
+			pShape = new CBentConnectorType();
+			break;
+		}
 		case sptCurvedConnector2:
-		case sptCurvedConnector3:    
+		case sptCurvedConnector3:
 		case sptCurvedConnector4:
 		case sptCurvedConnector5:
-			{
-				pShape = new CCurvedConnectorType();
-				break;
-			}
+		{
+			pShape = new CCurvedConnectorType();
+			break;
+		}
 
-		case sptTextPlainText:    
-		case sptTextStop:  
-		case sptTextTriangle:   
+		case sptTextPlainText:
+		case sptTextStop:
+		case sptTextTriangle:
 		case sptTextTriangleInverted:
 		case sptTextChevron:
 		case sptTextChevronInverted:
 		case sptTextRingInside:
 		case sptTextRingOutside:
-		case sptTextArchUpCurve:   
-		case sptTextArchDownCurve: 
-		case sptTextCircleCurve: 
-		case sptTextButtonCurve: 
-		case sptTextArchUpPour:  
-		case sptTextArchDownPour: 
+		case sptTextArchUpCurve:
+		case sptTextArchDownCurve:
+		case sptTextCircleCurve:
+		case sptTextButtonCurve:
+		case sptTextArchUpPour:
+		case sptTextArchDownPour:
 		case sptTextCirclePour:
-		case sptTextButtonPour:  
-		case sptTextCurveUp:  
-		case sptTextCurveDown: 
-		case sptTextCascadeUp:   
+		case sptTextButtonPour:
+		case sptTextCurveUp:
+		case sptTextCurveDown:
+		case sptTextCascadeUp:
 		case sptTextCascadeDown:
-		case sptTextWave1:   
-		case sptTextWave2:   
-		case sptTextWave3:   
-		case sptTextWave4: 
-		case sptTextInflate:   
-		case sptTextDeflate:    
-		case sptTextInflateBottom:  
-		case sptTextDeflateBottom:  
+		case sptTextWave1:
+		case sptTextWave2:
+		case sptTextWave3:
+		case sptTextWave4:
+		case sptTextInflate:
+		case sptTextDeflate:
+		case sptTextInflateBottom:
+		case sptTextDeflateBottom:
 		case sptTextInflateTop:
-		case sptTextDeflateTop:   
-		case sptTextDeflateInflate:   
+		case sptTextDeflateTop:
+		case sptTextDeflateInflate:
 		case sptTextDeflateInflateDeflate:
-		case sptTextFadeRight: 
-		case sptTextFadeLeft:   
-		case sptTextFadeUp:   
-		case sptTextFadeDown:   
-		case sptTextSlantUp:    
-		case sptTextSlantDown:   
-		case sptTextCanUp:   
+		case sptTextFadeRight:
+		case sptTextFadeLeft:
+		case sptTextFadeUp:
+		case sptTextFadeDown:
+		case sptTextSlantUp:
+		case sptTextSlantDown:
+		case sptTextCanUp:
 		case sptTextCanDown:
 		{
 			pShape = new CTextboxType();
@@ -290,9 +384,8 @@ CCustomShape* CCustomShape::CreateByType(oox::MSOSPT type)
 	};
 
 	if (NULL != pShape)
-		pShape->m_eType = type;
+	pShape->m_eType = type;
 
 	return pShape;
 }
-
 }

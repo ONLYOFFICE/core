@@ -30,11 +30,8 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLRESTART_INCLUDE_H_
-#define PPTX_LIMIT_TLRESTART_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
@@ -44,16 +41,9 @@ namespace PPTX
 		{
 		public:
 			TLRestart();
-			TLRestart(UINT restart);
-
-			_USE_STRING_OPERATOR
+			TLRestart(unsigned int restart);
 				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			DEFINE_LIMIT_PVIRTUAL
 		};
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_TLRESTART_INCLUDE_H_

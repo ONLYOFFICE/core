@@ -43,7 +43,7 @@ namespace PPTX
 		class BuClr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuClr)
+			WritingElement_AdditionMethods(BuClr)
 			PPTX_LOGIC_BASE2(BuClr)
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

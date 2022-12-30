@@ -41,7 +41,7 @@ namespace OOX
 		class CExternalSheetNames : public WritingElementWithChilds<ComplexTypes::Spreadsheet::String>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalSheetNames)
+			WritingElement_AdditionMethods(CExternalSheetNames)
             WritingElement_XlsbConstructors(CExternalSheetNames)
 			CExternalSheetNames()
 			{
@@ -68,7 +68,7 @@ namespace OOX
 		class CExternalDefinedName : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalDefinedName)
+			WritingElement_AdditionMethods(CExternalDefinedName)
             WritingElement_XlsbConstructors(CExternalDefinedName)
 			CExternalDefinedName()
 			{
@@ -101,7 +101,7 @@ namespace OOX
 		class CExternalDefinedNames : public WritingElementWithChilds<CExternalDefinedName>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalDefinedNames)
+			WritingElement_AdditionMethods(CExternalDefinedNames)
             WritingElement_XlsbVectorConstructors(CExternalDefinedNames)
 			CExternalDefinedNames()
 			{
@@ -125,7 +125,7 @@ namespace OOX
 		class CExternalCell : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalCell)
+			WritingElement_AdditionMethods(CExternalCell)
             WritingElement_XlsbConstructors(CExternalCell)
 			CExternalCell()
 			{
@@ -159,7 +159,7 @@ namespace OOX
 		class CExternalRow : public WritingElementWithChilds<CExternalCell>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalRow)
+			WritingElement_AdditionMethods(CExternalRow)
             WritingElement_XlsbConstructors(CExternalRow)
 			CExternalRow()
 			{
@@ -189,7 +189,7 @@ namespace OOX
 		class CExternalSheetData : public WritingElementWithChilds<CExternalRow>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalSheetData)
+			WritingElement_AdditionMethods(CExternalSheetData)
             WritingElement_XlsbConstructors(CExternalSheetData)
 			CExternalSheetData()
 			{
@@ -220,7 +220,7 @@ namespace OOX
 		class CExternalSheetDataSet : public WritingElementWithChilds<CExternalSheetData>
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalSheetDataSet)
+			WritingElement_AdditionMethods(CExternalSheetDataSet)
             WritingElement_XlsbVectorConstructors(CExternalSheetDataSet)
 			CExternalSheetDataSet()
 			{
@@ -246,7 +246,7 @@ namespace OOX
 		class CExternalBook : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExternalBook)
+			WritingElement_AdditionMethods(CExternalBook)
             WritingElement_XlsbConstructors(CExternalBook)
 			CExternalBook()
 			{
@@ -280,7 +280,7 @@ namespace OOX
 		class CDdeValue : public WritingElementWithChilds<CText>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDdeValue)
+			WritingElement_AdditionMethods(CDdeValue)
             WritingElement_XlsbConstructors(CDdeValue)
 			CDdeValue()
 			{
@@ -310,7 +310,7 @@ namespace OOX
 		class CDdeValues : public WritingElementWithChilds<CDdeValue>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDdeValues)
+			WritingElement_AdditionMethods(CDdeValues)
             WritingElement_XlsbConstructors(CDdeValues)
 			CDdeValues()
 			{
@@ -341,7 +341,7 @@ namespace OOX
 		class CDdeItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDdeItem)
+			WritingElement_AdditionMethods(CDdeItem)
             WritingElement_XlsbConstructors(CDdeItem)
 			CDdeItem()
 			{
@@ -377,7 +377,7 @@ namespace OOX
 		class CDdeItems : public WritingElementWithChilds<CDdeItem>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDdeItems)
+			WritingElement_AdditionMethods(CDdeItems)
             WritingElement_XlsbConstructors(CDdeItems)
 			CDdeItems()
 			{
@@ -403,7 +403,7 @@ namespace OOX
 		class CDdeLink : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDdeLink)
+			WritingElement_AdditionMethods(CDdeLink)
             WritingElement_XlsbConstructors(CDdeLink)
 			CDdeLink()
 			{
@@ -438,7 +438,7 @@ namespace OOX
 		class COleItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleItem)
+			WritingElement_AdditionMethods(COleItem)
             WritingElement_XlsbConstructors(COleItem)
 			COleItem()
 			{
@@ -471,7 +471,7 @@ namespace OOX
 		class COleItems : public WritingElementWithChilds<COleItem>
 		{
 		public:
-			WritingElement_AdditionConstructors(COleItems)
+			WritingElement_AdditionMethods(COleItems)
             WritingElement_XlsbConstructors(COleItems)
 			COleItems()
 			{
@@ -495,7 +495,7 @@ namespace OOX
 		class COleLink : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COleLink)
+			WritingElement_AdditionMethods(COleLink)
             WritingElement_XlsbConstructors(COleLink)
 			COleLink()
 			{

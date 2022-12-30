@@ -45,7 +45,7 @@ namespace PPTX
 		class PrstShdw : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(PrstShdw)
+			WritingElement_AdditionMethods(PrstShdw)
 			PPTX_LOGIC_BASE2(PrstShdw)
 
 			PrstShdw& operator=(const PrstShdw& oSrc);

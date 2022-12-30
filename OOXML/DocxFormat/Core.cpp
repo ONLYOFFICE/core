@@ -29,9 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "Core.h"
+#include "Docx.h"
 #include "../XlsxFormat/Xlsx.h"
 #include "../PPTXFormat/Core.h"
+
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 namespace OOX
 {

@@ -295,9 +295,11 @@ namespace OOX
 					CStyle2003 *style = new CStyle2003(WritingElement::m_pMainDocument);
 					style->fromXML(oReader);
 
-					if ((style->m_sName.IsInit()) && (style->m_sName == L"Normal"))
+					if (	((style->m_sName.IsInit())	&& (style->m_sName == L"Normal"	|| style->m_sName == L"Default"))
+						||	((style->m_sId.IsInit())	&& (style->m_sId == L"Normal"	|| style->m_sId == L"Default")))
+					{
 						m_nStyleNormal2003 = m_arrStyles2003.size();
-
+					}
 					m_arrStyles2003.push_back(style);
 				}
 				else if (L"extLst" == sName)

@@ -39,7 +39,6 @@ class CBevelType : public CCustomShape
 {
 public:
 	CBevelType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

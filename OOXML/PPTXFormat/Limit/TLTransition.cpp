@@ -38,18 +38,18 @@ namespace PPTX
 	{		
 		TLTransition::TLTransition()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void TLTransition::set(const std::wstring& strValue)
 		{
-			if ((_T("in") == strValue) ||
-				(_T("out") == strValue) ||
-				(_T("none") == strValue))
+			if ((L"in" == strValue) ||
+				(L"out" == strValue) ||
+				(L"none" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLTransition::GetBYTECode() const
+		unsigned char TLTransition::GetBYTECode() const
 		{
 			if (L"in" == m_strValue)	return 0;
 			if (L"out" == m_strValue)	return 1;
@@ -57,7 +57,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLTransition::SetBYTECode(const BYTE& src)
+		void TLTransition::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

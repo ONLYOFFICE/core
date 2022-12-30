@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLNextAc::TLNextAc()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void TLNextAc::set(const std::wstring& strValue)
 		{
-			if ((_T("none") == strValue) ||
-				(_T("seek") == strValue))
+			if ((L"none" == strValue) ||
+				(L"seek" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLNextAc::GetBYTECode() const
+		unsigned char TLNextAc::GetBYTECode() const
 		{
 			if (L"none" == m_strValue)	return 0;
 			if (L"seek" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLNextAc::SetBYTECode(const BYTE& src)
+		void TLNextAc::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

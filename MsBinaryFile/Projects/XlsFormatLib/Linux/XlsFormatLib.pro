@@ -20,8 +20,8 @@ include(../../../../Common/base.pri)
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
 DEFINES +=  UNICODE \
-        _UNICODE \
-        DONT_WRITE_EMBEDDED_FONTS
+			_UNICODE \
+			DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += ../../../XlsFile/Format
 INCLUDEPATH += ../../../Common
@@ -367,6 +367,7 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logic/Biff_records/SXPair.cpp \
 	../../../XlsFile/Format/Logic/Biff_records/SXRng.cpp \
 	../../../XlsFile/Format/Logic/Biff_records/SxIsxoper.cpp \
+	\
 	../../../XlsFile/Format/Logic/Biff_structures/AddinUdf.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/AF12Criteria.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/AFDOper.cpp \
@@ -649,6 +650,7 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logic/Biff_structures/Feat11Fmla.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/Feat11WSSListInfo.cpp \
 	../../../XlsFile/Format/Logic/Biff_structures/Feat11XMap.cpp \
+	\
 	../../../XlsFile/Format/Logic/Biff_unions/AI.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/AUTOFILTER_bu.cpp \
@@ -782,10 +784,12 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logic/Biff_unions/SXFORMULA_bu.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/SXOPER.cpp \
 	../../../XlsFile/Format/Logic/Biff_unions/SXRANGE.cpp \
+	\
 	../../../Common/SummaryInformation/PropertyFactory.cpp \
 	../../../Common/SummaryInformation/PropertySet.cpp \
 	../../../Common/SummaryInformation/PropertySetStream.cpp \
 	../../../Common/SummaryInformation/CodePageOle.cpp \
+	\
 	../../../XlsFile/Format/Logic/EncryptionStream.cpp \
 	../../../XlsFile/Format/Logic/AnyObject.cpp \
 	../../../XlsFile/Format/Logic/AnySubstream.cpp \
@@ -817,6 +821,7 @@ SOURCES +=  \
 	../../../XlsFile/Format/Binary/CFStreamCacheReader.cpp \
 	../../../XlsFile/Format/Binary/CFStreamCacheWriter.cpp \
 	../../../XlsFile/Format/Binary/CompoundFile.cpp \
+	\
 	../../../XlsFile/Format/Crypt/rtl/cipher.cpp \
 	../../../XlsFile/Format/Crypt/rtl/digest.cpp \
 	../../../XlsFile/Format/Crypt/BiffDecoder_RCF.cpp \
@@ -824,11 +829,19 @@ SOURCES +=  \
 	../../../XlsFile/Format/Crypt/Decryptor.cpp \
 	../../../XlsFile/Format/Crypt/RC4Crypt.cpp \
 	../../../XlsFile/Format/Crypt/XORCrypt.cpp \
+	\
 	../../../XlsFile/Format/Logging/Log.cpp \
 	../../../XlsFile/Format/Logging/Logger.cpp \
+	\
 	../../../Common/ODraw/FormulaShape.cpp \
 	../../../Common/ODraw/CustomShape.cpp \
-	../../../Common/ODraw/BaseShape_1.cpp \
+	../../../Common/ODraw/BaseShape.cpp \
+	../../../Common/ODraw/CustomGeomShape.cpp \
+	../../../Common/ODraw/CustomShapeConvert.cpp \
+	../../../Common/ODraw/GraphicsPath.cpp \
+	../../../Common/ODraw/PathShape.cpp \
+	../../../Common/ODraw/XmlWriter.cpp \
+	\
 	../../../XlsFile/Converter/ConvertXls2Xlsx.cpp \
 	../../../XlsFile/Converter/external_items.cpp \
 	../../../XlsFile/Converter/mediaitems_utils.cpp \
@@ -1166,6 +1179,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_records/XFCRC.h \
 	../../../XlsFile/Format/Logic/Biff_records/XFExt.h \
 	../../../XlsFile/Format/Logic/Biff_records/YMult.h \
+	\
 	../../../XlsFile/Format/Binary/BinSmartPointers.h \
 	../../../XlsFile/Format/Binary/CFRecord.h \
 	../../../XlsFile/Format/Binary/CFRecordType.h \
@@ -1173,6 +1187,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Binary/CFStreamCacheReader.h \
 	../../../XlsFile/Format/Binary/CFStreamCacheWriter.h \
 	../../../XlsFile/Format/Binary/CompoundFile.h \
+	\
 	../../../XlsFile/Format/Crypt/rtl/cipher.h \
 	../../../XlsFile/Format/Crypt/rtl/digest.h \
 	../../../XlsFile/Format/Crypt/BiffDecoder_RCF.h \
@@ -1181,8 +1196,10 @@ HEADERS +=  \
 	../../../XlsFile/Format/Crypt/Decryptor.h \
 	../../../XlsFile/Format/Crypt/RC4Crypt.h \
 	../../../XlsFile/Format/Crypt/XORCrypt.h \
+	\
 	../../../XlsFile/Format/Logging/Log.h \
 	../../../XlsFile/Format/Logging/Logger.h \
+	\
 	../../../XlsFile/Format/Logic/Biff_structures/AddinUdf.h \
 	../../../XlsFile/Format/Logic/Biff_structures/AF12Criteria.h \
 	../../../XlsFile/Format/Logic/Biff_structures/AF12CellIcon.h \
@@ -1473,6 +1490,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_structures/ODRAW/OfficeArtSplitMenuColorContainer.h \
 	../../../XlsFile/Format/Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h \
 	../../../XlsFile/Format/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h \
+	\
 	../../../XlsFile/Format/Logic/Biff_unions/AI.h \
 	../../../XlsFile/Format/Logic/Biff_unions/ATTACHEDLABEL.h \
 	../../../XlsFile/Format/Logic/Biff_unions/AUTOFILTER.h \
@@ -1599,12 +1617,15 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_unions/UNKNOWNFRT.h \
 	../../../XlsFile/Format/Logic/Biff_unions/WINDOW.h \
 	../../../XlsFile/Format/Logic/Biff_unions/XFS.h \
+	\
 	../../../Common/SummaryInformation/Property.h \
 	../../../Common/SummaryInformation/PropertyFactory.h \
 	../../../Common/SummaryInformation/PropertySet.h \
 	../../../Common/SummaryInformation/PropertySetStream.h \
+	\
 	../../../Common/Utils/OptPtr.h \
 	../../../Common/Utils/simple_xml_writer.h \
+	\
 	../../../XlsFile/Converter/ConvertXls2Xlsx.h \
 	../../../XlsFile/Converter/external_items.h \
 	../../../XlsFile/Converter/mediaitems_utils.h \
@@ -1627,6 +1648,7 @@ HEADERS +=  \
 	../../../XlsFile/Converter/xlsx_textcontext.h \
 	../../../XlsFile/Converter/xlsx_external_context.h \
 	../../../XlsFile/Converter/xlsx_activeX_context.h \
+	\
 	../../../XlsFile/Format/Logic/EncryptionStream.h \
 	../../../XlsFile/Format/Logic/AnyObject.h \
 	../../../XlsFile/Format/Logic/AnySubstream.h \
@@ -1649,6 +1671,7 @@ HEADERS +=  \
 	../../../XlsFile/Format/Logic/Biff_structures/SharedProperty.h \
 	../../../XlsFile/Converter/xlsx_chart_context.h \
 	../../../XlsFile/Format/Logic/Biff_records/FrtWrapper.h \
+	\
 	../../../Common/ODraw/BaseShape.h \
 	../../../Common/ODraw/BinaryReader.h \
 	../../../Common/ODraw/CustomGeomShape.h \
@@ -1658,6 +1681,16 @@ HEADERS +=  \
 	../../../Common/ODraw/PathShape.h \
 	../../../Common/ODraw/PPTShapeEnum.h \
 	../../../Common/ODraw/PresetShapesHeader.h \
+	\
+	../../../Common/ODraw/XmlWriter.h \
+	../../../Common/ODraw/CustomShape.h \
+	../../../XlsFile/Format/Logic/Biff_structures/AFDOperBoolErr.h \
+	../../../XlsFile/Format/Logic/Biff_structures/AFDOperXNum.h \
+	../../../XlsFile/Format/Logic/Biff_unions/IMDATAOBJECT.h \
+	../../../XlsFile/Format/Logic/Biff_records/IMDATA.h \
+	../../../XlsFile/Format/Logic/Biff_structures/CFDatabar.h \
+	../../../XlsFile/Format/Logic/Biff_structures/CFGradient.h \
+	\
 	../../../Common/ODraw/oldAutoShapes/accentbordercallout1type.h \
 	../../../Common/ODraw/oldAutoShapes/accentbordercallout3type.h \
 	../../../Common/ODraw/oldAutoShapes/accentbordercallout90type.h \
@@ -1798,12 +1831,4 @@ HEADERS +=  \
 	../../../Common/ODraw/oldAutoShapes/WaveType.h \
 	../../../Common/ODraw/oldAutoShapes/WedgeEllipseCalloutType.h \
 	../../../Common/ODraw/oldAutoShapes/WedgeRectCalloutType.h \
-	../../../Common/ODraw/oldAutoShapes/WedgeRoundedRectCalloutType.h \
-	../../../Common/ODraw/XmlWriter.h \
-	../../../Common/ODraw/CustomShape.h \
-	../../../XlsFile/Format/Logic/Biff_structures/AFDOperBoolErr.h \
-	../../../XlsFile/Format/Logic/Biff_structures/AFDOperXNum.h \
-	../../../XlsFile/Format/Logic/Biff_unions/IMDATAOBJECT.h \
-	../../../XlsFile/Format/Logic/Biff_records/IMDATA.h \
-	../../../XlsFile/Format/Logic/Biff_structures/CFDatabar.h \
-	../../../XlsFile/Format/Logic/Biff_structures/CFGradient.h
+	../../../Common/ODraw/oldAutoShapes/WedgeRoundedRectCalloutType.h

@@ -139,7 +139,11 @@ namespace OOX
 							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 							if ( _T("c") == sName )
-								m_arrItems.push_back(new CCalcCell(oReader));
+							{
+								CCalcCell* pCalcCell = new CCalcCell();
+								*pCalcCell = oReader;
+								m_arrItems.push_back(pCalcCell);
+							}
 						}
 					}
 				}

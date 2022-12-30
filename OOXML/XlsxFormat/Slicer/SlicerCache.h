@@ -40,7 +40,7 @@ namespace OOX
 		class COlapSlicerCacheItemParent : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheItemParent)
+			WritingElement_AdditionMethods(COlapSlicerCacheItemParent)
 			COlapSlicerCacheItemParent(){}
 			virtual ~COlapSlicerCacheItemParent(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -62,7 +62,7 @@ namespace OOX
 		class COlapSlicerCacheItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheItem)
+			WritingElement_AdditionMethods(COlapSlicerCacheItem)
 			COlapSlicerCacheItem(){}
 			virtual ~COlapSlicerCacheItem(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -90,7 +90,7 @@ namespace OOX
 		class COlapSlicerCacheRange : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheRange)
+			WritingElement_AdditionMethods(COlapSlicerCacheRange)
 			COlapSlicerCacheRange(){}
 			virtual ~COlapSlicerCacheRange(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -116,7 +116,7 @@ namespace OOX
 		class CTabularSlicerCacheItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabularSlicerCacheItem)
+			WritingElement_AdditionMethods(CTabularSlicerCacheItem)
 			CTabularSlicerCacheItem(){}
 			virtual ~CTabularSlicerCacheItem(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -142,7 +142,7 @@ namespace OOX
 		class COlapSlicerCacheSelection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheSelection)
+			WritingElement_AdditionMethods(COlapSlicerCacheSelection)
 			COlapSlicerCacheSelection(){}
 			virtual ~COlapSlicerCacheSelection(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -168,7 +168,7 @@ namespace OOX
 		class COlapSlicerCacheLevelData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheLevelData)
+			WritingElement_AdditionMethods(COlapSlicerCacheLevelData)
 			COlapSlicerCacheLevelData(){}
 			virtual ~COlapSlicerCacheLevelData(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -198,7 +198,7 @@ namespace OOX
 		class CTabularSlicerCacheItems : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabularSlicerCacheItems)
+			WritingElement_AdditionMethods(CTabularSlicerCacheItems)
             WritingElement_XlsbConstructors(CTabularSlicerCacheItems)
 			CTabularSlicerCacheItems(){}
 			virtual ~CTabularSlicerCacheItems(){}
@@ -224,7 +224,7 @@ namespace OOX
 		class COlapSlicerCacheSelections : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheSelections)
+			WritingElement_AdditionMethods(COlapSlicerCacheSelections)
             WritingElement_XlsbConstructors(COlapSlicerCacheSelections)
 			COlapSlicerCacheSelections(){}
 			virtual ~COlapSlicerCacheSelections(){}
@@ -250,7 +250,7 @@ namespace OOX
 		class COlapSlicerCacheLevelsData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCacheLevelsData)
+			WritingElement_AdditionMethods(COlapSlicerCacheLevelsData)
             WritingElement_XlsbConstructors(COlapSlicerCacheLevelsData)
 			COlapSlicerCacheLevelsData(){}
 			virtual ~COlapSlicerCacheLevelsData(){}
@@ -276,7 +276,7 @@ namespace OOX
 		class CTabularSlicerCache : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabularSlicerCache)
+			WritingElement_AdditionMethods(CTabularSlicerCache)
             WritingElement_XlsbConstructors(CTabularSlicerCache)
 			CTabularSlicerCache(){}
 			virtual ~CTabularSlicerCache(){}
@@ -308,7 +308,7 @@ namespace OOX
 		class COlapSlicerCache : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapSlicerCache)
+			WritingElement_AdditionMethods(COlapSlicerCache)
             WritingElement_XlsbConstructors(COlapSlicerCache)
 			COlapSlicerCache(){}
 			virtual ~COlapSlicerCache(){}
@@ -337,7 +337,7 @@ namespace OOX
 		class CSlicerCacheData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicerCacheData)
+			WritingElement_AdditionMethods(CSlicerCacheData)
             WritingElement_XlsbConstructors(CSlicerCacheData)
 			CSlicerCacheData(){}
 			virtual ~CSlicerCacheData(){}
@@ -362,7 +362,7 @@ namespace OOX
 		class CSlicerCachePivotTable : public WritingElement
 		{
 		public:
-            WritingElement_AdditionConstructors(CSlicerCachePivotTable)
+            WritingElement_AdditionMethods(CSlicerCachePivotTable)
 			CSlicerCachePivotTable(){}
 			virtual ~CSlicerCachePivotTable(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -387,7 +387,7 @@ namespace OOX
 		class CSlicerCacheDefinition : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicerCacheDefinition)
+			WritingElement_AdditionMethods(CSlicerCacheDefinition)
             WritingElement_XlsbConstructors(CSlicerCacheDefinition)
 			CSlicerCacheDefinition(){}
 			virtual ~CSlicerCacheDefinition(){}

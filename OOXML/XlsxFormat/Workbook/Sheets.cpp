@@ -148,7 +148,8 @@ namespace OOX
 
 				if ( (L"sheet") == sName )
 				{
-					CSheet* pSheet = new CSheet( oReader );
+					CSheet* pSheet = new CSheet();
+					*pSheet = oReader;
 
 					m_arrItems.push_back( pSheet );
 				}

@@ -40,7 +40,7 @@ namespace OOX
     class CCalcPr : public WritingElement
     {
     public:
-        WritingElement_AdditionConstructors(CCalcPr)
+        WritingElement_AdditionMethods(CCalcPr)
         WritingElement_XlsbConstructors(CCalcPr)
 			CCalcPr();
 			virtual ~CCalcPr();

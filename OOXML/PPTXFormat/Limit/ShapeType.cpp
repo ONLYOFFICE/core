@@ -233,12 +233,12 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE ShapeType::GetBYTECode() const
+		unsigned char ShapeType::GetBYTECode() const
 		{
 			//not using
 			return 0;
 		}
-		void ShapeType::SetBYTECode(const BYTE& src)
+		void ShapeType::SetBYTECode(const unsigned char& src)
 		{
 			//not using
 		}

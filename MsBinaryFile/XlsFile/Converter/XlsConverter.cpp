@@ -78,6 +78,7 @@
 #include "../Format/Logic/Biff_records/WsBool.h"
 #include "../Format/Logic/Biff_records/Theme.h"
 #include "../Format/Logic/Biff_records/Format.h"
+#include "../Format/Logic/Biff_records/CalcMode.h"
 
 #include "../Format/Logic/Biff_structures/URLMoniker.h"
 #include "../Format/Logic/Biff_structures/FileMoniker.h"
@@ -512,7 +513,10 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 	
 	if (globals)
 	{
-		globals->serialize(xlsx_context->current_sheet().sheetFormat());
+		globals->serialize_formatPr(xlsx_context->current_sheet().sheetFormat());
+		
+		if (xlsx_context->workbook_calcpr().rdbuf()->in_avail() == 0)
+			globals->serialize_calcPr(xlsx_context->workbook_calcpr());
 	}
 	
 	if (!sheet->m_arWINDOW.empty())
@@ -552,6 +556,17 @@ void XlsConverter::convert_common (XLS::CommonSubstream* sheet)
 		{
 			globals->m_VerticalPageBreaks->serialize(xlsx_context->current_sheet().pageProperties());
 		}
+		//if (globals->m_CalcMode)
+		//{
+		//	CP_XML_WRITER(xlsx_context->current_sheet().sheetCalcPr())
+		//	{
+		//		CP_XML_NODE(L"sheetCalcPr")
+		//		{
+		//			XLS::CalcMode *calcMode = dynamic_cast<XLS::CalcMode *>(globals->m_CalcMode.get());
+		//			CP_XML_ATTR(L"fullCalcOnLoad", calcMode->nAutoRecalc > 0 ? 1 : 0);					
+		//		}
+		//	}
+		//}
 	}
 
 	if (sheet->m_arCUSTOMVIEW.size() > 0)
@@ -1214,6 +1229,10 @@ void XlsConverter::convert_old(XLS::OBJECTS* objects, XLS::WorksheetSubstream * 
 		if (type_object == 0) 
 			continue;
 
+		if (obj->cmo.fUIObj)
+		{
+			continue; // automatically inserted by the application
+		}
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))
 		{
 			convert(obj->old_version.anchor.get());

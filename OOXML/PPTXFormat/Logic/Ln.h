@@ -52,7 +52,7 @@ namespace PPTX
 		class Ln : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Ln)
+			WritingElement_AdditionMethods(Ln)
 
 			Ln();
 

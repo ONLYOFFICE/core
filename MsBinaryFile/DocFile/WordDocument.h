@@ -169,17 +169,20 @@ namespace DocFileFormat
 		std::map<int, SectionPropertyExceptions*>	* AllSepx;		// The value is the SEPX that formats the section.
 		std::vector<int>							* AllPapxVector;// A vector to quick find in AllPapx
 
-		std::map<int, int>						PictureBulletsCPsMap;
+		std::map<int, int> PictureBulletsCPsMap;
 
-		struct _annotStartEnd
+		struct _bmkStartEnd
 		{
 			int start;
 			int end;			
 			_UINT32 bookmarkId;
 		};
-		std::vector<std::pair<int, int>>		BookmarkStartEndCPs;
-		std::vector<_annotStartEnd>				AnnotStartEndCPs;
-		std::map<int, int>						mapCommentsBookmarks;
+		std::vector<_bmkStartEnd> BookmarkStartEndCPs;
+		std::vector<_bmkStartEnd> BookmarkProtStartEndCPs;
+		std::vector<_bmkStartEnd> AnnotStartEndCPs;
+		
+		std::map<int, int> mapAnnotBookmarks; //id, index
+		std::map<int, int> mapProtBookmarks;
 
 		FileInformationBlock				* FIB;
 		StyleSheet							* Styles;					// The style sheet of the document
@@ -197,9 +200,12 @@ namespace DocFileFormat
 		StringTable<WideString>				*BookmarkNames;
 		StringTable<WideString>				*AutoTextNames;
 		StringTable<WideString>				*AssocNames;
-		StringTable<WideString>				*BookmarkAnnotNames;
+		StringTable<WideString>				*BkmkAnnotNames;
 		StringTable<WideString>				*Captions;
 		StringTable<WideString>				*AutoCaptions;
+		
+		StringTableEx<ProtInfoBookmark>		*BkmkProt;
+		StringTable<WideString>				*BkmkProtUser;
 
 		Plex<EmptyStructure>				*IndividualFootnotesPlex;			//A plex of locations of individual footnotes		
 		Plex<FootnoteDescriptor>			*FootnoteReferenceCharactersPlex;	//A plex of footnote reference characters
@@ -226,6 +232,9 @@ namespace DocFileFormat
 		Plex<BookmarkFirst>					*AnnotStartPlex;
 		Plex<EmptyStructure>				*AnnotEndPlex;
 
+		Plex<BookmarkFirst>					*BookmarkProtStartPlex;
+		Plex<EmptyStructure>                *BookmarkProtEndPlex;
+
 		Plex<ListNumCache>					*ListPlex;
 		Plex<FieldCharacter>				*FieldsPlex;
 		Plex<FieldCharacter>				*FootnoteDocumentFieldsPlex;
@@ -235,6 +244,7 @@ namespace DocFileFormat
 		Plex<AnnotationReferenceDescriptor> *AnnotationsReferencePlex;
 		Plex<EmptyStructure>				*AutoTextPlex;		
 		
+
 		AnnotationReferenceExDescriptors	*AnnotationsReferencesEx;
 //------------------------------------------------------------------------------
 		void CorrectColor(ODRAW::OfficeArtCOLORREF & color);

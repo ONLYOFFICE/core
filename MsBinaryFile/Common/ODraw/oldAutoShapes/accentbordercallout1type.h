@@ -40,7 +40,6 @@ class CAccentBorderCallout1Type : public CCustomShape
 {
 public:
 	CAccentBorderCallout1Type()
-
     {
         m_bConcentricFill = true;
         m_eJoin = ODRAW::lineJoinMiter;

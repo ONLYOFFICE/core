@@ -44,7 +44,7 @@ namespace PPTX
 		class EffectProperties : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(EffectProperties)
+			WritingElement_AdditionMethods(EffectProperties)
 			PPTX_LOGIC_BASE2(EffectProperties)
 
 			EffectProperties& operator=(const EffectProperties& oSrc)
@@ -66,9 +66,17 @@ namespace PPTX
 				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
 					
 				if (strName == _T("effectLst"))
-					List.reset(new Logic::EffectLst(oReader));
+				{
+					Logic::EffectLst* pEffectLst = new Logic::EffectLst();
+					*pEffectLst = oReader;
+					List.reset(pEffectLst);
+				}
 				else if(strName == _T("effectDag"))
-					List.reset(new Logic::EffectDag(oReader));
+				{
+					Logic::EffectDag* pEffectDag = new Logic::EffectDag();
+					*pEffectDag = oReader;
+					List.reset(pEffectDag);
+				}
 				else 
 					List.reset();
 			}
@@ -84,9 +92,17 @@ namespace PPTX
 				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
 
 				if (strName == _T("effectLst"))
-					List.reset(new Logic::EffectLst(node));
+				{
+					Logic::EffectLst* pEffectLst = new Logic::EffectLst();
+					*pEffectLst = node;
+					List.reset(pEffectLst);
+				}
 				else if(strName == _T("effectDag"))
-					List.reset(new Logic::EffectDag(node));
+				{
+					Logic::EffectDag* pEffectDag = new Logic::EffectDag();
+					*pEffectDag = node;
+					List.reset(pEffectDag);
+				}
 				else List.reset();
 			}
 
@@ -95,12 +111,18 @@ namespace PPTX
 				XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("effectLst"));
 				if (oNode.IsValid())
 				{
-					List.reset(new Logic::EffectLst(oNode));
+					Logic::EffectLst* pEffectLst = new Logic::EffectLst();
+					*pEffectLst = oNode;
+					List.reset(pEffectLst);
 					return;
 				}
 				oNode = element.ReadNodeNoNS(_T("effectDag"));
 				if (oNode.IsValid())
-					List.reset(new Logic::EffectDag(oNode));
+				{
+					Logic::EffectDag* pEffectDag = new Logic::EffectDag();
+					*pEffectDag = oNode;
+					List.reset(pEffectDag);
+				}
 				else List.reset();
 			}
 

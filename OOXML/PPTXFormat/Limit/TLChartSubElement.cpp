@@ -38,20 +38,20 @@ namespace PPTX
 	{		
 		TLChartSubElement::TLChartSubElement()
 		{
-			m_strValue = _T("series");
+			m_strValue = L"series";
 		}
 		void TLChartSubElement::set(const std::wstring& strValue)
 		{
-			if ((_T("category") == strValue) ||
-				(_T("gridLegend") == strValue) ||
-				(_T("ptInCategory") == strValue) ||
-				(_T("ptInSeries") == strValue) ||
-				(_T("series") == strValue))
+			if ((L"category" == strValue) ||
+				(L"gridLegend" == strValue) ||
+				(L"ptInCategory" == strValue) ||
+				(L"ptInSeries" == strValue) ||
+				(L"series" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLChartSubElement::GetBYTECode() const
+		unsigned char TLChartSubElement::GetBYTECode() const
 		{
 			if (L"category" == m_strValue)	return 0;
 			if (L"gridLegend" == m_strValue)	return 1;
@@ -60,7 +60,7 @@ namespace PPTX
 			if (L"series" == m_strValue)	return 4;
 			return 0;
 		}
-		void TLChartSubElement::SetBYTECode(const BYTE& src)
+		void TLChartSubElement::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

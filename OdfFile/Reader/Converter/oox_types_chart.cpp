@@ -401,6 +401,7 @@ void oox_radar_chart::add_series(int id)
 void oox_radar_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
+	grouping_ = L"";
 }
 void oox_radar_chart::oox_serialize(std::wostream & _Wostream)
 {

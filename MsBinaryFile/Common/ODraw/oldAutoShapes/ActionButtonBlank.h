@@ -40,7 +40,6 @@ class CActionButtonBlankType : public CCustomShape
 {
 public:
 	CActionButtonBlankType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

@@ -30,23 +30,13 @@
  *
  */
 #pragma once
+
 #include "BaseLimit.h"
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class AlbumLayout : public BaseLimit
-		{
-		public:
-			AlbumLayout();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(AlbumLayout)
 	} // namespace Limit
 } // namespace PPTX

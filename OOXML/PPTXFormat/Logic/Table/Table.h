@@ -45,7 +45,7 @@ namespace PPTX
 		class Table : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Table)
+			WritingElement_AdditionMethods(Table)
 
 			Table();
 			Table& operator=(const Table& oSrc);

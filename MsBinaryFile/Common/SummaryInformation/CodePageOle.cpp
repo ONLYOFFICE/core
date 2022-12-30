@@ -43,7 +43,9 @@
 
 namespace OLEPS
 {
-
+PropertyCodePage::PropertyCodePage(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type), code_page(0)
+{
+}
 bool PropertyCodePage::Read (XLS::CFStreamPtr stream)
 {
 	if (value_type == Property::VT_I2)
@@ -57,6 +59,10 @@ std::wstring PropertyCodePage::toString()
 	return std::to_wstring(code_page);
 }
 //-------------------------------------------------------------------
+PropertyString::PropertyString(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
+{
+	code_page = code_page_;
+}
 bool PropertyString::Read (XLS::CFStreamPtr stream)
 {
 	if (value_type != Property::VT_LPSTR) return false;
@@ -90,6 +96,9 @@ bool PropertyString::IsEmpty()
 	return value.empty();
 }
 //-------------------------------------------------------------------
+PropertyWString::PropertyWString(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+{
+}
 bool PropertyWString::Read(XLS::CFStreamPtr stream)
 {
 	if (value_type != Property::VT_LPWSTR) return false;
@@ -120,6 +129,9 @@ std::wstring PropertyWString::toString()
 	return value;
 }
 //-------------------------------------------------------------------
+PropertyDTM::PropertyDTM(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+{
+}
 bool PropertyDTM::Read (XLS::CFStreamPtr stream)
 {
 	dwLowDateTime = 0, dwHighDateTime = 0;
@@ -160,6 +172,9 @@ std::wstring PropertyDTM::toString()
 	return value;
 }
 //-------------------------------------------------------------------
+PropertyInt::PropertyInt(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+{
+}
 bool PropertyInt::Read (XLS::CFStreamPtr stream)
 {
 	value = 0;
@@ -174,6 +189,9 @@ std::wstring PropertyInt::toString()
 	return std::to_wstring(value);
 }
 //-------------------------------------------------------------------
+PropertyBool::PropertyBool(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type)
+{
+}
 bool PropertyBool::Read (XLS::CFStreamPtr stream)
 {
 	value = false;
@@ -192,6 +210,10 @@ std::wstring PropertyBool::toString()
 	return value ? L"1" : L"0";
 }
 //-------------------------------------------------------------------
+PropertyVecString::PropertyVecString(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
+{
+	code_page = code_page_;
+}
 bool PropertyVecString::Read(XLS::CFStreamPtr stream)
 {
 	_INT32 count;
@@ -227,6 +249,10 @@ std::wstring PropertyVecString::toString()
 	}
 	return output.str();
 }//-------------------------------------------------------------------
+PropertyVecHeadingPair::PropertyVecHeadingPair(unsigned int prop_type, const unsigned short value_type, unsigned short code_page_) : Property(prop_type, value_type)
+{
+	code_page = code_page_;
+}
 bool PropertyVecHeadingPair::Read(XLS::CFStreamPtr stream)
 {
 	_INT32 count;
@@ -292,6 +318,7 @@ std::wstring PropertyVecHeadingPair::toString()
 	return output.str();
 }
 //-------------------------------------------------------------------
+PropertyDigSig::PropertyDigSig(unsigned int prop_type, const unsigned short value_type) : Property(prop_type, value_type) {}
 bool PropertyDigSig::Read(XLS::CFStreamPtr stream)
 {
 	_INT32 cb;

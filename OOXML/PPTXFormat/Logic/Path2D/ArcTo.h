@@ -42,7 +42,7 @@ namespace PPTX
 		class ArcTo : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(ArcTo)
+			WritingElement_AdditionMethods(ArcTo)
 			PPTX_LOGIC_BASE2(ArcTo)
 
 			ArcTo& operator=(const ArcTo& oSrc);

@@ -160,7 +160,11 @@ namespace OOX
 					std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("workbookView") == sName )
-						m_arrItems.push_back( new CWorkbookView( oReader ));
+					{
+						CWorkbookView* pWorkbookView = new CWorkbookView();
+						*pWorkbookView = oReader;
+						m_arrItems.push_back(pWorkbookView);
+					}
 				}
 			}
 			void CBookViews::fromBin(std::vector<XLS::BaseObjectPtr>& obj)

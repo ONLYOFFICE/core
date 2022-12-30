@@ -46,7 +46,7 @@ namespace OOX
 		class CClientData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CClientData)
+			WritingElement_AdditionMethods(CClientData)
 			CClientData();
 			virtual ~CClientData();
 
@@ -69,8 +69,9 @@ namespace OOX
 		class CCellAnchor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellAnchor)
+			WritingElement_AdditionMethods(CCellAnchor)
            
+			CCellAnchor();
 			CCellAnchor(const SimpleTypes::Spreadsheet::ECellAnchorType& oAnchorType);
 			CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType& oAnchorType);
 			virtual ~CCellAnchor();

@@ -38,25 +38,25 @@ namespace PPTX
 	{		
 		ContentStatus::ContentStatus()
 		{
-			m_strValue = _T("Draft");
+			m_strValue = L"Draft";
 		}
 		void ContentStatus::set(const std::wstring& strValue)
 		{
-			if ((_T("Draft") == strValue) ||
-				(_T("Reviewed") == strValue) ||
-				(_T("Final") == strValue))
+			if ((L"Draft" == strValue) ||
+				(L"Reviewed" == strValue) ||
+				(L"Final" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE ContentStatus::GetBYTECode() const
+		unsigned char ContentStatus::GetBYTECode() const
 		{
 			if (L"Draft" == m_strValue)		return 0;
 			if (L"Reviewed" == m_strValue)	return 1;
 			if (L"Final" == m_strValue)		return 2;
 			return 1;
 		}
-		void ContentStatus::SetBYTECode(const BYTE& src)
+		void ContentStatus::SetBYTECode(const unsigned char& src)
 		{
 			if (src == 0) m_strValue = L"Draft";
 			else if (src == 1) m_strValue = L"Reviewed";

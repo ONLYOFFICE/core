@@ -36,8 +36,6 @@
 namespace XLS
 {
 
-
-// Logical representation of CalcCount record in BIFF8
 class CalcCount: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CalcCount)
@@ -47,7 +45,6 @@ public:
 	~CalcCount();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 

@@ -48,7 +48,7 @@ namespace PPTX
 		class GradFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(GradFill)
+			WritingElement_AdditionMethods(GradFill)
 			
 			GradFill(std::wstring ns = L"a");
 			

@@ -43,22 +43,16 @@ const wchar_t* const AutoFilterDefineNames[] =
 
 };
 
-
 Lbl::Lbl() : rgce(false), fGrp(0)
 {
 }
-
-
 Lbl::~Lbl()
 {
 }
-
-
 BaseObjectPtr Lbl::clone()
 {
 	return BaseObjectPtr(new Lbl(*this));
 }
-
 void Lbl::readFields(CFRecord& record)
 {
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
@@ -79,12 +73,24 @@ void Lbl::readFields(CFRecord& record)
         unsigned char cch;
         unsigned short cce;
         record >> cch >> cce;
-        record.skipNunBytes(2);
-        _UINT16	itab_2b;
-        record >> itab_2b;
-        itab = itab_2b;
 
-        record.skipNunBytes(4);
+		_UINT16	itab_2b = 0;
+		if (record.getGlobalWorkbookInfo()->Version == 0x500)
+		{
+			_UINT16	ixti_2b = 0;
+			record >> itab_2b;
+			record >> ixti_2b;
+			
+			itab = itab_2b;
+		}
+		else
+		{
+			record.skipNunBytes(2);
+			record >> itab_2b;
+			
+			itab = itab_2b;
+		}
+        record.skipNunBytes(4); 
 
         if (record.getGlobalWorkbookInfo()->Version < 0x600)
         {
@@ -169,7 +175,6 @@ void Lbl::readFields(CFRecord& record)
             }
         }
     }
-
     else
     {
         unsigned int flags;
@@ -200,6 +205,16 @@ void Lbl::readFields(CFRecord& record)
     }
 }
 
+Lbl_BIFF34::Lbl_BIFF34()
+{
+}
 
+Lbl_BIFF34::~Lbl_BIFF34()
+{
+}
+BaseObjectPtr Lbl_BIFF34::clone()
+{
+	return BaseObjectPtr(new Lbl_BIFF34(*this));
+}
 } // namespace XLS
 

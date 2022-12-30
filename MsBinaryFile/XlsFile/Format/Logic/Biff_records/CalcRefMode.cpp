@@ -50,20 +50,9 @@ BaseObjectPtr CalcRefMode::clone()
 	return BaseObjectPtr(new CalcRefMode(*this));
 }
 
-
-
 void CalcRefMode::readFields(CFRecord& record)
-{
-	Boolean<unsigned short> fRef;
+{	
 	record >> fRef;
-	if(fRef)
-	{
-		fRefA1 = std::wstring (L"A1");
-	}
-	else
-	{
-		fRefA1 = std::wstring (L"R1C1");
-	}
 }
 
 } // namespace XLS

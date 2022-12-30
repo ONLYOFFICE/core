@@ -31,7 +31,6 @@
  */
 
 #include "Readers.h"
-#include "ReaderClasses.h"
 
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../Sheets/Writer/BinaryReader.h"
@@ -40,27 +39,17 @@
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
-#include "../../../DocxFormat/Docx.h"
-#include "../../../DocxFormat/Document.h"
-#include "../../../DocxFormat/FontTable.h"
-#include "../../../DocxFormat/Numbering.h"
-#include "../../../DocxFormat/Comments.h"
-#include "../../../DocxFormat/Styles.h"
-#include "../../../DocxFormat/Footnote.h"
-#include "../../../DocxFormat/Endnote.h"
 #include "../../../DocxFormat/Settings/Settings.h"
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Math/oMathContent.h"
+#include "../../../DocxFormat/Logic/DocParts.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 
-#include "../../../../DesktopEditor/common/ASCVariant.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-
 #include "../../../../DesktopEditor/common/Directory.h"
-#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #define UINT_TO_COMPLEX_BOOL(offset, val) \
 	if (0 != ((nFlags >> offset) & 1)) { \
@@ -6344,7 +6333,13 @@ int Binary_DocumentTableReader::ReadMathCtrlPr(BYTE type, long length, void* poR
 }
 int Binary_DocumentTableReader::ReadMathCtrlPrDelIns(BYTE type, long length, void* poResult)
 {
-	return oBinary_rPrReader.ReadrPrChange2(type, length, poResult);
+	int res = c_oSerConstants::ReadOk;
+	ComplexTypes::Word::CTrackChange* trackChange = static_cast<ComplexTypes::Word::CTrackChange*>(poResult);
+
+	READ1_TRACKREV_2(type, length, trackChange)
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
 }
 
 int Binary_DocumentTableReader::ReadMathDelimiter(BYTE type, long length, void* poResult)
@@ -9448,6 +9443,23 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oComplexFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtComplexFormPr, pSdtPr->m_oComplexFormPr.GetPointer());
 	}
+	else if (c_oSerSdt::OformMaster == type)
+	{
+		std::wstring pathOFormMaster = m_oBufferedStream.GetString3(length);
+
+		if (false == pathOFormMaster.empty())
+		{
+			XmlUtils::replace_all(pathOFormMaster, L"\\", L"/");
+			
+			m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/fieldMaster+xml", L"", pathOFormMaster.substr(3));	// del "../"		
+
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(L"https://schemas.onlyoffice.com/relationships/oform-fieldMaster", pathOFormMaster, L"", &rId);
+
+			pSdtPr->m_oOformRid.Init();
+			pSdtPr->m_oOformRid->SetValue(L"rId" + std::to_wstring(rId));
+		}
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -10127,6 +10139,34 @@ int BinaryFileReader::ReadMainTable()
 			}
 			else
 				m_oBufferedStream.SkipRecord();
+		}break;
+		case c_oSerTableTypes::OForm:
+		{
+			_INT32 nDataSize = m_oBufferedStream.GetLong();
+
+			BYTE *pData = new BYTE[nDataSize];
+			if (pData)
+			{
+				m_oBufferedStream.GetArray(pData, nDataSize);
+					
+				std::wstring pathOFormDst = m_oFileWriter.get_document_writer().m_sDir + FILE_SEPARATOR_STR + L"oform";
+				std::wstring sZipOformFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_oFileWriter.get_document_writer().m_sDir, L"oform");
+
+				NSFile::CFileBinary zipOform;
+				if (zipOform.CreateFile(sZipOformFile) && NSDirectory::CreateDirectory(pathOFormDst))
+				{
+					zipOform.WriteFile(pData, nDataSize);
+					zipOform.CloseFile();
+
+					COfficeUtils oCOfficeUtils(NULL);
+					if (S_OK == oCOfficeUtils.ExtractToDirectory(sZipOformFile, pathOFormDst, NULL, 0))
+					{
+						m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/main+xml", L"/oform", L"main.xml");
+					}
+					NSFile::CFileBinary::Remove(sZipOformFile);
+				}
+				delete[]pData;
+			}
 		}break;
 		case c_oSerTableTypes::Glossary:
 		{

@@ -38,9 +38,9 @@ namespace PPTX
 	{		
 		TLRestart::TLRestart()
 		{
-			m_strValue = _T("never");
+			m_strValue = L"never";
 		}
-		TLRestart::TLRestart(UINT restart)
+		TLRestart::TLRestart(unsigned int restart)
 		{
 			if      (   restart == 0     ||
 						restart == 3) m_strValue = L"never";
@@ -49,14 +49,14 @@ namespace PPTX
 		}
 		void TLRestart::set(const std::wstring& strValue)
 		{
-			if ((_T("always") == strValue) ||
-				(_T("never") == strValue) ||
-				(_T("whenNotActive") == strValue))
+			if ((L"always" == strValue) ||
+				(L"never" == strValue) ||
+				(L"whenNotActive" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLRestart::GetBYTECode() const
+		unsigned char TLRestart::GetBYTECode() const
 		{
 			if (L"always" == m_strValue)	return 0;
 			if (L"never" == m_strValue)	return 1;
@@ -64,7 +64,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLRestart::SetBYTECode(const BYTE& src)
+		void TLRestart::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

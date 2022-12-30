@@ -55,18 +55,9 @@ namespace OOX
 
 		CTxbxContent::CTxbxContent(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
-		}
-		CTxbxContent::CTxbxContent(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-		{
-			fromXML( oNode );
-		}
-		CTxbxContent::CTxbxContent(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CTxbxContent::~CTxbxContent()
 		{
-
 		}
 		const CTxbxContent& CTxbxContent::operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -190,14 +181,6 @@ namespace OOX
 		// 20.4.2.37 txbx (Textual contents of shape)
 		//--------------------------------------------------------------------------------
 
-		CTextBody::CTextBody(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CTextBody::CTextBody(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
 		CTextBody::CTextBody()
 		{
 		}

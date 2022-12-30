@@ -43,7 +43,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(Blur)
+			WritingElement_AdditionMethods(Blur)
 			PPTX_LOGIC_BASE2(Blur)
 
 			Blur& operator=(const Blur& oSrc);

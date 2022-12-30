@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class SlideSize : public BaseLimit
-		{
-		public:
-			SlideSize();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& type);
-		};
+		DEFINE_LIMIT_BASE(SlideSize)
 	} // namespace Limit
 } // namespace PPTX

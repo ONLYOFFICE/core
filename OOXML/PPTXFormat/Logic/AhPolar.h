@@ -42,7 +42,7 @@ namespace PPTX
 		class AhPolar : public Ah
 		{
 		public:
-			WritingElement_AdditionConstructors(AhPolar)
+			WritingElement_AdditionMethods(AhPolar)
 			PPTX_LOGIC_BASE2(AhPolar)
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);

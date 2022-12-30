@@ -45,7 +45,7 @@ namespace PPTX
 		class SpTree : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SpTree)
+			WritingElement_AdditionMethods(SpTree)
 
 			SpTree(std::wstring ns = L"p");
 
@@ -56,7 +56,7 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL, bool in_group = false);
+			void toXmlWriterVML(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group = false);
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
@@ -80,7 +80,7 @@ namespace PPTX
 		class LockedCanvas : public SpTree
 		{
 		public:
-			WritingElement_AdditionConstructors(LockedCanvas)
+			WritingElement_AdditionMethods(LockedCanvas)
 
 			LockedCanvas();
 

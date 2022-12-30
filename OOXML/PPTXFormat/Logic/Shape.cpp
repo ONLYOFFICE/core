@@ -661,7 +661,7 @@ namespace PPTX
 			}
 		}
 
-		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group, bool bSignature)
+		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group, bool bSignature)
 		{
 			std::wstring strPath, strTextRect;
 			SimpleTypes::Vml::SptType vmlPrst = SimpleTypes::Vml::sptNotPrimitive;
@@ -728,22 +728,23 @@ namespace PPTX
 
 			pWriter->StartAttributes();
 
-			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			if (pWriter->m_strId.empty())
 			{
-				if (NULL == pId)
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					pWriter->WriteAttribute(L"id", strSpid);
+					pWriter->WriteAttribute(L"id", strSpid); //??
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", pId);
+					pWriter->WriteAttribute(L"id", strId);
 					pWriter->WriteAttribute(L"o:spid", strSpid);
 				}
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"id", pWriter->m_strId);
 				pWriter->WriteAttribute(L"o:spid", strSpid);
+				pWriter->m_strId.clear();
 			}
 
 			if (vmlPrst != SimpleTypes::Vml::sptNotPrimitive && 

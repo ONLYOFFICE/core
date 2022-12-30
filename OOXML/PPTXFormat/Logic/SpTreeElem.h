@@ -81,7 +81,7 @@ namespace PPTX
 			virtual void fromPPTY	(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual void toPPTY		(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId = NULL) const;
+			void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const;
 			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			std::wstring GetUriElem();			

@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class FontAlign : public BaseLimit
-		{
-		public:
-			FontAlign();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& val);
-		};
+		DEFINE_LIMIT_BASE(FontAlign)
 	} // namespace Limit
 } // namespace PPTX

@@ -400,7 +400,9 @@ namespace OOX
 				{
 					if ( oTabs.GetAt( nIndex, oTab ) )
 					{
-						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop(oTab);
+						ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop();
+						*oTabStop = oTab;
+
 						if (oTabStop) m_arrTabs.push_back( oTabStop );
 					}
 				}
@@ -417,7 +419,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:tab" == sName )
 				{
-					ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop(oReader);
+					ComplexTypes::Word::CTabStop *oTabStop = new ComplexTypes::Word::CTabStop();
+					*oTabStop = oReader;
+
 					if (oTabStop) m_arrTabs.push_back( oTabStop );
 				}
 			}

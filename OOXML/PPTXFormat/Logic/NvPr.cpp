@@ -76,7 +76,8 @@ namespace PPTX
 					int nParentDepth1 = oReader.GetDepth();
 					while( oReader.ReadNextSiblingNode( nParentDepth1 ) )
 					{
-						Ext element(oReader);
+						Ext element;
+						element = oReader;
 						extLst.push_back(element);
 					}
 				}

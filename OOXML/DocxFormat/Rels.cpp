@@ -36,6 +36,9 @@ namespace OOX
 {
 	namespace Rels
 	{
+		CRelationShip::CRelationShip()
+		{
+		}
 		CRelationShip::CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal) : m_rId(rId), m_oTarget(oFilePath), m_sType(sType)
 		{
 			XmlUtils::replace_all(m_oTarget.m_strFilename, L" ", L"_");
@@ -172,7 +175,9 @@ namespace OOX
 					sName = XmlUtils::GetNameNoNS(oReader.GetName());
 					if (L"Relationship" == sName )
 					{
-						OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip(oReader);
+						OOX::Rels::CRelationShip *pRel = new OOX::Rels::CRelationShip();
+						*pRel = oReader;
+
 						if (pRel)
 						{
 							std::wstring rid = pRel->rId().get();
@@ -187,7 +192,8 @@ namespace OOX
 	}
 	void CRels::Write(const CPath& oFilePath) const
 	{
-		if ( m_mapRelations.empty() )return;
+		if ( m_mapRelations.empty() ) return;
+
 		CPath oFile = CreateFileName( oFilePath );
 		CSystemUtility::CreateDirectories( oFile.GetDirectory() );
 
@@ -208,6 +214,40 @@ namespace OOX
 		oWriter.WriteNodeEnd(L"Relationships");
 
 		NSFile::CFileBinary::SaveToFile(oFile.GetPath(), oWriter.GetXmlString());
+	}
+	void CRels::Registration(const RId& rId, const std::wstring& oRelationShipType, const CPath& oPath, bool bExternal)
+	{
+		if (oRelationShipType.empty()) return;
+
+		std::wstring strFileName = oPath.m_strFilename;
+
+		std::wstring strDir = oPath.GetDirectory() + L"";
+
+		Rels::CRelationShip* pRel = NULL;
+
+		if (L"" == oPath.GetExtention())
+		{
+			if (oRelationShipType == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject")
+			{
+				strFileName += (strFileName.empty() ? L"" : L".bin");
+				pRel = new Rels::CRelationShip(rId, oRelationShipType, strDir + strFileName, bExternal);
+			}
+			else if (oRelationShipType == L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
+			{
+				strFileName += L".wmf";
+				pRel = new Rels::CRelationShip(rId, oRelationShipType, strDir + strFileName, bExternal);
+			}
+		}
+		else
+		{
+			pRel = new Rels::CRelationShip(rId, oRelationShipType, oPath.GetPath(), bExternal);
+
+		}
+		if (pRel)
+		{
+			m_arRelations.push_back(pRel);
+			m_mapRelations.insert(std::make_pair(rId.get(), pRel));
+		}
 	}
 	void CRels::Registration(const RId& rId, const FileType& oType, const CPath& oPath, bool bExternal)
 	{

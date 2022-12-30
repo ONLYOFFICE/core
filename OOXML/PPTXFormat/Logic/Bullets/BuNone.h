@@ -42,7 +42,7 @@ namespace PPTX
 		class BuNone : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuNone)
+			WritingElement_AdditionMethods(BuNone)
 			PPTX_LOGIC_BASE2(BuNone)
 
 			BuNone& operator=(const BuNone& oSrc);

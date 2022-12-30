@@ -30,8 +30,8 @@
  *
  */
 #pragma once
+
 #include "../WritingElement.h"
-#include "../../Base/Nullable.h"
 
 namespace OOX
 {	
@@ -43,9 +43,7 @@ namespace OOX
 		class CMathArgNodes : public WritingElementWithChilds<>
 		{
 		public:
-			CMathArgNodes(OOX::Document *pMain = NULL);
-			CMathArgNodes(XmlUtils::CXmlNode &oNode);
-			CMathArgNodes(XmlUtils::CXmlLiteReader& oReader);
+			CMathArgNodes(OOX::Document *pMain = NULL);			
 			virtual ~CMathArgNodes();
 
 			const CMathArgNodes &operator =(const XmlUtils::CXmlNode& oNode);

@@ -97,7 +97,9 @@ namespace OOX
 				sName = oReader.GetName();
 				if ( _T("w:endnote") == sName )
 				{
-					CFtnEdn *pEndnote = new CFtnEdn( oReader );
+					CFtnEdn *pEndnote = new CFtnEdn();
+					*pEndnote = oReader;
+
 					if (pEndnote)
 					{
 						m_arrEndnote.push_back( pEndnote );

@@ -39,7 +39,6 @@ class CActionButtonReturnType : public CCustomShape
 {
 public:
 	CActionButtonReturnType()
-
     {
         m_bConcentricFill = true;
 		m_eJoin = ODRAW::lineJoinMiter;

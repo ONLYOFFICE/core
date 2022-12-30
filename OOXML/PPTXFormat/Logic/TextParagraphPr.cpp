@@ -104,7 +104,8 @@ namespace PPTX
 							std::wstring sName1 = oReader.GetName();
 							if (_T("a:tab") == sName1)
 							{
-								Tab tab(oReader);
+								Tab tab;
+								tab = oReader;
 								tabLst.push_back(tab);
 							}
 						}

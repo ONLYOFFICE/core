@@ -2175,7 +2175,11 @@ void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 		if (L"cfRule" == sName)
-			m_arrItems.push_back(new CConditionalFormattingRule(oReader));
+		{
+			CConditionalFormattingRule* pConditionalFormattingRule = new CConditionalFormattingRule();
+			*pConditionalFormattingRule = oReader;
+			m_arrItems.push_back(pConditionalFormattingRule);
+		}
 		if (L"sqref" == sName || L"Range" == sName)
 			m_oSqRef = oReader.GetText2();
 	}

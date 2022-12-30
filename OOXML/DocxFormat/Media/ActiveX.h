@@ -264,7 +264,7 @@ namespace OOX
 	class COcxPr : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(COcxPr)
+		WritingElement_AdditionMethods(COcxPr)
 		COcxPr() {}
 		virtual ~COcxPr() {}
 		virtual void fromXML(XmlUtils::CXmlNode& node)

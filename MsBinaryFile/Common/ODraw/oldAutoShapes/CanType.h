@@ -39,7 +39,6 @@ class CCanType : public CCustomShape
 {
 public:
 	CCanType()
-
     {
         m_bConcentricFill = true;
         m_eJoin = ODRAW::lineJoinRound;

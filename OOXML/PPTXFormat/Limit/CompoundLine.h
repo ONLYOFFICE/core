@@ -33,22 +33,10 @@
 
 #include "BaseLimit.h"
 
-
 namespace PPTX
 {
 	namespace Limit
 	{
-		class CompoundLine : public BaseLimit
-		{
-		public:
-			CompoundLine();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(CompoundLine)
 	} // namespace Limit
 } // namespace PPTX

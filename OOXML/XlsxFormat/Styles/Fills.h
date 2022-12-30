@@ -42,7 +42,7 @@ namespace OOX
 		class CPatternFill : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPatternFill)
+			WritingElement_AdditionMethods(CPatternFill)
             WritingElement_XlsbConstructors(CPatternFill)
 			CPatternFill();
 			virtual ~CPatternFill();
@@ -71,7 +71,7 @@ namespace OOX
 		class CGradientStop : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CGradientStop)
+			WritingElement_AdditionMethods(CGradientStop)
 			CGradientStop();
 			virtual ~CGradientStop();
 
@@ -97,7 +97,7 @@ namespace OOX
 		class CGradientFill : public WritingElementWithChilds<CGradientStop>
 		{
 		public:
-			WritingElement_AdditionConstructors(CGradientFill)
+			WritingElement_AdditionMethods(CGradientFill)
             WritingElement_XlsbConstructors(CGradientFill)
 			CGradientFill();
 			virtual ~CGradientFill();
@@ -129,7 +129,7 @@ namespace OOX
 		class CFill : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFill)
+			WritingElement_AdditionMethods(CFill)
             WritingElement_XlsbConstructors(CFill)
 			CFill();
 			virtual ~CFill();
@@ -156,7 +156,7 @@ namespace OOX
 		class CFills : public WritingElementWithChilds<CFill>
 		{
 		public:
-			WritingElement_AdditionConstructors(CFills)
+			WritingElement_AdditionMethods(CFills)
             WritingElement_XlsbVectorConstructors(CFills)
 			CFills();
 			virtual ~CFills();

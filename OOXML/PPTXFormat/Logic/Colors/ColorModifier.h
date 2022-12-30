@@ -39,7 +39,7 @@ namespace PPTX
 		class ColorModifier : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ColorModifier)
+			WritingElement_AdditionMethods(ColorModifier)
 			PPTX_LOGIC_BASE2(ColorModifier)
 
 			virtual OOX::EElementType getType() const;

@@ -49,21 +49,23 @@ public:
 
 	static const ElementType type = typeGLOBALS;
 
-	int serialize(std::wostream & stream);
+	int serialize_formatPr(std::wostream & stream);
+	int serialize_calcPr(std::wostream & stream);
 
-	bool is_dialog;
+	bool is_dialog = false;
 
-	BaseObjectPtr				m_DefaultRowHeight;
-	BaseObjectPtr				m_Guts;
-	BaseObjectPtr				m_WsBool;
-	BaseObjectPtr				m_HorizontalPageBreaks;
-	BaseObjectPtr				m_VerticalPageBreaks;
-
+	BaseObjectPtr m_DefaultRowHeight;
+	BaseObjectPtr m_Guts;
+	BaseObjectPtr m_WsBool;
+	BaseObjectPtr m_HorizontalPageBreaks;
+	BaseObjectPtr m_VerticalPageBreaks;
+	BaseObjectPtr m_CalcMode;
+	BaseObjectPtr m_CalcRefMode;
 //--------------------------------------------------------------
-	GlobalWorkbookInfoPtr		global_info_;
+	GlobalWorkbookInfoPtr global_info_;
 
-	BaseObjectPtr				m_DxGCol;
-	BaseObjectPtr				m_DefColWidth;
+	BaseObjectPtr m_DxGCol;
+	BaseObjectPtr m_DefColWidth;
 };		
 
 } // namespace XLS

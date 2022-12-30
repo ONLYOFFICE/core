@@ -38,39 +38,39 @@ namespace PPTX
 	{		
 		TextStrike::TextStrike()
 		{
-			m_strValue = _T("noStrike");
+			m_strValue = L"noStrike";
 		}
 		void TextStrike::set(const std::wstring& strValue)
 		{
-			if ((_T("dblStrike") == strValue) ||
-				(_T("noStrike") == strValue) ||
-				(_T("sngStrike") == strValue))
+			if ((L"dblStrike" == strValue) ||
+				(L"noStrike" == strValue) ||
+				(L"sngStrike" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextStrike::GetBYTECode() const
+		unsigned char TextStrike::GetBYTECode() const
 		{
-			if (_T("dblStrike") == m_strValue)
+			if (L"dblStrike" == m_strValue)
 				return 0;
-			if (_T("noStrike") == m_strValue)
+			if (L"noStrike" == m_strValue)
 				return 1;
-			if (_T("sngStrike") == m_strValue)
+			if (L"sngStrike" == m_strValue)
 				return 2;
 			return 1;
 		}
-		void TextStrike::SetBYTECode(const BYTE& src)
+		void TextStrike::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("dblStrike");
+				m_strValue = L"dblStrike";
 				break;
 			case 2:
-				m_strValue = _T("sngStrike");
+				m_strValue = L"sngStrike";
 				break;
 			default:
-				m_strValue = _T("noStrike");
+				m_strValue = L"noStrike";
 				break;
 			}
 		}

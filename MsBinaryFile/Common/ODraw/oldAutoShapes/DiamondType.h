@@ -39,7 +39,6 @@ class CDiamondType : public CCustomShape
 {
 public:
 	CDiamondType()
-
     {
         m_bConcentricFill = true;
 

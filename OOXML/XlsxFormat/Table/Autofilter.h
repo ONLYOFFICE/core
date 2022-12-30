@@ -42,7 +42,7 @@ namespace OOX
 		class CSortCondition : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSortCondition)
+			WritingElement_AdditionMethods(CSortCondition)
 			WritingElement_XlsbConstructors(CSortCondition)
 			CSortCondition();
 			virtual ~CSortCondition();
@@ -72,7 +72,7 @@ namespace OOX
 		class CSortState : public WritingElementWithChilds<CSortCondition>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSortState)
+			WritingElement_AdditionMethods(CSortState)
 			WritingElement_XlsbConstructors(CSortState)
 			CSortState();
 			virtual ~CSortState();
@@ -101,7 +101,7 @@ namespace OOX
 		class CColorFilter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColorFilter)
+			WritingElement_AdditionMethods(CColorFilter)
 			WritingElement_XlsbConstructors(CColorFilter)
 			CColorFilter();
 			virtual ~CColorFilter();
@@ -129,7 +129,7 @@ namespace OOX
 		class CDynamicFilter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDynamicFilter)
+			WritingElement_AdditionMethods(CDynamicFilter)
 			WritingElement_XlsbConstructors(CDynamicFilter)
 			CDynamicFilter();
 			virtual ~CDynamicFilter();
@@ -158,7 +158,7 @@ namespace OOX
 		class CCustomFilter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomFilter)
+			WritingElement_AdditionMethods(CCustomFilter)
 			WritingElement_XlsbConstructors(CCustomFilter)
 			CCustomFilter();
 			virtual ~CCustomFilter();
@@ -186,7 +186,7 @@ namespace OOX
 		class CCustomFilters : public WritingElementWithChilds<CCustomFilter>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCustomFilters)
+			WritingElement_AdditionMethods(CCustomFilters)
 			WritingElement_XlsbConstructors(CCustomFilters)
 			CCustomFilters();
 			virtual ~CCustomFilters();
@@ -213,7 +213,7 @@ namespace OOX
 		class CFilter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFilter)
+			WritingElement_AdditionMethods(CFilter)
 			WritingElement_XlsbConstructors(CFilter)
 			CFilter();
 			virtual ~CFilter();
@@ -240,7 +240,7 @@ namespace OOX
 		class CDateGroupItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDateGroupItem)
+			WritingElement_AdditionMethods(CDateGroupItem)
 			WritingElement_XlsbConstructors(CDateGroupItem)
 			CDateGroupItem();
 			virtual ~CDateGroupItem();
@@ -273,7 +273,7 @@ namespace OOX
 		class CFilters : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CFilters)
+			WritingElement_AdditionMethods(CFilters)
 			WritingElement_XlsbConstructors(CFilters)
 			CFilters();
 			virtual ~CFilters();
@@ -300,7 +300,7 @@ namespace OOX
 		class CTop10 : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTop10)
+			WritingElement_AdditionMethods(CTop10)
 			WritingElement_XlsbConstructors(CTop10)
 			CTop10();
 			virtual ~CTop10();
@@ -330,7 +330,7 @@ namespace OOX
 		class CFilterColumn : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFilterColumn)
+			WritingElement_AdditionMethods(CFilterColumn)
 			WritingElement_XlsbConstructors(CFilterColumn)
 			CFilterColumn();
 			virtual ~CFilterColumn();
@@ -365,7 +365,7 @@ namespace OOX
 		class CAutofilter : public WritingElementWithChilds<CFilterColumn>
 		{
 		public:
-			WritingElement_AdditionConstructors(CAutofilter)
+			WritingElement_AdditionMethods(CAutofilter)
 			WritingElement_XlsbConstructors(CAutofilter)
 			CAutofilter();
 			virtual ~CAutofilter();

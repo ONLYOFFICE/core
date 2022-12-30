@@ -39,7 +39,6 @@ class CDownArrowType : public CCustomShape
 {
 public:
 	CDownArrowType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinMiter;

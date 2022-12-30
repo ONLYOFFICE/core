@@ -38,20 +38,20 @@ namespace PPTX
 	{		
 		TLAdditive::TLAdditive()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void TLAdditive::set(const std::wstring& strValue)
 		{
-			if ((_T("base") == strValue) ||
-				(_T("mult") == strValue) ||
-				(_T("none") == strValue) ||
-				(_T("repl") == strValue) ||
-				(_T("sum") == strValue))
+			if ((L"base" == strValue) ||
+				(L"mult" == strValue) ||
+				(L"none" == strValue) ||
+				(L"repl" == strValue) ||
+				(L"sum" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLAdditive::GetBYTECode() const
+		unsigned char TLAdditive::GetBYTECode() const
 		{
 			if (L"base" == m_strValue)	return 0;
 			if (L"mult" == m_strValue)	return 1;
@@ -60,7 +60,7 @@ namespace PPTX
 			if (L"sum" == m_strValue)	return 4;
 			return 0;
 		}
-		void TLAdditive::SetBYTECode(const BYTE& src)
+		void TLAdditive::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

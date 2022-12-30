@@ -40,7 +40,6 @@
 #include "../../OOXML/DocxFormat/Footnote.h"
 #include "../../OOXML/DocxFormat/Endnote.h"
 #include "../../OOXML/DocxFormat/FtnEdn.h"
-#include "../../OOXML/DocxFormat/HeaderFooter.h"
 #include "../../OOXML/DocxFormat/Logic/Table.h"
 #include "../../OOXML/DocxFormat/Logic/Sdt.h"
 #include "../../OOXML/DocxFormat/Logic/FldSimple.h"

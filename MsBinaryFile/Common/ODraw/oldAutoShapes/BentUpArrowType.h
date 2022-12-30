@@ -39,7 +39,6 @@ class CBentUpArrowType : public CCustomShape
 {
 public:
 	CBentUpArrowType()
-
     {
         m_bConcentricFill = false;
 		m_eJoin = ODRAW::lineJoinMiter;

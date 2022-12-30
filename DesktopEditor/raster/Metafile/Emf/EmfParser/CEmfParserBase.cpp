@@ -782,6 +782,16 @@ namespace MetaFile
 		return 96.;
 	}
 
+	IRegion *CEmfParserBase::GetRegion()
+	{
+		return NULL;
+	}
+
+	unsigned int CEmfParserBase::GetArcDirection()
+	{
+		return m_pDC->GetArcDirection();
+	}
+
 	bool CEmfParserBase::IsViewportFlippedY()
 	{
 		TEmfWindow* pViewport = m_pDC->GetViewport();

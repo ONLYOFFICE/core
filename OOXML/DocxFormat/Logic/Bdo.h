@@ -46,9 +46,7 @@ namespace OOX
 		class CBdo : public WritingElementWithChilds<>
 		{
 		public:
-			CBdo(OOX::Document *pMain = NULL);
-			CBdo(XmlUtils::CXmlNode &oNode);
-			CBdo(XmlUtils::CXmlLiteReader& oReader);
+			CBdo(OOX::Document *pMain = NULL);			
 			virtual ~CBdo();
 
 			const CBdo &operator =(const XmlUtils::CXmlNode& oNode);

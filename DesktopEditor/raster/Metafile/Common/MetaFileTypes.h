@@ -372,6 +372,7 @@ namespace MetaFile
 	struct TEmfPointL;
 	struct TWmfPointS;
     struct TWmfRect;
+	struct TEmfRectL;
 
 	struct TRect
 	{
@@ -381,6 +382,8 @@ namespace MetaFile
 		int  nBottom;
 
 		TRect();
+		TRect(const TWmfRect& oRect);
+		TRect(const TEmfRectL& oRect);
 		TRect& operator=(TWmfRect& oRect);
     };
 
@@ -425,22 +428,22 @@ namespace MetaFile
 			dBottom *= dValue;
 			return *this;
 		}
-	void Update(bool bFlipedX, double bFlipedY)
-	{
-		if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+		void Update(bool bFlipedX, double bFlipedY)
 		{
-			double dTemp = dBottom;
-			dBottom = dTop;
-			dTop = dTemp;
-		}
+			if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+			{
+				double dTemp = dBottom;
+				dBottom = dTop;
+				dTop = dTemp;
+			}
 
-		if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
-		{
-			double dTemp = dRight;
-			dRight = dLeft;
-			dLeft = dTemp;
+			if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
+			{
+				double dTemp = dRight;
+				dRight = dLeft;
+				dLeft = dTemp;
+			}
 		}
-	}
     };
 
 	struct TPointL

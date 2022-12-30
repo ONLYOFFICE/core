@@ -42,7 +42,7 @@ namespace PPTX
 		class RelOff : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(RelOff)
+			WritingElement_AdditionMethods(RelOff)
 			PPTX_LOGIC_BASE2(RelOff)
 
 			RelOff& operator=(const RelOff& oSrc);

@@ -65,7 +65,7 @@ namespace OOX
 		class CWorkbookPivotCache : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookPivotCache)
+			WritingElement_AdditionMethods(CWorkbookPivotCache)
 			WritingElement_XlsbConstructors(CWorkbookPivotCache)
 			CWorkbookPivotCache();
 			virtual ~CWorkbookPivotCache();
@@ -90,7 +90,7 @@ namespace OOX
 		class CWorkbookPivotCaches : public WritingElementWithChilds<CWorkbookPivotCache>
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookPivotCaches)
+			WritingElement_AdditionMethods(CWorkbookPivotCaches)
             WritingElement_XlsbConstructors(CWorkbookPivotCaches)
 			CWorkbookPivotCaches(OOX::Document *pMain = NULL);
 			virtual ~CWorkbookPivotCaches();

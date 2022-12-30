@@ -38,23 +38,23 @@ namespace PPTX
 	{		
 		TLOverride::TLOverride()
 		{
-			m_strValue = _T("normal");
+			m_strValue = L"normal";
 		}
 		void TLOverride::set(const std::wstring& strValue)
 		{
-			if ((_T("childStyle") == strValue) ||
-				(_T("normal") == strValue))
+			if ((L"childStyle" == strValue) ||
+				(L"normal" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLOverride::GetBYTECode() const
+		unsigned char TLOverride::GetBYTECode() const
 		{
 			if (L"childStyle" == m_strValue)	return 0;
 			if (L"normal" == m_strValue)	return 1;
 			return 0;
 		}
-		void TLOverride::SetBYTECode(const BYTE& src)
+		void TLOverride::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

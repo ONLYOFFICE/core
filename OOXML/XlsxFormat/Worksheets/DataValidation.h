@@ -43,7 +43,7 @@ namespace OOX
 		class CDataValidationFormula : public WritingElement //тоже что и CFormulaCF
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataValidationFormula)
+			WritingElement_AdditionMethods(CDataValidationFormula)
 			CDataValidationFormula(OOX::Document *pMain = NULL);
 			virtual ~CDataValidationFormula();
 
@@ -63,7 +63,7 @@ namespace OOX
 		class CDataValidation : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataValidation)
+			WritingElement_AdditionMethods(CDataValidation)
             WritingElement_XlsbConstructors(CDataValidation)
 			CDataValidation(OOX::Document *pMain = NULL);
 			virtual ~CDataValidation();
@@ -107,7 +107,7 @@ namespace OOX
 		class CDataValidations : public WritingElementWithChilds<CDataValidation>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataValidations)
+			WritingElement_AdditionMethods(CDataValidations)
             WritingElement_XlsbConstructors(CDataValidations)
 			CDataValidations(OOX::Document *pMain = NULL);
 			virtual ~CDataValidations();

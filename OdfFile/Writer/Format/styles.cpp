@@ -276,8 +276,8 @@ void draw_fill_image::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
- 			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
-			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",	draw_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name", draw_display_name_);
 			
 			xlink_attlist_.serialize(CP_GET_XML_NODE());
 		}
@@ -297,8 +297,8 @@ void draw_marker::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
- 			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
-			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",	draw_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name", draw_display_name_);
 			
 			CP_XML_ATTR_OPT(L"svg:d",	svg_d_);
 			CP_XML_ATTR_OPT(L"svg:viewBox",	svg_viewBox_);
@@ -332,8 +332,8 @@ void draw_gradient::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:angle", draw_angle_);
 			CP_XML_ATTR_OPT(L"draw:style", draw_style_);
 
- 			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
-			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",	draw_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name", draw_display_name_);
 		}
 	}
 }
@@ -357,8 +357,8 @@ void draw_hatch::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:distance",	draw_distance_);
 			CP_XML_ATTR_OPT(L"draw:style",		draw_style_);
 
- 			CP_XML_ATTR_OPT(L"draw:name",		draw_name_);
-			CP_XML_ATTR_OPT(L"draw:display_name",draw_display_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",		draw_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name", draw_display_name_);
 		}
 	}
 }
@@ -386,8 +386,8 @@ void draw_opacity::serialize(std::wostream & strm)
 			CP_XML_ATTR_OPT(L"draw:angle", draw_angle_);
 			CP_XML_ATTR_OPT(L"draw:style", draw_style_);
 
- 			CP_XML_ATTR_OPT(L"draw:name",			draw_name_);
-			CP_XML_ATTR_OPT(L"draw:display_name",	draw_display_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",			draw_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:display_name",	draw_display_name_);
 		}
 	}
 }
@@ -405,7 +405,7 @@ void draw_layer::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"draw:name",	draw_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name",	draw_name_);
 		}
 	}
 }

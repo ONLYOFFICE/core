@@ -36,32 +36,32 @@ namespace PPTX
 {
 	namespace Limit
 	{		
-		TextWrap::TextWrap(const BYTE& src)
+		TextWrap::TextWrap(const unsigned char& src)
 		{
 							SetBYTECode(src);
 		}
 		void TextWrap::set(const std::wstring& strValue)
 		{
-			if ((_T("none") == strValue) ||
-				(_T("square") == strValue))
+			if ((L"none" == strValue) ||
+				(L"square" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextWrap::GetBYTECode() const
+		unsigned char TextWrap::GetBYTECode() const
 		{
-			if (_T("none") == m_strValue)
+			if (L"none" == m_strValue)
 				return 0;
-			if (_T("square") == m_strValue)
+			if (L"square" == m_strValue)
 				return 1;
 			return 1;
 		}
-		void TextWrap::SetBYTECode(const BYTE& src)
+		void TextWrap::SetBYTECode(const unsigned char& src)
 		{
 			if (0 == src)
-				m_strValue = _T("none");
+				m_strValue = L"none";
 			else
-				m_strValue = _T("square");
+				m_strValue = L"square";
 		}
 	} // namespace Limit
 } // namespace PPTX

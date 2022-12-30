@@ -156,7 +156,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("sparkline") == sName )
-					m_arrItems.push_back(new CSparkline( oReader ));
+				{
+					CSparkline* pSparkline = new CSparkline();
+					*pSparkline = oReader;
+					m_arrItems.push_back(pSparkline);
+				}
 			}
 		}
 		void CSparklines::fromBin(XLS::BaseObjectPtr& obj)
@@ -534,7 +538,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("sparklineGroup") == sName )
-					m_arrItems.push_back(new CSparklineGroup( oReader ));
+				{
+					CSparklineGroup* pSparklineGroup = new CSparklineGroup();
+					*pSparklineGroup = oReader;
+					m_arrItems.push_back(pSparklineGroup);
+				}
 			}
 		}
 		void CSparklineGroups::fromBin(XLS::BaseObjectPtr& obj)
@@ -551,8 +559,8 @@ namespace OOX
 			return et_x_SparklineGroups;
 		}
 		void CSparklineGroups::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-			}
+		{
+		}
 
 	} //Spreadsheet
 } // namespace OOX

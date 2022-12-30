@@ -31,12 +31,8 @@
  */
 #pragma once
 
-#include "Docx.h"
 #include "File.h"
 #include "../Base/Nullable.h"
-#include "../Common/SimpleTypes_Word.h"
-#include "../Common/SimpleTypes_Shared.h"
-#include "../../DesktopEditor/common/SystemUtils.h"
 
 namespace PPTX
 {

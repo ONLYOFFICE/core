@@ -39,7 +39,6 @@ class CBracePairType : public CCustomShape
 {
 public:
 	CBracePairType()
-
     {
         m_bConcentricFill = false;
         m_eJoin = ODRAW::lineJoinMiter;

@@ -34,7 +34,6 @@
 #include "File.h"
 #include "IFileContainer.h"
 #include "../Base/Nullable.h"
-#include "FileTypes.h"
 #include "WritingElement.h"
 
 #include "../Common/SimpleTypes_Shared.h"
@@ -53,7 +52,7 @@ namespace OOX
 	class CComment : public WritingElementWithChilds<>
 	{
 	public:
-		WritingElement_AdditionConstructors(CComment)
+		WritingElement_AdditionMethods(CComment)
 			
 		CComment(OOX::Document *pMain = NULL);
 		virtual ~CComment();
@@ -113,7 +112,7 @@ namespace OOX
 	class CCommentExt : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CCommentExt)
+		WritingElement_AdditionMethods(CCommentExt)
 		CCommentExt();
 		virtual ~CCommentExt();
 
@@ -163,7 +162,7 @@ namespace OOX
 	class CCommentExtensible : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CCommentExtensible)
+		WritingElement_AdditionMethods(CCommentExtensible)
 		CCommentExtensible();
 		virtual ~CCommentExtensible();
 
@@ -221,7 +220,7 @@ namespace OOX
 	class CCommentId : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CCommentId)
+		WritingElement_AdditionMethods(CCommentId)
 		CCommentId();
 		virtual ~CCommentId();
 
@@ -266,7 +265,7 @@ namespace OOX
 	class CPresenceInfo : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CPresenceInfo)
+		WritingElement_AdditionMethods(CPresenceInfo)
 			
 		CPresenceInfo();
 		virtual ~CPresenceInfo();
@@ -288,7 +287,7 @@ namespace OOX
 	class CPerson : public WritingElement
 	{
 	public:
-		WritingElement_AdditionConstructors(CPerson)
+		WritingElement_AdditionMethods(CPerson)
 		CPerson();
 		virtual ~CPerson();
 

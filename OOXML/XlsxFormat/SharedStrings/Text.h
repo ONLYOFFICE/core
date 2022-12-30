@@ -47,13 +47,16 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, bool bPreserve);
 			void fromStringA(const char* sVal);
+
 		public:
 			WCHAR* m_sBuffer;
 			LONG m_nSize;
 			LONG m_nLen;
+
 		protected:
 			void checkBufferSize(_UINT32 nRequired);
 		};
+
 		class CTextXLSB
 		{
 		public:
@@ -61,6 +64,7 @@ namespace OOX
 			void Clean();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader, SimpleTypes::Spreadsheet::ECellTypeType eType);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
 		public:
 			bool m_bIsInit;
 			SimpleTypes::CXmlSpace m_oSpace;
@@ -74,7 +78,7 @@ namespace OOX
 		class CText : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CText)
+			WritingElement_AdditionMethods(CText)
 			CText();
 			virtual ~CText();
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,41 +35,5 @@
 // 67
 namespace NSCustomShapesConvert
 {
-class CDownArrowType : public CCustomShape
-{
-public:
-	CDownArrowType()
-    {
-        m_bConcentricFill = false;
-        m_eJoin = ODRAW::lineJoinMiter;
-
-        m_strPath = _T("m0@0l@1@0@1,0@2,0@2@0,21600@0,10800,21600xe");
-
-        AddGuide(_T("val #0"));
-        AddGuide(_T("val #1"));
-        AddGuide(_T("sum height 0 #1"));
-        AddGuide(_T("sum 10800 0 #1"));
-        AddGuide(_T("sum width 0 #0"));
-        AddGuide(_T("prod @4 @3 10800"));
-        AddGuide(_T("sum width 0 @5"));
-
-        m_arAdjustments.push_back(16200);
-		m_arAdjustments.push_back(5400);
-
-        LoadConnectorsList(_T("10800,0;0,@0;10800,21600;21600,@0"));
-
-        m_arConnectorAngles.push_back(270);
-		m_arConnectorAngles.push_back(180);
-		m_arConnectorAngles.push_back(90);
-		m_arConnectorAngles.push_back(0);
-        
-		LoadTextRect(_T("@1,0,@2,@6"));
-
-        CHandle_ oHandle1;
-        oHandle1.position = _T("#1,#0");
-        oHandle1.xrange = _T("0,10800");
-        oHandle1.yrange = _T("0,21600");
-        m_arHandles.push_back(oHandle1);
-    }
-};
+	DEFINE_SHAPE_CLASS(CDownArrowType, CCustomShape)
 }

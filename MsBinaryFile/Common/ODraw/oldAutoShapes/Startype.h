@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,20 +35,5 @@
 // 12
 namespace NSCustomShapesConvert
 {
-
-class CStarType : public CCustomShape
-{
-public:
-	CStarType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-
-        m_strPath = _T("m10800,l8280,8259,,8259r6720,5146l4200,21600r6600,-5019l17400,21600,14880,13405,21600,8259r-8280,xe");
-
-        LoadConnectorsList(_T("10800,0;0,8259;4200,21600;17400,21600;21600,8259"));
-        LoadTextRect(_T("6720,8259,14880,15628"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CStarType, CCustomShape)
 }

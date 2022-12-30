@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,43 +35,5 @@
 // 93
 namespace NSCustomShapesConvert
 {
-
-class CStripedRightArrowType : public CCustomShape
-{
-public:
-	CStripedRightArrowType()
-
-    {
-        m_bConcentricFill = false;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m@0,l@0@1,3375@1,3375@2@0@2@0,21600,21600,10800xem1350@1l1350@2,2700@2,2700@1xem0@1l0@2,675@2,675@1xe");
-        
-        AddGuide(_T("val #0")); 
-        AddGuide(_T("val #1")); 
-        AddGuide(_T("sum height 0 #1")); 
-        AddGuide(_T("sum 10800 0 #1")); 
-        AddGuide(_T("sum width 0 #0")); 
-        AddGuide(_T("prod @4 @3 10800"));
-        AddGuide(_T("sum width 0 @5"));
-
-		m_arAdjustments.push_back(16200);
-		m_arAdjustments.push_back(5400);
-
-        LoadConnectorsList(_T("@0,0;0,10800;@0,21600;21600,10800"));
-
-		m_arConnectorAngles.push_back(270);
-		m_arConnectorAngles.push_back(180);
-		m_arConnectorAngles.push_back(90);
-		m_arConnectorAngles.push_back(0);
-		
-
-        LoadTextRect(_T("3375,@1,@6,@2"));
-
-        CHandle_ oHandle1;
-        oHandle1.position = _T("#0,#1");
-        oHandle1.xrange = _T("3375,21600");
-        oHandle1.yrange = _T("0,10800"); 
-        m_arHandles.push_back(oHandle1);
-    }
-};
+	DEFINE_SHAPE_CLASS(CStripedRightArrowType, CCustomShape)
 }

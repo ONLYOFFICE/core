@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,18 +35,5 @@
 // 177
 namespace NSCustomShapesConvert
 {
-class CFlowChartOffpageConnectorType : public CCustomShape
-{
-public:
-	CFlowChartOffpageConnectorType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m,l21600,r,17255l10800,21600,,17255xe"); 
-        LoadConnectorsList(_T("Rectangle"));
-        LoadTextRect(_T("0,0,21600,17255"));
-    }
-};
-
+	DEFINE_SHAPE_CLASS(CFlowChartOffpageConnectorType, CCustomShape)
 }

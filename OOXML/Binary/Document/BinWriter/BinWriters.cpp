@@ -51,6 +51,7 @@
 
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
+#include "../../../DocxFormat/FontTable.h"
 
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Logic/AlternateContent.h"

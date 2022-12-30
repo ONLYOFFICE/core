@@ -888,14 +888,13 @@ void note::docx_convert(oox::docx_conversion_context & Context)
 
 	Context.get_notes_context().set_current_note(text_note_class_.get_type(), dynamic_cast<const note_citation *>(text_note_citation_.get()));
 
-	std::wstring sCustom = text_note_citation_ ? L" w:customMarkFollows=\"1\"" : L"";
     if (text_note_class_.get_type() == noteclass::Footnote)
     {
-	   Context.output_stream() << "<w:footnoteReference" << sCustom << L" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
+	   Context.output_stream() << "<w:footnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
     }
     else 
     {
-		Context.output_stream() << "<w:endnoteReference" << sCustom << L" w:customMarkFollows=\"1\" w:id=\"" << Context.get_notes_context().next_id() << "\" />";
+		Context.output_stream() << "<w:endnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
     }
 
     if (text_note_citation_)

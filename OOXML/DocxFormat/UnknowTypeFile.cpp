@@ -34,11 +34,15 @@
 
 namespace OOX
 {
-	UnknowTypeFile::UnknowTypeFile(OOX::Document* pMain): File(pMain)
+	UnknowTypeFile::UnknowTypeFile(OOX::Document* pMain) : File(pMain)
 	{
 	}
 	UnknowTypeFile::~UnknowTypeFile()
 	{
+	}
+	UnknowTypeFile::UnknowTypeFile(OOX::Document *pMain, const OOX::CPath& oFilePath) : File(pMain)
+	{
+		m_sOutputFilename = oFilePath.GetPath();
 	}
 	void UnknowTypeFile::read(const CPath& filename)
 	{

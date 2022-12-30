@@ -9,7 +9,7 @@ void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
 }
 void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 {
-	m_wsCMapFolder = wsFolder;
+    m_wsCMapFolder = wsFolder;
 
 	GString* sFolder = NSStrings::CreateString(wsFolder);
 	if (!sFolder)
@@ -31,33 +31,15 @@ void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 	unicodeMaps->add(new GString("ISO-8859-9"),   sFolder->copy()->append("/ISO-8859-9.unicodeMap"));
 	unicodeMaps->add(new GString("Latin2"),       sFolder->copy()->append("/Latin2.unicodeMap"));
 
-	cidToUnicodes->add(new GString("Adobe-GB1"), sFolder->copy()->append("/Adobe-GB1.cidToUnicode"));
-	cidToUnicodes->add(new GString("Adobe-Korea1"), sFolder->copy()->append("/Adobe-Korea1.cidToUnicode"));
-	cidToUnicodes->add(new GString("Adobe-KR"), sFolder->copy()->append("/Adobe-KR.cidToUnicode"));
-	cidToUnicodes->add(new GString("Adobe-Japan1"), sFolder->copy()->append("/Adobe-Japan1.cidToUnicode"));
-
 	AddNameToUnicode(GString(sFolder->getCString()).append("/Bulgarian.nameToUnicode")->getCString());
 	AddNameToUnicode(GString(sFolder->getCString()).append("/Greek.nameToUnicode")->getCString());
 	AddNameToUnicode(GString(sFolder->getCString()).append("/Thai.nameToUnicode")->getCString());
 
-	AddCMapFolder("Adobe-GB1", sFolder);
-	AddCMapFolder("Adobe-Japan1", sFolder);
-	AddCMapFolder("Adobe-Korea1", sFolder);
-	AddCMapFolder("Adobe-KR", sFolder);
+    AddAllCMap(sFolder);
 
-	toUnicodeDirs->append(sFolder->copy()->append("/CMap"));
-}
-void GlobalParamsAdaptor::SetCMapMemory()
-{
-	cidToUnicodes->add(new GString("Adobe-GB1"), new GString());
-	cidToUnicodes->add(new GString("Adobe-Korea1"), new GString());
-	cidToUnicodes->add(new GString("Adobe-KR"), new GString());
-	cidToUnicodes->add(new GString("Adobe-Japan1"), new GString());
+    toUnicodeDirs->append(sFolder->copy());
 
-	cMapDirs->add(new GString("Adobe-GB1"), new GList());
-	cMapDirs->add(new GString("Adobe-Korea1"), new GList());
-	cMapDirs->add(new GString("Adobe-KR"), new GList());
-	cMapDirs->add(new GString("Adobe-Japan1"), new GList());
+    delete sFolder;
 }
 void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 {
@@ -82,14 +64,95 @@ void GlobalParamsAdaptor::AddNameToUnicode(const char* sFile)
 
 	fclose(f);
 }
+void GlobalParamsAdaptor::AddAllCMap(GString* sFolder)
+{
+    if (cidToUnicodes->lookup("Adobe-GB1"))
+        return;
+
+    cidToUnicodes->add(new GString("Adobe-GB1"), sFolder ? sFolder->copy()->append("/Adobe-GB1.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-CNS1"), sFolder ? sFolder->copy()->append("/Adobe-CNS1.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-Korea1"), sFolder ? sFolder->copy()->append("/Adobe-Korea1.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-KR"), sFolder ? sFolder->copy()->append("/Adobe-KR.cidToUnicode") : new GString());
+    cidToUnicodes->add(new GString("Adobe-Japan1"), sFolder ? sFolder->copy()->append("/Adobe-Japan1.cidToUnicode") : new GString());
+
+    if (sFolder)
+        sFolder->append("/CMap");
+
+    AddCMapFolder("Adobe-GB1", sFolder);
+    AddCMapFolder("Adobe-CNS1", sFolder);
+    AddCMapFolder("Adobe-Japan1", sFolder);
+    AddCMapFolder("Adobe-Korea1", sFolder);
+    AddCMapFolder("Adobe-KR", sFolder);
+}
 void GlobalParamsAdaptor::AddCMapFolder(const char* sCollection, GString* sFolder)
 {
 	GList *pList = new GList();
 	if (!pList)
 		return;
 
-	pList->append(sFolder->copy()->append("/CMap"));
+    if (sFolder)
+    {
+        pList->append(sFolder->copy());
+    }
+
 	cMapDirs->add(new GString(sCollection), pList);
+}
+void GlobalParamsAdaptor::SetCMapFile(const std::wstring &wsFile)
+{
+    AddAllCMap(NULL);
+
+#ifndef BUILDING_WASM_MODULE
+	NSFile::CFileBinary::ReadAllBytes(wsFile, &m_bCMapData, m_nCMapDataLength);
+#endif
+}
+void GlobalParamsAdaptor::SetCMapMemory(BYTE* pData, DWORD nSizeData)
+{
+    AddAllCMap(NULL);
+
+    if (pData)
+    {
+        m_bCMapData = pData;
+        m_nCMapDataLength = nSizeData;
+    }
+}
+
+DWORD GetLength(BYTE* x)
+{
+    return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
+}
+bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int& nSize)
+{
+    if (!m_bCMapData)
+    {
+        if (m_wsCMapFolder.empty())
+            SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
+        if (!m_bCMapData)
+            return false;
+    }
+
+    DWORD i = 0;
+    while (i < m_nCMapDataLength)
+    {
+        DWORD nPathLength = GetLength(m_bCMapData + i);
+        i += 4;
+        std::string sName1 = std::string((char*)(m_bCMapData + i), nPathLength);
+        i += nPathLength;
+
+        nPathLength = GetLength(m_bCMapData + i);
+        i += 4;
+        if (sName1 == std::string(sName))
+        {
+            pData = (char*)(m_bCMapData + i);
+            nSize = nPathLength;
+            return true;
+        }
+        else
+        {
+            i += nPathLength;
+        }
+    }
+
+    return false;
 }
 
 bool operator==(const Ref &a, const Ref &b)

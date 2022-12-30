@@ -152,7 +152,7 @@ void text_bookmark::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:name", text_name_);
+			CP_XML_ATTR_ENCODE_STRING(L"text:name", text_name_);
 		}
 	}
 }
@@ -168,7 +168,7 @@ void text_bookmark_start::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:name", text_name_);
+			CP_XML_ATTR_ENCODE_STRING(L"text:name", text_name_);
 		}
 	}
 }
@@ -184,7 +184,7 @@ void text_bookmark_end::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:name", text_name_);
+			CP_XML_ATTR_ENCODE_STRING(L"text:name", text_name_);
 		}
 	}
 }
@@ -200,7 +200,7 @@ void text_reference_mark::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:name", text_name_);
+			CP_XML_ATTR_ENCODE_STRING(L"text:name", text_name_);
 		}
 	}
 }
@@ -216,7 +216,7 @@ void text_reference_mark_start::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:name", text_name_);
+			CP_XML_ATTR_ENCODE_STRING(L"text:name", text_name_);
 		}
 	}
 }
@@ -232,7 +232,7 @@ void text_reference_mark_end::serialize(std::wostream & _Wostream)
     {
 		CP_XML_NODE_SIMPLE()
         { 	
-			CP_XML_ATTR(L"text:name", text_name_);
+			CP_XML_ATTR_ENCODE_STRING(L"text:name", text_name_);
 		}
 	}
 }

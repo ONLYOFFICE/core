@@ -514,18 +514,27 @@ namespace SimpleTypes
 
 		EFontFamily CFontFamily::FromString(const std::wstring &sValue)
 		{
-			int nFontFamily = XmlUtils::GetInteger(sValue);
-			switch(nFontFamily)
+			std::wstring oldValue = XmlUtils::GetLower(sValue);
+
+			if (oldValue == L"roman") this->m_eValue = fontfamilyRoman;
+			else if (oldValue == L"swiss") this->m_eValue = fontfamilySwiss;
+			else if (oldValue == L"modern") this->m_eValue = fontfamilyModern;
+			else if (oldValue == L"script") this->m_eValue = fontfamilyScript;
+			else
 			{
-			case 0:this->m_eValue = fontfamilyNotApplicable;break;
-			case 1:this->m_eValue = fontfamilyRoman;break;
-			case 2:this->m_eValue = fontfamilySwiss;break;
-			case 3:this->m_eValue = fontfamilyModern;break;
-			case 4:this->m_eValue = fontfamilyScript;break;
-			case 5:this->m_eValue = fontfamilyDecorative;break;
-			default:this->m_eValue = fontfamilyNotApplicable;
+				int nFontFamily = XmlUtils::GetInteger(sValue);
+				switch (nFontFamily)
+				{
+				case 0:this->m_eValue = fontfamilyNotApplicable; break;
+				case 1:this->m_eValue = fontfamilyRoman; break;
+				case 2:this->m_eValue = fontfamilySwiss; break;
+				case 3:this->m_eValue = fontfamilyModern; break;
+				case 4:this->m_eValue = fontfamilyScript; break;
+				case 5:this->m_eValue = fontfamilyDecorative; break;
+				default:this->m_eValue = fontfamilyNotApplicable;
+				}
+				return this->m_eValue;
 			}
-			return this->m_eValue;
 		}
 
 		std::wstring CFontFamily::ToString  () const

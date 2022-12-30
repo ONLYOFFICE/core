@@ -170,6 +170,16 @@ namespace MetaFile
 		return (0 != m_oPlaceable.Inch) ? m_oPlaceable.Inch : 96.;
 	}
 
+	IRegion *CWmfParserBase::GetRegion()
+	{
+		return m_pDC->GetRegion();
+	}
+
+	unsigned int CWmfParserBase::GetArcDirection()
+	{
+		return AD_CLOCKWISE;
+	}
+
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput)
 	{
 		if (NULL != m_pInterpretator)
@@ -1634,11 +1644,11 @@ namespace MetaFile
 					}
 					else if (!oEmfParser.CheckError() && InterpretatorType::Svg == m_pInterpretator->GetType())
 					{
-						unsigned int unWidth, unHeight;
+						double dWidth, dHeight;
 
-						((CWmfInterpretatorSvg*)m_pInterpretator)->GetSize(unWidth, unHeight);
+						((CWmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
 
-						((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg, unWidth, unHeight);
+						((CEmfParserBase*)&oEmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
 
 						oEmfParser.PlayFile();
 

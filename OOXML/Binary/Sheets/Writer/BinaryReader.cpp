@@ -5382,7 +5382,7 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, NULL, false, true);
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 
@@ -5614,7 +5614,8 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 	{
 		OOX::CVmlDrawing::_vml_shape oVmlShape;
 		READ1_DEF(length, res, this->ReadLegacyDrawingHFDrawing, &oVmlShape);
-		if(NULL != oVmlShape.pElement && !oVmlShape.sXml.empty())
+		
+		if (NULL != oVmlShape.pElement && !oVmlShape.sXml.empty())
 		{
 			PPTX::Logic::SpTreeElem* pSpTree = static_cast<PPTX::Logic::SpTreeElem*>(oVmlShape.pElement);
 			
@@ -5624,8 +5625,10 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 
 			oWriter.m_pOOXToVMLRenderer = &oOOXToVMLRenderer;
 			oWriter.m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+
+			//oWriter.m_strId = oVmlShape.sXml.c_str(); //??
 			
-			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oVmlShape.sXml.c_str());
+			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
 			
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());

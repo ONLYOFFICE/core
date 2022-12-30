@@ -1434,7 +1434,8 @@ namespace PPTX
 		{
 			return (long) nvPicPr.cNvPr.id;
 		}
-		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, const WCHAR* pId, bool in_group)
+
+		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			bool bOle = oleObject.IsInit() && oleObject->isValid();
 			std::wstring sOleNodeName;
@@ -1561,22 +1562,23 @@ namespace PPTX
 			pWriter->StartNode(L"v:shape");
 			pWriter->StartAttributes();
 
-			if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
+			if (pWriter->m_strId.empty())
 			{
-				if(NULL == pId)
+				if (XMLWRITER_DOC_TYPE_XLSX == pWriter->m_lDocType)
 				{
-					pWriter->WriteAttribute(L"id", strSpid);
+					pWriter->WriteAttribute(L"id", strSpid); //??
 				}
 				else
 				{
-					pWriter->WriteAttribute(L"id", pId);
+					pWriter->WriteAttribute(L"id", strId);
 					pWriter->WriteAttribute(L"o:spid", strSpid);
 				}
 			}
 			else
 			{
-				pWriter->WriteAttribute(L"id", strId);
+				pWriter->WriteAttribute(L"id", pWriter->m_strId);
 				pWriter->WriteAttribute(L"o:spid", strSpid);
+				pWriter->m_strId.clear();
 			}
 			pWriter->WriteAttribute(L"type", L"#_x0000_t75");
 			

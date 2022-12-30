@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef OOX_UNKNOW_TYPE_FILE_INCLUDE_H_
-#define OOX_UNKNOW_TYPE_FILE_INCLUDE_H_
 
 #include "File.h"
 #include "FileTypes.h"
@@ -43,6 +41,7 @@ namespace OOX
 	{
 	public:
 		UnknowTypeFile(OOX::Document* pMain);
+		UnknowTypeFile(OOX::Document *pMain, const OOX::CPath& oFilePath);
 		virtual ~UnknowTypeFile();
 
 		virtual void read(const CPath& filename);
@@ -54,4 +53,3 @@ namespace OOX
 	};
 } // namespace OOX
 
-#endif // OOX_UNKNOW_TYPE_FILE_INCLUDE_H_

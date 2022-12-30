@@ -52,23 +52,7 @@ BaseObjectPtr CalcMode::clone()
 
 void CalcMode::readFields(CFRecord& record)
 {
-	short fAutoRecalc_num;
-	record >> fAutoRecalc_num;
-	switch (fAutoRecalc_num)
-	{
-		case 0:
-			fAutoRecalc = std::wstring (L"manual");
-			break;
-		case 1:
-			fAutoRecalc = std::wstring (L"auto");
-			break;
-		case 2:
-			fAutoRecalc = std::wstring (L"autoNoTable");
-			break;
-		default:
-			fAutoRecalc = std::wstring (L"auto");
-			// EXCEPT::RT::WrongBiffRecord("Unsupported value of fAutoRecalc.", record.getTypeString());
-	}
+	record >> nAutoRecalc;
 }
 
 } // namespace XLS

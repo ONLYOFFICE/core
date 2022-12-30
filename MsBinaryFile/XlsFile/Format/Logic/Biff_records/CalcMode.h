@@ -35,7 +35,6 @@
 
 namespace XLS
 {
-
 class CalcMode: public BiffRecord
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(CalcMode)
@@ -45,14 +44,12 @@ public:
 	~CalcMode();
 
 	BaseObjectPtr clone();
-
 	
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeCalcMode;
+	static const ElementType type = typeCalcMode;
 
-	std::wstring fAutoRecalc;
-
+	unsigned short nAutoRecalc;
 };
 
 } // namespace XLS

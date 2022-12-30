@@ -48,7 +48,7 @@ namespace DocFileFormat
 		std::vector<ByteStructure*>	Elements;
 		bool						m_bIsValid;
 
-		std::map<int, int>			mapCP;
+		std::map<int, size_t>		mapCP;
 	public:
 		Plex(int structureLength, POLE::Stream* stream, unsigned int fc, unsigned int lcb, int nWordVersion) 
 			: m_bIsValid(false), CP_LENGTH(/*nWordVersion == 2 ? 2 :*/ 4)
@@ -80,7 +80,7 @@ namespace DocFileFormat
 				{
 					int val = reader.ReadInt32();
 
-					mapCP.insert(std::make_pair(val, (int)CharacterPositions.size()));
+					mapCP.insert(std::make_pair(val, CharacterPositions.size()));
 					CharacterPositions.push_back(val);
 				}
 
@@ -105,33 +105,29 @@ namespace DocFileFormat
 				RELEASEOBJECT(Elements[i]);
 			}
 		}
-
-
-		// Retruns the struct that matches the given character position.
-
-		inline ByteStructure* GetStruct(int cp)
+		inline ByteStructure* GetStruct(size_t index)
 		{
-			int index = -1;
-
-			std::map<int, int>::iterator pFind = mapCP.find(cp);
-
-			if (pFind != mapCP.end())
-			{
-				index = pFind->second;
-			}
-
-
 			if ((index >= 0) && (index < (int)Elements.size()))
 				return this->Elements[index];
 
 			return NULL;
+		}
+		inline ByteStructure* GetStructByCP(int cp)
+		{
+			std::map<int, size_t>::iterator pFind = mapCP.find(cp);
+
+			if (pFind != mapCP.end())
+			{
+				return GetStruct(pFind->second);
+			}
+			return NULL;			
 		}
 
 		inline bool IsCpExists(int cp) const
 		{
 			bool result = false;
 
-			std::map<int, int>::const_iterator pFind = mapCP.find(cp);
+			std::map<int, size_t>::const_iterator pFind = mapCP.find(cp);
 
 			if (pFind != mapCP.end())
 			{

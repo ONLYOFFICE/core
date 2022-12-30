@@ -1,0 +1,78 @@
+{
+	"name": "engine",
+	"res_folder": "./deploy",
+	"wasm": true,
+	"asm": true,
+	"run_before": "before.py",
+	"run_after": "after.py",
+	"base_js_content": "./hash_base.js",
+	"embed_mem_file": true,
+
+	"compiler_flags": [
+		"-O3",
+		"-fno-exceptions",
+		"-fno-rtti",
+		"-Wno-unused-command-line-argument",
+		"-s ALLOW_MEMORY_GROWTH=1",
+		"-s FILESYSTEM=0",
+		"-s ENVIRONMENT='worker'",		
+		"-s TOTAL_STACK=1MB",
+		"-s TOTAL_MEMORY=2MB"
+	],
+	
+	"exported_functions": [
+		"_malloc",
+		"_free",
+		"_hash",
+		"_hash2"
+	],
+	
+	"include_path": [
+		"./", "./../3rdParty/openssl/include"
+	],
+	"define": [
+		"WIN32", "DNDEBUG", "OPENSSL_MD2_ENABLED"
+	],
+	"compile_files_array": [
+	{
+		"name": "a1",
+		"folder": "./../3rdParty/openssl/crypto/sha/",
+		"files": ["keccak1600.c", "sha1_one.c", "sha1dgst.c", "sha256.c", "sha512.c"]
+	},
+	{
+		"name": "a2",
+		"folder": "./../3rdParty/openssl/crypto/md2/",
+		"files": ["md2_dgst.c", "md2_one.c"]
+	},
+	{
+		"name": "a3",
+		"folder": "./../3rdParty/openssl/crypto/md4/",
+		"files": ["md4_dgst.c", "md4_one.c"]
+	},
+	{
+		"name": "a4",
+		"folder": "./../3rdParty/openssl/crypto/md5/",
+		"files": ["md5_dgst.c", "md5_one.c"]
+	},
+	{
+		"name": "a5",
+		"folder": "./../3rdParty/openssl/crypto/ripemd/",
+		"files": ["rmd_dgst.c", "rmd_one.c"]
+	},
+	{
+		"name": "a6",
+		"folder": "./../3rdParty/openssl/crypto/whrlpool/",
+		"files": ["wp_block.c", "wp_dgst.c"]
+	},
+	{
+		"name": "a7",
+		"folder": "./../3rdParty/openssl/crypto/",
+		"files": ["mem_clr.c"]
+	},
+	{
+		"name": "m",
+		"folder": "./",
+		"files": ["main.cpp"]
+	}
+	]
+}

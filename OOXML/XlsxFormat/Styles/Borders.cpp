@@ -158,6 +158,8 @@ namespace OOX
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDotted));
 				else if (*sLineStyle == L"Dash")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDashed));
+				else if (*sLineStyle == L"None")
+					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleNone));
 				else if (*sLineStyle == L"Double")
 					m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleDouble));
 				else if (*sLineStyle == L"Continuous")
@@ -172,11 +174,13 @@ namespace OOX
 				{
 					case 1:	 //Thin
 					{
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
+						if (false == sLineStyle.IsInit())
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThin));
 					}break;
 					case 3: //Thick
 					{
-						m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
+						if (false == sLineStyle.IsInit())
+							m_oStyle.reset(new SimpleTypes::Spreadsheet::CBorderStyle(SimpleTypes::Spreadsheet::borderstyleThick));
 					}break;
 					default://2: //Medium
 					{

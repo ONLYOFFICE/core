@@ -253,7 +253,7 @@ void form_element::serialize_attlist(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"form:tab-stop",		tab_stop_);
 	CP_XML_ATTR_OPT(L"form:title",			title_);
 	CP_XML_ATTR_OPT(L"form:value",			value_);
-	CP_XML_ATTR_OPT(L"form:current-value",	current_value_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"form:current-value", current_value_);
 	CP_XML_ATTR_OPT(L"form:dropdown",		dropdown_);
 	CP_XML_ATTR_OPT(L"xml:id",				xml_id_);
 	CP_XML_ATTR_OPT(L"xforms:bind",			xforms_bind_);

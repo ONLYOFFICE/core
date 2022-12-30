@@ -38,6 +38,5 @@ namespace PdfReader
     // эту память не удалять!!! просто использовать
     bool GetBaseFont(const std::wstring& sName, const unsigned char*& pData, unsigned int& nSize);
     bool GetBaseCidToUnicode(const char* sName, const unsigned  int*& pData, unsigned int& nSize);
-    bool GetBaseCMap(const char* sName, const char*& pData, unsigned int& nSize);
 }
 #endif //_PDF_READER_BASE_FONTS_H

@@ -236,6 +236,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_TopMargin:
 			case rt_LeftMargin:
 			case rt_RightMargin:
+			case rt_VCenter:
+			case rt_HCenter:
 			case rt_Setup:
 			{
 				if (proc.mandatory<PAGESETUP>())
@@ -299,6 +301,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 			case rt_Label_BIFF2:
 			case rt_Row:
 			case rt_Row_BIFF2:
+			case rt_Blank:
 			{
 				CELLTABLE cell_table_temlate(shared_formulas_locations);
 				if (proc.optional(cell_table_temlate))

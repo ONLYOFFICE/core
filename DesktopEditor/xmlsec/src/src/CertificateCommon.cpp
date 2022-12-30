@@ -11,6 +11,7 @@
 #endif
 
 #include "./../include/CertificateCommon.h"
+#include "../../../common/File.h"
 
 ICertificate::ICertificate()
 {

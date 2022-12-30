@@ -73,6 +73,8 @@ public:
 	BaseObjectPtr					m_CodeName;
 	BaseObjectPtr					m_METADATA;
 	BaseObjectPtr					m_MTRSettings;
+	BaseObjectPtr					m_Date1904;
+	BaseObjectPtr					m_CalcPrecision;
 
 	std::vector<BaseObjectPtr>		m_arBIGNAME;
 	std::vector<BaseObjectPtr>		m_arHFPicture;

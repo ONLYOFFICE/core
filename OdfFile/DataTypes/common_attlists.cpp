@@ -773,7 +773,7 @@ void common_shape_draw_attlist::apply_from(const common_shape_draw_attlist & Oth
 
 void common_shape_draw_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"draw:name",			draw_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name", draw_name_);
     CP_XML_ATTR_OPT(L"draw:style-name",		draw_style_name_);
     CP_XML_ATTR_OPT(L"draw:class-names",	draw_class_names_);
     CP_XML_ATTR_OPT(L"draw:id",				draw_id_);
@@ -921,7 +921,7 @@ void section_attlists::add_attributes( const xml::attributes_wc_ptr & Attributes
 void section_attlists::serialize(CP_ATTR_NODE)
 {
     CP_XML_ATTR_OPT(L"text:style-name", style_name_);
-    CP_XML_ATTR(L"text:name", name_);
+	CP_XML_ATTR_ENCODE_STRING(L"text:name", name_);
     CP_XML_ATTR_OPT(L"text:protected", protected_);
     CP_XML_ATTR_OPT(L"text:protection-key", protection_key_);
     CP_XML_ATTR_OPT(L"text:display", display_);

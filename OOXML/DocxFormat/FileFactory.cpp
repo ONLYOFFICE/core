@@ -324,7 +324,7 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::ImportedExternalContent )
 			return smart_ptr<OOX::File>(new Media( pMain, oFileName, pRelation->IsExternal() ));
 
-		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
+		return smart_ptr<OOX::File>( new UnknowTypeFile(pMain, pRelation->Target()) );
 	}
 
 } // namespace OOX

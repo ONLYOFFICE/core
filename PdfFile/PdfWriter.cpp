@@ -34,7 +34,6 @@
 
 #include "PdfWriter.h"
 
-#ifndef BUILDING_WASM_MODULE
 #include "SrcWriter/Document.h"
 #include "SrcWriter/Pages.h"
 #include "SrcWriter/Image.h"
@@ -2292,4 +2291,3 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
     return L"";
 }
-#endif // BUILDING_WASM_MODULE

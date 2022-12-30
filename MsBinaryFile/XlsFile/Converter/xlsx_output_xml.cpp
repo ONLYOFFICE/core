@@ -88,6 +88,7 @@ public:
 	std::wstringstream  dataValidations_;
 	std::wstringstream  protection_;
 	std::wstringstream  tableParts_;
+	std::wstringstream  sheetCalcPr_;
 
 	rels rels_;
 
@@ -199,6 +200,11 @@ std::wostream & xlsx_xml_worksheet::tableParts()
 {
     return impl_->tableParts_;
 }
+std::wostream & xlsx_xml_worksheet::sheetCalcPr()
+{
+	return impl_->sheetCalcPr_;
+}
+
 //-----------------------------------------------------------------
 rels & xlsx_xml_worksheet::sheet_rels()
 {
@@ -247,6 +253,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 					impl_->sheetData_.clear();
 				}
             }
+			CP_XML_STREAM() << impl_->sheetCalcPr_.str();
 
 			CP_XML_STREAM() << impl_->protection_.str();
 

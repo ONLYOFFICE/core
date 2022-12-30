@@ -7,10 +7,12 @@
 #include "../../../common/File.h"
 #include "../Common/MetaFileObjects.h"
 
+#include "../../../../OOXML/Base/Types_32.h"
+
 #ifndef MININT32
-#define MAXUINT32   ((UINT32)~((UINT32)0))
-#define MAXINT32    ((INT32)(MAXUINT32 >> 1))
-#define MININT32    ((INT32)~MAXINT32)
+#define MAXUINT32   ((_UINT32)~((_UINT32)0))
+#define MAXINT32    ((_INT32)(MAXUINT32 >> 1))
+#define MININT32    ((_INT32)~MAXINT32)
 #endif
 
 namespace MetaFile

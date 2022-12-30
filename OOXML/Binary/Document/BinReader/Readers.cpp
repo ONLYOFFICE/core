@@ -31,7 +31,6 @@
  */
 
 #include "Readers.h"
-#include "ReaderClasses.h"
 
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../Sheets/Writer/BinaryReader.h"
@@ -40,27 +39,17 @@
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
-#include "../../../DocxFormat/Docx.h"
-#include "../../../DocxFormat/Document.h"
-#include "../../../DocxFormat/FontTable.h"
-#include "../../../DocxFormat/Numbering.h"
-#include "../../../DocxFormat/Comments.h"
-#include "../../../DocxFormat/Styles.h"
-#include "../../../DocxFormat/Footnote.h"
-#include "../../../DocxFormat/Endnote.h"
 #include "../../../DocxFormat/Settings/Settings.h"
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Math/oMathContent.h"
+#include "../../../DocxFormat/Logic/DocParts.h"
 
 #include "../DocWrapper/XlsxSerializer.h"
 
-#include "../../../../DesktopEditor/common/ASCVariant.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-
 #include "../../../../DesktopEditor/common/Directory.h"
-#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #define UINT_TO_COMPLEX_BOOL(offset, val) \
 	if (0 != ((nFlags >> offset) & 1)) { \

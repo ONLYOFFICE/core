@@ -345,7 +345,9 @@ namespace OOX
 				{
 					if ( oList.GetAt( nIndex, oLsdNode ) )
 					{
-						ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException(oLsdNode);
+						ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException();
+						*oLsdException = oLsdNode;
+
 						if (oLsdException ) m_arrLsdException.push_back( oLsdException );
 					}
 				}
@@ -364,7 +366,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:lsdException" == sName )
 				{
-					ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException (oReader);
+					ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException();
+					*oLsdException = oReader;
+
 					if (oLsdException) m_arrLsdException.push_back( oLsdException );
 				}
 			}

@@ -847,7 +847,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"x" == sName)
-				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
 	}
     void CColumnRowItem::fromBin(XLS::BaseObjectPtr& obj)
@@ -3086,7 +3086,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"x" == sName)
-				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
 	}
     void CDiscreteGroupingProperties::fromBin(XLS::BaseObjectPtr& obj)
@@ -3417,7 +3417,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotCharacterValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3537,7 +3537,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}    
     void CPivotErrorValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3677,7 +3677,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotNumericValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3790,7 +3790,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotDateTimeValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3878,7 +3878,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
     }
     void CPivotBooleanValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3973,7 +3973,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotNoValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -4822,7 +4822,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				m_arrItems.push_back(pPivotCharacterValue);
 			}
 			else if ( L"x" == sName )
-				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
 	}
     void CPivotCacheRecord::fromBin(XLS::BaseObjectPtr& obj)

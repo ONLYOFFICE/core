@@ -378,7 +378,9 @@ namespace OOX
 				{
 					if ( oListEntryNodes.GetAt( nIndex, oListEntryNode ) )
 					{
-						ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oListEntryNode);
+						ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String();
+						*oListEntry = oListEntryNode;
+
 						if (oListEntry) m_arrListEntry.push_back( oListEntry );
 					}
 				}
@@ -399,7 +401,9 @@ namespace OOX
 					m_oResult = oReader;
 				else if ( L"w:listEntry" == sName )
 				{
-					ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String(oReader);
+					ComplexTypes::Word::String *oListEntry = new ComplexTypes::Word::String();
+					*oListEntry = oReader;
+
 					if (oListEntry) m_arrListEntry.push_back( oListEntry );
 				}
 			}

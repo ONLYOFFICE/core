@@ -35,7 +35,7 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../XlsxFormat/WritingElement.h"
+
 namespace OOX
 {
 	namespace Logic

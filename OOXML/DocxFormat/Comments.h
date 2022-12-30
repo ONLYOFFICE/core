@@ -34,7 +34,6 @@
 #include "File.h"
 #include "IFileContainer.h"
 #include "../Base/Nullable.h"
-#include "FileTypes.h"
 #include "WritingElement.h"
 
 #include "../Common/SimpleTypes_Shared.h"

@@ -31,13 +31,8 @@
  */
 #pragma once
 
-#include "../IFileContainer.h"
-#include "../FileTypes.h"
-#include "../File.h"
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-
 #include "../../PPTXFormat/Logic/SpTree.h"
 
 namespace OOX

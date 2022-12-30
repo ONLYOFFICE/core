@@ -1009,7 +1009,9 @@ namespace OOX
 					XmlUtils::CXmlNode oCol;
 					if ( oCols.GetAt( nIndex, oCol ) )
 					{
-						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oCol);
+						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
+						*oColumn = oCol;
+
 						if (oColumn) m_arrColumns.push_back( oColumn );
 					}
 				}
@@ -1028,7 +1030,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:col" == sName )
 				{
-					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn(oReader);
+					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
+					*oColumn = oReader;
+
 					if (oColumn) m_arrColumns.push_back( oColumn );
 				}
 			}
@@ -1558,7 +1562,9 @@ namespace OOX
 					{
 						if ( oNodes.GetAt( nIndex, oFooterNode ) )
 						{
-							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oFooterNode);
+							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
+							*oFooter = oFooterNode;
+
 							if (oFooter) m_arrFooterReference.push_back( oFooter );
 						}
 					}
@@ -1581,7 +1587,9 @@ namespace OOX
 					{
 						if ( oNodes.GetAt( nIndex, oHeaderNode ) )
 						{
-							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef(oHeaderNode);
+							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
+							*oHeader = oHeaderNode;
+
 							if (oHeader) m_arrHeaderReference.push_back( oHeader );
 						}
 					}
@@ -1653,7 +1661,9 @@ namespace OOX
 					m_oEndnotePr = oReader;
 				else if ( !m_bSectPrChange && L"w:footerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef(oReader);
+					ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
+					*oFooter = oReader;
+
 					if (oFooter) m_arrFooterReference.push_back( oFooter );
 				}
 				else if ( L"w:footnotePr" == sName )
@@ -1662,7 +1672,9 @@ namespace OOX
 					m_oFormProt = oReader;
 				else if ( !m_bSectPrChange && L"w:headerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef( oReader);
+					ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
+					*oHeader = oReader;
+
 					if (oHeader) m_arrHeaderReference.push_back( oHeader );
 				}
 				else if ( L"w:lnNumType" == sName )

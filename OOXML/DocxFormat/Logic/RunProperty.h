@@ -34,7 +34,6 @@
 #include "../WritingElement.h"
 
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/ComplexTypes.h"
 
 #include "../../PPTXFormat/Logic/Ln.h"

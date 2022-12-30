@@ -32,7 +32,6 @@
 #pragma once
 #include "../../Base/Nullable.h"
 
-#include "../File.h"
 #include "../../Common/ComplexTypes.h"
 #include "../Logic/VmlOfficeDrawing.h"
 #include "../FtnEdn.h"

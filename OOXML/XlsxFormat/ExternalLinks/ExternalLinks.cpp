@@ -74,7 +74,7 @@ namespace Spreadsheet
 			std::wstring sName = oReader.GetName();
 			if (L"sheetName" == sName)
 			{
-				m_arrItems.push_back(new ComplexTypes::Spreadsheet::String(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<ComplexTypes::Spreadsheet::String>(oReader));
 			}
 		}
 	}

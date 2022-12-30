@@ -40,7 +40,6 @@
 #include "FileTypes.h"
 #include "IFileContainer.h"
 
-#include "Logic/DocParts.h"
 #include "Logic/SectionProperty.h"
 #include "Logic/Pict.h"
 

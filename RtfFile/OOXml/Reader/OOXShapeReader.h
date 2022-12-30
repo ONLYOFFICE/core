@@ -37,6 +37,7 @@
 #include "../../Format/RtfShape.h"
 
 #include "../../../OOXML/DocxFormat/Logic/Vml.h"
+#include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
 
 namespace OOX
 {

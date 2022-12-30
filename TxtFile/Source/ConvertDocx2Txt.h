@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include <vector>
 #include <string>
 
 namespace Docx2Txt

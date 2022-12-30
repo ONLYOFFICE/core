@@ -36,11 +36,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 
 #include "../WritingElement.h"
-#include "../RId.h"
-
 #include "../../PPTXFormat/Logic/GraphicFrame.h"
-
-#include "../../SystemUtility/SystemUtility.h"
 
 namespace OOX
 {

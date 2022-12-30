@@ -418,7 +418,7 @@ namespace OOX
 
 				if (L"w:behavior" == sName)
 				{
-					m_arrItems.push_back(new ComplexTypes::Word::CDocPartBehavior(oReader));
+					m_arrItems.push_back(PPTX::CreatePtrXmlContent<ComplexTypes::Word::CDocPartBehavior>(oReader));
 				}
 			}
 		}
@@ -463,7 +463,7 @@ namespace OOX
 
 				if (L"w:type" == sName)
 				{
-					m_arrItems.push_back(new ComplexTypes::Word::String(oReader));
+					m_arrItems.push_back(PPTX::CreatePtrXmlContent<ComplexTypes::Word::String>(oReader));
 				}
 			}
 		}

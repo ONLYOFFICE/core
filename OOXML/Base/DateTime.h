@@ -33,7 +33,7 @@
 #ifndef UTILITY_DATE_TIME_INCLUDE_H_
 #define UTILITY_DATE_TIME_INCLUDE_H_
 
-#include "./Base.h"
+#include <string>
 
 //----------------------------------------------------------------------------------------------
 //  DateTime

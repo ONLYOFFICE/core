@@ -1459,7 +1459,9 @@ namespace Settings
 
 			if ( L"w:rsid" == sName )
 			{
-				ComplexTypes::Word::CLongHexNumber *oRsid = new ComplexTypes::Word::CLongHexNumber(oReader);
+				ComplexTypes::Word::CLongHexNumber *oRsid = new ComplexTypes::Word::CLongHexNumber();
+				*oRsid = oReader;
+
 				if (oRsid) m_arrRsid.push_back( oRsid );
 			}
 			else if ( L"w:rsidRoot" == sName )

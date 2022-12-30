@@ -33,7 +33,6 @@
 
 #include "../../DocxFormat/WritingElement.h"
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Word.h"
 #include "../../Common/ComplexTypes.h"
 #include "../../PPTXFormat/Logic/Xfrm.h"
 

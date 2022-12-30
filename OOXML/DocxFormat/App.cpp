@@ -30,8 +30,11 @@
  *
  */
 #include "App.h"
+#include "Docx.h"
 #include "../XlsxFormat/Xlsx.h"
 #include "../PPTXFormat/App.h"
+#include "../Common/SimpleTypes_Word.h"
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 namespace OOX
 {

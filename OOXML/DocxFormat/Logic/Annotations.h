@@ -32,11 +32,7 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/ComplexTypes.h"
-
 #include "./../WritingElement.h"
 
 namespace OOX

@@ -38,7 +38,13 @@ namespace SVG
 
 		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath) = 0;
 
-		void ApplyStroke(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath)
+		void ApplyDefaultStroke(IRenderer* pRenderer, int& nTypePath)
+		{
+			nTypePath += c_nStroke;
+			pRenderer->put_PenColor(0);
+		}
+
+		void ApplyStroke(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath, bool bUseDedault = false)
 		{
 			if (SvgColorType::ColorHex == oStyle.GetStrokeColorType())
 			{
@@ -50,14 +56,30 @@ namespace SVG
 				if (0 != dStrokeWidth)
 					pRenderer->put_PenSize(dStrokeWidth);
 			}
+			else if (bUseDedault)
+				ApplyDefaultStroke(pRenderer, nTypePath);
 		}
 
-		void ApplyFill(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath)
+		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath)
+		{
+			nTypePath += c_nWindingFillMode;
+			pRenderer->put_BrushColor1(0);
+		}
+
+		void ApplyFill(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath, bool bUseDedault = false)
 		{
 			if (SvgColorType::ColorHex == oStyle.GetFillType())
 			{
 				nTypePath += c_nWindingFillMode;
 				pRenderer->put_BrushColor1(oStyle.GetFillN());
+			}
+			else if (SvgColorType::ColorNone == oStyle.GetFillType())
+			{
+				return;
+			}
+			else if (bUseDedault)
+			{
+				ApplyDefaultFill(pRenderer, nTypePath);
 			}
 		}
 
@@ -79,6 +101,8 @@ namespace SVG
 		friend class CPath;
 		friend class CText;
 		friend class CTspan;
+		friend class CPolyline;
+		friend class CPolygon;
 
 		CObjectBase    *m_pParent;
 		const CGeneralStyle  *m_pStyle;

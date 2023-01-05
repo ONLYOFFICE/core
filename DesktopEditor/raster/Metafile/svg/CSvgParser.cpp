@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include "SvgObjects/CPolyline.h"
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CHeader.h"
 #include "SvgObjects/CCircle.h"
@@ -102,6 +103,10 @@ namespace SVG
 			pObject = new CPath(pParent, m_pStorage->GetStyle());
 		else if (L"text" == wsElementName)
 			pObject = new CText(pParent, m_pStorage->GetStyle(), m_pFontManager);
+		else if (L"polyline" == wsElementName)
+			pObject = new CPolyline(pParent, m_pStorage->GetStyle());
+		else if (L"polygon" == wsElementName)
+			pObject = new CPolygon(pParent, m_pStorage->GetStyle());
 
 		if (NULL != pObject)
 		{

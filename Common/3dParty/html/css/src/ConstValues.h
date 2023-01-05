@@ -298,6 +298,7 @@ namespace NSCSS
 
 			typedef enum
 			{
+				ColorEmpty,
 				ColorNone,
 				ColorUrl,
 				ColorHex
@@ -2600,7 +2601,10 @@ namespace NSCSS
 
 				ColorType GetColorType() const
 				{
-					if (sColor.empty() || L"none" == sColor)
+					if (sColor.empty())
+						return ColorType::ColorEmpty;
+
+					if (L"none" == sColor)
 						return ColorType::ColorNone;
 
 					if (std::wstring::npos != sColor.find(L"url"))
@@ -3031,7 +3035,10 @@ namespace NSCSS
 
 				ColorType GetColorType() const
 				{
-					if (wsColor.empty() || L"none" == wsColor)
+					if (wsColor.empty())
+						return ColorType::ColorEmpty;
+
+					if (L"none" == wsColor)
 						return ColorType::ColorNone;
 
 					if (std::wstring::npos != wsColor.find(L"url"))

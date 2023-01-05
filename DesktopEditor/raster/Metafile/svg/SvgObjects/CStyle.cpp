@@ -41,6 +41,8 @@ namespace SVG
 	{
 		if (L"fill" == oStyle.first)
 		{
+			m_pBackground.SavebWithoutProcessing();
+
 			const size_t unPositionImp = oStyle.second.find(L"!i");
 			if (unPositionImp == std::wstring::npos)
 			{

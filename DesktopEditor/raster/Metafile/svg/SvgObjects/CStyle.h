@@ -45,7 +45,7 @@ namespace SVG
 		int GetStrokeColorN() const;
 
 		// Transform
-		void GetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dDx, double& dDy) const;
+		Aggplus::CMatrix GetTransform() const;
 
 	private:
 

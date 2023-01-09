@@ -8,6 +8,8 @@
 #include <vector>
 #include <iostream>
 
+#include "../../graphics/Matrix.h"
+
 namespace NSCSS
 {
     #ifndef RGB
@@ -3194,38 +3196,34 @@ namespace NSCSS
 
 			class Transform
 			{
-				double m_dM11;
-				double m_dM12;
-				double m_dM21;
-				double m_dM22;
-				double m_dDx;
-				double m_dDy;
+				Aggplus::CMatrix m_oMatrix;
 
 				std::vector<bool> bImportants;
 				std::vector<unsigned int> arLevels;
 
 				void Clear()
 				{
-					m_dM11 = m_dM12 = m_dM21 = m_dM22 = m_dDx = m_dDy = 0;
+					m_oMatrix.Reset();
 				}
 
 			public:
-				Transform() : m_dM11(0), m_dM12(0), m_dM21(0), m_dM22(0), m_dDx(0), m_dDy(0), bImportants({false}), arLevels({0}) {};
+				Transform() : bImportants({false}), arLevels({0})
+				{
+				};
 
 				void ClearImportants()
 				{
 					bImportants = {false};
 				}
 
-				bool Empty() const
+				bool IsIdentity() const
 				{
-					return (0 == m_dM11 || 0 == m_dM22);
+					return m_oMatrix.IsIdentity();
 				}
 
 				bool operator==(const Transform& oTransform) const
 				{
-					return m_dM11 == oTransform.m_dM11 && m_dM12 == oTransform.m_dM12 && m_dM21 == oTransform.m_dM21 &&
-					       m_dM22 == oTransform.m_dM22 && m_dDx  == oTransform.m_dDx &&  m_dDy  == oTransform.m_dDy;
+					return m_oMatrix.IsEqual(&m_oMatrix, &oTransform.m_oMatrix);
 				}
 
 				void SetImportantAll(const bool &bImportant)
@@ -3243,8 +3241,6 @@ namespace NSCSS
 					if (arValues.empty() || (bImportants[0] && !bHardMode))
 						return;
 
-					Clear();
-
 					switch (enType)
 					{
 						case TransformType::TransformMatrix:
@@ -3252,12 +3248,9 @@ namespace NSCSS
 							if (6 != arValues.size())
 								return;
 
-							m_dM11 = arValues[0];
-							m_dM12 = arValues[1];
-							m_dM21 = arValues[2];
-							m_dM22 = arValues[3];
-							m_dDx  = arValues[4];
-							m_dDy  = arValues[5];
+							Aggplus::CMatrix oNewMatrix(arValues[0], arValues[1], arValues[2], arValues[3], arValues[4], arValues[5]);
+
+							m_oMatrix.Multiply(&oNewMatrix);
 
 							break;
 						}
@@ -3266,10 +3259,7 @@ namespace NSCSS
 							if (2 != arValues.size())
 								return;
 
-							m_dDx = arValues[0];
-							m_dDx = arValues[1];
-
-							m_dM11 = m_dM22 = 1;
+							m_oMatrix.Shear(arValues[0], arValues[1]);
 
 							break;
 						}
@@ -3278,32 +3268,16 @@ namespace NSCSS
 							if (2 != arValues.size())
 								return;
 
-							m_dM11 = arValues[0];
-							m_dM22 = arValues[1];
+							m_oMatrix.Scale(arValues[0], arValues[1]);
 
 							break;
 						}
 					}
-
-
 				}
 
-				void GetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dDx, double& dDy) const
+				Aggplus::CMatrix GetTransform() const
 				{
-					if (Empty())
-					{
-						dM11 = dM22 = 1;
-						dM12 = dM21 = dDx = dDy = 0;
-					}
-					else
-					{
-						dM11 = m_dM11;
-						dM12 = m_dM12;
-						dM21 = m_dM21;
-						dM22 = m_dM22;
-						dDx  = m_dDx;
-						dDy  = m_dDy;
-					}
+					return m_oMatrix;
 				}
 
 				static TransformType GetTransformType(const std::wstring& wsValue)

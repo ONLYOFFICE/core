@@ -18,23 +18,35 @@ namespace SVG
 	private:
 		void SaveNodeData(XmlUtils::CXmlNode& oNode)
 		{
-			if (NULL == m_pStyle)
-				return;
-
-			NSCSS::CNode oXmlNode;
-
-			m_oXmlNode.m_sName  = oNode.GetName();
-			m_oXmlNode.m_sClass = oNode.GetAttribute(L"class");
-			m_oXmlNode.m_sId    = oNode.GetAttribute(L"id");
-			m_oXmlNode.m_sStyle = oNode.GetAttribute(L"style");
-
 			std::vector<std::wstring> arProperties, arValues;
 
 			oNode.GetAllAttributes(arProperties, arValues);
 
+			NSCSS::CNode oXmlNode;
+			m_oXmlNode.m_sName  = oNode.GetName();
+
 			for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-				m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
+			{
+				if (L"class" == arProperties[unIndex])
+					m_oXmlNode.m_sClass = arValues[unIndex];
+				else if (L"id" == arProperties[unIndex])
+					m_oXmlNode.m_sId = arValues[unIndex];
+				else if (L"style" == arProperties[unIndex])
+					m_oXmlNode.m_sStyle = arValues[unIndex];
+				else
+					m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
+			}
 		};
+
+		std::vector<NSCSS::CNode> GetFullPath() const
+		{
+			if (NULL == m_pParent)
+				return {m_oXmlNode};
+
+			std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
+			arObjects.push_back({m_oXmlNode});
+			return arObjects;
+		}
 
 		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath) = 0;
 
@@ -87,26 +99,25 @@ namespace SVG
 		{
 			pRenderer->ResetTransform();
 
-			double dM11, dM12, dM21, dM22, dDx, dDy;
+			Aggplus::CMatrix oMatrix = oStyle.GetTransform();
 
-			oStyle.GetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
-
-			pRenderer->SetTransform(0.89 * dM11 * 25.4 / 96, dM12, dM21, 0.89 * dM22 * 25.4 / 96, dDx, dDy);
+			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 		}
 
 		friend class CLine;
 		friend class CRect;
 		friend class CCircle;
 		friend class CEllipse;
+		friend class CHeader;
 		friend class CPath;
 		friend class CText;
 		friend class CTspan;
 		friend class CPolyline;
 		friend class CPolygon;
 
-		CObjectBase    *m_pParent;
+		CObjectBase          *m_pParent;
 		const CGeneralStyle  *m_pStyle;
-		NSCSS::CNode    m_oXmlNode;
+		NSCSS::CNode          m_oXmlNode;
 	};
 }
 

@@ -55,10 +55,7 @@ namespace SVG
 		if (NULL == pRenderer || NULL == m_pStyle)
 			return;
 
-		if (NULL == pRenderer)
-			return;
-
-		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath);

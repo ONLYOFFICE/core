@@ -128,9 +128,9 @@ namespace SVG
 		return m_pStroke.GetColorN();
 	}
 
-	void CStyle::GetTransform(double &dM11, double &dM12, double &dM21, double &dM22, double &dDx, double &dDy) const
+	Aggplus::CMatrix CStyle::GetTransform() const
 	{
-		m_pTransform.GetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+		return m_pTransform.GetTransform();
 	}
 
 }

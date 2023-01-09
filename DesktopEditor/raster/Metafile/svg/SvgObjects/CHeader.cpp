@@ -18,8 +18,7 @@ namespace SVG
 		m_dWidth  = oNode.ReadAttributeDouble(L"width");
 		m_dHeight = oNode.ReadAttributeDouble(L"height");
 
-		if (0 == m_dWidth || 0 == m_dHeight)
-			return false;
+		SaveNodeData(oNode);
 
 		return true;
 	}

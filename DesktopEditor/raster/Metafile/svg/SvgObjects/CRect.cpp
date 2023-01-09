@@ -88,10 +88,10 @@ namespace SVG
 
 	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || NULL == m_pStyle)
 			return;
 
-		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath);

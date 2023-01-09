@@ -22,7 +22,7 @@ namespace SVG
 
 	bool CEllipse::Draw(IRenderer *pRenderer)
 	{
-		if (NULL == pRenderer ||true)
+		if (NULL == pRenderer)
 			return false;
 
 		int nPathType = 0;
@@ -47,10 +47,10 @@ namespace SVG
 
 	void CEllipse::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
-		if (NULL == pRenderer)
+		if (NULL == pRenderer || NULL == m_pStyle)
 			return;
 
-		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath);

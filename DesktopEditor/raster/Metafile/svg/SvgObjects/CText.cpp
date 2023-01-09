@@ -79,6 +79,11 @@ namespace SVG
 
 	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
+		if (NULL == pRenderer || NULL == m_pStyle)
+			return;
+
+		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
+
 		//Временный данные для тестов
 		pRenderer->put_FontName(L"Times New Roman");
 		pRenderer->put_FontSize(12 / 25.4 * 96);
@@ -162,7 +167,10 @@ namespace SVG
 
 	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
 	{
-		CStyle oStyle = m_pStyle->GetStyle({m_oXmlNode});
+		if (NULL == pRenderer || NULL == m_pStyle)
+			return;
+
+		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 

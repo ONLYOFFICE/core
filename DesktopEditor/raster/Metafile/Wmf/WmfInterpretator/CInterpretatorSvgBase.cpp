@@ -202,6 +202,12 @@ namespace MetaFile
 		double dXCoord = oCoord.x;
 		double dYCoord = oCoord.y;
 
+		if (m_pParser->GetTextAlign() & TA_UPDATECP)
+		{
+			dXCoord = m_pParser->GetCurPos().x;
+			dYCoord = m_pParser->GetCurPos().y;
+		}
+
 		TXForm oTransform;
 		oTransform.Copy(m_pParser->GetTransform());
 

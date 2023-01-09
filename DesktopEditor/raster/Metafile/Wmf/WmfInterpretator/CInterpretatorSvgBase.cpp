@@ -672,19 +672,29 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == pBrush)
 			return std::wstring();
 
-		BYTE* pBuffer = NULL;
+		CBgraFrame oFrame;
 		unsigned int unWidth = 0, unHeight = 0;
 
-		pBrush->GetDibPattern(&pBuffer, unWidth, unHeight);
+		if (pBrush->GetDibPatterPath().empty())
+		{
+			BYTE* pBuffer = NULL;
 
-		if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
-			return std::wstring();
+			pBrush->GetDibPattern(&pBuffer, unWidth, unHeight);
 
-		CBgraFrame oFrame;
-		oFrame.put_Data(pBuffer);
-		oFrame.put_Width(unWidth);
-		oFrame.put_Height(unHeight);
-		oFrame.put_Stride(4 * unWidth);
+			if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
+				return std::wstring();
+
+			oFrame.put_Data(pBuffer);
+			oFrame.put_Width(unWidth);
+			oFrame.put_Height(unHeight);
+			oFrame.put_Stride(4 * unWidth);
+		}
+		else
+		{
+			oFrame.OpenFile(pBrush->GetDibPatterPath());
+			unWidth  = oFrame.get_Width();
+			unHeight = oFrame.get_Height();
+		}
 
 		BYTE *pTempBuffer = NULL;
 		int nTempSize;
@@ -720,8 +730,8 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
-		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
-		std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
+		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
+		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
 
 		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
 		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +

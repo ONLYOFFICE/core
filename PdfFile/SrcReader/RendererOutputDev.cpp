@@ -4183,7 +4183,7 @@ namespace PdfReader
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
         pImageStream->reset();
 
-        unsigned char unAlpha = m_bTransparentGroup ? ((m_bIsolatedTransparentGroup && m_bTransparentGroupSoftMask) ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
+        unsigned char unAlpha = m_bTransparentGroup ? ((m_bIsolatedTransparentGroup || m_bTransparentGroupSoftMask) ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
 
         int nStride = pImageStream->getVals();
         int nComps = pImageStream->getComps();

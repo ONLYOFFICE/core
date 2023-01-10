@@ -1565,16 +1565,13 @@ namespace MetaFile
 
 				TRectD oTempSrcRect;
 
-				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
+				TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
 
-				if (NULL != pImageAttributes && WrapModeClamp == pImageAttributes->eWrapMode)
-				{
-					oTempSrcRect.dLeft   = oTempSrcRect.dBottom = 0;
-					oTempSrcRect.dRight  = oSrcRect.dWidth  - GetPixelWidth();
-					oTempSrcRect.dBottom = oSrcRect.dHeight - GetPixelHeight();
-				}
-				else
-					oTempSrcRect = oSrcRect.GetRectD();
+				oTempSrcRect = oSrcRect.GetRectD();
+				oTempSrcRect.dLeft   -= pEmfBounds->lLeft;
+				oTempSrcRect.dRight  -= pEmfBounds->lLeft + GetPixelWidth();
+				oTempSrcRect.dTop    -= pEmfBounds->lTop;
+				oTempSrcRect.dBottom -= pEmfBounds->lTop  + GetPixelHeight();
 
 				TXForm oTransform;
 

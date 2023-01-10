@@ -1684,10 +1684,22 @@ void odt_conversion_context::end_table_header_rows()
 {
 	text_context()->end_element();
 }
-void odt_conversion_context::start_table_row(bool styled)
+void odt_conversion_context::start_table_row(bool styled, bool header)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"table-row", elm, this);
+
+	if (header && !table_row_header_state_)
+	{
+		start_table_header_rows();
+		table_row_header_state_ = true;
+	}
+
+	if (!header && table_row_header_state_)
+	{
+		end_table_header_rows();
+		table_row_header_state_ = false;
+	}
 
 	if (styled)
 	{

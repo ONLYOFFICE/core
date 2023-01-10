@@ -4680,9 +4680,7 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 	if (styled && oox_table_row->m_pTableRowProperties->m_oTblHeader.IsInit()
 		&& oox_table_row->m_pTableRowProperties->m_oTblHeader->m_oVal.ToBool() )is_header = true;
 
-	if (is_header)odt_context->start_table_header_rows();
-
-	odt_context->start_table_row(styled);
+	odt_context->start_table_row(styled, is_header);
 	
 	convert(oox_table_row->m_pTableRowProperties);
 
@@ -4699,8 +4697,6 @@ void DocxConverter::convert(OOX::Logic::CTr	*oox_table_row)
 		}
 	}	
 	odt_context->end_table_row();
-
-	if (is_header)odt_context->end_table_header_rows();
 
 	if (id_insert_row >= 0)
 		odt_context->end_change(id_insert_row, 1);

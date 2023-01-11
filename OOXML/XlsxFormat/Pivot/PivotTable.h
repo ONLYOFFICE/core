@@ -31,10 +31,35 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../FileTypes_Spreadsheet.h"
+
+#include "../../Common/ComplexTypes.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CShowDataAs;
+		class CDataConsolidateFunction;
+		class CPivotItemType;
+		class CPivotAxisType;
+		class CPivotAreaType;
+		class CFieldSortType;
+		class CFormatAction;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CSharedItemsIndex : public WritingElement

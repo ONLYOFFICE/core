@@ -43,6 +43,8 @@
 #include "../../Binary/Document/DocWrapper/FontProcessor.h"
 #include "../../Binary/Document/BinWriter/BinWriters.h"
 
+#include "../../XlsxFormat/Chart/Chart.h"
+
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../DocxFormat/Diagram/DiagramColors.h"

@@ -32,6 +32,9 @@
 
 #include "../Workbook/Workbook.h"
 
+#include "../Common.h"
+#include "../../../XlsbFormat/Biff12_records/CommonRecords.h"
+
 #include "../../DocxFormat/VmlDrawing.h"
 #include "../Styles/Styles.h"
 #include "../SharedStrings/SharedStrings.h"
@@ -41,6 +44,7 @@
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"
 #include "../../../DesktopEditor/common/StreamWriter.h"
+#include "../../../DesktopEditor/common/StringExt.h"
 
 #include "../../XlsbFormat/Biff12_unions/ACCELLTABLE.h"
 #include "../../XlsbFormat/Biff12_records/RwDescent.h"

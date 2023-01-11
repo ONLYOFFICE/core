@@ -31,9 +31,27 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Drawing/FromTo.h"
 #include "../Ole/OleObjects.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+#include "../Drawing/FromTo.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
+namespace SimpleTypes
+{
+	class CColorType;
+
+	namespace Spreadsheet
+	{
+		class CObjectType;
+		class CDropStyle;
+		class CChecked;
+		class CSelType;
+		class CHorizontalAlignment;
+		class CVerticalAlignment;
+		class CEditValidation;
+	}
+}
 
 namespace OOX
 {

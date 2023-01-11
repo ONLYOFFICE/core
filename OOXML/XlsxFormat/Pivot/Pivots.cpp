@@ -124,6 +124,13 @@
 
 #include <boost/range/adaptor/reversed.hpp>
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Word.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
 namespace OOX
 {
 namespace Spreadsheet

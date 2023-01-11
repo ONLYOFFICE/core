@@ -38,6 +38,7 @@
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
 #include "../../../XlsxFormat/Worksheets/Worksheet.h"
+#include "../../../XlsxFormat/Chart/ChartSerialize.h"
 
 #define NUMID_START 160
 const wchar_t* gc_Cat = L"cat";

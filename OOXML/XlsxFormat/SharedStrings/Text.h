@@ -31,9 +31,10 @@
  */
 #pragma once
 
-
-#include "../CommonInclude.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../Common/SimpleTypes_Word.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace OOX
 {

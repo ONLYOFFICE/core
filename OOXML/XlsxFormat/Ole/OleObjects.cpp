@@ -32,6 +32,14 @@
 
 #include "OleObjects.h"
 
+#include "../Drawing/FromTo.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../../XlsbFormat/Biff12_unions/OLEOBJECTS.h"
+#include "../../XlsbFormat/Biff12_records/OleObject.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

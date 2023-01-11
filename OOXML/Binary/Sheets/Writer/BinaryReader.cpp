@@ -49,9 +49,11 @@
 #include "../../../PPTXFormat/App.h"
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
+#include "../../../PPTXFormat/Logic/Shape.h"
 
 #include "../../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../XlsxFormat/Drawing/Drawing.h"
+#include "../../../XlsxFormat/Drawing/Pos.h"
 #include "../../../XlsxFormat/Comments/Comments.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"

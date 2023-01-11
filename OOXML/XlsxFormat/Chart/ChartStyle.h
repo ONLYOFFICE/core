@@ -32,18 +32,37 @@
 //Generated code
 #pragma once
 
-#include "../../Base/Nullable.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../../Common/SimpleTypes_Spreadsheet.h"
 #include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
 #include "../../PPTXFormat/Logic/StyleRef.h"
 #include "../../PPTXFormat/Logic/FontRef.h"
-#include "../../PPTXFormat/Logic/RunProperties.h"
-#include "../../PPTXFormat/Logic/SpPr.h"
-#include "../../PPTXFormat/Logic/BodyPr.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CChartSymbol;
+	}
+}
+
+namespace PPTX
+{
+	namespace Logic
+	{
+		class RunProperties;
+		class SpPr;
+		class BodyPr;
+	}
+}
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx

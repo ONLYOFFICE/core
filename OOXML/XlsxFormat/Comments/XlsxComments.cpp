@@ -47,6 +47,8 @@
 #include "../../XlsbFormat/Biff12_records/CommentText.h"
 #include "../../XlsbFormat/Biff12_records/LegacyDrawing.h"
 
+#include "../SharedStrings/Si.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

@@ -65,6 +65,13 @@
 #include "../../XlsbFormat/Biff12_records/Color14.h"
 #include "../../XlsbFormat/Biff12_records/CFIcon.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../Styles/dxf.h"
+#include "../Styles/Colors.h"
+
 using namespace XLS;
 
 namespace OOX

@@ -37,6 +37,9 @@
 #include "../../XlsbFormat/Biff12_records/BeginDVals14.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

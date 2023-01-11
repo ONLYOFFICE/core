@@ -33,6 +33,7 @@
 #include "../../../OOXML/XlsxFormat/Xlsx.h"
 #include "../../../OOXML/XlsxFormat/XlsxFlat.h"
 #include "../../../OOXML/XlsxFormat/Workbook/Workbook.h"
+#include "../../../OOXML/XlsxFormat/Drawing/Pos.h"
 #include "../../../OOXML/XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../OOXML/XlsxFormat/Comments/Comments.h"
 #include "../../../OOXML/XlsxFormat/SharedStrings/SharedStrings.h"

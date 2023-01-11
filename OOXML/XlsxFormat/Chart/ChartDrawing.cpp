@@ -31,6 +31,8 @@
  */
 
 #include "ChartDrawing.h"
+#include "../../DocxFormat/Document.h"
+#include "../../PPTXFormat/Logic/SpTreeElem.h"
 
 namespace OOX
 {	

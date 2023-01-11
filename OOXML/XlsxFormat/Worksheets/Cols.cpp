@@ -34,6 +34,9 @@
 #include "../XlsxFlat.h"
 
 #include "../../XlsbFormat/Biff12_unions/COLINFOS.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {

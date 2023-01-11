@@ -33,6 +33,7 @@
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringExt.h"
 
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../XlsxFormat/Xlsx.h"

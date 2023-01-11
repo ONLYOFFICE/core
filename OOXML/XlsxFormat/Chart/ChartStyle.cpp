@@ -32,6 +32,13 @@
 
 #include "ChartStyle.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../../PPTXFormat/Logic/RunProperties.h"
+#include "../../PPTXFormat/Logic/SpPr.h"
+#include "../../PPTXFormat/Logic/BodyPr.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

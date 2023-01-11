@@ -47,6 +47,7 @@
 #include "../Math/OMath.h"
 
 #include "../../XlsxFormat/Drawing/CellAnchor.h"
+#include "../../XlsxFormat/Drawing/FromTo.h"
 
 
 namespace OOX

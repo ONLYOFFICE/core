@@ -33,12 +33,15 @@
 #pragma once
 
 #include "../WritingElement.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../../PPTXFormat/Logic/UniColor.h"
 #include "../../PPTXFormat/Logic/Colors/ColorModifier.h"
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx

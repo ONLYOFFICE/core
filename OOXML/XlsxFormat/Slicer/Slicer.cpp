@@ -36,6 +36,8 @@
 #include "../../XlsbFormat/Biff12_unions/SLICER.h"
 #include "../../XlsbFormat/Biff12_records/BeginSlicer.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 namespace OOX
 {
 namespace Spreadsheet

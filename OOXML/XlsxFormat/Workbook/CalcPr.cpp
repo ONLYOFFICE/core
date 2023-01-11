@@ -33,6 +33,9 @@
 #include "CalcPr.h"
 #include "../../XlsbFormat/Biff12_records/CalcProp.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

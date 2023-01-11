@@ -30,6 +30,12 @@
  *
  */
 #include "Controls.h"
+
+#include "../FileTypes_Spreadsheet.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h"
 #include "../../XlsbFormat/Biff12_records/ActiveX.h"
 

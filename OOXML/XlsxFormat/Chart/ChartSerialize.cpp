@@ -31,12 +31,19 @@
  */
 
 //Generated code
+
 #include "ChartSerialize.h"
 #include "../../../DesktopEditor/common/StringExt.h"
+#include "../WritingElement.h"
 
-namespace OOX{
-	namespace Spreadsheet{
+#include "../../PPTXFormat/Logic/TxBody.h"
+#include "../../PPTXFormat/Logic/ClrMap.h"
+#include "../../PPTXFormat/Logic/SpPr.h"
 
+namespace OOX
+{
+	namespace Spreadsheet
+	{
 		bool FromXml_ST_PageSetupOrientation(std::wstring& val, ST_PageSetupOrientation& eOut)
 		{
 			bool bRes = true;

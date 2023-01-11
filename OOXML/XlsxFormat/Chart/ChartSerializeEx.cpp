@@ -31,13 +31,23 @@
  */
 
 #include "ChartSerializeEx.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+
+#include "../WritingElement.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
 #include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../../DesktopEditor/common/StringExt.h"
 
-namespace OOX{
-namespace Spreadsheet{
-namespace ChartEx{
+#include "../../PPTXFormat/Logic/TxBody.h"
+#include "../../PPTXFormat/Logic/ClrMap.h"
+#include "../../PPTXFormat/Logic/SpPr.h"
 
+namespace OOX
+{
+namespace Spreadsheet
+{
+namespace ChartEx
+{
 	void CChartSpace::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if ( oReader.IsEmptyNode() )

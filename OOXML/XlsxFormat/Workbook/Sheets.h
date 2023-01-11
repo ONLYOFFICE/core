@@ -31,7 +31,19 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CRelationshipId;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CVisibleType;
+	}
+}
 
 namespace OOX
 {

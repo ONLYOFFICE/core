@@ -29,10 +29,12 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "NamedSheetViews.h"
 #include "../Styles/dxf.h"
 #include "../../Binary/Sheets/Reader/BinaryWriter.h"
 #include "../../Binary/Sheets/Writer/BinaryReader.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace OOX
 {

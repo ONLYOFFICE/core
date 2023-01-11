@@ -31,13 +31,39 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Styles/dxf.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDecimalNumber;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class ST_CfvoType;
+		class ST_IconSetType;
+		class ST_DataBarAxisPosition;
+		class ST_DataBarDirection;
+		class ST_CfOperator;
+		class ST_TimePeriod;
+		class ST_CfType;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
+		class CDxf;
+		class CColor;
+
 		//необработано:
 		//<extLst>
 		class CFormulaCF : public WritingElement

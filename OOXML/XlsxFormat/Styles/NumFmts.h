@@ -30,9 +30,10 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
-#include "rPr.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {

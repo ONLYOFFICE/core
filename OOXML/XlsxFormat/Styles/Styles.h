@@ -33,7 +33,9 @@
 
 #include "../Xlsx.h"
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "Borders.h"
 #include "CellStyles.h"

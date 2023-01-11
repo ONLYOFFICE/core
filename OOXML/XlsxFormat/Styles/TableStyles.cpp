@@ -32,9 +32,12 @@
 
 #include "TableStyles.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESTYLES.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESTYLE.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

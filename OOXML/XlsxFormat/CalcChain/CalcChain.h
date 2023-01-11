@@ -33,8 +33,15 @@
 #ifndef OOX_CALCCHAIN_FILE_INCLUDE_H_
 #define OOX_CALCCHAIN_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 #include "../Xlsx.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -93,7 +100,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            std::vector<CCalcCell *>  m_arrItems;
+			std::vector<CCalcCell*>  m_arrItems;
 		};
 	} //Spreadsheet
 } // namespace OOX

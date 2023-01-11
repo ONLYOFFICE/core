@@ -31,9 +31,8 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "rPr.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {

@@ -35,12 +35,19 @@
 
 #include "../Xlsx.h"
 #include "../Workbook/Workbook.h"
-#include "../SharedStrings/Si.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+	class CDateTime;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CText;
+
 		class CPerson : public WritingElement
 		{
 		public:

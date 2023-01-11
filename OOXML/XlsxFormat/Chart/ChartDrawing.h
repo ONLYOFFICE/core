@@ -31,10 +31,16 @@
  */
 #pragma once
 
-#include "../../DocxFormat/IFileContainer.h"
-#include "../../PPTXFormat/Logic/SpTreeElem.h"
-#include "../WritingElement.h"
 #include "../../DocxFormat/Document.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SpTreeElem;
+	}
+}
 
 namespace OOX
 {

@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
 #include "../Chart/ChartSerialize.h"
 #include "../Styles/rPr.h"
 

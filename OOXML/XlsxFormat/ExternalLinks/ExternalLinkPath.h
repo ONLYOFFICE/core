@@ -35,7 +35,6 @@
 
 #include "../../DocxFormat/External/External.h"
 
-
 namespace OOX
 {
 	namespace Spreadsheet

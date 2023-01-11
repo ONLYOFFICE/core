@@ -30,11 +30,34 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+#include "../FileTypes_Spreadsheet.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+
+	namespace Spreadsheet
+	{
+		class COlapSlicerCacheSortOrder;
+		class CSlicerCacheCrossFilter;
+		class CTabularSlicerCacheSortOrder;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class COlapSlicerCacheItemParent : public WritingElement
@@ -422,8 +445,8 @@ namespace OOX
 			{
 				m_bSpreadsheets = true;
 			}
-			CSlicerCacheFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::
-IFileContainer(pMain)
+			CSlicerCacheFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) :
+							 OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
 			{
 				m_bSpreadsheets = true;
 				read( oRootPath, oPath );

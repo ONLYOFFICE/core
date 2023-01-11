@@ -29,7 +29,11 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #include "Text.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../../DesktopEditor/common/StringExt.h"
+
 #include "../../XlsbFormat/Biff12_structures/RichStr.h"
 
 namespace OOX

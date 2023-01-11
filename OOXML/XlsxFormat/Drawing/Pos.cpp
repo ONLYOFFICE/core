@@ -31,6 +31,7 @@
  */
 
 #include "Pos.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {

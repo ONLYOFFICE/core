@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,49 +29,17 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
 
-#include "Run.h"
-#include "PhoneticPr.h"
-
-namespace NSBinPptxRW
-{
-	class CBinaryFileReader;
-	class CXlsbBinaryWriter;
-}
-
-namespace OOX
+namespace SimpleTypes
 {
 	namespace Spreadsheet
 	{
-		//необработано:
-		//<extLst>
-		class CSi : public WritingElementWithChilds<>
+		enum EDoubleOrAutomatic
 		{
-		public:
-			WritingElement_AdditionMethods(CSi)
-			CSi();
-			virtual ~CSi();
-
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
-			virtual void toXML2(NSStringUtils::CStringBuilder& writer) const;
-
-			std::wstring ToString();
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-			void fromBin(XLS::BiffStructure& obj, bool flagIsComment = false);
-
-			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream);
-			void toXLSBExt (NSBinPptxRW::CXlsbBinaryWriter& oStream);
-			_UINT32 getXLSBSize() const;
-			virtual EElementType getType () const;
-
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			typeAuto		=  0,
+			typeDouble		=  1
 		};
-
-	} //Spreadsheet
-} // namespace OOX
+	}
+}

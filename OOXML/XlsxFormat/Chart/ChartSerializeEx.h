@@ -33,9 +33,43 @@
 #pragma once
 
 #include "ChartSerialize.h"
+#include "../../Common/SimpleTypes_Enums.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CFormulaDirection;
+		class CSidePos;
+		class CPosAlign;
+		class CIntervalClosedSide;
+		class CDimensionType;
+		class CQuartileMethod;
+		class CDataLabelPos;
+		class CSeriesLayout;
+		class CTickMarksType;
+		class CAxisUnit;
+		template<EDoubleOrAutomatic eDefValue = typeAuto> class CDoubleOrAutomatic;
+	}
+}
+namespace ComplexTypes
+{
+	class CDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CParentLabelLayout;
+		class CRegionLabelLayout;
+	}
+}
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx

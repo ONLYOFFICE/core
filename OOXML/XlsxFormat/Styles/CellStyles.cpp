@@ -31,6 +31,8 @@
  */
 
 #include "CellStyles.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/Style.h"
 
 namespace OOX

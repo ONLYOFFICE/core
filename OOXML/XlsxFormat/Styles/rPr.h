@@ -31,7 +31,9 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 namespace NSBinPptxRW
 {

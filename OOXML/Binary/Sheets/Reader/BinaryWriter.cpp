@@ -60,6 +60,7 @@
 #include "../../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../../XlsxFormat/Slicer/Slicer.h"
 #include "../../../XlsxFormat/NamedSheetViews/NamedSheetViews.h"
+#include "../../../XlsxFormat/Drawing/Pos.h"
 
 namespace BinXlsxRW 
 {

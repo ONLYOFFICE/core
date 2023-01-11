@@ -31,8 +31,17 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../../Base/Nullable.h"
+#include "../WritingElement.h"
+#include "../../DocxFormat/IFileContainer.h"
 
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CSortMethod;
+	}
+}
 namespace OOX
 {
 	namespace Drawing

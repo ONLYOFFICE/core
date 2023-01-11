@@ -31,8 +31,13 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
+namespace SimpleTypes
+{
+	class CRelationshipId;
+}
 
 namespace OOX
 {
@@ -51,7 +56,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromBin(XLS::BaseObjectPtr& obj);
+			void fromBin(XLS::BaseObjectPtr& obj);
 
 			virtual EElementType getType () const;
 
@@ -77,7 +82,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
+			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 
 			virtual EElementType getType () const;
 

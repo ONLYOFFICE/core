@@ -55,6 +55,10 @@
 #include "../../XlsbFormat/Biff12_records/Filter.h"
 #include "../../XlsbFormat/Biff12_records/AFilterDateGroupItem.h"
 #include "../../XlsbFormat/Biff12_records/Top10Filter.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

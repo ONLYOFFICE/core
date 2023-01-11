@@ -30,8 +30,21 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "PivotTable.h"
+
+namespace SimpleTypes
+{
+	class CDateTime;
+	class CRelationshipId;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CValuesGroupBy;
+		class CSourceCacheType;
+	}
+}
 
 namespace OOX
 {

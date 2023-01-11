@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "SheetData.h"
 #include "Cols.h"
 #include "Hyperlinks.h"
@@ -42,7 +40,6 @@
 #include "DataValidation.h"
 
 #include "../Drawing/Drawing.h"
-#include "../Chart/Chart.h"
 #include "../Table/Table.h"
 #include "../Ole/OleObjects.h"
 #include "../Controls/Controls.h"
@@ -58,6 +55,10 @@ namespace OOX
 		class CLegacyDrawingWorksheet;
 		class CThreadedComments;
 		class CPersonList;
+		class CChartFile;
+		class CChartStyleFile;
+		class CChartColorsFile;
+
 //необработанные child:
 		//<customProperties>
 		//<extLst>

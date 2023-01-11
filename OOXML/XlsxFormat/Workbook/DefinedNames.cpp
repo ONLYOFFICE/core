@@ -31,6 +31,9 @@
  */
 
 #include "DefinedNames.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {

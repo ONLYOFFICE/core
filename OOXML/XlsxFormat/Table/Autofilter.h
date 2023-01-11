@@ -31,8 +31,25 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDouble;
+	class CRelationshipId;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CSortBy;
+		class CSortMethod;
+		class CCustomFilter;
+		class CDateTimeGroup;
+		class CDynamicFilterType;
+	}
+}
 
 namespace OOX
 {

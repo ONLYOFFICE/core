@@ -30,10 +30,8 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
 #include "rPr.h"
-
 
 namespace OOX
 {

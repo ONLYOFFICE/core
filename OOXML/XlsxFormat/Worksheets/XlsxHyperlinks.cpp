@@ -33,6 +33,8 @@
 #include "Hyperlinks.h"
 #include "../../XlsbFormat/Biff12_records/HLink.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

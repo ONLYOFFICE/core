@@ -30,12 +30,16 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
 #include "Autofilter.h"
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CQueryTableField : public WritingElement

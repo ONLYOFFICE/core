@@ -31,7 +31,21 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+	class COnOff;
+	class CCryptAlgoritmName;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CUpdateLinksType;
+	}
+}
 
 namespace OOX
 {

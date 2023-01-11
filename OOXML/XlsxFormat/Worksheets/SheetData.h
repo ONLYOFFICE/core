@@ -31,8 +31,6 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "../SharedStrings/Si.h"
 #include "Cols.h"
 

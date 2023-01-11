@@ -31,7 +31,11 @@
  */
 #include "ExternalLinks.h"
 
+#include "../Common.h"
+
 #include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../SharedStrings/Text.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 #include "../../XlsbFormat/ExternalLinkStream.h"
@@ -63,6 +67,19 @@ namespace OOX
 {
 namespace Spreadsheet
 {
+	CExternalSheetNames::CExternalSheetNames()
+	{
+	}
+	CExternalSheetNames::~CExternalSheetNames()
+	{
+	}
+	void CExternalSheetNames::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalSheetNames::getType() const
+	{
+		return et_x_ExternalSheetNames;
+	}
 	void CExternalSheetNames::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -112,7 +129,19 @@ namespace Spreadsheet
 		}
 	}
 
-
+	CExternalDefinedName::CExternalDefinedName()
+	{
+	}
+	CExternalDefinedName::~CExternalDefinedName()
+	{
+	}
+	void CExternalDefinedName::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalDefinedName::getType() const
+	{
+		return et_x_ExternalDefinedName;
+	}
 	void CExternalDefinedName::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -175,7 +204,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
-
+	CExternalDefinedNames::CExternalDefinedNames()
+	{
+	}
+	CExternalDefinedNames::~CExternalDefinedNames()
+	{
+	}
+	void CExternalDefinedNames::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalDefinedNames::getType() const
+	{
+		return et_x_ExternalDefinedNames;
+	}
 	void CExternalDefinedNames::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -219,6 +260,19 @@ namespace Spreadsheet
 		}
 	}
 
+	CExternalCell::CExternalCell()
+	{
+	}
+	CExternalCell::~CExternalCell()
+	{
+	}
+	void CExternalCell::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalCell::getType() const
+	{
+		return et_x_ExternalCell;
+	}
 	void CExternalCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -344,6 +398,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CExternalRow::CExternalRow()
+	{
+	}
+	CExternalRow::~CExternalRow()
+	{
+	}
+	void CExternalRow::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalRow::getType() const
+	{
+		return et_x_ExternalRow;
+	}
 	void CExternalRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -411,6 +478,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CExternalSheetData::CExternalSheetData()
+	{
+	}
+	CExternalSheetData::~CExternalSheetData()
+	{
+	}
+	void CExternalSheetData::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalSheetData::getType() const
+	{
+		return et_x_ExternalSheetData;
+	}
 	void CExternalSheetData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -481,7 +561,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
-
+	CExternalSheetDataSet::CExternalSheetDataSet()
+	{
+	}
+	CExternalSheetDataSet::~CExternalSheetDataSet()
+	{
+	}
+	void CExternalSheetDataSet::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalSheetDataSet::getType() const
+	{
+		return et_x_ExternalSheetDataSet;
+	}
 	void CExternalSheetDataSet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -525,6 +617,19 @@ namespace Spreadsheet
 		}
 	}
 
+	CExternalBook::CExternalBook()
+	{
+	}
+	CExternalBook::~CExternalBook()
+	{
+	}
+	void CExternalBook::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CExternalBook::getType() const
+	{
+		return et_x_ExternalBook;
+	}
 	void CExternalBook::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -600,7 +705,6 @@ namespace Spreadsheet
 			}
 		}
 	}
-
 	void CExternalBook::ReadAttributes(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
@@ -617,6 +721,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End_No_NS(oReader)
 	}
 
+	CDdeValue::CDdeValue()
+	{
+	}
+	CDdeValue::~CDdeValue()
+	{
+	}
+	void CDdeValue::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeValue::getType() const
+	{
+		return et_x_DdeValue;
+	}
 	void CDdeValue::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -749,6 +866,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CDdeValues::CDdeValues()
+	{
+	}
+	CDdeValues::~CDdeValues()
+	{
+	}
+	void CDdeValues::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeValues::getType() const
+	{
+		return et_x_DdeValues;
+	}
 	void CDdeValues::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -819,6 +949,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CDdeItem::CDdeItem()
+	{
+	}
+	CDdeItem::~CDdeItem()
+	{
+	}
+	void CDdeItem::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeItem::getType() const
+	{
+		return et_x_OleItem;
+	}
 	void CDdeItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -895,6 +1038,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	CDdeItems::CDdeItems()
+	{
+	}
+	CDdeItems::~CDdeItems()
+	{
+	}
+	void CDdeItems::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeItems::getType() const
+	{
+		return et_x_DdeItems;
+	}
 	void CDdeItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -989,6 +1145,19 @@ namespace Spreadsheet
 		}
 	}
 
+	CDdeLink::CDdeLink()
+	{
+	}
+	CDdeLink::~CDdeLink()
+	{
+	}
+	void CDdeLink::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType CDdeLink::getType() const
+	{
+		return et_x_DdeLink;
+	}
 	void CDdeLink::ReadAttributes(XLS::BaseObjectPtr& obj)
 	{
 		auto ptr = static_cast<XLSB::BeginSupBook*>(obj.get());
@@ -1008,6 +1177,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	COleItem::COleItem()
+	{
+	}
+	COleItem::~COleItem()
+	{
+	}
+	void COleItem::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType COleItem::getType() const
+	{
+		return et_x_OleItem;
+	}
 	void COleItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1065,6 +1247,19 @@ namespace Spreadsheet
 			WritingElement_ReadAttributes_End(oReader)
 	}
 
+	COleItems::COleItems()
+	{
+	}
+	COleItems::~COleItems()
+	{
+	}
+	void COleItems::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType COleItems::getType() const
+	{
+		return et_x_OleItems;
+	}
 	void COleItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if (oReader.IsEmptyNode())
@@ -1111,6 +1306,19 @@ namespace Spreadsheet
 		}
 	}
 
+	COleLink::COleLink()
+	{
+	}
+	COleLink::~COleLink()
+	{
+	}
+	void COleLink::fromXML(XmlUtils::CXmlNode& oNode)
+	{
+	}
+	EElementType COleLink::getType() const
+	{
+		return et_x_OleLink;
+	}
 	void COleLink::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
@@ -1338,6 +1546,28 @@ namespace Spreadsheet
 		oContent.Registration(type().OverrideType(), oDirectory, oPath.GetFilename());
 		IFileContainer::Write(oPath, oDirectory, oContent);
 	}
-
+	bool CExternalLink::isValid() const
+	{
+		return true;
+	}
+	const OOX::FileType CExternalLink::type() const
+	{
+		return OOX::Spreadsheet::FileTypes::ExternalLinks;
+	}
+	const CPath CExternalLink::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const CPath CExternalLink::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	const CPath& CExternalLink::GetReadPath()
+	{
+		return m_oReadPath;
+	}
+	void CExternalLink::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+	}
 }
 }

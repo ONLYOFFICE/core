@@ -31,12 +31,26 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "Autofilter.h"
+#include "../../DocxFormat/IFileContainer.h"
+#include "../FileTypes_Spreadsheet.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CTableType;
+		class CTotalsRowFunction;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CAltTextTable : public WritingElement

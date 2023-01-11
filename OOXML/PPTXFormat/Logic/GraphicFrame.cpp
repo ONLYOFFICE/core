@@ -41,6 +41,8 @@
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 
+#include "../../XlsxFormat/Chart/Chart.h"
+
 namespace PPTX
 {
 

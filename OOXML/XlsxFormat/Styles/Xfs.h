@@ -31,7 +31,20 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CHorizontalAlignment;
+		class CVerticalAlignment;
+	}
+}
 
 namespace OOX
 {

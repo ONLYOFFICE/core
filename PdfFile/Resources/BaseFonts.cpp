@@ -46,6 +46,7 @@
 #include "../Resources/Fontn021023l.h"
 #include "../Resources/Fontn021003l.h"
 #include "../Resources/Fontd050000l.h"
+#include "CMapMemory/cmap_memory.h"
 
 #include <map>
 
@@ -87,15 +88,7 @@ bool PdfReader::GetBaseFont(const std::wstring& sName, const unsigned char*& pDa
     return false;
 }
 
-#ifdef CMAP_USE_MEMORY
-#include "./CMapMemory/cmap_memory.h"
-#endif
-
 bool PdfReader::GetBaseCidToUnicode(const char* sName, const unsigned int*& pData, unsigned int& nSize)
 {
-#ifdef CMAP_USE_MEMORY
 	return GetCidToUnicodeMemoryMap(sName, pData, nSize);
-#else
-	return false;
-#endif
 }

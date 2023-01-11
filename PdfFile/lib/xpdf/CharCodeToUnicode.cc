@@ -22,10 +22,7 @@
 #include "GlobalParams.h"
 #include "PSTokenizer.h"
 #include "CharCodeToUnicode.h"
-
-#ifdef CMAP_USE_MEMORY
 #include "../../Resources/BaseFonts.h"
-#endif
 
 //------------------------------------------------------------------------
 
@@ -108,16 +105,16 @@ CharCodeToUnicode *CharCodeToUnicode::parseCIDToUnicode(GString *fileName,
   Unicode u;
   CharCodeToUnicode *ctu;
 
-#ifdef CMAP_USE_MEMORY
+
   const unsigned int* pDataCid = NULL;
   unsigned int nSizeCid = 0;
   if (PdfReader::GetBaseCidToUnicode(collection->getCString(), pDataCid, nSizeCid)) {
     ctu = new CharCodeToUnicode(collection->copy(),
       (Unicode*)pDataCid, nSizeCid, gTrue, NULL, 0, 0);
     return ctu;
-  } else {
-    return NULL;
   }
+#ifdef BUILDING_WASM_MODULE
+  return NULL;
 #endif
 
   if (!(f = openFile(fileName->getCString(), "r"))) {

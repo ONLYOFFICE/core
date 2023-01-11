@@ -1221,6 +1221,13 @@ namespace NSOnlineOfficeBinToPdf
 
 				break;
 			}
+			case ctDocInfo:
+			{
+				std::wstring wsUrl     = ReadString(current, curindex);
+				std::wstring wsTooltip = ReadString(current, curindex);
+
+				break;
+			}
 			default:
 			{
 				break;

@@ -3188,6 +3188,8 @@ namespace MetaFile
 
 		m_oStream >> oMatrix;
 
+		UpdateMatrix(oMatrix);
+
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
 		UpdateOutputDC();
 
@@ -3248,7 +3250,11 @@ namespace MetaFile
 	{
 		m_bBanEmfProcessing = true;
 
-		m_pDC->GetClip()->Reset();
+		TEmfPlusXForm oMatrix(1, 0, 0, 1, 0, 0);
+		UpdateMatrix(oMatrix);
+
+		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
+		UpdateOutputDC();
 
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_EMFPLUS_RESETCLIP();

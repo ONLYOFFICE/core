@@ -1563,16 +1563,15 @@ namespace MetaFile
 				oRect.dRight  = arPoints[1].X - m_pDC->GetPixelWidth();
 				oRect.dBottom = arPoints[2].Y - m_pDC->GetPixelHeight();
 
-				TRectD oTempSrcRect = oSrcRect.GetRectD();
+				TRectD oTempSrcRect;
 
-				CEmfPlusImageAttributes *pImageAttributes = GetImageAttributes(unImageAttributeIndex);
+				TEmfRectL *pEmfBounds = oEmfParser.GetBounds();
 
-				if (NULL != pImageAttributes && WrapModeTileFlipY != pImageAttributes->eWrapMode && WrapModeTileFlipXY != pImageAttributes->eWrapMode)
-				{
-					double dTempValue    = oTempSrcRect.dBottom;
-					oTempSrcRect.dBottom = oTempSrcRect.dTop;
-					oTempSrcRect.dTop    = dTempValue;
-				}
+				oTempSrcRect = oSrcRect.GetRectD();
+				oTempSrcRect.dLeft   -= pEmfBounds->lLeft;
+				oTempSrcRect.dRight  -= pEmfBounds->lLeft + GetPixelWidth();
+				oTempSrcRect.dTop    -= pEmfBounds->lTop;
+				oTempSrcRect.dBottom -= pEmfBounds->lTop  + GetPixelHeight();
 
 				TXForm oTransform;
 

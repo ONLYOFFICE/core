@@ -28,9 +28,6 @@ namespace MetaFile
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
-		if (oPlaceable.Inch != 0)
-			m_oScale.x = m_oScale.y = 96.f / oPlaceable.Inch;
-
 		TRect *pBounds = m_pParser->GetDCBounds();
 
 		m_oViewport.dLeft	= pBounds->nLeft;
@@ -195,7 +192,9 @@ namespace MetaFile
 
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)shStringLength, eCharSet);
 
-		WriteText(wsText, TPointD(shX, shY), oRectangle);
+		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
+
+		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)

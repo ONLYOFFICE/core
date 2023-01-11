@@ -195,7 +195,9 @@ namespace MetaFile
 
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)shStringLength, eCharSet);
 
-		WriteText(wsText, TPointD(shX, shY), oRectangle);
+		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
+
+		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)

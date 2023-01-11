@@ -384,7 +384,7 @@ namespace MetaFile
 
 		double dStrokeWidth = std::fabs(pPen->GetWidth());
 
-		if (0 == dStrokeWidth && (NULL != m_pParser->GetBrush() && BS_NULL == m_pParser->GetBrush()->GetStyle()))
+		if (0 == dStrokeWidth && 0 == pPen->GetColor() && (NULL != m_pParser->GetBrush() && BS_NULL == m_pParser->GetBrush()->GetStyle()))
 			return;
 
 		if (0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))

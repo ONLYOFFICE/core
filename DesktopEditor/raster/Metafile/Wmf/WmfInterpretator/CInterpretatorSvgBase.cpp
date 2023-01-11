@@ -783,11 +783,11 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		std::wstring wsWidth  = ConvertToWString(oFrame.get_Width()  / m_pParser->GetTransform()->M11);
-		std::wstring wsHeight = ConvertToWString(oFrame.get_Height() / m_pParser->GetTransform()->M22);
+		std::wstring wsWidth  = ConvertToWString(oFrame.get_Width());
+		std::wstring wsHeight = ConvertToWString(oFrame.get_Height());
 
 		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
-		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
+		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\">" +
 		            L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
 		            L"</pattern> ";
 

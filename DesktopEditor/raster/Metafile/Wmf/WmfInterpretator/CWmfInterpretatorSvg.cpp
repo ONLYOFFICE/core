@@ -28,9 +28,6 @@ namespace MetaFile
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
-		if (oPlaceable.Inch != 0)
-			m_oScale.x = m_oScale.y = 96.f / oPlaceable.Inch;
-
 		TRect *pBounds = m_pParser->GetDCBounds();
 
 		m_oViewport.dLeft	= pBounds->nLeft;

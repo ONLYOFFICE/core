@@ -73,7 +73,7 @@ namespace MetaFile
 	};
 
 	CInterpretatorSvgBase::CInterpretatorSvgBase(IMetaFileBase *pParser, double dWidth, double dHeight)
-	    : m_oSizeWindow(dWidth, dHeight), m_oScale(1, 1), m_unNumberDefs(0), m_pParser(pParser)
+	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser)
 	{}
 
 	CInterpretatorSvgBase::~CInterpretatorSvgBase()

@@ -298,8 +298,8 @@ namespace ChartEx
 		nullable_int		m_binCount;
 
 		nullable<SimpleTypes::Spreadsheet::CIntervalClosedSide>		m_intervalClosed;
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_underflow;
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_overflow;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_underflow;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_overflow;
 	};
 //------------------------------------------------------------------------------
 	class CStatistics : public WritingElement
@@ -523,7 +523,7 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>> m_gapWidth;	//typedef ST_DoubleOrAutomatic ST_GapWidthRatio 
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>> m_gapWidth;	//typedef ST_DoubleOrAutomatic ST_GapWidthRatio
 	};
 //------------------------------------------------------------------------------
 	class CValScaling : public WritingElement
@@ -541,11 +541,11 @@ namespace ChartEx
 
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_max;
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_min;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_max;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_min;
 
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_majorUnit; //ST_ValueAxisUnit == ST_DoubleOrAutomatic  
-		nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<>>	m_minorUnit;
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_majorUnit; //ST_ValueAxisUnit == ST_DoubleOrAutomatic
+        nullable<SimpleTypes::Spreadsheet::CDoubleOrAutomatic<SimpleTypes::Spreadsheet::typeAuto>>	m_minorUnit;
 	};
 //------------------------------------------------------------------------------
 	class CAxisUnitsLabel : public WritingElement

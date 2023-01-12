@@ -40,7 +40,7 @@ namespace PPT {
 		class Timing
 		{
 		public:
-			Timing(const Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int>& shapesID);
+            Timing(const Intermediate::SlideAnimation& slideAnim);
 			PPTX::Logic::Timing Convert(CExMedia* pExMedia, CRelsGenerator *pRels);
 
 			bool HasAnimation() const;
@@ -52,8 +52,7 @@ namespace PPT {
 		private:
 			const Intermediate::SlideAnimation& slideAnim;
 			CExMedia* pExMedia;
-			CRelsGenerator* pRels;
-			const std::unordered_set<int> shapesID;
+            CRelsGenerator* pRels;
 			PPTX::Logic::Timing timing;
 		};
 	}

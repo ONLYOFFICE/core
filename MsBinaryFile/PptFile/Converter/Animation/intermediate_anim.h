@@ -71,6 +71,7 @@ namespace PPT
 			CRecordPP10SlideBinaryTagExtension* pAnim_2010 = nullptr;
 			std::vector<SOldAnimation> arrAnim_1995;
 			std::unordered_set<_INT32> realShapesIds;
+            std::unordered_set<_INT32> nonTextShapes;
 		};
 	}
 }

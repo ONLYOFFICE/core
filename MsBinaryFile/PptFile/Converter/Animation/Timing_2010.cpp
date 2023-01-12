@@ -41,9 +41,8 @@
 namespace PPT {
 namespace Converter {
 
-Timing_2010::Timing_2010(CRecordPP10SlideBinaryTagExtension *pAnim_2010, const std::unordered_set<int> &shapesID) :
-    pTagExtAnim(pAnim_2010),
-    slideShapes(shapesID)
+Timing_2010::Timing_2010(const Intermediate::SlideAnimation &sldAnim) :
+    slideAnim(sldAnim)
 {}
 
 void Timing_2010::Convert(PPTX::Logic::Timing &timing, CExMedia *pExMedia, CRelsGenerator *pRels)
@@ -52,6 +51,7 @@ void Timing_2010::Convert(PPTX::Logic::Timing &timing, CExMedia *pExMedia, CRels
     m_pRels = pRels;
 
 
+    auto* pTagExtAnim = slideAnim.pAnim_2010;
     if (pTagExtAnim == nullptr || pTagExtAnim->m_haveExtTime == false)
         return;
 
@@ -77,7 +77,7 @@ void Timing_2010::ConvertBldLst(PPTX::Logic::Timing &timimg, CRecordBuildListCon
         auto* pSub = dynamic_cast<CRecordBuildListSubContainer*>(pDBC);
         if (pSub == nullptr)
             throw TimingExeption("Cannot read BuildListSubContainer");
-        if (slideShapes.count(pSub->buildAtom.m_nShapeIdRef) == false)
+        if (IsCorrectAnimationSpId(pSub->buildAtom.m_nShapeIdRef) == false)
             continue;
 
         FillBuildNodeBase(pSub, oBuildNodeBase);
@@ -438,14 +438,19 @@ void Timing_2010::FillCBhvr(CRecordTimeBehaviorContainer *pBhvr, PPTX::Logic::CB
     }
 }
 
-void Timing_2010::FillTgtEl(PPTX::Logic::TgtEl &tgtEl, CRecordClientVisualElementContainer clientVisualElement)
+bool Timing_2010::isTextShape(UINT spid) const
+{
+    return slideAnim.nonTextShapes.find(spid) == slideAnim.nonTextShapes.end();
+}
+
+void Timing_2010::FillTgtEl(PPTX::Logic::TgtEl &tgtEl, CRecordClientVisualElementContainer& clientVisualElement)
 {
     if (!clientVisualElement.m_bVisualShapeAtom)
         return;
 
-    if (clientVisualElement.m_oVisualShapeAtom.m_nData2 == 0xFFFFFFFF ||
-        clientVisualElement.m_oVisualShapeAtom.m_nData1 == 0xFFFFFFFF)
-        return;
+//    if (clientVisualElement.m_oVisualShapeAtom.m_nData2 == 0xFFFFFFFF ||
+//        clientVisualElement.m_oVisualShapeAtom.m_nData1 == 0xFFFFFFFF)
+//        return;
 
     if (clientVisualElement.m_oVisualShapeAtom.m_RefType != TL_ET_ShapeType)
         return; // todo insert next types here
@@ -465,7 +470,8 @@ void Timing_2010::FillTgtEl(PPTX::Logic::TgtEl &tgtEl, CRecordClientVisualElemen
                 tgtEl.spTgt->spid;
     }
 
-    if (clientVisualElement.m_oVisualShapeAtom.m_Type == TL_TVET_TextRange)
+    if (clientVisualElement.m_oVisualShapeAtom.m_Type == TL_TVET_TextRange &&
+            isTextShape(spid))
     {
         tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;
         tgtEl.spTgt->txEl->charRg = false;
@@ -646,15 +652,30 @@ void Timing_2010::FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Log
 bool Timing_2010::CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn)
 {
     auto anim_2010 = Intermediate::ParseExisting5Level_ETNC(pETNC);
-    bool isSlideShape = IsSlideSpId(anim_2010.spid);
+    bool isSlideShape = CheckSlideSpid(anim_2010.spid);
+    bool isSyncWithAnim95 = CheckMainSeqSyncWithAnim95(anim_2010.spid);
+    return isSlideShape && isSyncWithAnim95;
+}
+
+bool Timing_2010::CheckSlideSpid(_INT32 spid)
+{
+    bool isSlideShape = IsSlideSpId(spid);
     if (isSlideShape)
-        InsertAnimationSpId(anim_2010.spid);
+        InsertAnimationSpId(spid);
     return isSlideShape;
 }
 
 bool Timing_2010::IsSlideSpId(_INT32 spid) const
 {
-    return slideShapes.find(spid) != slideShapes.end();
+    return slideAnim.realShapesIds.find(spid) != slideAnim.realShapesIds.end();
+}
+
+bool Timing_2010::CheckMainSeqSyncWithAnim95(_INT32 spid) const
+{
+    if (!isMainSeq)
+        return true;
+
+    return true;
 }
 
 bool Timing_2010::IsCorrectAnimationSpId(_INT32 spid) const

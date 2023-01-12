@@ -324,7 +324,7 @@ public:
 	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;}
 	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;}
 	virtual HRESULT AddFormField(IFormField* pField) {return S_OK;}
-	virtual HRESULT DocInfo(std::wstring wsTitle) {return S_OK;}
+	virtual HRESULT DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords) {return S_OK;}
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\

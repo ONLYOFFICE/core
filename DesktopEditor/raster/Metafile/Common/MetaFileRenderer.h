@@ -474,6 +474,11 @@ namespace MetaFile
 
 				unsigned int ulVTextAlign = m_pFile->GetTextAlign() >> 8;
 
+
+				if (ulTextAlign & TA_UPDATECP)
+				{
+					ulTextAlign -= TA_UPDATECP;
+				}
 				if (ulTextAlign & TA_BASELINE)
 				{
 					ulTextAlign -= TA_BASELINE;

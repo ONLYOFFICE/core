@@ -73,7 +73,7 @@ namespace MetaFile
 	};
 
 	CInterpretatorSvgBase::CInterpretatorSvgBase(IMetaFileBase *pParser, double dWidth, double dHeight)
-	    : m_oSizeWindow(dWidth, dHeight), m_oScale(1, 1), m_unNumberDefs(0), m_pParser(pParser)
+	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser)
 	{}
 
 	CInterpretatorSvgBase::~CInterpretatorSvgBase()
@@ -201,6 +201,12 @@ namespace MetaFile
 
 		double dXCoord = oCoord.x;
 		double dYCoord = oCoord.y;
+
+		if (m_pParser->GetTextAlign() & TA_UPDATECP)
+		{
+			dXCoord = m_pParser->GetCurPos().x;
+			dYCoord = m_pParser->GetCurPos().y;
+		}
 
 		TXForm oTransform;
 		oTransform.Copy(m_pParser->GetTransform());
@@ -376,17 +382,20 @@ namespace MetaFile
 		if (NULL == pPen || PS_NULL == pPen->GetStyle())
 			return;
 
+		double dStrokeWidth = std::fabs(pPen->GetWidth());
+
+		if (0 == dStrokeWidth && 0 == pPen->GetColor() && (NULL != m_pParser->GetBrush() && BS_NULL == m_pParser->GetBrush()->GetStyle()))
+			return;
+
+		if (0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))
+			dStrokeWidth = (m_oViewport.GetWidth() / m_oSizeWindow.x) / std::fabs(m_pParser->GetTransform()->M11);
+
+		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
+
 		if (pPen->GetAlpha() != 255)
 			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
 
 		arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'});
-
-		double dStrokeWidth = std::fabs(pPen->GetWidth());
-
-		if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = 1. / std::fabs(m_pParser->GetTransform()->M11);
-
-		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
 		unsigned int unMetaPenStyle = pPen->GetStyle();
 		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
@@ -666,19 +675,29 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == pBrush)
 			return std::wstring();
 
-		BYTE* pBuffer = NULL;
+		CBgraFrame oFrame;
 		unsigned int unWidth = 0, unHeight = 0;
 
-		pBrush->GetDibPattern(&pBuffer, unWidth, unHeight);
+		if (pBrush->GetDibPatterPath().empty())
+		{
+			BYTE* pBuffer = NULL;
 
-		if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
-			return std::wstring();
+			pBrush->GetDibPattern(&pBuffer, unWidth, unHeight);
 
-		CBgraFrame oFrame;
-		oFrame.put_Data(pBuffer);
-		oFrame.put_Width(unWidth);
-		oFrame.put_Height(unHeight);
-		oFrame.put_Stride(4 * unWidth);
+			if (NULL == pBuffer || 0 == unWidth || 0 == unHeight)
+				return std::wstring();
+
+			oFrame.put_Data(pBuffer);
+			oFrame.put_Width(unWidth);
+			oFrame.put_Height(unHeight);
+			oFrame.put_Stride(4 * unWidth);
+		}
+		else
+		{
+			oFrame.OpenFile(pBrush->GetDibPatterPath());
+			unWidth  = oFrame.get_Width();
+			unHeight = oFrame.get_Height();
+		}
 
 		BYTE *pTempBuffer = NULL;
 		int nTempSize;
@@ -714,8 +733,8 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
-		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * 10 * unHeight / unWidth);
-		std::wstring wsHeight = ConvertToWString(dStrokeWidth * 10 * unWidth  / unHeight);
+		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
+		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
 
 		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
 		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
@@ -764,11 +783,11 @@ namespace MetaFile
 
 		std::wstring wsImageDataW = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pImageData, (LONG)nImageSize);
 
-		std::wstring wsWidth  = ConvertToWString(oFrame.get_Width()  / m_pParser->GetTransform()->M11);
-		std::wstring wsHeight = ConvertToWString(oFrame.get_Height() / m_pParser->GetTransform()->M22);
+		std::wstring wsWidth  = ConvertToWString(oFrame.get_Width());
+		std::wstring wsHeight = ConvertToWString(oFrame.get_Height());
 
 		m_wsDefs += L"<pattern id=\"" + wsStyleId + L"\" " +
-		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\" patternUnits=\"userSpaceOnUse\">" +
+		            L"width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\">" +
 		            L"<image xlink:href=\"data:image/png;base64," + wsImageDataW + L"\" x=\"0\" y=\"0\" width=\"" + wsWidth + L"\" height=\"" + wsHeight + L"\"/>" +
 		            L"</pattern> ";
 

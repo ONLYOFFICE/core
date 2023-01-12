@@ -85,7 +85,6 @@ namespace MetaFile
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;
-		TPointD              m_oScale;
 
 		std::wstring         m_wsLastClipId;
 

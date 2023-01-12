@@ -689,6 +689,12 @@
 #define c_oAscContentControlSpecificTypeDateTime      5
 #define c_oAscContentControlSpecificTypeTOC           10
 
+#define c_oAscEDocProtectComments 0
+#define c_oAscEDocProtectForms 1
+#define c_oAscEDocProtectNone 2
+#define c_oAscEDocProtectReadOnly 3
+#define c_oAscEDocProtectTrackedChanges 4
+
 #define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
 
 // MENU COMMANDS

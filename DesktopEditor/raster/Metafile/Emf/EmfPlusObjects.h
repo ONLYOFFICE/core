@@ -298,7 +298,6 @@ namespace MetaFile
 				return Brush->Color.chAlpha;
 
 			return 255;
-//			return (unsigned int)Color.chAlpha;
 		}
 
 		double GetMiterLimit()

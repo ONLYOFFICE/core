@@ -172,9 +172,7 @@ public:
 		void start_table_columns	();
 			void add_table_column	(double width = -1);
 		void end_table_columns		();
-		void start_table_header_rows();
-		void end_table_header_rows	();
-		void start_table_row		(bool styled = false);
+		void start_table_row		(bool styled = false, bool header = false);
 			void add_default_cell	();
 			void start_table_cell	(int col, bool covered, bool styled = false);
 			void end_table_cell		();
@@ -202,6 +200,9 @@ public:
 	bool empty() {return current_root_elements_.empty();}
 
 private:
+	void start_table_header_rows();
+	void end_table_header_rows	();
+
 	office_text*				root_text_;
 	office_element_ptr			root_document_;
 	
@@ -264,6 +265,8 @@ private:
 		odf_text_context	*main_text_context;
 		std::vector<int>	current_types;
 	}text_changes_state_;
+
+	bool table_row_header_state_ = false;
 
 	bool is_hyperlink_;
 

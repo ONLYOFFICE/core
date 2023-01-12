@@ -4,7 +4,7 @@
 
 namespace SVG
 {
-	CRect::CRect(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
+	CRect::CRect(CObjectBase *pParent) : CObjectBase(pParent)
 	{
 
 	}
@@ -34,11 +34,11 @@ namespace SVG
 		return true;
 	}
 
-	bool CRect::Draw(IRenderer *pRenderer)
+	bool CRect::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		int nPathType = 0;
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, pBaseStyle);
 
 		if ((fabs(m_dRx) < 0.000001) && (fabs(m_dRy) < 0.000001))
 		{
@@ -86,12 +86,12 @@ namespace SVG
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
+	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
+		if (NULL == pRenderer || NULL == pBaseStyle)
 			return;
 
-		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
+		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath);

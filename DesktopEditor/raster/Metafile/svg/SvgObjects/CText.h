@@ -13,13 +13,13 @@ namespace SVG
 	class CText : public CObjectBase
 	{
 	public:
-		CText(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL, NSFonts::IFontManager* pFontManager = NULL);
+		CText(CObjectBase* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 		virtual ~CText();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer) override;
+		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
 
 		double GetWidth() const;
 
@@ -42,9 +42,9 @@ namespace SVG
 		double GetWidth() const;
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer) override;
+		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
 
 		void InheritData(const CText& oText);
 

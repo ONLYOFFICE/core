@@ -8,17 +8,17 @@ namespace SVG
 	class CPolyline : public CObjectBase
 	{
 	public:
-		CPolyline(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
+		CPolyline(CObjectBase* pParent = NULL);
 		virtual ~CPolyline();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer) override;
+		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
 
-		void BeginDraw(IRenderer* pRenderer, int& nTypePath);
-		void DrawLines(IRenderer* pRenderer);
-		virtual void EndDraw(IRenderer* pRenderer, int& nTypePath);
+		void BeginDraw(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const;
+		void DrawLines(IRenderer* pRenderer) const;
+		virtual void EndDraw(IRenderer* pRenderer, int& nTypePath) const;
 
 		std::vector<double> m_arValues;
 	};
@@ -26,10 +26,10 @@ namespace SVG
 	class CPolygon : public CPolyline
 	{
 	public:
-		CPolygon(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
+		CPolygon(CObjectBase* pParent = NULL);
 		virtual ~CPolygon();
 
-		void EndDraw(IRenderer* pRenderer, int& nTypePath) override;
+		void EndDraw(IRenderer* pRenderer, int& nTypePath) const override;
 	};
 }
 

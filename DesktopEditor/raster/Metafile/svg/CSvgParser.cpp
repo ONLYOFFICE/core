@@ -4,6 +4,9 @@
 
 #include <iostream>
 
+#include "CSvgFile.h"
+
+#include "SvgObjects/CContainer.h"
 #include "SvgObjects/CPolyline.h"
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CHeader.h"
@@ -17,14 +20,12 @@
 namespace SVG
 {
 	CSvgParser::CSvgParser()
-	    : m_pStorage(NULL), m_pFontManager(NULL)
+	    : m_pFontManager(NULL)
 	{
-
 	}
 
 	CSvgParser::~CSvgParser()
 	{
-
 	}
 
 	void CSvgParser::SetFontManager(NSFonts::IFontManager *pFontManager)
@@ -32,91 +33,101 @@ namespace SVG
 		m_pFontManager = pFontManager;
 	}
 
-	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CSvgStorage* pStorage)
+	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (NULL == pStorage)
+		if (NULL == pContainer)
 			return false;
 
 		std::wstring wsXml;
 		NSFile::CFileBinary::ReadAllTextUtf8(wsFile, wsXml);
 
 		XmlUtils::IXmlDOMDocument::DisableOutput();
-		bool bResult = LoadFromString(wsXml, pStorage);
+		bool bResult = LoadFromString(wsXml, pContainer, pFile);
 		XmlUtils::IXmlDOMDocument::EnableOutput();
 
 		return bResult;
 	}
 
-	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CSvgStorage *pStorage)
+	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (NULL == pStorage)
+		if (NULL == pContainer)
 			return false;
-
-		m_pStorage = pStorage;
 
 		XmlUtils::CXmlNode oXml;
 		if (!oXml.FromXmlString(wsContent))
 			return false;
 
-		std::wstring sNodeName = oXml.GetName();
-
-		if (L"svg" != sNodeName &&
-		    L"g"   != sNodeName   &&
-		    L"xml" != sNodeName)
-			return false;
-
-		return ReadElement(oXml);
+		return LoadFromXmlNode(oXml, pContainer, pFile);
 	}
 
-	void CSvgParser::Clear()
+	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (NULL != m_pStorage)
-			m_pStorage->Clear();
+		if (NULL != pContainer && pContainer->ReadHeader(oElement))
+			return ReadChildrens(oElement, pContainer, pFile, pContainer->GetHeader());
+		return false;
 	}
 
-	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CObjectBase *pParent)
+	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile, CObjectBase *pParent) const
 	{
 		std::wstring wsElementName = oElement.GetName();
 
-		XmlUtils::CXmlNodes arChilds;
-
-		oElement.GetChilds(arChilds);
-
 		CObjectBase *pObject = NULL;
 
-		if (L"svg" == wsElementName)
-			pObject = new CHeader(pParent);
-		if (L"style" == wsElementName)
+		if (L"svg" == wsElementName || L"g" == wsElementName)
 		{
-			if (NULL != m_pStorage)
-				m_pStorage->AddStyle(oElement.GetText());
+			CContainer *pNewContainer = new CContainer(pParent);
+
+			if (NULL == pNewContainer)
+				return false;
+
+			if (pNewContainer->ReadFromXmlNode(oElement, *this, pFile))
+			{
+				pContainer->AddObject(pNewContainer);
+				return true;
+			}
+			else
+				return false;
+		}
+		else if (L"style" == wsElementName)
+		{
+			if (NULL != pFile)
+				pFile->AddStyle(oElement.GetText());
 		}
 		else if (L"line" == wsElementName)
-			pObject = new CLine(pParent, m_pStorage->GetStyle());
+			pObject = new CLine(pParent);
 		else if (L"rect" == wsElementName)
-			pObject = new CRect(pParent, m_pStorage->GetStyle());
+			pObject = new CRect(pParent);
 		else if (L"circle" == wsElementName)
-			pObject = new CCircle(pParent, m_pStorage->GetStyle());
+			pObject = new CCircle(pParent);
 		else if (L"ellipse" == wsElementName)
-			pObject = new CEllipse(pParent, m_pStorage->GetStyle());
+			pObject = new CEllipse(pParent);
 		else if (L"path" == wsElementName)
-			pObject = new CPath(pParent, m_pStorage->GetStyle());
+			pObject = new CPath(pParent);
 		else if (L"text" == wsElementName)
-			pObject = new CText(pParent, m_pStorage->GetStyle(), m_pFontManager);
+			pObject = new CText(pParent, m_pFontManager);
 		else if (L"polyline" == wsElementName)
-			pObject = new CPolyline(pParent, m_pStorage->GetStyle());
+			pObject = new CPolyline(pParent);
 		else if (L"polygon" == wsElementName)
-			pObject = new CPolygon(pParent, m_pStorage->GetStyle());
+			pObject = new CPolygon(pParent);
 
 		if (NULL != pObject)
 		{
 			if (pObject->ReadFromXmlNode(oElement))
-				m_pStorage->AddObject(pObject);
+				pContainer->AddObject(pObject);
 			else
 				RELEASEOBJECT(pObject);
 		}
 		else
 			return false;
+
+		return ReadChildrens(oElement, pContainer, pFile, pObject);
+	}
+
+	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile, CObjectBase *pParent) const
+	{
+		XmlUtils::CXmlNodes arChilds;
+
+		oElement.GetChilds(arChilds);
 
 		XmlUtils::CXmlNode oChild;
 
@@ -125,7 +136,8 @@ namespace SVG
 			if (!arChilds.GetAt(unChildrenIndex, oChild))
 				break;
 
-			ReadElement(oChild, pObject);
+			if (!ReadElement(oChild, pContainer, pFile, pParent))
+				return false;
 
 			oChild.Clear();
 		}

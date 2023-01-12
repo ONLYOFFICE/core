@@ -1,11 +1,13 @@
 #ifndef CSVGPARSER_H
 #define CSVGPARSER_H
 
-#include "CSvgStorage.h"
-
 #include "../../graphics/pro/Fonts.h"
 #include "../../../common/Directory.h"
 #include "../../../xml/include/xmlutils.h"
+
+#include "SvgObjects/CContainer.h"
+
+class CSvgFile;
 
 namespace SVG
 {
@@ -17,15 +19,15 @@ namespace SVG
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
-		bool LoadFromFile(const std::wstring& wsFile, CSvgStorage* pStorage);
-		bool LoadFromString(const std::wstring& wsContente, CSvgStorage* pStorage);
+		bool LoadFromFile(const std::wstring& wsFile, CContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromString(const std::wstring& wsContente, CContainer* pContainer, CSvgFile* pFile) const;
+		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
 
-		void Clear();
+		void AddStyle(const std::wstring& wsStyle);
 	private:
+		bool ReadElement(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile,  CObjectBase *pParent = NULL) const;
+		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile, CObjectBase *pParent = NULL) const;
 
-		bool ReadElement(XmlUtils::CXmlNode& oElement, CObjectBase *pParent = NULL);
-
-		CSvgStorage            *m_pStorage;
 		NSFonts::IFontManager  *m_pFontManager;
 
 		double m_dX;

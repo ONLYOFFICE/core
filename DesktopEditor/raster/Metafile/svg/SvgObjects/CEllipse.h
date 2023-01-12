@@ -9,12 +9,12 @@ namespace SVG
 	class CEllipse : public CObjectBase
 	{
 	public:
-		CEllipse(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
+		CEllipse(CObjectBase* pParent = NULL);
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer) override;
+		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
 
 		double m_dCx;
 		double m_dCy;

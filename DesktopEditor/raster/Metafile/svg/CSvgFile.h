@@ -6,7 +6,6 @@
 #include "../../../graphics/pro/Fonts.h"
 
 #include "CSvgParser.h"
-#include "CSvgStorage.h"
 
 class GRAPHICS_DECL CSvgFile
 {
@@ -20,16 +19,19 @@ class GRAPHICS_DECL CSvgFile
 
 		void Close();
 
-		void GetBounds(double& dX, double& dY, double& dWidth, double& dHeight) const;
+		bool GetBounds(double& dX, double& dY, double& dWidth, double& dHeight) const;
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
-		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) const;
+		void AddStyle(const std::wstring& wsStyle);
+
+		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
 		void Init();
 
-		SVG::CSvgParser  *m_pParser;
-		SVG::CSvgStorage *m_pStorage;
+		SVG::CSvgParser   *m_pParser;
+		SVG::CContainer   *m_pContainer;
+		SVG::CGeneralStyle m_oStyle;
 };
 
 #endif // CSVGFILE_H

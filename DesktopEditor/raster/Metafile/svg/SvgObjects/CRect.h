@@ -8,13 +8,13 @@ namespace SVG
 	class CRect : public CObjectBase
 	{
 	public:
-		CRect(CObjectBase* pParent = NULL, CGeneralStyle* pBaseStyle = NULL);
+		CRect(CObjectBase* pParent = NULL);
 		virtual ~CRect();
 
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer) override;
+		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
 
 		double m_dX;
 		double m_dY;

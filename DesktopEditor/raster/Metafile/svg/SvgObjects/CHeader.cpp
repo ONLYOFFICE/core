@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CHeader::CHeader(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
+	CHeader::CHeader(CObjectBase *pParent) : CObjectBase(pParent)
 	{
 
 	}
@@ -23,7 +23,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CHeader::Draw(IRenderer *pRenderer)
+	bool CHeader::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -39,7 +39,7 @@ namespace SVG
 		dHeight = m_dHeight;
 	}
 
-	void CHeader::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
+	void CHeader::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
 
 	}

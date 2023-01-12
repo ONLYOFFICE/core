@@ -1,9 +1,10 @@
 #include "CSvgFile.h"
 
+#include "SvgObjects/CContainer.h"
 #include "SvgObjects/CHeader.h"
 
 CSvgFile::CSvgFile()
-    : m_pParser(NULL), m_pStorage(NULL)
+    : m_pParser(NULL), m_pContainer(NULL)
 {
 	Init();
 }
@@ -11,7 +12,9 @@ CSvgFile::CSvgFile()
 CSvgFile::~CSvgFile()
 {
 	RELEASEOBJECT(m_pParser);
-	RELEASEOBJECT(m_pStorage);
+
+	if (NULL != m_pContainer)
+		delete m_pContainer;
 }
 
 bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
@@ -23,7 +26,7 @@ bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 {
 	Init();
 
-	return m_pParser->LoadFromFile(wsFile, m_pStorage);
+	return m_pParser->LoadFromFile(wsFile, m_pContainer, this);
 }
 
 bool CSvgFile::Load(const std::wstring &wsContent)
@@ -36,17 +39,18 @@ void CSvgFile::Close()
 
 }
 
-void CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
+bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
 {
-	if (m_pStorage->Empty())
-		return;
+	if (NULL == m_pContainer || m_pContainer->Empty())
+		return false;
 
-	SVG::CHeader* pHeader = dynamic_cast<SVG::CHeader*>(m_pStorage->GetFirstObject());
+	SVG::CHeader *pHeader = m_pContainer->GetHeader();
 
 	if (NULL == pHeader)
-		return;
+		return false;
 
 	pHeader->GetBounds(dX, dY, dWidth, dHeight);
+	return true;
 }
 
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
@@ -55,14 +59,20 @@ void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 		m_pParser->SetFontManager(pFontManager);
 }
 
-bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight) const
+void CSvgFile::AddStyle(const std::wstring &wsStyle)
 {
-	if (NULL == pRenderer || NULL == m_pStorage)
+	m_oStyle.AddStyle(wsStyle);
+}
+
+bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
+{
+	if (NULL == pRenderer || NULL == m_pContainer)
 		return false;
 
 	double dFileX = 0, dFileY = 0, dFileWidth = 0, dFileHeight = 0;
 
-	GetBounds(dFileX, dFileY, dFileWidth, dFileHeight);
+	if (!GetBounds(dFileX, dFileY, dFileWidth, dFileHeight))
+		return false;
 
 	double oldTransform[6];
 	oldTransform[0] = oldTransform[3] = 1;
@@ -70,11 +80,11 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
 
-	m_pStorage->AddStyle(L"svg{transform:matrix(" + std::to_wstring((dWidth)  / dFileWidth) + L", 0, 0, " +
-	                                                std::to_wstring((dHeight) / dFileHeight) +L", " +
-	                                                std::to_wstring(dX) + L", " + std::to_wstring(dY) + L")};");
+	m_oStyle.AddStyle(L"svg{transform:matrix(" + std::to_wstring((dWidth)  / dFileWidth) + L", 0, 0, " +
+	                                             std::to_wstring((dHeight) / dFileHeight) +L", " +
+	                                             std::to_wstring(dX) + L", " + std::to_wstring(dY) + L")};");
 
-	bool bResult = m_pStorage->Draw(pRenderer);
+	bool bResult = m_pContainer->Draw(pRenderer, &m_oStyle);
 
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
 
@@ -84,12 +94,10 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 void CSvgFile::Init()
 {
 	if (NULL == m_pParser)
-		m_pParser = new SVG::CSvgParser;
-	else
-		m_pParser->Clear();
+		m_pParser = new SVG::CSvgParser();
 
-	if (NULL == m_pStorage)
-		m_pStorage = new SVG::CSvgStorage;
+	if (NULL == m_pContainer)
+		m_pContainer = new SVG::CContainer();
 	else
-		m_pStorage->Clear();
+		m_pContainer->Clear();
 }

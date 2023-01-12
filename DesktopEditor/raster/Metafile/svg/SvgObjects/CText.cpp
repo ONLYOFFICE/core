@@ -11,8 +11,8 @@
 
 namespace SVG
 {
-	CText::CText(CObjectBase *pParent, CGeneralStyle* pBaseStyle, NSFonts::IFontManager* pFontManager)
-	    : CObjectBase(pParent, pBaseStyle), m_pFontManager(pFontManager), m_oCoord({0, 0})
+	CText::CText(CObjectBase *pParent, NSFonts::IFontManager* pFontManager)
+	    : CObjectBase(pParent), m_pFontManager(pFontManager), m_oCoord({0, 0})
 	{}
 
 	CText::~CText()
@@ -60,43 +60,40 @@ namespace SVG
 		return true;
 	}
 
-	bool CText::Draw(IRenderer *pRenderer)
+	bool CText::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		int nPathType = 0;
+		double dX = m_oCoord.dX, dY = m_oCoord.dY;
 
-		ApplyStyle(pRenderer, nPathType);
+		if (NULL != pBaseStyle)
+		{
+			pRenderer->ResetTransform();
 
-		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
+			CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
+
+			Aggplus::CMatrix oMatrix = oStyle.GetTransform();
+			oMatrix.TransformPoint(dX, dY);
+
+			ApplyFont(pRenderer, oStyle, oMatrix.sx());
+		}
+
+		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
 		for (CTspan* pTspan : m_arChildrens)
-			pTspan->Draw(pRenderer);
+			pTspan->Draw(pRenderer, pBaseStyle);
 
 		return true;
 	}
 
-	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
+	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
-			return;
-
-		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
-
-		//Временный данные для тестов
-		pRenderer->put_FontName(L"Times New Roman");
-		pRenderer->put_FontSize(12 / 25.4 * 96);
-
-		pRenderer->put_BrushType(c_BrushTypeSolid);
-		pRenderer->put_BrushColor1(0);
-		pRenderer->put_BrushAlpha1(255);
 	}
 
 	double CText::GetWidth() const
 	{
 		m_pFontManager->LoadFontByName(L"Arial", 1, 0, 72, 72);
-//		m_pFontManager->SetCharSpacing(0 * 72 / 25.4);
 
 		m_pFontManager->LoadString1(m_wsText, 0, 0);
 		TBBox oBox = m_pFontManager->MeasureString2();
@@ -151,36 +148,32 @@ namespace SVG
 		return true;
 	}
 
-	bool CTspan::Draw(IRenderer *pRenderer)
+	bool CTspan::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		int nPathType = 0;
+		double dX = m_oCoord.dX, dY = m_oCoord.dY;
 
-		ApplyStyle(pRenderer, nPathType);
+		if (NULL != pBaseStyle)
+		{
+			pRenderer->ResetTransform();
+
+			CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
+
+			Aggplus::CMatrix oMatrix = oStyle.GetTransform();
+			oMatrix.TransformPoint(dX, dY);
+
+			ApplyFont(pRenderer, oStyle, oMatrix.sx());
+		}
 
 		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
 
 		return true;
 	}
 
-	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
+	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
-			return;
-
-		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
-
-		ApplyTransform(pRenderer, oStyle);
-
-		//Временный данные для тестов
-		pRenderer->put_FontName(L"Arial");
-		pRenderer->put_FontSize(1);
-
-		pRenderer->put_BrushType(c_BrushTypeSolid);
-		pRenderer->put_BrushColor1(0);
-		pRenderer->put_BrushAlpha1(255);
 	}
 
 	void CTspan::InheritData(const CText &oText)

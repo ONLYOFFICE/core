@@ -4,7 +4,7 @@
 
 namespace SVG
 {
-	CPath::CPath(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
+	CPath::CPath(CObjectBase *pParent) : CObjectBase(pParent)
 	{
 
 	}
@@ -29,14 +29,14 @@ namespace SVG
 		return true;
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer)
+	bool CPath::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
 
 		int nPathType = 0;
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, pBaseStyle);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );
@@ -51,12 +51,12 @@ namespace SVG
 		return true;
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
+	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
+		if (NULL == pRenderer || NULL == pBaseStyle)
 			return;
 
-		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
+		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath);

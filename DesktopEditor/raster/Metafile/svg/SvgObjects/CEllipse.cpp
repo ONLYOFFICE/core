@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CEllipse::CEllipse(CObjectBase *pParent, CGeneralStyle* pBaseStyle) : CObjectBase(pParent, pBaseStyle)
+	CEllipse::CEllipse(CObjectBase *pParent) : CObjectBase(pParent)
 	{}
 
 	bool CEllipse::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
@@ -20,14 +20,14 @@ namespace SVG
 		return true;
 	}
 
-	bool CEllipse::Draw(IRenderer *pRenderer)
+	bool CEllipse::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		int nPathType = 0;
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, pBaseStyle);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand (c_nPathType);
@@ -45,12 +45,12 @@ namespace SVG
 		return true;
 	}
 
-	void CEllipse::ApplyStyle(IRenderer *pRenderer, int& nTypePath)
+	void CEllipse::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
+		if (NULL == pRenderer || NULL == pBaseStyle)
 			return;
 
-		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
+		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath);

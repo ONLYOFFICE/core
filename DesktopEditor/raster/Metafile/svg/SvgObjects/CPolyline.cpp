@@ -2,7 +2,7 @@
 
 namespace SVG
 {
-	CPolyline::CPolyline(CObjectBase *pParent, CGeneralStyle *pBaseStyle) : CObjectBase(pParent, pBaseStyle)
+	CPolyline::CPolyline(CObjectBase *pParent) : CObjectBase(pParent)
 	{}
 
 	CPolyline::~CPolyline()
@@ -25,35 +25,35 @@ namespace SVG
 		return m_arValues.size() >= 4;
 	}
 
-	bool CPolyline::Draw(IRenderer *pRenderer)
+	bool CPolyline::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
 	{
 		if (NULL == pRenderer || m_arValues.size() < 4)
 			return false;
 
 		int nPathType = 0;
 
-		BeginDraw(pRenderer, nPathType);
+		BeginDraw(pRenderer, nPathType, pBaseStyle);
 		DrawLines(pRenderer);
 		EndDraw(pRenderer, nPathType);
 
 		return true;
 	}
 
-	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath)
+	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		if (NULL == pRenderer || NULL == m_pStyle)
+		if (NULL == pRenderer || NULL == pBaseStyle)
 			return;
 
-		CStyle oStyle = m_pStyle->GetStyle(GetFullPath());
+		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
 
 		ApplyTransform(pRenderer, oStyle);
 		ApplyStroke(pRenderer, oStyle, nTypePath, true);
 		ApplyFill(pRenderer, oStyle, nTypePath, true);
 	}
 
-	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath)
+	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath, const CGeneralStyle* pBaseStyle) const
 	{
-		ApplyStyle(pRenderer, nTypePath);
+		ApplyStyle(pRenderer, nTypePath, pBaseStyle);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );
@@ -61,26 +61,26 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(m_arValues[0], m_arValues[1]);
 	}
 
-	void CPolyline::DrawLines(IRenderer *pRenderer)
+	void CPolyline::DrawLines(IRenderer *pRenderer) const
 	{
 		for (unsigned int unIndex = 2; unIndex < m_arValues.size(); unIndex += 2)
 			pRenderer->PathCommandLineTo(m_arValues[unIndex + 0], m_arValues[unIndex + 1]);
 	}
 
-	void CPolyline::EndDraw(IRenderer *pRenderer, int &nTypePath)
+	void CPolyline::EndDraw(IRenderer *pRenderer, int &nTypePath) const
 	{
 		pRenderer->DrawPath (nTypePath);
 		pRenderer->EndCommand (c_nPathType);
 		pRenderer->PathCommandEnd();
 	}
 
-	CPolygon::CPolygon(CObjectBase *pParent, CGeneralStyle *pBaseStyle)	: CPolyline(pParent, pBaseStyle)
+	CPolygon::CPolygon(CObjectBase *pParent)	: CPolyline(pParent)
 	{}
 
 	CPolygon::~CPolygon()
 	{}
 
-	void CPolygon::EndDraw(IRenderer *pRenderer, int &nTypePath)
+	void CPolygon::EndDraw(IRenderer *pRenderer, int &nTypePath) const
 	{
 		pRenderer->PathCommandClose();
 

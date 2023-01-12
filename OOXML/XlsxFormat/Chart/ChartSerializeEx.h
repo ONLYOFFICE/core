@@ -49,7 +49,7 @@ namespace SimpleTypes
 		class CSeriesLayout;
 		class CTickMarksType;
 		class CAxisUnit;
-		template<EDoubleOrAutomatic eDefValue = typeAuto> class CDoubleOrAutomatic;
+		template<EDoubleOrAutomatic eDefValue> class CDoubleOrAutomatic;
 	}
 }
 namespace ComplexTypes

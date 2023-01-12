@@ -48,6 +48,8 @@
 #include "TableStyles.h"
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/StylesStream.h"
 #include "../../XlsbFormat/Biff12_unions/FMTS.h"

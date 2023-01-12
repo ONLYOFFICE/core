@@ -36,18 +36,27 @@
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
 
-#include "Borders.h"
-#include "CellStyles.h"
-#include "Xfs.h"
-#include "Colors.h"
-#include "dxf.h"
-#include "Fills.h"
-#include "Fonts.h"
-#include "NumFmts.h"
-#include "TableStyles.h"
-
 namespace OOX
 {
+	namespace Spreadsheet
+	{
+		class CBorder;
+		class CBorders;
+		class CFill;
+		class CFont;
+		class CNumFmt;
+		class CAligment;
+		class CCellStyles;
+		class CCellStyleXfs;
+		class CCellXfs;
+		class CColors;
+		class CDxfs;
+		class CFills;
+		class CFonts;
+		class CNumFmts;
+		class CTableStyles;
+	}
+
 	namespace Drawing
 	{
 		class COfficeArtExtensionList;

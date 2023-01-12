@@ -34,6 +34,15 @@
 #include "rPr.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CPatternType;
+		class CGradientType;
+	}
+}
+
 namespace OOX
 {
 	namespace Spreadsheet

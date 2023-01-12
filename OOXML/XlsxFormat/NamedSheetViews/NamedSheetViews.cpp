@@ -36,6 +36,8 @@
 #include "../../Binary/Sheets/Writer/BinaryReader.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
+#include "../Styles/Colors.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -43,9 +45,9 @@ namespace Spreadsheet
 	void CSortRule::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_ifChar( oReader, "colId", m_oColId)
-				WritingElement_ReadAttributes_Read_else_ifChar( oReader, "id", m_oId)
-				WritingElement_ReadAttributes_EndChar_No_NS( oReader )
+		WritingElement_ReadAttributes_Read_ifChar( oReader, "colId", m_oColId)
+		WritingElement_ReadAttributes_Read_else_ifChar( oReader, "id", m_oId)
+		WritingElement_ReadAttributes_EndChar_No_NS( oReader )
 	}
 	void CSortRule::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{

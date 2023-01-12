@@ -948,13 +948,7 @@ namespace SimpleTypes
 			refmodeR1C1	=  1
 		};
 
-		DEFINE_SIMPLE_TYPE(CRefMode, ERefMode, refmodeA1)
-
-		/*enum EDoubleOrAutomatic
-		{
-			typeAuto		=  0,
-			typeDouble		=  1
-		};*/
+		DEFINE_SIMPLE_TYPE(CRefMode, ERefMode, refmodeA1)		
 
 		template<EDoubleOrAutomatic eDefValue = typeAuto>
 		class CDoubleOrAutomatic : public CSimpleType<EDoubleOrAutomatic, eDefValue>

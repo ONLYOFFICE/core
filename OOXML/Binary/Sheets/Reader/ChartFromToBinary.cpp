@@ -37,6 +37,7 @@
 
 #include "../../../XlsxFormat/Chart/Chart.h"
 #include "../../../XlsxFormat/Chart/ChartDrawing.h"
+#include "../../../XlsxFormat/ComplexTypes_Spreadsheet.h"
 
 #include "../../../PPTXFormat/Theme.h"
 

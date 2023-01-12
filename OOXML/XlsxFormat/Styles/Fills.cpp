@@ -32,7 +32,11 @@
 
 #include "Fills.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../XlsbFormat/Biff12_records/Fill.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

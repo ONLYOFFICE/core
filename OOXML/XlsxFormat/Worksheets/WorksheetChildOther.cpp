@@ -67,6 +67,7 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX

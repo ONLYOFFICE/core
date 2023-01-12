@@ -31,16 +31,25 @@
  */
 #pragma once
 
-#include "Borders.h"
-#include "Fills.h"
-#include "Fonts.h"
-#include "NumFmts.h"
-#include "Xfs.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CProtection;
+		class CAligment;
+		class CBorder;
+		class CFill;
+		class CFont;
+		class CNumFmt;
+
 		class CDxf : public WritingElement
 		{
 		public:

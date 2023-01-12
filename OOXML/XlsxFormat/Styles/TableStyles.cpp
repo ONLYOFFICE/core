@@ -32,6 +32,9 @@
 
 #include "TableStyles.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"

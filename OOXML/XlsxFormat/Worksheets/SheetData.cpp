@@ -37,9 +37,11 @@
 
 #include "../../DocxFormat/VmlDrawing.h"
 #include "../Styles/Styles.h"
+#include "../Styles/Xfs.h"
 #include "../SharedStrings/SharedStrings.h"
 #include "DataValidation.h"
 #include "../Comments/ThreadedComments.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"

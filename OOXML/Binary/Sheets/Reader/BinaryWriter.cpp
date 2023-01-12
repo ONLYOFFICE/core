@@ -61,6 +61,16 @@
 #include "../../../XlsxFormat/Slicer/Slicer.h"
 #include "../../../XlsxFormat/NamedSheetViews/NamedSheetViews.h"
 #include "../../../XlsxFormat/Drawing/Pos.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/Colors.h"
+#include "../../../XlsxFormat/Styles/Fills.h"
+#include "../../../XlsxFormat/Styles/Fonts.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/CellStyles.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/TableStyles.h"
+
 
 namespace BinXlsxRW 
 {

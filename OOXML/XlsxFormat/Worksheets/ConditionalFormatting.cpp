@@ -67,10 +67,16 @@
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/SimpleTypes_Spreadsheet.h"
+//#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../ComplexTypes_Spreadsheet.h"
 
 #include "../Styles/dxf.h"
 #include "../Styles/Colors.h"
+#include "../Styles/Xfs.h"
+#include "../Styles/NumFmts.h"
+#include "../Styles/Fonts.h"
+#include "../Styles/Fills.h"
+#include "../Styles/Borders.h"
 
 using namespace XLS;
 

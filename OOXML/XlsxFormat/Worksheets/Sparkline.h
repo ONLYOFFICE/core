@@ -34,6 +34,15 @@
 #include "../Chart/ChartSerialize.h"
 #include "../Styles/rPr.h"
 
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class ST_SparklineType;
+		class ST_SparklineAxisMinMax;
+	}
+}
+
 namespace OOX
 {
 	namespace Spreadsheet

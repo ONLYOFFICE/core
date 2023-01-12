@@ -37,6 +37,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../IFileContainer.h"
 #include "../Document.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 #include <boost/smart_ptr/shared_array.hpp>
 

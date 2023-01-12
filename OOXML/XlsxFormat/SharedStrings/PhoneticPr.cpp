@@ -34,6 +34,7 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_structures/PhRun.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {

@@ -31,10 +31,18 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "rPr.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CTableStyleType;
+	}
+}
 
 namespace OOX
 {

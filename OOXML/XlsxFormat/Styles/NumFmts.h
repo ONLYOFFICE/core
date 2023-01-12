@@ -30,9 +30,15 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
-#include "rPr.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {

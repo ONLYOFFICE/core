@@ -34,6 +34,8 @@
 #include "../Xlsx.h"
 #include "../Worksheets/Worksheet.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

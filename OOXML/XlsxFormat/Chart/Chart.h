@@ -36,6 +36,9 @@
 #include "../../DocxFormat/Document.h"
 #include "../Xlsx.h"
 
+#include "ChartStyle.h"
+#include "ChartColors.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

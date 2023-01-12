@@ -31,10 +31,8 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
-#include "PhoneticPr.h"
 #include "Run.h"
+#include "PhoneticPr.h"
 
 namespace NSBinPptxRW
 {

@@ -31,11 +31,32 @@
 */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../DocxFormat/IFileContainer.h"
 
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CExternalConnectionType;
+		class CParameterType;
+		class CHtmlFormat;
+		class CCredMethod;
+		class CQualifier;
+		class CFileType;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CTextField : public WritingElement

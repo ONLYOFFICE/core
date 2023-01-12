@@ -37,7 +37,12 @@
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
 #include "../../../XlsxFormat/Worksheets/Worksheet.h"
+#include "../../../XlsxFormat/Chart/ChartSerialize.h"
 
 #define NUMID_START 160
 const wchar_t* gc_Cat = L"cat";

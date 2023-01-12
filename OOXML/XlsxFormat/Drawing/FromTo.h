@@ -31,7 +31,14 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CEmu;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {

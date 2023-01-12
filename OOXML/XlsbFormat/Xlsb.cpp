@@ -33,7 +33,10 @@
 
 #include "../XlsxFormat/Workbook/Workbook.h"
 #include "../XlsxFormat/SharedStrings/SharedStrings.h"
+
 #include "../XlsxFormat/Styles/Styles.h"
+#include "../XlsxFormat/Styles/Fonts.h"
+
 #include "../XlsxFormat/Worksheets/Worksheet.h"
 #include "../XlsxFormat/CalcChain/CalcChain.h"
 #include "../XlsxFormat/ExternalLinks/ExternalLinks.h"

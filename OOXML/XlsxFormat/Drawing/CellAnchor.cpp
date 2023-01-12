@@ -33,6 +33,12 @@
 
 #include "CellAnchor.h"
 
+#include "FromTo.h"
+#include "Pos.h"
+
+#include "../../PPTXFormat/Logic/Shape.h"
+#include "../../PPTXFormat/Logic/GraphicFrame.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

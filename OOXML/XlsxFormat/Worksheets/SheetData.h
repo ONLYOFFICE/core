@@ -31,10 +31,8 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "../SharedStrings/Si.h"
-#include "Cols.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace NSBinPptxRW
 {
@@ -45,7 +43,9 @@ namespace NSFile
 {
 	class CStreamWriter;
 }
+
 class CSVWriter;
+
 //--------------------------------------------------------------------------------------------
 namespace OOX
 {

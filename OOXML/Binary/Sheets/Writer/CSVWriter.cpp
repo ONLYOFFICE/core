@@ -33,6 +33,7 @@
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/common/StringExt.h"
 
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../XlsxFormat/Xlsx.h"
@@ -40,6 +41,8 @@
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
 #include "../../../XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../../Common/MS-LCID.h"
 

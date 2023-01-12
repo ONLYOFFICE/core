@@ -31,13 +31,39 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-#include "../Styles/rPr.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CInch;
+	class COnOff;
+	class CDouble;
+	class CCryptAlgoritmName;
+	class CUnsignedDecimalNumber;
+	class CRelationshipId;
+	class CPageOrientation;
+
+	namespace Spreadsheet
+	{
+		class CCellComments;
+		class CPrintError;
+		class CPageOrder;
+		class CPageSize;
+		class CPageUnits;
+		class CActivePane;
+		class CPaneState;
+		class CSheetViewType;
+		class CDataConsolidateFunction;
+	}
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CColor;
+
 		class CProtectedRange : public WritingElement
 		{
 		public:

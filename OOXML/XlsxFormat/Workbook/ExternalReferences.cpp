@@ -34,6 +34,8 @@
 #include "../../XlsbFormat/Biff12_unions/SUP.h"
 #include "../../XlsbFormat/Biff12_records/SupBookSrc.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

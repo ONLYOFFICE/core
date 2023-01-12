@@ -32,6 +32,9 @@
 
 #include "Sparkline.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUPS.h"
 #include "../../XlsbFormat/Biff12_unions/SPARKLINEGROUP.h"
 #include "../../XlsbFormat/Biff12_records/BeginSparklineGroup.h"

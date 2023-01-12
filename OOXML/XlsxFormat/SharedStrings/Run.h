@@ -30,7 +30,6 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
 #include "Text.h"
 #include "../Styles/rPr.h"

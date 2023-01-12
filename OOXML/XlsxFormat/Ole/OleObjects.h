@@ -33,15 +33,29 @@
 #ifndef OOX_OLEOBJECTS_FILE_INCLUDE_H_
 #define OOX_OLEOBJECTS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
-#include "../Drawing/FromTo.h"
-#include "../../XlsbFormat/Biff12_unions/OLEOBJECTS.h"
-#include "../../XlsbFormat/Biff12_records/OleObject.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../DocxFormat/Media/OleObject.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CRelationshipId;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class ST_DvAspect;
+		class ST_OleUpdate;
+	}
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CFromTo;
+
 		class CExtAnchor : public WritingElement
 		{
 		public:

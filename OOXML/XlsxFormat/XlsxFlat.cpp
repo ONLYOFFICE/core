@@ -39,6 +39,17 @@
 #include "Worksheets/Worksheet.h"
 #include "Workbook/DefinedNames.h"
 
+#include "Styles/Borders.h"
+#include "Styles/CellStyles.h"
+#include "Styles/Xfs.h"
+#include "Styles/Colors.h"
+#include "Styles/dxf.h"
+#include "Styles/Fills.h"
+#include "Styles/Fonts.h"
+#include "Styles/NumFmts.h"
+#include "Styles/TableStyles.h"
+
+#include "ComplexTypes_Spreadsheet.h"
 
 namespace OOX
 {

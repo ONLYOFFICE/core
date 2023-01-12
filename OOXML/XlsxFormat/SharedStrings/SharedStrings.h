@@ -31,18 +31,16 @@
  */
 #pragma once
 
-#include "../Xlsx.h"
-#include "../../XlsbFormat/Xlsb.h"
-#include "../CommonInclude.h"
-
-#include "Si.h"
 #include <map>
 #include <thread>
 #include <algorithm>
 
-#include "../../XlsbFormat/SharedStringsStream.h"
-
+#include "Si.h"
+#include "../Xlsx.h"
 #include "../Styles/Styles.h"
+
+#include "../../XlsbFormat/Xlsb.h"
+#include "../../XlsbFormat/SharedStringsStream.h"
 
 namespace OOX
 {

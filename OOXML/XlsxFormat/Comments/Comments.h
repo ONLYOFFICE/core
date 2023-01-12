@@ -31,17 +31,16 @@
  */
 #pragma once
 
-
 #include "../Worksheets/Worksheet.h"
-#include "../SharedStrings/Si.h"
-
 #include "../Styles/Styles.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CSi;
 		class CThreadedComment;
+
 		class CCommentItem
 		{
 		public:

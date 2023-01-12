@@ -34,6 +34,9 @@
 #include "../../../../DesktopEditor/common/Directory.h"
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../../DesktopEditor/common/Path.h"
+
+#include "../../../XlsxFormat/Chart/Chart.h"
+
 #include "../../Sheets/Reader/BinaryWriter.h"
 #include "../../Sheets/Writer/BinaryReader.h"
 #include "../../Presentation/FontPicker.h"

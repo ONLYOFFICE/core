@@ -49,6 +49,7 @@
 #include "Comments/ThreadedComments.h"
 #include "Comments/Comments.h"
 #include "Controls/Controls.h"
+#include "Chart/Chart.h"
 
 #include "Pivot/PivotTable.h"
 #include "Pivot/PivotCacheDefinition.h"

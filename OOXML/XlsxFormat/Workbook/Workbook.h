@@ -35,7 +35,7 @@
 #include "../XlsxFlat.h"
 #include "../../XlsbFormat/Xlsb.h"
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
 
 #include "BookViews.h"
 #include "CalcPr.h"
@@ -46,6 +46,11 @@
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CPersonList;
@@ -67,6 +72,7 @@ namespace OOX
 		public:
 			WritingElement_AdditionMethods(CWorkbookPivotCache)
 			WritingElement_XlsbConstructors(CWorkbookPivotCache)
+
 			CWorkbookPivotCache();
 			virtual ~CWorkbookPivotCache();
 

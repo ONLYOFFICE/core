@@ -45,7 +45,8 @@
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Math/oMathContent.h"
 #include "../../../DocxFormat/Logic/DocParts.h"
-
+#include "../../../DocxFormat/Logic/SectionProperty.h"
+#include "../../../DocxFormat/Logic/Sdt.h"
 #include "../DocWrapper/XlsxSerializer.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"

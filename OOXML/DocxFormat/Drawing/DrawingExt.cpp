@@ -43,6 +43,7 @@
 #include "../../XlsxFormat/Slicer/SlicerCache.h"
 #include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../XlsxFormat/Pivot/PivotCacheDefinitionExt.h"
+#include "../../XlsxFormat/Styles/dxf.h"
 #include "../Comments.h"
 
 #include "../../XlsbFormat/Biff12_unions/FRTWORKSHEET.h"

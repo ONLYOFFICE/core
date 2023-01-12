@@ -31,10 +31,23 @@
  */
 #pragma once
 
-#include "../ComplexTypes_Spreadsheet.h"
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Spreadsheet.h"
-#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDecimalNumber;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CDataValidationType;
+		class CDataValidationErrorStyle;
+		class CDataValidationImeMode;
+		class CDataValidationOperator;
+	}
+}
 
 namespace OOX
 {

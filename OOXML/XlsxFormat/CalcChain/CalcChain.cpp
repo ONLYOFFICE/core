@@ -31,6 +31,7 @@
  */
 
 #include "CalcChain.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX
 {

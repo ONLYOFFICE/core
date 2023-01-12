@@ -31,6 +31,8 @@
  */
 
 #include "PhoneticPr.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_structures/PhRun.h"
 
 namespace OOX

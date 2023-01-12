@@ -62,6 +62,14 @@
 #include "../../XlsbFormat/Biff12_records/CsProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/CsProtection.h"
 
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../Styles/rPr.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../../Common/SimpleTypes_Word.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

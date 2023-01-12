@@ -31,9 +31,13 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "Text.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {

@@ -49,6 +49,8 @@
 #include "../../../OOXML/XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../OOXML/XlsxFormat/Styles/Styles.h"
 #include "../../../OOXML/XlsxFormat/Worksheets/Worksheet.h"
+#include "../../../OOXML/XlsxFormat/Chart/ChartSerialize.h"
+#include "../../../OOXML/XlsxFormat/Chart/ChartSerializeEx.h"
 
 namespace Oox2Odf
 {

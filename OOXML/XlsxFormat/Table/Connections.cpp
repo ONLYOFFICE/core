@@ -50,6 +50,11 @@
 #include "../../XlsbFormat/Biff12_unions/EXTCONN15.h"
 #include "../../XlsbFormat/Biff12_records/BeginExtConn15.h"
 #include "../../XlsbFormat/Biff12_records/RangePr15.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 namespace OOX
 {
 	namespace Spreadsheet

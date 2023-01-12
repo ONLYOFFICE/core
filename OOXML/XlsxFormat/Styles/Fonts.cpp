@@ -31,6 +31,8 @@
  */
 
 #include "Fonts.h"
+
+#include "../ComplexTypes_Spreadsheet.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX

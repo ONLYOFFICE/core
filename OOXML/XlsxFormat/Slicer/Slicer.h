@@ -30,11 +30,20 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+#include "../FileTypes_Spreadsheet.h"
+#include "../../DocxFormat/IFileContainer.h"
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CSlicer : public WritingElement

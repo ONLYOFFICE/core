@@ -33,9 +33,13 @@
 #ifndef OOX_DRAWING_FILE_INCLUDE_H_
 #define OOX_DRAWING_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
-#include "../../XlsbFormat/Biff12_records/Drawing.h"
 #include "CellAnchor.h"
+
+#include "../../DocxFormat/IFileContainer.h"
+#include "../../Common/SimpleTypes_Shared.h"
+
+#include "../../PPTXFormat/Logic/GraphicFrame.h"
+#include "../../XlsbFormat/Biff12_records/Drawing.h"
 
 namespace OOX
 {
@@ -47,7 +51,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CDrawingWorksheet)
-                        WritingElement_XlsbConstructors(CDrawingWorksheet)
+			WritingElement_XlsbConstructors(CDrawingWorksheet)
 			CDrawingWorksheet();
 			virtual ~CDrawingWorksheet();
 

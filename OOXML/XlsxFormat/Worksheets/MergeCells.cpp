@@ -32,6 +32,7 @@
 
 #include "MergeCells.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/MergeCell.h"
 
 namespace OOX

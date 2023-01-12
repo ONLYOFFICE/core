@@ -31,12 +31,42 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
 namespace NSBinPptxRW
 {
 	class CBinaryFileReader;
 	class CXlsbBinaryWriter;
+}
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDouble;
+	class CDecimalNumber;
+	class CVerticalAlignRun;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CHexColor;
+		class CThemeColor;
+		class CFontCharset;
+		class CFontFamily;
+		class CFontScheme;
+		class CUnderline;		
+	}
+}
+
+namespace ComplexTypes
+{
+	namespace Spreadsheet
+	{
+		class COnOff2;
+		class String;
+		class CDouble;		
+	}
 }
 
 namespace OOX

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,15 +35,5 @@
 // 1
 namespace NSCustomShapesConvert
 {
-class CRectangleType : public CCustomShape
-{
-public:
-	CRectangleType()
-
-    {
-        m_bConcentricFill = true;
-		m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m,l,21600r21600,l21600,xe");
-     }
-};
+	DEFINE_SHAPE_CLASS(CRectangleType, CCustomShape)
 }

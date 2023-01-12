@@ -36,6 +36,21 @@
 #include "../../XlsbFormat/Xlsb.h"
 #include "../XlsxFlat.h"
 
+#include "Borders.h"
+#include "Fills.h"
+#include "Fonts.h"
+#include "NumFmts.h"
+#include "Xfs.h"
+#include "CellStyles.h"
+#include "rPr.h"
+#include "Colors.h"
+#include "dxf.h"
+#include "TableStyles.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
 #include "../../XlsbFormat/StylesStream.h"
 #include "../../XlsbFormat/Biff12_unions/FMTS.h"
 #include "../../XlsbFormat/Biff12_unions/FONTS.h"

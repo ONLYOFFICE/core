@@ -30,11 +30,32 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+
+namespace SimpleTypes
+{
+	class CRelationshipId;
+
+	namespace Spreadsheet
+	{
+		class CTabularSlicerCacheSortOrder;
+		class CSlicerCacheCrossFilter;
+		class CSlicerStyleType;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CSlicerCacheOlapLevelName : public WritingElement

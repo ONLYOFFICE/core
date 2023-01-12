@@ -33,7 +33,7 @@
 #include "../Workbook/Workbook.h"
 
 #include "../Common.h"
-#include "../../../XlsbFormat/Biff12_records/CommonRecords.h"
+#include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 #include "../../DocxFormat/VmlDrawing.h"
 #include "../Styles/Styles.h"

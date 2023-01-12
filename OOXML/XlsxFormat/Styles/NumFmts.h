@@ -33,7 +33,12 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Shared.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {

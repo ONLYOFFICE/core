@@ -35,7 +35,6 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "Borders.h"
 #include "CellStyles.h"
@@ -49,6 +48,11 @@
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CStyle2003 : public WritingElement

@@ -25,9 +25,6 @@
     <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.cpp" />
     <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_textcontext.cpp" />
-    <ClCompile Include="..\..\..\Common\ODraw\BaseShape_1.cpp">
-      <Filter>DrawConverting</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\Common\ODraw\CustomShape.cpp">
       <Filter>DrawConverting</Filter>
     </ClCompile>

@@ -30,7 +30,6 @@
  *
  */
 
-#include <stdio.h>
 #include "BinaryWriter.h"
 #include "../Writer/BinaryReader.h"
 
@@ -71,6 +70,7 @@
 #include "../../../XlsxFormat/Styles/dxf.h"
 #include "../../../XlsxFormat/Styles/TableStyles.h"
 
+#include "../../../../DesktopEditor/common/Directory.h"
 
 namespace BinXlsxRW 
 {

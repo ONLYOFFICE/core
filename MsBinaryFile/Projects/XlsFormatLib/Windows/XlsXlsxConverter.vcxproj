@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Common\ODraw\BaseShape_1.cpp" />
     <ClCompile Include="..\..\..\Common\ODraw\CustomShape.cpp" />
     <ClCompile Include="..\..\..\Common\ODraw\FormulaShape.cpp" />
     <ClCompile Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout1type.cpp" />

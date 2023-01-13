@@ -78,6 +78,9 @@
 #include "../Format/style_graphic_properties.h"
 #include "../Format/styles_list.h"
 
+#include "../../../OOXML/Common/SimpleTypes_Spreadsheet.h"
+#include "../../../OOXML/Common/SimpleTypes_Word.h"
+
 using namespace cpdoccore;
 
 std::vector<double> current_font_size;

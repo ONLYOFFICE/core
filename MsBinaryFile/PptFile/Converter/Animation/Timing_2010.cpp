@@ -470,7 +470,9 @@ void Timing_2010::FillTgtEl(PPTX::Logic::TgtEl &tgtEl, CRecordClientVisualElemen
                 tgtEl.spTgt->spid;
     }
 
-    if (clientVisualElement.m_oVisualShapeAtom.m_Type == TL_TVET_TextRange &&
+    auto& vsa = clientVisualElement.m_oVisualShapeAtom;
+    if (vsa.m_Type == TL_TVET_TextRange &&
+            vsa.m_nData1 != 0xffffffff && vsa.m_nData2 != 0xffffffff &&
             isTextShape(spid))
     {
         tgtEl.spTgt->txEl         = new PPTX::Logic::TxEl;

@@ -272,6 +272,10 @@ namespace MetaFile
 		unsigned int ulTextAlign  = m_pParser->GetTextAlign() & TA_MASK;
 		unsigned int ulVTextAlign = m_pParser->GetTextAlign() >> 8;
 
+		if (ulTextAlign & TA_UPDATECP)
+		{
+			ulTextAlign -= TA_UPDATECP;
+		}
 		if (ulTextAlign & TA_BASELINE)
 		{
 			ulTextAlign -= TA_BASELINE;

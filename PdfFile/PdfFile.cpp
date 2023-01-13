@@ -835,12 +835,6 @@ void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
         return;
     m_pInternal->pWriter->SetDocumentID(wsDocumentID);
 }
-void CPdfFile::SetCore(const std::wstring& wsCoreXml)
-{
-    if (!m_pInternal->pWriter)
-        return;
-    m_pInternal->pWriter->SetCore(wsCoreXml);
-}
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
 #ifndef BUILDING_WASM_MODULE
@@ -1469,5 +1463,12 @@ HRESULT CPdfFile::AddFormField(IFormField* pFieldInfo)
 {
     if (!m_pInternal->pWriter)
         return S_FALSE;
-	return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, pFieldInfo);
+    return m_pInternal->pWriter->AddFormField(m_pInternal->pAppFonts, pFieldInfo);
+}
+HRESULT CPdfFile::DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
+{
+    if (!m_pInternal->pWriter)
+        return S_FALSE;
+    m_pInternal->pWriter->SetDocumentInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
+    return S_OK;
 }

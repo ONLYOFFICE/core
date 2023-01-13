@@ -52,9 +52,6 @@ namespace MetaFile
 		m_oViewport.dRight  = oTEmfHeader.oFramePx.lRight;
 		m_oViewport.dBottom = oTEmfHeader.oFramePx.lBottom;
 
-		m_oScale.x = (double)oTEmfHeader.oMillimeters.cx / (double)oTEmfHeader.oDevice.cx;
-		m_oScale.y = (double)oTEmfHeader.oMillimeters.cy / (double)oTEmfHeader.oDevice.cy;
-
 		m_oXmlWriter.WriteNodeBegin(L"svg", true);
 		m_oXmlWriter.WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_oXmlWriter.WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");

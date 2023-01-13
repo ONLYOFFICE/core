@@ -301,7 +301,7 @@ namespace Word
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hAnsiTheme", m_oHAnsiTheme)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:hint", m_oHint)
 		//2003
-		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_oHint)
+		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:h-ansi", m_sHAnsi)
 		WritingElement_ReadAttributes_Read_else_if(oReader, L"w:fareast", m_sEastAsia)
 		WritingElement_ReadAttributes_End(oReader)
 	}

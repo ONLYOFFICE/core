@@ -31,8 +31,9 @@
  */
 #pragma once
 
-#include "CommonWriter.h"
 #include "../../../XlsxFormat/Chart/ChartSerialize.h"
+
+#include "CommonWriter.h"
 #include "../../../XlsxFormat/Chart/ChartStyle.h"
 #include "../../../XlsxFormat/Chart/ChartColors.h"
 #include "../Writer/BinaryCommonReader.h"

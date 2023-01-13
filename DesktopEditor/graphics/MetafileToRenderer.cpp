@@ -1221,6 +1221,16 @@ namespace NSOnlineOfficeBinToPdf
 
 				break;
 			}
+			case ctDocInfo:
+			{
+				std::wstring wsTitle    = ReadString(current, curindex);
+				std::wstring wsCreator  = ReadString(current, curindex);
+				std::wstring wsSubject  = ReadString(current, curindex);
+				std::wstring wsKeywords = ReadString(current, curindex);
+
+				pRenderer->DocInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
+				break;
+			}
 			default:
 			{
 				break;

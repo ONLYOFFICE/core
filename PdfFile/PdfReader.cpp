@@ -75,10 +75,9 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
     ((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
 #ifndef BUILDING_WASM_MODULE
     globalParams->setupBaseFonts(NULL);
-#endif
-
-#ifdef CMAP_USE_MEMORY
-    ((GlobalParamsAdaptor*)globalParams)->SetCMapMemory(NULL, 0);
+    SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
+#else
+    SetCMapMemory(NULL, 0);
 #endif
 
     m_eError = errNone;

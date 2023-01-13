@@ -1,11 +1,9 @@
 core_mac:CONFIG += apple_platform
 core_ios:CONFIG += apple_platform
 
-apple_platform {
-    CONFIG += socketrocket
-} else {
-    CONFIG += ixwebsocket
-}
+# since 7.3: ONLY socketio
+#apple_platform:CONFIG += socketrocket
+#!apple_platform:CONFIG += ixwebsocket
 
 CONFIG += libsocketio
 

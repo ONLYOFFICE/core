@@ -1888,8 +1888,9 @@ DjVuDocument::writeDjVuXML(const GP<ByteStream> &gstr_out,int flags) const
 
 void DjVuDocument::ReadPageInfo(int nPage, int& width, int& height, int& nDpi)
 {
-	width	= 1000;
-	height	= 1000;
+	width	= 1;
+	height	= 1;
+	nDpi = 96;
 
 	try
 	{

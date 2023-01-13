@@ -1227,10 +1227,14 @@ namespace PdfWriter
 		if (-1 != nIndex && m_pTables[nIndex].nLen > 0)
 		{
 			unsigned int unOffset = m_pTables[nIndex].nOffset;
+			int nTableVersion = GetS16BE(unOffset, &m_bSuccess);
 			m_nWeight	 = GetS16BE(unOffset + 4, &m_bSuccess); 
 			m_nAscent	 = GetS16BE(unOffset + 68, &m_bSuccess);
 			m_nDescent	 = GetS16BE(unOffset + 70, &m_bSuccess);
-			m_nCapHeight = GetS16BE(unOffset + 88, &m_bSuccess);
+
+			//https://learn.microsoft.com/en-us/typography/opentype/spec/os2#scapheight
+			if (nTableVersion >= 2)
+				m_nCapHeight = GetS16BE(unOffset + 88, &m_bSuccess);
 		}
 	}
 }

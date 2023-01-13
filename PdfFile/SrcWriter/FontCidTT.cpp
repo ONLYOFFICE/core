@@ -143,19 +143,22 @@ namespace PdfWriter
 
 		pFontDescriptor->Add("Flags", nFlags);
 
-		CArrayObject* pBBox = new CArrayObject();
-		int* pFontBBox = m_pFontFile->GetBBox();
-		pBBox->Add(pFontBBox[0]);
-		pBBox->Add(pFontBBox[1]);
-		pBBox->Add(pFontBBox[2]);
-		pBBox->Add(pFontBBox[3]);
-		pFontDescriptor->Add("FontBBox", pBBox);
+		if (m_pFontFile)
+		{
+			CArrayObject* pBBox = new CArrayObject();
+			int* pFontBBox = m_pFontFile->GetBBox();
+			pBBox->Add(pFontBBox[0]);
+			pBBox->Add(pFontBBox[1]);
+			pBBox->Add(pFontBBox[2]);
+			pBBox->Add(pFontBBox[3]);
+			pFontDescriptor->Add("FontBBox", pBBox);
+		}
 		pFontDescriptor->Add("ItalicAngle", 0);
-		pFontDescriptor->Add("Ascent", m_pFontFile->GetAscent());
-		pFontDescriptor->Add("Descent", m_pFontFile->GetDescent());
-		pFontDescriptor->Add("CapHeight", m_pFontFile->GetCapHeight());
+		pFontDescriptor->Add("Ascent", m_pFontFile ? m_pFontFile->GetAscent() : 1000);
+		pFontDescriptor->Add("Descent", m_pFontFile ? m_pFontFile->GetDescent() : -500);
+		pFontDescriptor->Add("CapHeight", m_pFontFile ? m_pFontFile->GetCapHeight() : 800);
 		pFontDescriptor->Add("StemV", 0);
-		pFontDescriptor->Add("FontWeight", m_pFontFile->GetWeight());
+		pFontDescriptor->Add("FontWeight", m_pFontFile ? m_pFontFile->GetWeight() : 400);
 
 		m_pFontFileDict = new CDictObject(m_pXref);
 		pFontDescriptor->Add("FontFile2", m_pFontFileDict);

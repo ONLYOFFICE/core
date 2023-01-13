@@ -237,7 +237,7 @@ void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 				get_styles_context().start();
 
 
-				if(( textProp) && (textProp->content_.r_style_))parenStyleId = _T("");
+				if(( textProp) && (textProp->content_.r_style_)) parenStyleId = _T("");
 				textProp->content_.docx_convert(*this);
 			}
 	        

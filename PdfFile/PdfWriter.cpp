@@ -1618,10 +1618,13 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	if (!IsPageValid() || !pMaskBuffer || !pImage)
 		return S_OK;
 
+	PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
+	if (!pPdfImage)
+		return S_OK;
+
 	m_pPage->GrSave();
 	UpdateTransform();
-    PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
-    pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
+	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;

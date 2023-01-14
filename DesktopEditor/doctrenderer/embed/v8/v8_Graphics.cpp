@@ -7,6 +7,7 @@ namespace NSGraphics
 
     // FUNCTION
     FUNCTION_WRAPPER_V8_5(_init,              init)
+    FUNCTION_WRAPPER_V8  (_destroy,           Destroy)
     FUNCTION_WRAPPER_V8  (_EndDraw,           EndDraw)
     FUNCTION_WRAPPER_V8_2(_put_GlobalAlpha,   put_GlobalAlpha)
     FUNCTION_WRAPPER_V8  (_Start_GlobalAlpha, Start_GlobalAlpha)
@@ -131,6 +132,7 @@ namespace NSGraphics
 
         // методы
         NSV8Objects::Template_Set(result, "create",                   _init);
+        NSV8Objects::Template_Set(result, "Destroy",                  _destroy);
         NSV8Objects::Template_Set(result, "EndDraw",                  _EndDraw);
         NSV8Objects::Template_Set(result, "put_GlobalAlpha",          _put_GlobalAlpha);
         NSV8Objects::Template_Set(result, "Start_GlobalAlpha",        _Start_GlobalAlpha);
@@ -246,6 +248,8 @@ namespace NSGraphics
 
         v8::Local<v8::Object> obj = GraphicsTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
         obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pGraphics));
+
+		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
 
         args.GetReturnValue().Set(obj);
     }

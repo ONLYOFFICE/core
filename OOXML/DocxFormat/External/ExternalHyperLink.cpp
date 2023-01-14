@@ -31,6 +31,8 @@
  */
 
 #include "HyperLink.h"
+#include "../FileTypes.h"
+
 
 namespace OOX
 {

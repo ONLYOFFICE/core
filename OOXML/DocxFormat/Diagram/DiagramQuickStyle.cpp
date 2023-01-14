@@ -32,6 +32,8 @@
 #pragma once
 
 #include "DiagramQuickStyle.h"
+#include "../Drawing/DrawingExt.h"
+
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX

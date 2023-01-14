@@ -33,7 +33,6 @@
 
 #include "DiagramData.h"
 
-
 namespace OOX
 {
 	namespace Diagram

@@ -32,6 +32,11 @@
 #pragma once
 
 #include "DiagramLayout.h"
+#include "../Drawing/DrawingExt.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Drawing.h"
+
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 #define Diagram_Layout_Read_Xml() \

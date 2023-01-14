@@ -32,10 +32,8 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Drawing.h"
-#include "../../Common/SimpleTypes_Shared.h"
-
 #include "../WritingElement.h"
+
 #include "../../PPTXFormat/Logic/GraphicFrame.h"
 
 namespace OOX

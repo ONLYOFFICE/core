@@ -32,6 +32,8 @@
 #pragma once
 
 #include "DiagramDrawing.h"
+
+#include "../../PPTXFormat/Logic/SpTree.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX

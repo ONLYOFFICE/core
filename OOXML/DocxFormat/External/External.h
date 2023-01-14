@@ -34,7 +34,6 @@
 #define OOX_EXTERNAL_INCLUDE_H_
 
 #include "../File.h"
-#include "../FileTypes.h"
 
 namespace OOX
 {

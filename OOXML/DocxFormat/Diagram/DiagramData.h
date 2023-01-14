@@ -32,17 +32,50 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../Drawing/DrawingExt.h"
 
-#include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
 #include "../../../OOXML/PPTXFormat/Logic/TxBody.h"
-#include "../../Common/SimpleTypes_Drawing.h"
-#include "../../Common/SimpleTypes_Shared.h"
+
+namespace SimpleTypes
+{
+	class CBool;
+	class CDouble;
+	class CAnimLvlStr;
+	class CAnimOneStr;
+	class CDecimalNumber;
+	class CDirectionDraw;
+	class CHierBranch;
+	class CResizeHandles;
+	class CPtTypes;
+	class CHueDirType;
+	class CColorMethod;
+	class CChOrder;
+	class CAxisTypes;
+	class CElementTypes;
+	class CConstraintRelationship;
+	class CConstraintType;
+	class CBoolOperator;
+	class CFunctionType;
+	class CFunctionOperator;
+	class CAlgorithmType;
+	class CParameterId;
+}
+
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SpPr;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Diagram
 	{
 		template<typename E>

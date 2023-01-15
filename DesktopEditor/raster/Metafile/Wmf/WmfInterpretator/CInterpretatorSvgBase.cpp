@@ -272,6 +272,10 @@ namespace MetaFile
 		unsigned int ulTextAlign  = m_pParser->GetTextAlign() & TA_MASK;
 		unsigned int ulVTextAlign = m_pParser->GetTextAlign() >> 8;
 
+		if (ulTextAlign & TA_UPDATECP)
+		{
+			ulTextAlign -= TA_UPDATECP;
+		}
 		if (ulTextAlign & TA_BASELINE)
 		{
 			ulTextAlign -= TA_BASELINE;
@@ -388,7 +392,14 @@ namespace MetaFile
 			return;
 
 		if (0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = (m_oViewport.GetWidth() / m_oSizeWindow.x) / std::fabs(m_pParser->GetTransform()->M11);
+		{
+			double dScale = 1;
+
+			if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+				dScale = m_oViewport.GetWidth() / m_oSizeWindow.x;
+
+			dStrokeWidth = dScale / std::fabs(m_pParser->GetTransform()->M11);
+		}
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 

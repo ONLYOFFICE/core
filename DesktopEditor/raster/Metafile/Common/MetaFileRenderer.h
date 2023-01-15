@@ -1119,8 +1119,6 @@ namespace MetaFile
 			if (!pPen)
 				return false;
 
-			int nColor = pPen->GetColor();
-
 			unsigned int unMetaPenStyle = pPen->GetStyle();
 
 			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
@@ -1132,8 +1130,6 @@ namespace MetaFile
 			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
 			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
 			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
-
-			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)
@@ -1171,7 +1167,7 @@ namespace MetaFile
 
 				dWidth = 25.4 / dRendererDpiX;
 
-				if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
+				if (PS_COSMETIC == ulPenType)
 					dWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
 
 				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
@@ -1182,7 +1178,6 @@ namespace MetaFile
 
 			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
-			// TODO: Реализовать PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;
 
 			double *pDataDash;
@@ -1196,111 +1191,84 @@ namespace MetaFile
 				//поэтому замещает по возможно его на стандартный
 				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
 
-				if (1 == unSizeDash)
-					ulPenStyle = Aggplus::DashStyleSolid;
-				else if (2 == unSizeDash)
-					ulPenStyle = (pDataDash[0] != pDataDash[1]) ? Aggplus::DashStyleDash : Aggplus::DashStyleDot;
-				else if (4 == unSizeDash)
-					ulPenStyle = Aggplus::DashStyleDashDot;
-				else if (6 == unSizeDash)
-					ulPenStyle = Aggplus::DashStyleDashDotDot;
+				std::vector<double> arDashData;
+
+				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
+					arDashData.push_back(pDataDash[unIndex] * dWidth);
+
+				m_pRenderer->PenDashPattern(arDashData.data(), unSizeDash);
+				nDashStyle = Aggplus::DashStyleCustom;
 			}
-
-			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
-			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle && false)
+			else if (PS_SOLID != ulPenStyle)
 			{
-				// TODO: Ранее здесь специально ставилась толщина 0, что любой рендерер должен
-				//       воспринимать как толщину в 1px. Но сейчас это не работает в графическом ренедерере,
-				//       поэтому временно это убрано.
-				//       Толщиной в 1px - именно так рисуется в винде любая пунктирная линия в метафайле.
+				std::vector<double> arDashPattern;
 
-				//dWidth = 0; // Специальное значение для 1pх карандаша
+				double dPixWidth = 0;
 
-				double dDpiX;
-				m_pRenderer->get_DpiX(&dDpiX);
-				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
+				if (0 == pPen->GetWidth() || (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType))
+				{
+					dPixWidth = dWidth;
+				}
+				else
+				{
+					dPixWidth = dWidth * 25.4 / 72.;
 
-				double dDashOff = 0;
-				double* pDashPattern = NULL;
-				int nDashLen = 0;
+					if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
+						dPixWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
+				}
 
 				switch (ulPenStyle)
 				{
-				case PS_DASH:
-				{
-					dDashOff = 0 * dPixelW;
-					nDashLen = 2;
-					pDashPattern = new double[2];
-					if (pDashPattern)
+					case PS_DASH:
 					{
-						pDashPattern[0] = 18 * dPixelW;
-						pDashPattern[1] = 3 * dPixelW;
+						arDashPattern.push_back(9 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+
+						break;
 					}
-					break;
-				}
-				case PS_DOT:
-				{
-					dDashOff = 4 * dPixelW;
-					nDashLen = 2;
-					pDashPattern = new double[2];
-					if (pDashPattern)
+					case PS_DOT:
 					{
-						pDashPattern[0] = 3 * dPixelW;
-						pDashPattern[1] = 3 * dPixelW;
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+
+						break;
 					}
-					break;
-				}
-				case PS_DASHDOT:
-				{
-					dDashOff = 22 * dPixelW;
-					nDashLen = 4;
-					pDashPattern = new double[4];
-					if (pDashPattern)
+					case PS_DASHDOT:
 					{
-						pDashPattern[0] = 9 * dPixelW;
-						pDashPattern[1] = 6 * dPixelW;
-						pDashPattern[2] = 3 * dPixelW;
-						pDashPattern[3] = 6 * dPixelW;
+						arDashPattern.push_back(9 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+
+						break;
 					}
-					break;
-				}
-				case PS_DASHDOTDOT:
-				{
-					dDashOff = 22 * dPixelW;
-					nDashLen = 6;
-					pDashPattern = new double[6];
-					if (pDashPattern)
+					case PS_DASHDOTDOT:
 					{
-						pDashPattern[0] = 9 * dPixelW;
-						pDashPattern[1] = 3 * dPixelW;
-						pDashPattern[2] = 3 * dPixelW;
-						pDashPattern[3] = 3 * dPixelW;
-						pDashPattern[4] = 3 * dPixelW;
-						pDashPattern[5] = 3 * dPixelW;
+						arDashPattern.push_back(9 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+						arDashPattern.push_back(3 * dPixWidth);
+
+						break;
 					}
-					break;
-				}
 				}
 
-				if (NULL != pDashPattern)
+				if (!arDashPattern.empty())
 				{
-					m_pRenderer->put_PenDashOffset(dDashOff);
-					m_pRenderer->PenDashPattern(pDashPattern, nDashLen);
+					m_pRenderer->PenDashPattern(arDashPattern.data(), arDashPattern.size());
 					nDashStyle = Aggplus::DashStyleCustom;
-					delete[] pDashPattern;
+					nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
+					nJoinStyle = Aggplus::LineJoinMiter;
 				}
 			}
 
-			if (1 <= pPen->GetWidth() && PS_SOLID != ulPenStyle)
-			{
-				nStartCapStyle = Aggplus::LineCapFlat;
-			}
-
-			m_pRenderer->put_PenDashStyle(ulPenStyle);
+			m_pRenderer->put_PenDashStyle(nDashStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);
 			m_pRenderer->put_PenLineStartCap(nStartCapStyle);
 			m_pRenderer->put_PenLineEndCap(nEndCapStyle);
-			m_pRenderer->put_PenColor(nColor);
+			m_pRenderer->put_PenColor(pPen->GetColor());
 			m_pRenderer->put_PenSize(dWidth);
 			m_pRenderer->put_PenAlpha(pPen->GetAlpha());
 			m_pRenderer->put_PenMiterLimit(dMiterLimit);
@@ -1316,9 +1284,6 @@ namespace MetaFile
 			case R2_COPYPEN: break;
 			case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
 			}
-
-			if (PS_NULL == ulPenStyle)
-				return false;
 
 			return true;
 		}

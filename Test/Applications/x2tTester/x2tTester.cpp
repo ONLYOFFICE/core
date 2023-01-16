@@ -347,7 +347,7 @@ void Cx2tTester::Start()
 	m_timeStart = NSTimers::GetTickCount();
 
 	// check fonts
-	std::wstring fonts_directory = NSFile::GetProcessDirectory() + L"/fonts";
+	std::wstring fonts_directory = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + L"fonts";
 	CApplicationFontsWorker fonts_worker;
 	fonts_worker.m_sDirectory = fonts_directory;
 	if (!NSDirectory::Exists(fonts_worker.m_sDirectory))
@@ -359,13 +359,16 @@ void Cx2tTester::Start()
 	{
 		std::wstring sFolder = *i;
 		if (0 == sFolder.find(L"."))
-			sFolder = NSFile::GetProcessDirectory() + L"/" + sFolder;
+			sFolder = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + sFolder;
 		fonts_worker.m_arAdditionalFolders.push_back(sFolder);
 	}
 
 	fonts_worker.m_bIsNeedThumbnails = false;
 	NSFonts::IApplicationFonts* pFonts = fonts_worker.Check();
 	RELEASEINTERFACE(pFonts);
+
+	m_outputDirectory = CorrectPathW(m_outputDirectory);
+	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
 
 	// setup & clear output folder
 	if(NSDirectory::Exists(m_outputDirectory))
@@ -417,8 +420,6 @@ void Cx2tTester::Start()
 																	input_file_directory.size() - m_inputDirectory.size());
 
 		std::wstring output_files_directory = m_outputDirectory + input_subfolders + FILE_SEPARATOR_STR + input_filename;
-
-		output_files_directory = CorrectPathW(output_files_directory);
 
 		// setup & clear output subfolder
 		while(!NSDirectory::Exists(output_files_directory))
@@ -723,7 +724,7 @@ DWORD CConverter::ThreadProc()
 		builder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 
 		builder.WriteString(L"<m_sAllFontsPath>");
-		builder.WriteEncodeXmlString(m_fontsDirectory + L"/AllFonts.js");
+		builder.WriteEncodeXmlString(m_fontsDirectory + FILE_SEPARATOR_STR + L"AllFonts.js");
 		builder.WriteString(L"</m_sAllFontsPath>");
 
 		builder.WriteString(L"<m_sFontDir>");

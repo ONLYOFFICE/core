@@ -577,7 +577,7 @@ namespace formulasconvert {
 		replace_semicolons	(workstr);
 		replace_tilda		(workstr);
 		replace_vertical	(workstr);
-		replace_apersand	(workstr);
+		//replace_apersand	(workstr);
 
 		if (isFormula)
 		{

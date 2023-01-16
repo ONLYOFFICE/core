@@ -57,6 +57,8 @@
 #define LOGGING(_value)
 #endif
 
+#define M_MINFONTSIZE 5
+
 namespace MetaFile
 {
 	struct TRenderConditional
@@ -272,8 +274,21 @@ namespace MetaFile
 			UpdateTransform();
 			UpdateClip();
 
+			double dFontScale = 1.;
+			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
+
+			double dM11, dM12, dM21, dM22, dRx, dRy;
+
+			if (dLogicalFontHeight < M_MINFONTSIZE)
+			{
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+				dFontScale = dM22;
+				dLogicalFontHeight *= dFontScale;
+				m_pRenderer->SetTransform(dM11 / std::fabs(dM11), dM12, dM21, dM22 / std::fabs(dM22), dRx, dRy);
+			}
+
 			m_pRenderer->put_FontName(pFont->GetFaceName());
-			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * m_dScaleX / 25.4 * 72));
+			m_pRenderer->put_FontSize(fabs(dLogicalFontHeight * m_dScaleX / 25.4 * 72));
 
 			int lStyle = 0;
 			if (pFont->GetWeight() > 550)
@@ -291,19 +306,15 @@ namespace MetaFile
 			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
 			m_pRenderer->put_BrushAlpha1(255);
 
-			double dM11, dM12, dM21, dM22, dX, dY;
-
-			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 			m_pRenderer->ResetTransform();
-
-			m_pRenderer->put_FontSize(fabs(pFont->GetHeight() * dM22 * m_dScaleY / 25.4 * 72));
 
 			std::vector<TPointD> arGlyphPoint(arPoints.size());
 
 			for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
 			{
-				arGlyphPoint[unIndex].x = (arPoints[unIndex].x * dM11) * m_dScaleX + dX;
-				arGlyphPoint[unIndex].y = (arPoints[unIndex].y * dM22) * m_dScaleY + dY;
+				arGlyphPoint[unIndex].x = (arPoints[unIndex].x * dM11) * m_dScaleX * dFontScale + dRx;
+				arGlyphPoint[unIndex].y = (arPoints[unIndex].y * dM22) * m_dScaleY * dFontScale + dRy;
 			}
 
 			for (unsigned int unIndex = 0; unIndex < std::min(arPoints.size(), wsString.length()); ++unIndex)
@@ -322,6 +333,17 @@ namespace MetaFile
 			UpdateClip();
 
 			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
+
+			double dM11, dM12, dM21, dM22, dRx, dRy;
+			double dFontScale = 1.;
+
+			if (dLogicalFontHeight < M_MINFONTSIZE)
+			{
+				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+				dFontScale = dM22;
+				dLogicalFontHeight *= dFontScale;
+				m_pRenderer->SetTransform(dM11 / std::fabs(dM11), dM12, dM21, dM22 / std::fabs(dM22), dRx, dRy);
+			}
 
 			double dFontHeight = fabs(dLogicalFontHeight * m_dScaleY / 25.4 * 72);
 
@@ -346,13 +368,10 @@ namespace MetaFile
 			double dCosTheta = cosf(dTheta);
 			double dSinTheta = sinf(dTheta);
 
-			double dM11, dM12, dM21, dM22, dRx, dRy;
-			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
 			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
-			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
+			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth() * dFontScale;
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
@@ -463,7 +482,7 @@ namespace MetaFile
 					fH = (float)dFHeight;
 				}
 
-				TPointD oTextPoint = TranslatePoint(_dX, _dY);
+				TPointD oTextPoint = TranslatePoint(_dX * dFontScale, _dY * dFontScale);
 				double dX = oTextPoint.x;
 				double dY = oTextPoint.y + dSkipY;
 
@@ -473,7 +492,6 @@ namespace MetaFile
 				unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;
 
 				unsigned int ulVTextAlign = m_pFile->GetTextAlign() >> 8;
-
 
 				if (ulTextAlign & TA_UPDATECP)
 				{
@@ -629,7 +647,6 @@ namespace MetaFile
 				m_pRenderer->put_BrushAlpha1(255);
 
 				// Рисуем сам текст
-
 				if (NULL == pDx)
 				{
 					m_pRenderer->CommandDrawText(wsString, dX, dY, 0, 0);
@@ -641,7 +658,7 @@ namespace MetaFile
 					if (pUnicode && unUnicodeLen)
 					{
 						double dOffset = 0;
-						double dKoefX = m_dScaleX;
+						double dKoefX = m_dScaleX * dFontScale;
 						for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
 						{
 							m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);

@@ -40,7 +40,14 @@ CRecordParaBuildContainer::CRecordParaBuildContainer()
 
 CRecordParaBuildContainer::~CRecordParaBuildContainer()
 {
-
+	for (size_t i = 0; i < rgParaBuildLevel.size(); ++i)
+	{
+		if (rgParaBuildLevel[i])
+		{
+			delete rgParaBuildLevel[i];
+			rgParaBuildLevel[i] = NULL;
+		}
+	}
 }
 
 void CRecordParaBuildContainer::ReadFromStream(SRecordHeader &header, POLE::Stream *pStream)

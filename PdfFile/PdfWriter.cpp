@@ -161,38 +161,20 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 
 	return 0;
 }
-void CPdfWriter::SetCore(const std::wstring& wsCoreXml)
+void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
 {
     if (!IsValid())
         return;
 
-    XmlUtils::CXmlLiteReader oCoreReader;
-    oCoreReader.FromString(wsCoreXml);
-    oCoreReader.ReadNextNode();
+    std::string sTitle    = U_TO_UTF8(wsTitle);
+    std::string sAuthor   = U_TO_UTF8(wsCreator);
+    std::string sSubject  = U_TO_UTF8(wsSubject);
+    std::string sKeywords = U_TO_UTF8(wsKeywords);
 
-    std::string sAuthor, sAnnotation, sKeywords, sSubject, sTitle;
-    int nDeath = oCoreReader.GetDepth();
-    while (oCoreReader.ReadNextSiblingNode(nDeath))
-    {
-        std::wstring sName = oCoreReader.GetName();
-        std::string sText = oCoreReader.GetText2A();
-        if (!sText.empty())
-        {
-            if (sName == L"dc:creator")
-                sAuthor = sText;
-            else if (sName == L"dc:title")
-                sTitle = sText;
-            else if (sName == L"dc:subject")
-                sSubject = sText;
-            else if (sName == L"cp:keywords")
-                sKeywords = sText;
-        }
-    }
-
-    if (!sAuthor.empty())
-        m_pDocument->SetAuthor(sAuthor);
     if (!sTitle.empty())
         m_pDocument->SetTitle(sTitle);
+    if (!sAuthor.empty())
+        m_pDocument->SetAuthor(sAuthor);
     if (!sSubject.empty())
         m_pDocument->SetSubject(sSubject);
     if (!sKeywords.empty())

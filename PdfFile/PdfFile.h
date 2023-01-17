@@ -130,7 +130,6 @@ public:
     void RotatePage   (int nRotate);
     void SetPassword  (const std::wstring& wsPassword);
     void SetDocumentID(const std::wstring& wsDocumentID);
-    void SetCore      (const std::wstring& wsCoreXml);
     void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
     HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
     HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams = NULL);
@@ -273,7 +272,8 @@ public:
     virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
     virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip);
     virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage);
-	virtual HRESULT AddFormField(IFormField* pFieldInfo);
+    virtual HRESULT AddFormField(IFormField* pFieldInfo);
+    virtual HRESULT DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 
 private:
     CPdfFile_Private* m_pInternal;

@@ -1892,9 +1892,6 @@ namespace NExtractTools
 			if (false == password.empty())
 				pdfWriter.SetPassword(password);
 
-			if (false == sResult.empty())
-				pdfWriter.SetCore(sResult);
-
 			int nReg = (bPaid == false) ? 0 : 1;
 			nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sPdfBinFile, sTo, &oBufferParams)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 			RELEASEOBJECT(pApplicationFonts);
@@ -3566,9 +3563,6 @@ namespace NExtractTools
 								std::wstring password = params.getSavePassword();
 								if (false == password.empty())
 									pdfWriter.SetPassword(password);
-
-								if (false == sResult.empty())
-									pdfWriter.SetCore(sResult);
 
                                int nReg = (bPaid == false) ? 0 : 1;
 							   nRes = (S_OK == pdfWriter.OnlineWordToPdfFromBinary(sFilePathIn, sFilePathOut, &oBufferParams)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;

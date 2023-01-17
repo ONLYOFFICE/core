@@ -31,6 +31,7 @@
  */
 #include "Docx.h"
 #include "Endnote.h"
+#include "../SystemUtility/File.h"
 
 namespace OOX
 {

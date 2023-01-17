@@ -35,7 +35,17 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Vml.h"
+
+namespace SimpleTypes
+{
+	class CBorderType;
+	class CBorderShadow;
+	class CDecimalNumber;
+	class CHorizontalAnchor;
+	class CVerticalAnchor;
+	class CWrapSide;
+	class CWrapType;
+}
 
 namespace OOX
 {

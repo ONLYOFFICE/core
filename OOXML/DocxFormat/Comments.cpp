@@ -45,6 +45,8 @@
 #include "Logic/Dir.h"
 #include "Logic/Bdo.h"
 
+#include "Drawing/DrawingExt.h"
+
 namespace OOX
 {
 	CComment::CComment(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)

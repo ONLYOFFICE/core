@@ -33,6 +33,8 @@
 #include "Styles.h"
 #include "Docx.h"
 
+#include "Logic/SectionProperty.h"
+
 namespace ComplexTypes
 {
 	namespace Word

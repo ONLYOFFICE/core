@@ -30,6 +30,7 @@
  *
  */
 #include "SlicerCacheExt.h"
+
 #include "../../XlsbFormat/Biff12_unions/STYLESHEET14.h"
 #include "../../XlsbFormat/Biff12_unions/SLICERSTYLES.h"
 #include "../../XlsbFormat/Biff12_unions/SLICERSTYLE.h"
@@ -50,9 +51,10 @@
 #include "../../Binary/Presentation/XmlWriter.h"
 #include "../../Binary/Presentation/BinReaderWriterDefines.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 

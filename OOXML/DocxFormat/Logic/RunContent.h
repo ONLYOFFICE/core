@@ -33,10 +33,24 @@
 
 #include "../../DocxFormat/WritingElement.h"
 #include "../../Base/Nullable.h"
+
 #include "../../Common/ComplexTypes.h"
-#include "../../PPTXFormat/Logic/Xfrm.h"
 
 // 2. Класс CRuby   17.3.3.25
+
+namespace PPTX
+{
+	namespace Logic
+	{
+		class Xfrm;
+	}
+}
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CRelationshipId;
+}
 
 namespace OOX
 {

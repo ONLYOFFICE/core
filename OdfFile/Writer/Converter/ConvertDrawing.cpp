@@ -36,6 +36,7 @@
 #include "../../Common/utils.h"
 
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"

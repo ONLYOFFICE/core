@@ -35,6 +35,7 @@
 
 #include "../WritingElement.h"
 #include "RunProperty.h"
+#include "../../Common/ComplexTypes.h"
 
 namespace ComplexTypes
 {

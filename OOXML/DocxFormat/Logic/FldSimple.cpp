@@ -35,10 +35,12 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "Sdt.h"
 #include "Hyperlink.h"
 #include "SmartTag.h"
 #include "Dir.h"
+#include "FldChar.h"
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 

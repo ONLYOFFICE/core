@@ -46,6 +46,8 @@
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
 #include "../../../OOXML/DocxFormat/HeaderFooter.h"
 
+#include "../../../OOXML/DocxFormat/Logic/Vml.h"
+
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
 #include "../../../OOXML/DocxFormat/Logic/Sdt.h"
@@ -58,6 +60,7 @@
 #include "../../../OOXML/DocxFormat/Logic/Dir.h"
 #include "../../../OOXML/DocxFormat/Logic/SmartTag.h"
 #include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../OOXML/DocxFormat/Logic/SectionProperty.h"
 #include "../../../OOXML/DocxFormat/Logic/FldSimple.h"
 #include "../../../OOXML/DocxFormat/Logic/Run.h"
 #include "../../../OOXML/DocxFormat/Logic/RunProperty.h"

@@ -46,7 +46,9 @@
 #include "../../OOXML/DocxFormat/Logic/Hyperlink.h"
 #include "../../OOXML/DocxFormat/Logic/Paragraph.h"
 #include "../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../OOXML/DocxFormat/Logic/SectionProperty.h"
 #include "../../OOXML/DocxFormat/Logic/Run.h"
+#include "../../OOXML/DocxFormat/Logic/FldChar.h"
 
 #include <map>
 

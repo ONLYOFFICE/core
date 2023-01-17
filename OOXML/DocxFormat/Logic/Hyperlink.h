@@ -32,10 +32,21 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Shared.h"
-#include "../../Common/ComplexTypes.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CRelationshipId;
+}
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class CMatchSrc;
+	}
+}
 
 namespace OOX
 {

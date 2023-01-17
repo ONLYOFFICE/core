@@ -56,6 +56,7 @@
 
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../DocxFormat/Media/Image.h"
 #include "../../Common/SimpleTypes_Base.h"
 #include "../../Common/SimpleTypes_Vml.h"

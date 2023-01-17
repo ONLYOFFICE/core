@@ -37,6 +37,8 @@
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 
+#include "../../Common/ComplexTypes.h"
+
 namespace OOX
 {
 	namespace Logic

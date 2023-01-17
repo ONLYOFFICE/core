@@ -33,9 +33,10 @@
 
 #include "../Common.h"
 
-#include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../SharedStrings/Text.h"
 #include "../ComplexTypes_Spreadsheet.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 #include "../../XlsbFormat/ExternalLinkStream.h"

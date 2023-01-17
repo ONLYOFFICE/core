@@ -39,9 +39,11 @@
 
 #include "../DrawingConverter/ASCOfficeDrawingConverter.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-#include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 
+#include "../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../XlsxFormat/Chart/Chart.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 namespace PPTX
 {

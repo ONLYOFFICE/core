@@ -35,7 +35,7 @@
 #include "../../DocxFormat/IFileContainer.h"
 
 #include "../Drawing/FromTo.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 
 namespace SimpleTypes
 {
@@ -55,6 +55,11 @@ namespace SimpleTypes
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 //------------------------------------------------------------------------------------------------------------------------------

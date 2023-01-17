@@ -55,6 +55,7 @@
 
 #include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Media/ActiveX.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
 
 #include "../Format/ods_conversion_context.h"
 

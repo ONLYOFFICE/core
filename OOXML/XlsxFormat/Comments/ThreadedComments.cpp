@@ -34,6 +34,7 @@
 #include "../Xlsx.h"
 #include "../Worksheets/Worksheet.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../Common/SimpleTypes_Shared.h"
 
 namespace OOX

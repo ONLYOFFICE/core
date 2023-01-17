@@ -36,6 +36,7 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "FldSimple.h"
 #include "Bdo.h"
 #include "Table.h"
@@ -43,6 +44,8 @@
 #include "SmartTag.h"
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
+
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {

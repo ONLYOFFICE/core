@@ -56,6 +56,7 @@
 #include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramData.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
 #include "../../../OOXML/DocxFormat/Math/oMathPara.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Shape.h"

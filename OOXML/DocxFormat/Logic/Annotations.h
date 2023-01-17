@@ -32,8 +32,16 @@
 #pragma once
 
 #include "../../Base/Nullable.h"
-#include "../../Common/SimpleTypes_Word.h"
 #include "./../WritingElement.h"
+
+namespace SimpleTypes
+{
+	class CEdGrp;
+	class CProofErr;
+	class CDateTime;
+	class CDecimalNumber;
+	class CDisplacedByCustomXml;
+}
 
 namespace OOX
 {

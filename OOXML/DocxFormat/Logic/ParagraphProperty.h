@@ -33,16 +33,44 @@
 #ifndef OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 
-#include "../../Common/SimpleTypes_Word.h"
+#include "../../Base/Nullable.h"
 #include "./../WritingElement.h"
 
-#include "RunProperty.h"
-#include "SectionProperty.h"
+namespace SimpleTypes
+{
+	class CDateTime;
+	class CDecimalNumber;
+}
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class CJc;
+		class CInd;
+		class CCnf;
+		class COnOff2;
+		class CFramePr;
+		class CBorder;
+		class String;
+		class CSpacing;
+		class CShading;
+		class CTabStop;
+		class CTrackChange;
+		class CTextAlignment;
+		class CDecimalNumber;
+		class CTextDirection;
+		class CTextboxTightWrap;
+	}
+}
 
 namespace OOX
 {
 	namespace Logic
 	{
+		class CRunProperty;
+		class CSectionProperty;
+
 		//--------------------------------------------------------------------------------
 		// NumPr 17.13.1.19 (Part 1)
 		//--------------------------------------------------------------------------------

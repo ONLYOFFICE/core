@@ -88,7 +88,7 @@ namespace ComplexTypes
 
 		public:
 
-			nullable< SimpleTypes::COnOff>	m_oNull;
+			nullable<SimpleTypes::COnOff>	m_oNull;
             nullable_string						m_sVal;
 		};
 

@@ -34,16 +34,16 @@
 #define OOX_LOGIC_FIELD_SIMPLE_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
 #include "../WritingElement.h"
-#include "../../Common/SimpleTypes_Word.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
-#include "FldChar.h"
 
 namespace OOX
 {
 	namespace Logic
 	{
+		class CFFData;
+
 		//--------------------------------------------------------------------------------
 		// CFldSimple 17.16.19 (Part 1)
 		//--------------------------------------------------------------------------------	

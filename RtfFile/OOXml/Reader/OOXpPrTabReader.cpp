@@ -31,6 +31,7 @@
  */
 
 #include "OOXpPrTabReader.h"
+#include "../../../OOXML/Common/ComplexTypes.h"
 
 OOXpPrTabReader::OOXpPrTabReader( OOX::Logic::CTabs *ooxTabs)
 {

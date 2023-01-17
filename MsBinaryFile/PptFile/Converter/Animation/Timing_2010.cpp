@@ -448,10 +448,6 @@ void Timing_2010::FillTgtEl(PPTX::Logic::TgtEl &tgtEl, CRecordClientVisualElemen
     if (!clientVisualElement.m_bVisualShapeAtom)
         return;
 
-//    if (clientVisualElement.m_oVisualShapeAtom.m_nData2 == 0xFFFFFFFF ||
-//        clientVisualElement.m_oVisualShapeAtom.m_nData1 == 0xFFFFFFFF)
-//        return;
-
     if (clientVisualElement.m_oVisualShapeAtom.m_RefType != TL_ET_ShapeType)
         return; // todo insert next types here
 

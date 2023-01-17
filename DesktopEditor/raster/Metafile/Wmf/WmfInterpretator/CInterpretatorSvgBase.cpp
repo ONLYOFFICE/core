@@ -386,17 +386,22 @@ namespace MetaFile
 		if (NULL == pPen || PS_NULL == pPen->GetStyle())
 			return;
 
-		double dStrokeWidth = std::fabs(pPen->GetWidth());
+		switch (m_pParser->GetRop2Mode())
+		{
+			case R2_BLACK:   arAttributes.push_back({L"stroke", L"rgb(0, 0, 0)"}); break;
+			case R2_NOP:     return;
+			case R2_WHITE:   arAttributes.push_back({L"stroke", L"rgb(255, 255, 255)"}); break;
+			default: arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'}); break;
+		}
 
-		if (0 == dStrokeWidth && 0 == pPen->GetColor() && (NULL != m_pParser->GetBrush() && BS_NULL == m_pParser->GetBrush()->GetStyle()))
-			return;
+		double dStrokeWidth = std::fabs(pPen->GetWidth());
 
 		if (0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))
 		{
-			double dScale = 1;
+			double dScale = m_pParser->GetDpi() / 96.;
 
 			if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
-				dScale = m_oViewport.GetWidth() / m_oSizeWindow.x;
+				dScale *= m_oViewport.GetWidth() / m_oSizeWindow.x;
 
 			dStrokeWidth = dScale / std::fabs(m_pParser->GetTransform()->M11);
 		}
@@ -405,8 +410,6 @@ namespace MetaFile
 
 		if (pPen->GetAlpha() != 255)
 			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
-
-		arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'});
 
 		unsigned int unMetaPenStyle = pPen->GetStyle();
 		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;

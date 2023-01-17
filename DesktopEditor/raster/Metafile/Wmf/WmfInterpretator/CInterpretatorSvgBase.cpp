@@ -294,7 +294,7 @@ namespace MetaFile
 		}
 		else // if (ulTextAlign & TA_TOP)
 		{
-			arNodeAttributes.push_back({L"dominant-baseline", L"hanging"});
+			dYCoord += dFontHeight;
 		}
 
 		if (ulTextAlign == TA_RIGHT)

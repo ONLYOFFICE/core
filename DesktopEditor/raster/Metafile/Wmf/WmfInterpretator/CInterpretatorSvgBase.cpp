@@ -844,10 +844,13 @@ namespace MetaFile
 
 				pBrush->GetBounds(dLeft, dTop, dWidth, dHeight);
 
-				dX = ((dX - dLeft) / dWidth);
-				dY = ((dY - dTop)  / dHeight);
+				if (0 != dWidth && 0 != dHeight)
+				{
+					dX = ((dX - dLeft) / dWidth);
+					dY = ((dY - dTop)  / dHeight);
 
-				wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+					wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+				}
 			}
 
 			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +

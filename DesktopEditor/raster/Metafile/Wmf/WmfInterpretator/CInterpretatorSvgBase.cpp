@@ -294,7 +294,7 @@ namespace MetaFile
 		}
 		else // if (ulTextAlign & TA_TOP)
 		{
-			arNodeAttributes.push_back({L"dominant-baseline", L"hanging"});
+			dYCoord += dFontHeight;
 		}
 
 		if (ulTextAlign == TA_RIGHT)
@@ -658,6 +658,9 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+
 		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
 		std::wstring wsBgColor;
 
@@ -746,6 +749,9 @@ namespace MetaFile
 			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
+
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
@@ -847,10 +853,13 @@ namespace MetaFile
 
 				pBrush->GetBounds(dLeft, dTop, dWidth, dHeight);
 
-				dX = ((dX - dLeft) / dWidth);
-				dY = ((dY - dTop)  / dHeight);
+				if (0 != dWidth && 0 != dHeight)
+				{
+					dX = ((dX - dLeft) / dWidth);
+					dY = ((dY - dTop)  / dHeight);
 
-				wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+					wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+				}
 			}
 
 			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +

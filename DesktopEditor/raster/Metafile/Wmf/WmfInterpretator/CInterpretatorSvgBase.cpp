@@ -655,6 +655,9 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+
 		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
 		std::wstring wsBgColor;
 
@@ -743,6 +746,9 @@ namespace MetaFile
 			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
+
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);

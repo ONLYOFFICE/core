@@ -670,6 +670,18 @@ bool CPPTXWriter::HasRoundTrips() const
     if (m_pDocument->m_pNotesMaster && arrRTNotes.empty())
         return false;
 
+    if (m_pDocument->m_pHandoutMaster)
+    {
+        for (const auto& oIterSlide : m_pUserInfo->m_mapHandoutMasters)
+        {
+            std::vector<RoundTripTheme12Atom*> arrRTTheme;
+            oIterSlide.second->GetRecordsByType(&arrRTTheme, false, true);
+            if (arrRTTheme.empty())
+                return false;
+        }
+    }
+
+
     return arrRTTheme.size() && arrRTLayouts.size();
 }
 

@@ -421,10 +421,6 @@ void Cx2tTester::Start()
 
 		std::wstring output_files_directory = m_outputDirectory + input_subfolders + FILE_SEPARATOR_STR + input_filename;
 
-		// setup & clear output subfolder
-		while(!NSDirectory::Exists(output_files_directory))
-			NSDirectory::CreateDirectories(output_files_directory);
-
 		// setup output_formats for file
 		std::vector<int> output_file_formats;
 
@@ -450,6 +446,13 @@ void Cx2tTester::Start()
 				output_file_formats.push_back(format);
 			}
 		}
+
+		if(output_file_formats.empty())
+			continue;
+
+		// setup & clear output subfolder
+		while(!NSDirectory::Exists(output_files_directory))
+			NSDirectory::CreateDirectories(output_files_directory);
 
 		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
 		std::wstring csvDelimiter = m_defaultCsvDelimiter;

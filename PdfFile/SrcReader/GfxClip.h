@@ -296,7 +296,6 @@ public:
     GfxClip()
     {
         m_pTextClip = new GfxTextClip();
-        m_bChanged = true;
     }
 
     ~GfxClip()

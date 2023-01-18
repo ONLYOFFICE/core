@@ -663,6 +663,7 @@ namespace PdfReader
     void RendererOutputDev::saveState(GfxState *pGState)
     {
         m_sClip.push_back(GfxClip());
+        m_sClip.back().SetChanged(true);
         m_bClipChanged = true;
         updateAll(pGState);
     }
@@ -3561,6 +3562,7 @@ namespace PdfReader
         if (m_sClip.empty())
         {
             m_sClip.push_back(GfxClip());
+            m_sClip.back().SetChanged(true);
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
@@ -3574,6 +3576,7 @@ namespace PdfReader
         if (m_sClip.empty())
         {
             m_sClip.push_back(GfxClip());
+            m_sClip.back().SetChanged(true);
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
         m_bClipChanged = true;
@@ -3587,6 +3590,7 @@ namespace PdfReader
         if (m_sClip.empty())
         {
             m_sClip.push_back(GfxClip());
+            m_sClip.back().SetChanged(true);
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
@@ -3965,6 +3969,7 @@ namespace PdfReader
             if (m_sClip.empty())
             {
                 m_sClip.push_back(GfxClip());
+                m_sClip.back().SetChanged(true);
             }
             m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
             m_bClipChanged = true;
@@ -4778,8 +4783,19 @@ namespace PdfReader
 		if (m_sClip.empty())
 			return;
 
-        for (int i = m_sClip.size() - 1; i >= 0; i--) {
-        //for (int i = 0; i < m_sClip.size(); i++) {
+        int nStop = 0;
+        for (int i = 0; i < m_sClip.size(); i++)
+        {
+            if (m_sClip[i].GetPathNum())
+            {
+                nStop = i;
+                break;
+            }
+        }
+
+        for (int i = m_sClip.size() - 1; i >= 0; i--)
+        //for (int i = 0; i < m_sClip.size(); i++)
+        {
             for (int nIndex = 0; nIndex < m_sClip[i].GetPathNum(); nIndex++)
             {
                 GfxPath *pPath  = m_sClip[i].GetPath(nIndex);
@@ -4853,7 +4869,7 @@ namespace PdfReader
 
             if (m_sClip[i].GetPathNum() > 0)
             {
-                if (!m_sClip[i].IsChanged())
+                if (!m_sClip[i].IsChanged() && i <= nStop + 1)
                     break;
                 m_sClip[i].SetChanged(false);
             }

@@ -18,6 +18,8 @@ namespace MetaFile
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
 
+		void            ClearFile()                                 override;
+
 		EmfParserType   GetType()				                    override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
 

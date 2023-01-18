@@ -4183,7 +4183,10 @@ namespace PdfReader
         ImageStream *pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
         pImageStream->reset();
 
-        unsigned char unAlpha = m_bTransparentGroup ? ((m_bIsolatedTransparentGroup || m_bTransparentGroupSoftMask) ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
+        bool bTransperent = false;
+        for (const bool& b : m_arrTransparentGroupSoftMask)
+            bTransperent = b || bTransperent;
+        unsigned char unAlpha = m_bTransparentGroup ? ((m_bIsolatedTransparentGroup && bTransperent) ? 0 : 255.0 * pGState->getFillOpacity()) : 255;
 
         int nStride = pImageStream->getVals();
         int nComps = pImageStream->getComps();
@@ -4849,7 +4852,11 @@ namespace PdfReader
             }
 
             if (m_sClip[i].GetPathNum() > 0)
-                break;
+            {
+                if (!m_sClip[i].IsChanged())
+                    break;
+                m_sClip[i].SetChanged(false);
+            }
         }
 
         m_bClipChanged = false;

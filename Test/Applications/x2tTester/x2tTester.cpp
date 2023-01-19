@@ -212,11 +212,11 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	SetConfig(configPath);
 	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
 
-	if(m_outputDirectory.substr(0, 2) == L"./")
+	if(m_outputDirectory.find(L"./") == 0)
 		m_outputDirectory.erase(0, 2);
 
-	if(m_inputDirectory.substr(0, 2) == L"./")
-		m_outputDirectory.erase(0, 2);
+	if(m_inputDirectory.find(L"./") == 0)
+		m_inputDirectory.erase(0, 2);
 
 	if(m_bIsTimestamp)
 	{

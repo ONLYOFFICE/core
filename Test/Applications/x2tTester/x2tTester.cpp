@@ -776,7 +776,14 @@ DWORD CConverter::ThreadProc()
 		}
 		o_xml_file.WriteStringUTF8(xml_params, true);
 		o_xml_file.CloseFile();
+
+#ifdef WIN32
+
+	// x2t cannot work with normalized paths in xml
+	if(xml_params_file.find_first_of(L"\\?\\\\") != std::wstring::npos)
 		xml_params_file.erase(0, 4);
+
+#endif // WIN32
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 

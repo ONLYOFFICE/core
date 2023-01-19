@@ -1,12 +1,10 @@
 .cipd
-.gclient
-.gclient_entries
+.gclient*
 v8
 depot_tools
 v8.data
 v8_xp/.cipd
-v8_xp/.gclient
-v8_xp/.gclient_entries
+v8_xp/.gclient*
 v8_xp/v8
 v8_xp/depot_tools
 v8_xp/v8.data

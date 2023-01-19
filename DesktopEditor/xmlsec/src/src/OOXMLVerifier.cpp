@@ -675,7 +675,7 @@ public:
             return;
 
         XmlUtils::CXmlNode oContentTypes = m_pFolder->getNodeFromFile(L"[Content_Types].xml");
-        std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
+        std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\n";
         XmlUtils::CXmlNodes oNodes;
         if (oContentTypes.GetNodes(L"*", oNodes))
         {

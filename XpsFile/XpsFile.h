@@ -71,10 +71,8 @@ public:
     void ConvertToPdf(const std::wstring& wsDstPath);
 #endif
 
-#ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks(int nPageIndex);
-#endif
 
 private:
     CXpsFile_Private* m_pInternal;

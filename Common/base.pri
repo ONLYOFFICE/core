@@ -262,7 +262,7 @@ core_ios {
         CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
     } else {
 
-        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
+        QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
         CONFIG += core_ios_main_arch
 
         QMAKE_CFLAGS += -fembed-bitcode
@@ -273,7 +273,7 @@ core_ios {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
             core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
 
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
             }
         } else {
@@ -284,7 +284,7 @@ core_ios {
 
         core_ios_nomain_arch {
             QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
             }
         }
@@ -337,6 +337,7 @@ core_android {
 }
 
 core_debug {
+    DEFINES += _DEBUG
     CORE_BUILDS_CONFIGURATION_PREFIX    = debug
 }
 core_release {

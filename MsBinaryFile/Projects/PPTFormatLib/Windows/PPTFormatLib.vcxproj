@@ -1,0 +1,720 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7B27E40E-F70A-4A74-A77C-0944D7931D15}</ProjectGuid>
+    <RootNamespace>ASCOfficePPTFile</RootNamespace>
+    <Keyword>AtlProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficePPTFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficePPTFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficePPTFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficePPTFile_p.c</ProxyFileName>
+      <ValidateAllParameters>false</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficePPTFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficePPTFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficePPTFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficePPTFile_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+    </Lib>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficePPTFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficePPTFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficePPTFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficePPTFile_p.c</ProxyFileName>
+      <ValidateAllParameters>false</ValidateAllParameters>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>../../../DesktopEditor/freetype-2.5.2/include;C:\_WORK\trunk\ServerComponents\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PreBuildEvent>
+      <Command />
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>X64</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficePPTFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficePPTFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficePPTFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficePPTFile_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>../../../DesktopEditor/freetype-2.5.2/include;../../../DocxFormat/Source/XML/libxml2/XML/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;BUILD_CONFIG_FULL_VERSION;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0409</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+    <PostBuildEvent>
+      <Command />
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\AnimationParser.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Animation_1995.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\hashcode10.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingExeption.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingUtils.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_1995.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_2010.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\timing.h" />
+    <ClInclude Include="..\..\..\PptFile\Converter\transition.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Animations.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Attributes.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\AudioOverlay.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Document.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Effects.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Element.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Elements.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Interactive.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Layout.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Metric.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Shapes\Shape.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Slide.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\SlideShow.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Structures.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\TextAttributesEx.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\TextStructures.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\Theme.h" />
+    <ClInclude Include="..\..\..\PptFile\Drawing\XmlStringWriter.h" />
+    <ClInclude Include="..\..\..\PptFile\Enums\enums.h" />
+    <ClInclude Include="..\..\..\PptFile\Enums\RecordType.h" />
+    <ClInclude Include="..\..\..\PptFile\Enums\_includer.h" />
+    <ClInclude Include="..\..\..\PptFile\Main\PPTFormatLib.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\Converter.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\ImageManager.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\StylesWriter.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\TableWriter.h" />
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\ClassesAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.hpp" />
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTDocumentInfo.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTFileDefines.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTFileReader.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\ReadStructures.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\Records.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\RoundTripExtractor.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\SlideInfo.h" />
+    <ClInclude Include="..\..\..\PptFile\Reader\SlidePersist.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\AnimationInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\AnimationInfoContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListSubContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ChartBuildAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ChartBuildContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ClientVisualElementContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\DiagramBuildAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\DiagramBuildContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ExtTimeNodeContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\HashCode10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\LevelInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ParaBuildAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ParaBuildContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ParaBuildLevel.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\SubEffectContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateColor.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateColorBy.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListEntry.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeConditionAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeConditionContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeIterateDataAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeModifierAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeNodeAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeNodeTimeFilter.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeBehavior.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeNodeContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeSequenceDataAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeStringListContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeVariant.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeVariant4Behavior.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeVariant4TimeNode.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualPageAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualShapeAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualShapeChartElementAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualShapeGeneralAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualSoundAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\_includer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\BlipCollection9Container.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\BlipEntityAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\BookmarkEntityAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\BookmarkSeedAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\BuildAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\CFMasks.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ColorSchemeAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Comment10Container.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\CryptSession10Container.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\CString.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\CurrentUserAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\DocInfoListContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\DocProgTagsContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\DocRoutingSlipAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\DocumentAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\DocumentRecords.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\DocumentTextInfo.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ArtBlip.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\BlipStoreContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\BlipStoreEntry.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ChildAnchor.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ClientAnchor.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\DrawingContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\DrawingGroup.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\DrawingRecord.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\GroupShape.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\GroupShapeContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\RegGroupItems.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\Shape.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ShapeContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ShapeProperties.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\TextBox.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\EndDocument.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExCDAudioContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExControlAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExHyperlinkAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExMediaAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExMIDIAudioContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExObjListAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExObjListContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExObjRefAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExOleEmbedAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExOleLinkAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExOleObjAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExVideoContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExWAVAudioEmbeddedContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ExWAVAudioLinkContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\FontCollection10Container.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\FontEmbedFlags10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\FontEntityAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\GridSpacing10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\GuideAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\HeadersFootersAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\InteractiveInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuFollowingAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuLeadingAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\LinkedShape10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\LinkedSlide10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\MasterPersistAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\MasterTextPropAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\MetafileBlob.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\MouseInteractiveInfoContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\MouseTextInteractiveInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\NamedShowSlidesAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\NormalViewSetInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\NotesAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\NotesPersistAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\NoZoomViewInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\OfficeArtClientData.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\OfficeArtClientTextbox.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\OutlineTextProps9Container.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\OutlineTextPropsHeaderExAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\OutlineTextRefAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\PersistDirectoryAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\PFMasks.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\PlaceHolderAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ProgStringTagContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\RecordsIncluder.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\RoundTrip.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\RoundTripNotesMasterTextStyles12Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ShapeFlags10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ShapeFlagsAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ShapeProgBinaryTagSubContainerOrAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideColorSchemeAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideFlags10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideListWithText.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlidePersistAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideProgTagsContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideTime10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SlideViewInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SoundCollAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SoundCollectionContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SoundContainer.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SoundDataBlob.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SSDocInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SSlideLayoutAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\SSSlideInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextProp10Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextProp11Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextProp9Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextPropAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextBookmarkAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextBytesAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextCFException10.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextCFException9.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextCFExceptionAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextCharsAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextDefaults9Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextFullSettings.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextHeaderAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextInteractiveInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextMasterStyle9Atom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextMasterStyle9Level.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextMasterStyleAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextPFException9.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextPFExceptionAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextRulerAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextSIException.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextSIExceptionAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\TextSpecInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\UserEditAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\VBAInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ViewInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\ZoomViewInfoAtom.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\ColorIndex.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\ColorIndexStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\ColorStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\DateTimeStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\FontCollectionEntry.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\IStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\PointStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\RatioStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\RectStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\ScalingStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\SmallRectStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\TmsfTimeStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\WideColorStruct.h" />
+    <ClInclude Include="..\..\..\PptFile\Structures\_includer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\AnimationParser.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Animation_1995.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\hashcode10.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\TimingUtils.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_1995.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_2010.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\timing.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\transition.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\Element.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\Elements.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\Layout.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\Slide.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\TextAttributesEx.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\TextStructures.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Drawing\Theme.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Enums\RecordType.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Main\PPTFormatLib.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\Converter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ImageManager.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\StylesWriter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\TableWriter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\ClassesAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\ExtXmlUtils.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfo.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\PPTFileReader.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\ReadStructures.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\Records.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\RoundTripExtractor.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\SlideInfo.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Reader\SlidePersist.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\AnimationInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\AnimationInfoContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\BuildAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\BuildListSubContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ChartBuildAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ChartBuildContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ClientVisualElementContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\DiagramBuildAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\DiagramBuildContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ExtTimeNodeContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\HashCode10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\LevelInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ParaBuildAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ParaBuildContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ParaBuildLevel.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\SubEffectContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateColor.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateColorBy.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListEntry.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeConditionAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeConditionContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeIterateDataAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeModifierAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeNodeAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeBehavior.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeNodeContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeSequenceDataAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeStringListContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeVariant.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeVariant4Behavior.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualPageAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualShapeAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualShapeChartElementAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualShapeGeneralAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualSoundAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\BlipCollection9Container.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\BlipEntityAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\BookmarkEntityAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\BookmarkSeedAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\CFMasks.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ColorSchemeAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Comment10Container.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\CryptSession10Container.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\CString.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\CurrentUserAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\DocInfoListContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\DocProgTagsContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\DocRoutingSlipAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\DocumentAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\DocumentRecords.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\DocumentTextInfo.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ArtBlip.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\BlipStoreContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\BlipStoreEntry.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ChildAnchor.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ClientAnchor.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\DrawingContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\DrawingGroup.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\DrawingRecord.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\GroupShape.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\RegGroupItems.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\Shape.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ShapeContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ShapeProperties.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\TextBox.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\EndDocument.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExCDAudioContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExControlAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExHyperlinkAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExMediaAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExMIDIAudioContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExObjListAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExObjListContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExObjRefAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExOleEmbedAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExOleLinkAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExOleObjAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExVideoContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExWAVAudioEmbeddedContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ExWAVAudioLinkContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\FontCollection10Container.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\FontEmbedFlags10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\FontEntityAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\GridSpacing10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\GuideAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\HeadersFootersAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\InteractiveInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuFollowingAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuLeadingAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\LinkedShape10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\LinkedSlide10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\MasterPersistAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\MasterTextPropAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\MetafileBlob.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\MouseInteractiveInfoContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\MouseTextInteractiveInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\NamedShowSlidesAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\NormalViewSetInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\NotesAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\NotesPersistAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\NoZoomViewInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\OfficeArtClientData.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\OutlineTextProps9Container.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\OutlineTextPropsHeaderExAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\OutlineTextRefAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\PersistDirectoryAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\PFMasks.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\PlaceHolderAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ProgStringTagContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\RoundTrip.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\RoundTripNotesMasterTextStyles12Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ShapeFlags10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ShapeFlagsAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ShapeProgBinaryTagSubContainerOrAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideColorSchemeAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideFlags10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideListWithText.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlidePersistAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideProgTagsContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideTime10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SlideViewInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SoundCollAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SoundCollectionContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SoundContainer.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SoundDataBlob.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SSDocInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SSlideLayoutAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\SSSlideInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextProp10Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextProp11Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextProp9Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextPropAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextBookmarkAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextBytesAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextCFException10.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextCFException9.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextCFExceptionAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextCharsAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextDefaults9Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextFullSettings.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextHeaderAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextInteractiveInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextMasterStyle9Atom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextMasterStyle9Level.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextMasterStyleAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextPFException9.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextPFExceptionAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextRulerAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextSIException.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextSIExceptionAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\TextSpecInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\UserEditAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\VBAInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ViewInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Records\ZoomViewInfoAtom.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\ColorIndex.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\ColorIndexStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\ColorStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\DateTimeStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\FontCollectionEntry.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\PointStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\RatioStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\RectStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\ScalingStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\SmallRectStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\TmsfTimeStruct.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Structures\WideColorStruct.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

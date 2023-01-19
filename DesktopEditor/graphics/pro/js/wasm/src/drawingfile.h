@@ -6,7 +6,7 @@
 #include "../../../../pro/officedrawingfile.h"
 #include "../../../../../../XpsFile/XpsFile.h"
 #include "../../../../../../DjVuFile/DjVu.h"
-#include "../../../../../../PdfReader/PdfReader.h"
+#include "../../../../../../PdfFile/PdfFile.h"
 #include "../../../../../../HtmlRenderer/include/HTMLRendererText.h"
 
 class CGraphicsFileDrawing
@@ -45,7 +45,7 @@ public:
     {
         nType = _nType;
         if (nType == 0)
-            pReader = new PdfReader::CPdfReader(pApplicationFonts);
+            pReader = new CPdfFile(pApplicationFonts);
         else if (nType == 1)
             pReader = new CDjVuFile(pApplicationFonts);
         else if (nType == 2)
@@ -66,7 +66,7 @@ public:
             return -1;
         if (nType == 0)
             // диапозон ошибки от 0 до 10
-            return ((PdfReader::CPdfReader*)pReader)->GetError();
+            return ((CPdfFile*)pReader)->GetError();
         return 0; // errNone
     }
     int GetPagesCount()
@@ -113,6 +113,17 @@ public:
     std::wstring GetInfo()
     {
         return pReader->GetInfo();
+    }
+    bool IsNeedCMap()
+    {
+        if (nType == 0)
+            return ((CPdfFile*)pReader)->IsNeedCMap();
+        return false;
+    }
+    void SetCMapData(BYTE* pData, DWORD nSizeData)
+    {
+        if (nType == 0)
+            ((CPdfFile*)pReader)->SetCMapMemory(pData, nSizeData);
     }
 
     void DestroyText()

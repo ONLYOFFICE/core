@@ -1,0 +1,1458 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Reader">
+      <UniqueIdentifier>{38756aa6-a847-4795-916c-abb656cdd67c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Records">
+      <UniqueIdentifier>{d83241e4-edff-40c8-8cd8-fda021fdfdeb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Records\Drawing">
+      <UniqueIdentifier>{092496b5-5d73-476b-b723-6182accfbe46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Records\Animations">
+      <UniqueIdentifier>{25aa1ad2-ff7e-4dd1-9526-e2f324d0900d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OOXElements">
+      <UniqueIdentifier>{434c148a-dd1c-4c20-9ec2-462bf41b094b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OOXElements\ppt shapes">
+      <UniqueIdentifier>{07ef31dd-8f40-4607-8b27-6104a24bc093}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OOXWriter">
+      <UniqueIdentifier>{41fc709e-386b-4e1e-80c0-546932a2a480}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Structures">
+      <UniqueIdentifier>{e1779537-0a9d-4f28-b34c-2fa7d962a321}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Converter">
+      <UniqueIdentifier>{878f1451-aaec-42bc-9b15-a4faba99af16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\PptFile\Structures\_includer.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\ColorIndex.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\ColorIndexStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\ColorStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\DateTimeStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\IStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\PointStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\RatioStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\RectStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\ScalingStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\SmallRectStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\TmsfTimeStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\WideColorStruct.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\ClassesAtom.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTDocumentInfo.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTFileDefines.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\PPTFileReader.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\ReadStructures.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\Records.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\RoundTripExtractor.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\SlideInfo.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\SlidePersist.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ArtBlip.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\BlipStoreContainer.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\BlipStoreEntry.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ChildAnchor.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ClientAnchor.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\DrawingContainer.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\DrawingGroup.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\DrawingRecord.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\GroupShape.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\GroupShapeContainer.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\RegGroupItems.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\Shape.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ShapeContainer.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\ShapeProperties.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Drawing\TextBox.h">
+      <Filter>Records\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\_includer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\AnimationInfoAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\AnimationInfoContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ChartBuildAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ChartBuildContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ClientVisualElementContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\DiagramBuildAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\DiagramBuildContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ExtTimeNodeContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\HashCode10Atom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\LevelInfoAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ParaBuildAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ParaBuildContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\ParaBuildLevel.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\SubEffectContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateColor.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimateColorBy.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListEntry.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeConditionAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeConditionContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeIterateDataAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeModifierAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeNodeAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeNodeTimeFilter.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeBehavior.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeNodeContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeSequenceDataAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeStringListContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeVariant.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeVariant4Behavior.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\TimeVariant4TimeNode.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualPageAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualShapeAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualShapeChartElementAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualShapeGeneralAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\VisualSoundAtom.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\BlipCollection9Container.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\BlipEntityAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\BookmarkEntityAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\BookmarkSeedAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\BuildAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\CFMasks.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ColorSchemeAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\Comment10Container.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\CryptSession10Container.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\CString.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\CurrentUserAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\DocInfoListContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\DocProgTagsContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\DocRoutingSlipAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\DocumentAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\DocumentRecords.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\DocumentTextInfo.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\EndDocument.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExCDAudioContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExControlAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExHyperlinkAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExMediaAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExMIDIAudioContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExObjListAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExObjListContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExObjRefAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExOleEmbedAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExOleLinkAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExOleObjAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExVideoContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExWAVAudioEmbeddedContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ExWAVAudioLinkContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\FontCollection10Container.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\FontEmbedFlags10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\FontEntityAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\GridSpacing10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\GuideAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\HeadersFootersAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\InteractiveInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuFollowingAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\KinsokuLeadingAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\LinkedShape10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\LinkedSlide10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\MasterPersistAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\MasterTextPropAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\MetafileBlob.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\MouseInteractiveInfoContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\MouseTextInteractiveInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\NamedShowSlidesAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\NormalViewSetInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\NotesAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\NotesPersistAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\NoZoomViewInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\OfficeArtClientData.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\OfficeArtClientTextbox.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\OutlineTextProps9Container.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\OutlineTextPropsHeaderExAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\OutlineTextRefAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\PersistDirectoryAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\PFMasks.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\PlaceHolderAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ProgStringTagContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\RecordsIncluder.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\RoundTrip.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\RoundTripNotesMasterTextStyles12Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ShapeFlags10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ShapeFlagsAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ShapeProgBinaryTagSubContainerOrAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideColorSchemeAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideFlags10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideListWithText.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlidePersistAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideProgTagsContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideTime10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SlideViewInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SoundCollAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SoundCollectionContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SoundContainer.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SoundDataBlob.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SSDocInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SSlideLayoutAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\SSSlideInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextProp9Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextProp10Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextProp11Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\StyleTextPropAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextBookmarkAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextBytesAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextCFException9.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextCFException10.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextCFExceptionAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextCharsAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextDefaults9Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextFullSettings.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextHeaderAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextInteractiveInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextMasterStyle9Atom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextMasterStyle9Level.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextMasterStyleAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextPFException9.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextPFExceptionAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextRulerAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextSIException.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextSIExceptionAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\TextSpecInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\UserEditAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\VBAInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ViewInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Records\ZoomViewInfoAtom.h">
+      <Filter>Records</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Shapes\Shape.h">
+      <Filter>OOXElements\ppt shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Animations.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Attributes.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\AudioOverlay.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Document.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Effects.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Element.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Elements.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Interactive.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Layout.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Metric.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Slide.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\SlideShow.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Structures.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\TextAttributesEx.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\TextStructures.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\Theme.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Drawing\XmlStringWriter.h">
+      <Filter>OOXElements</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\TableWriter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\StylesWriter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\ImageManager.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\Converter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.h">
+      <Filter>OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Main\PPTFormatLib.h" />
+    <ClInclude Include="..\..\..\PptFile\Enums\_includer.h" />
+    <ClInclude Include="..\..\..\PptFile\Enums\enums.h" />
+    <ClInclude Include="..\..\..\PptFile\Enums\RecordType.h" />
+    <ClInclude Include="..\..\..\PptFile\Records\Animations\BuildListSubContainer.h">
+      <Filter>Records\Animations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.hpp">
+      <Filter>Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\timing.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\transition.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Animation_1995.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\AnimationParser.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\hashcode10.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_1995.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\Timing_2010.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingExeption.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Converter\Animation\TimingUtils.h">
+      <Filter>Converter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Structures\FontCollectionEntry.h">
+      <Filter>Structures</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\PptFile\Reader\ExtXmlUtils.h">
+      <Filter>Reader</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfoOneUser.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\PPTFileReader.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\ReadStructures.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\Records.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\RoundTripExtractor.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\SlidePersist.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ArtBlip.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ShapeContainer.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeVariant.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\BlipEntityAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\Elements.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\TextAttributesEx.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\TxBodyConverter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\TableWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ShapeWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\Converter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\BulletsConverter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Main\PPTFormatLib.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Enums\RecordType.cpp" />
+    <ClCompile Include="..\..\..\PptFile\Converter\timing.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\transition.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Animation_1995.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\AnimationParser.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\hashcode10.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\intermediate_anim.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_1995.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\Timing_2010.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Converter\Animation\TimingUtils.cpp">
+      <Filter>Converter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\BlipCollection9Container.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\BookmarkEntityAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\BookmarkSeedAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\CFMasks.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ColorSchemeAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Comment10Container.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\CryptSession10Container.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\CString.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\CurrentUserAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\DocInfoListContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\DocProgTagsContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\DocRoutingSlipAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\DocumentAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\DocumentRecords.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\DocumentTextInfo.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\EndDocument.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExCDAudioContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExControlAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExHyperlinkAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExMediaAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExMIDIAudioContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExObjListAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExObjListContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExObjRefAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExOleEmbedAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExOleLinkAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExOleObjAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExVideoContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExWAVAudioEmbeddedContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ExWAVAudioLinkContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\FontCollection10Container.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\FontEmbedFlags10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\FontEntityAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\GridSpacing10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\GuideAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\HeadersFootersAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\InteractiveInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuFollowingAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\KinsokuLeadingAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\LinkedShape10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\LinkedSlide10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\MasterPersistAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\MasterTextPropAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\MetafileBlob.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\MouseInteractiveInfoContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\MouseTextInteractiveInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\NamedShowSlidesAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\NormalViewSetInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\NotesAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\NotesPersistAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\NoZoomViewInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\OfficeArtClientData.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\OutlineTextProps9Container.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\OutlineTextPropsHeaderExAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\OutlineTextRefAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\PersistDirectoryAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\PFMasks.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\PlaceHolderAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ProgStringTagContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\RoundTrip.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\RoundTripNotesMasterTextStyles12Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ShapeFlags10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ShapeFlagsAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ShapeProgBinaryTagSubContainerOrAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideColorSchemeAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideFlags10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideListWithText.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlidePersistAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideProgTagsContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideTime10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SlideViewInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SoundCollAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SoundCollectionContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SoundContainer.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SoundDataBlob.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SSDocInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SSlideLayoutAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\SSSlideInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextProp9Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextProp10Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextProp11Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\StyleTextPropAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextBookmarkAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextBytesAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextCFException9.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextCFException10.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextCFExceptionAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextCharsAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextDefaults9Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextFullSettings.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextHeaderAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextInteractiveInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextMasterStyle9Atom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextMasterStyle9Level.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextMasterStyleAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextPFException9.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextPFExceptionAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextRulerAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextSIException.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextSIExceptionAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\TextSpecInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\UserEditAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\VBAInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ViewInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\ZoomViewInfoAtom.cpp">
+      <Filter>Records</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\AnimationInfoAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\AnimationInfoContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\BuildAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\BuildListSubContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ChartBuildAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ChartBuildContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ClientVisualElementContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\DiagramBuildAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\DiagramBuildContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ExtTimeNodeContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\HashCode10Atom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\LevelInfoAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ParaBuildAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ParaBuildContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\ParaBuildLevel.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\SubEffectContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateColor.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimateColorBy.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeAnimationValueListEntry.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeColorBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeCommandBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeConditionAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeConditionContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeEffectBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeIterateDataAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeModifierAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeMotionBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeNodeAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeBehavior.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimePropertyList4TimeNodeContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeRotationBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeScaleBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeSequenceDataAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeSetBehaviorContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeStringListContainer.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\TimeVariant4Behavior.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualPageAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualShapeAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualShapeChartElementAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualShapeGeneralAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Animations\VisualSoundAtom.cpp">
+      <Filter>Records\Animations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\BlipStoreContainer.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\BlipStoreEntry.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ChildAnchor.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ClientAnchor.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\DrawingContainer.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\DrawingGroup.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\DrawingRecord.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\GroupShape.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\RegGroupItems.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\Shape.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\ShapeProperties.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Records\Drawing\TextBox.cpp">
+      <Filter>Records\Drawing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\ColorIndex.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\ColorIndexStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\ColorStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\DateTimeStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\FontCollectionEntry.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\PointStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\RatioStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\RectStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\ScalingStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\SmallRectStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\TmsfTimeStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Structures\WideColorStruct.cpp">
+      <Filter>Structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\ClassesAtom.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\ExtXmlUtils.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\PPTDocumentInfo.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Reader\SlideInfo.cpp">
+      <Filter>Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\ImageManager.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\PPTXWriter\StylesWriter.cpp">
+      <Filter>OOXWriter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\Element.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\Layout.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\Slide.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\TextStructures.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PptFile\Drawing\Theme.cpp">
+      <Filter>OOXElements</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -115,6 +115,45 @@ namespace MetaFile
 			//m_pRenderer->PathCommandEnd();
 		}
 
+		CMetaFileRenderer(IMetaFileBase *pFile, CMetaFileRenderer* pMetaFileRenderer)
+		{
+			m_pFile = pFile;
+
+			if (!pMetaFileRenderer)
+				return;
+
+			m_dX = pMetaFileRenderer->m_dX;
+			m_dY = pMetaFileRenderer->m_dY;
+			m_dW = pMetaFileRenderer->m_dW;
+			m_dH = pMetaFileRenderer->m_dH;
+
+			m_pRenderer = NULL;
+			m_pSecondConditional = NULL;
+
+			m_pRenderer = pMetaFileRenderer->m_pRenderer;
+
+			UpdateScale();
+
+			m_bStartedPath = false;
+
+			//int alpha = 0xff;
+			//m_pRenderer->put_BrushAlpha1(alpha);
+			//m_pRenderer->put_BrushType(c_BrushTypeSolid);
+			//m_pRenderer->put_BrushColor1(0xffffff);
+
+			//m_pRenderer->BeginCommand(c_nPathType);
+			//m_pRenderer->PathCommandStart();
+			//m_pRenderer->PathCommandMoveTo(pBounds->nLeft	, pBounds->nTop);
+			//m_pRenderer->PathCommandLineTo(pBounds->nRight	, pBounds->nTop);
+			//m_pRenderer->PathCommandLineTo(pBounds->nRight	, pBounds->nBottom);
+			//m_pRenderer->PathCommandLineTo(pBounds->nLeft	, pBounds->nBottom);
+			//m_pRenderer->PathCommandLineTo(pBounds->nLeft	, pBounds->nTop);
+			//m_pRenderer->PathCommandClose();
+			//m_pRenderer->DrawPath(c_nWindingFillMode);
+			//m_pRenderer->EndCommand(c_nPathType);
+			//m_pRenderer->PathCommandEnd();
+		}
+
 		virtual ~CMetaFileRenderer()
 		{
 			RELEASEOBJECT(m_pSecondConditional)
@@ -160,8 +199,8 @@ namespace MetaFile
 			int nT = pBounds->nTop;
 			int nB = pBounds->nBottom;
 
-			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
-			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
+			m_dScaleX = m_dW / std::fabs((double)(nR - nL));
+			m_dScaleY = m_dH / std::fabs((double)(nB - nT));
 		}
 
 		void Begin()
@@ -282,13 +321,9 @@ namespace MetaFile
 			UpdateTransform(iGraphicsMode);
 			UpdateClip();
 
-			int lLogicalFontHeight = pFont->GetHeight();
-			if (lLogicalFontHeight < 0)
-				lLogicalFontHeight = -lLogicalFontHeight;
-			if (lLogicalFontHeight < 0.01)
-				lLogicalFontHeight = 18;
+			double dLogicalFontHeight = std::fabs(pFont->GetHeight());
 
-			double dFontHeight = fabs(lLogicalFontHeight * m_dScaleY / 25.4 * 72);
+			double dFontHeight = fabs(dLogicalFontHeight * m_dScaleY / 25.4 * 72);
 
 			std::wstring wsFaceName = pFont->GetFaceName();
 			m_pRenderer->put_FontName(wsFaceName);
@@ -317,267 +352,309 @@ namespace MetaFile
 			if (dYScale > 0)
 				dSinTheta = -dSinTheta;
 
-			float fL = 0, fT = 0, fW = 0, fH = 0;
-			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
-
 			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
 			m_pRenderer->put_FontCharSpace(dFontCharSpace);
 
+			float fL = 0, fT = 0, fW = 0, fH = 0;
+			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
+
 			NSFonts::IFontManager* pFontManager = m_pFile->GetFontManager();
-			if (NULL == pFontManager)
+
+			std::vector<std::wstring> arSplitString;
+
+			if (wsText.find(L"\n") != std::wstring::npos)
 			{
-				if (NULL != pDx && unCharsCount > 1)
+				size_t unStart;
+				size_t unEnd = 0;
+
+				while ((unStart = wsText.find_first_not_of(L"\n", unEnd)) != std::wstring::npos)
 				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
-					{
-						dTempTextW += pDx[unCharIndex];
-					}
-
-					dTempTextW += dFontHeight * wsText.length();
-
-					fW = (float)dTempTextW;
+					unEnd = wsText.find(L"\n", unStart);
+					arSplitString.push_back(wsText.substr(unStart, unEnd - unStart));
 				}
-				else
-				{
-					fW = (float)(dFontHeight * wsText.length());
-				}
-
-				fH = dFontHeight * 1.2;
 			}
 			else
+				arSplitString = {wsText};
+
+			double dSkipY = 0;
+
+			for (const std::wstring& wsString : arSplitString)
 			{
-				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
-				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
-
-				double dMmToPt = 25.4 / 72;
-
-				double dFHeight = dFontHeight;
-				double dFDescent = dFontHeight;
-
-				NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
-
-				if (pFontFile)
+				if (NULL == pFontManager)
 				{
-					dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
-					dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
-				}
-				double dFAscent  = dFHeight - std::abs(dFDescent);
-
-				if (NULL != pDx && unCharsCount > 1)
-				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
-					double dTempTextW = 0;
-					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					if (NULL != pDx && wsString.length())
 					{
-						dTempTextW += pDx[unCharIndex];
-					}
-					dTempTextW *= m_dScaleX;
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < wsString.length() - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
 
-					std::wstring wsTempText;
-					wsTempText += wsText.at(wsText.length() - 1);
-					//wsTempText += wsText.at(unCharsCount - 1);
+						dTempTextW += dFontHeight * wsString.length();
 
-					pFontManager->LoadString1(wsTempText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
-
-					fL = 0;
-					fW = (float)dTempTextW;
-				}
-				else
-				{
-					pFontManager->LoadString1(wsText, 0, 0);
-					TBBox oBox = pFontManager->MeasureString2();
-					fL = (float)dMmToPt * (oBox.fMinX);
-					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-				}
-
-				// Просчитаем положение подчеркивания
-				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-				fUndY1   *= (float)dMmToPt;
-				fUndY2   *= (float)dMmToPt;
-				fUndSize *= (float)dMmToPt / 2;
-
-				fUndX1 = fL;
-				fUndX2 = fL + fW;
-
-				fT = (float)-dFAscent;
-				fH = (float)dFHeight;
-			}
-
-			TPointD oTextPoint = TranslatePoint(_dX, _dY);
-			double dX = oTextPoint.x;
-			double dY = oTextPoint.y;
-
-			// Найдем начальную точку текста
-			unsigned int ulTextAlign = m_pFile->GetTextAlign();
-			if (ulTextAlign & TA_BASELINE)
-			{
-				// Ничего не делаем
-			}
-			else if (ulTextAlign & TA_BOTTOM)
-			{
-				float fTemp = -(-fT + fH);
-
-				dX += -fTemp * dSinTheta;
-				dY +=  fTemp * dCosTheta;
-			}
-			else // if (ulTextAlign & TA_TOP)
-			{
-				float fTemp = -fT;
-
-				dX += -fTemp * dSinTheta;
-				dY +=  fTemp * dCosTheta;
-			}
-
-			if (ulTextAlign & TA_CENTER)
-			{
-				dX += -fW / 2 * dCosTheta;
-				dY += -fW / 2 * dSinTheta;
-			}
-			else if (ulTextAlign & TA_RIGHT)
-			{
-				dX += -fW * dCosTheta;
-				dY += -fW * dSinTheta;
-			}
-			else //if (ulTextAlign & TA_LEFT)
-			{
-				// Ничего не делаем
-			}
-
-			if (pFont->IsUnderline())
-			{
-				fUndX1 += (float)dX;
-				fUndX2 += (float)dX;
-				fUndY1 += (float)dY;
-				fUndY2 += (float)dY;
-			}
-
-			bool bChangeCTM = false;
-
-			if (iGraphicsMode == GM_COMPATIBLE)
-			{
-				double dShiftX = 0;
-				double dShiftY = 0;
-
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-				if (dXScale < -0.00001)
-				{
-					dX += fabs(fW);
-
-					if (m_pFile->IsWindowFlippedX())
-					{
-						dShiftX = (2 * dX - fabs(fW)) * dM11;
+						fW = (float)dTempTextW;
 					}
 					else
 					{
-						dShiftX = (2 * dX + fabs(fW)) * dM11;
+						fW = (float)(dFontHeight * wsString.length());
 					}
 
-					dM11 = fabs(dM11);
+					fH = dFontHeight * 1.2;
 				}
-
-				if (dYScale < -0.00001)
+				else
 				{
-					dY += fabs(fH);
+					pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+					pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 
-					dShiftY = (2 * dY - fabs(fH)) * dM22;
+					double dMmToPt = 25.4 / 72;
 
-					dM22 = fabs(dM22);
-				}
+					double dFHeight = dFontHeight;
+					double dFDescent = dFontHeight;
 
-				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dShiftX + dRx, dShiftY + dRy);
+					NSFonts::IFontFile* pFontFile = pFontManager->GetFile();
 
-				bChangeCTM = true;
-			}
-
-			if (0 != pFont->GetEscapement())
-			{
-				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
-				m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
-				double dOldX = dX;
-
-				dX = dX * dCosTheta + dY * dSinTheta;
-				dY = dY * dCosTheta - dOldX * dSinTheta;
-
-				m_pRenderer->ResetTransform();
-				m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
-										  -dSinTheta * dM11, dCosTheta * dM22,
-										  dRx, dRy);
-
-				bChangeCTM = true;
-			}
-
-			// Для начала нарисуем фон текста
-			if (OPAQUE == m_pFile->GetTextBgMode())
-			{
-				m_pRenderer->put_BrushType(c_BrushTypeSolid);
-				m_pRenderer->put_BrushAlpha1(255);
-				m_pRenderer->put_BrushColor1(m_pFile->GetTextBgColor());
-
-				m_pRenderer->BeginCommand(c_nPathType);
-				m_pRenderer->PathCommandStart();
-				m_pRenderer->PathCommandMoveTo(dX + fL, dY + fT);
-				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT);
-				m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT + fH);
-				m_pRenderer->PathCommandLineTo(dX + fL, dY + fT + fH);
-				m_pRenderer->DrawPath(c_nWindingFillMode);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->PathCommandEnd();
-			}
-
-			// Нарисуем подчеркивание
-			if (pFont->IsUnderline())
-			{
-				m_pRenderer->put_PenSize((double)fUndSize);
-				m_pRenderer->put_PenLineEndCap(0);
-				m_pRenderer->put_PenLineStartCap(0);
-
-				m_pRenderer->BeginCommand(c_nPathType);
-				m_pRenderer->PathCommandStart();
-				m_pRenderer->PathCommandMoveTo(fUndX1, fUndY1);
-				m_pRenderer->PathCommandLineTo(fUndX2, fUndY2);
-				m_pRenderer->DrawPath(c_nStroke);
-				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->PathCommandEnd();
-			}
-
-			// Установим цвет текста
-			m_pRenderer->put_BrushType(c_BrushTypeSolid);
-			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
-			m_pRenderer->put_BrushAlpha1(255);
-
-			// Рисуем сам текст
-
-			if (NULL == pDx)
-			{
-				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
-			}
-			else
-			{
-				unsigned int unUnicodeLen = 0;
-				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
-				if (pUnicode && unUnicodeLen)
-				{
-					double dOffset = 0;
-					double dKoefX = m_dScaleX;
-					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
+					if (pFontFile)
 					{
-						m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
-						dOffset += (pDx[unCharIndex] * dKoefX);
+						dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dMmToPt;
+						dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dMmToPt;
+					}
+					double dFAscent  = dFHeight - std::abs(dFDescent);
+
+					if (NULL != pDx && unCharsCount > 1)
+					{
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
+						dTempTextW *= m_dScaleX;
+
+						std::wstring wsTempText;
+						wsTempText += wsString.at(wsString.length() - 1);
+						//wsTempText += wsText.at(unCharsCount - 1);
+
+						pFontManager->LoadString1(wsTempText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
+
+						fL = 0;
+						fW = (float)dTempTextW;
+					}
+					else
+					{
+						pFontManager->LoadString1(wsString, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						fL = (float)dMmToPt * (oBox.fMinX);
+						fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
 					}
 
-					delete[] pUnicode;
-				}
-			}
-			
+					// Просчитаем положение подчеркивания
+					pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+					fUndY1   *= (float)dMmToPt;
+					fUndY2   *= (float)dMmToPt;
+					fUndSize *= (float)dMmToPt / 2;
 
-			if (bChangeCTM)
-				m_pRenderer->ResetTransform();
+					fUndX1 = fL;
+					fUndX2 = fL + fW;
+
+					fT = (float)-dFAscent;
+					fH = (float)dFHeight;
+				}
+
+				TPointD oTextPoint = TranslatePoint(_dX, _dY);
+				double dX = oTextPoint.x;
+				double dY = oTextPoint.y + dSkipY;
+
+				dSkipY += dLogicalFontHeight * m_dScaleY * 1.5;
+
+				// Найдем начальную точку текста
+				unsigned int ulTextAlign = m_pFile->GetTextAlign() & TA_MASK;
+
+				unsigned int ulVTextAlign = m_pFile->GetTextAlign() >> 8;
+
+
+				if (ulTextAlign & TA_UPDATECP)
+				{
+					ulTextAlign -= TA_UPDATECP;
+				}
+				if (ulTextAlign & TA_BASELINE)
+				{
+					ulTextAlign -= TA_BASELINE;
+					// Ничего не делаем
+				}
+				else if (ulTextAlign & TA_BOTTOM || ulVTextAlign == VTA_BOTTOM)
+				{
+					float fTemp = -(fH + fT / 2);
+
+					dX += -fTemp * dSinTheta;
+					dY +=  fTemp * dCosTheta;
+
+					if (ulVTextAlign != VTA_BOTTOM)
+						ulTextAlign -= TA_BOTTOM;
+				}
+				else if (ulVTextAlign == VTA_CENTER)
+				{
+					float fTemp = (fH + fT / 2) / 2;
+
+					dX += -fTemp * dSinTheta;
+					dY +=  fTemp * dCosTheta;
+				}
+				else // if (ulTextAlign & TA_TOP)
+				{
+					float fTemp = -fT;
+
+					dX += -fTemp * dSinTheta;
+					dY +=  fTemp * dCosTheta;
+				}
+
+				if (ulTextAlign == TA_RIGHT)
+				{
+					dX += -fW * dCosTheta;
+					dY += -fW * dSinTheta;
+				}
+				else if (ulTextAlign == TA_CENTER)
+				{
+					dX += -fW / 2 * dCosTheta;
+					dY += -fW / 2 * dSinTheta;
+				}
+				else //if (ulTextAlign & TA_LEFT)
+				{
+					// Ничего не делаем
+				}
+
+				if (pFont->IsUnderline())
+				{
+					fUndX1 += (float)dX;
+					fUndX2 += (float)dX;
+					fUndY1 += (float)dY;
+					fUndY2 += (float)dY;
+				}
+
+				bool bChangeCTM = false;
+
+				if (iGraphicsMode == GM_COMPATIBLE)
+				{
+					double dShiftX = 0;
+					double dShiftY = 0;
+
+					m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+					if (dXScale < -0.00001)
+					{
+						dX += fabs(fW);
+
+						if (m_pFile->IsWindowFlippedX())
+						{
+							dShiftX = (2 * dX - fabs(fW)) * dM11;
+						}
+						else
+						{
+							dShiftX = (2 * dX + fabs(fW)) * dM11;
+						}
+
+						dM11 = fabs(dM11);
+					}
+
+					if (dYScale < -0.00001)
+					{
+						dY += fabs(fH);
+
+						dShiftY = (2 * dY - fabs(fH)) * dM22;
+
+						dM22 = fabs(dM22);
+					}
+
+					m_pRenderer->ResetTransform();
+					m_pRenderer->SetTransform(dM11, dM12, dM21, dM22, dShiftX + dRx, dShiftY + dRy);
+
+					bChangeCTM = true;
+				}
+
+				if (0 != pFont->GetEscapement())
+				{
+					// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
+					m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+					double dOldX = dX;
+
+					dX = dX * dCosTheta + dY * dSinTheta;
+					dY = dY * dCosTheta - dOldX * dSinTheta;
+
+					m_pRenderer->ResetTransform();
+					m_pRenderer->SetTransform(dCosTheta * dM11, dSinTheta * dM22,
+											  -dSinTheta * dM11, dCosTheta * dM22,
+											  dRx, dRy);
+
+					bChangeCTM = true;
+				}
+
+				// Для начала нарисуем фон текста
+				if (OPAQUE == m_pFile->GetTextBgMode())
+				{
+					m_pRenderer->put_BrushType(c_BrushTypeSolid);
+					m_pRenderer->put_BrushAlpha1(255);
+					m_pRenderer->put_BrushColor1(m_pFile->GetTextBgColor());
+
+					m_pRenderer->BeginCommand(c_nPathType);
+					m_pRenderer->PathCommandStart();
+					m_pRenderer->PathCommandMoveTo(dX + fL, dY + fT);
+					m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT);
+					m_pRenderer->PathCommandLineTo(dX + fL + fW, dY + fT + fH);
+					m_pRenderer->PathCommandLineTo(dX + fL, dY + fT + fH);
+					m_pRenderer->DrawPath(c_nWindingFillMode);
+					m_pRenderer->EndCommand(c_nPathType);
+					m_pRenderer->PathCommandEnd();
+				}
+
+				// Нарисуем подчеркивание
+				if (pFont->IsUnderline())
+				{
+					m_pRenderer->put_PenSize((double)fUndSize);
+					m_pRenderer->put_PenLineEndCap(0);
+					m_pRenderer->put_PenLineStartCap(0);
+
+					m_pRenderer->BeginCommand(c_nPathType);
+					m_pRenderer->PathCommandStart();
+					m_pRenderer->PathCommandMoveTo(fUndX1, fUndY1);
+					m_pRenderer->PathCommandLineTo(fUndX2, fUndY2);
+					m_pRenderer->DrawPath(c_nStroke);
+					m_pRenderer->EndCommand(c_nPathType);
+					m_pRenderer->PathCommandEnd();
+				}
+
+				// Установим цвет текста
+				m_pRenderer->put_BrushType(c_BrushTypeSolid);
+				m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
+				m_pRenderer->put_BrushAlpha1(255);
+
+				// Рисуем сам текст
+
+				if (NULL == pDx)
+				{
+					m_pRenderer->CommandDrawText(wsString, dX, dY, 0, 0);
+				}
+				else
+				{
+					unsigned int unUnicodeLen = 0;
+					unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsString, unUnicodeLen);
+					if (pUnicode && unUnicodeLen)
+					{
+						double dOffset = 0;
+						double dKoefX = m_dScaleX;
+						for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
+						{
+							m_pRenderer->CommandDrawTextCHAR(pUnicode[unCharIndex], dX + dOffset, dY, 0, 0);
+							dOffset += (pDx[unCharIndex] * dKoefX);
+						}
+
+						delete[] pUnicode;
+					}
+				}
+
+				if (bChangeCTM)
+					m_pRenderer->ResetTransform();
+			}
 		}
 		void StartPath()
 		{
@@ -688,7 +765,7 @@ namespace MetaFile
 			m_pRenderer->BeginCommand(c_nResetClipType);
 			m_pRenderer->EndCommand(c_nResetClipType);
 		}
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+		void IntersectClip(const TRectD& oClip)
 		{
 			m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
 
@@ -696,8 +773,8 @@ namespace MetaFile
 			m_pRenderer->BeginCommand(c_nPathType);
 			m_pRenderer->PathCommandStart();
 
-			TPointD oTL = TranslatePoint(dLeft, dTop);
-			TPointD oBR = TranslatePoint(dRight, dBottom);
+			TPointD oTL = TranslatePoint(oClip.dLeft, oClip.dTop);
+			TPointD oBR = TranslatePoint(oClip.dRight, oClip.dBottom);
 
 			m_pRenderer->PathCommandMoveTo(oTL.x, oTL.y);
 			m_pRenderer->PathCommandLineTo(oTL.x, oBR.y);
@@ -708,6 +785,39 @@ namespace MetaFile
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->EndCommand(c_nClipType);
 			m_pRenderer->PathCommandEnd();
+		}
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB)
+		{
+			StartClipPath(RGN_AND, ALTERNATE);
+
+			MoveTo(oClip.dLeft,  oClip.dTop);
+			LineTo(oClip.dRight, oClip.dTop);
+			LineTo(oClip.dRight, oClip.dBottom);
+			LineTo(oClip.dLeft,  oClip.dBottom);
+			ClosePath();
+
+			MoveTo(oBB.dLeft,  oBB.dTop);
+			LineTo(oBB.dRight, oBB.dTop);
+			LineTo(oBB.dRight, oBB.dBottom);
+			LineTo(oBB.dLeft,  oBB.dBottom);
+			ClosePath();
+
+			EndClipPath(RGN_AND);
+		}
+		void PathClip(IPath *pPath, int nClipMode, TXForm* pTransform = NULL)
+		{
+			double dM11, dM12, dM21, dM22, dX, dY;
+
+			if (NULL != pTransform)
+			{
+				GetTransform(&dM11, &dM12, &dM21, &dM22, &dX, &dY);
+				SetTransform(pTransform->M11, pTransform->M12, pTransform->M21, pTransform->M22, pTransform->Dx, pTransform->Dy);
+			}
+
+			pPath->Draw(this, false, false, nClipMode);
+
+			if (NULL != pTransform)
+				SetTransform(dM11, dM12, dM21, dM22, dX, dY);
 		}
 		void StartClipPath(unsigned int unMode, int nFillMode = -1)
 		{
@@ -841,6 +951,12 @@ namespace MetaFile
 				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
 			}
+			else if (BS_PATTERN == unBrushStyle)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypePattern);
+				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTileCenter);
+				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
+			}
 			else if (BS_HATCHED == unBrushStyle)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeHatch1);
@@ -916,17 +1032,12 @@ namespace MetaFile
 				else
 				{
 					m_pRenderer->put_BrushAlpha2(255);
-
-					TColor oBgColor(m_pFile->GetTextBgColor());
-					oBgColor.SwapRGBtoBGR();
-					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
+					m_pRenderer->put_BrushColor2(m_pFile->GetTextBgColor());
 				}
 
-				TColor oFgColor(pBrush->GetColor());
-				oFgColor.SwapRGBtoBGR();
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
-				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
+				m_pRenderer->put_BrushColor1(pBrush->GetColor());
 			}
 			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
 						BS_RECTGRADIENT		== unBrushStyle ||
@@ -989,9 +1100,18 @@ namespace MetaFile
 			double dKoefX = m_dScaleX;
 			double dKoefY = m_dScaleY;
 
-			TEmfXForm* pMatrix = m_pFile->GetTransform(iGraphicsMode);
+			TXForm oMatrix;
+
+			oMatrix.Copy(m_pFile->GetTransform(iGraphicsMode));
+
+			if (std::fabs(oMatrix.M11) > 100. || std::fabs(oMatrix.M22) > 100.)
+			{
+				oMatrix.M11 /= std::fabs(oMatrix.M11);
+				oMatrix.M22 /= std::fabs(oMatrix.M22);
+			}
+
 			m_pRenderer->ResetTransform();
-			m_pRenderer->SetTransform(pMatrix->M11, pMatrix->M12 * dKoefY / dKoefX, pMatrix->M21 * dKoefX / dKoefY, pMatrix->M22, pMatrix->Dx * dKoefX, pMatrix->Dy * dKoefY);
+			m_pRenderer->SetTransform(oMatrix.M11, oMatrix.M12 * dKoefY / dKoefX, oMatrix.M21 * dKoefX / dKoefY, oMatrix.M22, oMatrix.Dx * dKoefX, oMatrix.Dy * dKoefY);
 		}
 		bool UpdatePen()
 		{
@@ -1002,28 +1122,18 @@ namespace MetaFile
 			int nColor = pPen->GetColor();
 
 			unsigned int unMetaPenStyle = pPen->GetStyle();
+
+			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
+
+			if (PS_NULL == ulPenStyle)
+				return false;
+
 			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
 			unsigned int ulPenStartCap  = unMetaPenStyle & PS_STARTCAP_MASK;
 			unsigned int ulPenEndCap    = unMetaPenStyle & PS_ENDCAP_MASK;
 			unsigned int ulPenJoin      = unMetaPenStyle & PS_JOIN_MASK;
-			unsigned int ulPenStyle     = unMetaPenStyle & PS_STYLE_MASK;
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-
-			double dWidth = pPen->GetWidth();
-
-			if (dWidth == 0 || (dWidth == 1 && PS_COSMETIC == ulPenType))
-			{
-				TRectD oRect(*m_pFile->GetDCBounds());
-
-				double dScale = m_pFile->GetScale();
-
-				oRect *= dScale;
-
-				dWidth = std::fabs(m_dW / (oRect.dRight - oRect.dLeft) / m_pFile->GetPixelWidth());
-			}
-			else
-				dWidth *= m_dScaleX;
 
 			BYTE nStartCapStyle = 0;
 			if (PS_STARTCAP_ROUND == ulPenStartCap)
@@ -1052,6 +1162,24 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
+			double dWidth = pPen->GetWidth();
+
+			if (0 == dWidth || (1 == dWidth && PS_COSMETIC == ulPenType))
+			{
+				double dRendererDpiX;
+				m_pRenderer->get_DpiX(&dRendererDpiX);
+
+				dWidth = 25.4 / dRendererDpiX;
+
+				if (1 == pPen->GetWidth() && PS_COSMETIC == ulPenType)
+					dWidth /= m_pFile->GetTransform()->M11 / (m_pFile->GetDpi() / 96.);
+
+				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
+				nJoinStyle = Aggplus::LineJoinMiter;
+			}
+			else
+				dWidth *= m_dScaleX;
+
 			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
 			// TODO: Реализовать PS_USERSTYLE
@@ -1076,25 +1204,6 @@ namespace MetaFile
 					ulPenStyle = Aggplus::DashStyleDashDot;
 				else if (6 == unSizeDash)
 					ulPenStyle = Aggplus::DashStyleDashDotDot;
-
-				//				double dDpiX;
-				//				m_pRenderer->get_DpiX(&dDpiX);
-				//				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
-
-				//				double *pDashPattern = new double[unSizeDash];
-
-				//				if (NULL != pDashPattern)
-				//				{
-				//					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-				//						pDashPattern[unIndex] = pDataDash[unIndex] * dPixelW;
-				//				}
-
-				//				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
-				//				m_pRenderer->PenDashPattern( (NULL != pDashPattern) ? pDashPattern : pDataDash, unSizeDash);
-				//				ulPenStyle = Aggplus::DashStyleCustom;
-
-				//				RELEASEARRAYOBJECTS(pDashPattern)
-
 			}
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID

@@ -40,7 +40,7 @@
 #endif
 
 #include <string>
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../OOXML/Base/Base.h"
 
 namespace NExtractTools
 {
@@ -228,6 +228,8 @@ namespace NExtractTools
 
 	_UINT32 fromInputParams(InputParams& oInputParams);
 	_UINT32 detectMacroInFile(InputParams& oInputParams);
+
+	void createJSCaches();
 	
 	X2T_DECL_EXPORT _UINT32 FromFile(const std::wstring& file);
 	X2T_DECL_EXPORT _UINT32 FromXml(const std::wstring& xml);

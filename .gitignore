@@ -42,3 +42,6 @@ Thumbs.db
 .vs
 
 DesktopEditor/fontengine/js/common/freetype-2.10.4
+*_resource.rc
+
+.qtc_clangd

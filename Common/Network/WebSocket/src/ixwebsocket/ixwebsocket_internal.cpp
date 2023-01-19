@@ -36,7 +36,7 @@ namespace NSNetwork
 {
     namespace NSWebSocket
     {
-        void CIXWebSocket::open()
+        void CIXWebSocket::open(const std::map<std::string, std::string>& query)
         {
             ix::SocketTLSOptions tls;
             tls.caFile = "NONE";

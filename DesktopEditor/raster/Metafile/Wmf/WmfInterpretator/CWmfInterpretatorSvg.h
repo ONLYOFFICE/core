@@ -3,31 +3,28 @@
 
 #include "../WmfParser/CWmfParserBase.h"
 #include "CWmfInterpretatorBase.h"
-#include "../../../../xml/include/xmlwriter.h"
+#include "CInterpretatorSvgBase.h"
 
 namespace MetaFile
 {
-	class CWmfInterpretatorSvg : public CWmfInterpretatorBase
+	class CWmfInterpretatorSvg : public CWmfInterpretatorBase, public CInterpretatorSvgBase
 	{
 	public:
 		CWmfInterpretatorSvg(CWmfParserBase* pParser = NULL, unsigned int unWidth = 0, unsigned int unHeight = 0);
-		CWmfInterpretatorSvg(const CWmfInterpretatorSvg& oInterpretator);
 		virtual ~CWmfInterpretatorSvg();
 
 		InterpretatorType   GetType() const override;
-
-		void SetSize(unsigned int unWidth, unsigned int unHeight);
 
 		void HANDLE_META_HEADER(const TWmfPlaceable& oPlaceable, const TWmfHeader& oHeader) override;
 		//-----------------------------------------------------------
 		// 2.3.1 Bitmap records
 		//-----------------------------------------------------------
-		void HANDLE_META_BITBLT(const TWmfBitBlt& oWmfBitBlt, CDataStream& oDataStream) override;
-		void HANDLE_META_DIBBITBLT(const TWmfBitBlt& oWmfBitBlt, CDataStream& oDataStream) override;
-		void HANDLE_META_DIBSTRETCHBLT(const TWmfStretchBlt& oWmfStretchBlt, CDataStream& oDataStream) override;
-		void HANDLE_META_SETDIBTODEV(const TWmfSetDibToDev& oWmfSetDibToDev, CDataStream& oDataStream) override;
-		void HANDLE_META_STRETCHBLT(const TWmfStretchBlt& oWmfStretchBlt, CDataStream& oDataStream) override;
-		void HANDLE_META_STRETCHDIB(const TWmfStretchDib& oWmfStretchDib, CDataStream& oDataStream) override;
+		void HANDLE_META_BITBLT(const TWmfBitBlt& oWmfBitBlt, CDataStream& oDataStream) override {};
+		void HANDLE_META_DIBBITBLT(const TWmfBitBlt& oWmfBitBlt, CDataStream& oDataStream) override {};
+		void HANDLE_META_DIBSTRETCHBLT(const TWmfStretchBlt& oWmfStretchBlt, CDataStream& oDataStream) override {};
+		void HANDLE_META_SETDIBTODEV(const TWmfSetDibToDev& oWmfSetDibToDev, CDataStream& oDataStream) override {};
+		void HANDLE_META_STRETCHBLT(const TWmfStretchBlt& oWmfStretchBlt, CDataStream& oDataStream) override {};
+		void HANDLE_META_STRETCHDIB(const TWmfStretchDib& oWmfStretchDib, CDataStream& oDataStream) override {};
 		//-----------------------------------------------------------
 		// 2.3.2 Control records
 		//-----------------------------------------------------------
@@ -56,68 +53,60 @@ namespace MetaFile
 		//-----------------------------------------------------------
 		// 2.3.4 Object records
 		//-----------------------------------------------------------
-		void HANDLE_META_CREATEBRUSHINDIRECT(const TWmfLogBrush& oBrush) override;
-		void HANDLE_META_CREATEFONTINDIRECT(const CWmfFont& oFont) override;
-		void HANDLE_META_CREATEPALETTE(const CWmfPalette& oPalette) override;
-		void HANDLE_META_CREATEPATTERNBRUSH(const CWmfBrush& oBrush, CDataStream& oDataStream) override;
-		void HANDLE_META_CREATEPENINDIRECT(const CWmfPen& oPen) override;
-		void HANDLE_META_CREATEREGION(const CWmfRegion& oRegion) override;
-		void HANDLE_META_DELETEOBJECT(unsigned short ushIndex) override;
-		void HANDLE_META_DIBCREATEPATTERNBRUSH(unsigned short ushStyle, unsigned short ushColorUsage, const CWmfBrush& oBrush, CDataStream& oDataStream) override;
-		void HANDLE_META_SELECTCLIPREGION(unsigned short ushIndex) override;
-		void HANDLE_META_SELECTOBJECT(unsigned short ushIndex) override;
-		void HANDLE_META_SELECTPALETTE(unsigned short ushIndex) override;
+		void HANDLE_META_CREATEBRUSHINDIRECT(const TWmfLogBrush& oBrush) override {};
+		void HANDLE_META_CREATEFONTINDIRECT(const CWmfFont& oFont) override {};
+		void HANDLE_META_CREATEPALETTE(const CWmfPalette& oPalette) override {};
+		void HANDLE_META_CREATEPATTERNBRUSH(const CWmfBrush& oBrush, CDataStream& oDataStream) override {};
+		void HANDLE_META_CREATEPENINDIRECT(const CWmfPen& oPen) override {};
+		void HANDLE_META_CREATEREGION(const CWmfRegion& oRegion) override {};
+		void HANDLE_META_DELETEOBJECT(unsigned short ushIndex) override {};
+		void HANDLE_META_DIBCREATEPATTERNBRUSH(unsigned short ushStyle, unsigned short ushColorUsage, const CWmfBrush& oBrush, CDataStream& oDataStream) override {};
+		void HANDLE_META_SELECTCLIPREGION(unsigned short ushIndex) override {};
+		void HANDLE_META_SELECTOBJECT(unsigned short ushIndex) override {};
+		void HANDLE_META_SELECTPALETTE(unsigned short ushIndex) override {};
 		//-----------------------------------------------------------
 		// 2.3.5 State records
 		//-----------------------------------------------------------
 		void HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom) override;
 		void HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom) override;
-		void HANDLE_META_MOVETO(short shX, short shY) override;
-		void HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY) override;
-		void HANDLE_META_OFFSETVIEWPORTORG(short shXOffset, short shYOffset) override;
-		void HANDLE_META_OFFSETWINDOWORG(short shXOffset, short shYOffset) override;
+		void HANDLE_META_MOVETO(short shX, short shY) override {};
+		void HANDLE_META_OFFSETCLIPRGN(short shOffsetX, short shOffsetY) override {};
+		void HANDLE_META_OFFSETVIEWPORTORG(short shXOffset, short shYOffset) override {};
+		void HANDLE_META_OFFSETWINDOWORG(short shXOffset, short shYOffset) override {};
 		void HANDLE_META_RESTOREDC() override;
-		void HANDLE_META_SAVEDC() override;
-		void HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum) override;
-		void HANDLE_META_SCALEWINDOWEXT(short yDenom, short yNum, short xDenom, short xNum) override;
-		void HANDLE_META_SETBKCOLOR(const TWmfColor& oColor) override;
-		void HANDLE_META_SETBKMODE(unsigned short ushMode) override;
-		void HANDLE_META_SETLAYOUT(unsigned short ushLayout) override;
-		void HANDLE_META_SETMAPMODE(unsigned short ushMapMode) override;
-		void HANDLE_META_SETPOLYFILLMODE(unsigned short ushMode) override;
-		void HANDLE_META_SETROP2(unsigned short ushMode) override;
-		void HANDLE_META_SETSTRETCHBLTMODE(unsigned short ushMode) override;
-		void HANDLE_META_SETTEXTALIGN(unsigned short ushTextAlign) override;
-		void HANDLE_META_SETTEXTCHAREXTRA(unsigned short ushCharSpacing) override;
-		void HANDLE_META_SETTEXTCOLOR(const TWmfColor& oColor) override;
-		void HANDLE_META_SETTEXTJUSTIFICATION(unsigned short ushBreakCount, unsigned short ushBreakExtra) override;
-		void HANDLE_META_SETVIEWPORTEXT(short shX, short shY) override;
-		void HANDLE_META_SETVIEWPORTORG(short shX, short shY) override;
-		void HANDLE_META_SETWINDOWEXT(short shX, short shY) override;
-		void HANDLE_META_SETWINDOWORG(short shX, short shY) override;
+		void HANDLE_META_SAVEDC() override {};
+		void HANDLE_META_SCALEVIEWPORTEXT(short yDenom, short yNum, short xDenom, short xNum) override {};
+		void HANDLE_META_SCALEWINDOWEXT(short yDenom, short yNum, short xDenom, short xNum) override {};
+		void HANDLE_META_SETBKCOLOR(const TWmfColor& oColor) override {};
+		void HANDLE_META_SETBKMODE(unsigned short ushMode) override {};
+		void HANDLE_META_SETLAYOUT(unsigned short ushLayout) override {};
+		void HANDLE_META_SETMAPMODE(unsigned short ushMapMode) override {};
+		void HANDLE_META_SETPOLYFILLMODE(unsigned short ushMode) override {};
+		void HANDLE_META_SETROP2(unsigned short ushMode) override {};
+		void HANDLE_META_SETSTRETCHBLTMODE(unsigned short ushMode) override {};
+		void HANDLE_META_SETTEXTALIGN(unsigned short ushTextAlign) override {};
+		void HANDLE_META_SETTEXTCHAREXTRA(unsigned short ushCharSpacing) override {};
+		void HANDLE_META_SETTEXTCOLOR(const TWmfColor& oColor) override {};
+		void HANDLE_META_SETTEXTJUSTIFICATION(unsigned short ushBreakCount, unsigned short ushBreakExtra) override {};
+		void HANDLE_META_SETVIEWPORTEXT(short shX, short shY) override {};
+		void HANDLE_META_SETVIEWPORTORG(short shX, short shY) override {};
+		void HANDLE_META_SETWINDOWEXT(short shX, short shY) override {};
+		void HANDLE_META_SETWINDOWORG(short shX, short shY) override {};
 		//-----------------------------------------------------------
 		// 2.3.6 State records
 		//-----------------------------------------------------------
-		void HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount) override;
+		void HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount) override {};
 		//-----------------------------------------------------------
 		// Неизвестные записи
 		//-----------------------------------------------------------
-		void HANDLE_META_UNKNOWN(CDataStream& oDataStream) override;
+		void HANDLE_META_UNKNOWN(CDataStream& oDataStream) override {};
 
-	private:
-		XmlUtils::CXmlWriter    m_oXmlWriter;
-		std::wstring            m_sOutputData;
-
-		CWmfParserBase          *m_pParser;
-
-		TSvgViewport            m_oViewport;
-		TEmfSizeL               m_oSizeWindow;
 	public:
-		void Begin() override;
-		void End() override;
-		//Следующие методы ничего не делают
-
 		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+
+		//Следующие методы ничего не делают
+		void Begin() override {};
+		void End() override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
@@ -133,34 +122,16 @@ namespace MetaFile
 		void DrawPath(int nType = 0) override {};
 		void EndPath() override {};
 
-		void ResetClip() override {};
-		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom) override {};
+		void ResetClip() override;
+		void IntersectClip(const TRectD& oClip) override;
+		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
+		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
 
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};
 		void GetTransform(double* pdM11, double* pdM12, double* pdM21, double* pdM22, double* pdX, double* pdY) override {};
-
-		std::wstring GetFile() { return m_sOutputData; }
-	private:
-		void WriteNode(const std::wstring& wsNodeName, const NodeAttributes& arAttributes, const std::wstring& wsValueNode = L"");
-		void WriteText(const std::wstring& wsText, double dX, double dY, const TWmfRect& oBounds = TWmfRect());
-
-		void AddStroke(NodeAttributes &arAttributes);
-		void AddFill(NodeAttributes &arAttributes);
-
-		void UpdateTransform(double dX, double dY);
-		void UpdateTransform(const TRectD& oRect);
-		void UpdateTransform(const std::vector<TWmfPointS>& arPoints, const NodeAttributes& arAttributes = {});
-
-		double TranslateX(double nX);
-		double TranslateY(double nY);
-
-		TPointD TranslatePoint(const TPointD& oPoint);
-		TRectD TranslateRect(const TWmfRect& oRect);
-
-		TPointD GetCutPos();
 	};
 
 }

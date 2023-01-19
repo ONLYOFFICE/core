@@ -34,8 +34,8 @@
 
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/OfficeFileFormatChecker.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../OOXML/SystemUtility/SystemUtility.h"
+#include "../../OOXML/Base/Unit.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
@@ -344,6 +344,7 @@ namespace NExtractTools
 		int* format;
 		int* aspect;
 		bool* first;
+		bool* zip;
 		int* width;
 		int* height;
 		InputParamsThumbnail()
@@ -351,6 +352,7 @@ namespace NExtractTools
 			format = NULL;
 			aspect = NULL;
 			first = NULL;
+			zip = NULL;
 			width = NULL;
 			height = NULL;
 		}
@@ -359,6 +361,7 @@ namespace NExtractTools
 			RELEASEOBJECT(format);
 			RELEASEOBJECT(aspect);
 			RELEASEOBJECT(first);
+			RELEASEOBJECT(zip);
 			RELEASEOBJECT(width);
 			RELEASEOBJECT(height);
 		}
@@ -383,6 +386,8 @@ namespace NExtractTools
 								aspect = new int(XmlUtils::GetInteger(sValue));
 							else if(_T("first") == sName)
 								first = new bool(XmlUtils::GetBoolean2(sValue));
+							else if(_T("zip") == sName)
+								zip = new bool(XmlUtils::GetBoolean2(sValue));
 							else if(_T("width") == sName)
 								width = new int(XmlUtils::GetInteger(sValue));
 							else if(_T("height") == sName)
@@ -477,6 +482,7 @@ namespace NExtractTools
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
 		std::wstring* m_sConvertToOrigin;
+		std::wstring* m_sScriptsCacheDirectory;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -510,6 +516,7 @@ namespace NExtractTools
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
 			m_sConvertToOrigin = NULL;
+			m_sScriptsCacheDirectory = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -543,6 +550,7 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
 			RELEASEOBJECT(m_sConvertToOrigin);
+			RELEASEOBJECT(m_sScriptsCacheDirectory);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -726,6 +734,11 @@ namespace NExtractTools
 								{
 									RELEASEOBJECT(m_sConvertToOrigin);
 									m_sConvertToOrigin = new std::wstring(sValue);
+								}
+								else if (_T("m_sScriptsCacheDirectory") == sName)
+								{
+									RELEASEOBJECT(m_sScriptsCacheDirectory);
+									m_sScriptsCacheDirectory = new std::wstring(sValue);
 								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)

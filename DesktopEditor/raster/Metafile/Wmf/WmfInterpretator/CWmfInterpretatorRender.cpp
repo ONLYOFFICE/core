@@ -95,10 +95,22 @@ namespace MetaFile
 			m_pMetaFileRenderer->ResetClip();
 	}
 
-	void CWmfInterpretatorRender::IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
+	void CWmfInterpretatorRender::IntersectClip(const TRectD& oClip)
 	{
 		if (NULL != m_pMetaFileRenderer)
-			m_pMetaFileRenderer->IntersectClip(dLeft, dTop, dRight, dBottom);
+			m_pMetaFileRenderer->IntersectClip(oClip);
+	}
+
+	void CWmfInterpretatorRender::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->ExcludeClip(oClip, oBB);
+	}
+
+	void CWmfInterpretatorRender::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
+	{
+		if (NULL != m_pMetaFileRenderer)
+			m_pMetaFileRenderer->PathClip(pPath, nClipMode, pTransform);
 	}
 
 	void CWmfInterpretatorRender::StartClipPath(unsigned int unMode, int nFillMode)
@@ -129,5 +141,10 @@ namespace MetaFile
 	{
 		if (NULL != m_pMetaFileRenderer)
 			m_pMetaFileRenderer->GetTransform(pdM11, pdM12, pdM21, pdM22, pdX, pdY);
+	}
+
+	CMetaFileRenderer *CWmfInterpretatorRender::GetRenderer() const
+	{
+		return m_pMetaFileRenderer;
 	}
 }

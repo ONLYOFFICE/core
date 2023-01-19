@@ -39,9 +39,7 @@
 #include "Utils.h"
 #include "ContextState.h"
 
-#ifdef BUILDING_WASM_MODULE
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-#endif
 
 namespace XPS
 {
@@ -57,9 +55,7 @@ namespace XPS
 		void GetSize(int& nW, int& nH) const;
 		void Draw(IRenderer* pRenderer, bool* pbBreak);
 
-    #ifdef BUILDING_WASM_MODULE
         NSWasm::CPageLink m_oLinks;
-    #endif
 
 	private:
 

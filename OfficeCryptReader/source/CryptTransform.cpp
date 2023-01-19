@@ -31,6 +31,8 @@
  */
 #include <iostream>
 #include <iomanip>
+#include <sstream>
+#include <boost/format.hpp>
 
 #include "CryptTransform.h"
 
@@ -51,9 +53,8 @@
 #include "../../Common/3dParty/cryptopp/zinflate.h"
 #include "../../Common/3dParty/cryptopp/zdeflate.h"
 
-#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../OOXML/Base/unicode_util.h"
+#include "../../OOXML/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
@@ -871,7 +872,7 @@ void ECMAWriteProtect::Generate()
 
 	_buf pHashBuf = HashAppend(pSalt, pPassword, data.hashAlgorithm);
 		
-	for (int i = 0; i < data.spinCount; i++)
+	for (_UINT32 i = 0; i < data.spinCount; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashBuf = HashAppend(pHashBuf, iterator, data.hashAlgorithm);
@@ -900,8 +901,10 @@ bool ECMAWriteProtect::VerifyWrike()
     wPasswordHash ^= (0x8000 | ('N' << 8) | 'K');
     wPasswordHash ^= p.length();
 
-	std::string sPasswordHash = XmlUtils::IntToString(wPasswordHash, "%4.4X");
-	
+	std::stringstream sstream;
+	sstream << boost::format("%4.4X") % wPasswordHash;
+	std::string sPasswordHash(sstream.str());
+
 	return data.hashValue == sPasswordHash;
 }
 bool ECMAWriteProtect::Verify()
@@ -913,7 +916,7 @@ bool ECMAWriteProtect::Verify()
 
 	_buf pHashTest = HashAppend(pSalt, pPassword, data.hashAlgorithm);
 		
-	for (int i = 0; i < data.spinCount; i++)
+	for (_UINT32 i = 0; i < data.spinCount; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashTest = HashAppend(pHashTest, iterator, data.hashAlgorithm);

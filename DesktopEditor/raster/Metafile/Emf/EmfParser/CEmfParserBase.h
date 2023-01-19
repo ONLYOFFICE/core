@@ -31,6 +31,16 @@ namespace MetaFile
 		EmfxParser
 	};
 
+	typedef enum
+	{
+		EMR_COMMENT_WINDOWS_METAFILE = 0x80000001,
+		EMR_COMMENT_BEGINGROUP       = 0x00000002,
+		EMR_COMMENT_ENDGROUP         = 0x00000003,
+		EMR_COMMENT_MULTIFORMATS     = 0x40000004,
+		EMR_COMMENT_UNICODE_STRING   = 0x00000040,
+		EMR_COMMENT_UNICODE_END      = 0x00000080
+	} EmrComment;
+
 	class CEmfPlayer;
 
 	class  CEmfParserBase : public virtual IMetaFileBase
@@ -47,41 +57,45 @@ namespace MetaFile
 
 		virtual EmfParserType   GetType()                       = 0;
 
-		void		PlayMetaFile()				override;
-		void		ClearFile()				override;
-		TRect*		GetDCBounds()				override;
-		double		GetPixelHeight()			override;
-		double		GetPixelWidth()				override;
-		int		GetTextColor()				override;
-		IFont*		GetFont()				override;
-		IBrush*		GetBrush()				override;
-		IPen*		GetPen()				override;
-		unsigned int	GetTextAlign()				override;
-		unsigned int	GetTextBgMode()				override;
-		int		GetTextBgColor()			override;
-		unsigned int	GetFillMode()				override;
-		TPointD		GetCurPos()				override;
-		TXForm*		GetInverseTransform()			override;
-		TXForm*		GetTransform(int = GM_ADVANCED)         override;
-		unsigned int	GetMiterLimit()                         override;
-		unsigned int	GetRop2Mode()				override;
-		IClip*		GetClip()				override;
-		int		GetCharSpace()				override;
-		bool		IsWindowFlippedY()			override;
-		bool		IsWindowFlippedX()			override;
-		double      GetScale() override;
-		bool		IsViewportFlippedY();
-		bool		IsViewportFlippedX();
+		void            PlayMetaFile()                   override;
+		void            ClearFile()                      override;
+		TRect*          GetDCBounds()                    override;
+		double          GetPixelHeight()                 override;
+		double          GetPixelWidth()                  override;
+		int             GetTextColor()                   override;
+		IFont*          GetFont()                        override;
+		IBrush*         GetBrush()                       override;
+		IPen*           GetPen()                         override;
+		unsigned int    GetTextAlign()                   override;
+		unsigned int    GetTextBgMode()                  override;
+		int             GetTextBgColor()                 override;
+		unsigned int    GetFillMode()                    override;
+		TPointD         GetCurPos()                      override;
+		TXForm*         GetInverseTransform()            override;
+		TXForm*         GetTransform(int = GM_ADVANCED)  override;
+		unsigned int    GetMiterLimit()                  override;
+		unsigned int    GetRop2Mode()                    override;
+		IClip*          GetClip()                        override;
+		int             GetCharSpace()                   override;
+		bool            IsWindowFlippedY()               override;
+		bool            IsWindowFlippedX()               override;
+		unsigned int    GetMapMode()                     override;
+		double          GetDpi()                         override;
+		IRegion*        GetRegion()                      override;
+		unsigned int    GetArcDirection()                override;
+		bool            IsViewportFlippedY();
+		bool            IsViewportFlippedX();
 
-		virtual void SetInterpretator(IOutputDevice* pOutput);
-		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
-		void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
-		void SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		virtual void    SetInterpretator(IOutputDevice* pOutput);
+		void            SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
+		void            SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
+		void            SetInterpretator(InterpretatorType oInterpretatorType, double dWidth = 0, double dHeight = 0);
 
 		CEmfInterpretatorBase* GetInterpretator();
 
 		CEmfDC*     GetDC();
 		TEmfRectL*  GetBounds();
+		CEmfPath*	GetPath() const;
 	private:
 		//Работа с изображениями
 		void ImageProcessing(const TEmfAlphaBlend       &oTEmfAlphaBlend);
@@ -139,6 +153,7 @@ namespace MetaFile
 
 		CEmfInterpretatorBase   *m_pInterpretator;
 
+		bool              m_bEof;
 	private:
 		virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 
@@ -178,8 +193,10 @@ namespace MetaFile
 		void HANDLE_EMR_SETMAPMODE(unsigned int& unMapMode);
 		void HANDLE_EMR_SETWINDOWORGEX(TEmfPointL& oOrigin);
 		void HANDLE_EMR_SETWINDOWEXTEX(TEmfSizeL& oExtent);
+		void HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom);
 		void HANDLE_EMR_SETVIEWPORTORGEX(TEmfPointL& oOrigin);
 		void HANDLE_EMR_SETVIEWPORTEXTEX(TEmfSizeL& oExtent);
+		void HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom);
 		void HANDLE_EMR_SETSTRETCHBLTMODE(unsigned int& unStretchMode);
 		void HANDLE_EMR_SETICMMODE(unsigned int& unICMMode);
 		void HANDLE_EMR_CREATEDIBPATTERNBRUSHPT(unsigned int& unBrushIndex, TEmfDibPatternBrush& oDibBrush);
@@ -285,6 +302,9 @@ namespace MetaFile
 		void HANDLE_EMR_POLYGON(TEmfRectL& oBounds, std::vector<TEmfPointS>& arPoints);
 		template<typename T> void HANDLE_EMR_POLYGON_BASE(TEmfRectL& oBounds, std::vector<T>& arPoints)
 		{
+			if (arPoints.empty())
+				return;
+
 			MoveTo(arPoints[0]);
 
 			for (unsigned int unIndex = 1; unIndex < arPoints.size(); ++unIndex)
@@ -371,6 +391,9 @@ namespace MetaFile
 
 		void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
+		void HANDLE_EMR_PAINTRGN(const TEmfRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
+		void HANDLE_EMR_FRAMERGN(const TEmfRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
+
 	};
 
 }

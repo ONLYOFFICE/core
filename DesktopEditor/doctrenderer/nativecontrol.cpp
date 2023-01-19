@@ -30,9 +30,9 @@
  *
  */
 #include "nativecontrol.h"
-#include "../../../core/DesktopEditor/raster/ImageFileFormatChecker.h"
-#include "../../../core/DesktopEditor/raster/BgraFrame.h"
-#include "../../../core/Common/Network/FileTransporter/include/FileTransporter.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
 
 CImagesWorker::CImagesWorker(const std::wstring& sFolder)
 {

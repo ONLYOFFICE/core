@@ -36,6 +36,7 @@
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
+#include "./FormField.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #include "../common/StringExt.h"
@@ -1117,6 +1118,20 @@ namespace NSOnlineOfficeBinToPdf
 
 					if (nFlags & (1 << 25))
 						pPr->SetPlaceHolder(ReadString(current, curindex));
+
+					if (nFlags & (1 << 26))
+					{
+						CFormFieldInfo::CTextFormFormat* pFormat = pPr->GetFormat();
+						pFormat->SetType((CFormFieldInfo::EFormatType)ReadByte(current, curindex));
+
+						unsigned int unSymbolsCount = ReadInt(current, curindex);
+						for (unsigned int unSymbolIndex = 0; unSymbolIndex < unSymbolsCount; ++unSymbolIndex)
+						{
+							pFormat->AddSymbol(ReadInt(current, curindex));
+						}
+
+						pFormat->SetValue(ReadString(current, curindex));
+					}
 				}
 				else if (oInfo.IsDropDownList())
 				{
@@ -1199,11 +1214,21 @@ namespace NSOnlineOfficeBinToPdf
 				}
 
 				if (oInfo.IsValid())
-					pRenderer->AddFormField(oInfo);
+					pRenderer->AddFormField(&oInfo);
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;
 
+				break;
+			}
+			case ctDocInfo:
+			{
+				std::wstring wsTitle    = ReadString(current, curindex);
+				std::wstring wsCreator  = ReadString(current, curindex);
+				std::wstring wsSubject  = ReadString(current, curindex);
+				std::wstring wsKeywords = ReadString(current, curindex);
+
+				pRenderer->DocInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
 				break;
 			}
 			default:

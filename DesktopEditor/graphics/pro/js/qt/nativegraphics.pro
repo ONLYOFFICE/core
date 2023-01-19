@@ -8,10 +8,9 @@ CONFIG += console
 CONFIG += object_parallel_to_source
 CONFIG -= app_bundle
 
-DEFINES += TEST_AS_EXECUTABLE \
+DEFINES += TEST_CPP_BINARY \
     GRAPHICS_NO_USE_DYNAMIC_LIBRARY \
     BUILDING_WASM_MODULE \
-    CMAP_USE_MEMORY \
     _QT
 
 CORE_ROOT_DIR = $$PWD/../../../../..
@@ -20,7 +19,7 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 include(../../freetype.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, PdfWriter, HtmlRenderer)
+ADD_DEPENDENCY(UnicodeConverter, kernel, HtmlRenderer)
 
 INCLUDEPATH += \
     $$CORE_ROOT_DIR/DesktopEditor/agg-2.4/include \
@@ -77,6 +76,7 @@ HEADERS += \
     ../../../MetafileToRenderer.h \
     ../../../MetafileToRendererCheck.h \
     ../../../MetafileToGraphicsRenderer.h \
+    ../../../FormField.h \
     ../../../structures.h \
     ../../../GraphicsRenderer.h \
     \
@@ -108,6 +108,7 @@ SOURCES += \
     ../../../Image.cpp \
     ../../../MetafileToRenderer.cpp \
     ../../../MetafileToGraphicsRenderer.cpp \
+    ../../../FormField.cpp \
     \
     ../../../../fontengine/ApplicationFonts.cpp \
     ../../../../fontengine/FontFile.cpp \
@@ -591,7 +592,7 @@ SOURCES += \
     $$DJVU_WRAPPER/GURL.cpp
 
 # PdfReader
-PDF_ROOT_DIR = $$PWD/../../../../../PdfReader
+PDF_ROOT_DIR = $$PWD/../../../../../PdfFile
 
 INCLUDEPATH += \
     $$PDF_ROOT_DIR/lib/goo \
@@ -619,12 +620,14 @@ SOURCES -= \
     $$PDF_ROOT_DIR/lib/xpdf/pdfinfo.cc
 
 SOURCES += \
-    $$PDF_ROOT_DIR/Src/RendererOutputDev.cpp \
-    $$PDF_ROOT_DIR/Src/Adaptors.cpp \
-    $$PDF_ROOT_DIR/Src/GfxClip.cpp \
+    $$PDF_ROOT_DIR/SrcReader/RendererOutputDev.cpp \
+    $$PDF_ROOT_DIR/SrcReader/Adaptors.cpp \
+    $$PDF_ROOT_DIR/SrcReader/GfxClip.cpp \
     $$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
     $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
-    $$PDF_ROOT_DIR/PdfReader.cpp
+    $$PDF_ROOT_DIR/PdfReader.cpp \
+    $$PDF_ROOT_DIR/PdfWriter_empty.cpp \
+    $$PDF_ROOT_DIR/PdfFile.cpp
 
 HEADERS +=\
     $$PDF_ROOT_DIR/Resources/Fontd050000l.h \
@@ -643,11 +646,13 @@ HEADERS +=\
     $$PDF_ROOT_DIR/Resources/Fonts050000l.h \
     $$PDF_ROOT_DIR/Resources/BaseFonts.h \
     $$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.h \
-    $$PDF_ROOT_DIR/Src/RendererOutputDev.h \
-    $$PDF_ROOT_DIR/Src/Adaptors.h \
-    $$PDF_ROOT_DIR/Src/MemoryUtils.h \
-    $$PDF_ROOT_DIR/Src/GfxClip.h \
-    $$PDF_ROOT_DIR/PdfReader.h
+    $$PDF_ROOT_DIR/SrcReader/RendererOutputDev.h \
+    $$PDF_ROOT_DIR/SrcReader/Adaptors.h \
+    $$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
+    $$PDF_ROOT_DIR/SrcReader/GfxClip.h \
+    $$PDF_ROOT_DIR/SrcReader/FontsWasm.h \
+    $$PDF_ROOT_DIR/PdfReader.h \
+    $$PDF_ROOT_DIR/PdfFile.h
 
 HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
 SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp

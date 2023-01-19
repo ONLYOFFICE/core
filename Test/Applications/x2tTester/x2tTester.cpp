@@ -210,7 +210,10 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_inputFormatsList.SetDefault();
 	m_outputFormatsList.SetOutput();
 	SetConfig(configPath);
-	m_errorsXmlDirectory = m_outputDirectory + L"/_errors";
+	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
+
+	if(m_outputDirectory.find(L"./") == 0)
+		m_outputDirectory.erase(0, 2);
 
 	if(m_bIsTimestamp)
 	{
@@ -681,7 +684,7 @@ DWORD CConverter::ThreadProc()
 #ifdef WIN32
 
 	// x2t cannot work with normalized paths in xml
-	if(m_outputFilesDirectory.find_first_of(L"\\?\\\\") != std::wstring::npos)
+	if(m_outputFilesDirectory.find(L"\\\\?\\") == 0)
 		m_outputFilesDirectory.erase(0, 4);
 
 #endif // WIN32
@@ -701,6 +704,7 @@ DWORD CConverter::ThreadProc()
 		std::wstring output_filename = NSFile::GetFileName(output_file);
 
 		xml_params_file = CorrectPathW(xml_params_file);
+
 
 		// creating temporary xml file with params
 		NSStringUtils::CStringBuilder builder;
@@ -776,7 +780,14 @@ DWORD CConverter::ThreadProc()
 		}
 		o_xml_file.WriteStringUTF8(xml_params, true);
 		o_xml_file.CloseFile();
-		xml_params_file.erase(0, 4);
+
+#ifdef WIN32
+
+		// x2t cannot work with normalized paths in xml
+		if(xml_params_file.find(L"\\\\?\\") == 0)
+			xml_params_file.erase(0, 4);
+
+#endif // WIN32
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 

@@ -322,7 +322,7 @@ public:
     BYTE B;
     BYTE A;
 
-    LONG m_lSchemeIndex;
+    _INT32 m_lSchemeIndex;
 
     CColor()
     {
@@ -382,7 +382,7 @@ public:
         if (lBGR & 0xFF000000)
             m_lSchemeIndex = R;
     }
-    void SetBGR(const LONG& lBGR)
+    void SetBGR(const _INT32& lBGR)
     {
         R = (BYTE)(lBGR);
         G = (BYTE)(lBGR >> 8);
@@ -411,18 +411,18 @@ public:
         return ((color1.R == color2.R) && (color1.G == color2.G) && (color1.B == color2.B));
     }
 
-    LONG GetLONG() const
+	_INT32 GetLONG() const
     {
-        LONG dwColor = 0;
+		_INT32 dwColor = 0;
         dwColor |= R;
         dwColor |= (G << 8);
         dwColor |= (B << 16);
 
         return dwColor;
     }
-    LONG GetLONG_RGB() const
+    _INT32 GetLONG_RGB() const
     {
-        LONG dwColor = 0;
+		_INT32 dwColor = 0;
         dwColor |= B;
         dwColor |= (G << 8);
         dwColor |= (R << 16);
@@ -525,7 +525,7 @@ public:
 
     double DashOffset;
 
-    LONG Align;
+    _INT32 Align;
     double MiterLimit;
 
     CColor Color2;	//backLine
@@ -588,7 +588,7 @@ public:
             pRenderer->put_PenColor(Color.GetLONG());
         else
         {
-            LONG lColor = Color.GetLONG();
+            _INT32 lColor = Color.GetLONG();
             lColor |= (0xFF000000 & ((Color.m_lSchemeIndex + 1 + 100) << 24));
             pRenderer->put_PenColor(lColor);
         }
@@ -703,7 +703,7 @@ public:
 
     std::vector<std::pair<CColor, double>> ColorsPosition;
 
-    inline LONG ConstantCompatible(LONG nConstant)
+    inline _INT32 ConstantCompatible(_INT32 nConstant)
     {
         if( c_BrushTypeDiagonal1_ == nConstant )
             nConstant = c_BrushTypeDiagonal2_;
@@ -873,7 +873,7 @@ public:
                 pRenderer->put_BrushColor1(Color1.GetLONG());
             else
             {
-                LONG lColor = Color1.GetLONG();
+                _INT32 lColor = Color1.GetLONG();
                 lColor |= (0xFF000000 & ((Color1.m_lSchemeIndex + 1 + 100) << 24));
                 pRenderer->put_BrushColor1(lColor);
             }
@@ -897,7 +897,7 @@ public:
                 pRenderer->put_BrushColor1(Color1.GetLONG());
             else
             {
-                LONG lColor = Color1.GetLONG();
+                _INT32 lColor = Color1.GetLONG();
                 lColor |= (0xFF000000 & ((Color1.m_lSchemeIndex + 1 + 100) << 24));
                 pRenderer->put_BrushColor1(lColor);
             }
@@ -945,9 +945,9 @@ public:
                 (Bold == pFont->Bold) && (Italic == pFont->Italic));
     }
 
-    LONG GetStyle() const
+    _INT32 GetStyle() const
     {
-        LONG lStyle = 0;
+        _INT32 lStyle = 0;
         if (Bold)
             lStyle |= 0x01;
         if (Italic)
@@ -956,7 +956,7 @@ public:
         lStyle |= Strikeout << 7;
         return lStyle;
     }
-    void SetStyle(LONG const& lStyle)
+    void SetStyle(_INT32 const& lStyle)
     {
         Bold		= (0x01 == (0x01 & lStyle));
         Italic		= (0x02 == (0x02 & lStyle));

@@ -148,14 +148,24 @@ namespace XmlUtils
 	std::wstring ToString(const long& value);
 	std::wstring ToString(const unsigned long& value);
 
-	std::wstring ToString(_INT64 value, const wchar_t* format);
+	std::wstring ToString(BYTE value, const wchar_t* format);
+	std::string ToString(BYTE value, const char* format);
+
+	std::wstring ToString(_INT16 value, const wchar_t* format);
+	std::string ToString(_INT16 value, const char* format);
+	std::wstring ToString(_UINT16 value, const wchar_t* format);
+	std::string ToString(_UINT16 value, const char* format);
+
+	std::wstring ToString(_INT64 value, const wchar_t* format);	
 	std::string ToString(_INT64 value, const char* format);
 	std::wstring ToString(_UINT64 value, const wchar_t* format);
 	std::string ToString(_UINT64 value, const char* format);
+
 	std::wstring ToString(_INT32 value, const wchar_t* format);
 	std::string ToString(_INT32 value, const char* format);
 	std::wstring ToString(_UINT32 value, const wchar_t* format);
 	std::string ToString(_UINT32 value, const char* format);
+
 	std::wstring ToString(double value, const wchar_t* format);
 	std::string ToString(double value, const char* format);
 

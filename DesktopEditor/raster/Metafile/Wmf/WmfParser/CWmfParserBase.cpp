@@ -730,6 +730,7 @@ namespace MetaFile
 		{
 			BYTE* pBgra = NULL;
 			unsigned int unWidth, unHeight;
+
 			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight))
 			{
 				ProcessRasterOperation(unRasterOperation, &pBgra, unWidth, unHeight);
@@ -738,13 +739,18 @@ namespace MetaFile
 				TranslatePoint(oDestRect.nLeft, oDestRect.nTop, dX, dY);
 				TranslatePoint(oDestRect.nRight, oDestRect.nBottom, dX1, dY1);
 
-				TRect oClip = oSrcRect;
-				BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
-
-				if (NULL != pNewBuffer)
+				if (oDestRect != oSrcRect)
 				{
-					m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pNewBuffer, std::abs(oClip.nRight - oClip.nLeft), std::abs(oClip.nBottom - oClip.nTop));
-					delete[] pNewBuffer;
+					TRect oClip = oSrcRect;
+					BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
+
+					if (NULL != pNewBuffer)
+					{
+						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pNewBuffer, std::abs(oClip.nRight - oClip.nLeft), std::abs(oClip.nBottom - oClip.nTop));
+						delete[] pNewBuffer;
+					}
+					else
+						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
 				}
 				else
 					m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);

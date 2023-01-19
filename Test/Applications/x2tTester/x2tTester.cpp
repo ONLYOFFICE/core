@@ -215,9 +215,6 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	if(m_outputDirectory.find(L"./") == 0)
 		m_outputDirectory.erase(0, 2);
 
-	if(m_inputDirectory.find(L"./") == 0)
-		m_inputDirectory.erase(0, 2);
-
 	if(m_bIsTimestamp)
 	{
 		time_t now = time(0);

@@ -35,7 +35,7 @@
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
-#include "../../PdfReader/PdfReader.h"
+#include "../../PdfFile/PdfFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../DocxRenderer.h"
@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
-    std::wstring sTempDir = NSFile::GetProcessDirectory() + L"/temp";
-    std::wstring sTempDirOut = NSFile::GetProcessDirectory() + L"/temp/output";
+	std::wstring sTempDir = L"";
+	std::wstring sTempDirOut = L"";
 
     if (!NSDirectory::Exists(sTempDir))
         NSDirectory::CreateDirectory(sTempDir);
@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-    //sSourceFiles.push_back(L"C:\\File.pdf");
+	sSourceFiles.push_back(L"");
 
-    std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/text";
+	std::wstring sTextDirOut = L"";
     if (!NSDirectory::Exists(sTextDirOut))
         NSDirectory::CreateDirectory(sTextDirOut);
 
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
             switch (nFileType)
             {
             case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-                pReader = new PdfReader::CPdfReader(pFonts);
+				pReader = new CPdfFile(pFonts);
                 break;
             case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
                 pReader = new CXpsFile(pFonts);

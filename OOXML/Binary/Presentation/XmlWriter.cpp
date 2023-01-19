@@ -106,7 +106,7 @@ void CXmlWriter::WriteSIZET(const size_t& val)
 }
 void CXmlWriter::WriteDWORD_hex(const DWORD& val)
 {
-	m_oWriter.WriteString(XmlUtils::ToString(val, L"%x"));
+	m_oWriter.WriteString(XmlUtils::ToString((int)val, L"%x"));
 }
 void CXmlWriter::WriteBool(const bool& val)
 {

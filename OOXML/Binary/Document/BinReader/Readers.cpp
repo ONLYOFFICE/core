@@ -182,7 +182,7 @@ public:
 	}\
 	else if(c_oSerProp_RevisionType::Id == type)\
 	{\
-		poResult->Id = new long(m_oBufferedStream.GetLong());\
+		poResult->Id = new _INT32(m_oBufferedStream.GetLong());\
     }\
     else if(c_oSerProp_RevisionType::UserId == type)\
     {\
@@ -2854,11 +2854,11 @@ int Binary_tblPrReader::ReadCellMerge(BYTE type, long length, void* poResult)
 	READ1_TRACKREV(type, length, pTrackRevision)
 	else if (c_oSerProp_RevisionType::VMerge == type)
 	{
-		pTrackRevision->vMerge = new long(m_oBufferedStream.GetLong());
+		pTrackRevision->vMerge = new _INT32(m_oBufferedStream.GetLong());
 	}
 	else if (c_oSerProp_RevisionType::VMergeOrigin == type)
 	{
-		pTrackRevision->vMergeOrigin = new long(m_oBufferedStream.GetLong());
+		pTrackRevision->vMergeOrigin = new _INT32(m_oBufferedStream.GetLong());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -8372,7 +8372,7 @@ int Binary_DocumentTableReader::Read_tblGridChange(BYTE type, long length, void*
 	TrackRevision* pTrackRevision = static_cast<TrackRevision*>(poResult);
 	if(c_oSerProp_RevisionType::Id == type)
 	{
-		pTrackRevision->Id = new long(m_oBufferedStream.GetLong());
+		pTrackRevision->Id = new _INT32(m_oBufferedStream.GetLong());
 	}
 	else if(c_oSerProp_RevisionType::tblGridChange == type)
 	{

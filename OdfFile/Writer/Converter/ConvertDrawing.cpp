@@ -1409,7 +1409,7 @@ void OoxConverter::convert(PPTX::Logic::UniColor * color, std::wstring & hexStri
 
 	if (nARGB != 0)
 	{	
-		hexString = XmlUtils::ToString(nARGB & 0x00FFFFFF, L"#%06X");
+		hexString = XmlUtils::ToString((unsigned int)(nARGB & 0x00FFFFFF), L"#%06X");
 
 		if ((nARGB >> 24) != 0xff)
 		{
@@ -2577,7 +2577,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 
 	if (style_ref->idx.IsInit() == false)
 	{
-		std::wstring hexColor =  XmlUtils::ToString(nARGB & 0x00FFFFFF, L"#%06X");
+		std::wstring hexColor =  XmlUtils::ToString((unsigned int)(nARGB & 0x00FFFFFF), L"#%06X");
 		_CP_OPT(double) opacity;
 
 		if ((nARGB >> 24) != 0xff)

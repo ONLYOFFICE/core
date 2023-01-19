@@ -3427,7 +3427,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor			*color,
 				argb = HSL2RGB(dH, dS, dL);
 
 			}
-			std::wstring strColor = XmlUtils::ToString(argb & 0x00FFFFFF, L"#%06X");
+			std::wstring strColor = XmlUtils::ToString((unsigned int)(argb & 0x00FFFFFF), L"#%06X");
 			odf_color = odf_types::color(strColor);
 		}
 	}

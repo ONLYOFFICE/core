@@ -46,19 +46,19 @@ class SectPr
 {
 public: 
     std::wstring sHeaderFooterReference;
-	long W;
-	long H;
+	_INT32 W;
+	_INT32 H;
 	BYTE cOrientation;
-	long Left;
-	long Top;
-	long Right;
-	long Bottom;
-	long Header;
-	long Footer;
+	_INT32 Left;
+	_INT32 Top;
+	_INT32 Right;
+	_INT32 Bottom;
+	_INT32 Header;
+	_INT32 Footer;
 	bool TitlePg;
 	bool EvenAndOddHeaders;
 	BYTE SectionType;
-	int PageNumStart;
+	_INT32 PageNumStart;
     std::wstring sectPrChange;
     std::wstring cols;
     std::wstring pgBorders;
@@ -66,7 +66,7 @@ public:
     std::wstring endnotePr;
 	std::wstring lineNum;
 	bool RtlGutter;
-	long Gutter;
+	_INT32 Gutter;
 
 	bool bW;
 	bool bH;
@@ -134,9 +134,9 @@ public:
 
 	BYTE LineRule;
 	double Line;
-	long LineTwips;
-	long After;
-	long Before;
+	_INT32 LineTwips;
+	_INT32 After;
+	_INT32 Before;
 	bool AfterAuto;
 	bool BeforeAuto;
 
@@ -273,7 +273,7 @@ public:
 	double Width;
 	double Height;
 	PaddingsToWriteMM Paddings;
-	int m_nDocPr;
+	_INT32 m_nDocPr;
 
 	bool bMediaId;
 	bool bType;
@@ -284,7 +284,7 @@ public:
 	bool bPaddings;
     std::wstring srId;
 
-	docImg(int nDocPr);
+	docImg(_INT32 nDocPr);
 
 	void Write(NSStringUtils::CStringBuilder*  pCStringWriter);
 };
@@ -362,24 +362,24 @@ public:
 class docLvl
 {
 public:
-	long ILvl;
-	long Format;
+	_INT32 ILvl;
+	_INT32 Format;
 	std::wstring sFormat;
 	BYTE Jc;
 	std::wstring sJc;
 	std::vector<docLvlText*> Text;
-	long Restart;
-	long Start;
+	_INT32 Restart;
+	_INT32 Start;
 	BYTE Suff;
 	NSStringUtils::CStringBuilder ParaPr;
 	NSStringUtils::CStringBuilder TextPr;
     std::wstring PStyle;
 	bool Tentative;
-	unsigned long Tplc;
+	_UINT32 Tplc;
 	bool IsLgl;
 	bool Legacy;
-	long LegacyIndent;
-	unsigned long LegacySpace;
+	_INT32 LegacyIndent;
+	_UINT32 LegacySpace;
 
 	bool bILvl;
 	bool bFormat;
@@ -474,13 +474,13 @@ public:
 class IdCounter
 {
 private:
-	int m_nId;
+	_INT32 m_nId;
 
 public:
-	IdCounter(int nStart = 0);
+	IdCounter(_INT32 nStart = 0);
 
-	int getNextId(int nCount = 1);
-	int getCurrentId();
+	_INT32 getNextId(_INT32 nCount = 1);
+	_INT32 getCurrentId();
 };
 class CComment
 {
@@ -491,8 +491,8 @@ private:
 public:
 	void *pBinary_DocumentTableReader;
 
-	int IdOpen;
-	int IdFormat;
+	_INT32 IdOpen;
+	_INT32 IdFormat;
     std::wstring UserName;
 	std::wstring Initials;
     std::wstring UserId;
@@ -502,7 +502,7 @@ public:
 	std::wstring DateUtc;
 	std::wstring UserData;
 	bool Solved;
-	unsigned int DurableId;
+	_UINT32 DurableId;
     std::wstring Text;
 	std::wstring sContent;
     
@@ -519,14 +519,14 @@ public:
 	CComment(IdCounter& oParaIdCounter, IdCounter& oFormatIdCounter);
 	~CComment();
 
-	int getCount();
+	_INT32 getCount();
 
-	void setFormatStart(int IdFormatStart);
+	void setFormatStart(_INT32 IdFormatStart);
 
 	std::wstring writeRef(const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter);
 	static std::wstring writeRef(CComment* pComment, const std::wstring& sBefore, const std::wstring& sRef, const std::wstring& sAfter);
 
-	static void writeContentWritePart(CComment* pComment, std::wstring& sText, int nPrevIndex, int nCurIndex, std::wstring& sRes);
+	static void writeContentWritePart(CComment* pComment, std::wstring& sText, _INT32 nPrevIndex, _INT32 nCurIndex, std::wstring& sRes);
 	static std::wstring writeContent(CComment* pComment);
 	static std::wstring writeContentExt(CComment* pComment);
 	static std::wstring writeContentExtensible(CComment* pComment);
@@ -536,7 +536,7 @@ public:
 };
 class CComments
 {
-    boost::unordered_map<int, CComment*>          m_mapComments;
+    boost::unordered_map<_INT32, CComment*> m_mapComments;
     boost::unordered_map<std::wstring, CComment*> m_mapAuthors;
 
 public:
@@ -544,13 +544,13 @@ public:
 	IdCounter m_oParaIdCounter;
 
 	CComments();
-		~CComments();
+	~CComments();
 
 	void add(CComment* pComment);
 	void addAuthor(CComment* pComment);
 
-	CComment* get(int nInd);
-	int getNextId(int nCount = 1);
+	CComment* get(_INT32 nInd);
+	_INT32 getNextId(_INT32 nCount = 1);
 
 	std::wstring writeContent();
 	std::wstring writeContentExt();
@@ -563,8 +563,8 @@ public:
 class CDrawingPropertyWrapPoint
 {
 public:
-	__int64 X;
-	__int64 Y;
+	_INT64 X;
+	_INT64 Y;
 
 	bool bX;
 	bool bY;
@@ -591,39 +591,39 @@ class CDrawingProperty
 public:
 	bool			bObject;
     std::wstring	sObjectProgram;	
-    unsigned int	nObjectId;
+	_UINT32			nObjectId;
     BYTE			nObjectType;
 	
-	long DataPos;
-    long DataLength;
+	_INT32 DataPos;
+	_INT32 DataLength;
     BYTE Type;
     bool BehindDoc;
-	__int64 DistL;
-	__int64 DistT;
-	__int64 DistR;
-	__int64 DistB;
+	_INT64 DistL;
+	_INT64 DistT;
+	_INT64 DistR;
+	_INT64 DistB;
     bool LayoutInCell;
-	unsigned long RelativeHeight;
+	_UINT32 RelativeHeight;
     bool BSimplePos;
-	__int64 EffectExtentL;
-	__int64 EffectExtentT;
-	__int64 EffectExtentR;
-	__int64 EffectExtentB;
-	__int64 Width;
-	__int64 Height;
+	_INT64 EffectExtentL;
+	_INT64 EffectExtentT;
+	_INT64 EffectExtentR;
+	_INT64 EffectExtentB;
+	_INT64 Width;
+	_INT64 Height;
     BYTE PositionHRelativeFrom;
     BYTE PositionHAlign;
-	__int64 PositionHPosOffset;
+	_INT64 PositionHPosOffset;
 	double PositionHPctOffset;
     BYTE PositionVRelativeFrom;
     BYTE PositionVAlign;
-	__int64 PositionVPosOffset;
+	_INT64 PositionVPosOffset;
     double PositionVPctOffset;
-	__int64 SimplePosX;
-	__int64 SimplePosY;
+	_INT64 SimplePosX;
+	_INT64 SimplePosY;
     std::wstring sSizeRelH;
     std::wstring sSizeRelV;
-    int m_nDocPr;
+	_INT32 m_nDocPr;
     std::wstring sGraphicFramePr;
     std::wstring sDocPr;
    
@@ -660,7 +660,7 @@ public:
 	bool bSimplePosY;
 	bool bDrawingPropertyWrap;
 
-	CDrawingProperty(int nDocPr);
+	CDrawingProperty(_INT32 nDocPr);
 
 	bool IsGraphicFrameContent();
 	std::wstring Write();
@@ -708,18 +708,18 @@ public:
 	bool bYAlign;
 
 	BYTE DropCap;
-	long H;
+	_INT32 H;
 	BYTE HAnchor;
 	BYTE HRule;
-	long HSpace;
-	long Lines;
+	_INT32 HSpace;
+	_INT32 Lines;
 	BYTE VAnchor;
-	long VSpace;
-	long W;
+	_INT32 VSpace;
+	_INT32 W;
 	BYTE Wrap;
-	long X;
+	_INT32 X;
 	BYTE XAlign;
-	long Y;
+	_INT32 Y;
 	BYTE YAlign;
 
 public:
@@ -763,10 +763,10 @@ class TrackRevision
 public:
     std::wstring Author;
     std::wstring Date;
-	long* Id;
+	_INT32* Id;
     std::wstring UserId;
-	long* vMerge;
-	long* vMergeOrigin;
+	_INT32* vMerge;
+	_INT32* vMergeOrigin;
 
 	OOX::Logic::CRunProperty* RPr;
 

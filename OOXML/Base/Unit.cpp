@@ -621,15 +621,70 @@ namespace XmlUtils
 	{
 		return boost::lexical_cast<std::wstring>(value);
 	}
-
-	std::wstring ToString( int value, const wchar_t* format )
+	std::wstring ToString(_INT32 value, const wchar_t* format)
+	{
+		if (format == NULL) return L"";
+		std::wstringstream sstream;
+		sstream << boost::wformat(format) % value;
+		return sstream.str();
+	}
+	std::string ToString(_INT32 value, const char* format)
+	{
+		if (format == NULL) return "";
+		std::stringstream sstream;
+		sstream << boost::format(format) % value;
+		return sstream.str();
+	}
+	std::wstring ToString(_UINT32 value, const wchar_t* format)
+	{
+		if (format == NULL) return L"";
+		std::wstringstream sstream;
+		sstream << boost::wformat(format) % value;
+		return sstream.str();
+	}
+	std::string ToString(_UINT32 value, const char* format)
+	{
+		if (format == NULL) return "";
+		std::stringstream sstream;
+		sstream << boost::format(format) % value;
+		return sstream.str();
+	}
+	std::wstring ToString(_INT64 value, const wchar_t* format)
+	{
+		if (format == NULL) return L"";
+		std::wstringstream sstream;
+		sstream << boost::wformat(format) % value;
+		return sstream.str();
+	}
+	std::string ToString(_INT64 value, const char* format)
+	{
+		if (format == NULL) return "";
+		std::stringstream sstream;
+		sstream << boost::format(format) % value;
+		return sstream.str();
+	}
+	std::wstring ToString(_UINT64 value, const wchar_t* format)
+	{
+		if (format == NULL) return L"";
+		std::wstringstream sstream;
+		sstream << boost::wformat(format) % value;
+		return sstream.str();
+	}
+	std::string ToString(_UINT64 value, const char* format)
+	{
+		if (format == NULL) return "";
+		std::stringstream sstream;
+		sstream << boost::format(format) % value;
+		return sstream.str();
+	}
+	std::wstring ToString( double value, const wchar_t* format )
 	{
 		if ( format == NULL ) return L"";
 		std::wstringstream sstream;
 		sstream << boost::wformat(format) % value;
 		return sstream.str();
 	}
-	std::string ToString( int value, const char* format )
+	std::string ToString(double value, const char* format )
 	{
 		if ( format == NULL ) return "";
 		std::stringstream sstream;

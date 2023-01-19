@@ -2194,7 +2194,7 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	else if( c_oSerProp_tblPrType::Look == type )
 	{
 		//<w:tblLook  w:val="" w:firstRow="true" w:lastRow="true" w:noHBand="true" w:noVBand="true" /> 
-		long nLook = m_oBufferedStream.GetLong();
+		_INT32 nLook = m_oBufferedStream.GetLong();
 		int nFC = (0 == (nLook & 0x0080)) ? 0 : 1;
 		int nFR = (0 == (nLook & 0x0020)) ? 0 : 1;
 		int nLC = (0 == (nLook & 0x0100)) ? 0 : 1;
@@ -3767,7 +3767,7 @@ int Binary_CommentsTableReader::ReadCommentContent(BYTE type, long length, void*
 		pComment->sContent = doc_reader->m_oDocumentWriter.m_oContent.GetData();
 		doc_reader->m_oDocumentWriter.m_oContent.Clear();
 
-		int nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getCurrentId();
+		_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getCurrentId();
 		pComment->sParaId = XmlUtils::ToString(nId, L"%08X");
 
 	}
@@ -4721,7 +4721,7 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 
 		if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
-			int nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
+			_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
 			std::wstring sParaId = XmlUtils::ToString(nId, L"%08X");
 
 			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");
@@ -8116,7 +8116,7 @@ int Binary_DocumentTableReader::ReadRunContent(BYTE type, long length, void* poR
 
 		if (m_bUsedParaIdCounter && m_oFileWriter.m_pComments)
 		{
-			int nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
+			_INT32 nId = m_oFileWriter.m_pComments->m_oParaIdCounter.getNextId();
 			std::wstring sParaId = XmlUtils::ToString(nId, L"%08X");
 
 			m_oDocumentWriter.m_oContent.WriteString(L"<w:p w14:paraId=\"" + sParaId + L"\" w14:textId=\"" + sParaId + L"\">");

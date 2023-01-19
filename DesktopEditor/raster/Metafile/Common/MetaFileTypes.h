@@ -382,6 +382,7 @@ namespace MetaFile
 		int  nBottom;
 
 		TRect();
+		TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom);
 		TRect(const TWmfRect& oRect);
 		TRect(const TEmfRectL& oRect);
 		TRect& operator=(TWmfRect& oRect);

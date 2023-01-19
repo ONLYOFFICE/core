@@ -537,6 +537,9 @@ namespace MetaFile
 	}
 	bool CWmfDC::UpdatePixelMetrics()
 	{
+		if (1 >= m_oWindow.w || 1 >= m_oViewport.w)
+			return false;
+
 		unsigned short ushMapMode = m_ushMapMode;
 		if (MM_ISOTROPIC == ushMapMode)
 		{

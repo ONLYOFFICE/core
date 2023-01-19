@@ -548,6 +548,7 @@ namespace MetaFile
 			                               {L"y",      ConvertToWString(dY)},
 			                               {L"width",  ConvertToWString(dW)},
 			                               {L"height", ConvertToWString(dH)},
+			                               {L"preserveAspectRatio", L"xMinYMin slice"},
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);

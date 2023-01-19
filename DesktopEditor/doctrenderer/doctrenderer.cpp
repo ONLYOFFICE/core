@@ -1142,6 +1142,9 @@ namespace NSDoctRenderer
 		}
 		else if (sReturnParams.length() != 0)
 		{
+			// TODO: после обработки sReturnParams в командах рендерера - убрать sReturnParams вообще
+			// пока ставим заглушку, чтобы x2t не считал ошибкой
+			string_replace(sReturnParams, L"error", L"Error");
 			strError = L"<result>" + sReturnParams + L"</result>";
 		}
 

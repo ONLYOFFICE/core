@@ -2016,16 +2016,34 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
                  _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
-            MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-            pMeta->LoadFromFile(wsTexturePath.c_str());
+			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+			pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
 
-			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
+			double dW = 300.0 * (dR - dL) / 72;
+			if (dW < 0) dW = -dW;
+			double dH = 300.0 * (dB - dT) / 72;
+			if (dH < 0) dH = -dH;
 
-            std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-            pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+			if (dW < 1) dW = 1;
+			if (dH < 1) dH = 1;
+
+			double dMax = 2000;
+			double dMin = 10;
+			if (dW > dMax || dH > dMax)
+			{
+				double dMaxSrc = (dW > dH) ? dW : dH;
+				dW *= (dMax / dMaxSrc);
+				dH *= (dMax / dMaxSrc);
+			}
+
+			if (dW < dMin) dW = dMin;
+			if (dH < dMin) dH = dMin;
+
+			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
+			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
 
             RELEASEOBJECT(pMeta);
 

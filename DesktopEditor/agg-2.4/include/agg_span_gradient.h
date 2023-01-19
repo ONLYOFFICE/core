@@ -234,7 +234,6 @@ namespace agg
 				double _y = y;
 				m_trans.transform(&_x, &_y);
 				double t = calculate_param(_x, _y);
-                int a = 0;
 				int index = int( t * MaxColorIndex + 0.5 );
 				if( !m_valid_table[index] )
 					CalcColor( index );

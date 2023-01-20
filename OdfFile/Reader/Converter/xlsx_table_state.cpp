@@ -631,18 +631,20 @@ void xlsx_table_state::serialize_table_format (std::wostream & strm)
 							CP_XML_ATTR(L"xSplit", bXSplit ? nXSplit : 0);			
 							CP_XML_ATTR(L"ySplit", bYSplit ? nYSplit : 0);			
 							CP_XML_ATTR(L"topLeftCell", getCellAddress(nXSplit, nYSplit));
-							CP_XML_ATTR(L"activePane", L"bottomLeft");
-							CP_XML_ATTR(L"state", L"frozen");			
+							//CP_XML_ATTR(L"activePane", L"bottomLeft");
+							CP_XML_ATTR(L"activePane", L"topLeft");
+							CP_XML_ATTR(L"state", L"frozen");
 						}	
 					}
 					if (col >= 0 && row >= 0)
 					{
 						CP_XML_NODE(L"selection")
 						{	
-							CP_XML_ATTR(L"activeCell",		getCellAddress(col, row));			
-							CP_XML_ATTR(L"activeCellId",	0);			
-							CP_XML_ATTR(L"pane",			((bXSplit || bYSplit) ? L"bottomLeft" : L"topLeft"));			
-							CP_XML_ATTR(L"sqref",			getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCell", getCellAddress(col, row));			
+							CP_XML_ATTR(L"activeCellId", 0);			
+							//CP_XML_ATTR(L"pane", ((bXSplit || bYSplit) ? L"bottomLeft" : L"topLeft"));			
+							CP_XML_ATTR(L"activePane", L"topLeft");
+							CP_XML_ATTR(L"sqref", getCellAddress(col, row));
 						}						
 					}
 				}

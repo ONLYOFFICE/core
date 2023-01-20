@@ -64,15 +64,23 @@ namespace _graphics_utils_
 		if (file_size < 1) return false;
         bool result = false;
 
-        CBgraFrame image;
-        if (result = image.OpenFile(fileName, 0 ))
-        {
-                Width  = image.get_Width();
-                Height = image.get_Height();
+		try
+		{
+			CBgraFrame image;
+			if (result = image.OpenFile(fileName, 0))
+			{
+				Width = image.get_Width();
+				Height = image.get_Height();
 
-                result = true;
-        }
-        else
+				result = true;
+			}
+		}
+		catch (...)
+		{
+			result = false;
+		}
+
+		if (!result)
         {
 #if defined(_WIN32) || defined(_WIN64)
             Gdiplus::GdiplusStartupInput gdiplusStartupInput;

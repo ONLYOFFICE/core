@@ -70,6 +70,21 @@ namespace MetaFile
 		nBottom = oRect.Bottom;
 		return *this;
 	}
+	bool operator!=(const TRect& oLeftRect, const TRect& oRightRect)
+	{
+		return (oLeftRect.nLeft   != oRightRect.nLeft  &&
+		        oLeftRect.nTop    != oRightRect.nTop   &&
+		        oLeftRect.nRight  != oRightRect.nRight &&
+		        oLeftRect.nBottom != oRightRect.nBottom);
+	}
+	bool operator==(const TRect& oLeftRect, const TRect& oRightRect)
+	{
+		return (oLeftRect.nLeft   == oRightRect.nLeft  &&
+		        oLeftRect.nTop    == oRightRect.nTop   &&
+		        oLeftRect.nRight  == oRightRect.nRight &&
+		        oLeftRect.nBottom == oRightRect.nBottom);
+	}
+
 
 	TPointL::TPointL()
 	{

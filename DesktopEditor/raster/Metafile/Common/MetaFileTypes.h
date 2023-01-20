@@ -386,6 +386,8 @@ namespace MetaFile
 		TRect(const TWmfRect& oRect);
 		TRect(const TEmfRectL& oRect);
 		TRect& operator=(TWmfRect& oRect);
+		friend bool operator!=(const TRect& oLeftRect, const TRect& oRightRect);
+		friend bool operator==(const TRect& oLeftRect, const TRect& oRightRect);
     };
 
 	struct TRectD

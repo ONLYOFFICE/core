@@ -301,8 +301,8 @@ namespace OOX
 					else if (sName == L"externalReference")
 					{
 						WritingElement_ReadAttributes_Start_No_NS(oReader)
-							WritingElement_ReadAttributes_Read_if(oReader, L"fileId", m_oFileId)
-							WritingElement_ReadAttributes_Read_else_if(oReader, L"portalName", m_oPortalName)
+							WritingElement_ReadAttributes_Read_if(oReader, L"fileKey", m_oFileKey)
+							WritingElement_ReadAttributes_Read_else_if(oReader, L"instanceId", m_oInstanceId)
 						WritingElement_ReadAttributes_End_No_NS(oReader)
 					}
 				}
@@ -451,14 +451,14 @@ namespace OOX
                 m_oPivotCacheDefinitionExt->toXML(writer, L"x14:pivotCacheDefinition");
                 sResult += writer.GetData().c_str();
             }
-			if (m_oFileId.IsInit() || m_oPortalName.IsInit())
+			if (m_oFileKey.IsInit() || m_oInstanceId.IsInit())
 			{
 				NSStringUtils::CStringBuilder writer;
 				writer.StartNode(L"externalReference");
 				writer.StartAttributes();
 				
-				if (m_oFileId.IsInit()) writer.WriteAttribute(L"fileId", *m_oFileId);
-				if (m_oPortalName.IsInit()) writer.WriteAttribute(L"portalName", *m_oPortalName);
+				if (m_oFileKey.IsInit()) writer.WriteAttribute(L"fileKey", *m_oFileKey);
+				if (m_oInstanceId.IsInit()) writer.WriteAttribute(L"portalName", *m_oInstanceId);
 
 				writer.EndAttributes();
 				writer.EndNode(L"externalReference");

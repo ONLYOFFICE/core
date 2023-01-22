@@ -405,6 +405,16 @@ OBJECTS_DIR = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUI
 MOC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/moc
 RCC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/rcc
 UI_DIR      = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/ui
+
+bundle_xcframeworks {
+    xcframework_platform_ios_simulator {
+        OBJECTS_DIR = $$OBJECTS_DIR/simulator
+        MOC_DIR     = $$MOC_DIR/simulator
+        RCC_DIR     = $$RCC_DIR/simulator
+        UI_DIR      = $$UI_DIR/simulator
+    }
+}
+
 build_xp {
     OBJECTS_DIR = $$OBJECTS_DIR/xp
     MOC_DIR     = $$MOC_DIR/xp

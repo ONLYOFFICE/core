@@ -17,6 +17,14 @@ core_ios {
 
     OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/ios/openssl-universal/lib
 
+    bundle_xcframeworks {
+        xcframework_platform_ios_simulator {
+            OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/ios/openssl-xc/simulator/lib
+        } else {
+            OPENSSL_LIBS_DIRECTORY = $$PWD/../openssl/build/ios/openssl-xc/lib
+        }
+    }
+
 }
 
 core_windows {

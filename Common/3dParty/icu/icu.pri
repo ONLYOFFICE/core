@@ -27,9 +27,18 @@ core_mac {
 core_ios {
     INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/include
 
-    LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicudata.a
-    LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicui18n.a
-    LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicuuc.a
+    ICU_LIBS_PATH_IOS = $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build
+    bundle_xcframeworks {
+        xcframework_platform_ios_simulator {
+            ICU_LIBS_PATH_IOS = $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build_xc/simulator
+        } else {
+            ICU_LIBS_PATH_IOS = $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build_xc
+        }
+    }
+
+    LIBS += $$ICU_LIBS_PATH_IOS/libicudata.a
+    LIBS += $$ICU_LIBS_PATH_IOS/libicui18n.a
+    LIBS += $$ICU_LIBS_PATH_IOS/libicuuc.a
 }
 
 core_android {

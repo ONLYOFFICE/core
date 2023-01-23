@@ -9931,12 +9931,13 @@ int Binary_NotesTableReader::ReadNoteContent(BYTE type, long length, void* poRes
 };
 
 
-BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro)
+BinaryFileReader::BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro, bool bOForm)
 	: 
 	m_sFileInDir(sFileInDir), 
 	m_oBufferedStream(oBufferedStream), 
 	m_oFileWriter(oFileWriter),
-	m_bMacro(bMacro)
+	m_bMacro(bMacro),
+	m_bOForm(bOForm)
 {
 }
 int BinaryFileReader::ReadFile()
@@ -10153,31 +10154,35 @@ int BinaryFileReader::ReadMainTable()
 		}break;
 		case c_oSerTableTypes::OForm:
 		{
-			_INT32 nDataSize = m_oBufferedStream.GetLong();
-
-			BYTE *pData = new BYTE[nDataSize];
-			if (pData)
+			if (m_bOForm)
 			{
-				m_oBufferedStream.GetArray(pData, nDataSize);
-					
-				std::wstring pathOFormDst = m_oFileWriter.get_document_writer().m_sDir + FILE_SEPARATOR_STR + L"oform";
-				std::wstring sZipOformFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_oFileWriter.get_document_writer().m_sDir, L"oform");
-
-				NSFile::CFileBinary zipOform;
-				if (zipOform.CreateFile(sZipOformFile) && NSDirectory::CreateDirectory(pathOFormDst))
+				_INT32 nDataSize = m_oBufferedStream.GetLong();
+				BYTE *pData = new BYTE[nDataSize];
+				if (pData)
 				{
-					zipOform.WriteFile(pData, nDataSize);
-					zipOform.CloseFile();
+					m_oBufferedStream.GetArray(pData, nDataSize);
+					
+					std::wstring pathOFormDst = m_oFileWriter.get_document_writer().m_sDir + FILE_SEPARATOR_STR + L"oform";
+					std::wstring sZipOformFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_oFileWriter.get_document_writer().m_sDir, L"oform");
 
-					COfficeUtils oCOfficeUtils(NULL);
-					if (S_OK == oCOfficeUtils.ExtractToDirectory(sZipOformFile, pathOFormDst, NULL, 0))
+					NSFile::CFileBinary zipOform;
+					if (zipOform.CreateFile(sZipOformFile) && NSDirectory::CreateDirectory(pathOFormDst))
 					{
-						m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/main+xml", L"/oform", L"main.xml");
+						zipOform.WriteFile(pData, nDataSize);
+						zipOform.CloseFile();
+
+						COfficeUtils oCOfficeUtils(NULL);
+						if (S_OK == oCOfficeUtils.ExtractToDirectory(sZipOformFile, pathOFormDst, NULL, 0))
+						{
+							m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/main+xml", L"/oform", L"main.xml");
+						}
+						NSFile::CFileBinary::Remove(sZipOformFile);
 					}
-					NSFile::CFileBinary::Remove(sZipOformFile);
+					delete[]pData;
 				}
-				delete[]pData;
 			}
+			else
+				m_oBufferedStream.SkipRecord();
 		}break;
 		case c_oSerTableTypes::Glossary:
 		{

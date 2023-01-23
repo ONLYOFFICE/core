@@ -455,11 +455,13 @@ namespace NExtractTools
 
         BinDocxRW::CDocxSerializer m_oCDocxSerializer;
 
+		m_oCDocxSerializer.setOFormEnabled(params.m_nFormatTo && (	*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM ||
+																	*params.m_nFormatTo == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCXF));
 		m_oCDocxSerializer.setMacroEnabled(params.m_bMacro);
 		m_oCDocxSerializer.setIsNoBase64(params.getIsNoBase64());
 		m_oCDocxSerializer.setFontDir(params.getFontPath());
 
-        std::wstring sXmlOptions = _T("");
+		std::wstring sXmlOptions;
         std::wstring sThemePath;             // will be filled by 'CreateDocxFolders' method
         std::wstring sMediaPath;             // will be filled by 'CreateDocxFolders' method
         std::wstring sEmbedPath;             // will be filled by 'CreateDocxFolders' method

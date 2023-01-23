@@ -1223,10 +1223,17 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctDocInfo:
 			{
-				std::wstring wsTitle    = ReadString(current, curindex);
-				std::wstring wsCreator  = ReadString(current, curindex);
-				std::wstring wsSubject  = ReadString(current, curindex);
-				std::wstring wsKeywords = ReadString(current, curindex);
+				int nFlags = ReadInt(current, curindex);
+
+				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
+				if (nFlags & 1)
+					wsTitle    = ReadString(current, curindex);
+				if (nFlags & 2)
+					wsCreator  = ReadString(current, curindex);
+				if (nFlags & 4)
+					wsSubject  = ReadString(current, curindex);
+				if (nFlags & 8)
+					wsKeywords = ReadString(current, curindex);
 
 				pRenderer->DocInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
 				break;

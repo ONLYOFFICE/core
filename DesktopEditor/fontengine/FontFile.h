@@ -45,6 +45,7 @@
 #include "FontPath.h"
 #include "GlyphString.h"
 #include "../common/File.h"
+#include <map>
 
 static std::wstring GetCorrectSfntName(const char* name)
 {
@@ -85,79 +86,30 @@ static std::wstring GetCorrectSfntName(const char* name)
 class TFontCacheSizes
 {
 public:
-	int			ushUnicode; // Значение символа в юникоде
+	int			Unicode; // Значение символа в юникоде
 	EGlyphState eState;     // Есть ли символ в шрифте/стандартном шрифте
-	int         nCMapIndex; // Номер таблицы 'cmap', в которой был найден данный символ 
+	int			nCMapIndex; // Номер таблицы 'cmap', в которой был найден данный символ
 
-	USHORT		ushGID;     
+	int			GID;
 
 	float		fAdvanceX; 
-	float       fAdvanceY;
+	float		fAdvanceY;
 
 	TBBox		oBBox;
 	TMetrics	oMetrics;
 
-	bool         bBitmap;
+	bool		bBitmap;
 	TGlyphBitmap oBitmap;
 
 public:
 	TFontCacheSizes()
 	{
+		bBitmap = false;
 		fAdvanceX = 0;
 	}
 	~TFontCacheSizes()
 	{
 	}
-};
-
-class CFontCacheSizes
-{
-public:
-	CFontCacheSizes()
-	{
-	}
-	~CFontCacheSizes()
-	{
-	}
-	inline void Init()
-	{
-        m_arrSizes.clear();
-	}
-	inline void Clear(bool bIsFree = false)
-	{
-		if (bIsFree)
-		{
-            size_t nCount = m_arrSizes.size();
-            for (size_t i = 0; i < nCount; ++i)
-			{
-				m_arrSizes[i].oBitmap.bFreeData = TRUE;
-			}
-		}
-
-        m_arrSizes.clear();
-	}
-
-	int Add(const TFontCacheSizes& oSizes)
-	{
-        m_arrSizes.push_back( oSizes );
-        return m_arrSizes.size() - 1;
-	}
-
-	inline TFontCacheSizes& Get(int nIndex)
-	{
-		return m_arrSizes[nIndex];
-	}
-	const TFontCacheSizes& operator[] (int nIndex) const
-	{
-		return m_arrSizes[nIndex];
-	}
-	TFontCacheSizes& operator[] (int nIndex)
-	{		
-		return m_arrSizes[nIndex];
-	}
-
-private:
-    std::vector<TFontCacheSizes> m_arrSizes;
 };
 
 #define LOAD_MODE FT_LOAD_NO_HINTING | FT_LOAD_NO_AUTOHINT | FT_LOAD_NO_BITMAP | FT_LOAD_LINEAR_DESIGN
@@ -179,6 +131,30 @@ public:
     void*              user;
 };
 
+class CFontFile;
+class CCacheGlyphs
+{
+public:
+	std::map<int, TFontCacheSizes> m_mapGids;
+	std::map<int, TFontCacheSizes> m_mapUnicodes;
+
+	// потом гиды поменять на массив из индексов.
+	// особенно если не так много глифов. быстрота доступа важнее.
+
+	CFontFile* m_pFile;
+
+public:
+	CCacheGlyphs()
+	{
+		m_pFile = NULL;
+	}
+
+public:
+	TFontCacheSizes* Get(const int& code);
+	void Add(const TFontCacheSizes& item);
+	void Clear(bool bIsFree = false);
+};
+
 class CFontStream;
 class CFontManager;
 class CFontFile : public NSFonts::IFontFile
@@ -191,8 +167,8 @@ public:
     bool m_bUseKerning;
 
     double m_dSize;			// Размер шрифта
-    UINT m_unHorDpi;		// Горизонтальное разрешение
-    UINT m_unVerDpi;		// Вертикальное разрешение
+    double m_unHorDpi;		// Горизонтальное разрешение
+    double m_unVerDpi;		// Вертикальное разрешение
 
     INT m_bNeedDoItalic;
     INT m_bNeedDoBold;
@@ -227,11 +203,6 @@ public:
     int m_lLineHeight;
     int m_lUnits_Per_Em;
 
-    // cache
-	CFontCacheSizes m_oCacheSizes;
-	// вот так экономим память. нету пока таких шрифтов, в которых глифов больше 0xFFFF
-	USHORT m_arrCacheSizesIndexs[FONT_CACHE_SIZES_INDEXES_SIZE];
-
     INT		m_bUseDefaultFont;
 	CFontFile*	m_pDefaultFont;
 
@@ -241,6 +212,8 @@ public:
     INT m_bHintsSupport;
 
     std::wstring m_sName;
+
+	CCacheGlyphs m_oCache;
 
 public:
 
@@ -259,7 +232,7 @@ public:
     void UpdateMatrix1();
     void UpdateMatrix2();
 	
-	void SetSizeAndDpi(double dSize, UINT unHorDpi, UINT unVerDpi);
+	void SetSizeAndDpi(double dSize, double unHorDpi, double unVerDpi);
 	
 	void ClearCache();
 	void ClearCacheNoAttack(bool bIsFree = false);
@@ -274,8 +247,6 @@ public:
 	INT GetString2(CGlyphString& oString);
     INT GetString2C(CGlyphString& oString);
 	TFontCacheSizes GetChar(LONG lUnicode);
-
-    bool AddToSizesCache(const TFontCacheSizes& oSizes);
 	
 	int SetCMapForCharCode(long lUnicode, int *pnCMapIndex);
 	int SetCMapForCharCode2(long lUnicode);
@@ -325,6 +296,7 @@ public:
     virtual int GetEmbeddingLicenceType();
     virtual void FillFontSelectFormat(NSFonts::CFontSelectFormat& oFormat);
 };
+
 
 //-------------------------------------------------------------------------------------------------------------------------------
 struct TFreeTypeFontPath 

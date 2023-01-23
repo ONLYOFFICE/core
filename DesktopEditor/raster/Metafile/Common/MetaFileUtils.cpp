@@ -36,10 +36,15 @@
 
 #include <time.h>
 #include <math.h>
+#include <sstream>
+#include <iomanip>
 
 #ifndef DIB_RGB_COLORS
     #define DIB_RGB_COLORS  0x00
 #endif
+
+#define MINACCURACY 2
+#define MAXACCURACY 10
 
 namespace MetaFile
 {
@@ -136,13 +141,16 @@ namespace MetaFile
 			if (BI_JPEG != unCompression || BI_PNG != unCompression)
 				return false;
 
-			std::wstring wsTempFileName;
-			FILE* pTempFile = NULL;
-			if (!OpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".wmf0", NULL))
+			std::wstring wsTempFileName = GetTempFilename();
+			if (wsTempFileName.empty())
 				return false;
 
-			::fwrite(pBuffer, 1, unImageSize, pTempFile);
-			::fclose(pTempFile);
+			NSFile::CFileBinary oFile;
+			if (!oFile.CreateFileW(wsTempFileName))
+				return false;
+
+			oFile.WriteFile(pBuffer, (DWORD)unImageSize);
+			oFile.CloseFile();
 
 			CBgraFrame oFrame;
 			oFrame.OpenFile(wsTempFileName);
@@ -906,9 +914,9 @@ namespace MetaFile
 		double dAngle = dRadAngle * 180 / 3.14159265358979323846;
 		switch (nQuarter)
 		{
-			case 1: dAngle = 180 - dAngle; break;
-			case 2: dAngle = 180 + dAngle; break;
-			case 3: dAngle = 360 - dAngle; break;
+		case 1: dAngle = 180 - dAngle; break;
+		case 2: dAngle = 180 + dAngle; break;
+		case 3: dAngle = 360 - dAngle; break;
 		}
 
 		return dAngle;
@@ -916,6 +924,10 @@ namespace MetaFile
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight)
 	{
 		BYTE* pBgra = *ppBgra;
+
+		if (NULL == pBgra)
+			return;
+
 		// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
 		if (0x008800C6 == unRasterOperation) // SRCPAINT
 		{
@@ -951,6 +963,21 @@ namespace MetaFile
 			for (unsigned int unIndex = 3; unIndex < unWidth * 4 * unHeight; unIndex += 4)
 				pBgra[unIndex] = 0xff;
 		}
+		else if (0x00660046 == unRasterOperation) //SRCINVERT
+		{
+			BYTE* pCur = pBgra;
+
+			for (unsigned int unY = 0; unY < unHeight; unY++)
+			{
+				for (unsigned int unX = 0; unX < unWidth; unX++)
+				{
+					unsigned int unIndex = (unY * unWidth + unX) * 4;
+
+					if (0x00 == pCur[unIndex + 0] && 0x00 == pCur[unIndex + 1] && 0x00 == pCur[unIndex + 2])
+						pCur[unIndex + 3] = 0;
+				}
+			}
+		}
 	}
 
 	std::wstring ascii_to_unicode(const char *src)
@@ -976,72 +1003,78 @@ namespace MetaFile
 		return sRes;
 	}
 
-    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder)
+	std::wstring GetTempFilename(const std::wstring& sFolder)
 	{
-		std::wstring wsTemp, wsFileName;
-		FILE *pTempFile = NULL;
-#if defined(_WIN32) || defined (_WIN64)
-		wchar_t *wsTempDir;
-		if ((wsTempDir = _wgetenv(L"TEMP")) && (wsFolder == NULL))
+		std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(sFolder.empty() ? NSFile::CFileBinary::GetTempPath() : sFolder, L"wmf");
+		if (sTmpFile.empty())
+			return sTmpFile;
+
+		if (NSFile::CFileBinary::Exists(sTmpFile))
+			NSFile::CFileBinary::Remove(sTmpFile);
+
+		return sTmpFile;
+	}
+
+	std::wstring StringNormalization(std::wstring wsString)
+	{
+		std::wstring wsText;
+		for (wchar_t wChar : wsString)
+		    if (wChar == L'<')
+			   wsText += L"&lt;";
+		    else if (wChar == L'>')
+			   wsText += L"&gt;";
+		    else if (wChar == L'&')
+			   wsText += L"&amp;";
+		    else if (wChar == L'\'')
+			   wsText += L"&apos;";
+		    else if (wChar == L'"')
+			   wsText += L"&quot;";
+			else if (wChar == L'\r')
+				continue;
+		    else if (wChar == 0x00)
+			   return wsText;
+
+		    else wsText += wChar;
+		return wsText;
+	}
+
+	static int GetMinAccuracy(double dValue)
+	{
+		if (dValue == (int)dValue)
+			return 0;
+
+		if (dValue < 0.)
+			dValue = -dValue;
+
+		if (dValue > 1.)
+			return MINACCURACY;
+
+		unsigned int unAccuracy = 0;
+
+		while (unAccuracy < MAXACCURACY)
 		{
-			wsTemp = std::wstring(wsTempDir);
-#else
-		char *wsTempDirA;
-		if ((wsTempDirA = getenv("TEMP")) && (wsFolder == NULL))
-		{
-			std::wstring wsTempDir = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)wsTempDirA, strlen(wsTempDirA));
-			wsTemp = wsTempDir.c_str();
-#endif
-			wsTemp.append(L"/");
+			dValue *= 10;
+
+			if (dValue >= 1.)
+				break;
+
+			++unAccuracy;
 		}
-		else if (wsFolder != NULL)
-		{
-			wsTemp = std::wstring(wsFolder);
-			wsTemp.append(L"/");
-		}
+
+		if (MAXACCURACY == unAccuracy)
+			return 0;
 		else
-		{
-			wsTemp = L"";
-		}
-		wsTemp.append(L"x");
-		int nTime = (int)time(NULL);
-		for (int nIndex = 0; nIndex < 1000; ++nIndex)
-		{
-			wsFileName = wsTemp;
-#if defined(_WIN32) || defined (_WIN64)
-			wchar_t buff[32] ={};
-			_itow(nTime + nIndex, buff, 10);
-			wsFileName.append(buff, wcslen(buff));
-#else
-			wsFileName.append(std::to_wstring(nTime + nIndex));
-#endif
-			if (wsExt)
-			{
-				wsFileName.append(wsExt);
-			}
-#if defined (_WIN32) || defined (_WIN64)
-			if (!(pTempFile = _wfopen(wsFileName.c_str(), L"r")))
-			{
-				if (!(pTempFile = _wfopen(wsFileName.c_str(), wsMode)))
-#else
-			std::string sFileName = U_TO_UTF8(wsFileName);
-			if (!(pTempFile = fopen(sFileName.c_str(), "r")))
-			{
-				std::wstring strMode(wsMode);
-				std::string sMode = U_TO_UTF8(strMode);
-				if (!(pTempFile = fopen(sFileName.c_str(), sMode.c_str())))
-#endif
-				{
-					return FALSE;
-				}
-				*pwsName = wsFileName;
-				*ppFile = pTempFile;
-				return TRUE;
-			}
+			return unAccuracy + 3;
+	}
 
-			fclose(pTempFile);
-			}
+	std::wstring ConvertToWString(double dValue, int nAccuracy)
+	{
+		int nNewAccuracy = (-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue);
 
-		return FALSE;
-		}
-		}
+		std::wstringstream owsStream;
+		owsStream << std::fixed << std::setprecision(nNewAccuracy) << dValue;
+
+		return owsStream.str();
+	}
+
+}

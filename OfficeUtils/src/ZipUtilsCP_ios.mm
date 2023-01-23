@@ -39,13 +39,19 @@ namespace ZLibZipUtils
       NSString *path =[[NSString alloc] initWithBytes:filename
                                                length:wcslen(filename)*sizeof(*filename)
                                              encoding:NSUTF32LittleEndianStringEncoding];
-      return zipOpen( (const char*)[path fileSystemRepresentation], APPEND_STATUS_CREATE );
+      if (path && path.length > 0) {
+          return zipOpen( (const char*)[path fileSystemRepresentation], APPEND_STATUS_CREATE );
+      }
+      return NULL;
   }
   unzFile unzOpenHelp(const wchar_t* filename)
   {
       NSString *path =[[NSString alloc] initWithBytes:filename
                                                length:wcslen(filename)*sizeof(*filename)
                                              encoding:NSUTF32LittleEndianStringEncoding];
-      return unzOpen ((const char*)[path fileSystemRepresentation]);
+      if (path && path.length > 0) {
+          return unzOpen ((const char*)[path fileSystemRepresentation]);
+      }
+      return NULL;
   }
 }

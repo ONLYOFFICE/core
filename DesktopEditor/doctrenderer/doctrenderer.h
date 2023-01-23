@@ -38,39 +38,40 @@
 
 namespace NSDoctRenderer
 {
-    namespace DoctRendererFormat
-    {
-        enum FormatFile
-        {
-            DOCT	= 0,
-            XLST	= 1,
-            PPTT	= 2,
-            PDF		= 3,
-            HTML    = 4,
-            PPTX_THEME_THUMBNAIL = 5,
+	namespace DoctRendererFormat
+	{
+		enum FormatFile
+		{
+			DOCT	= 0,
+			XLST	= 1,
+			PPTT	= 2,
+			PDF		= 3,
+			HTML    = 4,
+			PPTX_THEME_THUMBNAIL = 5,
 
-            INVALID = 255
-        };
-    }
+			INVALID = 255
+		};
+	}
 }
 
 namespace NSDoctRenderer
 {
-    class CDoctRenderer_Private;
-    class Q_DECL_EXPORT CDoctrenderer
-    {
-    public:
-        CDoctrenderer(const std::wstring& sAllFontsPath = L"");
-        void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"");
-        ~CDoctrenderer();
+	class CDoctRenderer_Private;
+	class Q_DECL_EXPORT CDoctrenderer
+	{
+	public:
+		CDoctrenderer(const std::wstring& sAllFontsPath = L"");
+		void LoadConfig(const std::wstring& sConfigDir, const std::wstring& sAllFontsPath = L"");
+		~CDoctrenderer();
 
-    public:
-        bool Execute(const std::wstring& strXml, std::wstring& strError);
-        std::vector<std::wstring> GetImagesInChanges();
+	public:
+		bool Execute(const std::wstring& strXml, std::wstring& strError);
+		std::vector<std::wstring> GetImagesInChanges();
+		void CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir);
 
-    private:
-        CDoctRenderer_Private* m_pInternal;
-    };
+	private:
+		CDoctRenderer_Private* m_pInternal;
+	};
 }
 
 #endif // DOCTRENDERER_H

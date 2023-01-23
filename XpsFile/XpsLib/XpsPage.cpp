@@ -639,7 +639,18 @@ namespace XPS
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
 		int nUtf16Pos = 0;
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
-		m_pFontManager->LoadFontFromFile(m_wsRootPath->getFullFilePath(wsFontPath), 0, (float)(dFontSize * 0.75), 96, 96);
+
+		std::wstring sFullFontPath = m_wsRootPath->getFullFilePath(wsFontPath);
+		if (NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage())
+		{
+			NSFonts::IFontStream* pMemoryStream = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage()->Get(sFullFontPath);
+			if (!pMemoryStream)
+				sFullFontPath = L"";
+		}
+
+		if (!sFullFontPath.empty())
+			m_pFontManager->LoadFontFromFile(sFullFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
+
 		double dFontKoef = dFontSize / 100.0;
 
 		bool bNeedItalic = false, bNeedBold = false, bChangeFont = true;
@@ -826,9 +837,7 @@ namespace XPS
 		CWString wsFill;
 
 		CWString wsClip, wsTransform, wsPathData, wsPathTransform;
-	#ifdef BUILDING_WASM_MODULE
 		std::vector<CDocument::CDocumentStructure>::iterator find = m_pDocument->m_vStructure.end();
-	#endif
 		if (oReader.MoveToFirstAttribute())
 		{
 			std::wstring wsAttrName = oReader.GetName();
@@ -918,7 +927,6 @@ namespace XPS
 				{
 					wsPathData.create(oReader.GetText(), true);
 				}
-			#ifdef BUILDING_WASM_MODULE
 				else if (L"Name" == wsAttrName)
 				{
 					std::wstring wsNameTarget = oReader.GetText();
@@ -1005,7 +1013,6 @@ namespace XPS
 						}
 					}
 				}
-			#endif
 
 				if (!oReader.MoveToNextAttribute())
 					break;
@@ -1014,7 +1021,6 @@ namespace XPS
 			}
 		}
 		oReader.MoveToElement();
-	#ifdef BUILDING_WASM_MODULE
 		if (find != m_pDocument->m_vStructure.end())
 		{
 			std::wstring wsPath = wsPathData.c_stdstr();
@@ -1027,7 +1033,6 @@ namespace XPS
 					find->dY = GetDouble(wsPath.substr(nFindY, nFindEndY - nFindY));
 			}
 		}
-	#endif
 
 		CBrush* pBrush = NULL;
 		bool bDeleteBrush = false;

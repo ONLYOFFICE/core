@@ -689,6 +689,12 @@
 #define c_oAscContentControlSpecificTypeDateTime      5
 #define c_oAscContentControlSpecificTypeTOC           10
 
+#define c_oAscEDocProtectComments 0
+#define c_oAscEDocProtectForms 1
+#define c_oAscEDocProtectNone 2
+#define c_oAscEDocProtectReadOnly 3
+#define c_oAscEDocProtectTrackedChanges 4
+
 #define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
 
 // MENU COMMANDS
@@ -772,6 +778,7 @@
 #define ASC_MENU_EVENT_TYPE_USER_ZOOM               301
 
 #define ASC_MENU_EVENT_TYPE_INSERT_CHART            400
+#define ASC_MENU_EVENT_TYPE_INSERT_SCREEN_IMAGE     401
 #define ASC_MENU_EVENT_TYPE_ADD_CHART_DATA          440
 #define ASC_MENU_EVENT_TYPE_GET_CHART_DATA          450
 #define ASC_MENU_EVENT_TYPE_SET_CHART_DATA          460
@@ -784,6 +791,8 @@
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
 #define ASC_MENU_EVENT_TYPE_GET_COLOR_SCHEME        2416    //  GET(int)
 #define ASC_MENU_EVENT_TYPE_THEMECOLORS             2417
+
+#define ASC_MENU_EVENT_TYPE_CHANGE_MOBILE_MODE      2500
 
 #define ASC_MENU_EVENT_TYPE_GO_TO_INTERNAL_LINK     5000
 

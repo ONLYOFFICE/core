@@ -37,7 +37,7 @@
 #include "../../DesktopEditor/common/File.h"
 
 #ifndef DISABLE_PDF_CONVERTATION
-#include "../../PdfWriter/PdfRenderer.h"
+#include "../../PdfFile/PdfFile.h"
 #endif
 
 #ifndef M_PI
@@ -204,7 +204,7 @@ namespace XPS
 
 		if (c_nPDFWriter == lRendererType)
 		{
-			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+			CPdfFile* pPdf = (CPdfFile*)pRenderer;
 			pPdf->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);
 			pPdf->SetLinearGradient(m_dX0, m_dY0, m_dX1, m_dY1);
 		}
@@ -231,7 +231,7 @@ namespace XPS
 
 		if (c_nPDFWriter == lRendererType)
 		{
-			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+			CPdfFile* pPdf = (CPdfFile*)pRenderer;
 			pPdf->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);
             pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
 		}

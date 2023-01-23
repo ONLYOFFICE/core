@@ -369,6 +369,10 @@ protected:
 
 public:
     // Открывает архив, переданные данные необходимо освободить после использования класса
+    CZipFolderMemory()
+    {
+        m_zlib = new CZipBuffer();
+    }
     CZipFolderMemory(BYTE* data, DWORD length)
     {
         m_zlib = new CZipBuffer(data, length);

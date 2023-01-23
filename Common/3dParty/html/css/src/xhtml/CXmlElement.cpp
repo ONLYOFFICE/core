@@ -121,7 +121,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_UiPriority, L"9");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h1");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"44");
     }
@@ -135,7 +135,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h2");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"33");
     }
@@ -149,7 +149,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h3");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"26");
     }
@@ -163,7 +163,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h4");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"22");
     }
@@ -177,7 +177,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h5");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"18");
     }
@@ -191,7 +191,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_UnhideWhenUsed, L"true");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"h6");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_B, L"bold");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Sz, L"15");
     }
@@ -203,7 +203,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Name, L"Paragraph character");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"p");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
     }
     else if (sNameDefaultElement == L"p")
     {
@@ -222,7 +222,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Name, L"Div character");
         AddBasicProperties(NSCSS::NSConstValues::NSProperties::BasicProperties::B_Link, L"div");
 
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
     }
     else if (sNameDefaultElement == L"div")
     {
@@ -243,7 +243,7 @@ void CXmlElement::CreateDefaultElement(const std::wstring& sNameDefaultElement)
 
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_Color, L"0000FF");
         AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_U, L"single");
-        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Arial\"");
+        AddPropertiesInR(NSCSS::NSConstValues::NSProperties::RunnerProperties::R_RFonts, L"\"Times New Roman\"");
     }
     else if (sNameDefaultElement == L"a")
     {

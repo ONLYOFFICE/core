@@ -68,6 +68,10 @@ isEqual(QT_MAJOR_VERSION, 5) {
     equals(DST_ARCH, i386) {
         DST_ARCH=x86
     }
+
+    lessThan(QT_MINOR_VERSION, 15) {
+	    DEFINES += QT_VERSION_LESS_5_15
+	}
 }
 
 greaterThan(QT_MAJOR_VERSION, 5) {
@@ -168,6 +172,11 @@ core_windows {
     QMAKE_CXXFLAGS -= -Zc:strictStrings
     QMAKE_CXXFLAGS += /MP
 
+    MSVC_VERSION_DETECT = $$(VisualStudioVersion)
+	greaterThan(MSVC_VERSION_DETECT, 15.0) {
+	    CONFIG += vs2019
+	}
+
     vs2019 {
         QMAKE_CXXFLAGS_RELEASE -= -permissive-
         QMAKE_CXXFLAGS -= -permissive-
@@ -253,29 +262,36 @@ core_ios {
         CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
     } else {
 
-        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
-        CONFIG += core_ios_main_arch
+        QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
 
         QMAKE_CFLAGS += -fembed-bitcode
         QMAKE_CXXFLAGS += -fembed-bitcode
         QMAKE_LFLAGS += -fembed-bitcode
 
+        bundle_xcframeworks {
+            xcframework_platform_ios_simulator {
+                QMAKE_APPLE_DEVICE_ARCHS=
+                QMAKE_APPLE_SIMULATOR_ARCHS=x86_64 arm64
+            } else {
+                QMAKE_APPLE_DEVICE_ARCHS = arm64
+                QMAKE_APPLE_SIMULATOR_ARCHS=
+            }
+        } else {
+            CONFIG += core_ios_main_arch
+        }
+
         core_ios_main_arch {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
             core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
 
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
             }
-        } else {
-            plugin : TARGET = $$join(TARGET, TARGET, "", "_addition")
-            QMAKE_APPLE_DEVICE_ARCHS=
-            QMAKE_APPLE_SIMULATOR_ARCHS=
         }
 
         core_ios_nomain_arch {
             QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
             }
         }
@@ -328,6 +344,7 @@ core_android {
 }
 
 core_debug {
+    DEFINES += _DEBUG
     CORE_BUILDS_CONFIGURATION_PREFIX    = debug
 }
 core_release {
@@ -388,6 +405,16 @@ OBJECTS_DIR = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUI
 MOC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/moc
 RCC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/rcc
 UI_DIR      = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/ui
+
+bundle_xcframeworks {
+    xcframework_platform_ios_simulator {
+        OBJECTS_DIR = $$OBJECTS_DIR/simulator
+        MOC_DIR     = $$MOC_DIR/simulator
+        RCC_DIR     = $$RCC_DIR/simulator
+        UI_DIR      = $$UI_DIR/simulator
+    }
+}
+
 build_xp {
     OBJECTS_DIR = $$OBJECTS_DIR/xp
     MOC_DIR     = $$MOC_DIR/xp
@@ -402,6 +429,8 @@ CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/bin/$$CORE_BUILDS_PLATFORM_PREFI
 !isEmpty(OO_BUILD_BRANDING) {
     CORE_BUILDS_LIBRARIES_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/lib/$$CORE_BUILDS_PLATFORM_PREFIX
     CORE_BUILDS_BINARY_PATH = $$CORE_ROOT_DIR/build/$$OO_BUILD_BRANDING/bin/$$CORE_BUILDS_PLATFORM_PREFIX
+
+    DEFINES += "BUILD_BRANDING_NAME=\"\\\"$$OO_BUILD_BRANDING\\\"\""
 }
 
 core_debug {
@@ -412,6 +441,13 @@ core_debug {
 !isEmpty(OO_DESTDIR_BUILD_OVERRIDE) {
     CORE_BUILDS_LIBRARIES_PATH = $$OO_DESTDIR_BUILD_OVERRIDE
     CORE_BUILDS_BINARY_PATH = $$OO_DESTDIR_BUILD_OVERRIDE
+}
+
+core_ios {
+    xcframework_platform_ios_simulator {
+        CORE_BUILDS_LIBRARIES_PATH = $$CORE_BUILDS_LIBRARIES_PATH/simulator
+        CORE_BUILDS_BINARY_PATH = $$CORE_BUILDS_BINARY_PATH/simulator
+    }
 }
 
 plugin {
@@ -474,12 +510,19 @@ defineTest(ADD_DEPENDENCY) {
     libs = $$ARGS
     for(lib, libs) {
         CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
-        build_xp {
-            isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
-            isEqual(lib, ascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
-            isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
-            isEqual(lib, ooxmlsignature):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/xp
+        
+        isEqual(lib, videoplayer) {
+            BASE_VIDEO_PLAYER_VLC_DIR = $$(VIDEO_PLAYER_VLC_DIR)
+            !isEmpty(BASE_VIDEO_PLAYER_VLC_DIR):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
         }
+
+        build_xp {
+		    isEqual(lib, doctrenderer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+			isEqual(lib, ascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+			isEqual(lib, qtascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+			isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+			isEqual(lib, ooxmlsignature):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
+        } 
         !bundle_dylibs:LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH_DST -l$$lib
         bundle_dylibs:LIBS += -F$$CORE_BUILDS_LIBRARIES_PATH_DST -framework $$lib
     }

@@ -29,7 +29,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lkernel -lgraphics -lkernel_network
 
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lHtmlRenderer
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPdfReader

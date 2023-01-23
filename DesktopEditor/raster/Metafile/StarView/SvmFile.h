@@ -32,8 +32,11 @@
 #pragma once
 
 #include "SvmPlayer.h"
-
 #include "../Common/MetaFile.h"
+
+#if defined(DrawText)
+#undef DrawText
+#endif
 
 namespace MetaFile
 {
@@ -192,6 +195,26 @@ class CSvmFile : virtual public IMetaFileBase
 	bool         IsWindowFlippedX()
 	{
 		return false;
+	}
+
+	unsigned int GetMapMode()
+	{
+		return MM_ANISOTROPIC;
+	}
+
+	double GetDpi()
+	{
+		return 96.;
+	}
+
+	IRegion* GetRegion()
+	{
+		return NULL;
+	}
+
+	unsigned int GetArcDirection()
+	{
+		return AD_CLOCKWISE;
 	}
 
  private:

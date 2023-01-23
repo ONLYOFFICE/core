@@ -302,8 +302,8 @@ namespace MetaFile
 		{
 			lX = 0;
 			lY = 0;
-			ulW = 1024;
-			ulH = 1024;
+			ulW = 1;
+			ulH = 1;
 		}
 
 		void Copy(TEmfWindow* pOther)
@@ -332,16 +332,16 @@ namespace MetaFile
 			lBottom = oRect.nBottom;
 		}
 
-		void Update(bool bFlipedX, double bFlipedY)
+		void Update(bool bFlipedX, bool bFlipedY)
 		{
-			if ((lTop > lBottom && !bFlipedY) || (lTop < lBottom && bFlipedY))
+			if (lTop > lBottom && bFlipedY)
 			{
 				int nTemp = lBottom;
 				lBottom = lTop;
 				lTop = nTemp;
 			}
 
-			if ((lLeft > lRight && !bFlipedX) || (lLeft < lRight && bFlipedX))
+			if (lLeft < lRight && bFlipedX)
 			{
 				int nTemp = lRight;
 				lRight = lLeft;

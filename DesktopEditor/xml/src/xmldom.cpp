@@ -900,106 +900,6 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-    CXmlWriter::CXmlWriter()
-    {
-    }
-
-    std::wstring CXmlWriter::GetXmlString()
-    {
-        return m_str;
-    }
-    void CXmlWriter::SetXmlString(const std::wstring& strValue)
-    {
-        m_str = strValue;
-    }
-
-    bool CXmlWriter::SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
-    {
-        return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
-    }
-    void CXmlWriter::WriteString(const std::wstring& strValue)
-    {
-        m_str += strValue;
-    }
-    void CXmlWriter::WriteInteger(int Value)
-    {
-        m_str += std::to_wstring(Value);
-    }
-    void CXmlWriter::WriteDouble(double Value)
-    {
-        m_str += std::to_wstring(Value);
-    }
-    void CXmlWriter::WriteBoolean(bool Value)
-    {
-        if (Value)
-            m_str += (L"true");
-        else
-            m_str += (L"false");
-    }
-    void CXmlWriter::WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed)
-    {
-        m_str += (L"<") + strNodeName;
-
-        if (!bAttributed)
-            m_str += (L">");
-    }
-    void CXmlWriter::WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode, bool bEndNode)
-    {
-        if (bEmptyNode)
-        {
-            if (bEndNode)
-                m_str += (L" />");
-            else
-                m_str += (L">");
-        }
-        else
-            m_str += (L"</") + strNodeName + (L">");
-    }
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
-    {
-        if (strNodeValue.empty())
-            m_str += L"<" + strNodeName + L"/>";
-        else
-            m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
-    }
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
-    {
-        WriteNodeBegin(strNodeName);
-        WriteString(strTextBeforeValue);
-        WriteInteger(nValue);
-        WriteString(strTextAfterValue);
-        WriteNodeEnd(strNodeName);
-    }
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, double dValue)
-    {
-        WriteNodeBegin(strNodeName);
-        WriteDouble(dValue);
-        WriteNodeEnd(strNodeName);
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
-    {
-        m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
-    {
-        WriteString(L" " + strAttributeName + L"=");
-        WriteString(L"\"");
-        WriteString(strTextBeforeValue);
-        WriteInteger(nValue);
-        WriteString(strTextAfterValue);
-        WriteString(L"\"");
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, double dValue)
-    {
-        WriteString(L" " + strAttributeName + L"=");
-        WriteString(L"\"");
-        WriteDouble(dValue);
-        WriteString(L"\"");
-    }
-}
-
-namespace XmlUtils
-{
     class CXmlBuffer
     {
     public:
@@ -1046,6 +946,7 @@ namespace XmlUtils
 
     std::string NSXmlCanonicalizator::Execute(const std::string& sXml, int mode, bool withComments)
     {
+#ifdef LIBXML_C14N_ENABLED
         xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
 
         CXmlBuffer bufferC14N;
@@ -1059,6 +960,9 @@ namespace XmlUtils
         xmlOutputBufferClose(_buffer);
 
         return bufferC14N.builder.GetData();
+#else
+		return "";
+#endif
     }
     std::string NSXmlCanonicalizator::Execute(const std::wstring& sXmlFile, int mode, bool withComments)
     {

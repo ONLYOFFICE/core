@@ -81,6 +81,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -123,6 +125,7 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,6 +147,14 @@
   <ItemGroup>
     <ClInclude Include="..\source\CryptTransform.h" />
     <ClInclude Include="..\source\ECMACryptFile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
+      <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\cfcpp\CompoundFileLib.vcxproj">
+      <Project>{fa22bab4-e93e-459d-8a5f-16764fbbed40}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

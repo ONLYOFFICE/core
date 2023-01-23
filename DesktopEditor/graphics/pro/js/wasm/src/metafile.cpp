@@ -34,22 +34,31 @@
 namespace MetaFile
 {
 	class CMetaFile : public IMetaFile
-    {
-    public:
-        CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : IMetaFile(pAppFonts) {}
-        virtual ~CMetaFile() {}
+	{
+	public:
+		CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : IMetaFile(pAppFonts) {}
+		virtual ~CMetaFile() {}
 
-        virtual bool LoadFromFile(const wchar_t* wsFilePath) { return false; }
-        virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) { return false; }
-        virtual void Close() {}
-        virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) {}
-        virtual int GetType() { return 0; }
-        virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) {}
-        virtual NSFonts::IFontManager* get_FontManager() { return NULL; }
-    };
+		virtual bool LoadFromFile(const wchar_t* wsFilePath) { return false; }
+		virtual bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize) { return false; }
+		virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) { return false; }
+		virtual void Close() {}
+		virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) {}
+		virtual int GetType() { return 0; }
+		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) {}
+		virtual NSFonts::IFontManager* get_FontManager() { return NULL; }
+
+		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) { return L""; }
+
+		virtual void ConvertToXml(const wchar_t* wsFilePath) {}
+		virtual void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) {}
+
+		virtual bool LoadFromXmlFile(const wchar_t* wsFilePath) { return false; }
+		virtual void ConvertToEmf(const wchar_t *wsFilePath) {}
+	};
 	
 	IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts)
 	{
 		return new CMetaFile(pAppFonts);
-	}	
+	}
 }

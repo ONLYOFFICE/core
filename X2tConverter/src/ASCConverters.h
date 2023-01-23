@@ -40,7 +40,7 @@
 #endif
 
 #include <string>
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
+#include "../../OOXML/Base/Base.h"
 
 namespace NExtractTools
 {
@@ -53,13 +53,14 @@ namespace NExtractTools
     _UINT32 docx2doct			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 docx_dir2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, const std::wstring &sDocxFile);
 	_UINT32 docx_dir2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, const std::wstring &sDocxFile);
-	_UINT32 doct_bin2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-    _UINT32 doct_bin2docx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-	_UINT32 doct2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 doct_bin2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 doct_bin2docx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 doct2docx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
 
     _UINT32 docxflat2doct		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 docxflat2doct_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 docxflat2odt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
+	_UINT32 docxflat2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 
 	_UINT32 package2ooxml		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 package2ooxml_dir	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
@@ -83,9 +84,9 @@ namespace NExtractTools
 	_UINT32 xlsxflat2xlsx_dir	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
 	_UINT32 xlsx_dir2xlst		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile);
 	_UINT32 xlsx_dir2xlst_bin	(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params, bool bXmlOptions, const std::wstring &sXlsxFile);
-	_UINT32 xlst_bin2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-    _UINT32 xlst_bin2xlsx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-	_UINT32 xlst2xlsx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 xlst_bin2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 xlst_bin2xlsx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 xlst2xlsx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
    
 	_UINT32 xltx2xlsx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 xltx2xlsx_dir		(const std::wstring &sFrom, const std::wstring &sTo, InputParams& params);
@@ -101,9 +102,9 @@ namespace NExtractTools
 	_UINT32 pptx_dir2pptt		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, const std::wstring &sPptxFile);
 	_UINT32 pptx_dir2pptt_bin	(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params, const std::wstring &sPptxFile);
     _UINT32 pptx2pptt			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
-	_UINT32 pptt_bin2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-    _UINT32 pptt_bin2pptx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-	_UINT32 pptt2pptx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 pptt_bin2pptx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 pptt_bin2pptx_dir	(const std::wstring &sFrom, const std::wstring &sToResult, const std::wstring &sTo, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 pptt2pptx			(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
 
     _UINT32 csv2xlst		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 csv2xlsx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
@@ -144,8 +145,8 @@ namespace NExtractTools
     _UINT32 rtf2doct_bin    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 docx2rtf		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 docx_dir2rtf    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
-    _UINT32 doct2rtf        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
-    _UINT32 doct_bin2rtf    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bFromChanges, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 doct2rtf        (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
+	_UINT32 doct_bin2rtf    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, const std::wstring &sThemeDir, InputParams& params);
 
     _UINT32 doc2docx		(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
     _UINT32 doc2docx_dir    (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params);
@@ -208,25 +209,27 @@ namespace NExtractTools
 
     _UINT32 convertmailmerge (const InputParamsMailMerge& oMailMergeSend,const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, bool bPaid, const std::wstring &sThemeDir, InputParams& params);
 
-	_UINT32 fromDocxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sDocxFile);
-    _UINT32 fromDoctBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
+	_UINT32 fromDocxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params, const std::wstring &sDocxFile);
+	_UINT32 fromDoctBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params);
 	_UINT32 fromDocument    (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 
-	_UINT32 fromXlsxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sXlsxFile);
-	_UINT32 fromXlsbXlsxDir (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sXlsxFile);
-    _UINT32 fromXlstBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
+	_UINT32 fromXlsxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params, const std::wstring &sXlsxFile);
+	_UINT32 fromXlsbXlsxDir (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params, const std::wstring &sXlsxFile);
+	_UINT32 fromXlstBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params);
 	_UINT32 fromSpreadsheet (const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 
-	_UINT32 fromPptxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params, const std::wstring &sPptxFile);
-    _UINT32 fromPpttBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
+	_UINT32 fromPptxDir     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params, const std::wstring &sPptxFile);
+	_UINT32 fromPpttBin     (const std::wstring &sFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params);
 	_UINT32 fromPresentation(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTemp, InputParams& params);
 
-    _UINT32 fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
-    _UINT32 fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
-    _UINT32 fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bFromChanges, bool bPaid, InputParams& params);
+	_UINT32 fromT(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params);
+	_UINT32 fromCrossPlatform(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params);
+	_UINT32 fromCanvasPdf(const std::wstring &sFrom, int nFormatFrom, const std::wstring &sTo, int nFormatTo, const std::wstring &sTemp, const std::wstring &sThemeDir, bool bPaid, InputParams& params);
 
 	_UINT32 fromInputParams(InputParams& oInputParams);
 	_UINT32 detectMacroInFile(InputParams& oInputParams);
+
+	void createJSCaches();
 	
 	X2T_DECL_EXPORT _UINT32 FromFile(const std::wstring& file);
 	X2T_DECL_EXPORT _UINT32 FromXml(const std::wstring& xml);

@@ -254,10 +254,10 @@ namespace NSCSS
         std::wstring sInfValue;
         sInfValue.reserve(64);
 
-        if (!oStyle.m_pMargin.Empty())
+        if (!oStyle.m_pMargin.Empty() && oStyle.m_pMargin.GetPermission())
         {
-            const std::wstring& sLeftSide = oStyle.m_pMargin.GetLeftSide();
-            const std::wstring& sRightSide = oStyle.m_pMargin.GetRightSide();
+            const std::wstring& sLeftSide = oStyle.m_pMargin.GetLeftSideW();
+            const std::wstring& sRightSide = oStyle.m_pMargin.GetRightSideW();
 
             if (!sLeftSide.empty())
                 sInfValue += L"w:left=\""  + sLeftSide + L"\" ";
@@ -274,19 +274,22 @@ namespace NSCSS
         std::wstring sSpacingValue;
         sSpacingValue.reserve(128);
 
-        if (!oStyle.m_pMargin.Empty())
+        if (!oStyle.m_pMargin.Empty() && oStyle.m_pMargin.GetPermission())
         {
-            sSpacingValue += L"w:after=\""  + oStyle.m_pMargin.GetTopSide() + L"\" ";
-            sSpacingValue += L"w:before=\"" + oStyle.m_pMargin.GetTopSide() + L"\" ";
+            sSpacingValue += L"w:afterAutospacing=\"1\" w:after=\""  + oStyle.m_pMargin.GetTopSideW() + L"\" ";
+            sSpacingValue += L"w:beforeAutospacing=\"1\" w:before=\"" + oStyle.m_pMargin.GetTopSideW() + L"\" ";
         }
-        else if (!oStyle.m_pBorder.Empty())
-                sSpacingValue += L"w:after=\"0\" w:before=\"0\" ";
+        else/* if (!oStyle.m_pBorder.Empty() || !oStyle.m_pMargin.GetPermission())*/
+                sSpacingValue += L"w:after=\"0\" w:before=\"0\"";
 
         const std::wstring &sLineHeight = oStyle.m_pFont.GetLineHeight();
         if (!sLineHeight.empty())
         {
-                sSpacingValue += L"w:line=\"" + sLineHeight + L"\" ";
-                sSpacingValue += L"w:lineRule=\"auto\"";
+                sSpacingValue += L" w:line=\"" + sLineHeight + L"\" w:lineRule=\"auto\"";
+        }
+        else if (!oStyle.m_pBorder.Empty())
+        {
+                sSpacingValue += L" w:line=\"" + std::to_wstring(static_cast<short int>(oStyle.m_pFont.GetSize() * 12 + 0.5f)) + L"\" w:lineRule=\"auto\"";
         }
         else if (!oStyle.m_pBorder.Empty())
                 sSpacingValue += L"w:line=\"240\" w:lineRule=\"auto\" ";

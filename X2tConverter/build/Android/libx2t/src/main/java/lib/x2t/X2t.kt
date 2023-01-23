@@ -20,6 +20,7 @@ class X2t private constructor() {
         const val CONVERTER_CODE_FAIL = -1
         const val CONVERTER_CODE_SUCCESS = 0
         const val CONVERTER_CODE_EXIST = 1
+        const val CONVERTER_CODE_ERROR_XML = 88
         const val CONVERTED_CODE_PASSWORD = 90
         const val CONVERTER_CODE_INVALID_PASSWORD = 91
 

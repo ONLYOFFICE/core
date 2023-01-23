@@ -49,19 +49,9 @@ namespace NSOnlineOfficeBinToPdf
         virtual ~CMetafileToRenderterRaster();
 
     public:
-        virtual std::wstring GetImagePath(const std::wstring& sImagePath);
         bool ConvertBuffer(BYTE* pBuffer, LONG lBufferLen);
 
     public:
-        std::wstring GetHtmlPlace();
-        void SetHtmlPlace(const std::wstring& value);
-
-        std::wstring GetThemesPlace();
-        void SetThemesPlace(const std::wstring& value);
-
-        std::wstring GetTempDir();
-        void SetTempDir(const std::wstring& value);
-
         std::wstring GetFileName();
         void SetFileName(const std::wstring& value);
 

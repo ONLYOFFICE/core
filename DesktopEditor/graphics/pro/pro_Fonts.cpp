@@ -34,10 +34,7 @@
 #include "../../common/File.h"
 #include "../../common/StringExt.h"
 #include "../../fontengine/ApplicationFonts.h"
-
-#ifdef __APPLE__
-#include <libkern/OSAtomic.h>
-#endif
+#include "./pro_base.cpp"
 
 NSFonts::IFontsMemoryStorage* g_global_fonts_memory_storage = NULL;
 
@@ -51,53 +48,6 @@ namespace NSFonts
     CLibrary::~CLibrary()
     {
         RELEASEOBJECT(m_internal);
-    }
-}
-
-namespace NSBase
-{
-    CBaseRefCounter::CBaseRefCounter()
-    {
-        m_lRef = 1;
-    }
-
-    CBaseRefCounter::~CBaseRefCounter()
-    {
-    }
-
-#ifdef __APPLE__
-    int CBaseRefCounter::AddRef()
-    {
-        OSAtomicIncrement32(&m_lRef);
-        return m_lRef;
-    }
-    int CBaseRefCounter::Release()
-    {
-        int32_t ret = OSAtomicDecrement32(&m_lRef);
-        if (0 == m_lRef)
-            delete this;
-
-        return ret;
-    }
-#else
-    int CBaseRefCounter::AddRef()
-    {
-        ++m_lRef;
-        return m_lRef;
-    }
-
-    int CBaseRefCounter::Release()
-    {
-        int ret = --m_lRef;
-        if (0 == m_lRef)
-            delete this;
-        return ret;
-    }
-#endif
-
-    void Release(CBaseRefCounter* base)
-    {
-        delete base;
     }
 }
 

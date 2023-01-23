@@ -1,0 +1,921 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\PPTXFormat\App.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\CommentAuthors.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Comments.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Core.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\FileContainer.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\FileFactory.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\FileMap.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\FileTypes.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Folder.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\HandoutMaster.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\LegacyDiagramText.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\AlbumLayout.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\AnimationDgmBuild.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\BaseLimit.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\BevelType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\BlendMode.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\BlipCompression.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\BWMode.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\CameraType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\ChartBuild.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\ChartBuildType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\ColorSchemeIndex.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\CompoundLine.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\Conformance.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\ContentStatus.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\CornerDirectionVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\DgmBuild.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\DgmBuildType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\EffectContainerType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\EightDirectionVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\FillPath.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\Flip.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\FontAlign.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\FontStyleIndex.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\FrameShape.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\HorzOverflow.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\InOutDirectionVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\IterateType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\LastView.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\LightRigType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\LineCap.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\LineEndSize.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\LineEndType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\Material.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\OnOff.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\Orient.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\ParaBuildType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PathFillMode.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PattFillVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PenAlign.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PlaceholderSize.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PlaceholderType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PresetShadowVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PrstClrVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\PrstDashVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\RectAlign.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\SchemeClrVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\ShapeType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\SideDirectionVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\SlideLayoutType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\SlideSize.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\SplitterBarState.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\SysClrVal.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextAlign.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextAnchor.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextAutonumberScheme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextCaps.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextShapeType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextStrike.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextTabAlignType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextUnderline.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextVerticalType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TextWrap.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLAccumulate.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLAdditive.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLCalcMode.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLChartSubElement.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLColorDirection.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLColorSpace.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLCommandType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLMasterRelation.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLNextAc.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLNodeFillType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLNodeType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLOrigin.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLOverride.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLPathEditMode.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLPresetClass.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLPrevAc.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLRestart.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLRuntimeTrigger.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLSyncBehavior.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLTransform.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLTriggerEvent.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TLValueType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\TransitionSpeed.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\VariantType.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Limit\VertOverflow.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Ah.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\AhBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\AhPolar.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\AhXY.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Backdrop.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bevel.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bg.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\BgPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\BodyPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuAutoNum.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuBlip.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuChar.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuClrTx.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuFontTx.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\Bullet.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BulletColor.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BulletSize.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BulletTypeface.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuNone.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuSzPct.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuSzPts.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Bullets\BuSzTx.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Camera.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Cell3D.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\ClrMap.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\ClrMapOvr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CNvCxnSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CNvGraphicFramePr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CNvGrpSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CNvPicPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CNvPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CNvSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\ColorBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\ColorModifier.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\PrstClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\SchemeClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\SrgbClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Colors\SysClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Controls.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CSld.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CustGeom.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Cxn.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\CxnSp.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\DefaultShapeDefinition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\EffectDag.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\EffectLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\EffectProperties.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\EffectStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaBiLevel.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaCeiling.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaFloor.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaInv.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaMod.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaModFix.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaOutset.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\AlphaRepl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\BiLevel.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\Blend.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\Blur.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\ClrChange.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\ClrRepl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\Duotone.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\EffectElement.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\FillEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\FillOverlay.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\Glow.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\Grayscl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\HslEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\InnerShdw.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\LumEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\OuterShdw.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\PrstShdw.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\Reflection.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\RelOff.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\SoftEdge.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\TintEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Effects\XfrmEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\ExtP.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\FillStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\Blip.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\BlipFill.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\GradFill.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\NoFill.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\PattFill.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\SolidFill.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\Stretch.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Fills\Tile.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\FontCollection.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\FontRef.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Gd.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Geometry.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\GraphicFrame.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\GrpSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Gs.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\HeadingVariant.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Hf.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Hyperlink.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\LightRig.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Lin.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\LineEnd.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\LineJoin.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\LineStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Ln.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Media\AudioCD.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Media\MediaFile.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Media\WavAudioFile.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\NvCxnSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\NvGraphicFramePr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\NvGrpSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\NvPicPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\NvPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\NvSpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Paragraph.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\PartTitle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\ArcTo.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\Close.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\CubicBezTo.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\LineTo.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\MoveTo.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\PathBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Path2D\QuadBezTo.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Ph.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Pic.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\PrstDash.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\PrstGeom.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\PrstTxWarp.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Rect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Rot.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\RunElem.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\RunProperties.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\Br.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\Fld.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\MathParaWrapper.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\Run.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\RunBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Scene3d.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Shape.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\ShapeStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\SmartArt.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Sp3d.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\SpPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\SpTree.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\SpTreeElem.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\StyleRef.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\SupplementalFont.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Tab.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TableBgStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TablePartStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TableStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\Table.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\TableCell.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\TableCellProperties.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\TableCol.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\TableProperties.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\TableRow.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TcBdr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TcStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TcTxStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TextFit.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TextFont.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TextListStyle.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TextParagraphPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TextSpacing.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Anim.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AnimClr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AnimEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AnimMotion.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AnimRot.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AnimScale.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AnimVariant.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AttrName.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\AttrNameLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Audio.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BldDgm.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BldGraphic.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BldLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BldOleChart.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BldP.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BldSub.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\BuildNodeBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\CBhvr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\ChildTnLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Cmd.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\CMediaNode.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Cond.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\CondLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\CTn.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Excl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\GraphicEl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Iterate.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Par.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Seq.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Set.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\SpTgt.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Tav.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\TavLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\TgtEl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\TimeNodeBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Timing.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Tmpl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\TmplLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\TnLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\TxEl.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Timing\Video.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\CornerDirectionTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\EightDirectionTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\EmptyTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\OptionalBlackTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\OrientationTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\SideDirectionTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\SndAc.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\SplitTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\StSnd.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\Transition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\TransitionBase.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\WheelTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\ZoomTransition.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TxBody.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\TxStyles.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\UniColor.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\UniEffect.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\UniFill.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\UniMedia.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\UniPath2D.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Xfrm.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\XmlId.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Namespaces.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\NotesMaster.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\NotesSlide.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\PPTX.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\PPTXEvent.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\EmbeddedFont.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\EmbeddedFontDataId.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\Kinsoku.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\NotesSz.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\PhotoAlbum.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\SectionLst.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\SldSz.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\PresProps.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Browse.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\CustShow.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Kiosk.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Present.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\ShowPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\SldAll.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\SldRg.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Slide.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\SlideLayout.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\SlideMaster.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\TableStyles.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\ClrScheme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\ExtraClrScheme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\FmtScheme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\FontScheme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\ThemeElements.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\CSldViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\CViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\GridSpacing.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Guide.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\NormalViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\NotesTextViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\NotesViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Origin.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\OutlineViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Ratio.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Restored.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Scale.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Sld.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\SlideViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\SorterViewPr.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\WrapperFile.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\WrapperWritingElement.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\WritingVector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\PPTXFormat\App.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\CommentAuthors.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Comments.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Core.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\FileFactory.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\FileMap.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\FileTypes.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Folder.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\HandoutMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\LegacyDiagramText.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\AlbumLayout.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\AnimationDgmBuild.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\BaseLimit.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\BevelType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\BlendMode.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\BlipCompression.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\BWMode.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\CameraType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\ChartBuild.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\ChartBuildType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\ColorSchemeIndex.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\CompoundLine.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\Conformance.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\ContentStatus.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\CornerDirectionVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\DgmBuild.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\DgmBuildType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\EffectContainerType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\EightDirectionVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\FillPath.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\Flip.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\FontAlign.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\FontStyleIndex.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\FrameShape.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\HorzOverflow.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\InOutDirectionVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\IterateType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\LastView.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\LightRigType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\LineCap.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\LineEndSize.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\LineEndType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\Material.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\OnOff.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\Orient.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\ParaBuildType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PathFillMode.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PattFillVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PenAlign.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PlaceholderSize.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PlaceholderType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PresetShadowVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PrstClrVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\PrstDashVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\RectAlign.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\SchemeClrVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\ShapeType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\SideDirectionVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\SlideLayoutType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\SlideSize.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\SplitterBarState.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\SysClrVal.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextAlign.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextAnchor.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextAutonumberScheme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextCaps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextShapeType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextStrike.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextTabAlignType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextUnderline.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextVerticalType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TextWrap.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLAccumulate.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLAdditive.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLCalcMode.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLChartSubElement.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLColorDirection.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLColorSpace.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLCommandType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLMasterRelation.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLNextAc.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLNodeFillType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLNodeType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLOrigin.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLOverride.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLPathEditMode.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLPresetClass.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLPrevAc.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLRestart.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLRuntimeTrigger.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLSyncBehavior.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLTransform.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLTriggerEvent.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TLValueType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\TransitionSpeed.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\VariantType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\VertOverflow.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Ah.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\AhBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\AhPolar.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\AhXY.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Backdrop.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bevel.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bg.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\BgPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\BodyPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuAutoNum.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuBlip.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuChar.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuClrTx.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuFontTx.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\Bullet.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BulletColor.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BulletSize.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BulletTypeface.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuNone.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuSzPct.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuSzPts.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuSzTx.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Camera.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Cell3D.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\ClrMap.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\ClrMapOvr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvCxnSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvGraphicFramePr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvGrpSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvPicPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CNvSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\ColorBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\ColorModifier.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\PrstClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SchemeClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SrgbClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Colors\SysClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Controls.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CSld.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CustGeom.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Cxn.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\CxnSp.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\DefaultShapeDefinition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\EffectDag.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\EffectLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\EffectProperties.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\EffectStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaBiLevel.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaCeiling.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaFloor.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaInv.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaMod.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaModFix.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaOutset.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\AlphaRepl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\BiLevel.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\Blend.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\Blur.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\ClrChange.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\ClrRepl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\Duotone.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\EffectElement.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\FillEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\FillOverlay.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\Glow.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\Grayscl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\HslEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\InnerShdw.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\LumEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\OuterShdw.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\PrstShdw.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\Reflection.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\RelOff.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\SoftEdge.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\TintEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Effects\XfrmEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\ExtP.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\FillStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\Blip.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\BlipFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\GradFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\NoFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\PattFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\SolidFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\Stretch.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Fills\Tile.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\FontCollection.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\FontRef.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Gd.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Geometry.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\GraphicFrame.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\GrpSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Gs.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\HeadingVariant.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Hf.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Hyperlink.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\LightRig.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Lin.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\LineEnd.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\LineJoin.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\LineStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Ln.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Media\AudioCD.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Media\MediaFile.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Media\WavAudioFile.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\NvCxnSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\NvGraphicFramePr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\NvGrpSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\NvPicPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\NvPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\NvSpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Paragraph.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\PartTitle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\ArcTo.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\Close.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\CubicBezTo.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\LineTo.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\MoveTo.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\PathBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Path2D\QuadBezTo.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Ph.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Pic.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\PrstDash.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\PrstGeom.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\PrstTxWarp.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Rect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Rot.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\RunElem.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\RunProperties.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\Br.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\Fld.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\MathParaWrapper.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\Run.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\RunBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Scene3d.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Shape.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\ShapeStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\SmartArt.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Sp3d.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\SpPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\SpTree.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\SpTreeElem.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\StyleRef.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\SupplementalFont.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Tab.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TableBgStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TablePartStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TableStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\Table.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\TableCell.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\TableCellProperties.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\TableCol.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\TableProperties.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\TableRow.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TcBdr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TcStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TcTxStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TextFit.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TextFont.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TextListStyle.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TextParagraphPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TextSpacing.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Anim.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimClr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimMotion.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimRot.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimScale.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AnimVariant.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AttrName.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\AttrNameLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Audio.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldDgm.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldGraphic.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldOleChart.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldP.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BldSub.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\BuildNodeBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CBhvr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\ChildTnLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Cmd.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CMediaNode.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Cond.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CondLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\CTn.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Excl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\GraphicEl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Iterate.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Par.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Seq.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Set.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\SpTgt.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Tav.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TavLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TgtEl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TimeNodeBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Timing.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Tmpl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TmplLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TnLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\TxEl.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Timing\Video.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\CornerDirectionTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\EightDirectionTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\EmptyTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\OptionalBlackTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\OrientationTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\SideDirectionTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\SndAc.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\SplitTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\StSnd.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\Transition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\TransitionBase.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\WheelTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\ZoomTransition.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TxBody.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\TxStyles.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\UniColor.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\UniEffect.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\UniFill.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\UniMedia.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\UniPath2D.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Xfrm.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\XmlId.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Namespaces.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\NotesMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\NotesSlide.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\EmbeddedFont.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\EmbeddedFontDataId.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\Kinsoku.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\NotesSz.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\PhotoAlbum.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\SectionLst.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\SldSz.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\PresProps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Browse.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\CustShow.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Kiosk.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Present.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\ShowPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\SldAll.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\SldRg.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Slide.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\SlideLayout.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\SlideMaster.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\TableStyles.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\ClrScheme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\ExtraClrScheme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\FmtScheme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\FontScheme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\ThemeElements.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\CSldViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\CViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\GridSpacing.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Guide.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\NormalViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\NotesTextViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\NotesViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Origin.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\OutlineViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Ratio.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Restored.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Scale.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Sld.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\SlideViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\SorterViewPr.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\WrapperFile.cpp" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{36636678-AE25-4BE6-9A34-2561D1BCF302}</ProjectGuid>
+    <RootNamespace>PPTXFormat</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>PPTXFormatLib</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);D:\_Work\core\Common\3dParty\boost\build\win_64\include;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;D:\_Work\core\Common\3dParty\boost\build\win_64\lib;</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\Common\3dParty\boost\build\win_32\lilb;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PrecompiledHeaderFile />
+    </ClCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;..\..\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

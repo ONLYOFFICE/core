@@ -31,7 +31,7 @@ public:
     bool IsFb2File(const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
     HRESULT Open(const std::wstring& sPath, const std::wstring& sDirectory, CFb2Params* oParams = NULL);
-    HRESULT FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst, const std::wstring& sInpTitle);
+    HRESULT FromHtml(const std::wstring& sHtmlFile, const std::wstring& sDst, const std::wstring& sInpTitle);
 };
 
 #endif // _FB2FILE_FB2FILE_H

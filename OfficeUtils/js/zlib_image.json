@@ -1,0 +1,122 @@
+{
+	"name": "zlib",
+	"res_folder": "./deploy",
+	"wasm": true,
+	"asm": true,
+	"run_before": null,
+	"run_after": "import sys;sys.path.append(\"../../../build_tools/scripts\");import base;base.configure_common_apps();base.replaceInFile(\"./deploy/zlib.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onZlibEngineInit();}];\");base.replaceInFile(\"./deploy/zlib.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.replaceInFile(\"./deploy/zlib_ie.js\", \"__ATPOSTRUN__=[];\", \"__ATPOSTRUN__=[function(){self.onZlibEngineInit();}];\");base.replaceInFile(\"./deploy/zlib_ie.js\", \"function getBinaryPromise(){\", \"function getBinaryPromise2(){\");base.copy_file(\"./wasm/js/index.html\", \"./deploy/index.html\");base.copy_file(\"./wasm/js/code.js\", \"./deploy/code.js\")",
+	"base_js_content": "./wasm/js/zlib.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-Wno-unused-command-line-argument",
+		"-s ALLOW_MEMORY_GROWTH=1",
+		"-s FILESYSTEM=0",
+		"--memory-init-file 0",
+		"-s ENVIRONMENT='web,worker'"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+		"_Zlib_Malloc",
+		"_Zlib_Free",
+		"_Zlib_Create",
+		"_Zlib_Open",
+		"_Zlib_Close",
+		"_Zlib_AddFile",
+		"_Zlib_RemoveFile",
+		"_Zlib_GetPaths",
+		"_Zlib_GetFile",
+		"_Zlib_Save",
+		"_Raster_DecodeFile",
+		"_Raster_GetDecodedBuffer",
+		"_Raster_GetHeight",
+		"_Raster_GetWidth",
+		"_Raster_GetStride",
+		"_Raster_Destroy",
+		"_Raster_EncodeImageData",
+		"_Raster_Encode",
+		"_Raster_GetEncodedBuffer",
+		"_Raster_GetEncodedSize",
+		"_Raster_DestroyEncodedData",
+		"_Image_GetFormat"
+	],
+	"include_path": ["../src/zlib-1.2.11", "../src", "../../DesktopEditor/cximage/jasper/include", 
+		"../../DesktopEditor/cximage/jpeg", "../../DesktopEditor/cximage/png", "../../DesktopEditor/agg-2.4/include"],
+	"define": ["__linux__", "_LINUX", "UNIX", "_QT", "METAFILE_SUPPORT_WMF_EMF", "HAVE_UNISTD_H", "HAVE_FCNTL_H", "_ARM_ALIGN_", 
+		"CXIMAGE_DISABLE_SUPPORT_MNG", "CXIMAGE_DISABLE_SUPPORT_ADDITIONS",
+		"_tcsnicmp=strncmp", "_lseek=lseek", "_getcwd=getcwd", "NO_CONSOLE_IO", "BUILD_ZLIB_AS_SOURCES"],
+	"compile_files_array": [
+	{
+		"name": "m",
+		"folder": "../src/zlib-1.2.11/contrib/minizip/",
+		"files": ["unzip.c", "ioapi.c", "zip.c", "ioapibuf.c"]
+	},
+	{
+		"name": "z",
+		"folder": "../src/zlib-1.2.11/",
+		"files": ["inflate.c", "zutil.c", "adler32.c", "crc32.c", "inftrees.c", "inffast.c", "deflate.c", "trees.c", "uncompr.c", "compress.c"]
+	},
+	{
+		"name": "s",
+		"folder": "./",
+		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp", "../src/zlib_addon.c"]
+	},
+	{
+		"name": "r",
+		"folder": "../../DesktopEditor/",
+		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp"]
+	},
+	{
+		"name": "ras",
+		"folder": "../../DesktopEditor/graphics/pro/js/qt/raster",
+		"files": ["pro_Fonts_empty.cpp", "pro_Graphics_empty.cpp", "raster.cpp"]
+	},
+	{
+		"name": "ci",
+		"folder": "../../DesktopEditor/cximage/CxImage/",
+		"files": ["ximaenc.cpp", "ximaexif.cpp", "ximage.cpp", "ximainfo.cpp", "ximajpg.cpp", "ximalpha.cpp", "ximapal.cpp", "ximasel.cpp", "xmemfile.cpp", "ximapng.cpp", "ximabmp.cpp", "ximatran.cpp", "ximatif.cpp", "tif_xfile.cpp", "ximajas.cpp", "ximagif.cpp", "ximaico.cpp", "ximatga.cpp", "ximapcx.cpp", "ximawbmp.cpp", "ximamng.cpp", "ximapsd.cpp", "ximaska.cpp", "ximaraw.cpp"]
+	},
+	{
+		"name": "j",
+		"folder": "../../DesktopEditor/cximage/jpeg/",
+		"files": ["jerror.c", "jdmarker.c", "jdapimin.c", "jdmaster.c", "jdapistd.c", "jcomapi.c", "jutils.c", "jdinput.c", "jdmainct.c", "jmemmgr.c", "jquant1.c", "jquant2.c", "jdmerge.c", "jdcolor.c", "jdsample.c", "jdpostct.c", "jddctmgr.c", "jdarith.c", "jdhuff.c", "jdcoefct.c", "jmemnobs.c", "jidctint.c", "jidctfst.c", "jidctflt.c", "jaricom.c", "jcapimin.c", "jcparam.c", "jcapistd.c", "jcinit.c", "jcmaster.c", "jccolor.c", "jcmarker.c", "jcsample.c", "jcprepct.c", "jcdctmgr.c", "jcarith.c", "jchuff.c", "jccoefct.c", "jcmainct.c", "jfdctint.c", "jfdctfst.c", "jfdctflt.c"]
+	},
+	{
+		"name": "pn",
+		"folder": "../../DesktopEditor/cximage/png/",
+		"files": ["pngread.c", "pngmem.c", "pngerror.c", "png.c", "pngrio.c", "pngtrans.c", "pngget.c", "pngrutil.c", "pngrtran.c", "pngset.c", "pngwrite.c", "pngwio.c", "pngwutil.c", "pngwtran.c"]
+	},
+	{
+		"name": "t",
+		"folder": "../../DesktopEditor/cximage/tiff/",
+		"files": ["tif_close.c", "tif_dir.c", "tif_aux.c", "tif_getimage.c", "tif_strip.c", "tif_open.c", "tif_tile.c", "tif_error.c", "tif_read.c", "tif_flush.c", "tif_dirinfo.c", "tif_compress.c", "tif_warning.c", "tif_swab.c", "tif_color.c", "tif_dirread.c", "tif_write.c", "tif_codec.c", "tif_luv.c", "tif_dirwrite.c", "tif_dumpmode.c", "tif_fax3.c", "tif_ojpeg.c", "tif_jpeg.c", "tif_next.c", "tif_thunder.c", "tif_packbits.c", "tif_lzw.c", "tif_zip.c", "tif_fax3sm.c", "tif_predict.c"]
+	},	
+	{
+		"name": "mm",
+		"folder": "../../DesktopEditor/raster/Metafile/",
+		"files": ["MetaFile.cpp", "Common/MetaFileTypes.cpp", "Common/MetaFileUtils.cpp", "Common/CPathConverter.cpp"]
+	},
+	{
+		"name": "emf",
+		"folder": "../../DesktopEditor/raster/Metafile/Emf/",
+		"files": ["EmfInterpretator/CEmfInterpretator.cpp", "EmfInterpretator/CEmfInterpretatorArray.cpp", 
+			"EmfInterpretator/CEmfInterpretatorRender.cpp", "EmfInterpretator/CEmfInterpretatorSvg.cpp", 
+			"EmfParser/CEmfParser.cpp", "EmfParser/CEmfParserBase.cpp", "EmfParser/CEmfPlusParser.cpp",
+			"EmfClip.cpp", "EmfObjects.cpp", "EmfPath.cpp", "EmfPlayer.cpp", "EmfFile.cpp"]
+	},
+	{
+		"name": "wmf",
+		"folder": "../../DesktopEditor/raster/Metafile/Wmf/",
+		"files": ["WmfInterpretator/CInterpretatorSvgBase.cpp", "WmfInterpretator/CWmfInterpretatorSvg.cpp", 
+			"WmfInterpretator/CWmfInterpretatorRender.cpp", "WmfInterpretator/CWmfInterpretator.cpp",
+			"WmfParser/CWmfParser.cpp", "WmfParser/CWmfParserBase.cpp",
+			"WmfClip.cpp", "WmfObjects.cpp", "WmfPlayer.cpp"]
+	},
+	{
+		"name": "co",
+		"folder": "../../DesktopEditor/common/",
+		"files": ["File.cpp", "Base64.cpp", "StringExt.cpp", "StringBuilder.cpp", "../xml/src/xmlwriter.cpp"]
+	}
+	]
+}

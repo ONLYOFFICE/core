@@ -1,0 +1,630 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptFormula.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShape.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\ChartWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\CommentsWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\CustomXmlWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DefaultThemeWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DocumentRelsWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\DocumentWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\FileWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\fontTableWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\HeaderFooterWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\MediaWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\NumberingWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\ReaderClasses.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\Readers.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\SettingWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\StylesWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinWriters.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\MathEquation\MathEquation.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\CalculatorCRC32.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\Converter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesMaster.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\DefaultNotesTheme.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\FontCutter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Common\Common.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CSVReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Writer\CSVWriter.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFileRealization.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\Common.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\GraphicsPath.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\Path.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\BinaryReader.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\CustomGeomShape.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\ElementSettings.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\Enums.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\Ppt2PptxShapeConverter.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\accentbordercallout1type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\AccentBorderCallout2Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\accentbordercallout3type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\accentbordercallout90type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\AccentCallout1Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\AccentCallout2Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\AccentCallout3Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\AccentCallout90Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonBack.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonBeginning.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonBlank.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonDocument.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonEnd.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonHelp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonHome.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonInfo.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonMovie.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonNext.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonReturn.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ActionButtonSound.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\arctype.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BentArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BentConnector.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BentUpArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BevelType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BlockArcType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BorderCallout1Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BorderCallout2Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BorderCallout3Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BorderCallout90Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BracePairType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\BracketPairType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Callout1Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Callout2Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Callout3Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Callout90Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CanType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ChevronType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CircularArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CloudCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CubeType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CurvedConnector.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CurvedDownArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CurvedLeftArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CurvedRightArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\CurvedUpArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\DiamondType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\DonutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\DownArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\DownArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\EllipseRibbon2Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\EllipseRibbonType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\EllipseType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartAlternateProcessType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartCollateType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartConnectorType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartDecisionType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartDelayType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartDisplayType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartDocumentType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartExtractType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartInputOutputType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartInternalStorageType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartMagneticDiskType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartMagneticDrumType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartMagneticTapeType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartManualInputType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartManualOperationType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartMergeType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartMultidocumentType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartOffpageConnectorType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartOnlineStorageType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartOrType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartPredefinedProcessType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartPreparationType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartProcessType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartPunchedCardType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartPunchedTapeType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartSortType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartSummingJunctionType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FlowChartTerminatorType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\FoldedCornerType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\HeartType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\HexagonType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\HomePlateType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\HorisontalScrollType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\IrregularSealOneType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\IrregularSealTwo.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\IsoscelesTriangleType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftBraceType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftBracketType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftRightArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftRightArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftRightUpArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LeftUpArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LightningBoltType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\LineType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\MoonType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\NoSmokingType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\NotchedRightArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\OctagonType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\ParallelogramType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\PentagonType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\PlaqueType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\PlusType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\QuadArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\QuadArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RectangleType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RibbonDownType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RibbonUpType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RightArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RightArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RightBracetype.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RightBracketType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RightTriangleType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\RoundedRectangleType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Seal16Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Seal24Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Seal32Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Seal4Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Seal8Type.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\SmileyFaceType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\Startype.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\StraightConnectorType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\StripedRightArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\SunType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\TextboxType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\TrapezoidType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\UpArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\UpArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\UpDownArrowCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\UpDownArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\UturnArrowType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\VerticalScrollType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\WaveDoubleType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\WaveType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\WedgeEllipseCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\WedgeRectCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PPTAutoShapes\WedgeRoundedRectCalloutType.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptFormula.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShape.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PptShapeEnum.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\PresetShapesHeader.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentBorderCallout3.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CAccentCallout3.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBackPrevious.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBeginning.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonBlank.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonDocument.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonEnd.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonForwardNext.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonHelp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonHome.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonInformation.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonMovie.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonReturn.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CActionButtonSound.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CArc.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector3.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector4.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentConnector5.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBentUpArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBevel.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBlockArc.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBorderCallout3.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBracePair.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CBracketPair.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCallout3.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCan.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartPlus.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartStar.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChartX.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChevron.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CChord.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCircularArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCloud.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCloudCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCorner.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCornerTabs.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCube.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector3.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector4.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedConnector5.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedDownArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedLeftArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedRightArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CCurvedUpArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDecagon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDiagStripe.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDiamond.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDodecagon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDonut.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDoubleWave.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDownArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CDownArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipse.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipseRibbon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CEllipseRibbon2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartAlternateProcess.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartCollate.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartConnector.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDecision.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDelay.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDisplay.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartDocument.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartExtract.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartInputOutput.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartInternalStorage.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticDisk.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticDrum.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMagneticTape.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartManualInput.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartManualOperation.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMerge.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartMultidocument.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOfflineStorage.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOffpageConnector.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOnlineStorage.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartOr.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPredefinedProcess.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPreparation.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartProcess.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPunchedCard.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartPunchedTape.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartSort.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartSummingJunction.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFlowChartTerminator.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFoldedCorner.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFrame.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CFunnel.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CGear6.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CGear9.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHalfFrame.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHeart.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHeptagon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHexagon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHomePlate.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CHorizontalScroll.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CIrregularSeal1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CIrregularSeal2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftBrace.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftBracket.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftCircularArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightCircularArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightRibbon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftRightUpArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLeftUpArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLightningBolt.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLine.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CLineInv.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathDivide.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathEqual.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathMinus.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathMultiply.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathNotEqual.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMathPlus.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CMoon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNonIsoscelesTrapezoid.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNoSmoking.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CNotchedRightArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\COctagon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CParallelogram.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPentagon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPie.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPieWedge.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlaque.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlaqueTabs.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CPlus.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CQuadArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CQuadArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRibbon.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRibbon2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightBrace.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRightBracket.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound1Rect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound2DiagRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRound2SameRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRoundRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CRtTriangle.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSmileyFace.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip1Rect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip2DiagRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnip2SameRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSnipRoundRect.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSquareTabs.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar10.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar12.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar16.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar24.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar32.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar4.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar5.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar6.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar7.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStar8.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStraightConnector1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CStripedRightArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSun.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CSwooshArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTeardrop.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchDown.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchDownPour.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchUp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextArchUpPour.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextButton.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextButtonPour.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCanDown.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCanUp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCascadeDown.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCascadeUp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextChevron.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextChevronInverted.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCircle.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCirclePour.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCurveDown.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextCurveUp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflate.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateBottom.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateInflate.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateInflateDeflate.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDeflateTop.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextDoubleWave1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeDown.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeLeft.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeRight.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextFadeUp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflate.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflateBottom.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextInflateTop.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextPlain.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextRingInside.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextRingOutside.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextSlantDown.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextSlantUp.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextStop.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextTriangle.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextTriangleInverted.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave1.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave2.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTextWave4.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTrapezoid.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CTriangle.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpDownArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUpDownArrowCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CUturnArrow.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CVerticalScroll.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWave.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeEllipseCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRectCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRoundRectCallout.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\_template.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\Pptx2PptShapeConverter.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PresetShapesHeader.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\ChartWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\CommentsWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\CustomXmlWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\DefaultThemeWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\DocumentRelsWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\DocumentWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\FileWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\fontTableWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\HeaderFooterWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\MediaWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\NumberingWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\ReaderClasses.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\readers.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\SettingWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\StylesWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinReaderWriterDefines.h" />
+    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinWriters.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\ChartWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.h" />
+    <ClInclude Include="..\..\..\Binary\MathEquation\LEStream.h" />
+    <ClInclude Include="..\..\..\Binary\MathEquation\MathEquation.h" />
+    <ClInclude Include="..\..\..\Binary\MathEquation\OutputDev.h" />
+    <ClInclude Include="..\..\..\Binary\MathEquation\String.h" />
+    <ClInclude Include="..\..\..\Binary\MathEquation\StringOutput.h" />
+    <ClInclude Include="..\..\..\Binary\MathEquation\Types.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\BinaryFileReaderWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\BinReaderWriterDefines.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\BinWriters.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\CalculatorCRC32.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\converter.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\DefaultNotesMaster.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\DefaultNotesTheme.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\FontCutter.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\FontPicker.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\imagemanager.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\pptxwriter.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\WMFToImageConverter.h" />
+    <ClInclude Include="..\..\..\Binary\Presentation\XmlWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Common\BinReaderWriterDefines.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Common\Common.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CSVReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryCommonReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Writer\CSVWriter.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficePPTXFile.h" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CD359215-E183-4EA7-B986-42868B10D8B8}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>BinaryFormatLib</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+    <OutDir>$(SolutionDir)$(Configuration)</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

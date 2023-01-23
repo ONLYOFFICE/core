@@ -81,8 +81,6 @@ private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
 
-    // обезопасим лок файлов с ограниченным кэшем и режимом без квадратов
-    NSFonts::IFontFile* m_pSafeFont;
     FT_Library m_pLibrary;
     
 public:
@@ -119,6 +117,8 @@ public:
 
     int m_nLOAD_MODE;
     int m_nRENDER_MODE;
+
+	bool m_bCorrectFontByName;
 
 	CApplicationFonts*	m_pApplication;
 	CFontsCache*		m_pOwnerCache;
@@ -161,7 +161,7 @@ public:
     virtual INT LoadString2C(const int& wsBuffer, const float& fX, const float& fY);
 
     virtual int GetKerning(UINT unPrevGID, UINT unGID);
-    virtual INT GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
+    virtual int GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
 
     virtual TFontCacheSizes MeasureChar(const LONG& lUnicode);
 
@@ -191,6 +191,8 @@ public:
     
     virtual void GetFace(double& d0, double& d1, double& d2);
     virtual void GetLimitsY(double& dMin, double& dMax);
+
+	virtual void SetUseCorrentFontByName(const bool& use);
 
     CFontFile* GetFontFileBySymbol(CFontFile* pFile, int code);
 };

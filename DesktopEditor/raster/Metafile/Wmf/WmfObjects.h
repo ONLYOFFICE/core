@@ -92,6 +92,14 @@ namespace MetaFile
 		}
 		std::wstring GetDibPatterPath();
 		void GetBounds(double& left, double& top, double& width, double& height) {}
+		void GetCenterPoint(double& dX, double& dY) {}
+
+		void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight)
+		{
+			*pBuffer	= DibBuffer;
+			unWidth		= DibWidth;
+			unHeight	= DibHeigth;
+		}
 
 	public:
 
@@ -247,7 +255,7 @@ namespace MetaFile
 		TWmfPointS     Width;
 		TWmfColor      Color;
 	};
-	class CWmfRegion : public CWmfObjectBase
+	class CWmfRegion : public CWmfObjectBase, public IRegion
 	{
 	public:
 		CWmfRegion()

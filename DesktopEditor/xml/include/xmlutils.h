@@ -32,20 +32,7 @@
 #ifndef _BUILD_XMLUTILS_CROSSPLATFORM_H_
 #define _BUILD_XMLUTILS_CROSSPLATFORM_H_
 
-#include <vector>
-#include <list>
-#include <map>
-#include <string>
-
-#ifdef _MSC_VER
-   #pragma warning (disable: 4100 4189)
-#endif
-
-#include "../../common/StringBuilder.h"
-
-#ifndef XML_UNUSED
-#define XML_UNUSED( arg )  ( (arg) = (arg) )
-#endif
+#include "xmlwriter.h"
 
 namespace XmlUtils
 {
@@ -267,34 +254,6 @@ namespace XmlUtils
 		void SetBase(CXmlNodeBase* pBase);
 		std::wstring GetNamespace(const std::wstring& strNodeName);
 		std::wstring GetNameNoNS(const std::wstring& strNodeName);
-	};
-
-
-	class KERNEL_DECL CXmlWriter
-	{
-	private:
-		std::wstring m_str;
-	
-	public:
-
-		CXmlWriter();
-		
-		std::wstring GetXmlString();
-		void SetXmlString(const std::wstring& strValue);
-		
-		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/);
-		void WriteString(const std::wstring& strValue);
-		void WriteInteger(int Value);
-		void WriteDouble(double Value);
-		void WriteBoolean(bool Value);
-		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false);
-		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true);
-		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue);
-		void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"");
-		void WriteNode(const std::wstring& strNodeName, double dValue);
-		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue);
-		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
-		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
 	};
 
 	std::wstring KERNEL_DECL GetNameNoNS(const std::wstring & strNodeName);

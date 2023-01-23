@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AF2D00A7-A351-4700-AE88-C1D9ADE29345}</ProjectGuid>
+    <RootNamespace>RtfFormatLib</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_DEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Format\ConvertationManager.cpp" />
+    <ClCompile Include="..\..\..\Format\DestinationCommand.cpp" />
+    <ClCompile Include="..\..\..\Format\IdGenerator.cpp" />
+    <ClCompile Include="..\..\..\Format\Ole1FormatReader.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfBookmark.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfChar.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfDocument.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfField.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfGlobalTables.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfLex.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfMath.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfOldList.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfOle.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfParagraph.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfPicture.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfProperty.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfReader.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfSection.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfShape.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfTable.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfTableCell.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfTableRow.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfToken.cpp" />
+    <ClCompile Include="..\..\..\Format\RtfWriter.cpp" />
+    <ClCompile Include="..\..\..\Format\UniversalConverterUtils.cpp" />
+    <ClCompile Include="..\..\..\Format\Utils.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXAbstractNumReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXAppReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXBorderReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXcnfStyleReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXColorReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXColorReader2.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXColorSchemeReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXCoreReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXDocDefaultsReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXDocumentReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXDrawingGraphicReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFontReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFontSchemeReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFontTableReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXFootnotesReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXHeaderReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXLatentStyleReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXLevelReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXMathReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXNumberingMapReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXNumberingReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXParagraphElementReaders.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXPictureAnchorReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXPictureInlineReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXPictureReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXpPrTabReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXShadingReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXShapeReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXStyleReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXStyleTableReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXTableReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtblLookReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtblpPrReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtblPrReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXtcPrReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXTextItemReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Reader\OOXThemeReader.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXCommentsWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXContentTypesWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXDocumentWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXFontTableWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXFootnoteWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXNumberingWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXRelsWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXSettingsWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXStylesWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXThemeWriter.cpp" />
+    <ClCompile Include="..\..\..\OOXml\Writer\OOXWriter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Format\Basic.h" />
+    <ClInclude Include="..\..\..\Format\convertationmanager.h" />
+    <ClInclude Include="..\..\..\Format\DestinationCommand.h" />
+    <ClInclude Include="..\..\..\Format\IdGenerator.h" />
+    <ClInclude Include="..\..\..\Format\Ole1FormatReader.h" />
+    <ClInclude Include="..\..\..\Format\OOXColorTable.h" />
+    <ClInclude Include="..\..\..\Format\RtfBookmark.h" />
+    <ClInclude Include="..\..\..\Format\RtfChar.h" />
+    <ClInclude Include="..\..\..\Format\RtfDefine.h" />
+    <ClInclude Include="..\..\..\Format\RtfDocument.h" />
+    <ClInclude Include="..\..\..\Format\RtfErrors.h" />
+    <ClInclude Include="..\..\..\Format\RtfField.h" />
+    <ClInclude Include="..\..\..\Format\RtfGlobalTables.h" />
+    <ClInclude Include="..\..\..\Format\RtfLex.h" />
+    <ClInclude Include="..\..\..\Format\RtfMath.h" />
+    <ClInclude Include="..\..\..\Format\RtfOle.h" />
+    <ClInclude Include="..\..\..\Format\RtfParagraph.h" />
+    <ClInclude Include="..\..\..\Format\RtfPicture.h" />
+    <ClInclude Include="..\..\..\Format\RtfProperty.h" />
+    <ClInclude Include="..\..\..\Format\RtfReader.h" />
+    <ClInclude Include="..\..\..\Format\RtfSection.h" />
+    <ClInclude Include="..\..\..\Format\RtfShape.h" />
+    <ClInclude Include="..\..\..\Format\RtfTable.h" />
+    <ClInclude Include="..\..\..\Format\RtfTableCell.h" />
+    <ClInclude Include="..\..\..\Format\RtfTableRow.h" />
+    <ClInclude Include="..\..\..\Format\RtfToken.h" />
+    <ClInclude Include="..\..\..\Format\RtfWriter.h" />
+    <ClInclude Include="..\..\..\Format\UniversalConverterUtils.h" />
+    <ClInclude Include="..\..\..\Format\Utils.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXAbstractNumReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXAppReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXBorderReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXcnfStyleReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXColorReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXColorReader2.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXColorSchemeReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXContentTypeReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXCoreReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXDocDefaultsReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXDocumentReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXDrawingGraphicReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXFontReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXFontSchemeReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXFontTableReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXFootnotesReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXHeaderReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXLatentStyleReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXLevelReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXMathReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXNumberingMapReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXNumberingReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXParagraphReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXPictureAnchorReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXPictureInlineReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXPictureReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXpPrFrameReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXpPrReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXpPrTabReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXReaderBasic.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXRelsReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXrPrReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXRunReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXSectionPropertyReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXSettingsReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXShadingReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXShapeReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXStyleReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXStyleTableReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXTableCellReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXTableReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXTableRowReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXtblLookReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXtblpPrReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXtblPrReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXtcPrReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXTextItemReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXThemeReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Reader\OOXtrPrReader.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXCommentsWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXContentTypesWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXDocumentWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXFontTableWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXFootnoteWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXNumberingWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXRelsWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXSettingsWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXStylesWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXThemeWriter.h" />
+    <ClInclude Include="..\..\..\OOXml\Writer\OOXWriter.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

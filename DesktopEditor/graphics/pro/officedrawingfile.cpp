@@ -44,7 +44,7 @@ CBgraFrame* GetFrame(IOfficeDrawingFile* pFile, int nPageIndex, int nRasterW, in
         if (!pApplicationFonts)
             return NULL;
 
-        NSFonts::IFontManager *pFontManager = pApplicationFonts->GenerateFontManager();
+        pFontManager = pApplicationFonts->GenerateFontManager();
         NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
         pFontCache->SetStreams(pApplicationFonts->GetStreams());
         pFontManager->SetOwnerCache(pFontCache);

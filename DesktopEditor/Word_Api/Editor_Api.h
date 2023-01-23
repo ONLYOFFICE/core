@@ -597,6 +597,9 @@ namespace NSEditorApi
         js_wrapper<std::string>		m_sBase64;	
         js_wrapper<CAscBinaryData>	m_oBinaryData;
         js_wrapper<std::wstring>    m_sAdditionalParams;
+        js_wrapper<int>             m_nPositionX;
+        js_wrapper<int>             m_nPositionY;
+        js_wrapper<int>             m_nWrapType;
         
     public:
         CAscInsertImage()
@@ -612,6 +615,9 @@ namespace NSEditorApi
         LINK_PROPERTY_STRINGA_JS(Base64)
         LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
         LINK_PROPERTY_STRING_JS(AdditionalParams)
+        LINK_PROPERTY_INT_JS(PositionX)
+        LINK_PROPERTY_INT_JS(PositionY)
+        LINK_PROPERTY_INT_JS(WrapType)
     };
 }
 
@@ -2740,6 +2746,25 @@ namespace NSEditorApi
         }
     };
     
+    class CAscPageScrollInfo : public IMenuEventDataBase
+    {
+    public:
+        int status;
+        int page;
+        int pages;
+        
+    public:
+        CAscPageScrollInfo()
+        {
+            status = 0;
+            page = 0;
+            pages = 0;
+        }
+        virtual ~CAscPageScrollInfo()
+        {
+        }
+    };
+
     class CAscStatisticInfo : public IMenuEventDataBase
     {
     public:

@@ -46,7 +46,7 @@ namespace NSUnicodeConverter
         const char* DisplayName;
     };
 
-    #define UNICODE_CONVERTER_ENCODINGS_COUNT 53
+    #define UNICODE_CONVERTER_ENCODINGS_COUNT 54
     static const EncodindId Encodings[UNICODE_CONVERTER_ENCODINGS_COUNT] =
     {
         { 0,    28596, "ISO-8859-6",       "Arabic (ISO 8859-6)" },
@@ -71,8 +71,8 @@ namespace NSUnicodeConverter
         { 15,   852,   "IBM852",           "Central European (OEM 852)" },
         { 16,   1250,  "windows-1250",     "Central European (Windows)" },
 
-        { 17,   950,   "Big5",             "Chinese (Big5 Traditional)" },
-        { 18,   936,   "GB2312",           "Central (GB2312 Simplified)" },
+        { 17,   950,   "Big5",              "Chinese (Big5 Traditional)" },
+        { 18,   936,   "GBK",               "Central (GBK Simplified)" },
 
         { 19,   28592, "ISO-8859-2",       "Eastern European (ISO 8859-2)" },
 
@@ -118,89 +118,90 @@ namespace NSUnicodeConverter
         { 49,   1201, "UTF-16BE",          "Unicode (UTF-16 Big Endian)" },
 
         { 50,   12000, "UTF-32LE",         "Unicode (UTF-32)" },
-        { 51,   12001, "UTF-32BE",         "Unicode (UTF-32 Big Endian)" },
-        { 52,   950,   "EUC-JP",           "Japanese (EUC-JP)" }
+        { 51,   12001, "UTF-32BE",          "Unicode (UTF-32 Big Endian)" },
 
+        { 52,   20932,   "EUC-JP",          "Japanese (EUC-JP)" },
+        { 53,   54936,   "GB18030",         "Chinese government standard" }
     };
 
     static std::map<int, std::string> create_mapEncodingsICU()
     {
-		std::map<int, std::string> m;
-		m[28596]	= "ISO-8859-6";
-		m[720]		= "DOS-720";
-		m[1256]		= "windows-1256";
+        std::map<int, std::string> m;
+        m[28596]	= "ISO-8859-6";
+        m[720]		= "DOS-720";
+        m[1256]		= "windows-1256";
 
-		m[28594]	= "ISO-8859-4";
-		m[28603]	= "ISO-8859-13";
-		m[775]		= "IBM775";
-		m[1257]		= "windows-1257";
+        m[28594]	= "ISO-8859-4";
+        m[28603]	= "ISO-8859-13";
+        m[775]		= "IBM775";
+        m[1257]		= "windows-1257";
 
-		m[28604]	= "ISO-8859-14";
+        m[28604]	= "ISO-8859-14";
 
-		m[28595]	= "ISO-8859-5";
-		m[20866]	= "KOI8-R";
-		m[21866]	= "KOI8-U";
-		m[10007]	= "x-mac-cyrillic";
-		m[855]		= "IBM855";
-		m[866]		= "cp866";
-		m[1251]		= "windows-1251";
+        m[28595]	= "ISO-8859-5";
+        m[20866]	= "KOI8-R";
+        m[21866]	= "KOI8-U";
+        m[10007]	= "x-mac-cyrillic";
+        m[855]		= "IBM855";
+        m[866]		= "cp866";
+        m[1251]		= "windows-1251";
 
-		m[852]		= "IBM852";
-		m[1250]		= "windows-1250";
+        m[852]		= "IBM852";
+        m[1250]		= "windows-1250";
 
-		m[950]		= "Big5";
-		m[936]		= "GB2312";
+        m[936]		= "GBK";
+        m[28592]	= "ISO-8859-2";
 
-		m[28592]	= "ISO-8859-2";
+        m[28597]	= "ISO-8859-7";
+        m[737]		= "IBM737";
+        m[869]		= "IBM869";
+        m[1253]		= "windows-1253";
 
-		m[28597]	= "ISO-8859-7";
-		m[737]		= "IBM737";
-		m[869]		= "IBM869";
-		m[1253]		= "windows-1253";
+        m[28598]	= "ISO-8859-8";
+        m[862]		= "DOS-862";
+        m[1255]		= "windows-1255";
 
-		m[28598]	= "ISO-8859-8";
-		m[862]		= "DOS-862";
-		m[1255]		= "windows-1255";
+        m[932]		= "Shift_JIS";
+        m[950]		= "Big5"; //CN
 
-		m[932]		= "Shift_JIS";
-                m[950]		= "EUC-JP";
+        m[949]		= "KS_C_5601-1987";
+        m[51949]	= "EUC-KR";
 
-		m[949]		= "KS_C_5601-1987";
-		m[51949]	= "EUC-KR";
+        m[861]		= "IBM861";
+        m[865]		= "IBM865";
 
-		m[861]		= "IBM861";
-		m[865]		= "IBM865";
+        m[874]		= "windows-874";
 
-		m[874]		= "windows-874";
+        m[28593]	= "ISO-8859-3";
+        m[28599]	= "ISO-8859-9";
+        m[857]		= "IBM857";
+        m[1254]		= "windows-1254";
 
-		m[28593]	= "ISO-8859-3";
-		m[28599]	= "ISO-8859-9";
-		m[857]		= "IBM857";
-		m[1254]		= "windows-1254";
+        m[28591]	= "ISO-8859-1";
+        m[28605]	= "ISO-8859-15";
+        m[850]		= "IBM850";
+        m[858]		= "IBM858";
+        m[860]		= "IBM860";
+        m[863]		= "IBM863";
+        m[437]		= "IBM437";
+        m[1252]		= "windows-1252";
 
-		m[28591]	= "ISO-8859-1";
-		m[28605]	= "ISO-8859-15";
-		m[850]		= "IBM850";
-		m[858]		= "IBM858";
-		m[860]		= "IBM860";
-		m[863]		= "IBM863";
-		m[437]		= "IBM437";
-		m[1252]		= "windows-1252";
+        m[1258]		= "windows-1258";
 
-		m[1258]		= "windows-1258";
+        m[65001]	= "UTF-8";
+        m[65000]	= "UTF-7";
 
-		m[65001]	= "UTF-8";
-		m[65000]	= "UTF-7";
+        m[1200]		= "UTF-16LE";
+        m[1201]		= "UTF-16BE";
 
-		m[1200]		= "UTF-16LE";
-		m[1201]		= "UTF-16BE";
+        m[12000]	= "UTF-32LE";
+        m[12001]	= "UTF-32BE";
 
-		m[12000]	= "UTF-32LE";
-		m[12001]	= "UTF-32BE";
-
-		m[10000]	= "macintosh";
-		return m;
-	}
+        m[10000]	= "macintosh";
+        m[20932]    = "EUC-JP";
+        m[54936]    = "GB18030";
+        return m;
+    }
     static const std::map<int, std::string> mapEncodingsICU = create_mapEncodingsICU();
 
 }

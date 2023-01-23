@@ -40,7 +40,7 @@
 
 namespace NSStringUtils
 {
-    class KERNEL_DECL CStringBuilderA
+	class KERNEL_DECL CStringBuilderA
 	{
 	private:
 		char*		m_pData;
@@ -50,32 +50,32 @@ namespace NSStringUtils
 		size_t		m_lSizeCur;
 
 	public:
-        CStringBuilderA();
-        ~CStringBuilderA();
-        void AddSize(size_t nSize);
+		CStringBuilderA();
+		~CStringBuilderA();
+		void AddSize(size_t nSize);
 
 	public:
-        void SetText(const std::string& sText);
-        void WriteString(const std::string& str);
+		void SetText(const std::string& sText);
+		void WriteString(const std::string& str);
 
-        void WriteStringNoSafe(const char* pString, size_t nLen);
-        void WriteString(const char* pString, size_t nLen);
+		void WriteStringNoSafe(const char* pString, size_t nLen);
+		void WriteString(const char* pString, size_t nLen);
 
-        void AddCharNoSafe(const char& _c);
-        void AddCharSafe(const char& _c);
+		void AddCharNoSafe(const char& _c);
+		void AddCharSafe(const char& _c);
 
-        size_t GetCurSize();
-        void SetCurSize(size_t lCurSize);
-        size_t GetSize();
+		size_t GetCurSize();
+		void SetCurSize(size_t lCurSize);
+		size_t GetSize();
 
-        void Clear();
-        void ClearNoAttack();
+		void Clear();
+		void ClearNoAttack();
 
-        std::string GetData();
-        char* GetBuffer();
+		std::string GetData();
+		char* GetBuffer();
 	};
 
-    class KERNEL_DECL CStringBuilder
+	class KERNEL_DECL CStringBuilder
 	{
 	protected:
 		wchar_t*	m_pData;
@@ -85,109 +85,110 @@ namespace NSStringUtils
 		size_t		m_lSizeCur;
 
 	public:
-        CStringBuilder();
-        virtual ~CStringBuilder();
+		CStringBuilder();
+		virtual ~CStringBuilder();
 
-        virtual void AddSize(size_t nSize);
+		virtual void AddSize(size_t nSize);
 
 	public:
 
-        void SetText(const std::wstring& bsText);
+		void SetText(const std::wstring& bsText);
 
-        void operator+=(const std::wstring& oTemp);
+		void operator+=(const std::wstring& oTemp);
 
-        void WriteStringNoSafe(const wchar_t* pString, size_t nLen);
-        void WriteString(const wchar_t* pString, size_t nLen = -1);
+		void WriteStringNoSafe(const wchar_t* pString, size_t nLen);
+		void WriteString(const wchar_t* pString, size_t nLen = -1);
 
-        void WriteString(const std::wstring& sString);
+		void WriteString(const std::wstring& sString);
 
-        void AddCharNoSafe(const wchar_t& _c);
-        void AddCharNoCheck(const wchar_t& _c);
-        void AddSpaceNoCheck();
-        void AddCharSafe(const wchar_t& _c);
-        void AddChar2Safe(const wchar_t _c1, const wchar_t& _c2);
+		void AddCharNoSafe(const wchar_t& _c);
+		void AddCharNoCheck(const wchar_t& _c);
+		void AddSpaceNoCheck();
+		void AddCharSafe(const wchar_t& _c);
+		void AddChar2Safe(const wchar_t _c1, const wchar_t& _c2);
 
-        void WriteEncodeXmlString(const std::wstring& sString);
-        void WriteEncodeXmlString(const wchar_t* pString, int nCount = -1);
+		void WriteEncodeXmlString(const std::wstring& sString);
+		void WriteEncodeXmlString(const wchar_t* pString, int nCount = -1);
 
-        void WriteEncodeXmlStringHHHH(const std::wstring& sString);
-        void WriteEncodeXmlStringHHHH(const wchar_t* pString, int nCount = -1);
+		void WriteEncodeXmlStringHHHH(const std::wstring& sString);
+		void WriteEncodeXmlStringHHHH(const wchar_t* pString, int nCount = -1);
 
-        size_t GetCurSize();
-        void SetCurSize(size_t lCurSize);
-        size_t GetSize();
+		size_t GetCurSize();
+		void SetCurSize(size_t lCurSize);
+		size_t GetSize();
 
-        void Write(CStringBuilder& oWriter, const size_t& offset = 0);
+		void Write(CStringBuilder& oWriter, const size_t& offset = 0);
+		void WriteBefore(CStringBuilder& oWriter);
 
-        void Clear();
-        void ClearNoAttack();
+		void Clear();
+		void ClearNoAttack();
 
-        std::wstring GetData();
-        std::wstring GetSubData(const size_t& start = 0, const size_t& count = std::wstring::npos);
-        wchar_t* GetBuffer();
+		std::wstring GetData();
+		std::wstring GetSubData(const size_t& start = 0, const size_t& count = std::wstring::npos);
+		wchar_t* GetBuffer();
 
-        void RemoveLastSpaces();
-        bool IsSpace();
+		void RemoveLastSpaces();
+		bool IsSpace();
 
 		void AddBool2(bool val);
-        void AddInt(int val);
+		void AddInt(int val);
 		void AddUInt(unsigned int val);
-        void AddIntDel10(int val);
-        void AddIntDel100(int val);
-        void AddInt64(__int64 val);
+		void AddIntDel10(int val);
+		void AddIntDel100(int val);
+		void AddInt64(__int64 val);
 
-        void AddIntNoCheck(int val);
+		void AddIntNoCheck(int val);
 
-        void AddIntNoCheckDel10(int val);
-        void AddIntNoCheckDel100(int val);
-        void AddDouble(double val, int count);
+		void AddIntNoCheckDel10(int val);
+		void AddIntNoCheckDel100(int val);
+		void AddDouble(double val, int count);
 
-        void WriteHexByteNoSafe(const unsigned char& value);
-        void WriteHexByte(const unsigned char& value);
-        void WriteHexInt3(const unsigned int& value);
-        void WriteHexInt4(const unsigned int& value);
-        void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b);
-        void WriteHexColor3(const unsigned int& value);
+		void WriteHexByteNoSafe(const unsigned char& value);
+		void WriteHexByte(const unsigned char& value);
+		void WriteHexInt3(const unsigned int& value);
+		void WriteHexInt4(const unsigned int& value);
+		void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b);
+		void WriteHexColor3(const unsigned int& value);
 
-        void Skip(int nSkip);
+		void Skip(int nSkip);
 
-        void StartNode(const std::wstring& name);
-        void StartNodeWithNS(const std::wstring& ns, const std::wstring& name);
-        void StartAttributes();
-        void EndAttributes();
-        void EndAttributesAndNode();
-        void EndNode(const std::wstring& name);
-        void EndNodeWithNS(const std::wstring& ns, const std::wstring& name);
-        void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false);
-        void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true);
+		void StartNode(const std::wstring& name);
+		void StartNodeWithNS(const std::wstring& ns, const std::wstring& name);
+		void StartAttributes();
+		void EndAttributes();
+		void EndAttributesAndNode();
+		void EndNode(const std::wstring& name);
+		void EndNodeWithNS(const std::wstring& ns, const std::wstring& name);
+		void WriteNodeBegin(std::wstring strNodeName, bool bAttributed = false);
+		void WriteNodeEnd(std::wstring strNodeName, bool bEmptyNode = false, bool bEndNode = true);
 
-        void WriteAttribute(const std::wstring& strName, bool value);
-        void WriteAttribute(const std::wstring& strName, int value);
-        void WriteAttribute(const std::wstring& strName, unsigned int value);
-        void WriteAttribute(const std::wstring& strName, double value);
-        void WriteAttribute(const std::wstring& strName, const std::wstring& value);
-        void WriteAttribute(const std::wstring& strName, const wchar_t* value);
-        void WriteAttributeEncodeXml(const std::wstring& strName, const std::wstring& value);
-        void WriteAttributeEncodeXml(const std::wstring& strName, const wchar_t* value);
+		void WriteAttribute(const std::wstring& strName, bool value);
+		void WriteAttribute(const std::wstring& strName, int value);
+		void WriteAttribute(const std::wstring& strName, unsigned int value);
+		void WriteAttribute(const std::wstring& strName, double value);
+		void WriteAttribute(const std::wstring& strName, const std::wstring& value);
+		void WriteAttribute(const std::wstring& strName, const wchar_t* value);
+		void WriteAttributeEncodeXml(const std::wstring& strName, const std::wstring& value);
+		void WriteAttributeEncodeXml(const std::wstring& strName, const wchar_t* value);
 
-        void WriteNodeValue(const std::wstring& strName, bool value);
-        void WriteNodeValue(const std::wstring& strName, int value);
-        void WriteNodeValue(const std::wstring& strName, unsigned int value);
-        void WriteNodeValue(const std::wstring& strName, double value);
-        void WriteNodeValue(const std::wstring& strName, const std::wstring& value);
-        void WriteNodeValue(const std::wstring& strName, const wchar_t* value);
-        void WriteNodeValueEncodeXml(const std::wstring& strName, const std::wstring& value);
-        void WriteNodeValueEncodeXml(const std::wstring& strName, const wchar_t* value);
+		void WriteNodeValue(const std::wstring& strName, bool value);
+		void WriteNodeValue(const std::wstring& strName, int value);
+		void WriteNodeValue(const std::wstring& strName, unsigned int value);
+		void WriteNodeValue(const std::wstring& strName, double value);
+		void WriteNodeValue(const std::wstring& strName, const std::wstring& value);
+		void WriteNodeValue(const std::wstring& strName, const wchar_t* value);
+		void WriteNodeValueEncodeXml(const std::wstring& strName, const std::wstring& value);
+		void WriteNodeValueEncodeXml(const std::wstring& strName, const wchar_t* value);
 	protected:
-        inline void WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount);
-        inline void WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount);
-        inline void WriteEncodeXmlStringHHHH_4bytes(const wchar_t* pString, int nCount);
-        inline void WriteEncodeXmlStringHHHH_2bytes(const wchar_t* pString, int nCount);
-        inline void WriteEncodeXmlChar(wchar_t code, unsigned char type);
-        inline unsigned char CheckXmlCode(unsigned int c);
-        inline unsigned char CheckXmlCodeHHHH(unsigned int c, const wchar_t* pData);
+		inline void WriteEncodeXmlString_4bytes(const wchar_t* pString, int nCount);
+		inline void WriteEncodeXmlString_2bytes(const wchar_t* pString, int nCount);
+		inline void WriteEncodeXmlStringHHHH_4bytes(const wchar_t* pString, int nCount);
+		inline void WriteEncodeXmlStringHHHH_2bytes(const wchar_t* pString, int nCount);
+		inline void WriteEncodeXmlChar(wchar_t code, unsigned char type);
+		inline unsigned char CheckXmlCode(unsigned int c);
+		inline unsigned char CheckXmlCodeHHHH(unsigned int c, const wchar_t* pData);
 	};
 
-    KERNEL_DECL void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);
-    KERNEL_DECL void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo);
+	KERNEL_DECL void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo);
+	KERNEL_DECL void string_replaceA(std::string& text, const std::string& replaceFrom, const std::string& replaceTo);
 }

@@ -106,6 +106,71 @@
 namespace MetaFile
 {
 #define META_EOF 0x0000
+
+	typedef enum
+	{
+		WMF_NEWFRAME = 0x0001,
+		WMF_ABORTDOC = 0x0002,
+		WMF_NEXTBAND = 0x0003,
+		WMF_SETCOLORTABLE = 0x0004,
+		WMF_GETCOLORTABLE = 0x0005,
+		WMF_FLUSHOUT = 0x0006,
+		WMF_DRAFTMODE = 0x0007,
+		WMF_QUERYESCSUPPORT = 0x0008,
+		WMF_SETABORTPROC = 0x0009,
+		WMF_STARTDOC = 0x000A,
+		WMF_ENDDOC = 0x000B,
+		WMF_GETPHYSPAGESIZE = 0x000C,
+		WMF_GETPRINTINGOFFSET = 0x000D,
+		WMF_GETSCALINGFACTOR = 0x000E,
+		WMF_META_ESCAPE_ENHANCED_METAFILE = 0x000F,
+		WMF_SETPENWIDTH = 0x0010,
+		WMF_SETCOPYCOUNT = 0x0011,
+		WMF_SETPAPERSOURCE = 0x0012,
+		WMF_PASSTHROUGH = 0x0013,
+		WMF_GETTECHNOLOGY = 0x0014,
+		WMF_SETLINECAP = 0x0015,
+		WMF_SETLINEJOIN = 0x0016,
+		WMF_SETMITERLIMIT = 0x0017,
+		WMF_BANDINFO = 0x0018,
+		WMF_DRAWPATTERNRECT = 0x0019,
+		WMF_GETVECTORPENSIZE = 0x001A,
+		WMF_GETVECTORBRUSHSIZE = 0x001B,
+		WMF_ENABLEDUPLEX = 0x001C,
+		WMF_GETSETPAPERBINS = 0x001D,
+		WMF_GETSETPRINTORIENT = 0x001E,
+		WMF_ENUMPAPERBINS = 0x001F,
+		WMF_SETDIBSCALING = 0x0020,
+		WMF_EPSPRINTING = 0x0021,
+		WMF_ENUMPAPERMETRICS = 0x0022,
+		WMF_GETSETPAPERMETRICS = 0x0023,
+		WMF_POSTSCRIPT_DATA = 0x0025,
+		WMF_POSTSCRIPT_IGNORE = 0x0026,
+		WMF_GETDEVICEUNITS = 0x002A,
+		WMF_GETEXTENDEDTEXTMETRICS = 0x0100,
+		WMF_GETPAIRKERNTABLE = 0x0102,
+		WMF_EXTTEXTOUT = 0x0200,
+		WMF_GETFACENAME = 0x0201,
+		WMF_DOWNLOADFACE = 0x0202,
+		WMF_METAFILE_DRIVER = 0x0801,
+		WMF_QUERYDIBSUPPORT = 0x0C01,
+		WMF_BEGIN_PATH = 0x1000,
+		WMF_CLIP_TO_PATH = 0x1001,
+		WMF_END_PATH = 0x1002,
+		WMF_OPENCHANNEL = 0x100E,
+		WMF_DOWNLOADHEADER = 0x100F,
+		WMF_CLOSECHANNEL = 0x1010,
+		WMF_POSTSCRIPT_PASSTHROUGH = 0x1013,
+		WMF_ENCAPSULATED_POSTSCRIPT = 0x1014,
+		WMF_POSTSCRIPT_IDENTIFY = 0x1015,
+		WMF_vPOSTSCRIPT_INJECTION = 0x1016,
+		WMF_CHECKJPEGFORMAT = 0x1017,
+		WMF_CHECKPNGFORMAT = 0x1018,
+		WMF_GET_PS_FEATURESETTING = 0x1019,
+		WMF_MXDC_ESCAPE = 0x101A,
+		WMF_SPCLPASSTHROUGH2 = 0x11D8
+	} MetafileEscapes;
+
 	struct TWmfColor
 	{
 		unsigned char r;
@@ -183,6 +248,16 @@ namespace MetaFile
 		short Top;
 		short Right;
 		short Bottom;
+
+		TWmfRect()
+		{
+			Left = Top = Right = Bottom = 0;
+		}
+
+		bool Empty() const
+		{
+			return (0 == Left) && (0 == Top) && (0 == Right) && (0 == Bottom);
+		}
 	};
 	struct TWmfPlaceable
 	{
@@ -307,6 +382,71 @@ namespace MetaFile
 		short          DestWidth;
 		short          yDst;
 		short          xDst;
+	};
+	class CWmfEscapeBuffer
+	{
+		public:
+			CWmfEscapeBuffer() : m_pBytes(NULL), m_unSize(0), m_unPosition(0) {};
+			~CWmfEscapeBuffer()
+			{
+				Clear();
+			}
+
+			bool Empty() const
+			{
+				return 0 == m_unSize;
+			}
+
+			void SetSize(unsigned int unSize)
+			{
+				Clear();
+				m_unSize = unSize;
+				m_pBytes = new unsigned char[m_unSize];
+			};
+
+			void IncreasePosition(unsigned int unValue)
+			{
+				m_unPosition += unValue;
+
+				if (m_unPosition > m_unSize)
+					m_unPosition = m_unSize;
+			}
+
+			unsigned char* GetBuffer() const
+			{
+				return m_pBytes;
+			}
+
+			unsigned char* GetCurPtr() const
+			{
+				if (NULL == m_pBytes || 0 == m_unSize)
+					return NULL;
+
+				return m_pBytes + m_unPosition;
+			}
+
+			unsigned int GetSize() const
+			{
+				return m_unSize;
+			}
+
+		private:
+
+			void Clear()
+			{
+				if (NULL != m_pBytes)
+				{
+					delete m_pBytes;
+					m_pBytes = NULL;
+				}
+
+				m_unSize = 0;
+				m_unPosition = 0;
+			}
+
+			unsigned char* m_pBytes;
+			unsigned int   m_unSize;
+			unsigned int   m_unPosition;
 	};
 }
 

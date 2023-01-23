@@ -291,8 +291,8 @@ generateOut()
                      $BOOST_SRC/iphonesim-build/stage/lib/libboost_${NAME}.a \
                      -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
                      
-        lipo $SRCDIR/build/ios/lib/libboost_${NAME}.a -remove i386 -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
-        lipo $SRCDIR/build/ios/lib/libboost_${NAME}.a -remove armv4t -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
+        #lipo $SRCDIR/build/ios/lib/libboost_${NAME}.a -remove i386 -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
+        #lipo $SRCDIR/build/ios/lib/libboost_${NAME}.a -remove armv4t -o $SRCDIR/build/ios/lib/libboost_${NAME}.a
     done
 
     doneSection

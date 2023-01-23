@@ -32,14 +32,16 @@
 #include "WmfPlayer.h"
 #include "WmfFile.h"
 
+#include "WmfParser/CWmfParserBase.h"
+
 namespace MetaFile
 {
-	CWmfPlayer::CWmfPlayer(CWmfFile* pFile) : m_pFile(pFile)
+	CWmfPlayer::CWmfPlayer(CWmfParserBase* pFile) : m_pParser(pFile)
 	{
 		CWmfDC* pDC = new CWmfDC();
 		if (!pDC)
 		{
-			pFile->SetError();
+			m_pParser->SetError();
 			return;
 		}
 
@@ -82,7 +84,7 @@ namespace MetaFile
 		CWmfDC* pDC = new CWmfDC();
 		if (!pDC)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return;
 		}
 
@@ -95,14 +97,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
 		CWmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return NULL;
 		}
 
@@ -114,7 +116,7 @@ namespace MetaFile
 	{
 		if (m_vDCStack.size() <= 1)
 		{
-			m_pFile->SetError();
+			m_pParser->SetError();
 			return m_pDC;
 		}
 
@@ -148,12 +150,9 @@ namespace MetaFile
 		}
 
 		CWmfObjectMap::const_iterator oPos = m_mObjects.find(ushIndex);
+
 		if (m_mObjects.end() != oPos)
-		{
-			CWmfObjectBase* pOldObject = oPos->second;
-			delete pOldObject;
-			m_mObjects.erase(ushIndex);
-		}
+			DeleteObject(ushIndex);
 
 		m_mObjects.insert(std::pair<unsigned int, CWmfObjectBase*>(ushIndex, pObject));
 
@@ -231,7 +230,7 @@ namespace MetaFile
 
 //---------------------------------------------------------------------------------------------------------------
 	CWmfDC::CWmfDC()
-	{				   
+	{
 		m_pBrush       = &m_oDefaultBrush;
 		m_pPen         = &m_oDefaultPen;
 		m_pPalette     = NULL;
@@ -289,6 +288,7 @@ namespace MetaFile
 		pNewDC->m_oTransform.Init();
 		pNewDC->m_oClip             = m_oClip;
 		pNewDC->m_oFinalTransform.Copy(&m_oFinalTransform);
+		pNewDC->m_oFinalTransform2.Copy(&m_oFinalTransform2);
 
 		return pNewDC;
 	}
@@ -360,9 +360,6 @@ namespace MetaFile
 	void           CWmfDC::SetMapMode(unsigned short ushMapMode)
 	{
 		m_ushMapMode = ushMapMode;
-
-		UpdatePixelMetrics();
-		return;
 
 		switch (m_ushMapMode)
 		{
@@ -450,7 +447,6 @@ namespace MetaFile
 		{
 			m_oViewport.x = shX;
 			m_oViewport.y = shY;
-			m_oViewport.bUnchangedOrg = false;
 		}
 
 		UpdatePixelMetrics();
@@ -464,10 +460,12 @@ namespace MetaFile
 
 		if (m_oViewport.bUnchangedExt)
 		{
-			m_oViewport.w = shW;
-			m_oViewport.h = shH;
-			m_oViewport.bUnchangedExt = false;
+			m_oViewport.w = std::abs(shW);
+			m_oViewport.h = std::abs(shH);
 		}
+
+		if (MM_ISOTROPIC == m_ushMapMode)
+			FixIsotropic();
 
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
@@ -500,7 +498,6 @@ namespace MetaFile
 		{
 			m_oWindow.x = shX;
 			m_oWindow.y = shY;
-			m_oWindow.bUnchangedOrg = false;
 		}
 
 		UpdatePixelMetrics();
@@ -516,8 +513,10 @@ namespace MetaFile
 		{
 			m_oWindow.w = shW;
 			m_oWindow.h = shH;
-			m_oWindow.bUnchangedExt = false;
 		}
+
+		if (MM_ISOTROPIC == m_ushMapMode)
+			FixIsotropic();
 
 		UpdatePixelMetrics();
 		UpdateFinalTransform();
@@ -538,6 +537,9 @@ namespace MetaFile
 	}
 	bool CWmfDC::UpdatePixelMetrics()
 	{
+		if (1 >= m_oWindow.w || 1 >= m_oViewport.w)
+			return false;
+
 		unsigned short ushMapMode = m_ushMapMode;
 		if (MM_ISOTROPIC == ushMapMode)
 		{
@@ -548,7 +550,7 @@ namespace MetaFile
 			SetPixelHeight(dPixel);
 			SetPixelWidth(dPixel);
 		}
-		else// if (MM_ANISOTROPIC == ushMapMode)
+		else if (MM_ANISOTROPIC == ushMapMode)
 		{
 			double dPixelX = (double)m_oViewport.w / (double)m_oWindow.w;
 			double dPixelY = (double)m_oViewport.h / (double)m_oWindow.h;
@@ -564,8 +566,11 @@ namespace MetaFile
 		TWmfWindow* pWindow   = GetWindow();
 		TWmfWindow* pViewPort = GetViewport();
 
-		TXForm oWindowXForm(1, 0, 0, 1, -pWindow->x, -pWindow->y);
-		TXForm oViewportXForm((double)GetPixelWidth(), 0, 0, (double)GetPixelHeight(), pViewPort->x, pViewPort->y);
+		double dM11 = (pViewPort->w >= 0) ? 1 : -1;
+		double dM22 = (pViewPort->h >= 0) ? 1 : -1;
+
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(pWindow->x * GetPixelWidth() * dM11), -(pWindow->y * GetPixelHeight() * dM22));
+		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, pViewPort->x, pViewPort->y);
 
 		m_oFinalTransform.Init();
 		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
@@ -574,8 +579,27 @@ namespace MetaFile
 
 		m_oFinalTransform2.Init();
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+//		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
+	}
+
+	void CWmfDC::FixIsotropic()
+	{
+		double dXDim = std::fabs((double)m_oViewport.w / m_oWindow.w);
+		double dYDim = std::fabs((double)m_oViewport.h / m_oWindow.h);
+
+		if (dXDim > dYDim)
+		{
+			int nMinCx = (m_oViewport.w >= 0) ? 1 : -1;
+			m_oViewport.w = std::floor(m_oViewport.w * dYDim / dXDim + 0.5);
+			if (!m_oViewport.w) m_oViewport.w = nMinCx;
+		}
+		else
+		{
+			int nMinCy = (m_oViewport.h >= 0) ? 1 : -1;
+			m_oViewport.h = std::floor(m_oViewport.h * dXDim / dYDim + 0.5);
+			if (!m_oViewport.h) m_oViewport.h = nMinCy;
+		}
 	}
 	void CWmfDC::SetTextColor(TWmfColor& oColor)
 	{

@@ -74,8 +74,6 @@ public:
 
     void ConvertToPdf(const std::wstring& path);
 
-#ifdef BUILDING_WASM_MODULE
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks (int nPageIndex);
-#endif
 };

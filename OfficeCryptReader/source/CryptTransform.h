@@ -99,8 +99,7 @@ struct _ecmaCryptData
 	int			hashSize	= 0x14;
 	int			blockSize	= 0x10;
 	int			saltSize	= 0x10;
-
-	std::string dataSaltValue;
+	
 	std::string saltValue;
 	std::string encryptedKeyValue;
 	std::string encryptedVerifierInput;
@@ -108,6 +107,15 @@ struct _ecmaCryptData
 	  
 	std::string encryptedHmacKey;
 	std::string encryptedHmacValue;
+
+//---------------------------------------------------------------------------------------------
+	CRYPT_METHOD::_hashAlgorithm	dataHashAlgorithm = CRYPT_METHOD::SHA1;
+	CRYPT_METHOD::_cipherAlgorithm	dataCipherAlgorithm = CRYPT_METHOD::AES_CBC;
+	std::string dataSaltValue;
+	int			dataKeySize = 0x10;
+	int			dataHashSize = 0x14;
+	int			dataBlockSize = 0x10;
+	int			dataSaltSize = 0x10;
 
 	bool bAgile	= true;
 

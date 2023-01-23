@@ -150,7 +150,10 @@ int main(int argc, char *argv[])
     if (true)
     {
         NSDoctRenderer::CDocBuilder oBuilder;
+
+        // если отключена эта опция - то она отключится на parse_args
         oBuilder.SetProperty("--check-fonts", L"");
+
         //oBuilder.SetProperty("--use-doctrenderer-scheme", L"");
         //oBuilder.SetProperty("--work-directory", L"builder");
 

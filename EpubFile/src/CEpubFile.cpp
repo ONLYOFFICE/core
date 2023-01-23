@@ -196,7 +196,23 @@ void CEpubFile::ShowMap()
         std::wcout << oItem.m_sID << L" - " << m_mapRefs[oItem.m_sID].GetRef() << std::endl;
 }
 
-HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDstFile, const std::wstring& sInpTitle)
+#define DocInfo(name, tag)\
+{\
+    std::wstring sFind = L"<meta name=\""; sFind += name; sFind += L'\"';\
+    if ((nFind = sIndexHtml.find(sFind)) != std::wstring::npos)\
+    {\
+        size_t nBegin = sIndexHtml.find(L"content=\"", nFind);\
+        size_t nEnd   = sIndexHtml.find(L"\" />", nFind);\
+        if (nBegin != std::wstring::npos && nEnd != std::wstring::npos && nBegin + 9 < nEnd)\
+        {\
+            nBegin += 9;\
+            std::wstring sRes = L"<"; sRes += tag; sRes += L'>'; sRes += sIndexHtml.substr(nBegin, nEnd - nBegin); sRes += L"</"; sRes += tag; sRes += L">";\
+            oContentOpf.WriteStringUTF8(sRes);\
+        }\
+    }\
+}
+
+HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sDstFile, const std::wstring& sInpTitle)
 {
     NSDirectory::CreateDirectory(m_sTempDir + L"/META-INF");
     NSDirectory::CreateDirectory(m_sTempDir + L"/OEBPS");
@@ -296,45 +312,27 @@ HRESULT CEpubFile::FromHtml(const std::wstring& sHtmlFile, const std::wstring& s
         oContentOpf.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><package xmlns=\"http://www.idpf.org/2007/opf\" version=\"2.0\" unique-identifier=\"book_uuid\"><metadata xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:opf=\"http://www.idpf.org/2007/opf\">");
         // metadata
         bool bWasIdentifier = false;
-        XmlUtils::CXmlLiteReader oCoreReader;
-        oCoreReader.FromString(sCoreFile);
-        oCoreReader.ReadNextNode();
-        int nDeath = oCoreReader.GetDepth();
-        while (oCoreReader.ReadNextSiblingNode(nDeath))
+
+        size_t nFind;
+        if ((nFind = sIndexHtml.find(L"<title>")) != std::wstring::npos)
         {
-            std::wstring sOut = oCoreReader.GetOuterXml();
-            std::wstring sName = oCoreReader.GetName();
-            if (sName == L"dc:identifier")
+            size_t nEnd = sIndexHtml.find(L"</title>", nFind);
+            if (nEnd != std::wstring::npos)
             {
-                bWasIdentifier = true;
-                oContentOpf.WriteStringUTF8(sOut);
+                bWasTitle = true;
+                sTitle = sIndexHtml.substr(nFind + 7, nEnd - nFind - 7);
+                oContentOpf.WriteStringUTF8(L"<dc:title>" + sTitle + L"</dc:title>");
             }
-            else if (sName == L"dc:title")
-            {
-                std::wstring sInTitle = sOut;
-                size_t nBegin = sInTitle.find(L'>');
-                if (nBegin == std::wstring::npos)
-                    continue;
-                sInTitle.erase(0, nBegin + 1);
-                nBegin = sInTitle.find(L'<');
-                if (nBegin == std::wstring::npos)
-                    continue;
-                sInTitle.erase(nBegin);
-                if (!sInTitle.empty())
-                {
-                    bWasTitle = true;
-                    sTitle = sInTitle;
-                    oContentOpf.WriteStringUTF8(sOut);
-                }
-            }
-            else if (sName == L"dc:language")
-            {
-                bWasLanguage = true;
-                oContentOpf.WriteStringUTF8(sOut);
-            }
-            else
-                oContentOpf.WriteStringUTF8(sOut);
         }
+        DocInfo(L"identifier", L"dc:identifier");
+        DocInfo(L"language", L"dc:language");
+        DocInfo(L"creator", L"dc:creator");
+        DocInfo(L"description", L"dc:description");
+        DocInfo(L"subject", L"dc:subject");
+        DocInfo(L"keywords", L"cp:keywords");
+        bWasIdentifier = sIndexHtml.find(L"<meta name=\"identifier\"") != std::wstring::npos;
+        bWasLanguage = sIndexHtml.find(L"<meta name=\"language\"") != std::wstring::npos;
+
         if (!bWasIdentifier)
         {
             oContentOpf.WriteStringUTF8(L"<dc:identifier id=\"book_uuid\" opf:scheme=\"UUID\">urn:uuid:");

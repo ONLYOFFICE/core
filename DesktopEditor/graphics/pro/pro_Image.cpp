@@ -39,8 +39,8 @@ namespace NSImages
         ICacheImage* Create(NSFonts::IApplicationFonts* pFonts, const std::wstring& sFile)
         {
             if (sFile.empty())
-                return new CCacheImage((CApplicationFonts*)pFonts);
-            return new CCacheImage((CApplicationFonts*)pFonts, sFile);
+				return new CCacheImage(pFonts);
+			return new CCacheImage(pFonts, sFile);
         }
     }
 
@@ -48,7 +48,7 @@ namespace NSImages
     {
         IImageFilesCache* Create(NSFonts::IApplicationFonts* pFonts)
         {
-            return new CImageFilesCache((CApplicationFonts*)pFonts);
+			return new CImageFilesCache(pFonts);
         }
     }
 }

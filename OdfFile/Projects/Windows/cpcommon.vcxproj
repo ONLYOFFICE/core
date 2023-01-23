@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>OdfCommon</ProjectName>
+    <ProjectGuid>{609ED938-3CA8-4BED-B363-25096D4C4812}</ProjectGuid>
+    <RootNamespace>cpcommon</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\Common\</OutDir>
+    <IntDir>$(Configuration)\Common\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\include;..\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4311;4267;4996;4172;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>../include;../src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4311;4267;4996;4172;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <AdditionalIncludeDirectories>../include;../src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4311;4267;4996;4172;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(ProjectName)-static.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Common\CPColorUtils.h" />
+    <ClInclude Include="..\..\Common\CPNoncopyable.h" />
+    <ClInclude Include="..\..\Common\CPOptional.h" />
+    <ClInclude Include="..\..\Common\CPScopedPtr.h" />
+    <ClInclude Include="..\..\Common\CPSharedPtr.h" />
+    <ClInclude Include="..\..\Common\CPString.h" />
+    <ClInclude Include="..\..\Common\CPWeakPtr.h" />
+    <ClInclude Include="..\..\Common\errors.h" />
+    <ClInclude Include="..\..\Common\logging.h" />
+    <ClInclude Include="..\..\Common\odf_elements_type.h" />
+    <ClInclude Include="..\..\Common\readdocelement.h" />
+    <ClInclude Include="..\..\Common\readstring.h" />
+    <ClInclude Include="..\..\Common\utils.h" />
+    <ClInclude Include="..\..\Common\writedocelement.h" />
+    <ClInclude Include="..\..\DataTypes\anchortype.h" />
+    <ClInclude Include="..\..\DataTypes\backgroundcolor.h" />
+    <ClInclude Include="..\..\DataTypes\bibliography.h" />
+    <ClInclude Include="..\..\DataTypes\bool.h" />
+    <ClInclude Include="..\..\DataTypes\bordermodel.h" />
+    <ClInclude Include="..\..\DataTypes\borderstyle.h" />
+    <ClInclude Include="..\..\DataTypes\borderwidths.h" />
+    <ClInclude Include="..\..\DataTypes\calcext_type.h" />
+    <ClInclude Include="..\..\DataTypes\chartclass.h" />
+    <ClInclude Include="..\..\DataTypes\chartdatalabelnumber.h" />
+    <ClInclude Include="..\..\DataTypes\charterrorcategory.h" />
+    <ClInclude Include="..\..\DataTypes\chartinterpolation.h" />
+    <ClInclude Include="..\..\DataTypes\chartlabelarrangement.h" />
+    <ClInclude Include="..\..\DataTypes\chartlabelposition.h" />
+    <ClInclude Include="..\..\DataTypes\chartregressiontype.h" />
+    <ClInclude Include="..\..\DataTypes\chartseriessource.h" />
+    <ClInclude Include="..\..\DataTypes\chartsolidtype.h" />
+    <ClInclude Include="..\..\DataTypes\chartsymbol.h" />
+    <ClInclude Include="..\..\DataTypes\charttimeunit.h" />
+    <ClInclude Include="..\..\DataTypes\clockvalue.h" />
+    <ClInclude Include="..\..\DataTypes\color.h" />
+    <ClInclude Include="..\..\DataTypes\commandtype.h" />
+    <ClInclude Include="..\..\DataTypes\common_attlists.h" />
+    <ClInclude Include="..\..\DataTypes\custom_shape_types_convert.h" />
+    <ClInclude Include="..\..\DataTypes\dategroup.h" />
+    <ClInclude Include="..\..\DataTypes\direction.h" />
+    <ClInclude Include="..\..\DataTypes\drawangle.h" />
+    <ClInclude Include="..\..\DataTypes\drawfill.h" />
+    <ClInclude Include="..\..\DataTypes\dropcaplength.h" />
+    <ClInclude Include="..\..\DataTypes\errors.h" />
+    <ClInclude Include="..\..\DataTypes\fillimagerefpoint.h" />
+    <ClInclude Include="..\..\DataTypes\fobreak.h" />
+    <ClInclude Include="..\..\DataTypes\fontfamilygeneric.h" />
+    <ClInclude Include="..\..\DataTypes\fontpitch.h" />
+    <ClInclude Include="..\..\DataTypes\fontrelief.h" />
+    <ClInclude Include="..\..\DataTypes\fontsize.h" />
+    <ClInclude Include="..\..\DataTypes\fontstretch.h" />
+    <ClInclude Include="..\..\DataTypes\fontstyle.h" />
+    <ClInclude Include="..\..\DataTypes\fontvariant.h" />
+    <ClInclude Include="..\..\DataTypes\fontweight.h" />
+    <ClInclude Include="..\..\DataTypes\gradientstyle.h" />
+    <ClInclude Include="..\..\DataTypes\grandtotal.h" />
+    <ClInclude Include="..\..\DataTypes\hatchstyle.h" />
+    <ClInclude Include="..\..\DataTypes\hyphenationkeep.h" />
+    <ClInclude Include="..\..\DataTypes\hyphenationladdercount.h" />
+    <ClInclude Include="..\..\DataTypes\iconset_type.h" />
+    <ClInclude Include="..\..\DataTypes\keeptogether.h" />
+    <ClInclude Include="..\..\DataTypes\layoutgridmode.h" />
+    <ClInclude Include="..\..\DataTypes\length.h" />
+    <ClInclude Include="..\..\DataTypes\lengthorpercent.h" />
+    <ClInclude Include="..\..\DataTypes\letterspacing.h" />
+    <ClInclude Include="..\..\DataTypes\linebreak.h" />
+    <ClInclude Include="..\..\DataTypes\linemode.h" />
+    <ClInclude Include="..\..\DataTypes\linestyle.h" />
+    <ClInclude Include="..\..\DataTypes\linetype.h" />
+    <ClInclude Include="..\..\DataTypes\linewidth.h" />
+    <ClInclude Include="..\..\DataTypes\markerstyle.h" />
+    <ClInclude Include="..\..\DataTypes\mathvariant.h" />
+    <ClInclude Include="..\..\DataTypes\membertype.h" />
+    <ClInclude Include="..\..\DataTypes\messagetype.h" />
+    <ClInclude Include="..\..\DataTypes\noteclass.h" />
+    <ClInclude Include="..\..\DataTypes\odfattributes.h" />
+    <ClInclude Include="..\..\DataTypes\officevaluetype.h" />
+    <ClInclude Include="..\..\DataTypes\pageusage.h" />
+    <ClInclude Include="..\..\DataTypes\percent.h" />
+    <ClInclude Include="..\..\DataTypes\percentorscale.h" />
+    <ClInclude Include="..\..\DataTypes\presentationclass.h" />
+    <ClInclude Include="..\..\DataTypes\punctuationwrap.h" />
+    <ClInclude Include="..\..\DataTypes\rotationalign.h" />
+    <ClInclude Include="..\..\DataTypes\runthrough.h" />
+    <ClInclude Include="..\..\DataTypes\scripttype.h" />
+    <ClInclude Include="..\..\DataTypes\shadowtype.h" />
+    <ClInclude Include="..\..\DataTypes\smil_transitiontype.h" />
+    <ClInclude Include="..\..\DataTypes\stylecellprotect.h" />
+    <ClInclude Include="..\..\DataTypes\stylefamily.h" />
+    <ClInclude Include="..\..\DataTypes\stylehorizontalpos.h" />
+    <ClInclude Include="..\..\DataTypes\stylehorizontalrel.h" />
+    <ClInclude Include="..\..\DataTypes\styleleadercolor.h" />
+    <ClInclude Include="..\..\DataTypes\stylenumformat.h" />
+    <ClInclude Include="..\..\DataTypes\styleposition.h" />
+    <ClInclude Include="..\..\DataTypes\styleprint.h" />
+    <ClInclude Include="..\..\DataTypes\stylerepeat.h" />
+    <ClInclude Include="..\..\DataTypes\styletype.h" />
+    <ClInclude Include="..\..\DataTypes\styleverticalpos.h" />
+    <ClInclude Include="..\..\DataTypes\styleverticalrel.h" />
+    <ClInclude Include="..\..\DataTypes\stylewrap.h" />
+    <ClInclude Include="..\..\DataTypes\stylewrapcontourmode.h" />
+    <ClInclude Include="..\..\DataTypes\style_ref.h" />
+    <ClInclude Include="..\..\DataTypes\tablealign.h" />
+    <ClInclude Include="..\..\DataTypes\tablecentering.h" />
+    <ClInclude Include="..\..\DataTypes\tablefunction.h" />
+    <ClInclude Include="..\..\DataTypes\tablemode.h" />
+    <ClInclude Include="..\..\DataTypes\tableorder.h" />
+    <ClInclude Include="..\..\DataTypes\tableorientation.h" />
+    <ClInclude Include="..\..\DataTypes\tabletype.h" />
+    <ClInclude Include="..\..\DataTypes\tablevisibility.h" />
+    <ClInclude Include="..\..\DataTypes\targetframename.h" />
+    <ClInclude Include="..\..\DataTypes\textalign.h" />
+    <ClInclude Include="..\..\DataTypes\textalignsource.h" />
+    <ClInclude Include="..\..\DataTypes\textautospace.h" />
+    <ClInclude Include="..\..\DataTypes\textcombine.h" />
+    <ClInclude Include="..\..\DataTypes\textdisplay.h" />
+    <ClInclude Include="..\..\DataTypes\textemphasize.h" />
+    <ClInclude Include="..\..\DataTypes\textposition.h" />
+    <ClInclude Include="..\..\DataTypes\textrotationscale.h" />
+    <ClInclude Include="..\..\DataTypes\texttransform.h" />
+    <ClInclude Include="..\..\DataTypes\timeperiod.h" />
+    <ClInclude Include="..\..\DataTypes\underlinecolor.h" />
+    <ClInclude Include="..\..\DataTypes\verticalalign.h" />
+    <ClInclude Include="..\..\DataTypes\wrapoption.h" />
+    <ClInclude Include="..\..\DataTypes\writingmode.h" />
+    <ClInclude Include="..\..\DataTypes\xlink.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Common\CPColorUtils.cpp" />
+    <ClCompile Include="..\..\Common\CPString.cpp" />
+    <ClCompile Include="..\..\Common\logging.cpp" />
+    <ClCompile Include="..\..\Common\readdocelement.cpp" />
+    <ClCompile Include="..\..\Common\utils.cpp" />
+    <ClCompile Include="..\..\DataTypes\anchortype.cpp" />
+    <ClCompile Include="..\..\DataTypes\backgroundcolor.cpp" />
+    <ClCompile Include="..\..\DataTypes\bibliography.cpp" />
+    <ClCompile Include="..\..\DataTypes\bool.cpp" />
+    <ClCompile Include="..\..\DataTypes\bordermodel.cpp" />
+    <ClCompile Include="..\..\DataTypes\borderstyle.cpp" />
+    <ClCompile Include="..\..\DataTypes\borderwidths.cpp" />
+    <ClCompile Include="..\..\DataTypes\calcext_type.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartclass.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartdatalabelnumber.cpp" />
+    <ClCompile Include="..\..\DataTypes\charterrorcategory.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartinterpolation.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartlabelarrangement.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartlabelposition.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartregressiontype.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartseriessource.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartsolidtype.cpp" />
+    <ClCompile Include="..\..\DataTypes\chartsymbol.cpp" />
+    <ClCompile Include="..\..\DataTypes\charttimeunit.cpp" />
+    <ClCompile Include="..\..\DataTypes\clockvalue.cpp" />
+    <ClCompile Include="..\..\DataTypes\color.cpp" />
+    <ClCompile Include="..\..\DataTypes\commandtype.cpp" />
+    <ClCompile Include="..\..\DataTypes\common_attlists.cpp" />
+    <ClCompile Include="..\..\DataTypes\dategroup.cpp" />
+    <ClCompile Include="..\..\DataTypes\direction.cpp" />
+    <ClCompile Include="..\..\DataTypes\drawangle.cpp" />
+    <ClCompile Include="..\..\DataTypes\drawfill.cpp" />
+    <ClCompile Include="..\..\DataTypes\dropcaplength.cpp" />
+    <ClCompile Include="..\..\DataTypes\fillimagerefpoint.cpp" />
+    <ClCompile Include="..\..\DataTypes\fobreak.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontfamilygeneric.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontpitch.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontrelief.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontsize.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontstretch.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontstyle.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontvariant.cpp" />
+    <ClCompile Include="..\..\DataTypes\fontweight.cpp" />
+    <ClCompile Include="..\..\DataTypes\gradientstyle.cpp" />
+    <ClCompile Include="..\..\DataTypes\grandtotal.cpp" />
+    <ClCompile Include="..\..\DataTypes\hatchstyle.cpp" />
+    <ClCompile Include="..\..\DataTypes\hyphenationkeep.cpp" />
+    <ClCompile Include="..\..\DataTypes\hyphenationladdercount.cpp" />
+    <ClCompile Include="..\..\DataTypes\iconset_type.cpp" />
+    <ClCompile Include="..\..\DataTypes\keeptogether.cpp" />
+    <ClCompile Include="..\..\DataTypes\layoutgridmode.cpp" />
+    <ClCompile Include="..\..\DataTypes\length.cpp" />
+    <ClCompile Include="..\..\DataTypes\lengthorpercent.cpp" />
+    <ClCompile Include="..\..\DataTypes\letterspacing.cpp" />
+    <ClCompile Include="..\..\DataTypes\linebreak.cpp" />
+    <ClCompile Include="..\..\DataTypes\linemode.cpp" />
+    <ClCompile Include="..\..\DataTypes\linestyle.cpp" />
+    <ClCompile Include="..\..\DataTypes\linetype.cpp" />
+    <ClCompile Include="..\..\DataTypes\linewidth.cpp" />
+    <ClCompile Include="..\..\DataTypes\markerstyle.cpp" />
+    <ClCompile Include="..\..\DataTypes\mathvariant.cpp" />
+    <ClCompile Include="..\..\DataTypes\membertype.cpp" />
+    <ClCompile Include="..\..\DataTypes\messagetype.cpp" />
+    <ClCompile Include="..\..\DataTypes\noteclass.cpp" />
+    <ClCompile Include="..\..\DataTypes\officevaluetype.cpp" />
+    <ClCompile Include="..\..\DataTypes\pageusage.cpp" />
+    <ClCompile Include="..\..\DataTypes\percent.cpp" />
+    <ClCompile Include="..\..\DataTypes\percentorscale.cpp" />
+    <ClCompile Include="..\..\DataTypes\presentationclass.cpp" />
+    <ClCompile Include="..\..\DataTypes\punctuationwrap.cpp" />
+    <ClCompile Include="..\..\DataTypes\rotationalign.cpp" />
+    <ClCompile Include="..\..\DataTypes\runthrough.cpp" />
+    <ClCompile Include="..\..\DataTypes\scripttype.cpp" />
+    <ClCompile Include="..\..\DataTypes\shadowtype.cpp" />
+    <ClCompile Include="..\..\DataTypes\smil_transitiontype.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylecellprotect.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylefamily.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylehorizontalpos.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylehorizontalrel.cpp" />
+    <ClCompile Include="..\..\DataTypes\styleleadercolor.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylenumformat.cpp" />
+    <ClCompile Include="..\..\DataTypes\styleposition.cpp" />
+    <ClCompile Include="..\..\DataTypes\styleprint.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylerepeat.cpp" />
+    <ClCompile Include="..\..\DataTypes\styletype.cpp" />
+    <ClCompile Include="..\..\DataTypes\styleverticalpos.cpp" />
+    <ClCompile Include="..\..\DataTypes\styleverticalrel.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylewrap.cpp" />
+    <ClCompile Include="..\..\DataTypes\stylewrapcontourmode.cpp" />
+    <ClCompile Include="..\..\DataTypes\style_ref.cpp" />
+    <ClCompile Include="..\..\DataTypes\tablealign.cpp" />
+    <ClCompile Include="..\..\DataTypes\tablecentering.cpp" />
+    <ClCompile Include="..\..\DataTypes\tablefunction.cpp" />
+    <ClCompile Include="..\..\DataTypes\tablemode.cpp" />
+    <ClCompile Include="..\..\DataTypes\tableorder.cpp" />
+    <ClCompile Include="..\..\DataTypes\tableorientation.cpp" />
+    <ClCompile Include="..\..\DataTypes\tabletype.cpp" />
+    <ClCompile Include="..\..\DataTypes\tablevisibility.cpp" />
+    <ClCompile Include="..\..\DataTypes\targetframename.cpp" />
+    <ClCompile Include="..\..\DataTypes\textalign.cpp" />
+    <ClCompile Include="..\..\DataTypes\textalignsource.cpp" />
+    <ClCompile Include="..\..\DataTypes\textautospace.cpp" />
+    <ClCompile Include="..\..\DataTypes\textcombine.cpp" />
+    <ClCompile Include="..\..\DataTypes\textdisplay.cpp" />
+    <ClCompile Include="..\..\DataTypes\textemphasize.cpp" />
+    <ClCompile Include="..\..\DataTypes\textposition.cpp" />
+    <ClCompile Include="..\..\DataTypes\textrotationscale.cpp" />
+    <ClCompile Include="..\..\DataTypes\texttransform.cpp" />
+    <ClCompile Include="..\..\DataTypes\timeperiod.cpp" />
+    <ClCompile Include="..\..\DataTypes\underlinecolor.cpp" />
+    <ClCompile Include="..\..\DataTypes\verticalalign.cpp" />
+    <ClCompile Include="..\..\DataTypes\wrapoption.cpp" />
+    <ClCompile Include="..\..\DataTypes\writingmode.cpp" />
+    <ClCompile Include="..\..\DataTypes\xlink.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

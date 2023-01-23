@@ -446,6 +446,12 @@ namespace NExtractTools
 			oBuilder.WriteEncodeXmlString(sJsonParams);
 			oBuilder.WriteString(_T("</JsonParams>"));
 		}
+		if (NULL != params.m_sScriptsCacheDirectory)
+		{
+			oBuilder.WriteString(_T("<ScriptsCacheDirectory>"));
+			oBuilder.WriteEncodeXmlString(*params.m_sScriptsCacheDirectory);
+			oBuilder.WriteString(_T("</ScriptsCacheDirectory>"));
+		}
         oBuilder.WriteString(_T("<Changes TopItem=\""));
         oBuilder.AddInt(nTopIndex);
         oBuilder.WriteString(_T("\">"));
@@ -482,7 +488,9 @@ namespace NExtractTools
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
-			sBinTo = sBinDir + FILE_SEPARATOR_STR + _T("EditorWithChanges.bin");
+			std::wstring sBinFromFileName = NSFile::GetFileName(sBinFrom);
+			std::wstring sBinFromExt = NSFile::GetFileExtention(sBinFromFileName);
+			sBinTo = sBinDir + FILE_SEPARATOR_STR + sBinFromFileName.substr(0, sBinFromFileName.length() - sBinFromExt.length() - 1) + _T("WithChanges.") + sBinFromExt;
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + _T("media");
            
 			NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
@@ -503,7 +511,7 @@ namespace NExtractTools
                     {
                         nErrorIndexStart = sResult.find(_T("\""), nErrorIndexStart + 1);
                         int nErrorIndexEnd = sResult.find(_T("\""), nErrorIndexStart + 1);
-						nErrorIndex = _wtoi(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1).c_str());
+                        nErrorIndex = XmlUtils::GetInteger(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1));
                     }
                     if (nErrorIndex > 0 && nChangeIndex != nErrorIndex)
                     {

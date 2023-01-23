@@ -1,0 +1,565 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseOpenSource|Win32">
+      <Configuration>ReleaseOpenSource</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseOpenSource|x64">
+      <Configuration>ReleaseOpenSource</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A100103A-353E-45E8-A9B8-90B87CC5C0B0}</ProjectGuid>
+    <RootNamespace>DocxFormat</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>false</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\DocxFormat\</OutDir>
+    <IntDir>$(Configuration)\DocxFormat\</IntDir>
+    <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <PrecompiledHeaderFile />
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalDependencies>urlmon.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_OPENSOURCE_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>.\..\Source\XML\libxml2\win_build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseOpenSource|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>.\..\Source\XML\libxml2\XML\include;.\..\Source\Utility;.\..\Source\XML;.\..\Source\Common;..\..\..\..\..\Redist;..\..\ASCOfficeOdtFile\Source\OfficeSvmFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_OPENSOURCE_VERSION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <ProgramDataBaseFileName>$(IntDir)DocxFormat.pdb</ProgramDataBaseFileName>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <AdditionalLibraryDirectories>.\..\Source\XML\libxml2\win_build\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Base\Base.h" />
+    <ClInclude Include="..\..\..\Base\codecvt.h" />
+    <ClInclude Include="..\..\..\Base\DateTime.h" />
+    <ClInclude Include="..\..\..\Base\Nullable.h" />
+    <ClInclude Include="..\..\..\Base\SmartPtr.h" />
+    <ClInclude Include="..\..\..\Base\strings_hack_printf.h" />
+    <ClInclude Include="..\..\..\Base\Types_32.h" />
+    <ClInclude Include="..\..\..\Base\unicode_util.h" />
+    <ClInclude Include="..\..\..\Base\Unit.h" />
+    <ClInclude Include="..\..\..\Base\WinColor.h" />
+    <ClInclude Include="..\..\..\Common\ComplexTypes.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Base.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Drawing.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_OMath.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Rtf.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Shared.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Spreadsheet.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Vml.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Word.h" />
+    <ClInclude Include="..\..\..\DocxFormat\App.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Bibliography.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Comments.h" />
+    <ClInclude Include="..\..\..\DocxFormat\ContentTypes.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Core.h" />
+    <ClInclude Include="..\..\..\DocxFormat\CustomXml.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramColors.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramData.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramDrawing.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramLayout.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Diagram\DiagramQuickStyle.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Document.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Docx.h" />
+    <ClInclude Include="..\..\..\DocxFormat\DocxFlat.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Drawing\Drawing.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Drawing\DrawingBody.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Drawing\DrawingExt.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Endnote.h" />
+    <ClInclude Include="..\..\..\DocxFormat\External\External.h" />
+    <ClInclude Include="..\..\..\DocxFormat\External\HyperLink.h" />
+    <ClInclude Include="..\..\..\DocxFormat\File.h" />
+    <ClInclude Include="..\..\..\DocxFormat\FileFactory.h" />
+    <ClInclude Include="..\..\..\DocxFormat\FileType.h" />
+    <ClInclude Include="..\..\..\DocxFormat\FileTypes.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Font.h" />
+    <ClInclude Include="..\..\..\DocxFormat\FontTable.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Footnote.h" />
+    <ClInclude Include="..\..\..\DocxFormat\FtnEdn.h" />
+    <ClInclude Include="..\..\..\DocxFormat\HeaderFooter.h" />
+    <ClInclude Include="..\..\..\DocxFormat\IFileBuilder.h" />
+    <ClInclude Include="..\..\..\DocxFormat\IFileContainer.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\AlternateContent.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Annotations.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\BaseLogicSettings.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Bdo.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Dir.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\DocParts.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\FldChar.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\FldSimple.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Hyperlink.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Paragraph.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\ParagraphProperty.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Pict.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Run.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\RunContent.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\RunProperty.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Sdt.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\SectionProperty.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Shape.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\SmartTag.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Table.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\TableProperty.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\Vml.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\VmlOfficeDrawing.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Logic\VmlWord.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Math\OMath.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Math\oMathBottomNodes.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Math\oMathContent.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Math\oMathPara.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\ActiveX.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\Audio.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\Image.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\JsaProject.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\Media.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\OleObject.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\VbaProject.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Media\Video.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Namespaces.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Numbering.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Rels.h" />
+    <ClInclude Include="..\..\..\DocxFormat\RId.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Settings\Settings.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Settings\WebSettings.h" />
+    <ClInclude Include="..\..\..\DocxFormat\Styles.h" />
+    <ClInclude Include="..\..\..\DocxFormat\UnknowTypeFile.h" />
+    <ClInclude Include="..\..\..\DocxFormat\VmlDrawing.h" />
+    <ClInclude Include="..\..\..\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\..\..\SystemUtility\File.h" />
+    <ClInclude Include="..\..\..\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\CalcChain\CalcChain.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Chart\Chart.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Chart\ChartColors.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Chart\ChartDrawing.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Chart\ChartSerialize.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Chart\ChartSerializeEx.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Chart\ChartStyle.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Comments\Comments.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Comments\ThreadedComments.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Common.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\CommonInclude.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\ComplexTypes_Spreadsheet.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Controls\Controls.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Drawing\CellAnchor.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Drawing\Drawing.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Drawing\FromTo.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Drawing\Pos.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinkPath.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinks.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\FileFactory_Spreadsheet.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\FileTypes_Spreadsheet.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Ole\OleObjects.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinition.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotCacheRecords.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotTable.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\Run.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\Si.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\SharedStrings\Text.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Slicer\Slicer.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Slicer\SlicerCache.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Slicer\SlicerCacheExt.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\Borders.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\CellStyles.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\Colors.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\dxf.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\Fills.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\Fonts.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\NumFmts.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\rPr.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\Styles.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\TableStyles.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Styles\Xfs.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Table\Autofilter.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Table\Connections.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Table\QueryTable.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Table\Table.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\WorkbookComments.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\BookViews.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\CalcPr.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\DefinedNames.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\Sheets.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\Workbook.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\WorkbookPr.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\Cols.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\ConditionalFormatting.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\DataValidation.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\Hyperlinks.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\MergeCells.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\SheetData.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\Sparkline.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\Worksheet.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Worksheets\WorksheetChildOther.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\WritingElement.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Xlsx.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\XlsxFlat.h" />
+    <ClInclude Include="..\..\..\XML\XmlSimple.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Base\codecvt.cpp" />
+    <ClCompile Include="..\..\..\Base\DateTime.cpp" />
+    <ClCompile Include="..\..\..\Base\unicode_util.cpp" />
+    <ClCompile Include="..\..\..\Base\Unit.cpp" />
+    <ClCompile Include="..\..\..\Base\WinColor.cpp" />
+    <ClCompile Include="..\..\..\Common\ComplexTypes.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Base.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Drawing.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_OMath.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Rtf.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Shared.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Spreadsheet.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Vml.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Word.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\App.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Bibliography.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Comments.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\ContentTypes.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Core.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\CustomXml.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramColors.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramData.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramDrawing.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramLayout.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Diagram\DiagramQuickStyle.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Document.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Docx.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\DocxFlat.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Drawing\Drawing.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Drawing\DrawingExt.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Endnote.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\External\External.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\External\ExternalHyperLink.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\File.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\FileFactory.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\FileType.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\FileTypes.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Font.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\FontTable.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Footnote.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\FtnEdn.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\HeaderFooter.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\IFileContainer.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\AlternateContent.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Annotations.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Bdo.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Dir.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\DocParts.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\FldChar.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\FldSimple.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Hyperlink.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Paragraph.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\ParagraphProperty.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Pict.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Run.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\RunContent.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\RunProperty.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Sdt.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\SectionProperty.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Shape.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\SmartTag.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Table.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\TableProperty.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\Vml.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\VmlOfficeDrawing.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Logic\VmlWord.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Math\oMath.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Math\oMathContent.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Math\oMathPara.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\ActiveX.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Audio.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Image.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\JsaProject.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Media.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\OleObject.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\VbaProject.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Media\Video.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Namespaces.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Numbering.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Rels.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\RId.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Settings\Settings.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Settings\WebSettings.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\Styles.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\UnknowTypeFile.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\VmlDrawing.cpp" />
+    <ClCompile Include="..\..\..\DocxFormat\WritingElement.cpp" />
+    <ClCompile Include="..\..\..\SystemUtility\FileUtils.cpp" />
+    <ClCompile Include="..\..\..\SystemUtility\SystemUtility.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\CalcChain\CalcChain.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Chart\Chart.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartColors.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartDrawing.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartSerialize.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartSerializeEx.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartStyle.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Comments\XlsxComments.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Comments\ThreadedComments.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Common.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\ComplexTypes_Spreadsheet.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Controls\Controls.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Drawing\CellAnchor.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Drawing\XlsxDrawing.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Drawing\FromTo.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Drawing\Pos.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinkPath.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\ExternalLinks\ExternalLinks.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\FileFactory_Spreadsheet.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\FileTypes_Spreadsheet.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\NamedSheetViews\NamedSheetViews.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Ole\OleObjects.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotCacheDefinitionExt.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Pivot\Pivots.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\PhoneticPr.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\XlsxRun.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\SharedStrings.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\Si.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\SharedStrings\Text.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Slicer\Slicer.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Slicer\SlicerCache.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Slicer\SlicerCacheExt.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\Borders.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\CellStyles.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\Colors.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\dxf.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\Fills.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\Fonts.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\NumFmts.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\rPr.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\XlsxStyles.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\TableStyles.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Styles\Xfs.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Table\Autofilter.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Table\Connections.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Table\Tables.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\BookViews.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\CalcPr.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\DefinedNames.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\Sheets.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\Workbook.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\WorkbookPr.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Cols.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\ConditionalFormatting.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\DataValidation.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\XlsxHyperlinks.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\MergeCells.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\SheetData.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Sparkline.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\Worksheet.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Worksheets\WorksheetChildOther.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Xlsx.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\XlsxFlat.cpp" />
+    <ClCompile Include="..\..\..\XML\XmlSimple.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -60,7 +60,7 @@ namespace NSNetwork
             delete impl;
         }
 
-        void CSocketRocket::open()
+        void CSocketRocket::open(const std::map<std::string, std::string>& query)
         {
             [impl->wrapped open];
         }

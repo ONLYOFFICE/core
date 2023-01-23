@@ -43,6 +43,10 @@
 #include <regex>
 #include <atomic>
 
+#ifdef _MAC
+#include <signal.h>
+#endif
+
 namespace NSNetwork
 {
     namespace NSFileTransport
@@ -59,7 +63,7 @@ namespace NSNetwork
             return url.substr(pos);
         }
 
-        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress, std::function<bool(void)> func_checkAborted = nullptr)
+        int download_external(const std::wstring& sUrl, const std::wstring& sOutput, std::function<void(int)> func_onProgress = nullptr, std::function<bool(void)> func_checkAborted = nullptr)
         {
             pid_t pid;
             int nReturnCode = -1;

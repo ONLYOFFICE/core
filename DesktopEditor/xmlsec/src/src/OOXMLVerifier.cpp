@@ -1,6 +1,7 @@
 #include "./XmlTransform.h"
 #include "./../include/OOXMLVerifier.h"
 #include "../../../../OfficeUtils/src/ZipFolder.h"
+#include "./../include/CertificateCommon.h"
 
 class COOXMLSignature_private
 {
@@ -180,7 +181,7 @@ public:
             m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
             return;
         }
-        m_cert = ICertificate::CreateInstance();
+        m_cert = NSCertificate::CreateInstance();
         if (!m_cert->LoadFromBase64Data(U_TO_UTF8(oNodeCert.GetText())))
         {
             m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
@@ -263,7 +264,7 @@ public:
         std::string sCanonicalizationMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"CanonicalizationMethod").GetAttributeA("Algorithm");
         std::string sSignatureMethod = m_node.ReadNode(L"SignedInfo").ReadNode(L"SignatureMethod").GetAttributeA("Algorithm");
 
-        int nSignatureMethod = ICertificate::GetOOXMLHashAlg(sSignatureMethod);
+        int nSignatureMethod = NSCertificate::GetOOXMLHashAlg(sSignatureMethod);
         if (OOXML_HASH_ALG_INVALID == nSignatureMethod)
         {
             m_valid = OOXML_SIGNATURE_NOTSUPPORTED;
@@ -408,7 +409,7 @@ public:
         if (!nodeMethod.IsValid())
             return OOXML_SIGNATURE_INVALID;
 
-        int nAlg = ICertificate::GetOOXMLHashAlg(nodeMethod.GetAttributeA("Algorithm"));
+        int nAlg = NSCertificate::GetOOXMLHashAlg(nodeMethod.GetAttributeA("Algorithm"));
 
         if (OOXML_HASH_ALG_INVALID == nAlg)
             return OOXML_SIGNATURE_NOTSUPPORTED;
@@ -505,7 +506,7 @@ public:
         if (!nodeMethod.IsValid())
             return OOXML_SIGNATURE_INVALID;
 
-        int nAlg = ICertificate::GetOOXMLHashAlg(nodeMethod.GetAttributeA("Algorithm"));
+        int nAlg = NSCertificate::GetOOXMLHashAlg(nodeMethod.GetAttributeA("Algorithm"));
         std::string sCalcValue = m_cert->GetHash(sXml, nAlg);
 
         if (sCalcValue != sValue)
@@ -674,7 +675,7 @@ public:
             return;
 
         XmlUtils::CXmlNode oContentTypes = m_pFolder->getNodeFromFile(L"[Content_Types].xml");
-        std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">";
+        std::wstring sXml = L"<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\n";
         XmlUtils::CXmlNodes oNodes;
         if (oContentTypes.GetNodes(L"*", oNodes))
         {

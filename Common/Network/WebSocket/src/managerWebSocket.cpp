@@ -40,6 +40,10 @@
 #include "./socketrocket/socketRocket_internal.h"
 #endif
 
+#ifdef USE_IOWEBSOCKET
+#include "./socketio/socketio_internal.h"
+#endif
+
 namespace NSNetwork
 {
 	namespace NSWebSocket
@@ -65,6 +69,13 @@ namespace NSNetwork
                 return std::make_shared<CSocketRocket>(url, listener);
             }
 #endif
+#ifdef USE_IOWEBSOCKET
+            if (sType == "socketio")
+            {
+                return std::make_shared<CIOWebSocket>(url, listener);
+            }
+#endif
+
             return nullptr;
 	    }
 	}

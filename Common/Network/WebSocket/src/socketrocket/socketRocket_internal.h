@@ -51,7 +51,7 @@ namespace NSNetwork
 
             CSocketRocket(const std::string& url, std::shared_ptr<IListener> listener);
             ~CSocketRocket();
-            virtual void open() override;
+            virtual void open(const std::map<std::string, std::string>& query) override;
             virtual void send(const std::string& message) override;
             virtual void close() override;
             virtual void setUrl(const std::string& url) override;

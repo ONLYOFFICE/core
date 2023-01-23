@@ -64,16 +64,11 @@ namespace MetaFile
 	class CWmfClipCommandIntersect : public CWmfClipCommandBase
 	{
 	public:
-		CWmfClipCommandIntersect(double dL, double dT, double dR, double dB)
-		{
-			m_dL = dL;
-			m_dT = dT;
-			m_dR = dR;
-			m_dB = dB;
-		}
-		~CWmfClipCommandIntersect()
-		{
-		}
+		CWmfClipCommandIntersect(const TRectD& oClip)
+		    : m_oClip(oClip){}
+
+		~CWmfClipCommandIntersect(){}
+
 		EWmfClipCommandType GetType()
 		{
 			return WMF_CLIPCOMMAND_INTERSECT;
@@ -81,28 +76,16 @@ namespace MetaFile
 
 	public:
 
-		double m_dL;
-		double m_dT;
-		double m_dR;
-		double m_dB;
+		TRectD m_oClip;
 	};
 	class CWmfClipCommandExclude : public CWmfClipCommandBase
 	{
 	public:
-		CWmfClipCommandExclude(double dL, double dT, double dR, double dB, double dWindowL, double dWindowT, double dWindowR, double dWindowB)
-		{
-			m_dL = dL;
-			m_dT = dT;
-			m_dR = dR;
-			m_dB = dB;
-			m_dWindowL = dWindowL;
-			m_dWindowT = dWindowT;
-			m_dWindowR = dWindowR;
-			m_dWindowB = dWindowB;
-		}
-		~CWmfClipCommandExclude()
-		{
-		}
+		CWmfClipCommandExclude(const TRectD& oClip, const TRectD& oBB)
+		    : m_oClip(oClip), m_oBB(oBB){}
+
+		~CWmfClipCommandExclude(){}
+
 		EWmfClipCommandType GetType()
 		{
 			return WMF_CLIPCOMMAND_EXCLUDE;
@@ -110,14 +93,8 @@ namespace MetaFile
 
 	public:
 
-		double m_dL;
-		double m_dT;
-		double m_dR;
-		double m_dB;
-		double m_dWindowL;
-		double m_dWindowT;
-		double m_dWindowR;
-		double m_dWindowB;
+		TRectD m_oClip;
+		TRectD m_oBB;
 	};
 
 	class CWmfClip : public IClip
@@ -128,8 +105,8 @@ namespace MetaFile
 
 		void operator=(CWmfClip& oClip);
 		void Reset();
-		bool Intersect(double dL, double dT, double dR, double dB);
-		bool Exclude(double dL, double dT, double dR, double dB, double dLbb, double dTbb, double dRbb, double dBbb);
+		bool Intersect(const TRectD& oClip);
+		bool Exclude(const TRectD& oClip, const TRectD& oBB);
 
 		// IClip
 		void ClipOnRenderer(IOutputDevice* pOutput);

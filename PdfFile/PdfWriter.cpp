@@ -166,19 +166,14 @@ void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring
     if (!IsValid())
         return;
 
-    std::string sTitle    = U_TO_UTF8(wsTitle);
-    std::string sAuthor   = U_TO_UTF8(wsCreator);
-    std::string sSubject  = U_TO_UTF8(wsSubject);
-    std::string sKeywords = U_TO_UTF8(wsKeywords);
-
-    if (!sTitle.empty())
-        m_pDocument->SetTitle(sTitle);
-    if (!sAuthor.empty())
-        m_pDocument->SetAuthor(sAuthor);
-    if (!sSubject.empty())
-        m_pDocument->SetSubject(sSubject);
-    if (!sKeywords.empty())
-        m_pDocument->SetKeywords(sKeywords);
+    if (!wsTitle.empty())
+        m_pDocument->SetTitle(U_TO_UTF8(wsTitle));
+    if (!wsCreator.empty())
+        m_pDocument->SetAuthor(U_TO_UTF8(wsCreator));
+    if (!wsSubject.empty())
+        m_pDocument->SetSubject(U_TO_UTF8(wsSubject));
+    if (!wsKeywords.empty())
+        m_pDocument->SetKeywords(U_TO_UTF8(wsKeywords));
 }
 std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {

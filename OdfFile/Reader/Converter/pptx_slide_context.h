@@ -80,7 +80,7 @@ public:
 
 	std::wstring add_hyperlink(std::wstring const & ref);
 
-	void start_frame();
+	bool start_frame();
 		void set_image		(const std::wstring & path);
 		void set_chart		(const std::wstring & path);
 		void set_ms_object	(const std::wstring & path, const std::wstring & progId);
@@ -103,6 +103,7 @@ public:
 	void set_use_image_replacement();
 
 	bool empty() const;
+	bool isDefault();
 //////////////////////////////////////////////////////////////////////////////////////////////
 	
 	void serialize_HeaderFooter	(std::wostream & strm);

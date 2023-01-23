@@ -131,78 +131,81 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring textStyleName = common_draw_attlist_.common_shape_draw_attlist_.draw_text_style_name_.get_value_or(L"");
 
 //////////////////////////////////////////////////////////////////////////
-	Context.get_drawing_context().start_drawing( name);
-	Context.get_drawing_context().start_frame();
 	
-	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
-    const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
+	bool bInnerFrame = Context.get_drawing_context().start_frame();
 
-	const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
-	const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
-
-	if (svg_widthVal && svg_heightVal)
+	if (false == bInnerFrame)
 	{
-		const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
-		const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
+		Context.get_drawing_context().start_drawing(name);
+		const _CP_OPT(length) svg_widthVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;
+		const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
 
-		Context.get_drawing_context().set_rect(width_pt, height_pt, x_pt, y_pt);
+		const double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
+		const double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
+		if (svg_widthVal && svg_heightVal)
+		{
+			const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
+			const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
+
+			Context.get_drawing_context().set_rect(width_pt, height_pt, x_pt, y_pt);
+		}
+		///////////////////////////////////////////////////////////////////////////////////////
+		if (common_draw_attlist_.common_shape_draw_attlist_.draw_transform_)
+		{
+			std::wstring transformStr = common_draw_attlist_.common_shape_draw_attlist_.draw_transform_.get();
+			xlsx_convert_transforms(transformStr, Context);
+		}
+		////////////////////////////////////////
+		if (common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_)
+		{
+			std::wstring end_Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
+
+			const double end_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
+			const double end_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
+
+			Context.get_drawing_context().set_anchor_end(end_Anchor, end_x_pt, end_y_pt);
+		}
+		else if (Context.in_table_cell())
+		{
+			std::wstring Anchor = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
+			Context.get_drawing_context().set_anchor_start(Anchor, x_pt, y_pt);
+		}
+		//////////////////////////////////////////////
+		std::vector<const odf_reader::style_instance *> instances;
+
+		odf_reader::style_instance* styleInst =
+			Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic, false/*process_headers_footers_*/);
+		if (styleInst)
+		{
+			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
+			if (defaultStyle)instances.push_back(defaultStyle);
+
+			instances.push_back(styleInst);
+		}
+		graphic_format_properties properties = calc_graphic_properties_content(instances);
+
+		////////////////////////////////////////////////////////////////////
+		properties.apply_to(Context.get_drawing_context().get_properties());
+
+		Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
+		Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
+		Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
+		Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
+
+		oox::_oox_fill fill;
+		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
+			Context.root()->odf_context().drawStyles(), fill);
+		if (properties.fo_clip_)
+		{
+			std::wstring strRectClip = properties.fo_clip_.get();
+			Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+		}
+		Context.get_drawing_context().set_fill(fill);
+
+		oox_drawing_ = oox_drawing_ptr(new oox::_xlsx_drawing());
 	}
-///////////////////////////////////////////////////////////////////////////////////////
-	if (common_draw_attlist_.common_shape_draw_attlist_.draw_transform_)
-	{
-		std::wstring transformStr = common_draw_attlist_.common_shape_draw_attlist_.draw_transform_.get();
-		xlsx_convert_transforms(transformStr, Context);
-	}
-////////////////////////////////////////
-	if (common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_)
-	{
-		std::wstring end_Anchor = common_draw_attlist_.common_shape_table_attlist_.table_end_cell_address_.get();
-		
-		const double end_x_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_x_.get_value_or(length(0)).get_value_unit(length::pt);
-		const double end_y_pt = common_draw_attlist_.common_shape_table_attlist_.table_end_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
-		Context.get_drawing_context().set_anchor_end(end_Anchor, end_x_pt, end_y_pt);
-	}
-	else if (Context.in_table_cell())
-	{
-		std::wstring Anchor = oox::getCellAddress(Context.current_table_column(), Context.current_table_row());
-		Context.get_drawing_context().set_anchor_start(Anchor, x_pt, y_pt);
-	}
-//////////////////////////////////////////////
-	std::vector<const odf_reader::style_instance *> instances;
-
-	odf_reader::style_instance* styleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,false/*process_headers_footers_*/);
-	if (styleInst)
-	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
-		if (defaultStyle)instances.push_back(defaultStyle);
-
-		instances.push_back(styleInst);
-	}
-	graphic_format_properties properties = calc_graphic_properties_content(instances);
-	
-////////////////////////////////////////////////////////////////////
-	properties.apply_to(Context.get_drawing_context().get_properties());
-
-	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_left",		Compute_BorderWidth(properties, sideLeft)));
-	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_top",		Compute_BorderWidth(properties, sideTop)));
-	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_right",		Compute_BorderWidth(properties, sideRight)));
-	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_bottom",	Compute_BorderWidth(properties, sideBottom))); 
-	
-	oox::_oox_fill fill;
-	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_,
-																	Context.root()->odf_context().drawStyles(), fill);	
-	if (properties.fo_clip_)
-	{
-		std::wstring strRectClip = properties.fo_clip_.get();
-		Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
-	}
-	Context.get_drawing_context().set_fill(fill);
-
-	oox_drawing_ = oox_drawing_ptr(new oox::_xlsx_drawing());
-
-////////////////////////////////////////////////
 	for (size_t i = 0 ; i < content_.size(); i++)
     {
 		office_element_ptr const & elm = content_[i];
@@ -210,8 +213,6 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
     }
 	Context.get_drawing_context().end_frame();
     Context.get_drawing_context().end_drawing();    
-
-	Context.get_drawing_context().clear();
 }
 
 void draw_image::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -376,7 +377,11 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}
 		else if (objectBuild.object_type_ == 3) //мат формулы
 		{
-			Context.get_drawing_context().set_text_box(); 
+			bool bNewObject = false;
+			if (bNewObject = Context.get_drawing_context().isDefault())
+			{
+				Context.get_drawing_context().set_text_box();
+			}
 
 			objectBuild.xlsx_convert(Context);
 			
@@ -391,8 +396,15 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 				text_content += math_content;
 				text_content += L"</m:oMath></m:oMathPara></a14:m></a:p>";
 
-				Context.get_drawing_context().set_property(_property(L"fit-to-size",	true));		
-				Context.get_drawing_context().set_property(_property(L"text-content",	text_content));
+				if (bNewObject)
+				{
+					Context.get_drawing_context().set_property(_property(L"fit-to-size", true));
+					Context.get_drawing_context().set_property(_property(L"text-content", text_content));
+				}
+				else
+				{
+					Context.get_text_context().add_paragraph(text_content);
+				}
 			}
 		}
 		else if (objectBuild.object_type_ == 4) // embedded sheet

@@ -86,6 +86,7 @@ public:
 	void			end_hyperlink(std::wstring hId);
 
 	void add_text(const std::wstring & text);
+	void add_paragraph(const std::wstring & para);
 
     void serialize_shared_strings(std::wostream & strm);
 

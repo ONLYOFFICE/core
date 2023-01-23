@@ -57,6 +57,7 @@ public:
 	styles_context & get_styles_context() { return styles_context_; }
 
 	void add_text(const std::wstring & text);
+	void add_paragraph(const std::wstring & para);
     
     void start_paragraph(const std::wstring & styleName);
     void end_paragraph	();
@@ -148,7 +149,7 @@ private:
 
 pptx_text_context::Impl::Impl(odf_reader::odf_read_context & odf_contxt_, pptx_conversion_context & pptx_contxt_): 
 		odf_context_(odf_contxt_),	pptx_context_(pptx_contxt_),
-		paragraphs_cout_(0),in_paragraph(false),in_span(false),in_comment(false),field_type_(none)
+		paragraphs_cout_(0), in_paragraph(false),in_span(false), in_comment(false), field_type_(none)
 {
 	new_list_style_number_=0;
 	local_styles_ptr_ = NULL;
@@ -162,7 +163,10 @@ void pptx_text_context::Impl::add_text(const std::wstring & text)
 	else
 		text_ << text;
 }
-
+void pptx_text_context::Impl::add_paragraph(const std::wstring & para)
+{
+	paragraph_ << para;
+}
 void pptx_text_context::Impl::set_local_styles_container(odf_reader::styles_container * local_styles_)
 {
 	local_styles_ptr_= local_styles_;
@@ -773,7 +777,10 @@ void pptx_text_context::set_local_styles_container(odf_reader::styles_container*
 {
 	return impl_->set_local_styles_container(local_styles_);
 }
-
+void pptx_text_context::add_paragraph(const std::wstring & para)
+{
+	return impl_->add_paragraph(para);
+}
 void pptx_text_context::add_text(const std::wstring & text)
 {
     return impl_->add_text(text);

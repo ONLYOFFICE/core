@@ -185,6 +185,7 @@ xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h)
 
 void xlsx_drawing_context::clear()
 {
+	impl_->object_description_.bInner_				= false;
 	impl_->object_description_.type_				= typeUnknown;
 	impl_->object_description_.in_group_			= false;
 	impl_->object_description_.lined_				= false;
@@ -273,12 +274,15 @@ void xlsx_drawing_context::end_group()
 		impl_->current_level_ = &impl_->objects_;
 	}
 }
-
+bool xlsx_drawing_context::isDefault()
+{
+	return impl_->object_description_.type_ == typeUnknown;
+}
 void xlsx_drawing_context::start_drawing(std::wstring const & name)
 {
     impl_->object_description_.name_ = name;
 
-	if (impl_->groups_.size() > 0)
+	if (false == impl_->groups_.empty())
 		impl_->object_description_.in_group_ = true;
 }
 
@@ -307,6 +311,7 @@ void xlsx_drawing_context::start_shape(int type)
 void xlsx_drawing_context::end_shape()
 {
 	impl_->current_level_->push_back(impl_->object_description_);
+	clear();
 }
 void xlsx_drawing_context::start_comment(int base_col, int base_row)
 {
@@ -330,6 +335,7 @@ void xlsx_drawing_context::start_control(const std::wstring & ctrlPropId, int ty
 void xlsx_drawing_context::end_control()
 {
 	impl_->current_level_->push_back(impl_->object_description_);
+	clear();
 }
 void xlsx_drawing_context::set_use_image_replacement()
 {
@@ -374,13 +380,22 @@ void xlsx_drawing_context::set_image(const std::wstring & path)
 		impl_->object_description_.fill_.bitmap->xlink_href_ = path;
 	}
 }
-void xlsx_drawing_context::start_frame()
+bool xlsx_drawing_context::start_frame()
 {
-	impl_->object_description_.type_ = typeUnknown;
+	if (impl_->object_description_.type_ != typeUnknown)
+		impl_->object_description_.bInner_ = true;
+
+	return impl_->object_description_.bInner_;
 }
 void xlsx_drawing_context::end_frame()
 {
-    impl_->current_level_->push_back(impl_->object_description_);
+	if (impl_->object_description_.bInner_)
+		impl_->object_description_.bInner_ = false;
+	else
+	{
+		impl_->current_level_->push_back(impl_->object_description_);
+		clear();
+	}	
 }
 
 void xlsx_drawing_context::set_chart(const std::wstring & path)

@@ -4674,7 +4674,7 @@ int Binary_SettingsTableReader::ReadClrSchemeMapping(BYTE type, long length, voi
 };
 
 
-Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter)
+Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, bool bOFormRead)
         : Binary_CommonReader(poBufferedStream)
         , m_oDocumentWriter(oDocumentWriter)
         , m_oFileWriter(oFileWriter)
@@ -4684,6 +4684,7 @@ Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileR
         , oBinary_pPrReader(poBufferedStream, oFileWriter)
         , oBinary_rPrReader(poBufferedStream, oFileWriter)
         , oBinary_tblPrReader(poBufferedStream, oFileWriter)
+		, m_bOFormRead(bOFormRead)
 {
 	m_bUsedParaIdCounter = false;
 	m_byteLastElemType = c_oSerParType::Content;
@@ -9458,7 +9459,7 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	{
 		std::wstring pathOFormMaster = m_oBufferedStream.GetString3(length);
 
-		if (false == pathOFormMaster.empty())
+		if (false == pathOFormMaster.empty() && m_bOFormRead)
 		{
 			XmlUtils::replace_all(pathOFormMaster, L"\\", L"/");
 			

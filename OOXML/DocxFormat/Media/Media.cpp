@@ -81,6 +81,9 @@ namespace OOX
 	{
 		m_filename = filename;
 		m_bExist = NSFile::CFileBinary::Exists(m_filename.GetPath());
+
+		if (m_bExist)
+			m_sOutputFilename = filename.GetFilename();
 	}
 	void Media::write(const CPath& filename, const CPath& directory, CContentTypes& content) const
 	{

@@ -89,6 +89,8 @@ public:
     xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h);
     ~xlsx_drawing_context();
 
+	bool isDefault();
+
 	void set_odf_packet_path(std::wstring path){odf_packet_path_ = path;}//для анализа картинок
 
 	void start_drawing	(std::wstring const & name);
@@ -100,7 +102,7 @@ public:
 	void start_shape(int type);
     void end_shape();
 
-	void start_frame();
+	bool start_frame();
 		void set_image		(const std::wstring & path);
 		void set_chart		(const std::wstring & path);
 		void set_ole_object	(const std::wstring & path, const std::wstring & progId);

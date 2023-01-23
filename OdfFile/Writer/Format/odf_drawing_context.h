@@ -137,10 +137,11 @@ public:
 	void start_image	(std::wstring odf_file_path);
 	void end_image		();
 	
-	bool change_text_box_2_wordart	();
-	bool is_wordart					();
+	bool change_text_box_2_wordart();
+	bool is_wordart();
+	bool is_text_box();
 	
-	graphic_format_properties*	get_graphic_properties();
+	graphic_format_properties* get_graphic_properties();
 
 	void set_graphic_properties		(style_graphic_properties *graphic_properties);	
 	void set_paragraph_properties	(style_paragraph_properties *paragraph_properties);

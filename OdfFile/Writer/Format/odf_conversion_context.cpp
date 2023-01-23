@@ -308,6 +308,45 @@ void odf_conversion_context::end_chart()
 	end_object();
 	chart_context_.set_styles_context(styles_context());
 }
+void odf_conversion_context::start_text_context()
+{
+	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, styles_context()));
+	if (!new_text_context_)return;
+
+	text_context_.push_back(new_text_context_);
+}
+void odf_conversion_context::end_text_context()
+{
+	if (false == text_context_.empty())
+	{
+		text_context_.pop_back();
+	}
+}
+void odf_conversion_context::start_drawing_context()
+{
+	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
+	if (!new_drawing_context_)return;
+
+	new_drawing_context_->set_styles_context(styles_context());
+
+	drawing_context_.push_back(new_drawing_context_);
+}
+void odf_conversion_context::end_drawing_context()
+{
+	if (drawing_context_.empty()) return;
+
+	office_element_ptr & elm = drawing_context()->get_root_element();
+
+	if (elm)
+	{
+		text_context()->start_element(elm);
+		text_context()->end_element();
+	}
+
+	drawing_context()->clear();
+	drawing_context_.pop_back();
+}
+
 bool odf_conversion_context::start_math()
 {
 	if (false == math_context_.isEmpty()) return false;

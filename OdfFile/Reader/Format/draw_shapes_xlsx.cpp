@@ -171,7 +171,6 @@ void draw_rect::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_ellipse::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -180,7 +179,6 @@ void draw_ellipse::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_circle::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -189,7 +187,6 @@ void draw_circle::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_line::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -200,7 +197,6 @@ void draw_line::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 
 
@@ -213,7 +209,6 @@ void draw_path::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 
 void draw_connector::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -234,7 +229,6 @@ void draw_connector::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_polygon::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -245,7 +239,6 @@ void draw_polygon::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_polyline::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -256,7 +249,6 @@ void draw_polyline::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_custom_shape::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -265,7 +257,6 @@ void draw_custom_shape::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_caption::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -276,7 +267,6 @@ void draw_caption::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void draw_enhanced_geometry::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {
@@ -392,7 +382,6 @@ void dr3d_scene::xlsx_convert(oox::xlsx_conversion_context & Context)
 	common_xlsx_convert(Context);
 
 	Context.get_drawing_context().end_shape();
-	Context.get_drawing_context().clear();
 }
 void dr3d_light::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
@@ -519,8 +508,6 @@ void draw_control::xlsx_convert(oox::xlsx_conversion_context & Context)
 	//_CP_OPT(odf_types::Bool)	dropdown_;
 
 	Context.get_drawing_context().end_control();
-	Context.get_drawing_context().clear();
-
 }
 
 }

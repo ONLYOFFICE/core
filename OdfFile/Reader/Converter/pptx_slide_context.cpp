@@ -224,6 +224,8 @@ void pptx_slide_context::set_transitionSpeed(std::wstring val)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 void pptx_slide_context::default_set()
 {
+	impl_->object_description_.bInner_ = false;
+	impl_->object_description_.type_ = typeUnknown;
     impl_->object_description_.xlink_href_	= L"";
     impl_->object_description_.name_		= L"";
 	impl_->object_description_.descriptor_  = L"";
@@ -373,6 +375,8 @@ void pptx_slide_context::set_name(std::wstring const & name)
 
 void pptx_slide_context::start_shape(int type)
 {
+	if (impl_->object_description_.bInner_) return;
+
 	impl_->object_description_.type_		= typeShape;
 	impl_->object_description_.shape_type_	= type; //2,3... 
 }
@@ -509,9 +513,12 @@ void pptx_slide_context::set_image(const std::wstring & path)
 	}
 }
 
-void pptx_slide_context::start_frame()
+bool pptx_slide_context::start_frame()
 {
-	impl_->object_description_.type_ = typeUnknown;
+	if (impl_->object_description_.type_ != typeUnknown)
+		impl_->object_description_.bInner_ = true;
+
+	return impl_->object_description_.bInner_;
 }
 
 void pptx_slide_context::set_chart(const std::wstring & path)
@@ -522,8 +529,13 @@ void pptx_slide_context::set_chart(const std::wstring & path)
 
 void pptx_slide_context::end_frame()
 {
-	impl_->objects_.push_back(impl_->object_description_);
-	default_set();
+	if (impl_->object_description_.bInner_)
+		impl_->object_description_.bInner_ = false;
+	else
+	{
+		impl_->objects_.push_back(impl_->object_description_);
+		default_set();
+	}
 }
 
 
@@ -540,6 +552,10 @@ void pptx_slide_context::end_table()
 bool pptx_slide_context::empty() const
 {
     return impl_->empty();
+}
+bool pptx_slide_context::isDefault()
+{
+	return impl_->object_description_.type_ == typeUnknown;
 }
 
 void pptx_slide_context::process_drawings()

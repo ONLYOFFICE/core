@@ -1555,6 +1555,21 @@ namespace NSOnlineOfficeBinToPdf
 				curindex = nStartIndex + nLen;
 				break;
 			}
+			case ctDocInfo:
+			{
+				int nFlags = ReadInt(current, curindex);
+
+				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
+				if (nFlags & 1)
+					SkipString(current, curindex);
+				if (nFlags & 2)
+					SkipString(current, curindex);
+				if (nFlags & 4)
+					SkipString(current, curindex);
+				if (nFlags & 8)
+					SkipString(current, curindex);
+				break;
+			}
 			default:
 			{
 				break;

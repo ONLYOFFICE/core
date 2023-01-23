@@ -9,10 +9,10 @@ You need to create an xml configuration file. It must contain:
 	# report (.csv) path
 	<reportPath> </reportPath>
 
-	# directory with test documents
+	# directory with test documents (with no slash at the end)
 	<inputDirectory> </inputDirectory>
 
-	# results directory
+	# results directory (with no slash at the end)
 	<outputDirectory> </outputDirectory>
 
 	# path to x2t

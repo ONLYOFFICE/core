@@ -18,10 +18,10 @@ int main()
     bool bFromHtml = false;
     if (bFromHtml)
     {
-        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../FromHtmlTest/test3";
+        std::wstring sFile = NSFile::GetProcessDirectory() + L"/../../../Files/test.html";
         CEpubFile oEpub;
         oEpub.SetTempDirectory(sTmp);
-        oEpub.FromHtml(sFile, sFile, sOutputDirectory + L"/res.epub", L"");
+        oEpub.FromHtml(sFile, sOutputDirectory + L"/res.epub", L"");
         NSDirectory::DeleteDirectory(sTmp);
         return 0;
     }

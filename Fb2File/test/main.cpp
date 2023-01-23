@@ -16,7 +16,7 @@ void getDirectories(const std::wstring& sDirectory, std::vector<std::wstring>& a
 int main()
 {
     bool bBatchMode = false;
-    bool bFromHtml  = false;
+    bool bFromHtml  = true;
     if (bBatchMode)
     {
         // Директория файлов
@@ -98,11 +98,10 @@ int main()
         NSDirectory::DeleteDirectory(sOutputDirectory);
         NSDirectory::CreateDirectory(sOutputDirectory);
 
-
         if (bFromHtml)
         {
-            sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test3";
-            oFile.FromHtml(sFile, sFile, sOutputDirectory + L"/res.fb2", L"Test Title");
+            sFile = NSFile::GetProcessDirectory() + L"/../../../examples/test.html";
+            oFile.FromHtml(sFile, sOutputDirectory + L"/res.fb2", L"Test Title");
             return 0;
         }
 

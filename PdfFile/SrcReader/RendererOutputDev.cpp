@@ -850,7 +850,7 @@ namespace PdfReader
         updateFillOpacity(pGState);
         updateStrokeOpacity(pGState);
         updateFont(pGState);
-        updateClip(pGState, false);
+        updateClip(pGState);
     }
     void RendererOutputDev::updateRender(GfxState *pGState)
     {
@@ -2937,7 +2937,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), true);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
         m_pRenderer->DrawPath(c_nWindingFillMode);
         m_pRenderer->EndCommand(c_nPathType);
     }
@@ -2949,7 +2949,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), true);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
         m_pRenderer->DrawPath(c_nEvenOddFillMode);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -3562,7 +3562,7 @@ namespace PdfReader
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
-        updateClip(pGState, true);
+        updateClip(pGState);
     }
     void RendererOutputDev::eoClip(GfxState *pGState)
     {
@@ -3576,7 +3576,7 @@ namespace PdfReader
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
         m_bClipChanged = true;
-        updateClip(pGState, true);
+        updateClip(pGState);
     }
     void RendererOutputDev::clipToStrokePath(GfxState *pGState)
     {
@@ -3590,7 +3590,7 @@ namespace PdfReader
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
-        updateClip(pGState, false);
+        updateClip(pGState);
     }
     void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
     {
@@ -4705,7 +4705,7 @@ namespace PdfReader
         *pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
         *pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
     }
-    void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, bool bDropEmpty, GfxClipMatrix* pCTM2)
+    void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4741,8 +4741,6 @@ namespace PdfReader
         {
             GfxSubpath *pSubpath = pPath->getSubpath(nSubPathIndex);
             int nPointsCount = pSubpath->getNumPoints();
-            if (bDropEmpty && nPointsCount <= 1)
-                continue;
 
             m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(pSubpath->getX(0) + dShiftX), PDFCoordsToMM(pSubpath->getY(0) + dShiftY));
 
@@ -4766,7 +4764,7 @@ namespace PdfReader
             }
         }
     }
-    void RendererOutputDev::updateClip(GfxState *pGState, bool bDropEmpty)
+    void RendererOutputDev::updateClip(GfxState *pGState)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4777,9 +4775,9 @@ namespace PdfReader
         if (m_bTiling)
             return;
 
-        updateClipAttack(pGState, bDropEmpty);
+        updateClipAttack(pGState);
     }
-    void RendererOutputDev::updateClipAttack(GfxState *pGState, bool bDropEmpty)
+    void RendererOutputDev::updateClipAttack(GfxState *pGState)
     {
 		if (!m_bClipChanged)
 			return;
@@ -4803,7 +4801,7 @@ namespace PdfReader
 
                 m_pRenderer->BeginCommand(c_nClipType);
                 m_pRenderer->put_ClipMode(nClipFlag);
-                DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), bDropEmpty, &m_sClip[i].m_vMatrix[nIndex]);
+                DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), &m_sClip[i].m_vMatrix[nIndex]);
                 m_pRenderer->EndCommand(c_nPathType);
                 m_pRenderer->EndCommand(c_nClipType);
                 m_pRenderer->PathCommandEnd();

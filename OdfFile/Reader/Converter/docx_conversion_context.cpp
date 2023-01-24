@@ -55,7 +55,7 @@
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../OOXML/Base/Unit.h"
 
-static int current_id_changes = 0;
+static int current_id_changes = 1;
 
 namespace cpdoccore { 
 namespace oox {
@@ -2375,23 +2375,27 @@ void docx_conversion_context::start_text_changes (const std::wstring &id)
 
 		if (state_.in_paragraph_)
 		{
-			std::wstring format_change = L" w:date=\"" + state.date + L"\"" +
-				L" w:author=\"" + state.author + L"\"";
+			std::wstring format_change = L" w:date=\"" + state.date + L"\" w:author=\"" + state.author + L"\"";
 
 			finish_run();
-			state.active = true;
 			state.in_drawing = get_drawing_state_content();
 
-			if (state.type == 1)
+			if (state.oox_id == 0)
 			{
-				output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) << L"\">";
+				state.oox_id = current_id_changes++;
+			}			
+
+			if (state.type == 1 && !state.active)
+			{
+				output_stream() << L"<w:ins" << format_change << L" w:id=\"" << std::to_wstring(state.oox_id) << L"\">";
+				state.active = true;
 			}
 
 			if (state.type == 2)
 			{
 				for (size_t i = 0; i < state.content.size(); i++)
 				{
-					output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(current_id_changes++) << L"\">";
+					output_stream() << L"<w:del" << format_change << L" w:id=\"" << std::to_wstring(state.oox_id) << L"\">";
 
 					output_stream() << state.content[i];
 
@@ -2429,7 +2433,12 @@ void docx_conversion_context::start_changes()
 		std::wstring change_attr;
 		change_attr += L" w:date=\"" + state.date + L"\"";
 		change_attr += L" w:author=\"" + state.author + L"\"";
-		change_attr += L" w:id=\"" + std::to_wstring(current_id_changes++) + L"\"";
+
+		if (state.oox_id == 0)
+		{
+			state.oox_id = current_id_changes++;
+		}
+		change_attr += L" w:id=\"" + std::to_wstring(state.oox_id) + L"\"";
 		
 		if (state.out_active)
 		{

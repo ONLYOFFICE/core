@@ -659,7 +659,6 @@ namespace PdfReader
     void RendererOutputDev::saveState(GfxState *pGState)
     {
         m_sClip.push_back(GfxClip());
-        m_sClip.back().SetChanged(true);
         m_bClipChanged = true;
         updateAll(pGState);
     }
@@ -667,8 +666,6 @@ namespace PdfReader
     {
         if (!m_sClip.empty())
             m_sClip.pop_back();
-        for (GfxClip& c : m_sClip)
-            c.SetChanged(true);
         m_bClipChanged = true;
         updateAll(pGState);
     }
@@ -3558,7 +3555,6 @@ namespace PdfReader
         if (m_sClip.empty())
         {
             m_sClip.push_back(GfxClip());
-            m_sClip.back().SetChanged(true);
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
@@ -3572,7 +3568,6 @@ namespace PdfReader
         if (m_sClip.empty())
         {
             m_sClip.push_back(GfxClip());
-            m_sClip.back().SetChanged(true);
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
         m_bClipChanged = true;
@@ -3586,7 +3581,6 @@ namespace PdfReader
         if (m_sClip.empty())
         {
             m_sClip.push_back(GfxClip());
-            m_sClip.back().SetChanged(true);
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
@@ -3965,7 +3959,6 @@ namespace PdfReader
             if (m_sClip.empty())
             {
                 m_sClip.push_back(GfxClip());
-                m_sClip.back().SetChanged(true);
             }
             m_sClip.back().GetTextClip()->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
             m_bClipChanged = true;

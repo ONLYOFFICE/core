@@ -4705,7 +4705,7 @@ namespace PdfReader
         *pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
         *pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
     }
-    void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, bool bDropEmpty)
+    void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, bool bDropEmpty, GfxClipMatrix* pCTM2)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4721,6 +4721,15 @@ namespace PdfReader
         arrMatrix[3] = -pCTM[3];
         arrMatrix[4] =  pCTM[4];
         arrMatrix[5] = -pCTM[5] + dPageHeight;
+        if (pCTM2)
+        {
+            arrMatrix[0] =  pCTM2->dA;
+            arrMatrix[1] = -pCTM2->dB;
+            arrMatrix[2] =  pCTM2->dC;
+            arrMatrix[3] = -pCTM2->dD;
+            arrMatrix[4] =  pCTM2->dE;
+            arrMatrix[5] = -pCTM2->dF + dPageHeight;
+        }
 
         double dShiftX = 0, dShiftY = 0;
         DoTransform(arrMatrix, &dShiftX, &dShiftY);
@@ -4788,14 +4797,13 @@ namespace PdfReader
             {
                 GfxPath *pPath  = m_sClip[i].GetPath(nIndex);
                 bool    bFlag   = m_sClip[i].GetClipEo(nIndex);
-                double *pMatrix = m_sClip[i].GetMatrix(nIndex);
 
                 int     nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
                 nClipFlag |= c_nClipRegionIntersect;
 
                 m_pRenderer->BeginCommand(c_nClipType);
                 m_pRenderer->put_ClipMode(nClipFlag);
-                DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix, bDropEmpty);
+                DoPath(pGState, pPath, pGState->getPageHeight(), pGState->getCTM(), bDropEmpty, &m_sClip[i].m_vMatrix[nIndex]);
                 m_pRenderer->EndCommand(c_nPathType);
                 m_pRenderer->EndCommand(c_nClipType);
                 m_pRenderer->PathCommandEnd();

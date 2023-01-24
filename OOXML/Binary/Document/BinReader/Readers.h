@@ -297,7 +297,7 @@ public:
 	bool							m_bUsedParaIdCounter;
 	bool							m_bOFormRead;
 
-    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, bool bOFormRead = false);
+    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, bool bOFormRead);
 	~Binary_DocumentTableReader();
 	
 	int Read();

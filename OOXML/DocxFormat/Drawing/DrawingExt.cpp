@@ -458,7 +458,7 @@ namespace OOX
 				writer.StartAttributes();
 				
 				if (m_oFileKey.IsInit()) writer.WriteAttribute(L"fileKey", *m_oFileKey);
-				if (m_oInstanceId.IsInit()) writer.WriteAttribute(L"portalName", *m_oInstanceId);
+				if (m_oInstanceId.IsInit()) writer.WriteAttribute(L"instanceId", *m_oInstanceId);
 
 				writer.EndAttributes();
 				writer.EndNode(L"externalReference");

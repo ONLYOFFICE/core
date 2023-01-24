@@ -413,7 +413,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 			
-			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header);
+			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, false);
 			READ1_DEF(length, res, this->ReadHdrFtrItemContent, &oBinary_DocumentTableReader);
 
             OOX::CPath fileRelsPath = m_oFileWriter.get_document_writer().m_sDir +	FILE_SEPARATOR_STR + L"word" + 
@@ -3656,7 +3656,7 @@ int Binary_CommentsTableReader::Read()
 	m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
     
 	Writers::ContentWriter oContentWriter;
-	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, oContentWriter);
+	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, oContentWriter, false);
 
 	oBinary_DocumentTableReader.m_bUsedParaIdCounter = true;
 
@@ -8525,7 +8525,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 	}
 	else if( c_oSerDocTableType::Cell_Content == type )
 	{
-		Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oDocumentWriter);
+		Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oDocumentWriter, m_bOFormRead);
 		READ1_DEF(length, res, this->ReadCellContent, &oBinary_DocumentTableReader);
 		//Потому что если перед </tc> не идет <p>, то документ считается невалидным
 		if(c_oSerParType::Par != oBinary_DocumentTableReader.m_byteLastElemType)
@@ -9846,7 +9846,7 @@ int Binary_NotesTableReader::Read()
 		sFilename = m_oFileWriter.get_endnotes_writer().getFilename();
 		pContentWriter = &m_oFileWriter.get_endnotes_writer().m_oNotesWriter;
 	}
-	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, *pContentWriter);
+	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, *pContentWriter, false);
 
 	int res = c_oSerConstants::ReadOk;
 	READ_TABLE_DEF(res, this->ReadNotes, &oBinary_DocumentTableReader);
@@ -10326,7 +10326,7 @@ int BinaryFileReader::ReadMainTable()
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 		}
 
-		res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.get_document_writer()).Read();
+		res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.get_document_writer(), m_bOForm).Read();
 
         OOX::CPath fileRelsPath = m_oFileWriter.get_document_writer().m_sDir	+ FILE_SEPARATOR_STR + L"word"
 																				+ (m_oFileWriter.m_bGlossaryMode ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"")

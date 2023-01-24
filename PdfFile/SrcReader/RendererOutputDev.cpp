@@ -535,8 +535,6 @@ namespace PdfReader
         m_bTransparentGroupSoftMask = false;
         m_bTransparentGroupSoftMaskEnd = false;
 
-        m_pSoftMask = NULL;
-
         m_bDrawOnlyText = false;
         m_bClipChanged = true;
 
@@ -632,7 +630,6 @@ namespace PdfReader
 //        if (m_pBufferTextClip) tmpchange
 //            delete m_pBufferTextClip;
 
-        RELEASEARRAYOBJECTS(m_pSoftMask);
     }
     void RendererOutputDev::startPage(int nPageIndex, GfxState *pGState)
     {
@@ -647,7 +644,6 @@ namespace PdfReader
         m_bIsolatedTransparentGroup = false;
         m_bTransparentGroupSoftMask = false;
         m_bTransparentGroupSoftMaskEnd = false;
-        RELEASEARRAYOBJECTS(m_pSoftMask);
 
         if (c_nHtmlRendrerer2 == m_lRendererType)
             m_bDrawOnlyText = (S_OK == m_pRenderer->CommandLong(c_nCommandLongTypeOnlyText, 0)) ? true : false;
@@ -669,10 +665,10 @@ namespace PdfReader
     }
     void RendererOutputDev::restoreState(GfxState *pGState)
     {
-        RELEASEARRAYOBJECTS(m_pSoftMask);
-
         if (!m_sClip.empty())
             m_sClip.pop_back();
+        for (GfxClip& c : m_sClip)
+            c.SetChanged(true);
         m_bClipChanged = true;
         updateAll(pGState);
     }
@@ -854,7 +850,7 @@ namespace PdfReader
         updateFillOpacity(pGState);
         updateStrokeOpacity(pGState);
         updateFont(pGState);
-        updateClip(pGState);
+        updateClip(pGState, false);
     }
     void RendererOutputDev::updateRender(GfxState *pGState)
     {
@@ -2928,7 +2924,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask)
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
         m_pRenderer->DrawPath(c_nStroke);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -2938,10 +2934,10 @@ namespace PdfReader
         if (m_bDrawOnlyText)
             return;
 
-        if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd) || m_pSoftMask)
+        if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), true);
         m_pRenderer->DrawPath(c_nWindingFillMode);
         m_pRenderer->EndCommand(c_nPathType);
     }
@@ -2953,7 +2949,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), true);
         m_pRenderer->DrawPath(c_nEvenOddFillMode);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -2966,7 +2962,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
         m_pRenderer->DrawPath(c_nStroke | c_nWindingFillMode);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -2979,7 +2975,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
         m_pRenderer->DrawPath(c_nStroke | c_nEvenOddFillMode);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -3125,7 +3121,7 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
@@ -3222,7 +3218,7 @@ namespace PdfReader
         }
         */
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
 
 		double dAlphaKoef = pGState->getFillOpacity();
 		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
@@ -3328,7 +3324,7 @@ namespace PdfReader
 
 
 
-		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
@@ -3384,7 +3380,7 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
-		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
@@ -3429,7 +3425,7 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
-		DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
@@ -3566,7 +3562,7 @@ namespace PdfReader
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
-        updateClip(pGState);
+        updateClip(pGState, true);
     }
     void RendererOutputDev::eoClip(GfxState *pGState)
     {
@@ -3580,7 +3576,7 @@ namespace PdfReader
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), true);
         m_bClipChanged = true;
-        updateClip(pGState);
+        updateClip(pGState, true);
     }
     void RendererOutputDev::clipToStrokePath(GfxState *pGState)
     {
@@ -3594,7 +3590,7 @@ namespace PdfReader
         }
         m_sClip.back().AddPath(pGState->getPath(), pGState->getCTM(), false);
         m_bClipChanged = true;
-        updateClip(pGState);
+        updateClip(pGState, false);
     }
     void RendererOutputDev::clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO)
     {
@@ -3609,7 +3605,7 @@ namespace PdfReader
 
         m_pRenderer->BeginCommand(c_nClipType);
         m_pRenderer->put_ClipMode(nClipFlag);
-        DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
+        DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix, false);
         m_pRenderer->EndCommand(c_nPathType);
         m_pRenderer->EndCommand(c_nClipType);
     }
@@ -4083,10 +4079,12 @@ namespace PdfReader
         unsigned char *pBufferPtr = new unsigned char[nBufferSize];
         if (!pBufferPtr)
             return;
+        /*
         RELEASEARRAYOBJECTS(m_pSoftMask);
         m_pSoftMask = pBufferPtr;
         m_nSoftMaskWidth  = nWidth;
         m_nSoftMaskHeight = nHeight;
+        */
 
         Aggplus::CImage oImage;
         oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth, true);
@@ -4707,7 +4705,7 @@ namespace PdfReader
         *pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
         *pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
     }
-    void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM)
+    void RendererOutputDev::DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, bool bDropEmpty)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4730,12 +4728,12 @@ namespace PdfReader
         m_pRenderer->BeginCommand(c_nPathType);
         m_pRenderer->PathCommandEnd();
 
-        int nSubPathCount = pPath->getNumSubpaths();
-
-        for (int nSubPathIndex = 0; nSubPathIndex < nSubPathCount; ++nSubPathIndex)
+        for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
         {
             GfxSubpath *pSubpath = pPath->getSubpath(nSubPathIndex);
             int nPointsCount = pSubpath->getNumPoints();
+            if (bDropEmpty && nPointsCount <= 1)
+                continue;
 
             m_pRenderer->PathCommandMoveTo(PDFCoordsToMM(pSubpath->getX(0) + dShiftX), PDFCoordsToMM(pSubpath->getY(0) + dShiftY));
 
@@ -4759,7 +4757,7 @@ namespace PdfReader
             }
         }
     }
-    void RendererOutputDev::updateClip(GfxState *pGState)
+    void RendererOutputDev::updateClip(GfxState *pGState, bool bDropEmpty)
     {
         if (m_bDrawOnlyText)
             return;
@@ -4770,9 +4768,9 @@ namespace PdfReader
         if (m_bTiling)
             return;
 
-        updateClipAttack(pGState);
+        updateClipAttack(pGState, bDropEmpty);
     }
-    void RendererOutputDev::updateClipAttack(GfxState *pGState)
+    void RendererOutputDev::updateClipAttack(GfxState *pGState, bool bDropEmpty)
     {
 		if (!m_bClipChanged)
 			return;
@@ -4783,18 +4781,8 @@ namespace PdfReader
 		if (m_sClip.empty())
 			return;
 
-        int nStop = 0;
+        //for (int i = m_sClip.size() - 1; i >= 0; i--)
         for (int i = 0; i < m_sClip.size(); i++)
-        {
-            if (m_sClip[i].GetPathNum())
-            {
-                nStop = i;
-                break;
-            }
-        }
-
-        for (int i = m_sClip.size() - 1; i >= 0; i--)
-        //for (int i = 0; i < m_sClip.size(); i++)
         {
             for (int nIndex = 0; nIndex < m_sClip[i].GetPathNum(); nIndex++)
             {
@@ -4807,7 +4795,7 @@ namespace PdfReader
 
                 m_pRenderer->BeginCommand(c_nClipType);
                 m_pRenderer->put_ClipMode(nClipFlag);
-                DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
+                DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix, bDropEmpty);
                 m_pRenderer->EndCommand(c_nPathType);
                 m_pRenderer->EndCommand(c_nClipType);
                 m_pRenderer->PathCommandEnd();
@@ -4865,13 +4853,6 @@ namespace PdfReader
                 m_pRenderer->EndCommand(c_nClipType);
                 m_pRenderer->PathCommandEnd();
                 m_pRenderer->EndConvertCoordsToIdentity();
-            }
-
-            if (m_sClip[i].GetPathNum() > 0)
-            {
-                if (!m_sClip[i].IsChanged() && i <= nStop + 1)
-                    break;
-                m_sClip[i].SetChanged(false);
             }
         }
 

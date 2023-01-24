@@ -2921,7 +2921,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask)
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
         m_pRenderer->DrawPath(c_nStroke);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -2959,7 +2959,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
         m_pRenderer->DrawPath(c_nStroke | c_nWindingFillMode);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -2972,7 +2972,7 @@ namespace PdfReader
         if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
             return;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
         m_pRenderer->DrawPath(c_nStroke | c_nEvenOddFillMode);
 
         m_pRenderer->EndCommand(c_nPathType);
@@ -3118,7 +3118,7 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
 		m_pRenderer->get_BrushType(&brush);
@@ -3215,7 +3215,7 @@ namespace PdfReader
         }
         */
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
 		double dAlphaKoef = pGState->getFillOpacity();
 		m_pRenderer->put_BrushType(c_BrushTypePathNewLinearGradient);
@@ -3321,7 +3321,7 @@ namespace PdfReader
 
 
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
@@ -3377,7 +3377,7 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
@@ -3422,7 +3422,7 @@ namespace PdfReader
 		if (m_bTransparentGroupSoftMask || (!m_arrTransparentGroupSoftMask.empty() && m_bTransparentGroupSoftMaskEnd))
 			return true;
 
-        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM(), false);
+        DoPath(pGState, pGState->getPath(), pGState->getPageHeight(), pGState->getCTM());
 
 		long brush;
 		int alpha = pGState->getFillOpacity() * 255;
@@ -3599,7 +3599,7 @@ namespace PdfReader
 
         m_pRenderer->BeginCommand(c_nClipType);
         m_pRenderer->put_ClipMode(nClipFlag);
-        DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix, false);
+        DoPath(pGState, pPath, pGState->getPageHeight(), pMatrix);
         m_pRenderer->EndCommand(c_nPathType);
         m_pRenderer->EndCommand(c_nClipType);
     }

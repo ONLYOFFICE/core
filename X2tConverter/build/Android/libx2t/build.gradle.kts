@@ -3,6 +3,28 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 plugins {
     id("com.android.library")
     kotlin("android")
+    id("maven-publish")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            groupId = PublishEditors.groupId
+            artifactId = PublishEditors.x2tId
+            version = PublishEditors.version
+            artifact("$buildDir/outputs/aar/lib${artifactId}-release.aar")
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("${PublishEditors.publishUrl}/")
+            credentials {
+//                username = ""
+//                password = ""
+            }
+        }
+    }
 }
 
 android {
@@ -10,6 +32,11 @@ android {
     buildToolsVersion = AppDependency.BUILD_TOOLS_VERSION
     compileSdk = AppDependency.COMPILE_SDK_VERSION
     ndkVersion = rootProject.extra.get("NDK_VERSION").toString()
+
+    publishing {
+        singleVariant("release") {
+        }
+    }
 
     defaultConfig {
         minSdk = AppDependency.MIN_SDK_VERSION

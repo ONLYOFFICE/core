@@ -172,7 +172,7 @@ void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring
     {
         std::string sAuthor = U_TO_UTF8(wsCreator);
         NSStringUtils::string_replaceA(sAuthor, ";", ", ");
-        m_pDocument->SetAuthor(U_TO_UTF8(wsCreator));
+        m_pDocument->SetAuthor(sAuthor);
     }
     if (!wsSubject.empty())
         m_pDocument->SetSubject(U_TO_UTF8(wsSubject));

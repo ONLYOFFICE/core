@@ -31,6 +31,7 @@
  */
 
 #include "Chart.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 namespace OOX
 {

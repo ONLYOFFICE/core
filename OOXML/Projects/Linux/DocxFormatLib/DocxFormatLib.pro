@@ -208,7 +208,6 @@ HEADERS += \
 	../../../Common/ComplexTypes.h \
 	../../../Common/SimpleTypes_Base.h \
 	../../../Common/SimpleTypes_Drawing.h \
-	../../../Common/SimpleTypes_Enums.h \
 	../../../Common/SimpleTypes_OMath.h \
 	../../../Common/SimpleTypes_Shared.h \
 	../../../Common/SimpleTypes_Vml.h \

@@ -212,8 +212,21 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	SetConfig(configPath);
 	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
 
+	// CorrectPathW works strange with directories starts with "./"
 	if(m_outputDirectory.find(L"./") == 0)
 		m_outputDirectory.erase(0, 2);
+
+	// no slash at the end
+	if(m_outputDirectory.size() > 2 && m_outputDirectory[m_outputDirectory.size() - 1] == L'/')
+		m_outputDirectory.erase(m_outputDirectory.size() - 1, 1);
+
+	// on linux the backslash can be part of the filename
+#ifdef WIN32
+
+	if(m_outputDirectory.size() > 2 && m_outputDirectory[m_outputDirectory.size() - 1] == L'\\')
+		m_outputDirectory.erase(m_outputDirectory.size() - 1, 1);
+
+#endif
 
 	if(m_bIsTimestamp)
 	{
@@ -834,6 +847,7 @@ DWORD CConverter::ThreadProc()
 		if(exit_code || !exist)
 		{
 			std::wstring err_xml_file = m_errorsXmlDirectory + FILE_SEPARATOR_STR + xml_params_filename;
+			err_xml_file = CorrectPathW(err_xml_file);
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
 		}
 

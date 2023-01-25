@@ -35,7 +35,6 @@
 
 #include "./../WrapperWritingElement.h"
 #include "./../Logic/UniFill.h"
-#include "./../Logic/Colors/SchemeClr.h"
 #include "./../Logic/Ln.h"
 #include "./../Logic/EffectStyle.h"
 

@@ -35,17 +35,18 @@
 
 #include "./../WrapperWritingElement.h"
 #include "../Logic/UniColor.h"
-#include "./Browse.h"
-#include "./CustShow.h"
-#include "./Kiosk.h"
-#include "./Present.h"
-#include "./SldAll.h"
-#include "./SldRg.h"
 
 namespace PPTX
 {
 	namespace nsShowPr
 	{
+		class Browse;
+		class CustShow;
+		class Kiosk;
+		class Present;
+		class SldAll;
+		class SldRg;
+
 		class ShowPr : public WrapperWritingElement
 		{
 		public:

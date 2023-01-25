@@ -32,6 +32,14 @@
 
 #include "PresProps.h"
 
+#include "ShowPr/ShowPr.h"
+#include "ShowPr/Browse.h"
+#include "ShowPr/CustShow.h"
+#include "ShowPr/Kiosk.h"
+#include "ShowPr/Present.h"
+#include "ShowPr/SldAll.h"
+#include "ShowPr/SldRg.h"
+
 namespace PPTX
 {
 	PresProps::PresProps(OOX::Document* pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)

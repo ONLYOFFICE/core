@@ -32,6 +32,13 @@
 
 #include "ShowPr.h"
 
+#include "./Browse.h"
+#include "./CustShow.h"
+#include "./Kiosk.h"
+#include "./Present.h"
+#include "./SldAll.h"
+#include "./SldRg.h"
+
 namespace PPTX
 {
 	namespace nsShowPr

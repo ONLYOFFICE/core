@@ -53,6 +53,7 @@
 #include "../../../MsBinaryFile/Common/Vml/toVmlConvert.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"

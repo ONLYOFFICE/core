@@ -36,6 +36,15 @@
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../OOXML/Base/Base.h"
 
+void EscapeCharacters(std::string& s)
+{
+	NSStringUtils::string_replaceA(s, "&", "&amp;");
+	NSStringUtils::string_replaceA(s, "<", "&lt;");
+	NSStringUtils::string_replaceA(s, ">", "&gt;");
+	NSStringUtils::string_replaceA(s, "\"", "&quot;");
+	NSStringUtils::string_replaceA(s, "\'", "&#39;");
+}
+
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
@@ -68,8 +77,11 @@ namespace PdfWriter
 		const char* sKeywords = pInfo->GetInfo(InfoKeyWords);
 		if (sKeywords)
 		{
+			std::string s = sKeywords;
+			EscapeCharacters(s);
+
 			sXML += "<pdf:Keywords>";
-			sXML += sKeywords;
+			sXML += s;
 			sXML += "</pdf:Keywords>\n";
 		}
 		sXML += "</rdf:Description>\n";
@@ -111,20 +123,29 @@ namespace PdfWriter
 			sXML += "<dc:format>application/pdf</dc:format>";
 			if (sSubject)
 			{
+				std::string s = sSubject;
+				EscapeCharacters(s);
+
 				sXML += "<dc:description><rdf:Alt><rdf:li xml:lang=\"x-default\">";
-				sXML += sSubject;
+				sXML += s;
 				sXML += "</rdf:li></rdf:Alt></dc:description>\n";
 			}
 			if (sAuthor)
 			{
+				std::string s = sAuthor;
+				EscapeCharacters(s);
+
 				sXML += "<dc:creator><rdf:Seq><rdf:li>";
-				sXML += sAuthor;
+				sXML += s;
 				sXML += "</rdf:li></rdf:Seq></dc:creator>\n";
 			}
 			if (sTitle)
 			{
+				std::string s = sTitle;
+				EscapeCharacters(s);
+
 				sXML += "<dc:title><rdf:Alt><rdf:li xml:lang=\"x-default\">";
-				sXML += sTitle;
+				sXML += s;
 				sXML += "</rdf:li></rdf:Alt></dc:title>\n";
 			}
 			sXML += "</rdf:Description>\n";

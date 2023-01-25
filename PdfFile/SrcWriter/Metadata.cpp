@@ -59,11 +59,19 @@ namespace PdfWriter
 		// Begin
         sXML += ("<?xpacket begin=\"" + sBOM + "\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n<x:xmpmeta xmlns:x=\"adobe:ns:meta/\" x:xmptk=\"3.1-701\">\n<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n");
 
-		// Producer
 		sXML += "<rdf:Description rdf:about=\"\" xmlns:pdf=\"http://ns.adobe.com/pdf/1.3/\">\n";
+		// Producer
 		sXML += "<pdf:Producer>";		
 		sXML += pInfo->GetInfo(InfoProducer);
 		sXML += "</pdf:Producer>\n";
+		// Keywords
+		const char* sKeywords = pInfo->GetInfo(InfoKeyWords);
+		if (sKeywords)
+		{
+			sXML += "<pdf:Keywords>";
+			sXML += sKeywords;
+			sXML += "</pdf:Keywords>\n";
+		}
 		sXML += "</rdf:Description>\n";
 
 		// Creator Tool
@@ -93,6 +101,34 @@ namespace PdfWriter
 
 		sXML += "</rdf:Description>\n";
 
+		// DC
+		const char* sTitle   = pInfo->GetInfo(InfoTitle);
+		const char* sAuthor  = pInfo->GetInfo(InfoAuthor);
+		const char* sSubject = pInfo->GetInfo(InfoSubject);
+		if (sTitle || sAuthor || sSubject)
+		{
+			sXML += "<rdf:Description rdf:about=\"\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n";
+			sXML += "<dc:format>application/pdf</dc:format>";
+			if (sSubject)
+			{
+				sXML += "<dc:description><rdf:Alt><rdf:li xml:lang=\"x-default\">";
+				sXML += sSubject;
+				sXML += "</rdf:li></rdf:Alt></dc:description>\n";
+			}
+			if (sAuthor)
+			{
+				sXML += "<dc:creator><rdf:Seq><rdf:li>";
+				sXML += sAuthor;
+				sXML += "</rdf:li></rdf:Seq></dc:creator>\n";
+			}
+			if (sTitle)
+			{
+				sXML += "<dc:title><rdf:Alt><rdf:li xml:lang=\"x-default\">";
+				sXML += sTitle;
+				sXML += "</rdf:li></rdf:Alt></dc:title>\n";
+			}
+			sXML += "</rdf:Description>\n";
+		}
 
 		if (pXref->IsPDFA())
 		{

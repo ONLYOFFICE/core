@@ -7827,16 +7827,6 @@ void BinaryDocumentTableWriter::WriteSdtPr(const OOX::Logic::CSdtPr& oStdPr)
 		WriteSdtComplexFormPr(oStdPr.m_oComplexFormPr.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	if (oStdPr.m_oOformRid.IsInit())
-	{
-		smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find(oStdPr.m_oOformRid->GetValue());
-		if (pFile.IsInit())
-		{
-			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::OformMaster);
-			m_oBcw.m_oStream.WriteStringW3(pFile->m_sOutputFilename);
-			m_oBcw.WriteItemEnd(nCurPos);
-		}
-	}
 }
 void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& oSdtPicture)
 {
@@ -8098,6 +8088,16 @@ void BinaryDocumentTableWriter::WriteSdtFormPr(const OOX::Logic::CFormPr& oFormP
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::FormPrShd);
 		m_oBcw.WriteShd(oFormPr.m_oShd.get());
 		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oFormPr.m_oFieldRid.IsInit())
+	{
+		smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find(oFormPr.m_oFieldRid->GetValue());
+		if (pFile.IsInit())
+		{
+			nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::OformMaster);
+			m_oBcw.m_oStream.WriteStringW3(pFile->m_sOutputFilename);
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
 	}
 }
 void BinaryDocumentTableWriter::WriteSdtTextFormPr(const OOX::Logic::CTextFormPr& oTextFormPr)

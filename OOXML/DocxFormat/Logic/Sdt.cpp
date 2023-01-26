@@ -673,6 +673,12 @@ namespace OOX
 					m_oShd = oReader;
 				else if (L"w:border" == sName)
 					m_oBorder = oReader;
+				else if (L"w:field" == sName)
+				{
+					WritingElement_ReadAttributes_Start(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"r:id", m_oFieldRid)
+					WritingElement_ReadAttributes_End(oReader)
+				}
 			}
 		}
 		std::wstring CFormPr::toXML() const
@@ -707,6 +713,10 @@ namespace OOX
 			WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
 			WritingElement_WriteNode_1(L"<w:border ", m_oBorder);
 
+			if (m_oFieldRid.IsInit())
+			{
+				sResult += L"<w:field r:id=\"" + m_oFieldRid->ToString() + L"\"/>";
+			}
 			sResult += L"</w:formPr>";
 
 			return sResult;
@@ -1468,12 +1478,6 @@ namespace OOX
 					m_oFormPr = oReader;
 				else if (L"w:textFormPr" == sName)
 					m_oTextFormPr = oReader;
-				else if (L"w:oform" == sName)
-				{
-					WritingElement_ReadAttributes_Start(oReader)
-						WritingElement_ReadAttributes_ReadSingle(oReader, L"r:id", m_oOformRid)
-					WritingElement_ReadAttributes_End(oReader)
-				}
 				else if (sdttypeUnknown == m_eType && L"w:text" == sName)
 				{
 					m_oText = oReader;
@@ -1596,10 +1600,6 @@ namespace OOX
 			WritingElement_WriteNode_2(m_oTextFormPr);
 			WritingElement_WriteNode_2(m_oComplexFormPr);
 
-			if (m_oOformRid.IsInit())
-			{
-				sResult += L"<w:oform r:id=\"" + m_oOformRid->ToString() + L"\"/>";
-			}
 			return sResult;
 		}
 		std::wstring CSdtPr::toXMLEnd() const

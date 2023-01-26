@@ -9455,23 +9455,6 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oComplexFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtComplexFormPr, pSdtPr->m_oComplexFormPr.GetPointer());
 	}
-	else if (c_oSerSdt::OformMaster == type)
-	{
-		std::wstring pathOFormMaster = m_oBufferedStream.GetString3(length);
-
-		if (false == pathOFormMaster.empty() && m_bOFormRead)
-		{
-			XmlUtils::replace_all(pathOFormMaster, L"\\", L"/");
-			
-			m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/fieldMaster+xml", L"", pathOFormMaster.substr(3));	// del "../"		
-
-			unsigned int rId;
-			m_oFileWriter.m_pDrawingConverter->WriteRels(L"https://schemas.onlyoffice.com/relationships/oform-fieldMaster", pathOFormMaster, L"", &rId);
-
-			pSdtPr->m_oOformRid.Init();
-			pSdtPr->m_oOformRid->SetValue(L"rId" + std::to_wstring(rId));
-		}
-	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9720,6 +9703,23 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 	{
 		pFormPr->m_oShd.Init();
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pFormPr->m_oShd.GetPointer());
+	}
+	else if (c_oSerSdt::OformMaster == type)
+	{
+		std::wstring pathOFormMaster = m_oBufferedStream.GetString3(length);
+
+		if (false == pathOFormMaster.empty() && m_bOFormRead)
+		{
+			XmlUtils::replace_all(pathOFormMaster, L"\\", L"/");
+
+			m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/fieldMaster+xml", L"", pathOFormMaster.substr(3));	// del "../"		
+
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(L"https://schemas.onlyoffice.com/relationships/oform-fieldMaster", pathOFormMaster, L"", &rId);
+
+			pFormPr->m_oFieldRid.Init();
+			pFormPr->m_oFieldRid->SetValue(L"rId" + std::to_wstring(rId));
+		}
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

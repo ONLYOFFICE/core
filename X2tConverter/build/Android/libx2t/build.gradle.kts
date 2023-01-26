@@ -6,6 +6,12 @@ plugins {
     id("maven-publish")
 }
 
+apply {
+    from("../extras/gradle/common.gradle")
+}
+
+val keystore = extra.get("getKeystore") as org.codehaus.groovy.runtime.MethodClosure
+
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -20,8 +26,8 @@ publishing {
             name = "GitHubPackages"
             url = uri("${PublishEditors.publishUrl}/")
             credentials {
-//                username = ""
-//                password = ""
+                username = (keystore() as? java.util.Properties)?.getProperty("git_user_name") ?: ""
+                password = (keystore() as? java.util.Properties)?.getProperty("git_token") ?: ""
             }
         }
     }

@@ -103,7 +103,7 @@ std::shared_ptr<CFStream> CFStorage::GetStream(const std::wstring& streamName)
     }
     else
     {
-        throw CFItemNotFound(L"Cannot find item [" + streamName + L"] within the current storage");
+		return std::shared_ptr<CFStream>();
     }
 }
 

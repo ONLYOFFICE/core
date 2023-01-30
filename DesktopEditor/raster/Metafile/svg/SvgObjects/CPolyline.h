@@ -11,12 +11,12 @@ namespace SVG
 		CPolyline(CObjectBase* pParent = NULL);
 		virtual ~CPolyline();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		bool Draw(IRenderer* pRenderer) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
-		void BeginDraw(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const;
+		void BeginDraw(IRenderer* pRenderer, int& nTypePath) const;
 		void DrawLines(IRenderer* pRenderer) const;
 		virtual void EndDraw(IRenderer* pRenderer, int& nTypePath) const;
 

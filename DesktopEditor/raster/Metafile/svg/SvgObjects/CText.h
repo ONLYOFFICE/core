@@ -16,16 +16,16 @@ namespace SVG
 		CText(CObjectBase* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 		virtual ~CText();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		bool Draw(IRenderer* pRenderer) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
 		double GetWidth() const;
 
 		NSFonts::IFontManager* m_pFontManager;
 
-		Point        m_oCoord;
+//		Point        m_oCoord;
 		std::wstring m_wsText;
 
 		std::vector<CTspan*> m_arChildrens;
@@ -41,10 +41,10 @@ namespace SVG
 
 		double GetWidth() const;
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		bool Draw(IRenderer* pRenderer) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
 		void InheritData(const CText& oText);
 

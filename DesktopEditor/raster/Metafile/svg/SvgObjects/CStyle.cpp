@@ -6,7 +6,7 @@ namespace SVG
 {
 	CGeneralStyle::CGeneralStyle()
 	{
-
+		m_oCssCalculator.SetUnitMeasure(NSCSS::UnitMeasure::Pixel);
 	}
 
 	CGeneralStyle::~CGeneralStyle()
@@ -94,6 +94,36 @@ namespace SVG
 				std::wstring wsTempValue = oStyle.second.substr(0, unPositionImp - 1);
 				m_pTransform.SetTransform(StrUtils::ReadDoubleValues(wsTempValue), m_pTransform.GetTransformType(wsTempValue), unLevel, true);
 				m_pTransform.SetImportantTransform(true);
+			}
+		}
+		else if (L"x" == oStyle.first)
+		{
+			const size_t unPositionImp = oStyle.second.find(L"!i");
+			if (unPositionImp == std::wstring::npos)
+			{
+				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second, m_pDisplay.GetWidth()).c_str(), NULL);
+				m_pDisplay.SetX(dValue, unLevel, bHardMode);
+			}
+			else if (unPositionImp != 0)
+			{
+				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second.substr(0, unPositionImp - 1), m_pDisplay.GetWidth()).c_str(), NULL);
+				m_pDisplay.SetX(dValue, unLevel, true);
+				m_pDisplay.SetImportantX(true);
+			}
+		}
+		else if (L"y" == oStyle.first)
+		{
+			const size_t unPositionImp = oStyle.second.find(L"!i");
+			if (unPositionImp == std::wstring::npos)
+			{
+				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second, 0.0f).c_str(), NULL);
+				m_pDisplay.SetY(dValue, unLevel, bHardMode);
+			}
+			else if (unPositionImp != 0)
+			{
+				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
+				m_pDisplay.SetY(dValue, unLevel, true);
+				m_pDisplay.SetImportantY(true);
 			}
 		}
 	}

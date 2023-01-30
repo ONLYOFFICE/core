@@ -12,8 +12,8 @@
 
 namespace NSCSS
 {
-    #ifndef RGB
-    #define RGB(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) ) )
+    #ifndef RGB_TO_INT
+    #define RGB_TO_INT(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) ) )
     #endif
 
     typedef enum {
@@ -163,7 +163,7 @@ namespace NSCSS
                 /* Outdated */
                 {L"windowtext",         L"000000"},  {L"transparent",           L"000000"}
             };
-        }
+		}
 
         static const std::vector<std::wstring> arDisplayValues =
         {
@@ -2725,7 +2725,7 @@ namespace NSCSS
 					char chG = stoi(wsG, nullptr, 16);
 					char chB = stoi(wsB, nullptr, 16);
 
-					return RGB(chR, chG, chB);
+					return RGB_TO_INT(chR, chG, chB);
 				}
 
                 std::wstring GetColor() const
@@ -2758,262 +2758,321 @@ namespace NSCSS
                 }
             };
 
-            class Display
-            {
-                std::wstring wsDisplay;
-                int nWidth;
-                int nHeight;
-                std::wstring wsAlign;
-                std::wstring wsVerticalAlign;
+			class Display
+			{
+				std::wstring wsDisplay;
+				Aggplus::RectF oRect;
+				std::wstring wsAlign;
+				std::wstring wsVerticalAlign;
 
-                std::vector<bool> bImportants;
-                std::vector<unsigned int> arLevels;
+				std::vector<bool> bImportants;
+				std::vector<unsigned int> arLevels;
 
-            public:
-                Display() : wsDisplay(L"inline"), nWidth(-1), nHeight(-1), wsAlign(), bImportants{false, false, false, false, false}, arLevels{0, 0, 0, 0, 0} {};
+			public:
+				Display() : wsDisplay(L"inline"), wsAlign(), bImportants{false, false, false, false, false, false, false}, arLevels{0, 0, 0, 0, 0, 0, 0} {};
 
-                void ClearImportants()
-                {
-                    bImportants = {false, false, false, false, false};
-                }
+				void ClearImportants()
+				{
+				bImportants = {false, false, false, false, false};
+				}
 
-                Display operator+=(const Display& oDisplay)
-                {
-                    if (oDisplay.Empty())
-                        return *this;
+				Display operator+=(const Display& oDisplay)
+				{
+					if (oDisplay.Empty())
+						return *this;
 
-                    wsDisplay   = oDisplay.wsDisplay;
-                    nWidth      = oDisplay.nWidth;
-                    nHeight     = oDisplay.nHeight;
-                    wsAlign     = oDisplay.wsAlign;
+					wsDisplay = oDisplay.wsDisplay;
+					oRect     = oDisplay.oRect;
+					wsAlign   = oDisplay.wsAlign;
 
-                    return *this;
-                }
+					return *this;
+				}
 
-                static void DisplayEquation(Display &oFirstDisplay, Display &oSecondDisplay)
-                {
-                    if (oFirstDisplay.bImportants[0] && !oSecondDisplay.bImportants[0] && !oFirstDisplay.wsDisplay.empty())
-                        oSecondDisplay.wsDisplay.clear();
-                    else if (oSecondDisplay.bImportants[0] && !oFirstDisplay.bImportants[0] && !oSecondDisplay.wsDisplay.empty())
-                        oFirstDisplay.wsDisplay.clear();
-                    else if (!oSecondDisplay.wsDisplay.empty())
-                    {
-                        if (oFirstDisplay.arLevels[0] < oSecondDisplay.arLevels[0])
-                            oFirstDisplay.wsDisplay.clear();
-                        else
-                            oSecondDisplay.wsDisplay.clear();
-                    }
+				static void DisplayEquation(Display &oFirstDisplay, Display &oSecondDisplay)
+				{
+					if (oFirstDisplay.bImportants[0] && !oSecondDisplay.bImportants[0] && !oFirstDisplay.wsDisplay.empty())
+						oSecondDisplay.wsDisplay.clear();
+					else if (oSecondDisplay.bImportants[0] && !oFirstDisplay.bImportants[0] && !oSecondDisplay.wsDisplay.empty())
+						oFirstDisplay.wsDisplay.clear();
+					else if (!oSecondDisplay.wsDisplay.empty())
+					{
+						if (oFirstDisplay.arLevels[0] < oSecondDisplay.arLevels[0])
+							oFirstDisplay.wsDisplay.clear();
+						else
+							oSecondDisplay.wsDisplay.clear();
+					}
 
-                    if (oFirstDisplay.bImportants[1] && !oSecondDisplay.bImportants[1] && oFirstDisplay.nWidth > 0)
-                        oSecondDisplay.nWidth = -1;
-                    else if (oSecondDisplay.bImportants[1] && !oFirstDisplay.bImportants[1] && oSecondDisplay.nWidth > 0)
-                        oFirstDisplay.nWidth = -1;
-                    else if (oSecondDisplay.nWidth > 0)
-                    {
-                        if (oFirstDisplay.arLevels[1] < oSecondDisplay.arLevels[1])
-                            oFirstDisplay.nWidth = -1;
-                        else
-                            oSecondDisplay.nWidth = -1;
-                    }
+					if (oFirstDisplay.bImportants[3] && !oSecondDisplay.bImportants[3] && oFirstDisplay.oRect.Width > 0)
+						oSecondDisplay.oRect.Width = 0;
+					else if (oSecondDisplay.bImportants[3] && !oFirstDisplay.bImportants[3] && oSecondDisplay.oRect.Width > 0)
+						oFirstDisplay.oRect.Width = 0;
+					else if (oSecondDisplay.oRect.Width > 0)
+					{
+						if (oFirstDisplay.arLevels[3] < oSecondDisplay.arLevels[3])
+							oFirstDisplay.oRect.Width = -1;
+						else
+							oSecondDisplay.oRect.Width = 0;
+					}
 
-                    if (oFirstDisplay.bImportants[2] && !oSecondDisplay.bImportants[2] && oFirstDisplay.nHeight > 0)
-                        oSecondDisplay.nHeight = -1;
-                    else if (oSecondDisplay.bImportants[2] && !oFirstDisplay.bImportants[2] && oSecondDisplay.nHeight > 0)
-                        oFirstDisplay.nHeight = -1;
-                    else if (oSecondDisplay.nHeight > 0)
-                    {
-                        if (oFirstDisplay.arLevels[2] < oSecondDisplay.arLevels[2])
-                            oFirstDisplay.nHeight = -1;
-                        else
-                            oSecondDisplay.nHeight = -1;
-                    }
+					if (oFirstDisplay.bImportants[4] && !oSecondDisplay.bImportants[4] && oFirstDisplay.oRect.Height > 0)
+						oSecondDisplay.oRect.Height = 0;
+					else if (oSecondDisplay.bImportants[4] && !oFirstDisplay.bImportants[4] && oSecondDisplay.oRect.Height > 0)
+						oFirstDisplay.oRect.Height = 0;
+					else if (oSecondDisplay.oRect.Height > 0)
+					{
+						if (oFirstDisplay.arLevels[4] < oSecondDisplay.arLevels[4])
+							oFirstDisplay.oRect.Height = 0;
+						else
+							oSecondDisplay.oRect.Height = 0;
+					}
 
-                    if (oFirstDisplay.bImportants[3] && !oSecondDisplay.bImportants[3] && !oFirstDisplay.wsAlign.empty())
-                        oSecondDisplay.wsAlign.clear();
-                    else if (oSecondDisplay.bImportants[3] && !oFirstDisplay.bImportants[3] && !oSecondDisplay.wsAlign.empty())
-                        oFirstDisplay.wsAlign.clear();
-                    else if (!oSecondDisplay.wsAlign.empty())
-                    {
-                        if (oFirstDisplay.arLevels[3] < oSecondDisplay.arLevels[3])
-                            oFirstDisplay.wsAlign.clear();
-                        else
-                            oSecondDisplay.wsAlign.clear();
-                    }
+					if (oFirstDisplay.bImportants[5] && !oSecondDisplay.bImportants[5] && !oFirstDisplay.wsAlign.empty())
+						oSecondDisplay.wsAlign.clear();
+					else if (oSecondDisplay.bImportants[5] && !oFirstDisplay.bImportants[5] && !oSecondDisplay.wsAlign.empty())
+						oFirstDisplay.wsAlign.clear();
+					else if (!oSecondDisplay.wsAlign.empty())
+					{
+						if (oFirstDisplay.arLevels[5] < oSecondDisplay.arLevels[5])
+							oFirstDisplay.wsAlign.clear();
+						else
+							oSecondDisplay.wsAlign.clear();
+					}
 
-                    if (oFirstDisplay.bImportants[4] && !oSecondDisplay.bImportants[4] && !oFirstDisplay.wsVerticalAlign.empty())
-                        oSecondDisplay.wsVerticalAlign.clear();
-                    else if (oSecondDisplay.bImportants[4] && !oFirstDisplay.bImportants[4] && !oSecondDisplay.wsVerticalAlign.empty())
-                        oFirstDisplay.wsVerticalAlign.clear();
-                    else if (!oSecondDisplay.wsVerticalAlign.empty())
-                    {
-                        if (oFirstDisplay.arLevels[4] < oSecondDisplay.arLevels[4])
-                            oFirstDisplay.wsVerticalAlign.clear();
-                        else
-                            oSecondDisplay.wsVerticalAlign.clear();
-                    }
-                }
+					if (oFirstDisplay.bImportants[6] && !oSecondDisplay.bImportants[6] && !oFirstDisplay.wsVerticalAlign.empty())
+						oSecondDisplay.wsVerticalAlign.clear();
+					else if (oSecondDisplay.bImportants[6] && !oFirstDisplay.bImportants[6] && !oSecondDisplay.wsVerticalAlign.empty())
+						oFirstDisplay.wsVerticalAlign.clear();
+					else if (!oSecondDisplay.wsVerticalAlign.empty())
+					{
+						if (oFirstDisplay.arLevels[6] < oSecondDisplay.arLevels[6])
+							oFirstDisplay.wsVerticalAlign.clear();
+						else
+							oSecondDisplay.wsVerticalAlign.clear();
+					}
+				}
 
-                bool operator==(const Display& oDisplay) const
-                {
-                    return wsDisplay == oDisplay.wsDisplay && nWidth == oDisplay.nWidth && nHeight == oDisplay.nHeight &&
-                           wsAlign == oDisplay.wsAlign && wsVerticalAlign == oDisplay.wsVerticalAlign;
-                }
+				bool operator==(const Display& oDisplay) const
+				{
+					return wsDisplay == oDisplay.wsDisplay && oRect.Equals(oDisplay.oRect) &&
+					       wsAlign == oDisplay.wsAlign && wsVerticalAlign == oDisplay.wsVerticalAlign;
+				}
 
-                bool Empty() const
-                {
-                    return (L"inline" == wsDisplay || wsDisplay.empty()) && (nWidth < 0) && (nHeight < 0) &&
-                           (wsAlign.empty()) && (wsVerticalAlign.empty());
-                }
+				bool Empty() const
+				{
+					return (L"inline" == wsDisplay || wsDisplay.empty()) && 0 == oRect.X && 0 == oRect.Y &&
+					       0 == oRect.Width && oRect.Height && (wsAlign.empty()) && (wsVerticalAlign.empty());
+				}
 
-                void SetImportantAll(const bool &bImportant)
-                {
-                    bImportants = {bImportant, bImportant, bImportant, bImportant, bImportant};
-                }
+				void SetImportantAll(const bool &bImportant)
+				{
+					bImportants = {bImportant, bImportant, bImportant, bImportant, bImportant, bImportant, bImportant};
+				}
 
-                void SetImportantDisplay(const bool &bImportant)
-                {
-                    bImportants[0] = bImportant;
-                }
+				void SetImportantDisplay(const bool &bImportant)
+				{
+					bImportants[0] = bImportant;
+				}
 
-                void SetImportantWidth(const bool &bImportant)
-                {
-                    bImportants[1] = bImportant;
-                }
+				void SetImportantX(const bool &bImportant)
+				{
+					bImportants[1] = bImportant;
+				}
 
-                void SetImportantHeight(const bool &bImportant)
-                {
-                    bImportants[2] = bImportant;
-                }
+				void SetImportantY(const bool &bImportant)
+				{
+					bImportants[2] = bImportant;
+				}
 
-                void SetImportantAlign(const bool& bImportant)
-                {
-                    bImportants[3] = bImportant;
-                }
+				void SetImportantWidth(const bool &bImportant)
+				{
+					bImportants[3] = bImportant;
+				}
 
-                void SetImportantVerticalAlign(const bool& bImportant)
-                {
-                    bImportants[4] = bImportant;
-                }
+				void SetImportantHeight(const bool &bImportant)
+				{
+					bImportants[4] = bImportant;
+				}
 
-                void SetDisplay(const std::wstring& wsNewDisplay, const unsigned int& unLevel, const bool &bHardMode = false)
-                {
-                    if (wsNewDisplay.empty() || (bImportants[0] && !bHardMode))
-                        return;
+				void SetImportantAlign(const bool& bImportant)
+				{
+					bImportants[5] = bImportant;
+				}
 
-                    if (arDisplayValues.end() != std::find(arDisplayValues.begin(), arDisplayValues.end(), wsNewDisplay))
-                    {
-                        wsDisplay = wsNewDisplay;
-                        arLevels[0] = unLevel;
-                    }
-                }
+				void SetImportantVerticalAlign(const bool& bImportant)
+				{
+					bImportants[6] = bImportant;
+				}
 
-                void SetWidth(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
-                {
-                    if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[1] && !bHardMode))
-                        return;
+				void SetDisplay(const std::wstring& wsNewDisplay, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (wsNewDisplay.empty() || (bImportants[0] && !bHardMode))
+					return;
 
-                    arLevels[1] = unLevel;
-                    nWidth = std::stoi(wsNewValue);
-                }
+					if (arDisplayValues.end() != std::find(arDisplayValues.begin(), arDisplayValues.end(), wsNewDisplay))
+					{
+						wsDisplay = wsNewDisplay;
+						arLevels[0] = unLevel;
+					}
+				}
 
-                void SetWidth(int nValue, const unsigned int& unLevel, const bool &bHardMode = false)
-                {
-                    if (bImportants[1] && !bHardMode)
-                        return;
+				void SetX(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[1] && !bHardMode))
+						return;
 
-                    arLevels[1] = unLevel;
-                    nWidth = nValue;
-                }
+					arLevels[1] = unLevel;
+					oRect.X = std::stod(wsNewValue);
+				}
 
-                void SetHeight(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
-                {
-                    if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[2] && !bHardMode))
-                        return;
+				void SetX(double dValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (bImportants[1] && !bHardMode)
+						return;
 
-                    arLevels[2] = unLevel;
-                    nHeight = std::stoi(wsNewValue);
-                }
+					arLevels[1] = unLevel;
+					oRect.X = dValue;
+				}
 
-                void SetHeight(int nValue, const unsigned int& unLevel, const bool &bHardMode = false)
-                {
-                    if (bImportants[2] && !bHardMode)
-                        return;
+				void SetY(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[2] && !bHardMode))
+						return;
 
-                    arLevels[2] = unLevel;
-                    nHeight = nValue;
-                }
+					arLevels[2] = unLevel;
+					oRect.Y = std::stod(wsNewValue);
+				}
 
-                void SetAlign(const std::wstring& sAlign, const unsigned int& unLevel, const bool& bHardMode = false)
-                {
-                    if (sAlign.empty() || (bImportants[3] && !bHardMode))
-                        return;
+				void SetY(double dValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (bImportants[2] && !bHardMode)
+						return;
 
-                    if (L"center" == sAlign || L"left" == sAlign || L"start" == sAlign ||
-                        L"right" == sAlign || L"end" == sAlign)
-                    {
-                         arLevels[3] = unLevel;
-                         wsAlign = sAlign;
-                    }
-                }
+					arLevels[2] = unLevel;
+					oRect.Y = dValue;
+				}
 
-                void SetVerticalAlign(const std::wstring& sVerticalAlign, const unsigned int& unLevel, const bool& bHardMode = false)
-                {
-                    if (sVerticalAlign.empty() || (bImportants[4] && !bHardMode))
-                        return;
+				void SetWidth(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[3] && !bHardMode))
+						return;
 
-                    if (L"top" == sVerticalAlign || L"baseline" == sVerticalAlign || L"text-top" == sVerticalAlign)
-                    {
-                        wsVerticalAlign = L"top";
-                        arLevels[4] = unLevel;
-                    }
-                        else if (L"bottom" == sVerticalAlign || L"text-bottom" == sVerticalAlign)
-                    {
-                        wsVerticalAlign = L"bottom";
-                        arLevels[4] = unLevel;
-                    }
-                    else if (L"middle" == sVerticalAlign)
-                    {
-                        wsVerticalAlign = sVerticalAlign;
-                        arLevels[4] = unLevel;
-                    }
-                }
+					arLevels[3] = unLevel;
+					oRect.Width = std::stod(wsNewValue);
+				}
 
-                std::wstring GetDisplay() const
-                {
-                    return wsDisplay;
-                }
+				void SetWidth(double dValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (bImportants[3] && !bHardMode)
+						return;
 
-                std::wstring GetWidthW() const
-                {
-                    if (nWidth < 0)
-                            return std::wstring();
+					arLevels[3] = unLevel;
+					oRect.Width = dValue;
+				}
 
-                    return std::to_wstring(nWidth);
-                }
+				void SetHeight(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[4] && !bHardMode))
+						return;
 
-                int GetWidth() const
-                {
-                    return nWidth;
-                }
+					arLevels[4] = unLevel;
+					oRect.Height = std::stod(wsNewValue);
+				}
 
-                std::wstring GetHeightW() const
-                {
-                    if (nHeight < 0)
-                            return std::wstring();
+				void SetHeight(double dValue, const unsigned int& unLevel, const bool &bHardMode = false)
+				{
+					if (bImportants[2] && !bHardMode)
+						return;
 
-                    return std::to_wstring(nHeight);
-                }
+					arLevels[4] = unLevel;
+					oRect.Height = dValue;
+				}
 
-                std::wstring GetAlign() const
-                {
-                    return wsAlign;
-                }
+				void SetAlign(const std::wstring& sAlign, const unsigned int& unLevel, const bool& bHardMode = false)
+				{
+					if (sAlign.empty() || (bImportants[5] && !bHardMode))
+						return;
 
-                std::wstring GetVerticalAlign() const
-                {
-                    return wsVerticalAlign;
-                }
-            };
+					if (L"center" == sAlign || L"left" == sAlign || L"start" == sAlign ||
+					    L"right" == sAlign || L"end" == sAlign)
+					{
+						arLevels[5] = unLevel;
+						wsAlign = sAlign;
+					}
+				}
+
+				void SetVerticalAlign(const std::wstring& sVerticalAlign, const unsigned int& unLevel, const bool& bHardMode = false)
+				{
+					if (sVerticalAlign.empty() || (bImportants[6] && !bHardMode))
+						return;
+
+					if (L"top" == sVerticalAlign || L"baseline" == sVerticalAlign || L"text-top" == sVerticalAlign)
+					{
+						wsVerticalAlign = L"top";
+						arLevels[6] = unLevel;
+					}
+					else if (L"bottom" == sVerticalAlign || L"text-bottom" == sVerticalAlign)
+					{
+						wsVerticalAlign = L"bottom";
+						arLevels[6] = unLevel;
+					}
+					else if (L"middle" == sVerticalAlign)
+					{
+						wsVerticalAlign = sVerticalAlign;
+						arLevels[6] = unLevel;
+					}
+				}
+
+				std::wstring GetDisplay() const
+				{
+					return wsDisplay;
+				}
+
+				double GetX() const
+				{
+					return oRect.X;
+				}
+
+				double GetY() const
+				{
+					return oRect.Y;
+				}
+
+				std::wstring GetWidthW() const
+				{
+					if (oRect.Width < 0)
+						return std::wstring();
+
+					return std::to_wstring(oRect.Width);
+				}
+
+				double GetWidth() const
+				{
+					return oRect.Width;
+				}
+
+				std::wstring GetHeightW() const
+				{
+					if (oRect.Height < 0)
+						return std::wstring();
+
+					return std::to_wstring(oRect.Height);
+				}
+
+				double GetHeight() const
+				{
+					return oRect.Height;
+				}
+
+				std::wstring GetAlign() const
+				{
+					return wsAlign;
+				}
+
+				std::wstring GetVerticalAlign() const
+				{
+					return wsVerticalAlign;
+				}
+			};
 
 			class Stroke
 			{
@@ -3181,7 +3240,7 @@ namespace NSCSS
 					char chG = stoi(wsG, nullptr, 16);
 					char chB = stoi(wsB, nullptr, 16);
 
-					return RGB(chR, chG, chB);
+					return RGB_TO_INT(chR, chG, chB);
 				}
 			};
 

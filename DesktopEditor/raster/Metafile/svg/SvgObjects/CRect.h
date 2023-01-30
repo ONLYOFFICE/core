@@ -11,17 +11,10 @@ namespace SVG
 		CRect(CObjectBase* pParent = NULL);
 		virtual ~CRect();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		bool Draw(IRenderer* pRenderer) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
-
-		double m_dX;
-		double m_dY;
-		double m_dWidth;
-		double m_dHeight;
-		double m_dRx;
-		double m_dRy;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 	};
 }
 

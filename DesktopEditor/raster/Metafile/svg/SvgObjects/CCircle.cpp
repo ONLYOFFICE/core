@@ -12,7 +12,7 @@ namespace SVG
 
 	}
 
-	bool CCircle::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CCircle::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		if (!oNode.IsValid())
 			return false;
@@ -21,19 +21,19 @@ namespace SVG
 		m_dCy = oNode.GetAttributeDouble(L"cy");
 		m_dR  = oNode.GetAttributeDouble(L"r");
 
-		SaveNodeData(oNode);
+		SaveNodeData(oNode, oBaseStyle);
 
 		return true;
 	}
 
-	bool CCircle::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
+	bool CCircle::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		int nPathType = 0;
 
-		ApplyStyle(pRenderer, nPathType, pBaseStyle);
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand (c_nPathType);
@@ -51,16 +51,14 @@ namespace SVG
 		return true;
 	}
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CCircle::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
 	{
-		if (NULL == pRenderer || NULL == pBaseStyle)
+		if (NULL == pRenderer)
 			return;
 
-		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
-
-		ApplyTransform(pRenderer, oStyle);
-		ApplyStroke(pRenderer, oStyle, nTypePath);
-		ApplyFill(pRenderer, oStyle, nTypePath);
+		ApplyTransform(pRenderer);
+		ApplyStroke(pRenderer, nTypePath);
+		ApplyFill(pRenderer, nTypePath);
 	}
 
 }

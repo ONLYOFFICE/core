@@ -290,7 +290,7 @@ namespace NSCSS
             return arSelectors;
         }
 
-        inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine, const std::wstring& sSigns = L" \n\r\t\f\v:;,")
+		inline std::vector<std::wstring> GetWordsWithSigns(const std::wstring& sLine, const std::wstring& sSigns = L" \n\r\t\f\v:;,!")
         {
             if (sLine.empty())
                 return {};
@@ -355,7 +355,7 @@ namespace NSCSS
                 posFirst = sRgbValue.find_first_of(L"01234567890", posSecond);
             }
             return sValue;
-        }
+		}
 
         inline std::vector<unsigned short int> GetWeightSelector(const std::wstring& sSelector)
         {

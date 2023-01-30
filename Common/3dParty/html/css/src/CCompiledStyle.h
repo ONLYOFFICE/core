@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 
+#include "StyleProperties.h"
+
 namespace NSCSS
 {
 	class CCompiledStyle
@@ -75,6 +77,8 @@ namespace NSCSS
         NSConstValues::NSCssProperties::Text        m_pText;
         NSConstValues::NSCssProperties::Border      m_pBorder;
         NSConstValues::NSCssProperties::Display     m_pDisplay;
+
+		CDisplay m_oDisplay;
 
         CCompiledStyle();
         explicit CCompiledStyle(const std::map<std::wstring, std::wstring>& mStyle);

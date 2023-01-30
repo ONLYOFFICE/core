@@ -16,7 +16,7 @@ namespace SVG
 		Clear();
 	}
 
-	bool CContainer::ReadHeader(XmlUtils::CXmlNode &oElement)
+	bool CContainer::ReadHeader(XmlUtils::CXmlNode &oElement, const CGeneralStyle& oBaseStyle)
 	{
 		std::wstring wsNodeName = oElement.GetName();
 
@@ -28,10 +28,10 @@ namespace SVG
 		Clear();
 
 		m_pHeader = new CHeader(m_pParent);
-		return m_pHeader->ReadFromXmlNode(oElement);
+		return m_pHeader->ReadFromXmlNode(oElement, oBaseStyle);
 	}
 
-	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		return false;
 	}
@@ -41,13 +41,13 @@ namespace SVG
 		return oParser.LoadFromXmlNode(oNode, this, pFile);
 	}
 
-	bool CContainer::Draw(IRenderer *pRenderer, const CGeneralStyle *pBaseStyle) const
+	bool CContainer::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		for (CObjectBase* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pBaseStyle);
+			pObject->Draw(pRenderer);
 
 		return true;
 	}
@@ -74,7 +74,7 @@ namespace SVG
 			m_arObjects.push_back(pObject);
 	}
 
-	void CContainer::ApplyStyle(IRenderer *pRenderer, int &nTypePath, const CGeneralStyle *pBaseStyle) const
+	void CContainer::ApplyStyle(IRenderer *pRenderer, int &nTypePath) const
 	{
 
 	}

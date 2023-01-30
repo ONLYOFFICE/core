@@ -8,11 +8,10 @@
 #define MININT8     ((char)~MAXINT8)
 #endif
 
-
 namespace SVG
 {
 	CText::CText(CObjectBase *pParent, NSFonts::IFontManager* pFontManager)
-	    : CObjectBase(pParent), m_pFontManager(pFontManager), m_oCoord({0, 0})
+	    : CObjectBase(pParent), m_pFontManager(pFontManager)/*, m_oCoord({0, 0})*/
 	{}
 
 	CText::~CText()
@@ -21,23 +20,14 @@ namespace SVG
 			delete pTspan;
 	}
 
-	bool CText::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CText::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		if (!oNode.IsValid())
 			return false;
 
-		m_oCoord.dX = oNode.GetAttributeDouble(L"x");
-		m_oCoord.dY = oNode.GetAttributeDouble(L"y");
-
-		double dX = oNode.GetAttributeDouble(L"dx");
-		double dY = oNode.GetAttributeDouble(L"dy");
-
-		m_oCoord.dX += dX;
-		m_oCoord.dY += dY;
-
 		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 
-		SaveNodeData(oNode);
+		SaveNodeData(oNode, oBaseStyle);
 
 		XmlUtils::CXmlNodes arChilds;
 
@@ -52,7 +42,7 @@ namespace SVG
 			{
 				CTspan *pTSpan = new CTspan(this);
 
-				if (pTSpan->ReadFromXmlNode(oChild))
+				if (pTSpan->ReadFromXmlNode(oChild, oBaseStyle))
 					m_arChildrens.push_back(pTSpan);
 			}
 		}
@@ -60,34 +50,30 @@ namespace SVG
 		return true;
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
+	bool CText::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		double dX = m_oCoord.dX, dY = m_oCoord.dY;
+		pRenderer->ResetTransform();
 
-		if (NULL != pBaseStyle)
-		{
-			pRenderer->ResetTransform();
+//		Aggplus::CMatrix oMatrix = m_oStyle.GetTransform();
+//		oMatrix.TransformPoint(dX, dY);
 
-			CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
+//		ApplyFont(pRenderer, oStyle, oMatrix.sx());
 
-			Aggplus::CMatrix oMatrix = oStyle.GetTransform();
-			oMatrix.TransformPoint(dX, dY);
+//		for (double dNewY = 40; dNewY < 50; dNewY += 10)
+//		{
+//			pRenderer->CommandDrawText(m_wsText, dX, dNewY, 0, 0);
+//		}
 
-			ApplyFont(pRenderer, oStyle, oMatrix.sx());
-		}
-
-		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
-
-		for (CTspan* pTspan : m_arChildrens)
-			pTspan->Draw(pRenderer, pBaseStyle);
+//		for (CTspan* pTspan : m_arChildrens)
+//			pTspan->Draw(pRenderer, pBaseStyle);
 
 		return true;
 	}
 
-	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
 	{
 	}
 
@@ -120,7 +106,7 @@ namespace SVG
 
 	}
 
-	bool CTspan::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CTspan::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		double dX = oNode.GetAttributeDouble(L"x", MININT8);
 		double dY = oNode.GetAttributeDouble(L"y", MININT8);
@@ -148,38 +134,33 @@ namespace SVG
 		return true;
 	}
 
-	bool CTspan::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
+	bool CTspan::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		double dX = m_oCoord.dX, dY = m_oCoord.dY;
+//		double dX = m_oCoord.dX, dY = m_oCoord.dY;
 
-		if (NULL != pBaseStyle)
-		{
-			pRenderer->ResetTransform();
+		pRenderer->ResetTransform();
 
-			CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
+//		Aggplus::CMatrix oMatrix = oStyle.GetTransform();
+//		oMatrix.TransformPoint(dX, dY);
 
-			Aggplus::CMatrix oMatrix = oStyle.GetTransform();
-			oMatrix.TransformPoint(dX, dY);
+//		ApplyFont(pRenderer, oStyle, oMatrix.sx());
 
-			ApplyFont(pRenderer, oStyle, oMatrix.sx());
-		}
-
-		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
+//		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
 
 		return true;
 	}
 
-	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
 	{
 	}
 
 	void CTspan::InheritData(const CText &oText)
 	{
 		m_pFontManager = oText.m_pFontManager;
-		m_oCoord       = oText.m_oCoord;
+//		m_oCoord       = oText.m_oCoord;
 	}
 
 	double CTspan::GetWidth() const

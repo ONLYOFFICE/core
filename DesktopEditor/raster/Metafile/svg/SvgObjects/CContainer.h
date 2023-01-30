@@ -17,11 +17,11 @@ namespace SVG
 		CContainer(CObjectBase* pParent = NULL);
 		virtual ~CContainer();
 
-		bool ReadHeader(XmlUtils::CXmlNode &oElement);
+		bool ReadHeader(XmlUtils::CXmlNode &oElement, const CGeneralStyle& oBaseStyle);
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
 		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CSvgParser& oParser, CSvgFile* pFile);
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool Draw(IRenderer* pRenderer) const override;
 
 		void Clear();
 
@@ -31,7 +31,7 @@ namespace SVG
 
 		void AddObject(CObjectBase* pObject);
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
 		CHeader                  *m_pHeader;
 		std::vector<CObjectBase*> m_arObjects;

@@ -15,7 +15,7 @@ namespace SVG
 			delete pPathElement;
 	}
 
-	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		std::wstring wsPoints = oNode.GetAttribute(L"d");
 
@@ -24,19 +24,19 @@ namespace SVG
 
 		ReadFromString(wsPoints);
 
-		SaveNodeData(oNode);
+		SaveNodeData(oNode, oBaseStyle);
 
 		return true;
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
+	bool CPath::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
 
 		int nPathType = 0;
 
-		ApplyStyle(pRenderer, nPathType, pBaseStyle);
+		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );
@@ -51,16 +51,14 @@ namespace SVG
 		return true;
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
 	{
-		if (NULL == pRenderer || NULL == pBaseStyle)
+		if (NULL == pRenderer)
 			return;
 
-		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
-
-		ApplyTransform(pRenderer, oStyle);
-		ApplyStroke(pRenderer, oStyle, nTypePath);
-		ApplyFill(pRenderer, oStyle, nTypePath);
+		ApplyTransform(pRenderer);
+		ApplyStroke(pRenderer, nTypePath);
+		ApplyFill(pRenderer, nTypePath);
 	}
 
 	void CPath::ReadFromString(const std::wstring &wsValue)

@@ -62,13 +62,16 @@ namespace SVG
 
 	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (NULL != pContainer && pContainer->ReadHeader(oElement))
+		if (NULL != pContainer && NULL != pFile && pContainer->ReadHeader(oElement, *pFile->GetBaseStyle()))
 			return ReadChildrens(oElement, pContainer, pFile, pContainer->GetHeader());
 		return false;
 	}
 
 	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile, CObjectBase *pParent) const
 	{
+		if (NULL == pContainer || NULL == pFile)
+			return false;
+
 		std::wstring wsElementName = oElement.GetName();
 
 		CObjectBase *pObject = NULL;
@@ -112,7 +115,7 @@ namespace SVG
 
 		if (NULL != pObject)
 		{
-			if (pObject->ReadFromXmlNode(oElement))
+			if (pObject->ReadFromXmlNode(oElement, *pFile->GetBaseStyle()))
 				pContainer->AddObject(pObject);
 			else
 				RELEASEOBJECT(pObject);
@@ -136,8 +139,7 @@ namespace SVG
 			if (!arChilds.GetAt(unChildrenIndex, oChild))
 				break;
 
-			if (!ReadElement(oChild, pContainer, pFile, pParent))
-				return false;
+			ReadElement(oChild, pContainer, pFile, pParent);
 
 			oChild.Clear();
 		}

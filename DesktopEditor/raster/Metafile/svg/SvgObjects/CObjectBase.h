@@ -5,6 +5,8 @@
 #include "../../IRenderer.h"
 #include "CStyle.h"
 
+#define MapCI std::map<std::wstring, std::wstring>::const_iterator
+
 namespace SVG
 {
 	class CObjectBase
@@ -13,10 +15,10 @@ namespace SVG
 		CObjectBase(CObjectBase* pParent = NULL) : m_pParent(pParent){};
 		virtual ~CObjectBase(){};
 
-		virtual bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) = 0;
-		virtual bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const = 0;
+		virtual bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) = 0;
+		virtual bool Draw(IRenderer* pRenderer) const = 0;
 	private:
-		void SaveNodeData(XmlUtils::CXmlNode& oNode)
+		void SaveNodeData(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle)
 		{
 			std::vector<std::wstring> arProperties, arValues;
 
@@ -36,6 +38,8 @@ namespace SVG
 				else
 					m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
 			}
+
+			m_oStyle = oBaseStyle.GetStyle(GetFullPath());
 		};
 
 		std::vector<NSCSS::CNode> GetFullPath() const
@@ -48,7 +52,7 @@ namespace SVG
 			return arObjects;
 		}
 
-		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const = 0;
 
 		void ApplyDefaultStroke(IRenderer* pRenderer, int& nTypePath) const
 		{
@@ -56,14 +60,14 @@ namespace SVG
 			pRenderer->put_PenColor(0);
 		}
 
-		void ApplyStroke(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath, bool bUseDedault = false) const
+		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const
 		{
-			if (SvgColorType::ColorHex == oStyle.GetStrokeColorType())
+			if (SvgColorType::ColorHex == m_oStyle.GetStrokeColorType())
 			{
 				nTypePath += c_nStroke;
-				pRenderer->put_PenColor(oStyle.GetStrokeColorN());
+				pRenderer->put_PenColor(m_oStyle.GetStrokeColorN());
 
-				double dStrokeWidth = oStyle.GetStrokeWidth();
+				double dStrokeWidth = m_oStyle.GetStrokeWidth();
 
 				if (0 != dStrokeWidth)
 					pRenderer->put_PenSize(dStrokeWidth);
@@ -78,14 +82,14 @@ namespace SVG
 			pRenderer->put_BrushColor1(0);
 		}
 
-		void ApplyFill(IRenderer* pRenderer, const CStyle& oStyle, int& nTypePath, bool bUseDedault = false) const
+		void ApplyFill(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const
 		{
-			if (SvgColorType::ColorHex == oStyle.GetFillType())
+			if (SvgColorType::ColorHex == m_oStyle.GetFillType())
 			{
 				nTypePath += c_nWindingFillMode;
-				pRenderer->put_BrushColor1(oStyle.GetFillN());
+				pRenderer->put_BrushColor1(m_oStyle.GetFillN());
 			}
-			else if (SvgColorType::ColorNone == oStyle.GetFillType())
+			else if (SvgColorType::ColorNone == m_oStyle.GetFillType())
 			{
 				return;
 			}
@@ -95,31 +99,31 @@ namespace SVG
 			}
 		}
 
-		void ApplyTransform(IRenderer* pRenderer, const CStyle& oStyle) const
+		void ApplyTransform(IRenderer* pRenderer) const
 		{
 			pRenderer->ResetTransform();
 
-			Aggplus::CMatrix oMatrix = oStyle.GetTransform();
+			Aggplus::CMatrix oMatrix = m_oStyle.GetTransform();
 
 			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 		}
 
-		void ApplyFont(IRenderer* pRenderer, const CStyle& oStyle, double dScaleX) const
+		void ApplyFont(IRenderer* pRenderer, double dScaleX) const
 		{
-			std::wstring wsName = oStyle.m_pFont.GetFamily();
+			std::wstring wsName = m_oStyle.m_pFont.GetFamily();
 
 			if (!wsName.empty())
 				pRenderer->put_FontName(wsName.substr(1, wsName.length() - 2));
 
-			double dSize = oStyle.m_pFont.GetSize() * dScaleX;
+			double dSize = m_oStyle.m_pFont.GetSize() /** dScaleX*/;
 
 			if (0 != dSize)
 				pRenderer->put_FontSize(dSize / 25.4 * 72);
 
 			int lStyle = 0;
-			if (L"bold" == oStyle.m_pFont.GetWeight())
+			if (L"bold" == m_oStyle.m_pFont.GetWeight())
 				lStyle |= 0x01;
-			if (L"italic" == oStyle.m_pFont.GetStyle())
+			if (L"italic" == m_oStyle.m_pFont.GetStyle())
 				lStyle |= 0x02;
 //			if (pFont->IsUnderline())
 //				lStyle |= (1 << 2);
@@ -130,7 +134,7 @@ namespace SVG
 
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 
-			int nColor = oStyle.GetFillN();
+			int nColor = m_oStyle.GetFillN();
 
 			if (-1 == nColor)
 				pRenderer->put_BrushColor1(0);
@@ -154,6 +158,7 @@ namespace SVG
 
 		CObjectBase   *m_pParent;
 		NSCSS::CNode   m_oXmlNode;
+		CStyle         m_oStyle;
 	};
 }
 

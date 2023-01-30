@@ -53,6 +53,11 @@ bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 	return true;
 }
 
+SVG::CGeneralStyle *CSvgFile::GetBaseStyle()
+{
+	return &m_oStyle;
+}
+
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
 	if (NULL != m_pParser)
@@ -84,7 +89,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	                                             std::to_wstring((dHeight) / dFileHeight) +L", " +
 	                                             std::to_wstring(dX) + L", " + std::to_wstring(dY) + L")};");
 
-	bool bResult = m_pContainer->Draw(pRenderer, &m_oStyle);
+	bool bResult = m_pContainer->Draw(pRenderer);
 
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
 

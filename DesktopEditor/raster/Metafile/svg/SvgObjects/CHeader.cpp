@@ -11,19 +11,19 @@ namespace SVG
 	{
 	}
 
-	bool CHeader::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CHeader::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		m_dX      = oNode.ReadAttributeDouble(L"x");
 		m_dY      = oNode.ReadAttributeDouble(L"y");
 		m_dWidth  = oNode.ReadAttributeDouble(L"width");
 		m_dHeight = oNode.ReadAttributeDouble(L"height");
 
-		SaveNodeData(oNode);
+		SaveNodeData(oNode, oBaseStyle);
 
 		return true;
 	}
 
-	bool CHeader::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
+	bool CHeader::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -39,7 +39,7 @@ namespace SVG
 		dHeight = m_dHeight;
 	}
 
-	void CHeader::ApplyStyle(IRenderer *pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CHeader::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
 	{
 
 	}

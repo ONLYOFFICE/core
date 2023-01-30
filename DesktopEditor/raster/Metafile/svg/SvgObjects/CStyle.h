@@ -11,21 +11,6 @@ namespace SVG
 
 	static const ColorParser m_oColorParser;
 
-	class CStyle;
-
-	class CGeneralStyle
-	{
-	public:
-		CGeneralStyle();
-		~CGeneralStyle();
-
-		void AddStyle(const std::wstring& wsStyle);
-		CStyle GetStyle(const std::vector<NSCSS::CNode>& arNodes) const;
-
-	private:
-		NSCSS::CCssCalculator m_oCssCalculator;
-	};
-
 	class CStyle : public NSCSS::CCompiledStyle
 	{
 	public:
@@ -51,6 +36,19 @@ namespace SVG
 
 		NSCSS::NSConstValues::NSCssProperties::Stroke    m_pStroke;
 		NSCSS::NSConstValues::NSCssProperties::Transform m_pTransform;
+	};
+
+	class CGeneralStyle
+	{
+	public:
+		CGeneralStyle();
+		~CGeneralStyle();
+
+		void AddStyle(const std::wstring& wsStyle);
+		CStyle GetStyle(const std::vector<NSCSS::CNode>& arNodes) const;
+
+	private:
+		NSCSS::CCssCalculator m_oCssCalculator;
 	};
 }
 

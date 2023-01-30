@@ -1073,10 +1073,10 @@ namespace SVG
 		CPath(CObjectBase* pParent = NULL);
 		virtual ~CPath();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		bool Draw(IRenderer* pRenderer) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
 		void ReadFromString(const std::wstring& wsValue);
 

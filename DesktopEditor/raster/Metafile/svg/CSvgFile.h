@@ -21,6 +21,8 @@ class GRAPHICS_DECL CSvgFile
 
 		bool GetBounds(double& dX, double& dY, double& dWidth, double& dHeight) const;
 
+		SVG::CGeneralStyle* GetBaseStyle();
+
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
 		void AddStyle(const std::wstring& wsStyle);

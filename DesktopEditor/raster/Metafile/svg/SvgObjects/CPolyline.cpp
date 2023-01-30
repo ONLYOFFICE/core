@@ -8,7 +8,7 @@ namespace SVG
 	CPolyline::~CPolyline()
 	{}
 
-	bool CPolyline::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	bool CPolyline::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
 	{
 		if (!oNode.IsValid())
 			return false;
@@ -20,40 +20,38 @@ namespace SVG
 
 		m_arValues = StrUtils::ReadDoubleValues(wsValue);
 
-		SaveNodeData(oNode);
+		SaveNodeData(oNode, oBaseStyle);
 
 		return m_arValues.size() >= 4;
 	}
 
-	bool CPolyline::Draw(IRenderer *pRenderer, const CGeneralStyle* pBaseStyle) const
+	bool CPolyline::Draw(IRenderer *pRenderer) const
 	{
 		if (NULL == pRenderer || m_arValues.size() < 4)
 			return false;
 
 		int nPathType = 0;
 
-		BeginDraw(pRenderer, nPathType, pBaseStyle);
+		BeginDraw(pRenderer, nPathType);
 		DrawLines(pRenderer);
 		EndDraw(pRenderer, nPathType);
 
 		return true;
 	}
 
-	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath) const
 	{
-		if (NULL == pRenderer || NULL == pBaseStyle)
+		if (NULL == pRenderer)
 			return;
 
-		CStyle oStyle = pBaseStyle->GetStyle(GetFullPath());
-
-		ApplyTransform(pRenderer, oStyle);
-		ApplyStroke(pRenderer, oStyle, nTypePath, true);
-		ApplyFill(pRenderer, oStyle, nTypePath, true);
+		ApplyTransform(pRenderer);
+		ApplyStroke(pRenderer, nTypePath, true);
+		ApplyFill(pRenderer, nTypePath, true);
 	}
 
-	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath, const CGeneralStyle* pBaseStyle) const
+	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath) const
 	{
-		ApplyStyle(pRenderer, nTypePath, pBaseStyle);
+		ApplyStyle(pRenderer, nTypePath);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );

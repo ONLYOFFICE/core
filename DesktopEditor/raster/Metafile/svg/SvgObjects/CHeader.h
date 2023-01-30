@@ -11,12 +11,12 @@ namespace SVG
 		CHeader(CObjectBase* pParent = NULL);
 		virtual ~CHeader();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, const CGeneralStyle* pBaseStyle) const override;
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		bool Draw(IRenderer* pRenderer) const override;
 
 		void GetBounds(double &dX, double &dY, double &dWidth, double &dHeight);
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, const CGeneralStyle* pBaseStyle) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
 		double m_dX;
 		double m_dY;

@@ -30,149 +30,19 @@
  *
  */
 
-#include "socketio_internal.h"
-#include <iostream>
-#include "../../../../3dParty/socketio/socket.io-client-cpp/src/internal/sio_packet.h"
-#include "../../../../3dParty/socketio/socket.io-client-cpp/src/sio_client.h"
-#include "../../../../../DesktopEditor/graphics/TemporaryCS.h"
+#include "socketio_internal_private.h"
+#include "socketio_internal_private_no_tls.h"
 
 namespace NSNetwork
 {
     namespace NSWebSocket
     {
-        class CIOWebSocket_private
-        {
-        public:
-            sio::client m_socket;
-            NSCriticalSection::CRITICAL_SECTION m_oCS;
-            CIOWebSocket* m_base;
-
-        public:
-            CIOWebSocket_private(CIOWebSocket* base)
-            {
-                m_base = base;
-                m_oCS.InitializeCriticalSection();
-            }
-            ~CIOWebSocket_private()
-            {
-                m_socket.close();
-                m_oCS.DeleteCriticalSection();
-            }
-
-        public:
-            void event_onConnected()
-            {
-                m_base->listener->onOpen();
-            }
-            void event_onClose(sio::client::close_reason const& reason)
-            {
-                m_base->listener->onClose(0, "");
-            }
-            void event_onFail()
-            {
-                m_base->listener->onError("");
-            }
-
-        public:
-            void open(const std::map<std::string, std::string>& query)
-            {
-                m_socket.set_open_listener (std::bind(&CIOWebSocket_private::event_onConnected, this));
-                m_socket.set_close_listener(std::bind(&CIOWebSocket_private::event_onClose, this, std::placeholders::_1));
-                m_socket.set_fail_listener (std::bind(&CIOWebSocket_private::event_onFail, this));
-
-                sio::message::ptr objAuth = sio::object_message::create();
-                //std::string sAuth;
-
-                std::map<std::string, std::string> queryDst = query;
-                std::map<std::string, std::string>::iterator iterAuth = queryDst.find("token");
-                if (iterAuth != queryDst.end())
-                {
-                    objAuth->get_map()["token"] = sio::string_message::create(iterAuth->second);
-                    //sAuth = "{\"token\":\"" + iterAuth->second + "\"}";
-                    queryDst.erase(iterAuth);
-                }
-
-                //webSocket.connect(url, queryDst, sio::string_message::create(sAuth));
-                m_socket.connect(m_base->url, queryDst, objAuth);
-
-                m_socket.socket()->on("message", [&](sio::event& event){
-                    CTemporaryCS oCS(&m_oCS);
-                    const sio::message::ptr& message = event.get_message();
-                    if (!message)
-                        return;
-
-                    // TODO: пока только текстовые и json команды
-                    switch (message->get_flag())
-                    {
-                    case sio::message::flag_null:
-                    {
-                        m_base->listener->onMessage("null");
-                        break;
-                    }
-                    case sio::message::flag_integer:
-                    case sio::message::flag_double:
-                    case sio::message::flag_boolean:
-                    {
-                        m_base->listener->onMessage("");
-                        break;
-                    }
-                    case sio::message::flag_binary:
-                    {
-                        m_base->listener->onMessage("");
-                        break;
-                    }
-                    case sio::message::flag_array:
-                    {
-                        m_base->listener->onMessage("");
-                        break;
-                    }
-                    case sio::message::flag_object:
-                    {
-                        sio::packet_manager manager;
-
-                        std::stringstream ss;
-                        sio::packet packet("/", message);
-                        manager.encode( packet, [&](bool isBinary, std::shared_ptr<const std::string> const& json)
-                        {
-                            ss << *json;
-                        });
-                        manager.reset();
-
-                        std::string result = ss.str();
-
-                        std::size_t indexList = result.find('[');
-                        std::size_t indexObject = result.find('{');
-                        std::size_t indexString = result.find('"');
-
-                        std::size_t index = indexList;
-                        if (indexObject != std::string::npos && indexObject < index)
-                            index = indexObject;
-                        if (indexString != std::string::npos && indexString < index)
-                            index = indexString;
-
-                        if (index != std::string::npos)
-                            result = result.substr(index);
-                        else
-                            result = "";
-
-                        m_base->listener->onMessage(result);
-                        break;
-                    }
-                    case sio::message::flag_string:
-                    {
-                        m_base->listener->onMessage(message->get_string());
-                        break;
-                    }
-                    default:
-                        break;
-                    }
-                });
-            }
-        };
-
         CIOWebSocket::CIOWebSocket(const std::string& url, std::shared_ptr<IListener> listener): CWebWorkerBase(url, listener)
         {
-            m_internal = new CIOWebSocket_private(this);
+            if (0 == url.find("http://"))
+                m_internal = new CIOWebSocket_private_no_tls(this);
+            else
+                m_internal = new CIOWebSocket_private_tls(this);
         }
 
         void CIOWebSocket::open(const std::map<std::string, std::string>& query)
@@ -182,36 +52,12 @@ namespace NSNetwork
 
         void CIOWebSocket::send(const std::string& message_str)
         {
-            //CTemporaryCS (&m_internal->m_oCS);
-
-            // если json -то надо объект
-            if (0 == message_str.find("{") ||
-                0 == message_str.find("["))
-            {
-                sio::packet_manager manager;
-                sio::message::ptr message;
-                manager.set_decode_callback([&](sio::packet const& p)
-                {
-                    message = p.get_message();
-                });
-
-                // Magic message type / ID
-                manager.put_payload("42" + message_str);
-                manager.reset();
-
-                m_internal->m_socket.socket()->emit("message", message);
-            }
-            else
-            {
-                m_internal->m_socket.socket()->emit("message", sio::string_message::create(message_str));
-            }
+            m_internal->send(message_str);
         }
 
         void CIOWebSocket::close()
         {
-            //CTemporaryCS (&m_internal->m_oCS);
-            m_internal->m_socket.socket()->off_all();
-            m_internal->m_socket.close();
+            m_internal->close();
         }
 
         CIOWebSocket::~CIOWebSocket()

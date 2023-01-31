@@ -71,33 +71,47 @@ int main()
 
     if (false)
     {
-        double dPageDpiX, dPageDpiY, dWidth, dHeight;
-        pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-        pdfFile.ConvertToRaster(0, NSFile::GetProcessDirectory() + L"/res.png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+        pdfFile.CreatePdf();
+        pdfFile.OnlineWordToPdfFromBinary(NSFile::GetProcessDirectory() + L"/pdf.bin", wsDstFile);
 
         RELEASEINTERFACE(pApplicationFonts);
         RELEASEOBJECT(pCertificate);
         return 0;
     }
 
-    if (false)
+    if (true)
     {
-        pdfFile.CreatePdf();
+        double dPageDpiX, dPageDpiY, dWidth, dHeight;
+        int i = 8;
+        //for (int i = 0; i < pdfFile.GetPagesCount(); i++)
+        {
+            pdfFile.GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+            pdfFile.ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/res" + std::to_wstring(i) + L".png", 4, dWidth * dPageDpiX / 25.4, dHeight * dPageDpiY / 25.4, true, pdfFile.GetFontManager());
+        }
+
+        RELEASEINTERFACE(pApplicationFonts);
+        RELEASEOBJECT(pCertificate);
+        return 0;
+    }
+
+    if (true)
+    {
+        pdfFile.CreatePdf(true);
         double dPageDpiX, dPageDpiY, dWidth, dHeight;
         pdfFile.GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
         dWidth  *= 25.4 / dPageDpiX;
         dHeight *= 25.4 / dPageDpiY;
 
-        for (int i = 0; i < pdfFile.GetPagesCount(); i++)
-        {
-            pdfFile.NewPage();
-            pdfFile.BeginCommand(c_nPageType);
-            pdfFile.put_Width(dWidth);
-            pdfFile.put_Height(dHeight);
-            pdfFile.DrawPageOnRenderer(&pdfFile, i, NULL);
-            pdfFile.EndCommand(c_nPageType);
-        }
+        pdfFile.NewPage();
+        pdfFile.BeginCommand(c_nPageType);
+        pdfFile.put_Width(dWidth);
+        pdfFile.put_Height(dHeight);
+        std::string sTitle = "1<2<3<4";
+        pdfFile.DocInfo(UTF8_TO_U(sTitle), L"5\"6\";7\'8\'", L"1>2>3>4", L"1&2&3&4&5");
+        //pdfFile.DrawImageFromFile(NSFile::GetProcessDirectory() + L"/test.jpg", 10, 10, 455, 200);
+        pdfFile.EndCommand(c_nPageType);
+
         if (pCertificate)
             pdfFile.Sign(10, 70, 50, 50, NSFile::GetProcessDirectory() + L"/test.png", pCertificate);
         pdfFile.SaveToFile(wsDstFile);

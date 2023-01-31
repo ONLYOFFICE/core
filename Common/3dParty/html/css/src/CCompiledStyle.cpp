@@ -27,9 +27,8 @@ namespace NSCSS
 
     CCompiledStyle::~CCompiledStyle()
     {
-        m_arParentsStyles.clear();
-    }
-
+		m_arParentsStyles.clear();
+	}
 
     CCompiledStyle& CCompiledStyle::operator+= (const CCompiledStyle &oElement)
     {
@@ -1000,24 +999,26 @@ namespace NSCSS
                 //OTHER
                 CASE(L"width"):
                 {
-                        const size_t unPositionImp = pPropertie.second.find(L"!i");
+					double dParentValue = m_pDisplay.GetWidth();
 
-                        int nParentValue = m_pDisplay.GetWidth();
+					if (0 >= dParentValue)
+						dParentValue =  m_oDeviceWindow.m_ushWidth;
 
-                        if (0 >= nParentValue)
-                                nParentValue =  m_oDeviceWindow.m_ushWidth;
+					m_oDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, dParentValue, ScalingDirectionX), unLevel, bHardMode);
 
-                        if (unPositionImp == std::wstring::npos)
-                        {
-                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, nParentValue, ScalingDirectionX), unLevel, bHardMode);
-                        }
-                        else if (unPositionImp != 0)
-                        {
-                            m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), nParentValue, ScalingDirectionX), unLevel, true);
-                            m_pDisplay.SetImportantWidth(true);
-                        }
+					const size_t unPositionImp = pPropertie.second.find(L"!i");
 
-                        break;
+					if (unPositionImp == std::wstring::npos)
+					{
+						m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second, dParentValue, ScalingDirectionX), unLevel, bHardMode);
+					}
+					else if (unPositionImp != 0)
+					{
+						m_pDisplay.SetWidth(ConvertUnitMeasure(pPropertie.second.substr(0, unPositionImp - 1), dParentValue, ScalingDirectionX), unLevel, true);
+						m_pDisplay.SetImportantWidth(true);
+					}
+
+					break;
                 }
                 CASE(L"height"):
                 {
@@ -1158,9 +1159,13 @@ namespace NSCSS
 
             for (std::wstring& sValueTemp : arValues)
             {
-                const size_t nPosImportant = sValueTemp.find(L'!');
-                if (nPosImportant != std::wstring::npos)
-                    sValueTemp = sValueTemp.substr(0, nPosImportant);
+				std::transform(sValueTemp.begin(), sValueTemp.end(), sValueTemp.begin(), tolower);
+
+				if (sValueTemp == L"important")
+				{
+					sValueString += L"!important";
+					continue;
+				}
 
                 size_t nPosGrid = sValueTemp.find(L'#');
 

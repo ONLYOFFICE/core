@@ -262,29 +262,36 @@ core_ios {
         CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
     } else {
 
-        QMAKE_IOS_DEPLOYMENT_TARGET = 10.0
-        CONFIG += core_ios_main_arch
+        QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
 
         QMAKE_CFLAGS += -fembed-bitcode
         QMAKE_CXXFLAGS += -fembed-bitcode
         QMAKE_LFLAGS += -fembed-bitcode
 
+        bundle_xcframeworks {
+            xcframework_platform_ios_simulator {
+                QMAKE_APPLE_DEVICE_ARCHS=
+                QMAKE_APPLE_SIMULATOR_ARCHS=x86_64 arm64
+            } else {
+                QMAKE_APPLE_DEVICE_ARCHS = arm64
+                QMAKE_APPLE_SIMULATOR_ARCHS=
+            }
+        } else {
+            CONFIG += core_ios_main_arch
+        }
+
         core_ios_main_arch {
             QMAKE_APPLE_DEVICE_ARCHS = arm64
             core_ios_no_simulator_arch : QMAKE_APPLE_SIMULATOR_ARCHS=
 
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7
             }
-        } else {
-            plugin : TARGET = $$join(TARGET, TARGET, "", "_addition")
-            QMAKE_APPLE_DEVICE_ARCHS=
-            QMAKE_APPLE_SIMULATOR_ARCHS=
         }
 
         core_ios_nomain_arch {
             QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS arm64e
-            !core_ios_no_32 {
+            core_ios_32 {
                 QMAKE_APPLE_DEVICE_ARCHS = $$QMAKE_APPLE_DEVICE_ARCHS armv7s
             }
         }
@@ -337,6 +344,7 @@ core_android {
 }
 
 core_debug {
+    DEFINES += _DEBUG
     CORE_BUILDS_CONFIGURATION_PREFIX    = debug
 }
 core_release {
@@ -397,6 +405,16 @@ OBJECTS_DIR = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUI
 MOC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/moc
 RCC_DIR     = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/rcc
 UI_DIR      = $$PWD_ROOT_DIR/core_build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/ui
+
+bundle_xcframeworks {
+    xcframework_platform_ios_simulator {
+        OBJECTS_DIR = $$OBJECTS_DIR/simulator
+        MOC_DIR     = $$MOC_DIR/simulator
+        RCC_DIR     = $$RCC_DIR/simulator
+        UI_DIR      = $$UI_DIR/simulator
+    }
+}
+
 build_xp {
     OBJECTS_DIR = $$OBJECTS_DIR/xp
     MOC_DIR     = $$MOC_DIR/xp
@@ -423,6 +441,13 @@ core_debug {
 !isEmpty(OO_DESTDIR_BUILD_OVERRIDE) {
     CORE_BUILDS_LIBRARIES_PATH = $$OO_DESTDIR_BUILD_OVERRIDE
     CORE_BUILDS_BINARY_PATH = $$OO_DESTDIR_BUILD_OVERRIDE
+}
+
+core_ios {
+    xcframework_platform_ios_simulator {
+        CORE_BUILDS_LIBRARIES_PATH = $$CORE_BUILDS_LIBRARIES_PATH/simulator
+        CORE_BUILDS_BINARY_PATH = $$CORE_BUILDS_BINARY_PATH/simulator
+    }
 }
 
 plugin {

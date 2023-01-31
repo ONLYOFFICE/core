@@ -42,6 +42,26 @@ namespace MetaFile
 		nRight  = 1024;
 		nBottom = 1024;
 	}
+
+	TRect::TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom)
+	    : nLeft(nNewLeft), nTop(nNewTop), nRight(nNewRight), nBottom(nNewBottom)
+	{}
+
+	TRect::TRect(const TWmfRect &oRect)
+	{
+		nLeft   = oRect.Left;
+		nTop    = oRect.Top;
+		nRight  = oRect.Right;
+		nBottom = oRect.Bottom;
+	}
+
+	TRect::TRect(const TEmfRectL &oRect)
+	{
+		nLeft   = oRect.lLeft;
+		nTop    = oRect.lTop;
+		nRight  = oRect.lRight;
+		nBottom = oRect.lBottom;
+	}
 	TRect& TRect::operator=(TWmfRect& oRect)
 	{
 		nLeft   = oRect.Left;
@@ -50,6 +70,21 @@ namespace MetaFile
 		nBottom = oRect.Bottom;
 		return *this;
 	}
+	bool operator!=(const TRect& oLeftRect, const TRect& oRightRect)
+	{
+		return (oLeftRect.nLeft   != oRightRect.nLeft  &&
+		        oLeftRect.nTop    != oRightRect.nTop   &&
+		        oLeftRect.nRight  != oRightRect.nRight &&
+		        oLeftRect.nBottom != oRightRect.nBottom);
+	}
+	bool operator==(const TRect& oLeftRect, const TRect& oRightRect)
+	{
+		return (oLeftRect.nLeft   == oRightRect.nLeft  &&
+		        oLeftRect.nTop    == oRightRect.nTop   &&
+		        oLeftRect.nRight  == oRightRect.nRight &&
+		        oLeftRect.nBottom == oRightRect.nBottom);
+	}
+
 
 	TPointL::TPointL()
 	{

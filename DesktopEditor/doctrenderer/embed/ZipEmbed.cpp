@@ -104,6 +104,24 @@ JSSmart<CJSValue> CZipEmbed::close()
 	return CJSContext::createUndefined();
 }
 
+JSSmart<CJSValue> CZipEmbed::getPaths()
+{
+	if (!m_pFolder)
+		return CJSContext::createArray(0);
+
+	std::vector<std::wstring> arFiles = m_pFolder->getFiles(L"", true);
+	JSSmart<CJSArray> retFiles = CJSContext::createArray((int)arFiles.size());
+
+	int nCurCount = 0;
+	for (std::vector<std::wstring>::const_iterator i = arFiles.begin(); i != arFiles.end(); i++)
+	{
+		const std::wstring& val = *i;
+		retFiles->set(nCurCount++, CJSContext::createString(val.empty() ? val : val.substr(1)));
+	}
+
+	return retFiles->toValue();
+}
+
 JSSmart<CJSValue> CZipEmbed::decodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> isRgba)
 {
 	JSSmart<CJSTypedArray> oArray = typedArray->toTypedArray();

@@ -511,7 +511,7 @@ namespace NExtractTools
                     {
                         nErrorIndexStart = sResult.find(_T("\""), nErrorIndexStart + 1);
                         int nErrorIndexEnd = sResult.find(_T("\""), nErrorIndexStart + 1);
-						nErrorIndex = _wtoi(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1).c_str());
+                        nErrorIndex = XmlUtils::GetInteger(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1));
                     }
                     if (nErrorIndex > 0 && nChangeIndex != nErrorIndex)
                     {

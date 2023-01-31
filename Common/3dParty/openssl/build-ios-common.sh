@@ -18,9 +18,9 @@ source ./build-common.sh
 
 export PLATFORM_TYPE="iOS"
 export IOS_MIN_TARGET="10.0"
-export ARCHS=("armv7" "arm64" "i386" "x86_64")
-export SDKS=("iphoneos" "iphoneos" "iphonesimulator" "iphonesimulator")
-export PLATFORMS=("iPhoneOS" "iPhoneOS" "iPhoneSimulator" "iPhoneSimulator")
+export ARCHS=("armv7" "arm64" "i386" "x86_64" "sim_arm64")
+export SDKS=("iphoneos" "iphoneos" "iphonesimulator" "iphonesimulator" "iphonesimulator")
+export PLATFORMS=("iPhoneOS" "iPhoneOS" "iPhoneSimulator" "iPhoneSimulator" "iphonesimulator")
 
 # for test !!!
 # export ARCHS=("armv7")
@@ -45,6 +45,9 @@ function get_ios_arch() {
     x86_64)
         echo "x86-64"
         ;;
+    sim_arm64)
+        echo "sim-arm64"
+        ;;
     esac
 }
 
@@ -65,6 +68,9 @@ function ios_get_build_host() {
         ;;
     x86-64)
         echo "x86_64-ios-darwin"
+        ;;
+    sim-arm64)
+        echo "aarch64-ios-darwin"
         ;;
     esac
 }
@@ -110,6 +116,13 @@ function set_ios_cpu_feature() {
         export CFLAGS="-arch x86_64 -target x86_64-ios-darwin -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel -Wno-unused-function -fstrict-aliasing -O2 -Wno-ignored-optimization-argument -DIOS -isysroot ${sysroot} -mios-simulator-version-min=${ios_min_target} -I${sysroot}/usr/include"
         export LDFLAGS="-arch x86_64 -target x86_64-ios-darwin -march=x86-64 -isysroot ${sysroot} -L${sysroot}/usr/lib "
         export CXXFLAGS="-std=c++11 -arch x86_64 -target x86_64-ios-darwin -march=x86-64 -msse4.2 -mpopcnt -m64 -mtune=intel -fstrict-aliasing -DIOS -mios-simulator-version-min=${ios_min_target} -I${sysroot}/usr/include"
+        ;;
+    sim-arm64)
+        export CC="xcrun -sdk iphonesimulator clang -arch arm64"
+        export CXX="xcrun -sdk iphonesimulator clang++ -arch arm64"
+        export CFLAGS="-arch arm64 -target aarch64-apple-darwin -march=armv8 -mcpu=generic -Wno-unused-function -fstrict-aliasing -Oz -Wno-ignored-optimization-argument -DIOS -isysroot ${sysroot} -fembed-bitcode -mios-simulator-version-min=${ios_min_target} -I${sysroot}/usr/include"
+        export LDFLAGS="-arch arm64 -target aaarch64-apple-darwin -march=armv8 -isysroot ${sysroot} -fembed-bitcode -L${sysroot}/usr/lib "
+        export CXXFLAGS="-std=c++11 -arch arm64 -target aarch64-apple-darwin -march=armv8 -mcpu=generic -fstrict-aliasing -fembed-bitcode -DIOS -mios-simulator-version-min=${ios_min_target} -I${sysroot}/usr/include"
         ;;
     *)
         log_error "not support" && exit 1

@@ -37,6 +37,7 @@ SOURCES += \
 	src/OOXMLVerifier.cpp
 
 core_windows {
+    DEFINES += SUPPORT_MS_CRYPTO
     HEADERS += src/Certificate_mscrypto.h
 
     LIBS += -lcrypt32
@@ -46,7 +47,13 @@ core_windows {
     LIBS += -lUser32
 }
 
+DEFINES += SUPPORT_OPENSSL
 HEADERS += src/Certificate_openssl.h
+
+support_oform {
+    DEFINES += SUPPORT_OFORM
+	HEADERS += src/Certificate_oform.h
+}
 
 CONFIG += open_ssl_common
 include(../../../Common/3dParty/openssl/openssl.pri)

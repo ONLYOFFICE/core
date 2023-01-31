@@ -571,6 +571,15 @@ namespace NSStringUtils
 	{
 		WriteString(oWriter.m_pData + offset, oWriter.m_lSizeCur - offset);
 	}
+	void CStringBuilder::WriteBefore(CStringBuilder& oWriter)
+	{
+		size_t nNewS = oWriter.GetCurSize();
+		AddSize(nNewS);
+		memmove(m_pData + nNewS, m_pData, m_lSizeCur * sizeof (wchar_t));
+		memcpy(m_pData, oWriter.m_pData, nNewS * sizeof (wchar_t));
+		m_pDataCur += nNewS;
+		m_lSizeCur += nNewS;
+	}
 
 	void CStringBuilder::Clear()
 	{

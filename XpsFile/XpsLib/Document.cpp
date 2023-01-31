@@ -192,7 +192,6 @@ namespace XPS
 
 		std::wstring wsFilePath = GetPath(wsSourceFile);
 
-	#ifdef BUILDING_WASM_MODULE
 		// Оглавление, содержание, structure
 		oReader.Clear();
 
@@ -271,7 +270,6 @@ namespace XPS
 				}
 			}
 		}
-	#endif
 
 		oReader.Clear();
 
@@ -305,7 +303,6 @@ namespace XPS
 						continue;
 				}
 
-			#ifdef BUILDING_WASM_MODULE
                 if (!oReader.IsEmptyElement())
                 {
                     int nDepth = oReader.GetDepth();
@@ -333,7 +330,6 @@ namespace XPS
                         }
                     }
                 }
-			#endif
 
 				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, m_wsPath, &m_oFontList, m_pFontManager, this)));
 			}
@@ -352,7 +348,6 @@ namespace XPS
 		if (oIter != m_mPages.end())
 			oIter->second->GetSize(nW, nH);
 	}
-#ifdef BUILDING_WASM_MODULE
 	BYTE* CDocument::GetStructure()
 	{
         NSWasm::CData oRes;
@@ -376,7 +371,6 @@ namespace XPS
             return oIter->second->m_oLinks.Serialize();
 		return NULL;
 	}
-#endif
 	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);

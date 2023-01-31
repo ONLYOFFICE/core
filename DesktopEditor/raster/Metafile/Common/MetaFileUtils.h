@@ -790,6 +790,31 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(CEmfPlusStringFormat& oStringFormat)
+		{
+			Skip(4); // Version
+			*this >> oStringFormat.unStringFormatFlags;
+			Skip(4); // Language
+			*this >> oStringFormat.unStringAlignment;
+			*this >> oStringFormat.unLineAlign;
+			Skip(8); // DigitSubstitution, DigitLanguage
+			*this >> oStringFormat.dFirstTabOffset;
+			Skip(4); // HotkeyPrefix
+			*this >> oStringFormat.dLeadingMargin;
+			*this >> oStringFormat.dTrailingMargin;
+			*this >> oStringFormat.dTracking;
+			*this >> oStringFormat.unTrimming;
+
+			int nTabStopCount, nRangeCount;
+
+			*this >> nTabStopCount;
+			*this >> nRangeCount;
+
+			Skip(nTabStopCount * 4); // TabStops
+			Skip(nRangeCount * 8);   // CharRange
+
+			return *this;
+		}
 		CDataStream& operator>>(CEmfPlusImageAttributes& oAttributes)
 		{
 			Skip(8); //Version, Reserved 1 (4 bytes)
@@ -1194,5 +1219,6 @@ namespace MetaFile
 	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
 
 	std::wstring StringNormalization(std::wstring wsString);
+	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

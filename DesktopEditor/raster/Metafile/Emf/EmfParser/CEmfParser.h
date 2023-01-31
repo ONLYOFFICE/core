@@ -18,7 +18,9 @@ namespace MetaFile
 		void            PlayFile()                                  override;
 		void            Scan()                                      override;
 
-		EmfParserType   GetType()				    override;
+		void            ClearFile()                                 override;
+
+		EmfParserType   GetType()				                    override;
 		void            SetStream(BYTE* pBuf, unsigned int unSize);
 
 	public:
@@ -63,8 +65,10 @@ namespace MetaFile
 		void Read_EMR_SETMAPMODE();
 		void Read_EMR_SETWINDOWORGEX();
 		void Read_EMR_SETWINDOWEXTEX();
+		void Read_EMR_SCALEWINDOWEXTEX();
 		void Read_EMR_SETVIEWPORTORGEX();
 		void Read_EMR_SETVIEWPORTEXTEX();
+		void Read_EMR_SCALEVIEWPORTEXTEX();
 		void Read_EMR_SETSTRETCHBLTMODE();
 		void Read_EMR_SETICMMODE();
 		void Read_EMR_CREATEDIBPATTERNBRUSHPT();
@@ -126,6 +130,8 @@ namespace MetaFile
 
 		void Read_EMR_COMMENT();
 		void Read_EMR_FILLRGN();
+		void Read_EMR_PAINTRGN();
+		void Read_EMR_FRAMERGN();
 	};
 }
 

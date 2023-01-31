@@ -1,0 +1,524 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\external_items.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\mediaitems_utils.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\namespaces.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_content_type.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_package.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_rels.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\XlsConverter.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_chart_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawings.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_external_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_output_xml.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_package.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_protection.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_textcontext.cpp" />
+    <ClCompile Include="..\..\..\Common\ODraw\BaseShape_1.cpp">
+      <Filter>DrawConverting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\ODraw\CustomShape.cpp">
+      <Filter>DrawConverting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\ODraw\FormulaShape.cpp">
+      <Filter>DrawConverting</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\external_items.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\mediaitems_utils.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\namespaces.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_content_type.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_package.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_rels.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\progressCallback.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\ShapeType.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\XlsConverter.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_chart_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawings.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_external_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_output_xml.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_package.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_protection.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_textcontext.h" />
+    <ClInclude Include="..\..\..\Common\ODraw\BaseShape.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\CustomGeomShape.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\CustomShape.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\CustomShapeConvert.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\FormulaShape.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\GraphicsPath.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\PathShape.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\PresetShapesHeader.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\XmlWriter.h">
+      <Filter>DrawConverting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout1type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentBorderCallout2Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout3type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\accentbordercallout90type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout1Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout2Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout3Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\AccentCallout90Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBack.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBeginning.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonBlank.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonDocument.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonEnd.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonHelp.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonHome.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonInfo.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonMovie.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonNext.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonReturn.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ActionButtonSound.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\arctype.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentConnector.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BentUpArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BevelType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BlockArcType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout1Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout2Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout3Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BorderCallout90Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BracePairType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\BracketPairType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout1Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout2Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout3Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Callout90Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CanType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ChevronType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CircularArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CloudCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CubeType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedConnector.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedDownArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedLeftArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedRightArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\CurvedUpArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DiamondType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DonutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DownArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\DownArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseRibbon2Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseRibbonType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\EllipseType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartAlternateProcessType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartCollateType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartConnectorType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDecisionType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDelayType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDisplayType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartDocumentType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartExtractType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartInputOutputType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartInternalStorageType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticDiskType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticDrumType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMagneticTapeType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartManualInputType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartManualOperationType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMergeType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartMultidocumentType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOffpageConnectorType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOnlineStorageType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartOrType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPredefinedProcessType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPreparationType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartProcessType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPunchedCardType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartPunchedTapeType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartSortType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartSummingJunctionType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FlowChartTerminatorType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\FoldedCornerType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HeartType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HexagonType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HomePlateType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\HorisontalScrollType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IrregularSealOneType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IrregularSealTwo.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\IsoscelesTriangleType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftBraceType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftBracketType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftRightUpArrow.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LeftUpArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LightningBoltType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\LineType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\MoonType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\NoSmokingType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\NotchedRightArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\OctagonType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\ParallelogramType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PentagonType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PlaqueType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\PlusType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\QuadArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\QuadArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RectangleType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RibbonDownType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RibbonUpType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightBracetype.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightBracketType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RightTriangleType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\RoundedRectangleType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal4Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal8Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal16Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal24Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Seal32Type.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\SmileyFaceType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\Startype.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\StraightConnectorType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\StripedRightArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\SunType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\TextboxType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\TrapezoidType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpDownArrowCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UpDownArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\UturnArrowType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\VerticalScrollType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WaveDoubleType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WaveType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeEllipseCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeRectCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\ODraw\oldAutoShapes\WedgeRoundedRectCalloutType.h">
+      <Filter>DrawConverting\oldShapes</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DrawConverting">
+      <UniqueIdentifier>{281869f4-b2aa-4a93-a4a4-74f543ce809b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawConverting\oldShapes">
+      <UniqueIdentifier>{34abdc1c-7f65-47a6-8cd6-786d5dd2cef7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

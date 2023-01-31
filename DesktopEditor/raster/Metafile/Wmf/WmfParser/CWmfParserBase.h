@@ -34,46 +34,49 @@ namespace MetaFile
 
 		virtual WmfParserType   GetType()                       = 0;
 
-		void		PlayMetaFile()				override;
-		void		ClearFile()				override;
-		TRect*		GetDCBounds()				override;
-		double		GetPixelHeight()			override;
-		double		GetPixelWidth()				override;
-		int		GetTextColor()				override;
-		IFont*		GetFont()				override;
-		IBrush*		GetBrush()				override;
-		IPen*		GetPen()				override;
-		unsigned int	GetTextAlign()				override;
-		unsigned int	GetTextBgMode()				override;
-		int		GetTextBgColor()			override;
-		unsigned int	GetFillMode()				override;
-		TPointD		GetCurPos()				override;
-		TXForm*		GetInverseTransform()			override;
-		TXForm*		GetTransform(int = GM_ADVANCED)         override;
-		unsigned int	GetMiterLimit()                         override;
-		unsigned int	GetRop2Mode()				override;
-		IClip*		GetClip()				override;
-		int		GetCharSpace()				override;
-		bool		IsWindowFlippedY()			override;
-		bool		IsWindowFlippedX()			override;
-		double      GetScale() override;
+		void            PlayMetaFile()                   override;
+		void            ClearFile()                      override;
+		TRect*          GetDCBounds()                    override;
+		double          GetPixelHeight()                 override;
+		double          GetPixelWidth()                  override;
+		int             GetTextColor()                   override;
+		IFont*          GetFont()                        override;
+		IBrush*         GetBrush()                       override;
+		IPen*           GetPen()                         override;
+		unsigned int    GetTextAlign()                   override;
+		unsigned int	GetTextBgMode()                  override;
+		int             GetTextBgColor()                 override;
+		unsigned int    GetFillMode()                    override;
+		TPointD         GetCurPos()                      override;
+		TXForm*         GetInverseTransform()            override;
+		TXForm*         GetTransform(int = GM_ADVANCED)  override;
+		unsigned int    GetMiterLimit()                  override;
+		unsigned int    GetRop2Mode()                    override;
+		IClip*          GetClip()                        override;
+		int             GetCharSpace()                   override;
+		bool            IsWindowFlippedY()               override;
+		bool            IsWindowFlippedX()               override;
+		unsigned int    GetMapMode()                     override;
+		double          GetDpi()                         override;
+		IRegion*        GetRegion()                      override;
+		unsigned int    GetArcDirection()                override;
 
 		void SetInterpretator(IOutputDevice* pOutput);
 		void SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 		void SetInterpretator(IOutputDevice* pOutput, const wchar_t *wsFilePath);
 		void SetInterpretator(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
 
-		CWmfDC*     GetDC();
+		CWmfDC* GetDC();
 		TRectD  GetBounds();
 
 		CWmfInterpretatorBase* GetInterpretator();
 
 	private:
-		void SkipVoid();
-		void TranslatePoint(short shX, short shY, double& dX, double &dY);
-		TRect GetBoundingBox();
-		bool IsPlaceable();
-		int GetRecordRemainingBytesCount();
+		void    SkipVoid();
+		void    TranslatePoint(short shX, short shY, double& dX, double &dY);
+		TRect   GetBoundingBox();
+		bool    IsPlaceable();
+		int     GetRecordRemainingBytesCount();
 		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle);
 
 		void MoveTo(short shX, short shY);
@@ -86,11 +89,11 @@ namespace MetaFile
 		void RegisterPoint(short shX, short shY);
 
 		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
-		void DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage, unsigned int unRasterOperation);
+		void DrawImage(const TRect& oDestRect, const TRect& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation);
+
+		static BYTE* ClipBuffer(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, TRect& oNewRect);
 
 		void UpdateOutputDC();
-
-
 	private:
 		friend class CWmfPlayer;
 
@@ -114,6 +117,9 @@ namespace MetaFile
 
 		CWmfInterpretatorBase   *m_pInterpretator;
 
+		CWmfEscapeBuffer	m_oEscapeBuffer;
+
+		bool           m_bEof;
 	private:
 		//                virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 

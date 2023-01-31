@@ -1,0 +1,349 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Writer\Format\abstract_xml.cpp" />
+    <ClCompile Include="..\..\Writer\Format\anim_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\calcext_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\draw_base.cpp" />
+    <ClCompile Include="..\..\Writer\Format\draw_frame.cpp" />
+    <ClCompile Include="..\..\Writer\Format\draw_page.cpp" />
+    <ClCompile Include="..\..\Writer\Format\draw_shapes.cpp" />
+    <ClCompile Include="..\..\Writer\Format\header_footer.cpp" />
+    <ClCompile Include="..\..\Writer\Format\list.cpp" />
+    <ClCompile Include="..\..\Writer\Format\logging.cpp" />
+    <ClCompile Include="..\..\Writer\Format\math_elementaries.cpp" />
+    <ClCompile Include="..\..\Writer\Format\math_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\math_layout_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\math_limit_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\math_table_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\math_token_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\mediaitems.cpp" />
+    <ClCompile Include="..\..\Writer\Format\mediaitems_utils.cpp" />
+    <ClCompile Include="..\..\Writer\Format\number_style.cpp" />
+    <ClCompile Include="..\..\Writer\Format\object_package.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_chart_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_comment_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_controls_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_conversion_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_drawing_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_lists_styles_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_math_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_notes_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_number_styles_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_page_layout_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_page_layout_state.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_rels.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_settings_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_style_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_style_state.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_table_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_table_styles_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odf_text_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odp_conversion_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odp_page_state.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odp_slide_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\ods_conversion_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\ods_table_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\ods_table_state.cpp" />
+    <ClCompile Include="..\..\Writer\Format\odt_conversion_context.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_annotation.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_body.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_chart.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_document.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_elements_create.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_event_listeners.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_forms.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_presentation.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_scripts.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_settings.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_spreadsheet.cpp" />
+    <ClCompile Include="..\..\Writer\Format\office_text.cpp" />
+    <ClCompile Include="..\..\Writer\Format\oox_shape_defines.cpp" />
+    <ClCompile Include="..\..\Writer\Format\paragraph_elements.cpp" />
+    <ClCompile Include="..\..\Writer\Format\styles.cpp" />
+    <ClCompile Include="..\..\Writer\Format\styles_list.cpp" />
+    <ClCompile Include="..\..\Writer\Format\styles_lite_container.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_chart_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_graphic_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_map.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_page_layout_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_paragraph_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_presentation.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_section_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_table_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\style_text_properties.cpp" />
+    <ClCompile Include="..\..\Writer\Format\svg_creator.cpp" />
+    <ClCompile Include="..\..\Writer\Format\table.cpp" />
+    <ClCompile Include="..\..\Writer\Format\table_database_ranges.cpp" />
+    <ClCompile Include="..\..\Writer\Format\table_data_pilot_tables.cpp" />
+    <ClCompile Include="..\..\Writer\Format\table_named_expressions.cpp" />
+    <ClCompile Include="..\..\Writer\Format\text_elements.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Writer\Format\abstract_xml.h" />
+    <ClInclude Include="..\..\Writer\Format\anim_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\calcext_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\draw_base.h" />
+    <ClInclude Include="..\..\Writer\Format\draw_frame.h" />
+    <ClInclude Include="..\..\Writer\Format\draw_page.h" />
+    <ClInclude Include="..\..\Writer\Format\draw_shapes.h" />
+    <ClInclude Include="..\..\Writer\Format\header_footer.h" />
+    <ClInclude Include="..\..\Writer\Format\list.h" />
+    <ClInclude Include="..\..\Writer\Format\math_elementaries.h" />
+    <ClInclude Include="..\..\Writer\Format\math_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\math_layout_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\math_limit_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\math_table_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\math_token_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\mediaitems.h" />
+    <ClInclude Include="..\..\Writer\Format\mediaitems_utils.h" />
+    <ClInclude Include="..\..\Writer\Format\number_style.h" />
+    <ClInclude Include="..\..\Writer\Format\object_package.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_chart_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_comment_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_controls_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_conversion_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_drawing_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_lists_styles_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_math_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_notes_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_number_styles_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_page_layout_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_page_layout_state.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_rels.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_settings_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_style_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_style_state.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_table_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_table_styles_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odf_text_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odp_conversion_context.h" />
+    <ClInclude Include="..\..\Writer\Format\odp_page_state.h" />
+    <ClInclude Include="..\..\Writer\Format\odp_slide_context.h" />
+    <ClInclude Include="..\..\Writer\Format\ods_conversion_context.h" />
+    <ClInclude Include="..\..\Writer\Format\ods_table_context.h" />
+    <ClInclude Include="..\..\Writer\Format\ods_table_state.h" />
+    <ClInclude Include="..\..\Writer\Format\odt_conversion_context.h" />
+    <ClInclude Include="..\..\Writer\Format\office_annotation.h" />
+    <ClInclude Include="..\..\Writer\Format\office_body.h" />
+    <ClInclude Include="..\..\Writer\Format\office_chart.h" />
+    <ClInclude Include="..\..\Writer\Format\office_document.h" />
+    <ClInclude Include="..\..\Writer\Format\office_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\office_elements_create.h" />
+    <ClInclude Include="..\..\Writer\Format\office_elements_type.h" />
+    <ClInclude Include="..\..\Writer\Format\office_event_listeners.h" />
+    <ClInclude Include="..\..\Writer\Format\office_forms.h" />
+    <ClInclude Include="..\..\Writer\Format\office_presentation.h" />
+    <ClInclude Include="..\..\Writer\Format\office_scripts.h" />
+    <ClInclude Include="..\..\Writer\Format\office_settings.h" />
+    <ClInclude Include="..\..\Writer\Format\office_spreadsheet.h" />
+    <ClInclude Include="..\..\Writer\Format\office_text.h" />
+    <ClInclude Include="..\..\Writer\Format\oox_shape_defines.h" />
+    <ClInclude Include="..\..\Writer\Format\paragraph_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\odf_shape_mapping.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeAccentCallouts.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeActionButtons.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeArrows.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeBents.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeCallouts.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeCharts.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeConnectors.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeCurvedArrows.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeCurvedConnectors.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeCustoms.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeMaths.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapePrimitives.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeRibbons.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeSnipRoundRects.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeStars.h" />
+    <ClInclude Include="..\..\Writer\Format\Shapes\oox_shapeWordArt.h" />
+    <ClInclude Include="..\..\Writer\Format\styles.h" />
+    <ClInclude Include="..\..\Writer\Format\styles_list.h" />
+    <ClInclude Include="..\..\Writer\Format\styles_lite_container.h" />
+    <ClInclude Include="..\..\Writer\Format\style_chart_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\style_graphic_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\style_map.h" />
+    <ClInclude Include="..\..\Writer\Format\style_page_layout_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\style_paragraph_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\style_presentation.h" />
+    <ClInclude Include="..\..\Writer\Format\style_section_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\style_table_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\style_text_properties.h" />
+    <ClInclude Include="..\..\Writer\Format\svg_creator.h" />
+    <ClInclude Include="..\..\Writer\Format\table.h" />
+    <ClInclude Include="..\..\Writer\Format\table_database_ranges.h" />
+    <ClInclude Include="..\..\Writer\Format\table_data_pilot_tables.h" />
+    <ClInclude Include="..\..\Writer\Format\table_named_expressions.h" />
+    <ClInclude Include="..\..\Writer\Format\text_elements.h" />
+    <ClInclude Include="..\..\Writer\Format\visitor.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
+      <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="cpcommon.vcxproj">
+      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
+    </ProjectReference>
+    <ProjectReference Include="cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="formulasconvert.vcxproj">
+      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>OdfFormatWriterLib</ProjectName>
+    <ProjectGuid>{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}</ProjectGuid>
+    <RootNamespace>OdfFormat</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\Writer\</OutDir>
+    <IntDir>$(Configuration)\Writer\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;..\..\Common;$(IncludePath)</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <IncludePath>D:\_Work\core\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\_Work\core\Common\3dParty\boost\build\win_64\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\ASCOfficeOdfFile\include;..\..\..\ASCOfficeOdfFile\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DisableSpecificWarnings>4005;4311;4312;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\ASCOfficeOdfFile\include;..\..\..\ASCOfficeOdfFile\src\odf\datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <AdditionalIncludeDirectories>../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

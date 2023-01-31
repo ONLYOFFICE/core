@@ -127,7 +127,12 @@ const long c_nQRenderer         = 0x0013;
 // типы команд
 const long c_nCommandLongTypeOnlyText = 0x1000;
 
-class CFormFieldInfo;
+class IFormField
+{
+public:
+	IFormField() {}
+	virtual ~IFormField() {}
+};
 
 // IRenderer
 class IRenderer : public IGrObject
@@ -142,9 +147,9 @@ public:
 	}
 
 public:
-// тип рендерера-----------------------------------------------------------------------------
+	// тип рендерера-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType)				= 0;
-//-------- Функции для работы со страницей --------------------------------------------------
+	//-------- Функции для работы со страницей --------------------------------------------------
 	virtual HRESULT NewPage()							= 0;
 	virtual HRESULT get_Height(double* dHeight)			= 0;
 	virtual HRESULT put_Height(const double& dHeight)	= 0;
@@ -153,7 +158,7 @@ public:
 	virtual HRESULT get_DpiX(double* dDpiX)				= 0;
 	virtual HRESULT get_DpiY(double* dDpiY)				= 0;
 
-// pen --------------------------------------------------------------------------------------
+	// pen --------------------------------------------------------------------------------------
 	virtual HRESULT get_PenColor(LONG* lColor)					= 0;
 	virtual HRESULT put_PenColor(const LONG& lColor)			= 0;
 	virtual HRESULT get_PenAlpha(LONG* lAlpha)					= 0;
@@ -176,7 +181,7 @@ public:
 	virtual HRESULT put_PenMiterLimit(const double& dOffset)	= 0;
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount)= 0;
 
-// brush ------------------------------------------------------------------------------------
+	// brush ------------------------------------------------------------------------------------
 	virtual HRESULT get_BrushType(LONG* lType)							= 0;
 	virtual HRESULT put_BrushType(const LONG& lType)					= 0;
 	virtual HRESULT get_BrushColor1(LONG* lColor)						= 0;
@@ -187,8 +192,8 @@ public:
 	virtual HRESULT put_BrushColor2(const LONG& lColor)					= 0;
 	virtual HRESULT get_BrushAlpha2(LONG* lAlpha)						= 0;
 	virtual HRESULT put_BrushAlpha2(const LONG& lAlpha)					= 0;
-	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath)			= 0; 
-	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath)	= 0; 
+	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath)			= 0;
+	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath)	= 0;
 	virtual HRESULT get_BrushTextureMode(LONG* lMode)					= 0;
 	virtual HRESULT put_BrushTextureMode(const LONG& lMode)				= 0;
 	virtual HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)				= 0;
@@ -201,7 +206,7 @@ public:
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
 	//virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) {};
 
-// font -------------------------------------------------------------------------------------
+	// font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName)			= 0;
 	virtual HRESULT put_FontName(const std::wstring& bsName)	= 0;
 	virtual HRESULT get_FontPath(std::wstring* bsName)			= 0;
@@ -217,24 +222,24 @@ public:
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex)			= 0;
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex)	= 0;
 
-//-------- Функции для вывода текста --------------------------------------------------------
-    virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) = 0;
-    virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) = 0;
+	//-------- Функции для вывода текста --------------------------------------------------------
+	virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) = 0;
 
-    virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
-    virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
 
-    virtual HRESULT CommandDrawTextCHAR2(unsigned int* codepoints, const unsigned int& codepointscount, const unsigned int& gid, const double& x, const double& y, const double& w, const double& h)
-    {
-        LONG c = (NULL == codepoints) ? 32 : codepoints[0];
-        return CommandDrawTextExCHAR(c, (LONG)gid, x, y, w, h);
-    }
+	virtual HRESULT CommandDrawTextCHAR2(unsigned int* codepoints, const unsigned int& codepointscount, const unsigned int& gid, const double& x, const double& y, const double& w, const double& h)
+	{
+		LONG c = (NULL == codepoints) ? 32 : codepoints[0];
+		return CommandDrawTextExCHAR(c, (LONG)gid, x, y, w, h);
+	}
 
-//-------- Маркеры для команд ---------------------------------------------------------------
+	//-------- Маркеры для команд ---------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType)	= 0;
 	virtual HRESULT EndCommand(const DWORD& lType)		= 0;
 
-//-------- Функции для работы с Graphics Path -----------------------------------------------
+	//-------- Функции для работы с Graphics Path -----------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& x, const double& y)			= 0;
 	virtual HRESULT PathCommandLineTo(const double& x, const double& y)			= 0;
 	virtual HRESULT PathCommandLinesTo(double* points, const int& count)		= 0;
@@ -247,17 +252,17 @@ public:
 	virtual HRESULT PathCommandStart()											= 0;
 	virtual HRESULT PathCommandGetCurrentPoint(double* x, double* y)			= 0;
 
-    virtual HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) = 0;
-    virtual HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) = 0;
 
-    virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
-    virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
+	virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
 
-//-------- Функции для вывода изображений ---------------------------------------------------
+	//-------- Функции для вывода изображений ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)		= 0;
-	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255)	= 0;	
+	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255)	= 0;
 
-// transform --------------------------------------------------------------------------------
+	// transform --------------------------------------------------------------------------------
 	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
 	{
 		return S_OK;
@@ -292,16 +297,16 @@ public:
 		SetTransform(mass[0], mass[1], mass[2], mass[3], mass[4], mass[5]);
 		return S_OK;
 	}
-    virtual HRESULT SetBaseTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) { return S_OK; };
+	virtual HRESULT SetBaseTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) { return S_OK; }
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) = 0;
 	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)	= 0;
 	virtual HRESULT ResetTransform() = 0;
 
-// -----------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------
 	virtual HRESULT get_ClipMode(LONG* plMode)			= 0;
 	virtual HRESULT put_ClipMode(const LONG& lMode)		= 0;
 
-// additiaonal params ----------------------------------------------------------------------
+	// additiaonal params ----------------------------------------------------------------------
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand)			= 0;
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand)		= 0;
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand)	= 0;
@@ -316,685 +321,25 @@ public:
 		m_bUseTransformCoordsToIdentity = false;
 		return S_OK;
 	}
-	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;};
-	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;};
-	virtual HRESULT AddFormField(const CFormFieldInfo& oInfo) {return S_OK;};
-};
-
-class CFormFieldInfo
-{
-public:
-
-	enum EScaleType
-	{
-		Always  = 0x00,
-		Bigger  = 0x01,
-		Smaller = 0x02,
-		Never   = 0x03
-	};
-
-	enum EFormatType
-	{
-		None   = 0,
-		Digit  = 1,
-		Letter = 2,
-		Mask   = 3,
-		RegExp = 4
-	};
-
-	class CTextFormFormat
-	{
-	public:
-
-		CTextFormFormat()
-		{
-			m_eFormatType = EFormatType::None;
-		}
-		void SetType(const EFormatType& eType)
-		{
-			m_eFormatType = eType;
-		}
-		const EFormatType& GetType() const
-		{
-			return m_eFormatType;
-		}
-		void AddSymbol(const unsigned int& unCodePoint)
-		{
-			m_vSymbols.push_back(unCodePoint);
-		}
-		unsigned int GetSymbolsCount() const
-		{
-			return m_vSymbols.size();
-		}
-		unsigned int GetSymbol(const unsigned int& unIndex) const
-		{
-			if (unIndex >= m_vSymbols.size())
-				return 0;
-
-			return m_vSymbols.at(unIndex);
-		}
-		void SetValue(const std::wstring& wsValue)
-		{
-			m_wsValue = wsValue;
-		}
-		const std::wstring& GetValue() const
-		{
-			return m_wsValue;
-		}
-		bool IsEmpty() const
-		{
-			return (m_eFormatType == EFormatType::None && !m_vSymbols.size());
-		}
-		bool IsMask() const
-		{
-			return (m_eFormatType == EFormatType::Mask);
-		}
-		bool IsDigit() const
-		{
-			return (m_eFormatType == EFormatType::Digit);
-		}
-		bool IsLetter() const
-		{
-			return (m_eFormatType == EFormatType::Letter);
-		}
-		bool IsRegExp() const
-		{
-			return (m_eFormatType == EFormatType::RegExp);
-		}
-		const std::wstring& GetMask() const
-		{
-			return m_wsValue;
-		}
-		const std::wstring& GetRegExp() const
-		{
-			return m_wsValue;
-		}
-
-	private:
-
-		EFormatType               m_eFormatType;
-		std::vector<unsigned int> m_vSymbols;
-		std::wstring              m_wsValue; // mask or regexp
-	};
-
-	class CTextFormPr
-	{
-	public:
-		CTextFormPr()
-		{
-			m_unMaxCharacters = 0;
-			m_bComb           = false;
-			m_bAutoFit        = false;
-			m_bMultiLine      = false;
-		}
-		void SetTextValue(const std::wstring& wsValue)
-		{
-			m_wsTextValue = wsValue;
-		}
-		const std::wstring& GetTextValue() const
-		{
-			return m_wsTextValue;
-		}
-		void SetMaxCharacters(const unsigned int unMax)
-		{
-			m_unMaxCharacters = unMax;
-		}
-		unsigned int GetMaxCharacters() const
-		{
-			return m_unMaxCharacters;
-		}
-		void SetComb(const bool& bComb)
-		{
-			m_bComb = bComb;
-		}
-		bool IsComb() const
-		{
-			return m_bComb;
-		}
-		void SetAutoFit(const bool& bAutoFit)
-		{
-			m_bAutoFit = bAutoFit;
-		}
-		bool IsAutoFit() const
-		{
-			return m_bAutoFit;
-		}
-		void SetMultiLine(const bool& bMultiLine)
-		{
-			m_bMultiLine = bMultiLine;
-		}
-		bool IsMultiLine() const
-		{
-			return m_bMultiLine;
-		}
-		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
-		{
-			m_wsPlaceHolder = wsPlaceHolder;
-		}
-		const std::wstring& GetPlaceHolder() const
-		{
-			return m_wsPlaceHolder;
-		}
-		CTextFormFormat* GetFormat()
-		{
-			return &m_oFormat;
-		}
-		const CTextFormFormat* GetFormatPr() const
-		{
-			return &m_oFormat;
-		}
-		
-
-	private:
-
-		std::wstring    m_wsTextValue;
-		unsigned int    m_unMaxCharacters;
-		bool            m_bComb;
-		bool            m_bAutoFit;
-		bool            m_bMultiLine;
-		std::wstring    m_wsPlaceHolder;
-		CTextFormFormat m_oFormat;
-
-	};
-	class CDropDownFormPr
-	{
-	public:
-		CDropDownFormPr()
-		{
-			m_bEditComboBox = false;
-		}
-
-		void SetTextValue(const std::wstring& wsValue)
-		{
-			m_wsTextValue = wsValue;
-		}
-		const std::wstring& GetTextValue() const
-		{
-			return m_wsTextValue;
-		}
-		bool IsEditComboBox() const
-		{
-			return m_bEditComboBox;
-		}
-		void SetEditComboBox(const bool& bEdit)
-		{
-			m_bEditComboBox = bEdit;
-		}
-		unsigned int GetComboBoxItemsCount() const
-		{
-			return m_vComboBoxItems.size();
-		}
-		const std::wstring& GetComboBoxItem(const unsigned int& unIndex) const
-		{
-			return m_vComboBoxItems.at(unIndex);
-		}
-		void AddComboBoxItem(const std::wstring& wsItem)
-		{
-			m_vComboBoxItems.push_back(wsItem);
-		}
-		void SetPlaceHolder(const std::wstring& wsPlaceHolder)
-		{
-			m_wsPlaceHolder = wsPlaceHolder;
-		}
-		const std::wstring& GetPlaceHolder() const
-		{
-			return m_wsPlaceHolder;
-		}
-
-	private:
-
-		std::wstring              m_wsTextValue;
-		bool                      m_bEditComboBox;
-		std::vector<std::wstring> m_vComboBoxItems;
-		std::wstring              m_wsPlaceHolder;
-	};
-	class CCheckBoxFormPr
-	{
-	public:
-		CCheckBoxFormPr()
-		{
-			m_bChecked          = false;
-			m_unType            = 0;
-			m_unCheckedSymbol   = 0x2612;
-			m_unUncheckedSymbol = 0x2610;
-		}
-		bool IsChecked() const
-		{
-			return m_bChecked;
-		}
-		void SetChecked(const bool& bChecked)
-		{
-			m_bChecked = bChecked;
-		}		
-		unsigned int GetType() const
-		{
-			return m_unType;
-		}
-		void SetType(const unsigned int& unType)
-		{
-			m_unType = unType;
-		}
-		unsigned int GetCheckedSymbol() const
-		{
-			return m_unCheckedSymbol;
-		}
-		void SetCheckedSymbol(const unsigned int& unCheckedSymbol)
-		{
-			m_unCheckedSymbol = unCheckedSymbol;
-		}
-		unsigned int GetUncheckedSymbol() const
-		{
-			return m_unUncheckedSymbol;
-		}
-		void SetUncheckedSymbol(const unsigned int& unUncheckedSymbol)
-		{
-			m_unUncheckedSymbol = unUncheckedSymbol;
-		}
-		void SetCheckedFont(const std::wstring& wsFontName)
-		{
-			m_wsCheckedFont = wsFontName;
-		}
-		const std::wstring& GetCheckedFontName() const
-		{
-			return m_wsCheckedFont;
-		}
-		void SetUncheckedFont(const std::wstring& wsFontName)
-		{
-			m_wsUncheckedFont = wsFontName;
-		}
-		const std::wstring& GetUncheckedFontName() const
-		{
-			return m_wsUncheckedFont;
-		}
-		bool IsRadioButton() const
-		{
-			return (0 == m_wsGroupKey.length());
-		}
-		void SetGroupKey(const std::wstring& wsGroupKey)
-		{
-			m_wsGroupKey = wsGroupKey;
-		}
-		const std::wstring& GetGroupKey() const
-		{
-			return m_wsGroupKey;
-		}
-
-	private:
-
-		bool         m_bChecked;
-		unsigned int m_unType;
-		unsigned int m_unCheckedSymbol;
-		unsigned int m_unUncheckedSymbol;
-		std::wstring m_wsCheckedFont;
-		std::wstring m_wsUncheckedFont;
-		std::wstring m_wsGroupKey;
-	};
-	class CPictureFormPr
-	{
-	public:
-		CPictureFormPr()
-		{
-			m_eScaleType           = EScaleType::Always;
-			m_bRespectBorders      = false;
-			m_bConstantProportions = true;
-			m_lShiftX              = 500;
-			m_lShiftY              = 500;
-		}
-		bool IsConstantProportions() const
-		{
-			return m_bConstantProportions;
-		}
-		void SetConstantProportions(const bool& bConstant)
-		{
-			m_bConstantProportions = bConstant;
-		}
-		bool IsRespectBorders() const
-		{
-			return m_bRespectBorders;
-		}
-		void SetRespectBorders(const bool& bRespect)
-		{
-			m_bRespectBorders = bRespect;
-		}
-		EScaleType GetScaleType() const
-		{
-			return m_eScaleType;
-		}
-		void SetScaleType(const EScaleType& eType)
-		{
-			m_eScaleType = eType;
-		}
-		void SetShift(const LONG& lShiftX, const LONG& lShiftY)
-		{
-			m_lShiftX = lShiftX;
-			m_lShiftY = lShiftY;
-		}
-		const LONG& GetShiftX() const
-		{
-			return m_lShiftX;
-		}
-		const LONG& GetShiftY() const
-		{
-			return m_lShiftY;
-		}
-		void SetPicturePath(const std::wstring& wsPath)
-		{
-			m_wsPicturePath = wsPath;
-		}
-		const std::wstring& GetPicturePath() const
-		{
-			return m_wsPicturePath;
-		}
-
-	private:
-		EScaleType   m_eScaleType;
-		bool         m_bRespectBorders;
-		bool         m_bConstantProportions;
-		LONG         m_lShiftX;
-		LONG         m_lShiftY;
-		std::wstring m_wsPicturePath;
-	};
-	class CSignatureFormPr
-	{
-	public:
-		void SetName(const std::wstring& wsValue)
-		{
-			m_wsName = wsValue;
-		}
-		void SetContact(const std::wstring& wsValue)
-		{
-			m_wsContact = wsValue;
-		}
-		void SetReason(const std::wstring& wsValue)
-		{
-			m_wsReason = wsValue;
-		}
-		void SetPicturePath(const std::wstring& wsPath)
-		{
-			m_wsPicturePath = wsPath;
-		}
-		void SetCert(const std::wstring& wsValue)
-		{
-			m_wsCert = wsValue;
-		}
-		void SetDate(const bool& bDate)
-		{
-			m_bDate = bDate;
-		}
-
-		const std::wstring& GetName() const
-		{
-			return m_wsName;
-		}
-		const std::wstring& GetContact() const
-		{
-			return m_wsContact;
-		}
-		const std::wstring& GetReason() const
-		{
-			return m_wsReason;
-		}
-		const std::wstring& GetPicturePath() const
-		{
-			return m_wsPicturePath;
-		}
-		const std::wstring& GetCert() const
-		{
-			return m_wsCert;
-		}
-		bool GetDate() const
-		{
-			return m_bDate;
-		}
-
-	private:
-		std::wstring m_wsName;
-		std::wstring m_wsContact;
-		std::wstring m_wsReason;
-		std::wstring m_wsPicturePath;
-		std::wstring m_wsCert;
-		bool         m_bDate;
-	};
-
-public:
-	CFormFieldInfo()
-	{
-		m_nType = 0;
-
-		m_dX = 0;
-		m_dY = 0;
-		m_dW = 0;
-		m_dH = 0;
-
-		m_dBaseLineOffset = 0;
-
-		m_bRequired    = false;
-		m_bPlaceHolder = false;
-
-		m_nBorderType = 0;
-
-		// 0 - Right
-		// 1 - Left
-		// 2 - Center
-		// 3 - Justify
-		// 4 - Distributed
-		m_nJc = 1;
-
-		m_bHaveShd = false;
-	}
-
-	void SetType(int nType)
-	{
-		m_nType = nType;
-	}
-	bool IsValid() const
-	{
-		return 0 != m_nType;
-	}
-
-	// Common
-	void SetBounds(const double& dX, const double& dY, const double& dW, const double& dH)
-	{
-		m_dX = dX;
-		m_dY = dY;
-		m_dW = dW;
-		m_dH = dH;
-	}
-	void GetBounds(double& dX, double& dY, double& dW, double& dH) const
-	{
-		dX = m_dX;
-		dY = m_dY;
-		dW = m_dW;
-		dH = m_dH;
-	}
-	void SetBaseLineOffset(const double& dOffset)
-	{
-		m_dBaseLineOffset = dOffset;
-	}
-	double GetBaseLineOffset() const
-	{
-		return m_dBaseLineOffset;
-	}
-	void SetKey(const std::wstring& wsKey)
-	{
-		m_wsKey = wsKey;
-	}
-	const std::wstring& GetKey() const
-	{
-		return m_wsKey;
-	}
-	void SetHelpText(const std::wstring& wsHelpText)
-	{
-		m_wsHelpText = wsHelpText;
-	}
-	const std::wstring& GetHelpText() const
-	{
-		return m_wsHelpText;
-	}
-	void SetRequired(const bool& bRequired)
-	{
-		m_bRequired = bRequired;
-	}
-	bool IsRequired() const
-	{
-		return m_bRequired;
-	}
-	void SetPlaceHolder(const bool& bPlaceHolder)
-	{
-		m_bPlaceHolder = bPlaceHolder;
-	}
-	bool IsPlaceHolder() const
-	{
-		return m_bPlaceHolder;
-	}
-	void SetBorder(const int& nType, const double& dSize, const unsigned char& unR, const unsigned char& unG, const unsigned char& unB, const unsigned char& unA)
-	{
-		m_nBorderType = nType;
-		m_dBorderSize = dSize;
-		m_lBorderColor =  (((LONG)(unA << 24)) & 0xFFFFFF) | (((LONG)(unR << 16)) & 0xFFFFFF) | (((LONG)(unG << 8)) & 0xFFFFFF) | (LONG)(unB);
-	}
-	bool HaveBorder() const
-	{
-		return (0 != m_nBorderType);
-	}
-	double GetBorderSize() const
-	{
-		return m_dBorderSize;
-	}
-	void GetBorderColor(unsigned char& unR, unsigned char& unG, unsigned char& unB, unsigned char& unA) const
-	{
-		unA = ((m_lBorderColor >> 24) & 0xFF);
-		unR = ((m_lBorderColor >> 16) & 0xFF);
-		unG = ((m_lBorderColor >>  8) & 0xFF);
-		unB = ((m_lBorderColor)       & 0xFF);
-	}
-	bool HaveShd() const
-	{
-		return m_bHaveShd;
-	}
-	void SetShd(const unsigned char& unR, const unsigned char& unG, const unsigned char& unB, const unsigned char& unA)
-	{
-		m_bHaveShd  = true;
-		m_lShdColor =  (((LONG)(unA << 24)) & 0xFFFFFF) | (((LONG)(unR << 16)) & 0xFFFFFF) | (((LONG)(unG << 8)) & 0xFFFFFF) | (LONG)(unB);
-	}
-	void GetShdColor(unsigned char& unR, unsigned char& unG, unsigned char& unB, unsigned char& unA) const
-	{
-		unA = ((m_lShdColor >> 24) & 0xFF);
-		unR = ((m_lShdColor >> 16) & 0xFF);
-		unG = ((m_lShdColor >>  8) & 0xFF);
-		unB = ((m_lShdColor)       & 0xFF);
-	}
-	void SetJc(const unsigned char& unJc)
-	{
-		m_nJc = unJc;
-	}
-	BYTE GetJc() const
-	{
-		return m_nJc;
-	}
-
-	bool IsTextField() const
-	{
-		return (m_nType == 1);
-	}
-	bool IsDropDownList() const
-	{
-		return (m_nType == 2);
-	}
-	bool IsCheckBox() const
-	{
-		return (m_nType == 3);
-	}
-	bool IsPicture() const
-	{
-		return (m_nType == 4);
-	}
-	bool IsSignature() const
-	{
-		return (m_nType == 5);
-	}
-	CTextFormPr* GetTextFormPr()
-	{
-		return &m_oTextPr;
-	}
-	const CTextFormPr* GetTextPr() const
-	{
-		return &m_oTextPr;
-	}
-	CDropDownFormPr* GetDropDownFormPr()
-	{
-		return &m_oDropDownPr;
-	}
-	const CDropDownFormPr* GetDropDownPr() const
-	{
-		return &m_oDropDownPr;
-	}
-	CCheckBoxFormPr* GetCheckBoxFormPr()
-	{
-		return &m_oCheckBoxPr;
-	}
-	const CCheckBoxFormPr* GetCheckBoxPr() const
-	{
-		return &m_oCheckBoxPr;
-	}
-	CPictureFormPr* GetPictureFormPr()
-	{
-		return &m_oPicturePr;
-	}
-	const CPictureFormPr* GetPicturePr() const
-	{
-		return &m_oPicturePr;
-	}
-	CSignatureFormPr* GetSignatureFormPr()
-	{
-		return &m_oSignaturePr;
-	}
-	const CSignatureFormPr* GetSignaturePr() const
-	{
-		return &m_oSignaturePr;
-	}
-
-
-private:
-
-	int          m_nType;
-	double       m_dX;
-	double       m_dY;
-	double       m_dW;
-	double       m_dH;
-	double       m_dBaseLineOffset;
-	std::wstring m_wsKey;
-	std::wstring m_wsHelpText;
-	bool         m_bRequired;
-	bool         m_bPlaceHolder;
-	int          m_nBorderType;
-	double       m_dBorderSize;
-	LONG         m_lBorderColor;
-	bool         m_bHaveShd;
-	LONG         m_lShdColor;
-	BYTE         m_nJc;
-
-	CTextFormPr      m_oTextPr;
-	CDropDownFormPr  m_oDropDownPr;
-	CCheckBoxFormPr  m_oCheckBoxPr;
-	CPictureFormPr   m_oPicturePr;
-	CSignatureFormPr m_oSignaturePr;
-
+	virtual HRESULT AddHyperlink(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsUrl, const std::wstring& wsTooltip) {return S_OK;}
+	virtual HRESULT AddLink(const double& dX, const double& dY, const double& dW, const double& dH, const double& dDestX, const double& dDestY, const int& nPage) {return S_OK;}
+	virtual HRESULT AddFormField(IFormField* pField) {return S_OK;}
+	virtual HRESULT DocInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords) {return S_OK;}
 };
 
 #define PROPERTY_RENDERER(NameBase, Name, Type)			\
 	STDMETHOD(get_##NameBase##Name)(Type* pVal)			\
-	{													\
-		if (NULL == pVal)								\
-			return S_FALSE;								\
-		*pVal =	m_o##NameBase.##Name;					\
-		return S_OK;									\
+{													\
+	if (NULL == pVal)								\
+	return S_FALSE;								\
+	*pVal =	m_o##NameBase.##Name;					\
+	return S_OK;									\
 	}													\
 	STDMETHOD(put_##NameBase##Name)(Type Val)			\
-	{													\
-		m_o##NameBase.##Name = Val;						\
-		return S_OK;									\
-	}			
+{													\
+	m_o##NameBase.##Name = Val;						\
+	return S_OK;									\
+	}
 
 // exapmle:
 // PROPERTY_RENDERER(Pen, Color, LONG)

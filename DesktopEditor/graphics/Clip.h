@@ -151,6 +151,9 @@ public:
 	bool m_bIsClip;
 	bool m_bIsClip2;
 
+	LONG m_lWidth;
+	LONG m_lHeight;
+
 public:
 	CClipMulti();
 	~CClipMulti();

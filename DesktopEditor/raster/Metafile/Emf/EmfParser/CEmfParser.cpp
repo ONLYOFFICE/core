@@ -9,17 +9,18 @@
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #endif
 
+#include "../EmfInterpretator/CEmfInterpretatorSvg.h"
+#include "../../Wmf/WmfInterpretator/CWmfInterpretatorSvg.h"
+
+#include "../../Wmf/WmfParser/CWmfParser.h"
+
 namespace MetaFile
 {
-	CEmfParser::CEmfParser() :
-		m_pEmfPlusParser(NULL)
-	{}
+	CEmfParser::CEmfParser() : m_pEmfPlusParser(NULL){}
 
 	CEmfParser::~CEmfParser()
 	{
 		ClearFile();
-
-		RELEASEOBJECT(m_pEmfPlusParser);
 		RELEASEOBJECT(m_pInterpretator);
 	}
 
@@ -38,8 +39,6 @@ namespace MetaFile
 			SetError();
 
 		unsigned int ulSize, ulType;
-
-		bool bEof = false;
 
 		unsigned int ulRecordIndex	= 0;
 		unsigned int m_ulRecordPos	= 0;
@@ -94,7 +93,7 @@ namespace MetaFile
 				// 2.3.4 Control
 				//-----------------------------------------------------------
 			case EMR_HEADER:    Read_EMR_HEADER(); break;
-			case EMR_EOF:       Read_EMR_EOF(); bEof = true; break;
+			case EMR_EOF:       Read_EMR_EOF(); break;
 				//-----------------------------------------------------------
 				// 2.3.5 Drawing
 				//-----------------------------------------------------------
@@ -132,6 +131,9 @@ namespace MetaFile
 			case EMR_SMALLTEXTOUT:      Read_EMR_SMALLTEXTOUT(); break;
 			case EMR_STROKEANDFILLPATH: Read_EMR_STROKEANDFILLPATH(); break;
 			case EMR_STROKEPATH:        Read_EMR_STROKEPATH(); break;
+			case EMR_PAINTRGN:			Read_EMR_PAINTRGN(); break;
+			case EMR_FILLRGN:           Read_EMR_FILLRGN(); break;
+			case EMR_FRAMERGN:          Read_EMR_FRAMERGN(); break;
 				//-----------------------------------------------------------
 				// 2.3.7 Object Creation
 				//-----------------------------------------------------------
@@ -172,8 +174,10 @@ namespace MetaFile
 			case EMR_SETMAPMODE:        Read_EMR_SETMAPMODE(); break;
 			case EMR_SETWINDOWORGEX:    Read_EMR_SETWINDOWORGEX(); break;
 			case EMR_SETWINDOWEXTEX:    Read_EMR_SETWINDOWEXTEX(); break;
+			case EMR_SCALEWINDOWEXTEX:  Read_EMR_SCALEWINDOWEXTEX(); break;
 			case EMR_SETVIEWPORTORGEX:  Read_EMR_SETVIEWPORTORGEX(); break;
 			case EMR_SETVIEWPORTEXTEX:  Read_EMR_SETVIEWPORTEXTEX(); break;
+			case EMR_SCALEVIEWPORTEXTEX:Read_EMR_SCALEVIEWPORTEXTEX(); break;
 			case EMR_SETBKCOLOR:        Read_EMR_SETBKCOLOR(); break;
 			case EMR_SETSTRETCHBLTMODE: Read_EMR_SETSTRETCHBLTMODE(); break;
 			case EMR_SETICMMODE:        Read_EMR_SETICMMODE(); break;
@@ -188,7 +192,6 @@ namespace MetaFile
 			case EMR_MODIFYWORLDTRANSFORM:	Read_EMR_MODIFYWORLDTRANSFORM(); break;
 
 			case EMR_GDICOMMENT: Read_EMR_COMMENT(); break;
-			case EMR_FILLRGN: Read_EMR_FILLRGN(); break;
 				//-----------------------------------------------------------
 				// Неизвестные записи
 				//-----------------------------------------------------------
@@ -199,7 +202,7 @@ namespace MetaFile
 			}
 			}
 
-			if (bEof)
+			if (m_bEof)
 				break;
 
 			int need_skip = m_ulRecordSize - (m_oStream.Tell() - m_ulRecordPos);
@@ -211,6 +214,9 @@ namespace MetaFile
 		if (!CheckError())
 			m_oStream.SeekToStart();
 
+		if (!m_bEof)
+			HANDLE_EMR_EOF();
+
 		ClearFile();
 	}
 
@@ -220,7 +226,13 @@ namespace MetaFile
 		m_pInterpretator = NULL;
 		PlayFile();
 		m_pInterpretator = pInterpretator;
-		this->ClearFile();
+	}
+
+	void CEmfParser::ClearFile()
+	{
+		RELEASEOBJECT(m_pEmfPlusParser);
+
+		CEmfParserBase::ClearFile();
 	}
 
 	EmfParserType CEmfParser::GetType()
@@ -674,6 +686,19 @@ namespace MetaFile
 			HANDLE_EMR_SETWINDOWEXTEX(oExtent);
 	}
 
+	void CEmfParser::Read_EMR_SCALEWINDOWEXTEX()
+	{
+		int nXNum, nXDenom, nYNum, nYDenom;
+
+		m_oStream >> nXNum;
+		m_oStream >> nXDenom;
+		m_oStream >> nYNum;
+		m_oStream >> nYDenom;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_SCALEWINDOWEXTEX(nXNum, nXDenom, nYNum, nYDenom);
+	}
+
 	void CEmfParser::Read_EMR_SETVIEWPORTORGEX()
 	{
 		TEmfPointL oOrigin;
@@ -692,6 +717,19 @@ namespace MetaFile
 
 		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
 			HANDLE_EMR_SETVIEWPORTEXTEX(oExtent);
+	}
+
+	void CEmfParser::Read_EMR_SCALEVIEWPORTEXTEX()
+	{
+		int nXNum, nXDenom, nYNum, nYDenom;
+
+		m_oStream >> nXNum;
+		m_oStream >> nXDenom;
+		m_oStream >> nYNum;
+		m_oStream >> nYDenom;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_SCALEVIEWPORTEXTEX(nXNum, nXDenom, nYNum, nYDenom);
 	}
 
 	void CEmfParser::Read_EMR_SETSTRETCHBLTMODE()
@@ -1397,11 +1435,10 @@ namespace MetaFile
 		m_oStream.Skip(4);
 
 		std::string sType = std::string((char*)m_oStream.GetCurPtr(), 4);
+		m_oStream.Skip(4);
 
 		if (sType == "EMF+" && NULL != m_pInterpretator)
 		{
-			m_oStream.Skip(4);
-
 			if (NULL == m_pEmfPlusParser)
 			{
 				m_pEmfPlusParser = new CEmfPlusParser(m_pInterpretator, m_oHeader);
@@ -1417,6 +1454,60 @@ namespace MetaFile
 			m_pInterpretator->ChangeConditional();
 
 			m_oStream.Skip(m_ulRecordSize - 8);
+		}
+		else if (sType == "GDIC")
+		{
+			unsigned int unPublicCommentIdentifier;
+
+			m_oStream >> unPublicCommentIdentifier;
+
+			if (EMR_COMMENT_WINDOWS_METAFILE == unPublicCommentIdentifier)
+			{
+				m_oStream.Skip(12); // Version, Reserved, Checksum, Flags
+
+				unsigned int unWinMetafileSize;
+
+				m_oStream >> unWinMetafileSize;
+
+				if (0 == unWinMetafileSize)
+					return;
+
+				CWmfParser oWmfParser;
+
+				oWmfParser.SetFontManager(GetFontManager());
+				oWmfParser.SetStream(m_oStream.GetCurPtr(), unWinMetafileSize);
+				oWmfParser.Scan();
+
+				if (!oWmfParser.CheckError())
+				{
+					if (NULL != m_pInterpretator && InterpretatorType::Render == m_pInterpretator->GetType())
+					{
+						CMetaFileRenderer oWmfOut(&oWmfParser, ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer());
+						oWmfParser.SetInterpretator(&oWmfOut);
+
+						oWmfParser.PlayFile();
+
+						m_bEof = true;
+					}
+					else if (NULL != m_pInterpretator && InterpretatorType::Svg == m_pInterpretator->GetType())
+					{
+						double dWidth, dHeight;
+
+						((CEmfInterpretatorSvg*)m_pInterpretator)->GetSize(dWidth, dHeight);
+
+						((CWmfParserBase*)&oWmfParser)->SetInterpretator(InterpretatorType::Svg, dWidth, dHeight);
+
+						oWmfParser.PlayFile();
+
+						((CEmfInterpretatorSvg*)m_pInterpretator)->SetXmlWriter(((CWmfInterpretatorSvg*)oWmfParser.GetInterpretator())->GetXmlWriter());
+
+						m_bEof = true;
+					}
+				}
+
+
+				m_oStream.Skip(unWinMetafileSize);
+			}
 		}
 	}
 
@@ -1446,5 +1537,64 @@ namespace MetaFile
 
 		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
 			HANDLE_EMR_FILLRGN(oBounds, unIhBrush, oRegionDataHeader, arRects);
+	}
+
+	void CEmfParser::Read_EMR_PAINTRGN()
+	{
+		TEmfRectL oBounds;
+		unsigned int unRgnDataSize;
+
+		m_oStream >> oBounds;
+		m_oStream >> unRgnDataSize;
+
+		if (unRgnDataSize <= 32)
+			return;
+
+		TRegionDataHeader oRegionDataHeader;
+
+		m_oStream >> oRegionDataHeader;
+
+		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
+			return;
+
+		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+
+		for (TEmfRectL &oRect : arRects)
+			m_oStream >> oRect;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_PAINTRGN(oBounds, oRegionDataHeader, arRects);
+	}
+
+	void CEmfParser::Read_EMR_FRAMERGN()
+	{
+		TEmfRectL oBounds;
+		unsigned int unRgnDataSize, unIhBrush;
+		int nWidth, nHeight;
+
+		m_oStream >> oBounds;
+		m_oStream >> unRgnDataSize;
+
+		if (unRgnDataSize <= 32)
+			return;
+
+		m_oStream >> unIhBrush;
+		m_oStream >> nWidth;
+		m_oStream >> nHeight;
+
+		TRegionDataHeader oRegionDataHeader;
+
+		m_oStream >> oRegionDataHeader;
+
+		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || 0 == oRegionDataHeader.unCountRects)
+			return;
+
+		std::vector<TEmfRectL> arRects(oRegionDataHeader.unCountRects);
+
+		for (TEmfRectL &oRect : arRects)
+			m_oStream >> oRect;
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_FRAMERGN(oBounds, unIhBrush, nWidth, nHeight, oRegionDataHeader, arRects);
 	}
 }

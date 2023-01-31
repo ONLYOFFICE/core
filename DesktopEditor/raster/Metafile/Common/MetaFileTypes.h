@@ -183,6 +183,20 @@ typedef unsigned char BYTE;
 #define TA_BOTTOM                    8
 #define TA_BASELINE                  24
 
+#if (WINVER >= 0x0400)
+#define TA_RTLREADING                256
+#define TA_MASK       (TA_BASELINE+TA_CENTER+TA_UPDATECP+TA_RTLREADING)
+#else
+#define TA_MASK       (TA_BASELINE+TA_CENTER+TA_UPDATECP)
+#endif
+
+#define VTA_BASELINE TA_BASELINE
+#define VTA_LEFT     TA_BOTTOM
+#define VTA_RIGHT    TA_TOP
+#define VTA_CENTER   TA_CENTER
+#define VTA_BOTTOM   TA_RIGHT
+#define VTA_TOP      TA_LEFT
+
 /* Binary raster ops */
 #define R2_BLACK            1   /*  0       */
 #define R2_NOTMERGEPEN      2   /* DPon     */
@@ -358,6 +372,7 @@ namespace MetaFile
 	struct TEmfPointL;
 	struct TWmfPointS;
     struct TWmfRect;
+	struct TEmfRectL;
 
 	struct TRect
 	{
@@ -367,7 +382,12 @@ namespace MetaFile
 		int  nBottom;
 
 		TRect();
+		TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom);
+		TRect(const TWmfRect& oRect);
+		TRect(const TEmfRectL& oRect);
 		TRect& operator=(TWmfRect& oRect);
+		friend bool operator!=(const TRect& oLeftRect, const TRect& oRightRect);
+		friend bool operator==(const TRect& oLeftRect, const TRect& oRightRect);
     };
 
 	struct TRectD
@@ -384,6 +404,10 @@ namespace MetaFile
 			dRight  = 1024;
 			dBottom = 1024;
 		}
+		TRectD(double dNewLeft, double dNewTop, double dNewRight, double dNewBottom)
+		    : dLeft(dNewLeft), dTop(dNewTop), dRight(dNewRight), dBottom(dNewBottom)
+		{}
+
 		TRectD(TRect& oRect)
 		{
 			dLeft   = (double)oRect.nLeft;
@@ -407,22 +431,22 @@ namespace MetaFile
 			dBottom *= dValue;
 			return *this;
 		}
-	void Update(bool bFlipedX, double bFlipedY)
-	{
-		if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+		void Update(bool bFlipedX, double bFlipedY)
 		{
-			double dTemp = dBottom;
-			dBottom = dTop;
-			dTop = dTemp;
-		}
+			if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+			{
+				double dTemp = dBottom;
+				dBottom = dTop;
+				dTop = dTemp;
+			}
 
-		if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
-		{
-			double dTemp = dRight;
-			dRight = dLeft;
-			dLeft = dTemp;
+			if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
+			{
+				double dTemp = dRight;
+				dRight = dLeft;
+				dLeft = dTemp;
+			}
 		}
-	}
     };
 
 	struct TPointL
@@ -523,7 +547,7 @@ namespace MetaFile
 			Dy  = 0;
 		}
 
-		void Copy(TXForm* pOther)
+		void Copy(const TXForm* pOther)
 		{
 			M11 = pOther->M11;
 			M12	= pOther->M12;

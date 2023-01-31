@@ -334,6 +334,16 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETWINDOWEXTEX");
 	}
 
+	void CEmfInterpretatorXml::HANDLE_EMR_SCALEWINDOWEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		m_pOutputXml->WriteNodeBegin(L"EMR_SCALEWINDOWEXTEX");
+		m_pOutputXml->WriteNode(L"xNum",    nXNum);
+		m_pOutputXml->WriteNode(L"nXDenom", nXDenom);
+		m_pOutputXml->WriteNode(L"nYNum",   nYNum);
+		m_pOutputXml->WriteNode(L"nYDenom", nYDenom);
+		m_pOutputXml->WriteNodeEnd(L"EMR_SCALEWINDOWEXTEX");
+	}
+
 	void CEmfInterpretatorXml::HANDLE_EMR_SETVIEWPORTORGEX(const TEmfPointL &oOrigin)
 	{
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTORGEX");
@@ -346,6 +356,16 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeBegin(L"EMR_SETVIEWPORTEXTEX");
 		m_pOutputXml->WriteNode(L"Extent", oExtent);
 		m_pOutputXml->WriteNodeEnd(L"EMR_SETVIEWPORTEXTEX");
+	}
+
+	void CEmfInterpretatorXml::HANDLE_EMR_SCALEVIEWPORTEXTEX(int nXNum, int nXDenom, int nYNum, int nYDenom)
+	{
+		m_pOutputXml->WriteNodeBegin(L"EMR_SCALEVIEWPORTEXTEX");
+		m_pOutputXml->WriteNode(L"xNum",    nXNum);
+		m_pOutputXml->WriteNode(L"nXDenom", nXDenom);
+		m_pOutputXml->WriteNode(L"nYNum",   nYNum);
+		m_pOutputXml->WriteNode(L"nYDenom", nYDenom);
+		m_pOutputXml->WriteNodeEnd(L"EMR_SCALEVIEWPORTEXTEX");
 	}
 
 	void CEmfInterpretatorXml::HANDLE_EMR_SETSTRETCHBLTMODE(const unsigned int &unStretchMode)
@@ -711,208 +731,23 @@ namespace MetaFile
 		m_pOutputXml->WriteNodeEnd(L"EMR_FILLRGN");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_HEADER(bool bIsEmfPlusDual, bool bIsReferenceDevice, unsigned int unDpiX, unsigned int unDpiY)
+	void CEmfInterpretatorXml::HANDLE_EMR_PAINTRGN(const TEmfRectL &oBounds, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
 	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_HEADER");
-		m_pOutputXml->WriteNode(L"IsEmfPlusDual",       bIsEmfPlusDual);
-		m_pOutputXml->WriteNode(L"IsReferenceDevice",   bIsReferenceDevice);
-		m_pOutputXml->WriteNode(L"LogicalDpiX",         unDpiX);
-		m_pOutputXml->WriteNode(L"LogicalDpiY",         unDpiY);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_HEADER");
+		m_pOutputXml->WriteNodeBegin(L"EMR_PAINTRGN");
+		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
+		m_pOutputXml->WriteNode(L"RgnData", oRegionDataHeader, arRects);
+		m_pOutputXml->WriteNodeEnd(L"EMR_PAINTRGN");
 	}
 
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_CLEAR(TEmfPlusARGB oColor)
+	void CEmfInterpretatorXml::HANDLE_EMR_FRAMERGN(const TEmfRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
 	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_CLEAR");
-		m_pOutputXml->WriteNode(L"Color", oColor);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_CLEAR");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRect oRect)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWARC");
-		m_pOutputXml->WriteNode(L"IsCopressed", 1);
-		m_pOutputXml->WriteNode(L"PenId",  (int)chPenId);
-		m_pOutputXml->WriteNode(L"StartAngle",  dStartAngle);
-		m_pOutputXml->WriteNode(L"SweepAngle",  dSweepAngle);
-		m_pOutputXml->WriteNode(L"Rectangle",   oRect);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWARC");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWARC(char chPenId, double dStartAngle, double dSweepAngle, TEmfPlusRectF oRect)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWARC");
-		m_pOutputXml->WriteNode(L"IsCopressed", 0);
-		m_pOutputXml->WriteNode(L"PenId",  (int)chPenId);
-		m_pOutputXml->WriteNode(L"StartAngle",  dStartAngle);
-		m_pOutputXml->WriteNode(L"SweepAngle",  dSweepAngle);
-		m_pOutputXml->WriteNode(L"Rectangle",   oRect);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWARC");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointR> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWBEZIERS");
-		m_pOutputXml->WriteNode(L"IsCopressed",         0);
-		m_pOutputXml->WriteNode(L"IsRelativeLocation",  1);
-		m_pOutputXml->WriteNode(L"PenId",          (int)chPenId);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWBEZIERS");
-
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPointF> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWBEZIERS");
-		m_pOutputXml->WriteNode(L"IsCopressed",         0);
-		m_pOutputXml->WriteNode(L"IsRelativeLocation",  0);
-		m_pOutputXml->WriteNode(L"PenId",          (int)chPenId);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWBEZIERS");
-
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWBEZIERS(char chPenId, std::vector<TEmfPlusPoint> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWBEZIERS");
-		m_pOutputXml->WriteNode(L"IsCopressed",         1);
-		m_pOutputXml->WriteNode(L"IsRelativeLocation",  0);
-		m_pOutputXml->WriteNode(L"PenId",          (int)chPenId);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWBEZIERS");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointR> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWCLOSEDCURVE");
-		m_pOutputXml->WriteNode(L"IsCopressed",         0);
-		m_pOutputXml->WriteNode(L"IsRelativeLocation",  1);
-		m_pOutputXml->WriteNode(L"PenId",          (int)chPenId);
-		m_pOutputXml->WriteNode(L"Tension",             dTension);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWCLOSEDCURVE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPointF> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWCLOSEDCURVE");
-		m_pOutputXml->WriteNode(L"IsCopressed",         0);
-		m_pOutputXml->WriteNode(L"IsRelativeLocation",  0);
-		m_pOutputXml->WriteNode(L"PenId",          (int)chPenId);
-		m_pOutputXml->WriteNode(L"Tension",             dTension);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWCLOSEDCURVE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWCLOSEDCURVE(char chPenId, double dTension, std::vector<TEmfPlusPoint> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWCLOSEDCURVE");
-		m_pOutputXml->WriteNode(L"IsCopressed",         1);
-		m_pOutputXml->WriteNode(L"IsRelativeLocation",  0);
-		m_pOutputXml->WriteNode(L"PenId",          (int)chPenId);
-		m_pOutputXml->WriteNode(L"Tension",             dTension);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWCLOSEDCURVE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPoint> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWCURVE");
-		m_pOutputXml->WriteNode(L"IsCopressed", 1);
-		m_pOutputXml->WriteNode(L"PenId",  (int)chPenId);
-		m_pOutputXml->WriteNode(L"Tension",     dTension);
-		m_pOutputXml->WriteNode(L"Offset",      unOffset);
-		m_pOutputXml->WriteNode(L"NumSegments", unNumSegments);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWCURVE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWCURVE(char chPenId, double dTension, unsigned int unOffset, unsigned int unNumSegments, std::vector<TEmfPlusPointF> arPoints)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWCURVE");
-		m_pOutputXml->WriteNode(L"IsCopressed", 0);
-		m_pOutputXml->WriteNode(L"PenId",  (int)chPenId);
-		m_pOutputXml->WriteNode(L"Tension",     dTension);
-		m_pOutputXml->WriteNode(L"Offset",      unOffset);
-		m_pOutputXml->WriteNode(L"NumSegments", unNumSegments);
-
-		for (unsigned int unIndex = 0; unIndex < arPoints.size(); ++unIndex)
-			m_pOutputXml->WriteNode(L"Point" + std::to_wstring(unIndex + 1), arPoints[unIndex]);
-
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWCURVE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRect oRect)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWELLIPSE");
-		m_pOutputXml->WriteNode(L"IsCopressed", 1);
-		m_pOutputXml->WriteNode(L"Rectangle", oRect);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWELLIPSE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWELLIPSE(char chPenId, TEmfPlusRectF oRect)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWELLIPSE");
-		m_pOutputXml->WriteNode(L"IsCopressed", 0);
-		m_pOutputXml->WriteNode(L"Rectangle", oRect);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWELLIPSE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWDRIVERSTRING(char chFontId, unsigned int unBrushId, unsigned int unDriverStringOptionsFlags, unsigned int unMatrixPresent, const std::wstring& wsString, const std::vector<TEmfPlusPointF>& arGlyphPos)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWDRIVERSTRING");
-		m_pOutputXml->WriteNode(L"FontId", (int)chFontId);
-		m_pOutputXml->WriteNode(L"BrushId", unBrushId);
-		m_pOutputXml->WriteNode(L"DriverStringOptionsFlags", unDriverStringOptionsFlags);
-		m_pOutputXml->WriteNode(L"MatrixPresent", unMatrixPresent);
-		m_pOutputXml->WriteNode(L"String", wsString);
-		m_pOutputXml->WriteNode(L"GlyphPos", arGlyphPos);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWDRIVERSTRING");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRect &oRectData)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWIMAGE");
-		m_pOutputXml->WriteNode(L"FontId", (int)chEmfPlusImageId);
-		m_pOutputXml->WriteNode(L"ImageAttributesID", unImageAttributesId);
-		m_pOutputXml->WriteNode(L"SrcUnit", nSrcUnit);
-		m_pOutputXml->WriteNode(L"SrcRect", oSrcRect);
-		m_pOutputXml->WriteNode(L"IsCopressed", 1);
-		m_pOutputXml->WriteNode(L"RectData", oRectData);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWIMAGE");
-	}
-
-	void CEmfInterpretatorXml::HANDLE_EMFPLUS_DRAWIMAGE(char chEmfPlusImageId, unsigned int unImageAttributesId, int nSrcUnit, const TEmfPlusRectF &oSrcRect, const TEmfPlusRectF &oRectData)
-	{
-		m_pOutputXml->WriteNodeBegin(L"EMFPLUS_DRAWIMAGE");
-		m_pOutputXml->WriteNode(L"FontId", (int)chEmfPlusImageId);
-		m_pOutputXml->WriteNode(L"ImageAttributesID", unImageAttributesId);
-		m_pOutputXml->WriteNode(L"SrcUnit", nSrcUnit);
-		m_pOutputXml->WriteNode(L"SrcRect", oSrcRect);
-		m_pOutputXml->WriteNode(L"IsCopressed", 0);
-		m_pOutputXml->WriteNode(L"RectData", oRectData);
-		m_pOutputXml->WriteNodeEnd(L"EMFPLUS_DRAWIMAGE");
+		m_pOutputXml->WriteNodeBegin(L"EMR_FRAMERGN");
+		m_pOutputXml->WriteNode(L"Bounds",  oBounds);
+		m_pOutputXml->WriteNode(L"ihBrush", unIhBrush);
+		m_pOutputXml->WriteNode(L"Width",   nWidth);
+		m_pOutputXml->WriteNode(L"Height",  nHeight);
+		m_pOutputXml->WriteNode(L"RgnData", oRegionDataHeader, arRects);
+		m_pOutputXml->WriteNodeEnd(L"EMR_FRAMERGN");
 	}
 
 	void CEmfInterpretatorXml::Begin()

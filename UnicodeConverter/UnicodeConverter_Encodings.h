@@ -149,7 +149,6 @@ namespace NSUnicodeConverter
         m[852]		= "IBM852";
         m[1250]		= "windows-1250";
 
-        m[950]		= "Big5";
         m[936]		= "GBK";
         m[28592]	= "ISO-8859-2";
 

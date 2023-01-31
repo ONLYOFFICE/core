@@ -364,7 +364,7 @@ namespace NSStringExt
 		// Parse error on anything but a null terminator
 		if (pos < wsString.length()) return false;
 
-		res = exp ? coeff * pow(unit, exp / 3) : coeff;
+		res = exp ? (long long)(coeff * pow(unit, exp / 3)) : coeff;
 		return true;
 	}
 }

@@ -302,8 +302,8 @@ namespace MetaFile
 		{
 			lX = 0;
 			lY = 0;
-			ulW = 0;
-			ulH = 0;
+			ulW = 1;
+			ulH = 1;
 		}
 
 		void Copy(TEmfWindow* pOther)

@@ -91,6 +91,15 @@ namespace MetaFile
 		{
 			BrushStyle     = BS_DIBPATTERN;
 			DibPatternPath = wsTempFileName;
+
+			BYTE* pNewBuffer = NULL;
+			int nNewSize = 0;
+
+			oBgraFrame.Encode(pNewBuffer, nNewSize, _CXIMAGE_FORMAT_PNG);
+
+			DibBuffer	= pNewBuffer;
+			DibWidth	= oBgraFrame.get_Width();
+			DibHeigth	= oBgraFrame.get_Height();
 		}
 
 		oBgraFrame.put_Data(NULL);

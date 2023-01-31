@@ -280,9 +280,6 @@ namespace MetaFile
 
 		if (!CheckError())
 			m_pOutput->MoveToStart();
-
-		if (NULL != m_pInterpretator)
-			m_pInterpretator->End();
 	}
 
 	void CEmfxParser::Scan()

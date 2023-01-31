@@ -16,61 +16,61 @@ namespace MetaFile
 		{
 			switch (pCommand->GetType())
 			{
-			case EMF_PATHCOMMAND_UNKNOWN: break;
-			case EMF_PATHCOMMAND_MOVETO:
-			{
-				CEmfPathMoveTo *pCommandMoveTo = (CEmfPathMoveTo*)pCommand;
-				oNewPath.MoveTo(pCommandMoveTo->x, pCommandMoveTo->y);
+				case EMF_PATHCOMMAND_UNKNOWN: break;
+				case EMF_PATHCOMMAND_MOVETO:
+				{
+					CEmfPathMoveTo *pCommandMoveTo = (CEmfPathMoveTo*)pCommand;
+					oNewPath.MoveTo(pCommandMoveTo->x, pCommandMoveTo->y);
 
-				oLastPoint.X = pCommandMoveTo->x;
-				oLastPoint.Y = pCommandMoveTo->y;
+					oLastPoint.X = pCommandMoveTo->x;
+					oLastPoint.Y = pCommandMoveTo->y;
 
-				break;
-			}
-			case EMF_PATHCOMMAND_LINETO:
-			{
-				CEmfPathLineTo *pCommandLineTo = (CEmfPathLineTo*)pCommand;
+					break;
+				}
+				case EMF_PATHCOMMAND_LINETO:
+				{
+					CEmfPathLineTo *pCommandLineTo = (CEmfPathLineTo*)pCommand;
 
-				double dAngle = -90 + (atan((pCommandLineTo->y - oLastPoint.Y) /
-											(pCommandLineTo->x - oLastPoint.X)) * 180 / 3.14);
+					double dAngle = -90 + (atan((pCommandLineTo->y - oLastPoint.Y) /
+					                            (pCommandLineTo->x - oLastPoint.X)) * 180 / 3.14);
 
-				if (AddLineStartCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle + 180))
-					oNewPath.MoveTo(oLastPoint.X, oLastPoint.Y);
+					if (AddLineStartCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle + 180))
+						oNewPath.MoveTo(oLastPoint.X, oLastPoint.Y);
 
-				oLastPoint.X = pCommandLineTo->x;
-				oLastPoint.Y = pCommandLineTo->y;
+					oLastPoint.X = pCommandLineTo->x;
+					oLastPoint.Y = pCommandLineTo->y;
 
-				AddLineEndCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle);
+					AddLineEndCap(oLineCapPath, oPen, oLastPoint.X, oLastPoint.Y, dAngle);
 
-				oNewPath.LineTo(oLastPoint.X,  oLastPoint.Y);
+					oNewPath.LineTo(oLastPoint.X,  oLastPoint.Y);
 
-				break;
-			}
-			case EMF_PATHCOMMAND_CURVETO:
-			{
-				CEmfPathCurveTo *pCommandCurveTo = (CEmfPathCurveTo*)pCommand;
+					break;
+				}
+				case EMF_PATHCOMMAND_CURVETO:
+				{
+					CEmfPathCurveTo *pCommandCurveTo = (CEmfPathCurveTo*)pCommand;
 
-				oNewPath.CurveTo(pCommandCurveTo->x1, pCommandCurveTo->y1,
-								 pCommandCurveTo->x2, pCommandCurveTo->y2,
-								 pCommandCurveTo->xE, pCommandCurveTo->yE);
+					oNewPath.CurveTo(pCommandCurveTo->x1, pCommandCurveTo->y1,
+					                 pCommandCurveTo->x2, pCommandCurveTo->y2,
+					                 pCommandCurveTo->xE, pCommandCurveTo->yE);
 
-				break;
-			}
-			case EMF_PATHCOMMAND_ARCTO:
-			{
-				CEmfPathArcTo *pCommandArcTo = (CEmfPathArcTo*)pCommand;
+					break;
+				}
+				case EMF_PATHCOMMAND_ARCTO:
+				{
+					CEmfPathArcTo *pCommandArcTo = (CEmfPathArcTo*)pCommand;
 
-				oNewPath.ArcTo(pCommandArcTo->left,  pCommandArcTo->top,
-							   pCommandArcTo->right, pCommandArcTo->bottom,
-							   pCommandArcTo->start, pCommandArcTo->sweep);
+					oNewPath.ArcTo(pCommandArcTo->left,  pCommandArcTo->top,
+					               pCommandArcTo->right, pCommandArcTo->bottom,
+					               pCommandArcTo->start, pCommandArcTo->sweep);
 
-				break;
-			}
-			case EMF_PATHCOMMAND_CLOSE:
-			{
-				oNewPath.Close();
-				break;
-			}
+					break;
+				}
+				case EMF_PATHCOMMAND_CLOSE:
+				{
+					oNewPath.Close();
+					break;
+				}
 			}
 		}
 

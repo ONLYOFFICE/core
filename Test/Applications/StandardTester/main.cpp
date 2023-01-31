@@ -1,23 +1,19 @@
 #include <iostream>
 
+#include "../../../X2tConverter/src/run.h"
+
 #include "../../../Common/OfficeFileFormats.h"
 #include "../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../../DesktopEditor/graphics/Timer.h"
 #include "../../../DesktopEditor/graphics/TemporaryCS.h"
+
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/common/StringBuilder.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
-
-#ifdef LINUX
-#include <unistd.h>
-#include <sys/wait.h>
-#include <stdio.h>
-#endif
 
 #include <map>
 
@@ -274,141 +270,6 @@ public:
 	}
 };
 
-namespace NSX2T
-{
-	int Convert(const std::wstring& sConverterPath, const std::wstring sXmlPath)
-	{
-		int nReturnCode = 0;
-		std::wstring sConverterExe = sConverterPath;
-
-#ifdef WIN32
-		NSStringUtils::string_replace(sConverterExe, L"/", L"\\");
-
-		sConverterExe += L".exe";
-		std::wstring sApp = L"x2t ";
-
-		STARTUPINFO sturtupinfo;
-		ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
-		sturtupinfo.cb = sizeof(STARTUPINFO);
-
-		sApp += (L"\"" + sXmlPath + L"\"");
-		wchar_t* pCommandLine = NULL;
-		if (true)
-		{
-			pCommandLine = new wchar_t[sApp.length() + 1];
-			memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
-			pCommandLine[sApp.length()] = (wchar_t)'\0';
-		}
-
-		HANDLE ghJob = CreateJobObject(NULL, NULL);
-
-		if (ghJob)
-		{
-			JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
-
-			// Configure all child processes associated with the job to terminate when the
-			jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-			if ( 0 == SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
-			{
-				CloseHandle(ghJob);
-				ghJob = NULL;
-			}
-		}
-
-		PROCESS_INFORMATION processinfo;
-		ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
-		BOOL bResult = CreateProcessW(sConverterExe.c_str(), pCommandLine,
-									  NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
-
-		if (bResult && ghJob)
-		{
-			AssignProcessToJobObject(ghJob, processinfo.hProcess);
-		}
-
-		::WaitForSingleObject(processinfo.hProcess, INFINITE);
-
-		RELEASEARRAYOBJECTS(pCommandLine);
-
-		//get exit code
-		DWORD dwExitCode = 0;
-		if (GetExitCodeProcess(processinfo.hProcess, &dwExitCode))
-		{
-			nReturnCode = (int)dwExitCode;
-		}
-
-		CloseHandle(processinfo.hProcess);
-		CloseHandle(processinfo.hThread);
-
-		if (ghJob)
-		{
-			CloseHandle(ghJob);
-			ghJob = NULL;
-		}
-
-#endif
-
-#ifdef LINUX
-		pid_t pid = fork(); // create child process
-		int status;
-
-		std::string sProgramm = U_TO_UTF8(sConverterExe);
-		std::string sXmlA = U_TO_UTF8(sXmlPath);
-
-		switch (pid)
-		{
-		case -1: // error
-			break;
-
-		case 0: // child process
-		{
-			std::string sLibraryDir = sProgramm;
-			std::string sPATH = sProgramm;
-			if (std::string::npos != sProgramm.find_last_of('/'))
-			{
-				sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
-				sPATH = "PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
-			}
-
-#ifdef _MAC
-			sLibraryDir = "DY" + sLibraryDir;
-#endif
-
-			const char* nargs[3];
-			nargs[0] = sProgramm.c_str();
-			nargs[1] = sXmlA.c_str();
-			nargs[2] = NULL;
-
-#ifndef _MAC
-			const char* nenv[2];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = NULL;
-#else
-			const char* nenv[3];
-			nenv[0] = sLibraryDir.c_str();
-			nenv[1] = sPATH.c_str();
-			nenv[2] = NULL;
-#endif
-
-			execve(sProgramm.c_str(),
-				   (char * const *)nargs,
-				   (char * const *)nenv);
-			exit(EXIT_SUCCESS);
-			break;
-		}
-		default: // parent process, pid now contains the child pid
-			while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
-			if (WIFEXITED(status))
-			{
-				nReturnCode =  WEXITSTATUS(status);
-			}
-			break;
-		}
-#endif
-
-		return nReturnCode;
-	}
-}
-
 class CConverter : public NSThreads::CBaseThread
 {
 public:
@@ -477,12 +338,10 @@ public:
 		NSStringUtils::CStringBuilder oBuilder;
 		oBuilder.WriteString(L"<?xml version=\"1.0\" encoding=\"utf-8\"?><TaskQueueDataConvert><m_sFileFrom>");
 
-		std::wstring sFileDst = sDirectoryDst + L"/page.zip";
-
 		oBuilder.WriteEncodeXmlString(m_file);
 		oBuilder.WriteString(L"</m_sFileFrom><m_sFileTo>");
 
-		oBuilder.WriteEncodeXmlString(sFileDst);
+		oBuilder.WriteEncodeXmlString(sDirectoryDst);
 		oBuilder.WriteString(L"</m_sFileTo><m_nFormatTo>");
 		oBuilder.WriteString(std::to_wstring(AVS_OFFICESTUDIO_FILE_IMAGE));
 		oBuilder.WriteString(L"</m_nFormatTo><m_sThemeDir>./</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional><m_sAllFontsPath>");
@@ -493,7 +352,7 @@ public:
 		oBuilder.WriteEncodeXmlString(sProcess + L"/fonts");
 		oBuilder.WriteString(L"</m_sFontDir>");
 
-		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><width>1000</width><height>1000</height></m_oThumbnail>");
+		oBuilder.WriteString(L"<m_oThumbnail><format>4</format><aspect>2</aspect><first>false</first><zip>false</zip><width>1000</width><height>1000</height></m_oThumbnail>");
 		oBuilder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
 
 		if (!m_pInternal->m_sConvertParams.empty())
@@ -509,8 +368,7 @@ public:
 		if (NSDirectory::Exists(sProcess + L"/converter"))
 			sProcess += L"/converter";
 
-		std::wstring sExe = sProcess + L"/x2t";
-		int nReturnCode = NSX2T::Convert(sExe, sTempFileForParams);
+		int nReturnCode = NSX2T::Convert(sProcess, sTempFileForParams);
 
 		if (0 != nReturnCode)
 		{
@@ -523,15 +381,6 @@ public:
 			NSFile::CFileBinary::Remove(sTempFileForParams);
 
 		DWORD dwTime2 = NSTimers::GetTickCount();
-
-		if (0 == nReturnCode)
-		{
-			CTemporaryCS oCS(&m_pInternal->m_oCS_OfficeUtils);
-
-			COfficeUtils oUtils;
-			if (S_OK == oUtils.ExtractToDirectory(sFileDst, sDirectoryDst, NULL, 0))
-				NSFile::CFileBinary::Remove(sFileDst);
-		}
 
 		int checkCode = crcEqual;
 

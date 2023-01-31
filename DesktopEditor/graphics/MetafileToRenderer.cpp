@@ -36,6 +36,7 @@
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
+#include "./FormField.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 #include "../common/StringExt.h"
@@ -1213,11 +1214,28 @@ namespace NSOnlineOfficeBinToPdf
 				}
 
 				if (oInfo.IsValid())
-					pRenderer->AddFormField(oInfo);
+					pRenderer->AddFormField(&oInfo);
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;
 
+				break;
+			}
+			case ctDocInfo:
+			{
+				int nFlags = ReadInt(current, curindex);
+
+				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
+				if (nFlags & 1)
+					wsTitle    = ReadString(current, curindex);
+				if (nFlags & 2)
+					wsCreator  = ReadString(current, curindex);
+				if (nFlags & 4)
+					wsSubject  = ReadString(current, curindex);
+				if (nFlags & 8)
+					wsKeywords = ReadString(current, curindex);
+
+				pRenderer->DocInfo(wsTitle, wsCreator, wsSubject, wsKeywords);
 				break;
 			}
 			default:
@@ -1535,6 +1553,21 @@ namespace NSOnlineOfficeBinToPdf
 
 				current  = nStartPos + nLen;
 				curindex = nStartIndex + nLen;
+				break;
+			}
+			case ctDocInfo:
+			{
+				int nFlags = ReadInt(current, curindex);
+
+				std::wstring wsTitle, wsCreator, wsSubject, wsKeywords;
+				if (nFlags & 1)
+					SkipString(current, curindex);
+				if (nFlags & 2)
+					SkipString(current, curindex);
+				if (nFlags & 4)
+					SkipString(current, curindex);
+				if (nFlags & 8)
+					SkipString(current, curindex);
 				break;
 			}
 			default:

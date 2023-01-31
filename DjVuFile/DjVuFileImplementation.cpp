@@ -34,7 +34,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 
-#include "../PdfWriter/PdfRenderer.h"
+#include "../PdfFile/PdfFile.h"
 
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
@@ -47,9 +47,10 @@
 
 #include <vector>
 
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+
 #ifdef BUILDING_WASM_MODULE
 #define DISABLE_TEMP_DIRECTORY
-#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #endif
 
 namespace NSDjvu
@@ -235,7 +236,8 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 }
 void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
-    CPdfRenderer oPdf(m_pApplicationFonts);
+    CPdfFile oPdf(m_pApplicationFonts);
+    oPdf.CreatePdf();
 	
 	bool bBreak = false;
 	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)
@@ -277,7 +279,6 @@ std::wstring CDjVuFileImplementation::GetInfo()
     return sRes;
 }
 
-#ifdef BUILDING_WASM_MODULE
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
@@ -422,7 +423,6 @@ BYTE* CDjVuFileImplementation::GetPageLinks(int nPageIndex)
     catch (...) {}
     return NULL;
 }
-#endif
 
 void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {
@@ -642,7 +642,7 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 	LONG lImageWidth  = pPage->get_real_width();
 	LONG lImageHeight = pPage->get_real_height();
 
-	CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+	CPdfFile* pPdf = (CPdfFile*)pRenderer;
 
 	if (pPage->is_legal_photo())
 	{

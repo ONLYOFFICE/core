@@ -100,6 +100,85 @@ CPdfReader::~CPdfReader()
     RELEASEOBJECT(globalParams);
     RELEASEINTERFACE(m_pFontManager);
 }
+
+bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& arrCMap)
+{
+    Object oFonts;
+    if (pResources->lookup("Font", &oFonts) && oFonts.isDict())
+    {
+        for (int i = 0, nLength = oFonts.dictGetLength(); i < nLength; ++i)
+        {
+            Object oFont, oEncoding;
+            if (!oFonts.dictGetVal(i, &oFont) || !oFont.isDict() || !oFont.dictLookup("Encoding", &oEncoding) || !oEncoding.isName())
+            {
+                oFont.free(); oEncoding.free();
+                continue;
+            }
+
+            char* sName = oEncoding.getName();
+            if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
+            {
+                oEncoding.free(); oFont.free(); oFonts.free();
+                return true;
+            }
+            oEncoding.free(); oFont.free();
+        }
+    }
+    oFonts.free();
+
+#define SCAN_FONTS(sName)\
+{\
+    Object oObject;\
+    if (pResources->lookup(sName, &oObject) && oObject.isDict())\
+    {\
+        for (int i = 0, nLength = oObject.dictGetLength(); i < nLength; ++i)\
+        {\
+            Object oXObj, oResources;\
+            if (!oObject.dictGetVal(i, &oXObj) || !oXObj.isStream() || !oXObj.streamGetDict()->lookup("Resources", &oResources) || !oResources.isDict())\
+            {\
+                oXObj.free(); oResources.free();\
+                continue;\
+            }\
+            oXObj.free();\
+            if (scanFonts(oResources.getDict(), pDoc, arrCMap))\
+            {\
+                oResources.free(); oObject.free();\
+                return true;\
+            }\
+            oResources.free();\
+        }\
+    }\
+    oObject.free();\
+}
+    SCAN_FONTS("XObject");
+    SCAN_FONTS("Pattern");
+
+    Object oExtGState;
+    if (pResources->lookup("ExtGState", &oExtGState) && oExtGState.isDict())
+    {
+        for (int i = 0, nLength = oExtGState.dictGetLength(); i < nLength; ++i)
+        {
+            Object oGS, oSMask, oSMaskGroup, oResources;
+            if (!oExtGState.dictGetVal(i, &oGS) || !oGS.isDict() || !oGS.dictLookup("SMask", &oSMask) || !oSMask.isDict() || !oSMask.dictLookup("G", &oSMaskGroup) || !oSMaskGroup.isStream() ||
+                    oSMaskGroup.streamGetDict()->lookup("Resources", &oResources) || !oResources.isDict())
+            {
+                oGS.free(); oSMask.free(); oSMaskGroup.free(); oResources.free();
+                continue;
+            }
+            oGS.free(); oSMask.free(); oSMaskGroup.free();
+            if (scanFonts(oResources.getDict(), pDoc, arrCMap))
+            {
+                oResources.free(); oExtGState.free();
+                return true;
+            }
+            oResources.free();
+        }
+    }
+    oExtGState.free();
+
+    return false;
+}
+
 bool CPdfReader::IsNeedCMap()
 {
     std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
@@ -125,51 +204,12 @@ bool CPdfReader::IsNeedCMap()
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return false;
 
-    XRef* xref = m_pPDFDocument->getXRef();
-    if (!xref)
-        return false;
-
-    for (int nNum = 0, nCount = xref->getSize(); nNum < nCount; ++nNum)
+    for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
     {
-        XRefEntry *pEntry = xref->getEntry(nNum);
-        if (!pEntry || xrefEntryFree == pEntry->type)
-            continue;
-
-        Object oTemp;
-        if (!xref->fetch(nNum, pEntry->gen, &oTemp))
-            continue;
-
-        if (!oTemp.isDict())
-        {
-            oTemp.free();
-            continue;
-        }
-
-        Object oFont;
-        if (!oTemp.dictLookup("Type", &oFont) || !oFont.isName() || strcmp(oFont.getName(), "Font"))
-        {
-            oTemp.free();
-            oFont.free();
-            continue;
-        }
-        oFont.free();
-
-        Object oEncoding;
-        if (!oTemp.dictLookup("Encoding", &oEncoding) || !oEncoding.isName())
-        {
-            oTemp.free();
-            oEncoding.free();
-            continue;
-        }
-        oTemp.free();
-
-        char* sName = oEncoding.getName();
-        if (std::find(arrCMap.begin(), arrCMap.end(), sName) != arrCMap.end())
-        {
-            oEncoding.free();
+        Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage + 1);
+        Dict* pResources = pPage->getResourceDict();
+        if (pResources && scanFonts(pResources, m_pPDFDocument, arrCMap))
             return true;
-        }
-        oEncoding.free();
     }
     return false;
 }
@@ -674,4 +714,8 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     RELEASEOBJECT(pTextOut);
 
     return oLinks.Serialize();
+}
+BYTE* CPdfReader::GetWidget()
+{
+    return NULL;
 }

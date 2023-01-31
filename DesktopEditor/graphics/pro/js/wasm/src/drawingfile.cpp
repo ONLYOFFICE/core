@@ -254,6 +254,8 @@ int main()
 			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
 			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
 			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
+			nWidth  *= (dpi / 25.4);
+			nHeight *= (dpi / 25.4);
 			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << std::endl;
 
 			nLength = READ_INT(pInfo + nPagesCount * 12 + 8);

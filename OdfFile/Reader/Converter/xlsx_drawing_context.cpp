@@ -146,9 +146,9 @@ public:
 
 	mediaitems_ptr & get_mediaitems() { return handle_->impl_->get_mediaitems(); }
 
-	void serialize(std::wostream & strm, const std::wstring & ns = L"xdr")
+	void serialize(std::wostream & strm, const std::wstring & ns, bool local)
     {
-        xlsx_drawings_->serialize(strm, ns);
+        xlsx_drawings_->serialize(strm, ns, local);
     }
 	void serialize_vml(std::wostream & strm)
     {
@@ -176,9 +176,10 @@ private:
 };
 
 
-xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h)
+xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h, bool in_text)
  : impl_(new xlsx_drawing_context::Impl(h))
-{    
+{
+	in_text_ = in_text;
 	hlinks_size_ = 0;
 	clear();
 }
@@ -394,8 +395,8 @@ void xlsx_drawing_context::end_frame()
 	else
 	{
 		impl_->current_level_->push_back(impl_->object_description_);
-		clear();
 	}	
+	clear();
 }
 
 void xlsx_drawing_context::set_chart(const std::wstring & path)
@@ -541,7 +542,7 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 			drawing.type_anchor = 2; // absolute
 	}
 	
-	if (drawing.type_anchor == 1)
+	if (drawing.type_anchor == 1 || obj.type_ == typeMsObject || obj.type_ == typeOleObject || obj.type_ == typeControl)
 	{
 		xlsx_table_position from, to;
 		
@@ -595,7 +596,7 @@ void xlsx_drawing_context::process_position_properties(drawing_object_descriptio
 
 	if (obj.svg_rect_)
 	{
-		x  = obj.svg_rect_->x;
+		x = obj.svg_rect_->x;
 		y  = obj.svg_rect_->y;
 		cx = obj.svg_rect_->cx;
 		cy = obj.svg_rect_->cy;
@@ -746,7 +747,12 @@ void xlsx_drawing_context::process_object(drawing_object_description & obj, xlsx
 	}
 	
 	if (drawing.inGroup)
-		impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_, false, false); // не объект
+	{// не объекты 
+		if (obj.type_ == typeControl || obj.type_ == typeComment)
+			impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_, false, false); 
+		else
+			impl_->get_drawings()->add(isMediaInternal, drawing.objectId, ref, obj.type_, true, false); 
+	}
 }
 void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
@@ -757,15 +763,17 @@ void xlsx_drawing_context::process_shape(drawing_object_description & obj,_xlsx_
 	xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, obj.type_);
 }
 
-void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_table_metrics & table_metrics,_xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
+void xlsx_drawing_context::process_group(drawing_object_description & obj, xlsx_table_metrics & table_metrics, _xlsx_drawing & drawing, xlsx_drawings_ptr xlsx_drawings_)
 {
 	xlsx_drawings_ptr xlsx_drawings_child(xlsx_drawings::create(true));
 	
-	process_group_objects	( obj.child_objects_, table_metrics, xlsx_drawings_child);	
+	process_group_objects( obj.child_objects_, table_metrics, xlsx_drawings_child);	
+
+	drawing.childs_ = xlsx_drawings_child->get();
 	
 	std::wstringstream strm;
 
-	xlsx_drawings_child->serialize(strm, L"xdr");
+	xlsx_drawings_child->serialize(strm, L"xdr", in_text_);
 
 	drawing.content_group_ = strm.str();
 
@@ -828,9 +836,9 @@ void xlsx_drawing_context::process_group_objects(std::vector<drawing_object_desc
 	}
 }
 
-void xlsx_drawing_context::serialize(std::wostream & strm, const std::wstring& ns)
+void xlsx_drawing_context::serialize(std::wostream & strm, const std::wstring& ns, bool local)
 {
-    impl_->serialize(strm, ns);    
+    impl_->serialize(strm, ns, local);
 }
 void xlsx_drawing_context::serialize_vml(std::wostream & strm)
 {

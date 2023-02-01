@@ -36,10 +36,10 @@ namespace oox {
 
 struct xlsx_table_position
 {
-    size_t col;    
-    double colOff;
-    size_t row;
-    double rowOff;
+    size_t col = 0;    
+    double colOff = 0;
+    size_t row = 0;
+    double rowOff = 0;
 };
 
 

@@ -69,7 +69,7 @@ public:
 
     BYTE* GetStructure();
     BYTE* GetLinks(int nPageIndex);
-    BYTE* GetWidget();
+    BYTE* GetWidgets();
 
 private:
     PDFDoc*            m_pPDFDocument;

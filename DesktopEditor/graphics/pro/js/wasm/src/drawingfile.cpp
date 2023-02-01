@@ -150,6 +150,10 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetStructure();
 }
+WASM_EXPORT BYTE* GetInteractiveForms(CGraphicsFileDrawing* pGraphics)
+{
+	return pGraphics->GetInteractiveForms();
+}
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->DestroyText();
@@ -254,8 +258,8 @@ int main()
 			nWidth  = READ_INT(pInfo + nTestPage * 12 + 8);
 			nHeight = READ_INT(pInfo + nTestPage * 12 + 12);
 			int dpi = READ_INT(pInfo + nTestPage * 12 + 16);
-			nWidth  *= (dpi / 25.4);
-			nHeight *= (dpi / 25.4);
+			//nWidth  *= (dpi / 25.4);
+			//nHeight *= (dpi / 25.4);
 			std::cout << "Page " << nTestPage << " width " << nWidth << " height " << nHeight << " dpi " << dpi << std::endl;
 
 			nLength = READ_INT(pInfo + nPagesCount * 12 + 8);
@@ -294,6 +298,7 @@ int main()
 		RELEASEARRAYOBJECTS(res);
 	}
 
+	// LINKS
 	if (nPagesCount > 0)
 	{
 		BYTE* pLinks = GetLinks(pGrFile, nTestPage);
@@ -329,6 +334,7 @@ int main()
 			free(pLinks);
 	}
 
+	// STRUCTURE
 	if (true)
 	{
 		BYTE* pStructure = GetStructure(pGrFile);
@@ -358,10 +364,51 @@ int main()
 			free(pStructure);
 	}
 
+	// GLYPHS
 	if (false && nPagesCount > 0)
 	{
 		// TODO:
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
+	}
+
+	// INTERACTIVE FORMS
+	if (true)
+	{
+		BYTE* pWidgets = GetInteractiveForms(pGrFile);
+		nLength = READ_INT(pWidgets);
+		DWORD i = 4;
+		nLength -= 4;
+		while (i < nLength)
+		{
+			DWORD nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Page " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "X1 " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Y1 " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "X2 " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Type " << std::string((char*)(pWidgets + i), nPathLength) << std::endl;
+			i += nPathLength;
+		}
+
+		std::cout << std::endl;
+
+		if (pWidgets)
+			free(pWidgets);
 	}
 
 	Close(pGrFile);

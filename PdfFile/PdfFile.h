@@ -102,6 +102,7 @@ public:
     // --- READER ---
 
     int GetError();
+
     bool IsNeedCMap();
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     void SetCMapFolder(const std::wstring& sFolder);
@@ -119,9 +120,11 @@ public:
     virtual int GetPagesCount();
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
     virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
+
     virtual std::wstring GetInfo();
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks(int nPageIndex);
+    BYTE* GetWidgets();
 
     // --- WRITER ---
 

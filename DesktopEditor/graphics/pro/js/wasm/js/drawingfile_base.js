@@ -363,6 +363,41 @@
 		Module["_free"](ext);
 		return res;
 	};
+	CFile.prototype["getInteractiveForms"] = function()
+	{
+		var res = [];
+		var ext = Module["_GetInteractiveForms"](this.nativeFile);
+		if (ext == 0)
+			return res;
+		
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+			return res;
+
+		var len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+			return res;
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		var reader = new CBinaryReader(buffer, 0, len);
+		
+		while (reader.isValid())
+		{
+			var rec = {};
+			rec["name"] = reader.readString();
+			rec["page"] = reader.readInt();
+			rec["x1"] = reader.readDouble();
+			rec["y1"] = reader.readDouble();
+			rec["x2"] = reader.readDouble();
+			rec["y2"] = reader.readDouble();
+			rec["type"] = reader.readString();
+			res.push(rec);
+		}
+
+		Module["_free"](ext);
+		return res;
+	};
 	CFile.prototype["getStructure"] = function()
 	{
 		var res = [];

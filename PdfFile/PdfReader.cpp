@@ -49,6 +49,7 @@
 #include "lib/xpdf/Outline.h"
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
+#include "lib/xpdf/AcroForm.h"
 #include "lib/goo/GList.h"
 
 #include <vector>
@@ -715,7 +716,65 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
     return oLinks.Serialize();
 }
-BYTE* CPdfReader::GetWidget()
+BYTE* CPdfReader::GetWidgets()
 {
-    return NULL;
+    if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+        return NULL;
+
+    AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+    if (!pAcroForms)
+        return NULL;
+
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+
+    for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+    {
+        AcroFormField* pField = pAcroForms->getField(i);
+
+        // Полное имя поля
+        int nLengthName;
+        Unicode* uName = pField->getName(&nLengthName);
+        std::string sName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
+        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+
+        // Номер страницы
+        int nPage = pField->getPageNum();
+        oRes.AddInt(nPage - 1);
+
+        // Координаты
+        double dx1, dy1, dx2, dy2;
+        pField->getBBox(&dx1, &dy1, &dx2, &dy2);
+        double height = m_pPDFDocument->getPageCropHeight(nPage);
+        oRes.AddDouble(dx1);
+        oRes.AddDouble(height - dy1);
+        oRes.AddDouble(dx2);
+        oRes.AddDouble(height - dy2);
+
+        // Тип
+        AcroFormFieldType oType = pField->getAcroFormFieldType();
+        std::string sType;
+        switch (oType)
+        {
+        case acroFormFieldPushbutton:    sType = "pushbutton";    break;
+        case acroFormFieldRadioButton:   sType = "radiobutton";   break;
+        case acroFormFieldCheckbox:      sType = "checkbox";      break;
+        case acroFormFieldFileSelect:    sType = "fileselect";    break;
+        case acroFormFieldMultilineText: sType = "multilinetext"; break;
+        case acroFormFieldText:          sType = "text";          break;
+        case acroFormFieldBarcode:       sType = "barcode";       break;
+        case acroFormFieldComboBox:      sType = "combobox";      break;
+        case acroFormFieldListBox:       sType = "listbox";       break;
+        case acroFormFieldSignature:     sType = "signature";     break;
+        default:                         sType = "";              break;
+        }
+        oRes.WriteString((BYTE*)sType.c_str(), (unsigned int)sType.length());
+
+        // TO DO здесь возможно записать флаги необходимые каждому типу
+    }
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
 }

@@ -809,6 +809,12 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
         return NULL;
     return m_pInternal->pReader->GetLinks(nPageIndex);
 }
+BYTE* CPdfFile::GetWidgets()
+{
+    if (!m_pInternal->pReader)
+        return NULL;
+    return m_pInternal->pReader->GetWidgets();
+}
 
 // ------------------------------------------------------------------------
 

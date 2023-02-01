@@ -29,6 +29,7 @@
 		"_GetGlyphs",
 		"_GetLinks",
 		"_GetStructure",
+		"_GetInteractiveForms",
 		"_InitializeFontsBin",
 		"_InitializeFontsBase64",
 		"_InitializeFontsRanges",

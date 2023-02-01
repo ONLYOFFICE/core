@@ -110,6 +110,12 @@ public:
     {
         return pReader->GetStructure();
     }
+    BYTE* GetInteractiveForms()
+    {
+        if (nType == 0)
+            return ((CPdfFile*)pReader)->GetWidgets();
+        return NULL;
+    }
     std::wstring GetInfo()
     {
         return pReader->GetInfo();
@@ -125,7 +131,6 @@ public:
         if (nType == 0)
             ((CPdfFile*)pReader)->SetCMapMemory(pData, nSizeData);
     }
-
     void DestroyText()
     {
         RELEASEOBJECT(pTextRenderer);

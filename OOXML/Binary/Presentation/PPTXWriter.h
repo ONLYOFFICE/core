@@ -37,6 +37,9 @@
 #include "DefaultNotesMaster.h"
 #include "DefaultNotesTheme.h"
 
+#include "../../PPTXFormat/NotesSlide.h"
+#include "../../DocxFormat/VmlDrawing.h"
+
 namespace NSBinPptxRW
 {
 	class CPPTXWriter
@@ -65,16 +68,16 @@ namespace NSBinPptxRW
 		std::vector<LONG>					m_arNotesSlides_Master;
 		std::vector<LONG>					m_arNotesMasters_Theme;
 		
-		PPTX::Document					m_oDocument;
-		PPTX::Presentation				m_oPresentation;
-		PPTX::TableStyles				m_oTableStyles;
-		OOX::CVmlDrawing				m_oVmlDrawing;
-		PPTX::App						m_oApp;
-		PPTX::Core						m_oCore;
-		nullable<PPTX::CustomProperties>m_oCustomProperties;
-		PPTX::ViewProps					m_oViewProps;
-		PPTX::PresProps					m_oPresProps;
-		PPTX::NotesSlide				m_oDefaultNote;
+		PPTX::Document						m_oDocument;
+		PPTX::Presentation					m_oPresentation;
+		PPTX::TableStyles					m_oTableStyles;
+		OOX::CVmlDrawing					m_oVmlDrawing;
+		PPTX::App							m_oApp;
+		PPTX::Core							m_oCore;
+		nullable<PPTX::CustomProperties>	m_oCustomProperties;
+		PPTX::ViewProps						m_oViewProps;
+		PPTX::PresProps						m_oPresProps;
+		PPTX::NotesSlide					m_oDefaultNote;
 
         bool m_bIsDefaultNoteMaster;
 

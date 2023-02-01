@@ -55,6 +55,7 @@
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../../DocxFormat/VmlDrawing.h"
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"
 #include "../../DocxFormat/Drawing/DrawingExt.h"

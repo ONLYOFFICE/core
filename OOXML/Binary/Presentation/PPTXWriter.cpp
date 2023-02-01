@@ -32,6 +32,11 @@
 
 #include "PPTXWriter.h"
 
+#include "../../PPTXFormat/NotesSlide.h"
+#include "../../PPTXFormat/Logic/ClrMapOvr.h"
+#include "../../PPTXFormat/Logic/TxStyles.h"
+#include "../../PPTXFormat/Logic/Hf.h"
+
 namespace NSBinPptxRW
 {
 		CPPTXWriter::CPPTXWriter() : m_oPresentation(&m_oDocument), m_oTableStyles(&m_oDocument), m_oVmlDrawing(&m_oDocument),

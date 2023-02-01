@@ -31,6 +31,8 @@
  */
 
 #include "NotesMaster.h"
+#include "Logic/Hf.h"
+#include "Logic/TextListStyle.h"
 
 namespace PPTX
 {

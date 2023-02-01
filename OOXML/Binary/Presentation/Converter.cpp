@@ -31,6 +31,8 @@
  */
 
 #include "Converter.h"
+#include "../../PPTXFormat/Presentation/SldSz.h"
+#include "../../PPTXFormat/NotesSlide.h"
 
 namespace PPTX2EditorAdvanced
 {

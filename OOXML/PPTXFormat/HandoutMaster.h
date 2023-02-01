@@ -37,11 +37,14 @@
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
-#include "Logic/Hf.h"
-
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class HF;
+	}
+
 	class HandoutMaster : public WrapperFile, public PPTX::FileContainer
 	{
 	public:

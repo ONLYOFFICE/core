@@ -54,6 +54,8 @@
 #include "../../../Common/OfficeFileFormatChecker.h"
 
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+#include "../../../DesktopEditor/common/Directory.h"
+
 namespace PPTX
 {
 	namespace Logic

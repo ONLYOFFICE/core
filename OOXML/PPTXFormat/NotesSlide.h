@@ -36,12 +36,15 @@
 #include "WrapperFile.h"
 #include "FileContainer.h"
 #include "FileTypes.h"
-
 #include "NotesMaster.h"
-#include "Logic/ClrMapOvr.h"
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class ClrMapOvr;
+	}
+
 	class NotesSlide : public WrapperFile, public FileContainer
 	{
 	public:

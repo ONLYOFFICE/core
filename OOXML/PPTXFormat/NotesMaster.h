@@ -39,13 +39,17 @@
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
-#include "Logic/Hf.h"
-#include "Logic/TextListStyle.h"
 #include "TableStyles.h"
 #include "Logic/Shape.h"
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class HF;
+		class TextListStyle;
+	}
+
 	class NotesMaster : public WrapperFile, public FileContainer
 	{
 	public:

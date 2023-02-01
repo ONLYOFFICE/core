@@ -38,24 +38,26 @@
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
-#include "Logic/Transitions/Transition.h"
-#include "Logic/Timing/Timing.h"
-#include "Logic/Hf.h"
-#include "Logic/TxStyles.h"
 #include "Logic/XmlId.h"
 
-#include "Logic/Shape.h"
-#include "Logic/TxBody.h"
-#include "Logic/UniColor.h"
-
-#include "Theme.h"
-#include "TableStyles.h"
-
-#include "../DocxFormat/External/HyperLink.h"
-#include "../DocxFormat/VmlDrawing.h"
+namespace OOX
+{
+	class CVmlDrawing;
+}
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class Transition;
+		class Timing;
+		class HF;
+		class TxStyles;
+	}
+
+	class Theme;
+	class TableStyles;
+
 	class SlideMaster : public WrapperFile, public FileContainer
 	{
 	public:

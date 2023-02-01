@@ -36,10 +36,6 @@
 #include "FileTypes.h"
 
 #include "Presentation/EmbeddedFont.h"
-#include "Presentation/Kinsoku.h"
-#include "Presentation/NotesSz.h"
-#include "Presentation/PhotoAlbum.h"
-#include "Presentation/SldSz.h"
 #include "CommentAuthors.h"
 
 #include "Limit/Conformance.h"
@@ -55,6 +51,15 @@
 
 namespace PPTX
 {
+	namespace nsPresentation
+	{
+		class Kinsoku;
+		class NotesSz;
+		class PhotoAlbum;
+		class SldSz;
+		class SectionLst;
+	}
+
 	class Presentation : public WrapperFile, public PPTX::FileContainer
 	{
 	public:

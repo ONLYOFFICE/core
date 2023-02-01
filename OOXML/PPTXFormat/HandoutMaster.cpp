@@ -31,6 +31,7 @@
  */
 
 #include "HandoutMaster.h"
+#include "Logic/Hf.h"
 
 namespace PPTX
 {

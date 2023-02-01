@@ -31,8 +31,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	ECMACryptFile crypt_file;
 	bool result = false, bDataIntegrity = false;
 
-	std::wstring srcFileName	= L"D:\\tests\\__53\\test123-1.rtf-my.docx";
-	std::wstring dstFileName	= srcFileName + L"-mycrypt.docx";
+	std::wstring srcFileName	= L"D:\\tests\\__63\\test-group-ole.ods-ms.xlsx";
+	std::wstring dstFileName	= srcFileName + L"-mycrypt.xlsx";
 	std::wstring dstFileName2	= dstFileName + L".oox";
 	
 	//std::wstring dstFileName	= srcFileName + L".oox";
@@ -45,19 +45,22 @@ int _tmain(int argc, _TCHAR* argv[])
 	//std::wstring dstFileName1	= srcFileName1 + L".oox";
 	//result = crypt_file.DecryptOfficeFile(srcFileName1, dstFileName1, password, bDataIntegrity);
 			
+
 	result = crypt_file.EncryptOfficeFile(srcFileName, dstFileName, password, L"123456789");
 	//result = crypt_file.DecryptOfficeFile(dstFileName, dstFileName2, password, bDataIntegrity);
 	
-	//std::wstring addit_name = L"11111111111111111111111111111";
-	//	
-	//std::string addit_info = crypt_file.ReadAdditional(srcFileName, addit_name);
+	std::wstring addit_name = L"11111111111111111111111111111";
 
-	//std::wstring temp = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
-	//
-	//addit_info += std::string(temp.begin(), temp.end());
+	for (size_t i = 0; i < 100; ++i)
+	{
+		std::string addit_info = crypt_file.ReadAdditional(dstFileName, addit_name);
 
-	//crypt_file.WriteAdditional(srcFileName, addit_name, addit_info);
-	
+		std::wstring temp = NSFile::CFileBinary::CreateTempFileWithUniqueName(L"", L"asd");
+		//
+		addit_info += std::string(temp.begin(), temp.end());
+
+		crypt_file.WriteAdditional(dstFileName, addit_name, addit_info);
+	}
 	_CrtDumpMemoryLeaks();
 	return 0;
 }

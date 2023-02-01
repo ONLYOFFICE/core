@@ -57,7 +57,7 @@ namespace DocFileFormat
 		/// Writes a border element
 		void writePictureBorder (const std::wstring & name, const BorderCode* brc);
 		void appendStyleProperty( std::wstring& style, const std::wstring& propName, const std::wstring& propValue ) const;
-		bool ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString );
+		bool ParseEmbeddedEquation(std::pair<boost::shared_array<char>, size_t> & data, std::wstring & xmlString );
 		bool ParseEmbeddedBlob(const std::string & xmlString, std::wstring & newXmlString);
 		std::wstring GetShapeID(const Shape* pShape) const;
 	protected:
@@ -70,25 +70,27 @@ namespace DocFileFormat
 		static std::wstring GetTargetExt (Global::BlipType nType);
 		static std::wstring GetContentType (Global::BlipType nType);
 
-		bool							m_isBlob;
-		bool							m_isBullete;
-		bool							m_isEquation;
-		bool							m_isEmbedded;
-		bool							m_isPictureBroken;
-		std::string						m_embeddedData;
-		std::wstring					m_equationXml;
-		std::wstring					m_blobXml;
+		bool m_isBlob = false;
+		bool m_isBullete = false;
+		bool m_isEquation = false;
+		bool m_isEmbedded = false;
+		bool m_isPictureBroken = false;
 		
-		std::wstring					m_shapeId;
+		std::pair<boost::shared_array<char>, size_t> m_embeddedData;
+
+		std::wstring m_equationXml;
+		std::wstring m_blobXml;
+		
+		std::wstring m_shapeId;
 	private:
 		
 		ConversionContext*				m_context;
 		IMapping*						m_caller;
 		int								m_nImageId;
 		
-		bool							m_isOlePreview;		
-		bool							m_isInlinePicture;
-		bool							m_inGroup;
+		bool							m_isOlePreview = false;
+		bool							m_isInlinePicture = false;
+		bool							m_inGroup = false;
 
         XMLTools::XMLElement*           m_imageData;
 		

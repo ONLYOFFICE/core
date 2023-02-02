@@ -30,10 +30,10 @@ namespace SVG
 
 		ApplyStyle(pRenderer, nPathType);
 
-		double dX     = m_oStyle.m_pDisplay.GetX();
-		double dY     = m_oStyle.m_pDisplay.GetY();
-		double dWidth = m_oStyle.m_pDisplay.GetWidth();
-		double dHeight= m_oStyle.m_pDisplay.GetHeight();
+		double dX     = m_oStyle.m_oDisplay.GetX().ToDouble();
+		double dY     = m_oStyle.m_oDisplay.GetY().ToDouble();
+		double dWidth = m_oStyle.m_oDisplay.GetWidth().ToDouble();
+		double dHeight= m_oStyle.m_oDisplay.GetHeight().ToDouble();
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand(c_nPathType);

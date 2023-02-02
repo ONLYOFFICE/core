@@ -19,23 +19,8 @@ namespace SVG
 
 		virtual void AddOtherStyle(const std::pair<std::wstring, std::wstring>& oStyle, const unsigned int unLevel, const bool& bHardMode = true);
 
-		// Fill
-		SvgColorType GetFillType() const;
-		std::wstring GetFill() const;
-		int GetFillN() const;
-
-		// Stroke
-		SvgColorType GetStrokeColorType() const;
-		double GetStrokeWidth() const;
-		int GetStrokeColorN() const;
-
-		// Transform
-		Aggplus::CMatrix GetTransform() const;
-
-	private:
-
-		NSCSS::NSConstValues::NSCssProperties::Stroke    m_pStroke;
-		NSCSS::NSConstValues::NSCssProperties::Transform m_pTransform;
+		NSCSS::NSProperties::CStroke    m_oStroke;
+		NSCSS::NSProperties::CTransform m_oTransform;
 	};
 
 	class CGeneralStyle

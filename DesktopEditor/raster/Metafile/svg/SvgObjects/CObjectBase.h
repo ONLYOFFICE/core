@@ -62,18 +62,19 @@ namespace SVG
 
 		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const
 		{
-			if (SvgColorType::ColorHex == m_oStyle.GetStrokeColorType())
+			if (!m_oStyle.m_oStroke.GetColor().Empty())
 			{
 				nTypePath += c_nStroke;
-				pRenderer->put_PenColor(m_oStyle.GetStrokeColorN());
+				pRenderer->put_PenColor(m_oStyle.m_oStroke.GetColor().ToInt());
 
-				double dStrokeWidth = m_oStyle.GetStrokeWidth();
+				double dStrokeWidth = m_oStyle.m_oStroke.GetWidth().ToDouble();
 
 				if (0 != dStrokeWidth)
 					pRenderer->put_PenSize(dStrokeWidth);
 			}
 			else if (bUseDedault)
 				ApplyDefaultStroke(pRenderer, nTypePath);
+
 		}
 
 		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath) const
@@ -84,14 +85,13 @@ namespace SVG
 
 		void ApplyFill(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const
 		{
-			if (SvgColorType::ColorHex == m_oStyle.GetFillType())
+			if (NSCSS::NSProperties::ColorType::ColorNone == m_oStyle.m_oBackground.GetColor().GetType())
+				return;
+			else if (NSCSS::NSProperties::ColorType::ColorHEX == m_oStyle.m_oBackground.GetColor().GetType() ||
+			         NSCSS::NSProperties::ColorType::ColorRGB == m_oStyle.m_oBackground.GetColor().GetType())
 			{
 				nTypePath += c_nWindingFillMode;
-				pRenderer->put_BrushColor1(m_oStyle.GetFillN());
-			}
-			else if (SvgColorType::ColorNone == m_oStyle.GetFillType())
-			{
-				return;
+				pRenderer->put_BrushColor1(m_oStyle.m_oBackground.GetColor().ToInt());
 			}
 			else if (bUseDedault)
 			{
@@ -103,27 +103,27 @@ namespace SVG
 		{
 			pRenderer->ResetTransform();
 
-			Aggplus::CMatrix oMatrix = m_oStyle.GetTransform();
+			Aggplus::CMatrix oMatrix = m_oStyle.m_oTransform.GetMatrix().GetValue();
 
 			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 		}
 
 		void ApplyFont(IRenderer* pRenderer, double dScaleX) const
 		{
-			std::wstring wsName = m_oStyle.m_pFont.GetFamily();
+			std::wstring wsName = m_oStyle.m_oFont.GetFamily().ToWString();
 
 			if (!wsName.empty())
 				pRenderer->put_FontName(wsName.substr(1, wsName.length() - 2));
 
-			double dSize = m_oStyle.m_pFont.GetSize() /** dScaleX*/;
+			double dSize = m_oStyle.m_oFont.GetSize().ToDouble() /** dScaleX*/;
 
 			if (0 != dSize)
 				pRenderer->put_FontSize(dSize / 25.4 * 72);
 
 			int lStyle = 0;
-			if (L"bold" == m_oStyle.m_pFont.GetWeight())
+			if (m_oStyle.m_oFont.GetWeight() == L"bold")
 				lStyle |= 0x01;
-			if (L"italic" == m_oStyle.m_pFont.GetStyle())
+			if (m_oStyle.m_oFont.GetStyle() == L"italic")
 				lStyle |= 0x02;
 //			if (pFont->IsUnderline())
 //				lStyle |= (1 << 2);
@@ -134,7 +134,7 @@ namespace SVG
 
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 
-			int nColor = m_oStyle.GetFillN();
+			int nColor = m_oStyle.m_oBackground.GetColor().ToInt();
 
 			if (-1 == nColor)
 				pRenderer->put_BrushColor1(0);

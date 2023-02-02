@@ -28,9 +28,7 @@ namespace SVG
 	}
 
 	CStyle::CStyle()
-	{
-		m_pBackground.SavebWithoutProcessing();
-	}
+	{}
 
 	CStyle::~CStyle()
 	{
@@ -41,126 +39,27 @@ namespace SVG
 	{
 		if (L"fill" == oStyle.first)
 		{
-			m_pBackground.SavebWithoutProcessing();
-
-			const size_t unPositionImp = oStyle.second.find(L"!i");
-			if (unPositionImp == std::wstring::npos)
-			{
-				m_pBackground.SetColor(oStyle.second, unLevel, bHardMode);
-			}
-			else if (unPositionImp != 0)
-			{
-				m_pBackground.SetColor(oStyle.second.substr(0, unPositionImp - 1), unLevel, true);
-				m_pBackground.SetImportantBackground(true);
-			}
+			m_oBackground.SetColor(oStyle.second, unLevel, bHardMode);
 		}
 		else if (L"stroke" == oStyle.first)
 		{
-			const size_t unPositionImp = oStyle.second.find(L"!i");
-			if (unPositionImp == std::wstring::npos)
-			{
-				m_pStroke.SetColor(oStyle.second, unLevel, bHardMode);
-			}
-			else if (unPositionImp != 0)
-			{
-				m_pStroke.SetColor(oStyle.second.substr(0, unPositionImp - 1), unLevel, true);
-				m_pStroke.SetImportantColor(true);
-			}
+			m_oStroke.SetColor(oStyle.second, unLevel, bHardMode);
 		}
 		else if (L"stroke-width" == oStyle.first)
 		{
-			const size_t unPositionImp = oStyle.second.find(L"!i");
-			if (unPositionImp == std::wstring::npos)
-			{
-				const double dValue = wcstof(ConvertUnitMeasure(oStyle.second, 0.0f).c_str(), NULL);
-				m_pStroke.SetWidth(dValue, unLevel, bHardMode);
-			}
-			else if (unPositionImp != 0)
-			{
-				const double dValue = wcstof(ConvertUnitMeasure(oStyle.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
-				m_pStroke.SetWidth(dValue, unLevel, true);
-				m_pStroke.SetImportantWidth(true);
-			}
+			m_oStroke.SetWidth(ConvertUnitMeasure(oStyle.second, 0.0f), unLevel, bHardMode);
 		}
 		else if (L"transform" == oStyle.first)
 		{
-			const size_t unPositionImp = oStyle.second.find(L"!i");
-			if (unPositionImp == std::wstring::npos)
-			{
-				m_pTransform.SetTransform(StrUtils::ReadDoubleValues(oStyle.second), m_pTransform.GetTransformType(oStyle.second), unLevel, bHardMode);
-			}
-			else if (unPositionImp != 0)
-			{
-				std::wstring wsTempValue = oStyle.second.substr(0, unPositionImp - 1);
-				m_pTransform.SetTransform(StrUtils::ReadDoubleValues(wsTempValue), m_pTransform.GetTransformType(wsTempValue), unLevel, true);
-				m_pTransform.SetImportantTransform(true);
-			}
+			m_oTransform.SetMatrix(oStyle.second, unLevel, bHardMode);
 		}
 		else if (L"x" == oStyle.first)
 		{
-			const size_t unPositionImp = oStyle.second.find(L"!i");
-			if (unPositionImp == std::wstring::npos)
-			{
-				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second, m_pDisplay.GetWidth()).c_str(), NULL);
-				m_pDisplay.SetX(dValue, unLevel, bHardMode);
-			}
-			else if (unPositionImp != 0)
-			{
-				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second.substr(0, unPositionImp - 1), m_pDisplay.GetWidth()).c_str(), NULL);
-				m_pDisplay.SetX(dValue, unLevel, true);
-				m_pDisplay.SetImportantX(true);
-			}
+			m_oDisplay.SetX(ConvertUnitMeasure(oStyle.second, m_oDisplay.GetWidth().ToDouble(), NSCSS::ScalingDirectionX), unLevel, bHardMode);
 		}
 		else if (L"y" == oStyle.first)
 		{
-			const size_t unPositionImp = oStyle.second.find(L"!i");
-			if (unPositionImp == std::wstring::npos)
-			{
-				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second, 0.0f).c_str(), NULL);
-				m_pDisplay.SetY(dValue, unLevel, bHardMode);
-			}
-			else if (unPositionImp != 0)
-			{
-				const double dValue = wcstod(ConvertUnitMeasure(oStyle.second.substr(0, unPositionImp - 1), 0.0f).c_str(), NULL);
-				m_pDisplay.SetY(dValue, unLevel, true);
-				m_pDisplay.SetImportantY(true);
-			}
+			m_oDisplay.SetY(ConvertUnitMeasure(oStyle.second, m_oDisplay.GetWidth().ToDouble(), NSCSS::ScalingDirectionY), unLevel, bHardMode);
 		}
 	}
-
-	NSCSS::NSConstValues::NSCssProperties::ColorType CStyle::GetFillType() const
-	{
-		return m_pBackground.GetColorType();
-	}
-
-	std::wstring CStyle::GetFill() const
-	{
-		return m_pBackground.GetColorHex();
-	}
-
-	int CStyle::GetFillN() const
-	{
-		return m_pBackground.GetColorN();
-	}
-
-	NSCSS::NSConstValues::NSCssProperties::ColorType CStyle::GetStrokeColorType() const
-	{
-		return m_pStroke.GetColorType();
-	}
-
-	double CStyle::GetStrokeWidth() const
-	{
-		return m_pStroke.GetWidth();
-	}
-
-	int CStyle::GetStrokeColorN() const
-	{
-		return m_pStroke.GetColorN();
-	}
-
-	Aggplus::CMatrix CStyle::GetTransform() const
-	{
-		return m_pTransform.GetTransform();
-	}
-
 }

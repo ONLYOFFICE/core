@@ -545,8 +545,8 @@ namespace OOX
 
 				if (pItem)
 				{
-					m_arrItems.push_back(pItem);
 					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
 				}
 			}
 		}
@@ -857,8 +857,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 			m_nCountCell = nNumCol;
@@ -1138,8 +1138,8 @@ namespace OOX
 				}
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}

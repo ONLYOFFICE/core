@@ -384,14 +384,15 @@ namespace OOX
 			else if (L"docParts" == sName && !oReader.IsEmptyNode())
 			{
 				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
-				m_arrItems.push_back(pItem);
+				
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ( pItem )
 			{
-				m_arrItems.push_back( pItem );
 				pItem->fromXML(oReader);
+				m_arrItems.push_back( pItem );
 			}
 		}
 	}

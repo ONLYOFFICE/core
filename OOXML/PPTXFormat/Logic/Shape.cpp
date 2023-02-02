@@ -39,6 +39,7 @@
 #include "Pic.h"
 
 #include "../NotesSlide.h"
+#include "../NotesMaster.h"
 
 namespace PPTX
 {

@@ -39,8 +39,6 @@
 
 #include "Logic/ClrMap.h"
 #include "Logic/CSld.h"
-#include "TableStyles.h"
-#include "Logic/Shape.h"
 
 namespace PPTX
 {
@@ -49,6 +47,9 @@ namespace PPTX
 		class HF;
 		class TextListStyle;
 	}
+
+	class Theme;
+	class TableStyles;
 
 	class NotesMaster : public WrapperFile, public FileContainer
 	{

@@ -36,7 +36,7 @@
 #include "WrapperFile.h"
 #include "FileContainer.h"
 #include "FileTypes.h"
-#include "NotesMaster.h"
+#include "Logic/CSld.h"
 
 namespace PPTX
 {
@@ -44,6 +44,9 @@ namespace PPTX
 	{
 		class ClrMapOvr;
 	}
+
+	class Theme;
+	class NotesMaster;
 
 	class NotesSlide : public WrapperFile, public FileContainer
 	{

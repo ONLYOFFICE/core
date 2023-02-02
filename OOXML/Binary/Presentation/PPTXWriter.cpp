@@ -37,6 +37,14 @@
 #include "../../PPTXFormat/Logic/TxStyles.h"
 #include "../../PPTXFormat/Logic/Hf.h"
 
+#include "../../PPTXFormat/ViewProps/GridSpacing.h"
+#include "../../PPTXFormat/ViewProps/NormalViewPr.h"
+#include "../../PPTXFormat/ViewProps/NotesTextViewPr.h"
+#include "../../PPTXFormat/ViewProps/NotesViewPr.h"
+#include "../../PPTXFormat/ViewProps/OutlineViewPr.h"
+#include "../../PPTXFormat/ViewProps/SlideViewPr.h"
+#include "../../PPTXFormat/ViewProps/SorterViewPr.h"
+
 namespace NSBinPptxRW
 {
 		CPPTXWriter::CPPTXWriter() : m_oPresentation(&m_oDocument), m_oTableStyles(&m_oDocument), m_oVmlDrawing(&m_oDocument),

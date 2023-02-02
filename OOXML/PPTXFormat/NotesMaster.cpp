@@ -31,8 +31,11 @@
  */
 
 #include "NotesMaster.h"
+
+#include "TableStyles.h"
 #include "Logic/Hf.h"
 #include "Logic/TextListStyle.h"
+#include "Logic/Shape.h"
 
 namespace PPTX
 {

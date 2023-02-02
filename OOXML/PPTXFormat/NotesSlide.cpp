@@ -31,6 +31,8 @@
  */
 
 #include "NotesSlide.h"
+
+#include "NotesMaster.h"
 #include "Logic/ClrMapOvr.h"
 
 namespace PPTX

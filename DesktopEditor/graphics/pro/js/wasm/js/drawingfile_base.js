@@ -387,6 +387,7 @@
 			var rec = {};
 			rec["name"] = reader.readString();
 			rec["page"] = reader.readInt();
+			// Необходимо смещение полученных координат как у getLinks
 			rec["x1"] = reader.readDouble();
 			rec["y1"] = reader.readDouble();
 			rec["x2"] = reader.readDouble();

@@ -179,7 +179,6 @@ bool scanFonts(Dict *pResources, PDFDoc *pDoc, const std::vector<std::string>& a
 
     return false;
 }
-
 bool CPdfReader::IsNeedCMap()
 {
     std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
@@ -732,17 +731,17 @@ BYTE* CPdfReader::GetWidgets()
     {
         AcroFormField* pField = pAcroForms->getField(i);
 
-        // Полное имя поля
+        // Полное имя поля - T (parent_full_name.child_name)
         int nLengthName;
         Unicode* uName = pField->getName(&nLengthName);
         std::string sName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
         oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
 
-        // Номер страницы
+        // Номер страницы - P
         int nPage = pField->getPageNum();
         oRes.AddInt(nPage - 1);
 
-        // Координаты
+        // Координаты - BBox
         double dx1, dy1, dx2, dy2;
         pField->getBBox(&dx1, &dy1, &dx2, &dy2);
         double height = m_pPDFDocument->getPageCropHeight(nPage);
@@ -751,18 +750,18 @@ BYTE* CPdfReader::GetWidgets()
         oRes.AddDouble(dx2);
         oRes.AddDouble(height - dy2);
 
-        // Тип
+        // Тип - FT + флаги
         AcroFormFieldType oType = pField->getAcroFormFieldType();
         std::string sType;
         switch (oType)
         {
-        case acroFormFieldPushbutton:    sType = "pushbutton";    break;
+        case acroFormFieldPushbutton:    sType = "button";        break;
         case acroFormFieldRadioButton:   sType = "radiobutton";   break;
         case acroFormFieldCheckbox:      sType = "checkbox";      break;
-        case acroFormFieldFileSelect:    sType = "fileselect";    break;
-        case acroFormFieldMultilineText: sType = "multilinetext"; break;
+        case acroFormFieldFileSelect:    sType = "text"/*"fileselect"*/;    break;
+        case acroFormFieldMultilineText: sType = "text"/*"multilinetext"*/; break;
         case acroFormFieldText:          sType = "text";          break;
-        case acroFormFieldBarcode:       sType = "barcode";       break;
+        case acroFormFieldBarcode:       sType = "text"/*"barcode"*/;       break;
         case acroFormFieldComboBox:      sType = "combobox";      break;
         case acroFormFieldListBox:       sType = "listbox";       break;
         case acroFormFieldSignature:     sType = "signature";     break;
@@ -770,7 +769,54 @@ BYTE* CPdfReader::GetWidgets()
         }
         oRes.WriteString((BYTE*)sType.c_str(), (unsigned int)sType.length());
 
-        // TO DO здесь возможно записать флаги необходимые каждому типу
+        // Цвет - оператор g/rg в DA
+        double r, g, b;
+        pField->getColor(&r, &g, &b);
+
+        // Шрифт и размер шрифта - операторы Tf и Tm в DA
+        Ref pFontRef; double dFontSize;
+        pField->getFont(&pFontRef, &dFontSize);
+
+        Object oFieldRef, oField, oTU;
+        XRef* xref = m_pPDFDocument->getXRef();
+        if (xref && pField->getFieldRef(&oFieldRef) && oFieldRef.isRef() && oFieldRef.fetch(xref, &oField) && oField.isDict() && oField.dictLookup("TU", &oTU) && oTU.isString())
+        {
+            // Альтернативное имя поля, используется во всплывающей подсказке - TU
+            TextString* s = new TextString(oTU.getString());
+            std::string sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            delete s;
+        }
+        oFieldRef.free(); oField.free(); oTU.free();
+
+        // Запись флагов необходимых каждому типу
+        switch (oType)
+        {
+        case acroFormFieldPushbutton:
+        case acroFormFieldRadioButton:
+        case acroFormFieldCheckbox:
+        {
+            break;
+        }
+        case acroFormFieldFileSelect:
+        case acroFormFieldMultilineText:
+        case acroFormFieldText:
+        case acroFormFieldBarcode:
+        {
+            // Максимальное количество символов в Tx - MaxLen
+            int nMaxLen = pField->getMaxLen();
+
+            break;
+        }
+        case acroFormFieldComboBox:
+        case acroFormFieldListBox:
+        {
+            break;
+        }
+        case acroFormFieldSignature:
+        {
+            break;
+        }
+        }
     }
 
     oRes.WriteLen();

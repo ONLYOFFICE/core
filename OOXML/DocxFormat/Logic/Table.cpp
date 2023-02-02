@@ -1105,7 +1105,7 @@ namespace OOX
 				else if ( _T("m:oMathPara") == sName )
 					pItem = new COMathPara( document );
 				else if ( _T("w:p") == sName )
-					pItem = new CParagraph( document );
+					pItem = new CParagraph( document, this );
 				else if ( _T("w:permEnd") == sName )
 					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )

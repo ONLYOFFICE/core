@@ -41,6 +41,8 @@
 #include "../Drawing/Drawing.h"
 #include "../Comments.h"
 
+#include "Table.h"
+#include "Paragraph.h"
 #include "AlternateContent.h"
 #include "RunProperty.h"
 #include "RunContent.h"
@@ -55,9 +57,10 @@ namespace OOX
 {
 	namespace Logic
 	{
-		CRun::CRun(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
+		CRun::CRun(OOX::Document *pMain, WritingElement *parent) : WritingElementWithChilds<>(pMain)
 		{
 			m_oRunProperty = NULL;
+			m_oParent = parent;
 		}
 		CRun::CRun(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
 		{
@@ -286,6 +289,22 @@ namespace OOX
 						docx_flat->m_pSettings->m_oEndnotePr.Init();
 				}
 				pItem = pEndRef;
+			}
+			else if (L"tbl" == sName)
+			{//ERP
+				CParagraph *paragraph = dynamic_cast<CParagraph*>(m_oParent);
+				WritingElementWithChilds *parent = paragraph ? dynamic_cast<WritingElementWithChilds*>(paragraph->m_oParent) : NULL;
+
+				if (!parent) parent = dynamic_cast<WritingElementWithChilds*>(m_oParent);
+				if (parent)
+				{
+					WritingElement *pItemUpper = new CTbl(document);
+					if (pItemUpper)
+					{
+						pItemUpper->fromXML(oReader);
+						parent->m_arrItems.push_back(pItemUpper);
+					}
+				}
 			}
 			else if ( L"endnoteRef" == sName )
 				pItem = new CEndnoteRef( document );

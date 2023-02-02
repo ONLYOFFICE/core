@@ -325,7 +325,7 @@ namespace OOX
 			else if (L"m:oMathPara" == sName )
 				pItem = new Logic::COMathPara( document );
 			else if (L"p" == sName )
-				pItem = new Logic::CParagraph( document );
+				pItem = new Logic::CParagraph( document, this );
 			else if (L"permEnd" == sName )
 				pItem = new Logic::CPermEnd( document );
 			else if (L"permStart" == sName )

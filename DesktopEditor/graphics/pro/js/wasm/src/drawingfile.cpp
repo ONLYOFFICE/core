@@ -401,7 +401,8 @@ int main()
 			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Type " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			std::string sType = std::string((char*)(pWidgets + i), nPathLength);
+			std::cout << "Type " << sType << ", ";
 			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
@@ -410,12 +411,15 @@ int main()
 			i += 4;
 			std::cout << "Flags " << nPathLength << ", ";
 			int nFlags = nPathLength;
-			if (nFlags & (1 << 0))
+			if (sType == "checkbox" || sType == "radiobutton")
 			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-				i += nPathLength;
+				if (nFlags & (1 << 0))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
 			}
 			std::cout << std::endl;
 		}

@@ -396,9 +396,14 @@
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();
 			var flags = reader.readInt();
-			if (flags & (1 << 0)
+
+			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton")
+			{
+				if (flags & (1 << 0)
 				// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 				rec["userName"] = reader.readString();
+			}
+
 			res.push(rec);
 		}
 

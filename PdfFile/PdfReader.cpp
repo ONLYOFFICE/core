@@ -736,6 +736,7 @@ BYTE* CPdfReader::GetWidgets()
         Unicode* uName = pField->getName(&nLengthName);
         std::string sName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
         oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+        gfree(uName);
 
         // Номер страницы - P
         int nPage = pField->getPageNum();
@@ -770,31 +771,88 @@ BYTE* CPdfReader::GetWidgets()
         oRes.WriteString((BYTE*)sType.c_str(), (unsigned int)sType.length());
 
         // Цвет - оператор g/rg в DA
-        double r, g, b;
-        pField->getColor(&r, &g, &b);
+        // double r, g, b;
+        // pField->getColor(&r, &g, &b);
 
         // Шрифт и размер шрифта - операторы Tf и Tm в DA
-        Ref pFontRef; double dFontSize;
-        pField->getFont(&pFontRef, &dFontSize);
+        // Ref pFontRef; double dFontSize;
+        // pField->getFont(&pFontRef, &dFontSize);
 
-        Object oFieldRef, oField, oTU;
+        // Флаг - Ff
+        unsigned int nFlag = pField->getFlags();
+        oRes.AddInt(nFlag);
+
+        int nFlags = 0;
+        Object oFieldRef, oField;
         XRef* xref = m_pPDFDocument->getXRef();
-        if (xref && pField->getFieldRef(&oFieldRef) && oFieldRef.isRef() && oFieldRef.fetch(xref, &oField) && oField.isDict() && oField.dictLookup("TU", &oTU) && oTU.isString())
+        std::string sTU;
+        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
         {
-            // Альтернативное имя поля, используется во всплывающей подсказке - TU
+            oRes.AddInt(nFlags);
+            continue;
+        }
+
+        Object oTU;
+        // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
+        if (oField.dictLookup("TU", &oTU) && oTU.isString())
+        {
             TextString* s = new TextString(oTU.getString());
-            std::string sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            nFlags |= (1 << 0);
             delete s;
         }
-        oFieldRef.free(); oField.free(); oTU.free();
+        oTU.free();
 
-        // Запись флагов необходимых каждому типу
+        // Запись данных необходимых каждому типу
         switch (oType)
         {
-        case acroFormFieldPushbutton:
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
+            // 2 - Включено
+
+            int nValueLength;
+            Unicode* pValue = pField->getValue(&nValueLength);
+            std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(pValue, nValueLength);
+            gfree(pValue);
+
+            if (sValue != "Off")
+                nFlags |= (1 << 1);
+
+            // Если Checkbox/RadioButton наследует Opt, то состояние соответствует порядковому в массиве Kids из Opt
+            int nDepth = 0;
+            Object oParentObj;
+            oField.dictLookup("Parent", &oParentObj);
+            while (oParentObj.isDict() && nDepth < 50)
+            {
+                Object oOpt, oKids;
+                if (oParentObj.dictLookup("Opt", &oOpt) && oOpt.isArray() && oParentObj.dictLookup("Kids", &oKids) && oKids.isArray() && oOpt.arrayGetLength() == oKids.arrayGetLength())
+                {
+                    for (int j = 0, nLength = oOpt.arrayGetLength(); j < nLength; ++j)
+                    {
+                        Object oOptJ, oOptI;
+                        if (oKids.arrayGetNF(j, &oOptJ) && oOptJ.isRef() && oOptJ.getRefGen() == oFieldRef.getRefGen() && oOptJ.getRefNum() == oFieldRef.getRefNum() &&
+                                oOpt.arrayGet(j, &oOptI) && oOptI.isString())
+                        {
+                            TextString* s = new TextString(oOptI.getString());
+                            sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                            if (sValue != "Off")
+                                nFlags |= (1 << 1);
+                            delete s;
+                        }
+                        oOptJ.free(); oOptI.free();
+                    }
+                }
+                oOpt.free(); oKids.free();
+
+                Object oParentObj2;
+                oParentObj.dictLookup("Parent", &oParentObj2);
+                oParentObj.free();
+                oParentObj = oParentObj2;
+                ++nDepth;
+            }
+            oParentObj.free();
+
             break;
         }
         case acroFormFieldFileSelect:
@@ -816,7 +874,17 @@ BYTE* CPdfReader::GetWidgets()
         {
             break;
         }
+        // Pushbutton не сохраняет постоянного значения, он не должен использовать записи V и DV
+        case acroFormFieldPushbutton:
+        default:
+            break;
         }
+        oFieldRef.free(); oField.free();
+
+        // 1 - Альтернативное имя
+        oRes.AddInt(nFlags);
+        if (nFlags & (1 << 0))
+            oRes.WriteString((BYTE*)sTU.c_str(), (unsigned int)sTU.length());
     }
 
     oRes.WriteLen();

@@ -401,8 +401,23 @@ int main()
 			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Type " << std::string((char*)(pWidgets + i), nPathLength) << std::endl;
+			std::cout << "Type " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Flag " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Flags " << nPathLength << ", ";
+			int nFlags = nPathLength;
+			if (nFlags & (1 << 0))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			std::cout << std::endl;
 		}
 
 		std::cout << std::endl;

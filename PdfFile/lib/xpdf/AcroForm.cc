@@ -646,7 +646,7 @@ AcroFormField *AcroFormField::load(AcroForm *acroFormA, Object *fieldRefA) {
 
   if (fieldObjA.dictLookup("Ff", &obj1)->isInt()) {
     flagsA = (Guint)obj1.getInt();
-    haveFlags = gTrue;
+    haveFlags = flagsA ? gTrue : gFalse;
   } else {
     flagsA = 0;
     haveFlags = gFalse;
@@ -674,10 +674,11 @@ AcroFormField *AcroFormField::load(AcroForm *acroFormA, Object *fieldRefA) {
       obj1.free();
     }
 
-    if (!haveFlags || !flagsA) {
+    if (!haveFlags) {
       if (parentObj.dictLookup("Ff", &obj1)->isInt()) {
 	flagsA = (Guint)obj1.getInt();
-	haveFlags = gTrue;
+    if (flagsA)
+      haveFlags = gTrue;
       }
       obj1.free();
     }

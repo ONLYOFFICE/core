@@ -90,6 +90,7 @@ public:
   void getFont(Ref *fontID, double *fontSize);
   void getColor(double *red, double *green, double *blue);
   int getMaxLen();
+  Guint getFlags() { return flags; }
 
   Object *getResources(Object *res);
 

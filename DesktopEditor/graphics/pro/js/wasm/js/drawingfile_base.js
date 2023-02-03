@@ -392,7 +392,13 @@
 			rec["y1"] = reader.readDouble();
 			rec["x2"] = reader.readDouble();
 			rec["y2"] = reader.readDouble();
+
 			rec["type"] = reader.readString();
+			rec["flag"] = reader.readInt();
+			var flags = reader.readInt();
+			if (flags & (1 << 0)
+				// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
+				rec["userName"] = reader.readString();
 			res.push(rec);
 		}
 

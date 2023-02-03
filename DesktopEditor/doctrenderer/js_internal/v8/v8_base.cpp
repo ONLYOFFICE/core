@@ -219,13 +219,16 @@ namespace NSJSBase
 #ifdef V8_INSPECTOR
 		v8_debug::disposeInspector(m_internal->m_context);
 #endif
+		m_internal->m_contextPersistent.Reset();
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
 	}
 
 	void CJSContext::CreateContext()
 	{
-		m_internal->m_context = v8::Context::New(CV8Worker::GetCurrent(), NULL, m_internal->m_global);
+		v8::Isolate::Scope iscope(m_internal->m_isolate);
+		v8::HandleScope scope(m_internal->m_isolate);
+		m_internal->m_contextPersistent.Reset(m_internal->m_isolate, v8::Context::New(m_internal->m_isolate, NULL, m_internal->m_global));
 	}
 
 	void CJSContext::CreateGlobalForContext()
@@ -240,24 +243,41 @@ namespace NSJSBase
 		return ret;
 	}
 
-	CJSIsolateScope* CJSContext::CreateIsolateScope()
+//	CJSIsolateScope* CJSContext::CreateIsolateScope()
+//	{
+//		return new CJSIsolateScopeV8(m_internal->m_isolate);
+//	}
+
+//	CJSContextScope* CJSContext::CreateContextScope()
+//	{
+//		CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
+
+//		JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
+//		global->set("window", global.GetPointer());
+
+//		return pScope;
+//	}
+
+//	CJSLocalScope* CJSContext::CreateLocalScope()
+//	{
+//		return new CJSLocalScopeV8();
+//	}
+
+	void CJSContext::Enter()
 	{
-		return new CJSIsolateScopeV8(m_internal->m_isolate);
+		std::cout << "Entering isolate \t" << m_internal->m_isolate << std::endl;
+		m_internal->m_isolate->Enter();
+		m_internal->m_scope = new CJSLocalScopeV8();
+		m_internal->m_context = v8::Local<v8::Context>::New(m_internal->m_isolate, m_internal->m_contextPersistent);
+		m_internal->m_context->Enter();
 	}
 
-	CJSContextScope* CJSContext::CreateContextScope()
+	void CJSContext::Exit()
 	{
-		CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
-
-		JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
-		global->set("window", global.GetPointer());
-
-		return pScope;
-	}
-
-	CJSLocalScope* CJSContext::CreateLocalScope()
-	{
-		return new CJSLocalScopeV8();
+		std::cout << "Exiting isolate \t" << m_internal->m_isolate << std::endl;
+		m_internal->m_context->Exit();
+		delete(m_internal->m_scope);
+		m_internal->m_isolate->Exit();
 	}
 
 	CJSValue* CJSContext::createUndefined()
@@ -394,7 +414,7 @@ namespace NSJSBase
 				return _return;
 	}
 
-	CJSContext* CJSContext::GetCurrent()
+	JSSmart<CJSContext> CJSContext::GetCurrent()
 	{
 		CJSContext* ret = new CJSContext();
 		ret->m_internal->m_isolate = CV8Worker::GetCurrent();

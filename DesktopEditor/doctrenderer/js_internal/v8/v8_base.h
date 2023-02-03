@@ -764,9 +764,11 @@ namespace NSJSBase
     public:
         CV8Worker m_oWorker;
         v8::Isolate* m_isolate;
+		CJSLocalScope* m_scope;
 
         v8::Local<v8::ObjectTemplate>   m_global;
-        v8::Local<v8::Context>          m_context;
+		v8::Persistent<v8::Context>     m_contextPersistent;
+		v8::Local<v8::Context>			m_context;
 
     public:
         CJSContextPrivate() : m_oWorker(), m_isolate(NULL)

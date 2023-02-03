@@ -242,9 +242,13 @@ namespace NSJSBase
         void CreateGlobalForContext();
         CJSObject* GetGlobal();
 
-        CJSIsolateScope* CreateIsolateScope();
-        CJSContextScope* CreateContextScope();
-        CJSLocalScope* CreateLocalScope();
+//        CJSIsolateScope* CreateIsolateScope();
+//        CJSContextScope* CreateContextScope();
+//        CJSLocalScope* CreateLocalScope();
+
+		// Use this methods before working with needed context if you want to work with multiple contexts simultaneously
+		void Enter();
+		void Exit();
 
         JSSmart<CJSValue> runScript(const std::string& script, JSSmart<CJSTryCatch> exception = NULL, const std::wstring& scriptPath = std::wstring(L""));
         CJSValue* JSON_Parse(const char* json_content);
@@ -286,7 +290,7 @@ namespace NSJSBase
         }
 
     public:
-        static CJSContext* GetCurrent();
+		static JSSmart<CJSContext> GetCurrent();
 
     public:
         static void ExternalInitialize(const std::wstring& sDirectory);

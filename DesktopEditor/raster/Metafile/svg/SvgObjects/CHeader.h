@@ -17,11 +17,6 @@ namespace SVG
 		void GetBounds(double &dX, double &dY, double &dWidth, double &dHeight);
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
-
-		double m_dX;
-		double m_dY;
-		double m_dWidth;
-		double m_dHeight;
 	};
 }
 #endif // CHEADER_H

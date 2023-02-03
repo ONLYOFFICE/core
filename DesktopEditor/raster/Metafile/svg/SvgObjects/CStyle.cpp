@@ -1,5 +1,6 @@
 #include "CStyle.h"
 
+#include "CObjectBase.h"
 #include "../SvgUtils.h"
 
 namespace SVG
@@ -22,9 +23,15 @@ namespace SVG
 	CStyle CGeneralStyle::GetStyle(const std::vector<NSCSS::CNode>& arNodes) const
 	{
 		CStyle oStyle;
+
 		m_oCssCalculator.GetCompiledStyle(oStyle, arNodes);
 
 		return oStyle;
+	}
+
+	void CGeneralStyle::SetStyle(CObjectBase &oObject)
+	{
+
 	}
 
 	CStyle::CStyle()
@@ -53,13 +60,21 @@ namespace SVG
 		{
 			m_oTransform.SetMatrix(oStyle.second, unLevel, bHardMode);
 		}
-		else if (L"x" == oStyle.first)
+		else if (L"x" == oStyle.first || L"cx" == oStyle.first)
 		{
 			m_oDisplay.SetX(ConvertUnitMeasure(oStyle.second, m_oDisplay.GetWidth().ToDouble(), NSCSS::ScalingDirectionX), unLevel, bHardMode);
 		}
-		else if (L"y" == oStyle.first)
+		else if (L"y" == oStyle.first || L"cy" == oStyle.first)
 		{
 			m_oDisplay.SetY(ConvertUnitMeasure(oStyle.second, m_oDisplay.GetWidth().ToDouble(), NSCSS::ScalingDirectionY), unLevel, bHardMode);
+		}
+		else if (L"dx" == oStyle.first)
+		{
+			m_oDisplay.AddX(ConvertUnitMeasure(oStyle.second, m_oDisplay.GetWidth().ToDouble(), NSCSS::ScalingDirectionX), unLevel, bHardMode);
+		}
+		else if (L"dy" == oStyle.first)
+		{
+			m_oDisplay.AddY(ConvertUnitMeasure(oStyle.second, m_oDisplay.GetWidth().ToDouble(), NSCSS::ScalingDirectionY), unLevel, bHardMode);
 		}
 	}
 }

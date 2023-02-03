@@ -29,11 +29,6 @@ namespace SVG
 		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile, CObjectBase *pParent = NULL) const;
 
 		NSFonts::IFontManager  *m_pFontManager;
-
-		double m_dX;
-		double m_dY;
-		double m_dWidth;
-		double m_dHeigh;
 	};
 }
 

@@ -17,9 +17,9 @@ namespace SVG
 		if (!oNode.IsValid())
 			return false;
 
-		m_dCx = oNode.GetAttributeDouble(L"cx");
-		m_dCy = oNode.GetAttributeDouble(L"cy");
-		m_dR  = oNode.GetAttributeDouble(L"r");
+//		m_dCx = oNode.GetAttributeDouble(L"cx");
+//		m_dCy = oNode.GetAttributeDouble(L"cy");
+//		m_dR  = oNode.GetAttributeDouble(L"r");
 
 		SaveNodeData(oNode, oBaseStyle);
 

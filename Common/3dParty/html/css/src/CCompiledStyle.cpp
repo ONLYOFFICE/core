@@ -572,9 +572,7 @@ namespace NSCSS
 			else if (sValueTemp.find(L"mm") != std::wstring::npos)
 			{
 				int nValue = ConvertMm(sValueTemp);
-				std::wcout << sValueTemp << L" -> " << nValue;
 				Scale(nValue, enScalingDirection);
-				std::wcout << L" -> " << nValue << std::endl;
 				sValueString += std::to_wstring(nValue);
 
 				if (sValueTemp.find(L';') != std::wstring::npos)
@@ -680,7 +678,7 @@ namespace NSCSS
 			return 0;
 
 		const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"px") - 1);
-		const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+		const float dValue = wcstof(sConvertValue.c_str(), NULL);
 
 		switch (m_UnitMeasure)
 		{
@@ -733,7 +731,7 @@ namespace NSCSS
 			return 0;
 
 		const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"cm") - 1);
-		const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+		const float dValue = wcstof(sConvertValue.c_str(), NULL);
 
 		switch (m_UnitMeasure)
 		{
@@ -786,7 +784,7 @@ namespace NSCSS
 			return 0;
 
 		const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"mm") - 1);
-		const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+		const float dValue = wcstof(sConvertValue.c_str(), NULL);
 
 		switch (m_UnitMeasure)
 		{
@@ -838,7 +836,7 @@ namespace NSCSS
 			return 0;
 
 		const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"in") - 1);
-		const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+		const float dValue = wcstof(sConvertValue.c_str(), NULL);
 
 		switch (m_UnitMeasure)
 		{
@@ -890,7 +888,7 @@ namespace NSCSS
 			return 0;
 
 		const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pt") - 1);
-		float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+		float dValue = wcstof(sConvertValue.c_str(), NULL);
 
 		switch (m_UnitMeasure)
 		{
@@ -943,7 +941,7 @@ namespace NSCSS
 			return 0;
 
 		const std::wstring& sConvertValue = sValue.substr(0, sValue.find_last_of(L"pc") - 1);
-		const float dValue = wcstof(sConvertValue.c_str(), NULL) * 2.0f;
+		const float dValue = wcstof(sConvertValue.c_str(), NULL);
 
 		switch (m_UnitMeasure)
 		{

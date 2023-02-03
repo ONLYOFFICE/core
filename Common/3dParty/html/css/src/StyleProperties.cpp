@@ -288,6 +288,12 @@ namespace NSCSS
 		return *this;
 	}
 
+	CDigit &CDigit::operator+=(double dValue)
+	{
+		m_oValue += dValue;
+		return *this;
+	}
+
 	CDigit &CDigit::operator*=(double dValue)
 	{
 		m_oValue *= dValue;
@@ -372,7 +378,7 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (2 < wsValue.length() || (m_bImportant && !bHardMode))
+		if (2 > wsValue.length() || (m_bImportant && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -414,13 +420,10 @@ namespace NSCSS
 		}
 		else
 		{
-			std::wstring sNewColor = wsValue;
-			std::transform(sNewColor.begin(), sNewColor.end(), sNewColor.begin(), towlower);
-
-			if (sNewColor == L"transparent")
+			if (wsNewValue == L"transparent")
 				return true;
 
-			const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::NSMaps::mColors.find(sNewColor);
+			const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::NSMaps::mColors.find(wsNewValue);
 			if (oHEX != NSConstValues::NSMaps::mColors.end())
 			{
 				m_oValue.SetHEX(oHEX->second);
@@ -494,7 +497,7 @@ namespace NSCSS
 	}
 
 	CMatrix::CMatrix()
-	    : CValue(Aggplus::CMatrix(0., 0., 0., 0., 0., 0.), 0, false), m_enType(TransformNone)
+	    : CValue(Aggplus::CMatrix(1., 0., 0., 1., 0., 0.), 0, false), m_enType(TransformNone)
 	{}
 
 	CMatrix::CMatrix(const Aggplus::CMatrix &oValue, unsigned int unLevel, bool bImportant)
@@ -662,6 +665,32 @@ namespace NSCSS
 	bool CDisplay::SetY(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
 		return m_oY.SetValue(wsValue, unLevel, bHardMode);
+	}
+
+	bool CDisplay::AddX(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		double dX = m_oX.ToDouble();
+
+		if (m_oX.SetValue(wsValue, unLevel, bHardMode))
+		{
+			m_oX += dX;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool CDisplay::AddY(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		double dY = m_oY.ToDouble();
+
+		if (m_oY.SetValue(wsValue, unLevel, bHardMode))
+		{
+			m_oY += dY;
+			return true;
+		}
+
+		return false;
 	}
 
 	bool CDisplay::SetWidth(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -848,6 +877,14 @@ namespace NSCSS
 	bool CBackground::Empty() const
 	{
 		return m_oColor.Empty();
+	}
+
+	CBackground &CBackground::operator=(const CBackground &oBackground)
+	{
+		m_oColor    = oBackground.m_oColor;
+		m_bInBorder = oBackground.m_bInBorder;
+
+		return *this;
 	}
 
 	CBackground &CBackground::operator+=(const CBackground &oBackground)
@@ -1653,8 +1690,26 @@ namespace NSCSS
 	}
 
 	CColorValue::CColorValue()
-	    : m_pColor(NULL)
+	    : m_enType(ColorEmpty), m_pColor(NULL)
 	{}
+
+	CColorValue::CColorValue(const CColorValue &oColorValue)
+	    : m_enType()
+	{
+		switch(oColorValue.m_enType)
+		{
+			case ColorRGB: SetRGB(*static_cast<TRGB*>(oColorValue.m_pColor)); break;
+			case ColorHEX: SetHEX(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
+			case ColorUrl: SetUrl(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
+			default: m_enType = oColorValue.m_enType; break;
+		}
+
+	}
+
+	CColorValue::~CColorValue()
+	{
+		Clear();
+	}
 
 	void CColorValue::SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB)
 	{
@@ -1726,7 +1781,12 @@ namespace NSCSS
 	bool CColorValue::Empty() const
 	{
 		return (ColorEmpty == m_enType) || (ColorRGB == m_enType && static_cast<TRGB*>(m_pColor)->Empty()) ||
-		       ((ColorHEX == m_enType || ColorUrl == m_enType) && static_cast<std::wstring*>(m_pColor)->empty());
+		        ((ColorHEX == m_enType || ColorUrl == m_enType) && static_cast<std::wstring*>(m_pColor)->empty());
+	}
+
+	std::wstring CColorValue::GetColor() const
+	{
+		return *(std::wstring*)m_pColor;
 	}
 
 	bool CColorValue::operator==(const CColorValue &oColorValue) const
@@ -1739,9 +1799,9 @@ namespace NSCSS
 	{
 		switch(oColorValue.m_enType)
 		{
-			case ColorRGB: SetRGB(*static_cast<TRGB*>(m_pColor)); break;
-			case ColorHEX: SetHEX(*static_cast<std::wstring*>(m_pColor)); break;
-			case ColorUrl: SetUrl(*static_cast<std::wstring*>(m_pColor)); break;
+			case ColorRGB: SetRGB(*static_cast<TRGB*>(oColorValue.m_pColor)); break;
+			case ColorHEX: SetHEX(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
+			case ColorUrl: SetUrl(*static_cast<std::wstring*>(oColorValue.m_pColor)); break;
 			default: m_enType = oColorValue.m_enType; break;
 		}
 

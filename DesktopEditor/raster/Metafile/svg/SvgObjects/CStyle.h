@@ -7,9 +7,7 @@
 
 namespace SVG
 {
-    #define SvgColorType NSCSS::NSConstValues::NSCssProperties::ColorType
-
-	static const ColorParser m_oColorParser;
+	class CObjectBase;
 
 	class CStyle : public NSCSS::CCompiledStyle
 	{
@@ -31,6 +29,8 @@ namespace SVG
 
 		void AddStyle(const std::wstring& wsStyle);
 		CStyle GetStyle(const std::vector<NSCSS::CNode>& arNodes) const;
+
+		void SetStyle(CObjectBase& oObject);
 
 	private:
 		NSCSS::CCssCalculator m_oCssCalculator;

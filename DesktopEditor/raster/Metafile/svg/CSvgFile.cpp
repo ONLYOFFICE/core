@@ -84,10 +84,7 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	oldTransform[1] = oldTransform[2] = oldTransform[4] = oldTransform[5] = 0;
 
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
-
-	m_oStyle.AddStyle(L"svg{transform:matrix(" + std::to_wstring((dWidth)  / dFileWidth) + L", 0, 0, " +
-	                                             std::to_wstring((dHeight) / dFileHeight) +L", " +
-	                                             std::to_wstring(dX) + L", " + std::to_wstring(dY) + L")};");
+	pRenderer->ResetTransform();
 
 	bool bResult = m_pContainer->Draw(pRenderer);
 

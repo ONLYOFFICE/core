@@ -38,8 +38,6 @@ namespace SVG
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand(c_nPathType);
 
-		pRenderer->PathCommandStart();
-
 		pRenderer->PathCommandMoveTo(dX, dY);
 		pRenderer->PathCommandLineTo(dX + dWidth, dY);
 		pRenderer->PathCommandLineTo(dX + dWidth, dY + dHeight);

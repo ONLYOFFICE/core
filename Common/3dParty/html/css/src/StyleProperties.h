@@ -42,7 +42,7 @@ namespace NSCSS
 		bool operator> (const T& oValue) const;
 		bool operator< (const T& oValue) const;
 
-		CValue& operator =(const CValue& oValue);
+		virtual CValue& operator =(const CValue& oValue);
 		CValue& operator =(const T& oValue);
 
 		CValue& operator+=(const CValue& oValue);
@@ -87,6 +87,7 @@ namespace NSCSS
 		CDigit operator+(const CDigit& oDigit) const;
 
 		CDigit& operator+=(const CDigit& oDigit);
+		CDigit& operator+=(double dValue);
 		CDigit& operator*=(double dValue);
 	};
 
@@ -110,10 +111,12 @@ namespace NSCSS
 		ColorUrl
 	} ColorType;
 
-	class CColorValue
+	class Q_DECL_EXPORT CColorValue
 	{
 	public:
 		CColorValue();
+		CColorValue(const CColorValue& oColorValue);
+		~CColorValue();
 
 		void SetRGB(unsigned char uchR, unsigned char uchG, unsigned char uchB);
 		void SetRGB(const TRGB& oRGB);
@@ -121,12 +124,14 @@ namespace NSCSS
 		void SetUrl(const std::wstring& wsValue);
 		void SetNone();
 
-		ColorType    m_enType;
-		void*        m_pColor = NULL;
-
 		void Clear();
 
 		bool Empty() const;
+
+		ColorType    m_enType;
+		void*        m_pColor = NULL;
+
+		std::wstring GetColor() const;
 
 		bool         operator==(const CColorValue& oColorValue) const;
 		CColorValue& operator= (const CColorValue& oColorValue);
@@ -194,6 +199,8 @@ namespace NSCSS
 
 		bool SetX      (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetY      (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool AddX      (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool AddY      (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWidth  (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetHeight (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
@@ -266,6 +273,7 @@ namespace NSCSS
 
 		bool Empty() const;
 
+		CBackground& operator =(const CBackground& oBackground);
 		CBackground& operator+=(const CBackground& oBackground);
 		bool         operator==(const CBackground& oBackground) const;
 	private:

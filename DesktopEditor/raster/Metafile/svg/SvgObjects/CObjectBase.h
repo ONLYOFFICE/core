@@ -1,11 +1,17 @@
 #ifndef COBJECTBASE_H
 #define COBJECTBASE_H
 
+#include "../../../../Common/3dParty/html/css/src/StyleProperties.h"
 #include "../../../xml/include/xmlutils.h"
 #include "../../IRenderer.h"
 #include "CStyle.h"
 
 #define MapCI std::map<std::wstring, std::wstring>::const_iterator
+
+#define SVGDigit  NSCSS::NSProperties::CDigit
+#define SVGString NSCSS::NSProperties::CString
+#define SVGColor  NSCSS::NSProperties::CColor
+#define SVGMatrix NSCSS::NSProperties::CMatrix
 
 namespace SVG
 {
@@ -39,7 +45,7 @@ namespace SVG
 					m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
 			}
 
-			m_oStyle = oBaseStyle.GetStyle(GetFullPath());
+			m_oStyle = (oBaseStyle.GetStyle(GetFullPath()));
 		};
 
 		std::vector<NSCSS::CNode> GetFullPath() const
@@ -105,7 +111,7 @@ namespace SVG
 
 			Aggplus::CMatrix oMatrix = m_oStyle.m_oTransform.GetMatrix().GetValue();
 
-			pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
+			pRenderer->SetTransform(oMatrix.sx() * 25.4 / 96., oMatrix.shy(), oMatrix.shx(), oMatrix.sy() * 25.4 / 96., oMatrix.tx(), oMatrix.ty());
 		}
 
 		void ApplyFont(IRenderer* pRenderer, double dScaleX) const

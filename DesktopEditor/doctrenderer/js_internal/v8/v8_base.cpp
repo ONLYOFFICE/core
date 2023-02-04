@@ -219,6 +219,13 @@ namespace NSJSBase
 #ifdef V8_INSPECTOR
 		v8_debug::disposeInspector(m_internal->m_context);
 #endif
+		unsigned int nEmbedDataCount = m_internal->m_isolate->GetNumberOfDataSlots();
+		for (unsigned int i = 0; i < nEmbedDataCount; ++i)
+		{
+			CIsolateAdditionalData* pAdditionData = (CIsolateAdditionalData*)m_internal->m_isolate->GetData(i);
+			delete pAdditionData;
+		}
+
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
 	}

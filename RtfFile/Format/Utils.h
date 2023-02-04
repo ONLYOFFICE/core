@@ -82,12 +82,12 @@ namespace Strings
 
 		return 0;
 	}
-	static int ToColor(const std::wstring& strValue)
+	static _UINT32 ToColor(const std::wstring& strValue)
 	{
 		// variables
-		int blue	= 0;
-		int green	= 0;
-		int red		= 0;
+		_UINT32 blue	= 0;
+		_UINT32 green	= 0;
+		_UINT32 red		= 0;
 
 		std::wstring color = strValue; //color = color.Trim();
 
@@ -136,7 +136,7 @@ class Convert
 {
 public:	
 	static std::wstring ToString(int i);
-	static  std::wstring ToStringHex( int i, int nLen );
+	static  std::wstring ToStringHex(_INT32 i, size_t nLen );
 	static  int ToInt32(std::wstring str, int base = 10);
 };
 

@@ -272,6 +272,10 @@ namespace MetaFile
 		unsigned int ulTextAlign  = m_pParser->GetTextAlign() & TA_MASK;
 		unsigned int ulVTextAlign = m_pParser->GetTextAlign() >> 8;
 
+		if (ulTextAlign & TA_UPDATECP)
+		{
+			ulTextAlign -= TA_UPDATECP;
+		}
 		if (ulTextAlign & TA_BASELINE)
 		{
 			ulTextAlign -= TA_BASELINE;
@@ -290,7 +294,7 @@ namespace MetaFile
 		}
 		else // if (ulTextAlign & TA_TOP)
 		{
-			arNodeAttributes.push_back({L"dominant-baseline", L"hanging"});
+			dYCoord += dFontHeight;
 		}
 
 		if (ulTextAlign == TA_RIGHT)
@@ -382,20 +386,30 @@ namespace MetaFile
 		if (NULL == pPen || PS_NULL == pPen->GetStyle())
 			return;
 
+		switch (m_pParser->GetRop2Mode())
+		{
+			case R2_BLACK:   arAttributes.push_back({L"stroke", L"rgb(0, 0, 0)"}); break;
+			case R2_NOP:     return;
+			case R2_WHITE:   arAttributes.push_back({L"stroke", L"rgb(255, 255, 255)"}); break;
+			default: arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'}); break;
+		}
+
 		double dStrokeWidth = std::fabs(pPen->GetWidth());
 
-		if (0 == dStrokeWidth && 0 == pPen->GetColor() && (NULL != m_pParser->GetBrush() && BS_NULL == m_pParser->GetBrush()->GetStyle()))
-			return;
-
 		if (0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (pPen->GetStyle() & PS_TYPE_MASK)))
-			dStrokeWidth = (m_oViewport.GetWidth() / m_oSizeWindow.x) / std::fabs(m_pParser->GetTransform()->M11);
+		{
+			double dScale = m_pParser->GetDpi() / 96.;
+
+			if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+				dScale *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+
+			dStrokeWidth = dScale / std::fabs(m_pParser->GetTransform()->M11);
+		}
 
 		arAttributes.push_back({L"stroke-width", ConvertToWString(dStrokeWidth)});
 
 		if (pPen->GetAlpha() != 255)
 			arAttributes.push_back({L"stroke-opacity" , ConvertToWString(pPen->GetAlpha() / 255., 3)});
-
-		arAttributes.push_back({L"stroke", L"rgb(" + INTCOLOR_TO_RGB(pPen->GetColor()) + L')'});
 
 		unsigned int unMetaPenStyle = pPen->GetStyle();
 		//			unsigned int ulPenType      = unMetaPenStyle & PS_TYPE_MASK;
@@ -644,6 +658,9 @@ namespace MetaFile
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
 
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
+
 		std::wstring wsStrokeColor = L"rgba(" + INTCOLOR_TO_RGB(m_pParser->GetBrush()->GetColor()) + L"," + ConvertToWString(m_pParser->GetBrush()->GetAlpha(), 0) + L")";
 		std::wstring wsBgColor;
 
@@ -732,6 +749,9 @@ namespace MetaFile
 			if (0.0 == dStrokeWidth || (1.0 == dStrokeWidth && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
 				dStrokeWidth = 1. / m_pParser->GetTransform()->M11;
 		}
+
+		if (0 != m_oViewport.GetWidth() && 0 != m_oSizeWindow.x)
+			dStrokeWidth *= m_oViewport.GetWidth() / m_oSizeWindow.x;
 
 		std::wstring wsWidth  = ConvertToWString(dStrokeWidth * unWidth);
 		std::wstring wsHeight = ConvertToWString(dStrokeWidth * unHeight);
@@ -833,10 +853,13 @@ namespace MetaFile
 
 				pBrush->GetBounds(dLeft, dTop, dWidth, dHeight);
 
-				dX = ((dX - dLeft) / dWidth);
-				dY = ((dY - dTop)  / dHeight);
+				if (0 != dWidth && 0 != dHeight)
+				{
+					dX = ((dX - dLeft) / dWidth);
+					dY = ((dY - dTop)  / dHeight);
 
-				wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+					wsIndlude = L" cx=\"" + ConvertToWString(dX) + L"\" cy=\"" + ConvertToWString(dY) + L"\" r=\"1\"";
+				}
 			}
 
 			m_wsDefs += L"<radialGradient id=\"" + wsStyleId + L"\"" + wsIndlude + L">" +

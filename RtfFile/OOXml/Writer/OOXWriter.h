@@ -45,7 +45,7 @@ public:
 	int				m_nCurTrackChangesId;
 
 	int				m_nFormFieldId;
-	long int		m_nextParaId;
+	_INT64			m_nextParaId;
 
 	OOXRelsWriter	m_oDocRels;
 	OOXRelsWriter	m_oRels;

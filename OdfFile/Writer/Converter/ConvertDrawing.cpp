@@ -1409,7 +1409,7 @@ void OoxConverter::convert(PPTX::Logic::UniColor * color, std::wstring & hexStri
 
 	if (nARGB != 0)
 	{	
-		hexString = XmlUtils::ToString(nARGB & 0x00FFFFFF, L"#%06X");
+		hexString = XmlUtils::ToString((unsigned int)(nARGB & 0x00FFFFFF), L"#%06X");
 
 		if ((nARGB >> 24) != 0xff)
 		{
@@ -1499,7 +1499,7 @@ void OoxConverter::convert(PPTX::Logic::Ln *oox_line_prop, DWORD ARGB, PPTX::Log
 	{
 		if (oox_line_prop->headEnd->len.IsInit() || oox_line_prop->headEnd->type.IsInit() || oox_line_prop->headEnd->w.IsInit())
 		{
-			int type = 1, w = 1, len = 1;//medium arrow
+			int type = 0, w = 1, len = 1;//medium arrow
 			if (oox_line_prop->headEnd->len.IsInit())	len		= oox_line_prop->headEnd->len->GetBYTECode();
 			if (oox_line_prop->headEnd->type.IsInit())	type	= oox_line_prop->headEnd->type->GetBYTECode();
 			if (oox_line_prop->headEnd->w.IsInit())		w		= oox_line_prop->headEnd->w->GetBYTECode();
@@ -2469,12 +2469,14 @@ void OoxConverter::convert(PPTX::Logic::MathParaWrapper *oox_math)
 {
 	if (!oox_math) return;
 
-	odf_context()->math_context()->in_text_box_ = true;
-	
+	odf_context()->math_context()->in_text_box_ = false;
+
+	odf_context()->start_drawing_context();
+
 	convert(oox_math->m_oMathPara.GetPointer());
 	convert(oox_math->m_oMath.GetPointer());
 
-	odf_context()->math_context()->in_text_box_ = false;
+	odf_context()->end_drawing_context();
 }
 void OoxConverter::convert(PPTX::Logic::LineTo *oox_geom_path)
 {
@@ -2515,7 +2517,25 @@ void OoxConverter::convert(PPTX::Logic::TxBody *oox_txBody, PPTX::Logic::ShapeSt
 
 	convert(oox_txBody->lstStyle.GetPointer());
 
-	for (size_t i = 0; i < oox_txBody->Paragrs.size(); i++)
+//single math - либра не тянет сложные вложенности
+	bool bSingleMath = false;
+	if (odf_context()->drawing_context()->is_text_box() &&
+		oox_txBody->Paragrs.size() == 1 && 
+		oox_txBody->Paragrs[0].RunElems.size() == 1 && 
+		oox_txBody->Paragrs[0].RunElems[0].getType() == OOX::et_p_MathPara)
+	{
+		bSingleMath = true;
+
+		odf_context()->math_context()->in_text_box_ = true;
+
+		PPTX::Logic::MathParaWrapper *oox_math = dynamic_cast<PPTX::Logic::MathParaWrapper*>(oox_txBody->Paragrs[0].RunElems[0].GetElem().GetPointer());
+		convert(oox_math->m_oMathPara.GetPointer());
+		convert(oox_math->m_oMath.GetPointer());
+
+		odf_context()->math_context()->in_text_box_ = false;
+	}
+//----------------------------------------------------------------------------------------------
+	for (size_t i = 0; !bSingleMath && i < oox_txBody->Paragrs.size(); i++)
 	{
 		convert(&oox_txBody->Paragrs[i], oox_txBody->lstStyle.GetPointer());
 	
@@ -2577,7 +2597,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 
 	if (style_ref->idx.IsInit() == false)
 	{
-		std::wstring hexColor =  XmlUtils::ToString(nARGB & 0x00FFFFFF, L"#%06X");
+		std::wstring hexColor =  XmlUtils::ToString((unsigned int)(nARGB & 0x00FFFFFF), L"#%06X");
 		_CP_OPT(double) opacity;
 
 		if ((nARGB >> 24) != 0xff)

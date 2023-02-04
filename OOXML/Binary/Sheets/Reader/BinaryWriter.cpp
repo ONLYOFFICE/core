@@ -2852,16 +2852,16 @@ void BinaryWorkbookTableWriter::WriteExternalReferences(const OOX::Spreadsheet::
 
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalReference);
 
-		if (pExternalLink->m_oFileId.IsInit())
+		if (pExternalLink->m_oFileKey.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalFileId);
-			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oFileId);
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalFileKey);
+			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oFileKey);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
-		if (pExternalLink->m_oPortalName.IsInit())
+		if (pExternalLink->m_oInstanceId.IsInit())
 		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalPortalName);
-			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oPortalName);
+			int nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::ExternalInstanceId);
+			m_oBcw.m_oStream.WriteStringW3(*pExternalLink->m_oInstanceId);
 			m_oBcw.WriteItemWithLengthEnd(nCurPos);
 		}
 		if (pExternalLink->m_oExternalBook.IsInit())

@@ -128,11 +128,15 @@ namespace NSGraphics
 		CGraphics() {}
 		~CGraphics()
 		{
-			RELEASEINTERFACE(m_pRenderer);
-			RELEASEINTERFACE(m_pApplicationFonts);
+			Destroy();
 		}
 
 		void init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm);
+		void Destroy()
+		{
+			RELEASEINTERFACE(m_pRenderer);
+			RELEASEINTERFACE(m_pApplicationFonts);
+		}
 		void EndDraw() {}
 		void put_GlobalAlpha(bool enable, double globalAlpha);
 		void Start_GlobalAlpha() {}

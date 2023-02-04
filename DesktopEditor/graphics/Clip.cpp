@@ -193,6 +193,8 @@ namespace Aggplus
 
 	void CClipMulti::Create(LONG width, LONG height)
 	{
+		m_lWidth = width;
+		m_lHeight = height;
 		m_rasterizer.clip_box(0, 0, width, height);
 		m_bIsClip = false;
 		m_bIsClip2 = false;
@@ -227,6 +229,7 @@ namespace Aggplus
 		{
 			// смешивать надо с растерайзером
 			agg::rasterizer_scanline_aa<> rasterizer;
+			rasterizer.clip_box(0, 0, m_lWidth, m_lHeight);
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;
 			trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
@@ -249,6 +252,7 @@ namespace Aggplus
 		{
 			// надо смешивать со стораджем
 			agg::rasterizer_scanline_aa<> rasterizer;
+			rasterizer.clip_box(0, 0, m_lWidth, m_lHeight);
 
 			typedef agg::conv_transform<agg::path_storage> trans_type;
 			trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);

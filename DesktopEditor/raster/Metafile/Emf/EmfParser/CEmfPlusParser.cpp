@@ -634,8 +634,11 @@ namespace MetaFile
 				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
 					m_oStream >> arBlendColors[unIndex];
 
-				if (0 != unPositionCount)
+				if (1 < unPositionCount)
+				{
 					pEmfPlusBrush->ColorBack = arBlendColors[0];
+					pEmfPlusBrush->Color     = arBlendColors.back();
+				}
 			}
 
 			break;

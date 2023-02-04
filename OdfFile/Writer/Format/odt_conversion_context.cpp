@@ -210,21 +210,7 @@ odf_text_context* odt_conversion_context::text_context()
 		return main_text_context_;
 	}
 } 
-void odt_conversion_context::start_text_context()
-{
-	odf_text_context_ptr new_text_context_ = boost::shared_ptr<odf_text_context>(new odf_text_context(this, /*odf_conversion_context::*/styles_context()));
-	//объекты с текстом в колонтитулах
-	if (!new_text_context_)return;
 
-	text_context_.push_back(new_text_context_);
-}
-void odt_conversion_context::end_text_context()
-{
-	if (text_context_.size() > 0)
-	{
-		text_context_.pop_back();
-	}
-}
 void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
@@ -258,31 +244,26 @@ void odt_conversion_context::add_to_root()
 	odf_element_state & state = text_context()->current_level_.back();
 	current_root_elements_.push_back(state);
 }
-void odt_conversion_context::start_drawings()
+void odt_conversion_context::start_drawing_context()
 {
-	odf_drawing_context_ptr new_drawing_context_ = boost::shared_ptr<odf_drawing_context>(new odf_drawing_context(this));
-	if (!new_drawing_context_)return;
-	
-	new_drawing_context_->set_styles_context(styles_context());
+	odf_conversion_context::start_drawing_context();
 
-	new_drawing_context_->set_footer_state(is_footer_);
-	new_drawing_context_->set_header_state(is_header_);
-
-	drawing_context_.push_back(new_drawing_context_);
+	drawing_context()->set_footer_state(is_footer_);
+	drawing_context()->set_header_state(is_header_);
 }
 bool odt_conversion_context::start_math()
 {
 	if (false == math_context()->isEmpty()) return false;
 
-	start_drawings();
+	start_drawing_context();
 	return odf_conversion_context::start_math();
 }
 void odt_conversion_context::end_math()
 {
 	odf_conversion_context::end_math();
-	end_drawings();
+	end_drawing_context();
 }
-void odt_conversion_context::end_drawings()
+void odt_conversion_context::end_drawing_context()
 {
 	if (drawing_context_.empty()) return;
 

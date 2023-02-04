@@ -40,7 +40,14 @@ CRecordParaBuildContainer::CRecordParaBuildContainer()
 
 CRecordParaBuildContainer::~CRecordParaBuildContainer()
 {
-
+	for (size_t i = 0; i < rgParaBuildLevel.size(); ++i)
+	{
+		if (rgParaBuildLevel[i])
+		{
+			delete rgParaBuildLevel[i];
+			rgParaBuildLevel[i] = NULL;
+		}
+	}
 }
 
 void CRecordParaBuildContainer::ReadFromStream(SRecordHeader &header, POLE::Stream *pStream)
@@ -60,12 +67,12 @@ void CRecordParaBuildContainer::ReadFromStream(SRecordHeader &header, POLE::Stre
 
     while (lCurLen < m_oHeader.RecLen )
     {
-        CRecordParaBuildLevel buildLevel;
-        buildLevel.ReadFromStream(pStream);
+        CRecordParaBuildLevel* pLevel = new CRecordParaBuildLevel();
+        pLevel->ReadFromStream(pStream);
 
-        rgParaBuildLevel.push_back(buildLevel);
+        rgParaBuildLevel.push_back(pLevel);
 
-        lCurLen += buildLevel.getRecordLen();
+        lCurLen += pLevel->getRecordLen();
     }
 
     StreamUtils::StreamSeek(lPos + m_oHeader.RecLen, pStream);

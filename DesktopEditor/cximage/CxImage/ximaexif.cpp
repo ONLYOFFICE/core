@@ -487,6 +487,8 @@ bool CxImageJPG::CxExifInfo::ProcessExifDir(uint8_t * DirStart, uint8_t * Offset
                 break;
 
             case TAG_USERCOMMENT:
+				if (ByteCount > 0)
+				{
                 // Olympus has this padded with trailing spaces. Remove these first. 
                 for (a=ByteCount;;){
                     a--;
@@ -497,6 +499,7 @@ bool CxImageJPG::CxExifInfo::ProcessExifDir(uint8_t * DirStart, uint8_t * Offset
                     }
                     if (a == 0) break;
                 }
+				}
 
                 /* Copy the comment */
                 if (memcmp(ValuePtr, "ASCII",5) == 0){
@@ -803,7 +806,7 @@ bool CxImageJPG::CxExifInfo::ProcessExifDir2(CSafeReader DirStart, CSafeReader O
 
             case TAG_USERCOMMENT:
                 // Olympus has this padded with trailing spaces. Remove these first.
-                if (ValuePtr.Check(ByteCount))
+				if (ValuePtr.Check(ByteCount) && ByteCount > 0)
                 {
                     for (a=ByteCount;;){
                         a--;

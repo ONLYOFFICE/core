@@ -166,19 +166,18 @@ void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring
     if (!IsValid())
         return;
 
-    std::string sTitle    = U_TO_UTF8(wsTitle);
-    std::string sAuthor   = U_TO_UTF8(wsCreator);
-    std::string sSubject  = U_TO_UTF8(wsSubject);
-    std::string sKeywords = U_TO_UTF8(wsKeywords);
-
-    if (!sTitle.empty())
-        m_pDocument->SetTitle(sTitle);
-    if (!sAuthor.empty())
+    if (!wsTitle.empty())
+        m_pDocument->SetTitle(U_TO_UTF8(wsTitle));
+    if (!wsCreator.empty())
+    {
+        std::string sAuthor = U_TO_UTF8(wsCreator);
+        NSStringUtils::string_replaceA(sAuthor, ";", ", ");
         m_pDocument->SetAuthor(sAuthor);
-    if (!sSubject.empty())
-        m_pDocument->SetSubject(sSubject);
-    if (!sKeywords.empty())
-        m_pDocument->SetKeywords(sKeywords);
+    }
+    if (!wsSubject.empty())
+        m_pDocument->SetSubject(U_TO_UTF8(wsSubject));
+    if (!wsKeywords.empty())
+        m_pDocument->SetKeywords(U_TO_UTF8(wsKeywords));
 }
 std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {
@@ -1600,10 +1599,13 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 	if (!IsPageValid() || !pMaskBuffer || !pImage)
 		return S_OK;
 
+	PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
+	if (!pPdfImage)
+		return S_OK;
+
 	m_pPage->GrSave();
 	UpdateTransform();
-    PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
-    pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
+	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
 	m_pPage->GrRestore();
 	return S_OK;
@@ -2013,16 +2015,34 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
                  _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
 		{
 			// TODO: Реализовать отрисовку метафайлов по-нормальному
-            MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
-            pMeta->LoadFromFile(wsTexturePath.c_str());
+			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+			pMeta->LoadFromFile(wsTexturePath.c_str());
 
 			double dL, dR, dT, dB;
 			m_oPath.GetBounds(dL, dT, dR, dB);
 
-			double dNewW = std::max(10.0, dR - dL) / 72 * 300;
+			double dW = 300.0 * (dR - dL) / 72;
+			if (dW < 0) dW = -dW;
+			double dH = 300.0 * (dB - dT) / 72;
+			if (dH < 0) dH = -dH;
 
-            std::wstring wsTempFile = GetTempFile(wsTempDirectory);
-            pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, dNewW);
+			if (dW < 1) dW = 1;
+			if (dH < 1) dH = 1;
+
+			double dMax = 2000;
+			double dMin = 10;
+			if (dW > dMax || dH > dMax)
+			{
+				double dMaxSrc = (dW > dH) ? dW : dH;
+				dW *= (dMax / dMaxSrc);
+				dH *= (dMax / dMaxSrc);
+			}
+
+			if (dW < dMin) dW = dMin;
+			if (dH < dMin) dH = dMin;
+
+			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
+			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
 
             RELEASEOBJECT(pMeta);
 

@@ -21,8 +21,6 @@ namespace MetaFile
 	CEmfParser::~CEmfParser()
 	{
 		ClearFile();
-
-		RELEASEOBJECT(m_pEmfPlusParser);
 		RELEASEOBJECT(m_pInterpretator);
 	}
 
@@ -228,6 +226,13 @@ namespace MetaFile
 		m_pInterpretator = NULL;
 		PlayFile();
 		m_pInterpretator = pInterpretator;
+	}
+
+	void CEmfParser::ClearFile()
+	{
+		RELEASEOBJECT(m_pEmfPlusParser);
+
+		CEmfParserBase::ClearFile();
 	}
 
 	EmfParserType CEmfParser::GetType()

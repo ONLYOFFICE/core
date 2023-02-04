@@ -295,8 +295,9 @@ public:
     Writers::MediaWriter&           m_oMediaWriter;
 
 	bool							m_bUsedParaIdCounter;
+	bool							m_bOFormRead;
 
-    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter);
+    Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, bool bOFormRead);
 	~Binary_DocumentTableReader();
 	
 	int Read();
@@ -506,8 +507,9 @@ private:
     std::wstring					m_sFileInDir;
 	bool							m_bMacro = false;
 	bool							m_bMacroRead = false;
+	bool							m_bOForm = false;
 public:
-	BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false);
+	BinaryFileReader(std::wstring& sFileInDir, NSBinPptxRW::CBinaryFileReader& oBufferedStream, Writers::FileWriter& oFileWriter, bool bMacro = false, bool bOForm = false);
 	int ReadFile();
 	int ReadMainTable();
 };

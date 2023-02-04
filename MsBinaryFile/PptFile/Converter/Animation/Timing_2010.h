@@ -64,7 +64,7 @@ namespace PPT {
 		class Timing_2010
 		{
 		public:
-			Timing_2010(CRecordPP10SlideBinaryTagExtension* pAnim_2010, const std::unordered_set<int>& shapesID);
+            Timing_2010(const Intermediate::SlideAnimation& sldAnim);
 			void Convert(PPTX::Logic::Timing& timing, CExMedia* pExMedia, CRelsGenerator* pRels);
 
 		public:
@@ -100,6 +100,8 @@ namespace PPT {
 			void FillCBhvr(
 				CRecordTimeBehaviorContainer *pBhvr,
 				PPTX::Logic::CBhvr &oBhvr);
+            bool isTextShape(UINT spid) const;
+            void FillTgtEl(PPTX::Logic::TgtEl& tgtEl, CRecordClientVisualElementContainer &clientVisualElement);
 			void FillCBhvr(
 				PPTX::Logic::CBhvr &oBhvr, int dur,
 				UINT spid, std::wstring attrname, int delay);
@@ -112,7 +114,9 @@ namespace PPT {
 
 			void FillCTnRecursive(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
 			bool CheckAnimation5Level(const CRecordExtTimeNodeContainer *pETNC, const PPTX::Logic::CTn &oCTn);
-			bool IsSlideSpId(_INT32 spid) const;
+            bool CheckSlideSpid(_INT32 spid);
+            bool IsSlideSpId(_INT32 spid) const;
+            bool CheckMainSeqSyncWithAnim95(_INT32 spid) const;
 			bool IsCorrectAnimationSpId(_INT32 spid) const;
 			void InsertAnimationSpId(_INT32 spid);
 			void ConvertChildTnLst(CRecordExtTimeNodeContainer *pETNC, PPTX::Logic::CTn &oCTn);
@@ -157,9 +161,8 @@ namespace PPT {
 				PPTX::Logic::Video &oVideo);
 
 		private:
-			CRecordPP10SlideBinaryTagExtension* pTagExtAnim = nullptr;
-			const std::unordered_set<int> slideShapes;
-			std::unordered_set<int> correctAnimatedShapes;
+            const Intermediate::SlideAnimation& slideAnim;
+            std::unordered_set<int> correctAnimatedShapes;
 			CExMedia *m_pExMedia = nullptr;
 			CRelsGenerator *m_pRels = nullptr;
 			bool isMainSeq = false;
@@ -168,7 +171,7 @@ namespace PPT {
 			PPTX::Logic::BldP   *m_currentBldP = nullptr;
 
 			int cTnId = 1;
-			int cTNLevel = TimeNodeLevel::zero;
+            int cTNLevel = TimeNodeLevel::zero;
 		};
 
 	}

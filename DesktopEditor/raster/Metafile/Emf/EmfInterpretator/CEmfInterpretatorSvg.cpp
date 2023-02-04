@@ -1022,8 +1022,8 @@ namespace MetaFile
 									   {L"y",		ConvertToWString(oNewRect.dTop)},
 									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
 									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
-									   {L"rx",		ConvertToWString(oCorner.cx)},
-									   {L"ry",		ConvertToWString(oCorner.cy)}};
+		                               {L"rx",		ConvertToWString((double)oCorner.cx / 2.)},
+		                               {L"ry",		ConvertToWString((double)oCorner.cy / 2.)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);

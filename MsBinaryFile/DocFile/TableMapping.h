@@ -122,7 +122,7 @@ namespace DocFileFormat
 
 	protected:
 
-		bool IsCellMarker( int _cp );
+		bool IsCellMarker( int _cp, bool & bBadMarker);
 		bool IsRowMarker( int _cp );
 		bool IsParagraphMarker( int _cp );
 

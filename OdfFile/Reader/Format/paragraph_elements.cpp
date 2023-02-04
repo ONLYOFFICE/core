@@ -544,7 +544,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 					std::wstring parent = styleInst->parent_name();
 
 					if (false == parent.empty())
-                {
+					{
 						text_props->content_.r_style_ = Context.styles_map_.get(parent, styleInst->type());
 					}
                     
@@ -555,7 +555,8 @@ void span::docx_convert(oox::docx_conversion_context & Context)
                     Context.get_styles_context().end_process_style();
                     addNewRun = true;
 
-					text_props->content_.r_style_ = boost::none;
+					if (text_props)
+						text_props->content_.r_style_ = boost::none;
                 }                            
             }
             else

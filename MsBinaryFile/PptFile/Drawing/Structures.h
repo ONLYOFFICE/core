@@ -39,7 +39,7 @@ typedef std::vector<std::wstring> vector_string;
 
 namespace ODRAW
 {
-	static void CorrectColorPPT(LONG& lSchemeIndex)
+	static void CorrectColorPPT(_INT32& lSchemeIndex)
     {
         //0x00 //Background color
         //0x01 //Text color
@@ -102,24 +102,24 @@ namespace ODRAW
 
     struct SPointAtom
     {
-        LONG X;
-        LONG Y;
+        _INT32 X;
+        _INT32 Y;
     };
 
     struct SRectAtom
     {
-        LONG Left;
-        LONG Top;
-        LONG Right;
-        LONG Bottom;
+        _INT32 Left;
+        _INT32 Top;
+        _INT32 Right;
+        _INT32 Bottom;
     };
 
     struct SSmallRectAtom
     {
-        SHORT Left;
-        SHORT Top;
-        SHORT Right;
-        SHORT Bottom;
+        _INT16 Left;
+        _INT16 Top;
+        _INT16 Right;
+        _INT16 Bottom;
     };
 
     struct SColorAtom

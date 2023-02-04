@@ -88,8 +88,8 @@ namespace PPT
         void WriteLayout		(CLayoutPtr pLayout, int nIndexLayout, int nStartLayout, int nIndexTheme);
 //		void WriteRelsMaster    (std::wstring path, int type, )
         void WriteSlide			(int nIndexSlide);
-		void WriteNotes			(int nIndexNotes);
-        void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID);
+        void WriteNotes			(int nIndexNotes);
+        void WriteTiming        (CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide);
 		
         void WriteTransition	(CStringWriter& oWriter, CSlideShowInfo& oSSInfo);
 		void WriteColorScheme	(CStringWriter& oWriter, const std::wstring & name, const std::vector<CColor> & colors, bool extra = false);

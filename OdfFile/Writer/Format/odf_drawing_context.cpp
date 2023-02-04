@@ -833,6 +833,13 @@ void odf_drawing_context::start_shape(int ooxDrawPreset)
 		impl_->create_draw_base(drawCustom);
 	}
 }
+bool odf_drawing_context::is_text_box()
+{
+	if (impl_->current_drawing_state_.oox_shape_preset_ >= 2000 && impl_->current_drawing_state_.oox_shape_preset_ < 3000)
+		return true;
+
+	return false;
+}
 
 bool odf_drawing_context::is_wordart()
 {
@@ -2289,7 +2296,7 @@ void odf_drawing_context::set_corner_radius	(odf_types::length corner)
 
 std::wstring odf_drawing_context::add_marker_style(int type)
 {
-	if (type == 2) return L"";
+	if (type == 0) return L"";
 
 	std::wstring str_types [] = {L"None", L"ArrowMarker", L"DiamondMarker", L"OvalMarker", L"StealthMarker", L"TriangleMarker"};
 

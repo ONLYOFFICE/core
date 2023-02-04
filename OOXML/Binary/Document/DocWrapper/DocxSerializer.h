@@ -55,6 +55,7 @@ namespace BinDocxRW
 		bool					m_bIsMacro;
 		bool					m_bIsNoBase64Save;
 		bool					m_bIsNoBase64;
+		bool					m_bIsOForm;
 	public:
 		Writers::FileWriter*	m_pCurFileWriter;
 		ParamsWriter*			m_pParamsWriter;
@@ -82,5 +83,6 @@ namespace BinDocxRW
         void setIsNoBase64      (bool val);
         void setSaveChartAsImg  (bool val);
 		void setMacroEnabled	(bool val);
+		void setOFormEnabled	(bool val);
 	};
 }

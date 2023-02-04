@@ -1589,11 +1589,22 @@ HRESULT CFb2File::Open(const std::wstring& sPath, const std::wstring& sDirectory
     return S_OK;
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable);
-void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
+void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2)
 {
-    int nDeath = oIndexHtml.GetDepth();
-    if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDeath))
+    size_t pos = s.find(s1);
+    size_t l = s2.length();
+    while (pos != std::string::npos)
+    {
+        s.replace(pos, s1.length(), s2);
+        pos = s.find(s1, pos + l);
+    }
+}
+
+void readLi(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuilder& oTitleInfo, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable);
+void readStream(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuilder& oTitleInfo, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bWasP, bool bWasTable)
+{
+    int nDepth = oIndexHtml.GetDepth();
+    if (oIndexHtml.IsEmptyNode() || !oIndexHtml.ReadNextSiblingNode2(nDepth))
         return;
     do
     {
@@ -1604,15 +1615,48 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p>");
+        }
+        else if (sName == L"title")
+            oTitleInfo.WriteString(L"<book-title>" + oIndexHtml.GetText2() + L"</book-title>");
+        else if (sName == L"meta")
+        {
+            std::wstring sAtrName, sAtrContent;
+            while (oIndexHtml.MoveToNextAttribute())
+            {
+                std::wstring sAtr = oIndexHtml.GetName();
+                if (sAtr == L"name")
+                    sAtrName = oIndexHtml.GetText();
+                else if (sAtr == L"content")
+                    sAtrContent = oIndexHtml.GetText();
+            }
+            oIndexHtml.MoveToElement();
+
+            if (!sAtrName.empty())
+            {
+                replace_all(sAtrContent, L"&", L"&amp;");
+                replace_all(sAtrContent, L"<", L"&lt;");
+                replace_all(sAtrContent, L">", L"&gt;");
+                replace_all(sAtrContent, L"\"", L"&quot;");
+                replace_all(sAtrContent, L"\'", L"&#39;");
+
+                if (sAtrName == L"creator")
+                    oTitleInfo.WriteString(L"<author><nickname>" + sAtrContent + L"</nickname></author>");
+                else if (sAtrName == L"description")
+                    oTitleInfo.WriteString(L"<annotation><p>" + sAtrContent + L"</p></annotation>");
+                else if (sAtrName == L"subject")
+                    oTitleInfo.WriteString(L"<genre>" + sAtrContent + L"</genre>");
+                else if (sAtrName == L"keywords")
+                    oTitleInfo.WriteString(L"<keywords>" + sAtrContent + L"</keywords>");
+            }
         }
         else if (sName == L"h1")
         {
             if (!bWasP)
                 oXml.WriteString(L"<section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p></title></section>");
         }
@@ -1620,7 +1664,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p></title></section></section>");
         }
@@ -1628,7 +1672,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p></title></section></section></section>");
         }
@@ -1636,7 +1680,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p></title></section></section></section></section>");
         }
@@ -1644,7 +1688,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<section><section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p></title></section></section></section></section></section>");
         }
@@ -1652,7 +1696,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasP)
                 oXml.WriteString(L"<section><section><section><section><section><section><title><p>");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p></title></section></section></section></section></section></section>");
         }
@@ -1674,44 +1718,44 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 if (sAlign == L"super")
                 {
                     oXml.WriteString(L"<sup>");
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+                    readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
                     oXml.WriteString(L"</sup>");
                 }
                 else if (sAlign == L"sub")
                 {
                     oXml.WriteString(L"<sub>");
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+                    readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
                     oXml.WriteString(L"</sub>");
                 }
                 else
-                    readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+                    readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             }
             else
-                readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+                readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
         }
         else if (sName == L"s")
         {
             oXml.WriteString(L"<strikethrough>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</strikethrough>");
         }
         else if (sName == L"i")
         {
             oXml.WriteString(L"<emphasis>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</emphasis>");
         }
         else if (sName == L"b")
         {
             oXml.WriteString(L"<strong>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</strong>");
         }
         else if (sName == L"table")
         {
             if (!bWasTable)
                 oXml.WriteString(L"<table>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             if (!bWasTable)
                 oXml.WriteString(L"</table>");
         }
@@ -1719,7 +1763,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
         {
             if (!bWasTable)
                 oXml.WriteString(L"<tr>");
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             if (!bWasTable)
                 oXml.WriteString(L"</tr>");
         }
@@ -1738,7 +1782,7 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
                 oIndexHtml.MoveToElement();
                 oXml.WriteString(L">");
             }
-            readStream(oXml, oIndexHtml, arrBinary, true, true);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, true);
             if (!bWasTable)
                 oXml.WriteString(L"</td>");
         }
@@ -1757,13 +1801,13 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oIndexHtml.MoveToElement();
             oXml.WriteString(L">");
 
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
             oXml.WriteString(L"</a>");
         }
         else if (sName == L"ul")
-            readLi(oXml, oIndexHtml, arrBinary, true, bWasP, bWasTable);
+            readLi(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasP, bWasTable);
         else if (sName == L"ol")
-            readLi(oXml, oIndexHtml, arrBinary, false, bWasP, bWasTable);
+            readLi(oXml, oTitleInfo, oIndexHtml, arrBinary, false, bWasP, bWasTable);
         else if (sName == L"img")
         {
             std::wstring sBinary;
@@ -1780,8 +1824,8 @@ void readStream(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& o
             oXml.WriteString(L"<image l:href=\"#img" + std::to_wstring(arrBinary.size()) + L".png\"/>");
         }
         else
-            readStream(oXml, oIndexHtml, arrBinary, bWasP, bWasTable);
-    } while (oIndexHtml.ReadNextSiblingNode2(nDeath));
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, bWasP, bWasTable);
+    } while (oIndexHtml.ReadNextSiblingNode2(nDepth));
 }
 
 std::wstring ToUpperRoman(int number)
@@ -1824,7 +1868,7 @@ std::wstring ToLowerRoman(int number)
     return L"";
 }
 
-void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable)
+void readLi(NSStringUtils::CStringBuilder& oXml, NSStringUtils::CStringBuilder& oTitleInfo, XmlUtils::CXmlLiteReader& oIndexHtml, std::vector<std::wstring>& arrBinary, bool bUl, bool bWasP, bool bWasTable)
 {
     int nNum = 1;
     while (oIndexHtml.MoveToNextAttribute())
@@ -1876,7 +1920,7 @@ void readLi(NSStringUtils::CStringBuilder& oXml, XmlUtils::CXmlLiteReader& oInde
                 oXml.WriteString(sPoint);
             }
             oXml.WriteString(L" ");
-            readStream(oXml, oIndexHtml, arrBinary, true, bWasTable);
+            readStream(oXml, oTitleInfo, oIndexHtml, arrBinary, true, bWasTable);
             if (!bWasP)
                 oXml.WriteString(L"</p>");
         }
@@ -1899,70 +1943,8 @@ std::wstring GenerateUUID()
     return sstream.str();
 }
 
-HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sCoreFile, const std::wstring& sDst, const std::wstring& sInpTitle)
+HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sDst, const std::wstring& sInpTitle)
 {
-    NSStringUtils::CStringBuilder oDocument;
-    oDocument.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\"><description>");
-    // description
-    // title-info
-    oDocument.WriteString(L"<title-info>");
-    std::wstring sBookTitle = sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle;
-    std::wstring sAuthor, sAnnotation, sKeywords, sGenre;
-    std::wstring sLanguage = L"en-EN", sVersion = L"1.0";
-    std::wstring sIdentifier = GenerateUUID();
-    XmlUtils::CXmlLiteReader oCoreReader;
-    oCoreReader.FromString(sCoreFile);
-    oCoreReader.ReadNextNode();
-    int nDeath = oCoreReader.GetDepth();
-    while (oCoreReader.ReadNextSiblingNode(nDeath))
-    {
-        std::wstring sName = oCoreReader.GetName();
-        std::wstring sText = oCoreReader.GetText2();
-        if (!sText.empty())
-        {
-            if (sName == L"dc:creator")
-                sAuthor     = sText;
-            else if (sName == L"dc:title")
-                sBookTitle  = sText;
-            else if (sName == L"dc:description")
-                sAnnotation = sText;
-            else if (sName == L"dc:subject")
-                sGenre      = sText;
-            else if (sName == L"cp:keywords")
-                sKeywords   = sText;
-            else if (sName == L"dc:identifier")
-                sIdentifier = sText;
-            else if (sName == L"dc:language")
-                sLanguage   = sText;
-            else if (sName == L"cp:version")
-                sVersion    = sText;
-        }
-    }
-
-    oDocument.WriteString(L"<genre>");
-    oDocument.WriteString(sGenre);
-    oDocument.WriteString(L"</genre><author><nickname>");
-    oDocument.WriteString(sAuthor);
-    oDocument.WriteString(L"</nickname></author><book-title>");
-    oDocument.WriteString(sBookTitle);
-    oDocument.WriteString(L"</book-title>");
-    if (!sAnnotation.empty())
-        oDocument.WriteString(L"<annotation><p>" + sAnnotation + L"</p></annotation>");
-    if (!sKeywords.empty())
-        oDocument.WriteString(L"<keywords>" + sKeywords + L"</keywords>");
-    oDocument.WriteString(L"<lang>");
-    oDocument.WriteString(sLanguage);
-    oDocument.WriteString(L"</lang></title-info><document-info><author><nickname>");
-    // document-info
-    oDocument.WriteString(sAuthor);
-    oDocument.WriteString(L"</nickname></author><date></date><id>");
-    oDocument.WriteString(sIdentifier);
-    oDocument.WriteString(L"</id><version>");
-    oDocument.WriteString(sVersion);
-    oDocument.WriteString(L"</version></document-info>");
-    // body
-    oDocument.WriteString(L"</description><body><section>");
-
     BYTE* pData;
     DWORD nLength;
     if (!NSFile::CFileBinary::ReadAllBytes(sHtmlFile, &pData, nLength))
@@ -1985,30 +1967,46 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sC
     RELEASEARRAYOBJECTS(pData);
 
     XmlUtils::CXmlLiteReader oIndexHtml;
-    std::vector<std::wstring> arrBinary;
     std::wstring xhtml = htmlToXhtml(sContent, bNeedConvert);
-    if (oIndexHtml.FromString(xhtml))
-    {
-        oIndexHtml.ReadNextNode(); // html
-        int nDepth = oIndexHtml.GetDepth();
-        oIndexHtml.ReadNextSiblingNode(nDepth); // head
-        oIndexHtml.ReadNextSiblingNode(nDepth); // body
-        readStream(oDocument, oIndexHtml, arrBinary, false, false);
-    }
-    oDocument.WriteString(L"</section></body>");
+    if (!oIndexHtml.FromString(xhtml))
+        return S_FALSE;
+
+    oIndexHtml.ReadNextNode(); // html
+    int nDepth = oIndexHtml.GetDepth();
+    oIndexHtml.ReadNextSiblingNode(nDepth); // head
+    oIndexHtml.ReadNextSiblingNode(nDepth); // body
+
+    std::vector<std::wstring> arrBinary;
+    NSStringUtils::CStringBuilder oDocument;
+    NSStringUtils::CStringBuilder oTitleInfo;
+    readStream(oDocument, oTitleInfo, oIndexHtml, arrBinary, false, false);
+
+    NSStringUtils::CStringBuilder oRes;
+    oRes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\">");
+    // description title-info
+    oRes.WriteString(L"<description><title-info>");
+    std::wstring sTitleInfo = oTitleInfo.GetData();
+    if (sTitleInfo.find(L"<book-title>") == std::wstring::npos)
+		oRes.WriteString(L"<book-title>" + (sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle) + L"</book-title>");
+    oRes.WriteString(sTitleInfo);
+    oRes.WriteString(L"</title-info></description>");
+    // body
+    oRes.WriteString(L"<body><section>");
+    oRes.WriteString(oDocument.GetData());
+    oRes.WriteString(L"</section></body>");
     // binary
     for (size_t i = 0; i < arrBinary.size(); i++)
     {
-        oDocument.WriteString(L"<binary id=\"img" + std::to_wstring(i + 1) + L".png\" content-type=\"image/png\">");
-        oDocument.WriteString(arrBinary[i]);
-        oDocument.WriteString(L"</binary>");
+        oRes.WriteString(L"<binary id=\"img" + std::to_wstring(i + 1) + L".png\" content-type=\"image/png\">");
+        oRes.WriteString(arrBinary[i]);
+        oRes.WriteString(L"</binary>");
     }
-    oDocument.WriteString(L"</FictionBook>");
+    oRes.WriteString(L"</FictionBook>");
     // Запись в файл
     NSFile::CFileBinary oWriter;
     if (oWriter.CreateFileW(sDst))
     {
-        oWriter.WriteStringUTF8(oDocument.GetData());
+        oWriter.WriteStringUTF8(oRes.GetData());
         oWriter.CloseFile();
     }
     return S_OK;

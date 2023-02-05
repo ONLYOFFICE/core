@@ -1158,6 +1158,9 @@ HRESULT CGraphicsRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
         m_pRenderer->m_bIsDarkMode = (1 == lCommand);
 	if (c_nUseDictionaryFonts == lType && m_pFontManager)
 		m_pFontManager->SetUseCorrentFontByName((1 == lCommand) ? true : false);
+	if (c_nPenWidth0As1px == lType && m_pRenderer)
+		m_pRenderer->m_bIs0PenWidthAs1px = (1 == lCommand) ? true : false;
+
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dCommand)

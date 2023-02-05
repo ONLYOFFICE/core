@@ -72,6 +72,38 @@ public:
 };
 #endif
 
+class CIsolateAdditionalData
+{
+public:
+	enum IsolateAdditionlDataType {
+		iadtSingletonNative = 0,
+		iadtUndefined = 255
+	};
+
+	IsolateAdditionlDataType m_eType;
+public:
+	CIsolateAdditionalData(const IsolateAdditionlDataType& type = iadtUndefined) { m_eType = type; }
+	virtual ~CIsolateAdditionalData() {}
+
+	static bool CheckSingletonType(v8::Isolate* isolate, const IsolateAdditionlDataType& type, const bool& isAdd = true)
+	{
+		unsigned int nCount = isolate->GetNumberOfDataSlots();
+		for (unsigned int i = 0; i < nCount; ++i)
+		{
+			CIsolateAdditionalData* pData = (CIsolateAdditionalData*)isolate->GetData(i);
+			if (pData->m_eType == type)
+				return true;
+		}
+
+		if (isAdd)
+		{
+			isolate->SetData(nCount, (void*)(new CIsolateAdditionalData(type)));
+		}
+
+		return false;
+	}
+};
+
 class CV8Initializer
 {
 private:

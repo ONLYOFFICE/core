@@ -69,6 +69,8 @@ namespace Aggplus
 
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
+
+		m_bIs0PenWidthAs1px = false;
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -103,6 +105,8 @@ namespace Aggplus
 		
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
+
+		m_bIs0PenWidthAs1px = false;
 	}
 
 	CGraphics::CGraphics(CImage* pImage) : m_dwConfigFlags(0)
@@ -142,6 +146,8 @@ namespace Aggplus
 		
 		m_nTextRenderMode = FT_RENDER_MODE_NORMAL;
 		m_nBlendMode = agg::comp_op_src_over;
+
+		m_bIs0PenWidthAs1px = false;
 	}
 
 	CGraphics::~CGraphics()
@@ -609,7 +615,8 @@ namespace Aggplus
 
 		if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
 		{
-			//dWidth = dWidthMinSize;
+			if (m_bIs0PenWidthAs1px)
+				dWidth = dWidthMinSize;
 		}
 		
 		double dblMiterLimit = pPen->MiterLimit;

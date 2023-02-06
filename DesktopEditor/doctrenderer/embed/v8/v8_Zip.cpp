@@ -62,5 +62,5 @@ namespace NSZip
 void CZipEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
 	v8::Isolate* current = CV8Worker::GetCurrent();
-	context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSZip::CreateNativeZip));
+	context->m_internal->m_globalTemplate->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSZip::CreateNativeZip));
 }

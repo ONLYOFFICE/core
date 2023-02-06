@@ -557,7 +557,7 @@ namespace NSDoctRenderer
 			LOGGER_SPEED_START
 
 					bool bIsBreak = false;
-			JSSmart<CJSContext> context = new CJSContext();
+			JSSmart<CJSContext> context = new CJSContext(false);
 			context->Initialize();
 
 			if (true)

@@ -150,37 +150,6 @@ namespace NSJSBase
 		}
 	};
 
-	class CJSIsolateScopeV8 : public CJSIsolateScope
-	{
-	public:
-		v8::Isolate::Scope  isolate_scope;
-		v8::Locker          isolate_locker;
-
-	public:
-		CJSIsolateScopeV8(v8::Isolate* isolate) : CJSIsolateScope(),
-			isolate_scope(isolate),
-			isolate_locker(isolate)
-		{
-		}
-		virtual ~CJSIsolateScopeV8()
-		{
-		}
-	};
-
-	class CJSContextScopeV8 : public CJSContextScope
-	{
-	public:
-		v8::Context::Scope m_scope;
-
-	public:
-		CJSContextScopeV8(v8::Local<v8::Context> context) : m_scope(context)
-		{
-		}
-		virtual ~CJSContextScopeV8()
-		{
-		}
-	};
-
 	class CJSLocalScopeV8 : public CJSLocalScope
 	{
 	public:
@@ -196,12 +165,16 @@ namespace NSJSBase
 	};
 
 
-	CJSContext::CJSContext()
+	CJSContext::CJSContext(const bool& bIsInitialize)
 	{
 		m_internal = new CJSContextPrivate();
+		if (bIsInitialize)
+			Initialize();
 	}
 	CJSContext::~CJSContext()
 	{
+		if (m_internal->m_isolate)
+			Dispose();
 		RELEASEOBJECT(m_internal);
 	}
 
@@ -212,7 +185,14 @@ namespace NSJSBase
 
 	void CJSContext::Initialize()
 	{
-		m_internal->m_isolate = CV8Worker::getInitializer().CreateNew();
+		if (m_internal->m_isolate == NULL)
+		{
+			v8::Isolate* isolate = CV8Worker::getInitializer().CreateNew();
+			m_internal->m_isolate = isolate;
+			v8::Isolate::Scope iscope(isolate);
+			v8::HandleScope scope(isolate);
+			m_internal->m_globalTemplatePersistent.Reset(isolate, v8::ObjectTemplate::New(isolate));
+		}
 	}
 	void CJSContext::Dispose()
 	{
@@ -226,14 +206,10 @@ namespace NSJSBase
 
 	void CJSContext::CreateContext()
 	{
-		v8::Isolate::Scope iscope(m_internal->m_isolate);
-		v8::HandleScope scope(m_internal->m_isolate);
-		m_internal->m_contextPersistent.Reset(m_internal->m_isolate, v8::Context::New(m_internal->m_isolate, NULL, m_internal->m_global));
-	}
-
-	void CJSContext::CreateGlobalForContext()
-	{
-		m_internal->m_global = v8::ObjectTemplate::New(CV8Worker::GetCurrent());
+		v8::Isolate* isolate = m_internal->m_isolate;
+		v8::Isolate::Scope iscope(isolate);
+		v8::HandleScope scope(isolate);
+		m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate, NULL, m_internal->m_globalTemplatePersistent.Get(isolate)));
 	}
 
 	CJSObject* CJSContext::GetGlobal()
@@ -243,39 +219,27 @@ namespace NSJSBase
 		return ret;
 	}
 
-//	CJSIsolateScope* CJSContext::CreateIsolateScope()
-//	{
-//		return new CJSIsolateScopeV8(m_internal->m_isolate);
-//	}
-
-//	CJSContextScope* CJSContext::CreateContextScope()
-//	{
-//		CJSContextScope* pScope = new CJSContextScopeV8(m_internal->m_context);
-
-//		JSSmart<CJSObject> global = GetCurrent()->GetGlobal();
-//		global->set("window", global.GetPointer());
-
-//		return pScope;
-//	}
-
-//	CJSLocalScope* CJSContext::CreateLocalScope()
-//	{
-//		return new CJSLocalScopeV8();
-//	}
-
 	void CJSContext::Enter()
 	{
+		v8::Isolate* isolate = m_internal->m_isolate;
+#ifdef LOG_TO_COUT
 		std::cout << "Entering isolate \t" << m_internal->m_isolate << std::endl;
-		m_internal->m_isolate->Enter();
+#endif
+		isolate->Enter();
 		m_internal->m_scope = new CJSLocalScopeV8();
-		m_internal->m_context = v8::Local<v8::Context>::New(m_internal->m_isolate, m_internal->m_contextPersistent);
-		m_internal->m_context->Enter();
+		m_internal->m_globalTemplate = v8::Local<v8::ObjectTemplate>::New(isolate, m_internal->m_globalTemplatePersistent);
+		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
+		if (!m_internal->m_context.IsEmpty())
+			m_internal->m_context->Enter();
 	}
 
 	void CJSContext::Exit()
 	{
+#ifdef LOG_TO_COUT
 		std::cout << "Exiting isolate \t" << m_internal->m_isolate << std::endl;
-		m_internal->m_context->Exit();
+#endif
+		if (!m_internal->m_context.IsEmpty())
+			m_internal->m_context->Exit();
 		delete(m_internal->m_scope);
 		m_internal->m_isolate->Exit();
 	}

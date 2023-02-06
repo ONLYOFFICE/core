@@ -19,7 +19,7 @@ namespace NSJSBase
     class CJSTypedArray;
     class CJSFunction;
 
-    class CJSValue
+	class Q_DECL_EXPORT CJSValue
     {
     public:
         CJSValue() {}
@@ -54,14 +54,14 @@ namespace NSJSBase
         virtual JSSmart<CJSObject> toObjectSmart() { return toObject(); }
     };
 
-    class CJSEmbedObjectPrivateBase
+	class Q_DECL_EXPORT CJSEmbedObjectPrivateBase
     {
     public:
         CJSEmbedObjectPrivateBase() {}
         virtual ~CJSEmbedObjectPrivateBase() {}
     };
 
-    class CJSEmbedObject
+	class Q_DECL_EXPORT CJSEmbedObject
     {
     public:
         CJSEmbedObject() { embed_native_internal = NULL; }
@@ -77,7 +77,7 @@ namespace NSJSBase
         friend class CJSEmbedObjectPrivate;
     };
 
-    class CJSObject : public CJSValue
+	class Q_DECL_EXPORT CJSObject : public CJSValue
     {
     public:
         CJSObject() {}
@@ -95,7 +95,7 @@ namespace NSJSBase
         virtual JSSmart<CJSValue> toValue()                     = 0;
     };
 
-    class CJSArray : public CJSValue
+	class Q_DECL_EXPORT CJSArray : public CJSValue
     {
     public:
         CJSArray() {}
@@ -126,7 +126,7 @@ namespace NSJSBase
         void Free(unsigned char* data, const size_t& size);
     }
 
-    class CJSDataBuffer
+	class Q_DECL_EXPORT CJSDataBuffer
     {
     public:
         BYTE* Data;
@@ -162,7 +162,7 @@ namespace NSJSBase
         }
     };
 
-    class CJSTypedArray : public CJSValue
+	class Q_DECL_EXPORT CJSTypedArray : public CJSValue
     {
     public:
         CJSTypedArray(BYTE* data = NULL, int count = 0) {}
@@ -173,7 +173,7 @@ namespace NSJSBase
         virtual JSSmart<CJSValue> toValue() = 0;
     };
 
-    class CJSFunction : public CJSValue
+	class Q_DECL_EXPORT CJSFunction : public CJSValue
     {
     public:
         CJSFunction() {}
@@ -182,7 +182,7 @@ namespace NSJSBase
         virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
     };
 
-    class CJSTryCatch
+	class Q_DECL_EXPORT CJSTryCatch
     {
     public:
         CJSTryCatch() {}
@@ -190,47 +190,25 @@ namespace NSJSBase
         virtual bool Check() = 0;
     };
 
-    class CJSIsolateScope
-    {
-    public:
-        CJSIsolateScope()
-        {
-        }
-        virtual ~CJSIsolateScope()
-        {
-        }
-    };
-
-    class CJSContextScope
-    {
-    public:
-        CJSContextScope()
-        {
-        }
-        virtual ~CJSContextScope()
-        {
-        }
-    };
-
-    class CJSLocalScope
-    {
-    public:
-        CJSLocalScope()
-        {
-        }
-        virtual ~CJSLocalScope()
-        {
-        }
-    };
+	class Q_DECL_EXPORT CJSLocalScope
+	{
+	public:
+		CJSLocalScope()
+		{
+		}
+		virtual ~CJSLocalScope()
+		{
+		}
+	};
 
     class CJSContextPrivate;
-    class CJSContext
+	class Q_DECL_EXPORT CJSContext
     {
     public:
         CJSContextPrivate* m_internal;
 
     public:
-        CJSContext();
+		CJSContext(const bool& bIsInitialize = true);
         ~CJSContext();
 
         void Initialize();
@@ -239,14 +217,9 @@ namespace NSJSBase
         CJSTryCatch* GetExceptions();
 
         void CreateContext();
-        void CreateGlobalForContext();
         CJSObject* GetGlobal();
 
-//        CJSIsolateScope* CreateIsolateScope();
-//        CJSContextScope* CreateContextScope();
-//        CJSLocalScope* CreateLocalScope();
-
-		// Use this methods before working with needed context if you want to work with multiple contexts simultaneously
+		// Use this methods before working with needed context if you want to work with multiple contexts simultaneously (or use CJSContextScope)
 		void Enter();
 		void Exit();
 
@@ -297,6 +270,22 @@ namespace NSJSBase
         static void ExternalDispose();
         static bool IsSupportNativeTypedArrays();
     };
+
+	class Q_DECL_EXPORT CJSContextScope
+	{
+	public:
+		JSSmart<CJSContext> m_context;
+
+	public:
+		CJSContextScope(JSSmart<CJSContext> context) : m_context(context)
+		{
+			m_context->Enter();
+		}
+		~CJSContextScope()
+		{
+			m_context->Exit();
+		}
+	};
 }
 
 #endif // _CORE_EXT_JS_BASE_H_

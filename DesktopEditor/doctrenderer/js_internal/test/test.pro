@@ -13,6 +13,7 @@ CORE_ROOT_DIR = $$PWD/../../../../../core
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
+# TODO: remove js_base.pri
 include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base.pri)
 
 ############### destination path ###############
@@ -37,3 +38,4 @@ HEADERS +=  \
 SOURCES += main.cpp
 
 DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
+DEFINES += LOG_TO_COUT

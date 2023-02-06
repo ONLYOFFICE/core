@@ -30,17 +30,22 @@
  *
  */
 
-#include "../js_base.h"
 #include <iostream>
+
+#include "../../embed/ZipEmbed.h"
+#include "../js_base.h"
 
 using namespace NSJSBase;
 int main(int argc, char *argv[])
 {
-	JSSmart<CJSContext> oContext1 = new CJSContext;
+#if 1
+	// Primitives example
+
+	JSSmart<CJSContext> oContext1 = new CJSContext(false);
 	oContext1->Initialize();
 
 	JSSmart<CJSContext> oContext2 = new CJSContext;
-	oContext2->Initialize();
+//	oContext2->Initialize();
 
 	// Create first context
 	oContext1->CreateContext();
@@ -58,15 +63,15 @@ int main(int argc, char *argv[])
 
 	oContext1->Exit();
 
-	// Work with second context
-	oContext2->Enter();
+	// Work with second context with CJSContextScope usage
+	{
+		CJSContextScope scope(oContext2);
 
-	JSSmart<CJSObject> oGlobal2 = oContext2->GetGlobal();
-	JSSmart<CJSValue> oVar4 = oContext2->createString("Wor");
-	oGlobal2->set("v1", oVar4.GetPointer());
-	oContext2->runScript("var res = v1 + 'ld!'");
-
-	oContext2->Exit();
+		JSSmart<CJSObject> oGlobal2 = oContext2->GetGlobal();
+		JSSmart<CJSValue> oVar4 = oContext2->createString("Wor");
+		oGlobal2->set("v1", oVar4.GetPointer());
+		oContext2->runScript("var res = v1 + 'ld!'");
+	}
 
 	// Print result from first context
 	oContext1->Enter();
@@ -74,8 +79,6 @@ int main(int argc, char *argv[])
 	JSSmart<CJSValue> oRes1 = oContext1->runScript("function f() { return res; }; f();");
 	std::string strRes1 = oRes1->toStringA();
 	std::cout << strRes1 << std::endl;
-
-	oContext1->Exit();
 
 	// Print second variable
 	oContext2->Enter();
@@ -85,9 +88,67 @@ int main(int argc, char *argv[])
 	std::cout << strRes2 << std::endl;
 
 	oContext2->Exit();
+	oContext1->Exit();
 
-	oContext1->Dispose();
+//	oContext1->Dispose();
 	oContext2->Dispose();
 
+#else
+	// CZipEmbed example
+
+	JSSmart<CJSContext> oContext1 = new CJSContext;
+	JSSmart<CJSContext> oContext2 = new CJSContext;
+
+	// Create first context
+	oContext1->Enter();
+	CZipEmbed::CreateObjectInContext("CZip", oContext1);
+	oContext1->Exit();
+	oContext1->CreateContext();
+
+	// Create second context
+	oContext2->Enter();
+	CZipEmbed::CreateObjectInContext("CZip", oContext2);
+	oContext2->Exit();
+	oContext2->CreateContext();
+
+	// Work with first context
+	oContext1->Enter();
+	JSSmart<CJSValue> oRes1 = oContext1->runScript(
+		"var oZip = new CZip;\n"
+		"var files = oZip.open('" CURR_DIR "/../v8');\n"
+		"oZip.close();");
+	oContext1->Exit();
+
+	// Work with second context
+	oContext2->Enter();
+	JSSmart<CJSValue> oRes2 = oContext2->runScript(
+		"var oZip = new CZip;\n"
+		"var files = oZip.open('" CURR_DIR "/../jsc');\n"
+		"oZip.close();");
+	oContext2->Exit();
+
+	// Print first result
+	oContext1->Enter();
+	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
+	JSSmart<CJSArray> oFiles1 = oGlobal1->get("files")->toArray();
+	std::cout << "\nRESULT FROM CONTEXT 1:\n";
+	for (int i = 0; i < oFiles1->getCount(); i++)
+	{
+		std::cout << oFiles1->get(i)->toStringA() << std::endl;
+	}
+
+	// Print second result
+	oContext2->Enter();
+	JSSmart<CJSObject> oGlobal2 = oContext2->GetGlobal();
+	JSSmart<CJSArray> oFiles2 = oGlobal2->get("files")->toArray();
+	std::cout << "\nRESULT FROM CONTEXT 2:\n";
+	for (int i = 0; i < oFiles2->getCount(); i++)
+	{
+		std::cout << oFiles2->get(i)->toStringA() << std::endl;
+	}
+	oContext2->Exit();
+	oContext1->Exit();
+
+#endif
 	return 0;
 }

@@ -48,18 +48,13 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 	m_nFileType = -1;
 
 	m_context = new CJSContext();
-	m_context->Initialize();
+	m_context->CreateContext();
+	CJSContextScope scope(m_context);
 
-	m_isolate_scope = m_context->CreateIsolateScope();
-	m_handle_scope  = m_context->CreateLocalScope();
-
-	m_context->CreateGlobalForContext();
 	CNativeControlEmbed::CreateObjectBuilderInContext("CreateNativeEngine", m_context);
 	CGraphicsEmbed::CreateObjectInContext("CreateNativeGraphics", m_context);
 	NSJSBase::CreateDefaults(m_context);
-	m_context->CreateContext();
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	builder_CreateNative("builderJS", m_context, pBuilder);
@@ -67,8 +62,6 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder)
 CV8RealTimeWorker::~CV8RealTimeWorker()
 {
 	m_oContextData.Clear();
-	m_handle_scope = NULL;
-	m_isolate_scope = NULL;
 	m_context->Dispose();
 }
 
@@ -82,7 +75,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 	std::string commandA = U_TO_UTF8(command);
 	//commandA = "Api." + commandA;
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	LOGGER_SPEED_LAP("compile_command")
@@ -107,7 +100,7 @@ std::string CV8RealTimeWorker::GetGlobalVariable()
 {
 	std::string commandA = "JSON.stringify(GlobalVariable);";
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	JSSmart<CJSValue> _value = m_context->runScript(commandA, try_catch);
@@ -124,7 +117,7 @@ std::wstring CV8RealTimeWorker::GetJSVariable(std::wstring sParam)
 	NSStringUtils::string_replaceA(sParamA, "\\\"", "\"");
 	std::string commandA = "(function(){ return (" + sParamA + "); })()";
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	JSSmart<CJSValue> _value = m_context->runScript(commandA, try_catch);
@@ -139,7 +132,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 {
 	LOGGER_SPEED_START
 
-			JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
 
 	LOGGER_SPEED_LAP("compile");
@@ -262,7 +255,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 	else if ((type & AVS_OFFICESTUDIO_FILE_CROSSPLATFORM) || (type & AVS_OFFICESTUDIO_FILE_IMAGE))
 		_formatDst = NSDoctRenderer::DoctRendererFormat::PDF;
 
-	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	CJSContextScope scope(m_context);
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	NSNativeControl::CNativeControl* pNative = NULL;
@@ -1051,7 +1044,7 @@ namespace NSDoctRenderer
 	{
 		CDocBuilderContextScope ret;
 		ret.m_internal->m_scope_wrap = new CDocBuilderContextScopeWrap();
-		ret.m_internal->m_scope_wrap->m_scope = m_internal->m_context->CreateContextScope();
+		ret.m_internal->m_scope_wrap->m_scope = new CJSContextScope(m_internal->m_context);
 		ret.m_internal->m_context_data = m_internal->m_context_data;
 
 		m_internal->m_context_data->AddScope(ret.m_internal->m_scope_wrap);

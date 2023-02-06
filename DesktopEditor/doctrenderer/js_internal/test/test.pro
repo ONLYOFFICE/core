@@ -13,8 +13,6 @@ CORE_ROOT_DIR = $$PWD/../../../../../core
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
-# TODO: remove js_base.pri
-include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base.pri)
 
 ############### destination path ###############
 DESTDIR = $$PWD/build
@@ -28,12 +26,13 @@ core_linux {
     LIBS += -ldl
 }
 
-SOURCES +=  \
-    ../../embed/ZipEmbed.cpp \
-    ../../embed/v8/v8_Zip.cpp
+# TODO: make it work
+#SOURCES +=  \
+#    ../../embed/ZipEmbed.cpp \
+#    ../../embed/v8/v8_Zip.cpp
 
-HEADERS +=  \
-    ../../embed/ZipEmbed.h
+#HEADERS +=  \
+#    ../../embed/ZipEmbed.h
 
 SOURCES += main.cpp
 

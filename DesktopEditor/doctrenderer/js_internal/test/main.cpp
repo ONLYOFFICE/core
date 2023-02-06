@@ -100,19 +100,14 @@ int main(int argc, char *argv[])
 	JSSmart<CJSContext> oContext2 = new CJSContext;
 
 	// Create first context
-	oContext1->Enter();
-	CZipEmbed::CreateObjectInContext("CZip", oContext1);
-	oContext1->Exit();
 	oContext1->CreateContext();
 
 	// Create second context
-	oContext2->Enter();
-	CZipEmbed::CreateObjectInContext("CZip", oContext2);
-	oContext2->Exit();
 	oContext2->CreateContext();
 
 	// Work with first context
 	oContext1->Enter();
+	CZipEmbed::CreateObjectInContext("CZip", oContext1);
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
 		"var oZip = new CZip;\n"
 		"var files = oZip.open('" CURR_DIR "/../v8');\n"
@@ -120,12 +115,14 @@ int main(int argc, char *argv[])
 	oContext1->Exit();
 
 	// Work with second context
-	oContext2->Enter();
-	JSSmart<CJSValue> oRes2 = oContext2->runScript(
-		"var oZip = new CZip;\n"
-		"var files = oZip.open('" CURR_DIR "/../jsc');\n"
-		"oZip.close();");
-	oContext2->Exit();
+	{
+		CJSContextScope scope(oContext2);
+		CZipEmbed::CreateObjectInContext("CZip", oContext2);
+		JSSmart<CJSValue> oRes2 = oContext2->runScript(
+			"var oZip = new CZip;\n"
+			"var files = oZip.open('" CURR_DIR "/../jsc');\n"
+			"oZip.close();");
+	}
 
 	// Print first result
 	oContext1->Enter();

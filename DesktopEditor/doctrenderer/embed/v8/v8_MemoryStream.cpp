@@ -64,5 +64,7 @@ namespace NSMemoryStream
 void CMemoryStreamEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSMemoryStream::CreateNativeMemoryStream));
+	v8::Local<v8::Context> localContext = context->m_internal->m_context;
+	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, NSMemoryStream::CreateNativeMemoryStream);
+	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
 }

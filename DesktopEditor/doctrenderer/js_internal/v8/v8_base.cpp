@@ -191,7 +191,6 @@ namespace NSJSBase
 			m_internal->m_isolate = isolate;
 			v8::Isolate::Scope iscope(isolate);
 			v8::HandleScope scope(isolate);
-			m_internal->m_globalTemplatePersistent.Reset(isolate, v8::ObjectTemplate::New(isolate));
 		}
 	}
 	void CJSContext::Dispose()
@@ -209,7 +208,7 @@ namespace NSJSBase
 		v8::Isolate* isolate = m_internal->m_isolate;
 		v8::Isolate::Scope iscope(isolate);
 		v8::HandleScope scope(isolate);
-		m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate, NULL, m_internal->m_globalTemplatePersistent.Get(isolate)));
+		m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
 	}
 
 	CJSObject* CJSContext::GetGlobal()
@@ -227,7 +226,6 @@ namespace NSJSBase
 #endif
 		isolate->Enter();
 		m_internal->m_scope = new CJSLocalScopeV8();
-		m_internal->m_globalTemplate = v8::Local<v8::ObjectTemplate>::New(isolate, m_internal->m_globalTemplatePersistent);
 		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Enter();

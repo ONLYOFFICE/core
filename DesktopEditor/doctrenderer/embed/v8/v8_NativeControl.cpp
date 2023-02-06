@@ -139,11 +139,15 @@ namespace NSNativeControl
 void CNativeControlEmbed::CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSNativeControl::CreateNativeObject));
+	v8::Local<v8::Context> localContext = context->m_internal->m_context;
+	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, NSNativeControl::CreateNativeObject);
+	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
 }
 
 void CNativeControlEmbed::CreateObjectBuilderInContext(const std::string& name, JSSmart<CJSContext> context)
 {
     v8::Isolate* current = CV8Worker::GetCurrent();
-    context->m_internal->m_global->Set(current, name.c_str(), v8::FunctionTemplate::New(current, NSNativeControl::CreateNativeObjectBuilder));
+	v8::Local<v8::Context> localContext = context->m_internal->m_context;
+	v8::Local<v8::FunctionTemplate> templ = v8::FunctionTemplate::New(current, NSNativeControl::CreateNativeObjectBuilder);
+	localContext->Global()->Set(localContext, CreateV8String(current, name.c_str()), templ->GetFunction(localContext).ToLocalChecked());
 }

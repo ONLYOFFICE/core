@@ -391,8 +391,6 @@ public:
 class CV8RealTimeWorker
 {
 public:
-	JSSmart<CJSIsolateScope> m_isolate_scope;
-	JSSmart<CJSLocalScope> m_handle_scope;
 	JSSmart<CJSContext> m_context;
 
 	int m_nFileType;

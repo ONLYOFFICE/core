@@ -88,16 +88,22 @@ public:
 	static bool CheckSingletonType(v8::Isolate* isolate, const IsolateAdditionlDataType& type, const bool& isAdd = true)
 	{
 		unsigned int nCount = isolate->GetNumberOfDataSlots();
-		for (unsigned int i = 0; i < nCount; ++i)
+		if (nCount == 0)
+			return false;
+
+		void* pSingletonData = isolate->GetData(0);
+		if (NULL != pSingletonData)
 		{
-			CIsolateAdditionalData* pData = (CIsolateAdditionalData*)isolate->GetData(i);
+			CIsolateAdditionalData* pData = (CIsolateAdditionalData*)pSingletonData;
 			if (pData->m_eType == type)
 				return true;
+
+			return false;
 		}
 
 		if (isAdd)
 		{
-			isolate->SetData(nCount, (void*)(new CIsolateAdditionalData(type)));
+			isolate->SetData(0, (void*)(new CIsolateAdditionalData(type)));
 		}
 
 		return false;

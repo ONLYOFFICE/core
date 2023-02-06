@@ -220,10 +220,14 @@ namespace NSJSBase
 		v8_debug::disposeInspector(m_internal->m_context);
 #endif
 		unsigned int nEmbedDataCount = m_internal->m_isolate->GetNumberOfDataSlots();
-		for (unsigned int i = 0; i < nEmbedDataCount; ++i)
+		if (nEmbedDataCount > 0)
 		{
-			CIsolateAdditionalData* pAdditionData = (CIsolateAdditionalData*)m_internal->m_isolate->GetData(i);
-			delete pAdditionData;
+			void* pSingletonData = m_internal->m_isolate->GetData(0);
+			if (NULL != pSingletonData)
+			{
+				CIsolateAdditionalData* pData = (CIsolateAdditionalData*)pSingletonData;
+				delete pData;
+			}
 		}
 
 		m_internal->m_isolate->Dispose();

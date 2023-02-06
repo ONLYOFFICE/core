@@ -78,6 +78,7 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
     globalParams->setupBaseFonts(NULL);
     SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
 #else
+    globalParams->setDrawFormFields(gFalse);
     SetCMapMemory(NULL, 0);
 #endif
 
@@ -792,16 +793,26 @@ BYTE* CPdfReader::GetWidgets()
             continue;
         }
 
+        int nFlagPos = oRes.GetSize();
+        oRes.AddInt(nFlags);
+
+        // 1 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
         Object oTU;
-        // Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
         if (oField.dictLookup("TU", &oTU) && oTU.isString())
         {
             TextString* s = new TextString(oTU.getString());
             sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
             nFlags |= (1 << 0);
+            oRes.WriteString((BYTE*)sTU.c_str(), (unsigned int)sTU.length());
             delete s;
         }
         oTU.free();
+
+        // Значение поля - V
+        int nValueLength;
+        Unicode* pValue = pField->getValue(&nValueLength);
+        std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(pValue, nValueLength);
+        gfree(pValue);
 
         // Запись данных необходимых каждому типу
         switch (oType)
@@ -810,11 +821,6 @@ BYTE* CPdfReader::GetWidgets()
         case acroFormFieldCheckbox:
         {
             // 2 - Включено
-
-            int nValueLength;
-            Unicode* pValue = pField->getValue(&nValueLength);
-            std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(pValue, nValueLength);
-            gfree(pValue);
 
             if (sValue != "Off")
                 nFlags |= (1 << 1);
@@ -860,14 +866,61 @@ BYTE* CPdfReader::GetWidgets()
         case acroFormFieldText:
         case acroFormFieldBarcode:
         {
+            // 2 - Значение
+            // 3 - Максимальное количество символов
+
+            if (!sValue.empty())
+            {
+                nFlags |= (1 << 1);
+                oRes.WriteString((BYTE*)sValue.c_str(), (unsigned int)sValue.length());
+            }
+
             // Максимальное количество символов в Tx - MaxLen
             int nMaxLen = pField->getMaxLen();
+            if (nMaxLen > 0)
+            {
+                nFlags |= (1 << 2);
+                oRes.AddInt(nMaxLen);
+            }
 
             break;
         }
         case acroFormFieldComboBox:
         case acroFormFieldListBox:
         {
+            // 2 - Значение
+            // 3 - Список значений
+
+            if (!sValue.empty())
+            {
+                nFlags |= (1 << 1);
+                oRes.WriteString((BYTE*)sValue.c_str(), (unsigned int)sValue.length());
+            }
+
+            Object oOpt;
+            if (oField.dictLookup("Opt", &oOpt) && oOpt.isArray())
+            {
+                nFlags |= (1 << 2);
+                int nOptLength = oOpt.arrayGetLength();
+                oRes.AddInt(nOptLength);
+                for (int j = 0; j < nOptLength; ++j)
+                {
+                    Object oOptJ;
+                    if (!oOpt.arrayGet(j, &oOptJ) || !oOptJ.isString())
+                    {
+                        oOptJ.free();
+                        continue;
+                    }
+
+                    TextString* s = new TextString(oOptJ.getString());
+                    std::string sOpt = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                    oRes.WriteString((BYTE*)sOpt.c_str(), (unsigned int)sOpt.length());
+                    delete s;
+                    oOptJ.free();
+                }
+            }
+            oOpt.free();
+
             break;
         }
         case acroFormFieldSignature:
@@ -881,10 +934,7 @@ BYTE* CPdfReader::GetWidgets()
         }
         oFieldRef.free(); oField.free();
 
-        // 1 - Альтернативное имя
-        oRes.AddInt(nFlags);
-        if (nFlags & (1 << 0))
-            oRes.WriteString((BYTE*)sTU.c_str(), (unsigned int)sTU.length());
+        oRes.AddInt(nFlags, nFlagPos);
     }
 
     oRes.WriteLen();

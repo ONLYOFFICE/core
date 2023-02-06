@@ -397,11 +397,33 @@
 			rec["flag"] = reader.readInt();
 			var flags = reader.readInt();
 
+			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
+			if (flags & (1 << 0)
+				rec["userName"] = reader.readString();
+
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton")
 			{
-				if (flags & (1 << 0)
-				// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-				rec["userName"] = reader.readString();
+			}
+			else if (rec["type"] == "text")
+			{
+				if (flags & (1 << 1)
+					rec["value"] = reader.readString();
+				if (flags & (1 << 2)
+					rec["maxLen"] = reader.readInt();
+			}
+			else if (rec["type"] == "combobox" || rec["type"] == "listbox")
+			{
+				if (flags & (1 << 1)
+					rec["value"] = reader.readString();
+				if (flags & (1 << 2)
+				{
+					var n = reader.readInt();
+					rec["opt"] = [];
+					for (int i = 0; i < n; ++i)
+					{
+						rec["opt"].push(reader.readInt());
+					}
+				}
 			}
 
 			res.push(rec);

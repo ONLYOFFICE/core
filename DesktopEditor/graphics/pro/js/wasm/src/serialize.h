@@ -77,6 +77,11 @@ namespace NSWasm
             m_pDataCur += 4;
             m_lSizeCur += 4;
         }
+        void AddInt(unsigned int value, size_t pos)
+        {
+            if (pos < m_lSizeCur)
+                memcpy(m_pData + pos, &value, sizeof(unsigned int));
+        }
         void AddDouble(double value)
         {
             // такой точности хватит

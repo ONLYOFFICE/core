@@ -411,14 +411,52 @@ int main()
 			i += 4;
 			std::cout << "Flags " << nPathLength << ", ";
 			int nFlags = nPathLength;
+			if (nFlags & (1 << 0))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
 			if (sType == "checkbox" || sType == "radiobutton")
 			{
-				if (nFlags & (1 << 0))
+			}
+			else if (sType == "text")
+			{
+				if (nFlags & (1 << 1))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
-					std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 					i += nPathLength;
+				}
+				if (nFlags & (1 << 2))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "MaxLen " << nPathLength << ", ";
+				}
+			}
+			else if (sType == "combobox" || sType == "listbox")
+			{
+				if (nFlags & (1 << 1))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (nFlags & (1 << 2))
+				{
+					int nOptLength = READ_INT(pWidgets + i);
+					i += 4;
+					for (int j = 0; j < nOptLength; ++j)
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << std::to_string(j) << "Opt " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
 				}
 			}
 			std::cout << std::endl;

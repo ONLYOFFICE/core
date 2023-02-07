@@ -276,7 +276,10 @@ namespace OOX
 				else if (L"m:oMathPara" == sName)
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
 				else if (L"w:p" == sName)
-					AssignPtrXmlContent(pItem, CParagraph, oReader)
+				{
+					pItem = new CParagraph(document, this);
+					pItem->fromXML(oReader);
+				}
 				else if (L"w:permEnd" == sName)
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
 				else if (L"w:permStart" == sName)

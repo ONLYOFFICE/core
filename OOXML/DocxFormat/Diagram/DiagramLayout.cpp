@@ -45,25 +45,25 @@ while (oReader.ReadNextSiblingNode(nParentDepth))\
 	std::wstring sName = oReader.GetName();\
 	WritingElement *pItem = NULL;\
 	if (L"dgm:alg" == sName)\
-		AssignPtrXmlContent(pItem, CAlg, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CAlg, oReader)\
 	else if (L"dgm:choose" == sName)\
-		AssignPtrXmlContent(pItem, CChoose, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CChoose, oReader)\
 	else if (L"dgm:constrLst" == sName)\
-		AssignPtrXmlContent(pItem, CConstrLst, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CConstrLst, oReader)\
 	else if (L"dgm:forEach" == sName)\
-		AssignPtrXmlContent(pItem, CForEach, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CForEach, oReader)\
 	else if (L"dgm:layoutNode" == sName)\
-		AssignPtrXmlContent(pItem, CLayoutNode, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CLayoutNode, oReader)\
 	else if (L"dgm:presOf" == sName)\
-		AssignPtrXmlContent(pItem, CPresOf, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CPresOf, oReader)\
 	else if (L"dgm:ruleLst" == sName)\
-		AssignPtrXmlContent(pItem, CRuleLst, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CRuleLst, oReader)\
 	else if (L"dgm:shape" == sName)\
-		AssignPtrXmlContent(pItem, CShape, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CShape, oReader)\
 	else if (L"dgm:varLst" == sName)\
-		AssignPtrXmlContent(pItem, CVariableList, oReader)\
+		AssignPtrXmlContentNoMain(pItem, CVariableList, oReader)\
 	else if (L"dgm:extLst" == sName)\
-		AssignPtrXmlContent(pItem, OOX::Drawing::COfficeArtExtensionList, oReader)\
+		AssignPtrXmlContentNoMain(pItem, OOX::Drawing::COfficeArtExtensionList, oReader)\
 	if (pItem)\
 		m_arrItems.push_back(pItem);\
 }}

@@ -43,9 +43,15 @@ namespace NSBinPptxRW
 
 namespace OOX
 {
-#define AssignPtrXmlContent(Ptr, Class, Content) \
+#define AssignPtrXmlContentNoMain(Ptr, Class, Content) \
 {\
 	Ptr = new Class();\
+	Class *pClass = dynamic_cast<Class*>(Ptr);\
+	*pClass = Content;\
+}
+#define AssignPtrXmlContent(Ptr, Class, Content) \
+{\
+	Ptr = new Class(WritingElement::m_pMainDocument);\
 	Class *pClass = dynamic_cast<Class*>(Ptr);\
 	*pClass = Content;\
 }
@@ -53,13 +59,11 @@ namespace OOX
 #define WritingElement_AdditionMethods(Class) \
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
-	m_pMainDocument = NULL;\
 	fromXML( (XmlUtils::CXmlNode &)oNode );\
 	return *this;\
 }\
 	const Class& operator =(const XmlUtils::CXmlLiteReader& oReader)\
 	{\
-	m_pMainDocument = NULL;\
 	fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 	return *this;\
 }\

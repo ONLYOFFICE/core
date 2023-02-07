@@ -78,6 +78,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -138,8 +140,11 @@ namespace OOX
 					AssignPtrXmlContent(pItem, COMath, oReader)
 				else if ( _T("m:oMathPara") == sName )
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
-				else if ( _T("w:p") == sName )
-					AssignPtrXmlContent(pItem, CParagraph, oReader)
+				else if (L"w:p" == sName)
+				{
+					pItem = new CParagraph(document, this);
+					pItem->fromXML(oReader);
+				}
 				else if ( _T("w:permEnd") == sName )
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
 				else if ( _T("w:permStart") == sName )
@@ -194,7 +199,6 @@ namespace OOX
 
 		void CDir::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
 			WritingElement_ReadAttributes_Read_if     ( oReader, _T("val"), m_oVal )
 			WritingElement_ReadAttributes_End( oReader )

@@ -36,9 +36,8 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		CRun::CRun()
-		{
-		}
+		CRun::CRun(OOX::Document *pMain) : WritingElementWithChilds<CText>(pMain) {}
+
 		CRun::~CRun()
 		{
 		}

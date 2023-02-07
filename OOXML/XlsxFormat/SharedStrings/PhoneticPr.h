@@ -48,7 +48,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CPhonetic)
-			CPhonetic();
+			CPhonetic(OOX::Document *pMain = NULL);
 			virtual ~CPhonetic();
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -74,7 +74,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CRPh)
-			CRPh();
+			CRPh(OOX::Document *pMain = NULL);
 			virtual ~CRPh();
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);

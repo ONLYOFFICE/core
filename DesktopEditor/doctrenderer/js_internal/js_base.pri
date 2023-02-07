@@ -8,6 +8,7 @@ core_ios {
 INCLUDEPATH += $$PWD
 
 HEADERS += $$PWD/js_base.h
+SOURCES += $$PWD/js_base.cpp
 
 HEADERS += $$PWD/js_logger.h
 SOURCES += $$PWD/js_logger.cpp
@@ -78,3 +79,6 @@ use_javascript_core {
     DEFINES += JS_ENGINE_JAVASCRIPTCORE
 
 }
+
+# cout logs
+#DEFINES += LOG_TO_COUT

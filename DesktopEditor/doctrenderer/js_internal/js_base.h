@@ -22,8 +22,8 @@ namespace NSJSBase
 	class Q_DECL_EXPORT CJSValue
     {
     public:
-        CJSValue() {}
-        virtual ~CJSValue() {}
+		CJSValue();
+		virtual ~CJSValue();
 
         virtual bool isUndefined()          = 0;
         virtual bool isNull()               = 0;
@@ -51,24 +51,24 @@ namespace NSJSBase
         virtual CJSTypedArray* toTypedArray() = 0;
         virtual CJSFunction* toFunction()   = 0;
 
-        virtual JSSmart<CJSObject> toObjectSmart() { return toObject(); }
+		virtual JSSmart<CJSObject> toObjectSmart();
     };
 
 	class Q_DECL_EXPORT CJSEmbedObjectPrivateBase
     {
     public:
-        CJSEmbedObjectPrivateBase() {}
-        virtual ~CJSEmbedObjectPrivateBase() {}
+		CJSEmbedObjectPrivateBase();
+		virtual ~CJSEmbedObjectPrivateBase();
     };
 
 	class Q_DECL_EXPORT CJSEmbedObject
     {
     public:
-        CJSEmbedObject() { embed_native_internal = NULL; }
-        virtual ~CJSEmbedObject() { RELEASEOBJECT(embed_native_internal); }
+		CJSEmbedObject();
+		virtual ~CJSEmbedObject();
 
     public:
-        virtual void* getObject() { return NULL; }
+		virtual void* getObject();
 
     protected:
         CJSEmbedObjectPrivateBase* embed_native_internal;
@@ -80,8 +80,8 @@ namespace NSJSBase
 	class Q_DECL_EXPORT CJSObject : public CJSValue
     {
     public:
-        CJSObject() {}
-        virtual ~CJSObject() {}
+		CJSObject();
+		virtual ~CJSObject();
 
         virtual CJSValue* get(const char* name)                 = 0;
         virtual void set(const char* name, CJSValue* value)     = 0;
@@ -98,8 +98,8 @@ namespace NSJSBase
 	class Q_DECL_EXPORT CJSArray : public CJSValue
     {
     public:
-        CJSArray() {}
-        virtual ~CJSArray() {}
+		CJSArray();
+		virtual ~CJSArray();
 
         virtual int getCount()                                  = 0;
         virtual JSSmart<CJSValue> get(const int& index)         = 0;
@@ -135,38 +135,16 @@ namespace NSJSBase
         bool IsExternalize;
 
     public:
-        BYTE* Copy()
-        {
-            if (0 == Len)
-                return NULL;
-            BYTE* pMem = new BYTE[Len];
-            if (!pMem)
-                return NULL;
-
-            memcpy(pMem, Data, Len);
-            return pMem;
-        }
-        CJSDataBuffer()
-        {
-            Data = NULL;
-            Len = 0;
-            IsExternalize = false;
-        }
-        void Free()
-        {
-            if (Data)
-            {
-                NSAllocator::Free(Data, Len);
-                Data = NULL;
-            }
-        }
+		BYTE* Copy();
+		CJSDataBuffer();
+		void Free();
     };
 
 	class Q_DECL_EXPORT CJSTypedArray : public CJSValue
     {
     public:
-        CJSTypedArray(BYTE* data = NULL, int count = 0) {}
-        virtual ~CJSTypedArray() {}
+		CJSTypedArray(BYTE* data = NULL, int count = 0);
+		virtual ~CJSTypedArray();
 
         virtual int getCount()          = 0;
         virtual CJSDataBuffer getData() = 0;
@@ -176,8 +154,8 @@ namespace NSJSBase
 	class Q_DECL_EXPORT CJSFunction : public CJSValue
     {
     public:
-        CJSFunction() {}
-        virtual ~CJSFunction() {}
+		CJSFunction();
+		virtual ~CJSFunction();
 
         virtual CJSValue* Call(CJSValue* recv, int argc, JSSmart<CJSValue> argv[]) = 0;
     };
@@ -185,21 +163,10 @@ namespace NSJSBase
 	class Q_DECL_EXPORT CJSTryCatch
     {
     public:
-        CJSTryCatch() {}
-        virtual ~CJSTryCatch() {}
+		CJSTryCatch();
+		virtual ~CJSTryCatch();
         virtual bool Check() = 0;
     };
-
-	class Q_DECL_EXPORT CJSLocalScope
-	{
-	public:
-		CJSLocalScope()
-		{
-		}
-		virtual ~CJSLocalScope()
-		{
-		}
-	};
 
     class CJSContextPrivate;
 	class Q_DECL_EXPORT CJSContext
@@ -245,22 +212,7 @@ namespace NSJSBase
 
         static CJSTypedArray* createUint8Array(BYTE* data = NULL, int count = 0, const bool& isExternalize = true);
 
-        static CJSValue* createUint8Array(const std::wstring& sFilePath)
-        {
-            NSFile::CFileBinary oFileBinary;
-            if (oFileBinary.OpenFile(sFilePath))
-            {
-                long nFileSize = oFileBinary.GetFileSize();
-                BYTE* pData = NSAllocator::Alloc((size_t)nFileSize);
-                DWORD dwSizeRead;
-                if (oFileBinary.ReadFile(pData, (DWORD)nFileSize, dwSizeRead))
-                {
-                    return CJSContext::createUint8Array(pData, (int)nFileSize, false);
-                }
-                NSAllocator::Free(pData, (size_t)nFileSize);
-            }
-            return CJSContext::createNull();
-        }
+		static CJSValue* createUint8Array(const std::wstring& sFilePath);
 
     public:
 		static JSSmart<CJSContext> GetCurrent();
@@ -271,20 +223,25 @@ namespace NSJSBase
         static bool IsSupportNativeTypedArrays();
     };
 
+	class CJSLocalScopePrivate;
+	class Q_DECL_EXPORT CJSLocalScope
+	{
+	public:
+		CJSLocalScopePrivate* m_internal;
+
+	public:
+		CJSLocalScope();
+		~CJSLocalScope();
+	};
+
 	class Q_DECL_EXPORT CJSContextScope
 	{
 	public:
 		JSSmart<CJSContext> m_context;
 
 	public:
-		CJSContextScope(JSSmart<CJSContext> context) : m_context(context)
-		{
-			m_context->Enter();
-		}
-		~CJSContextScope()
-		{
-			m_context->Exit();
-		}
+		CJSContextScope(JSSmart<CJSContext> context);
+		~CJSContextScope();
 	};
 }
 

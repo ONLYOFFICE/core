@@ -150,20 +150,28 @@ namespace NSJSBase
 		}
 	};
 
-	class CJSLocalScopeV8 : public CJSLocalScope
+	class CJSLocalScopePrivate
 	{
 	public:
 		v8::HandleScope m_scope;
 
 	public:
-		CJSLocalScopeV8() : m_scope(CV8Worker::GetCurrent())
+		CJSLocalScopePrivate() : m_scope(CV8Worker::GetCurrent())
 		{
 		}
-		virtual ~CJSLocalScopeV8()
+		~CJSLocalScopePrivate()
 		{
 		}
 	};
 
+	CJSLocalScope::CJSLocalScope() : m_internal(new CJSLocalScopePrivate())
+	{
+	}
+
+	CJSLocalScope::~CJSLocalScope()
+	{
+		delete m_internal;
+	}
 
 	CJSContext::CJSContext(const bool& bIsInitialize)
 	{
@@ -225,7 +233,7 @@ namespace NSJSBase
 		std::cout << "Entering isolate \t" << m_internal->m_isolate << std::endl;
 #endif
 		isolate->Enter();
-		m_internal->m_scope = new CJSLocalScopeV8();
+		m_internal->m_scope = new CJSLocalScope();
 		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Enter();
@@ -239,6 +247,7 @@ namespace NSJSBase
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Exit();
 		delete(m_internal->m_scope);
+		m_internal->m_context.Clear();
 		m_internal->m_isolate->Exit();
 	}
 

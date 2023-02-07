@@ -32,7 +32,7 @@
 
 #include <iostream>
 
-#include "../../embed/ZipEmbed.h"
+#include "../../embed/Default.h"
 #include "../js_base.h"
 
 using namespace NSJSBase;
@@ -57,6 +57,11 @@ int main(int argc, char *argv[])
 	oContext1->Enter();
 
 	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
+	{
+		CJSLocalScope local_scope;
+		JSSmart<CJSValue> oResLocal = oContext1->runScript("function f() { return 'Local scope test'; }; f();");
+		std::cout << oResLocal->toStringA() << std::endl;
+	}
 	JSSmart<CJSValue> oVar2 = oContext1->createString("Hel");
 	oGlobal1->set("v1", oVar2.GetPointer());
 	oContext1->runScript("var res = v1 + 'lo'");
@@ -107,9 +112,9 @@ int main(int argc, char *argv[])
 
 	// Work with first context
 	oContext1->Enter();
-	CZipEmbed::CreateObjectInContext("CZip", oContext1);
+	CreateDefaults(oContext1);
 	JSSmart<CJSValue> oRes1 = oContext1->runScript(
-		"var oZip = new CZip;\n"
+		"var oZip = new CreateNativeZip;\n"
 		"var files = oZip.open('" CURR_DIR "/../v8');\n"
 		"oZip.close();");
 	oContext1->Exit();
@@ -117,9 +122,9 @@ int main(int argc, char *argv[])
 	// Work with second context
 	{
 		CJSContextScope scope(oContext2);
-		CZipEmbed::CreateObjectInContext("CZip", oContext2);
+		CreateDefaults(oContext2);
 		JSSmart<CJSValue> oRes2 = oContext2->runScript(
-			"var oZip = new CZip;\n"
+			"var oZip = new CreateNativeZip;\n"
 			"var files = oZip.open('" CURR_DIR "/../jsc');\n"
 			"oZip.close();");
 	}

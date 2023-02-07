@@ -51,6 +51,9 @@ You need to create an xml configuration file. It must contain:
 	# (non-required) default unicode code delimiter for csv files, if filenameCsvTxtParams is 0, or no param in filename (default - 3b)
 	<defaultCsvDelimiter> </defaultCsvDelimiter>
 
+	# (non-required) timeout in milliseconds (default - 300000 (5 min))
+	<timeout> <timeout>
+
 	# (non-required) path to xml file with a list of input files
 	<inputFilesList> </inputFilesList>
 

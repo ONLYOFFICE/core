@@ -44,7 +44,7 @@
 
 namespace NSX2T
 {
-	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath)
+	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *nOutWaitResult = nullptr)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -93,7 +93,14 @@ namespace NSX2T
 			AssignProcessToJobObject(ghJob, processinfo.hProcess);
 		}
 
-		::WaitForSingleObject(processinfo.hProcess, INFINITE);
+		if(nTimeout == 0)
+				nTimeout = INFINITE;
+
+		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout);
+
+		// true if timeout
+		if(nOutWaitResult != nullptr)
+				*nOutWaitResult = (bool)nWaitResult;
 
 		RELEASEARRAYOBJECTS(pCommandLine);
 

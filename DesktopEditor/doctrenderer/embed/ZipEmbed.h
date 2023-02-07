@@ -30,6 +30,7 @@ public:
 	JSSmart<CJSValue> addFile(JSSmart<CJSValue> filePath, JSSmart<CJSValue> typedArray);
 	JSSmart<CJSValue> removeFile(JSSmart<CJSValue> filePath);
 	JSSmart<CJSValue> close();
+	JSSmart<CJSValue> getPaths();
 
 	JSSmart<CJSValue> decodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> isRgba);
 	JSSmart<CJSValue> encodeImageData(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> stride, JSSmart<CJSValue> format, JSSmart<CJSValue> isRgba);

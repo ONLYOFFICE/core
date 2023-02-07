@@ -38,6 +38,7 @@
 
 #include "odf_page_layout_context.h"
 
+#include "odf_text_context.h"
 #include "odf_drawing_context.h"
 #include "odf_chart_context.h"
 #include "odf_math_context.h"
@@ -115,9 +116,6 @@ public:
 	virtual odf_text_context		* text_context()		= 0;
 	virtual odf_controls_context	* controls_context()	= 0;
 
-	virtual void					start_text_context()	= 0;
-	virtual void					end_text_context()		= 0;
-
     std::wstring add_image		(const std::wstring & image_file_name);
     std::wstring add_media		(const std::wstring & file_name);
     std::wstring add_oleobject	(const std::wstring & ole_file_name);
@@ -151,6 +149,12 @@ public:
 	void create_object(bool bAddContentExt = true);
 	void end_object();
 
+	virtual void start_text_context();
+	virtual void end_text_context();
+
+	virtual void start_drawing_context();
+	virtual void end_drawing_context();
+
 	std::wstring			get_next_name_object();
 	office_element_ptr &	get_current_object_element();
 
@@ -160,6 +164,11 @@ public:
 
 	void calculate_font_metrix(std::wstring name, double size, bool italic, bool bold);
 	double convert_symbol_width(double val);
+
+protected:
+	std::vector<odf_text_context_ptr> text_context_;
+	std::vector<odf_drawing_context_ptr> drawing_context_;
+
 private:
 	_font_metrix font_metrix_;
 

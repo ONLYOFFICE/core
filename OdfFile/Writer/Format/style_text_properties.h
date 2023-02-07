@@ -73,10 +73,8 @@ class text_format_properties_content
 {
 public:
 	void serialize(std::wostream & strm,const wchar_t * ns, const wchar_t * name );
-
-    void apply_from(const text_format_properties_content & Other);
-    
-	void set_r_style(const std::wstring & rStyle) { r_style_ = rStyle; }
+    void apply_from(const text_format_properties_content & Other);    
+	void set_r_style(const std::wstring & rStyle);
 
 	void clear();
 

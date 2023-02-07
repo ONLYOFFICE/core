@@ -36,7 +36,8 @@
 
 
 namespace PPT {
+class CSlide;
 	namespace Intermediate {
-		SlideAnimation ParseSlideAnimation(CRecordSlide* pSlide);
+        SlideAnimation ParseSlideAnimation(CRecordSlide* pSlideRecord, CSlide* pCSlide);
 	}
 }

@@ -44,6 +44,9 @@ namespace OOX
 		CBr::~CBr() {}
 		void CBr::fromXML(XmlUtils::CXmlNode &oNode)
 		{
+			m_oClear.SetValue(SimpleTypes::brclearNone);
+			m_oType.SetValue(SimpleTypes::brtypeTextWrapping);
+
 			XmlMacroReadAttributeBase( oNode, _T("w:type"),  m_oType  );
 			XmlMacroReadAttributeBase( oNode, _T("w:clear"), m_oClear );
 		}

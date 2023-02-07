@@ -5,6 +5,11 @@ JSSmart<CJSValue> CGraphicsEmbed::init(JSSmart<CJSValue> Native, JSSmart<CJSValu
     m_pInternal->init((NSNativeControl::CNativeControl*)Native->toObjectSmart()->getNative()->getObject(), width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
     return NULL;
 }
+JSSmart<CJSValue> CGraphicsEmbed::Destroy()
+{
+    m_pInternal->Destroy();
+    return NULL;
+}
 JSSmart<CJSValue> CGraphicsEmbed::EndDraw()
 {
     m_pInternal->EndDraw();

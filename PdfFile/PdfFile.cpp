@@ -789,6 +789,7 @@ void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 {
     if (!m_pInternal->pReader)
         return;
+	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
     m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
 std::wstring CPdfFile::GetInfo()

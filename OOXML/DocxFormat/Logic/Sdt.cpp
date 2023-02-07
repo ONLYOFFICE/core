@@ -529,6 +529,9 @@ namespace OOX
 				return;
 
 			int nParentDepth = oReader.GetDepth();
+			
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
@@ -603,7 +606,7 @@ namespace OOX
 				else if ( L"w:smartTag" == sName )
 					AssignPtrXmlContent(pItem, CSmartTag, oReader)
 				//else if ( L"w:subDoc" == sName )
-				//	pItem = new CSubDoc( oReader );
+				//	pItem = new CSubDoc( document );
 				else if ( L"w:tbl" == sName )
 					AssignPtrXmlContent(pItem, CTbl, oReader)
 				else if ( L"w:tc" == sName )
@@ -611,8 +614,10 @@ namespace OOX
 				else if ( L"w:tr" == sName )
 					AssignPtrXmlContent(pItem, CTr, oReader)
 
-				if ( pItem )
-					m_arrItems.push_back( pItem );
+				if (pItem)
+				{
+					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CSdtContent::toXML() const
@@ -673,6 +678,12 @@ namespace OOX
 					m_oShd = oReader;
 				else if (L"w:border" == sName)
 					m_oBorder = oReader;
+				else if (L"w:field" == sName)
+				{
+					WritingElement_ReadAttributes_Start(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"r:id", m_oFieldRid)
+					WritingElement_ReadAttributes_End(oReader)
+				}
 			}
 		}
 		std::wstring CFormPr::toXML() const
@@ -707,6 +718,10 @@ namespace OOX
 			WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
 			WritingElement_WriteNode_1(L"<w:border ", m_oBorder);
 
+			if (m_oFieldRid.IsInit())
+			{
+				sResult += L"<w:field r:id=\"" + m_oFieldRid->ToString() + L"\"/>";
+			}
 			sResult += L"</w:formPr>";
 
 			return sResult;
@@ -1476,12 +1491,6 @@ namespace OOX
 					m_oFormPr = oReader;
 				else if (L"w:textFormPr" == sName)
 					m_oTextFormPr = oReader;
-				else if (L"w:oform" == sName)
-				{
-					WritingElement_ReadAttributes_Start(oReader)
-						WritingElement_ReadAttributes_ReadSingle(oReader, L"r:id", m_oOformRid)
-					WritingElement_ReadAttributes_End(oReader)
-				}
 				else if (sdttypeUnknown == m_eType && L"w:text" == sName)
 				{
 					m_oText = oReader;
@@ -1604,10 +1613,6 @@ namespace OOX
 			WritingElement_WriteNode_2(m_oTextFormPr);
 			WritingElement_WriteNode_2(m_oComplexFormPr);
 
-			if (m_oOformRid.IsInit())
-			{
-				sResult += L"<w:oform r:id=\"" + m_oOformRid->ToString() + L"\"/>";
-			}
 			return sResult;
 		}
 		std::wstring CSdtPr::toXMLEnd() const
@@ -1776,15 +1781,27 @@ namespace OOX
 				return;
 
 			int nParentDepth = oReader.GetDepth();
+			
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( L"w:sdtContent" == sName )
-					m_oSdtContent = oReader;
-				else if ( L"w:sdtEndPr" == sName )
-					m_oSdtEndPr = oReader;
-				else if ( L"w:sdtPr" == sName )
-					m_oSdtPr = oReader;
+				if (L"w:sdtContent" == sName)
+				{
+					m_oSdtContent = new CSdtContent(document);
+					m_oSdtContent->fromXML(oReader);
+				}
+				else if (L"w:sdtEndPr" == sName)
+				{
+					m_oSdtEndPr = new CSdtEndPr(document);
+					m_oSdtEndPr->fromXML(oReader);
+				}
+				else if (L"w:sdtPr" == sName)
+				{
+					 m_oSdtPr = new CSdtPr(document);
+					 m_oSdtPr->fromXML(oReader);
+				}
 			}
 		}
 		std::wstring CSdt::toXML() const

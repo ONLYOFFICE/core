@@ -340,10 +340,12 @@ namespace OOX
 			}
 			CMathBottomNodesEx(XmlUtils::CXmlNode& oNode)
 			{
+				CMathBottomNodes<TMathBottomType>::m_eType = type;
 				CMathBottomNodesExFromXML(*this, oNode);
 			}
 			CMathBottomNodesEx(XmlUtils::CXmlLiteReader& oReader)
 			{
+				CMathBottomNodes<TMathBottomType>::m_eType = type;
 				CMathBottomNodesExFromXML(*this, oReader);
 			}
 			virtual EElementType getType() const

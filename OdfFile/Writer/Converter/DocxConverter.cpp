@@ -528,7 +528,7 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 				if (false == id.empty())
 				{				
 					bForm = true;
-					odt_context->start_drawings();
+					odt_context->start_drawing_context();
 					odt_context->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);
 					odt_context->drawing_context()->set_drawings_rect(x, y, width, height); //default
 					
@@ -672,7 +672,7 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 		odt_context->drawing_context()->end_control();
 		odt_context->drawing_context()->end_drawing();
 
-		odt_context->end_drawings();
+		odt_context->end_drawing_context();
 		odt_context->controls_context()->end_control();
 	}
 }
@@ -2220,7 +2220,7 @@ void DocxConverter::convert(OOX::Logic::CBgPict *oox_bg_pict, int type)
 
 		odt_context->set_background(color, type);	
 	}
-	odt_context->start_drawings();
+	odt_context->start_drawing_context();
 		odt_context->drawing_context()->start_drawing();
 		odt_context->drawing_context()->set_background_state(true);
 
@@ -2232,7 +2232,7 @@ void DocxConverter::convert(OOX::Logic::CBgPict *oox_bg_pict, int type)
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
 	odt_context->drawing_context()->set_background_state(false);
-	odt_context->end_drawings();
+	odt_context->end_drawing_context();
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 {
@@ -2246,7 +2246,7 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 
 	odt_context->set_background(color, type);	
 	
-	odt_context->start_drawings();
+	odt_context->start_drawing_context();
 		odt_context->drawing_context()->start_drawing();
 		odt_context->drawing_context()->set_background_state(true);
 
@@ -2262,7 +2262,7 @@ void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 
 	odt_context->drawing_context()->end_drawing_background(current_layout_properties->attlist_.common_draw_fill_attlist_);
 	odt_context->drawing_context()->set_background_state(false);
-	odt_context->end_drawings();
+	odt_context->end_drawing_context();
 }
 
 void DocxConverter::convert(ComplexTypes::Word::CFramePr *oox_frame_pr, odf_writer::style_paragraph_properties * paragraph_properties)
@@ -3016,7 +3016,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 {
 	if (oox_pic == NULL) return;
 
-	odt_context->start_drawings();
+	odt_context->start_drawing_context();
 			
 	if (odt_context->table_context()->empty())
 		odf_context()->drawing_context()->set_anchor(anchor_type::Char);//default
@@ -3029,13 +3029,13 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 	OoxConverter::convert(oox_pic->m_oShapeType.GetPointer());
 	OoxConverter::convert(oox_pic->m_oShapeElement.GetPointer());
 
-	odt_context->end_drawings();
+	odt_context->end_drawing_context();
 }
 void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 {
 	if (oox_obj == NULL) return;
 
-	odt_context->start_drawings();
+	odt_context->start_drawing_context();
 			
 	if (odt_context->table_context()->empty())
 		odf_context()->drawing_context()->set_anchor(odf_types::anchor_type::AsChar);//default
@@ -3128,17 +3128,17 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 
 	odf_context()->drawing_context()->end_drawing();
 
-	odt_context->end_drawings();
+	odt_context->end_drawing_context();
 }
 ///////////////////////////////////////////////
 void DocxConverter::convert(OOX::Logic::CDrawing *oox_drawing)
 {
 	if (oox_drawing == NULL) return;
 
-	odt_context->start_drawings();
+	odt_context->start_drawing_context();
 		convert(oox_drawing->m_oAnchor.GetPointer());
 		convert(oox_drawing->m_oInline.GetPointer());
-	odt_context->end_drawings();
+	odt_context->end_drawing_context();
 }
 void DocxConverter::convert(OOX::Drawing::CAnchor *oox_anchor) 
 {
@@ -3430,7 +3430,7 @@ void DocxConverter::convert(SimpleTypes::CHexColor			*color,
 				argb = HSL2RGB(dH, dS, dL);
 
 			}
-			std::wstring strColor = XmlUtils::ToString(argb & 0x00FFFFFF, L"#%06X");
+			std::wstring strColor = XmlUtils::ToString((unsigned int)(argb & 0x00FFFFFF), L"#%06X");
 			odf_color = odf_types::color(strColor);
 		}
 	}
@@ -4455,7 +4455,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 			odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
 								  odt_context->page_layout_context()->last_master()->get_name() : L"");
 		}
-			odt_context->start_drawings();
+			odt_context->start_drawing_context();
 				_CP_OPT(double) width, height, x, y ;
 				
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpXSpec.IsInit())
@@ -4606,7 +4606,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 		
 		odt_context->drawing_context()->end_text_box();
 		odt_context->drawing_context()->end_drawing();
-		odt_context->end_drawings();
+		odt_context->end_drawing_context();
 		
 		odt_context->text_context()->set_KeepNextParagraph(true);
 	}	

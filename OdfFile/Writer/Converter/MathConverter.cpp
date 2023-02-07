@@ -489,6 +489,7 @@ namespace Oox2Odf
 	std::wstring OoxConverter::convert(OOX::Logic::CBegChr * oox_beg_chr)
 	{
 		if (!oox_beg_chr) return L"(";
+		if (false == oox_beg_chr->m_val.IsInit())  return L"(";
 
 		std::wstring s_val = oox_beg_chr->m_val->GetValue();
 
@@ -500,6 +501,7 @@ namespace Oox2Odf
 	std::wstring OoxConverter::convert(OOX::Logic::CEndChr * oox_end_chr)
 	{
 		if (!oox_end_chr) return L")";
+		if (false == oox_end_chr->m_val.IsInit())  return L")";
 
 		std::wstring s_val = oox_end_chr->m_val->GetValue();
 

@@ -670,6 +670,18 @@ bool CPPTXWriter::HasRoundTrips() const
     if (m_pDocument->m_pNotesMaster && arrRTNotes.empty())
         return false;
 
+    if (m_pDocument->m_pHandoutMaster)
+    {
+        for (const auto& oIterSlide : m_pUserInfo->m_mapHandoutMasters)
+        {
+            std::vector<RoundTripTheme12Atom*> arrRTTheme;
+            oIterSlide.second->GetRecordsByType(&arrRTTheme, false, true);
+            if (arrRTTheme.empty())
+                return false;
+        }
+    }
+
+
     return arrRTTheme.size() && arrRTLayouts.size();
 }
 
@@ -1549,7 +1561,6 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
     CGroupElement *pGroupElement = !pSlide->m_arElements.empty() ? dynamic_cast<CGroupElement *>(pSlide->m_arElements[0].get()) : NULL;
 
     size_t start_index = 0;
-    std::unordered_set<int> realShapesId; // todo Wrap in context when code is restructured
 
     if (pGroupElement)
     {
@@ -1557,8 +1568,6 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
         {
             auto& element = pGroupElement->m_pChildElements[i];
             WriteElement(oWriter, oRels, element);
-            if (element)
-                realShapesId.insert(element->m_lID);
         }
 
         start_index = 1;
@@ -1568,8 +1577,6 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
     {
         auto& element = pSlide->m_arElements[i];
         WriteElement(oWriter, oRels, element);
-        if (element)
-            realShapesId.insert(element->m_lID);
     }
 
     oWriter.WriteString(std::wstring(L"</p:spTree></p:cSld>"));
@@ -1579,7 +1586,7 @@ void CPPTXWriter::WriteSlide(int nIndexSlide)
     WriteTransition(oWriter, pSlide->m_oSlideShow);
 
     // TODO write new method and class for timing
-    WriteTiming(oWriter, oRels, nIndexSlide, realShapesId);
+    WriteTiming(oWriter, oRels, nIndexSlide);
 
 
     oWriter.WriteString(std::wstring(L"</p:sld>"));
@@ -1875,13 +1882,14 @@ void CPPTXWriter::WriteLayoutAfterTheme(CThemePtr pTheme, const int nIndexTheme,
 }
 
 
-void CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide, const std::unordered_set<int>& shapesID)
+void CPPTXWriter::WriteTiming(CStringWriter& oWriter, CRelsGenerator &oRels, int nIndexSlide)
 {
     auto slide_iter = m_pUserInfo->m_mapSlides.find(m_pUserInfo->m_arrSlidesOrder[nIndexSlide]);
-    auto intermediateSlideAnimation = Intermediate::ParseSlideAnimation(slide_iter->second);
-    intermediateSlideAnimation.realShapesIds = shapesID;
+    CSlide* pCSlide = m_pDocument->m_arSlides[nIndexSlide];
+
+    auto intermediateSlideAnimation = Intermediate::ParseSlideAnimation(slide_iter->second, pCSlide);
     auto timing =
-            Converter::Timing(intermediateSlideAnimation, shapesID).
+            Converter::Timing(intermediateSlideAnimation).
             Convert(&(m_pUserInfo->m_oExMedia), &oRels);
     oWriter.WriteString(timing.toXML());
 }

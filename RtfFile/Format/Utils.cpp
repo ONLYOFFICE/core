@@ -34,16 +34,18 @@
 
 //------------------------------------------------------------------------------------------------------
 
-std::wstring Convert::ToString(int i)
+std::wstring Convert::ToString(_INT32 i)
 {
 	return std::to_wstring( i );
 }
-std::wstring Convert::ToStringHex( int i, int nLen )
+std::wstring Convert::ToStringHex(_INT32 i, size_t nLen )
 {
 	std::wstring result = XmlUtils::ToString(i, L"%X");
 
-	for(int i = (int)result.length(); i < nLen; i++ )
-		result.insert( result.begin() , '0' );
+	for (size_t i = result.length(); i < nLen; i++)
+	{
+		result.insert(result.begin(), '0');
+	}
 	return result;
 }
 int Convert::ToInt32(std::wstring str, int base)

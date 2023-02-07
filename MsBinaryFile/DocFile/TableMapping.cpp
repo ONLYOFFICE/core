@@ -314,8 +314,10 @@ namespace DocFileFormat
 	{
 	}
 
-	bool Table::IsCellMarker(int _cp)
+	bool Table::IsCellMarker(int _cp, bool & bBadMarker)
 	{
+		bBadMarker = false;
+
 		if ( _cp > documentMapping->m_document->Text->size() - 1) return false;
 		
 		int fc = documentMapping->m_document->FindFileCharPos(_cp);
@@ -337,7 +339,12 @@ namespace DocFileFormat
 			ParagraphPropertyExceptions* papx_1 = documentMapping->findValidPapx(fc_1);
 			ParagraphPropertyExceptions* papx_2 = documentMapping->findValidPapx(fc_2);
 			
-			return (papx_1 != papx_2);
+			if (papx_1 == papx_2)
+			{
+				bBadMarker = true;
+				return false;
+			}
+			return true;
 		}
 
 		return false;
@@ -379,8 +386,9 @@ namespace DocFileFormat
 
 		TableInfo tai( papx, documentMapping->m_document->nWordVersion );
 
+		bool bBadMarker = false;
 		return (  ( tai.fInTable ) && ( documentMapping->m_document->Text->at( _cp ) == 0x000D ) && 
-			( !IsCellMarker( _cp ) ) && ( !IsRowMarker( _cp ) ) );
+			( !IsCellMarker( _cp, bBadMarker) ) && ( !IsRowMarker( _cp ) ) );
 	}
 
 	Table::Table( DocumentMapping* _documentMapping, int _cp, unsigned int _depth ):
@@ -434,7 +442,8 @@ namespace DocFileFormat
 				}
 				else
 				{
-					if ( IsCellMarker( _cp ) )
+					bool bBadMarker = false;
+					if ( IsCellMarker( _cp, bBadMarker) )
 					{
 						lastCellCP = _cp;
 						tableCell.SetCP( _cp );
@@ -465,12 +474,11 @@ namespace DocFileFormat
 						tableRow.Clear();
 						paragraphBeginCP++;
 					}
-					else if ( IsParagraphMarker( _cp ) )
+					else if ( !bBadMarker && IsParagraphMarker( _cp ) )
 					{
 						tableCell.AddItem( DocParagraph( documentMapping, paragraphBeginCP, _cp ) );
 						paragraphBeginCP = ( _cp + 1 );
 					}
-
 					_cp++;
 				}
 			}

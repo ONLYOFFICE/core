@@ -402,13 +402,12 @@ namespace MetaFile
 		oNewRect.dRight  = shR;
 		oNewRect.dBottom = shB;
 
-
 		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.dLeft)},
 									   {L"y",		ConvertToWString(oNewRect.dTop)},
 									   {L"width",	ConvertToWString(oNewRect.dRight - oNewRect.dLeft)},
 									   {L"height",	ConvertToWString(oNewRect.dBottom - oNewRect.dTop)},
-									   {L"rx",		ConvertToWString(shW)},
-									   {L"ry",		ConvertToWString(shH)}};
+		                               {L"rx",		ConvertToWString((double)shW / 2.)},
+		                               {L"ry",		ConvertToWString((double)shH / 2.)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
@@ -549,6 +548,7 @@ namespace MetaFile
 			                               {L"y",      ConvertToWString(dY)},
 			                               {L"width",  ConvertToWString(dW)},
 			                               {L"height", ConvertToWString(dH)},
+			                               {L"preserveAspectRatio", L"xMinYMin slice"},
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);

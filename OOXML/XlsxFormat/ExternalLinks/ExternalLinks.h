@@ -441,8 +441,8 @@ namespace OOX
 			nullable<COleLink>						m_oOleLink;
 			nullable<CDdeLink>						m_oDdeLink;
 
-			nullable_string							m_oFileId;
-			nullable_string							m_oPortalName;
+			nullable_string							m_oFileKey;
+			nullable_string							m_oInstanceId;
 		private:
 			CPath									m_oReadPath;
             std::wstring                            m_rId;

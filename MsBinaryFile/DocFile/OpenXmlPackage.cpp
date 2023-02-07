@@ -190,11 +190,11 @@ namespace DocFileFormat
 				oStream2.flush();
 
 			//Ole10Native
-				size_t nativeDataSize = object.data.length();
+				size_t nativeDataSize = object.data.second;
 
 				POLE::Stream streamData(storageOut, L"\001Ole10Native", true, nativeDataSize + 4);
 				streamData.write((BYTE*)&nativeDataSize, 4);
-				streamData.write((BYTE*)object.data.c_str(), nativeDataSize);
+				streamData.write((BYTE*)object.data.first.get(), nativeDataSize);
 				streamData.flush();
 
 				storageOut->close();
@@ -205,7 +205,7 @@ namespace DocFileFormat
 		{
 			NSFile::CFileBinary file;
 			file.CreateFileW(fileName);
-			file.WriteFile((BYTE*)object.data.c_str(), (_UINT32)object.data.size());
+			file.WriteFile((BYTE*)object.data.first.get(), (_UINT32)object.data.second);
 			file.CloseFile();
 		}
 		return true;

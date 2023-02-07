@@ -1192,6 +1192,10 @@ namespace NExtractTools
 			RELEASEOBJECT(m_bFromChanges);
 			m_bFromChanges = new bool(bVal);
 		}
+		std::wstring getTitle() const
+		{
+			return (NULL != m_sTitle) ? (*m_sTitle) : L"";
+		}
 	};
 
     static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)

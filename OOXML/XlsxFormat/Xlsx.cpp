@@ -151,6 +151,7 @@ bool OOX::Spreadsheet::CXlsx::WriteNative(const CPath& oDirPath, OOX::CContentTy
 	IFileContainer::Write(oDirPath / L"", OOX::CPath(_T("")), oContentTypes);
 
 	oContentTypes.Write(oDirPath);
+	return true;
 }
 bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {

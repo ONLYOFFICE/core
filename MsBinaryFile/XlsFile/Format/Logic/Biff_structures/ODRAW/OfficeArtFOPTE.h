@@ -994,7 +994,7 @@ class XmlString : public OfficeArtFOPTE
 	virtual void ReadComplexData(XLS::CFRecord& record);
 	virtual void ReadComplexData(IBinaryReader* reader);
 
-	std::string data; //utf-8
+	std::pair<boost::shared_array<char>, size_t> data; 
 };
 class PathParser
 {

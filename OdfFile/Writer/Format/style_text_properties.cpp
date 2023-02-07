@@ -63,7 +63,10 @@ std::wstring delete_apostroph_in_name(std::wstring value)
 	}
 	return value;
 }
-
+void text_format_properties_content::set_r_style(const std::wstring & rStyle) 
+{ 
+	r_style_ = rStyle; 
+}
 void text_format_properties_content::apply_from(const text_format_properties_content & Other)
 {
     _CP_APPLY_PROP( r_style_,							Other.r_style_);

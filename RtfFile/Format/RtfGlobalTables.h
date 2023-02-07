@@ -56,7 +56,7 @@ public:
 	bool GetColor( int nId, RtfColor& oColor);
 	bool GetColor( RtfColor::_ThemeColor oTheme, RtfColor& oColor);
 	bool GetColor( std::wstring sTheme, RtfColor& oColor);
-	bool GetColor( RtfColor oColor , int & nId);
+	bool GetColor( RtfColor oColor , _INT32 & nId);
 
 	std::wstring RenderToRtf(RenderParameter oRenderParameter);
 	std::wstring RenderToOOX(RenderParameter oRenderParameter);

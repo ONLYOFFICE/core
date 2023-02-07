@@ -602,6 +602,7 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSubHide.GetPointer(), oSubMath))
 					rtfMath->AddItem(oSubMath);
+
 				oSubMath.reset();
 				if (ParseElement(oParam, ooxSubMath->m_oSupHide.GetPointer(), oSubMath))
 					rtfMath->AddItem(oSubMath);
@@ -932,10 +933,14 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			OOX::WritingElementWithChilds<OOX::WritingElement>* ooxElemArray = 
 							dynamic_cast<OOX::WritingElementWithChilds<OOX::WritingElement>*>(ooxMath);
 	//----------------------------------
-			nullable<std::wstring>	sVal;
+			nullable_string	sVal;
 			
-			if		((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
-			else if ((ooxElemChar)		&& (ooxElemChar->m_val.IsInit()))			sVal = ooxElemChar->m_val->GetValue();
+			if ((ooxElemChar) && (ooxElemChar->m_val.IsInit()))
+			{
+				rtfMath->m_bIsChar = true;
+				sVal = ooxElemChar->m_val->GetValue();
+			}
+			else if ((ooxElemBool)		&& (ooxElemBool->m_val.IsInit()))			sVal = ooxElemBool->m_val->ToString2(SimpleTypes::onofftostringOn);
 			else if ((ooxElemMeasure)	&& (ooxElemMeasure->m_val.IsInit()))		sVal = ooxElemMeasure->m_val->ToString();
 			else if ((ooxElemInt255)	&& (ooxElemInt255->m_val.IsInit()))			sVal = ooxElemInt255->m_val->ToString();
 			else if ((ooxElemLim)		&& (ooxElemLim->m_val.IsInit()))			sVal = ooxElemLim->m_val->ToString();
@@ -962,13 +967,17 @@ bool OOXMathReader::ParseElement(ReaderParameter oParam , OOX::WritingElement * 
 			}
 			else if (sVal.IsInit())
 			{
-				rtfMath->m_bIsVal = true;
-				
-				RtfCharPtr oChar = RtfCharPtr(new RtfChar);
-                if (!sVal->empty())
-					oChar->setText( L" " + *sVal );
-				
-				rtfMath->m_oVal.AddItem( oChar );
+				rtfMath->m_bIsVal = true;				
+				rtfMath->m_sVal = *sVal;
+
+				if (rtfMath->m_bIsChar)
+				{
+					RtfCharPtr oChar = RtfCharPtr(new RtfChar);
+					if (!sVal->empty())
+						oChar->setText(*sVal);
+
+					rtfMath->m_oVal.AddItem(oChar);
+				}
 			}
 			else
 			{

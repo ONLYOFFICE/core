@@ -46,6 +46,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oox2OdfConverter", "..\..\..\OdfFile\Projects\Windows\Oox2OdfConverter.vcxproj", "{BEE01B53-244A-44E6-8947-ED9342D9247E}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64

@@ -25,8 +25,8 @@ namespace SVG
 
 		void AddStyle(const std::wstring& wsStyle);
 	private:
-		bool ReadElement(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile,  CObjectBase *pParent = NULL) const;
-		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile, CObjectBase *pParent = NULL) const;
+		bool ReadElement(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
+		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
 
 		NSFonts::IFontManager  *m_pFontManager;
 	};

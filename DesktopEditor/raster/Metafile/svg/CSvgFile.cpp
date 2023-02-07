@@ -1,7 +1,6 @@
 #include "CSvgFile.h"
 
 #include "SvgObjects/CContainer.h"
-#include "SvgObjects/CHeader.h"
 
 CSvgFile::CSvgFile()
     : m_pParser(NULL), m_pContainer(NULL)
@@ -41,21 +40,20 @@ void CSvgFile::Close()
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
 {
-	if (NULL == m_pContainer || m_pContainer->Empty())
+	if (NULL == m_pContainer || m_pContainer->Empty() || m_pContainer->GetWidth().Empty() || m_pContainer->GetHeight().Empty())
 		return false;
 
-	SVG::CHeader *pHeader = m_pContainer->GetHeader();
+	dX      = m_pContainer->GetX().ToDouble(NSCSS::Pixel);
+	dY      = m_pContainer->GetY().ToDouble(NSCSS::Pixel);;
+	dWidth  = m_pContainer->GetWidth().ToDouble(NSCSS::Pixel);;
+	dHeight = m_pContainer->GetHeight().ToDouble(NSCSS::Pixel);;
 
-	if (NULL == pHeader)
-		return false;
-
-	pHeader->GetBounds(dX, dY, dWidth, dHeight);
 	return true;
 }
 
-SVG::CGeneralStyle *CSvgFile::GetBaseStyle()
+const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
 {
-	return &m_oStyle;
+	return &m_oSvgCalculator;
 }
 
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
@@ -64,9 +62,9 @@ void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 		m_pParser->SetFontManager(pFontManager);
 }
 
-void CSvgFile::AddStyle(const std::wstring &wsStyle)
+void CSvgFile::AddStyles(const std::wstring &wsStyles)
 {
-	m_oStyle.AddStyle(wsStyle);
+	m_oSvgCalculator.AddStyles(wsStyles);
 }
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)

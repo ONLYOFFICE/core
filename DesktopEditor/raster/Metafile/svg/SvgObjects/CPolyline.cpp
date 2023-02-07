@@ -8,7 +8,12 @@ namespace SVG
 	CPolyline::~CPolyline()
 	{}
 
-	bool CPolyline::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
+	void CPolyline::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+
+	}
+
+	bool CPolyline::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
 	{
 		if (!oNode.IsValid())
 			return false;
@@ -18,9 +23,9 @@ namespace SVG
 		if (wsValue.empty())
 			return false;
 
-		m_arValues = StrUtils::ReadDoubleValues(wsValue);
+		m_arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(wsValue);
 
-		SaveNodeData(oNode, oBaseStyle);
+		SaveNodeData(oNode);
 
 		return m_arValues.size() >= 4;
 	}
@@ -72,7 +77,7 @@ namespace SVG
 		pRenderer->PathCommandEnd();
 	}
 
-	CPolygon::CPolygon(CObjectBase *pParent)	: CPolyline(pParent)
+	CPolygon::CPolygon(CObjectBase *pParent) : CPolyline(pParent)
 	{}
 
 	CPolygon::~CPolygon()

@@ -1,6 +1,8 @@
 #include "CText.h"
 
 #include "../SvgUtils.h"
+#include "CContainer.h"
+#include "CStyle.h"
 
 #ifndef MININT8
 #define MAXUINT8    ((unsigned char)~((unsigned char)0))
@@ -10,6 +12,8 @@
 
 namespace SVG
 {
+#define DefaultFontFamily L"Times New Roman"
+
 	CText::CText(CObjectBase *pParent, NSFonts::IFontManager* pFontManager)
 	    : CObjectBase(pParent), m_pFontManager(pFontManager)/*, m_oCoord({0, 0})*/
 	{}
@@ -20,14 +24,54 @@ namespace SVG
 			delete pTspan;
 	}
 
-	bool CText::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
+	void CText::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		if (!oNode.IsValid())
+		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetFill(mAttributes, ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"x"))
+			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"y"))
+			m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
+
+		//FONT
+		if (mAttributes.end() != mAttributes.find(L"font"))
+			m_oFont.SetValue(mAttributes.at(L"font"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-size"))
+			m_oFont.SetSize(mAttributes.at(L"font-size"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-size-adjust"))
+			m_oFont.SetSize(mAttributes.at(L"font-size-adjust"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-stretch"))
+			m_oFont.SetStretch(mAttributes.at(L"font-stretch"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-style"))
+			m_oFont.SetStyle(mAttributes.at(L"font-style"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-variant"))
+			m_oFont.SetVariant(mAttributes.at(L"font-variant"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-weight"))
+			m_oFont.SetWeight(mAttributes.at(L"font-weight"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"font-family"))
+			m_oFont.SetFamily(mAttributes.at(L"font-family"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"line-height"))
+			m_oFont.SetLineHeight(mAttributes.at(L"line-height"), ushLevel, bHardMode);
+	}
+
+	bool CText::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	{
+		if (!oNode.IsValid() || NULL != dynamic_cast<CText*>(m_pParent))
 			return false;
 
 		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 
-		SaveNodeData(oNode, oBaseStyle);
+		SaveNodeData(oNode);
 
 		XmlUtils::CXmlNodes arChilds;
 
@@ -42,7 +86,7 @@ namespace SVG
 			{
 				CTspan *pTSpan = new CTspan(this);
 
-				if (pTSpan->ReadFromXmlNode(oChild, oBaseStyle))
+				if (pTSpan->ReadFromXmlNode(oChild))
 					m_arChildrens.push_back(pTSpan);
 			}
 		}
@@ -55,17 +99,28 @@ namespace SVG
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		pRenderer->ResetTransform();
+		double dM11, dM12, dM21, dM22, dRx, dRy;
+		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-//		Aggplus::CMatrix oMatrix = m_oStyle.GetTransform();
-//		oMatrix.TransformPoint(dX, dY);
+		double dParentWidth = 0, dParentHeight = 0;
+		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
 
-//		ApplyFont(pRenderer, oStyle, oMatrix.sx());
+		if (NULL != pContainer)
+		{
+			dParentWidth  = pContainer->GetWidth().ToDouble(NSCSS::Pixel);
+			dParentHeight = pContainer->GetHeight().ToDouble(NSCSS::Pixel);
+		}
 
-//		for (double dNewY = 40; dNewY < 50; dNewY += 10)
-//		{
-//			pRenderer->CommandDrawText(m_wsText, dX, dNewY, 0, 0);
-//		}
+		double dX = m_oX.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY = m_oY.ToDouble(NSCSS::Pixel, dParentHeight);
+
+		GetWidth();
+
+		int nPathType = 0;
+
+		ApplyStyle(pRenderer, nPathType);
+
+		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
 //		for (CTspan* pTspan : m_arChildrens)
 //			pTspan->Draw(pRenderer, pBaseStyle);
@@ -75,11 +130,38 @@ namespace SVG
 
 	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
 	{
+		ApplyFont(pRenderer);
+		ApplyTransform(pRenderer);
+	}
+
+	void CText::ApplyFont(IRenderer* pRenderer) const
+	{
+		pRenderer->put_FontName((!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily);
+		pRenderer->put_FontSize((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.);
+
+		int nStyle = 0;
+
+		if (m_oFont.GetWeight().ToWString() == L"bold")
+			nStyle |= 0x01;
+		if (m_oFont.GetStyle() .ToWString() == L"italic")
+			nStyle |= 0x02;
+//			if (pFont->IsUnderline())
+//				nStyle |= (1 << 2);
+//			if (pFont->IsStrikeOut())
+//				nStyle |= (1 << 7);
+
+		pRenderer->put_FontStyle(nStyle);
+		pRenderer->put_BrushType(c_BrushTypeSolid);
+		pRenderer->put_BrushColor1(m_oFill.ToInt());
+		pRenderer->put_BrushAlpha1(255);
 	}
 
 	double CText::GetWidth() const
 	{
-		m_pFontManager->LoadFontByName(L"Arial", 1, 0, 72, 72);
+		std::wstring wsName = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
+		double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+
+		m_pFontManager->LoadFontByName(wsName, dSize, 0, 72, 72);
 
 		m_pFontManager->LoadString1(m_wsText, 0, 0);
 		TBBox oBox = m_pFontManager->MeasureString2();
@@ -106,10 +188,17 @@ namespace SVG
 
 	}
 
-	bool CTspan::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
+	void CTspan::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+
+	}
+
+	bool CTspan::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
 	{
 		double dX = oNode.GetAttributeDouble(L"x", MININT8);
 		double dY = oNode.GetAttributeDouble(L"y", MININT8);
+
+		SaveNodeData(oNode);
 
 		if (dX != MININT8)
 			m_oCoord.dX = dX;

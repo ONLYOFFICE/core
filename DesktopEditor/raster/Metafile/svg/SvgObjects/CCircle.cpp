@@ -1,5 +1,8 @@
 #include "CCircle.h"
 
+#include "CContainer.h"
+#include "CStyle.h"
+
 namespace SVG
 {
 	CCircle::CCircle(CObjectBase *pParent) : CObjectBase(pParent)
@@ -12,16 +15,27 @@ namespace SVG
 
 	}
 
-	bool CCircle::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
+	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetFill(mAttributes, ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"cx"))
+			m_oCx.SetValue(mAttributes.at(L"cx"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"cy"))
+			m_oCy.SetValue(mAttributes.at(L"cy"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"r"))
+			m_oR.SetValue(mAttributes.at(L"r"), ushLevel, bHardMode);
+	}
+
+	bool CCircle::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
 	{
 		if (!oNode.IsValid())
 			return false;
 
-//		m_dCx = oNode.GetAttributeDouble(L"cx");
-//		m_dCy = oNode.GetAttributeDouble(L"cy");
-//		m_dR  = oNode.GetAttributeDouble(L"r");
-
-		SaveNodeData(oNode, oBaseStyle);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -31,22 +45,35 @@ namespace SVG
 		if (NULL == pRenderer)
 			return false;
 
+		double dParentWidth = 0, dParentHeight = 0;
+		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
+
+		if (NULL != pContainer)
+		{
+			dParentWidth  = pContainer->GetWidth().ToDouble(NSCSS::Pixel);
+			dParentHeight = pContainer->GetHeight().ToDouble(NSCSS::Pixel);
+		}
+
+		double dX = m_oCx.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY = m_oCy.ToDouble(NSCSS::Pixel, dParentHeight);
+		double dR = m_oR .ToDouble(NSCSS::Pixel);
+
 		int nPathType = 0;
 
 		ApplyStyle(pRenderer, nPathType);
 
 		pRenderer->PathCommandStart();
-		pRenderer->BeginCommand (c_nPathType);
+		pRenderer->BeginCommand(c_nPathType);
 
-		pRenderer->PathCommandStart ();
+		pRenderer->PathCommandStart();
 
-		pRenderer->PathCommandMoveTo(m_dCx + m_dR, m_dCy);
-		pRenderer->PathCommandArcTo(m_dCx - m_dR, m_dCy - m_dR, m_dR * 2.0, m_dR * 2.0, 0, 360);
+		pRenderer->PathCommandMoveTo(dX + dR, dY);
+		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		pRenderer->DrawPath (nPathType);
-		pRenderer->EndCommand (c_nPathType);
+		pRenderer->DrawPath(nPathType);
+		pRenderer->EndCommand(c_nPathType);
 
-		pRenderer->PathCommandEnd ();
+		pRenderer->PathCommandEnd();
 
 		return true;
 	}

@@ -40,7 +40,7 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-	CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Default), m_mStatictics(NULL), m_sEncoding(L"UTF-8"){}
+	CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_UnitMeasure(Point), m_mStatictics(NULL), m_sEncoding(L"UTF-8"){}
 
 	CCssCalculator_Private::~CCssCalculator_Private()
 	{
@@ -309,8 +309,7 @@ namespace NSCSS
 		if (arSelectors.empty())
 			return CCompiledStyle();
 
-		if (unitMeasure != Default)
-			SetUnitMeasure(unitMeasure);
+		SetUnitMeasure(unitMeasure);
 
 		if (!bIsSettings)
 		{
@@ -542,8 +541,7 @@ namespace NSCSS
 		if (arSelectors.empty())
 			return false;
 
-		if (unitMeasure != Default)
-			SetUnitMeasure(unitMeasure);
+		SetUnitMeasure(unitMeasure);
 
 		if (!bIsSettings)
 		{
@@ -843,6 +841,10 @@ namespace NSCSS
 		return m_nDpi;
 	}
 
+	const std::map<std::wstring, CElement *> *CCssCalculator_Private::GetData() const
+	{
+		return &m_mData;
+	}
 
 	UnitMeasure CCssCalculator_Private::GetUnitMeasure() const
 	{
@@ -858,7 +860,7 @@ namespace NSCSS
 	{
 		m_sEncoding     = L"UTF-8";
 		m_nDpi          = 96;
-		m_UnitMeasure   = Default;
+		m_UnitMeasure   = Point;
 
 		m_mData.clear();
 		m_arFiles.clear();

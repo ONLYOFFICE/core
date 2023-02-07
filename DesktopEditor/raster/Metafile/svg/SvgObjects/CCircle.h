@@ -11,14 +11,16 @@ namespace SVG
 		CCircle(CObjectBase* pParent = NULL);
 		virtual ~CCircle();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
-		double m_dCx;
-		double m_dCy;
-		double m_dR;
+		SvgDigit m_oCx;
+		SvgDigit m_oCy;
+		SvgDigit m_oR;
 	};
 }
 

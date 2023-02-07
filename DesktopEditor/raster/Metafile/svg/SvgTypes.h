@@ -4,8 +4,25 @@
 #include <cstring>
 #include <cmath>
 
+#include "../../../Common/3dParty/html/css/src/StyleProperties.h"
+
 namespace SVG
 {
+    #define MapCI std::map<std::wstring, std::wstring>::const_iterator
+
+    #define SvgDigit  NSCSS::NSProperties::CDigit
+    #define SvgString NSCSS::NSProperties::CString
+    #define SvgColor  NSCSS::NSProperties::CColor
+    #define SvgMatrix NSCSS::NSProperties::CMatrix
+
+    #define SvgFont   NSCSS::NSProperties::CFont
+
+	struct CStroke
+	{
+		SvgColor m_oColor;
+		SvgDigit m_oWidth;
+	};
+
 	struct Point
 	{
 		double dX;

@@ -49,7 +49,6 @@ namespace SVG
 			}
 
 			return arValues;
-
 		}
 
 		static inline long LongValue(const std::wstring& value)

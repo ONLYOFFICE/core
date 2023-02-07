@@ -9,17 +9,18 @@ namespace SVG
 	{
 	public:
 		CLine(CObjectBase* pParent = NULL);
-		virtual ~CLine();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
 
-		double m_dX1;
-		double m_dY1;
-		double m_dX2;
-		double m_dY2;
+		SvgDigit m_oX1;
+		SvgDigit m_oY1;
+		SvgDigit m_oX2;
+		SvgDigit m_oY2;
 	};
 }
 

@@ -11,10 +11,20 @@ namespace SVG
 		CRect(CObjectBase* pParent = NULL);
 		virtual ~CRect();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
+
+		SvgDigit m_oX;
+		SvgDigit m_oY;
+		SvgDigit m_oWidth;
+		SvgDigit m_oHeight;
+
+		SvgDigit m_oRx;
+		SvgDigit m_oRy;
 	};
 }
 

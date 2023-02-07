@@ -1,7 +1,5 @@
 #include "StyleProperties.h"
 
-#include <iostream>
-
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 
@@ -223,8 +221,27 @@ namespace NSCSS
 		return *this;
 	}
 
+	double CDigit::ConvertValue(double dPrevValue, UnitMeasure enUnitMeasure) const
+	{
+		switch(m_enUnitMeasure)
+		{
+			case Percent:    return dPrevValue * m_oValue;
+			case Pixel:      return CUnitMeasureConverter::ConvertPx(m_oValue, enUnitMeasure, 96);
+			case Point:      return CUnitMeasureConverter::ConvertPt(m_oValue, enUnitMeasure, 96);
+			case Cantimeter: return CUnitMeasureConverter::ConvertCm(m_oValue, enUnitMeasure, 96);
+			case Millimeter: return CUnitMeasureConverter::ConvertMm(m_oValue, enUnitMeasure, 96);
+			case Inch:       return CUnitMeasureConverter::ConvertIn(m_oValue, enUnitMeasure, 96);
+			case Peak:       return CUnitMeasureConverter::ConvertPc(m_oValue, enUnitMeasure, 96);
+			case None:       return m_oValue;
+		}
+	}
+
 	CDigit::CDigit()
 	    : CValue(DBL_MIN, 0, false)
+	{}
+
+	CDigit::CDigit(double dValue)
+	    : CValue(dValue, 0, false)
 	{}
 
 	CDigit::CDigit(double dValue, unsigned int unLevel, bool bImportant)
@@ -265,6 +282,35 @@ namespace NSCSS
 		return std::to_wstring(m_oValue);
 	}
 
+	int CDigit::ToInt(UnitMeasure enUnitMeasure, double dPrevValue) const
+	{
+		if (DBL_MIN == m_oValue)
+			return 0;
+
+		return static_cast<int>(ConvertValue(dPrevValue, enUnitMeasure) + 0.5);
+	}
+
+	double CDigit::ToDouble(UnitMeasure enUnitMeasure, double dPrevValue) const
+	{
+		if (DBL_MIN == m_oValue)
+			return 0;
+
+		return ConvertValue(dPrevValue, enUnitMeasure);
+	}
+
+	std::wstring CDigit::ToWString(UnitMeasure enUnitMeasure, double dPrevValue) const
+	{
+		if (DBL_MIN == m_oValue)
+			return 0;
+
+		return std::to_wstring(ConvertValue(dPrevValue, enUnitMeasure));
+	}
+
+	UnitMeasure CDigit::GetUnitMeasure() const
+	{
+		return m_enUnitMeasure;
+	}
+
 	CDigit CDigit::operator+(const CDigit &oDigit) const
 	{
 		CDigit oTemp;
@@ -272,6 +318,48 @@ namespace NSCSS
 		oTemp.m_oValue     = m_oValue + oDigit.m_oValue;
 		oTemp.m_unLevel    = std::max(m_unLevel, oDigit.m_unLevel);
 		oTemp.m_bImportant = std::max(m_bImportant, oDigit.m_bImportant);
+
+		return oTemp;
+	}
+
+	CDigit CDigit::operator-(const CDigit &oDigit) const
+	{
+		CDigit oTemp;
+
+		oTemp.m_oValue     = m_oValue - oDigit.m_oValue;
+		oTemp.m_unLevel    = std::max(m_unLevel, oDigit.m_unLevel);
+		oTemp.m_bImportant = std::max(m_bImportant, oDigit.m_bImportant);
+
+		return oTemp;
+	}
+
+	CDigit CDigit::operator*(const CDigit &oDigit) const
+	{
+		CDigit oTemp;
+
+		oTemp.m_oValue     = m_oValue * oDigit.m_oValue;
+		oTemp.m_unLevel    = std::max(m_unLevel, oDigit.m_unLevel);
+		oTemp.m_bImportant = std::max(m_bImportant, oDigit.m_bImportant);
+
+		return oTemp;
+	}
+
+	CDigit CDigit::operator/(const CDigit &oDigit) const
+	{
+		CDigit oTemp;
+
+		oTemp.m_oValue     = m_oValue / oDigit.m_oValue;
+		oTemp.m_unLevel    = std::max(m_unLevel, oDigit.m_unLevel);
+		oTemp.m_bImportant = std::max(m_bImportant, oDigit.m_bImportant);
+
+		return oTemp;
+	}
+
+	CDigit CDigit::operator*(double dValue) const
+	{
+		CDigit oTemp(*this);
+
+		oTemp.m_oValue *= dValue;
 
 		return oTemp;
 	}
@@ -294,9 +382,27 @@ namespace NSCSS
 		return *this;
 	}
 
+	CDigit &CDigit::operator-=(double dValue)
+	{
+		m_oValue -= dValue;
+		return *this;
+	}
+
 	CDigit &CDigit::operator*=(double dValue)
 	{
 		m_oValue *= dValue;
+		return *this;
+	}
+
+	CDigit &CDigit::operator/=(double dValue)
+	{
+		m_oValue /= dValue;
+		return *this;
+	}
+
+	CDigit &CDigit::operator =(double dValue)
+	{
+		m_oValue = dValue;
 		return *this;
 	}
 
@@ -307,16 +413,13 @@ namespace NSCSS
 
 		std::wstring wsNewValue = wsValue;
 
-		bool bImportant = CutImportant(wsNewValue);
-
+		bool bImportant = CutImportant(wsNewValue); //TODO:: иногда мы знаем, что "!important" точно не встретится
+		                                            // возможно стоит добавить ещё метод
 		if (m_bImportant && !bImportant)
 			return false;
 
-		double dValue = 0;
+		CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure);
 
-		std::wistringstream(wsValue) >> dValue;
-
-		m_oValue     = dValue;
 		m_unLevel    = unLevel;
 		m_bImportant = bImportant;
 
@@ -1572,9 +1675,9 @@ namespace NSCSS
 	{
 		std::wstring wsNewFamily(wsValue);
 
-		if (wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'\''), wsNewFamily.end()) &&
-		    wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'"'),  wsNewFamily.end()))
-			return false;
+//		if (wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'\''), wsNewFamily.end()) &&
+//		    wsNewFamily.end() == wsNewFamily.erase(std::remove(wsNewFamily.begin(), wsNewFamily.end(), L'"'),  wsNewFamily.end()))
+//			return false;
 
 		std::vector<std::wstring> arWords = NS_STATIC_FUNCTIONS::GetWordsW(wsNewFamily, L",");
 

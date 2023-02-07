@@ -74,7 +74,6 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/CSvgFile.h \
 		$$METAFILE_PATH/svg/CSvgParser.h \
 		$$METAFILE_PATH/svg/SvgObjects/CContainer.h \
-		$$METAFILE_PATH/svg/SvgObjects/CHeader.h \
 		$$METAFILE_PATH/svg/SvgObjects/CLine.h \
 		$$METAFILE_PATH/svg/SvgObjects/CRect.h \
 		$$METAFILE_PATH/svg/SvgObjects/CCircle.h \
@@ -92,7 +91,6 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/CSvgFile.cpp \
 		$$METAFILE_PATH/svg/CSvgParser.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CContainer.cpp \
-		$$METAFILE_PATH/svg/SvgObjects/CHeader.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CLine.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CRect.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CCircle.cpp \
@@ -100,6 +98,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/SvgObjects/CPath.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CText.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CPolyline.cpp \
+		$$METAFILE_PATH/svg/SvgObjects/CObjectBase.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CStyle.cpp
 
 include($$METAFILE_PATH/../../../Common/3dParty/html/css/CssCalculator.pri)

@@ -15,7 +15,12 @@ namespace SVG
 			delete pPathElement;
 	}
 
-	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
+	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+
+	}
+
+	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
 	{
 		std::wstring wsPoints = oNode.GetAttribute(L"d");
 
@@ -24,7 +29,7 @@ namespace SVG
 
 		ReadFromString(wsPoints);
 
-		SaveNodeData(oNode, oBaseStyle);
+		SaveNodeData(oNode);
 
 		return true;
 	}

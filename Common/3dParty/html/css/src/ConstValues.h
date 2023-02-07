@@ -16,16 +16,6 @@ namespace NSCSS
     #define RGB_TO_INT(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) ) )
     #endif
 
-    typedef enum {
-        Default = 0,
-        Pixel,
-        Point,
-        Cantimeter,
-        Millimeter,
-        Inch,
-        Peak
-    } UnitMeasure;
-
     typedef enum
     {
         ScalingDirectionNone = 0,
@@ -3358,40 +3348,40 @@ namespace NSCSS
 			};
 		}
 
-        const std::vector<std::wstring> arPseudoClasses {
-                                                        L"invalid",
-                                                        L"read-only",
-                                                        L"-moz-placeholder",
-                                                        L"-webkit-input-placeholder",
-                                                        L"active",
-                                                        L"checked",
-                                                        L"default",
-                                                        L"disabled",
-                                                        L"empty",
-                                                        L"enabled",
-                                                        L"first-child",
-                                                        L"first-of-type",
-                                                        L"focus",
-                                                        L"hover",
-                                                        L"indeterminate",
-                                                        L"lang",
-                                                        L"last-child",
-                                                        L"last-of-type",
-                                                        L"link",
-                                                        L"not",
-                                                        L"nth-child",
-                                                        L"nth-last-child",
-                                                        L"nth-last-of-type",
-                                                        L"nth-of-type",
-                                                        L"only-child",
-                                                        L"only-of-type",
-                                                        L"optional",
-                                                        L"read-write",
-                                                        L"required",
-                                                        L"root",
-                                                        L"target",
-                                                        L"valid",
-                                                        L"visited"};
+		const std::wstring arPseudoClasses[33] {
+			                                            L"invalid",
+			                                            L"read-only",
+			                                            L"-moz-placeholder",
+			                                            L"-webkit-input-placeholder",
+			                                            L"active",
+			                                            L"checked",
+			                                            L"default",
+			                                            L"disabled",
+			                                            L"empty",
+			                                            L"enabled",
+			                                            L"first-child",
+			                                            L"first-of-type",
+			                                            L"focus",
+			                                            L"hover",
+			                                            L"indeterminate",
+			                                            L"lang",
+			                                            L"last-child",
+			                                            L"last-of-type",
+			                                            L"link",
+			                                            L"not",
+			                                            L"nth-child",
+			                                            L"nth-last-child",
+			                                            L"nth-last-of-type",
+			                                            L"nth-of-type",
+			                                            L"only-child",
+			                                            L"only-of-type",
+			                                            L"optional",
+			                                            L"read-write",
+			                                            L"required",
+			                                            L"root",
+			                                            L"target",
+			                                            L"valid",
+			                                            L"visited"};
 }
 }
 

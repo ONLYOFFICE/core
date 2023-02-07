@@ -11,7 +11,9 @@ namespace SVG
 		CPolyline(CObjectBase* pParent = NULL);
 		virtual ~CPolyline();
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode, const CGeneralStyle& oBaseStyle) override;
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
 		bool Draw(IRenderer* pRenderer) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;

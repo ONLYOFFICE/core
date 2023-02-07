@@ -16,7 +16,7 @@ namespace NSCSS
 {
 	typedef std::map<std::wstring, std::wstring>::const_iterator styles_iterator;
 
-	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Default){}
+	CCompiledStyle::CCompiledStyle() : m_nDpi(96), m_UnitMeasure(Point){}
 
 	 CCompiledStyle::CCompiledStyle(const CCompiledStyle& oStyle) :
 	    m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
@@ -663,12 +663,12 @@ namespace NSCSS
 			else if (ScalingDirectionX == enScalingDirection && 0 != m_oSourceWindow.m_ushWidth &&
 			    0 != m_oDeviceWindow.m_ushWidth && m_oSourceWindow.m_ushWidth != m_oDeviceWindow.m_ushWidth)
 			{
-				    nValue = static_cast<int>((double)nValue / m_oSourceWindow.m_ushWidth * m_oDeviceWindow.m_ushWidth + 0.5f);
+				nValue = static_cast<int>((double)nValue / m_oSourceWindow.m_ushWidth * m_oDeviceWindow.m_ushWidth + 0.5f);
 			}
 			else if (ScalingDirectionY == enScalingDirection && 0 != m_oSourceWindow.m_ushHeight &&
 			         0 != m_oDeviceWindow.m_ushHeight && m_oSourceWindow.m_ushHeight != m_oDeviceWindow.m_ushHeight)
 			{
-				    nValue = static_cast<int>((double)nValue / m_oSourceWindow.m_ushHeight * m_oDeviceWindow.m_ushHeight + 0.5f);
+				nValue = static_cast<int>((double)nValue / m_oSourceWindow.m_ushHeight * m_oDeviceWindow.m_ushHeight + 0.5f);
 			}
 	}
 
@@ -684,7 +684,6 @@ namespace NSCSS
 		{
 			case Pixel:
 				return static_cast<int>(dValue);
-			case Default:
 			case Point:
 				return ConvertPxToPt(dValue);
 			case Cantimeter:
@@ -735,7 +734,6 @@ namespace NSCSS
 
 		switch (m_UnitMeasure)
 		{
-			case Default:
 			case Point:
 				return ConvertCmToPt(dValue);
 			case Pixel:
@@ -790,7 +788,6 @@ namespace NSCSS
 		{
 			case Pixel:
 				return ConvertMmToPx(dValue);
-			case Default:
 			case Point:
 				return ConvertMmToPt(dValue);
 			case Cantimeter:
@@ -817,12 +814,12 @@ namespace NSCSS
 
 	inline int CCompiledStyle::ConvertMmToPc(const float& dValue) const
 	{
-		return static_cast<int>(2.8346f * dValue + 0.5f);
+		return static_cast<int>(0.236f * dValue + 0.5f);
 	}
 
 	inline int CCompiledStyle::ConvertMmToPt(const float& dValue) const
 	{
-		return static_cast<int>(0.23262f * dValue + 0.5f);
+		return static_cast<int>(2.835f * dValue + 0.5f);
 	}
 
 	inline int CCompiledStyle::ConvertMmToPx(const float& dValue) const
@@ -842,7 +839,6 @@ namespace NSCSS
 		{
 			case Pixel:
 				return  ConvertInToPx(dValue);
-			case Default:
 			case Point:
 				return ConvertInToPt(dValue);
 			case Cantimeter:
@@ -894,7 +890,6 @@ namespace NSCSS
 		{
 			case Pixel:
 				return ConvertPtToPx(dValue);
-			case Default:
 			case Point:
 				return static_cast<int>(dValue + 0.5f);
 			case Cantimeter:
@@ -947,7 +942,6 @@ namespace NSCSS
 		{
 			case Pixel:
 				return ConvertPcToPx(dValue);
-			case Default:
 			case Point:
 				return ConvertPcToPt(dValue);
 			case Cantimeter:

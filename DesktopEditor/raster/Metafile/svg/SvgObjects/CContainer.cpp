@@ -1,14 +1,12 @@
 #include "CContainer.h"
 
-#include "CHeader.h"
-
 #include "../CSvgFile.h"
 #include "../CSvgParser.h"
 
 namespace SVG
 {
 	CContainer::CContainer(CObjectBase *pParent)
-	    : CObjectBase(pParent), m_pHeader(NULL)
+	    : CObjectBase(pParent)
 	{}
 
 	CContainer::~CContainer()
@@ -16,9 +14,24 @@ namespace SVG
 		Clear();
 	}
 
-	bool CContainer::ReadHeader(XmlUtils::CXmlNode &oElement, const CGeneralStyle& oBaseStyle)
+	void CContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		std::wstring wsNodeName = oElement.GetName();
+		if (mAttributes.end() != mAttributes.find(L"x"))
+			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"y"))
+			m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"width"))
+			m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"height"))
+			m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
+	}
+
+	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+	{
+		std::wstring wsNodeName = oNode.GetName();
 
 		if (L"svg" != wsNodeName &&
 		    L"g"   != wsNodeName &&
@@ -27,18 +40,9 @@ namespace SVG
 
 		Clear();
 
-		m_pHeader = new CHeader(m_pParent);
-		return m_pHeader->ReadFromXmlNode(oElement, oBaseStyle);
-	}
+		SaveNodeData(oNode);
 
-	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
-	{
-		return false;
-	}
-
-	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CSvgParser &oParser, CSvgFile* pFile)
-	{
-		return oParser.LoadFromXmlNode(oNode, this, pFile);
+		return true;
 	}
 
 	bool CContainer::Draw(IRenderer *pRenderer) const
@@ -54,7 +58,6 @@ namespace SVG
 
 	void CContainer::Clear()
 	{
-		RELEASEOBJECT(m_pHeader);
 		m_arObjects.clear();
 	}
 
@@ -63,9 +66,24 @@ namespace SVG
 		return m_arObjects.empty();
 	}
 
-	CHeader *CContainer::GetHeader() const
+	SvgDigit CContainer::GetX() const
 	{
-		return m_pHeader;
+		return m_oX;
+	}
+
+	NSCSS::NSProperties::CDigit CContainer::GetY() const
+	{
+		return m_oY;
+	}
+
+	SvgDigit CContainer::GetWidth() const
+	{
+		return m_oWidth;
+	}
+
+	NSCSS::NSProperties::CDigit CContainer::GetHeight() const
+	{
+		return m_oHeight;
 	}
 
 	void CContainer::AddObject(CObjectBase *pObject)

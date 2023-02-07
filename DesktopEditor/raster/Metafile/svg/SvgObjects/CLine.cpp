@@ -1,5 +1,8 @@
 #include "CLine.h"
 
+#include "CStyle.h"
+#include "CContainer.h"
+
 namespace SVG
 {
 	CLine::CLine(CObjectBase *pParent) : CObjectBase(pParent)
@@ -7,21 +10,29 @@ namespace SVG
 
 	}
 
-	CLine::~CLine()
+	void CLine::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		SetStroke(mAttributes, ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"x1"))
+			m_oX1.SetValue(mAttributes.at(L"x1"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"y1"))
+			m_oY1.SetValue(mAttributes.at(L"y1"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"x2"))
+			m_oX2.SetValue(mAttributes.at(L"x2"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"y2"))
+			m_oY2.SetValue(mAttributes.at(L"y2"), ushLevel, bHardMode);
 	}
 
-	bool CLine::ReadFromXmlNode(XmlUtils::CXmlNode &oNode, const CGeneralStyle& oBaseStyle)
+	bool CLine::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
 	{
 		if (!oNode.IsValid())
 			return false;
 
-		m_dX1 = oNode.GetAttributeDouble(L"x1");
-		m_dY1 = oNode.GetAttributeDouble(L"y1");
-		m_dX2 = oNode.GetAttributeDouble(L"x2");
-		m_dY2 = oNode.GetAttributeDouble(L"y2");
-
-		SaveNodeData(oNode, oBaseStyle);
+		SaveNodeData(oNode);
 
 		return true;
 	}
@@ -31,20 +42,34 @@ namespace SVG
 		if (NULL == pRenderer)
 			return false;
 
+		double dParentWidth = 0, dParentHeight = 0;
+		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
+
+		if (NULL != pContainer)
+		{
+			dParentWidth  = pContainer->GetWidth().ToDouble(NSCSS::Pixel);
+			dParentHeight = pContainer->GetHeight().ToDouble(NSCSS::Pixel);
+		}
+
+		double dX1 = m_oX1.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY1 = m_oY1.ToDouble(NSCSS::Pixel, dParentHeight);
+		double dX2 = m_oX2.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY2 = m_oY2.ToDouble(NSCSS::Pixel, dParentHeight);
+
 		int nPathType = 0;
 
 		ApplyStyle(pRenderer, nPathType);
 		pRenderer->PathCommandStart();
-		pRenderer->BeginCommand (c_nPathType);
+		pRenderer->BeginCommand(c_nPathType);
 
-		pRenderer->PathCommandStart ();
+		pRenderer->PathCommandStart();
 
-		pRenderer->PathCommandMoveTo (m_dX1, m_dY1);
-		pRenderer->PathCommandLineTo (m_dX2, m_dY2);
+		pRenderer->PathCommandMoveTo(dX1, dY1);
+		pRenderer->PathCommandLineTo(dX2, dY2);
 
-		pRenderer->DrawPath (nPathType);
-		pRenderer->EndCommand (c_nPathType);
-		pRenderer->PathCommandEnd ();
+		pRenderer->DrawPath(nPathType);
+		pRenderer->EndCommand(c_nPathType);
+		pRenderer->PathCommandEnd();
 
 		return true;
 	}

@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "../../../../DesktopEditor/graphics/Matrix.h"
+#include "CUnitMeasureConverter.h"
 
 namespace NSCSS
 {
@@ -71,8 +72,12 @@ namespace NSCSS
 
 	class CDigit : public CValue<double>
 	{
+		UnitMeasure m_enUnitMeasure;
+
+		double ConvertValue(double dPrevValue, UnitMeasure enUnitMeasure) const;
 	public:
 		CDigit();
+		CDigit(double dValue);
 		CDigit(double dValue, unsigned int unLevel, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
@@ -84,11 +89,26 @@ namespace NSCSS
 		double       ToDouble()  const override;
 		std::wstring ToWString() const override;
 
+		int          ToInt(UnitMeasure enUnitMeasure, double dPrevValue = 0.)     const;
+		double       ToDouble(UnitMeasure enUnitMeasure, double dPrevValue = 0.)  const;
+		std::wstring ToWString(UnitMeasure enUnitMeasure, double dPrevValue = 0.) const;
+
+		UnitMeasure GetUnitMeasure() const;
+
 		CDigit operator+(const CDigit& oDigit) const;
+		CDigit operator-(const CDigit& oDigit) const;
+		CDigit operator*(const CDigit& oDigit) const;
+		CDigit operator/(const CDigit& oDigit) const;
+
+		CDigit operator*(double dValue) const;
 
 		CDigit& operator+=(const CDigit& oDigit);
+		CDigit& operator-=(const CDigit& oDigit);
 		CDigit& operator+=(double dValue);
+		CDigit& operator-=(double dValue);
 		CDigit& operator*=(double dValue);
+		CDigit& operator/=(double dValue);
+		CDigit& operator =(double dValue);
 	};
 
 	struct TRGB

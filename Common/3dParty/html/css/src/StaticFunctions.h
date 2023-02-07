@@ -5,6 +5,7 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #include "CNode.h"
 #include <cwctype>
+#include <sstream>
 #include <string>
 #include <vector>
 #include <list>
@@ -143,6 +144,13 @@ namespace NSCSS
             }
             return arWords;
         }
+
+		inline double ReadDouble(const std::wstring& wsValue)
+		{
+			double dValue;
+			std::wistringstream(wsValue) >> dValue;
+			return dValue;
+		}
 
 		inline std::vector<double> ReadDoubleValues(const std::wstring& wsValue)
 		{

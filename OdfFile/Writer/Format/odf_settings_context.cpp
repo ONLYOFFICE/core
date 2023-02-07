@@ -118,6 +118,25 @@ void odf_settings_context::add_property(std::wstring name, std::wstring type, st
 	}
 }
 
+void odf_settings_context::add_config_content_item(std::wstring name, std::wstring type, std::wstring value)
+{
+	if (current_view_ < 0) return;
+	if (name.empty() || type.empty()) return;
+
+	office_element_ptr prop;
+	create_element(L"config", L"config-item", prop, odf_context_);
+
+	settings_config_item* item = NULL;
+	item = dynamic_cast<settings_config_item*>(prop.get());
+	if (!item) return;
+
+	item->config_name_ = name;
+	item->config_type_ = type;
+	item->content_ = value;
+
+	config_content_.push_back(prop);	
+}
+
 void odf_settings_context::process_office_settings(office_element_ptr root )
 {
 	settings_config_item_set			*item_set			= NULL;

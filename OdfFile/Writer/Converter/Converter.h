@@ -444,8 +444,23 @@ namespace PPTX
 
 using namespace cpdoccore;
 
+
+
 namespace Oox2Odf
 {
+	struct returnValues
+	{
+		returnValues() : colorFlag(false), auxFlag(false), naryChr(false), narySubHide(false), narySupHide(false), begEndChrs(L"(", L")"), str(L"")
+		{}
+		bool colorFlag;
+		bool auxFlag;
+		bool naryChr;
+		bool narySubHide;
+		bool narySupHide;
+		std::pair<std::wstring, std::wstring> begEndChrs;
+		std::wstring str;
+		~returnValues() {}
+	};
 	class OoxConverter
 	{
 public:
@@ -655,49 +670,51 @@ public:
 
 		void convert(OOX::Drawing::COfficeArtExtensionList		*ext_list);
 		void convert(OOX::Drawing::COfficeArtExtension			*art_ext);
-
-		std::wstring GetImageIdFromVmlShape(OOX::Vml::CVmlCommonElements* pShape);
 //math............................................................................................................................
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();
 		std::vector<int>& end_counter();
 		std::wstring& annotation();
 		bool& annotation_flag();
+		void lvl_up_counter_increace(double val);
+		void lvl_up_counter_decreace(double val);
+		void lvl_down_counter_increace(double val);
+		void lvl_down_counter_decreace(double val);
 		void mrow();
 		void endOfMrow();
 		void resizeBrackets();
 		void convert(OOX::Logic::COMath					*oox_math);
 		void convert(OOX::Logic::CMathPr				*oox_math_pr);
-		bool convert(OOX::Logic::CCtrlPr				*oox_ctrl_pr);
+		returnValues convert(OOX::Logic::CCtrlPr		*oox_ctrl_pr);
 		void convert(OOX::Logic::CAcc					*oox_acc);
-		void convert(OOX::Logic::CAccPr					*oox_acc_pr);
+		returnValues convert(OOX::Logic::CAccPr			*oox_acc_pr);
 		void convert(OOX::Logic::CArgPr					*oox_arg_pr);
 		void convert(OOX::Logic::CBar					*oox_bar);
-		bool convert(OOX::Logic::CBarPr					*oox_bar_pr);
+		returnValues convert(OOX::Logic::CBarPr			*oox_bar_pr);
 		void convert(OOX::Logic::CBorderBox				*oox_border_box);
-		void convert(OOX::Logic::CBorderBoxPr			*oox_border_box_pr);
+		returnValues convert(OOX::Logic::CBorderBoxPr	*oox_border_box_pr);
 		void convert(OOX::Logic::CBox					*oox_box);
-		bool convert(OOX::Logic::CBoxPr					*oox_box_pr);
+		returnValues convert(OOX::Logic::CBoxPr			*oox_box_pr);
 		void convert(OOX::Logic::CBrk					*oox_brk);
 		void convert(OOX::Logic::CDelimiter				*oox_del);
-		std::pair<std::wstring, std::wstring> convert(OOX::Logic::CDelimiterPr			*oox_del_pr);
+		returnValues convert(OOX::Logic::CDelimiterPr	*oox_del_pr);
 		void convert(OOX::Logic::CEqArr					*oox_eq_arr);
-		void convert(OOX::Logic::CEqArrPr				*oox_eq_arr_pr);
+		returnValues convert(OOX::Logic::CEqArrPr		*oox_eq_arr_pr);
 		void convert(OOX::Logic::CBaseJc				*oox_base_jc);
 		void convert(OOX::Logic::CMaxDist				*oox_max_dist);
 		void convert(OOX::Logic::CObjDist				*oox_obj_dist);
 		void convert(OOX::Logic::CRSp					*oox_r_sp);
 		void convert(OOX::Logic::CRSpRule				*oox_r_sp_rule);
-		std::wstring convert(OOX::Logic::CFPr			*oox_f_pr);
+		returnValues convert(OOX::Logic::CFPr			*oox_f_pr);
 		void convert(OOX::Logic::CFraction				*oox_fraction);
 		void convert(OOX::Logic::CFunc					*oox_func);
-		void convert(OOX::Logic::CFuncPr				*oox_func_pr);
-		void convert(OOX::Logic::CGroupChr				*oox_group_ch);
-		bool convert(OOX::Logic::CGroupChrPr			*oox_group_ch_pr);
-		void convert(OOX::Logic::CLimLow				*oox_lim_low);
-		void convert(OOX::Logic::CLimLowPr				*oox_lim_low_pr);
+		returnValues convert(OOX::Logic::CFuncPr		*oox_func_pr);
+		void convert(OOX::Logic::CGroupChr *oox_group_ch, OOX::Logic::CLim *oox_lim = NULL);
+		returnValues convert(OOX::Logic::CGroupChrPr	*oox_group_ch_pr);
+		void convert(OOX::Logic::CLimLow *oox_lim_low, OOX::Logic::CElement *oox_elm = NULL);
+		returnValues convert(OOX::Logic::CLimLowPr		*oox_lim_low_pr);
 		void convert(OOX::Logic::CLimUpp				*oox_lim_upp);
-		void convert(OOX::Logic::CLimUppPr				*oox_lim_upp_pr);
+		returnValues convert(OOX::Logic::CLimUppPr		*oox_lim_upp_pr);
 		void convert(OOX::Logic::CMathFont				*oox_math_font);
 		void convert(OOX::Logic::CMatrix				*oox_matrix);
 		void convert(OOX::Logic::CMc					*oox_mc);
@@ -705,38 +722,38 @@ public:
 		void convert(OOX::Logic::CMcs					*oox_mcs);
 		void convert(OOX::Logic::CMDel					*oox_m_del);
 		void convert(OOX::Logic::CMIns					*oox_m_ins);
-		void convert(OOX::Logic::CMPr					*oox_m_pr);
+		returnValues convert(OOX::Logic::CMPr			*oox_m_pr);
 		void convert(OOX::Logic::CMr					*oox_mr);
 		void convert(OOX::Logic::CMRun					*oox_run);
 		void convert(OOX::Logic::CMText					*oox_text);
 		void convert(OOX::Logic::CNary					*oox_nary);
-		std::vector<bool> convert(OOX::Logic::CNaryPr *oox_nary_pr);
+		returnValues convert(OOX::Logic::CNaryPr *oox_nary_pr);
 		void convert(OOX::Logic::CGrow					*oox_grow);
 		void convert(OOX::Logic::COMathPara				*oox_math_para);
 		void convert(OOX::Logic::COMathParaPr			*oox_math_para_pr);
 		void convert(OOX::Logic::CPhant					*oox_phant);
 		void convert(OOX::Logic::CPhantPr				*oox_phant_pr);
 		void convert(OOX::Logic::CRad					*oox_rad);
-		bool convert(OOX::Logic::CRadPr					*oox_rad_pr);
+		returnValues convert(OOX::Logic::CRadPr			*oox_rad_pr);
 		void convert(OOX::Logic::CSPre					*oox_s_pre);
-		void convert(OOX::Logic::CSPrePr				*oox_s_pre_pr);
+		returnValues convert(OOX::Logic::CSPrePr		*oox_s_pre_pr);
 		void convert(OOX::Logic::CSSub					*oox_ssub);
-		void convert(OOX::Logic::CSSubPr				*oox_ssub_pr);
+		returnValues convert(OOX::Logic::CSSubPr		*oox_ssub_pr);
 		void convert(OOX::Logic::CSSubSup				*oox_ssub_sup);
-		void convert(OOX::Logic::CSSubSupPr				*oox_ssub_sup_pr);
+		returnValues convert(OOX::Logic::CSSubSupPr		*oox_ssub_sup_pr);
 		void convert(OOX::Logic::CAlnScr				*oox_aln_scr);
 		void convert(OOX::Logic::CSSup					*oox_ssup);
-		void convert(OOX::Logic::CSSupPr				*oox_ssup_pr);
+		returnValues convert(OOX::Logic::CSSupPr		*oox_ssup_pr);
 		void convert(OOX::Logic::CNum					*oox_num);
 		void convert(OOX::Logic::CDen					*oox_den);
-		std::wstring convert(OOX::Logic::CBegChr				*oox_beg_chr);
-		std::wstring convert(OOX::Logic::CEndChr				*oox_end_chr);
+		std::wstring convert(OOX::Logic::CBegChr		*oox_beg_chr);
+		std::wstring convert(OOX::Logic::CEndChr		*oox_end_chr);
 		void convert(OOX::Logic::CElement				*oox_elm);
 		bool convert(OOX::Logic::CDegHide				*oox_deg_hide);
 		void convert(OOX::Logic::CDeg *oox_deg, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSup *oox_sup, OOX::Logic::CElement *oox_elm);
 		void convert(OOX::Logic::CSub *oox_sub, OOX::Logic::CElement *oox_elm);
-		void convert(OOX::Logic::CFName					*oox_fname);
+		bool convert(OOX::Logic::CFName *oox_fname, OOX::Logic::CElement* oox_elm);
 		void convert(OOX::Logic::CLim					*oox_lim);
 		bool convert(OOX::Logic::CChr					*oox_chr);
 		void convert(OOX::Logic::CSup					*oox_csup);

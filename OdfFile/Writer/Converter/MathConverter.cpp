@@ -2,17 +2,22 @@
 
 //#include "../utils.h"
 
-#include "../../../Common/DocxFormat/Source/DocxFormat/DocxFlat.h"
+#include "../../OOXML/DocxFormat/DocxFlat.h"
+#include "../../OOXML/DocxFormat/Math/OMath.h"
+#include "../../OOXML/DocxFormat/Math/oMathContent.h"
+#include "../../OOXML/DocxFormat/Math/oMathPara.h"
 
-#include "../OdfFormat/odf_conversion_context.h"
-#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_layout_elements.h"
-#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_limit_elements.h"
-#include "../../ASCOfficeOdfFileW/source/OdfFormat/math_token_elements.h"
+#include "../Format/odf_conversion_context.h"
+#include "../Format/math_layout_elements.h"
+#include "../Format/math_limit_elements.h"
+#include "../Format/math_token_elements.h"
+
 #include <set>
 #include <vector>
 #include <fstream>
 #include <string>
 #include <sstream>
+
 namespace Oox2Odf
 {
 	

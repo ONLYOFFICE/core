@@ -773,6 +773,7 @@ public:
 		bool convert(OOX::Logic::CRunProperty			*oox_r_pr);
 
 //-----------------------------------
+		std::wstring GetImageIdFromVmlShape(OOX::Vml::CVmlCommonElements* pShape);
 		void RGB2HSL(DWORD argb, double& dH, double& dS, double& dL);
 		DWORD HSL2RGB(double dH, double dS, double dL);
 	private:

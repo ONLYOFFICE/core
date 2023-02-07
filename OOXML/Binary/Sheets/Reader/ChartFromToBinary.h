@@ -133,7 +133,6 @@ namespace BinXlsxRW
 		int ReadCT_DispBlanksAs			(BYTE type, long length, void* poResult);
 		int ReadCT_LegendEntry			(BYTE type, long length, void* poResult);
 		int ReadCT_UnsignedInt			(BYTE type, long length, void* poResult);
-		int ReadCT_Extension			(BYTE type, long length, void* poResult);
 		int ReadCT_LegendPos			(BYTE type, long length, void* poResult);
 		int ReadCT_Legend				(BYTE type, long length, void* poResult);
 		int ReadCT_Layout				(BYTE type, long length, void* poResult);
@@ -327,8 +326,7 @@ namespace BinXlsxRW
 //-------------------------------------------------------------------------------------------------------------
 		void WriteCT_ChartExFile(OOX::Spreadsheet::CChartExFile & oChartFile);
 	private:
-
-		void WriteCT_extLst(OOX::Spreadsheet::CT_extLst& oVal);
+		
 		void WriteCT_Boolean(OOX::Spreadsheet::CT_Boolean& oVal);
 		void WriteCT_PageSetup(OOX::Spreadsheet::CT_PageSetup& oVal);
 		void WriteCT_PageMargins(OOX::Spreadsheet::CT_PageMargins& oVal);
@@ -338,7 +336,6 @@ namespace BinXlsxRW
 		void WriteCT_DispBlanksAs(OOX::Spreadsheet::CT_DispBlanksAs& oVal);
 		void WriteCT_LegendEntry(OOX::Spreadsheet::CT_LegendEntry& oVal);
 		void WriteCT_UnsignedInt(OOX::Spreadsheet::CT_UnsignedInt& oVal);
-		void WriteCT_Extension(OOX::Spreadsheet::CT_Extension& oVal);
 		void WriteCT_LegendPos(OOX::Spreadsheet::CT_LegendPos& oVal);
 		void WriteCT_Legend(OOX::Spreadsheet::CT_Legend& oVal);
 		void WriteCT_Layout(OOX::Spreadsheet::CT_Layout& oVal);
@@ -352,7 +349,7 @@ namespace BinXlsxRW
 		void WriteCT_LogBase(OOX::Spreadsheet::CT_LogBase& oVal);
 		void WriteCT_Orientation(OOX::Spreadsheet::CT_Orientation& oVal);
 		void WriteCT_AxPos(OOX::Spreadsheet::CT_AxPos& oVal);
-		void WriteCT_ChartLines(OOX::Spreadsheet::CT_ChartLines& oVal);
+		void WriteCT_ChartLines(OOX::Spreadsheet::CT_ChartLines& oVal, bool bExt = false);
 		void WriteCT_Title(OOX::Spreadsheet::CT_Title& oVal);
 		void WriteCT_Tx(OOX::Spreadsheet::CT_Tx& oVal);
 		void WriteCT_StrRef(OOX::Spreadsheet::CT_StrRef& oVal);
@@ -386,7 +383,7 @@ namespace BinXlsxRW
 		void WriteCT_PictureFormat(OOX::Spreadsheet::CT_PictureFormat& oVal);
 		void WriteCT_PictureStackUnit(OOX::Spreadsheet::CT_PictureStackUnit& oVal);
 		void WriteCT_DLbls(OOX::Spreadsheet::CT_DLbls& oVal);
-		void WriteCT_DLbl(OOX::Spreadsheet::CT_DLbl& oVal);
+		void WriteCT_DLbl(OOX::Spreadsheet::CT_DLbl& oVal, bool bExt = false);
 		void WriteCT_DLblPos(OOX::Spreadsheet::CT_DLblPos& oVal);
 		void WriteCT_Trendline(OOX::Spreadsheet::CT_Trendline& oVal);
 		void WriteCT_TrendlineType(OOX::Spreadsheet::CT_TrendlineType& oVal);
@@ -512,7 +509,7 @@ namespace BinXlsxRW
 
 		void toBin(OOX::Spreadsheet::ItemsChoiceType5 eType, void* pVal);
 		void toBin(OOX::Spreadsheet::ItemsChoiceType6 eType, void* pVal);
-		void toBin(OOX::Spreadsheet::ItemsChoiceType4 eType, void* pVal);
+		void toBin(OOX::Spreadsheet::ItemsChoiceType4 eType, void* pVal, bool bExt = false);
 		void toBin(OOX::Spreadsheet::ItemsChoiceType3 eType, void* pVal);
 	};
 }

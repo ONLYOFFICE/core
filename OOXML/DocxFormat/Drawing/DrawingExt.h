@@ -54,6 +54,7 @@ namespace OOX
 		class CSlicerCacheHideNoData;
 		class CConnection;
         class CPivotCacheDefinitionExt;
+		class CT_DLbl;
 	}
 
 	namespace Drawing
@@ -154,6 +155,9 @@ namespace OOX
 
 			nullable_string m_oFileKey;
 			nullable_string m_oInstanceId;
+
+			nullable<OOX::Spreadsheet::CT_DLbl> m_oChartDLbl;
+
 		};
 
 		//--------------------------------------------------------------------------------

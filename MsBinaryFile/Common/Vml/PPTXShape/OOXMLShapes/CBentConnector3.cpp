@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,22 +29,44 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BaseShape.h"
+#include "CBentConnector3.h"
 
-#include "CustomShape.h"
-
-namespace NSCustomShapesConvert
+namespace OOXMLShapes
 {
-CBaseShape* CBaseShape::CreateByType( int ShapeType)
-{
-    return CCustomShape::CreateByType((oox::MSOSPT)ShapeType);
-}
-
-bool CBaseShape::SetType( int ShapeType)
-{
-
-    return ((CCustomShape*)this)->SetShapeType((oox::MSOSPT)ShapeType);
-}
+			CBentConnector3::CBentConnector3()
+			{
+				LoadFromXML(
+					_T("<ooxml-shape>")
+					_T("<avLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
+					  _T("<gd name=\"adj1\" fmla=\"val 50000\" />")
+					_T("</avLst>")
+					_T("<gdLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
+					  _T("<gd name=\"x1\" fmla=\"*/ w adj1 100000\" />")
+					_T("</gdLst>")
+					_T("<ahLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
+					  _T("<ahXY gdRefX=\"adj1\" minX=\"-2147483647\" maxX=\"2147483647\">")
+						_T("<pos x=\"x1\" y=\"vc\" />")
+					  _T("</ahXY>")
+					_T("</ahLst>")
+					_T("<rect l=\"l\" t=\"t\" r=\"r\" b=\"b\" xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\" />")
+					_T("<pathLst xmlns=\"http://schemas.openxmlformats.org/drawingml/2006/main\">")
+					  _T("<path fill=\"none\">")
+						_T("<moveTo>")
+						  _T("<pt x=\"l\" y=\"t\" />")
+						_T("</moveTo>")
+						_T("<lnTo>")
+						  _T("<pt x=\"x1\" y=\"t\" />")
+						_T("</lnTo>")
+						_T("<lnTo>")
+						  _T("<pt x=\"x1\" y=\"b\" />")
+						_T("</lnTo>")
+						_T("<lnTo>")
+						  _T("<pt x=\"r\" y=\"b\" />")
+						_T("</lnTo>")
+					  _T("</path>")
+					_T("</pathLst>")
+					_T("</ooxml-shape>")
+				);
+			}
 }

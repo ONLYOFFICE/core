@@ -41,7 +41,7 @@ namespace PPTX
 		class ClrMap : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ClrMap)
+			WritingElement_AdditionMethods(ClrMap)
 			
 			ClrMap(std::wstring name = L"p:clrMap");
 

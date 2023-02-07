@@ -35,16 +35,23 @@
 
 #include "../Xlsx.h"
 #include "../Workbook/Workbook.h"
-#include "../SharedStrings/Si.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+	class CDateTime;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CText;
+
 		class CPerson : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPerson)
+			WritingElement_AdditionMethods(CPerson)
 			CPerson();
 			virtual ~CPerson();
 
@@ -101,7 +108,7 @@ namespace OOX
 		class CThreadedCommentMention : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedCommentMention)
+			WritingElement_AdditionMethods(CThreadedCommentMention)
 			CThreadedCommentMention();
 			virtual ~CThreadedCommentMention();
 
@@ -124,7 +131,7 @@ namespace OOX
 		class CThreadedCommentMentions : public WritingElementWithChilds<CThreadedCommentMention>
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedCommentMentions)
+			WritingElement_AdditionMethods(CThreadedCommentMentions)
 			CThreadedCommentMentions();
 			virtual ~CThreadedCommentMentions();
 
@@ -142,7 +149,7 @@ namespace OOX
 		class CThreadedComment : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CThreadedComment)
+			WritingElement_AdditionMethods(CThreadedComment)
 			CThreadedComment();
 			virtual ~CThreadedComment();
 

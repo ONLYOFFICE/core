@@ -31,18 +31,39 @@
 */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../../DocxFormat/IFileContainer.h"
 
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CExternalConnectionType;
+		class CParameterType;
+		class CHtmlFormat;
+		class CCredMethod;
+		class CQualifier;
+		class CFileType;
+	}
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CTextField : public WritingElement
 		{
 		public:
 			CTextField();
-			WritingElement_AdditionConstructors(CTextField)
+			WritingElement_AdditionMethods(CTextField)
 			WritingElement_XlsbConstructors(CTextField)
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -65,7 +86,7 @@ namespace OOX
 		{
 		public:
 			CTextFields();
-			WritingElement_AdditionConstructors(CTextFields)
+			WritingElement_AdditionMethods(CTextFields)
 			WritingElement_XlsbConstructors(CTextFields)
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -84,7 +105,7 @@ namespace OOX
 		class CParameter : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CParameter)
+			WritingElement_AdditionMethods(CParameter)
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
@@ -112,7 +133,7 @@ namespace OOX
 		class CParameters : public WritingElementWithChilds<CParameter>
 		{
 		public:
-			WritingElement_AdditionConstructors(CParameters)
+			WritingElement_AdditionMethods(CParameters)
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
@@ -129,7 +150,7 @@ namespace OOX
 		class CRangePr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRangePr)
+			WritingElement_AdditionMethods(CRangePr)
 			WritingElement_XlsbConstructors(CRangePr)
 
 			CRangePr();
@@ -152,7 +173,7 @@ namespace OOX
 		class CDbPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDbPr)
+			WritingElement_AdditionMethods(CDbPr)
 			WritingElement_XlsbConstructors(CDbPr)
 
 			CDbPr();
@@ -178,7 +199,7 @@ namespace OOX
 		class COlapPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COlapPr)
+			WritingElement_AdditionMethods(COlapPr)
 			WritingElement_XlsbConstructors(COlapPr)
 
 			COlapPr();
@@ -209,7 +230,7 @@ namespace OOX
 		class CWebPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWebPr)
+			WritingElement_AdditionMethods(CWebPr)
 			WritingElement_XlsbConstructors(CWebPr)
 
 			CWebPr();
@@ -245,7 +266,7 @@ namespace OOX
 		class CTextPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTextPr)
+			WritingElement_AdditionMethods(CTextPr)
 			WritingElement_XlsbConstructors(CTextPr)
 
 			CTextPr();
@@ -288,7 +309,7 @@ namespace OOX
 		class CConnection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConnection)
+			WritingElement_AdditionMethods(CConnection)
 			WritingElement_XlsbConstructors(CConnection)
 
 			CConnection();
@@ -340,7 +361,7 @@ namespace OOX
 		class CConnections : public WritingElementWithChilds<CConnection>
 		{
 		public:
-			WritingElement_AdditionConstructors(CConnections)
+			WritingElement_AdditionMethods(CConnections)
 			WritingElement_XlsbConstructors(CConnections)
 
 			CConnections();

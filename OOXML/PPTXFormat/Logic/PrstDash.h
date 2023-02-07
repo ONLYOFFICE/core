@@ -44,7 +44,7 @@ namespace PPTX
 		class PrstDash : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(PrstDash)
+			WritingElement_AdditionMethods(PrstDash)
 			PPTX_LOGIC_BASE2(PrstDash)
 
 			virtual OOX::EElementType getType() const;

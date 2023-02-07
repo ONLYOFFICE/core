@@ -38,37 +38,37 @@ namespace PPTX
 	{		
 		TextCaps::TextCaps()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void TextCaps::set(const std::wstring& strValue)
 		{
-			if ((_T("all") == strValue) ||
-				(_T("none") == strValue) ||
-				(_T("small") == strValue))
+			if ((L"all" == strValue) ||
+				(L"none" == strValue) ||
+				(L"small" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TextCaps::GetBYTECode() const
+		unsigned char TextCaps::GetBYTECode() const
 		{
-			if (_T("all") == m_strValue)
+			if (L"all" == m_strValue)
 				return 0;
-			if (_T("small") == m_strValue)
+			if (L"small" == m_strValue)
 				return 1;
 			return 2;
 		}
-		void TextCaps::SetBYTECode(const BYTE& src)
+		void TextCaps::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{
 			case 0:
-				m_strValue = _T("all");
+				m_strValue = L"all";
 				break;
 			case 1:
-				m_strValue = _T("small");
+				m_strValue = L"small";
 				break;
 			default:
-				m_strValue = _T("none");
+				m_strValue = L"none";
 				break;
 			}
 		}

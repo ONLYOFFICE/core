@@ -31,10 +31,18 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "rPr.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CTableStyleType;
+	}
+}
 
 namespace OOX
 {
@@ -43,7 +51,7 @@ namespace OOX
 		class CTableStyleElement : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyleElement)
+			WritingElement_AdditionMethods(CTableStyleElement)
             WritingElement_XlsbConstructors(CTableStyleElement)
 			CTableStyleElement();
 			virtual ~CTableStyleElement();
@@ -69,7 +77,7 @@ namespace OOX
 		class CTableStyle : public WritingElementWithChilds<CTableStyleElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyle)
+			WritingElement_AdditionMethods(CTableStyle)
             WritingElement_XlsbConstructors(CTableStyle)
 			CTableStyle();
 			virtual ~CTableStyle();
@@ -98,7 +106,7 @@ namespace OOX
 		class CTableStyles : public WritingElementWithChilds<CTableStyle>
 		{
 		public:
-			WritingElement_AdditionConstructors(CTableStyles)
+			WritingElement_AdditionMethods(CTableStyles)
             WritingElement_XlsbConstructors(CTableStyles)
 			CTableStyles();
 			virtual ~CTableStyles();

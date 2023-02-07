@@ -52,7 +52,7 @@ namespace PPTX
 		class Rtl : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Rtl)
+			WritingElement_AdditionMethods(Rtl)
 			PPTX_LOGIC_BASE2(Rtl)
 
 			virtual OOX::EElementType getType () const;
@@ -71,7 +71,7 @@ namespace PPTX
 		class UFillTx : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(UFillTx)
+			WritingElement_AdditionMethods(UFillTx)
 
 			UFillTx(std::wstring name = L"a:uFillTx");
 
@@ -96,7 +96,7 @@ namespace PPTX
 		class Highlight : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Highlight)
+			WritingElement_AdditionMethods(Highlight)
 
 			Highlight();
 
@@ -120,7 +120,7 @@ namespace PPTX
 		class RunProperties : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(RunProperties)
+			WritingElement_AdditionMethods(RunProperties)
 
 			RunProperties();
 			virtual OOX::EElementType getType () const;

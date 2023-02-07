@@ -44,7 +44,7 @@ namespace PPTX
 		class ShapeStyle : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ShapeStyle)
+			WritingElement_AdditionMethods(ShapeStyle)
 
 			ShapeStyle(std::wstring ns = L"a");
 			ShapeStyle& operator=(const ShapeStyle& oSrc);

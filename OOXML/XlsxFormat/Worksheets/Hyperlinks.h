@@ -30,7 +30,14 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
+
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CRelationshipId;
+}
 
 namespace OOX
 {
@@ -41,7 +48,7 @@ namespace OOX
 		class CHyperlink : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CHyperlink)
+			WritingElement_AdditionMethods(CHyperlink)
 			CHyperlink(OOX::Document *pMain = NULL);
 			virtual ~CHyperlink();
 
@@ -71,7 +78,7 @@ namespace OOX
 		class CHyperlinks  : public WritingElementWithChilds<CHyperlink>
 		{
 		public:
-            WritingElement_AdditionConstructors(CHyperlinks)
+            WritingElement_AdditionMethods(CHyperlinks)
             WritingElement_XlsbVectorConstructors(CHyperlinks)
 			CHyperlinks(OOX::Document *pMain = NULL);
 			virtual ~CHyperlinks();

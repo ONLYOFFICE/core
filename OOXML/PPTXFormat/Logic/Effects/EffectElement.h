@@ -43,7 +43,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(EffectElement)
+			WritingElement_AdditionMethods(EffectElement)
 			PPTX_LOGIC_BASE2(EffectElement)
 
 			EffectElement& operator=(const EffectElement& oSrc);

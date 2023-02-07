@@ -33,9 +33,7 @@
 #ifndef OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 #define OOX_LOGIC_PARAGRAPH_PROPERTY_INCLUDE_H_
 
-#include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Word.h"
-
 #include "./../WritingElement.h"
 
 #include "RunProperty.h"
@@ -51,7 +49,7 @@ namespace OOX
 		class CNumPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNumPr)
+			WritingElement_AdditionMethods(CNumPr)
 
 			CNumPr();
 			virtual ~CNumPr();
@@ -66,7 +64,6 @@ namespace OOX
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oIlvl;
 			nullable<ComplexTypes::Word::CTrackChange   > m_oIns;
 			nullable<ComplexTypes::Word::CDecimalNumber > m_oNumID;
-
 		};
 
 		//--------------------------------------------------------------------------------
@@ -75,7 +72,7 @@ namespace OOX
 		class CPBdr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPBdr)
+			WritingElement_AdditionMethods(CPBdr)
 
 			CPBdr();
 			virtual ~CPBdr();
@@ -154,7 +151,7 @@ namespace OOX
 		class CTabs : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CTabs)
+			WritingElement_AdditionMethods(CTabs)
 
 			CTabs(OOX::Document *pMain = NULL);
 			virtual ~CTabs();

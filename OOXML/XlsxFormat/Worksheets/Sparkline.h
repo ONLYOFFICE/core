@@ -31,9 +31,17 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
 #include "../Chart/ChartSerialize.h"
 #include "../Styles/rPr.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class ST_SparklineType;
+		class ST_SparklineAxisMinMax;
+	}
+}
 
 namespace OOX
 {
@@ -42,7 +50,7 @@ namespace OOX
 		class CSparkline : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparkline)
+			WritingElement_AdditionMethods(CSparkline)
             WritingElement_XlsbConstructors(CSparkline)
 			CSparkline();
 			virtual ~CSparkline();
@@ -68,7 +76,7 @@ namespace OOX
 		class CSparklines  : public WritingElementWithChilds<CSparkline>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparklines)
+			WritingElement_AdditionMethods(CSparklines)
             WritingElement_XlsbConstructors(CSparklines)
 			CSparklines();
 			virtual ~CSparklines();
@@ -89,7 +97,7 @@ namespace OOX
 		class CSparklineGroup : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparklineGroup)
+			WritingElement_AdditionMethods(CSparklineGroup)
             WritingElement_XlsbConstructors(CSparklineGroup)
 			CSparklineGroup();
 			virtual ~CSparklineGroup();
@@ -141,7 +149,7 @@ namespace OOX
 		class CSparklineGroups  : public WritingElementWithChilds<CSparklineGroup>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSparklineGroups)
+			WritingElement_AdditionMethods(CSparklineGroups)
             WritingElement_XlsbConstructors(CSparklineGroups)
 			CSparklineGroups();
 			virtual ~CSparklineGroups();

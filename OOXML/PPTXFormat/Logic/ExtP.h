@@ -99,7 +99,7 @@ namespace PPTX
 		class Ext : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Ext)
+			WritingElement_AdditionMethods(Ext)
 
 			Ext();
 

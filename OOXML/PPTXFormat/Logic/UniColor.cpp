@@ -75,21 +75,23 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 			
 			if (name == _T("srgbClr"))
-				Color.reset(new Logic::SrgbClr(oReader));
+				Color.reset(CreatePtrXmlContent<Logic::SrgbClr>(oReader));
 			else if (name == _T("scrgbClr"))
 			{
-				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(oReader);
+				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr();
+				*pSrgbClr = oReader;
+
 				pSrgbClr->fromXML(oReader);
 				Color.reset(pSrgbClr);
 			}
 			else if (name == _T("prstClr"))
-				Color.reset(new Logic::PrstClr(oReader));
+				Color.reset(CreatePtrXmlContent<Logic::PrstClr>(oReader));
 			else if (name == _T("schemeClr"))
-				Color.reset(new Logic::SchemeClr(oReader));
+				Color.reset(CreatePtrXmlContent<Logic::SchemeClr>(oReader));
 			else if (name == _T("sysClr"))
-				Color.reset(new Logic::SysClr(oReader));
+				Color.reset(CreatePtrXmlContent<Logic::SysClr>(oReader));
 			else if (name == _T("styleClr"))
-				Color.reset(new Logic::StyleClr(oReader));
+				Color.reset(CreatePtrXmlContent<Logic::StyleClr>(oReader));
 			else Color.reset();
 		}
 		OOX::EElementType UniColor::getType () const
@@ -103,21 +105,23 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("srgbClr"))
-				Color.reset(new Logic::SrgbClr(node));
+				Color.reset(CreatePtrXmlContent<Logic::SrgbClr>(node));
 			else if (name == _T("scrgbClr"))
 			{
-				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(node);
+				Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr();
+				*pSrgbClr = node;
+
 				pSrgbClr->fromXMLScRgb(node);
 				Color.reset(pSrgbClr);
 			}
 			else if (name == _T("prstClr"))
-				Color.reset(new Logic::PrstClr(node));
+				Color.reset(CreatePtrXmlContent<Logic::PrstClr>(node));
 			else if (name == _T("schemeClr"))
-				Color.reset(new Logic::SchemeClr(node));
+				Color.reset(CreatePtrXmlContent<Logic::SchemeClr>(node));
 			else if (name == _T("sysClr"))
-				Color.reset(new Logic::SysClr(node));
+				Color.reset(CreatePtrXmlContent<Logic::SysClr>(node));
 			else if (name == _T("styleClr"))
-				Color.reset(new Logic::StyleClr(node));
+				Color.reset(CreatePtrXmlContent<Logic::StyleClr>(node));
 			else Color.reset();
 		}
 		void UniColor::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -289,28 +293,30 @@ namespace PPTX
 		{
 			XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("srgbClr"));
 			if (oNode.IsValid())
-				Color.reset(new Logic::SrgbClr(oNode));
+				Color.reset(CreatePtrXmlContent<Logic::SrgbClr>(oNode));
 			else
 			{
 				oNode = element.ReadNodeNoNS(_T("prstClr"));
 				if (oNode.IsValid())
-					Color.reset(new Logic::PrstClr(oNode));
+					Color.reset(CreatePtrXmlContent<Logic::PrstClr>(oNode));
 				else
 				{
 					oNode = element.ReadNodeNoNS(_T("schemeClr"));
 					if (oNode.IsValid())
-						Color.reset(new Logic::SchemeClr(oNode));
+						Color.reset(CreatePtrXmlContent<Logic::SchemeClr>(oNode));
 					else
 					{
 						oNode = element.ReadNodeNoNS(_T("sysClr"));
 						if (oNode.IsValid())
-							Color.reset(new Logic::SysClr(oNode));
+							Color.reset(CreatePtrXmlContent<Logic::SysClr>(oNode));
 						else
 						{
 							oNode = element.ReadNodeNoNS(_T("scrgbClr"));
 							if (oNode.IsValid())
 							{
-								Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr(oNode);
+								Logic::SrgbClr* pSrgbClr = new Logic::SrgbClr();
+								*pSrgbClr = oNode;
+
 								pSrgbClr->fromXMLScRgb(oNode);
 								Color.reset(pSrgbClr);
 							}

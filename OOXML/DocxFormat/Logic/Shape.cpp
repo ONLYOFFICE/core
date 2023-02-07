@@ -55,18 +55,9 @@ namespace OOX
 
 		CTxbxContent::CTxbxContent(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
-		}
-		CTxbxContent::CTxbxContent(XmlUtils::CXmlNode &oNode) : WritingElementWithChilds<>(NULL)
-		{
-			fromXML( oNode );
-		}
-		CTxbxContent::CTxbxContent(XmlUtils::CXmlLiteReader& oReader) : WritingElementWithChilds<>(NULL)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CTxbxContent::~CTxbxContent()
 		{
-
 		}
 		const CTxbxContent& CTxbxContent::operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -146,7 +137,7 @@ namespace OOX
 				else if (L"m:oMathPara" == sName )
 					pItem = new COMathPara( document );
 				else if (L"w:p" == sName )
-					pItem = new CParagraph( document );
+					pItem = new CParagraph( document, this );
 				else if (L"w:permEnd" == sName )
 					pItem = new CPermEnd( document );
 				else if (L"w:permStart" == sName )
@@ -160,8 +151,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}
@@ -190,14 +181,6 @@ namespace OOX
 		// 20.4.2.37 txbx (Textual contents of shape)
 		//--------------------------------------------------------------------------------
 
-		CTextBody::CTextBody(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CTextBody::CTextBody(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
 		CTextBody::CTextBody()
 		{
 		}

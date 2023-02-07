@@ -30,6 +30,7 @@
  *
  */
 #pragma once
+#include "../../Base/Nullable.h"
 #include "../WritingElement.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_OMath.h"
@@ -59,7 +60,7 @@ namespace OOX
 		class CMathBottomNodes : public WritingElement
 		{		
 		public:
-			WritingElement_AdditionConstructors(CMathBottomNodes)
+			WritingElement_AdditionMethods(CMathBottomNodes)
 			CMathBottomNodes()
 			{				
 			}

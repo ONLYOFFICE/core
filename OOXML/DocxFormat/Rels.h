@@ -52,8 +52,9 @@ namespace OOX
 		class CRelationShip : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRelationShip)
+			WritingElement_AdditionMethods(CRelationShip)
 
+			CRelationShip();
 			CRelationShip(const OOX::RId& rId, const std::wstring& sType, const OOX::CPath& oFilePath, bool bExternal = false);
 			CRelationShip(const OOX::RId& rId, const smart_ptr<External> pExternal);
 			virtual ~CRelationShip();

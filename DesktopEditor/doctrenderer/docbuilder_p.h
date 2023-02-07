@@ -890,7 +890,7 @@ namespace NSDoctRenderer
 
 			LOGGER_SPEED_START
 
-					CheckFileDir();
+			CheckFileDir();
 			NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 
 			std::wstring sExtCopy = GetFileCopyExt(path);
@@ -912,8 +912,8 @@ namespace NSDoctRenderer
 
 			LOGGER_SPEED_LAP("open_convert")
 
-					if (0 == nReturnCode)
-					return 0;
+			if (0 == nReturnCode)
+				return 0;
 
 			NSDirectory::DeleteDirectory(m_sFileDir);
 			m_sFileDir = L"";

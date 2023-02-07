@@ -46,6 +46,8 @@
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
 
 class CSVReader::Impl
 {

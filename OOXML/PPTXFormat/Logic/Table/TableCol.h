@@ -40,7 +40,7 @@ namespace PPTX
 		class TableCol : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TableCol)
+			WritingElement_AdditionMethods(TableCol)
 
 			TableCol();
 

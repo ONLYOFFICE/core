@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class SplitterBarState : public BaseLimit
-		{
-		public:
-			SplitterBarState();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(SplitterBarState)
 	} // namespace Limit
 } // namespace PPTX

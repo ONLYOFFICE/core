@@ -44,7 +44,7 @@ namespace PPTX
 		class BulletTypeface : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BulletTypeface)
+			WritingElement_AdditionMethods(BulletTypeface)
 			PPTX_LOGIC_BASE2(BulletTypeface)
 
 			BulletTypeface& operator=(const BulletTypeface& oSrc);

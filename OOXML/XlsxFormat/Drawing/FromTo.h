@@ -31,7 +31,14 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CEmu;
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -40,7 +47,7 @@ namespace OOX
 		class CFromTo : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFromTo)
+			WritingElement_AdditionMethods(CFromTo)
 			CFromTo();
 			virtual ~CFromTo();
 
@@ -66,7 +73,7 @@ namespace OOX
 		class CExt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CExt)
+			WritingElement_AdditionMethods(CExt)
 			CExt();
 			virtual ~CExt();
 

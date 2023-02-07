@@ -41,7 +41,7 @@ namespace PPTX
 		class Gs : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Gs)
+			WritingElement_AdditionMethods(Gs)
 			PPTX_LOGIC_BASE2(Gs)
 
 			Gs& operator=(const Gs& oSrc);

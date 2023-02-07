@@ -30,23 +30,13 @@
  *
  */
 #pragma once
+
 #include "BaseLimit.h"
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class Conformance : public BaseLimit
-		{
-		public:
-			Conformance();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(Conformance)
 	} // namespace Limit
 } // namespace PPTX

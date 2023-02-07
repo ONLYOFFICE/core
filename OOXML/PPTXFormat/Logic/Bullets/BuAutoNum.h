@@ -43,7 +43,7 @@ namespace PPTX
 		class BuAutoNum : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuAutoNum)
+			WritingElement_AdditionMethods(BuAutoNum)
 			PPTX_LOGIC_BASE2(BuAutoNum)
 
 			BuAutoNum& operator=(const BuAutoNum& oSrc);

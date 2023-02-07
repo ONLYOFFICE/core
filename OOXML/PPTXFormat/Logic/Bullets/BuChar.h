@@ -42,7 +42,7 @@ namespace PPTX
 		class BuChar : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BuChar)
+			WritingElement_AdditionMethods(BuChar)
 			PPTX_LOGIC_BASE2(BuChar)
 
 			BuChar& operator=(const BuChar& oSrc);

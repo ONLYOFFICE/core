@@ -42,7 +42,7 @@ namespace PPTX
 		class CubicBezTo : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(CubicBezTo)
+			WritingElement_AdditionMethods(CubicBezTo)
 			PPTX_LOGIC_BASE2(CubicBezTo)
 
 			CubicBezTo& operator=(const CubicBezTo& oSrc);

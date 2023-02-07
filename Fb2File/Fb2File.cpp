@@ -1987,7 +1987,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
     oRes.WriteString(L"<description><title-info>");
     std::wstring sTitleInfo = oTitleInfo.GetData();
     if (sTitleInfo.find(L"<book-title>") == std::wstring::npos)
-        oRes.WriteString(L"<book-title>" + (sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle) + L"<book-title>");
+		oRes.WriteString(L"<book-title>" + (sInpTitle.empty() ? NSFile::GetFileName(sDst) : sInpTitle) + L"</book-title>");
     oRes.WriteString(sTitleInfo);
     oRes.WriteString(L"</title-info></description>");
     // body

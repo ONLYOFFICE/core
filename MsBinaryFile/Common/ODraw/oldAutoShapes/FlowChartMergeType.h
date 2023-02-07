@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,19 +35,5 @@
 // 128
 namespace NSCustomShapesConvert
 {
-class CFlowChartMergeType : public CCustomShape
-{
-public:
-	CFlowChartMergeType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m,l21600,,10800,21600xe");
-        LoadConnectorsList(_T("10800,0;5400,10800;10800,21600;16200,10800"));
-        LoadTextRect(_T("5400,0,16200,10800"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CFlowChartMergeType, CCustomShape)
 }
-
-

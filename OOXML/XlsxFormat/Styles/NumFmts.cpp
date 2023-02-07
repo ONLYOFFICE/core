@@ -34,6 +34,9 @@
 
 #include "../../XlsbFormat/Biff12_records/Fmt.h"
 #include "../../XlsbFormat/Biff12_unions/ACFMT.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -148,7 +151,9 @@ namespace OOX
 
 				if (L"numFmt" == sName)
 				{
-					m_arrItems.push_back(new CNumFmt(oReader));
+					CNumFmt* pNumFmt = new CNumFmt();
+					*pNumFmt = oReader;
+					m_arrItems.push_back(pNumFmt);
 
 					if (m_arrItems.back()->m_oNumFmtId.IsInit())
 					{

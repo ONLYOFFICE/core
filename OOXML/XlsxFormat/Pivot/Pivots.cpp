@@ -124,6 +124,13 @@
 
 #include <boost/range/adaptor/reversed.hpp>
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Word.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -694,7 +701,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"field" == sName )
-				m_arrItems.push_back(new CField(oReader));
+			{
+				CField* pField = new CField();
+				*pField = oReader;
+				m_arrItems.push_back(pField);
+			}
 		}
 	}
     void CColumnRowFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -778,7 +789,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"i" == sName )
-				m_arrItems.push_back(new CColumnRowItem(oReader));
+			{
+				CColumnRowItem* pColumnRowItem = new CColumnRowItem();
+				*pColumnRowItem = oReader;
+				m_arrItems.push_back(pColumnRowItem);
+			}
 		}
 	}
     void CColumnRowItems::fromBin(XLS::BaseObjectPtr& obj)
@@ -839,7 +854,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"x" == sName)
-				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
 	}
     void CColumnRowItem::fromBin(XLS::BaseObjectPtr& obj)
@@ -968,7 +983,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"dataField" == sName )
-				m_arrItems.push_back(new CDataField(oReader));
+			{
+				CDataField* pDataField = new CDataField();
+				*pDataField = oReader;
+				m_arrItems.push_back(pDataField);
+			}
 		}
 	}
     void CDataFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -1160,7 +1179,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"pageField" == sName )
-				m_arrItems.push_back(new CPageField(oReader));
+			{
+				CPageField* pPageField = new CPageField();
+				*pPageField = oReader;
+				m_arrItems.push_back(pPageField);
+			}
 		}
 	}
     void CPageFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -1281,7 +1304,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"item" == sName )
-				m_arrItems.push_back(new CFieldItem(oReader));
+			{
+				CFieldItem* pFieldItem = new CFieldItem();
+				*pFieldItem = oReader;
+				m_arrItems.push_back(pFieldItem);
+			}
 		}
 	}
     void CFieldItems::fromBin(XLS::BaseObjectPtr& obj)
@@ -1471,7 +1498,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"pivotField" == sName )
-				m_arrItems.push_back(new CPivotField(oReader));
+			{
+				CPivotField* pPivotField = new CPivotField();
+				*pPivotField = oReader;
+				m_arrItems.push_back(pPivotField);
+			}
 		}
 	}
     void CPivotFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -1833,7 +1864,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"reference" == sName )
-				m_arrItems.push_back(new CReference(oReader));
+			{
+				CReference* pReference = new CReference();
+				*pReference = oReader;
+				m_arrItems.push_back(pReference);
+			}
 		}
 	}
     void CReferences::fromBin(XLS::BaseObjectPtr& obj)
@@ -2001,7 +2036,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"format" == sName )
-				m_arrItems.push_back(new CPivotTableFormat(oReader));
+			{
+				CPivotTableFormat* pPivotTableFormat = new CPivotTableFormat();
+				*pPivotTableFormat = oReader;
+				m_arrItems.push_back(pPivotTableFormat);
+			}
 		}
 	}
     void CPivotTableFormats::fromBin(XLS::BaseObjectPtr& obj)
@@ -2610,7 +2649,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"cacheFields" == sName )
-				m_arrItems.push_back(new CPivotCacheField(oReader));
+			{
+				CPivotCacheField* pPivotCacheField = new CPivotCacheField();
+				*pPivotCacheField = oReader;
+				m_arrItems.push_back(pPivotCacheField);
+			}
 		}
 	}
     void CPivotCacheFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -2806,17 +2849,41 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"b" == sName )
-				m_arrItems.push_back(new CPivotBooleanValue(oReader));
+			{
+				CPivotBooleanValue* pPivotBooleanValue = new CPivotBooleanValue();
+				*pPivotBooleanValue = oReader;
+				m_arrItems.push_back(pPivotBooleanValue);
+			}
 			else if ( L"d" == sName )
-				m_arrItems.push_back(new CPivotDateTimeValue(oReader));
+			{
+				CPivotDateTimeValue* pPivotDateTimeValue = new CPivotDateTimeValue();
+				*pPivotDateTimeValue = oReader;
+				m_arrItems.push_back(pPivotDateTimeValue);
+			}
 			else if ( L"e" == sName )
-				m_arrItems.push_back(new CPivotErrorValue(oReader));
+			{
+				CPivotErrorValue* pPivotErrorValue = new CPivotErrorValue();
+				*pPivotErrorValue = oReader;
+				m_arrItems.push_back(pPivotErrorValue);
+			}
 			else if ( L"m" == sName )
-				m_arrItems.push_back(new CPivotNoValue(oReader));
+			{
+				CPivotNoValue* pPivotNoValue = new CPivotNoValue();
+				*pPivotNoValue = oReader;
+				m_arrItems.push_back(pPivotNoValue);
+			}
 			else if ( L"n" == sName )
-				m_arrItems.push_back(new CPivotNumericValue(oReader));
+			{
+				CPivotNumericValue* pPivotNumericValue = new CPivotNumericValue();
+				*pPivotNumericValue = oReader;
+				m_arrItems.push_back(pPivotNumericValue);
+			}
 			else if ( L"s" == sName )
-				m_arrItems.push_back(new CPivotCharacterValue(oReader));
+			{
+				CPivotCharacterValue* pPivotCharacterValue = new CPivotCharacterValue();
+				*pPivotCharacterValue = oReader;
+				m_arrItems.push_back(pPivotCharacterValue);
+			}
 		}
 	}
     void CSharedItems::fromBin(XLS::BaseObjectPtr& obj)
@@ -3026,7 +3093,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"x" == sName)
-				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
 	}
     void CDiscreteGroupingProperties::fromBin(XLS::BaseObjectPtr& obj)
@@ -3078,17 +3145,41 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"b" == sName )
-				m_arrItems.push_back(new CPivotBooleanValue(oReader));
+			{
+				CPivotBooleanValue* pPivotBooleanValue = new CPivotBooleanValue();
+				*pPivotBooleanValue = oReader;
+				m_arrItems.push_back(pPivotBooleanValue);
+			}
 			else if ( L"d" == sName )
-				m_arrItems.push_back(new CPivotDateTimeValue(oReader));
+			{
+				CPivotDateTimeValue* pPivotDateTimeValue = new CPivotDateTimeValue();
+				*pPivotDateTimeValue = oReader;
+				m_arrItems.push_back(pPivotDateTimeValue);
+			}
 			else if ( L"e" == sName )
-				m_arrItems.push_back(new CPivotErrorValue(oReader));
+			{
+				CPivotErrorValue* pPivotErrorValue = new CPivotErrorValue();
+				*pPivotErrorValue = oReader;
+				m_arrItems.push_back(pPivotErrorValue);
+			}
 			else if ( L"m" == sName )
-				m_arrItems.push_back(new CPivotNoValue(oReader));
+			{
+				CPivotNoValue* pPivotNoValue = new CPivotNoValue();
+				*pPivotNoValue = oReader;
+				m_arrItems.push_back(pPivotNoValue);
+			}
 			else if ( L"n" == sName )
-				m_arrItems.push_back(new CPivotNumericValue(oReader));
+			{
+				CPivotNumericValue* pPivotNumericValue = new CPivotNumericValue();
+				*pPivotNumericValue = oReader;
+				m_arrItems.push_back(pPivotNumericValue);
+			}
 			else if ( L"s" == sName )
-				m_arrItems.push_back(new CPivotCharacterValue(oReader));
+			{
+				CPivotCharacterValue* pPivotCharacterValue = new CPivotCharacterValue();
+				*pPivotCharacterValue = oReader;
+				m_arrItems.push_back(pPivotCharacterValue);
+			}
 		}
 	}
     void COLAPGroupItems::fromBin(XLS::BaseObjectPtr& obj)
@@ -3333,7 +3424,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotCharacterValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3453,7 +3544,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}    
     void CPivotErrorValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3593,7 +3684,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotNumericValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3706,7 +3797,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotDateTimeValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3794,7 +3885,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
     }
     void CPivotBooleanValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -3889,7 +3980,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"x" == sName )
-				m_arrItems.push_back(new CMemberPropertyIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CMemberPropertyIndex>(oReader));
 		}
 	}
     void CPivotNoValue::fromBin(XLS::BaseObjectPtr& obj)
@@ -4130,7 +4221,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"page" == sName)
-				m_arrItems.push_back(new CPageItems(oReader));
+			{
+				CPageItems* pPageItems = new CPageItems();
+				*pPageItems = oReader;
+				m_arrItems.push_back(pPageItems);
+			}
 		}
 	}
     void CPageItemValues::fromBin(XLS::BaseObjectPtr& obj)
@@ -4182,7 +4277,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"pageItem" == sName)
-				m_arrItems.push_back(new CPageItem(oReader));
+			{
+				CPageItem* pPageItem = new CPageItem();
+				*pPageItem = oReader;
+				m_arrItems.push_back(pPageItem);
+			}
 		}
 	}
     void CPageItems::fromBin(XLS::BaseObjectPtr& obj)
@@ -4273,7 +4372,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"rangeSet" == sName)
-				m_arrItems.push_back(new CRangeSet(oReader));
+			{
+				CRangeSet* pRangeSet = new CRangeSet();
+				*pRangeSet = oReader;
+				m_arrItems.push_back(pRangeSet);
+			}
 		}
 	}
     void CRangeSets::fromBin(XLS::BaseObjectPtr& obj)
@@ -4612,7 +4715,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (L"r" == sName)
-				m_arrItems.push_back(new CPivotCacheRecord(oReader));
+			{
+				CPivotCacheRecord* pPivotCacheRecord = new CPivotCacheRecord();
+				*pPivotCacheRecord = oReader;
+				m_arrItems.push_back(pPivotCacheRecord);
+			}
 			else if (L"extLst" == sName)
 				m_oExtLst = oReader;
 		}
@@ -4686,19 +4793,43 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"b" == sName )
-				m_arrItems.push_back(new CPivotBooleanValue(oReader));
+			{
+				CPivotBooleanValue* pPivotBooleanValue = new CPivotBooleanValue();
+				*pPivotBooleanValue = oReader;
+				m_arrItems.push_back(pPivotBooleanValue);
+			}
 			else if ( L"d" == sName )
-				m_arrItems.push_back(new CPivotDateTimeValue(oReader));
+			{
+				CPivotDateTimeValue* pPivotDateTimeValue = new CPivotDateTimeValue();
+				*pPivotDateTimeValue = oReader;
+				m_arrItems.push_back(pPivotDateTimeValue);
+			}
 			else if ( L"e" == sName )
-				m_arrItems.push_back(new CPivotErrorValue(oReader));
+			{
+				CPivotErrorValue* pPivotErrorValue = new CPivotErrorValue();
+				*pPivotErrorValue = oReader;
+				m_arrItems.push_back(pPivotErrorValue);
+			}
 			else if ( L"m" == sName )
-				m_arrItems.push_back(new CPivotNoValue(oReader));
+			{
+				CPivotNoValue *pPivotNoValue = new CPivotNoValue();
+				*pPivotNoValue = oReader;
+				m_arrItems.push_back(pPivotNoValue);
+			}
 			else if ( L"n" == sName )
-				m_arrItems.push_back(new CPivotNumericValue(oReader));
+			{
+				CPivotNumericValue *pPivotNumericValue = new CPivotNumericValue();
+				*pPivotNumericValue = oReader;
+				m_arrItems.push_back(pPivotNumericValue);
+			}
 			else if ( L"s" == sName )
-				m_arrItems.push_back(new CPivotCharacterValue(oReader));
+			{
+				CPivotCharacterValue *pPivotCharacterValue = new CPivotCharacterValue();
+				*pPivotCharacterValue = oReader;
+				m_arrItems.push_back(pPivotCharacterValue);
+			}
 			else if ( L"x" == sName )
-				m_arrItems.push_back(new CSharedItemsIndex(oReader));
+				m_arrItems.push_back(PPTX::CreatePtrXmlContent<CSharedItemsIndex>(oReader));
 		}
 	}
     void CPivotCacheRecord::fromBin(XLS::BaseObjectPtr& obj)

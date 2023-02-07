@@ -107,6 +107,7 @@ const long c_nParamFlipY		= 0x0002;
 const long c_nFlipNextRotate	= 0x0004;
 const long c_nDarkMode          = 0x0008;
 const long c_nUseDictionaryFonts = 0x0010;
+const long c_nPenWidth0As1px	= 0x0020;
 
 // типы рендерера
 const long c_nUnknownRenderer   = 0x0000;

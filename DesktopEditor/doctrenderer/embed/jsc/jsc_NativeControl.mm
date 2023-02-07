@@ -14,8 +14,8 @@
 -(JSValue*) CheckNextChange;
 -(JSValue*) GetCountChanges;
 -(JSValue*) GetChangesFile : (JSValue*)index;
--(JSValue*) Save_AllocNative : (JSValue*)len;
--(JSValue*) Save_ReAllocNative : (JSValue*)pos : (JSValue*)len;
+//-(JSValue*) Save_AllocNative : (JSValue*)len;
+//-(JSValue*) Save_ReAllocNative : (JSValue*)pos : (JSValue*)len;
 -(JSValue*) Save_End : (JSValue*)pos : (JSValue*)len;
 -(JSValue*) AddImageInChanges : (JSValue*)img;
 -(JSValue*) ConsoleLog : (JSValue*)message;
@@ -54,8 +54,8 @@ FUNCTION_WRAPPER_JS(GetEditorType, GetEditorType)
 FUNCTION_WRAPPER_JS(CheckNextChange, CheckNextChange)
 FUNCTION_WRAPPER_JS(GetCountChanges, GetCountChanges)
 FUNCTION_WRAPPER_JS_1(GetChangesFile, GetChangesFile)
-FUNCTION_WRAPPER_JS_1(Save_AllocNative, Save_AllocNative)
-FUNCTION_WRAPPER_JS_2(Save_ReAllocNative, Save_ReAllocNative)
+//FUNCTION_WRAPPER_JS_1(Save_AllocNative, Save_AllocNative)
+//FUNCTION_WRAPPER_JS_2(Save_ReAllocNative, Save_ReAllocNative)
 FUNCTION_WRAPPER_JS_2(Save_End, Save_End)
 FUNCTION_WRAPPER_JS_1(AddImageInChanges, AddImageInChanges)
 FUNCTION_WRAPPER_JS_1(ConsoleLog, ConsoleLog)

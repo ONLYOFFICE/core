@@ -31,7 +31,20 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CHorizontalAlignment;
+		class CVerticalAlignment;
+	}
+}
 
 namespace OOX
 {
@@ -40,7 +53,7 @@ namespace OOX
 		class CAligment : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAligment)
+			WritingElement_AdditionMethods(CAligment)
             WritingElement_XlsbConstructors(CAligment)
 			CAligment();
 			virtual ~CAligment();
@@ -77,7 +90,7 @@ namespace OOX
 		class CProtection : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CProtection)
+			WritingElement_AdditionMethods(CProtection)
             WritingElement_XlsbConstructors(CProtection)
 			CProtection();
 			virtual ~CProtection();
@@ -107,7 +120,7 @@ namespace OOX
 		class CXfs : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CXfs)
+			WritingElement_AdditionMethods(CXfs)
             WritingElement_XlsbConstructors(CXfs)
 			CXfs();
 			virtual ~CXfs();
@@ -150,7 +163,7 @@ namespace OOX
 		class CCellXfs  : public WritingElementWithChilds<CXfs>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellXfs)
+			WritingElement_AdditionMethods(CCellXfs)
             WritingElement_XlsbVectorConstructors(CCellXfs)
 			CCellXfs();
 			virtual ~CCellXfs();
@@ -175,7 +188,7 @@ namespace OOX
 		class CCellStyleXfs  : public WritingElementWithChilds<CXfs>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCellStyleXfs)
+			WritingElement_AdditionMethods(CCellStyleXfs)
             WritingElement_XlsbVectorConstructors(CCellStyleXfs)
 			CCellStyleXfs();
 			virtual ~CCellStyleXfs();

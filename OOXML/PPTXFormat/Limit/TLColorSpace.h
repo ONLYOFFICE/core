@@ -30,29 +30,13 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLCOLORSPACE_INCLUDE_H_
-#define PPTX_LIMIT_TLCOLORSPACE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class TLColorSpace : public BaseLimit
-		{
-		public:
-			TLColorSpace();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(TLColorSpace)
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_TLCOLORSPACE_INCLUDE_H_

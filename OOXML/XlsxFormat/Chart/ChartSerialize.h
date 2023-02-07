@@ -31,10 +31,18 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
-#include "ChartStyle.h"
-#include "ChartColors.h"
+namespace PPTX
+{
+	namespace Logic
+	{
+		class TxBody;
+		class ClrMap;
+		class SpPr;
+	}
+}
 
 namespace OOX
 {

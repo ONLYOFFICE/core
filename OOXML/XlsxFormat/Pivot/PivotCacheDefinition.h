@@ -30,8 +30,21 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "PivotTable.h"
+
+namespace SimpleTypes
+{
+	class CDateTime;
+	class CRelationshipId;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CValuesGroupBy;
+		class CSourceCacheType;
+	}
+}
 
 namespace OOX
 {
@@ -40,7 +53,7 @@ namespace OOX
 		class CSharedItems : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSharedItems)
+			WritingElement_AdditionMethods(CSharedItems)
             WritingElement_XlsbConstructors(CSharedItems)
 			CSharedItems(){}
 			virtual ~CSharedItems() {}
@@ -81,7 +94,7 @@ namespace OOX
 		class COLAPGroupItems : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(COLAPGroupItems)
+			WritingElement_AdditionMethods(COLAPGroupItems)
             WritingElement_XlsbConstructors(COLAPGroupItems)
 			COLAPGroupItems(){}
 			virtual ~COLAPGroupItems() {}
@@ -107,7 +120,7 @@ namespace OOX
 		class CDiscreteGroupingProperties : public WritingElementWithChilds<CSharedItemsIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDiscreteGroupingProperties)
+			WritingElement_AdditionMethods(CDiscreteGroupingProperties)
             WritingElement_XlsbConstructors(CDiscreteGroupingProperties)
 			CDiscreteGroupingProperties(){}
 			virtual ~CDiscreteGroupingProperties() {}
@@ -133,7 +146,7 @@ namespace OOX
 		class CRangeGroupingProperties : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRangeGroupingProperties)
+			WritingElement_AdditionMethods(CRangeGroupingProperties)
             WritingElement_XlsbConstructors(CRangeGroupingProperties)
 			CRangeGroupingProperties(){}
 			virtual ~CRangeGroupingProperties() {}
@@ -171,7 +184,7 @@ namespace OOX
 		class CFieldGroupProperties : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFieldGroupProperties)
+			WritingElement_AdditionMethods(CFieldGroupProperties)
             WritingElement_XlsbConstructors(CFieldGroupProperties)
 			CFieldGroupProperties(){}
 			virtual ~CFieldGroupProperties() {}
@@ -203,7 +216,7 @@ namespace OOX
 		class CPivotCacheField : public WritingElement
 		{
         public:
-			WritingElement_AdditionConstructors(CPivotCacheField)
+			WritingElement_AdditionMethods(CPivotCacheField)
             WritingElement_XlsbConstructors(CPivotCacheField)
 			CPivotCacheField(){}
 			virtual ~CPivotCacheField() {}
@@ -248,7 +261,7 @@ namespace OOX
 		class CPivotCacheFields : public WritingElementWithChilds<CPivotCacheField>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheFields)
+			WritingElement_AdditionMethods(CPivotCacheFields)
             WritingElement_XlsbConstructors(CPivotCacheFields)
 			CPivotCacheFields(){}
 			virtual ~CPivotCacheFields() {}
@@ -274,7 +287,7 @@ namespace OOX
 		class CRangeSet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CRangeSet)
+			WritingElement_AdditionMethods(CRangeSet)
             WritingElement_XlsbConstructors(CRangeSet)
 			CRangeSet(){}
 			virtual ~CRangeSet() {}
@@ -308,7 +321,7 @@ namespace OOX
 		class CRangeSets : public WritingElementWithChilds<CRangeSet>
 		{
 		public:
-			WritingElement_AdditionConstructors(CRangeSets)
+			WritingElement_AdditionMethods(CRangeSets)
             WritingElement_XlsbConstructors(CRangeSets)
 			CRangeSets(){}
 			virtual ~CRangeSets() {}
@@ -334,7 +347,7 @@ namespace OOX
 		class CPageItem : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageItem)
+			WritingElement_AdditionMethods(CPageItem)
             WritingElement_XlsbConstructors(CPageItem)
 			CPageItem(){}
 			virtual ~CPageItem() {}
@@ -361,7 +374,7 @@ namespace OOX
 		class CPageItems : public WritingElementWithChilds<CPageItem>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageItems)
+			WritingElement_AdditionMethods(CPageItems)
             WritingElement_XlsbConstructors(CPageItems)
 			CPageItems(){}
 			virtual ~CPageItems() {}
@@ -387,7 +400,7 @@ namespace OOX
 		class CPageItemValues : public WritingElementWithChilds<CPageItems>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPageItemValues)
+			WritingElement_AdditionMethods(CPageItemValues)
             WritingElement_XlsbConstructors(CPageItemValues)
 			CPageItemValues(){}
 			virtual ~CPageItemValues() {}
@@ -415,7 +428,7 @@ namespace OOX
 		class CConsolidationSource : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CConsolidationSource)
+			WritingElement_AdditionMethods(CConsolidationSource)
             WritingElement_XlsbConstructors(CConsolidationSource)
 			CConsolidationSource()
 			{
@@ -449,7 +462,7 @@ namespace OOX
 		class CWorksheetSource : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorksheetSource)
+			WritingElement_AdditionMethods(CWorksheetSource)
             WritingElement_XlsbConstructors(CWorksheetSource)
 			CWorksheetSource(){}
 			virtual ~CWorksheetSource() {}
@@ -479,7 +492,7 @@ namespace OOX
 		class CPivotCacheSource : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheSource)
+			WritingElement_AdditionMethods(CPivotCacheSource)
             WritingElement_XlsbConstructors(CPivotCacheSource)
 			CPivotCacheSource()
 			{
@@ -515,7 +528,7 @@ namespace OOX
 		class CPivotCacheDefinition : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheDefinition)
+			WritingElement_AdditionMethods(CPivotCacheDefinition)
             WritingElement_XlsbConstructors(CPivotCacheDefinition)
 			CPivotCacheDefinition()
 			{
@@ -661,7 +674,7 @@ namespace OOX
 		class CPivotCharacterValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCharacterValue)
+			WritingElement_AdditionMethods(CPivotCharacterValue)
             WritingElement_XlsbConstructors(CPivotCharacterValue)
 			CPivotCharacterValue(){}
 			virtual ~CPivotCharacterValue() {}
@@ -702,7 +715,7 @@ namespace OOX
 		class CPivotBooleanValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotBooleanValue)
+			WritingElement_AdditionMethods(CPivotBooleanValue)
             WritingElement_XlsbConstructors(CPivotBooleanValue)
 			CPivotBooleanValue(){}
 			virtual ~CPivotBooleanValue() {}
@@ -733,7 +746,7 @@ namespace OOX
 		class CPivotNumericValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotNumericValue)
+			WritingElement_AdditionMethods(CPivotNumericValue)
             WritingElement_XlsbConstructors(CPivotNumericValue)
 			CPivotNumericValue(){}
 			virtual ~CPivotNumericValue() {}
@@ -774,7 +787,7 @@ namespace OOX
 		class CPivotDateTimeValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotDateTimeValue)
+			WritingElement_AdditionMethods(CPivotDateTimeValue)
             WritingElement_XlsbConstructors(CPivotDateTimeValue)
 			CPivotDateTimeValue(){}
 			virtual ~CPivotDateTimeValue() {}
@@ -805,7 +818,7 @@ namespace OOX
 		class CPivotErrorValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotErrorValue)
+			WritingElement_AdditionMethods(CPivotErrorValue)
             WritingElement_XlsbConstructors(CPivotErrorValue)
 			CPivotErrorValue(){}
 			virtual ~CPivotErrorValue() {}
@@ -846,7 +859,7 @@ namespace OOX
 		class CPivotNoValue : public WritingElementWithChilds<CMemberPropertyIndex>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotNoValue)
+			WritingElement_AdditionMethods(CPivotNoValue)
             WritingElement_XlsbConstructors(CPivotNoValue)
 			CPivotNoValue(){}
 			virtual ~CPivotNoValue() {}

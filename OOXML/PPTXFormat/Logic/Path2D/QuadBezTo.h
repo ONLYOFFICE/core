@@ -42,7 +42,7 @@ namespace PPTX
 		class QuadBezTo : public PathBase
 		{
 		public:
-			WritingElement_AdditionConstructors(QuadBezTo)
+			WritingElement_AdditionMethods(QuadBezTo)
 			PPTX_LOGIC_BASE2(QuadBezTo)
 
 			QuadBezTo& operator=(const QuadBezTo& oSrc);

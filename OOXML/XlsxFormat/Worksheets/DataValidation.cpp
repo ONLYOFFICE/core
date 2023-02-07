@@ -37,6 +37,9 @@
 #include "../../XlsbFormat/Biff12_records/BeginDVals14.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -452,7 +455,9 @@ namespace OOX
 
 				if ( L"dataValidation" == sName )
 				{
-					m_arrItems.push_back( new CDataValidation( oReader ));
+					CDataValidation* pDataValidation = new CDataValidation();
+					*pDataValidation = oReader;
+					m_arrItems.push_back(pDataValidation);
 				}
 			}
 		}

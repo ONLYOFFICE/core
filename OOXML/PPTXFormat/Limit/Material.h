@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class Material : public BaseLimit
-		{
-		public:
-			Material();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& val);
-		};
+		DEFINE_LIMIT_BASE(Material)
 	} // namespace Limit
 } // namespace PPTX

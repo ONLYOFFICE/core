@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,19 +35,5 @@
 // 131
 namespace NSCustomShapesConvert
 {
-class CFlowChartMagneticTapeType : public CCustomShape
-{
-public:
-	CFlowChartMagneticTapeType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("ar,,21600,21600,18685,18165,10677,21597l20990,21597r,-3432xe");
-        LoadConnectorsList(_T("Rectangle"));
-        LoadTextRect(_T("3163,3163,18437,18437"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CFlowChartMagneticTapeType, CCustomShape)
 }
-
-

@@ -46,6 +46,7 @@ namespace PPTX
 			explicit Xfrm(XmlUtils::CXmlLiteReader& oReader);
 
 			const Xfrm& operator =(XmlUtils::CXmlNode& node);
+			const Xfrm& operator =(XmlUtils::CXmlLiteReader& oReader);
 			Xfrm(const Xfrm& oSrc);
 			
 			virtual OOX::EElementType getType () const;

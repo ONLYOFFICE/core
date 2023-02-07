@@ -31,17 +31,16 @@
  */
 #pragma once
 
-
 #include "../Worksheets/Worksheet.h"
-#include "../SharedStrings/Si.h"
-
 #include "../Styles/Styles.h"
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CSi;
 		class CThreadedComment;
+
 		class CCommentItem
 		{
 		public:
@@ -76,7 +75,7 @@ namespace OOX
 		class CAuthors : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAuthors)
+			WritingElement_AdditionMethods(CAuthors)
             WritingElement_XlsbConstructors(CAuthors)
 			CAuthors();
 			virtual ~CAuthors();
@@ -102,7 +101,7 @@ namespace OOX
 		class CComment : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CComment)
+			WritingElement_AdditionMethods(CComment)
             WritingElement_XlsbConstructors(CComment)
 			CComment();
 			virtual ~CComment();
@@ -131,7 +130,7 @@ namespace OOX
 		class CCommentList : public WritingElementWithChilds<CComment>
 		{
 		public:
-			WritingElement_AdditionConstructors(CCommentList)
+			WritingElement_AdditionMethods(CCommentList)
             WritingElement_XlsbConstructors(CCommentList)
 			CCommentList();
 			virtual ~CCommentList();
@@ -181,7 +180,7 @@ namespace OOX
 		class CLegacyDrawingWorksheet : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CLegacyDrawingWorksheet)
+			WritingElement_AdditionMethods(CLegacyDrawingWorksheet)
             WritingElement_XlsbConstructors(CLegacyDrawingWorksheet)
 			CLegacyDrawingWorksheet();
 			virtual ~CLegacyDrawingWorksheet();

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,20 +35,5 @@
 // 111
 namespace NSCustomShapesConvert
 {
-class CFlowChartInputOutputType : public CCustomShape
-{
-public:
-	CFlowChartInputOutputType()
-
-    {
-        m_bConcentricFill = true;
-
-        m_eJoin = ODRAW::lineJoinMiter;
-
-        m_strPath = _T("m4321,l21600,,17204,21600,,21600xe");
-
-        LoadConnectorsList(_T("2961,0;10800,0;2161,10800;8602,21600;10800,21600;19402,10800"));
-        LoadTextRect(_T("4321,0,17204,21600"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CFlowChartInputOutputType, CCustomShape)
 }

@@ -31,11 +31,11 @@
  */
 #pragma once
 
-#include "SimpleTypes_Drawing.h"
-
 #include <vector>
 #include <map>
 #include <boost/shared_ptr.hpp>
+
+#include "SimpleTypes_Drawing.h"
 
 // Here are simple types Vml from spec Office Open Xml Part4 14
 namespace SimpleTypes

@@ -19,6 +19,16 @@ include(../../../../Common/base.pri)
 #BOOST
 include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 
+#LIMITS
+include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
+
+#PPTSHAPES
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes_cpp.pri)
+
+#PPTXSHAPES
+include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTXShape/OOXMLShapes/pri/pptx_shapes.pri)
+
 DEFINES += UNICODE \
     _UNICODE \
     AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
@@ -33,16 +43,16 @@ INCLUDEPATH += \
 	../../../../../MsBinaryFile/Common/common_xls \
 	../../../XlsbFormat
 
-core_release {
-SOURCES += \
-	pptx_format_logic.cpp
-}
-
 #!disable_precompiled_header:CONFIG += precompile_header
 #precompile_header {
 #    PRECOMPILED_HEADER = precompiled.h
 #    HEADERS += precompiled.h
 #}
+
+core_release {
+SOURCES += \
+	pptx_format_logic.cpp
+}
 
 core_debug {
 SOURCES += \
@@ -308,6 +318,7 @@ SOURCES += \
 	../../../PPTXFormat/HandoutMaster.cpp \
 	../../../PPTXFormat/Core.cpp \
 	../../../PPTXFormat/App.cpp \
+	../../../PPTXFormat/WrapperWritingElement.cpp \
 	../../../PPTXFormat/Comments.cpp \
 	../../../PPTXFormat/CommentAuthors.cpp
 }
@@ -315,13 +326,20 @@ SOURCES += \
 SOURCES += \
 	pptx_format.cpp \
 	../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
+	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
+	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/ElementSettings.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/BinaryReader.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/CustomGeomShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/Ppt2PptxShapeConverter.cpp \
+	\
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.cpp \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/Pptx2PptShapeConverter.cpp \
 	\
 	../../../../MsBinaryFile/PptFile/Drawing/TextAttributesEx.cpp \
 	../../../../MsBinaryFile/PptFile/Drawing/Elements.cpp \
@@ -378,193 +396,37 @@ SOURCES += \
 	../../../PPTXFormat/Presentation/EmbeddedFontDataId.cpp \
 	../../../PPTXFormat/Presentation/Kinsoku.cpp \
 	../../../PPTXFormat/Presentation/SectionLst.cpp \
-	../../../PPTXFormat/Presentation/SldSz.cpp \
-	\
-	../../../PPTXFormat/Limit/AlbumLayout.cpp \
-	../../../PPTXFormat/Limit/AnimationDgmBuild.cpp \
-	../../../PPTXFormat/Limit/BaseLimit.cpp \
-	../../../PPTXFormat/Limit/BevelType.cpp \
-	../../../PPTXFormat/Limit/BlendMode.cpp \
-	../../../PPTXFormat/Limit/BlipCompression.cpp \
-	../../../PPTXFormat/Limit/BWMode.cpp \
-	../../../PPTXFormat/Limit/CameraType.cpp \
-	../../../PPTXFormat/Limit/ChartBuild.cpp \
-	../../../PPTXFormat/Limit/ChartBuildType.cpp \
-	../../../PPTXFormat/Limit/ColorSchemeIndex.cpp \
-	../../../PPTXFormat/Limit/CompoundLine.cpp \
-	../../../PPTXFormat/Limit/Conformance.cpp \
-	../../../PPTXFormat/Limit/ContentStatus.cpp \
-	../../../PPTXFormat/Limit/CornerDirectionVal.cpp \
-	../../../PPTXFormat/Limit/DgmBuild.cpp \
-	../../../PPTXFormat/Limit/DgmBuildType.cpp \
-	../../../PPTXFormat/Limit/EffectContainerType.cpp \
-	../../../PPTXFormat/Limit/EightDirectionVal.cpp \
-	../../../PPTXFormat/Limit/FillPath.cpp \
-	../../../PPTXFormat/Limit/Flip.cpp \
-	../../../PPTXFormat/Limit/FontAlign.cpp \
-	../../../PPTXFormat/Limit/FontStyleIndex.cpp \
-	../../../PPTXFormat/Limit/FrameShape.cpp \
-	../../../PPTXFormat/Limit/HorzOverflow.cpp \
-	../../../PPTXFormat/Limit/InOutDirectionVal.cpp \
-	../../../PPTXFormat/Limit/IterateType.cpp \
-	../../../PPTXFormat/Limit/LastView.cpp \
-	../../../PPTXFormat/Limit/LightRigType.cpp \
-	../../../PPTXFormat/Limit/LineCap.cpp \
-	../../../PPTXFormat/Limit/LineEndSize.cpp \
-	../../../PPTXFormat/Limit/LineEndType.cpp \
-	../../../PPTXFormat/Limit/Material.cpp \
-	../../../PPTXFormat/Limit/OnOff.cpp \
-	../../../PPTXFormat/Limit/Orient.cpp \
-	../../../PPTXFormat/Limit/ParaBuildType.cpp \
-	../../../PPTXFormat/Limit/PathFillMode.cpp \
-	../../../PPTXFormat/Limit/PattFillVal.cpp \
-	../../../PPTXFormat/Limit/PenAlign.cpp \
-	../../../PPTXFormat/Limit/PlaceholderSize.cpp \
-	../../../PPTXFormat/Limit/PlaceholderType.cpp \
-	../../../PPTXFormat/Limit/PresetShadowVal.cpp \
-	../../../PPTXFormat/Limit/PrstClrVal.cpp \
-	../../../PPTXFormat/Limit/PrstDashVal.cpp \
-	../../../PPTXFormat/Limit/RectAlign.cpp \
-	../../../PPTXFormat/Limit/SchemeClrVal.cpp \
-	../../../PPTXFormat/Limit/ShapeType.cpp \
-	../../../PPTXFormat/Limit/SideDirectionVal.cpp \
-	../../../PPTXFormat/Limit/SlideLayoutType.cpp \
-	../../../PPTXFormat/Limit/SlideSize.cpp \
-	../../../PPTXFormat/Limit/SplitterBarState.cpp \
-	../../../PPTXFormat/Limit/SysClrVal.cpp \
-	../../../PPTXFormat/Limit/TextAlign.cpp \
-	../../../PPTXFormat/Limit/TextAnchor.cpp \
-	../../../PPTXFormat/Limit/TextAutonumberScheme.cpp \
-	../../../PPTXFormat/Limit/TextCaps.cpp \
-	../../../PPTXFormat/Limit/TextShapeType.cpp \
-	../../../PPTXFormat/Limit/TextStrike.cpp \
-	../../../PPTXFormat/Limit/TextTabAlignType.cpp \
-	../../../PPTXFormat/Limit/TextUnderline.cpp \
-	../../../PPTXFormat/Limit/TextVerticalType.cpp \
-	../../../PPTXFormat/Limit/TextWrap.cpp \
-	../../../PPTXFormat/Limit/TLAccumulate.cpp \
-	../../../PPTXFormat/Limit/TLAdditive.cpp \
-	../../../PPTXFormat/Limit/TLCalcMode.cpp \
-	../../../PPTXFormat/Limit/TLChartSubElement.cpp \
-	../../../PPTXFormat/Limit/TLColorDirection.cpp \
-	../../../PPTXFormat/Limit/TLColorSpace.cpp \
-	../../../PPTXFormat/Limit/TLCommandType.cpp \
-	../../../PPTXFormat/Limit/TLMasterRelation.cpp \
-	../../../PPTXFormat/Limit/TLNextAc.cpp \
-	../../../PPTXFormat/Limit/TLNodeFillType.cpp \
-	../../../PPTXFormat/Limit/TLNodeType.cpp \
-	../../../PPTXFormat/Limit/TLOrigin.cpp \
-	../../../PPTXFormat/Limit/TLOverride.cpp \
-	../../../PPTXFormat/Limit/TLPathEditMode.cpp \
-	../../../PPTXFormat/Limit/TLPresetClass.cpp \
-	../../../PPTXFormat/Limit/TLPrevAc.cpp \
-	../../../PPTXFormat/Limit/TLRestart.cpp \
-	../../../PPTXFormat/Limit/TLRuntimeTrigger.cpp \
-	../../../PPTXFormat/Limit/TLSyncBehavior.cpp \
-	../../../PPTXFormat/Limit/TLTransform.cpp \
-	../../../PPTXFormat/Limit/TLTransition.cpp \
-	../../../PPTXFormat/Limit/TLTriggerEvent.cpp \
-	../../../PPTXFormat/Limit/TLValueType.cpp \
-	../../../PPTXFormat/Limit/TransitionSpeed.cpp \
-	../../../PPTXFormat/Limit/VariantType.cpp \
-	../../../PPTXFormat/Limit/VertOverflow.cpp
-
+	../../../PPTXFormat/Presentation/SldSz.cpp
 
 HEADERS += \
 	pptx_format.h \
+	\
+	../../../../MsBinaryFile/Common/Vml/Common.h \
+	../../../../MsBinaryFile/Common/Vml/BaseShape.h \
+	../../../../MsBinaryFile/Common/Vml/toVmlConvert.h \
+	../../../../MsBinaryFile/Common/Vml/Path.h \
+	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \	
+	\
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptFormula.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/ElementSettings.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/BinaryReader.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/CustomGeomShape.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/Ppt2PptxShapeConverter.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/Enums.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShapeEnum.h \
+	../../../../MsBinaryFile/Common/Vml/PPTShape/PresetShapesHeader.h \
+	\
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.h \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.h \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/PresetShapesHeader.h \
+	../../../../MsBinaryFile/Common/Vml/PPTXShape/Pptx2PptShapeConverter.h \
+	\
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFile.h \
 	../../../PPTXFormat/FileTypes.h \
 	../../../PPTXFormat/Namespaces.h \
-	../../../PPTXFormat/WritingVector.h \
-	../../../PPTXFormat/Limit/AlbumLayout.h \
-	../../../PPTXFormat/Limit/AnimationDgmBuild.h \
-	../../../PPTXFormat/Limit/BaseLimit.h \
-	../../../PPTXFormat/Limit/BevelType.h \
-	../../../PPTXFormat/Limit/BlendMode.h \
-	../../../PPTXFormat/Limit/BlipCompression.h \
-	../../../PPTXFormat/Limit/BWMode.h \
-	../../../PPTXFormat/Limit/CameraType.h \
-	../../../PPTXFormat/Limit/ChartBuild.h \
-	../../../PPTXFormat/Limit/ChartBuildType.h \
-	../../../PPTXFormat/Limit/ColorSchemeIndex.h \
-	../../../PPTXFormat/Limit/CompoundLine.h \
-	../../../PPTXFormat/Limit/Conformance.h \
-	../../../PPTXFormat/Limit/ContentStatus.h \
-	../../../PPTXFormat/Limit/CornerDirectionVal.h \
-	../../../PPTXFormat/Limit/DgmBuild.h \
-	../../../PPTXFormat/Limit/DgmBuildType.h \
-	../../../PPTXFormat/Limit/EffectContainerType.h \
-	../../../PPTXFormat/Limit/EightDirectionVal.h \
-	../../../PPTXFormat/Limit/FillPath.h \
-	../../../PPTXFormat/Limit/Flip.h \
-	../../../PPTXFormat/Limit/FontAlign.h \
-	../../../PPTXFormat/Limit/FontStyleIndex.h \
-	../../../PPTXFormat/Limit/FrameShape.h \
-	../../../PPTXFormat/Limit/HorzOverflow.h \
-	../../../PPTXFormat/Limit/InOutDirectionVal.h \
-	../../../PPTXFormat/Limit/IterateType.h \
-	../../../PPTXFormat/Limit/LastView.h \
-	../../../PPTXFormat/Limit/LightRigType.h \
-	../../../PPTXFormat/Limit/LineCap.h \
-	../../../PPTXFormat/Limit/LineEndSize.h \
-	../../../PPTXFormat/Limit/LineEndType.h \
-	../../../PPTXFormat/Limit/Material.h \
-	../../../PPTXFormat/Limit/OnOff.h \
-	../../../PPTXFormat/Limit/Orient.h \
-	../../../PPTXFormat/Limit/ParaBuildType.h \
-	../../../PPTXFormat/Limit/PathFillMode.h \
-	../../../PPTXFormat/Limit/PattFillVal.h \
-	../../../PPTXFormat/Limit/PenAlign.h \
-	../../../PPTXFormat/Limit/PlaceholderSize.h \
-	../../../PPTXFormat/Limit/PlaceholderType.h \
-	../../../PPTXFormat/Limit/PresetShadowVal.h \
-	../../../PPTXFormat/Limit/PrstClrVal.h \
-	../../../PPTXFormat/Limit/PrstDashVal.h \
-	../../../PPTXFormat/Limit/RectAlign.h \
-	../../../PPTXFormat/Limit/SchemeClrVal.h \
-	../../../PPTXFormat/Limit/ShapeType.h \
-	../../../PPTXFormat/Limit/SideDirectionVal.h \
-	../../../PPTXFormat/Limit/SlideLayoutType.h \
-	../../../PPTXFormat/Limit/SlideSize.h \
-	../../../PPTXFormat/Limit/SplitterBarState.h \
-	../../../PPTXFormat/Limit/SysClrVal.h \
-	../../../PPTXFormat/Limit/TextAlign.h \
-	../../../PPTXFormat/Limit/TextAnchor.h \
-	../../../PPTXFormat/Limit/TextAutonumberScheme.h \
-	../../../PPTXFormat/Limit/TextCaps.h \
-	../../../PPTXFormat/Limit/TextShapeType.h \
-	../../../PPTXFormat/Limit/TextStrike.h \
-	../../../PPTXFormat/Limit/TextTabAlignType.h \
-	../../../PPTXFormat/Limit/TextUnderline.h \
-	../../../PPTXFormat/Limit/TextVerticalType.h \
-	../../../PPTXFormat/Limit/TextWrap.h \
-	../../../PPTXFormat/Limit/TLAccumulate.h \
-	../../../PPTXFormat/Limit/TLAdditive.h \
-	../../../PPTXFormat/Limit/TLCalcMode.h \
-	../../../PPTXFormat/Limit/TLChartSubElement.h \
-	../../../PPTXFormat/Limit/TLColorDirection.h \
-	../../../PPTXFormat/Limit/TLColorSpace.h \
-	../../../PPTXFormat/Limit/TLCommandType.h \
-	../../../PPTXFormat/Limit/TLMasterRelation.h \
-	../../../PPTXFormat/Limit/TLNextAc.h \
-	../../../PPTXFormat/Limit/TLNodeFillType.h \
-	../../../PPTXFormat/Limit/TLNodeType.h \
-	../../../PPTXFormat/Limit/TLOrigin.h \
-	../../../PPTXFormat/Limit/TLOverride.h \
-	../../../PPTXFormat/Limit/TLPathEditMode.h \
-	../../../PPTXFormat/Limit/TLPresetClass.h \
-	../../../PPTXFormat/Limit/TLPrevAc.h \
-	../../../PPTXFormat/Limit/TLRestart.h \
-	../../../PPTXFormat/Limit/TLRuntimeTrigger.h \
-	../../../PPTXFormat/Limit/TLSyncBehavior.h \
-	../../../PPTXFormat/Limit/TLTransform.h \
-	../../../PPTXFormat/Limit/TLTransition.h \
-	../../../PPTXFormat/Limit/TLTriggerEvent.h \
-	../../../PPTXFormat/Limit/TLValueType.h \
-	../../../PPTXFormat/Limit/TransitionSpeed.h \
-	../../../PPTXFormat/Limit/VariantType.h \
-	../../../PPTXFormat/Limit/VertOverflow.h \
+	\
 	../../../PPTXFormat/Logic/Bullets/BuAutoNum.h \
 	../../../PPTXFormat/Logic/Bullets/BuBlip.h \
 	../../../PPTXFormat/Logic/Bullets/BuChar.h \
@@ -579,12 +441,14 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Bullets/BuSzPct.h \
 	../../../PPTXFormat/Logic/Bullets/BuSzPts.h \
 	../../../PPTXFormat/Logic/Bullets/BuSzTx.h \
+	\
 	../../../PPTXFormat/Logic/Colors/ColorBase.h \
 	../../../PPTXFormat/Logic/Colors/ColorModifier.h \
 	../../../PPTXFormat/Logic/Colors/PrstClr.h \
 	../../../PPTXFormat/Logic/Colors/SchemeClr.h \
 	../../../PPTXFormat/Logic/Colors/SrgbClr.h \
 	../../../PPTXFormat/Logic/Colors/SysClr.h \
+	\
 	../../../PPTXFormat/Logic/Effects/AlphaBiLevel.h \
 	../../../PPTXFormat/Logic/Effects/AlphaCeiling.h \
 	../../../PPTXFormat/Logic/Effects/AlphaFloor.h \
@@ -614,6 +478,7 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Effects/SoftEdge.h \
 	../../../PPTXFormat/Logic/Effects/TintEffect.h \
 	../../../PPTXFormat/Logic/Effects/XfrmEffect.h \
+	\
 	../../../PPTXFormat/Logic/Fills/Blip.h \
 	../../../PPTXFormat/Logic/Fills/BlipFill.h \
 	../../../PPTXFormat/Logic/Fills/GradFill.h \
@@ -622,9 +487,11 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Fills/SolidFill.h \
 	../../../PPTXFormat/Logic/Fills/Stretch.h \
 	../../../PPTXFormat/Logic/Fills/Tile.h \
+	\
 	../../../PPTXFormat/Logic/Media/AudioCD.h \
 	../../../PPTXFormat/Logic/Media/MediaFile.h \
 	../../../PPTXFormat/Logic/Media/WavAudioFile.h \
+	\
 	../../../PPTXFormat/Logic/Path2D/ArcTo.h \
 	../../../PPTXFormat/Logic/Path2D/Close.h \
 	../../../PPTXFormat/Logic/Path2D/CubicBezTo.h \
@@ -632,17 +499,20 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Path2D/MoveTo.h \
 	../../../PPTXFormat/Logic/Path2D/PathBase.h \
 	../../../PPTXFormat/Logic/Path2D/QuadBezTo.h \
+	\
 	../../../PPTXFormat/Logic/Runs/Br.h \
 	../../../PPTXFormat/Logic/Runs/Fld.h \
 	../../../PPTXFormat/Logic/Runs/MathParaWrapper.h \
 	../../../PPTXFormat/Logic/Runs/Run.h \
 	../../../PPTXFormat/Logic/Runs/RunBase.h \
+	\
 	../../../PPTXFormat/Logic/Table/Table.h \
 	../../../PPTXFormat/Logic/Table/TableCell.h \
 	../../../PPTXFormat/Logic/Table/TableCellProperties.h \
 	../../../PPTXFormat/Logic/Table/TableCol.h \
 	../../../PPTXFormat/Logic/Table/TableProperties.h \
 	../../../PPTXFormat/Logic/Table/TableRow.h \
+	\
 	../../../PPTXFormat/Logic/Timing/Anim.h \
 	../../../PPTXFormat/Logic/Timing/AnimClr.h \
 	../../../PPTXFormat/Logic/Timing/AnimEffect.h \
@@ -683,6 +553,7 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Timing/TnLst.h \
 	../../../PPTXFormat/Logic/Timing/TxEl.h \
 	../../../PPTXFormat/Logic/Timing/Video.h \
+	\
 	../../../PPTXFormat/Logic/Transitions/CornerDirectionTransition.h \
 	../../../PPTXFormat/Logic/Transitions/EightDirectionTransition.h \
 	../../../PPTXFormat/Logic/Transitions/EmptyTransition.h \
@@ -696,6 +567,7 @@ HEADERS += \
 	../../../PPTXFormat/Logic/Transitions/TransitionBase.h \
 	../../../PPTXFormat/Logic/Transitions/WheelTransition.h \
 	../../../PPTXFormat/Logic/Transitions/ZoomTransition.h \
+	\
 	../../../PPTXFormat/Logic/Controls.h \
 	../../../PPTXFormat/Logic/Ah.h \
 	../../../PPTXFormat/Logic/AhBase.h \
@@ -793,17 +665,20 @@ HEADERS += \
 	../../../PPTXFormat/Logic/UniPath2D.h \
 	../../../PPTXFormat/Logic/Xfrm.h \
 	../../../PPTXFormat/Logic/XmlId.h \
+	\
 	../../../PPTXFormat/Presentation/EmbeddedFont.h \
 	../../../PPTXFormat/Presentation/EmbeddedFontDataId.h \
 	../../../PPTXFormat/Presentation/Kinsoku.h \
 	../../../PPTXFormat/Presentation/NotesSz.h \
 	../../../PPTXFormat/Presentation/PhotoAlbum.h \
 	../../../PPTXFormat/Presentation/SldSz.h \
+	\
 	../../../PPTXFormat/Theme/ClrScheme.h \
 	../../../PPTXFormat/Theme/ExtraClrScheme.h \
 	../../../PPTXFormat/Theme/FmtScheme.h \
 	../../../PPTXFormat/Theme/FontScheme.h \
 	../../../PPTXFormat/Theme/ThemeElements.h \
+	\
 	../../../PPTXFormat/ViewProps/CSldViewPr.h \
 	../../../PPTXFormat/ViewProps/CViewPr.h \
 	../../../PPTXFormat/ViewProps/GridSpacing.h \
@@ -819,6 +694,7 @@ HEADERS += \
 	../../../PPTXFormat/ViewProps/Sld.h \
 	../../../PPTXFormat/ViewProps/SlideViewPr.h \
 	../../../PPTXFormat/ViewProps/SorterViewPr.h \
+	\
 	../../../PPTXFormat/App.h \
 	../../../PPTXFormat/CommentAuthors.h \
 	../../../PPTXFormat/Comments.h \
@@ -843,6 +719,7 @@ HEADERS += \
 	../../../PPTXFormat/ViewProps.h \
 	../../../PPTXFormat/WrapperFile.h \
 	../../../PPTXFormat/WrapperWritingElement.h \
+	\
 	../../../Binary/Presentation/BinaryFileReaderWriter.h \
 	../../../Binary/Presentation/BinReaderWriterDefines.h \
 	../../../Binary/Presentation/BinWriters.h \
@@ -855,154 +732,15 @@ HEADERS += \
 	../../../Binary/Presentation/WMFToImageConverter.h \
 	../../../Binary/Presentation/DefaultNotesMaster.h \
 	../../../Binary/Presentation/DefaultNotesTheme.h \
+	\
 	../../../Base/Nullable.h \
 	../../../../HtmlRenderer/include/ASCSVGWriter.h \
 	../../../../Common/FileDownloader/FileDownloader.h \
+	\
 	../../../PPTXFormat/ShowPr/Browse.h \
 	../../../PPTXFormat/ShowPr/CustShow.h \
 	../../../PPTXFormat/ShowPr/Kiosk.h \
 	../../../PPTXFormat/ShowPr/Present.h \
 	../../../PPTXFormat/ShowPr/ShowPr.h \
 	../../../PPTXFormat/ShowPr/SldAll.h \
-	../../../PPTXFormat/ShowPr/SldRg.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentBorderCallout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout1Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout3Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/AccentCallout90Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonBack.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonBeginning.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonBlank.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonDocument.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonEnd.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonHelp.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonHome.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonInfo.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonMovie.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonNext.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonReturn.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ActionButtonSound.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BentArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BentConnector.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BentUpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BevelType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BlockArcType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout1Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout3Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BorderCallout90Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BracePairType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/BracketPairType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout1Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout3Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Callout90Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CanType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ChevronType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CircularArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CloudCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CubeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedConnector.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedDownArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedLeftArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/CurvedUpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DiamondType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DonutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DownArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/DownArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/EllipseRibbon2Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/EllipseRibbonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/EllipseType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartAlternateProcessType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartCollateType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartConnectorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDecisionType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDelayType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDisplayType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartDocumentType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartExtractType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartInputOutputType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartInternalStorageType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMagneticDiskType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMagneticDrumType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMagneticTapeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartManualInputType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartManualOperationType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMergeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartMultidocumentType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartOffpageConnectorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartOnlineStorageType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartOrType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPredefinedProcessType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPreparationType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartProcessType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPunchedCardType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartPunchedTapeType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartSortType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartSummingJunctionType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FlowChartTerminatorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/FoldedCornerType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HeartType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HexagonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HomePlateType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/HorisontalScrollType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/IrregularSealOneType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/IrregularSealTwo.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/IsoscelesTriangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftBraceType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftBracketType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftRightArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftRightUpArrow.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LeftUpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LightningBoltType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/LineType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/MoonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/NoSmokingType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/NotchedRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/OctagonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/ParallelogramType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/PentagonType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/PlaqueType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/PlusType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/QuadArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/QuadArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RectangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RibbonDownType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RibbonUpType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightBracetype.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightBracketType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RightTriangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/RoundedRectangleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal4Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal8Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal16Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal24Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Seal32Type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/SmileyFaceType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/Startype.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/StraightConnectorType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/StripedRightArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/SunType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/TextboxType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/TrapezoidType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpDownArrowCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UpDownArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/UturnArrowType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/VerticalScrollType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WaveDoubleType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WaveType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WedgeEllipseCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WedgeRectCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/WedgeRoundedRectCalloutType.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout1type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout3type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/accentbordercallout90type.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/arctype.h
+	../../../PPTXFormat/ShowPr/SldRg.h

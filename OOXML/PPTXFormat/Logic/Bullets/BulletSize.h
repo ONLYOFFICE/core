@@ -45,7 +45,7 @@ namespace PPTX
 		class BulletSize : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BulletSize)
+			WritingElement_AdditionMethods(BulletSize)
 			PPTX_LOGIC_BASE2(BulletSize)
 
 			BulletSize& operator=(const BulletSize& oSrc);

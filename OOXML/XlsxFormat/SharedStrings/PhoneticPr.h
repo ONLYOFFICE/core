@@ -31,9 +31,13 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "Text.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -43,7 +47,7 @@ namespace OOX
 		class CPhonetic : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPhonetic)
+			WritingElement_AdditionMethods(CPhonetic)
 			CPhonetic();
 			virtual ~CPhonetic();
 
@@ -69,7 +73,7 @@ namespace OOX
 		class CRPh : public WritingElementWithChilds<CText>
 		{
 		public:
-			WritingElement_AdditionConstructors(CRPh)
+			WritingElement_AdditionMethods(CRPh)
 			CRPh();
 			virtual ~CRPh();
 

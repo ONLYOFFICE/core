@@ -1016,15 +1016,15 @@ void PihlShape::ReadComplexData(IBinaryReader* reader)
 }
 void XmlString::ReadComplexData(IBinaryReader* reader)
 {
-	unsigned char* pData = reader->ReadBytes(op, true);
-	
-	data = std::string((char*)pData, op);
-
-	delete []pData;
+	boost::shared_array<char> buffer((char*)reader->ReadBytes(op, true));
+	data = std::make_pair(buffer, op);
 }
 void XmlString::ReadComplexData(XLS::CFRecord& record)
 {
-	data = std::string(record.getCurData<char>(), op);
+	boost::shared_array<char> buffer(new char[op]);
+	memcpy(buffer.get(), record.getCurData<char>(), op);
+	
+	data = std::make_pair(buffer, (size_t)op);
 
 	record.skipNunBytes(op);
 }

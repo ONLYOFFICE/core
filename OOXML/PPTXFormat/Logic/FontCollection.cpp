@@ -74,7 +74,11 @@ namespace PPTX
 					else if (_T("cs") == strName)
 						cs = oNode;
 					else if (_T("font") == strName)
-						Fonts.push_back(SupplementalFont(oNode));
+					{
+						SupplementalFont elem;
+						elem = oNode;
+						Fonts.push_back(elem);
+					}
 				}
 			}
 

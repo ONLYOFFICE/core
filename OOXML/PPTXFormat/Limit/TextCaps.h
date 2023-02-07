@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class TextCaps : public BaseLimit
-		{
-		public:
-			TextCaps();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(TextCaps)
 	} // namespace Limit
 } // namespace PPTX

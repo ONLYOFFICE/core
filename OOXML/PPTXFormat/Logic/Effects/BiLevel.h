@@ -43,7 +43,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(BiLevel)
+			WritingElement_AdditionMethods(BiLevel)
 			PPTX_LOGIC_BASE2(BiLevel)
 
 			BiLevel& operator=(const BiLevel& oSrc);

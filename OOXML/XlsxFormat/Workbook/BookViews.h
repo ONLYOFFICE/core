@@ -30,8 +30,21 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDecimalNumber;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CVisibleType;
+	}
+}
 
 namespace OOX
 {
@@ -42,7 +55,7 @@ namespace OOX
 		class CWorkbookView : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookView)
+			WritingElement_AdditionMethods(CWorkbookView)
             WritingElement_XlsbConstructors(CWorkbookView)
 			CWorkbookView();
 			virtual ~CWorkbookView();
@@ -79,7 +92,7 @@ namespace OOX
 		class CBookViews : public WritingElementWithChilds<CWorkbookView>
 		{
 		public:
-			WritingElement_AdditionConstructors(CBookViews)
+			WritingElement_AdditionMethods(CBookViews)
             WritingElement_XlsbVectorConstructors(CBookViews)
 			CBookViews();
 			virtual ~CBookViews();

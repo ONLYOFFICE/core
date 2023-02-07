@@ -31,8 +31,11 @@
  */
 #pragma once
 
-#include "CommonWriter.h"
 #include "../../../XlsxFormat/Chart/ChartSerialize.h"
+
+#include "CommonWriter.h"
+#include "../../../XlsxFormat/Chart/ChartStyle.h"
+#include "../../../XlsxFormat/Chart/ChartColors.h"
 #include "../Writer/BinaryCommonReader.h"
 #include "../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 #include "../../Sheets/Writer/CSVWriter.h"
@@ -45,6 +48,7 @@ namespace OOX
 		class CChartStyleFile;
 		class CChartColorsFile;
 		class CChartExFile;
+
 		namespace ChartEx
 		{
 			class CChartData;

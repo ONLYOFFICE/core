@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,15 +35,5 @@
 // 32
 namespace NSCustomShapesConvert
 {
-
-class CStraightConnectorType : public CCustomShape
-{
-public:
-	CStraightConnectorType()
-
-    {
-        m_strPath = _T("m,l21600,21600e");
-        LoadConnectorsList(_T("0,0;21600,21600"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CStraightConnectorType, CCustomShape)
 }

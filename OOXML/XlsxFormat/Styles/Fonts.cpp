@@ -31,6 +31,8 @@
  */
 
 #include "Fonts.h"
+
+#include "../ComplexTypes_Spreadsheet.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 
 namespace OOX
@@ -383,7 +385,9 @@ namespace OOX
 
 				if ( L"font" == sName )
 				{
-					CFont *pFont = new CFont( oReader );
+					CFont *pFont = new CFont();
+					*pFont = oReader;
+
 					m_arrItems.push_back( pFont );
 					m_mapFonts.insert(std::make_pair(index++, pFont));
 				}

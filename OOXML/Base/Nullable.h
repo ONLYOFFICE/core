@@ -123,7 +123,11 @@ namespace NSCommon
 		nullable(const XmlUtils::CXmlNode& oNode)   // const modifier is important for gcc compiler in our case
 		{
 			if (oNode.IsValid())
-				this->m_pPointer = new Type(const_cast<XmlUtils::CXmlNode&> (oNode));
+			{
+				Type* pType = new Type();
+				*pType = const_cast<XmlUtils::CXmlNode&> (oNode);
+				this->m_pPointer = pType;
+			}
 			else
 				this->m_pPointer = NULL;
 		}
@@ -131,7 +135,11 @@ namespace NSCommon
 		nullable(XmlUtils::CXmlNode& oNode)
 		{
 			if (oNode.IsValid())
-				this->m_pPointer = new Type(oNode);
+			{
+				Type* pType = new Type();
+				*pType = oNode;
+				this->m_pPointer = pType;
+			}
 			else
 				this->m_pPointer = NULL;
 		}
@@ -139,7 +147,11 @@ namespace NSCommon
 		nullable(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsValid())
-				this->m_pPointer = new Type(oReader);
+			{
+				Type* pType = new Type();
+				*pType = oReader;
+				this->m_pPointer = pType;
+			}
 			else
 				this->m_pPointer = NULL;
 		}
@@ -180,14 +192,22 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			if (oNode.IsValid())
-				this->m_pPointer = new Type(oNode);
+			{
+				Type* pType = new Type();
+				*pType = oNode;
+				this->m_pPointer = pType;
+			}
 			return *this;
 		}
 		nullable<Type>& operator=(XmlUtils::CXmlLiteReader& oReader)
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			if (oReader.IsValid())
-				this->m_pPointer = new Type(oReader);
+			{
+				Type* pType = new Type();
+				*pType = oReader;
+				this->m_pPointer = pType;
+			}
 			return *this;
 		}
 		nullable<Type>& operator=(const wchar_t* cwsValue)
@@ -304,7 +324,7 @@ namespace NSCommon
 		{
 			RELEASEOBJECT(this->m_pPointer);
 			this->m_pPointer = new Type();
-			this->m_pPointer->_set(value);
+			this->m_pPointer->set(value);
 		}
 		void operator=(Type* pType)
 		{

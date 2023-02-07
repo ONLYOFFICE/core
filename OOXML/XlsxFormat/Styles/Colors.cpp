@@ -32,6 +32,8 @@
 
 #include "Colors.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+
 #include "../../XlsbFormat/Biff12_unions/COLORPALETTE.h"
 #include "../../XlsbFormat/Biff12_unions/INDEXEDCOLORS.h"
 #include "../../XlsbFormat/Biff12_unions/MRUCOLORS.h"
@@ -104,10 +106,8 @@ namespace OOX
 			{
 				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
-
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("count"),      m_oCount )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 
 	} //Spreadsheet

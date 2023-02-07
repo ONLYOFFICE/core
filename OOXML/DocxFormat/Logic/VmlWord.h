@@ -34,12 +34,8 @@
 #define OOX_VML_WORD_INCLUDE_H_
 
 #include "../../Base/Nullable.h"
-
-#include "../../Common/SimpleTypes_Word.h"
-#include "../../Common/SimpleTypes_Vml.h"
-
 #include "../WritingElement.h"
-#include "../RId.h"
+#include "../../Common/SimpleTypes_Vml.h"
 
 namespace OOX
 {
@@ -51,7 +47,7 @@ namespace OOX
 		class CAnchorLock : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAnchorLock)
+			WritingElement_AdditionMethods(CAnchorLock)
 			CAnchorLock(OOX::Document *pMain = NULL);
 			virtual ~CAnchorLock();
 
@@ -68,7 +64,7 @@ namespace OOX
 		class CBorder : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorder)
+			WritingElement_AdditionMethods(CBorder)
 			CBorder(OOX::Document *pMain = NULL);
 			virtual ~CBorder();
 
@@ -94,7 +90,7 @@ namespace OOX
 		class CWrap : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrap)
+			WritingElement_AdditionMethods(CWrap)
 			CWrap(OOX::Document *pMain = NULL);
 			virtual ~CWrap();
 

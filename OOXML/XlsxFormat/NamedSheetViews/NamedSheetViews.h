@@ -31,8 +31,17 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../../Base/Nullable.h"
+#include "../WritingElement.h"
+#include "../../DocxFormat/IFileContainer.h"
 
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CSortMethod;
+	}
+}
 namespace OOX
 {
 	namespace Drawing
@@ -58,7 +67,7 @@ namespace OOX
 		class CSortRule : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSortRule)
+			WritingElement_AdditionMethods(CSortRule)
 			CSortRule(){}
 			virtual ~CSortRule(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -84,7 +93,7 @@ namespace OOX
 		class CSortRules : public WritingElementWithChilds<CSortRule>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSortRules)
+			WritingElement_AdditionMethods(CSortRules)
 			CSortRules(){}
 			virtual ~CSortRules(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -108,7 +117,7 @@ namespace OOX
 		class CColumnFilter : public WritingElementWithChilds<CFilterColumn>
 		{
 		public:
-			WritingElement_AdditionConstructors(CColumnFilter)
+			WritingElement_AdditionMethods(CColumnFilter)
 			CColumnFilter(){}
 			virtual ~CColumnFilter(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -133,7 +142,7 @@ namespace OOX
 		class CNsvFilter : public WritingElementWithChilds<CColumnFilter>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNsvFilter)
+			WritingElement_AdditionMethods(CNsvFilter)
 			CNsvFilter(){}
 			virtual ~CNsvFilter(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -159,7 +168,7 @@ namespace OOX
 		class CNamedSheetView : public WritingElementWithChilds<CNsvFilter>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNamedSheetView)
+			WritingElement_AdditionMethods(CNamedSheetView)
 			CNamedSheetView(){}
 			virtual ~CNamedSheetView(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}
@@ -183,7 +192,7 @@ namespace OOX
 		class CNamedSheetViews : public WritingElementWithChilds<CNamedSheetView>
 		{
 		public:
-			WritingElement_AdditionConstructors(CNamedSheetViews)
+			WritingElement_AdditionMethods(CNamedSheetViews)
 			CNamedSheetViews(){}
 			virtual ~CNamedSheetViews(){}
 			virtual void fromXML(XmlUtils::CXmlNode& node){}

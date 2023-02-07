@@ -30,17 +30,26 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+#include "../FileTypes_Spreadsheet.h"
+#include "../../DocxFormat/IFileContainer.h"
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CSlicer : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicer)
+			WritingElement_AdditionMethods(CSlicer)
             WritingElement_XlsbConstructors(CSlicer)
 			CSlicer(){}
 			virtual ~CSlicer(){}
@@ -77,7 +86,7 @@ namespace OOX
 		class CSlicers : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSlicers)
+			WritingElement_AdditionMethods(CSlicers)
             WritingElement_XlsbConstructors(CSlicers)
 			CSlicers(){}
 			virtual ~CSlicers(){}

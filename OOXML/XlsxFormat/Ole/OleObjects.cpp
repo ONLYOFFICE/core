@@ -32,6 +32,14 @@
 
 #include "OleObjects.h"
 
+#include "../Drawing/FromTo.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../../XlsbFormat/Biff12_unions/OLEOBJECTS.h"
+#include "../../XlsbFormat/Biff12_records/OleObject.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -377,7 +385,9 @@ namespace OOX
 
 				if ( (L"oleObject") == sName )
 				{
-					COleObject* pOleObject = new COleObject(oReader);
+					COleObject* pOleObject = new COleObject();
+					*pOleObject = oReader;
+
 					if(pOleObject->m_oShapeId.IsInit())
 					{
 						m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;
@@ -402,7 +412,9 @@ namespace OOX
 								std::wstring sSubSubName = XmlUtils::GetNameNoNS(oReader.GetName());
 								if ( (L"oleObject") == sSubSubName )
 								{
-									COleObject* pOleObject = new COleObject(oReader);
+									COleObject* pOleObject = new COleObject();
+									*pOleObject = oReader;
+
 									if(pOleObject->m_oShapeId.IsInit())
 									{
 										m_mapOleObjects[pOleObject->m_oShapeId->GetValue()] = pOleObject;

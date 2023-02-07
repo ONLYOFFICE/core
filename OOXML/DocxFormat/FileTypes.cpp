@@ -167,19 +167,19 @@ namespace OOX
 
 		const FileType Image			(L"media", L"image", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image", L"image", true);
 
 		const FileType Audio			(L"media", L"audio", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/audio", L"audio", true);
 
 		const FileType Video			(L"media", L"video", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/video", L"video", true);
 
 		const FileType Media			(L"media", L"media", 
 												L"", 
-												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true, true);
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/media", L"media", true);
 
 		const FileType DiagramData		(L"diagrams", L"data.xml",
 												L"application/vnd.openxmlformats-officedocument.drawingml.diagramData+xml",

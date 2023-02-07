@@ -494,19 +494,19 @@
       <Filter>Logic\Path2D</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\Br.h">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\Fld.h">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\MathParaWrapper.h">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\Run.h">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Runs\RunBase.h">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Table\Table.h">
       <Filter>Logic\Table</Filter>
@@ -949,9 +949,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\Logic\NvSpPr.h">
       <Filter>Logic</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Logic\Paragraph.h">
-      <Filter>Logic</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\Logic\PartTitle.h">
       <Filter>Logic</Filter>
     </ClInclude>
@@ -1081,6 +1078,9 @@
     <ClInclude Include="..\..\..\PPTXFormat\Logic\XmlId.h">
       <Filter>Logic</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\PPTXFormat\Logic\Paragraph.h">
+      <Filter>Logic\Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -1102,7 +1102,7 @@
       <Filter>Logic\Media</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\MathParaWrapper.cpp">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\TableCell.cpp">
       <Filter>Logic\Table</Filter>
@@ -1323,16 +1323,16 @@
       <Filter>Logic\Path2D</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\Br.cpp">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\Fld.cpp">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\Run.cpp">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Runs\RunBase.cpp">
-      <Filter>Logic\Run</Filter>
+      <Filter>Logic\Text</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Table\Table.cpp">
       <Filter>Logic\Table</Filter>
@@ -1506,9 +1506,6 @@
       <Filter>Logic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\NvSpPr.cpp">
-      <Filter>Logic</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Logic\Paragraph.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Logic\PartTitle.cpp">
@@ -2159,6 +2156,9 @@
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Transitions\ZoomTransition.cpp">
       <Filter>Logic\Transition</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Logic\Paragraph.cpp">
+      <Filter>Logic\Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Limits">
@@ -2185,9 +2185,6 @@
     <Filter Include="Logic\Path2D">
       <UniqueIdentifier>{c3ea8511-a68e-47b3-8b84-b28c8cc782f5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Logic\Run">
-      <UniqueIdentifier>{55fb0e4f-f959-4e64-ba5c-696a63abf2ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Logic\Table">
       <UniqueIdentifier>{2ff27397-b6ce-4764-94f7-d5948530c211}</UniqueIdentifier>
     </Filter>
@@ -2208,6 +2205,9 @@
     </Filter>
     <Filter Include="ViewProps">
       <UniqueIdentifier>{79724603-f046-4794-939c-1fca08505a20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Text">
+      <UniqueIdentifier>{55fb0e4f-f959-4e64-ba5c-696a63abf2ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

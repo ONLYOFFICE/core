@@ -30,7 +30,14 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
+
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
@@ -41,7 +48,7 @@ namespace OOX
 		class CMergeCell : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CMergeCell)
+			WritingElement_AdditionMethods(CMergeCell)
 			CMergeCell(OOX::Document *pMain = NULL);
 			virtual ~CMergeCell();
 
@@ -65,7 +72,7 @@ namespace OOX
 		class CMergeCells  : public WritingElementWithChilds<CMergeCell>
 		{
 		public:
-			WritingElement_AdditionConstructors(CMergeCells)
+			WritingElement_AdditionMethods(CMergeCells)
             WritingElement_XlsbVectorConstructors(CMergeCells)
 			CMergeCells(OOX::Document *pMain = NULL);
 			virtual ~CMergeCells();

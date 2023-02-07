@@ -33,7 +33,13 @@
 #ifndef OOX_POS_FILE_INCLUDE_H_
 #define OOX_POS_FILE_INCLUDE_H_
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CEmu;
+}
 
 namespace OOX
 {
@@ -44,7 +50,7 @@ namespace OOX
 		class CPos : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPos)
+			WritingElement_AdditionMethods(CPos)
 			CPos();
 			virtual ~CPos();
 

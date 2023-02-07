@@ -32,6 +32,7 @@
 #include "../DocxFlat.h"
 #include "Vml.h"
 #include "VmlOfficeDrawing.h"
+#include "VmlWord.h"
 
 #include "Paragraph.h"
 #include "Annotations.h"
@@ -46,6 +47,7 @@
 #include "../Math/OMath.h"
 
 #include "../../XlsxFormat/Drawing/CellAnchor.h"
+#include "../../XlsxFormat/Drawing/FromTo.h"
 
 
 namespace OOX
@@ -189,8 +191,8 @@ namespace OOX
 
 			if (NULL != pItem)
 			{
-				m_arrItems.push_back(pItem);
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ((image_data) && (image_data->m_rId.IsInit()))
@@ -799,8 +801,8 @@ namespace OOX
 
 				if ( NULL != pItem )
 				{
-					m_arrElements.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrElements.push_back( pItem );
 				}
 			}
 		}
@@ -2094,7 +2096,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("v:f") == sName )
 				{
-					OOX::Vml::CF *oF = new OOX::Vml::CF(oReader);
+					OOX::Vml::CF *oF = new OOX::Vml::CF();
+					*oF = oReader;
 					if (oF) m_arrItems.push_back( oF );
 				}
 			}
@@ -3031,7 +3034,8 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( _T("v:h") == sName )
 				{
-					OOX::Vml::CH *oH = new OOX::Vml::CH(oReader);
+					OOX::Vml::CH *oH = new OOX::Vml::CH();
+					*oH = oReader;
 					if (oH) m_arrItems.push_back( oH );
 				}
 			}

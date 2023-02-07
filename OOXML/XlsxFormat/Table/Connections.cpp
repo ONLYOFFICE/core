@@ -50,6 +50,11 @@
 #include "../../XlsbFormat/Biff12_unions/EXTCONN15.h"
 #include "../../XlsbFormat/Biff12_records/BeginExtConn15.h"
 #include "../../XlsbFormat/Biff12_records/RangePr15.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -136,7 +141,8 @@ namespace OOX
 
 				if (L"textField" == sName)
 				{
-					CTextField *pItem = new CTextField(oReader);
+					CTextField *pItem = new CTextField();
+					*pItem = oReader;
 					m_arrItems.push_back(pItem);
 				}
 			}
@@ -246,7 +252,8 @@ namespace OOX
 
 				if (L"Parameter" == sName)
 				{
-					CParameter *pPara = new CParameter(oReader);
+					CParameter *pPara = new CParameter();
+					*pPara = oReader;
 					m_arrItems.push_back(pPara);
 				}
 			}
@@ -921,7 +928,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 					if (L"connection" == sName)
 					{
-						CConnection *pConn = new CConnection(oReader);
+						CConnection *pConn = new CConnection();
+						*pConn = oReader;
 						m_arrItems.push_back(pConn);
 					}
 				}

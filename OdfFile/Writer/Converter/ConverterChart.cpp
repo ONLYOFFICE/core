@@ -31,6 +31,9 @@
  */
 
 #include "Converter.h"
+
+#include "../../../OOXML/XlsxFormat/Chart/ChartSerializeEx.h"
+
 #include "../../Common/utils.h"
 
 #include "XlsxConverter.h"

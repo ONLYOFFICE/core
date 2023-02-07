@@ -30,29 +30,13 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLTRANSITION_INCLUDE_H_
-#define PPTX_LIMIT_TLTRANSITION_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class TLTransition : public BaseLimit
-		{
-		public:
-			TLTransition();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(TLTransition)
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_TLTRANSITION_INCLUDE_H_

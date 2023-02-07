@@ -45,7 +45,7 @@ namespace PPTX
 		class CSld : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSld)
+			WritingElement_AdditionMethods(CSld)
 			
 			CSld(OOX::Document *pMain = NULL);
 

@@ -42,7 +42,7 @@ namespace PPTX
 		class CNvGraphicFramePr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CNvGraphicFramePr)
+			WritingElement_AdditionMethods(CNvGraphicFramePr)
 
 			CNvGraphicFramePr(std::wstring ns = L"p");
 			CNvGraphicFramePr& operator=(const CNvGraphicFramePr& oSrc);

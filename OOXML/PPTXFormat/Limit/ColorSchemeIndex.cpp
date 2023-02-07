@@ -38,122 +38,122 @@ namespace PPTX
 	{		
 		ColorSchemeIndex::ColorSchemeIndex()
 		{
-			m_strValue =  _T("accent1");
+			m_strValue =  L"accent1";
 		}
 		void ColorSchemeIndex::set(const std::wstring& strValue)
 		{
-			if ((_T("accent1") == strValue) ||
-				(_T("accent2") == strValue) ||
-				(_T("accent3") == strValue) ||
-				(_T("accent4") == strValue) ||
-				(_T("accent5") == strValue) ||
-				(_T("accent6") == strValue) ||
-				(_T("dk1") == strValue) ||
-				(_T("dk2") == strValue) ||
-				(_T("folHlink") == strValue) ||
-				(_T("hlink") == strValue) ||
-				(_T("lt1") == strValue) ||
-				(_T("lt2") == strValue))
+			if ((L"accent1" == strValue) ||
+				(L"accent2" == strValue) ||
+				(L"accent3" == strValue) ||
+				(L"accent4" == strValue) ||
+				(L"accent5" == strValue) ||
+				(L"accent6" == strValue) ||
+				(L"dk1" == strValue) ||
+				(L"dk2" == strValue) ||
+				(L"folHlink" == strValue) ||
+				(L"hlink" == strValue) ||
+				(L"lt1" == strValue) ||
+				(L"lt2" == strValue))
 			{
 				m_strValue = strValue;
 			}
 			else
 			{
 				// word clrmap
-				if (_T("light1") == strValue)
-					m_strValue = _T("lt1");
-				else if (_T("light2") == strValue)
-					m_strValue = _T("lt2");
-				else if (_T("dark1") == strValue)
-					m_strValue = _T("dk1");
-				else if (_T("dark2") == strValue)
-					m_strValue = _T("dk2");
-				else if (_T("hyperlink") == strValue)
-					m_strValue = _T("hlink");
-				else if (_T("followedHyperlink") == strValue)
-					m_strValue = _T("folHlink");
+				if (L"light1" == strValue)
+					m_strValue = L"lt1";
+				else if (L"light2" == strValue)
+					m_strValue = L"lt2";
+				else if (L"dark1" == strValue)
+					m_strValue = L"dk1";
+				else if (L"dark2" == strValue)
+					m_strValue = L"dk2";
+				else if (L"hyperlink" == strValue)
+					m_strValue = L"hlink";
+				else if (L"followedHyperlink" == strValue)
+					m_strValue = L"folHlink";
 			}
 		}
-		BYTE ColorSchemeIndex::GetBYTECode() const
+		unsigned char ColorSchemeIndex::GetBYTECode() const
 		{
-			if (_T("accent1") == m_strValue)
+			if (L"accent1" == m_strValue)
 				return 0;
-			if (_T("accent2") == m_strValue)
+			if (L"accent2" == m_strValue)
 				return 1;
-			if (_T("accent3") == m_strValue)
+			if (L"accent3" == m_strValue)
 				return 2;
-			if (_T("accent4") == m_strValue)
+			if (L"accent4" == m_strValue)
 				return 3;
-			if (_T("accent5") == m_strValue)
+			if (L"accent5" == m_strValue)
 				return 4;
-			if (_T("accent6") == m_strValue)
+			if (L"accent6" == m_strValue)
 				return 5;
-			if (_T("bg1") == m_strValue)
+			if (L"bg1" == m_strValue)
 				return 6;
-			if (_T("bg2") == m_strValue)
+			if (L"bg2" == m_strValue)
 				return 7;
-			if (_T("dk1") == m_strValue)
+			if (L"dk1" == m_strValue)
 				return 8;
-			if (_T("dk2") == m_strValue)
+			if (L"dk2" == m_strValue)
 				return 9;
-			if (_T("folHlink") == m_strValue)
+			if (L"folHlink" == m_strValue)
 				return 10;
-			if (_T("hlink") == m_strValue)
+			if (L"hlink" == m_strValue)
 				return 11;
-			if (_T("lt1") == m_strValue)
+			if (L"lt1" == m_strValue)
 				return 12;
-			if (_T("lt2") == m_strValue)
+			if (L"lt2" == m_strValue)
 				return 13;
-			if (_T("phClr") == m_strValue)
+			if (L"phClr" == m_strValue)
 				return 14;
-			if (_T("tx1") == m_strValue)
+			if (L"tx1" == m_strValue)
 				return 15;
-			if (_T("tx2") == m_strValue)
+			if (L"tx2" == m_strValue)
 				return 16;
 			return 0;
 		}
-		void ColorSchemeIndex::SetBYTECode(const BYTE& val)
+		void ColorSchemeIndex::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{
 			case 0:
-				m_strValue = _T("accent1");
+				m_strValue = L"accent1";
 				break;
 			case 1:
-				m_strValue = _T("accent2");
+				m_strValue = L"accent2";
 				break;
 			case 2:
-				m_strValue = _T("accent3");
+				m_strValue = L"accent3";
 				break;
 			case 3:
-				m_strValue = _T("accent4");
+				m_strValue = L"accent4";
 				break;
 			case 4:
-				m_strValue = _T("accent5");
+				m_strValue = L"accent5";
 				break;
 			case 5:
-				m_strValue = _T("accent6");
+				m_strValue = L"accent6";
 				break;
 			case 8:
-				m_strValue = _T("dk1");
+				m_strValue = L"dk1";
 				break;
 			case 9:
-				m_strValue = _T("dk2");
+				m_strValue = L"dk2";
 				break;
 			case 10:
-				m_strValue = _T("folHlink");
+				m_strValue = L"folHlink";
 				break;
 			case 11:
-				m_strValue = _T("hlink");
+				m_strValue = L"hlink";
 				break;
 			case 12:
-				m_strValue = _T("lt1");
+				m_strValue = L"lt1";
 				break;
 			case 13:
-				m_strValue = _T("lt2");
+				m_strValue = L"lt2";
 				break;
 			default:
-				m_strValue = _T("accent1");
+				m_strValue = L"accent1";
 				break;
 			}
 		}

@@ -49,12 +49,22 @@
 #include "../../../PPTXFormat/App.h"
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
+#include "../../../PPTXFormat/Logic/Shape.h"
 
 #include "../../../XlsxFormat/Worksheets/Sparkline.h"
 #include "../../../XlsxFormat/Drawing/Drawing.h"
+#include "../../../XlsxFormat/Drawing/Pos.h"
 #include "../../../XlsxFormat/Comments/Comments.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
+#include "../../../XlsxFormat/Styles/Fills.h"
+#include "../../../XlsxFormat/Styles/Fonts.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/CellStyles.h"
+#include "../../../XlsxFormat/Styles/TableStyles.h"
 #include "../../../XlsxFormat/CalcChain/CalcChain.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinks.h"
 #include "../../../XlsxFormat/ExternalLinks/ExternalLinkPath.h"
@@ -2738,7 +2748,7 @@ int BinaryWorkbookTableReader::ReadExternalReferences(BYTE type, long length, vo
 	if (c_oSerWorkbookTypes::ExternalReference == type)
 	{
 		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		READ2_DEF_SPREADSHEET(length, res, this->ReadExternalReference, extLink);
+		READ1_DEF(length, res, this->ReadExternalReference, extLink);
 
 		smart_ptr<OOX::File> oCurFile(extLink);
 		const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
@@ -2877,7 +2887,7 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 	{
 		std::wstring sName(m_oBufferedStream.GetString3(length));
 
-		OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(NULL, sName);
+		OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
 		smart_ptr<OOX::File> oLinkFile(link);
 		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
 

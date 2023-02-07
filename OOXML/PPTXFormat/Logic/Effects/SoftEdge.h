@@ -42,7 +42,7 @@ namespace PPTX
 		class SoftEdge : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(SoftEdge)
+			WritingElement_AdditionMethods(SoftEdge)
 			PPTX_LOGIC_BASE2(SoftEdge)
 
 			SoftEdge& operator=(const SoftEdge& oSrc);

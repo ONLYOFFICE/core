@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,19 +35,5 @@
 // 116
 namespace NSCustomShapesConvert
 {
-class CFlowChartTerminatorType : public CCustomShape
-{
-public:
-	CFlowChartTerminatorType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinRound;
-
-        m_strPath = _T("m3475,qx,10800,3475,21600l18125,21600qx21600,10800,18125,xe");
-
-        LoadConnectorsList(_T("Rectangle"));
-        LoadTextRect(_T("1018,3163,20582,18437"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CFlowChartTerminatorType, CCustomShape)
 }

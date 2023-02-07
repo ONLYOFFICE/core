@@ -51,7 +51,7 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE BlipCompression::GetBYTECode() const
+		unsigned char BlipCompression::GetBYTECode() const
 		{
 			if (L"none" == m_strValue)		return 0;
 			if (L"email" == m_strValue)		return 1;
@@ -60,7 +60,7 @@ namespace PPTX
 			if (L"screen" == m_strValue)	return 4;
 			return 0;
 		}
-		void BlipCompression::SetBYTECode(const BYTE& val)
+		void BlipCompression::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{

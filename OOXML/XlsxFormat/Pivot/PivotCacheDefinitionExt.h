@@ -30,8 +30,9 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
 namespace OOX
 {
@@ -40,7 +41,7 @@ namespace OOX
             class CPivotCacheDefinitionExt : public WritingElement
             {
             public:
-                WritingElement_AdditionConstructors(CPivotCacheDefinitionExt)
+                WritingElement_AdditionMethods(CPivotCacheDefinitionExt)
                 WritingElement_XlsbConstructors(CPivotCacheDefinitionExt)
                 CPivotCacheDefinitionExt()
                 {
@@ -69,10 +70,10 @@ namespace OOX
         //----------
                 nullable_bool					m_oSlicerData;
                 nullable_bool					m_oSrvSupportSubQueryCalcMem;
-                nullable_bool                       		m_oSrvSupportSubQueryNonVisual;
+				nullable_bool                   m_oSrvSupportSubQueryNonVisual;
                 nullable_bool					m_oSrvSupportAddCalcMems;
 
-                nullable_uint                                   m_oPivotCacheId;
+				nullable_uint                   m_oPivotCacheId;
 
             };
 	} //Spreadsheet

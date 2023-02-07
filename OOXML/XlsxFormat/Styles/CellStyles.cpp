@@ -31,6 +31,8 @@
  */
 
 #include "CellStyles.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
 #include "../../XlsbFormat/Biff12_records/Style.h"
 
 namespace OOX
@@ -140,7 +142,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("cellStyle") == sName )
-					m_arrItems.push_back( new CCellStyle( oReader ));
+				{
+					CCellStyle* pCellStyle = new CCellStyle();
+					*pCellStyle = oReader;
+					m_arrItems.push_back(pCellStyle);
+				}
 			}
 		}
 		void CCellStyles::fromBin(std::vector<XLS::BaseObjectPtr>& obj)

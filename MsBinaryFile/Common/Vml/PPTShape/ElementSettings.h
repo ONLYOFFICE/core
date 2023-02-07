@@ -31,7 +31,6 @@
  */
 #pragma once
 
-#include "../../../PptFile/Records/Drawing/ArtBlip.h"
 #include "../../../../OOXML/Base/Types_32.h"
 #include "../../../../Common/3dParty/pole/pole.h"
 #include "Enums.h"
@@ -52,21 +51,9 @@ public:
     // чтобы не плодить классы - это value, когда m_bComplex == true
     bool							m_bIsTruncated;
 
-    CProperty()
-    {
-        m_ePID = ODRAW::ePropertyId_left;
-        m_bIsBlip = false;
-        m_bComplex = false;
-        m_lValue = 0;
-        m_pOptions = NULL;
+	CProperty();
+	~CProperty();
 
-        m_bIsTruncated = false;
-    }
-    ~CProperty()
-    {
-        if (m_pOptions)	delete []m_pOptions;
-		m_pOptions = NULL;
-    }
 	void FromStream(POLE::Stream* pStream);
 	void ComplexFromStream(POLE::Stream* pStream);
 };
@@ -80,14 +67,8 @@ public:
     // тем более это класс - не связанный с RecordHeader
     size_t m_lCount;
 
-    CProperties() : m_arProperties()
-    {
-    }
-    ~CProperties()
-    {
-        m_lCount = 0;
-        m_arProperties.clear();
-    }
+	CProperties();
+	~CProperties();
 
 	void FromStream(POLE::Stream* pStream, long lCount);
 	size_t GetLen();

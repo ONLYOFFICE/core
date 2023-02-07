@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef CHART_WRITER
-#define CHART_WRITER
+#pragma once
 
 #include <string>
 #include <vector>
@@ -89,4 +88,3 @@ namespace BinXlsxRW {
 		void parseNumDataSource(const OOX::Spreadsheet::CT_NumDataSource* pNumDataSource, bool bUpdateRange, const wchar_t* cRangeName);
 	};
 }
-#endif	// #ifndef CHART_WRITER

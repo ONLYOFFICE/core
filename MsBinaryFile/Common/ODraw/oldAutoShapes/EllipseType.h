@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,16 +35,5 @@
 // 3
 namespace NSCustomShapesConvert
 {
-class CEllipseType : public CCustomShape
-{
-public:
-	CEllipseType()
-
-    {
-        m_bConcentricFill = true;
-		m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m,10800qy10800,,21600,10800,10800,21600,,10800xe");
-		LoadTextRect(_T("3233,3233,18367,18367"));
-    }
-};
+	DEFINE_SHAPE_CLASS(CEllipseType, CCustomShape)
 }

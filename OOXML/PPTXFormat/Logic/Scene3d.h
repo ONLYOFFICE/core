@@ -46,7 +46,7 @@ namespace PPTX
 		class Scene3d : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Scene3d)
+			WritingElement_AdditionMethods(Scene3d)
 
 			Scene3d();
 

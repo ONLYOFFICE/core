@@ -8,6 +8,25 @@
 #include "../lib/xpdf/GfxState.h"
 #include "MemoryUtils.h"
 
+struct GfxClipMatrix
+{
+    double dA;
+    double dB;
+    double dC;
+    double dD;
+    double dE;
+    double dF;
+
+    void FromDoublePointer(double* pMatrix)
+    {
+        dA = pMatrix[0];
+        dB = pMatrix[1];
+        dC = pMatrix[2];
+        dD = pMatrix[3];
+        dE = pMatrix[4];
+        dF = pMatrix[5];
+    }
+};
 
 class GfxTextClip
 {
@@ -308,7 +327,8 @@ public:
         if (pPath && Matrix)
         {
             m_vPaths.push_back(pPath->copy());
-            m_vMatrix.push_back(Matrix);
+            m_vMatrix.push_back(GfxClipMatrix());
+            m_vMatrix.back().FromDoublePointer(Matrix);
             m_vPathsClipEo.push_back(bEo);
         }
 
@@ -327,11 +347,6 @@ public:
     bool GetClipEo(int i)
     {
         return m_vPathsClipEo[i];
-    }
-
-    double *GetMatrix(int i)
-    {
-        return m_vMatrix[i];
     }
 
     bool IsChanged()
@@ -353,13 +368,12 @@ public:
         m_pTextClip  = new GfxTextClip(c.GetTextClip());
     };
 
-
+    std::vector<GfxClipMatrix> m_vMatrix;
 private:
 
 
     std::vector<GfxPath *> m_vPaths;
     std::vector<bool> m_vPathsClipEo;
-    std::vector<double *> m_vMatrix;
     bool m_bChanged;
     GfxTextClip *m_pTextClip;
 };

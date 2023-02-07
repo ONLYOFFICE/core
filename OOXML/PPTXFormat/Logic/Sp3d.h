@@ -43,7 +43,7 @@ namespace PPTX
 		class Sp3d : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Sp3d)
+			WritingElement_AdditionMethods(Sp3d)
 
 			Sp3d();
 

@@ -43,8 +43,9 @@ namespace PPTX
 		class MediaFile : public WrapperWritingElement
 		{
 		public:			
-			WritingElement_AdditionConstructors(MediaFile)
+			WritingElement_AdditionMethods(MediaFile)
 
+			MediaFile();
 			MediaFile(std::wstring name_);
 
 			MediaFile& operator=(const MediaFile& oSrc);

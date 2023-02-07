@@ -47,6 +47,8 @@
 #include "../../XlsbFormat/Biff12_records/CommentText.h"
 #include "../../XlsbFormat/Biff12_records/LegacyDrawing.h"
 
+#include "../SharedStrings/Si.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -255,7 +257,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( L"comment" == sName )
-					m_arrItems.push_back(new CComment(oReader));
+				{
+					CComment* pComment = new CComment();
+					*pComment = oReader;
+					m_arrItems.push_back(pComment);
+				}
 			}
 		}
 		void CCommentList::fromBin(XLS::BaseObjectPtr& obj)

@@ -45,7 +45,7 @@ namespace PPTX
 		{
 		public:
 			
-			WritingElement_AdditionConstructors(ClrRepl)
+			WritingElement_AdditionMethods(ClrRepl)
 			PPTX_LOGIC_BASE2(ClrRepl)
 
 			ClrRepl& operator=(const ClrRepl& oSrc);

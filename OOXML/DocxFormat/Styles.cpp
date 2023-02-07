@@ -108,15 +108,7 @@ namespace OOX
 
 		CTableStyleProperties::CTableStyleProperties()
 		{
-		}
-		CTableStyleProperties::CTableStyleProperties(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CTableStyleProperties::CTableStyleProperties(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CTableStyleProperties::~CTableStyleProperties()
 		{
 		}
@@ -214,15 +206,7 @@ namespace OOX
 
 		CDocDefaults::CDocDefaults()
 		{
-		}
-		CDocDefaults::CDocDefaults(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CDocDefaults::CDocDefaults(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CDocDefaults::~CDocDefaults()
 		{
 		}
@@ -321,15 +305,7 @@ namespace OOX
 
 		CLatentStyles::CLatentStyles()
 		{
-		}
-		CLatentStyles::CLatentStyles(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CLatentStyles::CLatentStyles(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CLatentStyles::~CLatentStyles()
 		{
 			for ( unsigned int nIndex = 0; nIndex < m_arrLsdException.size(); nIndex++ )
@@ -369,7 +345,9 @@ namespace OOX
 				{
 					if ( oList.GetAt( nIndex, oLsdNode ) )
 					{
-						ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException(oLsdNode);
+						ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException();
+						*oLsdException = oLsdNode;
+
 						if (oLsdException ) m_arrLsdException.push_back( oLsdException );
 					}
 				}
@@ -388,7 +366,9 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:lsdException" == sName )
 				{
-					ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException (oReader);
+					ComplexTypes::Word::CLsdException *oLsdException = new ComplexTypes::Word::CLsdException();
+					*oLsdException = oReader;
+
 					if (oLsdException) m_arrLsdException.push_back( oLsdException );
 				}
 			}
@@ -440,15 +420,7 @@ namespace OOX
 
 		CStyle::CStyle(OOX::Document *pMain) : WritingElement(pMain)
 		{
-		}
-		CStyle::CStyle(XmlUtils::CXmlNode &oNode)
-		{
-			fromXML( oNode );
-		}
-		CStyle::CStyle(XmlUtils::CXmlLiteReader& oReader)
-		{
-			fromXML( oReader );
-		}
+		}		
 		CStyle::~CStyle()
 		{
 			ClearItems();
@@ -512,7 +484,9 @@ namespace OOX
 				{
 					if ( oList.GetAt( nIndex, oTblStylePrNode ) )
 					{
-						OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties(oTblStylePrNode);
+						OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties();
+						*oTblStylePr = oTblStylePrNode;
+
 						if (oTblStylePr) m_arrTblStylePr.push_back( oTblStylePr );
 					}
 				}
@@ -554,7 +528,9 @@ namespace OOX
 				else if ( L"w:tblPr" == sName ) m_oTblPr = oReader;
 				else if ( L"w:tblStylePr" == sName )
 				{
-					OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties(oReader);
+					OOX::Logic::CTableStyleProperties *oTblStylePr = new OOX::Logic::CTableStyleProperties();
+					*oTblStylePr = oReader;
+
 					m_arrTblStylePr.push_back( oTblStylePr );
 				}
 				else if ( L"w:tcPr" == sName ) m_oTcPr = oReader;
@@ -627,7 +603,7 @@ namespace OOX
 	//--------------------------------------------------------------------------------
 	// Styles 17.7.4.18 (Part 1)
 	//--------------------------------------------------------------------------------
-
+		CStyles::CStyles(){}
 		CStyles::CStyles(OOX::Document *pMain) : OOX::File(pMain), WritingElement(pMain)
 		{
 			CDocx* docx = dynamic_cast<CDocx*>(File::m_pMainDocument);
@@ -731,7 +707,9 @@ namespace OOX
 
 				if ( L"w:style" == sName )
 				{
-					OOX::CStyle *oStyle = new OOX::CStyle (oReader);
+					OOX::CStyle *oStyle = new OOX::CStyle();
+					*oStyle = oReader;
+
 					if (oStyle)
 					{
 						if (oStyle->m_sStyleId.IsInit())

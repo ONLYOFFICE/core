@@ -31,7 +31,6 @@
  */
 
 #include "Readers.h"
-#include "ReaderClasses.h"
 
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "../../Sheets/Writer/BinaryReader.h"
@@ -40,27 +39,18 @@
 #include "../../../PPTXFormat/Core.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
-#include "../../../DocxFormat/Docx.h"
-#include "../../../DocxFormat/Document.h"
-#include "../../../DocxFormat/FontTable.h"
-#include "../../../DocxFormat/Numbering.h"
-#include "../../../DocxFormat/Comments.h"
-#include "../../../DocxFormat/Styles.h"
-#include "../../../DocxFormat/Footnote.h"
-#include "../../../DocxFormat/Endnote.h"
 #include "../../../DocxFormat/Settings/Settings.h"
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Math/oMathContent.h"
-
+#include "../../../DocxFormat/Logic/DocParts.h"
+#include "../../../DocxFormat/Logic/SectionProperty.h"
+#include "../../../DocxFormat/Logic/Sdt.h"
 #include "../DocWrapper/XlsxSerializer.h"
 
-#include "../../../../DesktopEditor/common/ASCVariant.h"
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
-
 #include "../../../../DesktopEditor/common/Directory.h"
-#include "../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 #define UINT_TO_COMPLEX_BOOL(offset, val) \
 	if (0 != ((nFlags >> offset) & 1)) { \
@@ -413,7 +403,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 			
-			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header);
+			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, false);
 			READ1_DEF(length, res, this->ReadHdrFtrItemContent, &oBinary_DocumentTableReader);
 
             OOX::CPath fileRelsPath = m_oFileWriter.get_document_writer().m_sDir +	FILE_SEPARATOR_STR + L"word" + 
@@ -3656,7 +3646,7 @@ int Binary_CommentsTableReader::Read()
 	m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
     
 	Writers::ContentWriter oContentWriter;
-	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, oContentWriter);
+	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, oContentWriter, false);
 
 	oBinary_DocumentTableReader.m_bUsedParaIdCounter = true;
 
@@ -4674,7 +4664,7 @@ int Binary_SettingsTableReader::ReadClrSchemeMapping(BYTE type, long length, voi
 };
 
 
-Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter)
+Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, bool bOFormRead)
         : Binary_CommonReader(poBufferedStream)
         , m_oDocumentWriter(oDocumentWriter)
         , m_oFileWriter(oFileWriter)
@@ -4684,6 +4674,7 @@ Binary_DocumentTableReader::Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileR
         , oBinary_pPrReader(poBufferedStream, oFileWriter)
         , oBinary_rPrReader(poBufferedStream, oFileWriter)
         , oBinary_tblPrReader(poBufferedStream, oFileWriter)
+		, m_bOFormRead(bOFormRead)
 {
 	m_bUsedParaIdCounter = false;
 	m_byteLastElemType = c_oSerParType::Content;
@@ -8524,7 +8515,7 @@ int Binary_DocumentTableReader::ReadCell(BYTE type, long length, void* poResult)
 	}
 	else if( c_oSerDocTableType::Cell_Content == type )
 	{
-		Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oDocumentWriter);
+		Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oDocumentWriter, m_bOFormRead);
 		READ1_DEF(length, res, this->ReadCellContent, &oBinary_DocumentTableReader);
 		//Потому что если перед </tc> не идет <p>, то документ считается невалидным
 		if(c_oSerParType::Par != oBinary_DocumentTableReader.m_byteLastElemType)
@@ -9454,23 +9445,6 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oComplexFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtComplexFormPr, pSdtPr->m_oComplexFormPr.GetPointer());
 	}
-	else if (c_oSerSdt::OformMaster == type)
-	{
-		std::wstring pathOFormMaster = m_oBufferedStream.GetString3(length);
-
-		if (false == pathOFormMaster.empty())
-		{
-			XmlUtils::replace_all(pathOFormMaster, L"\\", L"/");
-			
-			m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/fieldMaster+xml", L"", pathOFormMaster.substr(3));	// del "../"		
-
-			unsigned int rId;
-			m_oFileWriter.m_pDrawingConverter->WriteRels(L"https://schemas.onlyoffice.com/relationships/oform-fieldMaster", pathOFormMaster, L"", &rId);
-
-			pSdtPr->m_oOformRid.Init();
-			pSdtPr->m_oOformRid->SetValue(L"rId" + std::to_wstring(rId));
-		}
-	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9720,6 +9694,23 @@ int Binary_DocumentTableReader::ReadSdtFormPr(BYTE type, long length, void* poRe
 		pFormPr->m_oShd.Init();
 		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pFormPr->m_oShd.GetPointer());
 	}
+	else if (c_oSerSdt::OformMaster == type)
+	{
+		std::wstring pathOFormMaster = m_oBufferedStream.GetString3(length);
+
+		if (false == pathOFormMaster.empty() && m_bOFormRead)
+		{
+			XmlUtils::replace_all(pathOFormMaster, L"\\", L"/");
+
+			m_oFileWriter.m_pDrawingConverter->GetContentTypes()->Registration(L"oform/fieldMaster+xml", L"", pathOFormMaster.substr(3));	// del "../"		
+
+			unsigned int rId;
+			m_oFileWriter.m_pDrawingConverter->WriteRels(L"https://schemas.onlyoffice.com/relationships/oform-fieldMaster", pathOFormMaster, L"", &rId);
+
+			pFormPr->m_oFieldRid.Init();
+			pFormPr->m_oFieldRid->SetValue(L"rId" + std::to_wstring(rId));
+		}
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -9845,7 +9836,7 @@ int Binary_NotesTableReader::Read()
 		sFilename = m_oFileWriter.get_endnotes_writer().getFilename();
 		pContentWriter = &m_oFileWriter.get_endnotes_writer().m_oNotesWriter;
 	}
-	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, *pContentWriter);
+	Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, *pContentWriter, false);
 
 	int res = c_oSerConstants::ReadOk;
 	READ_TABLE_DEF(res, this->ReadNotes, &oBinary_DocumentTableReader);
@@ -10325,7 +10316,7 @@ int BinaryFileReader::ReadMainTable()
 			m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::CustomXml.RelationType(), sRelsPath, L"", &rId);
 		}
 
-		res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.get_document_writer()).Read();
+		res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.get_document_writer(), m_bOForm).Read();
 
         OOX::CPath fileRelsPath = m_oFileWriter.get_document_writer().m_sDir	+ FILE_SEPARATOR_STR + L"word"
 																				+ (m_oFileWriter.m_bGlossaryMode ? (FILE_SEPARATOR_STR + std::wstring(L"glossary")) : L"")

@@ -31,16 +31,29 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+#include "../FileTypes_Spreadsheet.h"
+#include "../../DocxFormat/IFileContainer.h"
+
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
+	namespace Drawing
+	{
+		class COfficeArtExtensionList;
+	}
+
 	namespace Spreadsheet
 	{
 		class CPivotCacheRecord : public WritingElementWithChilds<WritingElement>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheRecord)
+			WritingElement_AdditionMethods(CPivotCacheRecord)
             WritingElement_XlsbConstructors(CPivotCacheRecord)
 			CPivotCacheRecord(){}
 			virtual ~CPivotCacheRecord() {}
@@ -64,7 +77,7 @@ namespace OOX
 		class CPivotCacheRecords : public WritingElementWithChilds<CPivotCacheRecord>
 		{
 		public:
-			WritingElement_AdditionConstructors(CPivotCacheRecords)
+			WritingElement_AdditionMethods(CPivotCacheRecords)
             WritingElement_XlsbConstructors(CPivotCacheRecords)
 			CPivotCacheRecords()
 			{

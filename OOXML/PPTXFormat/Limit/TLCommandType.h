@@ -30,29 +30,13 @@
  *
  */
 #pragma once
-#ifndef PPTX_LIMIT_TLCOMMANDTYPE_INCLUDE_H_
-#define PPTX_LIMIT_TLCOMMANDTYPE_INCLUDE_H_
 
 #include "BaseLimit.h"
-
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class TLCommandType : public BaseLimit
-		{
-		public:
-			TLCommandType();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(TLCommandType)
 	} // namespace Limit
 } // namespace PPTX
-
-#endif // PPTX_LIMIT_TLCOMMANDTYPE_INCLUDE_H_

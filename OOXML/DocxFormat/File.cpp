@@ -34,6 +34,10 @@
 
 namespace OOX
 {
+	File::File()
+	{
+		m_bDoNotAddRels = false;
+	}
 	File::File(OOX::Document *pMain) : m_pMainDocument(pMain)
 	{
 		m_bDoNotAddRels = false;

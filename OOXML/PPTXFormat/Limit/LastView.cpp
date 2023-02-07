@@ -54,7 +54,7 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE LastView::GetBYTECode() const
+		unsigned char LastView::GetBYTECode() const
 		{
 			if (L"handoutView" == m_strValue)		return 0;
 			if (L"notesMasterView" == m_strValue)	return 1;
@@ -66,7 +66,7 @@ namespace PPTX
 			if (L"sldView" == m_strValue)			return 7;
 			return 6;
 		}
-		void LastView::SetBYTECode(const BYTE& src)
+		void LastView::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

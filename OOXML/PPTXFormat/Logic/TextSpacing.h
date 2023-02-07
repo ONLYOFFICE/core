@@ -43,7 +43,7 @@ namespace PPTX
 		class TextSpacing : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TextSpacing)
+			WritingElement_AdditionMethods(TextSpacing)
 			PPTX_LOGIC_BASE2(TextSpacing)
 
 			virtual OOX::EElementType getType () const;

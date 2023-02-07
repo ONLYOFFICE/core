@@ -33,16 +33,4 @@
 #include "../PptShape.h"
 
 // 109
-class CFlowChartProcessType : public CPPTShape
-{
-public:
-	CFlowChartProcessType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-
-        m_strPath = _T("m,l,21600r21600,l21600,xe");
-        LoadConnectorsList(_T("Rectangle"));
-    }
-};
+DEFINE_SHAPE_CLASS(CFlowChartProcessType, CPPTShape)

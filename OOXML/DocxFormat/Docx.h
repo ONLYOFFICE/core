@@ -31,14 +31,13 @@
  */
 #pragma once
 
-#include "Rels.h"
 #include "IFileContainer.h"
-#include "FileTypes.h"
 #include "../../DesktopEditor/common/Directory.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
 #include <sys/stat.h>
 #endif
+
 namespace PPTX
 {
 	class Theme;

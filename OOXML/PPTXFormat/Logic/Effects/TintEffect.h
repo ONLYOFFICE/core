@@ -43,7 +43,7 @@ namespace PPTX
 		class TintEffect : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(TintEffect)
+			WritingElement_AdditionMethods(TintEffect)
 			PPTX_LOGIC_BASE2(TintEffect)
 
 			TintEffect& operator=(const TintEffect& oSrc);

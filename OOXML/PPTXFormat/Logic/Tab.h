@@ -43,7 +43,7 @@ namespace PPTX
 		class Tab : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Tab)
+			WritingElement_AdditionMethods(Tab)
 			PPTX_LOGIC_BASE2(Tab)
 
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

@@ -31,6 +31,9 @@
  */
 
 #include "SharedStrings.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+
 #include "../../XlsbFormat/Biff12_records/BeginSst.h"
 #include "../../XlsbFormat/Biff12_unions/SHAREDSTRINGS.h"
 #include "../../XlsbFormat/Biff12_records/SSTItem.h"
@@ -146,7 +149,9 @@ namespace OOX
 
 						if ( _T("si") == sName )
 						{
-							CSi* pItem = new CSi( oReader );
+							CSi* pItem = new CSi();
+							*pItem = oReader;
+
 							m_arrItems.push_back(pItem );
 							m_nCount++;
 						}

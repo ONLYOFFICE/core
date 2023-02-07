@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,46 +35,5 @@
 // 16
 namespace NSCustomShapesConvert
 {
-class CCubeType : public CCustomShape
-{
-public:
-	CCubeType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-
-        m_strPath = _T("m@0,l0@0,,21600@1,21600,21600@2,21600,xem0@0nfl@1@0,21600,em@1@0nfl@1,21600e");
-
-        AddGuide(_T("val #0"));
-        AddGuide(_T("sum width 0 #0"));
-        AddGuide(_T("sum height 0 #0"));
-        AddGuide(_T("mid height #0"));
-        AddGuide(_T("prod @1 1 2"));
-        AddGuide(_T("prod @2 1 2"));
-        AddGuide(_T("mid width #0"));
-
-        m_arAdjustments.push_back(5400);
-
-        LoadConnectorsList(_T("@6,0;@4,@0;0,@3;@4,21600;@1,@3;21600,@5"));
-
-		m_arConnectorAngles.push_back(270);
-		m_arConnectorAngles.push_back(270);
-		m_arConnectorAngles.push_back(180);
-		m_arConnectorAngles.push_back(90);
-		m_arConnectorAngles.push_back(0);
-		m_arConnectorAngles.push_back(0);
-
-        LoadTextRect(_T("0,@0,@1,21600"));
-
-        CHandle_ oHandle1;
-        oHandle1.position = _T("topLeft,#0");
-        oHandle1.switchHandle = _T("true");
-        oHandle1.yrange = _T("0,21600");
-        m_arHandles.push_back(oHandle1);
-
-        m_lLimoX = 10800;
-		m_lLimoY = 10800;
-    }
-};
+	DEFINE_SHAPE_CLASS(CCubeType, CCustomShape)
 }

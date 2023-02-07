@@ -31,13 +31,23 @@
  */
 
 #include "ChartSerializeEx.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+
+#include "../WritingElement.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
 #include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../../DesktopEditor/common/StringExt.h"
 
-namespace OOX{
-namespace Spreadsheet{
-namespace ChartEx{
+#include "../../PPTXFormat/Logic/TxBody.h"
+#include "../../PPTXFormat/Logic/ClrMap.h"
+#include "../../PPTXFormat/Logic/SpPr.h"
 
+namespace OOX
+{
+namespace Spreadsheet
+{
+namespace ChartEx
+{
 	void CChartSpace::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		if ( oReader.IsEmptyNode() )
@@ -182,7 +192,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"data" == sName)
 			{
-				CData *item = new CData(oReader);
+				CData *item = new CData();
+				*item = oReader;
 				m_arData.push_back(item);
 			}
 			else if (L"externalData" == sName)
@@ -244,7 +255,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			else if( L"lvl" == sName)
 			{
-				CNumericLevel *item = new CNumericLevel(oReader);
+				CNumericLevel *item = new CNumericLevel();
+				*item = oReader;
 				m_levelData.push_back(item);
 			}
 			else if( L"extLst" == sName)
@@ -325,7 +337,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			else if( L"lvl" == sName)
 			{
-				CStringLevel *item = new CStringLevel(oReader);
+				CStringLevel *item = new CStringLevel();
+				*item = oReader;
 				m_levelData.push_back(item);
 			}
 			else if( L"extLst" == sName)
@@ -395,12 +408,14 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"numDim" == sName)
 			{
-				CNumDimension *item = new CNumDimension(oReader);
+				CNumDimension *item = new CNumDimension();
+				*item = oReader;
 				m_arDimension.push_back(dynamic_cast<CDimension*>(item));
 			}
 			else if( L"strDim" == sName)
 			{
-				CStrDimension *item = new CStrDimension(oReader);
+				CStrDimension *item = new CStrDimension();
+				*item = oReader;
 				m_arDimension.push_back(dynamic_cast<CDimension*>(item));
 			}
 			else if( L"extLst" == sName)
@@ -477,7 +492,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			else if( L"axis" == sName)
 			{
-				CAxis *item = new CAxis(oReader);
+				CAxis *item = new CAxis();
+				*item = oReader;
 				m_arAxis.push_back(item);
 			}
 			else if( L"spPr" == sName)
@@ -535,7 +551,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}
 			else if( L"series" == sName)
 			{
-				CSeries *item = new CSeries(oReader);
+				CSeries *item = new CSeries();
+				*item = oReader;
 				m_arSeries.push_back(item);
 			}
 			else if( L"extLst" == sName)
@@ -939,7 +956,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}	
 			else if( L"dataPt" == sName)
 			{
-				CDataPoint *item = new CDataPoint(oReader);
+				CDataPoint *item = new CDataPoint();
+				*item = oReader;
 				m_arDataPt.push_back(item);
 			}
 			else if( L"axisId" == sName)
@@ -1185,7 +1203,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"pt" == sName)
 			{
-				CNumericValue* item = new CNumericValue(oReader);
+				CNumericValue* item = new CNumericValue();
+				*item = oReader;
 				m_arPt.push_back(item);
 			}
 		}	
@@ -1264,7 +1283,8 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 			if( L"pt" == sName)
 			{
-				CStringValue* item = new CStringValue(oReader);
+				CStringValue* item = new CStringValue();
+				*item = oReader;
 				m_arPt.push_back(item);
 			}
 		}	
@@ -1732,12 +1752,14 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\""
 			}	
 			else if( L"dataLabel" == sName)
 			{
-				CDataLabel* item = new CDataLabel(oReader);
+				CDataLabel* item = new CDataLabel();
+				*item = oReader;
 				m_arDataLabel.push_back(item);
 			}
 			else if( L"dataLabelHidden" == sName)
 			{
-				CDataLabelHidden* item = new CDataLabelHidden(oReader);
+				CDataLabelHidden* item = new CDataLabelHidden();
+				*item = oReader;
 				m_arDataLabelHidden.push_back(item);			}
 		}
 	}

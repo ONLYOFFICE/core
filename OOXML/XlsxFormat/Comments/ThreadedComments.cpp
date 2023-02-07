@@ -34,6 +34,8 @@
 #include "../Xlsx.h"
 #include "../Worksheets/Worksheet.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -175,7 +177,9 @@ namespace OOX
 
 				if ( L"person" == sName )
 				{
-					m_arrItems.push_back(new CPerson(oReader));
+					CPerson* pPerson = new CPerson();
+					*pPerson = oReader;
+					m_arrItems.push_back(pPerson);
 				}
 			}
 		}
@@ -311,7 +315,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("mention") == sName )
-					m_arrItems.push_back(new CThreadedCommentMention(oReader));
+				{
+					CThreadedCommentMention* pThreadedCommentMention = new CThreadedCommentMention();
+					*pThreadedCommentMention = oReader;
+					m_arrItems.push_back(pThreadedCommentMention);
+				}
 			}
 		}
 		EElementType CThreadedCommentMentions::getType () const
@@ -509,7 +517,8 @@ namespace OOX
 
 				if ( L"threadedComment" == sName )
 				{
-					CThreadedComment* pThreadedComment = new CThreadedComment(oReader);
+					CThreadedComment* pThreadedComment = new CThreadedComment();
+					*pThreadedComment = oReader;
 					m_arrItems.push_back(pThreadedComment);
 				}
 			}

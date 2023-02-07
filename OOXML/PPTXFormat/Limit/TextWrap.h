@@ -40,14 +40,9 @@ namespace PPTX
 		class TextWrap : public BaseLimit
 		{
 		public:
-			TextWrap(const BYTE& src = 1);
+			TextWrap(const unsigned char& src = 1);
 
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
+			DEFINE_LIMIT_PVIRTUAL
 		};
 	} // namespace Limit
 } // namespace PPTX

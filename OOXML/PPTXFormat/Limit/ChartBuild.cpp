@@ -38,26 +38,26 @@ namespace PPTX
 	{		
 		ChartBuild::ChartBuild()
 		{
-			m_strValue = _T("allPts");
+			m_strValue = L"allPts";
 		}
 		void ChartBuild::set(const std::wstring& strValue)
 		{
-			if ((_T("allPts") == strValue) ||
-				(_T("category") == strValue) ||
-				(_T("gridLegend") == strValue) ||
-				(_T("ptInCategory") == strValue) ||
-				(_T("ptInSeries") == strValue) ||
-				(_T("series") == strValue))
+			if ((L"allPts" == strValue) ||
+				(L"category" == strValue) ||
+				(L"gridLegend" == strValue) ||
+				(L"ptInCategory" == strValue) ||
+				(L"ptInSeries" == strValue) ||
+				(L"series" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE ChartBuild::GetBYTECode() const
+		unsigned char ChartBuild::GetBYTECode() const
 		{
 			//not using yet
 			return 0;
 		}
-		void ChartBuild::SetBYTECode(const BYTE& src)
+		void ChartBuild::SetBYTECode(const unsigned char& src)
 		{
 			//not using yet
 		}

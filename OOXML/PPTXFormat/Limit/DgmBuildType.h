@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class DgmBuildType : public BaseLimit
-		{
-		public:
-			DgmBuildType();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(DgmBuildType)
 	} // namespace Limit
 } // namespace PPTX

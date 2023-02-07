@@ -43,7 +43,7 @@ namespace PPTX
 		class Bevel : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Bevel)
+			WritingElement_AdditionMethods(Bevel)
 
 			Bevel(const std::wstring name = L"a:bevel");
 			virtual ~Bevel();

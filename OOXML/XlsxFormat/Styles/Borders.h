@@ -31,9 +31,16 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "rPr.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+namespace SimpleTypes
+{
+	namespace Spreadsheet
+	{
+		class CBorderStyle;
+	}
+}
 
 namespace OOX
 {
@@ -42,7 +49,7 @@ namespace OOX
 		class CBorderProp : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorderProp)
+			WritingElement_AdditionMethods(CBorderProp)
 			CBorderProp();
 			virtual ~CBorderProp();
 
@@ -73,7 +80,7 @@ namespace OOX
 		class CBorder : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorder)
+			WritingElement_AdditionMethods(CBorder)
             WritingElement_XlsbConstructors(CBorder)
 			CBorder();
 			virtual ~CBorder();
@@ -112,7 +119,7 @@ namespace OOX
 		class CBorders : public WritingElementWithChilds<CBorder>
 		{
 		public:
-			WritingElement_AdditionConstructors(CBorders)
+			WritingElement_AdditionMethods(CBorders)
             WritingElement_XlsbVectorConstructors(CBorders)
 			CBorders();
 			virtual ~CBorders();

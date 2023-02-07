@@ -31,6 +31,8 @@
  */
 
 #include "ChartDrawing.h"
+#include "../../DocxFormat/Document.h"
+#include "../../PPTXFormat/Logic/SpTreeElem.h"
 
 namespace OOX
 {	
@@ -385,11 +387,13 @@ namespace OOX
 
 				if ( L"relSizeAnchor" == sName )
 				{
-					pItem = new CRelSizeAnchor( oReader );
+					pItem = new CRelSizeAnchor();
+					*pItem = oReader;
 				}
 				else if ( L"absSizeAnchor" == sName )
 				{
-					pItem = new CAbsSizeAnchor( oReader );
+					pItem = new CAbsSizeAnchor();
+					*pItem = oReader;
 				}
 				if ( pItem )
 					m_arrItems.push_back( pItem );

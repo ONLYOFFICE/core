@@ -32,6 +32,13 @@
 
 #include "ChartStyle.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../../PPTXFormat/Logic/RunProperties.h"
+#include "../../PPTXFormat/Logic/SpPr.h"
+#include "../../PPTXFormat/Logic/BodyPr.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -253,7 +260,9 @@ namespace OOX
 					}
 					else
 					{
-						m_arStyleEntries.push_back(new CStyleEntry(oReader));
+						CStyleEntry* pStyleEntry = new CStyleEntry();
+						*pStyleEntry = oReader;
+						m_arStyleEntries.push_back(pStyleEntry);
 					}
 				}
 			}

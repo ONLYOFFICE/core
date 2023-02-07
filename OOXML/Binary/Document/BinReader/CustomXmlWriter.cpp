@@ -33,6 +33,7 @@
 #include "CustomXmlWriter.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
+#include "../../../../DesktopEditor/common/Directory.h"
 
 namespace Writers
 {

@@ -31,10 +31,8 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
-#include "PhoneticPr.h"
 #include "Run.h"
+#include "PhoneticPr.h"
 
 namespace NSBinPptxRW
 {
@@ -51,7 +49,7 @@ namespace OOX
 		class CSi : public WritingElementWithChilds<>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSi)
+			WritingElement_AdditionMethods(CSi)
 			CSi();
 			virtual ~CSi();
 

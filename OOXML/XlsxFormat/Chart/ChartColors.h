@@ -33,12 +33,15 @@
 #pragma once
 
 #include "../WritingElement.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
-#include "../../PPTXFormat/Logic/UniColor.h"
 #include "../../PPTXFormat/Logic/Colors/ColorModifier.h"
 
 namespace OOX
 {
+namespace Drawing
+{
+	class COfficeArtExtensionList;
+}
+
 namespace Spreadsheet
 {
 namespace ChartEx
@@ -46,7 +49,7 @@ namespace ChartEx
 	class CVariation : public WritingElementWithChilds<PPTX::Logic::ColorModifier>
 	{
 	public:
-		WritingElement_AdditionConstructors(CVariation)
+		WritingElement_AdditionMethods(CVariation)
 
 		CVariation();
 
@@ -66,7 +69,7 @@ namespace ChartEx
 	public:
 		CColorStyle();
 
-		WritingElement_AdditionConstructors(CColorStyle)
+		WritingElement_AdditionMethods(CColorStyle)
 
 		virtual void fromXML(XmlUtils::CXmlNode& node);
 		virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);

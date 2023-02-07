@@ -38,24 +38,24 @@ namespace PPTX
 	{		
 		TLAccumulate::TLAccumulate()
 		{
-			m_strValue = _T("none");
+			m_strValue = L"none";
 		}
 		void TLAccumulate::set(const std::wstring& strValue)
 		{
-			if ((_T("always") == strValue) ||
-				(_T("none") == strValue))
+			if ((L"always" == strValue) ||
+				(L"none" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLAccumulate::GetBYTECode() const
+		unsigned char TLAccumulate::GetBYTECode() const
 		{
 			if (L"always" == m_strValue)return 0;
 			if (L"none" == m_strValue)	return 1;
 
 			return 0;
 		}
-		void TLAccumulate::SetBYTECode(const BYTE& src)
+		void TLAccumulate::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

@@ -31,6 +31,8 @@
  */
 
 #include "ChartColors.h"
+#include "../../PPTXFormat/Logic/UniColor.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 namespace OOX
 {

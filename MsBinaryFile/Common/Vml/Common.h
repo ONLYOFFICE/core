@@ -53,6 +53,12 @@ const double RadKoef = M_PI/10800000.0;
 #define		pow3_16			60000
 #endif
 
+#define DEFINE_SHAPE_CLASS(Class, BaseClass)								\
+	class Class : public BaseClass                                          \
+	{                                                                       \
+	public:                                                                 \
+		Class();															\
+	};
 
 namespace NSMath
 {

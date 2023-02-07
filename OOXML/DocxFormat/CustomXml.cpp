@@ -31,6 +31,7 @@
  */
 
 #include "CustomXml.h"
+#include "Document.h"
 
 namespace OOX
 {

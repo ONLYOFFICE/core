@@ -38,18 +38,18 @@ namespace PPTX
 	{		
 		TLValueType::TLValueType()
 		{
-			m_strValue = _T("num");
+			m_strValue = L"num";
 		}
 		void TLValueType::set(const std::wstring& strValue)
 		{
-			if ((_T("num") == strValue) ||
-				(_T("clr") == strValue) ||
-				(_T("str") == strValue))
+			if ((L"num" == strValue) ||
+				(L"clr" == strValue) ||
+				(L"str" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLValueType::GetBYTECode() const
+		unsigned char TLValueType::GetBYTECode() const
 		{
 			if (L"num" == m_strValue)	return 0;
 			if (L"clr" == m_strValue)	return 1;
@@ -57,7 +57,7 @@ namespace PPTX
 
 			return 0;
 		}
-		void TLValueType::SetBYTECode(const BYTE& src)
+		void TLValueType::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

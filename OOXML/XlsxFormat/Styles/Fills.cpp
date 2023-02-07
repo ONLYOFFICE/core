@@ -32,7 +32,11 @@
 
 #include "Fills.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
 #include "../../XlsbFormat/Biff12_records/Fill.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -283,7 +287,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( L"stop" == sName )
-					m_arrItems.push_back( new CGradientStop( oReader ));
+				{
+					CGradientStop* pGradientStop = new CGradientStop();
+					*pGradientStop = oReader;
+					m_arrItems.push_back(pGradientStop);
+				}
 			}
 		}
 		void CGradientFill::fromBin(XLS::BaseObjectPtr& obj)
@@ -470,7 +478,9 @@ namespace OOX
 
 				if ( L"fill" == sName )
 				{
-					CFill* pFill = new CFill( oReader );
+					CFill* pFill = new CFill();
+					*pFill = oReader;
+
 					m_arrItems.push_back( pFill );
 					m_mapFills.insert(std::make_pair(index++, pFill));
 				}

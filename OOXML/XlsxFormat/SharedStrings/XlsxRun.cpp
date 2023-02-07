@@ -80,7 +80,12 @@ namespace OOX
 				if ( _T("rPr") == sName )
 					m_oRPr = oReader;
 				else if ( _T("t") == sName )
-					m_arrItems.push_back( new CText( oReader ));
+				{
+					CText* pText = new CText();
+					*pText = oReader;
+
+					m_arrItems.push_back(pText);
+				}
 			}
 		}
 		void CRun::fromBin(std::wstring& str, unsigned short fontindex)

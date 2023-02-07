@@ -47,7 +47,7 @@ namespace PPTX
 		class BlipFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(BlipFill)
+			WritingElement_AdditionMethods(BlipFill)
 			
 			BlipFill(std::wstring ns = L"p");
 			BlipFill& operator=(const BlipFill& oSrc);

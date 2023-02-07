@@ -217,8 +217,7 @@ xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">\
 		}
 		std::wstring MathParaWrapper::GetText() const
 		{
-			//todo
-			return _T("");
+			return L"math";
 		}
 		void MathParaWrapper::FillParentPointersForChilds(){}
 	} // namespace Logic

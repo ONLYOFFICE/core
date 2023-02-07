@@ -40,7 +40,6 @@
 #include "FileTypes.h"
 #include "IFileContainer.h"
 
-#include "Logic/DocParts.h"
 #include "Logic/SectionProperty.h"
 #include "Logic/Pict.h"
 
@@ -55,7 +54,7 @@ namespace OOX
 		class CBackground : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBackground)
+			WritingElement_AdditionMethods(CBackground)
 			CBackground(OOX::Document *pMain = NULL);
 			virtual ~CBackground();
 
@@ -82,7 +81,7 @@ namespace OOX
 		class CBgPict : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CBgPict)
+			WritingElement_AdditionMethods(CBgPict)
 			CBgPict(OOX::Document *pMain = NULL);
 			virtual ~CBgPict();
 

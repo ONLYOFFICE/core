@@ -42,7 +42,7 @@ namespace PPTX
 		class Gd : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Gd)
+			WritingElement_AdditionMethods(Gd)
 			PPTX_LOGIC_BASE2(Gd)
 
 			virtual OOX::EElementType getType () const;

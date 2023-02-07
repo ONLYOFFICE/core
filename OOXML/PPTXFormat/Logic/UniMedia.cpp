@@ -44,15 +44,15 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (name == _T("audioCd"))
-				Media.reset(new Logic::AudioCD(oReader));
+				Media.reset(CreatePtrXmlContent<Logic::AudioCD>(oReader));
 			else if (name == _T("wavAudioFile"))
-				Media.reset(new Logic::WavAudioFile(oReader));
+				Media.reset(CreatePtrXmlContent<Logic::WavAudioFile>(oReader));
 			else if (name == _T("audioFile"))
-				Media.reset(new Logic::MediaFile(oReader));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(oReader));
 			else if (name == _T("videoFile"))
-				Media.reset(new Logic::MediaFile(oReader));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(oReader));
 			else if (name == _T("quickTimeFile"))
-				Media.reset(new Logic::MediaFile(oReader));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(oReader));
 			else Media.reset();
 		}
 		void UniMedia::fromXML(XmlUtils::CXmlNode& node)
@@ -60,30 +60,30 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == _T("audioCd"))
-				Media.reset(new Logic::AudioCD(node));
+				Media.reset(CreatePtrXmlContent<Logic::AudioCD>(node));
 			else if (name == _T("wavAudioFile"))
-				Media.reset(new Logic::WavAudioFile(node));
+				Media.reset(CreatePtrXmlContent<Logic::WavAudioFile>(node));
 			else if (name == _T("audioFile"))
-				Media.reset(new Logic::MediaFile(node));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(node));
 			else if (name == _T("videoFile"))
-				Media.reset(new Logic::MediaFile(node));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(node));
 			else if (name == _T("quickTimeFile"))
-				Media.reset(new Logic::MediaFile(node));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(node));
 			else Media.reset();
 		}
 		void UniMedia::GetMediaFrom(XmlUtils::CXmlNode& element)
 		{
 			XmlUtils::CXmlNode oNode;
 			if (element.GetNode(_T("a:audioCd"), oNode))
-				Media.reset(new Logic::AudioCD(oNode));
+				Media.reset(CreatePtrXmlContent<Logic::AudioCD>(oNode));
 			else if (element.GetNode(_T("a:wavAudioFile"), oNode))
-				Media.reset(new Logic::WavAudioFile(oNode));
+				Media.reset(CreatePtrXmlContent<Logic::WavAudioFile>(oNode));
 			else if (element.GetNode(_T("a:audioFile"), oNode))
-				Media.reset(new Logic::MediaFile(oNode));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(oNode));
 			else if (element.GetNode(_T("a:videoFile"), oNode))
-				Media.reset(new Logic::MediaFile(oNode));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(oNode));
 			else if (element.GetNode(_T("a:quickTimeFile"), oNode))
-				Media.reset(new Logic::MediaFile(oNode));
+				Media.reset(CreatePtrXmlContent<Logic::MediaFile>(oNode));
 			else Media.reset();
 		}
 		std::wstring UniMedia::toXML() const

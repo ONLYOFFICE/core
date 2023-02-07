@@ -38,54 +38,54 @@ namespace PPTX
 	{		
 		FontAlign::FontAlign()
 		{
-			m_strValue = _T("auto");
+			m_strValue = L"auto";
 		}
 		void FontAlign::set(const std::wstring& strValue)
 		{
-			if ((_T("auto") == strValue) ||
-				(_T("b") == strValue) ||
-				(_T("base") == strValue) ||
-				(_T("ctr") == strValue) ||
-				(_T("t") == strValue))
+			if ((L"auto" == strValue) ||
+				(L"b" == strValue) ||
+				(L"base" == strValue) ||
+				(L"ctr" == strValue) ||
+				(L"t" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE FontAlign::GetBYTECode() const
+		unsigned char FontAlign::GetBYTECode() const
 		{
-			if (_T("auto") == m_strValue)
+			if (L"auto" == m_strValue)
 				return 0;
-			if (_T("b") == m_strValue)
+			if (L"b" == m_strValue)
 				return 1;
-			if (_T("base") == m_strValue)
+			if (L"base" == m_strValue)
 				return 2;
-			if (_T("ctr") == m_strValue)
+			if (L"ctr" == m_strValue)
 				return 3;
-			if (_T("t") == m_strValue)
+			if (L"t" == m_strValue)
 				return 4;
 			return 0;
 		}
-		void FontAlign::SetBYTECode(const BYTE& val)
+		void FontAlign::SetBYTECode(const unsigned char& val)
 		{
 			switch (val)
 			{
 			case 0:
-				m_strValue = _T("auto");
+				m_strValue = L"auto";
 				break;
 			case 1:
-				m_strValue = _T("b");
+				m_strValue = L"b";
 				break;
 			case 2:
-				m_strValue = _T("base");
+				m_strValue = L"base";
 				break;
 			case 3:
-				m_strValue = _T("ctr");
+				m_strValue = L"ctr";
 				break;
 			case 4:
-				m_strValue = _T("t");
+				m_strValue = L"t";
 				break;
 			default:
-				m_strValue = _T("auto");
+				m_strValue = L"auto";
 				break;
 			}
 		}

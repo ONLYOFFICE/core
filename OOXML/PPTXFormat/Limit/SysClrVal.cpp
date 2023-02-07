@@ -38,50 +38,50 @@ namespace PPTX
 	{		
 		SysClrVal::SysClrVal()
 		{
-			m_strValue = _T("window");
+			m_strValue = L"window";
 		}
 		void SysClrVal::set(const std::wstring& strValue)
 		{
-			if ((_T("3dDkShadow") == strValue) ||
-				(_T("3dLight") == strValue) ||
-				(_T("activeBorder") == strValue) ||
-				(_T("activeCaption") == strValue) ||
-				(_T("appWorkspace") == strValue) ||
-				(_T("background") == strValue) ||
-				(_T("btnFace") == strValue) ||
-				(_T("btnHighlight") == strValue) ||
-				(_T("btnShadow") == strValue) ||
-				(_T("btnText") == strValue) ||
-				(_T("captionText") == strValue) ||
-				(_T("gradientActiveCaption") == strValue) ||
-				(_T("gradientInactiveCaption") == strValue) ||
-				(_T("grayText") == strValue) ||
-				(_T("highlight") == strValue) ||
-				(_T("highlightText") == strValue) ||
-				(_T("hotLight") == strValue) ||
-				(_T("inactiveBorder") == strValue) ||
-				(_T("inactiveCaption") == strValue) ||
-				(_T("inactiveCaptionText") == strValue) ||
-				(_T("infoBk") == strValue) ||
-				(_T("infoText") == strValue) ||
-				(_T("menu") == strValue) ||
-				(_T("menuBar") == strValue) ||
-				(_T("menuHighlight") == strValue) ||
-				(_T("menuText") == strValue) ||
-				(_T("scrollBar") == strValue) ||
-				(_T("window") == strValue) ||
-				(_T("windowFrame") == strValue) ||
-				(_T("windowText") == strValue))
+			if ((L"3dDkShadow" == strValue) ||
+				(L"3dLight" == strValue) ||
+				(L"activeBorder" == strValue) ||
+				(L"activeCaption" == strValue) ||
+				(L"appWorkspace" == strValue) ||
+				(L"background" == strValue) ||
+				(L"btnFace" == strValue) ||
+				(L"btnHighlight" == strValue) ||
+				(L"btnShadow" == strValue) ||
+				(L"btnText" == strValue) ||
+				(L"captionText" == strValue) ||
+				(L"gradientActiveCaption" == strValue) ||
+				(L"gradientInactiveCaption" == strValue) ||
+				(L"grayText" == strValue) ||
+				(L"highlight" == strValue) ||
+				(L"highlightText" == strValue) ||
+				(L"hotLight" == strValue) ||
+				(L"inactiveBorder" == strValue) ||
+				(L"inactiveCaption" == strValue) ||
+				(L"inactiveCaptionText" == strValue) ||
+				(L"infoBk" == strValue) ||
+				(L"infoText" == strValue) ||
+				(L"menu" == strValue) ||
+				(L"menuBar" == strValue) ||
+				(L"menuHighlight" == strValue) ||
+				(L"menuText" == strValue) ||
+				(L"scrollBar" == strValue) ||
+				(L"window" == strValue) ||
+				(L"windowFrame" == strValue) ||
+				(L"windowText" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE SysClrVal::GetBYTECode() const
+		unsigned char SysClrVal::GetBYTECode() const
 		{
 			//not using
 			return 0;
 		}
-		void SysClrVal::SetBYTECode(const BYTE& src)
+		void SysClrVal::SetBYTECode(const unsigned char& src)
 		{
 			//not using
 		}

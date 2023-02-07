@@ -65,6 +65,19 @@
 #include "../../XlsbFormat/Biff12_records/Color14.h"
 #include "../../XlsbFormat/Biff12_records/CFIcon.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../Common/SimpleTypes_Shared.h"
+//#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../ComplexTypes_Spreadsheet.h"
+
+#include "../Styles/dxf.h"
+#include "../Styles/Colors.h"
+#include "../Styles/Xfs.h"
+#include "../Styles/NumFmts.h"
+#include "../Styles/Fonts.h"
+#include "../Styles/Fills.h"
+#include "../Styles/Borders.h"
+
 using namespace XLS;
 
 namespace OOX
@@ -2175,7 +2188,11 @@ void CConditionalFormatting::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 		if (L"cfRule" == sName)
-			m_arrItems.push_back(new CConditionalFormattingRule(oReader));
+		{
+			CConditionalFormattingRule* pConditionalFormattingRule = new CConditionalFormattingRule();
+			*pConditionalFormattingRule = oReader;
+			m_arrItems.push_back(pConditionalFormattingRule);
+		}
 		if (L"sqref" == sName || L"Range" == sName)
 			m_oSqRef = oReader.GetText2();
 	}

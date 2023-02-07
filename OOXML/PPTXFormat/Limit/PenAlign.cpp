@@ -38,30 +38,30 @@ namespace PPTX
 	{		
 		PenAlign::PenAlign()
 		{
-			m_strValue = _T("ctr");
+			m_strValue = L"ctr";
 		}
 		void PenAlign::set(const std::wstring& strValue)
 		{
-			if ((_T("ctr") == strValue) ||
-				(_T("in") == strValue))
+			if ((L"ctr" == strValue) ||
+				(L"in" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE PenAlign::GetBYTECode() const
+		unsigned char PenAlign::GetBYTECode() const
 		{
-			if (_T("ctr") == m_strValue)
+			if (L"ctr" == m_strValue)
 				return 0;
-			if (_T("in") == m_strValue)
+			if (L"in" == m_strValue)
 				return 1;
 			return 0;
 		}
-		void PenAlign::SetBYTECode(const BYTE& src)
+		void PenAlign::SetBYTECode(const unsigned char& src)
 		{
 			if (1 == src)
-				m_strValue = _T("in");
+				m_strValue = L"in";
 			else
-				m_strValue = _T("ctr");
+				m_strValue = L"ctr";
 		}
 	} // namespace Limit
 } // namespace PPTX

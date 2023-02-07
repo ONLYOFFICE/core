@@ -31,7 +31,21 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class COnOff;
+	class CDouble;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CCalcMode;
+		class CRefMode;
+	}
+}
 
 namespace OOX
 {
@@ -40,7 +54,7 @@ namespace OOX
     class CCalcPr : public WritingElement
     {
     public:
-        WritingElement_AdditionConstructors(CCalcPr)
+        WritingElement_AdditionMethods(CCalcPr)
         WritingElement_XlsbConstructors(CCalcPr)
 			CCalcPr();
 			virtual ~CCalcPr();

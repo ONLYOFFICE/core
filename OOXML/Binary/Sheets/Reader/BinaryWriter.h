@@ -64,6 +64,15 @@ namespace OOX
 		class CPersonList;
 		class CThreadedComment;
 		class CThreadedCommentMention;
+		class CBorderProp;
+		class CXfs;
+		class CPatternFill;
+		class CGradientFill;
+		class CGradientStop;
+		class CTableStyleElement;
+		class CTableStyle;
+		class CCellStyle;
+		class CProtection;
 	}
 }
 

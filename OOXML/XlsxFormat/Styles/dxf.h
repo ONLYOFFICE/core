@@ -31,23 +31,29 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
 
-#include "Borders.h"
-#include "Fills.h"
-#include "Fonts.h"
-#include "NumFmts.h"
-#include "Xfs.h"
-
+namespace SimpleTypes
+{
+	class CUnsignedDecimalNumber;
+}
 
 namespace OOX
 {
 	namespace Spreadsheet
 	{
+		class CProtection;
+		class CAligment;
+		class CBorder;
+		class CFill;
+		class CFont;
+		class CNumFmt;
+
 		class CDxf : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDxf)
+			WritingElement_AdditionMethods(CDxf)
             WritingElement_XlsbConstructors(CDxf)
 			CDxf();
 			virtual ~CDxf();
@@ -79,7 +85,7 @@ namespace OOX
 		class CDxfs : public WritingElementWithChilds<CDxf>
 		{
 		public:
-			WritingElement_AdditionConstructors(CDxfs)
+			WritingElement_AdditionMethods(CDxfs)
             WritingElement_XlsbVectorConstructors(CDxfs)
 			CDxfs();
 			virtual ~CDxfs();

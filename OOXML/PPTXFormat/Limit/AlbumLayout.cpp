@@ -53,12 +53,12 @@ namespace PPTX
 				m_strValue = strValue;
 			}
 		}
-		BYTE AlbumLayout::GetBYTECode() const
+		unsigned char AlbumLayout::GetBYTECode() const
 		{
 			//not using yet
 			return 0;
 		}
-		void AlbumLayout::SetBYTECode(const BYTE& src)
+		void AlbumLayout::SetBYTECode(const unsigned char& src)
 		{
 			//not using yet
 		}

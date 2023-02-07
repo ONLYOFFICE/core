@@ -31,7 +31,12 @@
  */
 #pragma once
 
-#include "../../DesktopEditor/common/StringBuilder.h"
+#include <string>
+
+namespace NSStringUtils
+{
+	class CStringBuilder;
+}
 
 namespace Txt2Docx
 {

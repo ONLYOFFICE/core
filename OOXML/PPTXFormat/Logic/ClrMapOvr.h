@@ -43,7 +43,7 @@ namespace PPTX
 		class ClrMapOvr : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(ClrMapOvr)
+			WritingElement_AdditionMethods(ClrMapOvr)
 			PPTX_LOGIC_BASE2(ClrMapOvr)
 
 			virtual OOX::EElementType getType() const;

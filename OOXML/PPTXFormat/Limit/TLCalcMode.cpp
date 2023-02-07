@@ -38,25 +38,25 @@ namespace PPTX
 	{
 		TLCalcMode::TLCalcMode()
 		{
-			m_strValue = _T("lin");
+			m_strValue = L"lin";
 		}
 		void TLCalcMode::set(const std::wstring& strValue)
 		{
-			if ((_T("lin") == strValue) ||
-				(_T("fmla") == strValue) ||
-				(_T("discrete") == strValue))
+			if ((L"lin" == strValue) ||
+				(L"fmla" == strValue) ||
+				(L"discrete" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE TLCalcMode::GetBYTECode() const
+		unsigned char TLCalcMode::GetBYTECode() const
 		{
 			if (L"discrete" == m_strValue)	return 0;
 			if (L"lin" == m_strValue)	return 1;
 			if (L"fmla" == m_strValue)	return 2;
 			return 0;
 		}
-		void TLCalcMode::SetBYTECode(const BYTE& src)
+		void TLCalcMode::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

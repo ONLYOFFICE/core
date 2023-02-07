@@ -33,6 +33,12 @@
 
 #include "CellAnchor.h"
 
+#include "FromTo.h"
+#include "Pos.h"
+
+#include "../../PPTXFormat/Logic/Shape.h"
+#include "../../PPTXFormat/Logic/GraphicFrame.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -76,7 +82,9 @@ namespace OOX
 				WritingElement_ReadAttributes_End(oReader)
 			}
 
-
+		CCellAnchor::CCellAnchor() : m_bShapeOle(false), m_bShapeControl(false)
+		{
+		}
 		CCellAnchor::CCellAnchor(const SimpleTypes::Spreadsheet::ECellAnchorType& oAnchorType) :	m_oAnchorType(oAnchorType),
 																						m_bShapeOle(false), m_bShapeControl(false)
 		{
@@ -260,15 +268,15 @@ namespace OOX
 		void CCellAnchor::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_ReadSingle( oReader, L"editAs", m_oEditAs )
+				WritingElement_ReadAttributes_ReadSingle( oReader, L"editAs", m_oEditAs )
 			WritingElement_ReadAttributes_End( oReader )
 		}
 		void CCellAnchor::ReadAttributesRequire(XmlUtils::CXmlLiteReader& oReader, std::wstring& sRequire)
-			{
-				WritingElement_ReadAttributes_Start( oReader )
+		{
+			WritingElement_ReadAttributes_Start( oReader )
 				WritingElement_ReadAttributes_ReadSingle( oReader, L"Requires", sRequire )
-				WritingElement_ReadAttributes_End( oReader )
-			}
+			WritingElement_ReadAttributes_End( oReader )
+		}
 
 	} //Spreadsheet
 } // namespace OOX

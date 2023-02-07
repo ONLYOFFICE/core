@@ -41,7 +41,7 @@ namespace PPTX
 		class Glow : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Glow)
+			WritingElement_AdditionMethods(Glow)
 			PPTX_LOGIC_BASE2(Glow)
 
 			Glow& operator=(const Glow& oSrc);

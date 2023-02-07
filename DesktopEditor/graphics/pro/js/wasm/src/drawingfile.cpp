@@ -177,7 +177,7 @@ int READ_INT(BYTE* x)
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
 #include "../../../../../common/Directory.h"
 
-int main()
+int main(int argc, char* argv[])
 {
 	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
@@ -242,7 +242,7 @@ int main()
 	nLength -= 4;
 
 	int nPagesCount = 0;
-	int nTestPage = 0;
+	int nTestPage = argc > 1 ? atoi(argv[1]) : 0;
 	int nWidth = 100;
 	int nHeight = 100;
 
@@ -292,7 +292,7 @@ int main()
 		RELEASEARRAYOBJECTS(res);
 	}
 
-	if (nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* pLinks = GetLinks(pGrFile, nTestPage);
 		nLength = READ_INT(pLinks);
@@ -327,7 +327,7 @@ int main()
 			free(pLinks);
 	}
 
-	if (true)
+	if (false)
 	{
 		BYTE* pStructure = GetStructure(pGrFile);
 		nLength = READ_INT(pStructure);

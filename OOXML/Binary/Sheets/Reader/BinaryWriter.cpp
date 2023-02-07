@@ -30,7 +30,6 @@
  *
  */
 
-#include <stdio.h>
 #include "BinaryWriter.h"
 #include "../Writer/BinaryReader.h"
 
@@ -60,6 +59,18 @@
 #include "../../../XlsxFormat/Slicer/SlicerCacheExt.h"
 #include "../../../XlsxFormat/Slicer/Slicer.h"
 #include "../../../XlsxFormat/NamedSheetViews/NamedSheetViews.h"
+#include "../../../XlsxFormat/Drawing/Pos.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/Colors.h"
+#include "../../../XlsxFormat/Styles/Fills.h"
+#include "../../../XlsxFormat/Styles/Fonts.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/CellStyles.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/TableStyles.h"
+
+#include "../../../../DesktopEditor/common/Directory.h"
 
 namespace BinXlsxRW 
 {
@@ -1135,49 +1146,49 @@ void BinaryStyleTableWriter::WriteBorder(const OOX::Spreadsheet::CBorder& border
 {
 	int nCurPos = 0;
 	//Bottom
-	if(false != border.m_oBottom.IsInit() && false != border.m_oBottom->m_oStyle.IsInit())
+	if(false != border.m_oBottom.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Bottom);
 		WriteBorderProp(border.m_oBottom.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Diagonal
-	if(false != border.m_oDiagonal.IsInit() && false != border.m_oDiagonal->m_oStyle.IsInit())
+	if(false != border.m_oDiagonal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Diagonal);
 		WriteBorderProp(border.m_oDiagonal.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//End
-	if(false != border.m_oEnd.IsInit() && false != border.m_oEnd->m_oStyle.IsInit())
+	if(false != border.m_oEnd.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::End);
 		WriteBorderProp(border.m_oEnd.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Horizontal
-	if(false != border.m_oHorizontal.IsInit() && false != border.m_oHorizontal->m_oStyle.IsInit())
+	if(false != border.m_oHorizontal.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Horizontal);
 		WriteBorderProp(border.m_oHorizontal.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Start
-	if(false != border.m_oStart.IsInit() && false != border.m_oStart->m_oStyle.IsInit())
+	if(false != border.m_oStart.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Start);
 		WriteBorderProp(border.m_oStart.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Top
-	if(false != border.m_oTop.IsInit() && false != border.m_oTop->m_oStyle.IsInit())
+	if(false != border.m_oTop.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Top);
 		WriteBorderProp(border.m_oTop.get(), pIndexedColors, pTheme);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	//Vertical
-	if(false != border.m_oVertical.IsInit() && false != border.m_oVertical->m_oStyle.IsInit())
+	if(false != border.m_oVertical.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerBorderTypes::Vertical);
 		WriteBorderProp(border.m_oVertical.get(), pIndexedColors, pTheme);

@@ -36,11 +36,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 
 #include "../WritingElement.h"
-#include "../RId.h"
-
 #include "../../PPTXFormat/Logic/GraphicFrame.h"
-
-#include "../../SystemUtility/SystemUtility.h"
 
 namespace OOX
 {
@@ -53,7 +49,7 @@ namespace OOX
 		class CEffectExtent : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CEffectExtent)
+			WritingElement_AdditionMethods(CEffectExtent)
 
 			CEffectExtent();
 			virtual ~CEffectExtent();
@@ -79,7 +75,7 @@ namespace OOX
 		class CPosH : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPosH)
+			WritingElement_AdditionMethods(CPosH)
 
 			CPosH();
 			virtual ~CPosH();
@@ -111,7 +107,7 @@ namespace OOX
 		class CPosV : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CPosV)
+			WritingElement_AdditionMethods(CPosV)
 
 			CPosV();
 			virtual ~CPosV();
@@ -139,7 +135,7 @@ namespace OOX
 		class CSizeRelH : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSizeRelH)
+			WritingElement_AdditionMethods(CSizeRelH)
 
 			CSizeRelH();
 			virtual ~CSizeRelH();
@@ -163,7 +159,7 @@ namespace OOX
 		class CSizeRelV : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CSizeRelV)
+			WritingElement_AdditionMethods(CSizeRelV)
 
 			CSizeRelV();
 			virtual ~CSizeRelV();
@@ -190,7 +186,7 @@ namespace OOX
 		class CWrapNone : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrapNone)
+			WritingElement_AdditionMethods(CWrapNone)
 
 			CWrapNone();
 			virtual ~CWrapNone();
@@ -210,7 +206,7 @@ namespace OOX
 		class CWrapSquare : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrapSquare)
+			WritingElement_AdditionMethods(CWrapSquare)
 
 			CWrapSquare();
 			virtual ~CWrapSquare();
@@ -240,7 +236,7 @@ namespace OOX
 		class CWrapPath : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrapPath)
+			WritingElement_AdditionMethods(CWrapPath)
 
 			CWrapPath();
 			virtual ~CWrapPath();
@@ -266,7 +262,7 @@ namespace OOX
 		class CWrapThrough : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrapThrough)
+			WritingElement_AdditionMethods(CWrapThrough)
 
 			CWrapThrough();
 			virtual ~CWrapThrough();
@@ -293,7 +289,7 @@ namespace OOX
 		class CWrapTight : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrapTight)
+			WritingElement_AdditionMethods(CWrapTight)
 
 			CWrapTight();
 			virtual ~CWrapTight();
@@ -320,7 +316,7 @@ namespace OOX
 		class CWrapTopBottom : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWrapTopBottom)
+			WritingElement_AdditionMethods(CWrapTopBottom)
 
 			CWrapTopBottom();
 			virtual ~CWrapTopBottom();
@@ -356,7 +352,7 @@ namespace OOX
 		class CAnchor : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CAnchor)
+			WritingElement_AdditionMethods(CAnchor)
 
 			CAnchor(OOX::Document *pMain = NULL);
 			virtual ~CAnchor();
@@ -409,7 +405,7 @@ namespace OOX
 		class CInline : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CInline)
+			WritingElement_AdditionMethods(CInline)
 
 			CInline(OOX::Document *pMain = NULL);
 			virtual ~CInline();

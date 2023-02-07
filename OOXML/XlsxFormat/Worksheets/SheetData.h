@@ -31,10 +31,8 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
-
 #include "../SharedStrings/Si.h"
-#include "Cols.h"
+#include "../../Common/SimpleTypes_Shared.h"
 
 namespace NSBinPptxRW
 {
@@ -45,7 +43,9 @@ namespace NSFile
 {
 	class CStreamWriter;
 }
+
 class CSVWriter;
+
 //--------------------------------------------------------------------------------------------
 namespace OOX
 {
@@ -129,7 +129,7 @@ namespace OOX
 		class CFormula : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CFormula)
+			WritingElement_AdditionMethods(CFormula)
 			CFormula();
 			virtual ~CFormula();
 
@@ -168,7 +168,7 @@ namespace OOX
 		class CData : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CData)
+			WritingElement_AdditionMethods(CData)
 			CData();
 			virtual ~CData();
 
@@ -204,7 +204,7 @@ namespace OOX
 		class CCell : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCell)
+			WritingElement_AdditionMethods(CCell)
 			CCell(OOX::Document *pMain = NULL);
 			virtual ~CCell();
 
@@ -269,7 +269,7 @@ namespace OOX
 		class CRow : public WritingElementWithChilds<CCell>
 		{
 		public:
-			WritingElement_AdditionConstructors(CRow)
+			WritingElement_AdditionMethods(CRow)
 			CRow(OOX::Document *pMain = NULL);
 			virtual ~CRow();
 
@@ -310,7 +310,7 @@ namespace OOX
 		class CSheetData  : public WritingElementWithChilds<CRow>
 		{
 		public:
-			WritingElement_AdditionConstructors(CSheetData)
+			WritingElement_AdditionMethods(CSheetData)
             //WritingElement_XlsbConstructors(CSheetData)
 			CSheetData(OOX::Document *pMain = NULL);
 			virtual ~CSheetData();

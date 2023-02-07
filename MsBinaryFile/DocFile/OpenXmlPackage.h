@@ -107,8 +107,8 @@ namespace DocFileFormat
 		std::wstring ext;
 		std::wstring objectID;
         std::wstring clsid;
-
-		std::string	data;
+		
+		std::pair<boost::shared_array<char>, size_t> data;
 
         OleObjectFileStructure( const std::wstring& _ext, const std::wstring& _objectID, const std::wstring&/*REFCLSID*/ _clsid ):
 					ext(_ext), objectID(_objectID), clsid(_clsid){}

@@ -32,27 +32,12 @@
 #pragma once
 
 #include "BaseLimit.h"
-#if !defined(_WIN32) && !defined (_WIN64)
-	#include "../../../DesktopEditor/common/Types.h"
-#endif
-
 
 namespace PPTX
 {
 	namespace Limit
 	{
-		class SchemeClrVal : public BaseLimit
-		{
-		public:
-			SchemeClrVal();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& code);
-		};
+		DEFINE_LIMIT_BASE(SchemeClrVal)
 	} // namespace Limit
 } // namespace PPTX
 

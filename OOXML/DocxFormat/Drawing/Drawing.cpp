@@ -611,7 +611,9 @@ namespace OOX
 					}
 					else if ( bStart && _T("lineTo") == sName )
 					{
-						ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D(oNode);
+						ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D();
+						*oPoint = oNode;
+
 						if (oPoint) m_arrLineTo.push_back( oPoint );
 					}
 				}
@@ -637,7 +639,9 @@ namespace OOX
 				}
 				else if ( bStart && _T("wp:lineTo") == sName )
 				{
-					ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D(oReader);
+					ComplexTypes::Drawing::CPoint2D *oPoint = new ComplexTypes::Drawing::CPoint2D();
+					*oPoint = oReader;
+
 					if (oPoint) m_arrLineTo.push_back( oPoint );
 				}
 			}

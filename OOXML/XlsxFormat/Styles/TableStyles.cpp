@@ -32,9 +32,15 @@
 
 #include "TableStyles.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESTYLES.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESTYLE.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -212,7 +218,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("tableStyleElement") == sName )
-					m_arrItems.push_back( new CTableStyleElement( oReader ));
+				{
+					CTableStyleElement* pTableStyleElement = new CTableStyleElement();
+					*pTableStyleElement = oReader;
+					m_arrItems.push_back( pTableStyleElement );
+				}
 			}
 		}
 		void CTableStyle::fromBin(XLS::BaseObjectPtr& obj)
@@ -305,7 +315,11 @@ namespace OOX
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 				if ( _T("tableStyle") == sName )
-					m_arrItems.push_back( new CTableStyle( oReader ));
+				{
+					CTableStyle* pTableStyle = new CTableStyle();
+					*pTableStyle = oReader;
+					m_arrItems.push_back( pTableStyle );
+				}
 			}
 		}
 		void CTableStyles::fromBin(XLS::BaseObjectPtr& obj)

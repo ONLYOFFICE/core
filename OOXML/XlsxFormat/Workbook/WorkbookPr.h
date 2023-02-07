@@ -31,7 +31,21 @@
  */
 #pragma once
 
-#include "../CommonInclude.h"
+#include "../WritingElement.h"
+#include "../../Base/Nullable.h"
+
+namespace SimpleTypes
+{
+	class CGuid;
+	class COnOff;
+	class CCryptAlgoritmName;
+	class CUnsignedDecimalNumber;
+
+	namespace Spreadsheet
+	{
+		class CUpdateLinksType;
+	}
+}
 
 namespace OOX
 {
@@ -40,7 +54,7 @@ namespace OOX
 		class CWorkbookPr : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CWorkbookPr)
+			WritingElement_AdditionMethods(CWorkbookPr)
             WritingElement_XlsbConstructors(CWorkbookPr)
 			CWorkbookPr();
 			virtual ~CWorkbookPr();
@@ -82,7 +96,7 @@ namespace OOX
 		class CWorkbookProtection : public WritingElement
 		{
 		public:
-            WritingElement_AdditionConstructors(CWorkbookProtection)
+            WritingElement_AdditionMethods(CWorkbookProtection)
             WritingElement_XlsbConstructors(CWorkbookProtection)
 			CWorkbookProtection();
 			virtual ~CWorkbookProtection();

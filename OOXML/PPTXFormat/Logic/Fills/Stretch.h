@@ -44,7 +44,7 @@ namespace PPTX
 		class Stretch : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Stretch)
+			WritingElement_AdditionMethods(Stretch)
 			PPTX_LOGIC_BASE2(Stretch)
 
 			Stretch& operator=(const Stretch& oSrc);

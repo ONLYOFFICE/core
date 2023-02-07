@@ -207,6 +207,7 @@ HEADERS += \
 	../../../Common/ComplexTypes.h \
 	../../../Common/SimpleTypes_Base.h \
 	../../../Common/SimpleTypes_Drawing.h \
+	../../../Common/SimpleTypes_Enums.h \
 	../../../Common/SimpleTypes_OMath.h \
 	../../../Common/SimpleTypes_Shared.h \
 	../../../Common/SimpleTypes_Vml.h \
@@ -221,7 +222,6 @@ HEADERS += \
 	../../../DocxFormat/External/HyperLink.h \
 	../../../DocxFormat/Logic/AlternateContent.h \
 	../../../DocxFormat/Logic/Annotations.h \
-	../../../DocxFormat/Logic/BaseLogicSettings.h \
 	../../../DocxFormat/Logic/Bdo.h \
 	../../../DocxFormat/Logic/Dir.h \
 	../../../DocxFormat/Logic/FldChar.h \

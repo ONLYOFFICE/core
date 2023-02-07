@@ -40,7 +40,7 @@ namespace PPTX
 		class Cxn : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Cxn)
+			WritingElement_AdditionMethods(Cxn)
 			PPTX_LOGIC_BASE2(Cxn)
 			
 			Cxn& operator=(const Cxn& oSrc);

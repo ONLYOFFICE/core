@@ -34,6 +34,7 @@
 #include <CPOptional.h>
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../../OOXML/DocxFormat/Math/oMathContent.h"
+#include "../../../OOXML/DocxFormat/Logic/VmlWord.h"
 
 #include <vector>
 #include <string>

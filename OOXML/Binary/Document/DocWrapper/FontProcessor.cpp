@@ -38,8 +38,9 @@
 #include "../../../XlsxFormat/Styles/TableStyles.h"
 
 #include "../../../PPTXFormat/Theme.h"
-
 #include "../../../../Common/ASCUtils.h"
+
+#include "../../../XlsxFormat/ComplexTypes_Spreadsheet.h"
 
 namespace DocWrapper {
     wchar_t* gc_sNoNameFont         = _T("NoNameFont");

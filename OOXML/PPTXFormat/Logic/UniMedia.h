@@ -45,7 +45,7 @@ namespace PPTX
 		class UniMedia : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(UniMedia)
+			WritingElement_AdditionMethods(UniMedia)
 
 			UniMedia();
 

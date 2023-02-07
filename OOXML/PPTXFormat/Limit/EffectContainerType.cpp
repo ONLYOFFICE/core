@@ -38,25 +38,25 @@ namespace PPTX
 	{		
 		EffectContainerType::EffectContainerType()
 		{
-			m_strValue = _T("sib");
+			m_strValue = L"sib";
 		}
 		void EffectContainerType::set(const std::wstring& strValue)
 		{
-			if ((_T("sib") == strValue) ||
-				(_T("tree") == strValue))
+			if ((L"sib" == strValue) ||
+				(L"tree" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE EffectContainerType::GetBYTECode() const
+		unsigned char EffectContainerType::GetBYTECode() const
 		{
-			if (_T("sib") == m_strValue)
+			if (L"sib" == m_strValue)
 				return 0;
-			if (_T("tree") == m_strValue)
+			if (L"tree" == m_strValue)
 				return 1;
 			return 0;
 		}
-		void EffectContainerType::SetBYTECode(const BYTE& val)
+		void EffectContainerType::SetBYTECode(const unsigned char& val)
 		{
 			if (val == 0)	m_strValue = L"sib";
 			else			m_strValue = L"tree";

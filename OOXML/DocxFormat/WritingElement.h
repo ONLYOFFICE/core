@@ -32,7 +32,6 @@
 #pragma once
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../MsBinaryFile/XlsFile/Format/Logic/BaseObject.h"
 #include "../Base/SmartPtr.h"
 
 namespace NSBinPptxRW
@@ -41,24 +40,17 @@ namespace NSBinPptxRW
 	class CBinaryFileReader;
 	class CXmlWriter;
 }
+
 namespace OOX
 {
-#define WritingElement_AdditionConstructors(Class) \
-	explicit Class(XmlUtils::CXmlNode& oNode)\
-	{\
-	m_pMainDocument = NULL;\
-	fromXML( oNode );\
-}\
-	explicit Class(const XmlUtils::CXmlNode& node)\
-	{\
-	m_pMainDocument = NULL;\
-	fromXML(const_cast<XmlUtils::CXmlNode&> (node));\
-}\
-	Class(XmlUtils::CXmlLiteReader& oReader)\
-	{\
-	m_pMainDocument = NULL;\
-	fromXML( oReader );\
-}\
+#define AssignPtrXmlContent(Ptr, Class, Content) \
+{\
+	Ptr = new Class();\
+	Class *pClass = dynamic_cast<Class*>(Ptr);\
+	*pClass = Content;\
+}
+
+#define WritingElement_AdditionMethods(Class) \
 	const Class& operator =(const XmlUtils::CXmlNode &oNode)\
 	{\
 	m_pMainDocument = NULL;\
@@ -71,12 +63,12 @@ namespace OOX
 	fromXML( (XmlUtils::CXmlLiteReader&)oReader );\
 	return *this;\
 }\
-	const Class& operator =(XmlUtils::CXmlNode& node)				\
-	{																\
+	const Class& operator =(XmlUtils::CXmlNode& node)\
+	{\
 	m_pMainDocument = NULL;\
-	fromXML(node);												\
-	return *this;												\
-}																\
+	fromXML(node);\
+	return *this;\
+}\
 
 #define WritingElement_XlsbConstructors(Class) \
 	explicit Class(XLS::BaseObjectPtr& obj)\
@@ -1507,7 +1499,7 @@ namespace OOX
 
 	class WritingElement
 	{
-	public:
+	public:		
 		WritingElement(OOX::Document *pMain = NULL);
 		virtual ~WritingElement();
 

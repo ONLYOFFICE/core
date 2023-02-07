@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class SideDirectionVal : public BaseLimit
-		{
-		public:
-			SideDirectionVal();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(SideDirectionVal)
 	} // namespace Limit
 } // namespace PPTX

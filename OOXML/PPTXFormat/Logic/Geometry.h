@@ -44,7 +44,7 @@ namespace PPTX
 		class Geometry : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(Geometry)
+			WritingElement_AdditionMethods(Geometry)
 
 			Geometry();
 

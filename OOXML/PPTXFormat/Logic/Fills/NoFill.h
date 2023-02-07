@@ -43,7 +43,7 @@ namespace PPTX
 		class NoFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(NoFill)
+			WritingElement_AdditionMethods(NoFill)
 			
 			NoFill(std::wstring ns = L"a");
 
@@ -69,7 +69,7 @@ namespace PPTX
 		class GrpFill : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(GrpFill)
+			WritingElement_AdditionMethods(GrpFill)
 			PPTX_LOGIC_BASE2(GrpFill)
 
 			GrpFill& operator=(const GrpFill& oSrc);

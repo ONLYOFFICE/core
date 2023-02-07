@@ -30,10 +30,8 @@
  *
  */
 #pragma once
-#include "../CommonInclude.h"
 
 #include "rPr.h"
-
 
 namespace OOX
 {
@@ -42,7 +40,7 @@ namespace OOX
 		class CColors : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CColors)
+			WritingElement_AdditionMethods(CColors)
             WritingElement_XlsbConstructors(CColors)
 			CColors();
 			virtual ~CColors();

@@ -38,28 +38,28 @@ namespace PPTX
 	{
 		SplitterBarState::SplitterBarState()
 		{
-			m_strValue = _T("restored");
+			m_strValue = L"restored";
 		}
 		void SplitterBarState::set(const std::wstring& strValue)
 		{
-			if ((_T("maximized") == strValue) ||
-				(_T("minimized") == strValue) ||
-				(_T("restored") == strValue))
+			if ((L"maximized" == strValue) ||
+				(L"minimized" == strValue) ||
+				(L"restored" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE SplitterBarState::GetBYTECode() const
+		unsigned char SplitterBarState::GetBYTECode() const
 		{
-			if (_T("maximized") == m_strValue)
+			if (L"maximized" == m_strValue)
 				return 0;
-			if (_T("minimized") == m_strValue)
+			if (L"minimized" == m_strValue)
 				return 1;
-			if (_T("restored") == m_strValue)
+			if (L"restored" == m_strValue)
 				return 2;
 			return 2;
 		}
-		void SplitterBarState::SetBYTECode(const BYTE& src)
+		void SplitterBarState::SetBYTECode(const unsigned char& src)
 		{
 			switch (src)
 			{

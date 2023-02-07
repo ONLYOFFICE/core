@@ -47,6 +47,13 @@
 #include "../../XlsbFormat/Biff12_unions/SLICERCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/BeginSlicerCacheID.h"
 
+#include "../../Binary/Presentation/XmlWriter.h"
+#include "../../Binary/Presentation/BinReaderWriterDefines.h"
+
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 namespace OOX
 {
 namespace Spreadsheet

@@ -61,7 +61,7 @@ namespace OOX
 		class CCompatExt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CCompatExt)
+			WritingElement_AdditionMethods(CCompatExt)
 
 			CCompatExt();
 			virtual ~CCompatExt();
@@ -82,7 +82,7 @@ namespace OOX
 		class CDataModelExt : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(CDataModelExt)
+			WritingElement_AdditionMethods(CDataModelExt)
 
 			CDataModelExt();
 			virtual ~CDataModelExt();
@@ -107,7 +107,7 @@ namespace OOX
 		class COfficeArtExtension : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COfficeArtExtension)
+			WritingElement_AdditionMethods(COfficeArtExtension)
 
 			COfficeArtExtension();
 			~COfficeArtExtension();
@@ -163,7 +163,7 @@ namespace OOX
 		class COfficeArtExtensionList : public WritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(COfficeArtExtensionList)
+			WritingElement_AdditionMethods(COfficeArtExtensionList)
 			WritingElement_XlsbConstructors(COfficeArtExtensionList)
 
 			COfficeArtExtensionList();

@@ -38,35 +38,35 @@ namespace PPTX
 	{		
 		VertOverflow::VertOverflow()
 		{
-			m_strValue = _T("clip");
+			m_strValue = L"clip";
 		}
 		void VertOverflow::set(const std::wstring& strValue)
 		{
-			if ((_T("clip") == strValue) ||
-				(_T("ellipsis") == strValue) ||
-				(_T("overflow") == strValue))
+			if ((L"clip" == strValue) ||
+				(L"ellipsis" == strValue) ||
+				(L"overflow" == strValue))
 			{
 				m_strValue = strValue;
 			}
 		}
-		BYTE VertOverflow::GetBYTECode() const
+		unsigned char VertOverflow::GetBYTECode() const
 		{
-			if (_T("clip") == m_strValue)
+			if (L"clip" == m_strValue)
 				return 0;
-			if (_T("ellipsis") == m_strValue)
+			if (L"ellipsis" == m_strValue)
 				return 1;
-			if (_T("overflow") == m_strValue)
+			if (L"overflow" == m_strValue)
 				return 2;
 			return 0;
 		}
-		void VertOverflow::SetBYTECode(const BYTE& src)
+		void VertOverflow::SetBYTECode(const unsigned char& src)
 		{
 			if (2 == src)
-				m_strValue = _T("overflow");
+				m_strValue = L"overflow";
 			else if (1 == src)
-				m_strValue = _T("ellipsis");
+				m_strValue = L"ellipsis";
 			else
-				m_strValue = _T("clip");
+				m_strValue = L"clip";
 		}
 	} // namespace Limit
 } // namespace PPTX

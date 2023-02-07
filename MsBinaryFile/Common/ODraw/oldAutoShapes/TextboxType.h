@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2019
  *
  * This program is a free software product. You can redistribute it and/or
@@ -36,16 +36,5 @@
 // 202
 namespace NSCustomShapesConvert
 {
-
-class CTextboxType : public CCustomShape
-{
-public:
-	CTextboxType()
-
-    {
-        m_bConcentricFill = true;
-        m_eJoin = ODRAW::lineJoinMiter;
-        m_strPath = _T("m,l,21600r21600,l21600,xe");
-    }
-};
+	DEFINE_SHAPE_CLASS(CTextboxType, CCustomShape)
 }

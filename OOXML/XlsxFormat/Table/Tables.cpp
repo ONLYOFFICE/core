@@ -56,6 +56,10 @@
 #include "../../XlsbFormat/Biff12_unions/DELETEDNAME.h"
 #include "../../XlsbFormat/Biff12_records/BeginDeletedName.h"
 
+#include "../../Common/SimpleTypes_Shared.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -346,7 +350,11 @@ namespace Spreadsheet
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( (L"tableColumn") == sName )
-				m_arrItems.push_back(new CTableColumn(oReader));
+			{
+				CTableColumn* pTableColumn = new CTableColumn();
+				*pTableColumn = oReader;
+				m_arrItems.push_back(pTableColumn);
+			}
 		}
 	}
     void CTableColumns::fromBin(XLS::BaseObjectPtr& obj)
@@ -660,7 +668,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( (L"tablePart") == sName )
-				m_arrItems.push_back(new CTablePart(oReader));
+			{
+				CTablePart* pTablePart = new CTablePart();
+				*pTablePart = oReader;
+				m_arrItems.push_back(pTablePart);
+			}
 		}
 	}
     void CTableParts::fromBin(XLS::BaseObjectPtr& obj)
@@ -849,7 +861,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"queryTableField" == sName )
-				m_arrItems.push_back(new CQueryTableField(oReader));
+			{
+				CQueryTableField* pQueryTableField = new CQueryTableField();
+				*pQueryTableField = oReader;
+				m_arrItems.push_back(pQueryTableField);
+			}
 		}
 	}
     void CQueryTableFields::fromBin(XLS::BaseObjectPtr& obj)
@@ -938,7 +954,11 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if ( L"deletedField" == sName )
-				m_arrItems.push_back(new CQueryTableDeletedField(oReader));
+			{
+				CQueryTableDeletedField* pQueryTableDeletedField = new CQueryTableDeletedField();
+				*pQueryTableDeletedField = oReader;
+				m_arrItems.push_back(pQueryTableDeletedField);
+			}
 		}
 	}
     void CQueryTableDeletedFields::fromBin(XLS::BaseObjectPtr& obj)

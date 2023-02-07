@@ -37,17 +37,6 @@ namespace PPTX
 {
 	namespace Limit
 	{
-		class FontStyleIndex : public BaseLimit
-		{
-		public:
-			FontStyleIndex();
-
-			_USE_STRING_OPERATOR
-				
-			virtual void set(const std::wstring& strValue);
-
-			virtual BYTE GetBYTECode() const;
-			virtual void SetBYTECode(const BYTE& src);
-		};
+		DEFINE_LIMIT_BASE(FontStyleIndex)
 	} // namespace Limit
 } // namespace PPTX

@@ -42,7 +42,7 @@ namespace PPTX
 		class AlphaBiLevel : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(AlphaBiLevel)
+			WritingElement_AdditionMethods(AlphaBiLevel)
 			PPTX_LOGIC_BASE2(AlphaBiLevel)
 
 			AlphaBiLevel& operator=(const AlphaBiLevel& oSrc);

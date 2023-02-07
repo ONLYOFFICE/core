@@ -44,7 +44,7 @@ namespace PPTX
 		class PrstGeom : public WrapperWritingElement
 		{
 		public:
-			WritingElement_AdditionConstructors(PrstGeom)
+			WritingElement_AdditionMethods(PrstGeom)
 			PPTX_LOGIC_BASE2(PrstGeom)
 
 			PrstGeom& operator=(const PrstGeom& oSrc);

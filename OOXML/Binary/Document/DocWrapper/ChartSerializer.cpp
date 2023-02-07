@@ -29,14 +29,19 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "ChartSerializer.h"
-
 #include <algorithm>
+
+#include "ChartSerializer.h"
+#include "../../../XlsxFormat/Chart/ChartSerialize.h"
 
 #include "../../../XlsxFormat/Xlsx.h"
 #include "../../../XlsxFormat/Workbook/Workbook.h"
 #include "../../../XlsxFormat/SharedStrings/SharedStrings.h"
 #include "../../../XlsxFormat/Styles/Styles.h"
+#include "../../../XlsxFormat/Styles/Xfs.h"
+#include "../../../XlsxFormat/Styles/NumFmts.h"
+#include "../../../XlsxFormat/Styles/dxf.h"
+#include "../../../XlsxFormat/Styles/Borders.h"
 #include "../../../XlsxFormat/Worksheets/Worksheet.h"
 
 #define NUMID_START 160

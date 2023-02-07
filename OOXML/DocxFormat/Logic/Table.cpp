@@ -503,8 +503,8 @@ namespace OOX
 
 				if (pItem)
 				{
-					m_arrItems.push_back(pItem);
 					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
 				}
 			}
 		}
@@ -807,8 +807,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 			m_nCountCell = nNumCol;
@@ -1045,7 +1045,7 @@ namespace OOX
 				else if ( _T("m:oMathPara") == sName )
 					pItem = new COMathPara( document );
 				else if ( _T("w:p") == sName )
-					pItem = new CParagraph( document );
+					pItem = new CParagraph( document, this );
 				else if ( _T("w:permEnd") == sName )
 					pItem = new CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
@@ -1078,8 +1078,8 @@ namespace OOX
 				}
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}

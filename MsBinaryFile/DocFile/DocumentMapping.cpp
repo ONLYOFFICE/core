@@ -733,9 +733,9 @@ namespace DocFileFormat
 						
 						if (oVmlMapper.m_isEmbedded)
 						{
-							ole.isEquation		= oVmlMapper.m_isEquation;
-							ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-							ole.emeddedData		= oVmlMapper.m_embeddedData;
+							ole.isEquation = oVmlMapper.m_isEquation;
+							ole.isEmbedded = oVmlMapper.m_isEmbedded;
+							ole.embeddedData = oVmlMapper.m_embeddedData;
 						}
 						ole.Convert( &oleObjectMapping );
 
@@ -1037,9 +1037,9 @@ namespace DocFileFormat
 								OleObject ole ( chpx, m_document);
 								OleObjectMapping oleObjectMapping( &pictWriter, m_context, &oPicture, _caller, oVmlMapper.m_shapeId );
 								
-								ole.isEquation		= oVmlMapper.m_isEquation;
-								ole.isEmbedded		= oVmlMapper.m_isEmbedded;
-								ole.emeddedData		= oVmlMapper.m_embeddedData;
+								ole.isEquation = oVmlMapper.m_isEquation;
+								ole.isEmbedded = oVmlMapper.m_isEmbedded;
+								ole.embeddedData = oVmlMapper.m_embeddedData;
 							
 								ole.Convert( &oleObjectMapping );
 							}

@@ -65,9 +65,11 @@ public:
 
 	std::wstring			content_group_;
 
-	virtual void serialize	(std::wostream & strm) {return serialize(strm, L"xdr");}
+	std::vector<_xlsx_drawing>	childs_;
 
-    void serialize			(std::wostream & strm, const std::wstring & ns);    
+	virtual void serialize	(std::wostream & strm) { return serialize(strm, L"xdr", false); }
+
+    void serialize			(std::wostream & strm, const std::wstring & ns, bool local);    
 	void serialize_vml		(std::wostream & strm);    
 	void serialize_object	(std::wostream & strm);    
 	void serialize_control	(std::wostream & strm);    

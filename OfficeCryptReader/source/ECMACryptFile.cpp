@@ -1143,26 +1143,49 @@ std::string ECMACryptFile::ReadAdditional(const std::wstring &file_name, const s
 }
 bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::wstring &addit_name, const std::string &addit_info)
 {
-	POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
-	
-	if (!pStorage)return false;
-
-	if (!pStorage->open(true, false))
+	try
 	{
+		CFCPP::CompoundFile *pStorage = new CFCPP::CompoundFile(file_name, CFCPP::Update);
+		if (!pStorage)return false;
+		
+		std::shared_ptr<CFCPP::CFStream> pAddit = pStorage->RootStorage()->GetStream(addit_name);
+
+		if (!pAddit)
+		{
+			pAddit = pStorage->RootStorage()->AddStream(addit_name);
+		}
+
+		pAddit->Write(addit_info.c_str(), 0, addit_info.size());
+
+		pStorage->Save(file_name);
+		pStorage->Close();
 		delete pStorage;
+	}
+	catch (...)
+	{
 		return false;
 	}
 
-	POLE::Stream *pStream = new POLE::Stream(pStorage, addit_name, true, addit_info.size());
-	
-	pStream->write((unsigned char*)addit_info.c_str(), addit_info.size());
-	pStream->setSize(addit_info.size());
+	//POLE::Storage *pStorage = new POLE::Storage(file_name.c_str());
+	//
+	//if (!pStorage)return false;
 
-	pStream->flush();
-	delete pStream;
+	//if (!pStorage->open(true, false))
+	//{
+	//	delete pStorage;
+	//	return false;
+	//}
 
-	pStorage->close();
-	delete pStorage;
+	//POLE::Stream *pStream = new POLE::Stream(pStorage, addit_name, true, addit_info.size());
+	//
+	//pStream->write((unsigned char*)addit_info.c_str(), addit_info.size());
+	//pStream->setSize(addit_info.size());
+
+	//pStream->flush();
+	//delete pStream;
+
+	//pStorage->close();
+	//delete pStorage;
 
 	return true;
 }

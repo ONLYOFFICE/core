@@ -145,6 +145,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 
 //////////////////////////////////////////////////////////////////////////////////////	
 	Context.get_text_context().start_drawing_content();
+	Context.start_drawing_context();
 
 	if (word_art_)
 	{
@@ -156,6 +157,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
         content_[i]->xlsx_convert(Context);
     }
 	std::wstring text_content_ = Context.get_text_context().end_drawing_content();
+	Context.end_drawing_context();
 
 	if (!text_content_.empty())
 	{

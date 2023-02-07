@@ -76,8 +76,8 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 {
 	LOGGER_SPEED_START
 
-			if (retValue)
-			retValue->Clear();
+	if (retValue)
+		retValue->Clear();
 
 	std::string commandA = U_TO_UTF8(command);
 	//commandA = "Api." + commandA;
@@ -87,7 +87,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 
 	LOGGER_SPEED_LAP("compile_command")
 
-			JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
+	JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
 	if(try_catch->Check())
 		return false;
 
@@ -100,7 +100,7 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 
 	LOGGER_SPEED_LAP("run_command")
 
-			return true;
+	return true;
 }
 
 std::string CV8RealTimeWorker::GetGlobalVariable()
@@ -139,7 +139,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 {
 	LOGGER_SPEED_START
 
-			JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
+	JSSmart<CJSContextScope> context_scope = m_context->CreateContextScope();
 	JSSmart<CJSTryCatch>         try_catch = m_context->GetExceptions();
 
 	LOGGER_SPEED_LAP("compile");
@@ -150,7 +150,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("run")
 
-			if (true)
+	if (true)
 	{
 		std::string sArg = m_sUtf8ArgumentJSON;
 		if (sArg.empty())
@@ -249,7 +249,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 
 	LOGGER_SPEED_LAP("open")
 
-			return !bIsBreak;
+	return !bIsBreak;
 }
 
 bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams)

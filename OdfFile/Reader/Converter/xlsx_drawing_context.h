@@ -86,7 +86,7 @@ typedef _CP_PTR(xlsx_drawing_context_handle) xlsx_drawing_context_handle_ptr;
 class xlsx_drawing_context
 {
 public:
-    xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h);
+    xlsx_drawing_context(xlsx_drawing_context_handle_ptr & h, bool in_text = false);
     ~xlsx_drawing_context();
 
 	bool isDefault();
@@ -145,7 +145,7 @@ public:
 	
 	void clear();
 
-	void serialize(std::wostream & strm, const std::wstring& ns = L"xdr");
+	void serialize(std::wostream & strm, const std::wstring& ns = L"xdr", bool local = false);
 	void serialize_vml(std::wostream & strm);
 
 	std::wstring dump_path(std::vector<svg_path::_polyline> & path, double w,double h);
@@ -177,8 +177,11 @@ private:
 	int				hlinks_size_;
 	std::wstring	odf_packet_path_ ;
 	float			dpi_;
+
+	bool			in_text_ = false;
     
 };
+typedef _CP_PTR(xlsx_drawing_context) xlsx_drawing_context_ptr;
 
 }
 }

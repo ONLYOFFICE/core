@@ -321,7 +321,7 @@ RtfColor::RtfColor()
 {
 	SetDefault();
 }
-RtfColor::RtfColor(int nHex)
+RtfColor::RtfColor(_UINT32 nHex)
 {
 	SetHEX( nHex );
 }
@@ -384,7 +384,7 @@ const RtfColor& RtfColor::operator=( const RtfColor& oColor )
 	m_bAuto		= oColor.m_bAuto;
 	return (*this);
 }
-void RtfColor::SetHEX(int color)
+void RtfColor::SetHEX(_UINT32 color)
 {
 	SetDefault();
 
@@ -392,11 +392,11 @@ void RtfColor::SetHEX(int color)
 	m_byteGreen = (color&0xFF00) >> 8;
 	m_byteBlue	= (color&0xFF);
 }
-int RtfColor::GetRGB()const
+_UINT32 RtfColor::GetRGB()const
 {
 	return (m_byteRed << 16) | (m_byteGreen << 8) | m_byteBlue;
 }
-void RtfColor::SetRGB(unsigned int color)
+void RtfColor::SetRGB(_UINT32 color)
 {
 	SetDefault();
 
@@ -420,7 +420,7 @@ void RtfColor::SetHSL(double dH, double dS,double dL)
 {
 	HSL2RGB(dH, dS, dL, m_byteRed, m_byteGreen, m_byteBlue);
 }
-void RtfColor::SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
+void RtfColor::SetRGBPercent(_INT32 nRedPer, _INT32 nGreenPer, _INT32 nBluePer)
 {
 	m_byteRed	= (BYTE)(nRedPer	* 255 / 100);
 	m_byteGreen = (BYTE)(nGreenPer	* 255 / 100);
@@ -430,7 +430,7 @@ void RtfColor::SetHEXString(std::wstring hex)
 {
 	if ( L"auto" != hex )
 	{
-		int color	= Strings::ToColor(hex);
+		_UINT32 color	= Strings::ToColor(hex);
 
 		SetRGB(color);
 	}
@@ -460,7 +460,7 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 	}
 	else
 	{
-		int nColor;
+		_INT32 nColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor(*this, nColor) )
             sResult += L"\\c" + std::to_wstring(nColor); //todo
 	}

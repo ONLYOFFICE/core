@@ -363,8 +363,9 @@ namespace openjpeg
 
 				if (!opj_set_decode_area(l_codec, image, image->x0, nOffsetY, image->x1, nOffsetY + nTileHeight))
 				{
-					opj_stream_destroy(l_stream);
-					opj_destroy_codec(l_codec);
+					opj_stream_destroy(l_stream); l_stream = NULL;
+					opj_destroy_codec(l_codec); l_codec = NULL;
+					opj_image_destroy(image); image = NULL;
 
 					l_stream = get_file_stream(pFileData, nFileSize, codec);
 

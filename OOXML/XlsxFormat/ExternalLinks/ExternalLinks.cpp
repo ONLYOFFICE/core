@@ -1497,11 +1497,11 @@ namespace Spreadsheet
 
 						for (size_t i = 0; (oExtLst.IsInit()) && (i < oExtLst->m_arrExt.size()); i++)
 						{
-							if (oExtLst->m_arrExt[i]->m_oFileId.IsInit() ||
-								oExtLst->m_arrExt[i]->m_oPortalName.IsInit())
+							if (oExtLst->m_arrExt[i]->m_oFileKey.IsInit() ||
+								oExtLst->m_arrExt[i]->m_oInstanceId.IsInit())
 							{
-								m_oFileId = oExtLst->m_arrExt[i]->m_oFileId;
-								m_oPortalName = oExtLst->m_arrExt[i]->m_oPortalName;
+								m_oFileKey = oExtLst->m_arrExt[i]->m_oFileKey;
+								m_oInstanceId = oExtLst->m_arrExt[i]->m_oInstanceId;
 								break;
 							}
 						}
@@ -1529,11 +1529,11 @@ namespace Spreadsheet
 		{
 			m_oDdeLink->toXML(sXml);
 		}
-		if (m_oFileId.IsInit() || m_oPortalName.IsInit())
+		if (m_oFileKey.IsInit() || m_oInstanceId.IsInit())
 		{
 			OOX::Drawing::COfficeArtExtension oExt;
-			oExt.m_oFileId = m_oFileId;
-			oExt.m_oPortalName = m_oPortalName;
+			oExt.m_oFileKey = m_oFileKey;
+			oExt.m_oInstanceId = m_oInstanceId;
 
 			oExt.m_sUri = L"{C3750BE0-5CA9-4D1C-82C7-79D762991C26}";
 

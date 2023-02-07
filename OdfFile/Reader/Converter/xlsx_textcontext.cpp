@@ -55,6 +55,7 @@ public:
 	Impl(odf_reader::odf_read_context & odf_context);
 public:
 	void add_text(const std::wstring & text);
+	void add_paragraph(const std::wstring & para);
     
     void			start_paragraph(const std::wstring & styleName);
     void			end_paragraph();
@@ -144,7 +145,10 @@ void xlsx_text_context::Impl::add_text(const std::wstring & text)
 	if (!in_comment && !in_draw && !only_text)
 		dump_run();
 }
-
+void xlsx_text_context::Impl::add_paragraph(const std::wstring & para)
+{
+	paragraph_ << para;
+}
 void xlsx_text_context::Impl::set_local_styles_container(odf_reader::styles_container * local_styles_)
 {
 	local_styles_ptr_= local_styles_;
@@ -599,18 +603,18 @@ void xlsx_text_context::set_local_styles_container(odf_reader::styles_container*
 {
 	return impl_->set_local_styles_container(local_styles_);
 }
-
 void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_content_ptr text_properties)
 {
 	return impl_->set_cell_text_properties(text_properties);
 }
-
-
 void xlsx_text_context::add_text(const std::wstring & text)
 {
     return impl_->add_text(text);
 }
-
+void xlsx_text_context::add_paragraph(const std::wstring & para)
+{
+	return impl_->add_paragraph(para);
+}
 void xlsx_text_context::start_paragraph(const std::wstring & styleName)
 {
     return impl_->start_paragraph(styleName);

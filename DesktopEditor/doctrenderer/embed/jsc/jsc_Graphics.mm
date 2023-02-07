@@ -3,6 +3,7 @@
 
 @protocol IJSCGraphics <JSExport>
 -(JSValue*) create : (JSValue*)Native : (JSValue*)width_px : (JSValue*)height_px : (JSValue*)width_mm : (JSValue*)height_mm;
+-(JSValue*) Destroy;
 -(JSValue*) EndDraw;
 -(JSValue*) put_GlobalAlpha : (JSValue*)enable : (JSValue*)globalAlpha;
 -(JSValue*) Start_GlobalAlpha;
@@ -130,6 +131,7 @@
 EMBED_OBJECT_WRAPPER_METHODS(CGraphicsEmbed)
 
 FUNCTION_WRAPPER_JS_5(create, init)
+FUNCTION_WRAPPER_JS(Destroy, Destroy)
 FUNCTION_WRAPPER_JS(EndDraw, EndDraw)
 FUNCTION_WRAPPER_JS_2(put_GlobalAlpha, put_GlobalAlpha)
 FUNCTION_WRAPPER_JS(Start_GlobalAlpha, Start_GlobalAlpha)

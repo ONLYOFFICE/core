@@ -185,10 +185,10 @@ namespace PdfWriter
 		m_pFontDescriptor->Add("FontBBox", pBBox);
 		m_pFontDescriptor->Add("Ascent", yMax);
 		m_pFontDescriptor->Add("Descent", yMin);
-		m_pFontDescriptor->Add("CapHeight", (int)(unUnitsPerEm ? m_pFontFile->GetCapHeight() * dKoef : m_pFontFile->GetCapHeight()));
+		m_pFontDescriptor->Add("CapHeight", m_pFontFile ? (int)(unUnitsPerEm ? m_pFontFile->GetCapHeight() * dKoef : m_pFontFile->GetCapHeight()) : 800);
 		m_pFontDescriptor->Add("ItalicAngle", 0);
 		m_pFontDescriptor->Add("StemV", 80);
-		m_pFontDescriptor->Add("FontWeight", m_pFontFile->GetWeight());
+		m_pFontDescriptor->Add("FontWeight", m_pFontFile ? m_pFontFile->GetWeight() : 400);
 
 		// Сейчас мы этот класс используем для внедрения шрифтов, которые будут использоваться для заполнения
 		// внутри форм. Если класс будет использоваться для чего-то другого, тогда надо задавать ограничения на внедрение

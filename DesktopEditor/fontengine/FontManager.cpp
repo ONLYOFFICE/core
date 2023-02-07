@@ -135,11 +135,13 @@ NSFonts::IFontStream* CApplicationFontStreams::GetStream(const std::wstring &str
         }
     }
 
+#ifndef FONT_ENGINE_DISABLE_FILESYSTEM
     if (!pStream)
 	{
 		pStream = new CFontStream();
 		pStream->CreateFromFile(strFile);
 	}
+#endif
 
 	m_mapStreams[strFile] = pStream;
 	return pStream;

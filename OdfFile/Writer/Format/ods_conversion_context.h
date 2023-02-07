@@ -100,16 +100,11 @@ public:
 //-----------------------------------------------------------------------
 	ods_table_state_ptr & current_table() { return table_context_.state();}
 //-----------------------------------------------------------------------
-	virtual void start_text_context();
-	virtual void end_text_context();
 
-	virtual odf_drawing_context		* drawing_context()	{return current_table()->drawing_context();}
-	virtual odf_text_context		* text_context()	{return current_text_context_;}
+	virtual odf_drawing_context		* drawing_context();
+	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context(){return current_table()->controls_context();}
 	
-	void start_drawings();
-	void end_drawings();
-
 	bool start_header(int type);
 	bool start_footer(int type);
 	void end_header_footer();
@@ -140,9 +135,7 @@ public:
 
 	std::vector<ods_external_state>	externals_;
 private:
-	ods_table_context			table_context_;
-	
-	odf_text_context*			current_text_context_;
+	ods_table_context			table_context_;	
 	office_spreadsheet*			root_spreadsheet_;
 };
 

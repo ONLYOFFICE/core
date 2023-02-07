@@ -44,11 +44,14 @@ public:
 
 	bool				m_bHeader; //чтобы отличать заголовок от вложенных групп
 
-	bool				m_bIsVal;
-	bool				m_bIsBool;
+	bool				m_bIsVal = false;
+	bool				m_bIsChar = false; // for write
+	bool				m_bIsBool = false; // for read
 	
 	RtfParagraph		m_oVal;
 	RtfShapePtr			m_oPicture;
+
+	std::wstring         m_sVal;
 
 	RtfMath( );
 	RtfMath(const RtfMath& oMath );

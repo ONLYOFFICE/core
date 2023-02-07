@@ -521,9 +521,11 @@ public:
 		int							type = 0;
 		std::wstring				style_name;
 		std::vector<std::wstring>	content;	//delete elements		
+		
 		bool						active = false;
 		bool						in_drawing = false;
 		bool						out_active = false;
+		_UINT32						oox_id = 0;
 
 		void clear()
 		{
@@ -535,6 +537,7 @@ public:
 			content.clear();
 			active = false;
 			in_drawing = false;
+			oox_id = 0;
 		}
 	};
 	std::wstring dumpPPr_;

@@ -49,6 +49,6 @@ public:
 
 public:
     CRecordParaBuildAtom	m_oParaBuildAtom;
-    std::vector <CRecordParaBuildLevel>	rgParaBuildLevel;
+    std::vector <CRecordParaBuildLevel*>	rgParaBuildLevel;
 };
 }

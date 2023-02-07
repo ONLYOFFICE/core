@@ -2868,9 +2868,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CDrawing *oox_drawing, OOX::Spread
 				continue;
 			}
 		}
-		ods_context->start_drawings();
-			convert(oox_anchor);
-		ods_context->end_drawings();
+		convert(oox_anchor);
+		ods_context->drawing_context()->clear();
 	}
 
 	xlsx_current_container = old_container;
@@ -2882,7 +2881,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
     for (boost::unordered_map<unsigned int, OOX::Spreadsheet::COleObject*>::const_iterator it = oox_objects->m_mapOleObjects.begin(); it != oox_objects->m_mapOleObjects.end(); ++it)
 	{
 		OOX::Spreadsheet::COleObject* object = it->second;
-		ods_context->start_drawings();
 
 		bool bAnchor = false;
 		std::wstring odf_ref_object, odf_ref_image;
@@ -2997,7 +2995,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 		ods_context->drawing_context()->end_object_ole();
 		ods_context->drawing_context()->end_drawing();
 
-		ods_context->end_drawings();
+		ods_context->drawing_context()->clear();
 	}
 }
 
@@ -3124,8 +3122,6 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 
 		if (false == id.empty())
 		{
-			ods_context->start_drawings();
-
 			{
 				oox_table_position from = {}, to = {};
 				
@@ -3273,7 +3269,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CControls *oox_controls, OOX::Spre
 			ods_context->drawing_context()->end_control();
 			ods_context->drawing_context()->end_drawing();
 
-			ods_context->end_drawings();
+			ods_context->drawing_context()->clear();
 			ods_context->controls_context()->end_control();
 		}
 	}

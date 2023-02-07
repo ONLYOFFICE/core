@@ -382,9 +382,12 @@ namespace MetaFile
 		int  nBottom;
 
 		TRect();
+		TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom);
 		TRect(const TWmfRect& oRect);
 		TRect(const TEmfRectL& oRect);
 		TRect& operator=(TWmfRect& oRect);
+		friend bool operator!=(const TRect& oLeftRect, const TRect& oRightRect);
+		friend bool operator==(const TRect& oLeftRect, const TRect& oRightRect);
     };
 
 	struct TRectD

@@ -1668,7 +1668,10 @@ void text_format_properties_content::apply_from(const text_format_properties_con
     _CP_APPLY_PROP(style_text_overline_style_, Other.style_text_overline_style_);
 
 }
-
+void text_format_properties_content::set_r_style(const std::wstring & rStyle)
+{ 
+	r_style_ = rStyle; 
+}
 
 void text_format_properties_content::apply_to(std::vector<_property> & properties)
 {

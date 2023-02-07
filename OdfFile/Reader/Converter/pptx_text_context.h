@@ -60,8 +60,6 @@ enum field_type
 
 class pptx_text_context: boost::noncopyable
 {
-
-
 public:
 	pptx_text_context(odf_reader::odf_read_context & odf_context_, pptx_conversion_context & pptx_contxt_);
     ~pptx_text_context();
@@ -69,6 +67,7 @@ public:
 	void set_local_styles_container(odf_reader::styles_container*  local_styles_);
     
 	void add_text(const std::wstring & text);
+	void add_paragraph(const std::wstring & para);
     
     void start_paragraph(const std::wstring & styleName);
     void end_paragraph();

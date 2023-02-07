@@ -144,7 +144,6 @@ namespace PdfWriter
 		m_pInfo->SetInfo(InfoProducer, sCreatorA.c_str());
 		m_pInfo->SetInfo(InfoCreator, sCreatorA.c_str());
 
-		CMetadata* pMetadata = m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 		if (IsPDFA())
 		{
 			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
@@ -231,7 +230,7 @@ namespace PdfWriter
 	}
     void CDocument::SaveToStream(CStream* pStream)
 	{
-		unsigned long nRet = OK;
+		m_pCatalog->AddMetadata(m_pXref, m_pInfo);
 
 		// Пишем заголовок
 		if (IsPDFA())

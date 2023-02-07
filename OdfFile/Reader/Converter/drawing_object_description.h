@@ -57,6 +57,7 @@ struct drawing_object_description
 	bool									bNotes_;
 
 	oox::_rels_type							type_;
+	bool									bInner_;
 
 	std::wstring							name_;	
 	std::wstring							descriptor_;	

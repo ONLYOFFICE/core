@@ -40,9 +40,8 @@
 
 using namespace PPT::Converter;
 
-Timing::Timing(const PPT::Intermediate::SlideAnimation& slideAnim, const std::unordered_set<int> &shapesID) :
-    slideAnim(slideAnim),
-    shapesID(shapesID)
+Timing::Timing(const PPT::Intermediate::SlideAnimation& slideAnim) :
+    slideAnim(slideAnim)
 {}
 
 PPTX::Logic::Timing Timing::Convert(PPT::CExMedia *pExMedia, CRelsGenerator *pRels)
@@ -72,7 +71,7 @@ bool Timing::TryToConvertTiming2010()
 {
     timing = PPTX::Logic::Timing();
     try {
-        Timing_2010(slideAnim.pAnim_2010, shapesID).
+        Timing_2010(slideAnim).
                 Convert(timing, pExMedia, pRels);
     } catch (const TimingExeption &ex) {
         return false;

@@ -1448,10 +1448,12 @@ namespace NSFile
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 		src.open(strSrc.c_str(), std::ios::binary);
-		dst.open(strDst.c_str(), std::ios::binary);
+        if (src.is_open())
+            dst.open(strDst.c_str(), std::ios::binary);
 #else
 		src.open(strSrcA.c_str(), std::ios::binary);
-		dst.open(strDstA.c_str(), std::ios::binary);
+        if (src.is_open())
+            dst.open(strDstA.c_str(), std::ios::binary);
 #endif
 
 		bool bRet = false;
@@ -1469,6 +1471,7 @@ namespace NSFile
 		return bRet;
 #endif
 	}
+
 	bool CFileBinary::Remove(const std::wstring& strFileName)
 	{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)

@@ -677,7 +677,7 @@ namespace MetaFile
 	{
 		unsigned int ulMapMode = m_ulMapMode;
 
-		if (0 == m_oWindow.ulW || 0 == m_oViewport.ulW)
+		if (1 >= m_oWindow.ulW || 1 >= m_oViewport.ulW)
 			return false;
 
 		if (MM_ISOTROPIC == ulMapMode)

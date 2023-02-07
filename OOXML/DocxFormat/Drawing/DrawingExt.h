@@ -152,8 +152,8 @@ namespace OOX
 
 			nullable<OOX::CPresenceInfo> m_oPresenceInfo;
 
-			nullable_string m_oFileId;
-			nullable_string m_oPortalName;
+			nullable_string m_oFileKey;
+			nullable_string m_oInstanceId;
 		};
 
 		//--------------------------------------------------------------------------------

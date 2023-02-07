@@ -65,9 +65,6 @@ public:
 	virtual void start_document();
 	virtual void end_document();
 
-	virtual void start_text_context();
-	virtual void end_text_context();
-
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context();
@@ -78,8 +75,9 @@ public:
 	odf_table_context				* table_context();
 	
 	odf_notes_context				* notes_context();
-	void start_drawings ();
-	void end_drawings ();
+
+	virtual void start_drawing_context();
+	virtual void end_drawing_context();
 
 	virtual bool start_math();
 	virtual void end_math();
@@ -217,9 +215,6 @@ private:
 	bool			is_background_;
 
 	std::wstring	current_master_page_;
-	
-	std::vector<odf_drawing_context_ptr>	drawing_context_;	
-	std::vector<odf_text_context_ptr>		text_context_;		//for embedded 
 	
 	odf_controls_context					controls_context_;	
 

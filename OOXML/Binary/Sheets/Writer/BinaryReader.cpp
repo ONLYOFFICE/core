@@ -2731,13 +2731,13 @@ int BinaryWorkbookTableReader::ReadExternalReference(BYTE type, long length, voi
 		externalLink->m_oDdeLink.Init();
 		READ1_DEF(length, res, this->ReadDdeLink, externalLink->m_oDdeLink.GetPointer());
 	}
-	else if (c_oSerWorkbookTypes::ExternalFileId == type)
+	else if (c_oSerWorkbookTypes::ExternalFileKey == type)
 	{
-		externalLink->m_oFileId = m_oBufferedStream.GetString4(length);
+		externalLink->m_oFileKey = m_oBufferedStream.GetString4(length);
 	}
-	else if (c_oSerWorkbookTypes::ExternalPortalName == type)
+	else if (c_oSerWorkbookTypes::ExternalInstanceId == type)
 	{
-		externalLink->m_oPortalName = m_oBufferedStream.GetString4(length);
+		externalLink->m_oInstanceId = m_oBufferedStream.GetString4(length);
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2749,7 +2749,7 @@ int BinaryWorkbookTableReader::ReadExternalReferences(BYTE type, long length, vo
 	if (c_oSerWorkbookTypes::ExternalReference == type)
 	{
 		OOX::Spreadsheet::CExternalLink *extLink = new OOX::Spreadsheet::CExternalLink(NULL);
-		READ2_DEF_SPREADSHEET(length, res, this->ReadExternalReference, extLink);
+		READ1_DEF(length, res, this->ReadExternalReference, extLink);
 
 		smart_ptr<OOX::File> oCurFile(extLink);
 		const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
@@ -2888,7 +2888,7 @@ int BinaryWorkbookTableReader::ReadExternalBook(BYTE type, long length, void* po
 	{
 		std::wstring sName(m_oBufferedStream.GetString3(length));
 
-		OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(NULL, sName);
+		OOX::Spreadsheet::ExternalLinkPath *link = new OOX::Spreadsheet::ExternalLinkPath(NULL, OOX::CPath(sName, false));
 		smart_ptr<OOX::File> oLinkFile(link);
 		const OOX::RId oRIdLink = extLink->Add(oLinkFile);
 

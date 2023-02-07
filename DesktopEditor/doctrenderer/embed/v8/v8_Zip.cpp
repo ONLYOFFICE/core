@@ -12,6 +12,7 @@ namespace NSZip
 	FUNCTION_WRAPPER_V8_2(_addFile, addFile)
 	FUNCTION_WRAPPER_V8_1(_removeFile, removeFile)
 	FUNCTION_WRAPPER_V8  (_close, close)
+	FUNCTION_WRAPPER_V8  (_getPaths, getPaths)
 
 	FUNCTION_WRAPPER_V8_2(_decodeImage, decodeImage)
 	FUNCTION_WRAPPER_V8_6(_encodeImageData, encodeImageData)
@@ -33,6 +34,7 @@ namespace NSZip
 		NSV8Objects::Template_Set(result, "addFile",    _addFile);
 		NSV8Objects::Template_Set(result, "removeFile", _removeFile);
 		NSV8Objects::Template_Set(result, "close",      _close);
+		NSV8Objects::Template_Set(result, "getPaths",   _getPaths);
 
 		NSV8Objects::Template_Set(result, "decodeImage",     _decodeImage);
 		NSV8Objects::Template_Set(result, "encodeImageData", _encodeImageData);

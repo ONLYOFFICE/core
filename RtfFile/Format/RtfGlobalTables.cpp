@@ -152,7 +152,7 @@ bool RtfColorTable::GetColor( std::wstring sTheme, RtfColor& oColor)
 	}
 	return false;
 }
-bool RtfColorTable::GetColor( RtfColor oColor , int & nId)
+bool RtfColorTable::GetColor( RtfColor oColor , _INT32 & nId)
 {
 	for (size_t i = 0; i < m_aArray.size(); i++ )
 	{

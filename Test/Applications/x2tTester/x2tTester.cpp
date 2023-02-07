@@ -198,12 +198,6 @@ std::vector<int> CFormatsList::AllFormats() const
 	return all_formats;
 }
 
-void WaitFile(const std::wstring& path, const bool& exist_check = true)
-{
-	while (exist_check != NSFile::CFileBinary::Exists(path))
-		NSThreads::Sleep(10);
-}
-
 Cx2tTester::Cx2tTester(const std::wstring& configPath)
 {
 	m_bIsUseSystemFonts = true;
@@ -216,7 +210,23 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_inputFormatsList.SetDefault();
 	m_outputFormatsList.SetOutput();
 	SetConfig(configPath);
-	m_errorsXmlDirectory = m_outputDirectory + L"/_errors";
+	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
+
+	// CorrectPathW works strange with directories starts with "./"
+	if(m_outputDirectory.find(L"./") == 0)
+		m_outputDirectory.erase(0, 2);
+
+	// no slash at the end
+	if(m_outputDirectory.size() > 2 && m_outputDirectory[m_outputDirectory.size() - 1] == L'/')
+		m_outputDirectory.erase(m_outputDirectory.size() - 1, 1);
+
+	// on linux the backslash can be part of the filename
+#ifdef WIN32
+
+	if(m_outputDirectory.size() > 2 && m_outputDirectory[m_outputDirectory.size() - 1] == L'\\')
+		m_outputDirectory.erase(m_outputDirectory.size() - 1, 1);
+
+#endif
 
 	if(m_bIsTimestamp)
 	{
@@ -353,7 +363,7 @@ void Cx2tTester::Start()
 	m_timeStart = NSTimers::GetTickCount();
 
 	// check fonts
-	std::wstring fonts_directory = NSFile::GetProcessDirectory() + L"/fonts";
+	std::wstring fonts_directory = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + L"fonts";
 	CApplicationFontsWorker fonts_worker;
 	fonts_worker.m_sDirectory = fonts_directory;
 	if (!NSDirectory::Exists(fonts_worker.m_sDirectory))
@@ -365,13 +375,16 @@ void Cx2tTester::Start()
 	{
 		std::wstring sFolder = *i;
 		if (0 == sFolder.find(L"."))
-			sFolder = NSFile::GetProcessDirectory() + L"/" + sFolder;
+			sFolder = NSFile::GetProcessDirectory() + FILE_SEPARATOR_STR + sFolder;
 		fonts_worker.m_arAdditionalFolders.push_back(sFolder);
 	}
 
 	fonts_worker.m_bIsNeedThumbnails = false;
 	NSFonts::IApplicationFonts* pFonts = fonts_worker.Check();
 	RELEASEINTERFACE(pFonts);
+
+	m_outputDirectory = CorrectPathW(m_outputDirectory);
+	m_errorsXmlDirectory = CorrectPathW(m_errorsXmlDirectory);
 
 	// setup & clear output folder
 	if(NSDirectory::Exists(m_outputDirectory))
@@ -417,18 +430,12 @@ void Cx2tTester::Start()
 		int input_format = COfficeFileFormatChecker::GetFormatByExtension(input_ext);
 
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
-		std::wstring output_files_directory = m_outputDirectory;
 
 		// takes full directory after input folder
 		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
 																	input_file_directory.size() - m_inputDirectory.size());
-		output_files_directory += input_subfolders;
 
-		// setup & clear output subfolder
-		while(!NSDirectory::Exists(output_files_directory))
-			NSDirectory::CreateDirectories(output_files_directory);
-
-		output_files_directory += L'/' + NSFile::GetFileName(input_file);
+		std::wstring output_files_directory = m_outputDirectory + input_subfolders + FILE_SEPARATOR_STR + input_filename;
 
 		// setup output_formats for file
 		std::vector<int> output_file_formats;
@@ -455,6 +462,13 @@ void Cx2tTester::Start()
 				output_file_formats.push_back(format);
 			}
 		}
+
+		if(output_file_formats.empty())
+			continue;
+
+		// setup & clear output subfolder
+		while(!NSDirectory::Exists(output_files_directory))
+			NSDirectory::CreateDirectories(output_files_directory);
 
 		std::wstring csvTxtEncodingS = m_defaultCsvTxtEndcoding;
 		std::wstring csvDelimiter = m_defaultCsvDelimiter;
@@ -488,16 +502,11 @@ void Cx2tTester::Start()
 				csvDelimiter = (wchar_t)std::stoi(input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size()), nullptr, 16);
 		}
 
-		// setup folder for output files
-		if(NSDirectory::Exists(output_files_directory))
-			NSDirectory::DeleteDirectory(output_files_directory);
-
-		NSDirectory::CreateDirectory(output_files_directory);
-
 		// waiting...
 		do
+		{
 			NSThreads::Sleep(50);
-		while(IsAllBusy());
+		}while(IsAllBusy());
 
 		m_coresCS.Enter();
 
@@ -685,6 +694,14 @@ DWORD CConverter::ThreadProc()
 
 	bool is_all_ok = true;
 
+#ifdef WIN32
+
+	// x2t cannot work with normalized paths in xml
+	if(m_outputFilesDirectory.find(L"\\\\?\\") == 0)
+		m_outputFilesDirectory.erase(0, 4);
+
+#endif // WIN32
+
 	// input_format in many output exts
 	for(int i = 0; i < m_outputFormats.size(); i++)
 	{
@@ -692,12 +709,15 @@ DWORD CConverter::ThreadProc()
 
 		std::wstring output_ext =  checker.GetExtensionByType(output_format);
 		std::wstring xml_params_filename = input_filename + L"_" + output_ext + L".xml";
-		std::wstring xml_params_file = m_outputFilesDirectory + L"/" + xml_params_filename;
+		std::wstring xml_params_file = m_outputFilesDirectory + FILE_SEPARATOR_STR + xml_params_filename;
 
 		std::wstring output_file = m_outputFilesDirectory
-				+ L"/" + input_filename_no_ext + output_ext;
+				+ FILE_SEPARATOR_STR + input_filename_no_ext + output_ext;
 
 		std::wstring output_filename = NSFile::GetFileName(output_file);
+
+		xml_params_file = CorrectPathW(xml_params_file);
+
 
 		// creating temporary xml file with params
 		NSStringUtils::CStringBuilder builder;
@@ -724,7 +744,7 @@ DWORD CConverter::ThreadProc()
 		builder.WriteString(L"<m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 
 		builder.WriteString(L"<m_sAllFontsPath>");
-		builder.WriteEncodeXmlString(m_fontsDirectory + L"/AllFonts.js");
+		builder.WriteEncodeXmlString(m_fontsDirectory + FILE_SEPARATOR_STR + L"AllFonts.js");
 		builder.WriteString(L"</m_sAllFontsPath>");
 
 		builder.WriteString(L"<m_sFontDir>");
@@ -757,16 +777,30 @@ DWORD CConverter::ThreadProc()
 			builder.WriteString(L"</m_nCsvDelimiterChar>");
 		}
 
-
 		builder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");
-
 		builder.WriteString(L"</Root>");
 
 		std::wstring xml_params = builder.GetData();
-		NSFile::CFileBinary::SaveToFile(xml_params_file, xml_params, true);
 
-		// waiting
-		WaitFile(xml_params_file);
+		NSFile::CFileBinary o_xml_file;
+		bool is_created = o_xml_file.CreateFileW(xml_params_file);
+		if(!is_created)
+		{
+			m_internal->m_outputCS.Enter();
+			std::cout << "Error creating XML conversion file!" << std::endl;
+			m_internal->m_outputCS.Leave();
+			continue;
+		}
+		o_xml_file.WriteStringUTF8(xml_params, true);
+		o_xml_file.CloseFile();
+
+#ifdef WIN32
+
+		// x2t cannot work with normalized paths in xml
+		if(xml_params_file.find(L"\\\\?\\") == 0)
+			xml_params_file.erase(0, 4);
+
+#endif // WIN32
 
 		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
 
@@ -812,7 +846,8 @@ DWORD CConverter::ThreadProc()
 		// save param xml of error conversion
 		if(exit_code || !exist)
 		{
-			std::wstring err_xml_file = m_errorsXmlDirectory + L"/" + xml_params_filename;
+			std::wstring err_xml_file = m_errorsXmlDirectory + FILE_SEPARATOR_STR + xml_params_filename;
+			err_xml_file = CorrectPathW(err_xml_file);
 			NSFile::CFileBinary::SaveToFile(err_xml_file, xml_params, true);
 		}
 

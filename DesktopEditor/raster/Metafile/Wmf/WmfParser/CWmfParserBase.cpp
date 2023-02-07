@@ -724,21 +724,36 @@ namespace MetaFile
 		return true;
 	}
 
-	void CWmfParserBase::DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage, unsigned int unRasterOperation)
+	void CWmfParserBase::DrawImage(const TRect& oDestRect, const TRect& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation)
 	{
 		if (NULL != m_pInterpretator)
 		{
 			BYTE* pBgra = NULL;
 			unsigned int unWidth, unHeight;
+
 			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight))
 			{
 				ProcessRasterOperation(unRasterOperation, &pBgra, unWidth, unHeight);
 
 				double dX, dY, dX1, dY1;
-				TranslatePoint(nX, nY, dX, dY);
-				TranslatePoint(nX + nW, nY + nH, dX1, dY1);
+				TranslatePoint(oDestRect.nLeft, oDestRect.nTop, dX, dY);
+				TranslatePoint(oDestRect.nRight, oDestRect.nBottom, dX1, dY1);
 
-				m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+				if (oDestRect != oSrcRect)
+				{
+					TRect oClip = oSrcRect;
+					BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
+
+					if (NULL != pNewBuffer)
+					{
+						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pNewBuffer, std::abs(oClip.nRight - oClip.nLeft), std::abs(oClip.nBottom - oClip.nTop));
+						delete[] pNewBuffer;
+					}
+					else
+						m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+				}
+				else
+					m_pInterpretator->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
 			}
 
 			if (pBgra)
@@ -750,9 +765,56 @@ namespace MetaFile
 		}
 		else
 		{
-			RegisterPoint(nX, nY);
-			RegisterPoint(nX + nW, nY + nH);
+			RegisterPoint(oDestRect.nLeft, oDestRect.nTop);
+			RegisterPoint(oDestRect.nRight, oDestRect.nBottom);
 		}
+	}
+
+	BYTE *CWmfParserBase::ClipBuffer(BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, TRect &oNewRect)
+	{
+		if (NULL == pBuffer ||
+		    oNewRect.nLeft < 0 || oNewRect.nRight  < 0 ||
+		    oNewRect.nTop  < 0 || oNewRect.nBottom < 0)
+			return NULL;
+
+		if (unHeight < (oNewRect.nBottom - oNewRect.nTop))
+			oNewRect.nBottom = oNewRect.nTop + unWidth;
+
+		if (unWidth < (oNewRect.nRight - oNewRect.nLeft))
+			oNewRect.nRight = oNewRect.nLeft + unWidth;
+
+		if (unHeight == (oNewRect.nBottom - oNewRect.nTop) &&
+		    unWidth  == (oNewRect.nRight  - oNewRect.nLeft))
+			return NULL;
+
+		int nBeginX, nBeginY, nEndX, nEndY;
+
+		nBeginX = (std::min)(oNewRect.nLeft, oNewRect.nRight);
+		nBeginY = (std::min)(oNewRect.nTop,  oNewRect.nBottom);
+
+		nEndX   = (std::max)(oNewRect.nLeft, oNewRect.nRight);
+		nEndY   = (std::max)(oNewRect.nTop,  oNewRect.nBottom);
+
+		int nWidth = nEndX - nBeginX;
+		int nHeight = nEndY - nBeginY;
+
+		BYTE* pNewBuffer = new BYTE[nWidth * nHeight * 4];
+
+		ULONG ulPos = 0;
+
+		for (ULONG ulPosY = nBeginY * 4; ulPosY < nEndY * 4; ulPosY += 4)
+		{
+			for (ULONG ulPosX = nBeginX * 4; ulPosX < nEndX * 4; ulPosX += 4)
+			{
+				pNewBuffer[ulPos + 0]   = (BYTE)pBuffer[ulPosY * unWidth + ulPosX + 0];
+				pNewBuffer[ulPos + 1]   = (BYTE)pBuffer[ulPosY * unWidth + ulPosX + 1];
+				pNewBuffer[ulPos + 2]   = (BYTE)pBuffer[ulPosY * unWidth + ulPosX + 2];
+				pNewBuffer[ulPos + 3]   = (BYTE)pBuffer[ulPosY * unWidth + ulPosX + 3];
+				ulPos += 4;
+			}
+		}
+
+		return pNewBuffer;
 	}
 
 	void CWmfParserBase::UpdateOutputDC()
@@ -828,7 +890,9 @@ namespace MetaFile
 		}
 		else
 		{
-			DrawImage(oWmfBitBlt.XDest, oWmfBitBlt.YDest, oWmfBitBlt.Width, oWmfBitBlt.Height, 0, oWmfBitBlt.RasterOperation);
+			TRect oDestRect(oWmfBitBlt.XDest, oWmfBitBlt.YDest, oWmfBitBlt.XDest + oWmfBitBlt.Width, oWmfBitBlt.YDest + oWmfBitBlt.Height);
+
+			DrawImage(oDestRect, oDestRect, 0, oWmfBitBlt.RasterOperation);
 		}
 	}
 
@@ -846,7 +910,9 @@ namespace MetaFile
 		}
 		else
 		{
-			DrawImage(oWmfStretchBlt.XDest, oWmfStretchBlt.YDest, oWmfStretchBlt.DestWidth, oWmfStretchBlt.DestHeight, 0, oWmfStretchBlt.RasterOperation);
+			TRect oDestRect(oWmfStretchBlt.XDest, oWmfStretchBlt.YDest, oWmfStretchBlt.XDest + oWmfStretchBlt.DestWidth, oWmfStretchBlt.YDest + oWmfStretchBlt.DestHeight);
+
+			DrawImage(oDestRect, oDestRect, 0, oWmfStretchBlt.RasterOperation);
 		}
 	}
 
@@ -855,8 +921,10 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_SETDIBTODEV(oWmfSetDibToDev, oDataStream);
 
+		TRect oDestRect(oWmfSetDibToDev.xDest, oWmfSetDibToDev.yDest, oWmfSetDibToDev.xDest + oWmfSetDibToDev.Width, oWmfSetDibToDev.yDest + oWmfSetDibToDev.Height);
+
 		// TODO: Тут надо делать обрезку в зависимости от ScanCount и StartScan. Как встретится файл сделать.
-		DrawImage(oWmfSetDibToDev.xDest, oWmfSetDibToDev.yDest, oWmfSetDibToDev.Width, oWmfSetDibToDev.Height, oWmfSetDibToDev.ColorUsage, 0);
+		DrawImage(oDestRect, oDestRect, oWmfSetDibToDev.ColorUsage, 0);
 	}
 
 	void CWmfParserBase::HANDLE_META_STRETCHBLT(const TWmfStretchBlt &oWmfStretchBlt, CDataStream &oDataStream)
@@ -870,7 +938,10 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_STRETCHDIB(oWmfStretchDib, oDataStream);
 
-		DrawImage(oWmfStretchDib.xDst, oWmfStretchDib.yDst, oWmfStretchDib.DestWidth, oWmfStretchDib.DestHeight, oWmfStretchDib.ColorUsage, oWmfStretchDib.RasterOperation);
+		TRect oDestRect(oWmfStretchDib.xDst, oWmfStretchDib.yDst, oWmfStretchDib.xDst + oWmfStretchDib.DestWidth, oWmfStretchDib.yDst + oWmfStretchDib.DestHeight);
+		TRect oScrcRect(oWmfStretchDib.XSrc, oWmfStretchDib.YSrc, oWmfStretchDib.XSrc + oWmfStretchDib.SrcWidth, oWmfStretchDib.YSrc + oWmfStretchDib.SrcHeight);
+
+		DrawImage(oDestRect, oScrcRect, oWmfStretchDib.ColorUsage, oWmfStretchDib.RasterOperation);
 	}
 
 	void CWmfParserBase::HANDLE_META_EOF()

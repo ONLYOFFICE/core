@@ -1779,7 +1779,10 @@ void ods_table_state::set_conditional_time(int period)
 }
 void ods_table_state::set_conditional_text(const std::wstring &text)
 {
+	if (text.empty()) return;
+
 	calcext_condition* condition = dynamic_cast<calcext_condition*>(current_level_.back().get());
+	if (!condition) return;
 
 	if ((condition->attr_.calcext_value_) && 
 		(std::wstring::npos != condition->attr_.calcext_value_->find(L"contains-text") || 

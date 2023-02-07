@@ -1465,7 +1465,7 @@ void PptxConverter::convert(PPTX::Logic::Bg *oox_background)
 	odp_context->drawing_context()->end_drawing_background(page_props->content_.common_draw_fill_attlist_);
 	odp_context->drawing_context()->set_background_state(false);
 
-	odp_context->end_drawings();
+	odp_context->drawing_context()->clear();
 }
 
 void PptxConverter::convert_slide(PPTX::Logic::CSld *oox_slide, PPTX::Logic::TxStyles* txStyles, bool bPlaceholders, bool bFillUp, _typePages type)

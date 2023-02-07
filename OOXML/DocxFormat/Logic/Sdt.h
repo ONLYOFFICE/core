@@ -262,6 +262,7 @@ namespace OOX
 
 			nullable<ComplexTypes::Word::CBorder> m_oBorder;
 			nullable<ComplexTypes::Word::CShading> m_oShd;
+			nullable<SimpleTypes::CRelationshipId> m_oFieldRid;
 		};
 
 		//Not from specification
@@ -580,7 +581,6 @@ namespace OOX
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
 			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
-			nullable<SimpleTypes::CRelationshipId> m_oOformRid; // Not from specification
 		};
 
 		//--------------------------------------------------------------------------------

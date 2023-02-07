@@ -6,7 +6,7 @@ CPdfWriter::~CPdfWriter() {}
 int CPdfWriter::SaveToFile(const std::wstring& wsPath) { return 0; }
 void CPdfWriter::SetPassword(const std::wstring& wsPassword) {}
 void CPdfWriter::SetDocumentID(const std::wstring& wsDocumentID) {}
-void CPdfWriter::SetCore(const std::wstring& wsCore) {}
+void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords) {}
 HRESULT CPdfWriter::NewPage() { return 0; }
 HRESULT CPdfWriter::get_Height(double* dHeight) { return 0; }
 HRESULT CPdfWriter::put_Height(const double& dHeight) { return 0; }

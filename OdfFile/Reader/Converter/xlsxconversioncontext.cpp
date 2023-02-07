@@ -632,6 +632,18 @@ void xlsx_conversion_context::start_paragraph(const std::wstring & styleName)
 
 void xlsx_conversion_context::end_paragraph()
 {
+	if (xlsx_text_context_.is_drawing_context())
+	{
+		get_drawing_context().process_objects(get_table_metrics());
+
+		if (false == get_drawing_context().empty())
+		{
+			std::wstringstream strm;
+			get_drawing_context().serialize(strm, L"a", true);
+
+			xlsx_text_context_.add_paragraph(strm.str());
+		}
+	}
     xlsx_text_context_.end_paragraph();
 }
 
@@ -761,10 +773,22 @@ xlsx_table_metrics & xlsx_conversion_context::get_table_metrics()
 {
     return get_table_context().get_table_metrics();
 }
-
+void xlsx_conversion_context::start_drawing_context()
+{//todooo если делать множественную вложенность -> vector
+	if (xlsx_drawing_context_) return;
+		
+	xlsx_drawing_context_ = boost::shared_ptr<xlsx_drawing_context>(new xlsx_drawing_context(get_drawing_context_handle(), true));
+}
+void xlsx_conversion_context::end_drawing_context()
+{
+	xlsx_drawing_context_.reset();
+}
 xlsx_drawing_context & xlsx_conversion_context::get_drawing_context()
 {
-    return get_table_context().get_drawing_context();
+	if (xlsx_drawing_context_)
+		return *xlsx_drawing_context_;
+	else
+		return get_table_context().get_drawing_context();
 }
 xlsx_conditionalFormatting_context	& xlsx_conversion_context::get_conditionalFormatting_context()
 {
@@ -811,7 +835,7 @@ void xlsx_conversion_context::end_hyperlink(std::wstring const & href)
 	}
 	else
 	{
-		std::wstring hId = get_drawing_context().add_hyperlink(href);
+		std::wstring hId = get_table_context().get_drawing_context().add_hyperlink(href); // на внешний объект
 		xlsx_text_context_.end_hyperlink(hId); 
 		
 		xlsx_text_context_.end_span2();

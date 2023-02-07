@@ -163,9 +163,11 @@ namespace DocFileFormat
 
 		return true;
 	}
-	bool VMLPictureMapping::ParseEmbeddedEquation( const std::string & xmlString, std::wstring & newXmlString)
+	bool VMLPictureMapping::ParseEmbeddedEquation(std::pair<boost::shared_array<char>, size_t> & data, std::wstring & xmlString)
 	{
-		newXmlString.clear();
+		xmlString.clear();
+
+		if (data.second == 0 || !data.first) return false;
 
 		std::wstring sTempFolder = m_context->_doc->m_sTempFolder;
 		if (sTempFolder.empty())
@@ -177,7 +179,7 @@ namespace DocFileFormat
 
 		NSFile::CFileBinary file; 
 		file.CreateFileW(sTempXmlFile);
-		file.WriteFile((BYTE*)xmlString.c_str(), xmlString.size());
+		file.WriteFile((BYTE*)data.first.get(), data.second);
 		file.CloseFile();
 
 		OOX::CPath path(sTempXmlFile);
@@ -190,13 +192,13 @@ namespace DocFileFormat
 			{
 				OOX::Logic::CParagraph *paragraph = dynamic_cast<OOX::Logic::CParagraph *>(*it);
 
-                for (std::vector<OOX::WritingElement*>::iterator		jt = paragraph->m_arrItems.begin();
-													(paragraph) && (jt != paragraph->m_arrItems.end()); jt++)
+                for (std::vector<OOX::WritingElement*>::iterator jt = paragraph->m_arrItems.begin();
+						(paragraph) && (jt != paragraph->m_arrItems.end()); jt++)
 				{
 					if ((*jt)->getType() == OOX::et_m_oMath)
 					{
 						res = true;
-                        newXmlString = (*jt)->toXML();
+						xmlString = (*jt)->toXML();
 						break;
 					}
 					else if ((*jt)->getType() == OOX::et_m_oMathPara)
@@ -209,7 +211,7 @@ namespace DocFileFormat
 							if ((*kt)->getType() == OOX::et_m_oMath)
 							{
 								res = true;
-                                newXmlString = (*kt)->toXML();
+								xmlString = (*kt)->toXML();
 								break;
 							}
 						}
@@ -240,11 +242,6 @@ namespace DocFileFormat
 		m_caller			=	caller;
 		m_isInlinePicture	=	isInlinePicture;
 		m_inGroup			=	inGroup;
-		
-		m_isBullete			=	false;
-		m_isEquation		=	false;
-		m_isEmbedded		=	false;
-		m_isBlob			=	false;
 
         m_imageData			=	new XMLTools::XMLElement( L"v:imagedata" );
 	}

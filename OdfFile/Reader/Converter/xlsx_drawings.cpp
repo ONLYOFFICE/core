@@ -110,7 +110,7 @@ public:
 		}
     }
 	
-	void serialize(std::wostream & strm, const std::wstring & ns) 
+	void serialize(std::wostream & strm, const std::wstring & ns, bool local)
     {
 		if (drawings_.empty()) return;
 
@@ -118,30 +118,40 @@ public:
 		{
 			for (size_t i = 0 ; i < drawings_.size(); i++)
 			{
-				drawings_[i].serialize(strm, ns);
+				drawings_[i].serialize(strm, ns, local);
 			}
 		}
 		else
 		{
 			CP_XML_WRITER(strm)
 			{
-				CP_XML_NODE(ns + L":wsDr")
+				if (false == local)
 				{
-					if (ns == L"xdr")
+					CP_XML_NODE(ns + L":wsDr")
 					{
-						CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
-					}
-					if (ns == L"cdr")
-					{
-						CP_XML_ATTR(L"xmlns:cdr", L"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing");
-					}
-					CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
-					CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-					CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
+						if (ns == L"xdr")
+						{
+							CP_XML_ATTR(L"xmlns:xdr", L"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing");
+						}
+						if (ns == L"cdr")
+						{
+							CP_XML_ATTR(L"xmlns:cdr", L"http://schemas.openxmlformats.org/drawingml/2006/chartDrawing");
+						}
+						CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
+						CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+						CP_XML_ATTR(L"xmlns:a14", L"http://schemas.microsoft.com/office/drawing/2010/main");
 
-					for (size_t i = 0 ; i < drawings_.size(); i++)
+						for (size_t i = 0; i < drawings_.size(); i++)
+						{
+							drawings_[i].serialize(CP_XML_STREAM(), ns, false);
+						}
+					}
+				}
+				else
+				{
+					for (size_t i = 0; i < drawings_.size(); i++)
 					{
-						drawings_[i].serialize(CP_XML_STREAM(), ns);
+						drawings_[i].serialize(strm, ns, true);
 					}
 				}
 			}
@@ -220,16 +230,12 @@ public:
 			}
 		}
     }
-	void serialize_objects(std::wostream & strm) 
-    {
-		for (size_t i = 0 ; i < drawings_.size(); i++)
-		{
-			if (drawings_[i].type != typeOleObject && drawings_[i].type != typeMsObject) continue;
-
-			drawings_[i].serialize_object(strm);
-		}
-    }
-	void serialize_controls(std::wostream & strm) 
+	
+	void serialize_objects(std::wostream & strm)
+	{
+		serialize_objects(drawings_, strm);
+	}
+	void serialize_controls(std::wostream & strm)
     {
 		for (size_t i = 0 ; i < vml_drawings_.size(); i++)
 		{
@@ -291,9 +297,25 @@ public:
 						(xlsx_sheet_rels_[i].is_internal ? L"" : L"External")) );
 		}
     }
-	bool inGroup;
-
+	std::vector<_xlsx_drawing> get()
+	{
+		return drawings_;
+	}
+	bool inGroup = false;
 private:
+	void serialize_objects(std::vector<_xlsx_drawing> & drawings, std::wostream & strm)
+	{
+		for (size_t i = 0; i < drawings.size(); i++)
+		{
+			if (drawings[i].type == typeGroupShape)
+			{
+				return serialize_objects(drawings[i].childs_, strm);
+			}
+			if (drawings[i].type != typeOleObject && drawings[i].type != typeMsObject) continue;
+
+			drawings[i].serialize_object(strm);
+		}
+	}
 
 	std::vector<_xlsx_drawing>	drawings_;	
 	std::vector<_xlsx_drawing>	vml_drawings_;	
@@ -311,7 +333,10 @@ xlsx_drawings::xlsx_drawings(bool inGroup_) : impl_( new xlsx_drawings::Impl() )
 xlsx_drawings::~xlsx_drawings()
 {
 }
-
+std::vector<_xlsx_drawing> xlsx_drawings::get()
+{
+	return impl_->get();
+}
 void xlsx_drawings::add(_xlsx_drawing & d, bool isInternal, std::wstring const & rid,
 															std::wstring const & ref, _rels_type type, bool sheet_rel)
 {
@@ -323,9 +348,9 @@ void xlsx_drawings::add( bool isInternal, std::wstring const & rid, std::wstring
     impl_->add(isInternal, rid, ref, type, sheet_rel, vml_rel);
 }
 
-void xlsx_drawings::serialize(std::wostream & strm, const std::wstring & ns)
+void xlsx_drawings::serialize(std::wostream & strm, const std::wstring & ns, bool local)
 {
-    impl_->serialize(strm, ns);
+    impl_->serialize(strm, ns, local);
 }
 void xlsx_drawings::serialize_vml(std::wostream & strm)
 {

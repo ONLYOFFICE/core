@@ -387,44 +387,70 @@
 			var rec = {};
 			rec["name"] = reader.readString();
 			rec["page"] = reader.readInt();
-			// Необходимо смещение полученных координат как у getLinks
+			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["x1"] = reader.readDouble();
 			rec["y1"] = reader.readDouble();
 			rec["x2"] = reader.readDouble();
 			rec["y2"] = reader.readDouble();
-
+			rec["alignment"] = readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();
 			var flags = reader.readInt();
 
 			// Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-			if (flags & (1 << 0)
+			if (flags & (1 << 0))
 				rec["userName"] = reader.readString();
+			// Строка стиля по умолчанию (в формате CSS2) - DS
+			if (flags & (1 << 1))
+				rec["defaultStyle"] = reader.readString();
 
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton")
 			{
+				rec["value"] = flags & (1 << 9) ? "Yes" : "Off";
+				// 12.7.4.2.1
+				rec["NoToggleToOff"]  = rec["flag"] & (1 << 14); // NoToggleToOff
+				rec["radiosInUnison"] = rec["flag"] & (1 << 25); // RadiosInUnison
 			}
 			else if (rec["type"] == "text")
 			{
-				if (flags & (1 << 1)
+				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
-				if (flags & (1 << 2)
+				if (flags & (1 << 10))
 					rec["maxLen"] = reader.readInt();
+				if (flags & (1 << 11))
+					rec["richValue"] = reader.readString();
+				// 12.7.4.3
+				rec["multiline"]       = rec["flag"] & (1 << 12); // Multiline
+				rec["password"]        = rec["flag"] & (1 << 13); // Password
+				rec["fileSelect"]      = rec["flag"] & (1 << 20); // FileSelect
+				rec["doNotSpellCheck"] = rec["flag"] & (1 << 22); // DoNotSpellCheck
+				rec["doNotScroll"]     = rec["flag"] & (1 << 23); // DoNotScroll
+				rec["comb"]            = rec["flag"] & (1 << 24); // Comb
+				rec["richText"]        = rec["flag"] & (1 << 25); // RichText
 			}
 			else if (rec["type"] == "combobox" || rec["type"] == "listbox")
 			{
-				if (flags & (1 << 1)
+				if (flags & (1 << 9))
 					rec["value"] = reader.readString();
-				if (flags & (1 << 2)
+				if (flags & (1 << 10))
 				{
 					var n = reader.readInt();
 					rec["opt"] = [];
 					for (int i = 0; i < n; ++i)
 					{
-						rec["opt"].push(reader.readInt());
+						rec["opt"].push(reader.readString());
 					}
 				}
+				// 12.7.4.4
+				rec["editable"]          = rec["flag"] & (1 << 18); // Edit
+				rec["multipleSelection"] = rec["flag"] & (1 << 21); // MultiSelect
+				rec["doNotSpellCheck"]   = rec["flag"] & (1 << 22); // DoNotSpellCheck
+				rec["commitOnSelChange"] = rec["flag"] & (1 << 26); // CommitOnSelChange
 			}
+			// 12.7.3.1
+			rec["readonly"] = rec["flag"] & (1 << 0); // ReadOnly
+			rec["required"] = rec["flag"] & (1 << 1); // Required
+			rec["noexport"] = rec["flag"] & (1 << 2); // NoExport
 
 			res.push(rec);
 		}

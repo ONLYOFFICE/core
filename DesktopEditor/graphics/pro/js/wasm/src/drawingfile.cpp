@@ -399,6 +399,9 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
+            nPathLength = READ_INT(pWidgets + i);
+            i += 4;
+            std::cout << "Q " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::string sType = std::string((char*)(pWidgets + i), nPathLength);
@@ -418,35 +421,50 @@ int main(int argc, char* argv[])
 				std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 				i += nPathLength;
 			}
+            if (nFlags & (1 << 1))
+            {
+                nPathLength = READ_INT(pWidgets + i);
+                i += 4;
+                std::cout << "DS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+                i += nPathLength;
+            }
 			if (sType == "checkbox" || sType == "radiobutton")
 			{
+                std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
 			}
 			else if (sType == "text")
 			{
-				if (nFlags & (1 << 1))
+                if (nFlags & (1 << 9))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 					i += nPathLength;
 				}
-				if (nFlags & (1 << 2))
+                if (nFlags & (1 << 10))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "MaxLen " << nPathLength << ", ";
 				}
+                if (nFlags & (1 << 11))
+                {
+                    nPathLength = READ_INT(pWidgets + i);
+                    i += 4;
+                    std::cout << "RichValue " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+                    i += nPathLength;
+                }
 			}
 			else if (sType == "combobox" || sType == "listbox")
 			{
-				if (nFlags & (1 << 1))
+                if (nFlags & (1 << 9))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 					i += nPathLength;
 				}
-				if (nFlags & (1 << 2))
+                if (nFlags & (1 << 10))
 				{
 					int nOptLength = READ_INT(pWidgets + i);
 					i += 4;

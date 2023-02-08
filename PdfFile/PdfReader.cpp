@@ -752,6 +752,15 @@ BYTE* CPdfReader::GetWidgets()
         oRes.AddDouble(dx2);
         oRes.AddDouble(height - dy2);
 
+        // Выравнивание текста - Q
+        Object oQ;
+        pField->fieldLookup("Q", &oQ);
+        int nQ = 0;
+        if (oQ.isInt())
+            nQ = oQ.getInt();
+        oQ.free();
+        oRes.AddInt(nQ);
+
         // Тип - FT + флаги
         AcroFormFieldType oType = pField->getAcroFormFieldType();
         std::string sType;
@@ -786,7 +795,6 @@ BYTE* CPdfReader::GetWidgets()
         int nFlags = 0;
         Object oFieldRef, oField;
         XRef* xref = m_pPDFDocument->getXRef();
-        std::string sTU;
         if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
         {
             oRes.AddInt(nFlags);
@@ -801,12 +809,24 @@ BYTE* CPdfReader::GetWidgets()
         if (oField.dictLookup("TU", &oTU) && oTU.isString())
         {
             TextString* s = new TextString(oTU.getString());
-            sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            std::string sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
             nFlags |= (1 << 0);
             oRes.WriteString((BYTE*)sTU.c_str(), (unsigned int)sTU.length());
             delete s;
         }
         oTU.free();
+
+        // 2 - Строка стиля по умолчанию - DS
+        Object oDS;
+        if (oField.dictLookup("DS", &oDS) && oDS.isString())
+        {
+            TextString* s = new TextString(oDS.getString());
+            std::string sDS = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            nFlags |= (1 << 1);
+            oRes.WriteString((BYTE*)sDS.c_str(), (unsigned int)sDS.length());
+            delete s;
+        }
+        oDS.free();
 
         // Значение поля - V
         int nValueLength;
@@ -820,10 +840,10 @@ BYTE* CPdfReader::GetWidgets()
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
-            // 2 - Включено
+            // 10 - Включено
 
             if (sValue != "Off")
-                nFlags |= (1 << 1);
+                nFlags |= (1 << 9);
 
             // Если Checkbox/RadioButton наследует Opt, то состояние соответствует порядковому в массиве Kids из Opt
             int nDepth = 0;
@@ -843,7 +863,7 @@ BYTE* CPdfReader::GetWidgets()
                             TextString* s = new TextString(oOptI.getString());
                             sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
                             if (sValue != "Off")
-                                nFlags |= (1 << 1);
+                                nFlags |= (1 << 9);
                             delete s;
                         }
                         oOptJ.free(); oOptI.free();
@@ -866,12 +886,13 @@ BYTE* CPdfReader::GetWidgets()
         case acroFormFieldText:
         case acroFormFieldBarcode:
         {
-            // 2 - Значение
-            // 3 - Максимальное количество символов
+            // 10 - Значение
+            // 11 - Максимальное количество символов
+            // 12 - Расширенный текст RV
 
             if (!sValue.empty())
             {
-                nFlags |= (1 << 1);
+                nFlags |= (1 << 9);
                 oRes.WriteString((BYTE*)sValue.c_str(), (unsigned int)sValue.length());
             }
 
@@ -879,39 +900,61 @@ BYTE* CPdfReader::GetWidgets()
             int nMaxLen = pField->getMaxLen();
             if (nMaxLen > 0)
             {
-                nFlags |= (1 << 2);
+                nFlags |= (1 << 10);
                 oRes.AddInt(nMaxLen);
             }
+
+            Object oRV;
+            if ((nFlag & (1 << 25)) && oField.dictLookup("RV", &oRV) && oRV.isString()) // RichText
+            {
+                TextString* s = new TextString(oRV.getString());
+                std::string sRV = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                nFlags |= (1 << 11);
+                oRes.WriteString((BYTE*)sRV.c_str(), (unsigned int)sRV.length());
+                delete s;
+            }
+            oRV.free();
 
             break;
         }
         case acroFormFieldComboBox:
         case acroFormFieldListBox:
         {
-            // 2 - Значение
-            // 3 - Список значений
+            // 10 - Значение
+            // 11 - Список значений
 
             if (!sValue.empty())
             {
-                nFlags |= (1 << 1);
+                nFlags |= (1 << 9);
                 oRes.WriteString((BYTE*)sValue.c_str(), (unsigned int)sValue.length());
             }
 
             Object oOpt;
             if (oField.dictLookup("Opt", &oOpt) && oOpt.isArray())
             {
-                nFlags |= (1 << 2);
+                nFlags |= (1 << 10);
                 int nOptLength = oOpt.arrayGetLength();
                 oRes.AddInt(nOptLength);
                 for (int j = 0; j < nOptLength; ++j)
                 {
                     Object oOptJ;
-                    if (!oOpt.arrayGet(j, &oOptJ) || !oOptJ.isString())
+                    if (!oOpt.arrayGet(j, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
                     {
                         oOptJ.free();
                         continue;
                     }
 
+                    Object oOptJ2;
+                    if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1 && oOptJ.arrayGet(1, &oOptJ2) && oOptJ2.isString())
+                        oOptJ = oOptJ2;
+                    else
+                        oOptJ2.free();
+
+                    if (!oOptJ.isString())
+                    {
+                        oOptJ.free();
+                        continue;
+                    }
                     TextString* s = new TextString(oOptJ.getString());
                     std::string sOpt = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
                     oRes.WriteString((BYTE*)sOpt.c_str(), (unsigned int)sOpt.length());

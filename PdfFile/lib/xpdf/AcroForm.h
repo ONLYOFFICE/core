@@ -98,6 +98,7 @@ public:
   Object *getFieldRef(Object *ref);
   Object *getValueObj(Object *val);
   Object *getParentRef(Object *parent);
+  Object *fieldLookup(const char *key, Object *obj);
   GBool getTypeFromParent() { return typeFromParent; }
 
 private:
@@ -143,7 +144,6 @@ private:
   Object *getAnnotObj(Object *annotObj);
   Object *getAnnotResources(Dict *annot, Object *res);
   void buildDefaultResourceDict(Object *dr);
-  Object *fieldLookup(const char *key, Object *obj);
   Object *fieldLookup(Dict *dict, const char *key, Object *obj);
   Unicode *utf8ToUnicode(GString *s, int *unicodeLength);
   GString *unicodeToLatin1(Unicode *u, int unicodeLength);

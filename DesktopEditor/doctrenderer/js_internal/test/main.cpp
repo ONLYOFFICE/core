@@ -56,12 +56,13 @@ int main(int argc, char *argv[])
 	// Work with first context
 	oContext1->Enter();
 
-	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
 	{
+		CJSContextScope scope(oContext1);
 		CJSLocalScope local_scope;
 		JSSmart<CJSValue> oResLocal = oContext1->runScript("function f() { return 'Local scope test'; }; f();");
 		std::cout << oResLocal->toStringA() << std::endl;
 	}
+	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
 	JSSmart<CJSValue> oVar2 = oContext1->createString("Hel");
 	oGlobal1->set("v1", oVar2.GetPointer());
 	oContext1->runScript("var res = v1 + 'lo'");

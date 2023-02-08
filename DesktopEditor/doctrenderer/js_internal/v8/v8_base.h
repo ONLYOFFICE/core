@@ -5,6 +5,8 @@
 #include "inspector/inspector_interface.h"
 #endif
 
+#include <stack>
+
 #include "../js_base.h"
 #include "../js_logger.h"
 #include <iostream>
@@ -762,15 +764,17 @@ namespace NSJSBase
     class CJSContextPrivate
     {
     public:
+		int m_nEntered;
+
         CV8Worker m_oWorker;
         v8::Isolate* m_isolate;
-		CJSLocalScope* m_scope;
+		std::stack<CJSLocalScope*> m_scope;
 
 		v8::Persistent<v8::Context>     m_contextPersistent;
 		v8::Local<v8::Context>			m_context;
 
     public:
-        CJSContextPrivate() : m_oWorker(), m_isolate(NULL)
+		CJSContextPrivate() : m_nEntered(0), m_oWorker(), m_isolate(NULL)
         {
         }
     };

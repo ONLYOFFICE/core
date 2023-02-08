@@ -81,4 +81,4 @@ use_javascript_core {
 }
 
 # cout logs
-#DEFINES += LOG_TO_COUT
+DEFINES += LOG_TO_COUT

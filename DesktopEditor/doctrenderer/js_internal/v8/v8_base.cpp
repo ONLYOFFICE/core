@@ -232,8 +232,9 @@ namespace NSJSBase
 #ifdef LOG_TO_COUT
 		std::cout << "Entering isolate \t" << m_internal->m_isolate << std::endl;
 #endif
+		m_internal->m_nEntered++;
 		isolate->Enter();
-		m_internal->m_scope = new CJSLocalScope();
+		m_internal->m_scope.push(new CJSLocalScope());
 		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Enter();
@@ -244,10 +245,15 @@ namespace NSJSBase
 #ifdef LOG_TO_COUT
 		std::cout << "Exiting isolate \t" << m_internal->m_isolate << std::endl;
 #endif
+		m_internal->m_nEntered--;
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Exit();
-		delete(m_internal->m_scope);
-		m_internal->m_context.Clear();
+		delete m_internal->m_scope.top();
+		m_internal->m_scope.pop();
+		if (m_internal->m_nEntered)
+			m_internal->m_context = m_internal->m_isolate->GetCurrentContext();
+		else
+			m_internal->m_context.Clear();
 		m_internal->m_isolate->Exit();
 	}
 

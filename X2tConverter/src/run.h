@@ -45,7 +45,7 @@
 
 namespace NSX2T
 {
-	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *bOutWaitResult = nullptr)
+	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *bOutIsTimeout = nullptr)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -100,8 +100,8 @@ namespace NSX2T
 		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout * 1000);
 
 		// true if timeout
-		if(bOutWaitResult != nullptr)
-				*bOutWaitResult = (bool)nWaitResult;
+		if(bOutIsTimeout != nullptr)
+				*bOutIsTimeout = (WAIT_TIMEOUT == nWaitResult);
 
 		RELEASEARRAYOBJECTS(pCommandLine);
 
@@ -183,8 +183,8 @@ namespace NSX2T
 			while (-1 == waitpid(pid, &status, 0));
 			if(WIFSIGNALED(status))
 			{
-				if(bOutWaitResult != nullptr && WTERMSIG(status) == SIGXCPU)
-					*bOutWaitResult = true;
+				if(bOutIsTimeout != nullptr && WTERMSIG(status) == SIGXCPU)
+					*bOutIsTimeout = true;
 				nReturnCode = status;
 			}
 			else if (WIFEXITED(status))

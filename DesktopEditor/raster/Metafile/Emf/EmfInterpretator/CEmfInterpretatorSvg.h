@@ -201,7 +201,7 @@ namespace MetaFile
 		void End() override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
-						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
+		                int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};
 
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints) override {};
 
@@ -220,9 +220,6 @@ namespace MetaFile
 		void PathClip(IPath* pPath, int nClipMode, TXForm* pTransform = NULL) override;
 		void StartClipPath(unsigned int unMode, int nFillMode = -1) override {};
 		void EndClipPath(unsigned int unMode) override {};
-
-		void AddClip(NodeAttributes &arAttributes);
-		void UpdateClip();
 
 		void UpdateDC() override {};
 		void SetTransform(double& dM11, double& dM12, double& dM21, double& dM22, double& dX, double& dY) override {};

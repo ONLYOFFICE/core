@@ -36,20 +36,6 @@
     <ClInclude Include="..\..\Writer\Converter\VmlShapeTypes2Oox.h" />
     <ClInclude Include="..\..\Writer\Converter\XlsxConverter.h" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\OOXML\Projects\Windows\DocxFormatLib\DocxFormatLib.vcxproj">
-      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\OOXML\Projects\Windows\PPTXFormatLib\PPTXFormat.vcxproj">
-      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
-    </ProjectReference>
-    <ProjectReference Include="cpcommon.vcxproj">
-      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
-    </ProjectReference>
-    <ProjectReference Include="OdfFormatW.vcxproj">
-      <Project>{e5a67556-44da-4481-8f87-0a3aedbd20dd}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BEE01B53-244A-44E6-8947-ED9342D9247E}</ProjectGuid>
     <RootNamespace>Oox2OdfConverter</RootNamespace>

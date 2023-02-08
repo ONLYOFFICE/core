@@ -30,6 +30,7 @@
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\TargetOptions.h" />
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\TextMark.h" />
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\utf8.h" />
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.h" />
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.h" />
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\Common.h" />
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\GraphicsPath.h" />
@@ -429,7 +430,6 @@
     <ClInclude Include="..\..\..\Binary\Presentation\imagemanager.h" />
     <ClInclude Include="..\..\..\Binary\Presentation\pptxwriter.h" />
     <ClInclude Include="..\..\..\Binary\Presentation\WMFToImageConverter.h" />
-    <ClInclude Include="..\..\..\Binary\Presentation\XmlWriter.h" />
     <ClInclude Include="..\..\..\PPTXFormat\App.h" />
     <ClInclude Include="..\..\..\PPTXFormat\CommentAuthors.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Comments.h" />
@@ -813,6 +813,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\BinaryReader.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTShape\CustomGeomShape.cpp" />
@@ -1188,6 +1189,7 @@
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeEllipseCallout.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRectCallout.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\OOXMLShapes\CWedgeRoundRectCallout.cpp" />
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\Pptx2PptShapeConverter.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxFormula.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\PptxShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\toVmlConvert.cpp" />
@@ -1200,7 +1202,6 @@
     <ClCompile Include="..\..\..\Binary\Presentation\FontPicker.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\imagemanager.cpp" />
     <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp" />
-    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\App.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\CommentAuthors.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Comments.cpp" />
@@ -1217,7 +1218,9 @@
     <ClCompile Include="..\..\..\PPTXFormat\Limit\AlbumLayout.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Limit\AnimationDgmBuild.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Limit\BaseLimit.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Limit\BevelType.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Limit\BevelType.cpp">
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\BevelTypeLimit.obj</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\Limit\BlendMode.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Limit\BlipCompression.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Limit\BWMode.cpp" />
@@ -1632,8 +1635,8 @@
     <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(Configuration)\PPTXFormat\</OutDir>
-    <IntDir>$(Configuration)\PPTXFormat\</IntDir>
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
     <IncludePath>..\..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

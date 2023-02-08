@@ -1120,9 +1120,6 @@
     <ClInclude Include="..\..\..\Binary\Presentation\WMFToImageConverter.h">
       <Filter>Binary</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Presentation\XmlWriter.h">
-      <Filter>Binary</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.h">
       <Filter>Vml</Filter>
     </ClInclude>
@@ -2320,6 +2317,9 @@
     <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\utf8.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.h">
+      <Filter>Common\Xml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -3427,9 +3427,6 @@
       <Filter>Binary</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Presentation\PPTXWriter.cpp">
-      <Filter>Binary</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Presentation\XmlWriter.cpp">
       <Filter>Binary</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp">
@@ -4572,6 +4569,12 @@
     <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
       <Filter>Common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.cpp">
+      <Filter>Common\Xml</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\PPTXShape\Pptx2PptShapeConverter.cpp">
+      <Filter>Vml\PptxShape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Limits">
@@ -4642,6 +4645,9 @@
     </Filter>
     <Filter Include="Common">
       <UniqueIdentifier>{b5bd29c4-aaa3-42c1-bcb4-7ef80a910b35}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common\Xml">
+      <UniqueIdentifier>{1461f41f-a436-4c57-bb70-199577dca246}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -376,6 +376,36 @@ namespace MetaFile
 			m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
+	void CInterpretatorSvgBase::ResetClip()
+	{
+		m_wsLastClipId.clear();
+	}
+
+	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
+	{
+		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		TXForm *pTransform = m_pParser->GetTransform();
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>" +
+		            L"</clipPath>";
+	}
+
+	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		TXForm *pTransform = m_pParser->GetTransform();
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
+		            ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
+		            ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
+		            ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>" +
+		            L"</clipPath>";
+	}
+
 	void CInterpretatorSvgBase::AddStroke(NodeAttributes &arAttributes) const
 	{
 		if (NULL == m_pParser)
@@ -618,6 +648,22 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::AddClip(NodeAttributes &arAttributes)
 	{
+		if (NULL == m_pParser)
+			return;
+
+		if (m_wsLastClipId.empty())
+			UpdateClip();
+
+		if (!m_wsLastClipId.empty())
+			arAttributes.push_back({L"clip-path", L"url(#" + m_wsLastClipId + L')'});
+	}
+
+	void CInterpretatorSvgBase::UpdateClip()
+	{
+		IClip* pClip = m_pParser->GetClip();
+
+		if (NULL != pClip)
+			pClip->ClipOnRenderer((CInterpretatorSvgBase*)this);
 	}
 
 	void CInterpretatorSvgBase::AddNoneFill(NodeAttributes &arAttributes) const

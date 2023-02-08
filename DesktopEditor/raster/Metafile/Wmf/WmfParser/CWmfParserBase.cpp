@@ -1255,7 +1255,7 @@ namespace MetaFile
 	void CWmfParserBase::HANDLE_META_TEXTOUT(short shStringLength, unsigned char *pString, short shY, short shX)
 	{
 		if (NULL != m_pInterpretator)
-			m_pInterpretator->HANDLE_META_TEXTOUT(shStringLength, pString, shY, shX);
+			m_pInterpretator->HANDLE_META_TEXTOUT(shStringLength, pString, shX, shY);
 
 		DrawText(pString, shStringLength, shX, shY, NULL);
 	}

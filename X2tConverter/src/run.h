@@ -39,12 +39,13 @@
 #ifdef _LINUX
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/resource.h>
 #include <stdio.h>
 #endif
 
 namespace NSX2T
 {
-	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *nOutWaitResult = nullptr)
+	int Convert(const std::wstring& sConverterDirectory, const std::wstring sXmlPath, unsigned long nTimeout = 0, bool *bOutWaitResult = nullptr)
 	{
 		int nReturnCode = 0;
 		std::wstring sConverterExe = sConverterDirectory + L"/x2t";
@@ -96,11 +97,11 @@ namespace NSX2T
 		if(nTimeout == 0)
 				nTimeout = INFINITE;
 
-		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout);
+		DWORD nWaitResult = WaitForSingleObject(processinfo.hProcess, nTimeout * 1000);
 
 		// true if timeout
-		if(nOutWaitResult != nullptr)
-				*nOutWaitResult = (bool)nWaitResult;
+		if(bOutWaitResult != nullptr)
+				*bOutWaitResult = (bool)nWaitResult;
 
 		RELEASEARRAYOBJECTS(pCommandLine);
 
@@ -163,6 +164,12 @@ namespace NSX2T
 			nenv[1] = sPATH.c_str();
 			nenv[2] = NULL;
 #endif
+			if(nTimeout != 0)
+			{
+				// 5 secs to send signal etc...
+				rlimit limit = {nTimeout, nTimeout + 5};
+				setrlimit(RLIMIT_CPU, &limit);
+			}
 
 			execve(sProgramm.c_str(),
 				   (char * const *)nargs,
@@ -171,9 +178,13 @@ namespace NSX2T
 			break;
 		}
 		default: // parent process, pid now contains the child pid
-			while (-1 == waitpid(pid, &status, 0)); // wait for child to complete
+
+			// wait for child to complete
+			while (-1 == waitpid(pid, &status, 0));
 			if(WIFSIGNALED(status))
 			{
+				if(bOutWaitResult != nullptr && WTERMSIG(status) == SIGXCPU)
+					*bOutWaitResult = true;
 				nReturnCode = status;
 			}
 			else if (WIFEXITED(status))

@@ -209,7 +209,7 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList.SetDefault();
 	m_outputFormatsList.SetOutput();
-	m_timeout = 5 * 60 * 1000; // 5 min
+	m_timeout = 5 * 60; // 5 min
 	SetConfig(configPath);
 	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
 

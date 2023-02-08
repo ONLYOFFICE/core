@@ -28,14 +28,15 @@ namespace SVG
 
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
-		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 
 		void ApplyDefaultStroke(IRenderer* pRenderer, int& nTypePath) const;
 		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
 		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath) const;
 		void ApplyFill(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
-		void ApplyTransform(IRenderer* pRenderer) const;
+		void ApplyTransform(IRenderer* pRenderer, Aggplus::CMatrix& oOldMatrix) const;
 
 		friend class CLine;
 		friend class CRect;
@@ -52,8 +53,9 @@ namespace SVG
 		NSCSS::CNode   m_oXmlNode;
 
 		//Styles
-		SvgColor m_oFill;
-		CStroke  m_oStroke;
+		SvgColor     m_oFill;
+		CStroke      m_oStroke;
+		SvgTransform m_oTransform;
 	};
 }
 

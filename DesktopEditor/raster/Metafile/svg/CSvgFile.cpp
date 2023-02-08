@@ -40,13 +40,13 @@ void CSvgFile::Close()
 
 bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight) const
 {
-	if (NULL == m_pContainer || m_pContainer->Empty() || m_pContainer->GetWidth().Empty() || m_pContainer->GetHeight().Empty())
+	if (NULL == m_pContainer || m_pContainer->Empty())
 		return false;
 
 	dX      = m_pContainer->GetX().ToDouble(NSCSS::Pixel);
-	dY      = m_pContainer->GetY().ToDouble(NSCSS::Pixel);;
-	dWidth  = m_pContainer->GetWidth().ToDouble(NSCSS::Pixel);;
-	dHeight = m_pContainer->GetHeight().ToDouble(NSCSS::Pixel);;
+	dY      = m_pContainer->GetY().ToDouble(NSCSS::Pixel);
+	dWidth  = m_pContainer->GetWidth() .ToDouble(NSCSS::Pixel);
+	dHeight = m_pContainer->GetHeight().ToDouble(NSCSS::Pixel);
 
 	return true;
 }
@@ -84,6 +84,11 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	pRenderer->GetTransform(&oldTransform[0], &oldTransform[1], &oldTransform[2], &oldTransform[3], &oldTransform[4], &oldTransform[5]);
 	pRenderer->ResetTransform();
 
+	double dM11 = dWidth  / dFileWidth;
+	double dM22 = dHeight / dFileHeight;
+
+	pRenderer->SetTransform(dM11, 0, 0, dM22, 0, 0);
+
 	bool bResult = m_pContainer->Draw(pRenderer);
 
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
@@ -97,7 +102,7 @@ void CSvgFile::Init()
 		m_pParser = new SVG::CSvgParser();
 
 	if (NULL == m_pContainer)
-		m_pContainer = new SVG::CContainer();
+		m_pContainer = new SVG::CContainer(300, 150);
 	else
 		m_pContainer->Clear();
 }

@@ -15,6 +15,7 @@ namespace SVG
 	{
 	public:
 		CContainer(CObjectBase* pParent = NULL);
+		CContainer(double dWidth, double dHeight, CObjectBase* pParent = NULL);
 		virtual ~CContainer();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
@@ -33,7 +34,7 @@ namespace SVG
 
 		void AddObject(CObjectBase* pObject);
 	private:
-		void ApplyStyle(IRenderer* pRenderer, int& nTypePath) const override;
+		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		std::vector<CObjectBase*> m_arObjects;
 

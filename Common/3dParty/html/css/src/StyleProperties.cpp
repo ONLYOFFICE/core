@@ -225,7 +225,7 @@ namespace NSCSS
 	{
 		switch(m_enUnitMeasure)
 		{
-			case Percent:    return dPrevValue * m_oValue;
+			case Percent:    return dPrevValue * m_oValue / 100.;
 			case Pixel:      return CUnitMeasureConverter::ConvertPx(m_oValue, enUnitMeasure, 96);
 			case Point:      return CUnitMeasureConverter::ConvertPt(m_oValue, enUnitMeasure, 96);
 			case Cantimeter: return CUnitMeasureConverter::ConvertCm(m_oValue, enUnitMeasure, 96);

@@ -36,27 +36,30 @@ namespace SVG
 			return false;
 
 		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		BeginDraw(pRenderer, nPathType);
+		BeginDraw(pRenderer, nPathType, oOldMatrix);
 		DrawLines(pRenderer);
 		EndDraw(pRenderer, nPathType);
+
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 		return true;
 	}
 
-	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath) const
+	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
 
-		ApplyTransform(pRenderer);
+		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath, true);
 		ApplyFill(pRenderer, nTypePath, true);
 	}
 
-	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath) const
+	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
-		ApplyStyle(pRenderer, nTypePath);
+		ApplyStyle(pRenderer, nTypePath, oOldMatrix);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );

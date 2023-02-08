@@ -12,6 +12,7 @@ namespace SVG
 
 	void CLine::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"x1"))
@@ -57,8 +58,10 @@ namespace SVG
 		double dY2 = m_oY2.ToDouble(NSCSS::Pixel, dParentHeight);
 
 		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, oOldMatrix);
+
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand(c_nPathType);
 
@@ -71,15 +74,17 @@ namespace SVG
 		pRenderer->EndCommand(c_nPathType);
 		pRenderer->PathCommandEnd();
 
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+
 		return true;
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
+	void CLine::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
-		if (NULL == pRenderer )
+		if (NULL == pRenderer)
 			return;
 
-		ApplyTransform(pRenderer);
+		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
 	}
 }

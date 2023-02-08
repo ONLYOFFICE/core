@@ -17,6 +17,7 @@ namespace SVG
 
 	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 
@@ -59,8 +60,9 @@ namespace SVG
 		double dR = m_oR .ToDouble(NSCSS::Pixel);
 
 		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, oOldMatrix);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand(c_nPathType);
@@ -75,15 +77,17 @@ namespace SVG
 
 		pRenderer->PathCommandEnd();
 
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+
 		return true;
 	}
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
+	void CCircle::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
 
-		ApplyTransform(pRenderer);
+		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
 		ApplyFill(pRenderer, nTypePath);
 	}

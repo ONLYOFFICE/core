@@ -26,6 +26,7 @@ namespace SVG
 
 	void CText::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 
@@ -117,21 +118,24 @@ namespace SVG
 		GetWidth();
 
 		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, oOldMatrix);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
 //		for (CTspan* pTspan : m_arChildrens)
 //			pTspan->Draw(pRenderer, pBaseStyle);
 
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+
 		return true;
 	}
 
-	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
+	void CText::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
+		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyFont(pRenderer);
-		ApplyTransform(pRenderer);
 	}
 
 	void CText::ApplyFont(IRenderer* pRenderer) const
@@ -242,7 +246,7 @@ namespace SVG
 		return true;
 	}
 
-	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
+	void CTspan::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 	}
 

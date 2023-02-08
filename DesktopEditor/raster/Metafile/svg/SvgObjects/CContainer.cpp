@@ -9,6 +9,10 @@ namespace SVG
 	    : CObjectBase(pParent)
 	{}
 
+	CContainer::CContainer(double dWidth, double dHeight, CObjectBase *pParent)
+	    : CObjectBase(pParent), m_oWidth(dWidth), m_oHeight(dHeight)
+	{}
+
 	CContainer::~CContainer()
 	{
 		Clear();
@@ -92,7 +96,7 @@ namespace SVG
 			m_arObjects.push_back(pObject);
 	}
 
-	void CContainer::ApplyStyle(IRenderer *pRenderer, int &nTypePath) const
+	void CContainer::ApplyStyle(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 
 	}

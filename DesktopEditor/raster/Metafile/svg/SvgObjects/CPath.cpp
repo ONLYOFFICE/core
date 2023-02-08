@@ -40,8 +40,9 @@ namespace SVG
 			return false;
 
 		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, oOldMatrix);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );
@@ -53,15 +54,17 @@ namespace SVG
 		pRenderer->EndCommand (c_nPathType);
 		pRenderer->PathCommandEnd();
 
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+
 		return true;
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
 
-		ApplyTransform(pRenderer);
+		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
 		ApplyFill(pRenderer, nTypePath);
 	}

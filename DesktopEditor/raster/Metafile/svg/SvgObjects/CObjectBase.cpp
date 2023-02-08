@@ -102,6 +102,12 @@ namespace SVG
 			m_oFill.SetValue(mAttributes.at(L"fill"), ushLevel, bHardMode);
 	}
 
+	void CObjectBase::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"transform"))
+			m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
+	}
+
 	void CObjectBase::ApplyDefaultStroke(IRenderer *pRenderer, int &nTypePath) const
 	{
 		nTypePath += c_nStroke;
@@ -145,12 +151,19 @@ namespace SVG
 			ApplyDefaultFill(pRenderer, nTypePath);
 	}
 
-	void CObjectBase::ApplyTransform(IRenderer *pRenderer) const
+	void CObjectBase::ApplyTransform(IRenderer *pRenderer, Aggplus::CMatrix& oOldMatrix) const
 	{
-		pRenderer->ResetTransform();
+		double dM11, dM12, dM21, dM22, dRx, dRy;
 
-//			Aggplus::CMatrix oMatrix = m_oStyle.m_oTransform.GetMatrix().GetValue();
+		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
 
-		pRenderer->SetTransform(25.4 / 96., 0, 0, 25.4 / 96., 0, 0);
+		oOldMatrix.SetElements(dM11, dM12, dM21, dM22, dRx, dRy);
+
+		Aggplus::CMatrix oMatrix(oOldMatrix);
+		Aggplus::CMatrix oNewMatrix(m_oTransform.GetMatrix().GetValue());
+
+		oMatrix.Multiply(&oNewMatrix);
+
+		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 	}
 }

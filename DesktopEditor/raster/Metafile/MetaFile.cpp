@@ -353,10 +353,6 @@ namespace MetaFile
 	#ifdef METAFILE_SUPPORT_SVG
 		if (m_oSvgFile2.OpenFromFile(wsFilePath) == true)
 		{
-
-		}
-		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
-		{
 			m_lType = c_lMetaSvg;
 			return true;
 		}
@@ -570,10 +566,7 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_SVG
 			case c_lMetaSvg:
 			{
-				*pdX = 0;
-				*pdY = 0;
-				*pdW = m_oSvgFile.get_Width();
-				*pdH = m_oSvgFile.get_Height();
+				m_oSvgFile2.GetBounds(*pdX, *pdY, *pdW, *pdH);
 				break;
 			}
 		#endif

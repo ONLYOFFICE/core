@@ -13,6 +13,7 @@ namespace SVG
 
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 
@@ -65,8 +66,9 @@ namespace SVG
 		double dHeight = m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
 		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType);
+		ApplyStyle(pRenderer, nPathType, oOldMatrix);
 
 		if (m_oRx.Empty() && m_oRy.Empty())
 		{
@@ -114,15 +116,17 @@ namespace SVG
 			pRenderer->PathCommandEnd ();
 		}
 
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath) const
+	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
 
-		ApplyTransform(pRenderer);
+		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
 		ApplyFill(pRenderer, nTypePath);
 	}

@@ -840,46 +840,85 @@ BYTE* CPdfReader::GetWidgets()
         }
         oDS.free();
 
-        // 3 - Границы - Border
-        // 4 - Dash Pattern
+        // Границы и Dash Pattern - Border/BS
         Object oBorder;
-        if (oField.dictLookup("Border", &oBorder) && oBorder.isArray() && oBorder.arrayGetLength() > 2)
+        AnnotBorderType nBorderType = annotBorderSolid;
+        double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
+        if (oField.dictLookup("BS", &oBorder) && oBorder.isDict())
         {
-            int nHorizontalCornerRadius = 0, nVerticalCornerRadius = 0, nBorderWidth = 1;
             Object oV;
-            if (oBorder.arrayGet(0, &oV) && oV.isNum())
-                nHorizontalCornerRadius = oV.getNum();
-            oV.free();
-            if (oBorder.arrayGet(1, &oV) && oV.isNum())
-                nVerticalCornerRadius = oV.getNum();
-            oV.free();
-            if (oBorder.arrayGet(2, &oV) && oV.isNum())
-                nBorderWidth = oV.getNum();
-            oV.free();
-
-            nFlags |= (1 << 2);
-            oRes.AddInt(nHorizontalCornerRadius);
-            oRes.AddInt(nVerticalCornerRadius);
-            oRes.AddInt(nBorderWidth);
-
-            if (oBorder.arrayGetLength() > 3 && oBorder.arrayGet(3, &oV) && oV.isArray() && oV.arrayGetLength() > 1)
+            if (oBorder.dictLookup("S", &oV)->isName())
             {
-                int nDashesAlternating = 0, nGaps = 0;
+                if (oV.isName("S"))
+                    nBorderType = annotBorderSolid;
+                else if (oV.isName("D"))
+                    nBorderType = annotBorderDashed;
+                else if (oV.isName("B"))
+                    nBorderType = annotBorderBeveled;
+                else if (oV.isName("I"))
+                    nBorderType = annotBorderInset;
+                else if (oV.isName("U"))
+                    nBorderType = annotBorderUnderlined;
+            }
+            oV.free();
+            if (oBorder.dictLookup("W", &oV)->isNum())
+                dBorderWidth = oV.getNum();
+            oV.free();
+            if (oBorder.dictLookup("D", &oV)->isArray())
+            {
                 Object oV1;
-                if (oV.arrayGet(0, &oV1) && oV1.isNum())
-                    nDashesAlternating = oV1.getNum();
+                if (oV.arrayGet(0, &oV1)->isNum())
+                    dDashesAlternating = oV1.getNum();
                 oV1.free();
-                if (oV.arrayGet(1, &oV1) && oV1.isNum())
-                    nGaps = oV1.getNum();
+                if (oV.arrayGet(1, &oV1)->isNum())
+                    dGaps = oV1.getNum();
+                else
+                    dGaps = dDashesAlternating;
                 oV1.free();
-
-                nFlags |= (1 << 3);
-                oRes.AddInt(nDashesAlternating);
-                oRes.AddInt(nGaps);
             }
             oV.free();
         }
+        else
+        {
+            oBorder.free();
+            if (oField.dictLookup("Border", &oBorder) && oBorder.isArray() && oBorder.arrayGetLength() > 2)
+            {
+                Object oV;
+                if (oBorder.arrayGet(2, &oV) && oV.isNum())
+                    dBorderWidth = oV.getNum();
+                oV.free();
+
+                if (oBorder.arrayGetLength() > 3 && oBorder.arrayGet(3, &oV) && oV.isArray() && oV.arrayGetLength() > 1)
+                {
+                    nBorderType = annotBorderDashed;
+                    Object oV1;
+                    if (oV.arrayGet(0, &oV1) && oV1.isNum())
+                        dDashesAlternating = oV1.getNum();
+                    oV1.free();
+                    if (oV.arrayGet(1, &oV1) && oV1.isNum())
+                        dGaps = oV1.getNum();
+                    oV1.free();
+                }
+                oV.free();
+            }
+        }
         oBorder.free();
+        oRes.AddInt(nBorderType);
+        oRes.AddDouble(dBorderWidth);
+        if (nBorderType == annotBorderDashed)
+        {
+            oRes.AddDouble(dDashesAlternating);
+            oRes.AddDouble(dGaps);
+        }
+
+        // 3 - Эффекты границы - BE
+        Object oBorderBE, oBorderBEI;
+        if (oField.dictLookup("BE", &oBorder) && oBorder.isDict() && oBorder.dictLookup("S", &oBorderBE)->isName("C") && oBorder.dictLookup("I", &oBorderBEI)->isNum())
+        {
+            nFlags |= (1 << 2);
+            oRes.AddDouble(oBorderBEI.getNum());
+        }
+        oBorder.free(); oBorderBE.free(); oBorderBEI.free();
 
         // Значение поля - V
         int nValueLength;

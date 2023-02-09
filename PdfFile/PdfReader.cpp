@@ -50,6 +50,7 @@
 #include "lib/xpdf/Link.h"
 #include "lib/xpdf/TextOutputDev.h"
 #include "lib/xpdf/AcroForm.h"
+#include "lib/xpdf/Annot.h"
 #include "lib/goo/GList.h"
 
 #include <vector>
@@ -731,6 +732,25 @@ BYTE* CPdfReader::GetWidgets()
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
         AcroFormField* pField = pAcroForms->getField(i);
+        Object oFieldRef, oField;
+        XRef* xref = m_pPDFDocument->getXRef();
+        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
+        {
+            oFieldRef.free(); oField.free();
+            continue;
+        }
+
+        Object oFlag;
+        int nAnnotFlag = 0;
+        if (oField.dictLookup("F", &oFlag) && oFlag.isInt())
+            nAnnotFlag = oFlag.getInt();
+        oFlag.free();
+        if (nAnnotFlag & (1 << 1)) // Hidden
+        {
+            oFieldRef.free(); oField.free();
+            continue;
+        }
+        oRes.AddInt(nAnnotFlag);
 
         // Полное имя поля - T (parent_full_name.child_name)
         int nLengthName;
@@ -789,18 +809,10 @@ BYTE* CPdfReader::GetWidgets()
         // pField->getFont(&pFontRef, &dFontSize);
 
         // Флаг - Ff
-        unsigned int nFlag = pField->getFlags();
-        oRes.AddInt(nFlag);
+        unsigned int nFieldFlag = pField->getFlags();
+        oRes.AddInt(nFieldFlag);
 
         int nFlags = 0;
-        Object oFieldRef, oField;
-        XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
-        {
-            oRes.AddInt(nFlags);
-            continue;
-        }
-
         int nFlagPos = oRes.GetSize();
         oRes.AddInt(nFlags);
 
@@ -827,6 +839,47 @@ BYTE* CPdfReader::GetWidgets()
             delete s;
         }
         oDS.free();
+
+        // 3 - Границы - Border
+        // 4 - Dash Pattern
+        Object oBorder;
+        if (oField.dictLookup("Border", &oBorder) && oBorder.isArray() && oBorder.arrayGetLength() > 2)
+        {
+            int nHorizontalCornerRadius = 0, nVerticalCornerRadius = 0, nBorderWidth = 1;
+            Object oV;
+            if (oBorder.arrayGet(0, &oV) && oV.isNum())
+                nHorizontalCornerRadius = oV.getNum();
+            oV.free();
+            if (oBorder.arrayGet(1, &oV) && oV.isNum())
+                nVerticalCornerRadius = oV.getNum();
+            oV.free();
+            if (oBorder.arrayGet(2, &oV) && oV.isNum())
+                nBorderWidth = oV.getNum();
+            oV.free();
+
+            nFlags |= (1 << 2);
+            oRes.AddInt(nHorizontalCornerRadius);
+            oRes.AddInt(nVerticalCornerRadius);
+            oRes.AddInt(nBorderWidth);
+
+            if (oBorder.arrayGetLength() > 3 && oBorder.arrayGet(3, &oV) && oV.isArray() && oV.arrayGetLength() > 1)
+            {
+                int nDashesAlternating = 0, nGaps = 0;
+                Object oV1;
+                if (oV.arrayGet(0, &oV1) && oV1.isNum())
+                    nDashesAlternating = oV1.getNum();
+                oV1.free();
+                if (oV.arrayGet(1, &oV1) && oV1.isNum())
+                    nGaps = oV1.getNum();
+                oV1.free();
+
+                nFlags |= (1 << 3);
+                oRes.AddInt(nDashesAlternating);
+                oRes.AddInt(nGaps);
+            }
+            oV.free();
+        }
+        oBorder.free();
 
         // Значение поля - V
         int nValueLength;
@@ -905,7 +958,7 @@ BYTE* CPdfReader::GetWidgets()
             }
 
             Object oRV;
-            if ((nFlag & (1 << 25)) && oField.dictLookup("RV", &oRV) && oRV.isString()) // RichText
+            if ((nFieldFlag & (1 << 25)) && oField.dictLookup("RV", &oRV) && oRV.isString()) // RichText
             {
                 TextString* s = new TextString(oRV.getString());
                 std::string sRV = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());

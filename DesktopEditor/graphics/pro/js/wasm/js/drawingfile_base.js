@@ -385,6 +385,17 @@
 		while (reader.isValid())
 		{
 			var rec = {};
+			rec["annotflag"] = reader.readInt();
+			// 12.5.3
+			rec["hidden"]   = rec["annotflag"] & (1 << 1); // Hidden
+			rec["print"]    = rec["annotflag"] & (1 << 2); // Print
+			rec["noZoom"]   = rec["annotflag"] & (1 << 3); // NoZoom
+			rec["noRotate"] = rec["annotflag"] & (1 << 4); // NoRotate
+			rec["noView"]   = rec["annotflag"] & (1 << 5); // NoView
+			rec["readOnly"] = rec["annotflag"] & (1 << 6); // ReadOnly
+			rec["locked"]   = rec["annotflag"] & (1 << 7); // Locked
+			rec["lockedC"]  = rec["annotflag"] & (1 << 9); // LockedContents
+
 			rec["name"] = reader.readString();
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
@@ -403,6 +414,21 @@
 			// Строка стиля по умолчанию (в формате CSS2) - DS
 			if (flags & (1 << 1))
 				rec["defaultStyle"] = reader.readString();
+			// Радиус угла по горизонтали, радиус угла по вертикали и ширина границы - Border
+			if (flags & (1 << 2))
+			{
+				rec["border"] = [];
+				rec["border"].push(reader.readInt());
+				rec["border"].push(reader.readInt());
+				rec["border"].push(reader.readInt());
+			}
+			// Dash Pattern - Border[3]
+			if (flags & (1 << 3))
+			{
+				rec["dashed"] = [];
+				rec["dashed"].push(reader.readInt());
+				rec["dashed"].push(reader.readInt());
+			}
 
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton")
 			{

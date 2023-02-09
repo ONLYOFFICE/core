@@ -382,6 +382,9 @@ int main(int argc, char* argv[])
 		{
 			DWORD nPathLength = READ_INT(pWidgets + i);
 			i += 4;
+			std::cout << "Annot Flag " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
 			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
@@ -399,9 +402,9 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
-            nPathLength = READ_INT(pWidgets + i);
-            i += 4;
-            std::cout << "Q " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Q " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::string sType = std::string((char*)(pWidgets + i), nPathLength);
@@ -409,7 +412,7 @@ int main(int argc, char* argv[])
 			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Flag " << nPathLength << ", ";
+			std::cout << "Field Flag " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Flags " << nPathLength << ", ";
@@ -421,50 +424,71 @@ int main(int argc, char* argv[])
 				std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 				i += nPathLength;
 			}
-            if (nFlags & (1 << 1))
-            {
-                nPathLength = READ_INT(pWidgets + i);
-                i += 4;
-                std::cout << "DS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-                i += nPathLength;
-            }
+			if (nFlags & (1 << 1))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "DS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nFlags & (1 << 2))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Border " << nPathLength << " ";
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << nPathLength << " ";
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << nPathLength << ", ";
+			}
+			if (nFlags & (1 << 3))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Dash Pattern " << nPathLength << " ";
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << nPathLength << ", ";
+			}
 			if (sType == "checkbox" || sType == "radiobutton")
 			{
-                std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
+				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
 			}
 			else if (sType == "text")
 			{
-                if (nFlags & (1 << 9))
+				if (nFlags & (1 << 9))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 					i += nPathLength;
 				}
-                if (nFlags & (1 << 10))
+				if (nFlags & (1 << 10))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "MaxLen " << nPathLength << ", ";
 				}
-                if (nFlags & (1 << 11))
-                {
-                    nPathLength = READ_INT(pWidgets + i);
-                    i += 4;
-                    std::cout << "RichValue " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-                    i += nPathLength;
-                }
+				if (nFlags & (1 << 11))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "RichValue " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
 			}
 			else if (sType == "combobox" || sType == "listbox")
 			{
-                if (nFlags & (1 << 9))
+				if (nFlags & (1 << 9))
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
 					std::cout << "Value " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 					i += nPathLength;
 				}
-                if (nFlags & (1 << 10))
+				if (nFlags & (1 << 10))
 				{
 					int nOptLength = READ_INT(pWidgets + i);
 					i += 4;

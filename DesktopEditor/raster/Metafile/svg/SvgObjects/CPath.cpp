@@ -17,17 +17,17 @@ namespace SVG
 
 	void CPath::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
+		SetTransform(mAttributes, ushLevel, bHardMode);
+		SetStroke(mAttributes, ushLevel, bHardMode);
 
+		if (mAttributes.end() != mAttributes.find(L"d"))
+			ReadFromString(mAttributes.at(L"d"));
 	}
 
 	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
 	{
-		std::wstring wsPoints = oNode.GetAttribute(L"d");
-
-		if (wsPoints.empty())
+		if (!oNode.IsValid())
 			return false;
-
-		ReadFromString(wsPoints);
 
 		SaveNodeData(oNode);
 

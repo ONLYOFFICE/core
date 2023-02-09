@@ -10,7 +10,7 @@ namespace SVG
 	{}
 
 	CContainer::CContainer(double dWidth, double dHeight, CObjectBase *pParent)
-	    : CObjectBase(pParent), m_oWidth(dWidth), m_oHeight(dHeight)
+	    : CObjectBase(pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
 	CContainer::~CContainer()
@@ -21,16 +21,26 @@ namespace SVG
 	void CContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
+			m_oWindow.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
+			m_oWindow.m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"width"))
-			m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
+			m_oWindow.m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"height"))
-			m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
+			m_oWindow.m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"viewBox"))
+		{
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(mAttributes.at(L"viewBox"));
+
+			m_oViewBox.m_oX      = arValues[0];
+			m_oViewBox.m_oY      = arValues[1];
+			m_oViewBox.m_oWidth  = arValues[2];
+			m_oViewBox.m_oHeight = arValues[3];
+		}
 	}
 
 	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
@@ -70,24 +80,14 @@ namespace SVG
 		return m_arObjects.empty();
 	}
 
-	SvgDigit CContainer::GetX() const
+	TRect CContainer::GetWindow() const
 	{
-		return m_oX;
+		return m_oWindow;
 	}
 
-	NSCSS::NSProperties::CDigit CContainer::GetY() const
+	TRect CContainer::GetViewBox() const
 	{
-		return m_oY;
-	}
-
-	SvgDigit CContainer::GetWidth() const
-	{
-		return m_oWidth;
-	}
-
-	NSCSS::NSProperties::CDigit CContainer::GetHeight() const
-	{
-		return m_oHeight;
+		return m_oViewBox;
 	}
 
 	void CContainer::AddObject(CObjectBase *pObject)

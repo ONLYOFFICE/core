@@ -83,6 +83,7 @@ namespace NSCSS
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 
 		bool Empty() const override;
+		bool Zero() const;
 		void Clear() override;
 
 		int          ToInt()     const override;

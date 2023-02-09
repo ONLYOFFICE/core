@@ -18,10 +18,7 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
-		SvgDigit m_oX;
-		SvgDigit m_oY;
-		SvgDigit m_oWidth;
-		SvgDigit m_oHeight;
+		TRect    m_oRect;
 
 		SvgDigit m_oRx;
 		SvgDigit m_oRy;

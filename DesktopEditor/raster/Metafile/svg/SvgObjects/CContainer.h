@@ -27,10 +27,8 @@ namespace SVG
 
 		bool Empty() const;
 
-		SvgDigit GetX() const;
-		SvgDigit GetY() const;
-		SvgDigit GetWidth() const;
-		SvgDigit GetHeight() const;
+		TRect GetWindow() const;
+		TRect GetViewBox() const;
 
 		void AddObject(CObjectBase* pObject);
 	private:
@@ -38,10 +36,8 @@ namespace SVG
 
 		std::vector<CObjectBase*> m_arObjects;
 
-		SvgDigit m_oX;
-		SvgDigit m_oY;
-		SvgDigit m_oWidth;
-		SvgDigit m_oHeight;
+		TRect m_oWindow;
+		TRect m_oViewBox;
 	};
 }
 

@@ -54,7 +54,7 @@ namespace SVG
 
 		//Styles
 		SvgColor     m_oFill;
-		CStroke      m_oStroke;
+		TStroke      m_oStroke;
 		SvgTransform m_oTransform;
 	};
 }

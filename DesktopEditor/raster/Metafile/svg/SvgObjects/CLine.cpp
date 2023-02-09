@@ -48,8 +48,8 @@ namespace SVG
 
 		if (NULL != pContainer)
 		{
-			dParentWidth  = pContainer->GetWidth().ToDouble(NSCSS::Pixel);
-			dParentHeight = pContainer->GetHeight().ToDouble(NSCSS::Pixel);
+			dParentWidth  = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
+			dParentHeight = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
 		}
 
 		double dX1 = m_oX1.ToDouble(NSCSS::Pixel, dParentWidth);

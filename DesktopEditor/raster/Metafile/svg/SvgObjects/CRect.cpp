@@ -18,16 +18,16 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
+			m_oRect.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
+			m_oRect.m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"width"))
-			m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
+			m_oRect.m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"height"))
-			m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
+			m_oRect.m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"rx"))
 			m_oRx.SetValue(mAttributes.at(L"rx"), ushLevel, bHardMode);
@@ -56,14 +56,14 @@ namespace SVG
 
 		if (NULL != pContainer)
 		{
-			dParentWidth  = pContainer->GetWidth().ToDouble(NSCSS::Pixel);
-			dParentHeight = pContainer->GetHeight().ToDouble(NSCSS::Pixel);
+			dParentWidth  = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
+			dParentHeight = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
 		}
 
-		double dX      = m_oX.ToDouble(NSCSS::Pixel, dParentWidth);
-		double dY      = m_oY.ToDouble(NSCSS::Pixel, dParentHeight);
-		double dWidth  = m_oWidth.ToDouble(NSCSS::Pixel, dParentWidth);
-		double dHeight = m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
+		double dX      = m_oRect.m_oX.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY      = m_oRect.m_oY.ToDouble(NSCSS::Pixel, dParentHeight);
+		double dWidth  = m_oRect.m_oWidth.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
@@ -128,7 +128,7 @@ namespace SVG
 
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, nTypePath);
+		ApplyFill(pRenderer, nTypePath, true);
 	}
 
 }

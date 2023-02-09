@@ -237,20 +237,25 @@ namespace NSCSS
 	}
 
 	CDigit::CDigit()
-	    : CValue(DBL_MIN, 0, false)
+	    : CValue(DBL_MIN, 0, false), m_enUnitMeasure(None)
 	{}
 
 	CDigit::CDigit(double dValue)
-	    : CValue(dValue, 0, false)
+	    : CValue(dValue, 0, false), m_enUnitMeasure(None)
 	{}
 
 	CDigit::CDigit(double dValue, unsigned int unLevel, bool bImportant)
-	    : CValue(dValue, unLevel, bImportant)
+	    : CValue(dValue, unLevel, bImportant), m_enUnitMeasure(None)
 	{}
 
 	bool CDigit::Empty() const
 	{
 		return DBL_MIN == m_oValue;
+	}
+
+	bool CDigit::Zero() const
+	{
+		return DBL_MIN == m_oValue || 0. == m_oValue;
 	}
 
 	void CDigit::Clear()
@@ -622,6 +627,9 @@ namespace NSCSS
 
 		std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsValue);
 
+		if (arValues.empty())
+			return false;
+
 		switch (m_enType)
 		{
 			case TransformMatrix:
@@ -637,7 +645,7 @@ namespace NSCSS
 				if (2 != arValues.size())
 					return false;
 
-				m_oValue.Shear(arValues[0], arValues[1]);
+				m_oValue.Shear(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
 				break;
 			}
 			case TransformScale:
@@ -645,15 +653,15 @@ namespace NSCSS
 				if (2 != arValues.size())
 					return false;
 
-				m_oValue.Scale(arValues[0], arValues[1]);
+				m_oValue.Scale(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
 				break;
 			}
 			case TransformRotate:
 			{
-				if (3 != arValues.size())
-					return false;
-
-				m_oValue.RotateAt(arValues[0], arValues[1], arValues[2]);
+				if (3 == arValues.size())
+					m_oValue.RotateAt(arValues[0], arValues[1], arValues[2], Aggplus::MatrixOrderAppend);
+				else
+					m_oValue.RotateAt(arValues[0], 0., 0., Aggplus::MatrixOrderAppend);
 				break;
 			}
 		}

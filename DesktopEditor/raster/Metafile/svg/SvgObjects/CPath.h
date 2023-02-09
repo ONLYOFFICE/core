@@ -356,12 +356,12 @@ namespace SVG
 
 		void Rotate(double dAngle, Point oCenter)
 		{
-			Matrix rotate =	Matrix::Rotate(Point{oCenter.dX, oCenter.dY}, -dAngle * M_PI / 180);
+//			Matrix rotate = Matrix::Rotate(Point{oCenter.dX, oCenter.dY}, -dAngle * M_PI / 180);
 
-			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() - 1; ++unIndex)
-			{
-				m_arPoints[unIndex] = rotate.Transform(m_arPoints[unIndex]);
-			}
+//			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() - 1; ++unIndex)
+//			{
+//				m_arPoints[unIndex] = rotate.Transform(m_arPoints[unIndex]);
+//			}
 		}
 	private:
 		Point GetPoint(int nIndex) const override

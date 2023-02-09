@@ -192,7 +192,7 @@ namespace MetaFile
 		m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
 	}
 
-	void CInterpretatorSvgBase::WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRect& oBounds, const TPointD& oScale)
+	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRect &oBounds, const TPointD &oScale, const std::vector<double>& arDx)
 	{
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
@@ -342,9 +342,25 @@ namespace MetaFile
 
 		size_t unPosLineBreak = wsText.find(L"\n");
 
+		std::wstring wsXCoord;
+
+		if (arDx.empty() || arDx.size() < wsText.length())
+			wsXCoord = ConvertToWString(dXCoord);
+		else
+		{
+			std::vector<double> arXCoords(wsText.length());
+
+			arXCoords[0] = dXCoord;
+
+			for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
+				arXCoords[unIndex] = arDx[unIndex - 1] + arXCoords[unIndex - 1];
+
+			wsXCoord = ConvertToWString(arXCoords);
+		}
+
 		if (std::wstring::npos == unPosLineBreak)
 		{
-			arNodeAttributes.push_back({L"x", ConvertToWString(dXCoord)});
+			arNodeAttributes.push_back({L"x", wsXCoord});
 			arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
 
 			WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
@@ -360,7 +376,7 @@ namespace MetaFile
 			{
 				std::wstring wsTemp = StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart));
 
-				WriteNode(L"tspan", {{L"x", ConvertToWString(dXCoord)},
+				WriteNode(L"tspan", {{L"x", wsXCoord},
 				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
 
 				dYNewCoord += dFontHeight * 1.6;
@@ -1492,5 +1508,4 @@ namespace MetaFile
 	{
 		m_oStringBuilder.WriteNodeEnd(L"pattern");
 	}
-
 }

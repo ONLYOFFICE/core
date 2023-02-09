@@ -194,7 +194,12 @@ namespace MetaFile
 
 		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
 
-		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale);
+		std::vector<double> arDx(0);
+
+		if (NULL != pDx)
+			arDx = std::vector<double>(pDx, pDx + wsText.length());
+
+		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale, arDx);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)

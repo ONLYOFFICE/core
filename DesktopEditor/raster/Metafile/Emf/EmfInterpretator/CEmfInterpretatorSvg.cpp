@@ -365,14 +365,24 @@ namespace MetaFile
 	{
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfExtTextoutA.aEmrText.OutputString, oTEmfExtTextoutA.aEmrText.Chars);
 
-		WriteText(wsText, TPointD(oTEmfExtTextoutA.aEmrText.Reference.x, oTEmfExtTextoutA.aEmrText.Reference.y), oTEmfExtTextoutA.Bounds, TPointD(oTEmfExtTextoutA.exScale, oTEmfExtTextoutA.eyScale));
+		std::vector<double> arDx(0);
+
+		if (NULL != oTEmfExtTextoutA.aEmrText.OutputDx)
+			arDx = std::vector<double>(oTEmfExtTextoutA.aEmrText.OutputDx, oTEmfExtTextoutA.aEmrText.OutputDx + oTEmfExtTextoutA.aEmrText.Chars);
+
+		WriteText(wsText, TPointD(oTEmfExtTextoutA.aEmrText.Reference.x, oTEmfExtTextoutA.aEmrText.Reference.y), oTEmfExtTextoutA.Bounds, TPointD(oTEmfExtTextoutA.exScale, oTEmfExtTextoutA.eyScale), arDx);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_EXTTEXTOUTW(const TEmfExtTextoutW &oTEmfExtTextoutW)
 	{
 		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfExtTextoutW.wEmrText.OutputString, oTEmfExtTextoutW.wEmrText.Chars);
 
-		WriteText(wsText, TPointD(oTEmfExtTextoutW.wEmrText.Reference.x, oTEmfExtTextoutW.wEmrText.Reference.y), oTEmfExtTextoutW.Bounds, TPointD(oTEmfExtTextoutW.exScale, oTEmfExtTextoutW.eyScale));
+		std::vector<double> arDx(0);
+
+		if (NULL != oTEmfExtTextoutW.wEmrText.OutputDx)
+			arDx = std::vector<double>(oTEmfExtTextoutW.wEmrText.OutputDx, oTEmfExtTextoutW.wEmrText.OutputDx + oTEmfExtTextoutW.wEmrText.Chars);
+
+		WriteText(wsText, TPointD(oTEmfExtTextoutW.wEmrText.Reference.x, oTEmfExtTextoutW.wEmrText.Reference.y), oTEmfExtTextoutW.Bounds, TPointD(oTEmfExtTextoutW.exScale, oTEmfExtTextoutW.eyScale), arDx);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_LINETO(const TEmfPointL &oPoint)

@@ -55,7 +55,8 @@ std::wostream & operator << (std::wostream & _Wostream, const office_value_type 
         _Wostream << "percentage";
         break;
 	case office_value_type::Date:
-        _Wostream << "date";
+	case office_value_type::DateTime:
+		_Wostream << "date";
         break;	
  	case office_value_type::Time:
         _Wostream << "time";

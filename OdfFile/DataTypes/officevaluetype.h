@@ -53,7 +53,8 @@ public:
 		Boolean,
 		String,
 		Scientific,
-		Fraction
+		Fraction,
+		DateTime
     };
 
     office_value_type()  {type_ = String;}

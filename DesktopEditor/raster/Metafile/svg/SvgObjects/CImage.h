@@ -1,14 +1,14 @@
-#ifndef CRECT_H
-#define CRECT_H
+#ifndef CIMAGE_H
+#define CIMAGE_H
 
 #include "CObjectBase.h"
 
 namespace SVG
 {
-	class CRect : public CObjectBase
+	class CImage : public CObjectBase
 	{
 	public:
-		CRect(CObjectBase* pParent = NULL);
+		CImage(CObjectBase* pParent = NULL);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
@@ -17,11 +17,9 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
-		TRect    m_oRect;
-
-		SvgDigit m_oRx;
-		SvgDigit m_oRy;
+		TRect        m_oRect;
+		std::wstring m_wsHref;
 	};
 }
 
-#endif // CRECT_H
+#endif // CIMAGE_H

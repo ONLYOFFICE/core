@@ -45,6 +45,7 @@ namespace SVG
 		friend class CPath;
 		friend class CText;
 		friend class CTspan;
+		friend class CImage;
 		friend class CPolyline;
 		friend class CPolygon;
 		friend class CContainer;

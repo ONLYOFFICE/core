@@ -8,9 +8,6 @@ namespace SVG
 	CRect::CRect(CObjectBase *pParent) : CObjectBase(pParent)
 	{}
 
-	CRect::~CRect()
-	{}
-
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);

@@ -11,6 +11,7 @@
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CCircle.h"
 #include "SvgObjects/CStyle.h"
+#include "SvgObjects/CImage.h"
 #include "SvgObjects/CRect.h"
 #include "SvgObjects/CLine.h"
 #include "SvgObjects/CPath.h"
@@ -118,6 +119,8 @@ namespace SVG
 			pObject = new CPolyline(pContainer);
 		else if (L"polygon" == wsElementName)
 			pObject = new CPolygon(pContainer);
+		else if (L"image" == wsElementName)
+			pObject = new CImage(pContainer);
 
 		if (NULL != pObject)
 		{

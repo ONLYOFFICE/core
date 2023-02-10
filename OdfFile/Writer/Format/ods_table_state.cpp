@@ -146,7 +146,7 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 		double dTime = (dDateTime - nDate);
 
 		std::wstring sDate, sTime;
-		if (time > 0)
+		if (dTime > 0)
 		{
 			sTime = convert_time(dTime);
 		}

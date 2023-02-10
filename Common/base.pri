@@ -267,6 +267,7 @@ core_ios {
         QMAKE_CFLAGS += -fembed-bitcode
         QMAKE_CXXFLAGS += -fembed-bitcode
         QMAKE_LFLAGS += -fembed-bitcode
+        QMAKE_CXXFLAGS += -fobjc-arc
 
         bundle_xcframeworks {
             xcframework_platform_ios_simulator {

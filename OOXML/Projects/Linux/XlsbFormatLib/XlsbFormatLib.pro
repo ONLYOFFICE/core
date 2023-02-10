@@ -1148,7 +1148,6 @@ HEADERS += \
 	../../../XlsbFormat/Biff12_records/BeginWsViews.h \
 	../../../XlsbFormat/Biff12_records/BookProtection.h \
 	../../../XlsbFormat/Biff12_records/BookProtectionIso.h \
-	../../../XlsbFormat/Biff12_records/BookView.h \
 	../../../XlsbFormat/Biff12_records/Border.h \
 	../../../XlsbFormat/Biff12_records/BundleSh.h \
 	../../../XlsbFormat/Biff12_records/CFIcon.h \

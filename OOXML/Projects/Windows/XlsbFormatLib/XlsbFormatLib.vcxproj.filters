@@ -756,9 +756,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookProtectionIso.cpp">
       <Filter>records</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookView.cpp">
-      <Filter>records</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Border.cpp">
       <Filter>records</Filter>
     </ClCompile>
@@ -3817,9 +3814,6 @@
       <Filter>records</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookProtectionIso.h">
-      <Filter>records</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookView.h">
       <Filter>records</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Border.h">

@@ -66,7 +66,7 @@ public:
 
     void			start_cell_content();
 	void			set_cell_text_properties( odf_reader::text_format_properties_content_ptr text_properties);
-    int				end_cell_content();
+    int				end_cell_content(bool need_cache);
 
 	void			start_comment_content();
 	std::wstring	end_comment_content();
@@ -576,7 +576,7 @@ std::wstring xlsx_text_context::Impl::end_drawing_content()
 	in_draw = false;
 	return draw;
 }
-int xlsx_text_context::Impl::end_cell_content()
+int xlsx_text_context::Impl::end_cell_content(bool need_cache)
 {
 	dump_run();
 
@@ -585,7 +585,7 @@ int xlsx_text_context::Impl::end_cell_content()
 	
 	in_cell_content = false;  
 
-	const int sharedStrId = cell_string.empty() ? (-1) :  xlsx_shared_strings_.add(cell_string);
+	const int sharedStrId = (!need_cache || cell_string.empty()) ? (-1) :  xlsx_shared_strings_.add(cell_string);
 	return sharedStrId;
 }
 
@@ -647,9 +647,9 @@ void xlsx_text_context::start_cell_content()
 {
     return impl_->start_cell_content();
 }
-int xlsx_text_context::end_cell_content()
+int xlsx_text_context::end_cell_content(bool need_cache)
 {
-    return impl_->end_cell_content();
+    return impl_->end_cell_content(need_cache);
 }
 void xlsx_text_context::start_comment_content()
 {

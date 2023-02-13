@@ -57,7 +57,7 @@ namespace odf_reader {
 static formulasconvert::odf2oox_converter formulas_converter;
 
 
-int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties) 
+int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties, bool need_cache)
 {
 	if (elements_.empty()) return -1;
 
@@ -69,7 +69,7 @@ int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Contex
         elements_[i]->xlsx_convert(Context);
 	}
    
-	const int sharedStrId = Context.get_table_context().end_cell_content();
+	const int sharedStrId = Context.get_table_context().end_cell_content(need_cache);
 
     return sharedStrId;
 }
@@ -922,14 +922,14 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			&cellFormat, num_format, num_format_type, false, is_style_visible);
 	}
 
-	bool need_content_convert = false;
+	bool need_cache_convert = false;
 	if (number_val.empty() && !bool_val)
 	{
 		if (false == formula.empty())
 			xlsx_value_type = oox::XlsxCellType::str;
 		else
 		{
-			need_content_convert = true;
+			need_cache_convert = true;
 		}
 	}		
 //---------------------------------------------------------------------------------------------------------	
@@ -944,11 +944,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 		if (is_style_visible)
 			Context.set_current_cell_style_id(xfId_last_set);
 //---------------------------------------------------------------------------------------------------------	
-		if (need_content_convert)
-		{
-			need_content_convert = false;
-			sharedStringId = content_.xlsx_convert(Context, textFormatProperties);
-		}
+		sharedStringId = content_.xlsx_convert(Context, textFormatProperties, need_cache_convert);
 
 		if (xlsx_value_type == oox::XlsxCellType::str || xlsx_value_type == oox::XlsxCellType::inlineStr)
 		{

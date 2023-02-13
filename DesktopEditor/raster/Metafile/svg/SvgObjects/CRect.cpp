@@ -3,6 +3,8 @@
 #include "CContainer.h"
 #include "../SvgTypes.h"
 
+#include "CPattern.h"
+
 namespace SVG
 {
 	CRect::CRect(CObjectBase *pParent) : CObjectBase(pParent)
@@ -43,7 +45,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CRect::Draw(IRenderer *pRenderer) const
+	bool CRect::Draw(IRenderer *pRenderer, CDefs *pDefs) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -65,7 +67,7 @@ namespace SVG
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType, oOldMatrix);
+		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
 
 		if (m_oRx.Empty() && m_oRy.Empty())
 		{
@@ -118,14 +120,25 @@ namespace SVG
 		return true;
 	}
 
-	void CRect::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CRect::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
 
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, nTypePath, true);
+		ApplyFill(pRenderer, pDefs, nTypePath, true);
+	}
+
+	void CRect::ApplyFillObject(IRenderer *pRenderer, CObjectBase *pObject, CDefs *pDefs) const
+	{
+		if (NULL == pRenderer || NULL ==pObject)
+			return;
+
+		CPattern *pPattern = dynamic_cast<CPattern*>(pObject);
+
+		if (NULL != pPattern)
+			pPattern->DrawDef(pRenderer, m_oRect, pDefs);
 	}
 
 }

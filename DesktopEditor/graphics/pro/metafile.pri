@@ -74,6 +74,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/CSvgFile.h \
 		$$METAFILE_PATH/svg/CSvgParser.h \
 		$$METAFILE_PATH/svg/SvgObjects/CContainer.h \
+		$$METAFILE_PATH/svg/SvgObjects/CDefs.h \
+		$$METAFILE_PATH/svg/SvgObjects/CPattern.h \
 		$$METAFILE_PATH/svg/SvgObjects/CImage.h \
 		$$METAFILE_PATH/svg/SvgObjects/CLine.h \
 		$$METAFILE_PATH/svg/SvgObjects/CRect.h \
@@ -92,6 +94,8 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		$$METAFILE_PATH/svg/CSvgFile.cpp \
 		$$METAFILE_PATH/svg/CSvgParser.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CContainer.cpp \
+		$$METAFILE_PATH/svg/SvgObjects/CDefs.cpp \
+		$$METAFILE_PATH/svg/SvgObjects/CPattern.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CImage.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CLine.cpp \
 		$$METAFILE_PATH/svg/SvgObjects/CRect.cpp \

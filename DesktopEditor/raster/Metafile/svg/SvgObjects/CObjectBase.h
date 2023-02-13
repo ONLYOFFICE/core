@@ -9,6 +9,7 @@
 
 namespace SVG
 {
+	class CDefs;
 	class CObjectBase
 	{
 	public:
@@ -16,13 +17,15 @@ namespace SVG
 		virtual ~CObjectBase();
 
 		virtual bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) = 0;
-		virtual bool Draw(IRenderer* pRenderer) const = 0;
+		virtual bool Draw(IRenderer* pRenderer, CDefs *pDefs) const = 0;
 
 		std::vector<NSCSS::CNode> GetFullPath() const;
 
 		void SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode = false);
 
 		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
+
+		std::wstring GetId() const;
 	private:
 		void SaveNodeData(XmlUtils::CXmlNode& oNode);
 
@@ -30,13 +33,15 @@ namespace SVG
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
-		virtual void ApplyStyle(IRenderer* pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
+		virtual void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 
 		void ApplyDefaultStroke(IRenderer* pRenderer, int& nTypePath) const;
 		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
 		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath) const;
-		void ApplyFill(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
+		void ApplyFill(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, bool bUseDedault = false) const;
 		void ApplyTransform(IRenderer* pRenderer, Aggplus::CMatrix& oOldMatrix) const;
+
+		virtual void ApplyFillObject(IRenderer* pRenderer, CObjectBase* pObject, CDefs *pDefs) const {};
 
 		friend class CLine;
 		friend class CRect;

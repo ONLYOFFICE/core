@@ -7,6 +7,7 @@
 
 #include "CSvgParser.h"
 #include "SvgObjects/CStyle.h"
+#include "SvgObjects/CDefs.h"
 
 class GRAPHICS_DECL CSvgFile
 {
@@ -26,6 +27,7 @@ class GRAPHICS_DECL CSvgFile
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
 		void AddStyles(const std::wstring& wsStyles);
+		void AddDefs(XmlUtils::CXmlNode& oNode);
 
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
@@ -33,6 +35,7 @@ class GRAPHICS_DECL CSvgFile
 
 		SVG::CSvgParser    *m_pParser;
 		SVG::CContainer    *m_pContainer;
+		SVG::CDefs          m_oDefs;
 		SVG::CSvgCalculator m_oSvgCalculator;
 };
 

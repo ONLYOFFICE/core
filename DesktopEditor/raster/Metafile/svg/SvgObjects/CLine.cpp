@@ -38,7 +38,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CLine::Draw(IRenderer *pRenderer) const
+	bool CLine::Draw(IRenderer *pRenderer, CDefs *pDefs) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -60,7 +60,7 @@ namespace SVG
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		ApplyStyle(pRenderer, nPathType, oOldMatrix);
+		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand(c_nPathType);
@@ -79,7 +79,7 @@ namespace SVG
 		return true;
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CLine::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;

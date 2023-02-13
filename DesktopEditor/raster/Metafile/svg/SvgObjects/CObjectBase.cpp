@@ -1,5 +1,7 @@
 #include "CObjectBase.h"
 
+#include "CDefs.h"
+
 namespace SVG
 {
 	CObjectBase::CObjectBase(CObjectBase *pParent)
@@ -63,6 +65,11 @@ namespace SVG
 
 		if (!mAttributes.empty())
 			SetData(mAttributes, ushLevel, bHardMode);
+	}
+
+	std::wstring CObjectBase::GetId() const
+	{
+		return m_oXmlNode.m_sId;
 	}
 
 	void CObjectBase::SaveNodeData(XmlUtils::CXmlNode &oNode)
@@ -137,7 +144,7 @@ namespace SVG
 		pRenderer->put_BrushColor1(0);
 	}
 
-	void CObjectBase::ApplyFill(IRenderer *pRenderer, int &nTypePath, bool bUseDedault) const
+	void CObjectBase::ApplyFill(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, bool bUseDedault) const
 	{
 		if (NSCSS::NSProperties::ColorType::ColorNone == m_oFill.GetType())
 			return;
@@ -147,6 +154,8 @@ namespace SVG
 			nTypePath += c_nWindingFillMode;
 			pRenderer->put_BrushColor1(m_oFill.ToInt());
 		}
+		else if (NSCSS::NSProperties::ColorType::ColorUrl == m_oFill.GetType() && NULL != pDefs)
+			ApplyFillObject(pRenderer, pDefs->GetDef(m_oFill.ToWString()), pDefs);
 		else if (bUseDedault)
 			ApplyDefaultFill(pRenderer, nTypePath);
 	}

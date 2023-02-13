@@ -41,7 +41,7 @@ namespace SVG
 		return true;
 	}
 
-	bool CImage::Draw(IRenderer *pRenderer) const
+	bool CImage::Draw(IRenderer *pRenderer, CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || m_wsHref.empty())
 			return false;
@@ -100,7 +100,7 @@ namespace SVG
 		return true;
 	}
 
-	void CImage::ApplyStyle(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CImage::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;

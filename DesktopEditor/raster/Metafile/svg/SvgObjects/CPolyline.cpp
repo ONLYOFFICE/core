@@ -30,7 +30,7 @@ namespace SVG
 		return m_arValues.size() >= 4;
 	}
 
-	bool CPolyline::Draw(IRenderer *pRenderer) const
+	bool CPolyline::Draw(IRenderer *pRenderer, CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || m_arValues.size() < 4)
 			return false;
@@ -38,7 +38,7 @@ namespace SVG
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 
-		BeginDraw(pRenderer, nPathType, oOldMatrix);
+		BeginDraw(pRenderer, pDefs, nPathType, oOldMatrix);
 		DrawLines(pRenderer);
 		EndDraw(pRenderer, nPathType);
 
@@ -47,19 +47,19 @@ namespace SVG
 		return true;
 	}
 
-	void CPolyline::ApplyStyle(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CPolyline::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
 
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath, true);
-		ApplyFill(pRenderer, nTypePath, true);
+		ApplyFill(pRenderer, pDefs, nTypePath, true);
 	}
 
-	void CPolyline::BeginDraw(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CPolyline::BeginDraw(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
-		ApplyStyle(pRenderer, nTypePath, oOldMatrix);
+		ApplyStyle(pRenderer, pDefs, nTypePath, oOldMatrix);
 
 		pRenderer->PathCommandStart();
 		pRenderer->BeginCommand ( c_nPathType );

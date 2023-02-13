@@ -8,6 +8,7 @@
 
 #include "SvgObjects/CContainer.h"
 #include "SvgObjects/CPolyline.h"
+#include "SvgObjects/CPattern.h"
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CCircle.h"
 #include "SvgObjects/CStyle.h"
@@ -83,26 +84,23 @@ namespace SVG
 
 		CObjectBase *pObject = NULL;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName)
+		if (L"svg" == wsElementName || L"g" == wsElementName || L"pattern" == wsElementName)
 		{
-//			CContainer *pNewContainer = new CContainer(pContainer);
+			CContainer *pNewContainer = (L'p' == wsElementName.front()) ? new CPattern(pContainer) : new CContainer(pContainer);
 
-//			if (NULL == pNewContainer)
-//				return false;
+			if (NULL == pNewContainer)
+				return false;
 
-//			if (pNewContainer->ReadFromXmlNode(oElement, *this, pFile))
-//			{
-//				pContainer->AddObject(pNewContainer);
-//				return true;
-//			}
-//			else
-//				return false;
+			if (LoadFromXmlNode(oElement, pNewContainer, pFile))
+			{
+				pContainer->AddObject(pNewContainer);
+				return true;
+			}
+			else
+				return false;
 		}
 		else if (L"style" == wsElementName)
-		{
-			if (NULL != pFile)
-				pFile->AddStyles(oElement.GetText());
-		}
+			pFile->AddStyles(oElement.GetText());
 		else if (L"line" == wsElementName)
 			pObject = new CLine(pContainer);
 		else if (L"rect" == wsElementName)
@@ -121,6 +119,8 @@ namespace SVG
 			pObject = new CPolygon(pContainer);
 		else if (L"image" == wsElementName)
 			pObject = new CImage(pContainer);
+		else if (L"defs" == wsElementName)
+			pFile->AddDefs(oElement);
 
 		if (NULL != pObject)
 		{

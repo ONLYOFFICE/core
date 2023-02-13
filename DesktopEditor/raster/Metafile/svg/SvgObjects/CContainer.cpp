@@ -47,9 +47,11 @@ namespace SVG
 	{
 		std::wstring wsNodeName = oNode.GetName();
 
-		if (L"svg" != wsNodeName &&
-		    L"g"   != wsNodeName &&
-		    L"xml" != wsNodeName)
+		if (L"svg"     != wsNodeName &&
+		    L"g"       != wsNodeName &&
+		    L"xml"     != wsNodeName &&
+		    L"defs"    != wsNodeName &&
+		    L"pattern" != wsNodeName)
 			return false;
 
 		Clear();
@@ -59,13 +61,13 @@ namespace SVG
 		return true;
 	}
 
-	bool CContainer::Draw(IRenderer *pRenderer) const
+	bool CContainer::Draw(IRenderer *pRenderer, CDefs *pDefs) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		for (CObjectBase* pObject : m_arObjects)
-			pObject->Draw(pRenderer);
+			pObject->Draw(pRenderer, pDefs);
 
 		return true;
 	}
@@ -96,7 +98,7 @@ namespace SVG
 			m_arObjects.push_back(pObject);
 	}
 
-	void CContainer::ApplyStyle(IRenderer *pRenderer, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CContainer::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 
 	}

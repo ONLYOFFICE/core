@@ -475,7 +475,7 @@ namespace NSCSS
 		size_t unEndURL   = wsValue.find(L')', unStartURL);
 
 		if (std::wstring::npos != unStartURL && std::wstring::npos != unEndURL && (6 < unEndURL - unStartURL))
-			return wsValue.substr(unStartURL + 5, unEndURL - unStartURL - 6);
+			return wsValue.substr(unStartURL + 5, unEndURL - unStartURL - 5);
 
 		return std::wstring();
 	}
@@ -508,12 +508,14 @@ namespace NSCSS
 			if (std::wstring::npos == unEnd)
 				return false;
 
-			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3));
+			std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(wsNewValue.substr(4, unEnd - 3), L" (),");
 
 			if (3 > arValues.size())
 				return false;
 
-			m_oValue.SetRGB(std::stoi(arValues[0]), std::stoi(arValues[0]), std::stoi(arValues[2]));
+			m_oValue.SetRGB(NS_STATIC_FUNCTIONS::ReadDouble(arValues[0]),
+			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[1]),
+			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
 			return true;
 		}
 		else if (5 <= wsValue.length() && wsValue.substr(0, 3) == L"url")

@@ -386,7 +386,7 @@ namespace NSCSS
 
 		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Highlight, oStyle.m_oBackground.GetColor().ToWString());
 		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Color, oStyle.m_oText.GetColor().ToWString());
-		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_U, oStyle.m_oText.GetDecoration().ToWString());
+		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_U, (oStyle.m_oText.GetDecoration().m_oLine.Underline()) ? L"underline" : L"");
 		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_Sz, oStyle.m_oFont.GetSize().ToWString());
 		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_RFonts, oStyle.m_oFont.GetFamily().ToWString());
 		oXmlElement.AddPropertiesInR(NSConstValues::NSProperties::RunnerProperties::R_I, oStyle.m_oFont.GetStyle().ToWString());

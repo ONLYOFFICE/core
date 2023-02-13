@@ -22,10 +22,14 @@ namespace SVG
 		bool Draw(IRenderer* pRenderer, CDefs *pDefs) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
-		void ApplyFont(IRenderer* pRenderer) const;
+//		void ApplyStyle(IRenderer* pRenderer, double& dX, double& dY) const;
+//		void ApplyTransform(IRenderer* pRenderer, double& dX, double& dY, double& dFontSize) const;
 
 		double GetWidth() const;
+
+		void Normalize();
 
 		NSFonts::IFontManager* m_pFontManager;
 
@@ -37,6 +41,7 @@ namespace SVG
 		std::vector<CTspan*> m_arChildrens;
 
 		SvgFont m_oFont;
+		SvgText m_oText;
 
 		friend class CTspan;
 	};

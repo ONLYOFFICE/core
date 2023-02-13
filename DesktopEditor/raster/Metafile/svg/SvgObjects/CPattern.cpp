@@ -49,6 +49,7 @@ namespace SVG
 		CContainer::Draw(pGrRenderer, pDefs);
 
 		pGrRenderer->EndCommand(c_nImageType);
+		RELEASEINTERFACE(pGrRenderer);
 
 		oFrame.put_Data(NULL);
 
@@ -58,8 +59,6 @@ namespace SVG
 		for (double dX = oParentRect.m_oX.ToDouble(); dX < oParentRect.m_oWidth.ToDouble(); dX += nWidth)
 			for (double dY = oParentRect.m_oY.ToDouble(); dY < oParentRect.m_oHeight.ToDouble(); dY += nHeight)
 				pRenderer->DrawImage(&oImage, dX, dY, nWidth, nHeight);
-
-		RELEASEINTERFACE(pGrRenderer);
 
 		return true;
 	}

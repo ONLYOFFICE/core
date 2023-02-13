@@ -63,6 +63,15 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"line-height"))
 			m_oFont.SetLineHeight(mAttributes.at(L"line-height"), ushLevel, bHardMode);
+
+		//TEXT
+		if (mAttributes.end() != mAttributes.find(L"text-anchor"))
+			m_oText.SetAlign(mAttributes.at(L"text-anchor"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"text-decoration"))
+			m_oText.SetDecoration(mAttributes.at(L"text-decoration"), ushLevel, bHardMode);
+
+		Normalize();
 	}
 
 	bool CText::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
@@ -100,9 +109,6 @@ namespace SVG
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		double dM11, dM12, dM21, dM22, dRx, dRy;
-		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
 		double dParentWidth = 0, dParentHeight = 0;
 		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
 
@@ -115,12 +121,14 @@ namespace SVG
 		double dX = m_oX.ToDouble(NSCSS::Pixel, dParentWidth);
 		double dY = m_oY.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		GetWidth();
+		Aggplus::CMatrix oOldMatrix(1., 0., .0, 1., 0., 0.);
 
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
+		int nPlug = 0;
 
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
+		ApplyStyle(pRenderer,pDefs, nPlug, oOldMatrix);
+
+		ApplyTransform(pRenderer, oOldMatrix);
+		ApplyFont(pRenderer, dX, dY);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
@@ -134,14 +142,39 @@ namespace SVG
 
 	void CText::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
-		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyFont(pRenderer);
 	}
 
-	void CText::ApplyFont(IRenderer* pRenderer) const
+//	void CText::ApplyStyle(IRenderer *pRenderer, double &dX, double &dY) const
+//	{
+//		double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+////		ApplyTransform(pRenderer, dX, dY, dFontSize);
+//		Aggplus::CMatrix oOld;
+//		CObjectBase::ApplyTransform(pRenderer, oOld);
+//		ApplyFont(pRenderer, dFontSize);
+//	}
+
+//	void CText::ApplyTransform(IRenderer *pRenderer, double &dX, double &dY, double &dFontSize) const
+//	{
+//		double dM11, dM12, dM21, dM22, dRx, dRy;
+
+//		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
+
+//		Aggplus::CMatrix oMatrix(dM11, dM12, dM21, dM22, dRx, dRy);
+//		Aggplus::CMatrix oNewMatrix(m_oTransform.GetMatrix().GetValue());
+
+//		oMatrix.Multiply(&oNewMatrix);
+
+//		oMatrix.TransformPoint(dX, dY);
+//		dFontSize *= oNewMatrix.sy();
+//	}
+
+	void CText::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
 	{
-		pRenderer->put_FontName((!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily);
-		pRenderer->put_FontSize((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.);
+		std::wstring wsFontFamily = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
+		double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+
+		pRenderer->put_FontName(wsFontFamily);
+		pRenderer->put_FontSize(dFontSize);
 
 		int nStyle = 0;
 
@@ -149,10 +182,55 @@ namespace SVG
 			nStyle |= 0x01;
 		if (m_oFont.GetStyle() .ToWString() == L"italic")
 			nStyle |= 0x02;
-//			if (pFont->IsUnderline())
-//				nStyle |= (1 << 2);
-//			if (pFont->IsStrikeOut())
-//				nStyle |= (1 << 7);
+		if (m_oText.Underline())
+			nStyle |= (1 << 2);
+
+		// Вычиления размеров текста
+		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 72, 72);
+		m_pFontManager->SetCharSpacing(0);
+
+		double dKoef     = 25.4 / 96;
+		double dFHeight  = dFontSize;
+		double dFDescent = dFontSize;
+
+		NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
+
+		if (pFontFile)
+		{
+			dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dKoef;
+			dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dKoef;
+		}
+		double dFAscent  = dFHeight - std::abs(dFDescent);
+
+		float fL, fT, fW, fH, fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
+
+		m_pFontManager->LoadString1(m_wsText, 0, 0);
+		TBBox oBox = m_pFontManager->MeasureString2();
+		fL = (float)dKoef * (oBox.fMinX);
+		fW = (float)dKoef * (oBox.fMaxX - oBox.fMinX);
+
+		// Просчитаем положение подчеркивания
+		m_pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+		fUndY1   *= (float)dKoef;
+		fUndY2   *= (float)dKoef;
+		fUndSize *= (float)dKoef / 2;
+
+		fUndX1 = fL;
+		fUndX2 = fL + fW;
+
+		fT = (float)-dFAscent;
+		fH = (float)dFHeight;
+
+		float fTemp = -fT;
+
+		dX += -fTemp;
+		dY +=  fTemp;
+
+		if (L"left" == m_oText.GetAlign().ToWString())
+			dX += -fW;
+		else if (L"center" == m_oText.GetAlign().ToWString())
+			dX += -fW / 2;
+
 
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -175,6 +253,31 @@ namespace SVG
 			dWidth += pTspan->GetWidth();
 
 		return dWidth;
+	}
+
+	void CText::Normalize()
+	{
+		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetValue();
+
+		double dM11 = oMatrix.sx();
+		double dM22 = oMatrix.sy();
+
+		if (dM11 < 0.05 || dM11 > 100)
+		{
+			m_oX *= dM11;
+			dM11 /= std::abs(dM11);
+		}
+
+		if (dM22 < 0.05 || dM22 > 100)
+		{
+			m_oY *= dM22;
+			m_oFont.UpdateSize(m_oFont.GetSize().ToDouble(NSCSS::Pixel) * dM22);
+			dM22 /= std::abs(dM22);
+		}
+
+		oMatrix.SetElements(dM11, oMatrix.shy(), oMatrix.shx(), dM22, oMatrix.tx(), oMatrix.ty());
+
+		m_oTransform.SetMatrix(oMatrix);
 	}
 
 	CTspan::CTspan(CObjectBase *pParent) : CObjectBase(pParent), m_oCoord({0, 0})

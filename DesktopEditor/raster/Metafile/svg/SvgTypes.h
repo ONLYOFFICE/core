@@ -16,6 +16,7 @@ namespace SVG
 
     #define SvgTransform NSCSS::NSProperties::CTransform
     #define SvgFont      NSCSS::NSProperties::CFont
+    #define SvgText      NSCSS::NSProperties::CText
 
 	struct TStroke
 	{

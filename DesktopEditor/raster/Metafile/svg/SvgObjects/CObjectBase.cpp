@@ -126,6 +126,9 @@ namespace SVG
 	{
 		if (!m_oStroke.m_oColor.Empty())
 		{
+			if (NSCSS::NSProperties::ColorType::ColorNone == m_oStroke.m_oColor.GetType())
+				return;
+
 			nTypePath += c_nStroke;
 			pRenderer->put_PenColor(m_oStroke.m_oColor.ToInt());
 

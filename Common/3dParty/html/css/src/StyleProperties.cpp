@@ -671,6 +671,12 @@ namespace NSCSS
 		return true;
 	}
 
+	bool CMatrix::SetMatrix(const Aggplus::CMatrix &oValue)
+	{
+		m_oValue = oValue;
+		return true;
+	}
+
 	bool CMatrix::Empty() const
 	{
 		return m_oValue.IsIdentity();
@@ -1030,6 +1036,12 @@ namespace NSCSS
 		return m_oMatrix.SetValue(wsValue, unLevel, bHardMode);
 	}
 
+	bool CTransform::SetMatrix(const Aggplus::CMatrix &oMatrix)
+	{
+		m_oMatrix.SetMatrix(oMatrix);
+		return true;
+	}
+
 	const CMatrix& CTransform::GetMatrix() const
 	{
 		return m_oMatrix;
@@ -1361,7 +1373,7 @@ namespace NSCSS
 	{
 		CDigit ::Equation(oFirstText.m_oIndent,     oSecondText.m_oIndent);
 		CString::Equation(oFirstText.m_oAlign,      oSecondText.m_oAlign);
-		CString::Equation(oFirstText.m_oDecoration, oSecondText.m_oDecoration);
+//		CString::Equation(oFirstText.m_oDecoration, oSecondText.m_oDecoration);
 		CColor ::Equation(oFirstText.m_oColor,      oSecondText.m_oColor);
 	}
 
@@ -1378,13 +1390,25 @@ namespace NSCSS
 
 	bool CText::SetAlign(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oAlign.SetValue(wsValue, {std::make_pair(L"center", L"center"), std::make_pair(L"justify", L"both"), std::make_pair(L"left",  L"left"), std::make_pair(L"start", L"left"), std::make_pair(L"right", L"right"), std::make_pair(L"end", L"right")}, unLevel, bHardMode);
+		return m_oAlign.SetValue(wsValue, {std::make_pair(L"center", L"center"), std::make_pair(L"middle", L"center"), std::make_pair(L"justify", L"both"), std::make_pair(L"left",  L"left"), std::make_pair(L"start", L"left"), std::make_pair(L"right", L"right"), std::make_pair(L"end", L"right")}, unLevel, bHardMode);
 	}
 
 	bool CText::SetDecoration(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		return m_oDecoration.SetValue(wsValue, {std::make_pair(L"underline", L"single"), std::make_pair(L"line-through", L"line-through"), std::make_pair(L"none", L"none")}, unLevel, bHardMode);
-	}
+		if (wsValue.empty())
+			return false;
+
+		for (const std::wstring& wsVal : NSCSS::NS_STATIC_FUNCTIONS::GetWordsW(wsValue))
+		{
+			if (m_oDecoration.m_oLine.SetValue(wsVal) ||
+			    m_oDecoration.m_oStyle.SetValue(wsValue, {L"solid", L"double", L"dotted", L"dashed", L"wavy"}, unLevel, bHardMode) ||
+			    m_oDecoration.m_oColor.SetValue(wsValue, unLevel, bHardMode))
+				continue;
+			else
+				return false;
+		}
+
+		return true;	}
 
 	bool CText::SetColor(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
@@ -1401,7 +1425,7 @@ namespace NSCSS
 		return m_oAlign;
 	}
 
-	const CString& CText::GetDecoration() const
+	const TTextDecoration& CText::GetDecoration() const
 	{
 		return m_oDecoration;
 	}
@@ -1414,7 +1438,22 @@ namespace NSCSS
 	bool CText::Empty() const
 	{
 		return m_oIndent.Empty()     && m_oAlign.Empty() &&
-		       m_oDecoration.Empty() && m_oColor.Empty();
+		       m_oDecoration.m_oLine.Empty() && m_oColor.Empty();
+	}
+
+	bool CText::Underline() const
+	{
+		return m_oDecoration.m_oLine.Underline();
+	}
+
+	bool CText::Overline() const
+	{
+		return m_oDecoration.m_oLine.Overline();
+	}
+
+	bool CText::LineThrough() const
+	{
+		return m_oDecoration.m_oLine.LineThrough();
 	}
 
 	CText &CText::operator+=(const CText &oText)
@@ -1431,7 +1470,7 @@ namespace NSCSS
 	{
 		return m_oIndent     == oText.m_oIndent     &&
 		       m_oAlign      == oText.m_oAlign      &&
-		       m_oDecoration == oText.m_oDecoration &&
+//		       m_oDecoration == oText.m_oDecoration &&
 		       m_oColor      == oText.m_oColor;
 	}
 
@@ -1588,6 +1627,77 @@ namespace NSCSS
 	}
 
 	// FONT
+	CTextDecorationLine::CTextDecorationLine()
+	    : m_bUnderline(false), m_bOverline(false), m_bLineThrough(false)
+	{}
+
+	bool CTextDecorationLine::Empty() const
+	{
+		return false == m_bUnderline && false == m_bOverline && false == m_bLineThrough;
+	}
+
+	bool CTextDecorationLine::SetValue(const std::wstring &wsValue)
+	{
+		if (L"underline" == wsValue)
+		{
+			m_bUnderline = true;
+			return true;
+		}
+		else if (L"overline" == wsValue)
+		{
+			m_bOverline = true;
+			return true;
+		}
+		else if (L"line-through" == wsValue)
+		{
+			m_bLineThrough = true;
+			return true;
+		}
+		else if (L"none" == wsValue)
+		{
+			m_bUnderline = m_bOverline = m_bLineThrough = false;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool CTextDecorationLine::Underline() const
+	{
+		return m_bUnderline;
+	}
+
+	bool CTextDecorationLine::Overline() const
+	{
+		return m_bOverline;
+	}
+
+	bool CTextDecorationLine::LineThrough() const
+	{
+		return m_bLineThrough;
+	}
+
+	CTextDecorationLine &CTextDecorationLine::operator+=(const CTextDecorationLine &oTextDecoration)
+	{
+		if (oTextDecoration.m_bUnderline)
+			m_bUnderline = true;
+		if (oTextDecoration.m_bOverline)
+			m_bOverline = true;
+		if (oTextDecoration.m_bLineThrough)
+			m_bLineThrough = true;
+
+		return *this;
+	}
+
+	TTextDecoration &TTextDecoration::operator+=(const TTextDecoration &oTextDecoration)
+	{
+		m_oLine  += oTextDecoration.m_oLine;
+		m_oStyle += oTextDecoration.m_oStyle;
+		m_oColor += oTextDecoration.m_oColor;
+
+		return *this;
+	}
+
 	CFont::CFont()
 	    : m_oSize(24., 0)
 	{}
@@ -1723,6 +1833,22 @@ namespace NSCSS
 		return m_oWeight.SetValue(wsValue, {std::make_pair(L"normal", L"normal"), std::make_pair(L"300", L"normal"), std::make_pair(L"400", L"normal"), std::make_pair(L"500", L"normal"),
 		                                    std::make_pair(L"bold", L"bold"), std::make_pair(L"bolder", L"bold"), std::make_pair(L"600", L"bold"),
 		                                    std::make_pair(L"700", L"bold"), std::make_pair(L"800", L"bold"), std::make_pair(L"900", L"bold")}, unLevel, bHardMode);
+	}
+
+	bool CFont::UpdateSize(double dSize)
+	{
+		m_oSize = dSize;
+		return true;
+	}
+
+	bool CFont::Bold() const
+	{
+		return m_oWeight == L"bold";
+	}
+
+	bool CFont::Italic() const
+	{
+		return m_oStyle == L"italic";
 	}
 
 	void CFont::Clear()
@@ -1893,8 +2019,7 @@ namespace NSCSS
 
 	bool CColorValue::Empty() const
 	{
-		return (ColorEmpty == m_enType) || (ColorRGB == m_enType && static_cast<TRGB*>(m_pColor)->Empty()) ||
-		        ((ColorHEX == m_enType || ColorUrl == m_enType) && static_cast<std::wstring*>(m_pColor)->empty());
+		return ColorEmpty == m_enType;
 	}
 
 	std::wstring CColorValue::GetColor() const

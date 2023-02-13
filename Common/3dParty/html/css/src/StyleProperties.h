@@ -196,6 +196,7 @@ namespace NSCSS
 		CMatrix(const Aggplus::CMatrix& oValue, unsigned int unLevel, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
+		bool SetMatrix(const Aggplus::CMatrix& oValue);
 
 		bool Empty() const override;
 		void Clear() override;
@@ -310,6 +311,7 @@ namespace NSCSS
 		static void Equation(CTransform &oFirstTransform, CTransform &oSecondTransform);
 
 		bool SetMatrix(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetMatrix(const Aggplus::CMatrix &oMatrix);
 
 		const CMatrix& GetMatrix() const;
 
@@ -410,6 +412,34 @@ namespace NSCSS
 		CBorderSide m_oBottom;
 	};
 
+	class CTextDecorationLine
+	{
+		bool m_bUnderline;
+		bool m_bOverline;
+		bool m_bLineThrough;
+	public:
+		CTextDecorationLine();
+
+		bool Empty() const;
+
+		bool SetValue(const std::wstring& wsValue);
+
+		bool Underline()   const;
+		bool Overline()    const;
+		bool LineThrough() const;
+
+		CTextDecorationLine &operator+=(const CTextDecorationLine& oTextDecoration);
+	};
+
+	struct TTextDecoration
+	{
+		CTextDecorationLine m_oLine;
+		CString             m_oStyle;
+		CColor              m_oColor;
+
+		TTextDecoration& operator+=(const TTextDecoration& oTextDecoration);
+	};
+
 	class CText
 	{
 	public:
@@ -422,20 +452,24 @@ namespace NSCSS
 		bool SetDecoration(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetColor     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
-		const CDigit&  GetIndent()     const;
-		const CString& GetAlign()      const;
-		const CString& GetDecoration() const;
-		const CColor&  GetColor()      const;
+		const CDigit&          GetIndent()     const;
+		const CString&         GetAlign()      const;
+		const TTextDecoration& GetDecoration() const;
+		const CColor&          GetColor()      const;
 
 		bool Empty() const;
+
+		bool Underline()   const;
+		bool Overline()    const;
+		bool LineThrough() const;
 
 		CText& operator+=(const CText& oText);
 		bool   operator==(const CText& oText) const;
 	private:
-		CDigit  m_oIndent;
-		CString m_oAlign;
-		CString m_oDecoration;
-		CColor  m_oColor;
+		TTextDecoration m_oDecoration;
+		CDigit          m_oIndent;
+		CString         m_oAlign;
+		CColor          m_oColor;
 	};
 
 	class CIndent
@@ -480,16 +514,21 @@ namespace NSCSS
 
 		static void Equation(CFont &oFirstFont, CFont &oSecondFont);
 
-		bool SetValue     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetSize      (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetLineHeight(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetFamily    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetStretch   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetStyle     (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetVariant   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
-		bool SetWeight    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetValue         (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetSize          (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetLineHeight    (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetFamily        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetStretch       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetStyle         (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetVariant       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+		bool SetWeight        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+
+		bool UpdateSize(double dSize);
 
 		void Clear();
+
+		bool Bold() const;
+		bool Italic() const;
 
 		const CDigit&  GetSize()       const;
 		const CDigit&  GetLineHeight() const;
@@ -507,11 +546,13 @@ namespace NSCSS
 		CDigit  m_oSize;
 		CDigit  m_oLineHeight;
 		CString m_oFamily;
-		//TODO:: возможно стоит перейти в слудующих переменых на enum
+		//TODO:: возможно стоит перейти в слудующих переменных на enum
 		CString m_oStretch;
 		CString m_oStyle;
 		CString m_oVariant;
 		CString m_oWeight;
+
+		TTextDecoration m_oTextDecoration;
 	};
 	}
 }

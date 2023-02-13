@@ -173,6 +173,9 @@ public:
 	xlsx_comments_context_handle & get_comments_context_handle();
 	xlsx_conditionalFormatting_context	& get_conditionalFormatting_context();
 
+	void start_drawing_context();
+	void end_drawing_context();
+
 	xlsx_dataValidations_context & get_dataValidations_context()	{ return xlsx_dataValidations_context_;}
 
 	xlsx_drawing_context_handle_ptr & get_drawing_context_handle();	
@@ -214,6 +217,7 @@ private:
     xlsx_comments_context_handle    xlsx_comments_context_handle_;
 	xlsx_dataValidations_context	xlsx_dataValidations_context_;
     xlsx_drawing_context_handle_ptr	drawing_context_handle_;
+	xlsx_drawing_context_ptr		xlsx_drawing_context_;
 	
 	math_context					math_context_;
 	forms_context					forms_context_;

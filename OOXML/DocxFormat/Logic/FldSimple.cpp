@@ -189,6 +189,8 @@ namespace OOX
 			if ( oReader.IsEmptyNode() )
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
@@ -269,8 +271,10 @@ namespace OOX
 					m_oFFData = oReader;
 				}
 
-				if ( pItem )
-					m_arrItems.push_back( pItem );
+				if (pItem)
+				{
+					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CFldSimple::toXML() const

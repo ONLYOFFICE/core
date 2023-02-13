@@ -66,9 +66,9 @@ namespace OOX
 				if (L"w:docPart" == sName)
 				{
 					CDocPart *pItem = new CDocPart(m_pMainDocument);
-					m_arrItems.push_back(pItem);
-
 					pItem->fromXML(oReader);
+
+					m_arrItems.push_back(pItem);
 				}
 			}
 		}
@@ -223,6 +223,8 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
@@ -276,7 +278,10 @@ namespace OOX
 				else if (L"m:oMathPara" == sName)
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
 				else if (L"w:p" == sName)
-					AssignPtrXmlContent(pItem, CParagraph, oReader)
+				{
+					pItem = new CParagraph(document, this);
+					pItem->fromXML(oReader);
+				}
 				else if (L"w:permEnd" == sName)
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
 				else if (L"w:permStart" == sName)
@@ -289,7 +294,9 @@ namespace OOX
 					AssignPtrXmlContent(pItem, CTbl, oReader)
 
 				if (pItem)
+				{
 					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CDocPartBody::toXML() const

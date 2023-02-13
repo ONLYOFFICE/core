@@ -209,8 +209,10 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList.SetDefault();
 	m_outputFormatsList.SetOutput();
+	m_timeout = 5 * 60; // 5 min
 	SetConfig(configPath);
 	m_errorsXmlDirectory = m_outputDirectory + FILE_SEPARATOR_STR + L"_errors";
+
 
 	// CorrectPathW works strange with directories starts with "./"
 	if(m_outputDirectory.find(L"./") == 0)
@@ -293,6 +295,7 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"errorsOnly" && !node.GetText().empty()) m_bIsErrorsOnly = std::stoi(node.GetText());
 			else if(name == L"timestamp" && !node.GetText().empty()) m_bIsTimestamp = std::stoi(node.GetText());
 			else if(name == L"deleteOk" && !node.GetText().empty()) m_bIsDeleteOk = std::stoi(node.GetText());
+			else if(name == L"timeout" && !node.GetText().empty()) m_timeout = std::stoi(node.GetText());
 			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty())  m_bIsfilenameCsvTxtParams = std::stoi(node.GetText());
 			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
 			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
@@ -523,6 +526,7 @@ void Cx2tTester::Start()
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
 		converter->SetCsvTxtEncoding(csvTxtEncoding);
 		converter->SetCsvDelimiter(csvDelimiter);
+		converter->SetTimeout(m_timeout);
 		converter->SetFilesCount(files.size(), i + 1);
 		converter->DestroyOnFinish();
 		m_currentProc++;
@@ -560,7 +564,7 @@ void Cx2tTester::WriteReport(const Report& report)
 	m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
 	m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
 	m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
-	m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", false);
+	m_reportStream.WriteStringUTF8(report.exitCode + L"\t", false);
 	m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 }
 void Cx2tTester::WriteReports(const std::vector<Report>& reports)
@@ -574,14 +578,14 @@ void Cx2tTester::WriteReports(const std::vector<Report>& reports)
 		m_reportStream.WriteStringUTF8(std::to_wstring(report.time) + L"\t", false);
 		m_reportStream.WriteStringUTF8(std::to_wstring(report.inputSize) + L"\t", false);
 		m_reportStream.WriteStringUTF8(std::to_wstring(report.outputSize) + L"\t", false);
-		m_reportStream.WriteStringUTF8(std::to_wstring(report.exitCode) + L"\t", false);
+		m_reportStream.WriteStringUTF8(report.exitCode + L"\t", false);
 		m_reportStream.WriteStringUTF8(report.log + L"\n", false);
 	}
 }
 void Cx2tTester::WriteTime()
 {
 	CTemporaryCS CS(&m_reportCS);
-	DWORD time = NSTimers::GetTickCount() - m_timeStart;
+	unsigned long time = NSTimers::GetTickCount() - m_timeStart;
 	m_reportStream.WriteStringUTF8(L"Time: " + std::to_wstring(time));
 }
 
@@ -623,7 +627,7 @@ std::vector<int> Cx2tTester::ParseExtensionsString(std::wstring extensions, cons
 	return formats;
 }
 
-CConverter::CConverter(Cx2tTester* internal) : m_internal(internal), m_bIsErrorsOnly(false)
+CConverter::CConverter(Cx2tTester* internal) : m_internal(internal)
 {
 }
 CConverter::~CConverter()
@@ -671,9 +675,13 @@ void CConverter::SetCsvTxtEncoding(int csvTxtEncoding)
 {
 	m_csvTxtEncoding = csvTxtEncoding;
 }
-void CConverter::SetCsvDelimiter(std::wstring csvDelimiter)
+void CConverter::SetCsvDelimiter(const std::wstring& csvDelimiter)
 {
 	m_csvDelimiter = csvDelimiter;
+}
+void CConverter::SetTimeout(unsigned long timeout)
+{
+	m_timeout = timeout;
 }
 void CConverter::SetFilesCount(int totalFiles, int currFile)
 {
@@ -690,7 +698,7 @@ DWORD CConverter::ThreadProc()
 	std::wstring input_ext = L'.' + NSFile::GetFileExtention(input_filename);
 	std::wstring input_filename_no_ext = input_filename.substr(0, input_filename.size() - input_ext.size());
 
-	DWORD time_file_start = NSTimers::GetTickCount();
+	unsigned long time_file_start = NSTimers::GetTickCount();
 
 	bool is_all_ok = true;
 
@@ -802,7 +810,8 @@ DWORD CConverter::ThreadProc()
 
 #endif // WIN32
 
-		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file);
+		bool is_timeout = false;
+		int exit_code = NSX2T::Convert(NSFile::GetDirectoryName(m_x2tPath), xml_params_file, m_timeout, &is_timeout);
 
 		bool exist;
 		if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
@@ -810,6 +819,8 @@ DWORD CConverter::ThreadProc()
 		else
 			exist = NSFile::CFileBinary::Exists(output_file);
 
+		// is everything ok
+		bool ok = !exit_code && exist && !is_timeout;
 
 		int input_size = 0;
 		int output_size = 0;
@@ -821,7 +832,7 @@ DWORD CConverter::ThreadProc()
 		b_file.CloseFile();
 
 		// get sizes
-		if (!exit_code && exist)
+		if (ok)
 		{
 			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 			{
@@ -844,7 +855,7 @@ DWORD CConverter::ThreadProc()
 		}
 
 		// save param xml of error conversion
-		if(exit_code || !exist)
+		if(!ok)
 		{
 			std::wstring err_xml_file = m_errorsXmlDirectory + FILE_SEPARATOR_STR + xml_params_filename;
 			err_xml_file = CorrectPathW(err_xml_file);
@@ -852,7 +863,7 @@ DWORD CConverter::ThreadProc()
 		}
 
 		// writing report
-		if(!m_bIsErrorsOnly || exit_code || !exist)
+		if(!m_bIsErrorsOnly || !ok)
 		{
 			Cx2tTester::Report report;
 			report.inputFile = input_filename;
@@ -861,12 +872,15 @@ DWORD CConverter::ThreadProc()
 			report.time = NSTimers::GetTickCount() - time_file_start;
 			report.inputSize = input_size;
 			report.outputSize = output_size;
-			report.exitCode = exit_code;
+			if(is_timeout)
+				report.exitCode = L"TIMEOUT";
+			else
+				report.exitCode = std::to_wstring(exit_code);
 			report.log = xml_params;
 			reports.push_back(report);
 		}
 
-		if(!exit_code && exist)
+		if(ok)
 			NSFile::CFileBinary::Remove(xml_params_file);
 
 		std::string input_file_UTF8 = U_TO_UTF8(input_filename);
@@ -879,22 +893,24 @@ DWORD CConverter::ThreadProc()
 		std::cout << "(" << m_internal->m_currentProc << " processes now) ";
 		std::cout << input_file_UTF8 << " to " << output_file_UTF8 << " ";
 
-		if(!exit_code && exist)
+		if(ok)
 			std::cout << "OK";
 		else
 		{
 			is_all_ok = false;
 			std::cout << "BAD ";
-			if(exit_code)
+			if(is_timeout)
+				std::cout << "TIMEOUT";
+			else if(exit_code)
 				std::cout << exit_code;
 			else
-				std::cout << "OUTPUT IS NOT EXIST";
+				std::cout << "NOT EXIST";
 		}
 
 		std::cout << std::endl;
 		m_internal->m_outputCS.Leave();
 
-		if(m_bIsDeleteOk && !exit_code && exist)
+		if(m_bIsDeleteOk && ok)
 		{
 			if(output_format & AVS_OFFICESTUDIO_FILE_IMAGE)
 				NSDirectory::DeleteDirectory(output_file);

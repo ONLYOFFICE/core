@@ -38,7 +38,7 @@ namespace OOX
 		// CCtrlPr 22.1.2.23 (Control Properties)
 		//--------------------------------------------------------------------------------
 
-		CCtrlPr::CCtrlPr()
+		CCtrlPr::CCtrlPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CCtrlPr::~CCtrlPr()
@@ -53,7 +53,7 @@ namespace OOX
 		// CAccPr 22.1.2.2 (Accent Properties)
 		//--------------------------------------------------------------------------------
 
-		CAccPr::CAccPr()
+		CAccPr::CAccPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CAccPr::~CAccPr()
@@ -106,7 +106,7 @@ namespace OOX
 		// CAcc 22.1.2.1  (Accent)
 		//--------------------------------------------------------------------------------
 
-		CAcc::CAcc()
+		CAcc::CAcc(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CAcc::~CAcc()
@@ -162,7 +162,7 @@ namespace OOX
 		// CArgPr 22.1.2.5  (Argument Properties)
 		//--------------------------------------------------------------------------------
 
-		CArgPr::CArgPr()
+		CArgPr::CArgPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CArgPr::~CArgPr()
@@ -220,7 +220,7 @@ namespace OOX
 		// CBarPr 22.1.2.8 (Bar Properties)
 		//--------------------------------------------------------------------------------
 
-		CBarPr::CBarPr()
+		CBarPr::CBarPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBarPr::~CBarPr()
@@ -274,7 +274,7 @@ namespace OOX
 		// CBar 22.1.2.7 (Bar)
 		//--------------------------------------------------------------------------------
 
-		CBar::CBar()
+		CBar::CBar(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBar::~CBar()
@@ -330,7 +330,7 @@ namespace OOX
 		// CBorderBoxPr 22.1.2.12 (Border-Box Properties)
 		//--------------------------------------------------------------------------------
 
-		CBorderBoxPr::CBorderBoxPr()
+		CBorderBoxPr::CBorderBoxPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBorderBoxPr::~CBorderBoxPr()
@@ -412,7 +412,7 @@ namespace OOX
 		// CBorderBox 22.1.2.11 (Border-Box Object)
 		//--------------------------------------------------------------------------------
 
-		CBorderBox::CBorderBox()
+		CBorderBox::CBorderBox(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBorderBox::~CBorderBox()
@@ -468,7 +468,7 @@ namespace OOX
 		// CBrk 22.1.2.15 (Break)
 		//--------------------------------------------------------------------------------
 
-		CBrk::CBrk()
+		CBrk::CBrk(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBrk::~CBrk()
@@ -507,7 +507,7 @@ namespace OOX
 		// CBoxPr 22.1.2.14 (Box Properties)
 		//--------------------------------------------------------------------------------
 
-		CBoxPr::CBoxPr()
+		CBoxPr::CBoxPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBoxPr::~CBoxPr()
@@ -580,7 +580,7 @@ namespace OOX
 		// CBox 22.1.2.13 (Box Object)
 		//--------------------------------------------------------------------------------
 
-		CBox::CBox()
+		CBox::CBox(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CBox::~CBox()
@@ -636,7 +636,7 @@ namespace OOX
 		// CDelimiterPr 22.1.2.31 (Delimiter Properties)
 		//--------------------------------------------------------------------------------
 
-		CDelimiterPr::CDelimiterPr()
+		CDelimiterPr::CDelimiterPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CDelimiterPr::~CDelimiterPr()
@@ -732,7 +732,7 @@ namespace OOX
 		// CDelimiter 22.1.2.24 (Delimiter Object)
 		//--------------------------------------------------------------------------------
 
-		CDelimiter::CDelimiter()
+		CDelimiter::CDelimiter(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 			m_lColumn = 0;
 		}
@@ -748,7 +748,7 @@ namespace OOX
 		// CEqArrPr 22.1.2.35 (Array Object)
 		//--------------------------------------------------------------------------------
 
-		CEqArrPr::CEqArrPr()
+		CEqArrPr::CEqArrPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CEqArrPr::~CEqArrPr()
@@ -817,7 +817,7 @@ namespace OOX
 		// CEqArr 22.1.2.34 (Array Object)
 		//--------------------------------------------------------------------------------
 
-		CEqArr::CEqArr()
+		CEqArr::CEqArr(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 			m_lRow = 0;
 		}
@@ -897,7 +897,7 @@ namespace OOX
 		// CFPr 22.1.2.38 (Fraction Properties)
 		//--------------------------------------------------------------------------------
 
-		CFPr::CFPr()
+		CFPr::CFPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CFPr::~CFPr()
@@ -964,7 +964,7 @@ namespace OOX
 		// CFraction 22.1.2.36 (Fraction Object)
 		//--------------------------------------------------------------------------------
 
-		CFraction::CFraction()
+		CFraction::CFraction(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CFraction::~CFraction()
@@ -1027,7 +1027,7 @@ namespace OOX
 		// CFuncPr 22.1.2.40 (Function Properties)
 		//--------------------------------------------------------------------------------
 
-		CFuncPr::CFuncPr()
+		CFuncPr::CFuncPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CFuncPr::~CFuncPr()
@@ -1087,7 +1087,7 @@ namespace OOX
 		// CFunc 22.1.2.39 (Function Apply Object)
 		//--------------------------------------------------------------------------------
 
-		CFunc::CFunc()
+		CFunc::CFunc(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CFunc::~CFunc()
@@ -1150,7 +1150,7 @@ namespace OOX
 		// CGroupChrPr 22.1.2.42 (Group-Character Properties )
 		//--------------------------------------------------------------------------------
 
-		CGroupChrPr::CGroupChrPr()
+		CGroupChrPr::CGroupChrPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CGroupChrPr::~CGroupChrPr()
@@ -1231,7 +1231,7 @@ namespace OOX
 		// CGroupChr 22.1.2.41 (Group-Character Object)
 		//--------------------------------------------------------------------------------
 
-		CGroupChr::CGroupChr()
+		CGroupChr::CGroupChr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CGroupChr::~CGroupChr()
@@ -1287,7 +1287,7 @@ namespace OOX
 		// CLimLowPr 22.1.2.55 (Lower-Limit Properties)
 		//--------------------------------------------------------------------------------
 
-		CLimLowPr::CLimLowPr()
+		CLimLowPr::CLimLowPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CLimLowPr::~CLimLowPr()
@@ -1348,7 +1348,7 @@ namespace OOX
 		// CLimLow 22.1.2.54 (Lower-Limit Object)
 		//--------------------------------------------------------------------------------
 
-		CLimLow::CLimLow()
+		CLimLow::CLimLow(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CLimLow::~CLimLow()
@@ -1411,7 +1411,7 @@ namespace OOX
 		// CLimUppPr 22.1.2.57 (Upper-Limit Properties)
 		//--------------------------------------------------------------------------------
 
-		CLimUppPr::CLimUppPr()
+		CLimUppPr::CLimUppPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CLimUppPr::~CLimUppPr()
@@ -1471,7 +1471,7 @@ namespace OOX
 		// CLimUpp 22.1.2.56 (Upper-Limit Object)
 		//--------------------------------------------------------------------------------
 
-		CLimUpp::CLimUpp()
+		CLimUpp::CLimUpp(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CLimUpp::~CLimUpp()
@@ -1486,7 +1486,7 @@ namespace OOX
 		// CMathFont 22.1.2.61 (Math Font)
 		//--------------------------------------------------------------------------------
 
-		CMathFont::CMathFont()
+		CMathFont::CMathFont(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMathFont::~CMathFont()
@@ -1517,15 +1517,15 @@ namespace OOX
 		void CMathFont::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:val"), m_val )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 		//--------------------------------------------------------------------------------
 		// CMathPr 22.1.2.62 (Math Properties)
 		//--------------------------------------------------------------------------------
 
-		CMathPr::CMathPr()
+		CMathPr::CMathPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMathPr::~CMathPr()
@@ -1540,7 +1540,7 @@ namespace OOX
 		// CMcPr 22.1.2.66 (Matrix Column Properties)
 		//--------------------------------------------------------------------------------
 
-		CMcPr::CMcPr()
+		CMcPr::CMcPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMcPr::~CMcPr()
@@ -1604,7 +1604,7 @@ namespace OOX
 		// CMc 22.1.2.64  (Matrix Column)
 		//--------------------------------------------------------------------------------
 
-		CMc::CMc()
+		CMc::CMc(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMc::~CMc()
@@ -1653,7 +1653,7 @@ namespace OOX
 		// CMcs 22.1.2.67 (Matrix Columns)
 		//--------------------------------------------------------------------------------
 
-		CMcs::CMcs()
+		CMcs::CMcs(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 		}
 		CMcs::~CMcs()
@@ -1725,7 +1725,7 @@ namespace OOX
 		// CMPr 22.1.2.68   (Matrix Properties)
 		//--------------------------------------------------------------------------------
 
-		CMPr::CMPr()
+		CMPr::CMPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}		
 		EElementType CMPr::getType() const
@@ -1737,7 +1737,7 @@ namespace OOX
 		// CMr 22.1.2.69 (Matrix Row)
 		//--------------------------------------------------------------------------------
 
-		CMr::CMr()
+		CMr::CMr(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 			m_lCol = 0;
 		}
@@ -1824,7 +1824,7 @@ namespace OOX
 		// CMatrix 22.1.2.60 (Matrix Object)
 		//--------------------------------------------------------------------------------
 
-		CMatrix::CMatrix()
+		CMatrix::CMatrix(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 			m_lRow = 0;
 		}
@@ -1909,7 +1909,7 @@ namespace OOX
 		// CNaryPr 22.1.2.72   (n-ary Properties)
 		//--------------------------------------------------------------------------------
 
-		CNaryPr::CNaryPr()
+		CNaryPr::CNaryPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CNaryPr::~CNaryPr()
@@ -1924,7 +1924,7 @@ namespace OOX
 		// CNary 22.1.2.70 (n-ary Operator Object)
 		//--------------------------------------------------------------------------------
 
-		CNary::CNary()
+		CNary::CNary(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CNary::~CNary()
@@ -1994,7 +1994,7 @@ namespace OOX
 		// COMathParaPr 22.1.2.79
 		//--------------------------------------------------------------------------------
 
-		COMathParaPr::COMathParaPr()
+		COMathParaPr::COMathParaPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		COMathParaPr::~COMathParaPr()
@@ -2052,7 +2052,7 @@ namespace OOX
 		// CPhantPr 22.1.2.82   (Phantom Properties)
 		//--------------------------------------------------------------------------------
 
-		CPhantPr::CPhantPr()
+		CPhantPr::CPhantPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CPhantPr::~CPhantPr()
@@ -2147,7 +2147,7 @@ namespace OOX
 		// CPhant 22.1.2.81   (Phantom Object)
 		//--------------------------------------------------------------------------------
 
-		CPhant::CPhant()
+		CPhant::CPhant(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CPhant::~CPhant()
@@ -2203,7 +2203,7 @@ namespace OOX
 		// CMText 22.1.2.116  (Math Text)
 		//--------------------------------------------------------------------------------
 
-		CMText::CMText()
+		CMText::CMText(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMText::~CMText()
@@ -2272,7 +2272,7 @@ namespace OOX
 		// CMRPr 22.1.2.91   (Run Properties)
 		//--------------------------------------------------------------------------------
 
-		CMRPr::CMRPr()
+		CMRPr::CMRPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMRPr::~CMRPr()
@@ -2287,7 +2287,7 @@ namespace OOX
 		// CMRun 22.1.2.87  (Math Run)
 		//--------------------------------------------------------------------------------
 
-		CMRun::CMRun()
+		CMRun::CMRun(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMRun::~CMRun()
@@ -2486,7 +2486,7 @@ namespace OOX
 		// CMDel
 		//--------------------------------------------------------------------------------
 
-		CMDel::CMDel()
+		CMDel::CMDel(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMDel::~CMDel()
@@ -2556,20 +2556,19 @@ namespace OOX
 		}
 		void CMDel::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
-			// Читаем атрибуты
 			WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate  )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
-					WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_Read_if     ( oReader, _T("w:author"), m_sAuthor )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:date"),   m_oDate  )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("w:id"),     m_oId )
+				WritingElement_ReadAttributes_Read_else_if( oReader, _T("oouserid"), m_sUserId )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 		//--------------------------------------------------------------------------------
 		// CMIns
 		//--------------------------------------------------------------------------------
 
-		CMIns::CMIns()
+		CMIns::CMIns(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CMIns::~CMIns()
@@ -2652,7 +2651,7 @@ namespace OOX
 		// CRadPr 22.1.2.89   (Radical Properties)
 		//--------------------------------------------------------------------------------
 
-		CRadPr::CRadPr()
+		CRadPr::CRadPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CRadPr::~CRadPr()
@@ -2718,7 +2717,7 @@ namespace OOX
 		// CRad 22.1.2.88   (Radical Object)
 		//--------------------------------------------------------------------------------
 
-		CRad::CRad()
+		CRad::CRad(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CRad::~CRad()
@@ -2798,7 +2797,7 @@ namespace OOX
 		// CSPrePr 22.1.2.100   (Pre-Sub-Superscript Properties))
 		//--------------------------------------------------------------------------------
 
-		CSPrePr::CSPrePr()
+		CSPrePr::CSPrePr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSPrePr::~CSPrePr()
@@ -2858,7 +2857,7 @@ namespace OOX
 		// CSPre 22.1.2.99   (Pre-Sub-Superscript Object)
 		//--------------------------------------------------------------------------------
 
-		CSPre::CSPre()
+		CSPre::CSPre(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSPre::~CSPre()
@@ -2948,7 +2947,7 @@ namespace OOX
 		// CSSubPr 22.1.2.102   (Subscript Properties)
 		//--------------------------------------------------------------------------------
 
-		CSSubPr::CSSubPr()
+		CSSubPr::CSSubPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSSubPr::~CSSubPr()
@@ -3007,7 +3006,7 @@ namespace OOX
 		// CSSub 22.1.2.101   (Subscript Object)
 		//--------------------------------------------------------------------------------
 
-		CSSub::CSSub()
+		CSSub::CSSub(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSSub::~CSSub()
@@ -3086,7 +3085,7 @@ namespace OOX
 		// CSSubSupPr 22.1.2.104   (Sub-Superscript Properties)
 		//--------------------------------------------------------------------------------
 
-		CSSubSupPr::CSSubSupPr()
+		CSSubSupPr::CSSubSupPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSSubSupPr::~CSSubSupPr()
@@ -3152,7 +3151,7 @@ namespace OOX
 		// CSSubSup 22.1.2.103   (Sub-Superscript Object)
 		//--------------------------------------------------------------------------------
 
-		CSSubSup::CSSubSup()
+		CSSubSup::CSSubSup(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSSubSup::~CSSubSup()
@@ -3241,7 +3240,7 @@ namespace OOX
 		// CSSupPr 22.1.2.106   (Superscript Properties)
 		//--------------------------------------------------------------------------------
 
-		CSSupPr::CSSupPr()
+		CSSupPr::CSSupPr(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSSupPr::~CSSupPr()
@@ -3300,7 +3299,7 @@ namespace OOX
 		// CSSup 22.1.2.105   (Superscript Object)
 		//--------------------------------------------------------------------------------
 
-		CSSup::CSSup()
+		CSSup::CSSup(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CSSup::~CSSup()

@@ -37,7 +37,6 @@
 namespace DocFileFormat
 {
 OleObject::OleObject( const CharacterPropertyExceptions* chpx, WordDocument* document)
-							: bLinked(false), updateMode(NoLink), isEquation(false), isEmbedded (false), oleStorage(NULL)
 {
 	if (!document) return;
 	if (!chpx) return;
@@ -56,13 +55,14 @@ OleObject::OleObject( const CharacterPropertyExceptions* chpx, WordDocument* doc
 	std::wstring name = L"ObjectPool/" + sObjectId + L"/";
 	
 	bool bOle		= processOleStream( name + L"Ole" );
-	bool bCompObj	= bLinked ? processLinkInfoStream( name + L"LinkInfo" ): 
+	bool bCompObj	= isLinked ? processLinkInfoStream( name + L"LinkInfo" ):
 								processCompObjStream( name + L"CompObj" );
 	if (bOle || bCompObj)
 	{
 		processPICStream( name + L"PIC" );
 		processMETAStream( name + L"META" );
 		processEquationNativeStream( name + L"Equation Native" );
+		processPackageStream(name + L"Package");
 	}
 	else if (nWordVersion > 0)
 	{
@@ -98,16 +98,16 @@ OleObject::OleObject( const CharacterPropertyExceptions* chpx, WordDocument* doc
 			//int lcb = 5000;//reader.ReadInt32();
 
 			int szHeader  = reader.GetPosition() - pos;
-			int szData  = reader.ReadInt32();
+			size_t szData  = reader.ReadInt32();
 			if (szData > lcb)
 			{
 				szData = szData >> 16;
 			}
-			unsigned char* bytes = reader.ReadBytes( szData, true );
-			if (bytes && szData < 0xffff)
+			char* bytes = (szData < 0xffff) ? (char*)reader.ReadBytes( szData, true ) : NULL;
+			if (bytes)
 			{
-				emeddedData = std::string((char*)bytes, szData);
-				delete []bytes;
+				boost::shared_array<char> buffer(bytes);
+				embeddedData = std::make_pair(buffer, szData);
 			}
 		}
 
@@ -117,67 +117,89 @@ OleObject::OleObject( const CharacterPropertyExceptions* chpx, WordDocument* doc
 
 bool OleObject::processLinkInfoStream( const std::wstring& linkStream )
 {
+	bool res = false;
 	try
 	{
-		POLE::Stream* pLinkStream = NULL;
-		HRESULT res = S_OK;
+		POLE::Stream* pLinkStream = new POLE::Stream(oleStorage, linkStream);
 
-		pLinkStream = new POLE::Stream(oleStorage, linkStream);
-
-		if ( pLinkStream )
+		if (( pLinkStream ) && (false == pLinkStream->fail()))
 		{
 			VirtualStreamReader reader( pLinkStream, 0, false);
 			processLinkInfoStream(reader);
 
 			delete pLinkStream;
-			return true;
+			res = true;
 		}
+		if (pLinkStream) delete pLinkStream;
 	}
 	catch (...)
 	{
 	}
-	return false;
+	return res;
 }
       
 void OleObject::processEquationNativeStream( const std::wstring& eqStream )
 {
 	try
 	{
-	  POLE::Stream* pCompStream = NULL;
-	  HRESULT res = S_OK;
+	  POLE::Stream* pCompStream = new POLE::Stream(oleStorage, eqStream);
 
-	  pCompStream = new POLE::Stream(oleStorage, eqStream);
-
-	  if ( pCompStream )
+	  if ((pCompStream) && (false == pCompStream->fail()))
 	  {
-		  VirtualStreamReader reader( pCompStream, 0, false);
+		  VirtualStreamReader reader(pCompStream, 0, false);
 
-		int sz = reader.GetSize();
+		  int sz = reader.GetSize();
 
-		unsigned char *Buffer = reader.ReadBytes( sz, true );
+		  unsigned char *Buffer = reader.ReadBytes(sz, true);
 
-		if (Buffer && sz > 0)
-		{
-			isEquation = true;
-			delete []Buffer;
-		}
-
-		delete pCompStream;
+		  if (Buffer && sz > 0)
+		  {
+			  isEquation = true;
+			  delete[]Buffer;
+		  }
 	  }
+	  if (pCompStream) delete pCompStream;
 	}
 	catch (...)
 	{
 	}
 }
+bool OleObject::processPackageStream(const std::wstring& packageStream)
+{
+	bool res = true;
+	try
+	{
+		POLE::Stream* pPackageStream = new POLE::Stream(oleStorage, packageStream);
+
+		if ((pPackageStream) && (false == pPackageStream->fail()))
+		{
+			VirtualStreamReader reader(pPackageStream, 0, false);
+
+			size_t sz = reader.GetSize();
+			
+			char* bytes = (sz < 0xffffff) ? (char*)reader.ReadBytes(sz, true) : NULL;
+			if (bytes)
+			{
+				boost::shared_array<char> buffer(bytes);
+				embeddedData = std::make_pair(buffer, sz);
+			}
+
+			isPackage = true;
+		}
+		if (pPackageStream) delete pPackageStream;
+	}
+	catch (...)
+	{
+	}
+	return res;
+}
 void OleObject::processMETAStream( const std::wstring& metaStream )
 {
 	try
 	{
-		HRESULT res = S_OK;
-
 		POLE::Stream* pMETAStream = new POLE::Stream(oleStorage, metaStream);
 
-		if ( pMETAStream )
+		if (( pMETAStream ) && (false == pMETAStream->fail()))
 		{
 			pictureDesciptor.Type = wmf;
 			VirtualStreamReader reader( pMETAStream, 0, false);
@@ -190,6 +212,7 @@ void OleObject::processMETAStream( const std::wstring& metaStream )
 			pictureDesciptor.embeddedDataSize	= reader.GetSize() - 8;
 			pictureDesciptor.embeddedData		= reader.ReadBytes( pictureDesciptor.embeddedDataSize, true );
 		}
+		if (pMETAStream) delete pMETAStream;
 	}
 	catch (...)
 	{
@@ -199,11 +222,9 @@ void OleObject::processPICStream( const std::wstring& picStream )
 {
 	try
 	{
-		HRESULT res = S_OK;
-
 		POLE::Stream* pPICStream = new POLE::Stream(oleStorage, picStream);
 
-		if ( pPICStream )
+		if ((pPICStream) && (false == pPICStream->fail()))
 		{
 			VirtualStreamReader reader( pPICStream, 0, false);
 
@@ -266,26 +287,24 @@ void OleObject::processPICStream( const std::wstring& picStream )
 
 bool OleObject::processCompObjStream( const std::wstring& compStream )
 {
+	bool res = false;
 	try
 	{
-		HRESULT res = S_OK;
-
 		POLE::Stream* pCompStream = new POLE::Stream(oleStorage, compStream);
 
-		if ( (pCompStream) && (!pCompStream->fail()) )
+		if ( (pCompStream) && (false == pCompStream->fail()) )
 		{
 			VirtualStreamReader reader( pCompStream, 0, false);
 			processCompObjStream(reader);
-
-			delete pCompStream;
-
-			return true;
+			
+			res = true;
 		}
+		if (pCompStream) delete pCompStream;
 	}
 	catch (...)
 	{
 	}
-	return false;
+	return res;
 }
 
 bool OleObject::processOleStream( const std::wstring& oleStreamName )
@@ -316,12 +335,11 @@ bool OleObject::processOleStream( const std::wstring& oleStreamName )
 
 void OleObject::processOleStream( VirtualStreamReader& reader )
 {
-	//skip version
-	reader.ReadBytes( 4, false );
+	reader.ReadBytes( 4, false );	//skip version
 
 	//read the embedded/linked flag
 	int flag = reader.ReadInt32();
-	bLinked = FormatUtils::BitmaskToBool( flag, 0x1 );
+	isLinked = FormatUtils::BitmaskToBool( flag, 0x1 );
 
 	//Link update option
 	this->updateMode = (LinkUpdateOption)reader.ReadInt32();

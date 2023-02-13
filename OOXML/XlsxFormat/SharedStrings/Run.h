@@ -39,11 +39,11 @@ namespace OOX
 	namespace Spreadsheet
 	{
 		//необработано:
-		class CRun : public OOX::Spreadsheet::WritingElementWithChilds<CText>
+		class CRun : public WritingElementWithChilds<CText>
 		{
 		public:
 			WritingElement_AdditionMethods(CRun)
-			CRun();
+			CRun(OOX::Document *pMain = NULL);
 			virtual ~CRun();
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);

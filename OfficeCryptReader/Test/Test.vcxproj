@@ -87,12 +87,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\OfficeFileFormatChecker.h" />
+    <ClInclude Include="..\..\OOXML\Base\unicode_util.h" />
+    <ClInclude Include="..\..\OOXML\Base\Unit.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\3dParty\pole\pole.cpp" />
-    <ClCompile Include="..\..\Common\DocxFormat\Source\Base\unicode_util.cpp" />
-    <ClCompile Include="..\..\Common\DocxFormat\Source\Base\Unit.cpp" />
     <ClCompile Include="..\..\Common\OfficeFileFormatChecker2.cpp" />
+    <ClCompile Include="..\..\MsBinaryFile\DocFile\MemoryStream.cpp" />
+    <ClCompile Include="..\..\OOXML\Base\unicode_util.cpp" />
+    <ClCompile Include="..\..\OOXML\Base\Unit.cpp" />
     <ClCompile Include="Test.cpp" />
   </ItemGroup>
   <ItemGroup>

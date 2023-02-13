@@ -168,7 +168,7 @@ namespace DocFileFormat
 			{
                 std::wstring fileName = pathObjects + FILE_SEPARATOR_STR  + L"oleObject" + FormatUtils::IntToWideString(i++) + iter->ext;
 
-				if (!iter->data.empty())
+				if (iter->data.second > 0)
 				{
 					SaveEmbeddedObject(fileName, *iter);
 				}

@@ -530,6 +530,9 @@ namespace OOX
 				return;
 
 			int nParentDepth = oReader.GetDepth();
+			
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
@@ -589,8 +592,11 @@ namespace OOX
 					AssignPtrXmlContent(pItem, COMath, oReader)
 				else if ( L"m:oMathPara" == sName )
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
-				else if ( L"w:p" == sName )
-					AssignPtrXmlContent(pItem, CParagraph, oReader)
+				else if (L"w:p" == sName)
+				{
+					pItem = new CParagraph(document, this);
+					pItem->fromXML(oReader); 
+				}
 				else if ( L"w:permEnd" == sName )
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
 				else if ( L"w:permStart" == sName )
@@ -598,13 +604,16 @@ namespace OOX
 				else if ( L"w:proofErr" == sName )
 					AssignPtrXmlContent(pItem, CProofErr, oReader)
 				else if ( L"w:r" == sName )
-					AssignPtrXmlContent(pItem, CRun, oReader)
+				{
+					pItem = new CRun(document, this);
+					pItem->fromXML(oReader);
+				}
 				else if ( L"w:sdt" == sName )
 					AssignPtrXmlContent(pItem, CSdt, oReader)
 				else if ( L"w:smartTag" == sName )
 					AssignPtrXmlContent(pItem, CSmartTag, oReader)
 				//else if ( L"w:subDoc" == sName )
-				//	pItem = new CSubDoc( oReader );
+				//	pItem = new CSubDoc( document );
 				else if ( L"w:tbl" == sName )
 					AssignPtrXmlContent(pItem, CTbl, oReader)
 				else if ( L"w:tc" == sName )
@@ -612,8 +621,10 @@ namespace OOX
 				else if ( L"w:tr" == sName )
 					AssignPtrXmlContent(pItem, CTr, oReader)
 
-				if ( pItem )
-					m_arrItems.push_back( pItem );
+				if (pItem)
+				{
+					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CSdtContent::toXML() const
@@ -1777,15 +1788,27 @@ namespace OOX
 				return;
 
 			int nParentDepth = oReader.GetDepth();
+			
+			OOX::Document* document = WritingElement::m_pMainDocument;
+			
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( L"w:sdtContent" == sName )
-					m_oSdtContent = oReader;
-				else if ( L"w:sdtEndPr" == sName )
-					m_oSdtEndPr = oReader;
-				else if ( L"w:sdtPr" == sName )
-					m_oSdtPr = oReader;
+				if (L"w:sdtContent" == sName)
+				{
+					m_oSdtContent = new CSdtContent(document);
+					m_oSdtContent->fromXML(oReader);
+				}
+				else if (L"w:sdtEndPr" == sName)
+				{
+					m_oSdtEndPr = new CSdtEndPr(document);
+					m_oSdtEndPr->fromXML(oReader);
+				}
+				else if (L"w:sdtPr" == sName)
+				{
+					 m_oSdtPr = new CSdtPr(document);
+					 m_oSdtPr->fromXML(oReader);
+				}
 			}
 		}
 		std::wstring CSdt::toXML() const

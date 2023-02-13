@@ -43,12 +43,9 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSub;
 	
-        
-    
-
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 		virtual void add_child_element(const office_element_ptr & child_element);
@@ -65,11 +62,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSup;
-
-        
-    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -88,11 +82,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSubSup;
-
-        
-    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -109,11 +100,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMNone;
-
-        
-    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -132,11 +120,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMPreScripts;
-
-        
-    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -151,11 +136,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMMultiScripts;
-
-        
-    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -174,11 +156,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMUnderOver;
-
-        
-    
 
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
@@ -195,11 +174,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMOver;
-
-        
-    
 
         _CP_OPT(Bool)	accent;
 	private:
@@ -217,12 +193,10 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMUnder;
 
-        
-    
-
+		_CP_OPT(Bool)	accentunder;
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 		virtual void add_child_element(const office_element_ptr & child_element);

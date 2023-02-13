@@ -80,7 +80,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CText)
-			CText();
+			CText(OOX::Document *pMain = NULL);
 			virtual ~CText();
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);

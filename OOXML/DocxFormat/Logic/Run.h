@@ -50,7 +50,8 @@ namespace OOX
 		class CRun : public WritingElementWithChilds<>
 		{
 		public:
-			CRun(OOX::Document *pMain = NULL);			
+			CRun(OOX::Document *pMain = NULL, WritingElement *parent = NULL);
+
 			virtual ~CRun();
 
 			const CRun &operator =(const XmlUtils::CXmlNode& oNode);
@@ -77,6 +78,7 @@ namespace OOX
 			nullable<SimpleTypes::CLongHexNumber>	m_oRsidRPr;
 			OOX::Logic::CRunProperty				*m_oRunProperty;	// копия того что в m_arrItems...  - для быстрого доступа/анализа
 			// по идее нужно сделать как в Drawing::Run - то есть единственные подобъекты вынести отдельно
+			WritingElement *m_oParent = NULL;
 		};
 	} // namespace Logic
 } // namespace OOX

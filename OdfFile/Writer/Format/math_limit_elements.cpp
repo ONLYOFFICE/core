@@ -295,6 +295,7 @@ void math_munder::serialize(std::wostream & _Wostream)
 	{
 		CP_XML_NODE_SIMPLE_NONS()
 		{
+			CP_XML_ATTR_OPT(L"accentunder", accentunder);
 			for (size_t i = 0; i < content_.size(); i++)
 			{
 				if (!content_[i]) continue;

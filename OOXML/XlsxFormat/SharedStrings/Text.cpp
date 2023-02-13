@@ -195,7 +195,7 @@ namespace OOX
 			WritingElement_ReadAttributes_EndChar( oReader )
 		}
 
-		CText::CText() {}
+		CText::CText(OOX::Document *pMain) : WritingElement(pMain) {}
 		CText::~CText() {}
 		void CText::fromXML(XmlUtils::CXmlNode& node)
 		{

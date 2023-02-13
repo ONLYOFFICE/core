@@ -51,6 +51,9 @@ You need to create an xml configuration file. It must contain:
 	# (non-required) default unicode code delimiter for csv files, if filenameCsvTxtParams is 0, or no param in filename (default - 3b)
 	<defaultCsvDelimiter> </defaultCsvDelimiter>
 
+	# (non-required) timeout in seconds (default - 300). Set to 0 to disable timeouts
+	<timeout> </timeout>
+
 	# (non-required) path to xml file with a list of input files
 	<inputFilesList> </inputFilesList>
 
@@ -91,6 +94,7 @@ You can use the following templates:
 		<errorsOnly> </errorsOnly>
 		<deleteOk> </deleteOk>
 		<timestamp> </timestamp>
+		<timeout> </timeout>
 		<fonts system="">
 			<directory> </directory>
 		</fonts>

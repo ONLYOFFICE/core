@@ -73,10 +73,12 @@ public:
     void dump_rels_drawing		(rels & Rels);
     void dump_rels_vml_drawing	(rels & Rels);
 
-    void serialize			(std::wostream & _Wostream, const std::wstring & ns);  
+    void serialize			(std::wostream & _Wostream, const std::wstring & ns, bool local);  
 	void serialize_vml		(std::wostream & _Wostream);
 	void serialize_objects	(std::wostream & _Wostream);  
 	void serialize_controls	(std::wostream & _Wostream);  
+
+	std::vector<_xlsx_drawing> get();
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

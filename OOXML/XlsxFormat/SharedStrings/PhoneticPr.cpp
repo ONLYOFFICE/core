@@ -40,7 +40,7 @@ namespace OOX
 {
 	namespace Spreadsheet
 	{
-		CPhonetic::CPhonetic()
+		CPhonetic::CPhonetic(OOX::Document *pMain) : WritingElement(pMain)
 		{
 		}
 		CPhonetic::~CPhonetic()
@@ -125,9 +125,8 @@ namespace OOX
 			}
 		}
 
-		CRPh::CRPh()
-		{
-		}
+		CRPh::CRPh(OOX::Document *pMain) : WritingElementWithChilds<CText>(pMain) {}
+
 		CRPh::~CRPh()
 		{
 		}

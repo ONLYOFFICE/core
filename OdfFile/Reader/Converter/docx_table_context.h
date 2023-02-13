@@ -101,12 +101,14 @@ public:
 
     void end_table()
     {
-        table_states_.pop_back();        
+		if (table_states_.empty()) return;
+		table_states_.pop_back();
     }
 
     std::wstring current_style() const
     {
-        return table_states_.back().current_style();    
+		if (table_states_.empty()) return L"";
+		return table_states_.back().current_style();
     }
 
     size_t in_table() const
@@ -116,22 +118,26 @@ public:
 
     void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
     {
-        return table_states_.back().start_column(repeated, defaultCellStyleName);
+		if (table_states_.empty()) return;
+		return table_states_.back().start_column(repeated, defaultCellStyleName);
     }
 
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
     {
-        return table_states_.back().start_row(StyleName, defaultCellStyleName);
+		if (table_states_.empty()) return;
+		return table_states_.back().start_row(StyleName, defaultCellStyleName);
     }
 
     void end_row()
     {
-        return table_states_.back().end_row();
+		if (table_states_.empty()) return;
+		return table_states_.back().end_row();
     }
 
     std::wstring current_row_style() const
     {
-        return table_states_.back().current_row_style();
+		if (table_states_.empty()) return L"";
+		return table_states_.back().current_row_style();
     }
 
     void start_cell()
@@ -140,61 +146,73 @@ public:
     }
 	double get_current_cell_width()
 	{
-		 return table_states_.back().get_current_cell_width();
+		if (table_states_.empty()) return 0;
+		return table_states_.back().get_current_cell_width();
 	}
 	void add_column_width(double width)
 	{
+		if (table_states_.empty()) return;
 		 table_states_.back().add_column_width(width);
 	}
 
     void end_cell()
     {
-        return table_states_.back().end_cell();
+		if (table_states_.empty()) return;		
+		return table_states_.back().end_cell();
     }
 
     bool start_covered_cell(docx_conversion_context & Context)
     {
-        return table_states_.back().start_covered_cell(Context);
+		if (table_states_.empty()) return false;
+		return table_states_.back().start_covered_cell(Context);
     }
 
     void end_covered_cell()
     {
-        return table_states_.back().end_covered_cell();
+		if (table_states_.empty()) return;
+		return table_states_.back().end_covered_cell();
     }
 
     int current_column() const
     {
-        return table_states_.back().current_column();
+		if (table_states_.empty()) return 0;
+		return table_states_.back().current_column();
     }
 
     void set_columns_spanned(unsigned int Val)
     {
-        return table_states_.back().set_columns_spanned(Val);
+		if (table_states_.empty()) return;
+		return table_states_.back().set_columns_spanned(Val);
     }
 
     unsigned int current_columns_spaned() const
     {
-        return table_states_.back().current_columns_spaned();
+		if (table_states_.empty()) return 0;
+		return table_states_.back().current_columns_spaned();
     }
 
     void set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style)
     {
-        return table_states_.back().set_rows_spanned(Column, Val, ColumnsSpanned, Style);
+		if (table_states_.empty()) return;
+		return table_states_.back().set_rows_spanned(Column, Val, ColumnsSpanned, Style);
     }
 
     unsigned int current_rows_spanned(unsigned int Column) const
     {
-        return table_states_.back().current_rows_spanned(Column);
+		if (table_states_.empty()) return 0;
+		return table_states_.back().current_rows_spanned(Column);
     }
 
     std::wstring get_default_cell_style_col(unsigned int column)
     {
-        return table_states_.back().get_default_cell_style_col(column);
+		if (table_states_.empty()) return L"";
+		return table_states_.back().get_default_cell_style_col(column);
     }
 
     std::wstring get_default_cell_style_row()
     {
-        return table_states_.back().get_default_cell_style_row();
+		if (table_states_.empty()) return L"";
+		return table_states_.back().get_default_cell_style_row();
     }
 
 private:

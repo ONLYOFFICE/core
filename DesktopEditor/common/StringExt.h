@@ -144,6 +144,7 @@ namespace NSStringExt
 
     public:
         CStringUnicodeIterator(const std::wstring& string);
+        ~CStringUnicodeIterator();
         bool Check();
         void Next();
         unsigned int Value();

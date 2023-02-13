@@ -79,7 +79,7 @@ public:
 			length_pt = r.start_pos + r.count * r.length;
         }
 
-        if (region_.size() > 0)
+        if (false == region_.empty())
         {
 			if (region_.back().start_cell + region_.back().count < cell)
 			{

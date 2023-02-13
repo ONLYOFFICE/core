@@ -67,75 +67,115 @@ int ods_table_state::tmp_row_ =0;
 namespace utils//////////////////////////////////////////// ОБЩАЯ хрень .. вытащить что ли в utils ???
 
 {
-std::wstring convert_date(const std::wstring & oox_date)
-{
-	int iDate = 0;
+	std::wstring convert_date(int date)
+	{
+		boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(date - 2);
 
-	try
-	{
-		iDate = boost::lexical_cast<int>(oox_date);
-	}catch(...)
-	{
-		return oox_date;
+		std::wstring date_str;
+
+		try
+		{
+			date_str = boost::lexical_cast<std::wstring>(date_.year())
+				+ L"-" +
+				(date_.month() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.month().as_number())
+				+ L"-" +
+				(date_.day() < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(date_.day());
+		}
+		catch (...)
+		{
+			date_str = date;
+		}
+		return date_str;
 	}
-	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate - 2);
-
-	////to for example, "1899-12-31T05:37:46.66569
-	std::wstring date_str;
-
-	try
+	std::wstring convert_date(const std::wstring & oox_date)
 	{
-		date_str = boost::lexical_cast<std::wstring>(date_.year())
-							+ L"-" +
-							(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month().as_number()) 
-							+ L"-" +
-							(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
-	}
-	catch(...)
-	{
-		date_str = oox_date;
-	}
-	return date_str;
-}
+		int iDate = 0;
 
-std::wstring convert_time(const std::wstring & oox_time)
-{
-	double dTime = 0;
+		try
+		{
+			iDate = boost::lexical_cast<int>(oox_date);
+		}catch(...)
+		{
+			return oox_date;
+		}
+		return convert_date(iDate);
+	}
+	std::wstring convert_time(double dTime)
+	{
+		//12H15M42S
+		int hours = 0, minutes = 0;
+		double sec = 0;
+
+		boost::posix_time::time_duration day(24, 0, 0);
+
+		double millisec = day.total_milliseconds() * dTime;
+
+
+		sec = millisec / 1000.;
+		hours = (int)(sec / 60. / 60.);
+		minutes = (int)((sec - (hours * 60 * 60)) / 60.);
+		sec = sec - (hours * 60 + minutes) * 60.;
+
+		int sec1 = (int)sec;
+
+		std::wstring time_str =
+			(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
+			//+ std::wstring(L"H") +
+			+ std::wstring(L":") +
+			(minutes < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(minutes)
+			//+ std::wstring(L"M") +
+			+ std::wstring(L":") +
+			(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1);
+			//+ std::wstring(L"S");
+
+		return time_str;
+	}
+	std::wstring convert_date_time(const std::wstring & oox_time, office_value_type::type & type)
+	{
+		double dDateTime = 0;
+
+		try
+		{
+			dDateTime = boost::lexical_cast<double>(oox_time);
+		}
+		catch (...)
+		{
+			return oox_time;
+		}
+		int nDate = (int)dDateTime;
+		double dTime = (dDateTime - nDate);
+
+		std::wstring sDate, sTime;
+		if (dTime > 0)
+		{
+			sTime = convert_time(dTime);
+		}
+		if (nDate > 0)
+		{
+			sDate = convert_date(nDate);
+			type = office_value_type::Date;
+		}
+		else 
+			type = office_value_type::Time;
 		
-	try
-	{		
-		dTime = boost::lexical_cast<double>(oox_time);
-	}catch(...)
-	{
-		return oox_time;
+		// "1899-12-31T05:37:46.66569
+		return sDate + (sTime.empty() ? L"" : L"T" + sTime);
 	}
 
-	//PT12H15M42S
-	int hours = 0, minutes = 0;
-	double sec = 0;
-	
-	boost::posix_time::time_duration day(24, 0, 0);
-	
-	double millisec = day.total_milliseconds() * dTime;
-
-
-	sec		= millisec /1000.;
-	hours	= (int)(sec/60./60.);
-	minutes = (int)((sec - (hours * 60 * 60))/60.);
-	sec		= sec - (hours *60 + minutes) * 60.;
-
-	int sec1 = (int)sec;
-
-	std::wstring time_str = std::wstring(L"PT") +
-							(hours < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(hours)
-							+ std::wstring(L"H") +
-							(minutes < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(minutes) 
-							+ std::wstring(L"M") +
-							(sec1 < 10 ? L"0" : L"") + boost::lexical_cast<std::wstring>(sec1)
-							+ std::wstring(L"S");
-
-	return time_str;
-}
+	std::wstring convert_time(const std::wstring & oox_time)
+	{
+		double dTime = 0;
+		
+		try
+		{		
+			dTime = boost::lexical_cast<double>(oox_time);
+		}catch(...)
+		{
+			return oox_time;
+		}
+		//PT12H15M42S
+		return std::wstring(L"PT") + convert_time(dTime);
+	}
 };
 
 ///////////////////////////////////////////////////////////////
@@ -662,7 +702,7 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 void ods_table_state::set_cell_format_value(office_value_type::type value_type)
 {
 	if (cells_.empty())return;
-	if (value_type == office_value_type::Custom)return;	//general .. need detect
+	if (value_type == office_value_type::Custom) return;	//general .. need detect
 
 	table_table_cell* cell = dynamic_cast<table_table_cell*>(cells_.back().elm.get());
 	if (cell == NULL)return;
@@ -1281,7 +1321,8 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 	
 	if (cell->attlist_.common_value_and_type_attlist_->office_value_type_)
 	{
-		switch(cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type())
+		office_value_type::type type = cell->attlist_.common_value_and_type_attlist_->office_value_type_->get_type();
+		switch(type)
 		{
 		case office_value_type::String:
 			cell->attlist_.common_value_and_type_attlist_->office_string_value_ = value;
@@ -1295,6 +1336,16 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 		case office_value_type::Time:
 			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
 			break;
+		case office_value_type::DateTime:
+		{
+			std::wstring sVal = utils::convert_date_time(value, type);
+			
+			if (type == office_value_type::Date)
+				cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;
+			else
+				cell->attlist_.common_value_and_type_attlist_->office_time_value_ = sVal;
+			cell->attlist_.common_value_and_type_attlist_->office_value_type_ = office_value_type(type);
+		}break;
 		case office_value_type::Currency:
 		case office_value_type::Percentage:
 		case office_value_type::Float:

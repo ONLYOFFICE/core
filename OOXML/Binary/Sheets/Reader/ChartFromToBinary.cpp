@@ -1875,9 +1875,8 @@ namespace BinXlsxRW
 		CT_ManualLayout* poVal = static_cast<CT_ManualLayout*>(poResult);
 		if(c_oserct_manuallayoutLAYOUTTARGET == type)
 		{
-			CT_LayoutTarget* pNewElem = new CT_LayoutTarget;
-			READ1_DEF(length, res, this->ReadCT_LayoutTarget, pNewElem);
-			poVal->m_layoutTarget = pNewElem;
+			poVal->m_layoutTarget.Init();
+			READ1_DEF(length, res, this->ReadCT_LayoutTarget, poVal->m_layoutTarget.GetPointer());
 		}
 		else if(c_oserct_manuallayoutXMODE == type)
 		{
@@ -1940,13 +1939,15 @@ namespace BinXlsxRW
 	int BinaryChartReader::ReadCT_LayoutTarget(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		CT_LayoutTarget* poVal = static_cast<CT_LayoutTarget*>(poResult);
+		CLayoutTarget* poVal = static_cast<CLayoutTarget*>(poResult);
+		
 		if(c_oserct_layouttargetVAL == type)
 		{
-			ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
-			*pNewElem = (ST_LayoutTarget)m_oBufferedStream.GetUChar();
-			;
-			poVal->m_val = pNewElem;
+			poVal->SetValueFromByte(m_oBufferedStream.GetUChar());
+			//ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
+			//*pNewElem = (ST_LayoutTarget)m_oBufferedStream.GetUChar();
+			//;
+			//poVal->m_val = pNewElem;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -8272,7 +8273,7 @@ namespace BinXlsxRW
 	}
 	void BinaryChartWriter::WriteCT_ManualLayout(CT_ManualLayout& oVal)
 	{
-		if(NULL != oVal.m_layoutTarget)
+		if(oVal.m_layoutTarget.IsInit())
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_manuallayoutLAYOUTTARGET);
 			WriteCT_LayoutTarget(*oVal.m_layoutTarget);
@@ -8333,15 +8334,11 @@ namespace BinXlsxRW
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}
-	void BinaryChartWriter::WriteCT_LayoutTarget(CT_LayoutTarget& oVal)
+	void BinaryChartWriter::WriteCT_LayoutTarget(CLayoutTarget& oVal)
 	{
-		if(NULL != oVal.m_val)
-		{
-			int nCurPos = m_oBcw.WriteItemStart(c_oserct_layouttargetVAL);
-			int nVal = (int)(*oVal.m_val);
-			m_oBcw.m_oStream.WriteBYTE(*&nVal);
-			m_oBcw.WriteItemEnd(nCurPos);
-		}
+		int nCurPos = m_oBcw.WriteItemStart(c_oserct_layouttargetVAL);
+		m_oBcw.m_oStream.WriteBYTE(oVal.GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	void BinaryChartWriter::WriteCT_LayoutMode(CT_LayoutMode& oVal)
 	{

@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../Common/SimpleTypes_Base.h"
 
 namespace PPTX
 {
@@ -338,7 +339,6 @@ namespace OOX
 		class CT_Legend;
 		class CT_Layout;
 		class CT_ManualLayout;
-		class CT_LayoutTarget;
 		class CT_LayoutMode;
 		class CT_Double;
 		class CT_DTable;
@@ -735,11 +735,48 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
+
+		DEFINE_SIMPLE_TYPE(CLayoutTarget, ST_LayoutTarget, st_layouttargetINNER);
+
+		template<class T>
+		class nullableComplexVal : public nullable<T>
+		{
+		public:
+			nullableComplexVal() : nullable<T>()
+			{
+			}
+			nullableComplexVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					T* pType = new T();
+					
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						WritingElement_ReadAttributes_ReadSingle(oReader, L"val", *pType)
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+					if (!oReader.IsEmptyNode())
+						oReader.ReadTillEnd();
+					
+					this->m_pPointer = pType;
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + this->m_pPointer->ToString() + L"\"/>");
+				}
+			}
+		};
 		class CT_ManualLayout
 		{
 		public:
-			//Member
-			CT_LayoutTarget* m_layoutTarget;
+			////Member
+			//CT_LayoutTarget* m_layoutTarget;
+			nullableComplexVal<CLayoutTarget> m_layoutTarget;
 			//Member
 			CT_LayoutMode* m_xMode;
 			//Member
@@ -764,18 +801,19 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_LayoutTarget
-		{
-		public:
-			//Attribute
-			ST_LayoutTarget* m_val;
-			CT_LayoutTarget();
-			~CT_LayoutTarget();
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
+
+		//class CT_LayoutTarget
+		//{
+		//public:
+		//	//Attribute
+		//	ST_LayoutTarget* m_val;
+		//	CT_LayoutTarget();
+		//	~CT_LayoutTarget();
+		//	void fromXML(XmlUtils::CXmlLiteReader& oReader);
+		//	void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+		//	EElementType getType();
+		//private: void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		//};
 		class CT_LayoutMode
 		{
 		public:

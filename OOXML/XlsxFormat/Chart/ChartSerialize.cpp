@@ -130,28 +130,28 @@ namespace OOX
 				bRes=false;
 			return bRes;
 		}
-		bool FromXml_ST_LayoutTarget(std::wstring& val, ST_LayoutTarget& eOut)
-		{
-			bool bRes = true;
-			if(_T("inner")==val)
-				eOut=st_layouttargetINNER;
-			else if(_T("outer")==val)
-				eOut=st_layouttargetOUTER;
-			else
-				bRes=false;
-			return bRes;
-		}
-		bool ToXml_ST_LayoutTarget(ST_LayoutTarget& val, std::wstring& sOut)
-		{
-			bool bRes = true;
-			if(st_layouttargetINNER==val)
-				sOut=_T("inner");
-			else if(st_layouttargetOUTER==val)
-				sOut=_T("outer");
-			else
-				bRes=false;
-			return bRes;
-		}
+		//bool FromXml_ST_LayoutTarget(std::wstring& val, ST_LayoutTarget& eOut)
+		//{
+		//	bool bRes = true;
+		//	if(_T("inner")==val)
+		//		eOut=st_layouttargetINNER;
+		//	else if(_T("outer")==val)
+		//		eOut=st_layouttargetOUTER;
+		//	else
+		//		bRes=false;
+		//	return bRes;
+		//}
+		//bool ToXml_ST_LayoutTarget(ST_LayoutTarget& val, std::wstring& sOut)
+		//{
+		//	bool bRes = true;
+		//	if(st_layouttargetINNER==val)
+		//		sOut=_T("inner");
+		//	else if(st_layouttargetOUTER==val)
+		//		sOut=_T("outer");
+		//	else
+		//		bRes=false;
+		//	return bRes;
+		//}
 		bool FromXml_ST_LayoutMode(std::wstring& val, ST_LayoutMode& eOut)
 		{
 			bool bRes = true;
@@ -2499,7 +2499,7 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 		EElementType CT_Layout::getType(){return et_ct_layout;}
 		CT_ManualLayout::CT_ManualLayout()
 		{
-			m_layoutTarget = NULL;
+			//m_layoutTarget = NULL;
 			m_xMode = NULL;
 			m_yMode = NULL;
 			m_wMode = NULL;
@@ -2512,8 +2512,8 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 		}
 		CT_ManualLayout::~CT_ManualLayout()
 		{
-			if(NULL != m_layoutTarget)
-				delete m_layoutTarget;
+			//if(NULL != m_layoutTarget)
+			//	delete m_layoutTarget;
 			if(NULL != m_xMode)
 				delete m_xMode;
 			if(NULL != m_yMode)
@@ -2533,7 +2533,8 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
-		void CT_ManualLayout::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		void CT_ManualLayout::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if ( oReader.IsEmptyNode() )
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -2542,9 +2543,10 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if(_T("layoutTarget") == sName)
 				{
-					CT_LayoutTarget* pNewElem = new CT_LayoutTarget;
-					pNewElem->fromXML(oReader);
-					m_layoutTarget = pNewElem;
+					//CT_LayoutTarget* pNewElem = new CT_LayoutTarget;
+					//pNewElem->fromXML(oReader);
+					//m_layoutTarget = pNewElem;
+					m_layoutTarget = oReader;
 				}
 				else if(_T("xMode") == sName)
 				{
@@ -2602,15 +2604,14 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 				}
 			}
 		}
-		void CT_ManualLayout::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		void CT_ManualLayout::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-			if(NULL != m_layoutTarget)
-			{
-                std::wstring sNodeName = _T("c:layoutTarget");
-                m_layoutTarget->toXML(sNodeName, writer);
-			}
+
+			m_layoutTarget.toXML(L"c:layoutTarget", writer);
+
 			if(NULL != m_xMode)
 			{
                 std::wstring sNodeName = _T("c:xMode");
@@ -2661,52 +2662,71 @@ xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"");
 			writer.WriteString(L">");
 		}
 		EElementType CT_ManualLayout::getType(){return et_ct_manuallayout;}
-		CT_LayoutTarget::CT_LayoutTarget()
-		{
-			/*m_val = new ST_LayoutTarget;
-			*m_val = st_layouttargetOUTER;*/
-			m_val = NULL;
-		}
-		CT_LayoutTarget::~CT_LayoutTarget()
-		{
-			if(NULL != m_val)
-				delete m_val;
-		}
-		void CT_LayoutTarget::fromXML(XmlUtils::CXmlLiteReader& oReader){
-				ReadAttributes(oReader);
 
-				if(!oReader.IsEmptyNode())
-					oReader.ReadTillEnd();
+		ST_LayoutTarget CLayoutTarget::FromString(const std::wstring &sValue)
+		{
+			if ((L"inner") == sValue) this->m_eValue = st_layouttargetINNER;
+			else if ((L"outer") == sValue) this->m_eValue = st_layouttargetOUTER;
+			else this->m_eValue = st_layouttargetINNER;
+
+			return this->m_eValue;
 		}
-		void CT_LayoutTarget::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
-			writer.WriteString(L"<");
-			writer.WriteString(sNodeName);
-			if(NULL != m_val)
+
+		std::wstring CLayoutTarget::ToString() const
+		{
+			switch (this->m_eValue)
 			{
-				std::wstring sEnumVal;
-				if(ToXml_ST_LayoutTarget(*m_val, sEnumVal))
-				{
-					WritingStringAttrString(L"val", sEnumVal);
-				}
+			case st_layouttargetINNER: return (L"inner");
+			case st_layouttargetOUTER: return (L"outer");
+			default: return (L"inner");
 			}
-			writer.WriteString(L"/>");
 		}
-		EElementType CT_LayoutTarget::getType(){return et_ct_layouttarget;}
-		void CT_LayoutTarget::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-		{
-			WritingElement_ReadAttributes_Start_No_NS( oReader )
-				if(_T("val") == wsName)
-				{
-					ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
-					ST_LayoutTarget eVal;
+		//CT_LayoutTarget::CT_LayoutTarget()
+		//{
+		//	/*m_val = new ST_LayoutTarget;
+		//	*m_val = st_layouttargetOUTER;*/
+		//	m_val = NULL;
+		//}
+		//CT_LayoutTarget::~CT_LayoutTarget()
+		//{
+		//	if(NULL != m_val)
+		//		delete m_val;
+		//}
+		//void CT_LayoutTarget::fromXML(XmlUtils::CXmlLiteReader& oReader){
+		//		ReadAttributes(oReader);
 
-                    std::wstring sNodeName = oReader.GetText();
-                    if(FromXml_ST_LayoutTarget(sNodeName, eVal))
-						*pNewElem = eVal;
-					m_val = pNewElem;
-				}
-				WritingElement_ReadAttributes_End_No_NS( oReader )
-		}
+		//		if(!oReader.IsEmptyNode())
+		//			oReader.ReadTillEnd();
+		//}
+		//void CT_LayoutTarget::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const{
+		//	writer.WriteString(L"<");
+		//	writer.WriteString(sNodeName);
+		//	if(NULL != m_val)
+		//	{
+		//		std::wstring sEnumVal;
+		//		if(ToXml_ST_LayoutTarget(*m_val, sEnumVal))
+		//		{
+		//			WritingStringAttrString(L"val", sEnumVal);
+		//		}
+		//	}
+		//	writer.WriteString(L"/>");
+		//}
+		//EElementType CT_LayoutTarget::getType(){return et_ct_layouttarget;}
+		//void CT_LayoutTarget::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+		//{
+		//	WritingElement_ReadAttributes_Start_No_NS( oReader )
+		//		if(_T("val") == wsName)
+		//		{
+		//			ST_LayoutTarget* pNewElem = new ST_LayoutTarget;
+		//			ST_LayoutTarget eVal;
+
+  //                  std::wstring sNodeName = oReader.GetText();
+  //                  if(FromXml_ST_LayoutTarget(sNodeName, eVal))
+		//				*pNewElem = eVal;
+		//			m_val = pNewElem;
+		//		}
+		//		WritingElement_ReadAttributes_End_No_NS( oReader )
+		//}
 		CT_LayoutMode::CT_LayoutMode()
 		{
 			/*m_val = new ST_LayoutMode;

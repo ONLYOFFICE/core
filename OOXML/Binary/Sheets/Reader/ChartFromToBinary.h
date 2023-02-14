@@ -347,7 +347,7 @@ namespace BinXlsxRW
 		void WriteCT_Legend(OOX::Spreadsheet::CT_Legend& oVal);
 		void WriteCT_Layout(OOX::Spreadsheet::CT_Layout& oVal);
 		void WriteCT_ManualLayout(OOX::Spreadsheet::CT_ManualLayout& oVal);
-		void WriteCT_LayoutTarget(OOX::Spreadsheet::CT_LayoutTarget& oVal);
+		void WriteCT_LayoutTarget(OOX::Spreadsheet::CLayoutTarget& oVal);
 		void WriteCT_LayoutMode(OOX::Spreadsheet::CT_LayoutMode& oVal);
 		void WriteCT_Double(OOX::Spreadsheet::CT_Double& oVal);
 		void WriteCT_DTable(OOX::Spreadsheet::CT_DTable& oVal);

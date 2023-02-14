@@ -10,7 +10,9 @@ namespace SVG
 
 	void CPolyline::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-
+		SetTransform(mAttributes, ushLevel, bHardMode);
+		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
 	bool CPolyline::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
@@ -53,7 +55,7 @@ namespace SVG
 			return;
 
 		ApplyTransform(pRenderer, oOldMatrix);
-		ApplyStroke(pRenderer, nTypePath, true);
+		ApplyStroke(pRenderer, nTypePath);
 		ApplyFill(pRenderer, pDefs, nTypePath, true);
 	}
 

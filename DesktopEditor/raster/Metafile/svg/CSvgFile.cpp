@@ -87,9 +87,27 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	SVG::TRect oWindow  = m_pContainer->GetWindow();
 	SVG::TRect oViewBox = m_pContainer->GetViewBox();
 
-	if ((oWindow.m_oWidth.Zero()  && oViewBox.m_oWidth.Zero()) ||
-	    (oWindow.m_oHeight.Zero() && oViewBox.m_oHeight.Zero()))
-		return false;
+	if (oWindow.m_oWidth.Zero())
+	{
+		if (oViewBox.m_oWidth.Zero())
+			oWindow.m_oWidth =  300;
+		else
+		{
+			oWindow.m_oWidth = oViewBox.m_oWidth;
+			oViewBox.m_oWidth.Clear();
+		}
+	}
+
+	if (oWindow.m_oHeight.Zero())
+	{
+		if (oViewBox.m_oHeight.Zero())
+			oWindow.m_oHeight =  150;
+		else
+		{
+			oWindow.m_oHeight = oViewBox.m_oHeight;
+			oViewBox.m_oHeight.Clear();
+		}
+	}
 
 	double dWindowWidth  = oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
 	double dWindowHeight = oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
@@ -123,7 +141,8 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 
 	double dScale = std::min(dScaleX, dScaleY);
 
-	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScale * dM11, dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScale * dM22;
+	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScale * dM11;
+	double dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScale * dM22;
 
 	if (dViewBoxHeight > dViewBoxWidth)
 		dSkipX += (dViewBoxHeight - dViewBoxWidth) * (dScale + 1.);

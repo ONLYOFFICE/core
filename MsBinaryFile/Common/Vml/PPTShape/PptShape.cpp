@@ -443,7 +443,7 @@ void CPPTShape::ReCalculate()
 		LoadPathList(m_strPath);
 	}
 }
-const ClassType CPPTShape::GetClassType()const
+const ClassType CPPTShape::GetClassType() const
 {
 	return NSBaseShape::ppt;
 }

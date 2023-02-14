@@ -167,7 +167,7 @@ public:
 	virtual void ReCalculate();
 
 	static CBaseShapePtr CreateByType(PPTShapes::ShapeType type);
-	virtual const ClassType GetClassType()const;
+	virtual const ClassType GetClassType() const;
 
 	virtual bool SetProperties(CBaseShape* Shape);
 	virtual bool SetToDublicate(CBaseShape* Shape);

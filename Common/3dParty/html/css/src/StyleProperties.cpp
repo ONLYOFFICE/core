@@ -606,6 +606,29 @@ namespace NSCSS
 		return TRGB();
 	}
 
+	std::vector<std::wstring> CMatrix::CutTransforms(const std::wstring &wsValue) const
+	{
+		if (wsValue.length() < 10)
+			return std::vector<std::wstring>();
+
+//		std::wregex oRegex(L"(matrix|translate|scale|rotate)[(](([0-9]*\\.?[0-9]*)(\\s|,)*)+[)]");
+
+		std::wstring::const_iterator citBegin = std::find_if(wsValue.begin(), wsValue.end(), std::iswalpha);
+		std::wstring::const_iterator citEnd;
+
+		std::vector<std::wstring> arValues;
+
+		while (wsValue.end() != citBegin)
+		{
+			citEnd = std::find_if(citBegin, wsValue.end(), [](wchar_t wChar){return L')' == wChar;});
+			arValues.push_back(std::wstring(citBegin, citEnd + 1));
+			citBegin = citEnd + 1;
+			citBegin =  std::find_if(citBegin, wsValue.end(), std::iswalpha);
+		}
+
+		return arValues;
+	}
+
 	CMatrix::CMatrix()
 	    : CValue(Aggplus::CMatrix(1., 0., 0., 1., 0., 0.), 0, false), m_enType(TransformNone)
 	{}
@@ -616,59 +639,69 @@ namespace NSCSS
 
 	bool CMatrix::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (std::wstring::npos != wsValue.find(L"matrix"))
-			m_enType = TransformMatrix;
-		else if (std::wstring::npos != wsValue.find(L"translate"))
-			m_enType = TransformTranslate;
-		else if (std::wstring::npos != wsValue.find(L"scale"))
-			m_enType = TransformScale;
-		else if (std::wstring::npos != wsValue.find(L"rotate"))
-			m_enType = TransformRotate;
-		else
-			return false;
+		std::vector<std::wstring> arTransforms = CutTransforms(wsValue);
 
-		std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsValue);
-
-		if (arValues.empty())
-			return false;
-
-		switch (m_enType)
+		for (const std::wstring& wsTransform : arTransforms)
 		{
-			case TransformMatrix:
-			{
-				if (6 != arValues.size())
-					return false;
+			if (std::wstring::npos != wsTransform.find(L"matrix"))
+				m_enType = TransformMatrix;
+			else if (std::wstring::npos != wsTransform.find(L"translate"))
+				m_enType = TransformTranslate;
+			else if (std::wstring::npos != wsTransform.find(L"scale"))
+				m_enType = TransformScale;
+			else if (std::wstring::npos != wsTransform.find(L"rotate"))
+				m_enType = TransformRotate;
+			else
+				return false;
 
-				m_oValue.SetElements(arValues[0], arValues[1], arValues[2], arValues[3], arValues[4], arValues[5]);
-				break;
-			}
-			case TransformTranslate:
-			{
-				if (2 != arValues.size())
-					return false;
+			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform);
 
-				m_oValue.Shear(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
-				break;
-			}
-			case TransformScale:
-			{
-				if (2 != arValues.size())
-					return false;
+			if (arValues.empty())
+				return false;
 
-				m_oValue.Scale(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
-				break;
-			}
-			case TransformRotate:
+			switch (m_enType)
 			{
-				if (3 == arValues.size())
-					m_oValue.RotateAt(arValues[0], arValues[1], arValues[2], Aggplus::MatrixOrderAppend);
-				else
-					m_oValue.RotateAt(arValues[0], 0., 0., Aggplus::MatrixOrderAppend);
-				break;
+				case TransformMatrix:
+				{
+					if (6 != arValues.size())
+						return false;
+
+					Aggplus::CMatrix oTempMatrix(arValues[0], arValues[1], arValues[2], arValues[3], arValues[4], arValues[5]);
+
+					m_oValue.Multiply(&oTempMatrix, Aggplus::MatrixOrderAppend);
+					break;
+				}
+				case TransformTranslate:
+				{
+					if (2 != arValues.size())
+						return false;
+
+					m_oValue.Shear(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
+					break;
+				}
+				case TransformScale:
+				{
+					if (2 != arValues.size())
+						return false;
+
+					m_oValue.Scale(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
+					break;
+				}
+				case TransformRotate:
+				{
+					if (3 == arValues.size())
+						m_oValue.RotateAt(arValues[0], arValues[1], arValues[2], Aggplus::MatrixOrderAppend);
+					else
+						m_oValue.RotateAt(arValues[0], 0., 0., Aggplus::MatrixOrderAppend);
+					break;
+				}
 			}
 		}
 
-		return true;
+		if (1 < arTransforms.size())
+			m_enType = TransformMatrix;
+
+		return m_enType != TransformNone;
 	}
 
 	bool CMatrix::SetMatrix(const Aggplus::CMatrix &oValue)

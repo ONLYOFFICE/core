@@ -191,6 +191,7 @@ namespace NSCSS
 	class CMatrix : public CValue<Aggplus::CMatrix>
 	{
 		TransformType m_enType;
+		std::vector<std::wstring> CutTransforms(const std::wstring& wsValue) const;
 	public:
 		CMatrix();
 		CMatrix(const Aggplus::CMatrix& oValue, unsigned int unLevel, bool bImportant = false);

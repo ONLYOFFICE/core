@@ -144,30 +144,6 @@ namespace SVG
 	{
 	}
 
-//	void CText::ApplyStyle(IRenderer *pRenderer, double &dX, double &dY) const
-//	{
-//		double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
-////		ApplyTransform(pRenderer, dX, dY, dFontSize);
-//		Aggplus::CMatrix oOld;
-//		CObjectBase::ApplyTransform(pRenderer, oOld);
-//		ApplyFont(pRenderer, dFontSize);
-//	}
-
-//	void CText::ApplyTransform(IRenderer *pRenderer, double &dX, double &dY, double &dFontSize) const
-//	{
-//		double dM11, dM12, dM21, dM22, dRx, dRy;
-
-//		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dRx, &dRy);
-
-//		Aggplus::CMatrix oMatrix(dM11, dM12, dM21, dM22, dRx, dRy);
-//		Aggplus::CMatrix oNewMatrix(m_oTransform.GetMatrix().GetValue());
-
-//		oMatrix.Multiply(&oNewMatrix);
-
-//		oMatrix.TransformPoint(dX, dY);
-//		dFontSize *= oNewMatrix.sy();
-//	}
-
 	void CText::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
 	{
 		std::wstring wsFontFamily = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
@@ -186,51 +162,70 @@ namespace SVG
 			nStyle |= (1 << 2);
 
 		// Вычиления размеров текста
-		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 72, 72);
+		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 96., 96.);
 		m_pFontManager->SetCharSpacing(0);
 
-		double dKoef     = 25.4 / 96;
+		double dKoef     = 25.4 / 96.;
 		double dFHeight  = dFontSize;
-		double dFDescent = dFontSize;
 
 		NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 
 		if (pFontFile)
-		{
 			dFHeight  *= pFontFile->GetHeight() / pFontFile->Units_Per_Em() * dKoef;
-			dFDescent *= pFontFile->GetDescender() / pFontFile->Units_Per_Em() * dKoef;
-		}
-		double dFAscent  = dFHeight - std::abs(dFDescent);
 
-		float fL, fT, fW, fH, fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
+		float fW, fUndX1, fUndY1, fUndX2, fUndY2, fUndSize;
 
 		m_pFontManager->LoadString1(m_wsText, 0, 0);
 		TBBox oBox = m_pFontManager->MeasureString2();
-		fL = (float)dKoef * (oBox.fMinX);
 		fW = (float)dKoef * (oBox.fMaxX - oBox.fMinX);
 
 		// Просчитаем положение подчеркивания
 		m_pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+		fUndX1   *= (float)dKoef;
 		fUndY1   *= (float)dKoef;
+		fUndX2   *= (float)dKoef;
 		fUndY2   *= (float)dKoef;
 		fUndSize *= (float)dKoef / 2;
 
-		fUndX1 = fL;
-		fUndX2 = fL + fW;
-
-		fT = (float)-dFAscent;
-		fH = (float)dFHeight;
-
-		float fTemp = -fT;
-
-		dX += -fTemp;
-		dY +=  fTemp;
+		fUndY1 -= dFHeight / 4;
+		fUndY2 -= dFHeight / 4;
 
 		if (L"left" == m_oText.GetAlign().ToWString())
 			dX += -fW;
 		else if (L"center" == m_oText.GetAlign().ToWString())
 			dX += -fW / 2;
 
+		if (m_oText.Underline() || m_oText.LineThrough() || m_oText.Overline())
+		{
+			pRenderer->put_PenSize((double)fUndSize);
+			pRenderer->put_PenLineEndCap(0);
+			pRenderer->put_PenLineStartCap(0);
+
+			pRenderer->BeginCommand(c_nPathType);
+			pRenderer->PathCommandStart();
+
+			if (m_oText.Underline())
+			{
+				pRenderer->PathCommandMoveTo(fUndX1 + dX, fUndY1 + dY);
+				pRenderer->PathCommandLineTo(fUndX2 + dX, fUndY2 + dY);
+			}
+
+			if (m_oText.LineThrough())
+			{
+				pRenderer->PathCommandMoveTo(fUndX1 + dX, fUndY1 + dY - dFHeight / 2);
+				pRenderer->PathCommandLineTo(fUndX2 + dX, fUndY2 + dY - dFHeight / 2);
+			}
+
+			if (m_oText.Overline())
+			{
+				pRenderer->PathCommandMoveTo(fUndX1 + dX, fUndY1 + dY - dFHeight * 1.5);
+				pRenderer->PathCommandLineTo(fUndX2 + dX, fUndY2 + dY - dFHeight * 1.5);
+			}
+
+			pRenderer->DrawPath(c_nStroke);
+			pRenderer->EndCommand(c_nPathType);
+			pRenderer->PathCommandEnd();
+		}
 
 		pRenderer->put_FontStyle(nStyle);
 		pRenderer->put_BrushType(c_BrushTypeSolid);

@@ -299,7 +299,7 @@ namespace OOX
 			nullable<SimpleTypes::Spreadsheet::ST_CfType>		m_oType;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList>		m_oExtLst;
-			nullable<std::wstring>								m_oExtId;
+			nullable_string										m_oExtId;
 
 			nullable<CIconSet>					m_oIconSet;
 			nullable<CColorScale>				m_oColorScale;

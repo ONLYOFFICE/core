@@ -6438,7 +6438,7 @@ void BinaryWorksheetTableWriter::WriteConditionalFormattingRule(const OOX::Sprea
 	std::map<std::wstring, OOX::Spreadsheet::CConditionalFormattingRule*>::iterator pFind;
 	if (oConditionalFormattingRule.m_oExtId.IsInit())
 	{
-		 pFind = mapCFRuleEx.find(oConditionalFormattingRule.m_oExtId.get2());
+		 pFind = mapCFRuleEx.find(*oConditionalFormattingRule.m_oExtId);
 
 		 if (pFind != mapCFRuleEx.end())
 		 {

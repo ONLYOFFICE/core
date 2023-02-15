@@ -1695,9 +1695,8 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 				pOfficeArtExtension->m_oSlicerCachePivotTables.push_back(pSlicerCachePivotTable);
 			}
 
-			pOfficeArtExtension->m_sUri.Init();
-			pOfficeArtExtension->m_sUri->append(_T("{03082B11-2C62-411c-B77F-237D8FCFBE4C}"));
-			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			pOfficeArtExtension->m_sUri = L"{03082B11-2C62-411c-B77F-237D8FCFBE4C}";
+			pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 			if(!m_oExtLst.IsInit())
 			{
 				m_oExtLst.Init();
@@ -1711,9 +1710,8 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			pOfficeArtExtension->m_oTableSlicerCache.Init();
 			pOfficeArtExtension->m_oTableSlicerCache->fromPPTY(pReader);
 
-			pOfficeArtExtension->m_sUri.Init();
-			pOfficeArtExtension->m_sUri->append(_T("{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}"));
-			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			pOfficeArtExtension->m_sUri = L"{2F2917AC-EB37-4324-AD4E-5DD8C200BD13}";
+			pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 			if(!m_oExtLst.IsInit())
 			{
 				m_oExtLst.Init();
@@ -1727,9 +1725,8 @@ void CSlicerCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 			pOfficeArtExtension->m_oSlicerCacheHideItemsWithNoData.Init();
 			pOfficeArtExtension->m_oSlicerCacheHideItemsWithNoData->fromPPTY(pReader);
 
-			pOfficeArtExtension->m_sUri.Init();
-			pOfficeArtExtension->m_sUri->append(_T("{470722E0-AACD-4C17-9CDC-17EF765DBC7E}"));
-			pOfficeArtExtension->m_sAdditionalNamespace = _T("xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"");
+			pOfficeArtExtension->m_sUri = L"{470722E0-AACD-4C17-9CDC-17EF765DBC7E}";
+			pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
 			if(!m_oExtLst.IsInit())
 			{
 				m_oExtLst.Init();

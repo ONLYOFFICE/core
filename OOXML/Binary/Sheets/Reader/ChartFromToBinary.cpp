@@ -3196,9 +3196,9 @@ namespace BinXlsxRW
 			{
 				if (!poVal->m_extLst->m_arrExt[i]) continue;
 
-				if (poVal->m_extLst->m_arrExt[i]->m_oChartDLbl.IsInit())
+				if (poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
 				{
-					pDlbl = poVal->m_extLst->m_arrExt[i]->m_oChartDLbl.GetPointer();
+					pDlbl = poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.GetPointer();
 					break;
 				}
 			}
@@ -3207,8 +3207,8 @@ namespace BinXlsxRW
 			{
 				poVal->m_extLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
 				poVal->m_extLst->m_arrExt.back()->m_sUri = L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}";
-				poVal->m_extLst->m_arrExt.back()->m_oChartDLbl.Init();
-				pDlbl = poVal->m_extLst->m_arrExt.back()->m_oChartDLbl.GetPointer();
+				poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.Init();
+				pDlbl = poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.GetPointer();
 			}
 			if (pDlbl)
 			{
@@ -3376,9 +3376,9 @@ namespace BinXlsxRW
 			{
 				if (!poVal->m_extLst->m_arrExt[i]) continue;
 
-				if (poVal->m_extLst->m_arrExt[i]->m_oChartDLbl.IsInit())
+				if (poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
 				{
-					pDlbl = poVal->m_extLst->m_arrExt[i]->m_oChartDLbl.GetPointer();
+					pDlbl = poVal->m_extLst->m_arrExt[i]->m_oChartDataLabel.GetPointer();
 					break;
 				}
 			}
@@ -3387,8 +3387,8 @@ namespace BinXlsxRW
 			{
 				poVal->m_extLst->m_arrExt.push_back(new OOX::Drawing::COfficeArtExtension());
 				poVal->m_extLst->m_arrExt.back()->m_sUri = L"{CE6537A1-D6FC-4f65-9D91-7224C49458BB}";
-				poVal->m_extLst->m_arrExt.back()->m_oChartDLbl.Init();
-				pDlbl = poVal->m_extLst->m_arrExt.back()->m_oChartDLbl.GetPointer();
+				poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.Init();
+				pDlbl = poVal->m_extLst->m_arrExt.back()->m_oChartDataLabel.GetPointer();
 			}
 			if (pDlbl)
 			{
@@ -9181,9 +9181,9 @@ namespace BinXlsxRW
 		for (size_t i = 0; (oVal.m_extLst.IsInit()) && (i < oVal.m_extLst->m_arrExt.size()); ++i)
 		{
 			if (!oVal.m_extLst->m_arrExt[i]) continue;
-			if (oVal.m_extLst->m_arrExt[i]->m_oChartDLbl.IsInit())
+			if (oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
 			{
-				WriteCT_DLbl(*oVal.m_extLst->m_arrExt[i]->m_oChartDLbl, true);
+				WriteCT_DLbl(*oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel, true);
 			}
 		}
 	}
@@ -9390,9 +9390,9 @@ namespace BinXlsxRW
 		for (size_t i = 0; (oVal.m_extLst.IsInit()) && (i < oVal.m_extLst->m_arrExt.size()); ++i)
 		{
 			if (!oVal.m_extLst->m_arrExt[i]) continue;
-			if (oVal.m_extLst->m_arrExt[i]->m_oChartDLbl.IsInit())
+			if (oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel.IsInit())
 			{
-				WriteCT_DLbl(*oVal.m_extLst->m_arrExt[i]->m_oChartDLbl, true);
+				WriteCT_DLbl(*oVal.m_extLst->m_arrExt[i]->m_oChartDataLabel, true);
 			}
 		}
 	}

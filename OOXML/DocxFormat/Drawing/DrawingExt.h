@@ -55,6 +55,7 @@ namespace OOX
 		class CConnection;
         class CPivotCacheDefinitionExt;
 		class CT_DLbl;
+		class CSeriesFiltering;
 	}
 
 	namespace Drawing
@@ -77,7 +78,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            nullable<std::wstring> m_sSpId;
+            nullable_string m_sSpId;
 		};
 
 		class CDataModelExt : public WritingElement
@@ -124,14 +125,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-            nullable<std::wstring>                                  m_sUri;
+            nullable_string											m_sUri;
             std::wstring                                            m_sAdditionalNamespace;
 
             nullable<CCompatExt>                                    m_oCompatExt;
             nullable<OOX::Spreadsheet::CSparklineGroups>            m_oSparklineGroups;
             nullable<CDataModelExt>                                 m_oDataModelExt;
             nullable<OOX::Spreadsheet::CAltTextTable>               m_oAltTextTable;
-            nullable<std::wstring>                                  m_oId;
+            nullable_string											m_oId;
             nullable<OOX::Spreadsheet::CDataValidations>            m_oDataValidations;
 
             nullable<OOX::Spreadsheet::CConnection>                 m_oConnection;
@@ -156,7 +157,8 @@ namespace OOX
 			nullable_string m_oFileKey;
 			nullable_string m_oInstanceId;
 
-			nullable<OOX::Spreadsheet::CT_DLbl> m_oChartDLbl;
+			nullable<OOX::Spreadsheet::CT_DLbl> m_oChartDataLabel;
+			//nullable<OOX::Spreadsheet::CSeriesFiltering> m_oChartFiltering;
 
 		};
 

@@ -328,6 +328,8 @@ SOURCES += \
 	../../../../OOXML/Binary/Document/BinWriter/BinEquationWriter.cpp \
 	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
+	../../../../MsBinaryFile/Common/Vml/GraphicsPath.cpp \
+	../../../../MsBinaryFile/Common/Vml/Path.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \

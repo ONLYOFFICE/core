@@ -34,13 +34,6 @@
 
 namespace NSGuidesVML
 {
-	int __wstrlen(const wchar_t* str)
-	{
-		const wchar_t* s = str;
-		for (; *s != 0; ++s);
-		return (LONG)(s - str);
-	}
-
 	CSlicePath::CSlicePath(RulesType rule, LONG x, LONG y) : m_lX(x), m_lY(y), m_eRuler(rule)
 	{
 		m_nCountElementsPoint = 0;

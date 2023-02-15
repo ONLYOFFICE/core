@@ -717,6 +717,20 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
     return oLinks.Serialize();
 }
+
+#define DICT_LOOKUP_STRING(field, sName, byte) \
+{\
+if (field.dictLookup(sName, &oObj) && oObj.isString())\
+{\
+    TextString* s = new TextString(oObj.getString());\
+    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
+    nFlags |= (1 << byte);\
+    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());\
+    delete s;\
+}\
+oObj.free();\
+}
+
 BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
@@ -817,28 +831,11 @@ BYTE* CPdfReader::GetWidgets()
         oRes.AddInt(nFlags);
 
         // 1 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-        Object oTU;
-        if (oField.dictLookup("TU", &oTU) && oTU.isString())
-        {
-            TextString* s = new TextString(oTU.getString());
-            std::string sTU = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-            nFlags |= (1 << 0);
-            oRes.WriteString((BYTE*)sTU.c_str(), (unsigned int)sTU.length());
-            delete s;
-        }
-        oTU.free();
+        Object oObj;
+        DICT_LOOKUP_STRING(oField, "TU", 0);
 
         // 2 - Строка стиля по умолчанию - DS
-        Object oDS;
-        if (oField.dictLookup("DS", &oDS) && oDS.isString())
-        {
-            TextString* s = new TextString(oDS.getString());
-            std::string sDS = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-            nFlags |= (1 << 1);
-            oRes.WriteString((BYTE*)sDS.c_str(), (unsigned int)sDS.length());
-            delete s;
-        }
-        oDS.free();
+        DICT_LOOKUP_STRING(oField, "DS", 1);
 
         // Границы и Dash Pattern - Border/BS
         Object oBorder;
@@ -920,6 +917,16 @@ BYTE* CPdfReader::GetWidgets()
         }
         oBorder.free(); oBorderBE.free(); oBorderBEI.free();
 
+        // 4 - Режим выделения - H
+        Object oHighlighting;
+        if (oField.dictLookup("H", &oHighlighting) && oBorder.isName())
+        {
+            nFlags |= (1 << 3);
+            std::string sName(oBorder.getName());
+            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+        }
+        oHighlighting.free();
+
         // Значение поля - V
         int nValueLength;
         Unicode* pValue = pField->getValue(&nValueLength);
@@ -929,11 +936,15 @@ BYTE* CPdfReader::GetWidgets()
         // Запись данных необходимых каждому типу
         switch (oType)
         {
+        case acroFormFieldPushbutton:
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
-            // 10 - Включено
+            if (sValue.empty() && oField.dictLookup("AS", &oObj) && oObj.isName())
+                sValue = oObj.getName();
+            oObj.free();
 
+            // 10 - Включено
             if (sValue != "Off")
                 nFlags |= (1 << 9);
 
@@ -971,6 +982,49 @@ BYTE* CPdfReader::GetWidgets()
             }
             oParentObj.free();
 
+            Object oMK;
+            if (oField.dictLookup("MK", &oMK) && oMK.isDict())
+            {
+                // 11 - Заголовок - СА
+                DICT_LOOKUP_STRING(oMK, "CA", 10);
+
+                // 12 - Заголовок прокрутки - RC
+                // 13 - Альтернативный заголовок - AC
+                if (oType == acroFormFieldPushbutton)
+                {
+                    DICT_LOOKUP_STRING(oMK, "RC", 11);
+                    DICT_LOOKUP_STRING(oMK, "AC", 12);
+                }
+
+                // 14 - Положение заголовка - TP
+                if (oMK.dictLookup("TP", &oObj) && oObj.isInt())
+                {
+                    nFlags |= (1 << 13);
+                    oRes.AddInt(oObj.getInt());
+                }
+                oObj.free();
+
+                // TODO Обычный значок - I Значок прокрутки - RI Альтернативный значок - IX Значок соответствия - IF
+            }
+            oMK.free();
+
+            // 15 - Имя вкл состояния - AP - N - Yes
+            Object oNorm;
+            if (oField.dictLookup("AP", &oObj) && oObj.isDict() && oObj.dictLookup("N", &oNorm) && oNorm.isDict())
+            {
+                for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
+                {
+                    std::string sNormName(oNorm.dictGetKey(j));
+                    if (sNormName != "Off")
+                    {
+                        nFlags |= (1 << 14);
+                        oRes.WriteString((BYTE*)sNormName.c_str(), (unsigned int)sNormName.length());
+                        break;
+                    }
+                }
+            }
+            oNorm.free(); oObj.free();
+
             break;
         }
         case acroFormFieldFileSelect:
@@ -996,16 +1050,11 @@ BYTE* CPdfReader::GetWidgets()
                 oRes.AddInt(nMaxLen);
             }
 
-            Object oRV;
-            if ((nFieldFlag & (1 << 25)) && oField.dictLookup("RV", &oRV) && oRV.isString()) // RichText
+            // RichText
+            if (nFieldFlag & (1 << 25))
             {
-                TextString* s = new TextString(oRV.getString());
-                std::string sRV = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                nFlags |= (1 << 11);
-                oRes.WriteString((BYTE*)sRV.c_str(), (unsigned int)sRV.length());
-                delete s;
+                DICT_LOOKUP_STRING(oField, "RV", 11);
             }
-            oRV.free();
 
             break;
         }
@@ -1013,8 +1062,6 @@ BYTE* CPdfReader::GetWidgets()
         case acroFormFieldListBox:
         {
             // 10 - Значение
-            // 11 - Список значений
-
             if (!sValue.empty())
             {
                 nFlags |= (1 << 9);
@@ -1022,7 +1069,26 @@ BYTE* CPdfReader::GetWidgets()
             }
 
             Object oOpt;
-            if (oField.dictLookup("Opt", &oOpt) && oOpt.isArray())
+            if (!oField.dictLookup("Opt", &oOpt) || !oOpt.isArray())
+            {
+                int nDepth = 0;
+                Object oParentObj;
+                oField.dictLookup("Parent", &oParentObj);
+                while (oParentObj.isDict() && nDepth < 50)
+                {
+                    if (oParentObj.dictLookup("Opt", &oOpt) && oOpt.isArray())
+                        break;
+
+                    Object oParentObj2;
+                    oParentObj.dictLookup("Parent", &oParentObj2);
+                    oParentObj.free();
+                    oParentObj = oParentObj2;
+                    ++nDepth;
+                }
+                oParentObj.free();
+            }
+            // 11 - Список значений
+            if (oOpt.isArray())
             {
                 nFlags |= (1 << 10);
                 int nOptLength = oOpt.arrayGetLength();
@@ -1062,12 +1128,21 @@ BYTE* CPdfReader::GetWidgets()
         {
             break;
         }
-        // Pushbutton не сохраняет постоянного значения, он не должен использовать записи V и DV
-        case acroFormFieldPushbutton:
         default:
             break;
         }
         oFieldRef.free(); oField.free();
+
+        // Action
+        Object oAA;
+        if (oField.dictLookup("AA", &oAA) && oAA.isDict())
+        {
+            for (int j = 0, nLength = oAA.dictGetLength(); j < nLength; ++j)
+            {
+                std::string sAA(oAA.dictGetKey(j));
+            }
+        }
+        oAA.free();
 
         oRes.AddInt(nFlags, nFlagPos);
     }

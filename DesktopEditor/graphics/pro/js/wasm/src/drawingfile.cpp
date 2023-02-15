@@ -454,9 +454,53 @@ int main(int argc, char* argv[])
 			}
 			else
 				std::cout << "BE S, ";
-			if (sType == "checkbox" || sType == "radiobutton")
+			if (nFlags & (1 << 3))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "H " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 			{
 				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
+				if (nFlags & (1 << 10))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "CA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				if (sType == "button")
+				{
+					if (nFlags & (1 << 11))
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << "RC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
+					if (nFlags & (1 << 12))
+					{
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << "AC " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
+				}
+				if (nFlags & (1 << 13))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "TP " << nPathLength << ", ";
+				}
+				if (nFlags & (1 << 14))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "AP.N.Yes " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
 			}
 			else if (sType == "text")
 			{

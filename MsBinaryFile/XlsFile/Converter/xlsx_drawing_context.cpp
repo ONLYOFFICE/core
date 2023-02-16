@@ -1704,7 +1704,7 @@ void xlsx_drawing_context::serialize_shape(_drawing_state_ptr & drawing_state)
 				}
 				else
 				{
-					if (drawing_state->shadow.enabled)
+					if (drawing_state->shadow.enabled && drawing_state->shadow.offsetX != 0)
 					{
 						double dist = sqrt(drawing_state->shadow.offsetX * drawing_state->shadow.offsetX +
 							drawing_state->shadow.offsetY * drawing_state->shadow.offsetY);

@@ -754,16 +754,12 @@ BYTE* CPdfReader::GetWidgets()
             continue;
         }
 
+        // Флаг аннотации - F
         Object oFlag;
         int nAnnotFlag = 0;
         if (oField.dictLookup("F", &oFlag) && oFlag.isInt())
             nAnnotFlag = oFlag.getInt();
         oFlag.free();
-        if (nAnnotFlag & (1 << 1)) // Hidden
-        {
-            oFieldRef.free(); oField.free();
-            continue;
-        }
         oRes.AddInt(nAnnotFlag);
 
         // Полное имя поля - T (parent_full_name.child_name)
@@ -1133,13 +1129,53 @@ BYTE* CPdfReader::GetWidgets()
         }
         oFieldRef.free(); oField.free();
 
-        // Action
+        // 20 - Action - A
         Object oAA;
         if (oField.dictLookup("AA", &oAA) && oAA.isDict())
         {
             for (int j = 0, nLength = oAA.dictGetLength(); j < nLength; ++j)
             {
                 std::string sAA(oAA.dictGetKey(j));
+
+                if (sAA == "E")
+                {
+                }
+                else if (sAA == "X")
+                {
+
+                }
+                else if (sAA == "D")
+                {
+
+                }
+                else if (sAA == "U")
+                {
+
+                }
+                else if (sAA == "Fo")
+                {
+
+                }
+                else if (sAA == "Bl")
+                {
+
+                }
+                else if (sAA == "PO")
+                {
+
+                }
+                else if (sAA == "PC")
+                {
+
+                }
+                else if (sAA == "PV")
+                {
+
+                }
+                else if (sAA == "PI")
+                {
+
+                }
             }
         }
         oAA.free();

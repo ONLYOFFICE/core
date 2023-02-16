@@ -59,7 +59,7 @@ public:
     std::wstring	end_span2();
 
     void			start_cell_content();
-    int				end_cell_content();
+    int				end_cell_content(bool need_cache);
 
 	void			start_comment_content();
 	std::wstring	end_comment_content();

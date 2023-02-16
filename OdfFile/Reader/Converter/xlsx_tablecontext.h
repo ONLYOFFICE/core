@@ -65,7 +65,7 @@ public:
     void end_covered_cell();
 
     void start_cell_content();    
-    int	end_cell_content();
+    int	end_cell_content(bool need_cache);
 
     void set_current_cell_style_id(unsigned int xfId);
     int get_current_cell_style_id();

@@ -201,7 +201,7 @@ namespace BinXlsxRW{
 			
 			bResult = (0 == oBinaryChartReader.ReadCT_ChartFile(lLength, chart_file.GetPointer()));
 
-			bool bXlsxPresent = (chart_file->m_oChartSpace.m_externalData) && (chart_file->m_oChartSpace.m_externalData->m_id);
+			bool bXlsxPresent = (chart_file->m_oChartSpace.m_externalData) && (chart_file->m_oChartSpace.m_externalData->m_id.IsInit());
 			
 			if (bResult && pReader->m_nDocumentType != XMLWRITER_DOC_TYPE_XLSX && !sEmbedingPath.empty() && !bXlsxPresent)
 			{
@@ -223,11 +223,8 @@ namespace BinXlsxRW{
 					m_pExternalDrawingConverter->WriteRels(sChartsWorksheetRelType, sChartsWorksheetRelsName, std::wstring(), &rId);
 
 					chart_file->m_oChartSpace.m_externalData = new OOX::Spreadsheet::CT_ExternalData();
-					chart_file->m_oChartSpace.m_externalData->m_id = new std::wstring();
-					chart_file->m_oChartSpace.m_externalData->m_id->append(L"rId");
-					chart_file->m_oChartSpace.m_externalData->m_id->append(std::to_wstring(rId));
-					chart_file->m_oChartSpace.m_externalData->m_autoUpdate = new OOX::Spreadsheet::CT_Boolean();
-					chart_file->m_oChartSpace.m_externalData->m_autoUpdate->m_val = new bool(false);
+					chart_file->m_oChartSpace.m_externalData->m_id = L"rId" + std::to_wstring(rId);
+					chart_file->m_oChartSpace.m_externalData->m_autoUpdate = false;
 				}
 			}
 		}

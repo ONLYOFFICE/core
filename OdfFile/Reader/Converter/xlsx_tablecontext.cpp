@@ -272,9 +272,9 @@ void xlsx_table_context::start_cell_content()
     xlsx_text_context_.start_cell_content();
 }
 
-int xlsx_table_context::end_cell_content()
+int xlsx_table_context::end_cell_content(bool need_cache)
 {
-    return xlsx_text_context_.end_cell_content();
+    return xlsx_text_context_.end_cell_content(need_cache);
 }
 
 void xlsx_table_context::start_covered_cell()

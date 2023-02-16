@@ -2899,6 +2899,15 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		if (odf_border.length() > 0)
 			text_properties->content_.common_border_attlist_.fo_border_ = odf_border;
 	}
+	if (oox_run_pr->m_oShd.IsInit())
+	{
+		_CP_OPT(odf_types::color) odf_color;
+		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
+		if (odf_color)
+		{
+			text_properties->content_.fo_background_color_= *odf_color;
+		}
+	}
 	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
 	{
 		if (oox_run_pr->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
@@ -2914,16 +2923,6 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 				text_properties->content_.fo_background_color_ = odf_types::color(strColor);
 				delete oRgbColor;
 			}
-		}
-	}
-	
-	if (oox_run_pr->m_oShd.IsInit())
-	{
-		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
-		if (odf_color)
-		{
-			text_properties->content_.fo_background_color_= *odf_color;
 		}
 	}
 	if ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()))

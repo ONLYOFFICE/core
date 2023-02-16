@@ -267,7 +267,6 @@
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BkHim.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookProtection.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookProtectionIso.cpp" />
-    <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BookView.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Border.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\Brk.cpp" />
     <ClCompile Include="..\..\..\XlsbFormat\Biff12_records\BundleSh.cpp" />
@@ -1300,7 +1299,6 @@
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BkHim.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookProtection.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookProtectionIso.h" />
-    <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BookView.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Border.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\Brk.h" />
     <ClInclude Include="..\..\..\XlsbFormat\Biff12_records\BundleSh.h" />

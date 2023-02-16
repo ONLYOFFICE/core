@@ -9474,14 +9474,18 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 	if ((pDocx) && (pDocx->m_pApp))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::App);
-		pDocx->m_pApp->ToPptxApp()->toPPTY(&oBufferedStream);
+		PPTX::App* pAppTmp = pDocx->m_pApp->ToPptxApp();
+		pAppTmp->toPPTY(&oBufferedStream);
+		delete pAppTmp;
 		this->WriteTableEnd(nCurPos);
 	}
 
 	if ((pDocx) && (pDocx->m_pCore))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Core);
-		pDocx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+		PPTX::Core* pCoreTmp = pDocx->m_pCore->ToPptxCore();
+		pCoreTmp->toPPTY(&oBufferedStream);
+		delete pCoreTmp;
 		this->WriteTableEnd(nCurPos);
 	}
 	if (NULL != m_oParamsWriter.m_pTheme)

@@ -31,8 +31,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	ECMACryptFile crypt_file;
 	bool result = false, bDataIntegrity = false;
 
-	std::wstring srcFileName	= L"D:\\tests\\__63\\test-group-ole.ods-ms.xlsx";
-	std::wstring dstFileName	= srcFileName + L"-mycrypt.xlsx";
+	std::wstring srcFileName	= L"D:\\tests\\__63\\tests-eq-xlsx.xlsx";
+	std::wstring dstFileName	= L"D:\\tests\\__63\\ыпауыувыкепцукепчм.xlsx";
 	std::wstring dstFileName2	= dstFileName + L".oox";
 	
 	//std::wstring dstFileName	= srcFileName + L".oox";

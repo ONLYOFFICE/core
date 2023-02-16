@@ -42,6 +42,9 @@ class FStreamWrapper : public IStream, public std::fstream
 public:
     FStreamWrapper(std::string filename, std::ios_base::openmode openmode) :
         std::fstream(filename, openmode) {}
+	
+	FStreamWrapper(std::wstring filename, std::ios_base::openmode openmode) :
+		std::fstream(filename, openmode) {}
 
     inline _INT64 tell() override {
         return std::fstream::tellg();

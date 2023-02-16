@@ -40,13 +40,30 @@ using namespace CFCPP;
 
 CFCPP::Stream CFCPP::OpenFileStream(const std::wstring & filename, bool bRewrite, bool trunc)
 {
-    BYTE* pUtf8 = nullptr;
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+	CFCPP::Stream st;
+
+	// it's not good, but otherwise file doesn't create or if use ios::app, then the seek for writing will be blocked
+	if (bRewrite)
+		std::wfstream create(filename, std::ios::app | std::ios::out);
+
+	if (trunc && bRewrite)
+		st.reset(new FStreamWrapper(filename, std::ios::binary | std::ios::in | std::ios::out | std::ios::trunc));
+	else if (bRewrite)
+		st.reset(new FStreamWrapper(filename, std::ios::binary | std::ios::in | std::ios::out));
+	else
+		st.reset(new FStreamWrapper(filename, std::ios::binary | std::ios::in));
+
+	return st;
+#else
+	BYTE* pUtf8 = nullptr;
     LONG lLen = 0;
     NSFile::CUtf8Converter::GetUtf8StringFromUnicode(filename.c_str(), filename.length(), pUtf8, lLen, false);
     std::string utf8filename((char*)pUtf8, lLen);
     delete [] pUtf8;
 
     return OpenFileStream(utf8filename, bRewrite, trunc);
+#endif
 }
 
 CFCPP::Stream CFCPP::OpenFileStream(const std::string & filename, bool bRewrite, bool trunc)

@@ -40,6 +40,21 @@ namespace SVG
 		virtual bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) = 0;
 		virtual void Draw(IRenderer* pRenderer) const = 0;
 
+		TBounds GetBounds() const
+		{
+			TBounds oBounds{0., 0., 0., 0.};
+
+			for (const Point& oPoint : m_arPoints)
+			{
+				oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   oPoint.dX);
+				oBounds.m_dTop    = std::min(oBounds.m_dTop,    oPoint.dY);
+				oBounds.m_dRight  = std::max(oBounds.m_dRight,  oPoint.dX);
+				oBounds.m_dBottom = std::max(oBounds.m_dBottom, oPoint.dY);
+			}
+
+			return oBounds;
+		}
+
 	private:
 		virtual Point GetPoint(int nIndex) const = 0;
 
@@ -1079,6 +1094,8 @@ namespace SVG
 		bool Draw(IRenderer* pRenderer, CDefs *pDefs) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+
+		TBounds GetBounds() const override;
 
 		void ReadFromString(const std::wstring& wsValue);
 

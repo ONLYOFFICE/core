@@ -18,6 +18,8 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
+		TBounds GetBounds() const override;
+
 		SvgDigit m_oCx;
 		SvgDigit m_oCy;
 		SvgDigit m_oRx;

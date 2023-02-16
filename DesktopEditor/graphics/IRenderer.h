@@ -134,6 +134,8 @@ public:
 	virtual ~IFormField() {}
 };
 
+namespace Aggplus { class CImage; }
+
 // IRenderer
 class IRenderer : public IGrObject
 {
@@ -194,10 +196,14 @@ public:
 	virtual HRESULT put_BrushAlpha2(const LONG& lAlpha)					= 0;
 	virtual HRESULT get_BrushTexturePath(std::wstring* bsPath)			= 0;
 	virtual HRESULT put_BrushTexturePath(const std::wstring& bsPath)	= 0;
+	virtual HRESULT get_BrushTextureImage(Aggplus::CImage* pImage)		= 0;
+	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage)		= 0;
 	virtual HRESULT get_BrushTextureMode(LONG* lMode)					= 0;
 	virtual HRESULT put_BrushTextureMode(const LONG& lMode)				= 0;
 	virtual HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)				= 0;
 	virtual HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha)			= 0;
+	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix)		= 0;
+	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix) = 0;
 	virtual HRESULT get_BrushLinearAngle(double* dAngle)				= 0;
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle)			= 0;
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height) = 0;

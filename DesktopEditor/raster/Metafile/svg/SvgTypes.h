@@ -74,6 +74,14 @@ namespace SVG
 		SvgDigit m_oWidth;
 		SvgDigit m_oHeight;
 	};
+
+	struct TBounds
+	{
+		double m_dLeft;
+		double m_dTop;
+		double m_dRight;
+		double m_dBottom;
+	};
 }
 
 #endif // SVGTYPES_H

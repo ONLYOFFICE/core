@@ -41,7 +41,9 @@ namespace SVG
 		void ApplyFill(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, bool bUseDedault = false) const;
 		void ApplyTransform(IRenderer* pRenderer, Aggplus::CMatrix& oOldMatrix) const;
 
-		virtual void ApplyFillObject(IRenderer* pRenderer, CObjectBase* pObject, CDefs *pDefs) const {};
+		bool ApplyDef(IRenderer* pRenderer, CDefs *pDefs, const std::wstring& wsUrl) const;
+
+		virtual TBounds GetBounds() const = 0;
 
 		friend class CLine;
 		friend class CRect;

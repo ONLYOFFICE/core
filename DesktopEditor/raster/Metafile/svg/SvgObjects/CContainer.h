@@ -34,6 +34,11 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
+		TBounds GetBounds() const override;
+
+		double GetWidth()  const;
+		double GetHeight() const;
+
 		std::vector<CObjectBase*> m_arObjects;
 
 		friend class CDefs;

@@ -233,6 +233,18 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255);
 	}
 
+	TBounds CText::GetBounds() const
+	{
+		TBounds oBounds;
+
+		oBounds.m_dLeft   = m_oX.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  = oBounds.m_dLeft + GetWidth();
+		oBounds.m_dBottom = oBounds.m_dTop + (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+
+		return oBounds;
+	}
+
 	double CText::GetWidth() const
 	{
 		std::wstring wsName = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
@@ -346,6 +358,11 @@ namespace SVG
 
 	void CTspan::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
+	}
+
+	TBounds CTspan::GetBounds() const
+	{
+		return TBounds{0., 0., 0., 0.};
 	}
 
 	void CTspan::InheritData(const CText &oText)

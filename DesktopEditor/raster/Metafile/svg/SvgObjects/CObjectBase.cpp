@@ -1,6 +1,7 @@
 #include "CObjectBase.h"
 
 #include "CDefs.h"
+#include "CPattern.h"
 
 namespace SVG
 {
@@ -145,6 +146,7 @@ namespace SVG
 	{
 		nTypePath += c_nWindingFillMode;
 		pRenderer->put_BrushColor1(0);
+		pRenderer->put_BrushType(c_BrushTypeSolid);
 	}
 
 	void CObjectBase::ApplyFill(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, bool bUseDedault) const
@@ -156,9 +158,14 @@ namespace SVG
 		{
 			nTypePath += c_nWindingFillMode;
 			pRenderer->put_BrushColor1(m_oFill.ToInt());
+			pRenderer->put_BrushType(c_BrushTypeSolid);
 		}
 		else if (NSCSS::NSProperties::ColorType::ColorUrl == m_oFill.GetType() && NULL != pDefs)
-			ApplyFillObject(pRenderer, pDefs->GetDef(m_oFill.ToWString()), pDefs);
+		{
+//			ApplyFillObject(pRenderer, pDefs->GetDef(m_oFill.ToWString()), pDefs);
+			if (ApplyDef(pRenderer, pDefs, m_oFill.ToWString()))
+				nTypePath += c_nWindingFillMode;
+		}
 		else if (bUseDedault)
 			ApplyDefaultFill(pRenderer, nTypePath);
 	}
@@ -177,5 +184,20 @@ namespace SVG
 		oMatrix.Multiply(&oNewMatrix);
 
 		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
+	}
+
+	bool CObjectBase::ApplyDef(IRenderer *pRenderer, CDefs *pDefs, const std::wstring &wsUrl) const
+	{
+		if (NULL == pRenderer || NULL == pDefs || wsUrl.empty())
+			return false;
+
+		IDefObject *pDefObject = pDefs->GetDef(wsUrl);
+
+		if (NULL == pDefObject)
+			return false;
+
+		TBounds oBounds = GetBounds();
+
+		return pDefObject->Apply(pRenderer, pDefs, oBounds.m_dRight - oBounds.m_dLeft, oBounds.m_dBottom - oBounds.m_dTop);
 	}
 }

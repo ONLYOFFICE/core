@@ -107,4 +107,16 @@ namespace SVG
 
 		ApplyTransform(pRenderer, oOldMatrix);
 	}
+
+	TBounds CImage::GetBounds() const
+	{
+		TBounds oBounds;
+
+		oBounds.m_dLeft   = m_oRect.m_oX.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = m_oRect.m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  = oBounds.m_dLeft + m_oRect.m_oWidth.ToDouble(NSCSS::Pixel);
+		oBounds.m_dBottom = oBounds.m_dTop  + m_oRect.m_oHeight.ToDouble(NSCSS::Pixel);
+
+		return oBounds;
+	}
 }

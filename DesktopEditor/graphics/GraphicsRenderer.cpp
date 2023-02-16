@@ -190,7 +190,15 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 	}
 	else
 	{
-		Aggplus::CBrushTexture* pNew = new Aggplus::CBrushTexture(pBrush->TexturePath, /*(Aggplus::WrapMode)TextureMode*/Aggplus::WrapModeClamp);
+		Aggplus::CBrushTexture* pNew;
+
+		if (NULL != pBrush->Image)
+			pNew = new Aggplus::CBrushTexture(pBrush->Image, Aggplus::WrapModeClamp);
+		else
+			pNew = new Aggplus::CBrushTexture(pBrush->TexturePath, Aggplus::WrapModeClamp);
+
+		pNew->SetTransform(&m_oBrush.Transform);
+
 		return pNew;
 	}
 }
@@ -548,6 +556,20 @@ HRESULT CGraphicsRenderer::put_BrushTexturePath(const std::wstring& bsPath)
 	m_oBrush.TexturePath = bsPath;
 	return S_OK;
 }
+HRESULT CGraphicsRenderer::get_BrushTextureImage(Aggplus::CImage *pImage)
+{
+	pImage = m_oBrush.Image;
+	return S_OK;
+}
+HRESULT CGraphicsRenderer::put_BrushTextureImage(Aggplus::CImage *pImage)
+{
+	if (NULL == pImage)
+		return S_FALSE;
+
+	m_oBrush.Image = pImage;
+
+	return S_OK;
+}
 HRESULT CGraphicsRenderer::get_BrushTextureMode(LONG* lMode)
 {
 	*lMode = m_oBrush.TextureMode;
@@ -576,6 +598,16 @@ HRESULT CGraphicsRenderer::get_BrushLinearAngle(double* dAngle)
 HRESULT CGraphicsRenderer::put_BrushLinearAngle(const double& dAngle)
 {
 	m_oBrush.LinearAngle = dAngle;
+	return S_OK;
+}
+HRESULT CGraphicsRenderer::get_BrushTransform(Aggplus::CMatrix &oMatrix)
+{
+	oMatrix = m_oBrush.Transform;
+	return S_OK;
+}
+HRESULT CGraphicsRenderer::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
+{
+	m_oBrush.Transform = oMatrix;
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height)
@@ -943,12 +975,17 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 							RELEASEARRAYOBJECTS(pImageData);
 					}
 				#else
-					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
+					if (NULL != m_oBrush.Image)
+						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.Image, oMode);
+					else
+						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
                 #endif
 				}
 
 				if( pTextureBrush )
 				{
+					pTextureBrush->SetTransform(&m_oBrush.Transform);
+
 					pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
 
                     if (m_oBrush.Rectable == 1)

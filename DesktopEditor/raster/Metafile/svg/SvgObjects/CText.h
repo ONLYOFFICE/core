@@ -24,8 +24,7 @@ namespace SVG
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
-//		void ApplyStyle(IRenderer* pRenderer, double& dX, double& dY) const;
-//		void ApplyTransform(IRenderer* pRenderer, double& dX, double& dY, double& dFontSize) const;
+		TBounds GetBounds() const override;
 
 		double GetWidth() const;
 
@@ -60,6 +59,8 @@ namespace SVG
 		bool Draw(IRenderer* pRenderer, CDefs *pDefs) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+
+		TBounds GetBounds() const override;
 
 		void InheritData(const CText& oText);
 

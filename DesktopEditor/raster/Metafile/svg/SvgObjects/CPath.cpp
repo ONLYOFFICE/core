@@ -69,6 +69,23 @@ namespace SVG
 		ApplyFill(pRenderer, pDefs, nTypePath);
 	}
 
+	TBounds CPath::GetBounds() const
+	{
+		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
+
+		for (const IPathElement* oElement : m_arElements)
+		{
+			oTempBounds = oElement->GetBounds();
+
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
+			oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
+		}
+
+		return oBounds;
+	}
+
 	void CPath::ReadFromString(const std::wstring &wsValue)
 	{
 		std::wstring::const_iterator oFirstPos = wsValue.begin();

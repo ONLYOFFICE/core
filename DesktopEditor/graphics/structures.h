@@ -42,6 +42,8 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include "Matrix.h"
+
 // pen -----------------------------------------------------------
 const long c_ag_LineCapFlat = 0;
 const long c_ag_LineCapSquare = 1;
@@ -116,6 +118,8 @@ const long c_BrushTextureModeStretch = 0;
 const long c_BrushTextureModeTile = 1;
 const long c_BrushTextureModeTileCenter = 2;
 // --------------------------------------------------------------
+
+namespace Aggplus { class CImage; }
 
 namespace NSStructures
 {
@@ -275,6 +279,9 @@ namespace NSStructures
 		long Alpha1;
 		long Alpha2;
 
+		Aggplus::CImage  *Image;
+		Aggplus::CMatrix Transform;
+
 		std::wstring TexturePath;
 		long TextureAlpha;
 		long TextureMode;
@@ -381,11 +388,11 @@ namespace NSStructures
 			if (NULL == pBrush)
 				return FALSE;
 
-			return ((Type == pBrush->Type) &&
-					(Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
-					(Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) &&
-					(TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
-                    (Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
+			return ((Type == pBrush->Type) && (Image == pBrush->Image) && Aggplus::CMatrix::IsEqual(&Transform, &pBrush->Transform) &&
+			        (Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
+			        (Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) &&
+			        (TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
+			        (Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
 		}
 
 		void SetDefaultParams()
@@ -396,6 +403,9 @@ namespace NSStructures
 			Alpha1 = 255;
 			Color2 = 0;
 			Alpha2 = 255;
+
+			Image     = NULL;
+			Transform.SetElements(1., 0., 0., 1., 0., 0.);
 
 			TextureAlpha = 255;
 			TextureMode = c_BrushTextureModeStretch;
@@ -433,6 +443,9 @@ namespace NSStructures
 			Color2 = other.Color2;
 			Alpha2 = other.Alpha2;
 
+			Image     = other.Image;
+			Transform = other.Transform;
+
 			TexturePath = other.TexturePath;
 			TextureAlpha = other.TextureAlpha;
 			TextureMode = other.TextureMode;
@@ -454,6 +467,9 @@ namespace NSStructures
 			Alpha1 = other.Alpha1;
 			Color2 = other.Color2;
 			Alpha2 = other.Alpha2;
+
+			Image     = other.Image;
+			Transform = other.Transform;
 
 			TexturePath = other.TexturePath;
 			TextureAlpha = other.TextureAlpha;

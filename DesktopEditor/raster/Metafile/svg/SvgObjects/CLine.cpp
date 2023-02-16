@@ -87,4 +87,16 @@ namespace SVG
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
 	}
+
+	TBounds CLine::GetBounds() const
+	{
+		TBounds oBounds;
+
+		oBounds.m_dLeft   = m_oX1.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = m_oY1.ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  = m_oX2.ToDouble(NSCSS::Pixel);
+		oBounds.m_dBottom = m_oY2.ToDouble(NSCSS::Pixel);
+
+		return oBounds;
+	}
 }

@@ -17,7 +17,7 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
-		void ApplyFillObject(IRenderer* pRenderer, CObjectBase* pObject, CDefs *pDefs) const override;
+		TBounds GetBounds() const override;
 
 		TRect    m_oRect;
 

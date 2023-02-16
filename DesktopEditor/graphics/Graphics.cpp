@@ -946,7 +946,7 @@ namespace Aggplus
                 b = ptxBrush->m_oBounds.bottom;
             }
 
-			CMatrix brushMatrix;
+			CMatrix brushMatrix(ptxBrush->m_mtx);
 			if (ptxBrush->GetWrapMode() == Aggplus::WrapModeClamp)
 			{
 				double dScaleX = (r - x) / dwPatternWidth;

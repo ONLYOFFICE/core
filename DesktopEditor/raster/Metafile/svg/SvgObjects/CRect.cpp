@@ -130,15 +130,15 @@ namespace SVG
 		ApplyFill(pRenderer, pDefs, nTypePath, true);
 	}
 
-	void CRect::ApplyFillObject(IRenderer *pRenderer, CObjectBase *pObject, CDefs *pDefs) const
+	TBounds CRect::GetBounds() const
 	{
-		if (NULL == pRenderer || NULL ==pObject)
-			return;
+		TBounds oBounds;
 
-		CPattern *pPattern = dynamic_cast<CPattern*>(pObject);
+		oBounds.m_dLeft   = m_oRect.m_oX.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop    = m_oRect.m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  = oBounds.m_dLeft + m_oRect.m_oWidth.ToDouble(NSCSS::Pixel);
+		oBounds.m_dBottom = oBounds.m_dTop  + m_oRect.m_oHeight.ToDouble(NSCSS::Pixel);
 
-		if (NULL != pPattern)
-			pPattern->DrawDef(pRenderer, m_oRect, pDefs);
+		return oBounds;
 	}
-
 }

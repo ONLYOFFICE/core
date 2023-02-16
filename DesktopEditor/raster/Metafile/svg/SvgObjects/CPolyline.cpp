@@ -59,6 +59,21 @@ namespace SVG
 		ApplyFill(pRenderer, pDefs, nTypePath, true);
 	}
 
+	TBounds CPolyline::GetBounds() const
+	{
+		TBounds oBounds{0., 0., 0., 0.};
+
+		for (unsigned int unIndex = 2; unIndex < m_arValues.size(); unIndex += 2)
+		{
+			oBounds.m_dLeft   = std::min(oBounds.m_dLeft,   m_arValues[unIndex + 0]);
+			oBounds.m_dTop    = std::min(oBounds.m_dTop,    m_arValues[unIndex + 1]);
+			oBounds.m_dRight  = std::max(oBounds.m_dRight,  m_arValues[unIndex + 0]);
+			oBounds.m_dBottom = std::max(oBounds.m_dBottom, m_arValues[unIndex + 1]);
+		}
+
+		return oBounds;
+	}
+
 	void CPolyline::BeginDraw(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		ApplyStyle(pRenderer, pDefs, nTypePath, oOldMatrix);

@@ -6,25 +6,62 @@
 namespace SVG
 {
 	CPattern::CPattern(CObjectBase *pParent, NSFonts::IFontManager *pFontManager)
-	    : CContainer(pParent), m_pFontManager(pFontManager)
+	    : CContainer(pParent), m_pFontManager(pFontManager), m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
 	{}
 
-	bool CPattern::DrawDef(IRenderer *pRenderer, const TRect &oParentRect, CDefs *pDefs) const
+	CPattern::~CPattern()
 	{
+		if (NULL != m_pImage)
+			delete m_pImage;
+	}
+
+	void CPattern::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		CContainer::SetData(mAttributes, ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"patternUnits"))
+		{
+			const std::wstring& wsValue = mAttributes.at(L"patternUnits");
+
+			if (L"objectBoundingBox" == wsValue)
+				m_enPatternUnits = objectBoundingBox;
+			else if (L"userSpaceOnUse" == wsValue)
+				m_enPatternUnits = userSpaceOnUse;
+		}
+	}
+
+	void CPattern::Update(CDefs *pDefs, const double dParentWidth, const double dParentHeight)
+	{
+		if (NULL != m_pImage)
+			delete m_pImage;
+
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
 		pGrRenderer->SetFontManager(m_pFontManager);
 
-		int nWidth  = oParentRect.m_oWidth.ToDouble()  * m_oWindow.m_oWidth.ToDouble();
-		int nHeight = oParentRect.m_oHeight.ToDouble() * m_oWindow.m_oHeight.ToDouble();
+		TBounds oBounds = GetBounds();
+
+		double dMMtoPx = 96. / 25.4;
+
+		double dKoefWidth  = m_oWindow.m_oWidth .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
+		double dKoefHeight = m_oWindow.m_oHeight .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
+
+		if (objectBoundingBox == m_enPatternUnits)
+		{
+			dKoefWidth  *= dParentWidth;
+			dKoefHeight *= dParentHeight;
+		}
+
+		int nWidth  = (oBounds.m_dRight - oBounds.m_dLeft) * dKoefWidth  * dMMtoPx + 1;
+		int nHeight = (oBounds.m_dRight - oBounds.m_dLeft) * dKoefHeight * dMMtoPx + 1;
 
 		if (0 == nWidth || 0 == nHeight)
-			return false;
+			return;
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 
 		if (!pBgraData)
-			return false;
+			return;
 
 		unsigned int alfa = 0xffffff;
 		//дефолтный тон должен быть прозрачным, а не белым
@@ -45,6 +82,8 @@ namespace SVG
 		pGrRenderer->SetSwapRGB(false);
 		pGrRenderer->BeginCommand(c_nImageType);
 
+		pGrRenderer->SetTransform(dMMtoPx, 0., 0., dMMtoPx, 0., 0.);
+
 		//Отрисовка
 		CContainer::Draw(pGrRenderer, pDefs);
 
@@ -53,12 +92,20 @@ namespace SVG
 
 		oFrame.put_Data(NULL);
 
-		Aggplus::CImage oImage;
-		oImage.Create(pBgraData, nWidth, nHeight, -4 * nWidth);
+		m_pImage = new Aggplus::CImage;
+		m_pImage->Create(pBgraData, oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
+	}
 
-		for (double dX = oParentRect.m_oX.ToDouble(); dX < oParentRect.m_oWidth.ToDouble(); dX += nWidth)
-			for (double dY = oParentRect.m_oY.ToDouble(); dY < oParentRect.m_oHeight.ToDouble(); dY += nHeight)
-				pRenderer->DrawImage(&oImage, dX, dY, nWidth, nHeight);
+	bool CPattern::Apply(IRenderer *pRenderer, CDefs *pDefs, const double dParentWidth, const double dParentHeight)
+	{
+		Update(pDefs, dParentWidth, dParentHeight);
+
+		if (NULL == pRenderer || NULL == m_pImage)
+			return false;
+
+		pRenderer->put_BrushType(c_BrushTypeTexture);
+		pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+		pRenderer->put_BrushTextureImage(m_pImage);
 
 		return true;
 	}

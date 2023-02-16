@@ -17,6 +17,8 @@ namespace SVG
 	private:
 		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
+		TBounds GetBounds() const override;
+
 		TRect        m_oRect;
 		std::wstring m_wsHref;
 	};

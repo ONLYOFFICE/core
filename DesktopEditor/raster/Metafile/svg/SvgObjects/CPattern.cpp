@@ -43,7 +43,7 @@ namespace SVG
 
 		double dMMtoPx = 96. / 25.4;
 
-		double dKoefWidth  = m_oWindow.m_oWidth .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
+		double dKoefWidth  = m_oWindow.m_oWidth  .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
 		double dKoefHeight = m_oWindow.m_oHeight .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
 
 		if (objectBoundingBox == m_enPatternUnits)

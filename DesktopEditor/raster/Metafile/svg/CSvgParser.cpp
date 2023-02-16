@@ -8,6 +8,7 @@
 
 #include "SvgObjects/CContainer.h"
 #include "SvgObjects/CPolyline.h"
+#include "SvgObjects/CGradient.h"
 #include "SvgObjects/CPattern.h"
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CCircle.h"
@@ -84,9 +85,16 @@ namespace SVG
 
 		CObjectBase *pObject = NULL;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName || L"pattern" == wsElementName)
+		if (L"svg" == wsElementName || L"g" == wsElementName || L"pattern" == wsElementName || L"linearGradient" == wsElementName)
 		{
-			CContainer *pNewContainer = (L'p' == wsElementName.front()) ? new CPattern(pContainer) : new CContainer(pContainer);
+			CContainer *pNewContainer = NULL;
+
+			switch (wsElementName.front())
+			{
+				case L'p': pNewContainer = new CPattern(pContainer); break;
+				case L'l': pNewContainer = new CLinearGradient(pContainer); break;
+				default:   pNewContainer = new CContainer(pContainer); break;
+			}
 
 			if (NULL == pNewContainer)
 				return false;
@@ -121,6 +129,8 @@ namespace SVG
 			pObject = new CImage(pContainer);
 		else if (L"defs" == wsElementName)
 			pFile->AddDefs(oElement);
+		else if (L"stop" == wsElementName)
+			pObject = new CStopElement(pContainer);
 
 		if (NULL != pObject)
 		{

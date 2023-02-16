@@ -9,16 +9,18 @@ namespace SVG
 	{
 	public:
 		virtual bool Apply(IRenderer* pRenderer, CDefs* pDefs, const double dParentWidth, const double dParentHeight) = 0;
-	private:
-		virtual void Update(CDefs* pDefs, const double dParentWidth, const double dParentHeight) = 0;
 	};
 
-	class CDefs : public CContainer
+	class CDefs
 	{
 	public:
-		CDefs(CObjectBase* pParent = NULL);
+		CDefs();
 		
+		CContainer& GetContainer();
+
 		IDefObject* GetDef(const std::wstring& wsId) const;
+	private:
+		CContainer m_oContainer;
 	};
 }
 

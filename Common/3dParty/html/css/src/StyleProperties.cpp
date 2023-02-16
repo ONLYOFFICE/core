@@ -493,17 +493,19 @@ namespace NSCSS
 
 		bool bImportant = CutImportant(wsNewValue);
 
+		std::transform(wsNewValue.begin(), wsNewValue.end(), wsNewValue.begin(), std::towlower);
+
 		if (m_bImportant && !bImportant)
 			return false;
 
-		if (wsValue[0] == L'#')
+		if (wsNewValue[0] == L'#')
 		{
-			m_oValue.SetHEX(wsValue.substr(1, wsValue.length() - 1));
+			m_oValue.SetHEX(wsNewValue.substr(1, wsNewValue.length() - 1));
 			return true;
 		}
-		else if (10 <= wsValue.length() && wsValue.substr(0, 3) == L"rgb")
+		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
 		{
-			size_t unEnd = wsValue.find(L')', 4);
+			size_t unEnd = wsNewValue.find(L')', 4);
 
 			if (std::wstring::npos == unEnd)
 				return false;
@@ -518,12 +520,12 @@ namespace NSCSS
 			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
 			return true;
 		}
-		else if (5 <= wsValue.length() && wsValue.substr(0, 3) == L"url")
+		else if (5 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"url")
 		{
-			m_oValue.SetUrl(CutURL(wsValue));
+			m_oValue.SetUrl(CutURL(wsNewValue));
 			return true;
 		}
-		else if (L"none" == wsValue)
+		else if (L"none" == wsNewValue)
 		{
 			m_oValue.SetNone();
 			return true;

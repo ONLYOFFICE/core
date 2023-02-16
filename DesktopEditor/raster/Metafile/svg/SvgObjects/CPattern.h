@@ -17,11 +17,11 @@ namespace SVG
 		CPattern(CObjectBase* pParent = NULL, NSFonts::IFontManager *pFontManager = NULL);
 		virtual ~CPattern();
 
-		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
 		bool Apply(IRenderer* pRenderer, CDefs *pDefs,const double dParentWidth, const double dParentHeight) override;
 	private:
-		void Update(CDefs *pDefs, const double dParentWidth, const double dParentHeight) override;
+		void Update(CDefs *pDefs, const double dParentWidth, const double dParentHeight);
 
 		NSFonts::IFontManager *m_pFontManager;
 

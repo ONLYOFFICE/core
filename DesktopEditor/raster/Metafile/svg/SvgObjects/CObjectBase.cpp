@@ -14,12 +14,12 @@ namespace SVG
 
 	std::vector<NSCSS::CNode> CObjectBase::GetFullPath() const
 	{
-		    if (NULL == m_pParent)
-				return {m_oXmlNode};
+		if (NULL == m_pParent)
+			return {m_oXmlNode};
 
-			std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
-			arObjects.push_back({m_oXmlNode});
-			return arObjects;
+		std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
+		arObjects.push_back(m_oXmlNode);
+		return arObjects;
 	}
 
 	void CObjectBase::SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode)
@@ -85,9 +85,15 @@ namespace SVG
 		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
 		{
 			if (L"class" == arProperties[unIndex])
+			{
 				m_oXmlNode.m_sClass = arValues[unIndex];
+				std::transform(m_oXmlNode.m_sClass.begin(), m_oXmlNode.m_sClass.end(), m_oXmlNode.m_sClass.begin(), std::towlower);
+			}
 			else if (L"id" == arProperties[unIndex])
+			{
 				m_oXmlNode.m_sId = arValues[unIndex];
+				std::transform(m_oXmlNode.m_sId.begin(), m_oXmlNode.m_sId.end(), m_oXmlNode.m_sId.begin(), std::towlower);
+			}
 			else if (L"style" == arProperties[unIndex])
 				m_oXmlNode.m_sStyle = arValues[unIndex];
 			else
@@ -163,6 +169,7 @@ namespace SVG
 		else if (NSCSS::NSProperties::ColorType::ColorUrl == m_oFill.GetType() && NULL != pDefs)
 		{
 //			ApplyFillObject(pRenderer, pDefs->GetDef(m_oFill.ToWString()), pDefs);
+			std::wstring wsFill = m_oFill.ToWString();
 			if (ApplyDef(pRenderer, pDefs, m_oFill.ToWString()))
 				nTypePath += c_nWindingFillMode;
 		}

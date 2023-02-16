@@ -36,13 +36,11 @@ namespace SVG
 
 		TBounds GetBounds() const override;
 
-		double GetWidth()  const;
-		double GetHeight() const;
-
 		std::vector<CObjectBase*> m_arObjects;
 
 		friend class CDefs;
 		friend class CPattern;
+		friend class CGradient;
 
 		TRect m_oWindow;
 		TRect m_oViewBox;

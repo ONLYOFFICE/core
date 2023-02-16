@@ -56,6 +56,7 @@ namespace SVG
 		friend class CPolyline;
 		friend class CPolygon;
 		friend class CContainer;
+		friend class CStopElement;
 
 		CObjectBase   *m_pParent;
 		NSCSS::CNode   m_oXmlNode;

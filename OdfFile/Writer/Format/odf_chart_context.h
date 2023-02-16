@@ -151,10 +151,10 @@ public:
 		void add_domain(const std::wstring & odf_ref);
 		void add_categories(const std::wstring & odf_ref, const std::wstring & format_code, office_element_ptr & axis);
 
-		void set_layout_x(double *val,int mode);
-		void set_layout_y(double *val,int mode);
-		void set_layout_w(double *val,int mode);
-		void set_layout_h(double *val,int mode);
+		void set_layout_x(double val,int mode);
+		void set_layout_y(double val,int mode);
+		void set_layout_w(double val,int mode);
+		void set_layout_h(double val,int mode);
 
 		void set_local_table(bool Val, bool use_cash_only = false);
 		void set_cash(std::wstring format, std::vector<std::wstring> &data, bool categories, bool label);

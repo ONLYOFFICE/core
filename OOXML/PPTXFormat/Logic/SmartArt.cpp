@@ -500,7 +500,7 @@ namespace PPTX
 
 	//----------------------------------------------------------------
 			std::wstring id;
-			if ((pChart.IsInit()) && (pChart->m_oChartSpace.m_externalData) && (pChart->m_oChartSpace.m_externalData->m_id))
+			if ((pChart.IsInit()) && (pChart->m_oChartSpace.m_externalData) && (pChart->m_oChartSpace.m_externalData->m_id.IsInit()))
 				id = *pChart->m_oChartSpace.m_externalData->m_id;
 			else if ((pChartEx.IsInit()) && (true == pChartEx->m_oChartSpace.m_chartData.m_externalData.IsInit()))
 				id = pChartEx->m_oChartSpace.m_chartData.m_externalData->m_id.get_value_or(L"");

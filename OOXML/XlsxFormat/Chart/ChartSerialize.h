@@ -256,6 +256,8 @@ namespace OOX
 			st_groupingSTANDARD = 1,
 			st_groupingSTACKED = 2
 		};
+		bool ToXml_ST_DispBlanksAs(ST_DispBlanksAs val, std::wstring& sOut);
+		bool FromXml_ST_DispBlanksAs(const std::wstring& val, ST_DispBlanksAs& eOut);
 		
 		DEFINE_SIMPLE_TYPE(CGrouping, ST_Grouping, st_groupingSTANDARD)
 		DEFINE_SIMPLE_TYPE(CRadarStyle, ST_RadarStyle, st_radarstyleSTANDARD)
@@ -327,6 +329,10 @@ namespace OOX
 			nullableBoolVal() : nullable_bool()
 			{
 			}
+			void operator=(const bool& value)
+			{
+				nullable_bool::operator=(value);
+			}
 			nullableBoolVal(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if (oReader.IsValid())
@@ -353,11 +359,51 @@ namespace OOX
 				}
 			}
 		};
+		class nullableIntVal : public nullable_int
+		{
+		public:
+			nullableIntVal() : nullable_int()
+			{
+			}
+			void operator=(const int& value)
+			{
+				nullable_int::operator=(value);
+			}
+			nullableIntVal(XmlUtils::CXmlLiteReader& oReader)
+			{
+				if (oReader.IsValid())
+				{
+					WritingElement_ReadAttributes_Start_No_NS(oReader)
+						if (L"val" == wsName)
+						{
+							this->m_pPointer = new int(XmlUtils::GetInteger(oReader.GetText()));
+							break;
+						}
+					WritingElement_ReadAttributes_End_No_NS(oReader)
+
+						if (!oReader.IsEmptyNode())
+							oReader.ReadTillEnd();
+				}
+				else
+					this->m_pPointer = NULL;
+			}
+			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
+			{
+				if (this->m_pPointer)
+				{
+					writer.WriteString(L"<" + sNodeName + L" val=\"" + std::to_wstring(*this->m_pPointer) + L"\"/>");
+				}
+			}
+		};
 		class nullableUintVal : public nullable_uint
 		{
 		public:
 			nullableUintVal() : nullable_uint()
 			{
+			}
+			void operator=(const unsigned int& value)
+			{
+				nullable_uint::operator=(value);
 			}
 			nullableUintVal(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -391,6 +437,10 @@ namespace OOX
 			nullableDoubleVal() : nullable_double()
 			{
 			}
+			void operator=(const double& value)
+			{
+				nullable_double::operator=(value);
+			}
 			nullableDoubleVal(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if (oReader.IsValid())
@@ -422,6 +472,10 @@ namespace OOX
 		public:
 			nullableStringVal() : nullable_string()
 			{
+			}
+			void operator=(const std::wstring& value)
+			{
+				nullable_string::operator=(value);
 			}
 			nullableStringVal(XmlUtils::CXmlLiteReader& oReader)
 			{
@@ -869,20 +923,7 @@ namespace OOX
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
-		class CT_Skip
-		{
-		public:
-			nullable_uint m_val;
 
-			CT_Skip();
-			~CT_Skip();
-
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
 		class CT_SerAx
 		{
 		public:
@@ -902,8 +943,8 @@ namespace OOX
 			nullableUintVal					m_crossAx;
 			nullableComplexVal<CCrosses>	m_crosses;
 			nullableDoubleVal				m_crossesAt;
-			CT_Skip									*m_tickLblSkip;
-			CT_Skip									*m_tickMarkSkip;
+			nullableUintVal					m_tickLblSkip;
+			nullableUintVal					m_tickMarkSkip;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 	/*--------------------------------------------------------------*/
@@ -972,9 +1013,9 @@ namespace OOX
 			nullableBoolVal					m_auto;
 			nullableComplexVal<CLblAlgn>	m_lblAlgn;
 			nullableStringVal				m_lblOffset;
-			CT_Skip* m_tickLblSkip;
-			CT_Skip* m_tickMarkSkip;
-			nullableBoolVal m_noMultiLvlLbl;
+			nullableUintVal					m_tickLblSkip;
+			nullableUintVal					m_tickMarkSkip;
+			nullableBoolVal					m_noMultiLvlLbl;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_CatAx();
@@ -1367,7 +1408,7 @@ namespace OOX
 			nullableStringVal m_bubbleScale;
 			nullableBoolVal m_showNegBubbles;
 			nullableComplexVal<CSizeRepresents> m_sizeRepresents;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_BubbleChart();
@@ -1423,7 +1464,7 @@ namespace OOX
 			nullableBoolVal m_wireframe;
             std::vector<CT_SurfaceSer*> m_ser;
 			CT_bandFmts* m_bandFmts;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_Surface3DChart();
@@ -1439,7 +1480,7 @@ namespace OOX
 			nullableBoolVal m_wireframe;
             std::vector<CT_SurfaceSer*> m_ser;
 			CT_bandFmts* m_bandFmts;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_SurfaceChart();
@@ -1451,7 +1492,7 @@ namespace OOX
 		class CT_custSplit
 		{
 		public:
-            std::vector<nullableUintVal> m_secondPiePt;
+            std::vector<unsigned int> m_secondPiePt;
 
 			CT_custSplit();
 			~CT_custSplit();
@@ -1540,7 +1581,7 @@ namespace OOX
 			nullableStringVal m_gapWidth;
 			nullableStringVal m_gapDepth;
 			nullableComplexVal<CShapeType> m_shape;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1562,7 +1603,7 @@ namespace OOX
 			nullableStringVal m_gapWidth;
 			nullableStringVal m_overlap;
             std::vector<CT_ChartLines*> m_serLines;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1655,7 +1696,7 @@ namespace OOX
 			nullableBoolVal m_varyColors;
             std::vector<CT_ScatterSer*> m_ser;
 			CT_DLbls* m_dLbls;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_ScatterChart();
@@ -1692,7 +1733,7 @@ namespace OOX
 			nullableBoolVal m_varyColors;
             std::vector<CT_RadarSer*> m_ser;
 			CT_DLbls* m_dLbls;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 			
@@ -1761,7 +1802,7 @@ namespace OOX
 			CT_ChartLines* m_dropLines;
 			CT_ChartLines* m_hiLowLines;
 			CT_UpDownBars* m_upDownBars;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1781,7 +1822,7 @@ namespace OOX
 			CT_DLbls* m_dLbls;
 			CT_ChartLines* m_dropLines;
 			nullableStringVal m_gapDepth;
-            std::vector<nullableUintVal> m_axId;
+            std::vector<unsigned int> m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1803,7 +1844,7 @@ namespace OOX
 			CT_UpDownBars*					m_upDownBars;
 			nullableBoolVal					m_marker;
 			nullableBoolVal					m_smooth;
-            std::vector<nullableUintVal>	m_axId;
+            std::vector<unsigned int>		m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1846,8 +1887,8 @@ namespace OOX
             std::vector<CT_AreaSer*>		m_ser;
 			CT_DLbls*						m_dLbls;
 			CT_ChartLines*					m_dropLines;
-			nullableStringVal					m_gapDepth;
-            std::vector<nullableUintVal>	m_axId;
+			nullableStringVal				m_gapDepth;
+			std::vector<unsigned int>		m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1866,7 +1907,7 @@ namespace OOX
             std::vector<CT_AreaSer*>		m_ser;
 			CT_DLbls*						m_dLbls;
 			CT_ChartLines*					m_dropLines;
-            std::vector<nullableUintVal>	m_axId;
+			std::vector<unsigned int>		m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1917,30 +1958,15 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_Perspective
-		{
-		public:
-			unsigned char* m_val;
-
-			CT_Perspective();
-			~CT_Perspective();
-
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
-			EElementType getType();
-		private: 
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-		};
-
 		class CT_View3D
 		{
 		public:
-			nullableUintVal			m_rotX;
-			nullableStringVal		m_hPercent;
+			nullableIntVal			m_rotX;
 			nullableUintVal			m_rotY;
+			nullableStringVal		m_hPercent;
 			nullableStringVal		m_depthPercent;
 			nullableBoolVal			m_rAngAx;
-			CT_Perspective*	m_perspective;
+			nullableUintVal			m_perspective;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 

@@ -1361,12 +1361,11 @@ void odf_chart_context::set_legend_position(int val)
 		case 4:	legend->chart_legend_attlist_.chart_legend_position_ = L"top";		break;//st_legendposT
 	}
 }
-void odf_chart_context::set_layout_x(double *val,int mode)//edge, factor
+void odf_chart_context::set_layout_x(double val, int mode)//edge, factor
 {
-	if (!val)return;
-	if (mode == 0) *val = impl_->current_chart_state_.chart_width_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_width_pt * (val);
 
-	length x_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length x_cm = length(length(val,length::pt).get_value_unit(length::cm),length::cm);
 
 	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.common_draw_position_attlist_.svg_x_ = x_cm;
@@ -1508,12 +1507,11 @@ void odf_chart_context::set_axis_label_position(int type)
 	//near-axis //default
 
 }
-void odf_chart_context::set_layout_y(double *val,int mode)
+void odf_chart_context::set_layout_y(double val,int mode)
 {
-	if (!val)return;
-	if (mode == 0)*val = impl_->current_chart_state_.chart_height_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_height_pt * (val);
 
-	length y_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length y_cm = length(length(val, length::pt).get_value_unit(length::cm),length::cm);
 
 	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
@@ -1524,12 +1522,11 @@ void odf_chart_context::set_layout_y(double *val,int mode)
 	chart_title *title = dynamic_cast<chart_title*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (title)title->chart_title_attlist_.common_draw_position_attlist_.svg_y_ = y_cm;
 }
-void odf_chart_context::set_layout_w(double *val,int mode)
+void odf_chart_context::set_layout_w(double val,int mode)
 {
-	if (!val)return;
-	if (mode == 0) *val = impl_->current_chart_state_.chart_width_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_width_pt * (val);
 	
-	length width_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length width_cm = length(length(val,length::pt).get_value_unit(length::cm),length::cm);
 
 	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.chartooo_width_ = width_cm;
@@ -1537,12 +1534,11 @@ void odf_chart_context::set_layout_w(double *val,int mode)
 	chart_plot_area *plot_area = dynamic_cast<chart_plot_area *>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (plot_area)plot_area->chart_plot_area_attlist_.common_draw_size_attlist_.svg_width_ = width_cm;
 }
-void odf_chart_context::set_layout_h(double *val,int mode)
+void odf_chart_context::set_layout_h(double val, int mode)
 {
-	if (!val)return;
-	if (mode == 0) *val = impl_->current_chart_state_.chart_height_pt * (*val);
+	if (mode == 0) val = impl_->current_chart_state_.chart_height_pt * (val);
 
-	length height_cm = length(length(*val,length::pt).get_value_unit(length::cm),length::cm);
+	length height_cm = length(length(val,length::pt).get_value_unit(length::cm),length::cm);
 
 	chart_legend *legend = dynamic_cast<chart_legend*>(impl_->current_chart_state_.elements_.back().elm.get());
 	if (legend)legend->chart_legend_attlist_.chartooo_height_ = height_cm;

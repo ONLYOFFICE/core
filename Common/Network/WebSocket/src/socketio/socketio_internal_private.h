@@ -196,7 +196,7 @@ namespace NSNetwork
             {
                 //CTemporaryCS (&m_internal->m_oCS);
                 m_socket.socket()->off_all();
-                m_socket.close();
+                m_socket.sync_close();
             }
         };
     }

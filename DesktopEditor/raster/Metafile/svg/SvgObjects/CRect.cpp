@@ -96,19 +96,19 @@ namespace SVG
 
 			pRenderer->PathCommandStart();
 
-			pRenderer->PathCommandMoveTo(dX + dRx, dY);
-
-			pRenderer->PathCommandLineTo(dX - dRx, dY);
-			pRenderer->PathCommandArcTo(dX - dRx * 2.0, dY, dRx * 2.0, dRy * 2.0, 270.0, 90.0);
+			pRenderer->PathCommandMoveTo(dX, dY + dRy);
 
 			pRenderer->PathCommandLineTo(dX, dY + dHeight - dRy);
-			pRenderer->PathCommandArcTo(dX - dRx * 2.0, dY + dHeight - dRy * 2.0, dRx * 2.0, dRy * 2.0, 0.0, 90.0);
+			pRenderer->PathCommandArcTo(dX, dY + dHeight - dRy * 2, dRx * 2., dRy * 2., 180., -90.);
 
-			pRenderer->PathCommandLineTo(dX + dWidth + dRx, dY + dHeight);
-			pRenderer->PathCommandArcTo(dX + dWidth, dY + dHeight - dRy * 2.0, dRx * 2.0, dRy * 2.0, 90.0, 90.0);
+			pRenderer->PathCommandLineTo(dX + dWidth - dRx, dY + dHeight);
+			pRenderer->PathCommandArcTo(dX + dWidth - dRx * 2, dY + dHeight - dRy * 2., dRx * 2., dRy * 2., 90, -90.0);
 
 			pRenderer->PathCommandLineTo(dX + dWidth, dY + dRy);
-			pRenderer->PathCommandArcTo(dX + dWidth, dY, dRx * 2.0, dRy * 2.0, 180.0, 90.0);
+			pRenderer->PathCommandArcTo(dX + dWidth - dRx * 2.0, dY, dRx * 2.0, dRy * 2.0, 0.0, -90.0);
+
+			pRenderer->PathCommandLineTo(dX + dRx, dY);
+			pRenderer->PathCommandArcTo(dX, dY, dRx * 2.0, dRy * 2.0, 270, -90.0);
 
 			pRenderer->DrawPath(nPathType);
 			pRenderer->EndCommand(c_nPathType);

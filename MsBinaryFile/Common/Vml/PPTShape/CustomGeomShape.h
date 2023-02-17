@@ -87,7 +87,7 @@ namespace NSCustomVML
 
     class CCustomVML
     {
-    private:
+	public:
 		ODRAW::RulesType m_ePath;
 
         std::vector<Aggplus::POINT>		m_arVertices;
@@ -102,7 +102,7 @@ namespace NSCustomVML
         bool m_bIsPathPresent;
 
 		ODRAW::CBrush	m_oBrush;
-		ODRAW::CPen	m_oPen;
+		ODRAW::CPen		m_oPen;
 
     public:
 		CCustomVML();
@@ -123,6 +123,10 @@ namespace NSCustomVML
 		void LoadGuides(CProperty* pProperty);
 		void LoadInscribe(CProperty* pProperty);
 		void LoadAdjusts(LONG lIndex, LONG lValue);
+
+		void addSegment(ODRAW::RulesType eRuler, _UINT16	nCount);
+		void addGuide(CGuide & oInfo);
+		void addAdjust(int lIndex, int lValue);
 
 		void SetAdjusts(std::vector<LONG>* pList);
 		void ToCustomShape(ODRAW::CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager);

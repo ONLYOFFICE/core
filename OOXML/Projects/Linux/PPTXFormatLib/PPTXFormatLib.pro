@@ -26,6 +26,7 @@ include($$PWD/../../../PPTXFormat/Logic/pri/pptx_logic.pri)
 include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
 
 #PPTSHAPES
+CONFIG += build_shape_objects
 include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
 
 #PPTXSHAPES

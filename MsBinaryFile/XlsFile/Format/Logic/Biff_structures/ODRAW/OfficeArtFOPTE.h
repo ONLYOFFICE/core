@@ -42,8 +42,8 @@
 #include "MSO_enums.h"
 
 #include "../../../../../Common/Vml/PPTShape/Enums.h"
-#include "../../../../../Common/ODraw/GraphicsPath.h"
-#include "../../../../../Common/ODraw/FormulaShape.h"
+#include "../../../../../Common/Vml/GraphicsPath.h"
+#include "../../../../../Common/Vml/PPTShape/PptFormula.h"
 
 namespace XLS
 {
@@ -751,7 +751,7 @@ class MSOPATHINFO : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-	NSCustomShapesConvert::RulesType	m_eRuler;
+	ODRAW::RulesType		m_eRuler;
 	_UINT16					m_nCount;
 	
 	int cbElement;
@@ -770,7 +770,7 @@ class MSOSG : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-	NSCustomShapesConvert::FormulaType	m_eType;
+	NSGuidesVML::FormulaType	m_eType;
 
 	unsigned char				m_param_type1;
 	unsigned char				m_param_type2;
@@ -1065,7 +1065,7 @@ public:
 		{
 			switch (m_arSegments[i].m_eRuler)
 			{
-				case NSCustomShapesConvert::rtLineTo:
+				case ODRAW::rtLineTo:
 				{
 					for (_UINT16 j = 0; j < m_arSegments[i].m_nCount; ++j)
 					{
@@ -1091,7 +1091,7 @@ public:
 						}
 					}
 				}break;
-				case NSCustomShapesConvert::rtCurveTo:
+				case ODRAW::rtCurveTo:
 				{
 					for (_UINT16 j = 0; j < m_arSegments[i].m_nCount; ++j)
 					{
@@ -1112,7 +1112,7 @@ public:
 						valuePointer += 3;
 					}
 				}break;
-				case NSCustomShapesConvert::rtMoveTo:
+				case ODRAW::rtMoveTo:
 				{
 					if (valuePointer < m_arPoints.size()) 
 					{
@@ -1125,12 +1125,12 @@ public:
 					}
 				}
 				break;
-				case NSCustomShapesConvert::rtClose:
+				case ODRAW::rtClose:
 				{
 					strVmlPath += L"x";
 				}
 				break;
-				case NSCustomShapesConvert::rtEnd:
+				case ODRAW::rtEnd:
 				{
 					strVmlPath += L"e";
 				}break;	

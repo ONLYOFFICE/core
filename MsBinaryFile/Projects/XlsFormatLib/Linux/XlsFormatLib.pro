@@ -22,8 +22,8 @@ include($$PWD/../../../../Common/3dParty/boost/boost.pri)
 #LOGIC
 include($$PWD/../../../XlsFile/Format/Logic/pri/xls_logic.pri)
 
-#XLSSHAPES
-include($$PWD/../../../Common/ODraw/oldAutoShapes/pri/xls_shapes.pri)
+#PPTSHAPES
+include($$PWD/../../../Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
 
 DEFINES +=  UNICODE \
 			_UNICODE \
@@ -59,14 +59,17 @@ SOURCES +=  \
 	../../../XlsFile/Format/Logging/Log.cpp \
 	../../../XlsFile/Format/Logging/Logger.cpp \
 	\
-	../../../Common/ODraw/FormulaShape.cpp \
-	../../../Common/ODraw/CustomShape.cpp \
-	../../../Common/ODraw/BaseShape.cpp \
-	../../../Common/ODraw/CustomGeomShape.cpp \
-	../../../Common/ODraw/CustomShapeConvert.cpp \
-	../../../Common/ODraw/GraphicsPath.cpp \
-	../../../Common/ODraw/PathShape.cpp \
-	../../../Common/ODraw/XmlWriter.cpp \
+	../../../Common/Vml/BaseShape.cpp \
+	../../../Common/Vml/GraphicsPath.cpp \
+	../../../Common/Vml/Path.cpp \
+	../../../Common/Vml/toVmlConvert.cpp \
+	\
+	../../../Common/Vml/PPTShape/PptShape.cpp \
+	../../../Common/Vml/PPTShape/PptFormula.cpp \
+	../../../Common/Vml/PPTShape/ElementSettings.cpp \
+	../../../Common/Vml/PPTShape/BinaryReader.cpp \
+	../../../Common/Vml/PPTShape/CustomGeomShape.cpp \
+	../../../Common/Vml/PPTShape/Ppt2PptxShapeConverter.cpp \
 	\
 	../../../XlsFile/Converter/ConvertXls2Xlsx.cpp \
 	../../../XlsFile/Converter/external_items.cpp \
@@ -144,15 +147,19 @@ HEADERS +=  \
 	../../../XlsFile/Converter/xlsx_chart_context.h \
 	../../../XlsFile/Format/Auxiliary/HelpFunc.h \
 	\
-	../../../Common/ODraw/BaseShape.h \
-	../../../Common/ODraw/BinaryReader.h \
-	../../../Common/ODraw/CustomGeomShape.h \
-	../../../Common/ODraw/CustomShapeConvert.h \
-	../../../Common/ODraw/FormulaShape.h \
-	../../../Common/ODraw/GraphicsPath.h \
-	../../../Common/ODraw/PathShape.h \
-	../../../Common/ODraw/PPTShapeEnum.h \
-	../../../Common/ODraw/PresetShapesHeader.h \
-	../../../Common/ODraw/XmlWriter.h \
-	../../../Common/ODraw/CustomShape.h
+	../../../Common/Vml/Common.h \
+	../../../Common/Vml/BaseShape.h \
+	../../../Common/Vml/toVmlConvert.h \
+	../../../Common/Vml/Path.h \
+	../../../Common/Vml/GraphicsPath.h \
+	\
+	../../../Common/Vml/PPTShape/PptShape.h \
+	../../../Common/Vml/PPTShape/PptFormula.h \
+	../../../Common/Vml/PPTShape/ElementSettings.h \
+	../../../Common/Vml/PPTShape/BinaryReader.h \
+	../../../Common/Vml/PPTShape/CustomGeomShape.h \
+	../../../Common/Vml/PPTShape/Ppt2PptxShapeConverter.h \
+	../../../Common/Vml/PPTShape/Enums.h \
+	../../../Common/Vml/PPTShape/PptShapeEnum.h \
+	../../../Common/Vml/PPTShape/PresetShapesHeader.h \
 

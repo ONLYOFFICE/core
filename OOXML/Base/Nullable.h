@@ -523,7 +523,12 @@ namespace NSCommon
 				m_pPointer = new unsigned int(*oSrc);
 			return *this;
 		}
-
+		unsigned int* GetPointerEmptyNullable()
+		{
+			unsigned int* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
 		unsigned int get_value_or(const unsigned int& value) const
 		{
 			if (NULL == m_pPointer)
@@ -737,6 +742,12 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
+		double* GetPointerEmptyNullable()
+		{
+			double* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
 		double& operator*()  { return *m_pPointer; }
 		double* operator->() { return  m_pPointer; }
 
@@ -809,7 +820,12 @@ namespace NSCommon
 			}
 			return *m_pPointer;
 		}
-
+		bool* GetPointerEmptyNullable()
+		{
+			bool* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
+		}
 		bool& operator*()  { return *m_pPointer; }
 		bool* operator->() { return  m_pPointer; }
 
@@ -881,6 +897,12 @@ namespace NSCommon
 				return name + L"=\"" + (*m_pPointer) + L"\" ";
 			}
 			return L"";
+		}
+		std::wstring* GetPointerEmptyNullable()
+		{
+			std::wstring* pOldPointer = this->m_pPointer;
+			this->m_pPointer = NULL;
+			return pOldPointer;
 		}
 		std::wstring& operator*()  { return *m_pPointer; }
 		std::wstring* operator->() { return  m_pPointer; }

@@ -1006,7 +1006,7 @@ namespace PPTX
             if (pChart.IsInit() == false) return L"";
 
 			if (!pChart->m_oChartSpace.m_externalData) return L"";
-			if (!pChart->m_oChartSpace.m_externalData->m_id) return L"";
+			if (!pChart->m_oChartSpace.m_externalData->m_id.IsInit()) return L"";
 
 			file = pChart->Find(*pChart->m_oChartSpace.m_externalData->m_id);
 

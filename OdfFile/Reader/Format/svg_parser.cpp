@@ -565,10 +565,12 @@ namespace svg_path
 		for (size_t i = 0; i < points_str.size(); i++)
 		{
  			std::vector<std::wstring> point_str;
-			boost::algorithm::split(point_str, points_str[i], boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			
+			if (false == points_str[i].empty())
+				boost::algorithm::split(point_str, points_str[i], boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
 
-			if (point_str.size()>0)last_x = boost::lexical_cast<int>(point_str[0]);
-			if (point_str.size()>1)last_y = boost::lexical_cast<int>(point_str[1]);
+			if (point_str.size() > 0) last_x = boost::lexical_cast<int>(point_str[0]);
+			if (point_str.size() > 1) last_y = boost::lexical_cast<int>(point_str[1]);
 			
 			aCurrPoly.points.push_back(_point (last_x,last_y));
 

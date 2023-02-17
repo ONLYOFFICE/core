@@ -1077,4 +1077,15 @@ namespace MetaFile
 		return owsStream.str();
 	}
 
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy)
+	{
+		std::wstringstream owsStream;
+
+		for (double dValue : arValues)
+			owsStream << std::fixed << std::setprecision((-1 != nAccuracy) ? nAccuracy : GetMinAccuracy(dValue)) << dValue << L" ";
+
+		owsStream.seekp(-1, std::ios_base::end);
+
+		return owsStream.str();
+	}
 }

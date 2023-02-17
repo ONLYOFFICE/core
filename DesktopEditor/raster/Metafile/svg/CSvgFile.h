@@ -29,6 +29,8 @@ class GRAPHICS_DECL CSvgFile
 		void AddStyles(const std::wstring& wsStyles);
 		void AddDefs(XmlUtils::CXmlNode& oNode);
 
+		void ClearDefs();
+
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
 		void Init();

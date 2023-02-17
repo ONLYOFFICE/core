@@ -640,6 +640,19 @@ HRESULT CGraphicsRenderer::put_BrushGradientColors(LONG* lColors, double* pPosit
 	return S_OK;
 }
 
+HRESULT CGraphicsRenderer::put_BrushCenterPoint(double dX, double dY)
+{
+	m_oBrush.m_oGradientInfo.centerX = dX;
+	m_oBrush.m_oGradientInfo.centerY = dY;
+	return S_OK;
+}
+
+HRESULT CGraphicsRenderer::put_BrushRadius(double dRadius)
+{
+	m_oBrush.m_oGradientInfo.largeRadius = dRadius;
+	return S_OK;
+}
+
 // font -------------------------------------------------------------------------------------
 HRESULT CGraphicsRenderer::get_FontName(std::wstring* bsName)
 {

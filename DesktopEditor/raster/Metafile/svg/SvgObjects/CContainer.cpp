@@ -52,7 +52,8 @@ namespace SVG
 		    L"xml"     != wsNodeName &&
 		    L"defs"    != wsNodeName &&
 		    L"pattern" != wsNodeName &&
-		    L"linearGradient" != wsNodeName)
+		    L"linearGradient" != wsNodeName &&
+		    L"radialGradient" != wsNodeName)
 			return false;
 
 		Clear();

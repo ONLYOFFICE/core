@@ -8,7 +8,7 @@ namespace SVG
 	class IDefObject
 	{
 	public:
-		virtual bool Apply(IRenderer* pRenderer, CDefs* pDefs, const double dParentWidth, const double dParentHeight) = 0;
+		virtual bool Apply(IRenderer* pRenderer, CDefs* pDefs, const TBounds &oObjectBounds) = 0;
 	};
 
 	class CDefs

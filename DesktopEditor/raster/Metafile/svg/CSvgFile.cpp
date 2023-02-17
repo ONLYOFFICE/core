@@ -79,6 +79,11 @@ void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
 	m_pParser->LoadFromXmlNode(oNode, &m_oDefs.GetContainer(), this);
 }
 
+void CSvgFile::ClearDefs()
+{
+	m_oDefs.GetContainer().Clear();
+}
+
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 {
 	if (NULL == pRenderer || NULL == m_pContainer)

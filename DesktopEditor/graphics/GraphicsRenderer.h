@@ -192,6 +192,8 @@ public:
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
+	virtual HRESULT put_BrushCenterPoint(double dX, double dY);
+	virtual HRESULT put_BrushRadius(double dRadius);
 
 // font -------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* bsName);

@@ -59,12 +59,28 @@ namespace SVG
 		if (!oXml.FromXmlString(wsContent))
 			return false;
 
+		// TODO:: Временный вариант
+		// В дальнейшем сделать либо мнетод поиска стиля и defs,
+		// (проблема в том что тогда придется 2 раза запускать поиск (сначала стиля, а потом defs),
+		// а лишь потом запускать само чтение)
+		// либо использовать SvgCalculator при отрисовке, а не при чтении
+		// (но тогда скорость самой отрисовки падает)
+		LoadFromXmlNode(oXml, NULL, pFile);
+		pFile->ClearDefs();
+
 		return LoadFromXmlNode(oXml, pContainer, pFile);
 	}
 
 	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile) const
 	{
-		if (NULL != pFile && NULL != pContainer && NULL != pFile && pContainer->ReadFromXmlNode(oElement))
+		if (NULL == pFile || !oElement.IsValid())
+			return false;
+
+		if (NULL == pContainer)
+		{
+			return ReadChildrens(oElement, pContainer, pFile);
+		}
+		else if (pContainer->ReadFromXmlNode(oElement))
 		{
 			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 
@@ -78,14 +94,24 @@ namespace SVG
 
 	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CContainer *pContainer, CSvgFile *pFile) const
 	{
-		if (NULL == pContainer || NULL == pFile)
+		if (NULL == pFile)
 			return false;
 
 		std::wstring wsElementName = oElement.GetName();
 
+		if (L"style" == wsElementName)
+			pFile->AddStyles(oElement.GetText());
+		else if (L"defs" == wsElementName)
+			pFile->AddDefs(oElement);
+
+		// Если не передан CContainert -> идёт сканирование стилей
+		if (NULL == pContainer)
+			return true;
+
 		CObjectBase *pObject = NULL;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName || L"pattern" == wsElementName || L"linearGradient" == wsElementName)
+		if (L"svg" == wsElementName || L"g" == wsElementName || L"pattern" == wsElementName ||
+		    L"linearGradient" == wsElementName || L"radialGradient" == wsElementName)
 		{
 			CContainer *pNewContainer = NULL;
 
@@ -93,6 +119,7 @@ namespace SVG
 			{
 				case L'p': pNewContainer = new CPattern(pContainer); break;
 				case L'l': pNewContainer = new CLinearGradient(pContainer); break;
+				case L'r': pNewContainer = new CRadialGradient(pContainer); break;
 				default:   pNewContainer = new CContainer(pContainer); break;
 			}
 
@@ -107,8 +134,6 @@ namespace SVG
 			else
 				return false;
 		}
-		else if (L"style" == wsElementName)
-			pFile->AddStyles(oElement.GetText());
 		else if (L"line" == wsElementName)
 			pObject = new CLine(pContainer);
 		else if (L"rect" == wsElementName)
@@ -127,8 +152,6 @@ namespace SVG
 			pObject = new CPolygon(pContainer);
 		else if (L"image" == wsElementName)
 			pObject = new CImage(pContainer);
-		else if (L"defs" == wsElementName)
-			pFile->AddDefs(oElement);
 		else if (L"stop" == wsElementName)
 			pObject = new CStopElement(pContainer);
 

@@ -30,7 +30,7 @@ namespace SVG
 		}
 	}
 
-	void CPattern::Update(CDefs *pDefs, const double dParentWidth, const double dParentHeight)
+	void CPattern::Update(CDefs *pDefs, const TBounds &oObjectBounds)
 	{
 		if (NULL != m_pImage)
 			delete m_pImage;
@@ -48,8 +48,8 @@ namespace SVG
 
 		if (objectBoundingBox == m_enPatternUnits)
 		{
-			dKoefWidth  *= dParentWidth;
-			dKoefHeight *= dParentHeight;
+			dKoefWidth  *= oObjectBounds.m_dRight  - oObjectBounds.m_dLeft;
+			dKoefHeight *= oObjectBounds.m_dBottom - oObjectBounds.m_dTop;
 		}
 
 		int nWidth  = (oBounds.m_dRight - oBounds.m_dLeft) * dKoefWidth  * dMMtoPx + 1;
@@ -96,9 +96,9 @@ namespace SVG
 		m_pImage->Create(pBgraData, oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
 	}
 
-	bool CPattern::Apply(IRenderer *pRenderer, CDefs *pDefs, const double dParentWidth, const double dParentHeight)
+	bool CPattern::Apply(IRenderer *pRenderer, CDefs *pDefs, const TBounds &oObjectBounds)
 	{
-		Update(pDefs, dParentWidth, dParentHeight);
+		Update(pDefs, oObjectBounds);
 
 		if (NULL == pRenderer || NULL == m_pImage)
 			return false;

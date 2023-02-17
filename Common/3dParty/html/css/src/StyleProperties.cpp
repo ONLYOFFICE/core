@@ -481,7 +481,7 @@ namespace NSCSS
 	}
 
 	CColor::CColor()
-	    : CValue({}, 0, false)
+	    : CValue({}, 0, false), m_oOpacity(255)
 	{}
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -546,6 +546,14 @@ namespace NSCSS
 		return false;
 	}
 
+	bool CColor::SetOpacity(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (wsValue.empty() || (m_oOpacity.m_bImportant && !bHardMode))
+			return false;
+
+		return m_oOpacity.SetValue(wsValue, unLevel, bHardMode);
+	}
+
 	bool CColor::Empty() const
 	{
 		return m_oValue.Empty();
@@ -559,6 +567,11 @@ namespace NSCSS
 	ColorType CColor::GetType() const
 	{
 		return m_oValue.m_enType;
+	}
+
+	int CColor::GetOpacity() const
+	{
+		return (m_oOpacity > 1.) ? m_oOpacity.ToInt() : (255 * m_oOpacity.ToDouble());
 	}
 
 	int CColor::ToInt() const

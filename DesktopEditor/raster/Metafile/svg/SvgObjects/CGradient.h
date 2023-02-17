@@ -40,12 +40,12 @@ namespace SVG
 		SvgColor m_oColor;
 	};
 
-	class CGradient : public CContainer, public IDefObject
+	class CGradient : public CContainer
 	{
 	public:
 		CGradient(CObjectBase* pParent = NULL);
 
-		bool Apply(IRenderer* pRenderer, CDefs* pDefs, const double dParentWidth, const double dParentHeight) override;
+		bool Apply(IRenderer* pRenderer) const;
 	private:
 
 		std::wstring              m_wsXlinkHref;
@@ -53,19 +53,33 @@ namespace SVG
 		SpreadMethod              m_enSpreadMethod;
 	};
 
-	class CLinearGradient : public CGradient
+	class CLinearGradient : public CGradient, public IDefObject
 	{
 	public:
 		CLinearGradient(CObjectBase* pParent = NULL);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Apply(IRenderer* pRenderer, CDefs* pDefs, const double dParentWidth, const double dParentHeight) override;
+		bool Apply(IRenderer* pRenderer, CDefs* pDefs, const TBounds &oObjectBounds) override;
 	private:
 		SvgDigit m_oX1;
 		SvgDigit m_oY1;
 		SvgDigit m_oX2;
 		SvgDigit m_oY2;
+	};
+
+	class CRadialGradient : public CGradient, public IDefObject
+	{
+	public:
+		CRadialGradient(CObjectBase* pParent = NULL);
+
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool Apply(IRenderer* pRenderer, CDefs* pDefs, const TBounds &oObjectBounds) override;
+	private:
+		SvgDigit m_oCx;
+		SvgDigit m_oCy;
+		SvgDigit m_oR;
 	};
 }
 

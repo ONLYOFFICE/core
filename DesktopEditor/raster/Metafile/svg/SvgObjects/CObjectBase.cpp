@@ -127,6 +127,7 @@ namespace SVG
 		nTypePath += c_nStroke;
 		pRenderer->put_PenSize(1);
 		pRenderer->put_PenColor(0);
+		pRenderer->put_PenAlpha(255);
 	}
 
 	void CObjectBase::ApplyStroke(IRenderer *pRenderer, int &nTypePath, bool bUseDedault) const
@@ -152,6 +153,7 @@ namespace SVG
 	{
 		nTypePath += c_nWindingFillMode;
 		pRenderer->put_BrushColor1(0);
+		pRenderer->put_BrushAlpha1(255);
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 	}
 
@@ -164,12 +166,11 @@ namespace SVG
 		{
 			nTypePath += c_nWindingFillMode;
 			pRenderer->put_BrushColor1(m_oFill.ToInt());
+			pRenderer->put_BrushAlpha1(255);
 			pRenderer->put_BrushType(c_BrushTypeSolid);
 		}
 		else if (NSCSS::NSProperties::ColorType::ColorUrl == m_oFill.GetType() && NULL != pDefs)
 		{
-//			ApplyFillObject(pRenderer, pDefs->GetDef(m_oFill.ToWString()), pDefs);
-			std::wstring wsFill = m_oFill.ToWString();
 			if (ApplyDef(pRenderer, pDefs, m_oFill.ToWString()))
 				nTypePath += c_nWindingFillMode;
 		}
@@ -203,8 +204,6 @@ namespace SVG
 		if (NULL == pDefObject)
 			return false;
 
-		TBounds oBounds = GetBounds();
-
-		return pDefObject->Apply(pRenderer, pDefs, oBounds.m_dRight - oBounds.m_dLeft, oBounds.m_dBottom - oBounds.m_dTop);
+		return pDefObject->Apply(pRenderer, pDefs, GetBounds());
 	}
 }

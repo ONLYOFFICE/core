@@ -19,9 +19,9 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode) override;
 
-		bool Apply(IRenderer* pRenderer, CDefs *pDefs,const double dParentWidth, const double dParentHeight) override;
+		bool Apply(IRenderer* pRenderer, CDefs *pDefs, const TBounds &oObjectBounds) override;
 	private:
-		void Update(CDefs *pDefs, const double dParentWidth, const double dParentHeight);
+		void Update(CDefs *pDefs, const TBounds &oObjectBounds);
 
 		NSFonts::IFontManager *m_pFontManager;
 

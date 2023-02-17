@@ -160,6 +160,7 @@ namespace NSCSS
 
 	class CColor : public CValue<CColorValue>
 	{
+		CDigit m_oOpacity;
 		static TRGB ConvertHEXtoRGB(const std::wstring& wsValue);
 		static std::wstring ConvertRGBtoHEX(const TRGB& oValue);
 		static std::wstring CutURL(const std::wstring& wsValue);
@@ -167,11 +168,14 @@ namespace NSCSS
 		CColor();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
+		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode);
 
 		bool Empty() const override;
 		void Clear() override;
 
 		ColorType GetType() const;
+
+		int GetOpacity() const;
 
 		int ToInt() const override;
 		double ToDouble() const override;

@@ -3,22 +3,22 @@
 
 namespace NSDocxRenderer
 {
-    class CStyleManager
-    {
-        public:
-            std::vector<std::shared_ptr<CFontStyle>> m_arStyles;
+	class CStyleManager
+	{
+	public:
+		std::vector<std::shared_ptr<CFontStyle>> m_arStyles;
 
-            std::shared_ptr<CFontStyle> m_pCurrentStyle;
+		std::shared_ptr<CFontStyle> m_pCurrentStyle;
 
-        public:
-            CStyleManager();
-            virtual ~CStyleManager();
+	public:
+		CStyleManager();
+		virtual ~CStyleManager();
 
-            void Clear();
+		void Clear();
 
-            void NewDocument();
+		void NewDocument();
 
-            std::shared_ptr<CFontStyle> GetStyle();
-    };
+		std::shared_ptr<CFontStyle> GetStyle();
+	};
 }
 

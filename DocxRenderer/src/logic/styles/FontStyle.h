@@ -6,31 +6,31 @@
 
 namespace NSDocxRenderer
 {
-    class CFontStyle : public CBaseStyle
-    {
-        public:
-            NSStructures::CFont     m_oFont;
-            NSStructures::CBrush    m_oBrush;
+	class CFontStyle : public CBaseStyle
+	{
+	public:
+		NSStructures::CFont     m_oFont;
+		NSStructures::CBrush    m_oBrush;
 
-            std::wstring    m_strPickFontName {L""};
-            LONG            m_lPickFontStyle {0};
+		std::wstring    m_strPickFontName {L""};
+		LONG            m_lPickFontStyle {0};
 
-        private:
-            std::wstring    m_strStyleId {L""};
+	private:
+		std::wstring    m_strStyleId {L""};
 
-        public:
-            CFontStyle();
-            ~CFontStyle(){}
+	public:
+		CFontStyle();
+		~CFontStyle(){}
 
-            CFontStyle& operator=(const CFontStyle& oSrc);
-            void CopyFormat(const CFontStyle& oSrc);
+		CFontStyle& operator=(const CFontStyle& oSrc);
+		void CopyFormat(const CFontStyle& oSrc);
 
-            void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-            bool IsEqual(std::shared_ptr<CFontStyle> oSrc);
+		bool IsEqual(std::shared_ptr<CFontStyle> oSrc);
 
-            std::wstring GetStyleId() {return m_strStyleId;}
-    };
+		std::wstring GetStyleId() {return m_strStyleId;}
+	};
 }
 
 

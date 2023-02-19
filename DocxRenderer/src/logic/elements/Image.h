@@ -4,25 +4,25 @@
 
 namespace NSDocxRenderer
 {
-    class CImage : public CBaseItem
+	class CImage : public CBaseItem
 	{
 	public:
-         CImageInfo m_oImageInfo;
+		CImageInfo m_oImageInfo;
 
-         std::wstring m_strPath {L""};
+		std::wstring m_strPath {L""};
 
-         bool m_bIsNoFill {true};
-         bool m_bIsNoStroke {true};
-         bool m_bIsBehindDoc {true};
+		bool m_bIsNoFill {true};
+		bool m_bIsNoStroke {true};
+		bool m_bIsBehindDoc {true};
 
-         double m_dRotate {0.0};
+		double m_dRotate {0.0};
 
 	public:
-        CImage();
-        CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
-        void Clear() override final;
-        void AddContent(CBaseItem* pObj) override final{};
+		CImage();
+		CImage(const CImageInfo& oInfo, const std::wstring& strDstMedia);
+		void Clear() override final;
+		void AddContent(CBaseItem* pObj) override final{};
 
-        void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+		void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 	};
 }

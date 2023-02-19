@@ -3,41 +3,41 @@
 
 namespace NSDocxRenderer
 {
-    class CRow : public CBaseItem
-    {
-        public:
-            std::vector<CCell*> m_arCells;
+	class CRow : public CBaseItem
+	{
+	public:
+		std::vector<CCell*> m_arCells;
 
-        public:
-            CRow();
-            virtual ~CRow();
-            virtual void Clear() override final;
-            virtual void AddContent(CBaseItem* pObj) override final;
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final {}
-    };
+	public:
+		CRow();
+		virtual ~CRow();
+		virtual void Clear() override final;
+		virtual void AddContent(CBaseItem* pObj) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final {}
+	};
 
-    class CTable : public CBaseItem
-    {
-        public:
-            std::vector<double> m_arColumnWidths; //общее количество колонок в таблице
-            std::vector<CRow*>  m_arRows;
+	class CTable : public CBaseItem
+	{
+	public:
+		std::vector<double> m_arColumnWidths; //общее количество колонок в таблице
+		std::vector<CRow*>  m_arRows;
 
-            double              m_dSpaceBefore {0.0}; //по умолчанию выставляется 0, если отсутсвует w:before
-            double              m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
-            double              m_dLineHeight {0.0};
-            bool                m_bIsNeedSpacing {false};
+		double              m_dSpaceBefore {0.0}; //по умолчанию выставляется 0, если отсутсвует w:before
+		double              m_dSpaceAfter {0.0}; //в shape по умолчанию выставляется 8pt, если отсутсвует w:after
+		double              m_dLineHeight {0.0};
+		bool                m_bIsNeedSpacing {false};
 
-        public:
-            CTable();
-            virtual ~CTable();
-            virtual void Clear() override final;
-            virtual void AddContent(CBaseItem* pObj) override final;
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+	public:
+		CTable();
+		virtual ~CTable();
+		virtual void Clear() override final;
+		virtual void AddContent(CBaseItem* pObj) override final;
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-            double CalculateBeforeSpacing(double dPreviousStringBaseline)
-            {
-                return m_dTop - dPreviousStringBaseline;
-            }
-            void CalculateColumnWidth();
-    };
+		double CalculateBeforeSpacing(double dPreviousStringBaseline)
+		{
+			return m_dTop - dPreviousStringBaseline;
+		}
+		void CalculateColumnWidth();
+	};
 }

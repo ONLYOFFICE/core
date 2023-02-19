@@ -5,192 +5,192 @@
 
 namespace NSDocxRenderer
 {
-    CTextLine::CTextLine() : CBaseItem(ElemType::etTextLine)
-    {
-    }
+	CTextLine::CTextLine() : CBaseItem(ElemType::etTextLine)
+	{
+	}
 
-    void CTextLine::Clear()
-    {
-        m_arConts.clear();
-    }
+	void CTextLine::Clear()
+	{
+		m_arConts.clear();
+	}
 
-    CTextLine::~CTextLine()
-    {
-        Clear();
-    }
+	CTextLine::~CTextLine()
+	{
+		Clear();
+	}
 
-    void CTextLine::AddContent(CBaseItem *pObj)
-    {
-        CBaseItem::AddContent(pObj);
+	void CTextLine::AddContent(CBaseItem *pObj)
+	{
+		CBaseItem::AddContent(pObj);
 
-        if (dynamic_cast<CContText*>(pObj)->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
-        {
-            m_eVertAlignType = dynamic_cast<CContText*>(pObj)->m_eVertAlignType;
-        }
+		if (dynamic_cast<CContText*>(pObj)->m_pCont && m_eVertAlignType == eVertAlignType::vatUnknown)
+		{
+			m_eVertAlignType = dynamic_cast<CContText*>(pObj)->m_eVertAlignType;
+		}
 
-        m_arConts.push_back(dynamic_cast<CContText*>(pObj));
-    }
+		m_arConts.push_back(dynamic_cast<CContText*>(pObj));
+	}
 
-    void CTextLine::CheckLineToNecessaryToUse()
-    {
-        for (size_t i = 0; i < m_arConts.size(); ++i)
-        {
-            if (!m_arConts[i]->m_bIsNotNecessaryToUse)
-            {
-                return;
-            }
-        }
-        m_bIsNotNecessaryToUse = true;
-    }
+	void CTextLine::CheckLineToNecessaryToUse()
+	{
+		for (size_t i = 0; i < m_arConts.size(); ++i)
+		{
+			if (!m_arConts[i]->m_bIsNotNecessaryToUse)
+			{
+				return;
+			}
+		}
+		m_bIsNotNecessaryToUse = true;
+	}
 
-    void CTextLine::MergeConts()
-    {
-        if (m_arConts.empty())
-            return;
+	void CTextLine::MergeConts()
+	{
+		if (m_arConts.empty())
+			return;
 
-        auto pFirst = m_arConts.front();
+		auto pFirst = m_arConts.front();
 
-        for (size_t i = 1; i < m_arConts.size(); ++i)
-        {
-            auto pCurrent = m_arConts[i];
+		for (size_t i = 1; i < m_arConts.size(); ++i)
+		{
+			auto pCurrent = m_arConts[i];
 
-            if (pCurrent->m_bIsNotNecessaryToUse)
-            {
-                continue;
-            }
+			if (pCurrent->m_bIsNotNecessaryToUse)
+			{
+				continue;
+			}
 
-            //todo возможно стоит доработать логику
-            bool bIsEqual = pFirst->IsEqual(pCurrent);
-            bool bIsBigDelta = ((pFirst->m_dRight < pCurrent->m_dLeft) && ((pCurrent->m_dLeft - pFirst->m_dRight) < pCurrent->m_dSpaceWidthMM)) ||
-                               fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pCurrent->CalculateThinSpace();
-            bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateWideSpace();
+			//todo возможно стоит доработать логику
+			bool bIsEqual = pFirst->IsEqual(pCurrent);
+			bool bIsBigDelta = ((pFirst->m_dRight < pCurrent->m_dLeft) && ((pCurrent->m_dLeft - pFirst->m_dRight) < pCurrent->m_dSpaceWidthMM)) ||
+					fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pCurrent->CalculateThinSpace();
+			bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateWideSpace();
 
-            if (bIsVeryBigDelta)
-            {
-                pFirst->m_bSpaceIsNotNeeded = false;
-                pFirst = pCurrent;
+			if (bIsVeryBigDelta)
+			{
+				pFirst->m_bSpaceIsNotNeeded = false;
+				pFirst = pCurrent;
 
-            }
-            else if (bIsEqual)
-            {
-                if (fabs(pFirst->m_dRight - pCurrent->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM)
-                {
-                    pFirst->m_oText += pCurrent->m_oText;
-                }
-                else if (bIsBigDelta)
-                {
-                    pFirst->m_oText += uint32_t(' ');
-                    pFirst->m_oText += pCurrent->m_oText;
-                }
+			}
+			else if (bIsEqual)
+			{
+				if (fabs(pFirst->m_dRight - pCurrent->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM)
+				{
+					pFirst->m_oText += pCurrent->m_oText;
+				}
+				else if (bIsBigDelta)
+				{
+					pFirst->m_oText += uint32_t(' ');
+					pFirst->m_oText += pCurrent->m_oText;
+				}
 
-                pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
-                pFirst->m_dRight = pCurrent->m_dRight;
+				pFirst->m_dWidth = pCurrent->m_dRight - pFirst->m_dLeft;
+				pFirst->m_dRight = pCurrent->m_dRight;
 
-                if (!pFirst->m_pCont)
-                {
-                    pFirst->m_pCont = pCurrent->m_pCont;
-                    pFirst->m_eVertAlignType = pCurrent->m_eVertAlignType;
-                }
+				if (!pFirst->m_pCont)
+				{
+					pFirst->m_pCont = pCurrent->m_pCont;
+					pFirst->m_eVertAlignType = pCurrent->m_eVertAlignType;
+				}
 
-                pFirst->m_bSpaceIsNotNeeded = true;
-                pCurrent->m_bIsNotNecessaryToUse = true;
-            }
-            else
-            {
-                if (bIsBigDelta)
-                {
-                    if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
-                        !IsSpaceUtf32(pCurrent->m_oText[0]))
-                    {
-                        if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
-                        {
-                            pFirst->m_oText += L" ";
-                            pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
-                        }
-                        else
-                        {
-                            NSStringUtils::CStringUTF32 oNewText = L" ";
-                            oNewText += pCurrent->m_oText;
-                            pCurrent->m_oText = oNewText;
-                            pCurrent->m_dWidth += pCurrent->m_dSpaceWidthMM;
-                        }
-                    }
+				pFirst->m_bSpaceIsNotNeeded = true;
+				pCurrent->m_bIsNotNecessaryToUse = true;
+			}
+			else
+			{
+				if (bIsBigDelta)
+				{
+					if (!IsSpaceUtf32(pFirst->m_oText[pFirst->m_oText.length()-1]) &&
+							!IsSpaceUtf32(pCurrent->m_oText[0]))
+					{
+						if (pFirst->GetNumberOfFeatures() <= pCurrent->GetNumberOfFeatures())
+						{
+							pFirst->m_oText += L" ";
+							pFirst->m_dWidth += pFirst->m_dSpaceWidthMM;
+						}
+						else
+						{
+							NSStringUtils::CStringUTF32 oNewText = L" ";
+							oNewText += pCurrent->m_oText;
+							pCurrent->m_oText = oNewText;
+							pCurrent->m_dWidth += pCurrent->m_dSpaceWidthMM;
+						}
+					}
 
-                    pFirst->m_bSpaceIsNotNeeded = true;
-                }
-                else
-                {
-                    pFirst->m_bSpaceIsNotNeeded = false;
-                }
-                pFirst = pCurrent;
-            }
-        }
-    }
+					pFirst->m_bSpaceIsNotNeeded = true;
+				}
+				else
+				{
+					pFirst->m_bSpaceIsNotNeeded = false;
+				}
+				pFirst = pCurrent;
+			}
+		}
+	}
 
-    void CTextLine::SetVertAlignType(const eVertAlignType& oType)
-    {
-        m_eVertAlignType = oType;
-        for (size_t i = 0; i < m_arConts.size(); ++i)
-        {
-            m_arConts[i]->m_eVertAlignType = oType;
-        }
-    }
+	void CTextLine::SetVertAlignType(const eVertAlignType& oType)
+	{
+		m_eVertAlignType = oType;
+		for (size_t i = 0; i < m_arConts.size(); ++i)
+		{
+			m_arConts[i]->m_eVertAlignType = oType;
+		}
+	}
 
-    bool CTextLine::IsShadingPresent(const CTextLine *pLine)
-    {
-        if (m_pDominantShape && pLine->m_pDominantShape &&
-            m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
-            fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-            fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
-        {
-            return true;
-        }
+	bool CTextLine::IsShadingPresent(const CTextLine *pLine)
+	{
+		if (m_pDominantShape && pLine->m_pDominantShape &&
+				m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
+				fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+				fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
+		{
+			return true;
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
-    {
-        if (m_bIsNotNecessaryToUse)
-        {
-            return;
-        }
+	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	{
+		if (m_bIsNotNecessaryToUse)
+		{
+			return;
+		}
 
-        size_t nCountConts = m_arConts.size();
+		size_t nCountConts = m_arConts.size();
 
-        if (0 == nCountConts)
-            return;
+		if (0 == nCountConts)
+			return;
 
-        auto pPrev = m_arConts[0];
-        double dDelta = 0;
+		auto pPrev = m_arConts[0];
+		double dDelta = 0;
 
-        for (size_t i = 1; i < nCountConts; ++i)
-        {
-            auto pCurrent = m_arConts[i];
+		for (size_t i = 1; i < nCountConts; ++i)
+		{
+			auto pCurrent = m_arConts[i];
 
-            if (pCurrent->m_bIsNotNecessaryToUse)
-            {
-                continue;
-            }
+			if (pCurrent->m_bIsNotNecessaryToUse)
+			{
+				continue;
+			}
 
-            dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
+			dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
 
-            if (dDelta < pPrev->CalculateWideSpace() ||
-                pPrev->m_bSpaceIsNotNeeded)
-            {
-                // просто текст на тексте или сменились настройки (font/brush)
-                pPrev->ToXml(oWriter);
-                pPrev = pCurrent;
-            }
-            else
-            {
-                // расстояние слишком большое. нужно сделать большой пробел
-                pPrev->ToXml(oWriter);
-                pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
-                pPrev = pCurrent;
-            }
-        }
+			if (dDelta < pPrev->CalculateWideSpace() ||
+					pPrev->m_bSpaceIsNotNeeded)
+			{
+				// просто текст на тексте или сменились настройки (font/brush)
+				pPrev->ToXml(oWriter);
+				pPrev = pCurrent;
+			}
+			else
+			{
+				// расстояние слишком большое. нужно сделать большой пробел
+				pPrev->ToXml(oWriter);
+				pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
+				pPrev = pCurrent;
+			}
+		}
 
-        pPrev->ToXml(oWriter);
-    }
+		pPrev->ToXml(oWriter);
+	}
 }

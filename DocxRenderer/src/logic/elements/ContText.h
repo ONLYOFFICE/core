@@ -9,71 +9,71 @@
 
 namespace NSDocxRenderer
 {
-    class CShape;
+	class CShape;
 
-    enum class eVertAlignType
-    {
-        vatUnknown,
-        vatBase,
-        vatSubscript,
-        vatSuperscript
-    };
+	enum class eVertAlignType
+	{
+		vatUnknown,
+		vatBase,
+		vatSubscript,
+		vatSuperscript
+	};
 
-    class CContText : public CBaseItem
-    {
-        public:
-            std::shared_ptr<CFontStyle> m_pFontStyle {nullptr};
+	class CContText : public CBaseItem
+	{
+	public:
+		std::shared_ptr<CFontStyle> m_pFontStyle {nullptr};
 
-            bool   m_bIsStrikeoutPresent {false};
-            bool   m_bIsDoubleStrikeout {false};
+		bool   m_bIsStrikeoutPresent {false};
+		bool   m_bIsDoubleStrikeout {false};
 
-            bool   m_bIsHighlightPresent {false};
-            LONG   m_lHighlightColor {c_iBlackColor};
+		bool   m_bIsHighlightPresent {false};
+		LONG   m_lHighlightColor {c_iBlackColor};
 
-            bool   m_bIsUnderlinePresent {false};
-            eLineType m_eUnderlineType {eLineType::ltUnknown};
-            LONG   m_lUnderlineColor {c_iBlackColor};
+		bool   m_bIsUnderlinePresent {false};
+		eLineType m_eUnderlineType {eLineType::ltUnknown};
+		LONG   m_lUnderlineColor {c_iBlackColor};
 
-            bool   m_bIsShadowPresent {false};
-            bool   m_bIsOutlinePresent {false};
-            bool   m_bIsEmbossPresent {false};
-            bool   m_bIsEngravePresent {false};
+		bool   m_bIsShadowPresent {false};
+		bool   m_bIsOutlinePresent {false};
+		bool   m_bIsEmbossPresent {false};
+		bool   m_bIsEngravePresent {false};
 
-            NSStringUtils::CStringUTF32 m_oText;
+		NSStringUtils::CStringUTF32 m_oText;
 
-            double m_dSpaceWidthMM {0};
-            bool   m_bSpaceIsNotNeeded {false};
+		double m_dSpaceWidthMM {0};
+		bool   m_bSpaceIsNotNeeded {false};
 
-            eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
+		eVertAlignType m_eVertAlignType {eVertAlignType::vatUnknown};
 
-            CFontManagerLight* m_pManagerLight {nullptr};
-            CStyleManager*     m_pStyleManager {nullptr};
+		CFontManagerLight* m_pManagerLight {nullptr};
+		CStyleManager*     m_pStyleManager {nullptr};
 
-            CShape*    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
-            const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
+		CShape*    m_pShape {nullptr}; //Если не nullptr, то есть фоновая графика - можно анализировать.
+		const CContText* m_pCont {nullptr}; //Если не nullptr, то есть привязка к vatSubscript или vatSuperscript;
 
-            UINT m_iNumDuplicates {0};
+		UINT m_iNumDuplicates {0};
 
-        public:
-            CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
-            CContText(const CContText& rCont);
-            virtual ~CContText();
-            virtual void Clear() override final;
-            virtual void AddContent(CBaseItem* pObj) override final {};
-            virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
+	public:
+		CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager);
+		CContText(const CContText& rCont);
+		virtual ~CContText();
+		virtual void Clear() override final;
+		virtual void AddContent(CBaseItem* pObj) override final {};
+		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-            CContText& operator= (const CContText& rCont);
+		CContText& operator= (const CContText& rCont);
 
-            void AddWideSpaceToXml(double dSpacingMM,
-                                   NSStringUtils::CStringBuilder& oWriter,
-                                   bool bIsNeedSaveFormat = false);
-            bool IsEqual(const CContText* pCont);
-            UINT GetNumberOfFeatures();
-            bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
-            bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
-            bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+		void AddWideSpaceToXml(double dSpacingMM,
+							   NSStringUtils::CStringBuilder& oWriter,
+							   bool bIsNeedSaveFormat = false);
+		bool IsEqual(const CContText* pCont);
+		UINT GetNumberOfFeatures();
+		bool IsDuplicate(CContText *pCont, eVerticalCrossingType eVType);
+		bool IsThereAreFontEffects(CContText *pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
+		bool IsVertAlignTypeBetweenConts(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType);
 
-            double CalculateWideSpace();
-            double CalculateThinSpace();
-    };
+		double CalculateWideSpace();
+		double CalculateThinSpace();
+	};
 }

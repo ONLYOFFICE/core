@@ -36,16 +36,16 @@ namespace NSDocxRenderer
 
     void CFontManager::AddFontToMap()
     {
-        if (m_oFontTable.m_mapTable.end() == m_oFontTable.m_mapTable.find(m_oFont.m_strFamilyName))
+		if (m_oFontTable.m_mapTable.end() == m_oFontTable.m_mapTable.find(m_oFontAdvanced.m_strFamilyName))
         {
             CFontTableEntry oEntry;
-            oEntry.m_strFamilyName	= m_oFont.m_strFamilyName;
-            oEntry.m_strPANOSE		= m_oFont.m_strPANOSE;
-            oEntry.m_lStyle			= m_oFont.m_lStyle;
-            oEntry.m_bIsFixedWidth	= m_oFont.m_bIsFixedWidth;
-            oEntry.m_arSignature    = m_oFont.m_arSignature;
+			oEntry.m_strFamilyName	= m_oFontAdvanced.m_strFamilyName;
+			oEntry.m_strPANOSE		= m_oFontAdvanced.m_strPANOSE;
+			oEntry.m_lStyle			= m_oFontAdvanced.m_lStyle;
+			oEntry.m_bIsFixedWidth	= m_oFontAdvanced.m_bIsFixedWidth;
+			oEntry.m_arSignature    = m_oFontAdvanced.m_arSignature;
 
-            m_oFontTable.m_mapTable.insert(std::pair<std::wstring, CFontTableEntry>(m_oFont.m_strFamilyName, oEntry));
+			m_oFontTable.m_mapTable.insert(std::pair<std::wstring, CFontTableEntry>(m_oFontAdvanced.m_strFamilyName, oEntry));
         }
     }
 
@@ -61,26 +61,26 @@ namespace NSDocxRenderer
 
         m_pFont->Size = dSizeFont;
 
-        if (m_pFont->IsEqual2(&m_oFont.m_oFont))
+		if (m_pFont->IsEqual2(&m_oFontAdvanced.m_oFont))
         {
             m_pFont->Size = dSize;
             m_pManager->SetCharSpacing(dPix);
             return;
         }
 
-        m_oFont.m_oFont	= *m_pFont;
+		m_oFontAdvanced.m_oFont	= *m_pFont;
         m_pFont->Size = dSize;
 
         if (m_pFont->Path.empty())
         {
-            CFontManagerBase::LoadFontByName(m_oFont.m_oFont.Name, m_oFont.m_oFont.Size, m_oFont.m_oFont.GetStyle(), c_dDpiX, c_dDpiY);
+			CFontManagerBase::LoadFontByName(m_oFontAdvanced.m_oFont.Name, m_oFontAdvanced.m_oFont.Size, m_oFontAdvanced.m_oFont.GetStyle(), c_dDpiX, c_dDpiY);
         }
         else
         {
-            CFontManagerBase::LoadFontByFile(m_oFont.m_oFont.Path, m_oFont.m_oFont.Size, c_dDpiX, c_dDpiY, lFaceIndex);
+			CFontManagerBase::LoadFontByFile(m_oFontAdvanced.m_oFont.Path, m_oFontAdvanced.m_oFont.Size, c_dDpiX, c_dDpiY, lFaceIndex);
 
-            m_pFont->SetStyle(m_oFont.m_lStyle);
-            m_oFont.m_oFont.SetStyle(m_oFont.m_lStyle);
+			m_pFont->SetStyle(m_oFontAdvanced.m_lStyle);
+			m_oFontAdvanced.m_oFont.SetStyle(m_oFontAdvanced.m_lStyle);
         }
 
         int bIsGID = m_pManager->GetStringGID();
@@ -177,16 +177,16 @@ namespace NSDocxRenderer
     {
         LoadFont();
 
-        double d1 = 3 * (m_oFont.m_dLineSpacing - m_oFont.m_dDescent) - m_oFont.m_dAscent;
+		double d1 = 3 * (m_oFontAdvanced.m_dLineSpacing - m_oFontAdvanced.m_dDescent) - m_oFontAdvanced.m_dAscent;
         d1 /= 2.0;
 
-        d1 *= (m_oFont.m_oFont.Size / m_oFont.m_dEmHeight);
+		d1 *= (m_oFontAdvanced.m_oFont.Size / m_oFontAdvanced.m_dEmHeight);
         return d1;
     }
 
     double CFontManager::GetFontHeight()
     {
-        return c_dPtToMM * (m_oFont.m_dLineSpacing * m_oFont.m_oFont.Size ) / m_oFont.m_dEmHeight;
+		return c_dPtToMM * (m_oFontAdvanced.m_dLineSpacing * m_oFontAdvanced.m_oFont.Size ) / m_oFontAdvanced.m_dEmHeight;
     }
 
     void CFontManager::SetStringGid(const LONG& lGid)
@@ -205,12 +205,12 @@ namespace NSDocxRenderer
             {
                 CFontTableEntry oEntry;
                 oEntry.m_strFamilyName	= m_strCurrentPickFont;
-                oEntry.m_strPANOSE		= m_oFont.m_strPANOSE;
-                oEntry.m_lStyle			= m_oFont.m_lStyle;
-                oEntry.m_bIsFixedWidth	= m_oFont.m_bIsFixedWidth;
-                oEntry.m_arSignature    = m_oFont.m_arSignature;
+				oEntry.m_strPANOSE		= m_oFontAdvanced.m_strPANOSE;
+				oEntry.m_lStyle			= m_oFontAdvanced.m_lStyle;
+				oEntry.m_bIsFixedWidth	= m_oFontAdvanced.m_bIsFixedWidth;
+				oEntry.m_arSignature    = m_oFontAdvanced.m_arSignature;
 
-                m_oFontTable.m_mapTable.insert(std::pair<std::wstring, CFontTableEntry>(m_oFont.m_strFamilyName, oEntry));
+				m_oFontTable.m_mapTable.insert(std::pair<std::wstring, CFontTableEntry>(m_oFontAdvanced.m_strFamilyName, oEntry));
             }
         }
     }

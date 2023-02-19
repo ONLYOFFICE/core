@@ -337,7 +337,7 @@ namespace NSFontManager
         LoadFontMetrics();
         LoadFontParams();
 
-        m_oFont.m_lAvgWidth = -1;
+		m_oFontAdvanced.m_lAvgWidth = -1;
     }
 
     void CFontManagerBase::LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
@@ -347,10 +347,10 @@ namespace NSFontManager
 
         LoadFontMetrics();
         LoadFontParams();
-        m_oFont.m_oFont.Name = m_pManager->GetName();
-        m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
+		m_oFontAdvanced.m_oFont.Name = m_pManager->GetName();
+		m_oFontAdvanced.m_strFamilyName = m_oFontAdvanced.m_oFont.Name;
 
-        m_oFont.m_lAvgWidth = -1;
+		m_oFontAdvanced.m_lAvgWidth = -1;
 
         bool bIsCID = false;
         std::wstring sFileExt = NSFile::GetFileExtention(strPath);
@@ -384,7 +384,7 @@ namespace NSFontManager
                             {
                                 std::wstring sValue = oCurNode.GetAttribute(L"value");
                                 try {
-                                    m_oFont.m_lAvgWidth = (SHORT)std::stol(sValue);
+									m_oFontAdvanced.m_lAvgWidth = (SHORT)std::stol(sValue);
                                 } catch (std::invalid_argument &) {}
                             }
                         }
@@ -401,7 +401,7 @@ namespace NSFontManager
                     {
                         std::wstring sValue = oCurNode.GetAttribute(L"value");
                         try {
-                            m_oFont.m_lAvgWidth = (SHORT)std::stol(sValue);
+							m_oFontAdvanced.m_lAvgWidth = (SHORT)std::stol(sValue);
                         } catch (std::invalid_argument &) {}
                     }
                 }
@@ -413,21 +413,21 @@ namespace NSFontManager
     {
         LoadFont();
 
-        double d1 = 3 * (m_oFont.m_dLineSpacing - m_oFont.m_dDescent) - m_oFont.m_dAscent;
+		double d1 = 3 * (m_oFontAdvanced.m_dLineSpacing - m_oFontAdvanced.m_dDescent) - m_oFontAdvanced.m_dAscent;
         d1 /= 2.0;
 
-        d1 *= (m_oFont.m_oFont.Size / m_oFont.m_dEmHeight);
-        m_oFont.m_dBaselineOffset = d1;
+		d1 *= (m_oFontAdvanced.m_oFont.Size / m_oFontAdvanced.m_dEmHeight);
+		m_oFontAdvanced.m_dBaselineOffset = d1;
     }
 
     void CFontManagerBase::LoadFontMetrics()
     {
-        m_oFont.m_dAscent = m_pManager->GetAscender();
-        m_oFont.m_dDescent = m_pManager->GetDescender();
-        m_oFont.m_dLineSpacing = m_pManager->GetLineHeight();
-        m_oFont.m_dEmHeight = m_pManager->GetUnitsPerEm();
+		m_oFontAdvanced.m_dAscent = m_pManager->GetAscender();
+		m_oFontAdvanced.m_dDescent = m_pManager->GetDescender();
+		m_oFontAdvanced.m_dLineSpacing = m_pManager->GetLineHeight();
+		m_oFontAdvanced.m_dEmHeight = m_pManager->GetUnitsPerEm();
 
-        m_oFont.m_dBaselineOffset = (c_dPtToMM * m_oFont.m_dDescent * m_oFont.m_oFont.Size / m_oFont.m_dEmHeight);
+		m_oFontAdvanced.m_dBaselineOffset = (c_dPtToMM * m_oFontAdvanced.m_dDescent * m_oFontAdvanced.m_oFont.Size / m_oFontAdvanced.m_dEmHeight);
     }
 
     std::wstring CFontManagerBase::ToHexString( BYTE uc )
@@ -455,32 +455,32 @@ namespace NSFontManager
         if (nullptr == m_pManager || nullptr == m_pManager->GetFile())
             return;
 
-        m_oFont.m_strFamilyName = m_oFont.m_oFont.Name;
+		m_oFontAdvanced.m_strFamilyName = m_oFontAdvanced.m_oFont.Name;
 
-        m_oFont.m_lStyle = 0x00;
+		m_oFontAdvanced.m_lStyle = 0x00;
         if (m_pManager->GetFile()->IsBold())
         {
-            m_oFont.m_lStyle |= 0x01;
+			m_oFontAdvanced.m_lStyle |= 0x01;
         }
         if (m_pManager->GetFile()->IsItalic())
         {
-            m_oFont.m_lStyle |= 0x02;
+			m_oFontAdvanced.m_lStyle |= 0x02;
         }
 
         // PANOSE
         BYTE pPanose[10];
         m_pManager->GetFile()->GetPanose(pPanose);
-        m_oFont.m_strPANOSE.clear();
+		m_oFontAdvanced.m_strPANOSE.clear();
         for ( int i = 0; i < 10; ++i )
         {
-            m_oFont.m_strPANOSE += ToHexString(pPanose[i]);
+			m_oFontAdvanced.m_strPANOSE += ToHexString(pPanose[i]);
         }
 
         // IsFixed
-        m_oFont.m_bIsFixedWidth = m_pManager->GetFile()->IsFixedWidth();
+		m_oFontAdvanced.m_bIsFixedWidth = m_pManager->GetFile()->IsFixedWidth();
 
         // Signature
-        m_oFont.m_arSignature.clear();
+		m_oFontAdvanced.m_arSignature.clear();
 
         for ( unsigned int i = 0; i < 6; ++i )
         {
@@ -494,7 +494,7 @@ namespace NSFontManager
                 }
             }
 
-            m_oFont.m_arSignature.push_back(value);
+			m_oFontAdvanced.m_arSignature.push_back(value);
         }
     }
 
@@ -512,10 +512,10 @@ namespace NSFontManager
 
     bool CFontManagerBase::GenerateFontName(NSStringUtils::CStringUTF32& oText)
     {
-        if (m_oFont.m_oFont.Path.empty() || oText.empty())
+		if (m_oFontAdvanced.m_oFont.Path.empty() || oText.empty())
         {
-            m_strCurrentPickFont = m_oFont.m_strFamilyName;
-            m_lCurrentPictFontStyle = m_oFont.m_lStyle;
+			m_strCurrentPickFont = m_oFontAdvanced.m_strFamilyName;
+			m_lCurrentPictFontStyle = m_oFontAdvanced.m_lStyle;
             return false;
         }
 
@@ -530,7 +530,7 @@ namespace NSFontManager
         {
             std::list<CFontPickUp>::iterator posOld = pos;
             CFontPickUp& oPick = *(pos++);
-            if ((oPick.m_oFont.m_oFont.IsEqual2(&m_oFont.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
+			if ((oPick.m_oFont.m_oFont.IsEqual2(&m_oFontAdvanced.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
             {
                 // нашли! ничего подбирать не нужно
                 // нужно просто выкинуть этот шрифт наверх
@@ -545,14 +545,14 @@ namespace NSFontManager
         CFontPickUp oPick;
         oPick.m_lRangeNum	= lRangeNum;
         oPick.m_lRange		= lRange;
-        oPick.m_oFont		= m_oFont;
-        oPick.m_strPickFont	= m_oFont.m_strFamilyName;
-        oPick.m_lPickStyle	= m_oFont.m_lStyle;
+		oPick.m_oFont		= m_oFontAdvanced;
+		oPick.m_strPickFont	= m_oFontAdvanced.m_strFamilyName;
+		oPick.m_lPickStyle	= m_oFontAdvanced.m_lStyle;
 
-        UINT dwR1 = m_oFont.m_arSignature[0];
-        UINT dwR2 = m_oFont.m_arSignature[1];
-        UINT dwR3 = m_oFont.m_arSignature[2];
-        UINT dwR4 = m_oFont.m_arSignature[3];
+		UINT dwR1 = m_oFontAdvanced.m_arSignature[0];
+		UINT dwR2 = m_oFontAdvanced.m_arSignature[1];
+		UINT dwR3 = m_oFontAdvanced.m_arSignature[2];
+		UINT dwR4 = m_oFontAdvanced.m_arSignature[3];
         UINT dwCodePage1	= 0;
         UINT dwCodePage2	= 0;
 
@@ -576,10 +576,10 @@ namespace NSFontManager
         NSFonts::CFontSelectFormat oFormat;
 
         std::wstring sFontNameSelect = L"";
-        if (m_oFont.m_strFamilyName.empty() && !m_oFont.m_oFont.Path.empty())
+		if (m_oFontAdvanced.m_strFamilyName.empty() && !m_oFontAdvanced.m_oFont.Path.empty())
             sFontNameSelect = m_strDefaultFont;
         else
-            sFontNameSelect = m_oFont.m_strFamilyName;
+			sFontNameSelect = m_oFontAdvanced.m_strFamilyName;
 
         bool bSelectBold = false;
         bool bSelectItalic = false;
@@ -587,11 +587,11 @@ namespace NSFontManager
 
         oFormat.wsName = new std::wstring(sFontNameSelect);
 
-        if (!m_oFont.m_strPANOSE.empty())
+		if (!m_oFontAdvanced.m_strPANOSE.empty())
         {
             oFormat.pPanose = new BYTE[10];
 
-            const wchar_t* pPanoseStr = m_oFont.m_strPANOSE.c_str();
+			const wchar_t* pPanoseStr = m_oFontAdvanced.m_strPANOSE.c_str();
             for (int i = 0; i < 10; ++i)
             {
                 oFormat.pPanose[i] = FromHexString(pPanoseStr[0], pPanoseStr[1]);
@@ -599,11 +599,11 @@ namespace NSFontManager
             }
         }
 
-        oFormat.bBold = new INT(((m_oFont.m_lStyle & 0x01) == 0x01) ? 1 : 0);
-        oFormat.bItalic = new INT(((m_oFont.m_lStyle & 0x02) == 0x02) ? 1 : 0);
-        oFormat.bFixedWidth = new INT(m_oFont.m_bIsFixedWidth ? 1 : 0);
-        if (-1 != m_oFont.m_lAvgWidth)
-            oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFont.m_lAvgWidth);
+		oFormat.bBold = new INT(((m_oFontAdvanced.m_lStyle & 0x01) == 0x01) ? 1 : 0);
+		oFormat.bItalic = new INT(((m_oFontAdvanced.m_lStyle & 0x02) == 0x02) ? 1 : 0);
+		oFormat.bFixedWidth = new INT(m_oFontAdvanced.m_bIsFixedWidth ? 1 : 0);
+		if (-1 != m_oFontAdvanced.m_lAvgWidth)
+			oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFontAdvanced.m_lAvgWidth);
         oFormat.ulRange1 = new UINT(dwR1);
         oFormat.ulRange2 = new UINT(dwR2);
         oFormat.ulRange3 = new UINT(dwR3);

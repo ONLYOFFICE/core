@@ -371,12 +371,15 @@ namespace NSDocxRenderer
         //Условие пересечения по вертикали
         bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
         bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext; //текущий cont ниже
+
         //Условие пересечения по горизонтали
         bool bIf3 = eHType == eHorizontalCrossingType::hctCurrentLeftOfNext; //текущий cont левее
         bool bIf4 = eHType == eHorizontalCrossingType::hctCurrentRightOfNext; //текущий cont правее
+
         //Размеры шрифта и текст должны бать одинаковыми
         bool bIf5 = m_pFontStyle->m_oFont.Size == pCont->m_pFontStyle->m_oFont.Size;
         bool bIf6 = m_oText == pCont->m_oText;
+
         //Цвет тени должен быть серым
         bool bIf7 = m_pFontStyle->m_oBrush.Color1 == c_iGreyColor;
         bool bIf8 = pCont->m_pFontStyle->m_oBrush.Color1 == c_iGreyColor;

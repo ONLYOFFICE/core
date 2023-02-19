@@ -103,7 +103,7 @@ namespace NSFontManager
 
         public:
 
-            CFontAdvanced					m_oFont;
+			CFontAdvanced					m_oFontAdvanced;
 
             //для подбора шрифтов
             CUnicodeRanges                  m_oRanges;

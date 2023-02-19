@@ -384,7 +384,7 @@ namespace NSDocxRenderer
         pCont->m_dLeft = dTextX;
         pCont->m_dBaselinePos = dBaseLinePos;
 
-        pCont->m_dTop       = dBaseLinePos - dTextH - m_pFontManager->m_oFont.m_dBaselineOffset;
+		pCont->m_dTop       = dBaseLinePos - dTextH - m_pFontManager->m_oFontAdvanced.m_dBaselineOffset;
         pCont->m_dWidth     = dTextW;
         pCont->m_dHeight    = dTextH;
         pCont->m_dRight     = dTextX + dTextW;
@@ -392,7 +392,7 @@ namespace NSDocxRenderer
         pCont->m_oText = oText;
 
         //Первичное заполнение стилей
-        m_pStyleManager->m_pCurrentStyle->m_oFont = m_pFontManager->m_oFont.m_oFont;
+		m_pStyleManager->m_pCurrentStyle->m_oFont = m_pFontManager->m_oFontAdvanced.m_oFont;
         m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
 
         if (!bIsPath)
@@ -918,13 +918,9 @@ namespace NSDocxRenderer
         }
 
         AnalyzeCollectedConts();
-
         DetermineStrikeoutsUnderlinesHighlights();
-
         AddDiacriticalSymbols();
-
-        MergeLinesByVertAlignType();
-
+		MergeLinesByVertAlignType();
         DeleteTextClipPage();
 
         //DetermineTextColumns();
@@ -937,44 +933,42 @@ namespace NSDocxRenderer
 
     void CPage::AnalyzeCollectedConts()
     {
-        //определение различных эффектов на основании взаимного расположения символов
+		// определение различных эффектов на основании взаимного расположения символов
+
+		// идем по всем текстовым линиям
         for (size_t uCurrLineIndex = 0; uCurrLineIndex < m_arTextLine.size(); ++uCurrLineIndex)
         {
+			// берем текущую линию
             auto pCurrLine = m_arTextLine[uCurrLineIndex];
-
             if (pCurrLine->m_bIsNotNecessaryToUse)
-            {
                 continue;
-            }
 
+			// символы в текущей линии
             for (size_t uCurrContIndex = 0; uCurrContIndex < pCurrLine->m_arConts.size(); ++uCurrContIndex)
             {
+				// берем символ в текущей линии
                 auto pCurrCont = pCurrLine->m_arConts[uCurrContIndex];
-
                 if (pCurrCont->m_bIsNotNecessaryToUse)
-                {
                     continue;
-                }
 
+				// берем вторую линию, если символ последний - то начиная со следуюущей, иначе с той же
                 for (size_t uNextLineIndex = uCurrContIndex >= pCurrLine->m_arConts.size() - 1 ?
                      uCurrLineIndex + 1 : uCurrLineIndex; uNextLineIndex < m_arTextLine.size(); ++uNextLineIndex)
                 {
                     auto pNextLine = m_arTextLine[uNextLineIndex];
 
-                    if (pNextLine->m_bIsNotNecessaryToUse || pCurrLine->AreObjectsNoCrossingByVertically(pNextLine)) //note значительно ускоряет работу
-                    {
+					// значительно ускоряет работу, то есть если никак не перескается - некст
+					if (pNextLine->m_bIsNotNecessaryToUse || pCurrLine->AreObjectsNoCrossingByVertically(pNextLine))
                         continue;
-                    }
 
+					// посимвольно смотрим некст линию - если та же то следующий символ, если другая - то с нуля
                     for (size_t uNextContIndex = uNextLineIndex != uCurrLineIndex ? 0 : uCurrContIndex + 1;
                          uNextContIndex < pNextLine->m_arConts.size(); ++uNextContIndex)
                     {
+						// берем символ во второй линии
                         auto pNextCont = pNextLine->m_arConts[uNextContIndex];
-
                         if (pNextCont->m_bIsNotNecessaryToUse)
-                        {
                             continue;
-                        }
 
                         eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pNextCont);
                         eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pNextCont);
@@ -1018,11 +1012,8 @@ namespace NSDocxRenderer
         {
             auto pShape = m_arShapes[i];
 
-            if (pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics ||
-                pShape->m_bIsNotNecessaryToUse)
-            {
+			if (pShape->m_eGraphicsType == eGraphicsType::gtNoGraphics || pShape->m_bIsNotNecessaryToUse)
                 continue;
-            }
 
             for (size_t j = 0; j < m_arTextLine.size(); ++j)
             {
@@ -1048,17 +1039,40 @@ namespace NSDocxRenderer
                     eVerticalCrossingType eVType = pCurrCont->GetVerticalCrossingType(pShape);
                     eHorizontalCrossingType eHType = pCurrCont->GetHorizontalCrossingType(pShape);
 
-                    bool bIf1 = pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
-                    bool bIf2 = IsLineCrossingText(pShape, pCurrCont, eHType);
-                    bool bIf3 = IsLineBelowText(pShape, pCurrCont, eHType);
-                    bool bIf4 = IsItHighlightingBackground(pShape, pCurrCont, eHType);
+					bool bIsComplicatedFigure = pShape->m_eGraphicsType != eGraphicsType::gtComplicatedFigure;
+					bool bIsLineCrossingText = IsLineCrossingText(pShape, pCurrCont, eHType);
+					bool bIsLineBelowText = IsLineBelowText(pShape, pCurrCont, eHType);
+					bool bIsItHighlightingBackground = IsItHighlightingBackground(pShape, pCurrCont, eHType);
 
-                    if (bIf1 && (bIf2 || bIf3 || bIf4))
-                    {
+					if(bIsLineCrossingText)
+					{
+						pCurrCont->m_bIsStrikeoutPresent = true;
+						if (pShape->m_eLineType == eLineType::ltDouble)
+							pCurrCont->m_bIsDoubleStrikeout = true;
+					}
+
+					if(bIsLineBelowText)
+					{
+						pCurrCont->m_bIsUnderlinePresent = true;
+						pCurrCont->m_eUnderlineType  = pShape->m_eLineType;
+
+						// почему 0.3?
+						pCurrCont->m_lUnderlineColor = pShape->m_dHeight > 0.3 ? pShape->m_oBrush.Color1 : pShape->m_oPen.Color;
+					}
+
+					if(bIsItHighlightingBackground)
+					{
+						//Удовлетворяет расположением и размером - привязываем указатель на картинку
+						pCurrCont->m_pShape = pShape;
+						pCurrCont->m_bIsHighlightPresent = true;
+						pCurrCont->m_lHighlightColor = pShape->m_oBrush.Color1;
+					}
+
+					// проверили - удаляем
+					if (bIsComplicatedFigure && (bIsLineCrossingText || bIsLineBelowText || bIsItHighlightingBackground))
                         pShape->m_bIsNotNecessaryToUse = true;
-                    }
 
-                    if (!bIf1)
+					if (!bIsComplicatedFigure)
                     {
                         bool bIf1 = pCurrCont->m_pFontStyle->m_oBrush.Color1 == c_iGreyColor;
                         bool bIf2 = pCurrCont->m_bIsShadowPresent && pCurrCont->m_bIsOutlinePresent;
@@ -1088,32 +1102,26 @@ namespace NSDocxRenderer
 
     bool CPage::IsLineCrossingText(const CShape *pShape, CContText *pCont, const eHorizontalCrossingType& eHType)
     {
-        double dTopBorder = pCont->m_dTop + pCont->m_dHeight/3; //note Height - это максимально возможный размер символа. Больше реального размера.
+		// Height - это максимально возможный размер символа. Больше реального размера.
+		double dTopBorder = pCont->m_dTop + pCont->m_dHeight / 3;
 
         bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle &&
                 pShape->m_eLineType != eLineType::ltUnknown;
-        //Условие пересечения по вертикали
+
+		// Условие пересечения по вертикали
         bool bIf2 = pShape->m_dTop > dTopBorder && pShape->m_dBaselinePos < pCont->m_dBaselinePos;
-        //Условие пересечения по горизонтали
+
+		// Условие пересечения по горизонтали
         bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
                     eHType != eHorizontalCrossingType::hctCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
-        //Условие для размеров по высоте
+
+		// Условие для размеров по высоте
         bool bIf4 = pShape->m_dHeight < pCont->m_dHeight &&
                 pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
 
-        if (bIf1 && bIf2 && bIf3 && bIf4)
-        {
-            pCont->m_bIsStrikeoutPresent = true;;
-            if (pShape->m_eLineType == eLineType::ltDouble)
-            {
-                pCont->m_bIsDoubleStrikeout = true;
-            }
-            return true;
-        }
-
-        return false;
+		return bIf1 && bIf2 && bIf3 && bIf4;
     }
 
     bool CPage::IsLineBelowText(const CShape *pShape, CContText *pCont, const eHorizontalCrossingType& eHType)
@@ -1121,27 +1129,22 @@ namespace NSDocxRenderer
         //todo распознавание работает не для всех размеров шрифтов - возможно 0.15 мало или улучшить логику
         bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
                      pShape->m_eGraphicsType == eGraphicsType::gtCurve) &&
-                pShape->m_eLineType != eLineType::ltUnknown;
+				pShape->m_eLineType != eLineType::ltUnknown;
+
         //Условие по вертикали
         bool bIf2 = fabs(pShape->m_dTop - pCont->m_dBaselinePos) < pCont->m_dHeight * 0.15;
+
         //Условие пересечения по горизонтали
         bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
                     eHType != eHorizontalCrossingType::hctCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
+
         //Условие для размеров по высоте
         bool bIf4 = pShape->m_dHeight < pCont->m_dHeight &&
                 pCont->m_dHeight - pShape->m_dHeight > c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM;
 
-        if (bIf1 && bIf2 && bIf3 && bIf4)
-        {
-            pCont->m_bIsUnderlinePresent = true;;
-            pCont->m_eUnderlineType  = pShape->m_eLineType;
-            pCont->m_lUnderlineColor = pShape->m_dHeight > 0.3 ? pShape->m_oBrush.Color1 : pShape->m_oPen.Color;
-            return true;
-        }
-
-        return false;
+		return bIf1 && bIf2 && bIf3 && bIf4;
     }
 
     bool CPage::IsItHighlightingBackground(CShape *pShape, CContText* pCont, const eHorizontalCrossingType& eHType)
@@ -1151,31 +1154,25 @@ namespace NSDocxRenderer
         double dSomeBaseLine3 = pCont->m_dBaselinePos - pCont->m_dHeight * 0.25;
 
         bool bIf1 = pShape->m_eGraphicsType == eGraphicsType::gtRectangle;
+
         //Условие пересечения по вертикали
         bool bIf2 = (dSomeBaseLine1 > pShape->m_dTop && dSomeBaseLine1 < pShape->m_dBaselinePos &&
                      dSomeBaseLine2 > pShape->m_dTop && dSomeBaseLine2 < pShape->m_dBaselinePos &&
                      dSomeBaseLine3 > pShape->m_dTop && dSomeBaseLine3 < pShape->m_dBaselinePos);
+
         //Условие пересечения по горизонтали
         bool bIf3 = eHType != eHorizontalCrossingType::hctUnknown &&
                     eHType != eHorizontalCrossingType::hctCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
                     eHType != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
+
         //Цвета должны быть разными
         bool bIf4 = pCont->m_pFontStyle->m_oBrush.Color1 != pShape->m_oBrush.Color1;
         bool bIf5 = pShape->m_oBrush.Color1 == c_iBlackColor && pShape->m_oPen.Color == c_iWhiteColor;
         bool bIf6 = pShape->m_bIsNoFill == false;
         bool bIf7 = pShape->m_bIsNoStroke == true;
 
-        if (bIf1 && bIf2 && bIf3 && bIf4 && !bIf5 && bIf6 && bIf7)
-        {
-            //Удовлетворяет расположением и размером - привязываем указатель на картинку
-            pCont->m_pShape = pShape;
-            pCont->m_bIsHighlightPresent = true;
-            pCont->m_lHighlightColor = pShape->m_oBrush.Color1;
-            return true;
-        }
-
-        return false;
+		return bIf1 && bIf2 && bIf3 && bIf4 && !bIf5 && bIf6 && bIf7;
     }
 
     void CPage::AddDiacriticalSymbols()

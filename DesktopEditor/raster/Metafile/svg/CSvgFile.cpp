@@ -76,7 +76,10 @@ void CSvgFile::AddStyles(const std::wstring &wsStyles)
 
 void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
 {
-	m_pParser->LoadFromXmlNode(oNode, &m_oDefs.GetContainer(), this);
+	if (L"defs" == oNode.GetName())
+		m_pParser->LoadFromXmlNode(oNode, &m_oDefs.GetContainer(), this);
+	else
+		m_pParser->ReadElement(oNode, &m_oDefs.GetContainer(), this);
 }
 
 void CSvgFile::ClearDefs()

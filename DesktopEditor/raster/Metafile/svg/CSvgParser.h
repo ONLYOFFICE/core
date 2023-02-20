@@ -23,10 +23,15 @@ namespace SVG
 		bool LoadFromString(const std::wstring& wsContente, CContainer* pContainer, CSvgFile* pFile) const;
 		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
 
+		bool ReadElement(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
+
 		void AddStyle(const std::wstring& wsStyle);
 	private:
-		bool ReadElement(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
 		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer* pContainer, CSvgFile* pFile) const;
+
+		bool ScanElement(XmlUtils::CXmlNode& oElement, const std::wstring& wsElementName, CSvgFile* pFile) const;
+
+		bool IsDefs(const std::wstring& wsNodeName) const;
 
 		NSFonts::IFontManager  *m_pFontManager;
 	};

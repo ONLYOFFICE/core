@@ -65,8 +65,8 @@ namespace SVG
 		// а лишь потом запускать само чтение)
 		// либо использовать SvgCalculator при отрисовке, а не при чтении
 		// (но тогда скорость самой отрисовки падает)
-		LoadFromXmlNode(oXml, NULL, pFile);
-		pFile->ClearDefs();
+		ScanElement(oXml, L"style", pFile); // сканирование стилей
+		ScanElement(oXml, L"defs", pFile); // сканироание defs
 
 		return LoadFromXmlNode(oXml, pContainer, pFile);
 	}
@@ -76,11 +76,7 @@ namespace SVG
 		if (NULL == pFile || !oElement.IsValid())
 			return false;
 
-		if (NULL == pContainer)
-		{
-			return ReadChildrens(oElement, pContainer, pFile);
-		}
-		else if (pContainer->ReadFromXmlNode(oElement))
+		if (pContainer->ReadFromXmlNode(oElement))
 		{
 			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 
@@ -94,19 +90,10 @@ namespace SVG
 
 	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CContainer *pContainer, CSvgFile *pFile) const
 	{
-		if (NULL == pFile)
+		if (NULL == pFile || NULL == pContainer)
 			return false;
 
 		std::wstring wsElementName = oElement.GetName();
-
-		if (L"style" == wsElementName)
-			pFile->AddStyles(oElement.GetText());
-		else if (L"defs" == wsElementName)
-			pFile->AddDefs(oElement);
-
-		// Если не передан CContainert -> идёт сканирование стилей
-		if (NULL == pContainer)
-			return true;
 
 		CObjectBase *pObject = NULL;
 
@@ -193,5 +180,39 @@ namespace SVG
 		}
 
 		return true;
+	}
+
+	bool CSvgParser::ScanElement(XmlUtils::CXmlNode &oElement, const std::wstring &wsElementName, CSvgFile *pFile) const
+	{
+		if (NULL == pFile || !oElement.IsValid() || wsElementName.empty())
+			return false;
+
+		XmlUtils::CXmlNodes arChilds;
+
+		oElement.GetChilds(arChilds);
+
+		XmlUtils::CXmlNode oChild;
+
+		for (unsigned int unChildrenIndex = 0; unChildrenIndex < arChilds.GetCount(); ++unChildrenIndex)
+		{
+			if (!arChilds.GetAt(unChildrenIndex, oChild))
+				break;
+
+			std::wstring wsNodeName = oChild.GetName();
+
+			if (IsDefs(wsNodeName) && L"defs" == wsElementName)
+				pFile->AddDefs(oChild);
+			else if (L"style" == wsNodeName && wsNodeName == wsElementName)
+				pFile->AddStyles(oChild.GetText());
+
+			oChild.Clear();
+		}
+
+		return true;
+	}
+
+	bool CSvgParser::IsDefs(const std::wstring &wsNodeName) const
+	{
+		return L"defs" == wsNodeName || L"pattern" == wsNodeName || L"linearGradien" == wsNodeName || L"radialGradient" == wsNodeName;
 	}
 }

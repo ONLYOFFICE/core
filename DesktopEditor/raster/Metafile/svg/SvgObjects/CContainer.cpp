@@ -56,7 +56,7 @@ namespace SVG
 		    L"radialGradient" != wsNodeName)
 			return false;
 
-		Clear();
+//		Clear();
 
 		SaveNodeData(oNode);
 

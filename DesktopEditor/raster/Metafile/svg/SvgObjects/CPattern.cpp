@@ -39,12 +39,10 @@ namespace SVG
 
 		pGrRenderer->SetFontManager(m_pFontManager);
 
-		TBounds oBounds = GetBounds();
-
 		double dMMtoPx = 96. / 25.4;
 
-		double dKoefWidth  = m_oWindow.m_oWidth  .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
-		double dKoefHeight = m_oWindow.m_oHeight .ToDouble(NSCSS::Pixel) / (oBounds.m_dRight - oBounds.m_dLeft);
+		double dKoefWidth  = m_oWindow.m_oWidth  .ToDouble(NSCSS::Pixel);
+		double dKoefHeight = m_oWindow.m_oHeight .ToDouble(NSCSS::Pixel);
 
 		if (objectBoundingBox == m_enPatternUnits)
 		{
@@ -52,8 +50,8 @@ namespace SVG
 			dKoefHeight *= oObjectBounds.m_dBottom - oObjectBounds.m_dTop;
 		}
 
-		int nWidth  = (oBounds.m_dRight - oBounds.m_dLeft) * dKoefWidth  * dMMtoPx + 1;
-		int nHeight = (oBounds.m_dRight - oBounds.m_dLeft) * dKoefHeight * dMMtoPx + 1;
+		int nWidth  = dKoefWidth  * dMMtoPx + 1;
+		int nHeight = dKoefHeight * dMMtoPx + 1;
 
 		if (0 == nWidth || 0 == nHeight)
 			return;

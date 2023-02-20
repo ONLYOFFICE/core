@@ -358,7 +358,9 @@ namespace BinXlsxRW
 		int ReadDataValidationsContent(BYTE type, long length, void* poResult);
         int ReadDataValidation(BYTE type, long length, void* poResult);
 		int ReadSlicers(BYTE type, long length, void* poResult);
-		
+		int ReadUserProtectedRanges(BYTE type, long length, void* poResult);
+		int ReadUserProtectedRange(BYTE type, long length, void* poResult);
+
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
 		std::wstring GetControlVmlShape(void* pControl);

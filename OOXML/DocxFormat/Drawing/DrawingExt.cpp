@@ -45,6 +45,7 @@
 #include "../../XlsxFormat/Pivot/PivotCacheDefinitionExt.h"
 #include "../../XlsxFormat/Styles/dxf.h"
 #include "../../XlsxFormat/Chart/ChartSerialize.h"
+#include "../../XlsxFormat/Worksheets/WorksheetChildOther.h"
 
 #include "../Comments.h"
 
@@ -163,6 +164,7 @@ namespace OOX
 			m_oTableSlicerCache.reset();
 			m_oSlicerCacheHideItemsWithNoData.reset();
             m_oPivotCacheDefinitionExt.reset();
+			m_oUserProtectedRanges.reset();
 
 			for (size_t nIndex = 0; nIndex < m_arrConditionalFormatting.size(); ++nIndex)
 			{
@@ -205,7 +207,8 @@ namespace OOX
 										*m_sUri == L"{46F421CA-312F-682f-3DD2-61675219B42D}" ||
 										*m_sUri == L"{DE250136-89BD-433C-8126-D09CA5730AF9}" ||
 										*m_sUri == L"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}" ||
-										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||										
+										*m_sUri == L"{725AE2AE-9491-48be-B2B4-4EB974FC3084}" ||	
+										*m_sUri == L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}" ||
 										*m_sUri == L"http://schemas.microsoft.com/office/drawing/2008/diagram"))   
 			{
 				int nCurDepth = oReader.GetDepth();
@@ -319,6 +322,10 @@ namespace OOX
 							WritingElement_ReadAttributes_Read_else_if (oReader, L"instanceId", m_oInstanceId)
 						WritingElement_ReadAttributes_End_No_NS(oReader)
 					}
+					else if (sName == L"userProtectedRanges")
+					{
+						m_oUserProtectedRanges = oReader;
+					}
 				}
 			}
 			else
@@ -364,6 +371,13 @@ namespace OOX
 			if (m_oCompatExt.IsInit())
 			{
 				sResult += m_oCompatExt->toXML();
+			}
+			if (m_oUserProtectedRanges.IsInit())
+			{
+				NSStringUtils::CStringBuilder writer;
+				m_oUserProtectedRanges->toXML(writer);
+
+				sResult += writer.GetData().c_str();
 			}
 			if (m_oSparklineGroups.IsInit())
 			{

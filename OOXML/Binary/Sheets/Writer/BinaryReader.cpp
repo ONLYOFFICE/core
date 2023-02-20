@@ -3983,6 +3983,29 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	//SEEK_TO_POS_END(oControls); ниже ...
 	SEEK_TO_POS_END2(); 
 //-------------------------------------------------------------------------------------------------------------
+	OOX::Spreadsheet::CUserProtectedRanges *pUserProtectedRanges = new OOX::Spreadsheet::CUserProtectedRanges();
+
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::UserProtectedRanges);
+	READ1_DEF(length, res, this->ReadUserProtectedRanges, pUserProtectedRanges);
+	SEEK_TO_POS_END2();
+
+	if (false == pUserProtectedRanges->m_arrItems.empty())
+	{
+		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+			m_pCurWorksheet->m_oExtLst.Init();
+		
+		OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+		
+		pOfficeArtExtension->m_oUserProtectedRanges.reset(pUserProtectedRanges);
+		pOfficeArtExtension->m_sUri = L"{231B7EB2-2AFC-4442-B178-5FFDF5851E7C}";
+		
+		m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+	}
+	else
+	{
+		delete pUserProtectedRanges;
+	}
+//-------------------------------------------------------------------------------------------------------------
 	OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
 	OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
 	
@@ -6366,6 +6389,49 @@ int BinaryWorksheetsTableReader::ReadFormula(BYTE type, long length, void* poRes
 	else if(c_oSerFormulaTypes::Text == type)
 	{
 		pFormula->m_sText = m_oBufferedStream.GetString4(length);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadUserProtectedRanges(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CUserProtectedRanges *pUserProtectedRanges = static_cast<OOX::Spreadsheet::CUserProtectedRanges*>(poResult);
+	
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_UserProtectedRange::UserProtectedRange == type)
+	{
+		OOX::Spreadsheet::CUserProtectedRange* pUserProtectedRange = new OOX::Spreadsheet::CUserProtectedRange();
+		READ1_DEF(length, res, this->ReadUserProtectedRange, pUserProtectedRange);
+		pUserProtectedRanges->m_arrItems.push_back(pUserProtectedRange);
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
+int BinaryWorksheetsTableReader::ReadUserProtectedRange(BYTE type, long length, void* poResult)
+{
+	OOX::Spreadsheet::CUserProtectedRange *pUserProtectedRanges = static_cast<OOX::Spreadsheet::CUserProtectedRange*>(poResult);
+	int res = c_oSerConstants::ReadOk;
+	if (c_oSer_UserProtectedRange::Name == type)
+	{
+		pUserProtectedRanges->m_oName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::Sqref == type)
+	{
+		pUserProtectedRanges->m_oSqref = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::Text == type)
+	{
+		pUserProtectedRanges->m_oText = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_UserProtectedRange::UserId == type)
+	{
+		pUserProtectedRanges->m_arUsersId.push_back(m_oBufferedStream.GetString4(length));
+	}
+	else if (c_oSer_UserProtectedRange::UsersGroup == type)
+	{
+		pUserProtectedRanges->m_arUsersGroupsId.push_back(m_oBufferedStream.GetString4(length));
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

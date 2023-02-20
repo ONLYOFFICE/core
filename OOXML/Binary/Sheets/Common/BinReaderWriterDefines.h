@@ -421,7 +421,8 @@ namespace BinXlsxRW
 		ProtectedRange = 43,
 		CellWatches = 44,
 		CellWatch = 45,
-		CellWatchR = 46
+		CellWatchR = 46,
+		UserProtectedRanges = 47
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -1145,6 +1146,16 @@ namespace BinXlsxRW
 		iconSet = 0,
 		iconId = 1
 	};}
+	namespace c_oSer_UserProtectedRange {enum c_oSer_UserProtectedRange
+	{
+		UserProtectedRange = 0,
+		Sqref = 1,
+		Name = 2,
+		Text = 3,
+		UserId = 4,
+		UsersGroup = 5
+	};}
+	
 	namespace c_oSer_DataValidation{enum c_oSer_DataValidation
 	{
 		DataValidations = 0,

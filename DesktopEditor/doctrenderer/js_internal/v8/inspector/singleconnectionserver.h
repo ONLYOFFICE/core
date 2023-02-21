@@ -62,7 +62,7 @@ private:
     bool checkStream();
 
 public:
-    CSingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
+	CSingleConnectionServer(uint16_t port = 8080, std::string host = "127.0.0.1");
 
     void setOnMessageCallback(onMessageCallback callback);
 

@@ -61,6 +61,10 @@ SOURCES += $$PWD/js_logger.cpp
             LIBS += -L$$CORE_V8_PATH_LIBS/src/inspector -linspector
         }
 
+        core_linux {
+            LIBS += -lpthread
+        }
+
         #boost
         CONFIG += core_boost_date_time
         include($$PWD/../../../Common/3dParty/boost/boost.pri)

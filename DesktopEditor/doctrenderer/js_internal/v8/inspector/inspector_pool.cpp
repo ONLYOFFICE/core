@@ -28,7 +28,7 @@ NSJSBase::v8_debug::internal::CInspectorPool::addInspector(v8::Local<v8::Context
 
 uint16_t NSJSBase::v8_debug::internal::CInspectorPool::getPort()
 {
-    static std::atomic<uint16_t> initialPort{8080};
+	static std::atomic<uint16_t> initialPort{8080};
     return initialPort++;
 }
 

@@ -18,17 +18,17 @@ class CInspectorImpl;
 class CInspectorClient : public v8_inspector::V8InspectorClient
 {
     //notable cdt messages
-    static constexpr char serverReadyMessage[32] {"Runtime.runIfWaitingForDebugger"};
+	const char serverReadyMessage[33] = "Runtime.runIfWaitingForDebugger";
 
-    static constexpr char scriptResumeMessage[25] {"Debugger.getScriptSource"};
+	const char scriptResumeMessage[26] = "Debugger.getScriptSource";
 
-    static constexpr char funcResumeMessageEarly[35] {"Overlay.setPausedInDebuggerMessage"};
-    static constexpr char funcResumeMessageLate[22] {"Runtime.getProperties"};
+	const char funcResumeMessageEarly[36] = "Overlay.setPausedInDebuggerMessage";
+	const char funcResumeMessageLate[23] = "Runtime.getProperties";
 
-    static constexpr char activateBreakpointsMethod[30] {"Debugger.setBreakpointsActive"};
-    static constexpr char setBreakpointMethod[23] {"Debugger.setBreakpoint"};
-    static constexpr char removeBreakpointMethod[26] {"Debugger.removeBreakpoint"};
-    static constexpr char getPossibleBreakpointsMethod[32] {"Debugger.getPossibleBreakpoints"};
+	const char activateBreakpointsMethod[31] = "Debugger.setBreakpointsActive";
+	const char setBreakpointMethod[24] = "Debugger.setBreakpoint";
+	const char removeBreakpointMethod[27] = "Debugger.removeBreakpoint";
+	const char getPossibleBreakpointsMethod[33] = "Debugger.getPossibleBreakpoints";
 
     //v8 stuff
     v8::Local<v8::Context> m_Context{};//to register context in inspector

@@ -347,7 +347,7 @@ namespace NSJSBase
 	JSSmart<CJSValue> CJSContext::runScript(const std::string& script, JSSmart<CJSTryCatch> exception, const std::wstring& scriptPath)
 	{
 #ifdef V8_INSPECTOR
-		v8_debug::before(m_internal->m_context, CV8Worker::getInitializer()->getPlatform(), "");
+		v8_debug::before(m_internal->m_context, CV8Worker::getInitializer().getPlatform(), "");
 #endif
 		LOGGER_START
 

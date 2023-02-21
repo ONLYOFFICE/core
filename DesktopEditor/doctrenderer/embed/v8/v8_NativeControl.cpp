@@ -94,6 +94,7 @@ namespace NSNativeControl
         NSV8Objects::Template_Set(result, "Save_End",           _Save_End);
         NSV8Objects::Template_Set(result, "AddImageInChanges",  _AddImageInChanges);
         NSV8Objects::Template_Set(result, "ConsoleLog",         _ConsoleLog);
+		NSV8Objects::Template_Set(result, "SaveChanges",        _SaveChanges);
         NSV8Objects::Template_Set(result, "ZipOpen",            _zipOpenFile);
         NSV8Objects::Template_Set(result, "ZipOpenBase64",      _zipOpenFileBase64);
         NSV8Objects::Template_Set(result, "ZipFileAsString",    _zipGetFileAsString);

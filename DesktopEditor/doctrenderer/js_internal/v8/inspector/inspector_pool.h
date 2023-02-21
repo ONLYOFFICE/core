@@ -25,7 +25,7 @@ class CInspectorPool
     std::mutex m_Mutex{};
     storage_t m_Inspectors{};
 
-    static constexpr bool m_bLog{false};
+	const bool m_bLog = false;
 
     //добавить новый инспектор
     CInspectorImpl& addInspector(v8::Local<v8::Context> context

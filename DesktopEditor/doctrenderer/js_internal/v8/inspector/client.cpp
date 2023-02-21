@@ -4,6 +4,7 @@
 #include <libplatform/libplatform.h>//v8::Platform
 #include "inspector_impl.h"//to interact with inspector
 #include <iostream>//std::cout
+#include <memory>
 
 namespace {
     //use it in loop
@@ -22,10 +23,10 @@ void NSJSBase::v8_debug::internal::CInspectorClient::setUpDebuggingSession(
     //client instance is this
 
     //channel
-    m_pChannel = std::make_unique<CInspectorChannel>(
+	m_pChannel = std::unique_ptr<CInspectorChannel>(new CInspectorChannel(
                 [this](const v8_inspector::StringView &message) {
                         m_pInspectingWrapper->sendData(message);
-                    }
+					})
                 );
 
     //inspector
@@ -90,7 +91,7 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
 
     //если сервер не готов - смотрим сообщение о готовности
     if (!m_bServerReady) {
-        if (serverReadyMessage == method) {
+		if (serverReadyMessage == method) {
             m_bServerReady = true;
             m_pInspectingWrapper->onServerReady();
         }

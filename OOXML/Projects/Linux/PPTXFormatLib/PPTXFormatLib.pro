@@ -25,10 +25,6 @@ include($$PWD/../../../PPTXFormat/Logic/pri/pptx_logic.pri)
 #LIMITS
 include($$PWD/../../../PPTXFormat/Limit/pri/pptx_limits.pri)
 
-#PPTSHAPES
-CONFIG += build_shape_objects
-include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTShape/PPTAutoShapes/pri/ppt_shapes.pri)
-
 #PPTXSHAPES
 include($$PWD/../../../../MsBinaryFile/Common/Vml/PPTXShape/OOXMLShapes/pri/pptx_shapes.pri)
 
@@ -150,7 +146,7 @@ HEADERS += \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/Ppt2PptxShapeConverter.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/Enums.h \
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShapeEnum.h \
-	../../../../MsBinaryFile/Common/Vml/PPTShape/PresetShapesHeader.h \
+	../../../../MsBinaryFile/DocFile/OfficeDrawing/PresetShapeTypes.h \
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxFormula.h \
 	../../../../MsBinaryFile/Common/Vml/PPTXShape/PptxShape.h \

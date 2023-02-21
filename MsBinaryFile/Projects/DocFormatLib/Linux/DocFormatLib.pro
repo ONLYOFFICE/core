@@ -298,6 +298,7 @@ HEADERS +=  \
 	../../../DocFile/OfficeDrawing/ShapeContainer.h \
 	../../../DocFile/OfficeDrawing/ShapeOptions.h \
 	../../../DocFile/OfficeDrawing/ShapeType.h \
+	../../../DocFile/OfficeDrawing/PresetShapeTypes.h \
 	../../../DocFile/OfficeDrawing/ShapeTypeFactory.h \
 	../../../DocFile/OfficeDrawing/SplitMenuColorContainer.h \
 	../../../DocFile/OfficeDrawing/UnknownRecord.h

@@ -30,17 +30,42 @@
  *
  */
 
-#include "FlowChartDecisionType.h"
+#pragma once
 
-// 110
-CFlowChartDecisionType::CFlowChartDecisionType()
-{
-	m_bConcentricFill = true;
-
-	m_eJoin = ODRAW::lineJoinMiter;
-
-	m_strPath = _T("m10800,l,10800,10800,21600,21600,10800xe");
-
-	LoadConnectorsList(_T("Rectangle"));
-	LoadTextRect(_T("5400,5400,16200,16200"));
-}
+#include "Shapetypes/PictureFrameType.h"
+#include "Shapetypes/LineType.h"
+#include "Shapetypes/OvalType.h"
+#include "Shapetypes/RectangleType.h"
+#include "Shapetypes/RoundedRectangleType.h"
+#include "Shapetypes/TextboxType.h"
+#include "Shapetypes/DiamondType.h"
+#include "Shapetypes/IsoscelesTriangleType.h"
+#include "Shapetypes/RightTriangleType.h"
+#include "Shapetypes/ParallelogramType.h"
+#include "Shapetypes/TrapezoidType.h"
+#include "Shapetypes/HexagonType.h"
+#include "Shapetypes/OctagonType.h"
+#include "Shapetypes/PlusType.h"
+#include "Shapetypes/StarType.h"
+#include "Shapetypes/CubeType.h"
+#include "Shapetypes/ArcType.h"
+#include "Shapetypes/ActionButton.h"
+#include "Shapetypes/PlaqueType.h"
+#include "Shapetypes/CanType.h"
+#include "Shapetypes/DonutType.h"
+#include "Shapetypes/BevelType.h"
+#include "Shapetypes/PentagonType.h"
+#include "Shapetypes/FoldedCornerlType.h"
+#include "Shapetypes/SmileyFaceType.h"
+#include "Shapetypes/NoSmokingType.h"
+#include "Shapetypes/BlockArcType.h"
+#include "Shapetypes/HeartType.h"
+#include "Shapetypes/LightningBoltType.h"
+#include "Shapetypes/SunType.h"
+#include "Shapetypes/MoonType.h"
+#include "Shapetypes/ArrowType.h"
+#include "Shapetypes/FlowChartType.h"
+#include "Shapetypes/BracketsType.h"
+#include "Shapetypes/CalloutsType.h"
+#include "Shapetypes/Connector.h"
+#include "Shapetypes/WordArtText.h"

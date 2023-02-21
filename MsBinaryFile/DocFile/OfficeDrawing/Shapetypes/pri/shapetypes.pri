@@ -3,6 +3,7 @@ SHAPETYPES_DIR = $$PWD/..
 
 HEADERS += \
 	$$SHAPETYPES_DIR/ArcType.h \
+	$$SHAPETYPES_DIR/ActionButton.h \
 	$$SHAPETYPES_DIR/ArrowType.h \
 	$$SHAPETYPES_DIR/BevelType.h \
 	$$SHAPETYPES_DIR/BlockArcType.h \

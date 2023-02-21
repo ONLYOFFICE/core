@@ -39,6 +39,7 @@
 #include "../../DocxFormat/External/HyperLink.h"
 #include "../../DocxFormat/Media/Image.h"
 #include "../../DocxFormat/VmlDrawing.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../XlsbFormat/Xlsb.h"
 

@@ -31,6 +31,15 @@
  */
 
 #include "SlideMaster.h"
+#include "TableStyles.h"
+
+#include "Logic/Shape.h"
+#include "Logic/Transitions/Transition.h"
+#include "Logic/Timing/Timing.h"
+#include "Logic/Hf.h"
+#include "Logic/TxStyles.h"
+
+#include "../DocxFormat/VmlDrawing.h"
 
 namespace PPTX
 {

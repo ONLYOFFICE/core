@@ -32,17 +32,13 @@
 #ifndef ASC_OFFICE_DRAWING_CONVERTER
 #define ASC_OFFICE_DRAWING_CONVERTER
 
-#include "../../../DesktopEditor/common/ASCVariant.h"
-
-#include "../../Base/Base.h"
 #include "../../Base/Nullable.h"
 
-#include "../../../MsBinaryFile/Common/Vml/PPTShape/PptShapeEnum.h"
+#include "../../../DesktopEditor/graphics/config.h"
+#include "../../../DesktopEditor/common/ASCVariant.h"
 
 #include <vector>
 #include <map>
-
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 class IRenderer;
 class COfficeFontPicker;
@@ -51,6 +47,11 @@ class CShape;
 typedef boost::shared_ptr<CShape> CShapePtr;
 
 class CPPTShape;
+
+namespace NSFonts
+{
+	class GRAPHICS_DECL IFontManager;
+}
 
 namespace XmlUtils
 {

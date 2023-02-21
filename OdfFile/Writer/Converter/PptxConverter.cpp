@@ -35,14 +35,25 @@
 #include "../../../OOXML/PPTXFormat/Folder.h"
 #include "../../../OOXML/PPTXFormat/Presentation.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"
+#include "../../../OOXML/PPTXFormat/SlideMaster.h"
+#include "../../../OOXML/PPTXFormat/SlideLayout.h"
 #include "../../../OOXML/PPTXFormat/NotesMaster.h"
+#include "../../../OOXML/PPTXFormat/NotesSlide.h"
+#include "../../../OOXML/PPTXFormat/TableStyles.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Table/Table.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Par.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/Seq.h"
 #include "../../../OOXML/PPTXFormat/Logic/Timing/CTn.h"
+#include "../../../OOXML/PPTXFormat/Logic/Timing/Timing.h"
 
+#include "../../../OOXML/PPTXFormat/Logic/TcBdr.h"
+#include "../../../OOXML/PPTXFormat/Logic/TablePartStyle.h"
 #include "../../../OOXML/PPTXFormat/Logic/CxnSp.h"
+#include "../../../OOXML/PPTXFormat/Logic/Shape.h"
+#include "../../../OOXML/PPTXFormat/Logic/TxStyles.h"
+#include "../../../OOXML/PPTXFormat/Logic/ClrMapOvr.h"
+#include "../../../OOXML/PPTXFormat/Logic/Transitions/Transition.h"
 
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/EmptyTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/OrientationTransition.h"
@@ -53,6 +64,9 @@
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/WheelTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/ZoomTransition.h"
+
+#include "../../../OOXML/PPTXFormat/Presentation/SldSz.h"
+#include "../../../OOXML/PPTXFormat/Presentation/NotesSz.h"
 
 #include "../Format/odp_conversion_context.h"
 

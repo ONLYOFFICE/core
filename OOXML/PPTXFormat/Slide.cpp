@@ -32,6 +32,19 @@
 
 #include "Slide.h"
 
+#include "Logic/ClrMapOvr.h"
+#include "Logic/CSld.h"
+#include "Logic/Transitions/Transition.h"
+#include "Logic/Timing/Timing.h"
+
+#include "Theme.h"
+#include "SlideMaster.h"
+#include "SlideLayout.h"
+#include "NotesSlide.h"
+#include "TableStyles.h"
+
+#include "../DocxFormat/VmlDrawing.h"
+
 namespace PPTX
 {
 	Slide::Slide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)

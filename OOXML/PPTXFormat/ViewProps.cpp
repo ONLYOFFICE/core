@@ -32,6 +32,14 @@
 
 #include "ViewProps.h"
 
+#include "ViewProps/GridSpacing.h"
+#include "ViewProps/NormalViewPr.h"
+#include "ViewProps/NotesTextViewPr.h"
+#include "ViewProps/NotesViewPr.h"
+#include "ViewProps/OutlineViewPr.h"
+#include "ViewProps/SlideViewPr.h"
+#include "ViewProps/SorterViewPr.h"
+
 namespace PPTX
 {
 	ViewProps::ViewProps(OOX::Document* pMain) : WrapperFile(pMain), PPTX::FileContainer(pMain)

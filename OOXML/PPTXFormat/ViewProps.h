@@ -36,16 +36,20 @@
 #include "FileTypes.h"
 
 #include "Limit/LastView.h"
-#include "ViewProps/GridSpacing.h"
-#include "ViewProps/NormalViewPr.h"
-#include "ViewProps/NotesTextViewPr.h"
-#include "ViewProps/NotesViewPr.h"
-#include "ViewProps/OutlineViewPr.h"
-#include "ViewProps/SlideViewPr.h"
-#include "ViewProps/SorterViewPr.h"
 
 namespace PPTX
 {
+	namespace nsViewProps
+	{
+		class GridSpacing;
+		class NormalViewPr;
+		class NotesTextViewPr;
+		class NotesViewPr;
+		class OutlineViewPr;
+		class SlideViewPr;
+		class SorterViewPr;
+	}
+
 	class ViewProps : public WrapperFile, public PPTX::FileContainer
 	{
 	public:

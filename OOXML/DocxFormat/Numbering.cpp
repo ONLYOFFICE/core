@@ -34,6 +34,8 @@
 #include "Docx.h"
 #include "../../DesktopEditor/common/File.h"
 
+#include "Logic/SectionProperty.h"
+
 namespace ComplexTypes
 {
 	namespace Word

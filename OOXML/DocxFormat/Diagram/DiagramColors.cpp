@@ -32,6 +32,9 @@
 #pragma once
 
 #include "DiagramColors.h"
+#include "../../Common/SimpleTypes_Drawing.h"
+
+#include "../Drawing/DrawingExt.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX

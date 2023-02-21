@@ -31,6 +31,7 @@
  */
 
 #include "ExternalLinkPath.h"
+#include "../../DocxFormat/FileTypes.h"
 
 namespace OOX
 {

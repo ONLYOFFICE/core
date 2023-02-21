@@ -32,6 +32,8 @@
 
 #include "RunContent.h"
 
+#include "../../PPTXFormat/Logic/Xfrm.h"
+
 namespace OOX
 {
 	namespace Logic

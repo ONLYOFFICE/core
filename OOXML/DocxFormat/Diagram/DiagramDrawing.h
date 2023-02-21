@@ -33,7 +33,15 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../PPTXFormat/Logic/SpTree.h"
+#include "../IFileContainer.h"
+
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SpTree;
+	}
+}
 
 namespace OOX
 {

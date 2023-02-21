@@ -45,6 +45,11 @@ static double FixedPointToDouble(unsigned int op)
 	return Integral + (Fractional / 65536.0);
 }
 
+namespace DocFileFormat
+{
+	class ShapeType;
+}
+
 namespace ODRAW
 {
 	struct _textPath 
@@ -166,8 +171,9 @@ public:
 	virtual std::wstring ToXML(CGeomShapeInfo& GeomInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen);
 	virtual void ReCalculate();
 
+	static CPPTShape* CreateByShapeType(DocFileFormat::ShapeType* pShapeType);
 	static CBaseShapePtr CreateByType(PPTShapes::ShapeType type);
-	virtual const ClassType GetClassType()const;
+	virtual const ClassType GetClassType() const;
 
 	virtual bool SetProperties(CBaseShape* Shape);
 	virtual bool SetToDublicate(CBaseShape* Shape);

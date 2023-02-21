@@ -36,6 +36,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../XlsbFormat/Biff12_records/Fill.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {

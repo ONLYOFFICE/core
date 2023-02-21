@@ -33,27 +33,29 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
-
-#include "Logic/ClrMapOvr.h"
-#include "Logic/CSld.h"
-#include "Logic/Transitions/Transition.h"
-#include "Logic/Timing/Timing.h"
-
-#include "Logic/Bg.h"
-
-#include "Theme.h"
-#include "SlideMaster.h"
-#include "SlideLayout.h"
-#include "NotesSlide.h"
-#include "TableStyles.h"
-
-#include "../DocxFormat/External/HyperLink.h"
-#include "../DocxFormat/VmlDrawing.h"
-
 #include "Comments.h"
+
+namespace OOX
+{
+	class CVmlDrawing;
+}
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class ClrMapOvr;
+		class CSld;
+		class Transition;
+		class Timing;
+	}
+
+	class SlideLayout;
+	class SlideMaster;
+	class NotesSlide;
+	class Theme;
+	class TableStyles;
+
 	class Slide : public WrapperFile, public FileContainer
 	{
 	public:

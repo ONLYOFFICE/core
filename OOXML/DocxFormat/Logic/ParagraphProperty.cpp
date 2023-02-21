@@ -29,8 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "../Document.h"
+
 #include "ParagraphProperty.h"
+
+#include "RunProperty.h"
+#include "SectionProperty.h"
+
+#include "../Document.h"
+#include "../../Common/SimpleTypes_Word.h"
 
 namespace OOX
 {

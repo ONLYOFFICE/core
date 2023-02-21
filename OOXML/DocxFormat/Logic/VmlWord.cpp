@@ -31,6 +31,7 @@
  */
 
 #include "VmlWord.h"
+#include "../../Common/SimpleTypes_Vml.h"
 
 namespace OOX
 {

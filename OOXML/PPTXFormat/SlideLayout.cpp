@@ -32,6 +32,17 @@
 
 #include "SlideLayout.h"
 
+#include "Logic/ClrMapOvr.h"
+#include "Logic/Transitions/Transition.h"
+#include "Logic/Timing/Timing.h"
+#include "Logic/Hf.h"
+#include "Logic/Shape.h"
+
+#include "Theme.h"
+#include "SlideMaster.h"
+#include "TableStyles.h"
+#include "../DocxFormat/VmlDrawing.h"
+
 namespace PPTX
 {
 	SlideLayout::SlideLayout(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)

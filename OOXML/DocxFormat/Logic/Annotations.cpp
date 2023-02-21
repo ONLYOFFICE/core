@@ -42,6 +42,8 @@
 #include "../Math/oMathPara.h"
 #include "../Math/OMath.h"
 
+#include "../../Common/SimpleTypes_Word.h"
+
 // TO DO: Нехватающие классы:
 //        <w:customXml>
 //        <w:subDoc>

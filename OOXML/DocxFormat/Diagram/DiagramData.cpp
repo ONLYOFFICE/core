@@ -32,6 +32,13 @@
 #pragma once
 
 #include "DiagramData.h"
+
+#include "../../Common/SimpleTypes_Drawing.h"
+#include "../../Common/SimpleTypes_Shared.h"
+
+#include "../Drawing/DrawingExt.h"
+#include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
+
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX

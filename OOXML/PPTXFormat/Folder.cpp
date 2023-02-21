@@ -42,6 +42,7 @@
 #include "SlideLayout.h"
 #include "Slide.h"
 #include "NotesMaster.h"
+#include "NotesSlide.h"
 
 #include <map>
 

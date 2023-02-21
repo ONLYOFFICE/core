@@ -30,10 +30,15 @@
  *
  */
 #include "Controls.h"
+
 #include "../DrawingConverter/ASCOfficeDrawingConverter.h"
 #include "../../DocxFormat/Media/ActiveX.h"
+#include "../../DocxFormat/VmlDrawing.h"
+#include "../../../DesktopEditor/common/Directory.h"
 
 #include "../Slide.h"
+#include "../SlideLayout.h"
+#include "../SlideMaster.h"
 
 namespace PPTX
 {

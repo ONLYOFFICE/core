@@ -36,6 +36,9 @@
 #include "Pict.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
+#include "Vml.h"
+#include "VmlOfficeDrawing.h"
+
 namespace OOX
 {
 	namespace Logic

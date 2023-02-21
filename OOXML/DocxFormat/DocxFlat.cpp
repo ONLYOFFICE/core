@@ -44,6 +44,7 @@
 #include "Footnote.h"
 #include "Endnote.h"
 #include "Settings/Settings.h"
+#include "Logic/SectionProperty.h"
 
 namespace OOX
 {

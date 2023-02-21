@@ -78,6 +78,7 @@
 #include "../../../DocxFormat/App.h"
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
+#include "../../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../../XlsxFormat/Comments/ThreadedComments.h"
 #include "../../../XlsxFormat/Slicer/SlicerCache.h"

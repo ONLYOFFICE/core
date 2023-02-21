@@ -437,7 +437,7 @@ namespace NSCustomVML
             param_value	= ShapeSizeVML;
         }    
 
-		CCustomVML::CCustomVML() : m_pAdjustValues(NULL)
+		CCustomVML::CCustomVML() : m_arVertices(), m_arSegments(), m_arGuides(), m_pAdjustValues(NULL)
         {
             m_ePath = ODRAW::rtCurveTo/*rtLineTo*/;
 
@@ -476,13 +476,202 @@ namespace NSCustomVML
         }
 		bool CCustomVML::IsCustom()
         {
-            return (m_bIsVerticesPresent && m_bIsPathPresent);
+			//return (m_bIsVerticesPresent && m_bIsPathPresent);
+			return (m_bIsVerticesPresent && !m_arVertices.empty() && (m_bIsPathPresent || !m_arSegments.empty()));
         }
 		void CCustomVML::SetPath(ODRAW::RulesType ePath)
         {
             m_ePath = ePath;
             m_bIsPathPresent = true;
         }
+		void CCustomVML::LoadAHs(CProperty* pProperty)
+		{
+		}
+		void CCustomVML::addSegment(ODRAW::RulesType eRuler, _UINT16	nCount)
+		{
+			CSegment oInfo(eRuler, nCount);
+			m_arSegments.push_back(oInfo);
+		}
+		void CCustomVML::addGuide(CGuide & oInfo)
+		{
+			m_arGuides.push_back(oInfo);
+		}
+		void CCustomVML::addAdjust(int lIndex, int lValue)
+		{
+			if (NULL == m_pAdjustValues)
+				return;
+
+			int lCount = m_pAdjustValues->size();
+
+			while (lCount <= lIndex)
+			{
+				m_pAdjustValues->push_back(0);
+				lCount = m_pAdjustValues->size();
+			}
+
+			(*m_pAdjustValues)[lIndex] = lValue;
+		}
+		void CCustomVML::SetAdjusts(std::vector<LONG>* pList)
+		{
+			m_pAdjustValues = pList;
+		}
+		void CCustomVML::ToCustomShape(ODRAW::CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager)
+		{
+			if ((NULL == pShape) || (!IsCustom()))
+				return;
+
+			oManager.Clear();
+			// сначала заполним формулы
+			for (size_t nIndex = 0; nIndex < m_arGuides.size(); ++nIndex)
+			{
+				NSGuidesVML::CFormula oF;
+				m_arGuides[nIndex].SetToFormula(oF);
+				oManager.AddFormula(oF);
+			}
+
+			oManager.Clear(m_pAdjustValues);
+
+			std::wstring strPath = _T("");
+
+			bool bBreak = false;
+
+			long lMinF = (_INT32)0x80000000;
+			long lMaxF = (_INT32)0x8000007F;
+
+			int nGuideIndex_x , nGuideIndex_y;
+
+			if (0 == m_arSegments.size())
+			{
+				strPath = GetRulerVML(m_ePath);
+
+				for (size_t nIndex = 0; nIndex < m_arVertices.size(); ++nIndex)
+				{
+					nGuideIndex_x = nGuideIndex_y = -1;
+
+					if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (_UINT32)m_arVertices[nIndex].x - (_UINT32)lMinF;
+					if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (_UINT32)m_arVertices[nIndex].y - (_UINT32)lMinF;
+
+					if (nGuideIndex_x >= 0 && nGuideIndex_x < (int)m_arGuides.size())
+					{
+						strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
+					}
+					else
+					{
+						strPath += std::to_wstring(m_arVertices[nIndex].x) + L",";
+					}
+					if (nGuideIndex_y >= 0 && nGuideIndex_y < (int)m_arGuides.size())
+					{
+						strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
+					}
+					else
+					{
+						strPath += std::to_wstring(m_arVertices[nIndex].y) + L",";
+					}
+
+				}
+				strPath.erase(strPath.length() - 1);
+			}
+			else
+			{
+				size_t nStart	= 0;
+				size_t nEnd		= 0;
+				for (size_t nS = 0; nS < m_arSegments.size(); ++nS)
+				{
+					if (bBreak)
+					{
+						if ((ODRAW::rtEnd		!= m_arSegments[nS].m_eRuler) &&
+								(ODRAW::rtNoFill	!= m_arSegments[nS].m_eRuler) &&
+								(ODRAW::rtNoStroke != m_arSegments[nS].m_eRuler) &&
+								(ODRAW::rtClose	!= m_arSegments[nS].m_eRuler))
+						{
+							strPath += _T("e");
+							break;
+						}
+					}
+
+					if ((ODRAW::rtFillColor == m_arSegments[nS].m_eRuler) || (ODRAW::rtLineColor == m_arSegments[nS].m_eRuler))
+					{
+						if (nStart <  m_arVertices.size())
+						{
+							if (ODRAW::rtFillColor == m_arSegments[nS].m_eRuler)
+							{
+								m_oBrush.Color1 = (_UINT32)m_arVertices[nStart].x;
+								m_oBrush.Color2 = (_UINT32)m_arVertices[nStart].y;
+							}
+							else
+							{
+								m_oPen.Color	= (_UINT32)m_arVertices[nStart].x;
+							}
+						}
+						nEnd = nStart + m_arSegments[nS].m_nCount;
+						if (nEnd > m_arVertices.size())
+							nEnd = m_arVertices.size();
+						nStart = nEnd;
+
+						if (nEnd == m_arVertices.size())
+						{
+							bBreak = true;
+						}
+						continue;
+					}
+
+					strPath += GetRulerVML(m_arSegments[nS].m_eRuler);
+
+					nEnd = nStart + m_arSegments[nS].m_nCount;
+					if (nEnd > m_arVertices.size())
+						nEnd = m_arVertices.size();
+
+					for (size_t nV = nStart; nV < nEnd; ++nV)
+					{
+						nGuideIndex_x = nGuideIndex_y = -1;
+
+						if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (_UINT32)m_arVertices[nV].x - (_UINT32)lMinF;
+						if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (_UINT32)m_arVertices[nV].y - (_UINT32)lMinF;
+
+						std::wstring str = _T("");
+						if (nGuideIndex_x >= 0 && nGuideIndex_x < (int)m_arGuides.size())
+						{
+							strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
+						}
+						else
+						{
+							strPath += std::to_wstring(m_arVertices[nV].x) + L",";
+						}
+						if (nGuideIndex_y >= 0 && nGuideIndex_y < (int)m_arGuides.size())
+						{
+							strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
+						}
+						else
+						{
+							strPath += std::to_wstring(m_arVertices[nV].y) + L",";
+						}
+					}
+
+					if (nEnd != nStart)
+					{
+						strPath.erase(strPath.length() - 1);
+					}
+					nStart = nEnd;
+
+					if (nEnd == m_arVertices.size())
+					{
+						bBreak = true;
+					}
+				}
+			}
+
+			oManager.CalculateResults();
+
+			pShape->LoadPathList(strPath);
+
+			/*std::wstring str = _T("<w:pict xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\
+				  <v:shape id=\"Cloud 1\" o:spid=\"_x0000_s1026\" style=\"position:absolute;margin-left:-17.3pt;margin-top:158.4pt;width:466.95pt;height:335.65pt;z-index:251659264;visibility:visible;mso-wrap-style:square;mso-wrap-distance-left:9pt;mso-wrap-distance-top:0;mso-wrap-distance-right:9pt;mso-wrap-distance-bottom:0;mso-position-horizontal:absolute;mso-position-horizontal-relative:text;mso-position-vertical:absolute;mso-position-vertical-relative:text;v-text-anchor:middle\" coordsize=\"43200,43200\" path=\"m3900,14370c3629,11657,4261,8921,5623,6907,7775,3726,11264,3017,14005,5202,15678,909,19914,22,22456,3432,23097,1683,24328,474,25749,200v1564,-302,3126,570,4084,2281c31215,267,33501,-460,35463,690v1495,876,2567,2710,2855,4886c40046,6218,41422,7998,41982,10318v407,1684,349,3513,-164,5142c43079,17694,43520,20590,43016,23322v-670,3632,-2888,6352,-5612,6882c37391,32471,36658,34621,35395,36101v-1919,2249,-4691,2538,-6840,714c27860,39948,25999,42343,23667,43106v-2748,899,-5616,-633,-7187,-3840c12772,42310,7956,40599,5804,35472,3690,35809,1705,34024,1110,31250,679,29243,1060,27077,2113,25551,619,24354,-213,22057,-5,19704,239,16949,1845,14791,3863,14507v12,-46,25,-91,37,-137xem4693,26177nfc3809,26271,2925,25993,2160,25380t4768,9519nfc6573,35092,6200,35220,5820,35280t10658,3810nfc16211,38544,15987,37961,15810,37350m28827,34751nfc28788,35398,28698,36038,28560,36660m34129,22954nfc36133,24282,37398,27058,37380,30090m41798,15354nfc41473,16386,40978,17302,40350,18030m38324,5426nfc38379,5843,38405,6266,38400,6690m29078,3952nfc29267,3369,29516,2826,29820,2340m22141,4720nfc22218,4238,22339,3771,22500,3330m14000,5192nfc14472,5568,14908,6021,15300,6540m4127,15789nfc4024,15325,3948,14851,3900,14370e\" fillcolor=\"#4f81bd\" strokecolor=\"#385d8a\" strokeweight=\"2pt\">\
+					<v:path arrowok=\"t\" o:connecttype=\"custom\" o:connectlocs=\"644218,2582990;296508,2504347;951021,3443625;798923,3481220;2261969,3857168;2170271,3685475;3957142,3429021;3920490,3617390;4684958,2264964;5131230,2969101;5737698,1515041;5538928,1779093;5260814,535405;5271247,660129;3991597,389960;4093453,230897;3039341,465741;3088621,328585;1921809,512316;2100263,645328;566522,1557964;535361,1417946\" o:connectangles=\"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0\"/>\
+				  </v:shape>\
+				</w:pict>");*/
+
+			//pShape->LoadFromXML(str);
+		}
 		void CCustomVML::LoadVertices(std::vector<std::pair<int,int>> values)
         {
             if (!values.empty())
@@ -621,9 +810,6 @@ namespace NSCustomVML
                 m_arVertices.push_back(oPoint);
             }
         }
-		void CCustomVML::LoadAHs(CProperty* pProperty)
-        {
-        }
 		void CCustomVML::LoadSegments(std::vector<int> values)
         {
             m_arSegments.clear();
@@ -742,166 +928,5 @@ namespace NSCustomVML
             }
 
             (*m_pAdjustValues)[lIndex] = lValue;
-        }
-		void CCustomVML::SetAdjusts(std::vector<LONG>* pList)
-        {
-            m_pAdjustValues = pList;
-        }
-		void CCustomVML::ToCustomShape(ODRAW::CBaseShape* pShape, NSGuidesVML::CFormulasManager& oManager)
-        {
-            if ((NULL == pShape) || (!IsCustom()))
-                return;
-
-            oManager.Clear();
-            // сначала заполним формулы
-            for (size_t nIndex = 0; nIndex < m_arGuides.size(); ++nIndex)
-            {
-                NSGuidesVML::CFormula oF;
-                m_arGuides[nIndex].SetToFormula(oF);
-                oManager.AddFormula(oF);
-            }
-
-            oManager.Clear(m_pAdjustValues);
-
-            std::wstring strPath = _T("");
-
-            bool bBreak = false;
-
-            long lMinF = (_INT32)0x80000000;
-            long lMaxF = (_INT32)0x8000007F;
-
-            int nGuideIndex_x , nGuideIndex_y;
-
-            if (0 == m_arSegments.size())
-            {
-                strPath = GetRulerVML(m_ePath);
-
-                for (size_t nIndex = 0; nIndex < m_arVertices.size(); ++nIndex)
-                {
-                    nGuideIndex_x = nGuideIndex_y = -1;
-
-                    if (lMaxF > m_arVertices[nIndex].x )	nGuideIndex_x = (_UINT32)m_arVertices[nIndex].x - (_UINT32)lMinF;
-                    if (lMaxF > m_arVertices[nIndex].y )	nGuideIndex_y = (_UINT32)m_arVertices[nIndex].y - (_UINT32)lMinF;
-
-                    if (nGuideIndex_x >= 0 )
-                    {
-                        strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
-                    }
-                    else
-                    {
-                        strPath += std::to_wstring(m_arVertices[nIndex].x) + L",";
-                    }
-                    if (nGuideIndex_y >= 0)
-                    {
-                        strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
-                    }
-                    else
-                    {
-                        strPath += std::to_wstring(m_arVertices[nIndex].y) + L",";
-                    }
-
-                }
-                strPath.erase(strPath.length() - 1);
-            }
-            else
-            {
-                size_t nStart	= 0;
-                size_t nEnd		= 0;
-                for (size_t nS = 0; nS < m_arSegments.size(); ++nS)
-                {
-                    if (bBreak)
-                    {
-                        if ((ODRAW::rtEnd		!= m_arSegments[nS].m_eRuler) &&
-                                (ODRAW::rtNoFill	!= m_arSegments[nS].m_eRuler) &&
-                                (ODRAW::rtNoStroke != m_arSegments[nS].m_eRuler) &&
-                                (ODRAW::rtClose	!= m_arSegments[nS].m_eRuler))
-                        {
-                            strPath += _T("e");
-                            break;
-                        }
-                    }
-
-                    if ((ODRAW::rtFillColor == m_arSegments[nS].m_eRuler) || (ODRAW::rtLineColor == m_arSegments[nS].m_eRuler))
-                    {
-                        if (nStart <  m_arVertices.size())
-                        {
-                            if (ODRAW::rtFillColor == m_arSegments[nS].m_eRuler)
-                            {
-                                m_oBrush.Color1 = (_UINT32)m_arVertices[nStart].x;
-                                m_oBrush.Color2 = (_UINT32)m_arVertices[nStart].y;
-                            }
-                            else
-                            {
-                                m_oPen.Color	= (_UINT32)m_arVertices[nStart].x;
-                            }
-                        }
-                        nEnd = nStart + m_arSegments[nS].m_nCount;
-                        if (nEnd > m_arVertices.size())
-                            nEnd = m_arVertices.size();
-                        nStart = nEnd;
-
-                        if (nEnd == m_arVertices.size())
-                        {
-                            bBreak = true;
-                        }
-                        continue;
-                    }
-
-                    strPath += GetRulerVML(m_arSegments[nS].m_eRuler);
-
-                    nEnd = nStart + m_arSegments[nS].m_nCount;
-                    if (nEnd > m_arVertices.size())
-                        nEnd = m_arVertices.size();
-
-                    for (size_t nV = nStart; nV < nEnd; ++nV)
-                    {
-                        nGuideIndex_x = nGuideIndex_y = -1;
-
-                        if (lMaxF > m_arVertices[nV].x )	nGuideIndex_x = (_UINT32)m_arVertices[nV].x - (_UINT32)lMinF;
-                        if (lMaxF > m_arVertices[nV].y )	nGuideIndex_y = (_UINT32)m_arVertices[nV].y - (_UINT32)lMinF;
-
-                        std::wstring str = _T("");
-                        if (nGuideIndex_x >= 0 && nGuideIndex_x < (int)m_arGuides.size())
-                        {
-                            strPath += std::to_wstring(m_arGuides[nGuideIndex_x].m_param_value1) + L",";
-                        }
-                        else
-                        {
-                            strPath += std::to_wstring(m_arVertices[nV].x) + L",";
-                        }
-                        if (nGuideIndex_y >= 0 && nGuideIndex_y < (int)m_arGuides.size())
-                        {
-                            strPath += std::to_wstring(m_arGuides[nGuideIndex_y].m_param_value1) + L",";
-                        }
-                        else
-                        {
-                            strPath += std::to_wstring(m_arVertices[nV].y) + L",";
-                        }
-                    }
-
-                    if (nEnd != nStart)
-                    {
-                        strPath.erase(strPath.length() - 1);
-                    }
-                    nStart = nEnd;
-
-                    if (nEnd == m_arVertices.size())
-                    {
-                        bBreak = true;
-                    }
-                }
-            }
-
-            oManager.CalculateResults();
-
-            pShape->LoadPathList(strPath);
-
-            /*std::wstring str = _T("<w:pict xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:o=\"urn:schemas-microsoft-com:office:office\">\
-                  <v:shape id=\"Cloud 1\" o:spid=\"_x0000_s1026\" style=\"position:absolute;margin-left:-17.3pt;margin-top:158.4pt;width:466.95pt;height:335.65pt;z-index:251659264;visibility:visible;mso-wrap-style:square;mso-wrap-distance-left:9pt;mso-wrap-distance-top:0;mso-wrap-distance-right:9pt;mso-wrap-distance-bottom:0;mso-position-horizontal:absolute;mso-position-horizontal-relative:text;mso-position-vertical:absolute;mso-position-vertical-relative:text;v-text-anchor:middle\" coordsize=\"43200,43200\" path=\"m3900,14370c3629,11657,4261,8921,5623,6907,7775,3726,11264,3017,14005,5202,15678,909,19914,22,22456,3432,23097,1683,24328,474,25749,200v1564,-302,3126,570,4084,2281c31215,267,33501,-460,35463,690v1495,876,2567,2710,2855,4886c40046,6218,41422,7998,41982,10318v407,1684,349,3513,-164,5142c43079,17694,43520,20590,43016,23322v-670,3632,-2888,6352,-5612,6882c37391,32471,36658,34621,35395,36101v-1919,2249,-4691,2538,-6840,714c27860,39948,25999,42343,23667,43106v-2748,899,-5616,-633,-7187,-3840c12772,42310,7956,40599,5804,35472,3690,35809,1705,34024,1110,31250,679,29243,1060,27077,2113,25551,619,24354,-213,22057,-5,19704,239,16949,1845,14791,3863,14507v12,-46,25,-91,37,-137xem4693,26177nfc3809,26271,2925,25993,2160,25380t4768,9519nfc6573,35092,6200,35220,5820,35280t10658,3810nfc16211,38544,15987,37961,15810,37350m28827,34751nfc28788,35398,28698,36038,28560,36660m34129,22954nfc36133,24282,37398,27058,37380,30090m41798,15354nfc41473,16386,40978,17302,40350,18030m38324,5426nfc38379,5843,38405,6266,38400,6690m29078,3952nfc29267,3369,29516,2826,29820,2340m22141,4720nfc22218,4238,22339,3771,22500,3330m14000,5192nfc14472,5568,14908,6021,15300,6540m4127,15789nfc4024,15325,3948,14851,3900,14370e\" fillcolor=\"#4f81bd\" strokecolor=\"#385d8a\" strokeweight=\"2pt\">\
-                    <v:path arrowok=\"t\" o:connecttype=\"custom\" o:connectlocs=\"644218,2582990;296508,2504347;951021,3443625;798923,3481220;2261969,3857168;2170271,3685475;3957142,3429021;3920490,3617390;4684958,2264964;5131230,2969101;5737698,1515041;5538928,1779093;5260814,535405;5271247,660129;3991597,389960;4093453,230897;3039341,465741;3088621,328585;1921809,512316;2100263,645328;566522,1557964;535361,1417946\" o:connectangles=\"0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0\"/>\
-                  </v:shape>\
-                </w:pict>");*/
-
-            //pShape->LoadFromXML(str);
-        }    
+        }		    
 }

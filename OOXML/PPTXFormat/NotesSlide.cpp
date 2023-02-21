@@ -32,6 +32,9 @@
 
 #include "NotesSlide.h"
 
+#include "NotesMaster.h"
+#include "Logic/ClrMapOvr.h"
+
 namespace PPTX
 {
 	NotesSlide::NotesSlide(OOX::Document* pMain) : WrapperFile(pMain), FileContainer(pMain)

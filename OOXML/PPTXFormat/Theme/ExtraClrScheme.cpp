@@ -32,6 +32,7 @@
 #pragma once
 
 #include "ExtraClrScheme.h"
+#include "./../Logic/ClrMap.h"
 
 namespace PPTX
 {

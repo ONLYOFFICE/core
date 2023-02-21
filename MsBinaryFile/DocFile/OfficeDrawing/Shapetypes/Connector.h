@@ -35,6 +35,32 @@
 
 namespace DocFileFormat
 {
+	class StraightConnector: public ShapeType
+	{
+	public:
+		StraightConnector() : ShapeType(msosptStraightConnector1)
+		{
+			Path				=	L"m,l21600,21600e";
+			ConnectorLocations	=	L"0,0;21600,21600";
+		}
+	};
+
+	class BentConnector: public ShapeType
+	{
+	public:
+		BentConnector() : ShapeType(msosptBentConnector2)
+		{
+			ShapeConcentricFill =	true;
+			Joins				=	round;
+			Path				=	L"m,l@0,0@0,21600,21600,21600e";
+
+			Formulas.push_back(L"val #0");
+
+			AdjustmentValues	=	L"10800";
+			ConnectorLocations	=	L"0,0;21600,21600";
+		}
+	};
+
 	class BentConnector2: public ShapeType
 	{
 	public:
@@ -109,7 +135,24 @@ namespace DocFileFormat
 		}
 	};
 
-	
+	class CurvedConnector: public ShapeType
+	{
+	public:
+		CurvedConnector() : ShapeType(msosptCurvedConnector2)
+		{
+			ShapeConcentricFill =	true;
+			Joins				=	round;
+			Path				=	L"m,c@0,0@1,5400@1,10800@1,16200@2,21600,21600,21600e";
+
+			Formulas.push_back(L"mid #0 0");
+			Formulas.push_back(L"val #0");
+			Formulas.push_back(L"mid #0 21600");
+
+			AdjustmentValues	=	L"10800";
+			ConnectorLocations	=	L"0,0;21600,21600";
+		}
+	};
+
 	class CurvedConnector2: public ShapeType
 	{
 	public:

@@ -35,10 +35,14 @@
 
 #include "../../Common/utils.h"
 
+#include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
+#include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"
+#include "../../../OOXML/PPTXFormat/SlideMaster.h"
 #include "../../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
 #include "../../../OOXML/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../OOXML/PPTXFormat/Logic/Shape.h"

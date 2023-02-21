@@ -33,7 +33,7 @@
 #pragma once
 
 #include "ChartSerialize.h"
-#include "../../Common/SimpleTypes_Enums.h"
+#include "../../Common/SimpleTypes_Spreadsheet.h"
 
 namespace SimpleTypes
 {

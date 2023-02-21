@@ -31,6 +31,7 @@
  */
 
 #include "OOXColorReader.h"
+#include "../../../OOXML/PPTXFormat/Logic/Colors/SchemeClr.h"
 
 OOXColorReader::OOXColorReader()
 {

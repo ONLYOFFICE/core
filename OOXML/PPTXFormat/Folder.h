@@ -32,7 +32,6 @@
 #pragma once
 
 #include "FileContainer.h"
-#include "../DocxFormat/RId.h"
 
 namespace PPTX
 {

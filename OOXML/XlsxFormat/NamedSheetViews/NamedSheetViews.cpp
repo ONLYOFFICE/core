@@ -37,6 +37,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../Styles/Colors.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 
 namespace OOX
 {

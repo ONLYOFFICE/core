@@ -52,9 +52,12 @@
 #include "../../XlsbFormat/Biff12_records/BeginSlicerCacheSiRange.h"
 #include "../../XlsbFormat/Biff12_records/SlicerCacheOlapItem.h"
 
+#include "../../DocxFormat/Drawing/DrawingExt.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
-#include "../../DocxFormat/Drawing/DrawingExt.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
 
 namespace OOX
 {

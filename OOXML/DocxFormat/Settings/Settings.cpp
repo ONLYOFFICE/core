@@ -34,6 +34,8 @@
 #include "../Endnote.h"
 #include "../Footnote.h"
 #include "../Math/oMathContent.h"
+#include "../Logic/Vml.h"
+#include "../Logic/VmlOfficeDrawing.h"
 
 namespace OOX
 {

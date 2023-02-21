@@ -35,19 +35,32 @@
 
 namespace DocFileFormat
 {
-  class OvalType: public ShapeType
-  {
-    public:
-	  OvalType():
-      ShapeType(msosptEllipse)
-      {
-        this->ShapeConcentricFill = true;
+	/*class OvalType: public ShapeType
+	{
+	public:
+		OvalType():
+			ShapeType(msosptEllipse)
+		{
+			this->ShapeConcentricFill = true;
 
-        this->Joins = round;
-      }
+			this->Joins = round;
+		}
 
-	  virtual ~OvalType()
-	  {
-	  }
-  };
+		virtual ~OvalType()
+		{
+		}
+	};*/
+
+	class OvalType: public ShapeType
+	{
+	public:
+		OvalType():
+			ShapeType(msosptEllipse)
+		{
+			ShapeConcentricFill	=	true;
+			Joins				=	miter;
+			Path				=	(L"m,10800qy10800,,21600,10800,10800,21600,,10800xe");
+			TextBoxRectangle	=	(L"3233,3233,18367,18367");
+		}
+	};
 }

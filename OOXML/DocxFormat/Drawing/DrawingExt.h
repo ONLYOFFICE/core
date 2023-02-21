@@ -33,10 +33,10 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../RId.h"
 
 namespace OOX
 {
+	class RId;
 	class CPresenceInfo;
 
 	namespace Spreadsheet

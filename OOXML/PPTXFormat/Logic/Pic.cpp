@@ -50,6 +50,8 @@
 #include "./../SlideLayout.h"
 #include "./../SlideMaster.h"
 #include "./../Slide.h"
+#include "./../NotesSlide.h"
+#include "./../NotesMaster.h"
 
 #include "Media/MediaFile.h"
 #include "Media/WavAudioFile.h"

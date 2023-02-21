@@ -53,9 +53,12 @@
 #include "../../../MsBinaryFile/Common/Vml/toVmlConvert.h"
 
 #include "../../../DesktopEditor/common/Directory.h"
+#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
+#include "../../DocxFormat/VmlDrawing.h"
 #include "../../DocxFormat/Diagram/DiagramData.h"
 #include "../../DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../DocxFormat/Drawing/DrawingExt.h"
 #include "../../DocxFormat/Media/Image.h"
 #include "../../Common/SimpleTypes_Base.h"
 #include "../../Common/SimpleTypes_Vml.h"

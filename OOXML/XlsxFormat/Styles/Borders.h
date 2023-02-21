@@ -32,7 +32,11 @@
 #pragma once
 
 #include "rPr.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+
+namespace XLS
+{
+	class BiffStructure;
+}
 
 namespace SimpleTypes
 {

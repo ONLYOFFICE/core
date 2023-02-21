@@ -33,7 +33,16 @@
 
 #include "../../Base/Nullable.h"
 #include "../WritingElement.h"
-#include "../../Common/ComplexTypes.h"
+
+namespace ComplexTypes
+{
+	namespace Word
+	{
+		class String;
+		class CDocPartBehavior;
+		class CDocPartGallery;
+	}
+}
 
 namespace OOX
 {

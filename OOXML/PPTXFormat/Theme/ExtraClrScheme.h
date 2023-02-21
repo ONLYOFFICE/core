@@ -33,10 +33,14 @@
 
 #include "./../WrapperWritingElement.h"
 #include "ClrScheme.h"
-#include "./../Logic/ClrMap.h"
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class ClrMap;
+	}
+
 	namespace nsTheme
 	{
 		class ExtraClrScheme : public WrapperWritingElement

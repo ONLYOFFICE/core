@@ -637,7 +637,7 @@ namespace ODRAW
 		dgmstNil = 0xFFFF         
 	};
 
-        enum eSPT : unsigned short
+	enum eSPT : unsigned short
 	{    
 		sptMin = 0,    
 		sptNotPrimitive = sptMin,    

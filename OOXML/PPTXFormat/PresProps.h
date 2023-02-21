@@ -38,10 +38,14 @@
 #include "FileTypes.h"
 
 #include "Logic/UniColor.h"
-#include "ShowPr/ShowPr.h"
 
 namespace PPTX
 {
+	namespace nsShowPr
+	{
+		class ShowPr;
+	}
+
 	class PresProps : public WrapperFile, public PPTX::FileContainer
 	{
 	public:

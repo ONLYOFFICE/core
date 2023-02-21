@@ -53,6 +53,7 @@
 #include "../../../OOXML/DocxFormat/Logic/Hyperlink.h"
 #include "../../../OOXML/DocxFormat/Logic/Paragraph.h"
 #include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../OOXML/DocxFormat/Logic/SectionProperty.h"
 #include "../../../OOXML/DocxFormat/Logic/Dir.h"
 #include "../../../OOXML/DocxFormat/Logic/FldSimple.h"
 #include "../../../OOXML/DocxFormat/Logic/SmartTag.h"

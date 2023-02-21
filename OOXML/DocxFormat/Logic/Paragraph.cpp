@@ -38,6 +38,7 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "FldSimple.h"
 #include "Bdo.h"
 #include "Sdt.h"
@@ -47,6 +48,8 @@
 
 #include "../Math/OMath.h"
 #include "../Math/oMathPara.h"
+
+#include "../../Common/SimpleTypes_Word.h"
 
 // TO DO: Нехватающие классы:
 //        <w:customXml>

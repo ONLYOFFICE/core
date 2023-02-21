@@ -44,7 +44,12 @@ namespace PPTX2EditorAdvanced
 
 namespace NSGuidesVML
 {
-int __wstrlen(const wchar_t* str);
+static int __wstrlen(const wchar_t* str)
+{
+	const wchar_t* s = str;
+	for (; *s != 0; ++s);
+	return (LONG)(s - str);
+}
 
 static int		g_guide_max_len	= 80;
 

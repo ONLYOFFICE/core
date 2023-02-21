@@ -38,6 +38,9 @@
 #include "SpTree.h"
 #include "Pic.h"
 
+#include "../NotesSlide.h"
+#include "../NotesMaster.h"
+
 namespace PPTX
 {
 	namespace Logic

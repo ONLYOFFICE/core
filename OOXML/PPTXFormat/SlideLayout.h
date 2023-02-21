@@ -35,30 +35,29 @@
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
-#include "FileTypes.h"
 
 #include "Logic/CSld.h"
-#include "Logic/ClrMapOvr.h"
-#include "Logic/Transitions/Transition.h"
-#include "Logic/Timing/Timing.h"
-#include "Logic/Hf.h"
 #include "Limit/SlideLayoutType.h"
 
-#include "Logic/SpTreeElem.h"
-#include "Logic/Shape.h"
-
-#include "Theme.h"
-#include "SlideMaster.h"
-#include "TableStyles.h"
-
-#include "../DocxFormat/Media/Image.h"
-#include "../DocxFormat/Media/OleObject.h"
-#include "../DocxFormat/External/HyperLink.h"
-#include "../DocxFormat/VmlDrawing.h"
-
+namespace OOX
+{
+	class CVmlDrawing;
+}
 
 namespace PPTX
 {
+	namespace Logic
+	{
+		class ClrMapOvr;
+		class Transition;
+		class Timing;
+		class HF;
+	}
+
+	class Theme;
+	class SlideMaster;
+	class TableStyles;
+
 	class SlideLayout : public WrapperFile, public FileContainer
 	{
 	public:

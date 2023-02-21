@@ -31,6 +31,7 @@
  */
 
 #include "FmtScheme.h"
+#include "./../Logic/Colors/SchemeClr.h"
 
 namespace PPTX
 {

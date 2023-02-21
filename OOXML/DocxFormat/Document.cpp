@@ -40,6 +40,7 @@
 #include "Logic/Sdt.h"
 #include "Logic/Table.h"
 #include "Logic/DocParts.h"
+#include "Logic/Vml.h"
 
 namespace OOX
 {

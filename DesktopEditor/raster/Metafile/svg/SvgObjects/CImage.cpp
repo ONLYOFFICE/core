@@ -30,6 +30,8 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"href")) // TODO:: В дальнейшем возможно стоит реализовать
 			m_wsHref = mAttributes.at(L"href");             // отдельный класс CHref для всех типов ссылок
+		else if (mAttributes.end() != mAttributes.find(L"xlink:href"))
+			m_wsHref = mAttributes.at(L"xlink:href");
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

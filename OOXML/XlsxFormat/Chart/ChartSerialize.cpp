@@ -1029,11 +1029,11 @@ namespace Spreadsheet
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"externalData" == sName)
 				{
@@ -1106,14 +1106,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				m_chart->toXML(writer);
 			}
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (NULL != m_externalData)
 			{
@@ -1612,7 +1612,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -1630,10 +1630,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 			m_delete.toXML(L"c:delete", writer);
 
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -1732,11 +1732,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -1768,14 +1768,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			m_overlay.toXML(L"c:overlay", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -1979,11 +1979,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -2002,14 +2002,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_showOutline.toXML(L"c:showOutline", writer);
 			m_showKeys.toXML(L"c:showKeys", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -2102,11 +2102,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			else if (L"spPr" == sName)
 			{
-				m_oSpPr = oReader;
+				m_spPr = oReader;
 			}
 			else if (L"txPr" == sName)
 			{
-				m_oTxPr = oReader;
+				m_txPr = oReader;
 			}
 			else if (L"crossAx" == sName)
 			{
@@ -2157,14 +2157,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_minorTickMark.toXML(L"c:minorTickMark", writer);
 			m_tickLblPos.toXML(L"c:tickLblPos", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			m_crossAx.toXML(L"c:crossAx", writer);
 			m_crosses.toXML(L"c:crosses", writer);
@@ -2323,7 +2323,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 			}
 		}
@@ -2333,9 +2333,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -2380,11 +2380,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -2409,14 +2409,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			m_overlay.toXML(L"c:overlay", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -2935,11 +2935,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 			}
 		}
@@ -2958,14 +2958,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				std::wstring sNodeName = L"c:tx";
 				m_tx->toXML(sNodeName, writer);
 			}
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -3150,7 +3150,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			}
 			else if (L"spPr" == sName)
 			{
-				m_oSpPr = oReader;
+				m_spPr = oReader;
 			}
 			else if (L"extLst" == sName)
 			{
@@ -3170,9 +3170,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				std::wstring sNodeName = L"c:tx";
 				m_tx->toXML(sNodeName, writer);
 			}
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 		}
 
@@ -3432,7 +3432,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"pictureOptions" == sName)
 				{
@@ -3462,9 +3462,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_bubble3D.toXML(L"c:bubble3D", writer);
 			m_explosion.toXML(L"c:explosion", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			if (NULL != m_pictureOptions)
 			{
@@ -3503,7 +3503,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -3520,9 +3520,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_symbol.toXML(L"c:symbol", writer);
 			m_size.toXML(L"c:size", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -4596,7 +4596,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"trendlineType" == sName)
 				{
@@ -4657,9 +4657,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				writer.WriteEncodeXmlString(*m_name);
 				writer.WriteString(L"</c:name>");
 			}
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			m_trendlineType.toXML(L"c:trendlineType", writer);
 			m_order.toXML(L"c:order", writer);
@@ -4739,11 +4739,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -4771,14 +4771,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				std::wstring sNodeName = L"c:numFmt";
 				m_numFmt->toXML(sNodeName, writer);
 			}
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -4844,7 +4844,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -4872,9 +4872,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				m_minus->toXML(L"c:minus", writer);
 			}
 			m_val.toXML(L"c:val", writer);
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -5746,7 +5746,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 			}
 		}
@@ -5758,9 +5758,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			m_idx.toXML(L"c:idx", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -7623,7 +7623,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 			}
 		}
@@ -7632,9 +7632,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			writer.WriteString(L"</");
 			writer.WriteString(sNodeName);
@@ -8478,7 +8478,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"extLst" == sName)
 				{
@@ -8510,9 +8510,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				std::wstring sNodeName = L"c:dTable";
 				m_dTable->toXML(sNodeName, writer);
 			}
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			if (m_extLst.IsInit())
 			{
@@ -8947,7 +8947,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"pictureOptions" == sName)
 				{
@@ -8969,9 +8969,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			m_thickness.toXML(L"c:thickness", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
 			if (NULL != m_pictureOptions)
 			{
@@ -9082,11 +9082,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"spPr" == sName)
 				{
-					m_oSpPr = oReader;
+					m_spPr = oReader;
 				}
 				else if (L"txPr" == sName)
 				{
-					m_oTxPr = oReader;
+					m_txPr = oReader;
 				}
 				else if (L"marker" == sName)
 				{
@@ -9114,14 +9114,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			
 			m_idx.toXML(L"c:idx", writer);
 
-			if (m_oSpPr.IsInit())
+			if (m_spPr.IsInit())
 			{
-				writer.WriteString(m_oSpPr->toXML());
+				writer.WriteString(m_spPr->toXML());
 			}
-			if (m_oTxPr.IsInit())
+			if (m_txPr.IsInit())
 			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
+				m_txPr->m_name = L"c:txPr";
+				writer.WriteString(m_txPr->toXML());
 			}
 			if (NULL != m_marker)
 			{

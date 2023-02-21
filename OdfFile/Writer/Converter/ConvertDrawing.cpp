@@ -560,12 +560,12 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 		
 					if (pChart)
 					{
-						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(pChart->m_oChartSpace.m_spPr.GetPointer());					
 						OoxConverter::convert(&pChart->m_oChartSpace);
 					}
 					else if (pChartEx)
 					{
-						OoxConverter::convert(pChartEx->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(pChartEx->m_oChartSpace.m_spPr.GetPointer());					
 						OoxConverter::convert(&pChartEx->m_oChartSpace);
 					}
 				odf_context()->end_chart();

@@ -730,7 +730,7 @@ namespace OOX
 		public:
 			nullableUintVal					m_idx;
 			nullableBoolVal					m_delete;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_LegendEntry();
@@ -779,8 +779,8 @@ namespace OOX
             std::vector<CT_LegendEntry*>	m_legendEntry;
 			CT_Layout						*m_layout;
 			nullableBoolVal					m_overlay;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 	/*--------------------------------------------------*/
@@ -799,8 +799,8 @@ namespace OOX
 			nullableBoolVal m_showVertBorder;
 			nullableBoolVal m_showOutline;
 			nullableBoolVal m_showKeys;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 			
 			CT_DTable();
@@ -827,7 +827,7 @@ namespace OOX
 		class CT_ChartLines
 		{
 		public:
-			nullable<PPTX::Logic::SpPr> m_oSpPr;
+			nullable<PPTX::Logic::SpPr> m_spPr;
 			/*--------------------------------------------------------------*/
 			CT_ChartLines();
 			~CT_ChartLines();
@@ -897,8 +897,8 @@ namespace OOX
 			CT_Tx								*m_tx;
 			CT_Layout							*m_layout;
 			nullableBoolVal						m_overlay;
-			nullable<PPTX::Logic::SpPr>			m_oSpPr;
-			nullable<PPTX::Logic::TxBody>		m_oTxPr;
+			nullable<PPTX::Logic::SpPr>			m_spPr;
+			nullable<PPTX::Logic::TxBody>		m_txPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_Title();
@@ -944,8 +944,8 @@ namespace OOX
 			nullableComplexVal<CTickMark>	m_majorTickMark;
 			nullableComplexVal<CTickMark>	m_minorTickMark;
 			nullableComplexVal<CTickLblPos> m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;
 			nullableIntVal					m_crossAx;
 			nullableComplexVal<CCrosses>	m_crosses;
 			nullableDoubleVal				m_crossesAt;
@@ -1006,8 +1006,8 @@ namespace OOX
 		public:
 			CT_Layout*						m_layout;
 			CT_Tx*							m_tx;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
+			nullable<PPTX::Logic::SpPr>		m_spPr;
+			nullable<PPTX::Logic::TxBody>	m_txPr;	
 
 			CT_DispUnitsLbl();
 			~CT_DispUnitsLbl();
@@ -1216,7 +1216,7 @@ namespace OOX
 		public:
 			nullableComplexVal<CMarkerStyle>	m_symbol;
 			nullableUintVal						m_size;
-			nullable<PPTX::Logic::SpPr>			m_oSpPr;
+			nullable<PPTX::Logic::SpPr>			m_spPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_Marker();
@@ -1249,7 +1249,7 @@ namespace OOX
 			CT_Marker*					m_marker;
 			nullableBoolVal				m_bubble3D;
 			nullableUintVal				m_explosion;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
 			CT_PictureOptions*			m_pictureOptions;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1265,8 +1265,8 @@ namespace OOX
 			CT_Layout*								m_layout;
 			CT_Tx*									m_tx;
 			CT_NumFmt*								m_numFmt;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;
+			nullable<PPTX::Logic::SpPr>				m_spPr;
+			nullable<PPTX::Logic::TxBody>			m_txPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_TrendlineLbl();
@@ -1280,7 +1280,7 @@ namespace OOX
 		{
 		public:
 			nullable_string						m_name;
-			nullable<PPTX::Logic::SpPr>			m_oSpPr;
+			nullable<PPTX::Logic::SpPr>			m_spPr;
 			nullableComplexVal<CTrendlineType>	m_trendlineType;
 			nullableUintVal		m_order;
 			nullableUintVal		m_period;
@@ -1309,7 +1309,7 @@ namespace OOX
 			CT_NumDataSource* m_plus;
 			CT_NumDataSource* m_minus;
 			nullableDoubleVal m_val;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_ErrBars();
@@ -1328,7 +1328,7 @@ namespace OOX
 			nullableUintVal									m_idx;
 			nullableUintVal									m_order;
 			CT_SerTx*										m_tx;
-			nullable<PPTX::Logic::SpPr>						m_oSpPr;
+			nullable<PPTX::Logic::SpPr>						m_spPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			bool fromXML(const std::wstring nodeName, XmlUtils::CXmlLiteReader& oReader);
@@ -1379,7 +1379,7 @@ namespace OOX
 		{
 		public:
 			nullableUintVal				m_idx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
 
 			CT_BandFmt();
 			~CT_BandFmt();
@@ -1680,7 +1680,7 @@ namespace OOX
 		class CT_UpDownBar
 		{
 		public:
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
 
 			CT_UpDownBar();
 			~CT_UpDownBar();
@@ -1849,7 +1849,7 @@ namespace OOX
             std::vector<ItemsChoiceType6*> m_ItemsElementName1;
             std::vector<void*> m_Items1;
 			CT_DTable* m_dTable;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1869,7 +1869,7 @@ namespace OOX
 		{
 		public:
 			nullableStringVal			m_thickness;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
 			CT_PictureOptions*			m_pictureOptions;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
@@ -1902,8 +1902,8 @@ namespace OOX
 		{
 		public:
 			nullableUintVal							m_idx;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+			nullable<PPTX::Logic::SpPr>				m_spPr;
+			nullable<PPTX::Logic::TxBody>			m_txPr;	
 			CT_Marker*								m_marker;
 			CT_DLbl*								m_dLbl;
 
@@ -1997,8 +1997,8 @@ namespace OOX
 
 			nullable<PPTX::Logic::ClrMap>			m_oClrMapOvr;
 
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;
+			nullable<PPTX::Logic::SpPr>				m_spPr;
+			nullable<PPTX::Logic::TxBody>			m_txPr;
 
 			CT_ExternalData*						m_externalData;
 			CT_PrintSettings*						m_printSettings;
@@ -2013,6 +2013,70 @@ namespace OOX
 			EElementType getType();
 		};
 
+		//class CSeriesDataLabelsRange : public WritingElement
+		//{//c15
+		//public:
+		//	WritingElement_AdditionConstructors(CSeriesDataLabelsRange)
+
+		//	CSeriesDataLabelsRange();
+		//	virtual ~CSeriesDataLabelsRange();
+
+		//	virtual void fromXML(XmlUtils::CXmlNode& oNode);
+		//	virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+		//	virtual std::wstring toXML() const;
+		//	virtual EElementType getType() const;
+
+		//	nullable<CT_StrData> m_dlblRangeCache;
+		//	nullable_string m_f;
+		//};
+		class CCategoryFilterException
+		{//c15
+			nullableStringVal			m_uniqueId;
+			nullable<PPTX::Logic::SpPr>	m_spPr;
+			nullableUintVal				m_explosion;
+			nullableBoolVal				m_invertIfNegative;
+			nullableBoolVal				m_bubble3D;
+			nullable<CT_Marker>			m_marker;
+			nullable<CT_DLbl>			m_dLbl;
+
+
+		};
+		class CCCategoryFilterExceptions : public WritingElementWithChilds<CCategoryFilterException>
+		{//c15
+		};
+
+		//class CSeriesFiltering : public WritingElement
+		//{//c15
+		//public:
+		//	WritingElement_AdditionConstructors(CSeriesFiltering)
+
+		//	CSeriesFiltering();
+		//	virtual ~CSeriesFiltering();
+
+		//	virtual void fromXML(XmlUtils::CXmlNode& oNode);
+		//	virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+		//	virtual std::wstring toXML() const;
+		//	virtual EElementType getType() const;
+
+		//	nullable<CSeriesDataLabelsRange> m_chartDataLabelsRange;
+		//	nullable<CT_Tx> m_filteredSeriesTitle;
+		//	nullable<CT_AxDataSource> m_cat;
+
+		//	//nullable<CLineSer> m_filteredLineSeries; 
+		//	//nullable<CScatterSer> m_filteredScatterSeries;
+		//	//nullable<CRadarSer> m_filteredRadarSeries;
+		//	//nullable<CBarSer> m_filteredBarSeries;
+		//	//nullable<CAreaSer> m_filteredAreaSeries;
+		//	//nullable<CBubbleSer> m_filteredBubbleSeries;
+		//	//nullable<CSurfaceSer> m_filteredSurfaceSeries;
+		//	//nullable<CPieSer> m_filteredPieSeries;
+
+		//	nullable_string m_fullRef; //sqref
+		//	nullable_string m_levelRef; //sqref
+		//	nullable_string m_formulaRef; //sqref
+		//};
 	}
 }
 

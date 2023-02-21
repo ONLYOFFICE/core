@@ -492,7 +492,12 @@
 					rec["opt"] = [];
 					for (let i = 0; i < n; ++i)
 					{
-						rec["opt"].push(reader.readString());
+						var opt1 = reader.readString();
+						var opt2 = reader.readString();
+						if (opt1 == "")
+							rec["opt"].push(opt2);
+						else
+							rec["opt"].push([opt1, opt2]);
 					}
 				}
 				// 12.7.4.4

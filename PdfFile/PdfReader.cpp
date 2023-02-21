@@ -1095,24 +1095,38 @@ BYTE* CPdfReader::GetWidgets()
                     if (!oOpt.arrayGet(j, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
                     {
                         oOptJ.free();
+                        oRes.WriteString(NULL, 0);
+                        oRes.WriteString(NULL, 0);
                         continue;
                     }
 
-                    Object oOptJ2;
-                    if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1 && oOptJ.arrayGet(1, &oOptJ2) && oOptJ2.isString())
-                        oOptJ = oOptJ2;
-                    else
-                        oOptJ2.free();
-
-                    if (!oOptJ.isString())
+                    std::string sOpt1, sOpt2;
+                    if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1)
                     {
-                        oOptJ.free();
-                        continue;
+                        Object oOptJ2;
+                        if (oOptJ.arrayGet(0, &oOptJ2) && oOptJ2.isString())
+                        {
+                            TextString* s = new TextString(oOptJ2.getString());
+                            sOpt1 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                            delete s;
+                        }
+                        oOptJ2.free();
+                        if (oOptJ.arrayGet(1, &oOptJ2) && oOptJ2.isString())
+                        {
+                            TextString* s = new TextString(oOptJ2.getString());
+                            sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                            delete s;
+                        }
+                        oOptJ2.free();
                     }
-                    TextString* s = new TextString(oOptJ.getString());
-                    std::string sOpt = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                    oRes.WriteString((BYTE*)sOpt.c_str(), (unsigned int)sOpt.length());
-                    delete s;
+                    else if (oOptJ.isString())
+                    {
+                        TextString* s = new TextString(oOptJ.getString());
+                        sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                        delete s;
+                    }
+                    oRes.WriteString((BYTE*)sOpt1.c_str(), (unsigned int)sOpt1.length());
+                    oRes.WriteString((BYTE*)sOpt2.c_str(), (unsigned int)sOpt2.length());
                     oOptJ.free();
                 }
             }

@@ -542,7 +542,11 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pWidgets + i);
 						i += 4;
-						std::cout << std::to_string(j) << "Opt " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						std::cout << std::to_string(j) << "Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << std::to_string(j) << "Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 						i += nPathLength;
 					}
 				}

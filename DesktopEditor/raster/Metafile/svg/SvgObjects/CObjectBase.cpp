@@ -18,6 +18,9 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"stroke-width"))
 			m_oStroke.m_oWidth.SetValue(mAttributes.at(L"stroke-width"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"stroke-dasharray"))
+			m_oStroke.m_arDash = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(mAttributes.at(L"stroke-dasharray"));
 	}
 
 	void CSvgGraphicsObject::SetFill(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -89,6 +92,7 @@ namespace SVG
 		pRenderer->put_PenSize(1);
 		pRenderer->put_PenColor(0);
 		pRenderer->put_PenAlpha(255);
+		pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
 	}
 
 	void CSvgGraphicsObject::ApplyStroke(IRenderer *pRenderer, int &nTypePath, bool bUseDedault) const
@@ -105,6 +109,14 @@ namespace SVG
 
 			if (0 != dStrokeWidth)
 				pRenderer->put_PenSize(dStrokeWidth);
+
+			if (!m_oStroke.m_arDash.empty())
+			{
+				pRenderer->PenDashPattern((double*)m_oStroke.m_arDash.data(), m_oStroke.m_arDash.size());
+				pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
+			}
+			else
+				pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
 		}
 		else if (bUseDedault)
 			ApplyDefaultStroke(pRenderer, nTypePath);

@@ -22,6 +22,7 @@ namespace SVG
 	{
 		SvgColor m_oColor;
 		SvgDigit m_oWidth;
+		std::vector<double> m_arDash;
 	};
 
 	struct Point

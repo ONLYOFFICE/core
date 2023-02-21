@@ -11,24 +11,20 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"points"))
 			m_arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(mAttributes.at(L"points"));
 	}
 
-	bool CPolyline::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CPolyline::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer || m_arValues.size() < 4)
 			return false;
 
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-
-		BeginDraw(pRenderer, pDefs, nPathType, oOldMatrix);
+		StartPath(pRenderer, pDefs, bIsClip);
 		DrawLines(pRenderer);
-		EndDraw(pRenderer, nPathType);
-
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndDraw(pRenderer, pDefs, bIsClip);
 
 		return true;
 	}
@@ -58,27 +54,17 @@ namespace SVG
 		return oBounds;
 	}
 
-	void CPolyline::BeginDraw(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-		ApplyStyle(pRenderer, pDefs, nTypePath, oOldMatrix);
-
-		pRenderer->PathCommandStart();
-		pRenderer->BeginCommand ( c_nPathType );
-
-		pRenderer->PathCommandMoveTo(m_arValues[0], m_arValues[1]);
-	}
-
 	void CPolyline::DrawLines(IRenderer *pRenderer) const
 	{
+		pRenderer->PathCommandMoveTo(m_arValues[0], m_arValues[1]);
+
 		for (unsigned int unIndex = 2; unIndex < m_arValues.size(); unIndex += 2)
 			pRenderer->PathCommandLineTo(m_arValues[unIndex + 0], m_arValues[unIndex + 1]);
 	}
 
-	void CPolyline::EndDraw(IRenderer *pRenderer, int &nTypePath) const
+	void CPolyline::EndDraw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
-		pRenderer->DrawPath (nTypePath);
-		pRenderer->EndCommand (c_nPathType);
-		pRenderer->PathCommandEnd();
+		EndPath(pRenderer, pDefs, bIsClip);
 	}
 
 	CPolygon::CPolygon(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
@@ -88,13 +74,11 @@ namespace SVG
 	CPolygon::~CPolygon()
 	{}
 
-	void CPolygon::EndDraw(IRenderer *pRenderer, int &nTypePath) const
+	void CPolygon::EndDraw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		pRenderer->PathCommandClose();
 
-		pRenderer->DrawPath (nTypePath);
-		pRenderer->EndCommand (c_nPathType);
-		pRenderer->PathCommandEnd();
+		EndPath(pRenderer, pDefs, bIsClip);
 	}
 
 }

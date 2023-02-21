@@ -38,33 +38,13 @@ namespace SVG
 		}
 	}
 
-//	bool CGraphicsContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-//	{
-//		std::wstring wsNodeName = oNode.GetName();
-
-//		if (L"svg"     != wsNodeName &&
-//		    L"g"       != wsNodeName &&
-//		    L"xml"     != wsNodeName /*&&
-//			L"defs"    != wsNodeName &&
-//			L"pattern" != wsNodeName &&
-//			L"linearGradient" != wsNodeName &&
-//			L"radialGradient" != wsNodeName*/)
-//			return false;
-
-////		Clear();
-
-//		SaveNodeData(oNode);
-
-//		return true;
-//	}
-
-	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
 		for (const CSvgGraphicsObject* pObject : m_arObjects)
-			pObject->Draw(pRenderer, pDefs);
+			pObject->Draw(pRenderer, pDefs, bIsClip);
 
 		return true;
 	}

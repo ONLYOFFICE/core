@@ -13,6 +13,7 @@ namespace SVG
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"x1"))
 			m_oX1.SetValue(mAttributes.at(L"x1"), ushLevel, bHardMode);
@@ -27,7 +28,7 @@ namespace SVG
 			m_oY2.SetValue(mAttributes.at(L"y2"), ushLevel, bHardMode);
 	}
 
-	bool CLine::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CLine::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -42,24 +43,12 @@ namespace SVG
 		double dX2 = m_oX2.ToDouble(NSCSS::Pixel, dParentWidth);
 		double dY2 = m_oY2.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
-
-		pRenderer->PathCommandStart();
-		pRenderer->BeginCommand(c_nPathType);
-
-		pRenderer->PathCommandStart();
+		StartPath(pRenderer, pDefs, bIsClip);
 
 		pRenderer->PathCommandMoveTo(dX1, dY1);
 		pRenderer->PathCommandLineTo(dX2, dY2);
 
-		pRenderer->DrawPath(nPathType);
-		pRenderer->EndCommand(c_nPathType);
-		pRenderer->PathCommandEnd();
-
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer, pDefs, bIsClip);
 
 		return true;
 	}

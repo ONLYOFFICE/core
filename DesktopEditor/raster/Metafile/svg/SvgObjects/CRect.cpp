@@ -14,6 +14,7 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"x"))
 			m_oRect.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
@@ -34,7 +35,7 @@ namespace SVG
 			m_oRy.SetValue(mAttributes.at(L"ry"), ushLevel, bHardMode);
 	}
 
-	bool CRect::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CRect::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -49,37 +50,20 @@ namespace SVG
 		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
 		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
+		StartPath(pRenderer, pDefs, bIsClip);
 
 		if (m_oRx.Empty() && m_oRy.Empty())
 		{
-			pRenderer->PathCommandStart();
-			pRenderer->BeginCommand(c_nPathType);
-
-			pRenderer->PathCommandStart();
-
 			pRenderer->PathCommandMoveTo(dX, dY);
 			pRenderer->PathCommandLineTo(dX + dWidth, dY);
 			pRenderer->PathCommandLineTo(dX + dWidth, dY + dHeight);
 			pRenderer->PathCommandLineTo(dX, dY + dHeight);
 			pRenderer->PathCommandClose();
-
-			pRenderer->DrawPath(nPathType);
-			pRenderer->EndCommand(c_nPathType);
-			pRenderer->PathCommandEnd();
 		}
 		else
 		{
 			double dRx = m_oRx.ToDouble(NSCSS::Pixel);
 			double dRy = m_oRy.ToDouble(NSCSS::Pixel);
-
-			pRenderer->PathCommandStart();
-			pRenderer->BeginCommand(c_nPathType);
-
-			pRenderer->PathCommandStart();
 
 			pRenderer->PathCommandMoveTo(dX, dY + dRy);
 
@@ -95,12 +79,10 @@ namespace SVG
 			pRenderer->PathCommandLineTo(dX + dRx, dY);
 			pRenderer->PathCommandArcTo(dX, dY, dRx * 2.0, dRy * 2.0, 270, -90.0);
 
-			pRenderer->DrawPath(nPathType);
-			pRenderer->EndCommand(c_nPathType);
-			pRenderer->PathCommandEnd ();
+			pRenderer->PathCommandClose();
 		}
 
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer, pDefs, bIsClip);
 
 		return true;
 	}

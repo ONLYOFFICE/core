@@ -14,6 +14,7 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"cx"))
 			m_oCx.SetValue(mAttributes.at(L"cx"), ushLevel, bHardMode);
@@ -25,7 +26,7 @@ namespace SVG
 			m_oR.SetValue(mAttributes.at(L"r"), ushLevel, bHardMode);
 	}
 
-	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -36,25 +37,12 @@ namespace SVG
 		double dY = m_oCy.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 		double dR = m_oR .ToDouble(NSCSS::Pixel);
 
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
-
-		pRenderer->PathCommandStart();
-		pRenderer->BeginCommand(c_nPathType);
-
-		pRenderer->PathCommandStart();
+		StartPath(pRenderer, pDefs, bIsClip);
 
 		pRenderer->PathCommandMoveTo(dX + dR, dY);
 		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		pRenderer->DrawPath(nPathType);
-		pRenderer->EndCommand(c_nPathType);
-
-		pRenderer->PathCommandEnd();
-
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer, pDefs, bIsClip);
 
 		return true;
 	}
@@ -66,7 +54,7 @@ namespace SVG
 
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, pDefs, nTypePath);
+		ApplyFill(pRenderer, pDefs, nTypePath, true);
 	}
 
 	TBounds CCircle::GetBounds() const

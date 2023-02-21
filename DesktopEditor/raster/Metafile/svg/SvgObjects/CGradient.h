@@ -2,7 +2,6 @@
 #define CGRADIENT_H
 
 #include "CDefs.h"
-#include "CContainer.h"
 
 namespace SVG
 {

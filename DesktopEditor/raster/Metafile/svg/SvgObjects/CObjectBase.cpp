@@ -32,6 +32,57 @@ namespace SVG
 			m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
 	}
 
+	void CSvgGraphicsObject::SetClip(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	{
+		if (mAttributes.end() != mAttributes.find(L"clip-path"))
+			m_oClip.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
+	}
+
+	void CSvgGraphicsObject::StartPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	{
+		(bIsClip) ? StartClipPath(pRenderer) : StartStandardPath(pRenderer, pDefs);
+	}
+
+	void CSvgGraphicsObject::StartStandardPath(IRenderer *pRenderer, const CDefs *pDefs) const
+	{
+		ApplyClip(pRenderer, pDefs);
+
+		pRenderer->BeginCommand(c_nPathType);
+		pRenderer->PathCommandStart();
+	}
+
+	void CSvgGraphicsObject::StartClipPath(IRenderer *pRenderer) const
+	{
+		pRenderer->BeginCommand(c_nClipType);
+		pRenderer->BeginCommand(c_nPathType);
+		pRenderer->PathCommandStart();
+	}
+
+	void CSvgGraphicsObject::EndPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	{
+		(bIsClip) ? EndClipPath(pRenderer) : EndStandardPath(pRenderer, pDefs);
+	}
+
+	void CSvgGraphicsObject::EndStandardPath(IRenderer *pRenderer, const CDefs *pDefs) const
+	{
+		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
+		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
+
+		pRenderer->DrawPath(nPathType);
+		pRenderer->EndCommand(c_nPathType);
+		pRenderer->PathCommandEnd();
+
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+	}
+
+	void CSvgGraphicsObject::EndClipPath(IRenderer *pRenderer) const
+	{
+		pRenderer->EndCommand(c_nPathType);
+		pRenderer->EndCommand(c_nClipType);
+		pRenderer->PathCommandEnd();
+	}
+
 	void CSvgGraphicsObject::ApplyDefaultStroke(IRenderer *pRenderer, int &nTypePath) const
 	{
 		nTypePath += c_nStroke;
@@ -86,6 +137,19 @@ namespace SVG
 		}
 		else if (bUseDedault)
 			ApplyDefaultFill(pRenderer, nTypePath);
+	}
+
+	void CSvgGraphicsObject::ApplyClip(IRenderer *pRenderer, const CDefs *pDefs) const
+	{
+		if (NULL == pRenderer || NULL == pDefs || m_oClip.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != m_oClip.GetType())
+			return;
+
+		CDefObject *pClipObject = pDefs->GetDef(m_oClip.ToWString());
+
+		if (NULL == pClipObject)
+			return;
+
+		pClipObject->Apply(pRenderer, pDefs, GetBounds());
 	}
 
 	void CSvgGraphicsObject::ApplyTransform(IRenderer *pRenderer, Aggplus::CMatrix& oOldMatrix) const

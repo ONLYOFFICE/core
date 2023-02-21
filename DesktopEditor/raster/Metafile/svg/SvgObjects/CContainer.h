@@ -43,6 +43,7 @@ namespace SVG
 		friend class CDefs;
 		friend class CPattern;
 		friend class CGradient;
+		friend class CClipPath;
 		friend class CGraphicsContainer;
 	};
 
@@ -54,7 +55,7 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;

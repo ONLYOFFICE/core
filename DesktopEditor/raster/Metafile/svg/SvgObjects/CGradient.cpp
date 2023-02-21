@@ -1,7 +1,5 @@
 #include "CGradient.h"
 
-#include "../../../../graphics/shading_info.h"
-
 namespace SVG
 {
 	CStopElement::CStopElement(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)

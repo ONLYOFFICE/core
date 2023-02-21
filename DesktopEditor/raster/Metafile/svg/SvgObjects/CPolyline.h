@@ -12,15 +12,14 @@ namespace SVG
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool Draw(IRenderer* pRenderer, const CDefs *pDefs) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 
-		void BeginDraw(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const;
 		void DrawLines(IRenderer* pRenderer) const;
-		virtual void EndDraw(IRenderer* pRenderer, int& nTypePath) const;
+		virtual void EndDraw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
 
 		std::vector<double> m_arValues;
 	};
@@ -31,7 +30,7 @@ namespace SVG
 		CPolygon(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 		virtual ~CPolygon();
 
-		void EndDraw(IRenderer* pRenderer, int& nTypePath) const override;
+		void EndDraw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const override;
 	};
 }
 

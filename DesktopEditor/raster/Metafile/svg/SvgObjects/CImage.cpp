@@ -14,6 +14,7 @@ namespace SVG
 	void CImage::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"x"))
 			m_oRect.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
@@ -31,9 +32,9 @@ namespace SVG
 			m_wsHref = mAttributes.at(L"href");             // отдельный класс CHref для всех типов ссылок
 	}
 
-	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
-		if (NULL == pRenderer || m_wsHref.empty())
+		if (NULL == pRenderer || m_wsHref.empty() || bIsClip)
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};

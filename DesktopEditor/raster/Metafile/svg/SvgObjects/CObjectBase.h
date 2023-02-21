@@ -25,7 +25,6 @@ namespace SVG
 
 			oNode.GetAllAttributes(arProperties, arValues);
 
-			NSCSS::CNode oXmlNode;
 			m_oXmlNode.m_sName  = oNode.GetName();
 
 			for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
@@ -134,11 +133,21 @@ namespace SVG
 		CSvgGraphicsObject(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 		virtual ~CSvgGraphicsObject();
 
-		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs) const = 0;
+		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const = 0;
 
+		virtual TBounds GetBounds() const = 0;
+	private:
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetTransform(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
+
+		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
+		void StartStandardPath(IRenderer* pRenderer, const CDefs *pDefs) const;
+		void StartClipPath(IRenderer* pRenderer) const;
+		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
+		void EndStandardPath(IRenderer* pRenderer, const CDefs *pDefs) const;
+		void EndClipPath(IRenderer* pRenderer) const;
 
 		virtual void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const = 0;
 
@@ -146,16 +155,27 @@ namespace SVG
 		void ApplyStroke(IRenderer* pRenderer, int& nTypePath, bool bUseDedault = false) const;
 		void ApplyDefaultFill(IRenderer* pRenderer, int& nTypePath) const;
 		void ApplyFill(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, bool bUseDedault = false) const;
+		void ApplyClip(IRenderer* pRenderer, const CDefs *pDefs) const;
 		void ApplyTransform(IRenderer* pRenderer, Aggplus::CMatrix& oOldMatrix) const;
 
 		bool ApplyDef(IRenderer* pRenderer, const CDefs *pDefs, const std::wstring& wsUrl) const;
 
-		virtual TBounds GetBounds() const = 0;
+		friend class CLine;
+		friend class CRect;
+		friend class CPath;
+		friend class CText;
+		friend class CTspan;
+		friend class CImage;
+		friend class CCircle;
+		friend class CPolygon;
+		friend class CEllipse;
+		friend class CPolyline;
 
 		//Styles
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
 		SvgTransform m_oTransform;
+		SvgColor     m_oClip;
 	};
 
 //	class CObjectBase

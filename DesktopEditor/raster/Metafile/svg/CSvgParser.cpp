@@ -9,6 +9,7 @@
 #include "SvgObjects/CContainer.h"
 #include "SvgObjects/CPolyline.h"
 #include "SvgObjects/CGradient.h"
+#include "SvgObjects/CClipPath.h"
 #include "SvgObjects/CPattern.h"
 #include "SvgObjects/CEllipse.h"
 #include "SvgObjects/CCircle.h"
@@ -87,7 +88,7 @@ namespace SVG
 		return ReadChildrens(oElement, pContainer, pFile);
 	}
 
-	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CGraphicsContainer* pContainer, CSvgFile *pFile) const
+	bool CSvgParser::ReadGraphicsObject(XmlUtils::CXmlNode &oElement, CGraphicsContainer* pContainer, CSvgFile *pFile) const
 	{
 		if (NULL == pFile || NULL == pContainer)
 			return false;
@@ -170,6 +171,14 @@ namespace SVG
 			else
 				delete pPattern;
 		}
+		else if (L"clipPath" == wsElementName)
+		{
+			CClipPath* pClipPath = new CClipPath(oElement);
+			if (ReadChildrens(oElement, pClipPath, pFile))
+				pDefObject = pClipPath;
+			else
+				delete pClipPath;
+		}
 
 		if (NULL != pDefObject)
 		{
@@ -201,10 +210,10 @@ namespace SVG
 			if (!arChilds.GetAt(unChildrenIndex, oChild))
 				break;
 
-			if (std::is_same_v<CDefs, TypeContainer>)
+			if (std::is_same_v<CDefObject, TypeContainer>)
 				ReadDefs(oChild, (CDefs*)(pContainer), pFile);
 			else
-				ReadElement(oChild, (CGraphicsContainer*)pContainer, pFile);
+				ReadGraphicsObject(oChild, (CGraphicsContainer*)pContainer, pFile);
 
 			oChild.Clear();
 		}

@@ -23,7 +23,7 @@ namespace SVG
 		bool LoadFromString(const std::wstring& wsContente, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
 		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
 
-		bool ReadElement(XmlUtils::CXmlNode& oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		bool ReadGraphicsObject(XmlUtils::CXmlNode& oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
 
 		bool ReadDefs(XmlUtils::CXmlNode& oElement, CDefs* pDefs, CSvgFile* pFile) const;
 	private:

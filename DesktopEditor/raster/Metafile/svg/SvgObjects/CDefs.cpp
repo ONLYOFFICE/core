@@ -24,7 +24,7 @@ namespace SVG
 		std::vector<CDefObject*>::const_iterator oFound = std::find_if(m_arObjects.begin(), m_arObjects.end(), [&wsId](CDefObject* pObject){ if (wsId == pObject->GetId()) return true; else return false;});
 
 		if (m_arObjects.end() != oFound)
-			return dynamic_cast<CDefObject*>(*oFound);
+			return *oFound;
 
 		return NULL;
 	}

@@ -18,32 +18,23 @@ namespace SVG
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"d"))
 			ReadFromString(mAttributes.at(L"d"));
 	}
 
-	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
 
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
-
-		pRenderer->PathCommandStart();
-		pRenderer->BeginCommand ( c_nPathType );
+		StartPath(pRenderer, pDefs, bIsClip);
 
 		for (IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
-		pRenderer->DrawPath (nPathType);
-		pRenderer->EndCommand (c_nPathType);
-		pRenderer->PathCommandEnd();
-
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer, pDefs, bIsClip);
 
 		return true;
 	}

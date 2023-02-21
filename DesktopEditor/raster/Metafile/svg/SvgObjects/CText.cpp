@@ -28,6 +28,7 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"x"))
 			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
@@ -73,9 +74,9 @@ namespace SVG
 		Normalize();
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
+	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
-		if (NULL == pRenderer || m_wsText.empty())
+		if (NULL == pRenderer || m_wsText.empty() || bIsClip)
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
@@ -83,24 +84,23 @@ namespace SVG
 		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
 		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 
-		Aggplus::CMatrix oOldMatrix(1., 0., .0, 1., 0., 0.);
+		StartPath(pRenderer, pDefs, bIsClip);
 
-//		int nPlug = 0;
-
-//		ApplyStyle(pRenderer,pDefs, nPlug, oOldMatrix);
-
-		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyFont(pRenderer, dX, dY);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
+		EndPath(pRenderer,pDefs, bIsClip);
 
 		return true;
 	}
 
 	void CText::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
+		if (NULL == pRenderer)
+			return;
+
+		ApplyTransform(pRenderer, oOldMatrix);
 	}
 
 	void CText::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const

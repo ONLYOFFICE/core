@@ -257,6 +257,11 @@
 		return this.pages;
 	};
 
+	CFile.prototype["openForms"] = function()
+	{
+
+	};
+
 	CFile.prototype["getDocumentInfo"] = function()
 	{
 		return this.info;
@@ -403,7 +408,7 @@
 			rec["y1"] = reader.readDouble();
 			rec["x2"] = reader.readDouble();
 			rec["y2"] = reader.readDouble();
-			rec["alignment"] = readInt();
+			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();
 			var flags = reader.readInt();
@@ -485,7 +490,7 @@
 				{
 					var n = reader.readInt();
 					rec["opt"] = [];
-					for (int i = 0; i < n; ++i)
+					for (let i = 0; i < n; ++i)
 					{
 						rec["opt"].push(reader.readString());
 					}

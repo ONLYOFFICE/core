@@ -54,7 +54,7 @@ SOURCES += \
 	\
 	../../../../MsBinaryFile/Common/Vml/BaseShape.cpp \
 	../../../../MsBinaryFile/Common/Vml/GraphicsPath.cpp \
-	../../../../MsBinaryFile/Common/Vml/Path.cpp \
+        ../../../../MsBinaryFile/Common/Vml/VmlPath.cpp \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.cpp \
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.cpp \
@@ -135,7 +135,7 @@ HEADERS += \
 	../../../../MsBinaryFile/Common/Vml/Common.h \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.h \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.h \
-	../../../../MsBinaryFile/Common/Vml/Path.h \
+        ../../../../MsBinaryFile/Common/Vml/VmlPath.h \
 	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \	
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.h \

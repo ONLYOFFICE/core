@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "Path.h"
+#include "VmlPath.h"
 #include "../../../OOXML/Common/SimpleTypes_Base.h"
 
 #include <boost/shared_ptr.hpp>

@@ -30,7 +30,7 @@
  *
  */
 
-#include "Path.h"
+#include "VmlPath.h"
 
 namespace ODRAW
 {    

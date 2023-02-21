@@ -31,7 +31,7 @@
  */
 #pragma once
 #include "PptFormula.h"
-#include "../Path.h"
+#include "../VmlPath.h"
 #include "../PPTShape/PptShape.h"
 #include "../PPTXShape/PptxShape.h"
 

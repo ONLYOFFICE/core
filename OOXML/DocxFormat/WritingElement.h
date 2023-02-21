@@ -1394,6 +1394,9 @@ namespace OOX
 		et_x_ListItems,
 		et_x_ListItem,
 
+		et_x_UserProtectedRange,
+		et_x_UserProtectedRanges,
+
 		et_x_WorkbookPivotCache,
 		et_x_WorkbookPivotCaches,
 

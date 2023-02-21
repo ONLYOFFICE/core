@@ -1647,9 +1647,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_DispBlanksAs CDispBlanksAs::FromString(const std::wstring &sValue)
 		{
-			ST_DispBlanksAs eVal;
-			FromXml_ST_DispBlanksAs(sValue, eVal);
-			return eVal;
+			FromXml_ST_DispBlanksAs(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CDispBlanksAs::ToString() const
 		{
@@ -1659,9 +1658,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		ST_PageSetupOrientation CPageSetupOrientation::FromString(const std::wstring &sValue)
 		{
-			ST_PageSetupOrientation eVal;
-			FromXml_ST_PageSetupOrientation(sValue, eVal);
-			return eVal;
+			FromXml_ST_PageSetupOrientation(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CPageSetupOrientation::ToString() const
 		{
@@ -1671,9 +1669,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}		
 		ST_LegendPos CLegendPos::FromString(const std::wstring &sValue)
 		{
-			ST_LegendPos eVal;
-			FromXml_ST_LegendPos(sValue, eVal);
-			return eVal;
+			FromXml_ST_LegendPos(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CLegendPos::ToString() const
 		{
@@ -1683,9 +1680,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}		
 		ST_SizeRepresents CSizeRepresents::FromString(const std::wstring &sValue)
 		{
-			ST_SizeRepresents eVal;
-			FromXml_ST_SizeRepresents(sValue, eVal);
-			return eVal;
+			FromXml_ST_SizeRepresents(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CSizeRepresents::ToString() const
 		{
@@ -1947,9 +1943,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}		
 		ST_LayoutMode CLayoutMode::FromString(const std::wstring &sValue)
 		{
-			ST_LayoutMode eVal;
-			FromXml_ST_LayoutMode(sValue, eVal);
-			return eVal;
+			FromXml_ST_LayoutMode(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 
 		CT_DTable::CT_DTable()
@@ -2026,7 +2021,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L">");
 		}
 		EElementType CT_DTable::getType() { return et_ct_dtable; }
-		CT_SerAx::CT_SerAx()
+
+		CBaseAx::CBaseAx()
 		{
 			m_scaling = NULL;
 			m_majorGridlines = NULL;
@@ -2034,7 +2030,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_title = NULL;
 			m_numFmt = NULL;
 		}
-		CT_SerAx::~CT_SerAx()
+		CBaseAx::~CBaseAx()
 		{
 			if (NULL != m_scaling)
 				delete m_scaling;
@@ -2047,108 +2043,93 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			if (NULL != m_numFmt)
 				delete m_numFmt;
 		}
-		void CT_SerAx::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		bool CBaseAx::fromXML(const std::wstring & sName, XmlUtils::CXmlLiteReader& oReader)
 		{
-			if (oReader.IsEmptyNode())
-				return;
-			int nParentDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nParentDepth))
+			bool res = true;
+			if (L"axId" == sName)
 			{
-				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"axId" == sName)
-				{
-					m_axId = oReader;
-				}
-				else if (L"scaling" == sName)
-				{
-					CT_Scaling* pNewElem = new CT_Scaling;
-					pNewElem->fromXML(oReader);
-					m_scaling = pNewElem;
-				}
-				else if (L"delete" == sName)
-				{
-					m_delete = oReader;
-				}
-				else if (L"axPos" == sName)
-				{
-					m_axPos = oReader;
-				}
-				else if (L"majorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_majorGridlines = pNewElem;
-				}
-				else if (L"minorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_minorGridlines = pNewElem;
-				}
-				else if (L"title" == sName)
-				{
-					CT_Title* pNewElem = new CT_Title;
-					pNewElem->fromXML(oReader);
-					m_title = pNewElem;
-				}
-				else if (L"numFmt" == sName)
-				{
-					CT_NumFmt* pNewElem = new CT_NumFmt;
-					pNewElem->fromXML(oReader);
-					m_numFmt = pNewElem;
-				}
-				else if (L"majorTickMark" == sName)
-				{
-					m_majorTickMark = oReader;
-				}
-				else if (L"minorTickMark" == sName)
-				{
-					m_minorTickMark = oReader;
-				}
-				else if (L"tickLblPos" == sName)
-				{
-					m_tickLblPos = oReader;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
-				}
-				else if (L"txPr" == sName)
-				{
-					m_oTxPr = oReader;
-				}
-				else if (L"crossAx" == sName)
-				{
-					m_crossAx = oReader;
-				}
-				else if (L"crosses" == sName)
-				{
-					m_crosses = oReader;
-				}
-				else if (L"crossesAt" == sName)
-				{
-					m_crossesAt = oReader;
-				}
-				else if (L"tickLblSkip" == sName)
-				{
-					m_tickLblSkip = oReader;
-				}
-				else if (L"tickMarkSkip" == sName)
-				{
-					m_tickMarkSkip = oReader;
-				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
+				m_axId = oReader;
 			}
+			else if (L"scaling" == sName)
+			{
+				CT_Scaling* pNewElem = new CT_Scaling;
+				pNewElem->fromXML(oReader);
+				m_scaling = pNewElem;
+			}
+			else if (L"delete" == sName)
+			{
+				m_delete = oReader;
+			}
+			else if (L"axPos" == sName)
+			{
+				m_axPos = oReader;
+			}
+			else if (L"majorGridlines" == sName)
+			{
+				CT_ChartLines* pNewElem = new CT_ChartLines;
+				pNewElem->fromXML(oReader);
+				m_majorGridlines = pNewElem;
+			}
+			else if (L"minorGridlines" == sName)
+			{
+				CT_ChartLines* pNewElem = new CT_ChartLines;
+				pNewElem->fromXML(oReader);
+				m_minorGridlines = pNewElem;
+			}
+			else if (L"title" == sName)
+			{
+				CT_Title* pNewElem = new CT_Title;
+				pNewElem->fromXML(oReader);
+				m_title = pNewElem;
+			}
+			else if (L"numFmt" == sName)
+			{
+				CT_NumFmt* pNewElem = new CT_NumFmt;
+				pNewElem->fromXML(oReader);
+				m_numFmt = pNewElem;
+			}
+			else if (L"majorTickMark" == sName)
+			{
+				m_majorTickMark = oReader;
+			}
+			else if (L"minorTickMark" == sName)
+			{
+				m_minorTickMark = oReader;
+			}
+			else if (L"tickLblPos" == sName)
+			{
+				m_tickLblPos = oReader;
+			}
+			else if (L"spPr" == sName)
+			{
+				m_oSpPr = oReader;
+			}
+			else if (L"txPr" == sName)
+			{
+				m_oTxPr = oReader;
+			}
+			else if (L"crossAx" == sName)
+			{
+				m_crossAx = oReader;
+			}
+			else if (L"crosses" == sName)
+			{
+				m_crosses = oReader;
+			}
+			else if (L"crossesAt" == sName)
+			{
+				m_crossesAt = oReader;
+			}
+			else if (L"extLst" == sName)
+			{
+				m_extLst = oReader;
+			}
+			else
+				res = false;
+			return res;
 		}
-		void CT_SerAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
+		void CBaseAx::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
-			writer.WriteString(L"<");
-			writer.WriteString(sNodeName);
-			writer.WriteString(L">");
-			
 			m_axId.toXML(L"c:axId", writer);
 			m_scaling->toXML(L"c:scaling", writer);
 			m_delete.toXML(L"c:delete", writer);
@@ -2188,6 +2169,43 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_crossAx.toXML(L"c:crossAx", writer);
 			m_crosses.toXML(L"c:crosses", writer);
 			m_crossesAt.toXML(L"c:crossesAt", writer);
+		}
+		CT_SerAx::CT_SerAx()
+		{
+		}
+		CT_SerAx::~CT_SerAx()
+		{
+		}
+		void CT_SerAx::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+				if (CBaseAx::fromXML(sName, oReader))
+				{
+
+				}
+				else if (L"tickLblSkip" == sName)
+				{
+					m_tickLblSkip = oReader;
+				}
+				else if (L"tickMarkSkip" == sName)
+				{
+					m_tickMarkSkip = oReader;
+				}
+			}
+		}
+		void CT_SerAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
+		{
+			writer.WriteString(L"<");
+			writer.WriteString(sNodeName);
+			writer.WriteString(L">");
+			
+			CBaseAx::toXML(writer);
 			
 			if (m_tickLblSkip.IsInit())
 			{
@@ -2267,9 +2285,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		ST_Orientation COrientation::FromString(const std::wstring &sValue)
 		{
-			ST_Orientation eVal;
-			FromXml_ST_Orientation(sValue, eVal);
-			return eVal;
+			FromXml_ST_Orientation(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring COrientation::ToString() const
 		{
@@ -2280,9 +2297,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		ST_AxPos CAxPos::FromString(const std::wstring &sValue)
 		{
-			ST_AxPos eVal;
-			FromXml_ST_AxPos(sValue, eVal);
-			return eVal;
+			FromXml_ST_AxPos(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CAxPos::ToString() const
 		{
@@ -2683,9 +2699,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		ST_TickMark CTickMark::FromString(const std::wstring &sValue)
 		{
-			ST_TickMark eVal;
-			FromXml_ST_TickMark(sValue, eVal);
-			return eVal;
+			FromXml_ST_TickMark(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CTickMark::ToString() const
 		{
@@ -2695,9 +2710,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		ST_TickLblPos CTickLblPos::FromString(const std::wstring &sValue)
 		{
-			ST_TickLblPos eVal;
-			FromXml_ST_TickLblPos(sValue, eVal);
-			return eVal;
+			FromXml_ST_TickLblPos(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CTickLblPos::ToString() const
 		{
@@ -2707,9 +2721,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		ST_Crosses CCrosses::FromString(const std::wstring &sValue)
 		{
-			ST_Crosses eVal;
-			FromXml_ST_Crosses(sValue, eVal);
-			return eVal;
+			FromXml_ST_Crosses(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CCrosses::ToString() const
 		{
@@ -2719,9 +2732,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		ST_TimeUnit CTimeUnit::FromString(const std::wstring &sValue)
 		{
-			ST_TimeUnit eVal;
-			FromXml_ST_TimeUnit(sValue, eVal);
-			return eVal;
+			FromXml_ST_TimeUnit(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CTimeUnit::ToString() const
 		{
@@ -2732,24 +2744,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		CT_DateAx::CT_DateAx()
 		{
-			m_scaling = NULL;
-			m_majorGridlines = NULL;
-			m_minorGridlines = NULL;
-			m_title = NULL;
-			m_numFmt = NULL;
 		}
 		CT_DateAx::~CT_DateAx()
 		{
-			if (NULL != m_scaling)
-				delete m_scaling;
-			if (NULL != m_majorGridlines)
-				delete m_majorGridlines;
-			if (NULL != m_minorGridlines)
-				delete m_minorGridlines;
-			if (NULL != m_title)
-				delete m_title;
-			if (NULL != m_numFmt)
-				delete m_numFmt;
 		}
 		void CT_DateAx::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -2759,79 +2756,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"axId" == sName)
+				if (CBaseAx::fromXML(sName, oReader))
 				{
-					m_axId = oReader;
-				}
-				else if (L"scaling" == sName)
-				{
-					CT_Scaling* pNewElem = new CT_Scaling;
-					pNewElem->fromXML(oReader);
-					m_scaling = pNewElem;
-				}
-				else if (L"delete" == sName)
-				{
-					m_delete = oReader;
-				}
-				else if (L"axPos" == sName)
-				{
-					m_axPos = oReader;
-				}
-				else if (L"majorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_majorGridlines = pNewElem;
-				}
-				else if (L"minorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_minorGridlines = pNewElem;
-				}
-				else if (L"title" == sName)
-				{
-					CT_Title* pNewElem = new CT_Title;
-					pNewElem->fromXML(oReader);
-					m_title = pNewElem;
-				}
-				else if (L"numFmt" == sName)
-				{
-					CT_NumFmt* pNewElem = new CT_NumFmt;
-					pNewElem->fromXML(oReader);
-					m_numFmt = pNewElem;
-				}
-				else if (L"majorTickMark" == sName)
-				{
-					m_majorTickMark = oReader;
-				}
-				else if (L"minorTickMark" == sName)
-				{
-					m_minorTickMark = oReader;
-				}
-				else if (L"tickLblPos" == sName)
-				{
-					m_tickLblPos = oReader;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
-				}
-				else if (L"txPr" == sName)
-				{
-					m_oTxPr = oReader;
-				}
-				else if (L"crossAx" == sName)
-				{
-					m_crossAx = oReader;
-				}
-				else if (L"crosses" == sName)
-				{
-					m_crosses = oReader;
-				}
-				else if (L"crossesAt" == sName)
-				{
-					m_crossesAt = oReader;
+
 				}
 				else if (L"auto" == sName)
 				{
@@ -2861,10 +2788,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					m_minorTimeUnit = oReader;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_DateAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
@@ -2872,53 +2795,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
+
+			CBaseAx::toXML(writer);
 			
-			m_axId.toXML(L"c:axId", writer);
-
-			if (NULL != m_scaling)
-			{
-				std::wstring sNodeName = L"c:scaling";
-				m_scaling->toXML(sNodeName, writer);
-			}
-			m_delete.toXML(L"c:delete", writer);			
-			m_axPos.toXML(L"c:axPos", writer);
-
-			if (NULL != m_majorGridlines)
-			{
-				std::wstring sNodeName = L"c:majorGridlines";
-				m_majorGridlines->toXML(sNodeName, writer);
-			}
-			if (NULL != m_minorGridlines)
-			{
-				std::wstring sNodeName = L"c:minorGridlines";
-				m_minorGridlines->toXML(sNodeName, writer);
-			}
-			if (NULL != m_title)
-			{
-				std::wstring sNodeName = L"c:title";
-				m_title->toXML(sNodeName, writer);
-			}
-			if (NULL != m_numFmt)
-			{
-				std::wstring sNodeName = L"c:numFmt";
-				m_numFmt->toXML(sNodeName, writer);
-			}
-			m_majorTickMark.toXML(L"c:majorTickMark", writer);
-			m_minorTickMark.toXML(L"c:minorTickMark", writer);
-			m_tickLblPos.toXML(L"c:tickLblPos", writer);
-
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
-			if (m_oTxPr.IsInit())
-			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
-			}
-			m_crossAx.toXML(L"c:crossAx", writer);
-			m_crosses.toXML(L"c:crosses", writer);
-			m_crossesAt.toXML(L"c:crossesAt", writer);
 			m_auto.toXML(L"c:auto", writer);
 			m_lblOffset.toXML(L"c:lblOffset", writer);
 			m_baseTimeUnit.toXML(L"c:baseTimeUnit", writer);
@@ -2939,9 +2818,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_LblAlgn CLblAlgn::FromString(const std::wstring &sValue)
 		{
-			ST_LblAlgn eVal;
-			FromXml_ST_LblAlgn(sValue, eVal);
-			return eVal;
+			FromXml_ST_LblAlgn(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CLblAlgn::ToString() const
 		{
@@ -2951,26 +2829,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_CatAx::CT_CatAx()
 		{
-			m_scaling = NULL;
-			m_majorGridlines = NULL;
-			m_minorGridlines = NULL;
-			m_title = NULL;
-			m_numFmt = NULL;
-			m_tickLblSkip = NULL;
-			m_tickMarkSkip = NULL;
 		}
 		CT_CatAx::~CT_CatAx()
 		{
-			if (NULL != m_scaling)
-				delete m_scaling;
-			if (NULL != m_majorGridlines)
-				delete m_majorGridlines;
-			if (NULL != m_minorGridlines)
-				delete m_minorGridlines;
-			if (NULL != m_title)
-				delete m_title;
-			if (NULL != m_numFmt)
-				delete m_numFmt;
 		}
 		void CT_CatAx::fromXML(XmlUtils::CXmlLiteReader& oReader) 
 		{
@@ -2980,79 +2841,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"axId" == sName)
+				if (CBaseAx::fromXML(sName, oReader))
 				{
-					m_axId = oReader;
-				}
-				else if (L"scaling" == sName)
-				{
-					CT_Scaling* pNewElem = new CT_Scaling;
-					pNewElem->fromXML(oReader);
-					m_scaling = pNewElem;
-				}
-				else if (L"delete" == sName)
-				{
-					m_delete = oReader;
-				}
-				else if (L"axPos" == sName)
-				{
-					m_axPos = oReader;
-				}
-				else if (L"majorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_majorGridlines = pNewElem;
-				}
-				else if (L"minorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_minorGridlines = pNewElem;
-				}
-				else if (L"title" == sName)
-				{
-					CT_Title* pNewElem = new CT_Title;
-					pNewElem->fromXML(oReader);
-					m_title = pNewElem;
-				}
-				else if (L"numFmt" == sName)
-				{
-					CT_NumFmt* pNewElem = new CT_NumFmt;
-					pNewElem->fromXML(oReader);
-					m_numFmt = pNewElem;
-				}
-				else if (L"majorTickMark" == sName)
-				{
-					m_majorTickMark = oReader;
-				}
-				else if (L"minorTickMark" == sName)
-				{
-					m_minorTickMark = oReader;
-				}
-				else if (L"tickLblPos" == sName)
-				{
-					m_tickLblPos = oReader;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
-				}
-				else if (L"txPr" == sName)
-				{
-					m_oTxPr = oReader;
-				}
-				else if (L"crossAx" == sName)
-				{
-					m_crossAx = oReader;
-				}
-				else if (L"crosses" == sName)
-				{
-					m_crosses = oReader;
-				}
-				else if (L"crossesAt" == sName)
-				{
-					m_crossesAt = oReader;
+
 				}
 				else if (L"auto" == sName)
 				{
@@ -3078,10 +2869,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					m_noMultiLvlLbl = oReader;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_CatAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
@@ -3090,50 +2877,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_axId.toXML(L"c:axId", writer);
-			if (NULL != m_scaling)
-			{
-				std::wstring sNodeName = L"c:scaling";
-				m_scaling->toXML(sNodeName, writer);
-			}
-			m_delete.toXML(L"c:delete", writer);
-			m_axPos.toXML(L"c:axPos", writer);
-			if (NULL != m_majorGridlines)
-			{
-				std::wstring sNodeName = L"c:majorGridlines";
-				m_majorGridlines->toXML(sNodeName, writer);
-			}
-			if (NULL != m_minorGridlines)
-			{
-				std::wstring sNodeName = L"c:minorGridlines";
-				m_minorGridlines->toXML(sNodeName, writer);
-			}
-			if (NULL != m_title)
-			{
-				std::wstring sNodeName = L"c:title";
-				m_title->toXML(sNodeName, writer);
-			}
-			if (NULL != m_numFmt)
-			{
-				std::wstring sNodeName = L"c:numFmt";
-				m_numFmt->toXML(sNodeName, writer);
-			}
-			m_majorTickMark.toXML(L"c:majorTickMark", writer);
-			m_minorTickMark.toXML(L"c:minorTickMark", writer);
-			m_tickLblPos.toXML(L"c:tickLblPos", writer);
+			CBaseAx::toXML(writer);
 
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
-			if (m_oTxPr.IsInit())
-			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
-			}
-			m_crossAx.toXML(L"c:crossAx", writer);
-			m_crosses.toXML(L"c:crosses", writer);
-			m_crossesAt.toXML(L"c:crossesAt", writer);
 			m_auto.toXML(L"c:auto", writer);
 			m_lblAlgn.toXML(L"c:lblAlgn", writer);
 			m_lblOffset.toXML(L"c:lblOffset", writer);
@@ -3230,9 +2975,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_BuiltInUnit CBuiltInUnit::FromString(const std::wstring &sValue)
 		{
-			ST_BuiltInUnit eVal;
-			FromXml_ST_BuiltInUnit(sValue, eVal);
-			return eVal;
+			FromXml_ST_BuiltInUnit(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CBuiltInUnit::ToString() const
 		{
@@ -3250,7 +2994,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			if (NULL != m_dispUnitsLbl)
 				delete m_dispUnitsLbl;
 		}
-		void CT_DispUnits::fromXML(XmlUtils::CXmlLiteReader& oReader) {
+		void CT_DispUnits::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
 			if (oReader.IsEmptyNode())
 				return;
 			int nParentDepth = oReader.GetDepth();
@@ -3302,9 +3047,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_CrossBetween CCrossBetween::FromString(const std::wstring &sValue)
 		{
-			ST_CrossBetween eVal;
-			FromXml_ST_CrossBetween(sValue, eVal);
-			return eVal;
+			FromXml_ST_CrossBetween(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CCrossBetween::ToString() const
 		{
@@ -3314,109 +3058,25 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_ValAx::CT_ValAx()
 		{
-			m_scaling = NULL;
-			m_majorGridlines = NULL;
-			m_minorGridlines = NULL;
-			m_title = NULL;
-			m_numFmt = NULL;
 			m_dispUnits = NULL;
 		}
 		CT_ValAx::~CT_ValAx()
 		{
-			if (NULL != m_scaling)
-				delete m_scaling;
-			if (NULL != m_majorGridlines)
-				delete m_majorGridlines;
-			if (NULL != m_minorGridlines)
-				delete m_minorGridlines;
-			if (NULL != m_title)
-				delete m_title;
-			if (NULL != m_numFmt)
-				delete m_numFmt;
-			if (NULL != m_dispUnits)
+			if (m_dispUnits)
 				delete m_dispUnits;
 		}
 		void CT_ValAx::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
 				return;
+
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"axId" == sName)
+				if (CBaseAx::fromXML(sName, oReader))
 				{
-					m_axId = oReader;
-				}
-				else if (L"scaling" == sName)
-				{
-					CT_Scaling* pNewElem = new CT_Scaling;
-					pNewElem->fromXML(oReader);
-					m_scaling = pNewElem;
-				}
-				else if (L"delete" == sName)
-				{
-					m_delete = oReader;
-				}
-				else if (L"axPos" == sName)
-				{
-					m_axPos = oReader;
-				}
-				else if (L"majorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_majorGridlines = pNewElem;
-				}
-				else if (L"minorGridlines" == sName)
-				{
-					CT_ChartLines* pNewElem = new CT_ChartLines;
-					pNewElem->fromXML(oReader);
-					m_minorGridlines = pNewElem;
-				}
-				else if (L"title" == sName)
-				{
-					CT_Title* pNewElem = new CT_Title;
-					pNewElem->fromXML(oReader);
-					m_title = pNewElem;
-				}
-				else if (L"numFmt" == sName)
-				{
-					CT_NumFmt* pNewElem = new CT_NumFmt;
-					pNewElem->fromXML(oReader);
-					m_numFmt = pNewElem;
-				}
-				else if (L"majorTickMark" == sName)
-				{
-					m_majorTickMark = oReader;
-				}
-				else if (L"minorTickMark" == sName)
-				{
-					m_minorTickMark = oReader;
-				}
-				else if (L"tickLblPos" == sName)
-				{
-					m_tickLblPos = oReader;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
-				}
-				else if (L"txPr" == sName)
-				{
-					m_oTxPr = oReader;
-				}
-				else if (L"crossAx" == sName)
-				{
-					m_crossAx = oReader;
-				}
-				else if (L"crosses" == sName)
-				{
-					m_crosses = oReader;
-				}
-				else if (L"crossesAt" == sName)
-				{
-					m_crossesAt = oReader;
+
 				}
 				else if (L"crossBetween" == sName)
 				{
@@ -3436,10 +3096,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					pNewElem->fromXML(oReader);
 					m_dispUnits = pNewElem;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_ValAx::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
@@ -3448,45 +3104,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_axId.toXML(L"c:axId", writer);
-			if (NULL != m_scaling)
-			{
-				m_scaling->toXML(L"c:scaling", writer);
-			}
-			m_delete.toXML(L"c:delete", writer);
-			m_axPos.toXML(L"c:axPos", writer);
-			if (NULL != m_majorGridlines)
-			{
-				m_majorGridlines->toXML(L"c:majorGridlines", writer);
-			}
-			if (NULL != m_minorGridlines)
-			{
-				m_minorGridlines->toXML(L"c:minorGridlines", writer);
-			}
-			if (NULL != m_title)
-			{
-				m_title->toXML(L"c:title", writer);
-			}
-			if (NULL != m_numFmt)
-			{
-				m_numFmt->toXML(L"c:numFmt", writer);
-			}
-			m_majorTickMark.toXML(L"c:majorTickMark", writer);
-			m_minorTickMark.toXML(L"c:minorTickMark", writer);
-			m_tickLblPos.toXML(L"c:tickLblPos", writer);
+			CBaseAx::toXML(writer);
 
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
-			if (m_oTxPr.IsInit())
-			{
-				m_oTxPr->m_name = L"c:txPr";
-				writer.WriteString(m_oTxPr->toXML());
-			}
-			m_crossAx.toXML(L"c:crossAx", writer);
-			m_crosses.toXML(L"c:crosses", writer);
-			m_crossesAt.toXML(L"c:crossesAt", writer);
 			m_crossBetween.toXML(L"c:crossBetween", writer);
 			m_majorUnit.toXML(L"c:majorUnit", writer);
 			m_minorUnit.toXML(L"c:minorUnit", writer);
@@ -3504,19 +3123,69 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		EElementType CT_ValAx::getType() { return et_ct_valax; }
 
-		CT_BubbleSer::CT_BubbleSer()
+		CBaseSer::CBaseSer()
 		{
 			m_tx = NULL;
+		}
+		CBaseSer::~CBaseSer()
+		{
+			if (NULL != m_tx)
+				delete m_tx;
+		}
+		bool CBaseSer::fromXML(const std::wstring sName, XmlUtils::CXmlLiteReader& oReader)
+		{
+			bool res = true;
+			if (L"idx" == sName)
+			{
+				m_idx = oReader;
+			}
+			else if (L"order" == sName)
+			{
+				m_order = oReader;
+			}
+			else if (L"tx" == sName)
+			{
+				m_tx = new CT_SerTx;
+				m_tx->fromXML(oReader);
+			}
+			else if (L"spPr" == sName)
+			{
+				m_oSpPr = oReader;
+			}
+			else if (L"extLst" == sName)
+			{
+				m_extLst = oReader;
+			}
+			else
+				res = false;
+			return res;
+		}
+		void CBaseSer::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			m_idx.toXML(L"c:idx", writer);
+			m_order.toXML(L"c:order", writer);
+
+			if (NULL != m_tx)
+			{
+				std::wstring sNodeName = L"c:tx";
+				m_tx->toXML(sNodeName, writer);
+			}
+			if (m_oSpPr.IsInit())
+			{
+				writer.WriteString(m_oSpPr->toXML());
+			}
+		}
+
+		CT_BubbleSer::CT_BubbleSer()
+		{
 			m_dLbls = NULL;
 		}
 		CT_BubbleSer::~CT_BubbleSer()
 		{
-
-			if (NULL != m_tx)
-				delete m_tx;
 			for (size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
 			m_dPt.clear();
+
 			if (NULL != m_dLbls)
 				delete m_dLbls;
 			for (size_t i = 0; i < m_trendline.size(); ++i)
@@ -3536,27 +3205,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			if (oReader.IsEmptyNode())
 				return;
+			
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"invertIfNegative" == sName)
 				{
@@ -3608,10 +3265,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					m_bubble3D = oReader;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_BubbleSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
@@ -3619,19 +3272,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
-			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
 
-			if (NULL != m_tx)
-			{
-				std::wstring sNodeName = L"c:tx";
-				m_tx->toXML(sNodeName, writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
+			CBaseSer::toXML(writer);
+			
 			m_invertIfNegative.toXML(L"c:invertIfNegative", writer);
 			for (size_t i = 0; i < m_dPt.size(); ++i)
 			{
@@ -3893,9 +3536,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		ST_MarkerStyle CMarkerStyle::FromString(const std::wstring &sValue)
 		{
-			ST_MarkerStyle eVal;
-			FromXml_ST_MarkerStyle(sValue, eVal);
-			return eVal;
+			FromXml_ST_MarkerStyle(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CMarkerStyle::ToString() const
 		{
@@ -3959,9 +3601,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_PictureFormat CPictureFormat::FromString(const std::wstring &sValue)
 		{
-			ST_PictureFormat eVal;
-			FromXml_ST_PictureFormat(sValue, eVal);
-			return eVal;
+			FromXml_ST_PictureFormat(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CPictureFormat::ToString() const
 		{
@@ -4628,7 +4269,9 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_xForSave.toXML(sNodeNS + L":xForSave", writer);
 			m_showDataLabelsRange.toXML(sNodeNS + L":showDataLabelsRange", writer);
 			m_showLeaderLines.toXML(sNodeNS + L":showLeaderLines", writer);
-			m_leaderLines->toXML(sNodeNS + L":leaderLines", writer);
+			
+			if (m_leaderLines)
+				m_leaderLines->toXML(sNodeNS + L":leaderLines", writer);
 
 			if (m_extLst.IsInit())
 			{
@@ -4918,9 +4561,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_DLblPos CDLblPos::FromString(const std::wstring &sValue)
 		{
-			ST_DLblPos eVal;
-			FromXml_ST_DLblPos(sValue, eVal);
-			return eVal;
+			FromXml_ST_DLblPos(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CDLblPos::ToString() const
 		{
@@ -5044,9 +4686,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_TrendlineType CTrendlineType::FromString(const std::wstring &sValue)
 		{
-			ST_TrendlineType eVal;
-			FromXml_ST_TrendlineType(sValue, eVal);
-			return eVal;
+			FromXml_ST_TrendlineType(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CTrendlineType::ToString() const
 		{
@@ -5247,9 +4888,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_ErrDir CErrDir::FromString(const std::wstring &sValue)
 		{
-			ST_ErrDir eVal;
-			FromXml_ST_ErrDir(sValue, eVal);
-			return eVal;
+			FromXml_ST_ErrDir(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CErrDir::ToString() const
 		{
@@ -5259,9 +4899,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		ST_ErrBarType CErrBarType::FromString(const std::wstring &sValue)
 		{
-			ST_ErrBarType eVal;
-			FromXml_ST_ErrBarType(sValue, eVal);
-			return eVal;
+			FromXml_ST_ErrBarType(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CErrBarType::ToString() const
 		{
@@ -5272,9 +4911,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		ST_ErrValType CErrValType::FromString(const std::wstring &sValue)
 		{
-			ST_ErrValType eVal;
-			FromXml_ST_ErrValType(sValue, eVal);
-			return eVal;
+			FromXml_ST_ErrValType(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CErrValType::ToString() const
 		{
@@ -5849,7 +5487,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -5981,7 +5619,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -6024,14 +5662,11 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		CT_SurfaceSer::CT_SurfaceSer()
 		{
-			m_tx = NULL;
 			m_cat = NULL;
 			m_val = NULL;
 		}
 		CT_SurfaceSer::~CT_SurfaceSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
 			if (NULL != m_cat)
 				delete m_cat;
 			if (NULL != m_val)
@@ -6045,23 +5680,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"cat" == sName)
 				{
@@ -6075,10 +5697,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					pNewElem->fromXML(oReader);
 					m_val = pNewElem;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_SurfaceSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
@@ -6087,17 +5705,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				m_tx->toXML(L"c:tx", writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			if (NULL != m_cat)
 			{
 				std::wstring sNodeName = L"c:cat";
@@ -6198,7 +5807,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -6243,9 +5852,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_SplitType CSplitType::FromString(const std::wstring &sValue)
 		{
-			ST_SplitType eVal;
-			FromXml_ST_SplitType(sValue, eVal);
-			return eVal;
+			FromXml_ST_SplitType(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CSplitType::ToString() const
 		{
@@ -6256,9 +5864,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		ST_OfPieType COfPieType::FromString(const std::wstring &sValue)
 		{
-			ST_OfPieType eVal;
-			FromXml_ST_OfPieType(sValue, eVal);
-			return eVal;
+			FromXml_ST_OfPieType(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring COfPieType::ToString() const
 		{
@@ -6438,16 +6045,12 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		CT_PieSer::CT_PieSer()
 		{
-			m_tx = NULL;
 			m_dLbls = NULL;
 			m_cat = NULL;
 			m_val = NULL;
 		}
 		CT_PieSer::~CT_PieSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
-			
 			for (size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
 			m_dPt.clear();
@@ -6468,23 +6071,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"explosion" == sName)
 				{
@@ -6514,10 +6104,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					pNewElem->fromXML(oReader);
 					m_val = pNewElem;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_PieSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
@@ -6526,17 +6112,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				m_tx->toXML(L"c:tx", writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			m_explosion.toXML(L"c:explosion", writer);
 
 			for (size_t i = 0; i < m_dPt.size(); ++i)
@@ -6631,7 +6208,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -6682,9 +6259,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_BarDir CBarDir::FromString(const std::wstring &sValue)
 		{
-			ST_BarDir eVal;
-			FromXml_ST_BarDir(sValue, eVal);
-			return eVal;
+			FromXml_ST_BarDir(sValue, this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CBarDir::ToString() const
 		{
@@ -6695,9 +6271,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		ST_BarGrouping CBarGrouping::FromString(const std::wstring &sValue)
 		{
-			ST_BarGrouping eVal;
-			FromXml_ST_BarGrouping(sValue, eVal);
-			return eVal;
+			FromXml_ST_BarGrouping(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CBarGrouping::ToString() const
 		{
@@ -6708,7 +6283,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 
 		CT_BarSer::CT_BarSer()
 		{
-			m_tx = NULL;
 			m_pictureOptions = NULL;
 			m_dLbls = NULL;
 			m_errBars = NULL;
@@ -6717,8 +6291,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_BarSer::~CT_BarSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
 			if (NULL != m_pictureOptions)
 				delete m_pictureOptions;
 			for (size_t i = 0; i < m_dPt.size(); ++i)
@@ -6740,27 +6312,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			if (oReader.IsEmptyNode())
 				return;
+			
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"invertIfNegative" == sName)
 				{
@@ -6812,10 +6372,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					m_shape = oReader;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_BarSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
@@ -6824,18 +6380,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				std::wstring sNodeName = L"c:tx";
-				m_tx->toXML(sNodeName, writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			m_invertIfNegative.toXML(L"c:invertIfNegative", writer);
 
 			if (NULL != m_pictureOptions)
@@ -6888,9 +6434,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_Shape CShapeType::FromString(const std::wstring &sValue)
 		{
-			ST_Shape eVal;
-			FromXml_ST_Shape(sValue, eVal);
-			return eVal;
+			FromXml_ST_Shape(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CShapeType::ToString() const
 		{
@@ -6964,7 +6509,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -7258,7 +6803,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		CT_ScatterSer::CT_ScatterSer()
 		{
-			m_tx = NULL;
 			m_marker = NULL;
 			m_dLbls = NULL;
 			m_xVal = NULL;
@@ -7266,13 +6810,13 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_ScatterSer::~CT_ScatterSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
 			if (NULL != m_marker)
 				delete m_marker;
+
 			for (size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
 			m_dPt.clear();
+
 			if (NULL != m_dLbls)
 				delete m_dLbls;
 			for (size_t i = 0; i < m_trendline.size(); ++i)
@@ -7295,23 +6839,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"marker" == sName)
 				{
@@ -7359,10 +6890,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					m_smooth = oReader;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_ScatterSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
@@ -7371,18 +6898,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				std::wstring sNodeName = L"c:tx";
-				m_tx->toXML(sNodeName, writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			if (NULL != m_marker)
 			{
 				std::wstring sNodeName = L"c:marker";
@@ -7444,9 +6961,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_ScatterStyle CScatterStyle::FromString(const std::wstring &sValue)
 		{
-			ST_ScatterStyle eVal;
-			FromXml_ST_ScatterStyle(sValue, eVal);
-			return eVal;
+			FromXml_ST_ScatterStyle(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CScatterStyle::ToString() const
 		{
@@ -7497,7 +7013,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -7542,7 +7058,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		EElementType CT_ScatterChart::getType() { return et_ct_scatterchart; }
 		CT_RadarSer::CT_RadarSer()
 		{
-			m_tx = NULL;
 			m_marker = NULL;
 			m_dLbls = NULL;
 			m_cat = NULL;
@@ -7550,13 +7065,13 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_RadarSer::~CT_RadarSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
 			if (NULL != m_marker)
 				delete m_marker;
+
 			for (size_t i = 0; i < m_dPt.size(); ++i)
 				delete m_dPt[i];
 			m_dPt.clear();
+
 			if (NULL != m_dLbls)
 				delete m_dLbls;
 			if (NULL != m_cat)
@@ -7572,23 +7087,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"marker" == sName)
 				{
@@ -7620,10 +7122,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					pNewElem->fromXML(oReader);
 					m_val = pNewElem;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_RadarSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
@@ -7632,18 +7130,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				std::wstring sNodeName = L"c:tx";
-				m_tx->toXML(sNodeName, writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			if (NULL != m_marker)
 			{
 				std::wstring sNodeName = L"c:marker";
@@ -7685,9 +7173,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_RadarStyle CRadarStyle::FromString(const std::wstring &sValue)
 		{
-			ST_RadarStyle eVal;
-			FromXml_ST_RadarStyle(sValue, eVal);
-			return eVal;
+			FromXml_ST_RadarStyle(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CRadarStyle::ToString() const
 		{
@@ -7739,7 +7226,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal val = oReader;
+					nullableIntVal val = oReader;
 					m_axId.push_back(*val);
 				}
 				else if (L"extLst" == sName)
@@ -7843,7 +7330,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -7901,7 +7388,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		EElementType CT_StockChart::getType() { return et_ct_stockchart; }
 		CT_LineSer::CT_LineSer()
 		{
-			m_tx = NULL;
 			m_marker = NULL;
 			m_dLbls = NULL;
 			m_errBars = NULL;
@@ -7910,8 +7396,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_LineSer::~CT_LineSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
 			if (NULL != m_marker)
 				delete m_marker;
 			for (size_t i = 0; i < m_dPt.size(); ++i)
@@ -7933,27 +7417,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		{
 			if (oReader.IsEmptyNode())
 				return;
+			
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"marker" == sName)
 				{
@@ -8001,10 +7473,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				{
 					m_smooth = oReader;
 				}
-				else if (L"extLst" == sName)
-				{
-					m_extLst = oReader;
-				}
 			}
 		}
 		void CT_LineSer::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
@@ -8013,18 +7481,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				std::wstring sNodeName = L"c:tx";
-				m_tx->toXML(sNodeName, writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			if (NULL != m_marker)
 			{
 				std::wstring sNodeName = L"c:marker";
@@ -8241,7 +7699,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -8293,9 +7751,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		
 		ST_Grouping CGrouping::FromString(const std::wstring &sValue)
 		{
-			ST_Grouping eVal;
-			FromXml_ST_Grouping(sValue, eVal);
-			return eVal;
+			FromXml_ST_Grouping(sValue,  this->m_eValue);
+			return this->m_eValue;
 		}
 		std::wstring CGrouping::ToString() const
 		{
@@ -8381,7 +7838,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -8495,7 +7952,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)
@@ -8546,7 +8003,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		EElementType CT_Area3DChart::getType() { return et_ct_area3dchart; }
 		CT_AreaSer::CT_AreaSer()
 		{
-			m_tx = NULL;
 			m_pictureOptions = NULL;
 			m_dLbls = NULL;
 			m_cat = NULL;
@@ -8554,8 +8010,6 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		CT_AreaSer::~CT_AreaSer()
 		{
-			if (NULL != m_tx)
-				delete m_tx;
 			if (NULL != m_pictureOptions)
 				delete m_pictureOptions;
 			for (size_t i = 0; i < m_dPt.size(); ++i)
@@ -8582,23 +8036,10 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
-				if (L"idx" == sName)
+				
+				if (CBaseSer::fromXML(sName, oReader))
 				{
-					m_idx = oReader;
-				}
-				else if (L"order" == sName)
-				{
-					m_order = oReader;
-				}
-				else if (L"tx" == sName)
-				{
-					CT_SerTx* pNewElem = new CT_SerTx;
-					pNewElem->fromXML(oReader);
-					m_tx = pNewElem;
-				}
-				else if (L"spPr" == sName)
-				{
-					m_oSpPr = oReader;
+
 				}
 				else if (L"pictureOptions" == sName)
 				{
@@ -8654,18 +8095,8 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			writer.WriteString(sNodeName);
 			writer.WriteString(L">");
 			
-			m_idx.toXML(L"c:idx", writer);
-			m_order.toXML(L"c:order", writer);
+			CBaseSer::toXML(writer);
 
-			if (NULL != m_tx)
-			{
-				std::wstring sNodeName = L"c:tx";
-				m_tx->toXML(sNodeName, writer);
-			}
-			if (m_oSpPr.IsInit())
-			{
-				writer.WriteString(m_oSpPr->toXML());
-			}
 			if (NULL != m_pictureOptions)
 			{
 				std::wstring sNodeName = L"c:pictureOptions";
@@ -8774,7 +8205,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 				else if (L"axId" == sName)
 				{
-					nullableUintVal pNewElem = oReader;
+					nullableIntVal pNewElem = oReader;
 					m_axId.push_back(*pNewElem);
 				}
 				else if (L"extLst" == sName)

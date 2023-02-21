@@ -199,11 +199,18 @@ namespace OOX
 
 		OOX::CPath oRelationFilename = pRelation->Filename();
 		CPath oFileName;
-		if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
-			oFileName = oRootPath / oRelationFilename;
-		else
-			oFileName = oPath / oRelationFilename;
 
+		if (pRelation->IsExternal())
+		{
+			oFileName = oRelationFilename;
+		}
+		else
+		{
+			if (oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
+				oFileName = oRootPath / oRelationFilename;
+			else
+				oFileName = oPath / oRelationFilename;
+		}
 		if ( pRelation->Type() == FileTypes::Document)
 			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName, FileTypes::Document));
 		else if (pRelation->Type() == FileTypes::DocumentMacro)

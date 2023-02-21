@@ -301,6 +301,8 @@ namespace BinXlsxRW
 		void WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations);
 		void WriteDataValidation(const OOX::Spreadsheet::CDataValidation& oDataValidation);
 		void WriteSlicers(OOX::Spreadsheet::CWorksheet& oWorksheet, const OOX::Spreadsheet::CSlicerRefs& oSlicers);
+		void WriteUserProtectedRanges(const OOX::Spreadsheet::CUserProtectedRanges& oUserProtectedRanges);
+		void WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange);
 	};
 	class BinaryCustomsTableWriter
 	{

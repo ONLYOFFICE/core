@@ -924,56 +924,50 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 		};
 
-		class CT_SerAx
+		class CBaseAx
 		{
 		public:
-			nullableUintVal					m_axId;
-			CT_Scaling								*m_scaling;
+			CBaseAx();
+			virtual ~CBaseAx();
+
+			bool fromXML(const std::wstring & nodeName, XmlUtils::CXmlLiteReader& oReader);
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
+
+			nullableIntVal					m_axId;
+			CT_Scaling						*m_scaling;
 			nullableBoolVal					m_delete;
 			nullableComplexVal<CAxPos>		m_axPos;
-			CT_ChartLines							*m_majorGridlines;
-			CT_ChartLines							*m_minorGridlines;
-			CT_Title								*m_title;
-			CT_NumFmt								*m_numFmt;
+			CT_ChartLines					*m_majorGridlines;
+			CT_ChartLines					*m_minorGridlines;
+			CT_Title						*m_title;
+			CT_NumFmt						*m_numFmt;
 			nullableComplexVal<CTickMark>	m_majorTickMark;
 			nullableComplexVal<CTickMark>	m_minorTickMark;
 			nullableComplexVal<CTickLblPos> m_tickLblPos;
 			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
-			nullableUintVal					m_crossAx;
+			nullable<PPTX::Logic::TxBody>	m_oTxPr;
+			nullableIntVal					m_crossAx;
 			nullableComplexVal<CCrosses>	m_crosses;
 			nullableDoubleVal				m_crossesAt;
-			nullableUintVal					m_tickLblSkip;
-			nullableUintVal					m_tickMarkSkip;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-	/*--------------------------------------------------------------*/
+		};
+		class CT_SerAx : public CBaseAx
+		{
+		public:
+			nullableUintVal m_tickLblSkip;
+			nullableUintVal m_tickMarkSkip;
+
 			CT_SerAx();
-			~CT_SerAx();
+			virtual ~CT_SerAx();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_DateAx
+		class CT_DateAx : public CBaseAx
 		{
 		public:
-			nullableUintVal					m_axId;
-			CT_Scaling*						m_scaling;
-			nullableBoolVal					m_delete;
-			nullableComplexVal<CAxPos>		m_axPos;
-			CT_ChartLines*					m_majorGridlines;
-			CT_ChartLines*					m_minorGridlines;
-			CT_Title*						m_title;
-			CT_NumFmt*						m_numFmt;
-			nullableComplexVal<CTickMark>	m_majorTickMark;
-			nullableComplexVal<CTickMark>	m_minorTickMark;
-			nullableComplexVal<CTickLblPos> m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
-			nullableUintVal					m_crossAx;
-			nullableComplexVal<CCrosses>	m_crosses;
-			nullableDoubleVal				m_crossesAt;
 			nullableBoolVal					m_auto;
 			nullableStringVal				m_lblOffset;
 			nullableComplexVal<CTimeUnit>	m_baseTimeUnit;
@@ -981,45 +975,28 @@ namespace OOX
 			nullableComplexVal<CTimeUnit>	m_majorTimeUnit;
 			nullableDoubleVal				m_minorUnit;
 			nullableComplexVal<CTimeUnit>	m_minorTimeUnit;
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
+			
 			CT_DateAx();
-			~CT_DateAx();
+			virtual ~CT_DateAx();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
 
-		class CT_CatAx
+		class CT_CatAx : public CBaseAx
 		{
 		public:
-			nullableUintVal					m_axId;
-			CT_Scaling* m_scaling;
-			nullableBoolVal					m_delete;
-			nullableComplexVal<CAxPos>		m_axPos;
-			CT_ChartLines* m_majorGridlines;
-			CT_ChartLines* m_minorGridlines;
-			CT_Title* m_title;
-			CT_NumFmt* m_numFmt;
-			nullableComplexVal<CTickMark>	m_majorTickMark;
-			nullableComplexVal<CTickMark>	m_minorTickMark;
-			nullableComplexVal<CTickLblPos> m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>		m_oSpPr;
-			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
-			nullableUintVal					m_crossAx;
-			nullableComplexVal<CCrosses>	m_crosses;
-			nullableDoubleVal				m_crossesAt;
 			nullableBoolVal					m_auto;
 			nullableComplexVal<CLblAlgn>	m_lblAlgn;
 			nullableStringVal				m_lblOffset;
 			nullableUintVal					m_tickLblSkip;
 			nullableUintVal					m_tickMarkSkip;
 			nullableBoolVal					m_noMultiLvlLbl;
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_CatAx();
-			~CT_CatAx();
+			virtual ~CT_CatAx();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1027,10 +1004,10 @@ namespace OOX
 		class CT_DispUnitsLbl
 		{
 		public:
-			CT_Layout*								m_layout;
-			CT_Tx*									m_tx;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
+			CT_Layout*						m_layout;
+			CT_Tx*							m_tx;
+			nullable<PPTX::Logic::SpPr>		m_oSpPr;
+			nullable<PPTX::Logic::TxBody>	m_oTxPr;	
 
 			CT_DispUnitsLbl();
 			~CT_DispUnitsLbl();
@@ -1054,33 +1031,16 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_ValAx
+		class CT_ValAx : public CBaseAx
 		{
 		public:
-			nullableUintVal							m_axId;
-			CT_Scaling*								m_scaling;
-			nullableBoolVal							m_delete;
-			nullableComplexVal<CAxPos>				m_axPos;
-			CT_ChartLines*							m_majorGridlines;
-			CT_ChartLines*							m_minorGridlines;
-			CT_Title*								m_title;
-			CT_NumFmt*								m_numFmt;
-			nullableComplexVal<CTickMark>			m_majorTickMark;
-			nullableComplexVal<CTickMark>			m_minorTickMark;
-			nullableComplexVal<CTickLblPos>			m_tickLblPos;
-			nullable<PPTX::Logic::SpPr>				m_oSpPr;
-			nullable<PPTX::Logic::TxBody>			m_oTxPr;	
-			nullableUintVal							m_crossAx;
-			nullableComplexVal<CCrosses>			m_crosses;
-			nullableDoubleVal						m_crossesAt;
-			nullableComplexVal<CCrossBetween>		m_crossBetween;
-			nullableDoubleVal						m_majorUnit;
-			nullableDoubleVal						m_minorUnit;
-			CT_DispUnits*							m_dispUnits;
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+			nullableComplexVal<CCrossBetween>	m_crossBetween;
+			nullableDoubleVal					m_majorUnit;
+			nullableDoubleVal					m_minorUnit;
+			CT_DispUnits*						m_dispUnits;
 
 			CT_ValAx();
-			~CT_ValAx();
+			virtual ~CT_ValAx();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
@@ -1362,37 +1322,35 @@ namespace OOX
 		class CBaseSer
 		{
 		public:
-			nullable_uint									m_idx;
-			nullable_uint									m_order;
-			nullable<CT_SerTx>								m_tx;
-			nullable<PPTX::Logic::SpPr>						m_spPr;
-			nullable<CT_DLbls>								m_dLbls;
+			CBaseSer();
+			virtual ~CBaseSer();
+
+			nullableUintVal									m_idx;
+			nullableUintVal									m_order;
+			CT_SerTx*										m_tx;
+			nullable<PPTX::Logic::SpPr>						m_oSpPr;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
+			bool fromXML(const std::wstring nodeName, XmlUtils::CXmlLiteReader& oReader);
+			void toXML(NSStringUtils::CStringBuilder& writer) const;
 		};
 		//---------------------------------------------------------------------------------------------------
-		class CT_BubbleSer
+		class CT_BubbleSer : public CBaseSer
 		{
 		public:
-			nullableUintVal				m_idx;
-			nullableUintVal				m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			nullableBoolVal				m_invertIfNegative;
             std::vector<CT_DPt*>		m_dPt;
-			CT_DLbls*					m_dLbls;
             std::vector<CT_Trendline*>	m_trendline;
             std::vector<CT_ErrBars*>	m_errBars;
+			CT_DLbls*					m_dLbls;
 			CT_AxDataSource*			m_xVal;
 			CT_NumDataSource*			m_yVal;
 			CT_NumDataSource*			m_bubbleSize;
 			nullableBoolVal				m_bubble3D;
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_BubbleSer();
-			~CT_BubbleSer();
+			virtual  ~CT_BubbleSer();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1408,7 +1366,7 @@ namespace OOX
 			nullableStringVal m_bubbleScale;
 			nullableBoolVal m_showNegBubbles;
 			nullableComplexVal<CSizeRepresents> m_sizeRepresents;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_BubbleChart();
@@ -1441,19 +1399,15 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_SurfaceSer
+		class CT_SurfaceSer : public CBaseSer
 		{
 		public:
-			nullableUintVal				m_idx;
-			nullableUintVal				m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			CT_AxDataSource*			m_cat;
-			CT_NumDataSource*			m_val;
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
+			CT_AxDataSource*	m_cat;
+			CT_NumDataSource*	m_val;
 
 			CT_SurfaceSer();
-			~CT_SurfaceSer();
+			virtual ~CT_SurfaceSer();			
+			
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1464,7 +1418,7 @@ namespace OOX
 			nullableBoolVal m_wireframe;
             std::vector<CT_SurfaceSer*> m_ser;
 			CT_bandFmts* m_bandFmts;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_Surface3DChart();
@@ -1480,11 +1434,12 @@ namespace OOX
 			nullableBoolVal m_wireframe;
             std::vector<CT_SurfaceSer*> m_ser;
 			CT_bandFmts* m_bandFmts;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_SurfaceChart();
 			~CT_SurfaceChart();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1501,23 +1456,18 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_PieSer
+		class CT_PieSer : public CBaseSer
 		{
 		public:
-			nullableUintVal				m_idx;
-			nullableUintVal				m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
-			nullableUintVal				m_explosion;
+			nullableUintVal m_explosion;
 			std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
 			CT_AxDataSource* m_cat;
 			CT_NumDataSource* m_val;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 			CT_PieSer();
-			~CT_PieSer();
+			virtual ~CT_PieSer();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1527,14 +1477,14 @@ namespace OOX
 		public:
 			nullableComplexVal<COfPieType>	m_ofPieType;
 			nullableBoolVal					m_varyColors;
-            std::vector<CT_PieSer*> m_ser;
-			CT_DLbls* m_dLbls;
+            std::vector<CT_PieSer*>			m_ser;
+			CT_DLbls*						m_dLbls;
 			nullableStringVal				m_gapWidth;
 			nullableComplexVal<CSplitType>	m_splitType;
 			nullableDoubleVal				m_splitPos;
-			CT_custSplit* m_custSplit;
+			CT_custSplit*					m_custSplit;
 			nullableStringVal				m_secondPieSize;
-            std::vector<CT_ChartLines*> m_serLines;
+            std::vector<CT_ChartLines*>		m_serLines;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_OfPieChart();
@@ -1544,13 +1494,9 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_BarSer
+		class CT_BarSer : public CBaseSer
 		{
 		public:
-			nullableUintVal m_idx;
-			nullableUintVal m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			nullableBoolVal m_invertIfNegative;
 			CT_PictureOptions* m_pictureOptions;
 			std::vector<CT_DPt*> m_dPt;
@@ -1561,10 +1507,8 @@ namespace OOX
 			CT_NumDataSource* m_val;
 			nullableComplexVal<CShapeType> m_shape;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 			CT_BarSer();
-			~CT_BarSer();
+			virtual ~CT_BarSer();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
@@ -1581,7 +1525,7 @@ namespace OOX
 			nullableStringVal m_gapWidth;
 			nullableStringVal m_gapDepth;
 			nullableComplexVal<CShapeType> m_shape;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1603,7 +1547,7 @@ namespace OOX
 			nullableStringVal m_gapWidth;
 			nullableStringVal m_overlap;
             std::vector<CT_ChartLines*> m_serLines;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1665,13 +1609,9 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_ScatterSer
+		class CT_ScatterSer : public CBaseSer
 		{
 		public:
-			nullableUintVal m_idx;
-			nullableUintVal m_order;
-			CT_SerTx* m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			CT_Marker* m_marker;
             std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1681,10 +1621,9 @@ namespace OOX
 			CT_NumDataSource* m_yVal;
 			nullableBoolVal m_smooth;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 			CT_ScatterSer();
-			~CT_ScatterSer();
+			virtual ~CT_ScatterSer();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1696,7 +1635,7 @@ namespace OOX
 			nullableBoolVal m_varyColors;
             std::vector<CT_ScatterSer*> m_ser;
 			CT_DLbls* m_dLbls;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
 			CT_ScatterChart();
@@ -1705,23 +1644,18 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_RadarSer
+		class CT_RadarSer : public CBaseSer
 		{
 		public:
-			nullableUintVal m_idx;
-			nullableUintVal m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			CT_Marker* m_marker;
             std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
 			CT_AxDataSource* m_cat;
 			CT_NumDataSource* m_val;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 			CT_RadarSer();
-			~CT_RadarSer();
+			virtual ~CT_RadarSer();
+
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
@@ -1733,7 +1667,7 @@ namespace OOX
 			nullableBoolVal m_varyColors;
             std::vector<CT_RadarSer*> m_ser;
 			CT_DLbls* m_dLbls;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 			
@@ -1768,13 +1702,9 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_LineSer
+		class CT_LineSer : public CBaseSer
 		{
 		public:
-			nullableUintVal m_idx;
-			nullableUintVal m_order;
-			CT_SerTx*					m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			CT_Marker* m_marker;
 			std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1784,10 +1714,8 @@ namespace OOX
 			CT_NumDataSource* m_val;
 			nullableBoolVal m_smooth;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 			CT_LineSer();
-			~CT_LineSer();
+			virtual ~CT_LineSer();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
@@ -1802,7 +1730,7 @@ namespace OOX
 			CT_ChartLines* m_dropLines;
 			CT_ChartLines* m_hiLowLines;
 			CT_UpDownBars* m_upDownBars;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 			
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1822,7 +1750,7 @@ namespace OOX
 			CT_DLbls* m_dLbls;
 			CT_ChartLines* m_dropLines;
 			nullableStringVal m_gapDepth;
-            std::vector<unsigned int> m_axId;
+			std::vector<_INT32> m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1844,7 +1772,7 @@ namespace OOX
 			CT_UpDownBars*					m_upDownBars;
 			nullableBoolVal					m_marker;
 			nullableBoolVal					m_smooth;
-            std::vector<unsigned int>		m_axId;
+            std::vector<_INT32>				m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1855,13 +1783,9 @@ namespace OOX
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
 			EElementType getType();
 		};
-		class CT_AreaSer
+		class CT_AreaSer : public CBaseSer
 		{
 		public:
-			nullableUintVal m_idx;
-			nullableUintVal m_order;
-			CT_SerTx* m_tx;
-			nullable<PPTX::Logic::SpPr>	m_oSpPr;
 			CT_PictureOptions* m_pictureOptions;
 			std::vector<CT_DPt*> m_dPt;
 			CT_DLbls* m_dLbls;
@@ -1870,10 +1794,8 @@ namespace OOX
 			CT_AxDataSource* m_cat;
 			CT_NumDataSource* m_val;
 
-			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
-
 			CT_AreaSer();
-			~CT_AreaSer();
+			virtual ~CT_AreaSer();
 
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const;
@@ -1888,7 +1810,7 @@ namespace OOX
 			CT_DLbls*						m_dLbls;
 			CT_ChartLines*					m_dropLines;
 			nullableStringVal				m_gapDepth;
-			std::vector<unsigned int>		m_axId;
+			std::vector<_INT32>				m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 
@@ -1907,7 +1829,7 @@ namespace OOX
             std::vector<CT_AreaSer*>		m_ser;
 			CT_DLbls*						m_dLbls;
 			CT_ChartLines*					m_dropLines;
-			std::vector<unsigned int>		m_axId;
+			std::vector<_INT32>				m_axId;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList> m_extLst;
 

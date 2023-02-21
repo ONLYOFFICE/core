@@ -834,5 +834,46 @@ namespace OOX
 			nullable<CDataRefs>	m_oDataRefs;
 
 		};
+		class CUserProtectedRange : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CUserProtectedRange)
+			CUserProtectedRange();
+			virtual ~CUserProtectedRange();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			nullable_string				m_oName;
+			nullable_string				m_oSqref;
+			nullable_string				m_oText;
+
+			std::vector<std::wstring>	m_arUsersId;
+			std::vector<std::wstring>	m_arUsersGroupsId;
+		};
+
+		class CUserProtectedRanges : public WritingElementWithChilds<CUserProtectedRange>
+		{
+		public:
+			WritingElement_AdditionMethods(CUserProtectedRanges)
+			CUserProtectedRanges();
+			virtual ~CUserProtectedRanges();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+		};
+
 	} //Spreadsheet
 } // namespace OOX

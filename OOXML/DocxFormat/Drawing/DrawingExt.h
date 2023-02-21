@@ -56,6 +56,7 @@ namespace OOX
         class CPivotCacheDefinitionExt;
 		class CT_DLbl;
 		class CSeriesFiltering;
+		class CUserProtectedRanges;
 	}
 
 	namespace Drawing
@@ -158,7 +159,9 @@ namespace OOX
 			nullable_string m_oInstanceId;
 
 			nullable<OOX::Spreadsheet::CT_DLbl> m_oChartDataLabel;
-			//nullable<OOX::Spreadsheet::CSeriesFiltering> m_oChartFiltering;
+			nullable<OOX::Spreadsheet::CSeriesFiltering> m_oChartFiltering;
+
+			nullable<OOX::Spreadsheet::CUserProtectedRanges> m_oUserProtectedRanges;
 
 		};
 

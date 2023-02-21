@@ -632,6 +632,8 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
                 str = new GString(sLink.c_str());
                 dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
             }
+            else
+                str = NULL;
             RELEASEOBJECT(pLinkDest);
         }
         else if (kind == actionURI)

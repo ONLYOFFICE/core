@@ -5,10 +5,9 @@
 
 namespace SVG
 {
-	CLine::CLine(CObjectBase *pParent) : CObjectBase(pParent)
-	{
-
-	}
+	CLine::CLine(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent)
+	{}
 
 	void CLine::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -28,29 +27,15 @@ namespace SVG
 			m_oY2.SetValue(mAttributes.at(L"y2"), ushLevel, bHardMode);
 	}
 
-	bool CLine::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return false;
-
-		SaveNodeData(oNode);
-
-		return true;
-	}
-
-	bool CLine::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CLine::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
-		double dParentWidth = 0, dParentHeight = 0;
-		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
+		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
-		if (NULL != pContainer)
-		{
-			dParentWidth  = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-			dParentHeight = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-		}
+		double dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
+		double dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;
 
 		double dX1 = m_oX1.ToDouble(NSCSS::Pixel, dParentWidth);
 		double dY1 = m_oY1.ToDouble(NSCSS::Pixel, dParentHeight);
@@ -79,7 +64,7 @@ namespace SVG
 		return true;
 	}
 
-	void CLine::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CLine::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;

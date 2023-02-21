@@ -5,22 +5,22 @@
 
 namespace SVG
 {
-	class IDefObject
+	class CDefObject : public CSvgObject<CSvgGraphicsObject>
 	{
 	public:
-		virtual bool Apply(IRenderer* pRenderer, CDefs* pDefs, const TBounds &oObjectBounds) = 0;
+		CDefObject(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		virtual ~CDefObject();
+
+		virtual bool Apply(IRenderer* pRenderer, const CDefs* pDefs, const TBounds &oObjectBounds);
 	};
 
-	class CDefs
+
+	class CDefs : public CContainer<CDefObject>
 	{
 	public:
 		CDefs();
-		
-		CContainer& GetContainer();
 
-		IDefObject* GetDef(const std::wstring& wsId) const;
-	private:
-		CContainer m_oContainer;
+		CDefObject* GetDef(const std::wstring& wsId) const;
 	};
 }
 

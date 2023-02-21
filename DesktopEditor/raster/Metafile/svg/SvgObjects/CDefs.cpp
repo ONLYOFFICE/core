@@ -2,23 +2,29 @@
 
 namespace SVG
 {
-	CDefs::CDefs()
+	CDefObject::CDefObject(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
+	    : CSvgObject(oNode, pParent)
 	{}
 
-	CContainer &CDefs::GetContainer()
+	CDefObject::~CDefObject()
+	{}
+
+	bool CDefObject::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
 	{
-		return m_oContainer;
+		return true;
 	}
 
-	IDefObject *CDefs::GetDef(const std::wstring &wsId) const
+	CDefs::CDefs(){}
+
+	CDefObject *CDefs::GetDef(const std::wstring &wsId) const
 	{
-		if (m_oContainer.m_arObjects.empty())
+		if (m_arObjects.empty())
 			return NULL;
 
-		std::vector<CObjectBase*>::const_iterator oFound = std::find_if(m_oContainer.m_arObjects.begin(), m_oContainer.m_arObjects.end(), [&wsId](CObjectBase* pObject){ if (wsId == pObject->GetId()) return pObject;});
+		std::vector<CDefObject*>::const_iterator oFound = std::find_if(m_arObjects.begin(), m_arObjects.end(), [&wsId](CDefObject* pObject){ if (wsId == pObject->GetId()) return true; else return false;});
 
-		if (m_oContainer.m_arObjects.end() != oFound)
-			return dynamic_cast<IDefObject*>(*oFound);
+		if (m_arObjects.end() != oFound)
+			return dynamic_cast<CDefObject*>(*oFound);
 
 		return NULL;
 	}

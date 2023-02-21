@@ -35,9 +35,9 @@ namespace SVG
 		m_pFontManager = pFontManager;
 	}
 
-	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
 	{
-		if (NULL == pContainer)
+		if (wsFile.empty() || NULL == pFile)
 			return false;
 
 		std::wstring wsXml;
@@ -50,9 +50,9 @@ namespace SVG
 		return bResult;
 	}
 
-	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromString(const std::wstring &wsContent, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
 	{
-		if (NULL == pContainer)
+		if (wsContent.empty() || NULL == pFile)
 			return false;
 
 		XmlUtils::CXmlNode oXml;
@@ -71,44 +71,34 @@ namespace SVG
 		return LoadFromXmlNode(oXml, pContainer, pFile);
 	}
 
-	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::LoadFromXmlNode(XmlUtils::CXmlNode &oElement, CGraphicsContainer*& pContainer, CSvgFile* pFile) const
 	{
 		if (NULL == pFile || !oElement.IsValid())
 			return false;
 
-		if (pContainer->ReadFromXmlNode(oElement))
-		{
-			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+		if (NULL == pContainer)
+			pContainer = new CGraphicsContainer(oElement);
 
-			if (NULL != pSvgCalculator)
-				pSvgCalculator->SetData(*pContainer);
+		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 
-			return ReadChildrens(oElement, pContainer, pFile);
-		}
-		return false;
+		if (NULL != pSvgCalculator)
+			pSvgCalculator->SetData(pContainer);
+
+		return ReadChildrens(oElement, pContainer, pFile);
 	}
 
-	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CContainer *pContainer, CSvgFile *pFile) const
+	bool CSvgParser::ReadElement(XmlUtils::CXmlNode &oElement, CGraphicsContainer* pContainer, CSvgFile *pFile) const
 	{
 		if (NULL == pFile || NULL == pContainer)
 			return false;
 
 		std::wstring wsElementName = oElement.GetName();
 
-		CObjectBase *pObject = NULL;
+		CSvgGraphicsObject *pObject = NULL;
 
-		if (L"svg" == wsElementName || L"g" == wsElementName || L"pattern" == wsElementName ||
-		    L"linearGradient" == wsElementName || L"radialGradient" == wsElementName)
+		if (L"svg" == wsElementName || L"g" == wsElementName)
 		{
-			CContainer *pNewContainer = NULL;
-
-			switch (wsElementName.front())
-			{
-				case L'p': pNewContainer = new CPattern(pContainer); break;
-				case L'l': pNewContainer = new CLinearGradient(pContainer); break;
-				case L'r': pNewContainer = new CRadialGradient(pContainer); break;
-				default:   pNewContainer = new CContainer(pContainer); break;
-			}
+			CGraphicsContainer *pNewContainer = new CGraphicsContainer(oElement, pContainer);
 
 			if (NULL == pNewContainer)
 				return false;
@@ -122,38 +112,31 @@ namespace SVG
 				return false;
 		}
 		else if (L"line" == wsElementName)
-			pObject = new CLine(pContainer);
+			pObject = new CLine(oElement, pContainer);
 		else if (L"rect" == wsElementName)
-			pObject = new CRect(pContainer);
+			pObject = new CRect(oElement, pContainer);
 		else if (L"circle" == wsElementName)
-			pObject = new CCircle(pContainer);
+			pObject = new CCircle(oElement, pContainer);
 		else if (L"ellipse" == wsElementName)
-			pObject = new CEllipse(pContainer);
+			pObject = new CEllipse(oElement, pContainer);
 		else if (L"path" == wsElementName)
-			pObject = new CPath(pContainer);
+			pObject = new CPath(oElement, pContainer);
 		else if (L"text" == wsElementName)
-			pObject = new CText(pContainer, m_pFontManager);
+			pObject = new CText(oElement, pContainer, m_pFontManager);
 		else if (L"polyline" == wsElementName)
-			pObject = new CPolyline(pContainer);
+			pObject = new CPolyline(oElement, pContainer);
 		else if (L"polygon" == wsElementName)
-			pObject = new CPolygon(pContainer);
+			pObject = new CPolygon(oElement, pContainer);
 		else if (L"image" == wsElementName)
-			pObject = new CImage(pContainer);
-		else if (L"stop" == wsElementName)
-			pObject = new CStopElement(pContainer);
+			pObject = new CImage(oElement, pContainer);
 
 		if (NULL != pObject)
 		{
-			if (pObject->ReadFromXmlNode(oElement))
-			{
-				pContainer->AddObject(pObject);
-				const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+			pContainer->AddObject(pObject);
+			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 
-				if (NULL != pSvgCalculator)
-					pSvgCalculator->SetData(*pObject);
-			}
-			else
-				RELEASEOBJECT(pObject);
+			if (NULL != pSvgCalculator)
+				pSvgCalculator->SetData(pObject);
 		}
 		else
 			return false;
@@ -161,8 +144,52 @@ namespace SVG
 		return true;
 	}
 
-	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::ReadDefs(XmlUtils::CXmlNode &oElement, CDefs *pDefs, CSvgFile *pFile) const
 	{
+		if (NULL == pFile || NULL == pDefs)
+			return false;
+
+		std::wstring wsElementName = oElement.GetName();
+
+		if (L"defs" == wsElementName)
+			return ReadChildrens(oElement, pDefs, pFile);
+
+		CDefObject* pDefObject = NULL;
+
+		if(L"linearGradient" == wsElementName)
+			pDefObject = new CLinearGradient(oElement);
+		else if (L"radialGradient" == wsElementName)
+			pDefObject = new CRadialGradient(oElement);
+		else if (L"stop" == wsElementName)
+			pDefObject = new CStopElement(oElement);
+		else if (L"pattern" == wsElementName)
+		{
+			CPattern *pPattern = new CPattern(oElement);
+			if (ReadChildrens(oElement, pPattern, pFile))
+				pDefObject = pPattern;
+			else
+				delete pPattern;
+		}
+
+		if (NULL != pDefObject)
+		{
+			pDefs->AddObject(pDefObject);
+
+			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+
+			if (NULL != pSvgCalculator)
+				pSvgCalculator->SetData(pDefObject);
+		}
+
+		return true;
+	}
+
+	template<typename TypeContainer>
+	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile) const
+	{
+		if (NULL == pContainer || NULL == pFile)
+			return false;
+
 		XmlUtils::CXmlNodes arChilds;
 
 		oElement.GetChilds(arChilds);
@@ -174,7 +201,10 @@ namespace SVG
 			if (!arChilds.GetAt(unChildrenIndex, oChild))
 				break;
 
-			ReadElement(oChild, pContainer, pFile);
+			if (std::is_same_v<CDefs, TypeContainer>)
+				ReadDefs(oChild, (CDefs*)(pContainer), pFile);
+			else
+				ReadElement(oChild, (CGraphicsContainer*)pContainer, pFile);
 
 			oChild.Clear();
 		}

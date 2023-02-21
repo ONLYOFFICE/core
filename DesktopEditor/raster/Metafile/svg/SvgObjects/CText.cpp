@@ -14,15 +14,14 @@ namespace SVG
 {
 #define DefaultFontFamily L"Times New Roman"
 
-	CText::CText(CObjectBase *pParent, NSFonts::IFontManager* pFontManager)
-	    : CObjectBase(pParent), m_pFontManager(pFontManager)/*, m_oCoord({0, 0})*/
-	{}
+	CText::CText(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent, NSFonts::IFontManager* pFontManager)
+	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager)/*, m_oCoord({0, 0})*/
+	{
+		m_wsText = oNode.GetText();
+	}
 
 	CText::~CText()
-	{
-		for (CTspan* pTspan : m_arChildrens)
-			delete pTspan;
-	}
+	{}
 
 	void CText::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -74,73 +73,33 @@ namespace SVG
 		Normalize();
 	}
 
-	bool CText::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid() || NULL != dynamic_cast<CText*>(m_pParent))
-			return false;
-
-		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
-
-		SaveNodeData(oNode);
-
-		XmlUtils::CXmlNodes arChilds;
-
-		oNode.GetChilds(arChilds);
-
-		for (unsigned int unIndex = 0; unIndex < arChilds.GetCount(); ++unIndex)
-		{
-			XmlUtils::CXmlNode oChild;
-			arChilds.GetAt(unIndex, oChild);
-
-			if (L"tspan" == oChild.GetName())
-			{
-				CTspan *pTSpan = new CTspan(this);
-
-				if (pTSpan->ReadFromXmlNode(oChild))
-					m_arChildrens.push_back(pTSpan);
-			}
-		}
-
-		return true;
-	}
-
-	bool CText::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || m_wsText.empty())
 			return false;
 
-		double dParentWidth = 0, dParentHeight = 0;
-		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
+		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
-		if (NULL != pContainer)
-		{
-			dParentWidth  = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-			dParentHeight = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-		}
-
-		double dX = m_oX.ToDouble(NSCSS::Pixel, dParentWidth);
-		double dY = m_oY.ToDouble(NSCSS::Pixel, dParentHeight);
+		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
+		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 
 		Aggplus::CMatrix oOldMatrix(1., 0., .0, 1., 0., 0.);
 
-		int nPlug = 0;
+//		int nPlug = 0;
 
-		ApplyStyle(pRenderer,pDefs, nPlug, oOldMatrix);
+//		ApplyStyle(pRenderer,pDefs, nPlug, oOldMatrix);
 
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyFont(pRenderer, dX, dY);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
-//		for (CTspan* pTspan : m_arChildrens)
-//			pTspan->Draw(pRenderer, pBaseStyle);
-
 		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 		return true;
 	}
 
-	void CText::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CText::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 	}
 
@@ -256,8 +215,8 @@ namespace SVG
 		TBBox oBox = m_pFontManager->MeasureString2();
 		double dWidth = 25.4 / 72.0 * (oBox.fMaxX - oBox.fMinX);
 
-		for (const CTspan* pTspan : m_arChildrens)
-			dWidth += pTspan->GetWidth();
+//		for (const CTspan* pTspan : m_arChildrens)
+//			dWidth += pTspan->GetWidth();
 
 		return dWidth;
 	}
@@ -285,99 +244,5 @@ namespace SVG
 		oMatrix.SetElements(dM11, oMatrix.shy(), oMatrix.shx(), dM22, oMatrix.tx(), oMatrix.ty());
 
 		m_oTransform.SetMatrix(oMatrix);
-	}
-
-	CTspan::CTspan(CObjectBase *pParent) : CObjectBase(pParent), m_oCoord({0, 0})
-	{
-		if (NULL != pParent)
-		{
-			CText* pText = dynamic_cast<CText*>(pParent);
-			if (NULL != pText)
-				InheritData(*pText);
-		}
-	}
-
-	CTspan::~CTspan()
-	{
-
-	}
-
-	void CTspan::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{
-
-	}
-
-	bool CTspan::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		double dX = oNode.GetAttributeDouble(L"x", MININT8);
-		double dY = oNode.GetAttributeDouble(L"y", MININT8);
-
-		SaveNodeData(oNode);
-
-		if (dX != MININT8)
-			m_oCoord.dX = dX;
-		else if (NULL != m_pParent)
-		{
-			CText* pText = dynamic_cast<CText*>(m_pParent);
-			if (NULL != pText)
-				m_oCoord.dX += pText->GetWidth();
-		}
-
-		if (dY != MININT8)
-			m_oCoord.dY = dY;
-
-		dX = oNode.GetAttributeDouble(L"dx");
-		dY = oNode.GetAttributeDouble(L"dy");
-
-		m_oCoord.dX += dX;
-		m_oCoord.dY += dY;
-
-		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
-
-		return true;
-	}
-
-	bool CTspan::Draw(IRenderer *pRenderer, CDefs *pDefs) const
-	{
-		if (NULL == pRenderer || m_wsText.empty())
-			return false;
-
-//		double dX = m_oCoord.dX, dY = m_oCoord.dY;
-
-		pRenderer->ResetTransform();
-
-//		Aggplus::CMatrix oMatrix = oStyle.GetTransform();
-//		oMatrix.TransformPoint(dX, dY);
-
-//		ApplyFont(pRenderer, oStyle, oMatrix.sx());
-
-//		pRenderer->CommandDrawText(m_wsText, m_oCoord.dX, m_oCoord.dY, 0, 0);
-
-		return true;
-	}
-
-	void CTspan::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-	}
-
-	TBounds CTspan::GetBounds() const
-	{
-		return TBounds{0., 0., 0., 0.};
-	}
-
-	void CTspan::InheritData(const CText &oText)
-	{
-		m_pFontManager = oText.m_pFontManager;
-//		m_oCoord       = oText.m_oCoord;
-	}
-
-	double CTspan::GetWidth() const
-	{
-		m_pFontManager->LoadFontByName(L"Arial", 1, 0, 72, 72);
-//		m_pFontManager->SetCharSpacing(0 * 72 / 25.4);
-
-		m_pFontManager->LoadString1(m_wsText, 0, 0);
-		TBBox oBox = m_pFontManager->MeasureString2();
-		return (25.4 / 72.0 * (oBox.fMaxX - oBox.fMinX));
 	}
 }

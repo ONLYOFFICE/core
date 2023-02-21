@@ -11,36 +11,59 @@ namespace SVG
 {
 	class CSvgParser;
 
-	class CContainer : public CObjectBase
+	template<typename TypeObject>
+	class CContainer
 	{
 	public:
-		CContainer(CObjectBase* pParent = NULL);
-		CContainer(double dWidth, double dHeight, CObjectBase* pParent = NULL);
-		virtual ~CContainer();
+		CContainer(){};
+		~CContainer()
+		{
+			Clear();
+		};
 
-		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+		void Clear()
+		{
+			for (TypeObject* pObject : m_arObjects)
+				delete pObject;
+		}
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, CDefs *pDefs) const override;
+		 bool Empty() const
+		 {
+			return m_arObjects.empty();
+		 };
 
-		void Clear();
-
-		bool Empty() const;
-
-		TRect GetWindow() const;
-		TRect GetViewBox() const;
-
-		void AddObject(CObjectBase* pObject);
+		void AddObject(TypeObject* pObject)
+		{
+			if (NULL != pObject)
+				m_arObjects.push_back(pObject);
+		};
 	private:
-		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
-
-		TBounds GetBounds() const override;
-
-		std::vector<CObjectBase*> m_arObjects;
+		std::vector<TypeObject*> m_arObjects;
 
 		friend class CDefs;
 		friend class CPattern;
 		friend class CGradient;
+		friend class CGraphicsContainer;
+	};
+
+	class CGraphicsContainer : public CContainer<CSvgGraphicsObject>, public CSvgGraphicsObject
+	{
+	public:
+		CGraphicsContainer(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+
+		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
+
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs) const override;
+
+		TRect GetWindow() const;
+		TRect GetViewBox() const;
+	private:
+		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+
+		TBounds GetBounds() const override;
+
+		friend class CPattern;
 
 		TRect m_oWindow;
 		TRect m_oViewBox;

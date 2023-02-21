@@ -4,10 +4,9 @@
 
 namespace SVG
 {
-	CPath::CPath(CObjectBase *pParent) : CObjectBase(pParent)
-	{
-
-	}
+	CPath::CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent)
+	{}
 
 	CPath::~CPath()
 	{
@@ -24,17 +23,7 @@ namespace SVG
 			ReadFromString(mAttributes.at(L"d"));
 	}
 
-	bool CPath::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return false;
-
-		SaveNodeData(oNode);
-
-		return true;
-	}
-
-	bool CPath::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || m_arElements.empty())
 			return false;
@@ -59,7 +48,7 @@ namespace SVG
 		return true;
 	}
 
-	void CPath::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CPath::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;

@@ -1,107 +1,17 @@
 #include "CObjectBase.h"
 
 #include "CDefs.h"
-#include "CPattern.h"
 
 namespace SVG
 {
-	CObjectBase::CObjectBase(CObjectBase *pParent)
-	    : m_pParent(pParent)
+	CSvgGraphicsObject::CSvgGraphicsObject(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
+	    : CSvgObject(oNode, pParent)
 	{}
 
-	CObjectBase::~CObjectBase()
+	CSvgGraphicsObject::~CSvgGraphicsObject()
 	{}
 
-	std::vector<NSCSS::CNode> CObjectBase::GetFullPath() const
-	{
-		if (NULL == m_pParent)
-			return {m_oXmlNode};
-
-		std::vector<NSCSS::CNode> arObjects = m_pParent->GetFullPath();
-		arObjects.push_back(m_oXmlNode);
-		return arObjects;
-	}
-
-	void CObjectBase::SetData(const std::wstring wsStyles, unsigned short ushLevel, bool bHardMode)
-	{
-		if (wsStyles.empty())
-			return;
-
-		const std::vector<std::wstring> arWords = NSCSS::NS_STATIC_FUNCTIONS::GetWordsWithSigns(wsStyles, L":;");
-
-		if (arWords.empty())
-			return;
-
-		std::wstring wsProperty, wsValue;
-
-		std::map<std::wstring, std::wstring> mAttributes;
-
-		for (std::vector<std::wstring>::const_iterator iWord = arWords.begin(); iWord != arWords.end(); ++iWord)
-		{
-			if ((*iWord).back() == L':')
-			{
-				wsProperty = *iWord;
-				wsProperty.pop_back();
-			}
-			else
-			{
-				wsValue += *iWord;
-
-				if (L' ' == wsValue.front())
-					wsValue.erase(0, 1);
-
-				if (!wsValue.empty() && ((*iWord).back() == L';' || iWord == (arWords.end() - 1)))
-				{
-					if (wsValue.back() == L';')
-						wsValue.pop_back();
-
-					std::transform(wsProperty.begin(), wsProperty.end(), wsProperty.begin(), tolower);
-					std::transform(wsValue.begin(), wsValue.end(), wsValue.begin(), tolower);
-					mAttributes[wsProperty] = wsValue;
-					wsProperty.clear();
-					wsValue.clear();
-				}
-			}
-		}
-
-		if (!mAttributes.empty())
-			SetData(mAttributes, ushLevel, bHardMode);
-	}
-
-	std::wstring CObjectBase::GetId() const
-	{
-		return m_oXmlNode.m_sId;
-	}
-
-	void CObjectBase::SaveNodeData(XmlUtils::CXmlNode &oNode)
-	{
-		std::vector<std::wstring> arProperties, arValues;
-
-		oNode.GetAllAttributes(arProperties, arValues);
-
-		NSCSS::CNode oXmlNode;
-		m_oXmlNode.m_sName  = oNode.GetName();
-
-		for (unsigned int unIndex = 0; unIndex < arProperties.size(); ++unIndex)
-		{
-			if (L"class" == arProperties[unIndex])
-			{
-				m_oXmlNode.m_sClass = arValues[unIndex];
-				std::transform(m_oXmlNode.m_sClass.begin(), m_oXmlNode.m_sClass.end(), m_oXmlNode.m_sClass.begin(), std::towlower);
-			}
-			else if (L"id" == arProperties[unIndex])
-			{
-				m_oXmlNode.m_sId = arValues[unIndex];
-				std::transform(m_oXmlNode.m_sId.begin(), m_oXmlNode.m_sId.end(), m_oXmlNode.m_sId.begin(), std::towlower);
-			}
-			else if (L"style" == arProperties[unIndex])
-				m_oXmlNode.m_sStyle = arValues[unIndex];
-			else
-				m_oXmlNode.m_mAttrs.insert({arProperties[unIndex], arValues[unIndex]});
-		}
-	}
-
-	void CObjectBase::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	void CSvgGraphicsObject::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"stroke"))
 			m_oStroke.m_oColor.SetValue(mAttributes.at(L"stroke"), ushLevel, bHardMode);
@@ -110,19 +20,19 @@ namespace SVG
 			m_oStroke.m_oWidth.SetValue(mAttributes.at(L"stroke-width"), ushLevel, bHardMode);
 	}
 
-	void CObjectBase::SetFill(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	void CSvgGraphicsObject::SetFill(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"fill"))
 			m_oFill.SetValue(mAttributes.at(L"fill"), ushLevel, bHardMode);
 	}
 
-	void CObjectBase::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	void CSvgGraphicsObject::SetTransform(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"transform"))
 			m_oTransform.SetMatrix(mAttributes.at(L"transform"), ushLevel, bHardMode);
 	}
 
-	void CObjectBase::ApplyDefaultStroke(IRenderer *pRenderer, int &nTypePath) const
+	void CSvgGraphicsObject::ApplyDefaultStroke(IRenderer *pRenderer, int &nTypePath) const
 	{
 		nTypePath += c_nStroke;
 		pRenderer->put_PenSize(1);
@@ -130,7 +40,7 @@ namespace SVG
 		pRenderer->put_PenAlpha(255);
 	}
 
-	void CObjectBase::ApplyStroke(IRenderer *pRenderer, int &nTypePath, bool bUseDedault) const
+	void CSvgGraphicsObject::ApplyStroke(IRenderer *pRenderer, int &nTypePath, bool bUseDedault) const
 	{
 		if (!m_oStroke.m_oColor.Empty())
 		{
@@ -149,7 +59,7 @@ namespace SVG
 			ApplyDefaultStroke(pRenderer, nTypePath);
 	}
 
-	void CObjectBase::ApplyDefaultFill(IRenderer *pRenderer, int &nTypePath) const
+	void CSvgGraphicsObject::ApplyDefaultFill(IRenderer *pRenderer, int &nTypePath) const
 	{
 		nTypePath += c_nWindingFillMode;
 		pRenderer->put_BrushColor1(0);
@@ -157,7 +67,7 @@ namespace SVG
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 	}
 
-	void CObjectBase::ApplyFill(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, bool bUseDedault) const
+	void CSvgGraphicsObject::ApplyFill(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, bool bUseDedault) const
 	{
 		if (NSCSS::NSProperties::ColorType::ColorNone == m_oFill.GetType())
 			return;
@@ -178,7 +88,7 @@ namespace SVG
 			ApplyDefaultFill(pRenderer, nTypePath);
 	}
 
-	void CObjectBase::ApplyTransform(IRenderer *pRenderer, Aggplus::CMatrix& oOldMatrix) const
+	void CSvgGraphicsObject::ApplyTransform(IRenderer *pRenderer, Aggplus::CMatrix& oOldMatrix) const
 	{
 		double dM11, dM12, dM21, dM22, dRx, dRy;
 
@@ -194,12 +104,12 @@ namespace SVG
 		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 	}
 
-	bool CObjectBase::ApplyDef(IRenderer *pRenderer, CDefs *pDefs, const std::wstring &wsUrl) const
+	bool CSvgGraphicsObject::ApplyDef(IRenderer *pRenderer, const CDefs *pDefs, const std::wstring &wsUrl) const
 	{
 		if (NULL == pRenderer || NULL == pDefs || wsUrl.empty())
 			return false;
 
-		IDefObject *pDefObject = pDefs->GetDef(wsUrl);
+		CDefObject *pDefObject = pDefs->GetDef(wsUrl);
 
 		if (NULL == pDefObject)
 			return false;

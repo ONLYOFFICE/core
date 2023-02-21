@@ -4,8 +4,8 @@
 
 namespace SVG
 {
-	CStopElement::CStopElement(CObjectBase *pParent)
-	    : CObjectBase(pParent)
+	CStopElement::CStopElement(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CDefObject(oNode, pParent)
 	{}
 
 	SvgDigit CStopElement::GetOffset() const
@@ -34,31 +34,7 @@ namespace SVG
 			m_oColor.SetOpacity(mAttributes.at(L"stop-opacity"), ushLevel, bHardMode);
 	}
 
-	bool CStopElement::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return false;
-
-		SaveNodeData(oNode);
-
-		return true;
-	}
-
-	bool CStopElement::Draw(IRenderer *pRenderer, CDefs *pDefs) const
-	{
-		return true;
-	}
-
-	void CStopElement::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
-	{}
-
-	TBounds CStopElement::GetBounds() const
-	{
-		return {0., 0., 0., 0.};
-	}
-
-	CGradient::CGradient(CObjectBase *pParent)
-	    : CContainer(pParent)
+	CGradient::CGradient()
 	{}
 
 	bool CGradient::Apply(IRenderer *pRenderer) const
@@ -69,18 +45,10 @@ namespace SVG
 		std::vector<LONG> arColors;
 		std::vector<double> arPositions;
 
-		CStopElement *pStopElement = NULL;
-
-		for (CObjectBase* pObject : m_arObjects)
+		for (const CStopElement* pStopElement : m_arObjects)
 		{
-			pStopElement = dynamic_cast<CStopElement*>(pObject);
-			if (NULL != pStopElement)
-			{
-				arColors.push_back(((LONG)pStopElement->GetColor().ToInt() + (pStopElement->GetColor().GetOpacity() << 24)));
-				arPositions.push_back(pStopElement->GetOffset().ToDouble());
-
-				pStopElement = NULL;
-			}
+			arColors.push_back(((LONG)pStopElement->GetColor().ToInt() + (pStopElement->GetColor().GetOpacity() << 24)));
+			arPositions.push_back(pStopElement->GetOffset().ToDouble());
 		}
 
 		if (arColors.size() < 2)
@@ -91,8 +59,8 @@ namespace SVG
 		return true;
 	}
 
-	CLinearGradient::CLinearGradient(CObjectBase *pParent)
-	    : CGradient(pParent)
+	CLinearGradient::CLinearGradient(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CDefObject(oNode, pParent)
 	{}
 
 	void CLinearGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -110,7 +78,7 @@ namespace SVG
 			m_oY2.SetValue(mAttributes.at(L"y2"), ushLevel, bHardMode);
 	}
 
-	bool CLinearGradient::Apply(IRenderer *pRenderer, CDefs *pDefs, const TBounds &oObjectBounds)
+	bool CLinearGradient::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer))
 			return false;
@@ -146,8 +114,8 @@ namespace SVG
 		return true;
 	}
 
-	CRadialGradient::CRadialGradient(CObjectBase *pParent)
-	    : CGradient(pParent)
+	CRadialGradient::CRadialGradient(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CDefObject(oNode, pParent)
 	{}
 
 	void CRadialGradient::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -162,7 +130,7 @@ namespace SVG
 			m_oR.SetValue(mAttributes.at(L"r"), ushLevel, bHardMode);
 	}
 
-	bool CRadialGradient::Apply(IRenderer *pRenderer, CDefs *pDefs, const TBounds &oObjectBounds)
+	bool CRadialGradient::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
 	{
 		if (!CGradient::Apply(pRenderer))
 			return false;

@@ -5,20 +5,15 @@
 
 namespace SVG
 {
-	CContainer::CContainer(CObjectBase *pParent)
-	    : CObjectBase(pParent)
+	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent)
 	{}
 
-	CContainer::CContainer(double dWidth, double dHeight, CObjectBase *pParent)
-	    : CObjectBase(pParent), m_oWindow{0, 0, dWidth, dHeight}
+	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
-	CContainer::~CContainer()
-	{
-		Clear();
-	}
-
-	void CContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"x"))
 			m_oWindow.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
@@ -43,73 +38,55 @@ namespace SVG
 		}
 	}
 
-	bool CContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		std::wstring wsNodeName = oNode.GetName();
+//	bool CGraphicsContainer::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
+//	{
+//		std::wstring wsNodeName = oNode.GetName();
 
-		if (L"svg"     != wsNodeName &&
-		    L"g"       != wsNodeName &&
-		    L"xml"     != wsNodeName &&
-		    L"defs"    != wsNodeName &&
-		    L"pattern" != wsNodeName &&
-		    L"linearGradient" != wsNodeName &&
-		    L"radialGradient" != wsNodeName)
-			return false;
+//		if (L"svg"     != wsNodeName &&
+//		    L"g"       != wsNodeName &&
+//		    L"xml"     != wsNodeName /*&&
+//			L"defs"    != wsNodeName &&
+//			L"pattern" != wsNodeName &&
+//			L"linearGradient" != wsNodeName &&
+//			L"radialGradient" != wsNodeName*/)
+//			return false;
 
-//		Clear();
+////		Clear();
 
-		SaveNodeData(oNode);
+//		SaveNodeData(oNode);
 
-		return true;
-	}
+//		return true;
+//	}
 
-	bool CContainer::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
-		for (CObjectBase* pObject : m_arObjects)
+		for (const CSvgGraphicsObject* pObject : m_arObjects)
 			pObject->Draw(pRenderer, pDefs);
 
 		return true;
 	}
 
-	void CContainer::Clear()
-	{
-		m_arObjects.clear();
-	}
-
-	bool CContainer::Empty() const
-	{
-		return m_arObjects.empty();
-	}
-
-	TRect CContainer::GetWindow() const
+	TRect CGraphicsContainer::GetWindow() const
 	{
 		return m_oWindow;
 	}
 
-	TRect CContainer::GetViewBox() const
+	TRect CGraphicsContainer::GetViewBox() const
 	{
 		return m_oViewBox;
 	}
 
-	void CContainer::AddObject(CObjectBase *pObject)
-	{
-		if (NULL != pObject)
-			m_arObjects.push_back(pObject);
-	}
+	void CGraphicsContainer::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	{}
 
-	void CContainer::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
-	{
-
-	}
-
-	TBounds CContainer::GetBounds() const
+	TBounds CGraphicsContainer::GetBounds() const
 	{
 		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
 
-		for (const CObjectBase* pObject : m_arObjects)
+		for (const CSvgGraphicsObject* pObject : m_arObjects)
 		{
 			oTempBounds = pObject->GetBounds();
 			oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
@@ -120,4 +97,5 @@ namespace SVG
 
 		return oBounds;
 	}
+
 }

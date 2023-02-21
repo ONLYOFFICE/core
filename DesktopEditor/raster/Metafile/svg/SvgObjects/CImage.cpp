@@ -7,8 +7,8 @@
 
 namespace SVG
 {
-	CImage::CImage(CObjectBase *pParent)
-	    : CObjectBase(pParent)
+	CImage::CImage(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent)
 	{}
 
 	void CImage::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -27,37 +27,23 @@ namespace SVG
 		if (mAttributes.end() != mAttributes.find(L"height"))
 			m_oRect.m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
 
-		if (mAttributes.end() != mAttributes.find(L"href")) // TODO:: В дальнейшем необходимо реализовать
+		if (mAttributes.end() != mAttributes.find(L"href")) // TODO:: В дальнейшем возможно стоит реализовать
 			m_wsHref = mAttributes.at(L"href");             // отдельный класс CHref для всех типов ссылок
 	}
 
-	bool CImage::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return false;
-
-		SaveNodeData(oNode);
-
-		return true;
-	}
-
-	bool CImage::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || m_wsHref.empty())
 			return false;
 
-		double dParentWidth = 0, dParentHeight = 0;
-		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
+		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
-		if (NULL != pContainer)
-		{
-			dParentWidth  = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-			dParentHeight = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-		}
+		double dParentWidth  = oBounds.m_dRight  - oBounds.m_dLeft;
+		double dParentHeight = oBounds.m_dBottom - oBounds.m_dTop;
 
-		double dX      = m_oRect.m_oX.ToDouble(NSCSS::Pixel, dParentWidth);
-		double dY      = m_oRect.m_oY.ToDouble(NSCSS::Pixel, dParentHeight);
-		double dWidth  = m_oRect.m_oWidth.ToDouble(NSCSS::Pixel, dParentWidth);
+		double dX      = m_oRect.m_oX     .ToDouble(NSCSS::Pixel, dParentWidth);
+		double dY      = m_oRect.m_oY     .ToDouble(NSCSS::Pixel, dParentHeight);
+		double dWidth  = m_oRect.m_oWidth .ToDouble(NSCSS::Pixel, dParentWidth);
 		double dHeight = m_oRect.m_oHeight.ToDouble(NSCSS::Pixel, dParentHeight);
 
 		if (std::wstring::npos != m_wsHref.find(L"data:image/png;base64,"))
@@ -100,7 +86,7 @@ namespace SVG
 		return true;
 	}
 
-	void CImage::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
+	void CImage::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;

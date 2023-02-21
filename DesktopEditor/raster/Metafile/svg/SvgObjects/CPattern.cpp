@@ -5,8 +5,8 @@
 
 namespace SVG
 {
-	CPattern::CPattern(CObjectBase *pParent, NSFonts::IFontManager *pFontManager)
-	    : CContainer(pParent), m_pFontManager(pFontManager), m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
+	CPattern::CPattern(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	    : CGraphicsContainer(oNode, pParent), CDefObject(oNode, pParent), m_pFontManager(pFontManager), m_pImage(NULL), m_enPatternUnits(objectBoundingBox)
 	{}
 
 	CPattern::~CPattern()
@@ -17,7 +17,7 @@ namespace SVG
 
 	void CPattern::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		CContainer::SetData(mAttributes, ushLevel, bHardMode);
+		CGraphicsContainer::SetData(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"patternUnits"))
 		{
@@ -30,7 +30,7 @@ namespace SVG
 		}
 	}
 
-	void CPattern::Update(CDefs *pDefs, const TBounds &oObjectBounds)
+	void CPattern::Update(const CDefs *pDefs, const TBounds &oObjectBounds)
 	{
 		if (NULL != m_pImage)
 			delete m_pImage;
@@ -83,7 +83,7 @@ namespace SVG
 		pGrRenderer->SetTransform(dMMtoPx, 0., 0., dMMtoPx, 0., 0.);
 
 		//Отрисовка
-		CContainer::Draw(pGrRenderer, pDefs);
+		CGraphicsContainer::Draw(pGrRenderer, pDefs);
 
 		pGrRenderer->EndCommand(c_nImageType);
 		RELEASEINTERFACE(pGrRenderer);
@@ -94,7 +94,7 @@ namespace SVG
 		m_pImage->Create(pBgraData, oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
 	}
 
-	bool CPattern::Apply(IRenderer *pRenderer, CDefs *pDefs, const TBounds &oObjectBounds)
+	bool CPattern::Apply(IRenderer *pRenderer, const CDefs *pDefs, const TBounds &oObjectBounds)
 	{
 		Update(pDefs, oObjectBounds);
 

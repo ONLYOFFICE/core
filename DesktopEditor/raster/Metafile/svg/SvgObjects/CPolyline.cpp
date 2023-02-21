@@ -2,10 +2,8 @@
 
 namespace SVG
 {
-	CPolyline::CPolyline(CObjectBase *pParent) : CObjectBase(pParent)
-	{}
-
-	CPolyline::~CPolyline()
+	CPolyline::CPolyline(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent)
 	{}
 
 	void CPolyline::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -13,26 +11,12 @@ namespace SVG
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"points"))
+			m_arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(mAttributes.at(L"points"));
 	}
 
-	bool CPolyline::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return false;
-
-		std::wstring wsValue = oNode.GetAttribute(L"points");
-
-		if (wsValue.empty())
-			return false;
-
-		m_arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(wsValue);
-
-		SaveNodeData(oNode);
-
-		return m_arValues.size() >= 4;
-	}
-
-	bool CPolyline::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CPolyline::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer || m_arValues.size() < 4)
 			return false;
@@ -49,7 +33,7 @@ namespace SVG
 		return true;
 	}
 
-	void CPolyline::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CPolyline::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
@@ -74,7 +58,7 @@ namespace SVG
 		return oBounds;
 	}
 
-	void CPolyline::BeginDraw(IRenderer *pRenderer, CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CPolyline::BeginDraw(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		ApplyStyle(pRenderer, pDefs, nTypePath, oOldMatrix);
 
@@ -97,7 +81,8 @@ namespace SVG
 		pRenderer->PathCommandEnd();
 	}
 
-	CPolygon::CPolygon(CObjectBase *pParent) : CPolyline(pParent)
+	CPolygon::CPolygon(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CPolyline(oNode, pParent)
 	{}
 
 	CPolygon::~CPolygon()

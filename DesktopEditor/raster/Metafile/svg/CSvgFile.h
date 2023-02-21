@@ -29,16 +29,13 @@ class GRAPHICS_DECL CSvgFile
 		void AddStyles(const std::wstring& wsStyles);
 		void AddDefs(XmlUtils::CXmlNode& oNode);
 
-		void ClearDefs();
-
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
-		void Init();
 
-		SVG::CSvgParser    *m_pParser;
-		SVG::CContainer    *m_pContainer;
-		SVG::CDefs          m_oDefs;
-		SVG::CSvgCalculator m_oSvgCalculator;
+		SVG::CSvgParser          m_oParser;
+		SVG::CGraphicsContainer  *m_pContainer;
+		SVG::CDefs               m_oDefs;
+		SVG::CSvgCalculator      m_oSvgCalculator;
 };
 
 #endif // CSVGFILE_H

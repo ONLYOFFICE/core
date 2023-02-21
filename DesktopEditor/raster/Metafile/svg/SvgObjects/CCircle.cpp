@@ -5,10 +5,9 @@
 
 namespace SVG
 {
-	CCircle::CCircle(CObjectBase *pParent) : CObjectBase(pParent)
-	{
-
-	}
+	CCircle::CCircle(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
+	    : CSvgGraphicsObject(oNode, pParent)
+	{}
 
 	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -26,32 +25,15 @@ namespace SVG
 			m_oR.SetValue(mAttributes.at(L"r"), ushLevel, bHardMode);
 	}
 
-	bool CCircle::ReadFromXmlNode(XmlUtils::CXmlNode &oNode)
-	{
-		if (!oNode.IsValid())
-			return false;
-
-		SaveNodeData(oNode);
-
-		return true;
-	}
-
-	bool CCircle::Draw(IRenderer *pRenderer, CDefs *pDefs) const
+	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
 		if (NULL == pRenderer)
 			return false;
 
-		double dParentWidth = 0, dParentHeight = 0;
-		CContainer *pContainer = dynamic_cast<CContainer*>(m_pParent);
+		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
 
-		if (NULL != pContainer)
-		{
-			dParentWidth  = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-			dParentHeight = pContainer->GetWindow().m_oWidth.ToDouble(NSCSS::Pixel);
-		}
-
-		double dX = m_oCx.ToDouble(NSCSS::Pixel, dParentWidth);
-		double dY = m_oCy.ToDouble(NSCSS::Pixel, dParentHeight);
+		double dX = m_oCx.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
+		double dY = m_oCy.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 		double dR = m_oR .ToDouble(NSCSS::Pixel);
 
 		int nPathType = 0;
@@ -77,7 +59,7 @@ namespace SVG
 		return true;
 	}
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	void CCircle::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;

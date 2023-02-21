@@ -3,15 +3,11 @@
 #include "SvgObjects/CContainer.h"
 
 CSvgFile::CSvgFile()
-    : m_pParser(NULL), m_pContainer(NULL)
-{
-	Init();
-}
+    : m_pContainer(NULL)
+{}
 
 CSvgFile::~CSvgFile()
 {
-	RELEASEOBJECT(m_pParser);
-
 	if (NULL != m_pContainer)
 		delete m_pContainer;
 }
@@ -23,9 +19,12 @@ bool CSvgFile::ReadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 
 bool CSvgFile::OpenFromFile(const std::wstring &wsFile)
 {
-	Init();
+	if (NULL != m_pContainer)
+		m_pContainer->Clear();
 
-	return m_pParser->LoadFromFile(wsFile, m_pContainer, this);
+	m_oDefs.Clear();
+	m_oSvgCalculator.Clear();
+	return m_oParser.LoadFromFile(wsFile, m_pContainer, this);
 }
 
 bool CSvgFile::Load(const std::wstring &wsContent)
@@ -65,8 +64,7 @@ const SVG::CSvgCalculator *CSvgFile::GetSvgCalculator() const
 
 void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 {
-	if (NULL != m_pParser)
-		m_pParser->SetFontManager(pFontManager);
+	m_oParser.SetFontManager(pFontManager);
 }
 
 void CSvgFile::AddStyles(const std::wstring &wsStyles)
@@ -76,20 +74,12 @@ void CSvgFile::AddStyles(const std::wstring &wsStyles)
 
 void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
 {
-	if (L"defs" == oNode.GetName())
-		m_pParser->LoadFromXmlNode(oNode, &m_oDefs.GetContainer(), this);
-	else
-		m_pParser->ReadElement(oNode, &m_oDefs.GetContainer(), this);
-}
-
-void CSvgFile::ClearDefs()
-{
-	m_oDefs.GetContainer().Clear();
+	m_oParser.ReadDefs(oNode, &m_oDefs, this);
 }
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 {
-	if (NULL == pRenderer || NULL == m_pContainer)
+	if (NULL == pRenderer || NULL == m_pContainer || m_pContainer->Empty())
 		return false;
 
 	SVG::TRect oWindow  = m_pContainer->GetWindow();
@@ -165,15 +155,4 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	pRenderer->SetTransform(oldTransform[0], oldTransform[1], oldTransform[2], oldTransform[3], oldTransform[4], oldTransform[5]);
 
 	return bResult;
-}
-
-void CSvgFile::Init()
-{
-	if (NULL == m_pParser)
-		m_pParser = new SVG::CSvgParser();
-
-	if (NULL == m_pContainer)
-		m_pContainer = new SVG::CContainer();
-	else
-		m_pContainer->Clear();
 }

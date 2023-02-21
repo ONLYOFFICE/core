@@ -5,22 +5,20 @@
 
 namespace SVG
 {
-	class CPolyline : public CObjectBase
+	class CPolyline : public CSvgGraphicsObject
 	{
 	public:
-		CPolyline(CObjectBase* pParent = NULL);
-		virtual ~CPolyline();
+		CPolyline(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
-		bool ReadFromXmlNode(XmlUtils::CXmlNode& oNode) override;
-		bool Draw(IRenderer* pRenderer, CDefs *pDefs) const override;
+		bool Draw(IRenderer* pRenderer, const CDefs *pDefs) const override;
 	private:
-		void ApplyStyle(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 
-		void BeginDraw(IRenderer* pRenderer, CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const;
+		void BeginDraw(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const;
 		void DrawLines(IRenderer* pRenderer) const;
 		virtual void EndDraw(IRenderer* pRenderer, int& nTypePath) const;
 
@@ -30,7 +28,7 @@ namespace SVG
 	class CPolygon : public CPolyline
 	{
 	public:
-		CPolygon(CObjectBase* pParent = NULL);
+		CPolygon(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
 		virtual ~CPolygon();
 
 		void EndDraw(IRenderer* pRenderer, int& nTypePath) const override;

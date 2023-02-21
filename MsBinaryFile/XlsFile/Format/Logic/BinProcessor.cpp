@@ -160,19 +160,17 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 			// We don't update ret_val here because we are reading to the copy of the object.
 			// And the real object will remain uninitialized
 			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)			
-			for(BaseObjectPtrList::iterator it = wanted_objects.begin()/*, itEnd = */; 
-							it != wanted_objects.end();)
+			for (BaseObjectPtrList::iterator it = wanted_objects.begin(); it != wanted_objects.end();)
 			{
-				const BaseObjectPtr w_object = *it;				
-				if(w_object->read(reader_, parent_, false))
+				const BaseObjectPtr w_object = *it;			
+				BaseObjectPtrList::iterator it_del = wanted_objects.end();
+				if (w_object->read(reader_, parent_, false))
 				{
-					// Remove successfully read object from the wanted objects list
-					wanted_objects.erase(++it);
+					it_del = it;
 				}
-				else
-				{
-					++it;
-				}
+				++it;
+				if (it_del != wanted_objects.end())
+					wanted_objects.erase(it_del);
 			}
 		}
 	}

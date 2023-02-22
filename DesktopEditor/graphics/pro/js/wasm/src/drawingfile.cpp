@@ -31,7 +31,7 @@ WASM_EXPORT void InitializeFontsBase64(BYTE* pDataSrc, int nLenSrc)
 	if (!g_applicationFonts)
 	{
 		g_applicationFonts = NSFonts::NSApplication::Create();
-		
+
 		int nLenDst = NSBase64::Base64DecodeGetRequiredLength(nLenSrc);
 		BYTE* pDataDst = new BYTE[nLenDst];
 
@@ -40,7 +40,7 @@ WASM_EXPORT void InitializeFontsBase64(BYTE* pDataSrc, int nLenSrc)
 			RELEASEARRAYOBJECTS(pDataDst);
 			return;
 		}
-		
+
 		g_applicationFonts->InitializeFromBin(pDataDst, (unsigned int)nLenDst);
 		RELEASEARRAYOBJECTS(pDataDst);
 	}
@@ -92,7 +92,7 @@ WASM_EXPORT CGraphicsFileDrawing* Open(BYTE* data, LONG size, const char* passwo
 
 	// всегда пересоздаем сторадж
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
-	
+
 	CGraphicsFileDrawing* pGraphics = new CGraphicsFileDrawing(g_applicationFonts);
 	pGraphics->Open(data, size, GetType(data, size), password);
 	return pGraphics;
@@ -542,12 +542,41 @@ int main(int argc, char* argv[])
 					{
 						nPathLength = READ_INT(pWidgets + i);
 						i += 4;
-						std::cout << std::to_string(j) << "Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						std::cout << std::to_string(j) << " Opt1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 						i += nPathLength;
 						nPathLength = READ_INT(pWidgets + i);
 						i += 4;
-						std::cout << std::to_string(j) << "Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 						i += nPathLength;
+					}
+				}
+			}
+			if (nFlags & (1 << 19))
+			{
+				int nActLength = READ_INT(pWidgets + i);
+				i += 4;
+				for (int j = 0; j < nActLength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << std::to_string(j) << " AA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::string sType((char*)(pWidgets + i), nPathLength);
+					std::cout << "Type " << sType << ", ";
+					i += nPathLength;
+
+					if (sType == "JavaScript")
+					{
+						if (nFlags & (1 << 20))
+						{
+							nPathLength = READ_INT(pWidgets + i);
+							i += 4;
+							std::cout << "JS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+							i += nPathLength;
+						}
 					}
 				}
 			}

@@ -936,7 +936,7 @@ BYTE* CPdfReader::GetWidgets()
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
-            if (sValue.empty() && oField.dictLookup("AS", &oObj) && oObj.isName())
+            if (oField.dictLookup("AS", &oObj) && oObj.isName())
                 sValue = oObj.getName();
             oObj.free();
 
@@ -1147,49 +1147,41 @@ BYTE* CPdfReader::GetWidgets()
         Object oAA;
         if (oField.dictLookup("AA", &oAA) && oAA.isDict())
         {
-            for (int j = 0, nLength = oAA.dictGetLength(); j < nLength; ++j)
+            nFlags |= (1 << 19);
+            int nLength = oAA.dictGetLength();
+            oRes.AddInt(nLength);
+            for (int j = 0; j < nLength; ++j)
             {
                 std::string sAA(oAA.dictGetKey(j));
+                oRes.WriteString((BYTE*)sAA.c_str(), sAA.length());
 
-                if (sAA == "E")
+                Object oAction, oType;
+                if (!oAA.dictGetVal(j, &oAction) || !oAction.isDict() || !oAction.dictLookup("S", &oType) || !oType.isName())
                 {
+                    oRes.WriteString(NULL, 0);
+                    oAction.free();
+                    oType.free();
+                    continue;
                 }
-                else if (sAA == "X")
-                {
 
-                }
-                else if (sAA == "D")
+                std::string sName(oType.getName());
+                oRes.WriteString((BYTE*)sName.c_str(), sName.length());
+                oType.free();
+                if (sName == "JavaScript")
                 {
-
+                    // 21 - JS
+                    Object oJS;
+                    if (oAction.dictLookup("JS", &oJS) && oJS.isString())
+                    {
+                        TextString* s = new TextString(oJS.getString());
+                        std::string sJS = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                        delete s;
+                        nFlags |= (1 << 20);
+                        oRes.WriteString((BYTE*)sJS.c_str(), sJS.length());
+                    }
+                    oJS.free();
                 }
-                else if (sAA == "U")
-                {
-
-                }
-                else if (sAA == "Fo")
-                {
-
-                }
-                else if (sAA == "Bl")
-                {
-
-                }
-                else if (sAA == "PO")
-                {
-
-                }
-                else if (sAA == "PC")
-                {
-
-                }
-                else if (sAA == "PV")
-                {
-
-                }
-                else if (sAA == "PI")
-                {
-
-                }
+                oAction.free();
             }
         }
         oAA.free();

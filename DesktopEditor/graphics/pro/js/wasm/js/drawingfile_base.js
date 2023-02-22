@@ -488,7 +488,7 @@
 					rec["value"] = reader.readString();
 				if (flags & (1 << 10))
 				{
-					var n = reader.readInt();
+					let n = reader.readInt();
 					rec["opt"] = [];
 					for (let i = 0; i < n; ++i)
 					{
@@ -510,6 +510,24 @@
 			rec["readonly"] = rec["flag"] & (1 << 0); // ReadOnly
 			rec["required"] = rec["flag"] & (1 << 1); // Required
 			rec["noexport"] = rec["flag"] & (1 << 2); // NoExport
+			
+			if (flags & (1 << 19))
+			{
+				let n = reader.readInt();
+				rec["AA"] = {};
+				for (let i = 0; i < n; ++i)
+				{
+					var AAType = reader.readString();
+					rec["AA"][AAType] = {};
+					var SType = reader.readString();
+					rec["AA"][AAType]["S"] = SType;
+					if (SType == "JavaScript")
+					{
+						if (flags & (1 << 20))
+							rec["AA"][AAType]["JS"] = reader.readString();
+					}
+				}
+			}
 
 			res.push(rec);
 		}

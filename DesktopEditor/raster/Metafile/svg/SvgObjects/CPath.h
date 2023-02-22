@@ -40,6 +40,8 @@ namespace SVG
 		virtual bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) = 0;
 		virtual void Draw(IRenderer* pRenderer) const = 0;
 
+		virtual IPathElement* Copy() const = 0;
+
 		TBounds GetBounds() const
 		{
 			TBounds oBounds{0., 0., 0., 0.};
@@ -112,6 +114,11 @@ namespace SVG
 
 			pRenderer->PathCommandMoveTo(oPoint.dX, oPoint.dY);
 		}
+
+		CMoveElement* Copy() const override
+		{
+			return new CMoveElement(*this);
+		}
 	private:
 		Point GetPoint(int nIndex) const override
 		{
@@ -175,6 +182,11 @@ namespace SVG
 			for (unsigned int unIndex = 0; unIndex < m_arPoints.size(); ++unIndex)
 				pRenderer->PathCommandLineTo(m_arPoints[unIndex].dX, m_arPoints[unIndex].dY);
 		}
+
+		CLineElement* Copy() const override
+		{
+			return new CLineElement(*this);
+		}
 	private:
 		Point GetPoint(int nIndex) const override
 		{
@@ -229,6 +241,11 @@ namespace SVG
 
 			return false;
 		}
+
+		CVLineElement* Copy() const override
+		{
+			return new CVLineElement(*this);
+		}
 	};
 
 	class CHLineElement : public CLineElement
@@ -274,6 +291,11 @@ namespace SVG
 			}
 
 			return false;
+		}
+
+		CHLineElement* Copy() const override
+		{
+			return new CHLineElement(*this);
 		}
 	};
 
@@ -369,6 +391,11 @@ namespace SVG
 //			}
 		}
 
+		CCBezierElement* Copy() const override
+		{
+			return new CCBezierElement(*this);
+		}
+
 		void Rotate(double dAngle, Point oCenter)
 		{
 //			Matrix rotate = Matrix::Rotate(Point{oCenter.dX, oCenter.dY}, -dAngle * M_PI / 180);
@@ -462,6 +489,11 @@ namespace SVG
 				                              m_arPoints[unIndex + 1].dX, m_arPoints[unIndex + 1].dY,
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
 		}
+
+		CSBezierElement* Copy() const override
+		{
+			return new CSBezierElement(*this);
+		}
 	private:
 		Point GetPoint(int nIndex) const override
 		{
@@ -537,6 +569,11 @@ namespace SVG
 				pRenderer->PathCommandCurveTo(m_arPoints[unIndex + 0].dX, m_arPoints[unIndex + 0].dY,
 				                              m_arPoints[unIndex + 1].dX, m_arPoints[unIndex + 1].dY,
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
+		}
+
+		CQBezierElement* Copy() const override
+		{
+			return new CQBezierElement(*this);
 		}
 	private:
 		Point GetPoint(int nIndex) const override
@@ -632,6 +669,11 @@ namespace SVG
 				                              m_arPoints[unIndex + 1].dX, m_arPoints[unIndex + 1].dY,
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
 		}
+
+		CTBezierElement* Copy() const override
+		{
+			return new CTBezierElement(*this);
+		}
 	private:
 		Point GetPoint(int nIndex) const override
 		{
@@ -667,21 +709,23 @@ namespace SVG
 			if (NULL != pPrevElement)
 				oLastPoint = pPrevElement->GetPoint(-1);
 
-			if (!bRelativeCoordinate || NULL == pPrevElement)
+			for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 7)
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 7)
-				{
-					m_arRadius.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arXAxisRotation.push_back(arValues[unIndex + 2]);
-					m_arLargeArcFlag.push_back(arValues[unIndex + 3]);
-					m_arSweepFlag.push_back(arValues[unIndex + 4]);
-					m_arPoints.push_back(oLastPoint);
+				m_arRadius.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
+				m_arXAxisRotation.push_back(arValues[unIndex + 2]);
+				m_arLargeArcFlag.push_back(arValues[unIndex + 3]);
+				m_arSweepFlag.push_back(arValues[unIndex + 4]);
 
-					oLastPoint = Point{arValues[unIndex + 5], arValues[unIndex + 6]};
+				m_arPoints.push_back(oLastPoint);
 
-				    m_arPoints.push_back(oLastPoint);
-				}
-			}
+				if (bRelativeCoordinate)
+					oLastPoint += Point{arValues[unIndex + 5], arValues[unIndex + 6]};
+			    else
+			        oLastPoint = Point{arValues[unIndex + 5], arValues[unIndex + 6]};
+
+		        m_arPoints.push_back(oLastPoint);
+	        }
+
 
 			return false;
 		}
@@ -691,38 +735,31 @@ namespace SVG
 			if (m_arPoints.empty())
 				return;
 
-			//TODO: данные вычисления неверные, поэтому необходимо написать реализацию заново
+			//TODO: данные вычисления необходимо проверить
 
 			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() / 2; ++unIndex)
 			{
-				int	LargeFlag		=	static_cast<int> ( m_arLargeArcFlag[unIndex] );
-				int	SweepFlag		=	static_cast<int> ( m_arSweepFlag[unIndex] );
+				int	LargeFlag		=	m_arLargeArcFlag[unIndex];
+				int	SweepFlag		=	m_arSweepFlag[unIndex];
 
-				Point Start     =   m_arPoints[2 * unIndex];
-				Point End		=	m_arPoints[2 * unIndex + 1];
+				Point Start         =	m_arPoints[unIndex + 0];
+				Point End			=	m_arPoints[unIndex + 1];
 
-				Point Center	=	GetCenter ( LargeFlag, SweepFlag, m_arRadius[unIndex], Start, End );
+				Point Center		=	GetCenter ( LargeFlag, SweepFlag, m_arRadius[unIndex], Start, End );
 
-				double dStartAngle	=	GetAngle ( Center.dX, Center.dY, Start.dX, Start.dY );
-				double dEndAngle	=	GetAngle ( Center.dX, Center.dY, End.dX, End.dY );
+				double dStartAngle	=	GetAngle ( Center.dX, Center.dY, Start.dX, Start.dY);
+				double dEndAngle	=	GetAngle ( Center.dX, Center.dY, End.dX, End.dY);
 
-				double dSweep	=	0.0;
+				double dSweep		=	0.0;
 
-				GetArcAngles ( LargeFlag, SweepFlag, dStartAngle, dEndAngle, dSweep );
-
-				if (0.0 != m_arXAxisRotation[unIndex])
-				{
-					CCBezierElement oCBezierElement = ConvertToCBezier(Center.dX - m_arRadius[unIndex].dX, Center.dY - m_arRadius[unIndex].dY, m_arRadius[unIndex].dX * 2.0, m_arRadius[unIndex].dY * 2.0, dStartAngle, dSweep);
-
-					oCBezierElement.Rotate(-m_arXAxisRotation[unIndex], Center);
-
-					oCBezierElement.Draw(pRenderer);
-				}
-				else
-				{
+				if (GetArcAngles ( LargeFlag, SweepFlag, dStartAngle, dEndAngle, dSweep ))
 					pRenderer->PathCommandArcTo(Center.dX - m_arRadius[unIndex].dX, Center.dY - m_arRadius[unIndex].dY, m_arRadius[unIndex].dX * 2.0, m_arRadius[unIndex].dY * 2.0, dStartAngle, dSweep);
-				}
 			}
+		}
+
+		CArcElement* Copy() const override
+		{
+			return new CArcElement(*this);
 		}
 	private:
 	    Point GetPoint(int nIndex) const override
@@ -950,6 +987,13 @@ namespace SVG
 			return Point { ( Mid.dX + Ch * Rot.dX ) / RadF, Mid.dY + Ch * Rot.dY };
 		}
 
+		double GetAngle(const Point& oFirstPoint, const Point& oSecondPoint) const
+		{
+			Point oThirdPoint{oFirstPoint.dX - oSecondPoint.dX, oFirstPoint.dY - oSecondPoint.dX};
+
+			return std::atan2(oThirdPoint.dY, oThirdPoint.dX) * (180. / M_PI);
+		}
+
 		double GetAngle(const double& CX, const double& CY, const double& X, const double& Y) const
 		{
 			double dAngle = 0.0;
@@ -985,7 +1029,7 @@ namespace SVG
 
 			if ( (X - CX) > 0.0 && (Y - CY) < 0.0 )			//	4
 			{
-				dAngle	+=	270.0;
+				dAngle	+=	-90.0;
 			}
 
 			return dAngle;
@@ -1075,6 +1119,11 @@ namespace SVG
 		{
 			pRenderer->PathCommandClose();
 		}
+
+		CCloseElement* Copy() const override
+		{
+			return new CCloseElement(*this);
+		}
 	private:
 		Point GetPoint(int nIndex) const override
 		{
@@ -1091,6 +1140,8 @@ namespace SVG
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
+
+		CPath* Copy() const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 

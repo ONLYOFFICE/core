@@ -29,6 +29,11 @@ namespace SVG
 		return true;
 	}
 
+	CPolyline *CPolyline::Copy() const
+	{
+		return new CPolyline(*this);
+	}
+
 	void CPolyline::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)

@@ -20,6 +20,7 @@ namespace NSCSS
 		friend class CMatrix;
 		friend class CDigit;
 		friend class CColor;
+		friend class CEnum;
 
 		T            m_oValue;
 		unsigned int m_unLevel;
@@ -214,6 +215,29 @@ namespace NSCSS
 		TransformType GetType() const;
 
 		bool operator==(const CMatrix& oMatrix) const;
+	};
+
+	class CEnum : public CValue<int>
+	{
+		std::map<std::wstring, int> m_mMap;
+	public:
+		CEnum();
+
+		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
+		void SetMapping(const std::map<std::wstring, int>& mMap);
+
+		bool Empty() const override;
+		void Clear() override;
+
+		CEnum &operator =(int nValue);
+
+		bool operator==(int nValue) const;
+		bool operator!=(int nValue) const;
+
+		int ToInt() const override;
+	private:
+		double ToDouble() const override;
+		std::wstring ToWString() const override;
 	};
 
 	// PROPERTIES

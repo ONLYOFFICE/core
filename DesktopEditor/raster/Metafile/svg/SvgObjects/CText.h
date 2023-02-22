@@ -17,6 +17,8 @@ namespace SVG
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
+
+		CText* Copy() const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;

@@ -59,6 +59,8 @@ namespace SVG
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
+
+		CSvgGraphicsObject* GetObject(const std::wstring& wsId) const;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 

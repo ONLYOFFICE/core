@@ -6,10 +6,21 @@ namespace SVG
 {
 	CSvgGraphicsObject::CSvgGraphicsObject(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
 	    : CSvgObject(oNode, pParent)
-	{}
+	{
+		m_oStroke.m_oLineCap.SetMapping({std::make_pair(L"butt", Aggplus::LineCapFlat), std::make_pair(L"round", Aggplus::LineCapRound), std::make_pair(L"square", Aggplus::LineCapSquare)});
+		m_oStroke.m_oLineCap = Aggplus::LineCapFlat;
+
+		m_oStroke.m_oLineJoin.SetMapping({std::make_pair(L"arcs", Aggplus::LineJoinMiter), std::make_pair(L"bevel", Aggplus::LineJoinBevel), std::make_pair(L"miter", Aggplus::LineJoinMiter), std::make_pair(L"miter-clip", Aggplus::LineJoinMiterClipped), std::make_pair(L"round", Aggplus::LineJoinRound)});
+		m_oStroke.m_oLineCap = Aggplus::LineJoinMiter;
+	}
 
 	CSvgGraphicsObject::~CSvgGraphicsObject()
 	{}
+
+	CSvgGraphicsObject *CSvgGraphicsObject::Copy() const
+	{
+		return NULL;
+	}
 
 	void CSvgGraphicsObject::SetStroke(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -21,6 +32,12 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"stroke-dasharray"))
 			m_oStroke.m_arDash = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(mAttributes.at(L"stroke-dasharray"));
+
+		if (mAttributes.end() != mAttributes.find(L"stroke-linecap"))
+			m_oStroke.m_oLineCap.SetValue(mAttributes.at(L"stroke-linecap"), ushLevel, bHardMode);
+
+		if (mAttributes.end() != mAttributes.find(L"stroke-linejoin"))
+			m_oStroke.m_oLineJoin.SetValue(mAttributes.at(L"stroke-linejoin"), ushLevel, bHardMode);
 	}
 
 	void CSvgGraphicsObject::SetFill(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -117,6 +134,15 @@ namespace SVG
 			}
 			else
 				pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
+
+			if (!m_oStroke.m_oLineCap.Empty())
+			{
+				pRenderer->put_PenLineStartCap(m_oStroke.m_oLineCap.ToInt());
+				pRenderer->put_PenLineEndCap(m_oStroke.m_oLineCap.ToInt());
+			}
+
+			if (!m_oStroke.m_oLineJoin.Empty())
+				pRenderer->put_PenLineJoin(m_oStroke.m_oLineJoin.ToInt());
 		}
 		else if (bUseDedault)
 			ApplyDefaultStroke(pRenderer, nTypePath);

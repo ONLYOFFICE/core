@@ -54,6 +54,11 @@ namespace SVG
 		return true;
 	}
 
+	CEllipse *CEllipse::Copy() const
+	{
+		return new CEllipse(*this);
+	}
+
 	void CEllipse::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)

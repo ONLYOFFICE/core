@@ -18,6 +18,7 @@ namespace SVG
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
+		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
 
 		if (mAttributes.end() != mAttributes.find(L"d"))
@@ -31,12 +32,23 @@ namespace SVG
 
 		StartPath(pRenderer, pDefs, bIsClip);
 
-		for (IPathElement* oElement : m_arElements)
+		for (const IPathElement* oElement : m_arElements)
 			oElement->Draw(pRenderer);
 
 		EndPath(pRenderer, pDefs, bIsClip);
 
 		return true;
+	}
+
+	CPath *CPath::Copy() const
+	{
+		CPath* pNew = new CPath(*this);
+		pNew->m_arElements.clear();
+
+		for(const IPathElement* oElement : m_arElements)
+			pNew->m_arElements.push_back(oElement->Copy());
+
+		return pNew;
 	}
 
 	void CPath::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const

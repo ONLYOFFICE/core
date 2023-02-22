@@ -19,6 +19,7 @@
 #include "SvgObjects/CLine.h"
 #include "SvgObjects/CPath.h"
 #include "SvgObjects/CText.h"
+#include "SvgObjects/CUse.h"
 
 namespace SVG
 {
@@ -130,6 +131,8 @@ namespace SVG
 			pObject = new CPolygon(oElement, pContainer);
 		else if (L"image" == wsElementName)
 			pObject = new CImage(oElement, pContainer);
+		else if (L"use" == wsElementName)
+			pObject = new CUse(oElement, pContainer);
 
 		if (NULL != pObject)
 		{

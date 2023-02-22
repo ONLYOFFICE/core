@@ -53,6 +53,11 @@ namespace SVG
 		return true;
 	}
 
+	CLine *CLine::Copy() const
+	{
+		return new CLine(*this);
+	}
+
 	void CLine::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)

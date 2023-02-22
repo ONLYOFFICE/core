@@ -117,7 +117,7 @@ namespace NSCSS
 
 	bool CString::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (m_bImportant && !bHardMode))
+		if (wsValue.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -136,7 +136,7 @@ namespace NSCSS
 
 	bool CString::SetValue(const std::wstring &wsValue, const std::vector<std::wstring> &arValiableValues, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || arValiableValues.empty() || (m_bImportant && !bHardMode))
+		if (wsValue.empty() || arValiableValues.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -160,7 +160,7 @@ namespace NSCSS
 
 	bool CString::SetValue(const std::wstring &wsValue, const std::map<std::wstring, std::wstring> &arValiableValues, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || arValiableValues.empty() || (m_bImportant && !bHardMode))
+		if (wsValue.empty() || arValiableValues.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -413,7 +413,7 @@ namespace NSCSS
 
 	bool CDigit::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (wsValue.empty() || (m_bImportant && !bHardMode))
+		if (wsValue.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -486,7 +486,7 @@ namespace NSCSS
 
 	bool CColor::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		if (2 > wsValue.length() || (m_bImportant && !bHardMode))
+		if (2 > wsValue.length() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
 			return false;
 
 		std::wstring wsNewValue = wsValue;
@@ -501,6 +501,8 @@ namespace NSCSS
 		if (wsNewValue[0] == L'#')
 		{
 			m_oValue.SetHEX(wsNewValue.substr(1, wsNewValue.length() - 1));
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
 			return true;
 		}
 		else if (10 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"rgb")
@@ -518,27 +520,40 @@ namespace NSCSS
 			m_oValue.SetRGB(NS_STATIC_FUNCTIONS::ReadDouble(arValues[0]),
 			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[1]),
 			                NS_STATIC_FUNCTIONS::ReadDouble(arValues[2]));
+
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
 			return true;
 		}
 		else if (5 <= wsNewValue.length() && wsNewValue.substr(0, 3) == L"url")
 		{
 			m_oValue.SetUrl(CutURL(wsNewValue));
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;;
 			return true;
 		}
 		else if (L"none" == wsNewValue)
 		{
 			m_oValue.SetNone();
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
 			return true;
 		}
 		else
 		{
 			if (wsNewValue == L"transparent")
+			{
+				m_unLevel    = unLevel;
+				m_bImportant = bImportant;
 				return true;
+			}
 
 			const std::map<std::wstring, std::wstring>::const_iterator oHEX = NSConstValues::NSMaps::mColors.find(wsNewValue);
 			if (oHEX != NSConstValues::NSMaps::mColors.end())
 			{
 				m_oValue.SetHEX(oHEX->second);
+				m_unLevel    = unLevel;
+				m_bImportant = bImportant;
 				return true;
 			}
 		}
@@ -654,7 +669,19 @@ namespace NSCSS
 
 	bool CMatrix::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
 	{
-		std::vector<std::wstring> arTransforms = CutTransforms(wsValue);
+		if (wsValue.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+			return false;
+
+		std::wstring wsNewValue = wsValue;
+
+		bool bImportant = CutImportant(wsNewValue);
+
+		std::transform(wsNewValue.begin(), wsNewValue.end(), wsNewValue.begin(), std::towlower);
+
+		if (m_bImportant && !bImportant)
+			return false;
+
+		std::vector<std::wstring> arTransforms = CutTransforms(wsNewValue);
 
 		for (const std::wstring& wsTransform : arTransforms)
 		{
@@ -716,7 +743,13 @@ namespace NSCSS
 		if (1 < arTransforms.size())
 			m_enType = TransformMatrix;
 
-		return m_enType != TransformNone;
+		if (m_enType == TransformNone)
+			return false;
+
+		m_unLevel    = unLevel;
+		m_bImportant = bImportant;
+
+		return true;
 	}
 
 	bool CMatrix::SetMatrix(const Aggplus::CMatrix &oValue)
@@ -2114,5 +2147,81 @@ namespace NSCSS
 
 		m_enType = ColorEmpty;
 	}
+
+	CEnum::CEnum()
+	    : CValue(INT_MIN, 0, false){}
+
+	bool CEnum::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		if (wsValue.empty() || m_mMap.empty() || ((m_bImportant || unLevel < m_unLevel) && !bHardMode))
+			return false;
+
+		std::wstring wsNewValue = wsValue;
+
+		bool bImportant = CutImportant(wsNewValue);
+
+		if (m_bImportant && !bImportant)
+			return false;
+
+		std::map<std::wstring, int>::const_iterator oFound = m_mMap.find(wsNewValue);
+
+		if (m_mMap.end() != oFound)
+		{
+			m_oValue     = oFound->second;
+			m_unLevel    = unLevel;
+			m_bImportant = bImportant;
+		}
+		else
+			return false;
+
+		return true;
+	}
+
+	void CEnum::SetMapping(const std::map<std::wstring, int> &mMap)
+	{
+		m_mMap = mMap;
+	}
+
+	bool CEnum::Empty() const
+	{
+		return m_mMap.empty() || INT_MIN == m_oValue;
+	}
+
+	void CEnum::Clear()
+	{
+		m_oValue = INT_MIN;
+	}
+
+	CEnum &CEnum::operator =(int nValue)
+	{
+		m_oValue = nValue;
+		return *this;
+	}
+
+	bool CEnum::operator==(int nValue) const
+	{
+		return m_oValue == nValue;
+	}
+
+	bool CEnum::operator!=(int nValue) const
+	{
+		return m_oValue != nValue;
+	}
+
+	int CEnum::ToInt() const
+	{
+		return m_oValue;
+	}
+
+	double CEnum::ToDouble() const
+	{
+		return 0.;
+	}
+
+	std::wstring CEnum::ToWString() const
+	{
+		return std::wstring();
+	}
+
 	}
 }

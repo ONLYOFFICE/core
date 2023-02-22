@@ -112,6 +112,7 @@ namespace SVG
 			return arObjects;
 		};
 	private:
+		friend class CUse;
 		friend class CLine;
 		friend class CRect;
 		friend class CPath;
@@ -136,6 +137,8 @@ namespace SVG
 		virtual bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const = 0;
 
 		virtual TBounds GetBounds() const = 0;
+
+		virtual CSvgGraphicsObject* Copy() const;
 	private:
 		void SetStroke(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 		void SetFill(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
@@ -160,6 +163,7 @@ namespace SVG
 
 		bool ApplyDef(IRenderer* pRenderer, const CDefs *pDefs, const std::wstring& wsUrl) const;
 
+		friend class CUse;
 		friend class CLine;
 		friend class CRect;
 		friend class CPath;

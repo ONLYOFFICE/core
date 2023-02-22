@@ -13,6 +13,7 @@ namespace SVG
     #define SvgDigit     NSCSS::NSProperties::CDigit
     #define SvgString    NSCSS::NSProperties::CString
     #define SvgColor     NSCSS::NSProperties::CColor
+    #define SvgEnum      NSCSS::NSProperties::CEnum
 
     #define SvgTransform NSCSS::NSProperties::CTransform
     #define SvgFont      NSCSS::NSProperties::CFont
@@ -23,6 +24,8 @@ namespace SVG
 		SvgColor m_oColor;
 		SvgDigit m_oWidth;
 		std::vector<double> m_arDash;
+		SvgEnum m_oLineCap;
+		SvgEnum m_oLineJoin;
 	};
 
 	struct Point

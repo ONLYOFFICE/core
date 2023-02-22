@@ -1,31 +1,31 @@
-#ifndef CELLIPSE_H
-#define CELLIPSE_H
+#ifndef CUSE_H
+#define CUSE_H
 
-
+#include "CContainer.h"
 #include "CObjectBase.h"
 
 namespace SVG
 {
-	class CEllipse : public CSvgGraphicsObject
+	class CUse : public CSvgGraphicsObject
 	{
 	public:
-		CEllipse(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CUse(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		virtual ~CUse();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
 		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
-
-		CEllipse* Copy() const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 
 		TBounds GetBounds() const override;
 
-		SvgDigit m_oCx;
-		SvgDigit m_oCy;
-		SvgDigit m_oRx;
-		SvgDigit m_oRy;
+		CSvgGraphicsObject *m_pUsedObject;
+
+		SvgDigit m_oX;
+		SvgDigit m_oY;
+		SvgDigit m_oWidth;
+		SvgDigit m_oHeight;
 	};
 }
-
-#endif // CELLIPSE_H
+#endif // CUSE_H

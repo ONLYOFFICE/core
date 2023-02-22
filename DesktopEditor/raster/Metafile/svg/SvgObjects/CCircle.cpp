@@ -47,6 +47,11 @@ namespace SVG
 		return true;
 	}
 
+	CCircle *CCircle::Copy() const
+	{
+		return new CCircle(*this);
+	}
+
 	void CCircle::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)

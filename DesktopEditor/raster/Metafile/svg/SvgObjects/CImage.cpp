@@ -89,6 +89,11 @@ namespace SVG
 		return true;
 	}
 
+	CImage *CImage::Copy() const
+	{
+		return new CImage(*this);
+	}
+
 	void CImage::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const
 	{
 		if (NULL == pRenderer)

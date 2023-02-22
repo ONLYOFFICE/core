@@ -95,6 +95,11 @@ namespace SVG
 		return true;
 	}
 
+	CText *CText::Copy() const
+	{
+		return new CText(*this);
+	}
+
 	void CText::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)

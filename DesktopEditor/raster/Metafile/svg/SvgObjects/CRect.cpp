@@ -87,6 +87,11 @@ namespace SVG
 		return true;
 	}
 
+	CRect *CRect::Copy() const
+	{
+		return new CRect(*this);
+	}
+
 	void CRect::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)

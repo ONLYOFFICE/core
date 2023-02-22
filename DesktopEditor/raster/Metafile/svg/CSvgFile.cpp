@@ -142,11 +142,11 @@ bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, d
 	double dSkipX = -oViewBox.m_oX.ToDouble(NSCSS::Pixel) * dScale * dM11;
 	double dSkipY = -oViewBox.m_oY.ToDouble(NSCSS::Pixel) * dScale * dM22;
 
-	if (dViewBoxHeight > dViewBoxWidth)
-		dSkipX += (dViewBoxHeight - dViewBoxWidth) * (dScale + 1.);
+//	if (dViewBoxHeight > dViewBoxWidth)
+//		dSkipX += (dViewBoxHeight - dViewBoxWidth) * (dScale + 1.);
 
-	if (dViewBoxHeight < dViewBoxWidth)
-		dSkipY += (dViewBoxWidth - dViewBoxHeight) * (dScale + 1.);
+//	if (dViewBoxHeight < dViewBoxWidth)
+//		dSkipY += (dViewBoxWidth - dViewBoxHeight) * (dScale + 1.);
 
 	pRenderer->SetTransform(dM11 * dScale, 0, 0, dM22 * dScale, dSkipX, dSkipY);
 

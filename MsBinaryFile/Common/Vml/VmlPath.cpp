@@ -680,8 +680,9 @@ namespace ODRAW
   
 		//width = height = 43200;
 
+		// fix shape scaling xls
 		width		= ShapeSizeVML;
-		height		= ShapeSizeVML; //43200?
+		height		= ShapeSizeVML;
 
 		x = y = 0;
 

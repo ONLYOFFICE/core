@@ -66,6 +66,257 @@ namespace ODRAW
 		}
 		++m_nCountElementsPoint;
 	}
+	CSlice& CSlice::operator =(const CSlice& oSrc)
+	{
+		m_eRuler = oSrc.m_eRuler;
+		m_arPoints.clear();
+		for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+		{
+			m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
+		}
+		return (*this);
+	}
+	double CSlice::GetAngle(double fCentreX, double fCentreY, double fX, double fY)
+	{
+		//  -   + (..  )
+		double dX = fX - fCentreX;
+		double dY = fY - fCentreY;
+
+		double modDX = abs(dX);
+		double modDY = abs(dY);
+
+		if ((modDX < 0.01) && (modDY < 0.01))
+		{
+			return 0;
+		}
+		if ((modDX < 0.01) && (dY < 0))
+		{
+			return -90;
+		}
+		else if (modDX < 0.01)
+		{
+			return 90;
+		}
+		if ((modDY < 0.01) && (dX < 0))
+		{
+			return 180;
+		}
+		else if (modDY < 0.01)
+		{
+			return 0;
+		}
+
+		double fAngle = atan(dY / dX);
+		fAngle *= (180 / M_PI);
+		if (dX > 0 && dY > 0)
+		{
+			return fAngle;
+		}
+		else if (dX > 0 && dY < 0)
+		{
+			return fAngle;
+		}
+		else if (dX < 0 && dY > 0)
+		{
+			//return fAngle + 180;
+			return 180 + fAngle;
+		}
+		else
+		{
+			//return fAngle + 180;
+			return fAngle - 180;
+		}
+	}
+	double CSlice::GetSweepAngle(const double& angleStart, const double& angleEnd)
+	{
+		if (angleStart >= angleEnd)
+			return angleEnd - angleStart;
+		else
+			return angleEnd - angleStart - 360;
+	}
+	void CSlice::ApplyElliptical(bool& bIsX, double& angleStart, double& angleSweet,
+						 double& Left, double& Top, double& Width, double& Height, const CGeomShapeInfo::CPointD& pointCur)
+	{
+		//   (x - y - x...)
+		if (bIsX)
+		{
+			angleStart = -90;
+			angleSweet = 90;
+
+			if ((Width < 0) && (Height < 0))
+			{
+				angleStart = 90;
+				Width *= -1;
+				Height *= -1;
+				Left = pointCur.dX - Width / 2;
+				Top = pointCur.dY - Height;
+			}
+			else if ((Width < 0) && (Height > 0))
+			{
+				angleStart = -90;
+				angleSweet = -90;
+				Width *= -1;
+				Left = pointCur.dX - Width / 2;
+				Top = pointCur.dY;
+			}
+			else if ((Width > 0) && (Height < 0))
+			{
+				angleStart = 90;
+				angleSweet = -90;
+				Height *= -1;
+				Left = pointCur.dX - Width / 2;
+				Top = pointCur.dY - Height;
+			}
+			else
+			{
+				Left = pointCur.dX - Width / 2;
+				Top = pointCur.dY;
+			}
+		}
+		else
+		{
+			angleStart = 180;
+			angleSweet = -90;
+
+			if ((Width < 0) && (Height < 0))
+			{
+				angleStart = 0;
+				Width *= -1;
+				Height *= -1;
+				Left = pointCur.dX - Width;
+				Top = pointCur.dY - Height / 2;
+			}
+			else if ((Width < 0) && (Height > 0))
+			{
+				angleStart = 0;
+				angleSweet = 90;
+				Width *= -1;
+				Left = pointCur.dX - Width;
+				Top = pointCur.dY - Height / 2;
+			}
+			else if ((Width > 0) && (Height < 0))
+			{
+				angleStart = 180;
+				angleSweet = 90;
+				Height *= -1;
+				Left = pointCur.dX;
+				Top = pointCur.dY - Height / 2;
+			}
+			else
+			{
+				Left = pointCur.dX;
+				Top = pointCur.dY - Height / 2;
+			}
+		}
+		bIsX = !bIsX;
+	}
+	void CSlice::ApplyLimo(CGeomShapeInfo& pGeomInfo, double& lX, double& lY)
+	{
+		if ((0 == pGeomInfo.m_dLimoX) || (0 == pGeomInfo.m_dLimoY))
+			return;
+
+		double dAspect = (double)pGeomInfo.m_dLimoX / pGeomInfo.m_dLimoY;
+		double lWidth  = (dAspect * pGeomInfo.m_dHeight);
+
+		if (lWidth < pGeomInfo.m_dWidth)
+		{
+			// LimoX
+			double lXc = pGeomInfo.m_dLeft + pGeomInfo.m_dWidth / 2;
+			if ((lX > lXc) || ((lX == lXc) && (pGeomInfo.m_oCurPoint.dX >= lXc)))
+			{
+				double lXNew = pGeomInfo.m_dLeft + ((lWidth / pGeomInfo.m_dWidth) * (lX - pGeomInfo.m_dLeft));
+				lXNew += (pGeomInfo.m_dWidth - lWidth);
+				lX = lXNew;
+			}
+			//if (lX >= lXc)
+			//{
+			//	LONG lXNew = pGeomInfo->m_lLeft + (LONG)(((double)lWidth / pGeomInfo->m_lWidth) * (lX - pGeomInfo->m_lLeft));
+			//	if (pGeomInfo->m_oCurPoint.x >= lXc)
+			//	{
+			//		lXNew += (pGeomInfo->m_lWidth - lWidth);
+			//	}
+			//	lX = lXNew;
+			//}
+		}
+		else if (lWidth != pGeomInfo.m_dWidth)
+		{
+			// LimoY
+			double lHeight = (pGeomInfo.m_dWidth / dAspect);
+			double lYc = pGeomInfo.m_dTop + pGeomInfo.m_dHeight / 2;
+			if ((lY > lYc) || ((lY == lYc) && (pGeomInfo.m_oCurPoint.dY >= lYc)))
+			{
+				double lYNew = pGeomInfo.m_dTop + ((lHeight / pGeomInfo.m_dHeight) * (lY - pGeomInfo.m_dTop));
+				lYNew += (pGeomInfo.m_dHeight - lHeight);
+				lY = lYNew;
+			}
+		}
+	}
+	void CSlice::Bez2_3(std::vector<CGeomShapeInfo::CPointD>& oArray, RulesType& eType)
+	{
+		if (rtQuadrBesier == eType)
+		{
+			eType = rtCurveTo;
+		}
+		else if (rtOOXMLQuadBezTo == eType)
+		{
+			eType = rtOOXMLCubicBezTo;
+		}
+		else
+		{
+			return;
+		}
+
+		std::vector<CGeomShapeInfo::CPointD> arOld;
+		arOld.insert(arOld.end(),oArray.begin(), oArray.end());
+
+		oArray.clear();
+
+		size_t nStart	= 0;
+		size_t nEnd	= 2;
+
+		size_t nCount = arOld.size();
+		while (nStart < (nCount - 1))
+		{
+			if (2 >= (nCount - nStart))
+			{
+				// по идее такого быть не может
+				for (size_t i = nStart; i < nCount; ++i)
+				{
+					oArray.push_back(arOld[i]);
+				}
+
+				nStart = nCount;
+				break;
+			}
+
+			if (4 == (nCount - nStart))
+			{
+				// ничего не поделаешь... делаем кривую третьего порядка
+				oArray.push_back(arOld[nStart]);
+				oArray.push_back(arOld[nStart + 1]);
+				oArray.push_back(arOld[nStart + 2]);
+				oArray.push_back(arOld[nStart + 3]);
+
+				nStart += 4;
+				break;
+			}
+
+			// значит есть еще
+			CGeomShapeInfo::CPointD mem1;
+			mem1.dX = (arOld[nStart].dX + 2 * arOld[nStart + 1].dX) / 3.0;
+			mem1.dY = (arOld[nStart].dY + 2 * arOld[nStart + 1].dY) / 3.0;
+
+			CGeomShapeInfo::CPointD mem2;
+			mem2.dX = (2 * arOld[nStart + 1].dX + arOld[nStart + 2].dX) / 3.0;
+			mem2.dY = (2 * arOld[nStart + 1].dY + arOld[nStart + 2].dY) / 3.0;
+
+			oArray.push_back(mem1);
+			oArray.push_back(mem2);
+			oArray.push_back(arOld[nStart + 2]);
+
+			nStart += 2;
+		}
+	}
 	void CSlice::FromXML(XmlUtils::CXmlNode& Node, NSGuidesOOXML::CFormulaManager& pManager, double WidthKoef, double HeightKoef)
 	{
 		m_arPoints.clear();
@@ -421,296 +672,19 @@ namespace ODRAW
 		};
 
 	}
-	CSlice& CSlice::operator =(const CSlice& oSrc)
-	{
-		m_eRuler = oSrc.m_eRuler;
-		m_arPoints.clear();
-		for (size_t nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
-		{
-			m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
-		}
-		return (*this);
-	}
-	double CSlice::GetAngle(double fCentreX, double fCentreY, double fX, double fY)
-	{
-		//  -   + (..  )
-		double dX = fX - fCentreX;
-		double dY = fY - fCentreY;
-
-		double modDX = abs(dX);
-		double modDY = abs(dY);
-
-		if ((modDX < 0.01) && (modDY < 0.01))
-		{
-			return 0;
-		}
-		if ((modDX < 0.01) && (dY < 0))
-		{
-			return -90;
-		}
-		else if (modDX < 0.01)
-		{
-			return 90;
-		}
-		if ((modDY < 0.01) && (dX < 0))
-		{
-			return 180;
-		}
-		else if (modDY < 0.01)
-		{
-			return 0;
-		}
-
-		double fAngle = atan(dY / dX);
-		fAngle *= (180 / M_PI);
-		if (dX > 0 && dY > 0)
-		{
-			return fAngle;
-		}
-		else if (dX > 0 && dY < 0)
-		{
-			return fAngle;
-		}
-		else if (dX < 0 && dY > 0)
-		{
-			//return fAngle + 180;
-			return 180 + fAngle;
-		}
-		else
-		{
-			//return fAngle + 180;
-			return fAngle - 180;
-		}
-	}
-	double CSlice::GetSweepAngle(const double& angleStart, const double& angleEnd)
-	{
-		if (angleStart >= angleEnd)
-			return angleEnd - angleStart;
-		else
-			return angleEnd - angleStart - 360;
-	}
-	void CSlice::ApplyElliptical(bool& bIsX, double& angleStart, double& angleSweet,
-						 double& Left, double& Top, double& Width, double& Height, const CGeomShapeInfo::CPointD& pointCur)
-	{
-		//   (x - y - x...)
-		if (bIsX)
-		{
-			angleStart = -90;
-			angleSweet = 90;
-
-			if ((Width < 0) && (Height < 0))
-			{
-				angleStart = 90;
-				Width *= -1;
-				Height *= -1;
-				Left = pointCur.dX - Width / 2;
-				Top = pointCur.dY - Height;
-			}
-			else if ((Width < 0) && (Height > 0))
-			{
-				angleStart = -90;
-				angleSweet = -90;
-				Width *= -1;
-				Left = pointCur.dX - Width / 2;
-				Top = pointCur.dY;
-			}
-			else if ((Width > 0) && (Height < 0))
-			{
-				angleStart = 90;
-				angleSweet = -90;
-				Height *= -1;
-				Left = pointCur.dX - Width / 2;
-				Top = pointCur.dY - Height;
-			}
-			else
-			{
-				Left = pointCur.dX - Width / 2;
-				Top = pointCur.dY;
-			}
-		}
-		else
-		{
-			angleStart = 180;
-			angleSweet = -90;
-
-			if ((Width < 0) && (Height < 0))
-			{
-				angleStart = 0;
-				Width *= -1;
-				Height *= -1;
-				Left = pointCur.dX - Width;
-				Top = pointCur.dY - Height / 2;
-			}
-			else if ((Width < 0) && (Height > 0))
-			{
-				angleStart = 0;
-				angleSweet = 90;
-				Width *= -1;
-				Left = pointCur.dX - Width;
-				Top = pointCur.dY - Height / 2;
-			}
-			else if ((Width > 0) && (Height < 0))
-			{
-				angleStart = 180;
-				angleSweet = 90;
-				Height *= -1;
-				Left = pointCur.dX;
-				Top = pointCur.dY - Height / 2;
-			}
-			else
-			{
-				Left = pointCur.dX;
-				Top = pointCur.dY - Height / 2;
-			}
-		}
-		bIsX = !bIsX;
-	}
-	void CSlice::ApplyLimo(CGeomShapeInfo& pGeomInfo, double& lX, double& lY)
-	{
-		if ((0 == pGeomInfo.m_dLimoX) || (0 == pGeomInfo.m_dLimoY))
-			return;
-
-		double dAspect = (double)pGeomInfo.m_dLimoX / pGeomInfo.m_dLimoY;
-		double lWidth  = (dAspect * pGeomInfo.m_dHeight);
-
-		if (lWidth < pGeomInfo.m_dWidth)
-		{
-			// LimoX
-			double lXc = pGeomInfo.m_dLeft + pGeomInfo.m_dWidth / 2;
-			if ((lX > lXc) || ((lX == lXc) && (pGeomInfo.m_oCurPoint.dX >= lXc)))
-			{
-				double lXNew = pGeomInfo.m_dLeft + ((lWidth / pGeomInfo.m_dWidth) * (lX - pGeomInfo.m_dLeft));
-				lXNew += (pGeomInfo.m_dWidth - lWidth);
-				lX = lXNew;
-			}
-			//if (lX >= lXc)
-			//{
-			//	LONG lXNew = pGeomInfo->m_lLeft + (LONG)(((double)lWidth / pGeomInfo->m_lWidth) * (lX - pGeomInfo->m_lLeft));
-			//	if (pGeomInfo->m_oCurPoint.x >= lXc)
-			//	{
-			//		lXNew += (pGeomInfo->m_lWidth - lWidth);
-			//	}
-			//	lX = lXNew;
-			//}
-		}
-		else if (lWidth != pGeomInfo.m_dWidth)
-		{
-			// LimoY
-			double lHeight = (pGeomInfo.m_dWidth / dAspect);
-			double lYc = pGeomInfo.m_dTop + pGeomInfo.m_dHeight / 2;
-			if ((lY > lYc) || ((lY == lYc) && (pGeomInfo.m_oCurPoint.dY >= lYc)))
-			{
-				double lYNew = pGeomInfo.m_dTop + ((lHeight / pGeomInfo.m_dHeight) * (lY - pGeomInfo.m_dTop));
-				lYNew += (pGeomInfo.m_dHeight - lHeight);
-				lY = lYNew;
-			}
-		}
-	}
-	void CSlice::Bez2_3(std::vector<CGeomShapeInfo::CPointD>& oArray, RulesType& eType)
-	{
-		if (rtQuadrBesier == eType)
-		{
-			eType = rtCurveTo;
-		}
-		else if (rtOOXMLQuadBezTo == eType)
-		{
-			eType = rtOOXMLCubicBezTo;
-		}
-		else
-		{
-			return;
-		}
-
-		std::vector<CGeomShapeInfo::CPointD> arOld;
-		arOld.insert(arOld.end(),oArray.begin(), oArray.end());
-
-		oArray.clear();
-
-		size_t nStart	= 0;
-		size_t nEnd	= 2;
-
-		size_t nCount = arOld.size();
-		while (nStart < (nCount - 1))
-		{
-			if (2 >= (nCount - nStart))
-			{
-				// по идее такого быть не может
-				for (size_t i = nStart; i < nCount; ++i)
-				{
-					oArray.push_back(arOld[i]);
-				}
-
-				nStart = nCount;
-				break;
-			}
-
-			if (4 == (nCount - nStart))
-			{
-				// ничего не поделаешь... делаем кривую третьего порядка
-				oArray.push_back(arOld[nStart]);
-				oArray.push_back(arOld[nStart + 1]);
-				oArray.push_back(arOld[nStart + 2]);
-				oArray.push_back(arOld[nStart + 3]);
-
-				nStart += 4;
-				break;
-			}
-
-			// значит есть еще
-			CGeomShapeInfo::CPointD mem1;
-			mem1.dX = (arOld[nStart].dX + 2 * arOld[nStart + 1].dX) / 3.0;
-			mem1.dY = (arOld[nStart].dY + 2 * arOld[nStart + 1].dY) / 3.0;
-
-			CGeomShapeInfo::CPointD mem2;
-			mem2.dX = (2 * arOld[nStart + 1].dX + arOld[nStart + 2].dX) / 3.0;
-			mem2.dY = (2 * arOld[nStart + 1].dY + arOld[nStart + 2].dY) / 3.0;
-
-			oArray.push_back(mem1);
-			oArray.push_back(mem2);
-			oArray.push_back(arOld[nStart + 2]);
-
-			nStart += 2;
-		}
-	}
 
 	CPartPath::CPartPath() : m_arSlices()
 	{
 		m_bFill = true;
 		m_bStroke = true;
   
-		width = height = 43200;
+		//width = height = 43200;
+
+		width		= ShapeSizeVML;
+		height		= ShapeSizeVML; //43200?
+
 		x = y = 0;
 
-	}
-	void CPartPath::FromXML(XmlUtils::CXmlNode& PathNode, NSGuidesOOXML::CFormulaManager& pManager)// oox
-	{
-		m_bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
-		std::wstring stroke = PathNode.GetAttribute(_T("stroke"), _T("true"));
-		m_bStroke = (stroke == _T("true")) || (stroke == _T("1"));
-
-		width = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("w"), _T("0")));
-		height = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("h"), _T("0")));
-
-		if(width == 0) width = (long)pManager.GetWidth();
-		if(height == 0) height = (long)pManager.GetHeight();
-
-		XmlUtils::CXmlNodes list;
-		PathNode.GetNodes(_T("*"), list);
-
-		for(int i = 0; i < list.GetCount(); i++)
-		{
-			CSlice slice;
-			XmlUtils::CXmlNode node;
-			list.GetAt(i, node);
-
-			slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
-
-			m_arSlices.push_back(slice);
-		}
-
-		//CSlice EndSlice;
-		//EndSlice.m_eRuler = rtEnd;
-		//m_arSlices.push_back(EndSlice);
 	}
 	void CPartPath::FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager) //vml
 	{
@@ -784,6 +758,54 @@ namespace ODRAW
 			}
 		}
 	}
+	CPartPath& CPartPath::operator=(const CPartPath& oSrc)
+	{
+		m_bFill = oSrc.m_bFill;
+		m_bStroke = oSrc.m_bStroke;
+
+		width = oSrc.width;
+		height = oSrc.height;
+
+		x = oSrc.x;
+		y = oSrc.y;
+
+		m_arSlices.clear();
+		for (size_t nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
+		{
+			m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
+		}
+		return (*this);
+	}
+	void CPartPath::FromXML(XmlUtils::CXmlNode& PathNode, NSGuidesOOXML::CFormulaManager& pManager)// oox
+	{
+		m_bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
+		std::wstring stroke = PathNode.GetAttribute(_T("stroke"), _T("true"));
+		m_bStroke = (stroke == _T("true")) || (stroke == _T("1"));
+
+		width = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("w"), _T("0")));
+		height = (long)XmlUtils::GetInteger(PathNode.GetAttribute(_T("h"), _T("0")));
+
+		if(width == 0) width = (long)pManager.GetWidth();
+		if(height == 0) height = (long)pManager.GetHeight();
+
+		XmlUtils::CXmlNodes list;
+		PathNode.GetNodes(_T("*"), list);
+
+		for(int i = 0; i < list.GetCount(); i++)
+		{
+			CSlice slice;
+			XmlUtils::CXmlNode node;
+			list.GetAt(i, node);
+
+			slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
+
+			m_arSlices.push_back(slice);
+		}
+
+		//CSlice EndSlice;
+		//EndSlice.m_eRuler = rtEnd;
+		//m_arSlices.push_back(EndSlice);
+	}
 	std::wstring CPartPath::ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType)
 	{
 		return _T("");
@@ -820,43 +842,8 @@ namespace ODRAW
 			m_arSlices[nIndex].ToRenderer(pRenderer, pGeomInfo, width, height, ClassType);
 		}
 	}
-	CPartPath& CPartPath::operator=(const CPartPath& oSrc)
-	{
-		m_bFill = oSrc.m_bFill;
-		m_bStroke = oSrc.m_bStroke;
-
-		width = oSrc.width;
-		height = oSrc.height;
-
-		x = oSrc.x;
-		y = oSrc.y;
-
-		m_arSlices.clear();
-		for (size_t nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
-		{
-			m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
-		}
-		return (*this);
-	}
 
 	CPath::CPath() : m_lX(0), m_lY(0) {}
-	void CPath::FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager)
-	{
-		m_arParts.clear();
-		for(long i = 0; i < list.GetCount(); i++)
-		{
-			XmlUtils::CXmlNode path;
-			list.GetAt(i, path);
-
-			CPartPath part;
-
-			part.x = m_lX;
-			part.y = m_lY;
-
-			m_arParts.push_back(part);
-			m_arParts.back().FromXML(path, pManager);
-	   }
-	}
 	void CPath::FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager)
 	{
 		m_arParts.clear();
@@ -873,6 +860,35 @@ namespace ODRAW
 			m_arParts.push_back(part);
 			m_arParts.back().FromXML(oArray[nIndex], pManager);
 		}
+	}
+	CPath& CPath::operator=(const CPath& oSrc)
+	{
+		m_arParts.clear();
+		for (size_t nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
+		{
+			m_arParts.push_back(oSrc.m_arParts[nIndex]);
+		}
+		m_lX = oSrc.m_lX;
+		m_lY = oSrc.m_lY;
+
+		return (*this);
+	}
+	void CPath::FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager)
+	{
+		m_arParts.clear();
+		for(long i = 0; i < list.GetCount(); i++)
+		{
+			XmlUtils::CXmlNode path;
+			list.GetAt(i, path);
+
+			CPartPath part;
+
+			part.x = m_lX;
+			part.y = m_lY;
+
+			m_arParts.push_back(part);
+			m_arParts.back().FromXML(path, pManager);
+	   }
 	}
 	std::wstring CPath::ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType)
 	{
@@ -897,18 +913,6 @@ namespace ODRAW
 
 			oPath.Draw(pRenderer);
 		}
-	}
-	CPath& CPath::operator=(const CPath& oSrc)
-	{
-		m_arParts.clear();
-		for (size_t nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
-		{
-			m_arParts.push_back(oSrc.m_arParts[nIndex]);
-		}
-		m_lX = oSrc.m_lX;
-		m_lY = oSrc.m_lY;
-
-		return (*this);
 	}
 	void CPath::SetCoordpos(LONG lX, LONG lY)
 	{

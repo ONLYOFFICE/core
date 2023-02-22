@@ -49,7 +49,7 @@ namespace NSGuidesVML
 			point.x = lParam;
 			if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
 			{
-				point.x -= m_lX;
+				//point.x -= m_lX;
 			}
 			point.y = 0;
 			pointType.x = eParType;
@@ -62,7 +62,7 @@ namespace NSGuidesVML
 			m_arPoints.back().y = lParam;
 			if (m_eRuler !=  rtRMoveTo && m_eRuler !=  rtRLineTo && m_eRuler !=  rtRCurveTo)
 			{
-				m_arPoints.back().y -= m_lY;
+				//m_arPoints.back().y -= m_lY;
 			}
 
 			m_arPointsType.back().y = eParType;
@@ -75,8 +75,10 @@ namespace NSGuidesVML
 		m_lIndexDst = 0;
 		m_lIndexSrc = -1;
 
-		m_lWidth	= 0;
-		m_lHeight	= 0;
+		//m_lWidth	= 0;
+		//m_lHeight	= 0;
+		m_lWidth	= ShapeSizeVML;
+		m_lHeight	= ShapeSizeVML;
 
 		m_lX = 0;
 		m_lY = 0;
@@ -258,15 +260,21 @@ namespace NSGuidesVML
 
 		for (size_t nIndex = 0; nIndex < oArray.size(); ++nIndex)
 		{
-			if (oPath.m_arParts.size() <= nIndex)
-				break;
-			const CPartPath& oPart = oPath.m_arParts[nIndex];
+			//if (oPath.m_arParts.size() <= nIndex)
+			//	break;
 
-			m_lWidth = oPart.width;
-			m_lHeight = oPart.height;
+			if (oArray[nIndex].empty()) continue;
 
-			m_lX = oPart.x;
-			m_lY = oPart.y;
+			if (nIndex < (int)oPath.m_arParts.size() )
+			{
+				const CPartPath& oPart = oPath.m_arParts[nIndex];
+
+				m_lWidth = oPart.width;
+				m_lHeight = oPart.height;
+
+				//m_lX = oPart.x;
+				//m_lY = oPart.y;
+			}
 
 			bool bFill = false;
 			bool bStroke = false;
@@ -278,10 +286,15 @@ namespace NSGuidesVML
 			m_oPathRes.WriteAttribute(L"w",  m_lWidth);
 			m_oPathRes.WriteAttribute(L"h",  m_lHeight);
 
-			if (!bStroke)
+			/*if (!bStroke)
 				m_oPathRes.WriteAttribute(L"stroke",  (std::wstring)L"false");
 			if (!bFill)
-				m_oPathRes.WriteAttribute(L"fill",  (std::wstring)L"none");
+				m_oPathRes.WriteAttribute(L"fill",  (std::wstring)L"none");*/
+
+			m_oPathRes.WriteAttribute(L"fill"		, std::wstring(bFill ? L"norm" : L"none"));
+			m_oPathRes.WriteAttribute(L"stroke"		, bStroke ? 1	: 0);
+			m_oPathRes.WriteAttribute(L"extrusionOk", 0);
+
 			m_oPathRes.EndAttributes();
 
 			for (size_t i = 0; i < m_arSlicesPath.size(); ++i)

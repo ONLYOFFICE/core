@@ -549,10 +549,17 @@ namespace DocFileFormat
             Formulas.push_back(L"prod height 4390 32768");
             Formulas.push_back(L"prod height 28378 32768");
 
-            AdjustmentValues	=	L"12960,19440,14400";
-            ConnectorLocations	=	L"0,@17;@2,@14;@22,@8;@2,@12;@22,@16";
-            ConnectorAngles		=	L"180,90,0,0,0";
-            TextBoxRectangle	=	L"@47,@45,@48,@46";
+			//AdjustmentValues	=	L"12960,19440,14400";
+			AdjustmentValues	=	L"12960,19440,7200";
+
+			//ConnectorLocations	=	L"0,@17;@2,@14;@22,@8;@2,@12;@22,@16";
+			ConnectorLocations	=	L"0,@15;@2,@11;0,@8;@2,@13;@21,@16";
+
+			//ConnectorAngles		=	L"180,90,0,0,0";
+			ConnectorAngles		=	L"180,180,180,90,0";
+
+			//TextBoxRectangle	=	L"@47,@45,@48,@46";
+			TextBoxRectangle	=	L"@43,@41,@44,@42";
 
 			Handle one;
             one.position		=	L"topLeft,#0";

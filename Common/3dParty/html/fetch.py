@@ -25,4 +25,4 @@ if not base.is_dir("katana-parser"):
   base.replaceInFile(base_directory + "/katana-parser/src/tokenizer.c", "inline bool katana_is_html_space(char c)", "static inline bool katana_is_html_space(char c)")
   base.replaceInFile(base_directory + "/katana-parser/src/tokenizer.c", "static inline bool2 katana_is_html_space(char c);", "static inline bool katana_is_html_space(char c);")
   base.replaceInFile(base_directory + "/katana-parser/src/parser.c", "katanaget_text(parser->scanner)", "/*katanaget_text(parser->scanner)*/\"error\"")
-
+  base.replaceInFile(base_directory + "/katana-parser/src/parser.c", "#define KATANA_PARSER_STRING(literal) (KatanaParserString){", "#define KATANA_PARSER_STRING(literal) {")

@@ -46,14 +46,17 @@ namespace NSNetwork
         protected:
             CIOWebSocket* m_base;
             NSCriticalSection::CRITICAL_SECTION m_oCS;
+            NSCriticalSection::CRITICAL_SECTION m_oCS_Events;
         public:
             CIOWebSocket_private(CIOWebSocket* base)
             {
                 m_base = base;
                 m_oCS.InitializeCriticalSection();
+                m_oCS_Events.InitializeCriticalSection();
             }
             virtual ~CIOWebSocket_private()
             {
+                m_oCS_Events.DeleteCriticalSection();
                 m_oCS.DeleteCriticalSection();
             }
 

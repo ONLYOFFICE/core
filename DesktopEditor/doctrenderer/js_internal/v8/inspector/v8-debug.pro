@@ -1,9 +1,13 @@
-CORE_BUILDS_PLATFORM_PREFIX = win_64
-BUILD_MODE=debug
+QT       -= core
+QT       -= gui
 
-CONFIG += c++11 console
-CONFIG -= app_bundle
-CONFIG -= qt
+TARGET = v8_debug
+CONFIG   += console
+CONFIG   -= app_bundle
+
+TEMPLATE = app
+
+CONFIG += core_static_link_libstd
 
 CORE_ROOT_DIR = $$PWD/../../../../../../core
 PWD_ROOT_DIR = $$PWD

@@ -244,6 +244,9 @@ namespace NSJSBase
 #ifdef LOG_TO_COUT
 		std::cout << "Exiting isolate \t" << m_internal->m_isolate << std::endl;
 #endif
+#ifdef V8_INSPECTOR
+		v8_debug::disposeInspector(m_internal->m_context);
+#endif
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Exit();
 		delete m_internal->m_scope.top();
@@ -386,7 +389,7 @@ namespace NSJSBase
 
 		LOGGER_LAP("run")
 
-				return _return;
+		return _return;
 	}
 
 	JSSmart<CJSContext> CJSContext::GetCurrent()

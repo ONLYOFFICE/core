@@ -18,6 +18,8 @@ SOURCES += $$PWD/js_logger.cpp
     HEADERS += $$PWD/v8/v8_base.h
     SOURCES += $$PWD/v8/v8_base.cpp
 
+    CONFIG += v8_version_89
+
     !build_xp {
         include($$PWD/../../../Common/3dParty/v8/v8.pri)
     } else {

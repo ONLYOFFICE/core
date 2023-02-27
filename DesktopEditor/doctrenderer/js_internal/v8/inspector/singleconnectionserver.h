@@ -23,9 +23,7 @@ private:
     //tcp is a class
     using tcp = boost::asio::ip::tcp;
     //
-    using stream_t = boost::beast::websocket::stream<
-    tcp::socket
-    >;
+    using stream_t = boost::beast::websocket::stream<tcp::socket>;
 
     //boost stuff
     //required for all io operations
@@ -33,9 +31,9 @@ private:
                                     1//use only one thread
                                       };
     //tcp endpoint
-    boost::asio::ip::tcp::endpoint m_Endpoint;
+	tcp::endpoint m_Endpoint;
     //connection acceptor
-    boost::asio::ip::tcp::acceptor m_ConnectionAcceptor;
+	tcp::acceptor m_ConnectionAcceptor;
     //using pointer to be able to create stream on connection, not in ctor
     std::unique_ptr<stream_t> m_pWebsocketStream{nullptr};
 

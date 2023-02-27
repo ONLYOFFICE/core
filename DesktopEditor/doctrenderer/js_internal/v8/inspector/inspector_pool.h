@@ -20,7 +20,7 @@ class CInspectorPool
             return std::less<v8::Context*>{}(*lhs, *rhs);
         }
     };
-    using storage_t = std::map<v8::Local<v8::Context>, CInspectorImpl, ContextLess>;
+	using storage_t = std::map<v8::Local<v8::Context>, CInspectorImpl, ContextLess>;
 
     std::mutex m_Mutex{};
     storage_t m_Inspectors{};

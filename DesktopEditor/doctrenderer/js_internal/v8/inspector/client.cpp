@@ -209,7 +209,7 @@ bool NSJSBase::v8_debug::internal::CInspectorClient::isActiveTrue(const std::str
     if (!active->IsBoolean()){
         return false;
     }
-    v8::MaybeLocal<v8::Boolean> maybeBool = active->ToBoolean(m_Context);
+	v8::MaybeLocal<v8::Boolean> maybeBool = active->ToBoolean(m_pIsolate);
     if (maybeBool.IsEmpty()) {
         return false;
     }

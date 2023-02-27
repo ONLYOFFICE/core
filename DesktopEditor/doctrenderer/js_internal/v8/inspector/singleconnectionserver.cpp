@@ -256,19 +256,19 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::shutdown()
     //discard pending messages until receiving close frame
     while (true) {
         //read and get error_code
-        errCode = discardData();
+		errCode = discardData();
 
-        //close frame is delivered as closed error
-        if (errCode == beast::websocket::error::closed) {
-            return true;
-        }
+		//close frame is delivered as closed error
+		if (errCode == beast::websocket::error::closed) {
+			return true;
+		}
 
-        //any other errors
-        if (errCode) {
-            reportError(errCode, "while waiting for close responce at close");
-            return false;
-        }
-    }
+		//any other errors
+		if (errCode) {
+			reportError(errCode, "while waiting for close responce at close");
+			return false;
+		}
+	}
 }
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::pause()

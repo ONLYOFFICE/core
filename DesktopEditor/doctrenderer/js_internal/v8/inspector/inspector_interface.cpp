@@ -7,6 +7,10 @@ void NSJSBase::v8_debug::before(const v8::Local<v8::Context> &context
     internal::CInspectorPool::get().getInspector(context, platform, contextName).beforeLaunch();
 }
 
+//bool NSJSBase::v8_debug::isDebugFinished(const v8::Local<v8::Context> &context) {
+//	internal::CInspectorPool::get().getInspector(context, nullptr, "");
+//}
+
 void NSJSBase::v8_debug::disposeInspector(const v8::Local<v8::Context> &context) {
     internal::CInspectorPool::get().disposeInspector(context);
 }

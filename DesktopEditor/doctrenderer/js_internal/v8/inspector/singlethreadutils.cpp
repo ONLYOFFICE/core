@@ -17,6 +17,12 @@
 
 #else
 
+#ifdef V8_VERSION_89_PLUS
+#define V8IsolateFirstArgInspector v8::Isolate::GetCurrent(),
+#else
+#define V8IsolateFirstArgInspector
+#endif
+
 #define LOCK_AND_ENTER_ISOLATE(isolate_ptr)
 #define LOCK_AND_ENTER_ISOLATE_BY_CONTEXT(context)
 
@@ -47,7 +53,7 @@ std::string NSJSBase::v8_debug::internal::viewToStr(v8::Isolate *isolate
     LOCK_AND_ENTER_ISOLATE(isolate);
 
     v8::Local<v8::String> v8str = viewTov8str(isolate, view);
-    v8::String::Utf8Value utf8(v8str);
+	v8::String::Utf8Value utf8(V8IsolateFirstArgInspector v8str);
     return std::string(*utf8);
 }
 
@@ -200,6 +206,6 @@ v8::Local<v8::Value> NSJSBase::v8_debug::internal::getJsonProperty(
 
 std::string NSJSBase::v8_debug::internal::asString(v8::Local<v8::Value> value)
 {
-    v8::String::Utf8Value utf8(value);
+	v8::String::Utf8Value utf8(V8IsolateFirstArgInspector value);
     return std::string(*utf8);
 }

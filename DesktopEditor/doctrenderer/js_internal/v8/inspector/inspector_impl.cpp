@@ -40,9 +40,8 @@ void NSJSBase::v8_debug::internal::CInspectorImpl::printChromeLaunchHint(
         std::ostream &out
         , uint16_t port)
 {
-    out << "chrome "
-         << "--remote-debugging-port=9222 "
-         << "http://localhost:9222/devtools/inspector.html?ws=localhost:"
+	out << "Open the following link in your Chrome/Chromium browser: "
+		 << "devtools://devtools/bundled/inspector.html?ws=127.0.0.1:"
          << port
          << std::endl;
 }

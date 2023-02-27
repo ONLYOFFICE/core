@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 namespace NSDocxRenderer
 {
@@ -13,38 +14,50 @@ namespace NSDocxRenderer
 			vgtClose = 3
 		};
 
-	public:
-		double*	m_pData;
-		size_t	m_lSize;
+		struct Point
+		{
+			double x = 0;
+			double y = 0;
+		};
 
-		double*	m_pDataCur;
-		size_t	m_lSizeCur;
+		struct PathCommand
+		{
+			VectorGraphicsType type;
+			std::vector<Point> points;
+		};
 
 	public:
-		double m_dLeft;
-		double m_dTop;
-		double m_dRight;
-		double m_dBottom;
+		std::vector<PathCommand> GetData() const;
+
+	public:
+		double GetLeft() const noexcept;
+		double GetTop() const noexcept;
+		double GetRight() const noexcept;
+		double GetBottom() const noexcept;
 
 	public:
 		CVectorGraphics();
 		~CVectorGraphics();
-
-		inline void AddSize(size_t nSize);
 
 	public:
 		void MoveTo(const double& x1, const double& y1);
 		void LineTo(const double& x1, const double& y1);
 		void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);
 		void Close();
-
-		size_t GetCurSize() const;
-
-		void Clear();
-		void ClearNoAttack();
-
 		void End();
 
+		void Clear();
+		void CheckPoint(const Point& point);
 		void CheckPoint(const double& x, const double& y);
+
+	private:
+		std::vector<PathCommand> m_arData;
+
+		double m_dLeft;
+		double m_dTop;
+		double m_dRight;
+		double m_dBottom;
+
+		void ResetBorders();
 	};
 }

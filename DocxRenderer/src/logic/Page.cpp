@@ -250,16 +250,21 @@ namespace NSDocxRenderer
 
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
-		if ((m_oVector.m_dLeft <= m_oVector.m_dRight) && (m_oVector.m_dTop <= m_oVector.m_dBottom))
+		double left, right, top, bottom;
+		left = m_oVector.GetLeft();
+		right = m_oVector.GetRight();
+		top = m_oVector.GetTop();
+		bottom = m_oVector.GetBottom();
+		if ((left <= right) && (top <= bottom))
 		{
 			if (!m_arShapes.empty())
 			{
 				auto pLastShape = m_arShapes.back();
 
-				if (pLastShape->m_dLeft == m_oVector.m_dLeft &&
-						pLastShape->m_dTop == m_oVector.m_dTop &&
-						pLastShape->m_dWidth == m_oVector.m_dRight - m_oVector.m_dLeft &&
-						pLastShape->m_dHeight == m_oVector.m_dBottom - m_oVector.m_dTop)
+				if (pLastShape->m_dLeft == left &&
+						pLastShape->m_dTop == top &&
+						pLastShape->m_dWidth == right - left &&
+						pLastShape->m_dHeight == bottom - top)
 				{
 					if (0x00 != (lType & 0x01))
 					{
@@ -300,7 +305,7 @@ namespace NSDocxRenderer
 
 			if (pShape->m_bIsNoStroke)
 			{
-				if ((fabs(m_oVector.m_dLeft - m_oVector.m_dRight) < 0.3) || (fabs(m_oVector.m_dTop - m_oVector.m_dBottom) < 0.3))
+				if ((fabs(left - right) < 0.3) || (fabs(top - bottom) < 0.3))
 				{
 					pShape->m_oPen.Color = m_pBrush->Color1;
 					pShape->m_oPen.Alpha = m_pBrush->Alpha1;

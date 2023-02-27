@@ -65,10 +65,10 @@ namespace NSDocxRenderer
 
 	void CShape::GetDataFromVector(const CVectorGraphics& oVector)
 	{
-		m_dLeft = oVector.m_dLeft;
-		m_dTop = oVector.m_dTop;
-		m_dWidth = oVector.m_dRight - m_dLeft;
-		m_dHeight = oVector.m_dBottom - m_dTop;
+		m_dLeft = oVector.GetLeft();
+		m_dTop = oVector.GetTop();
+		m_dWidth = oVector.GetRight() - m_dLeft;
+		m_dHeight = oVector.GetBottom() - m_dTop;
 
 		if (m_dWidth < 0.0001)
 			m_dWidth = 0.0001;
@@ -83,11 +83,10 @@ namespace NSDocxRenderer
 
 	void CShape::WritePath(const CVectorGraphics& oVector)
 	{
-		size_t nCount = oVector.GetCurSize();
-		double *pData = oVector.m_pData;
+		auto arData = oVector.GetData();
 
-		double dWidth = oVector.m_dRight - oVector.m_dLeft;
-		double dHeight = oVector.m_dBottom - oVector.m_dTop;
+		double dWidth = oVector.GetRight() - oVector.GetLeft();
+		double dHeight = oVector.GetBottom() - oVector.GetTop();
 
 		NSStringUtils::CStringBuilder oWriter;
 
@@ -100,98 +99,67 @@ namespace NSDocxRenderer
 		size_t nPeacks = 0;
 		size_t nCurves = 0;
 
-		while (nCount > 0)
+		for(auto& path_command : arData)
 		{
-			CVectorGraphics::VectorGraphicsType eType = static_cast<CVectorGraphics::VectorGraphicsType>((int)(0.5 + *pData++));
-
-			switch (eType)
+			switch (path_command.type)
 			{
 			case CVectorGraphics::vgtMove:
-			{
-				LONG lX = static_cast<LONG>((*pData - m_dLeft) * c_dMMToEMU);
-				++pData;
-				LONG lY = static_cast<LONG>((*pData - m_dTop) * c_dMMToEMU);
-				++pData;
-
-				oWriter.WriteString(L"<a:moveTo><a:pt x=\"");
-				oWriter.AddInt(static_cast<int>(lX));
-				oWriter.WriteString(L"\" y=\"");
-				oWriter.AddInt(static_cast<int>(lY));
-				oWriter.WriteString(L"\"/></a:moveTo>");
-
-				nPeacks++;
-				nCount -= 3;
+				oWriter.WriteString(L"<a:moveTo>");
 				break;
-			}
+
 			case CVectorGraphics::vgtLine:
-			{
-				LONG lX = static_cast<LONG>((*pData - m_dLeft)* c_dMMToEMU);
-				++pData;
-				LONG lY = static_cast<LONG>((*pData - m_dTop)* c_dMMToEMU);
-				++pData;
-
-				oWriter.WriteString(L"<a:lnTo><a:pt x=\"");
-				oWriter.AddInt(static_cast<int>(lX));
-				oWriter.WriteString(L"\" y=\"");
-				oWriter.AddInt(static_cast<int>(lY));
-				oWriter.WriteString(L"\"/></a:lnTo>");
-
-				nPeacks++;
-				nCount -= 3;
+				oWriter.WriteString(L"<a:lnTo>");
 				break;
-			}
+
 			case CVectorGraphics::vgtCurve:
-			{
-				LONG lX1 = static_cast<LONG>((*pData - m_dLeft)* c_dMMToEMU);
-				++pData;
-				LONG lY1 = static_cast<LONG>((*pData - m_dTop)* c_dMMToEMU);
-				++pData;
-				LONG lX2 = static_cast<LONG>((*pData - m_dLeft)* c_dMMToEMU);
-				++pData;
-				LONG lY2 = static_cast<LONG>((*pData - m_dTop)* c_dMMToEMU);
-				++pData;
-				LONG lX3 = static_cast<LONG>((*pData - m_dLeft)* c_dMMToEMU);
-				++pData;
-				LONG lY3 = static_cast<LONG>((*pData - m_dTop)* c_dMMToEMU);
-				++pData;
-
 				oWriter.WriteString(L"<a:cubicBezTo>");
-
-				oWriter.WriteString(L"<a:pt x=\"");
-				oWriter.AddInt(static_cast<int>(lX1));
-				oWriter.WriteString(L"\" y=\"");
-				oWriter.AddInt(static_cast<int>(lY1));
-				oWriter.WriteString(L"\"/>");
-				oWriter.WriteString(L"<a:pt x=\"");
-				oWriter.AddInt(static_cast<int>(lX2));
-				oWriter.WriteString(L"\" y=\"");
-				oWriter.AddInt(static_cast<int>(lY2));
-				oWriter.WriteString(L"\"/>");
-				oWriter.WriteString(L"<a:pt x=\"");
-				oWriter.AddInt(static_cast<int>(lX3));
-				oWriter.WriteString(L"\" y=\"");
-				oWriter.AddInt(static_cast<int>(lY3));
-				oWriter.WriteString(L"\"/>");
-
-				oWriter.WriteString(L"</a:cubicBezTo>");
-
-				nCurves++;
-				nCount -= 7;
 				break;
-			}
+
 			case CVectorGraphics::vgtClose:
 			default:
-				--nCount;
 				break;
 			}
+
+			for(auto& point : path_command.points)
+			{
+				LONG lX = static_cast<LONG>((point.x - m_dLeft) * c_dMMToEMU);
+				LONG lY = static_cast<LONG>((point.y - m_dTop) * c_dMMToEMU);
+
+				oWriter.WriteString(L"<a:pt x=\"");
+				oWriter.AddInt(static_cast<int>(lX));
+				oWriter.WriteString(L"\" y=\"");
+				oWriter.AddInt(static_cast<int>(lY));
+				oWriter.WriteString(L"\"/>");
+			}
+
+			switch (path_command.type)
+			{
+			case CVectorGraphics::vgtMove:
+				oWriter.WriteString(L"</a:moveTo>");
+				nPeacks++;
+				break;
+
+			case CVectorGraphics::vgtLine:
+				oWriter.WriteString(L"</a:lnTo>");
+				nPeacks++;
+				break;
+
+			case CVectorGraphics::vgtCurve:
+				oWriter.WriteString(L"</a:cubicBezTo>");
+				nCurves++;
+				break;
+
+			case CVectorGraphics::vgtClose:
+			default:
+				break;
+			}
+
 		}
 		oWriter.WriteString(L"<a:close/>");
 		oWriter.WriteString(L"</a:path>");
 
 		m_strPath = oWriter.GetData();
-
 		DetermineGraphicsType(dWidth, dHeight, nPeacks, nCurves);
-
 		oWriter.ClearNoAttack();
 	}
 

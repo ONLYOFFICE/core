@@ -1,10 +1,10 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
  * version 3 as published by the Free Software Foundation. In accordance with
- * Section drawCustom(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
  * that Ascensio System SIA expressly excludes the warranty of non-infringement
  * of any third-party rights.
  *
@@ -19,8 +19,8 @@
  * of the Program must display Appropriate Legal Notices, as required under
  * Section 5 of the GNU AGPL version 3.
  *
- * Pursuant to Section drawCustom(b) of the License you must retain the original Product
- * logo when distributing the program. Pursuant to Section drawCustom(e) we decline to
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
  * grant you any rights under trademark law for use of our trademarks.
  *
  * All the Product's GUI elements, including illustrations and icon sets, as

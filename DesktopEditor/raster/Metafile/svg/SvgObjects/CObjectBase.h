@@ -117,7 +117,7 @@ namespace SVG
 		friend class CRect;
 		friend class CPath;
 		friend class CText;
-		friend class CTspan;
+		friend class CTSpan;
 		friend class CImage;
 		friend class CCircle;
 		friend class CPolygon;
@@ -167,8 +167,7 @@ namespace SVG
 		friend class CLine;
 		friend class CRect;
 		friend class CPath;
-		friend class CText;
-		friend class CTspan;
+		friend class CTSpan;
 		friend class CImage;
 		friend class CCircle;
 		friend class CPolygon;

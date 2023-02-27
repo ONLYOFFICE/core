@@ -1,5 +1,6 @@
 #include "CText.h"
 
+#include "../CSvgParser.h"
 #include "../SvgUtils.h"
 #include "CContainer.h"
 #include "CStyle.h"
@@ -14,27 +15,40 @@ namespace SVG
 {
 #define DefaultFontFamily L"Times New Roman"
 
-	CText::CText(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent, NSFonts::IFontManager* pFontManager)
-	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager)/*, m_oCoord({0, 0})*/
+	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent, NSFonts::IFontManager* pFontManager)
+	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager)
 	{
-		m_wsText = oNode.GetText();
+		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
+
+		if (!m_oX.SetValue(oNode.GetAttribute(L"x"), 1, true))
+		{
+			TBounds oBounds = pParent->GetBounds();
+			m_oX = pParent->m_oX + oBounds.m_dRight - oBounds.m_dLeft;
+		}
+
+		if (!m_oY.SetValue(oNode.GetAttribute(L"y"), 1, true))
+			m_oY = pParent->m_oY;
 	}
 
-	CText::~CText()
+	CTSpan::~CTSpan()
 	{}
 
-	void CText::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
+	CTSpan *CTSpan::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	{
+		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
+
+		if (NULL == pTSpanParent)
+			return NULL;
+
+		return new CTSpan(oNode, pTSpanParent, pFontManager);
+	}
+
+	void CTSpan::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
 
 		//FONT
 		if (mAttributes.end() != mAttributes.find(L"font"))
@@ -74,7 +88,7 @@ namespace SVG
 		Normalize();
 	}
 
-	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
 		if (NULL == pRenderer || m_wsText.empty() || bIsClip)
 			return false;
@@ -90,17 +104,30 @@ namespace SVG
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
+		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
+			pTSpan->Draw(pRenderer, pDefs, bIsClip);
+
 		EndPath(pRenderer,pDefs, bIsClip);
 
 		return true;
 	}
 
-	CText *CText::Copy() const
+	bool CTSpan::AddObject(CSvgGraphicsObject *pObject)
 	{
-		return new CText(*this);
+		if (NULL == dynamic_cast<CTSpan*>(pObject))
+			return false;
+
+		m_arObjects.push_back(pObject);
+
+		return true;
 	}
 
-	void CText::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
+	CTSpan *CTSpan::Copy() const
+	{
+		return new CTSpan(*this);
+	}
+
+	void CTSpan::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
 			return;
@@ -108,10 +135,12 @@ namespace SVG
 		ApplyTransform(pRenderer, oOldMatrix);
 	}
 
-	void CText::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
+	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
 	{
 		std::wstring wsFontFamily = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
 		double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+
+		wsFontFamily = DefaultFontFamily;
 
 		pRenderer->put_FontName(wsFontFamily);
 		pRenderer->put_FontSize(dFontSize);
@@ -197,19 +226,32 @@ namespace SVG
 		pRenderer->put_BrushAlpha1(255);
 	}
 
-	TBounds CText::GetBounds() const
+	TBounds CTSpan::GetBounds() const
 	{
 		TBounds oBounds;
 
 		oBounds.m_dLeft   = m_oX.ToDouble(NSCSS::Pixel);
 		oBounds.m_dTop    = m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + GetWidth();
-		oBounds.m_dBottom = oBounds.m_dTop + (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+		oBounds.m_dBottom = oBounds.m_dTop + ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.);
+
+		if (!m_arObjects.empty())
+		{
+			TBounds oTempBounds;
+			for (const CSvgGraphicsObject* pObject : m_arObjects)
+			{
+				oTempBounds = pObject->GetBounds();
+				oBounds.m_dLeft   = std::min(oBounds.m_dLeft, oTempBounds.m_dLeft);
+				oBounds.m_dTop    = std::min(oBounds.m_dTop, oTempBounds.m_dTop);
+				oBounds.m_dRight  = std::max(oBounds.m_dRight, oTempBounds.m_dRight);
+				oBounds.m_dBottom = std::max(oBounds.m_dBottom, oTempBounds.m_dBottom);
+			}
+		}
 
 		return oBounds;
 	}
 
-	double CText::GetWidth() const
+	double CTSpan::GetWidth() const
 	{
 		std::wstring wsName = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
 		double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
@@ -220,13 +262,10 @@ namespace SVG
 		TBBox oBox = m_pFontManager->MeasureString2();
 		double dWidth = 25.4 / 72.0 * (oBox.fMaxX - oBox.fMinX);
 
-//		for (const CTspan* pTspan : m_arChildrens)
-//			dWidth += pTspan->GetWidth();
-
 		return dWidth;
 	}
 
-	void CText::Normalize()
+	void CTSpan::Normalize()
 	{
 		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetValue();
 
@@ -249,5 +288,45 @@ namespace SVG
 		oMatrix.SetElements(dM11, oMatrix.shy(), oMatrix.shx(), dM22, oMatrix.tx(), oMatrix.ty());
 
 		m_oTransform.SetMatrix(oMatrix);
+	}
+
+	CText::CText(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	    : CTSpan(oNode, NULL, pFontManager)
+	{
+		m_pParent = pParent;
+
+		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
+	}
+
+	CText *CText::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	{
+		if (NULL != dynamic_cast<CText*>(pParent))
+			return NULL;
+
+		return new CText(oNode, pParent, pFontManager);
+	}
+
+	bool CText::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	{
+		if (NULL == pRenderer || NULL == pRenderer)
+			return false;
+
+		CTSpan::Draw(pRenderer, pDefs, bIsClip);
+
+		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
+			pTSpan->Draw(pRenderer, pDefs, bIsClip);
+
+		return true;
+	}
+
+	bool CText::AddObject(CSvgGraphicsObject *pObject)
+	{
+		CTSpan *pTSpan = dynamic_cast<CTSpan*>(pObject);
+		if (NULL != pTSpan)
+		{
+			m_arObjects.push_back(pTSpan);
+			return true;
+		}
+		return false;
 	}
 }

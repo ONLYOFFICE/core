@@ -86,10 +86,11 @@ namespace SVG
 		if (NULL != pSvgCalculator)
 			pSvgCalculator->SetData(pContainer);
 
-		return ReadChildrens(oElement, pContainer, pFile);
+		return ReadChildrens(oElement, pContainer, pFile, pContainer);
 	}
 
-	bool CSvgParser::ReadGraphicsObject(XmlUtils::CXmlNode &oElement, CGraphicsContainer* pContainer, CSvgFile *pFile) const
+	template <typename TypeContainer>
+	bool CSvgParser::ReadGraphicsObject(XmlUtils::CXmlNode &oElement, CContainer<TypeContainer>* pContainer, CSvgFile *pFile, CSvgGraphicsObject* pParent) const
 	{
 		if (NULL == pFile || NULL == pContainer)
 			return false;
@@ -100,7 +101,7 @@ namespace SVG
 
 		if (L"svg" == wsElementName || L"g" == wsElementName)
 		{
-			CGraphicsContainer *pNewContainer = new CGraphicsContainer(oElement, pContainer);
+			CGraphicsContainer *pNewContainer = new CGraphicsContainer(oElement, pParent);
 
 			if (NULL == pNewContainer)
 				return false;
@@ -114,38 +115,47 @@ namespace SVG
 				return false;
 		}
 		else if (L"line" == wsElementName)
-			pObject = new CLine(oElement, pContainer);
+			pObject = new CLine(oElement, pParent);
 		else if (L"rect" == wsElementName)
-			pObject = new CRect(oElement, pContainer);
+			pObject = new CRect(oElement, pParent);
 		else if (L"circle" == wsElementName)
-			pObject = new CCircle(oElement, pContainer);
+			pObject = new CCircle(oElement, pParent);
 		else if (L"ellipse" == wsElementName)
-			pObject = new CEllipse(oElement, pContainer);
+			pObject = new CEllipse(oElement, pParent);
 		else if (L"path" == wsElementName)
-			pObject = new CPath(oElement, pContainer);
+			pObject = new CPath(oElement, pParent);
 		else if (L"text" == wsElementName)
-			pObject = new CText(oElement, pContainer, m_pFontManager);
-		else if (L"polyline" == wsElementName)
-			pObject = new CPolyline(oElement, pContainer);
-		else if (L"polygon" == wsElementName)
-			pObject = new CPolygon(oElement, pContainer);
-		else if (L"image" == wsElementName)
-			pObject = new CImage(oElement, pContainer);
-		else if (L"use" == wsElementName)
-			pObject = new CUse(oElement, pContainer);
-
-		if (NULL != pObject)
 		{
-			pContainer->AddObject(pObject);
-			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+			CText *pText = CText::Create(oElement, pParent, m_pFontManager);
 
-			if (NULL != pSvgCalculator)
-				pSvgCalculator->SetData(pObject);
+			if (!AddObject(pText, pContainer, pFile))
+				return false;
+
+			ReadChildrens(oElement, pText, pFile, pText);
+
+			return true;
 		}
-		else
-			return false;
+		else if (L"tspan" == wsElementName)
+		{
+			CTSpan *pTSpan = CTSpan::Create(oElement, pParent, m_pFontManager);
 
-		return true;
+			if (!AddObject(pTSpan, pContainer, pFile))
+				return false;
+
+			ReadChildrens(oElement, pTSpan, pFile, pTSpan);
+
+			return true;
+		}
+		else if (L"polyline" == wsElementName)
+			pObject = new CPolyline(oElement, pParent);
+		else if (L"polygon" == wsElementName)
+			pObject = new CPolygon(oElement, pParent);
+		else if (L"image" == wsElementName)
+			pObject = new CImage(oElement, pParent);
+		else if (L"use" == wsElementName)
+			pObject = new CUse(oElement, pParent);
+
+		return AddObject(pObject, pContainer, pFile);
 	}
 
 	bool CSvgParser::ReadDefs(XmlUtils::CXmlNode &oElement, CDefs *pDefs, CSvgFile *pFile) const
@@ -183,21 +193,11 @@ namespace SVG
 				delete pClipPath;
 		}
 
-		if (NULL != pDefObject)
-		{
-			pDefs->AddObject(pDefObject);
-
-			const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
-
-			if (NULL != pSvgCalculator)
-				pSvgCalculator->SetData(pDefObject);
-		}
-
-		return true;
+		return AddObject(pDefObject, pDefs, pFile);
 	}
 
 	template<typename TypeContainer>
-	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile) const
+	bool CSvgParser::ReadChildrens(XmlUtils::CXmlNode &oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile, CSvgGraphicsObject* pParent) const
 	{
 		if (NULL == pContainer || NULL == pFile)
 			return false;
@@ -216,7 +216,7 @@ namespace SVG
 			if (std::is_same_v<CDefObject, TypeContainer>)
 				ReadDefs(oChild, (CDefs*)(pContainer), pFile);
 			else
-				ReadGraphicsObject(oChild, (CGraphicsContainer*)pContainer, pFile);
+				ReadGraphicsObject(oChild, (CGraphicsContainer*)pContainer, pFile, pParent);
 
 			oChild.Clear();
 		}
@@ -257,4 +257,28 @@ namespace SVG
 	{
 		return L"defs" == wsNodeName || L"pattern" == wsNodeName || L"linearGradien" == wsNodeName || L"radialGradient" == wsNodeName;
 	}
+
+	template <typename TypeObject, typename TypeContainer>
+	bool CSvgParser::AddObject(TypeObject *pObject, CContainer<TypeContainer> *pContainer, CSvgFile *pFile) const
+	{
+		if (NULL == pObject || NULL == pContainer)
+			return false;
+
+		if (!pContainer->AddObject(pObject))
+		{
+			delete pObject;
+			return false;
+		}
+
+		if (NULL == pFile)
+			return true;
+
+		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
+
+		if (NULL != pSvgCalculator)
+			pSvgCalculator->SetData(pObject);
+
+		return true;
+	}
+
 }

@@ -32,15 +32,21 @@ namespace SVG
 			return m_arObjects.empty();
 		 };
 
-		void AddObject(TypeObject* pObject)
+		virtual bool AddObject(TypeObject* pObject)
 		{
 			if (NULL != pObject)
+			{
 				m_arObjects.push_back(pObject);
+				return true;
+			}
+			return false;
 		};
 	private:
 		std::vector<TypeObject*> m_arObjects;
 
 		friend class CDefs;
+		friend class CText;
+		friend class CTSpan;
 		friend class CPattern;
 		friend class CGradient;
 		friend class CClipPath;

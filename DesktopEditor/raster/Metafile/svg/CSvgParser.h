@@ -23,16 +23,20 @@ namespace SVG
 		bool LoadFromString(const std::wstring& wsContente, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
 		bool LoadFromXmlNode(XmlUtils::CXmlNode& oElement, CGraphicsContainer*& pContainer, CSvgFile* pFile) const;
 
-		bool ReadGraphicsObject(XmlUtils::CXmlNode& oElement, CGraphicsContainer* pContainer, CSvgFile* pFile) const;
+		template <typename TypeContainer>
+		bool ReadGraphicsObject(XmlUtils::CXmlNode& oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile, CSvgGraphicsObject* pParent = NULL) const;
 
 		bool ReadDefs(XmlUtils::CXmlNode& oElement, CDefs* pDefs, CSvgFile* pFile) const;
 	private:
 		template <typename TypeContainer>
-		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile) const;
+		bool ReadChildrens(XmlUtils::CXmlNode& oElement, CContainer<TypeContainer>* pContainer, CSvgFile* pFile, CSvgGraphicsObject* pParent = NULL) const;
 
 		bool ScanElement(XmlUtils::CXmlNode& oElement, const std::wstring& wsElementName, CSvgFile* pFile) const;
 
 		bool IsDefs(const std::wstring& wsNodeName) const;
+
+		template <typename TypeObject, typename TypeContainer>
+		bool AddObject(TypeObject* pObject, CContainer<TypeContainer>* pContainer, CSvgFile* pFile) const;
 
 		NSFonts::IFontManager  *m_pFontManager;
 	};

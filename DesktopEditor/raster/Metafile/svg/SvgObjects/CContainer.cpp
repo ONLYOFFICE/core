@@ -86,7 +86,12 @@ namespace SVG
 
 	TBounds CGraphicsContainer::GetBounds() const
 	{
-		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
+		TBounds oBounds, oTempBounds;
+
+		oBounds.m_dLeft    = oBounds.m_dRight  = m_oWindow.m_oX.ToDouble(NSCSS::Pixel);
+		oBounds.m_dTop     = oBounds.m_dBottom = m_oWindow.m_oY.ToDouble(NSCSS::Pixel);
+		oBounds.m_dRight  += m_oWindow.m_oWidth.ToDouble(NSCSS::Pixel);
+		oBounds.m_dBottom += m_oWindow.m_oHeight.ToDouble(NSCSS::Pixel);
 
 		for (const CSvgGraphicsObject* pObject : m_arObjects)
 		{

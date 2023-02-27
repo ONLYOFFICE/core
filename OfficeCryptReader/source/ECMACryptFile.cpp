@@ -1156,10 +1156,15 @@ bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::ws
 		}
 
 		pAddit->Write(addit_info.c_str(), 0, addit_info.size());
-
-		pStorage->Save(file_name);
+		pStorage->Commit(true);
+//todooo_2 flush
+		pStorage->Save(file_name + L"~");
 		pStorage->Close();
 		delete pStorage;
+//todooo_1 rename
+		//NSFile::CFileBinary::Rename(file_name + L"~", file_name);
+		NSFile::CFileBinary::Copy(file_name + L"~", file_name);
+		NSFile::CFileBinary::Remove(file_name + L"~");
 	}
 	catch (...)
 	{

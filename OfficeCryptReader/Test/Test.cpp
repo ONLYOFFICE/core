@@ -32,7 +32,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool result = false, bDataIntegrity = false;
 
 	std::wstring srcFileName	= L"D:\\tests\\__63\\tests-eq-xlsx.xlsx";
-	std::wstring dstFileName	= L"D:\\tests\\__63\\ыпауыувыкепцукепчм.xlsx";
+	std::wstring dstFileName	= L"D:\\tests\\__63\\С‹РїР°СѓС‹СѓРІС‹РєРµРїС†СѓРєРµРїС‡Рј.xlsx";
 	std::wstring dstFileName2	= dstFileName + L".oox";
 	
 	//std::wstring dstFileName	= srcFileName + L".oox";

@@ -192,6 +192,16 @@ namespace MetaFile
 		m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
 	}
 
+	static void EraseWords(std::wstring& wsString, const std::vector<std::wstring>& arWords)
+	{
+		size_t unBegin = 0;
+		for (const std::wstring& wsWord : arWords)
+		{
+			while (std::wstring::npos != (unBegin = wsString.find(wsWord)))
+				wsString.erase(unBegin, wsWord.length());
+		}
+	}
+
 	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRect &oBounds, const TPointD &oScale, const std::vector<double>& arDx)
 	{
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
@@ -246,6 +256,8 @@ namespace MetaFile
 		arNodeAttributes.push_back({L"font-size", ConvertToWString(dFontHeight)});
 
 		std::wstring wsFaceName = pFont->GetFaceName();
+		std::transform(wsFaceName.begin(), wsFaceName.end(), wsFaceName.begin(), towlower);
+		EraseWords(wsFaceName, {L" bold", L" italic"});
 
 		if (!wsFaceName.empty())
 			arNodeAttributes.push_back({L"font-family", wsFaceName});

@@ -613,7 +613,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 		else if (0 == sExt.compare(L".odp"))
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 	}
-	else if (0 == sExt.compare(L".mht"))
+	else if (0 == sExt.compare(L".mht") || 0 == sExt.compare(L".mhtml"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
     else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xlsx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
@@ -1140,9 +1140,9 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring& sExt)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
     if (L".txt" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
-    if (L".html" == ext)
+    if (L".html" == ext || L".htm" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
-    if (L".mht" == ext)
+    if (L".mht" == ext || L".mhtml" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
     if (L".epub" == ext)
         return AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB;

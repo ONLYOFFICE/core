@@ -1282,7 +1282,7 @@ namespace NSCSS
 
                         Scale(nValue, enScalingDirection);
 
-                        sValueString += std::to_wstring(nValue);
+						sValueString += std::to_wstring(nValue) + sValueTemp.back();
                     }
                     else
                         sValueString += sValueTemp;

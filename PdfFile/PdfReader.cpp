@@ -395,6 +395,21 @@ void CPdfReader::ChangeLength(DWORD nLength)
     m_nFileLength = nLength;
 }
 
+std::wstring CPdfReader::GetInfo()
+{
+    if (!m_pPDFDocument)
+        return NULL;
+    XRef* xref = m_pPDFDocument->getXRef();
+    BaseStream* str = m_pPDFDocument->getBaseStream();
+    if (!xref || !str)
+        return NULL;
+
+    std::wstring sRes = L"{";
+
+    Object info, obj1;
+    m_pPDFDocument->getDocInfo(&info);
+    if (info.isDict())
+    {
 #define DICT_LOOKUP(sName, wsName) \
 if (info.dictLookup(sName, &obj1)->isString())\
 {\
@@ -416,8 +431,13 @@ if (info.dictLookup(sName, &obj1)->isString())\
         sRes += sValue;\
         sRes += L"\",";\
     }\
-}\
-
+}
+        DICT_LOOKUP("Title",    L"Title");
+        DICT_LOOKUP("Author",   L"Author");
+        DICT_LOOKUP("Subject",  L"Subject");
+        DICT_LOOKUP("Keywords", L"Keywords");
+        DICT_LOOKUP("Creator",  L"Creator");
+        DICT_LOOKUP("Producer", L"Producer");
 #define DICT_LOOKUP_DATE(sName, wsName) \
 if (info.dictLookup(sName, &obj1)->isString())\
 {\
@@ -443,30 +463,7 @@ if (info.dictLookup(sName, &obj1)->isString())\
         }\
         delete s;\
     }\
-}\
-
-std::wstring CPdfReader::GetInfo()
-{
-    if (!m_pPDFDocument)
-        return NULL;
-    XRef* xref = m_pPDFDocument->getXRef();
-    BaseStream* str = m_pPDFDocument->getBaseStream();
-    if (!xref || !str)
-        return NULL;
-
-    std::wstring sRes = L"{";
-
-    Object info, obj1;
-    m_pPDFDocument->getDocInfo(&info);
-    if (info.isDict())
-    {
-        DICT_LOOKUP("Title",    L"Title");
-        DICT_LOOKUP("Author",   L"Author");
-        DICT_LOOKUP("Subject",  L"Subject");
-        DICT_LOOKUP("Keywords", L"Keywords");
-        DICT_LOOKUP("Creator",  L"Creator");
-        DICT_LOOKUP("Producer", L"Producer");
-
+}
         DICT_LOOKUP_DATE("CreationDate", L"CreationDate");
         DICT_LOOKUP_DATE("ModDate", L"ModDate");
     }
@@ -718,19 +715,6 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
-#define DICT_LOOKUP_STRING(field, sName, byte) \
-{\
-if (field.dictLookup(sName, &oObj) && oObj.isString())\
-{\
-    TextString* s = new TextString(oObj.getString());\
-    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
-    nFlags |= (1 << byte);\
-    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());\
-    delete s;\
-}\
-oObj.free();\
-}
-
 BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
@@ -828,6 +812,18 @@ BYTE* CPdfReader::GetWidgets()
 
         // 1 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
         Object oObj;
+#define DICT_LOOKUP_STRING(field, sName, byte) \
+{\
+if (field.dictLookup(sName, &oObj)->isString())\
+{\
+    TextString* s = new TextString(oObj.getString());\
+    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
+    nFlags |= (1 << byte);\
+    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());\
+    delete s;\
+}\
+oObj.free();\
+}
         DICT_LOOKUP_STRING(oField, "TU", 0);
 
         // 2 - Строка стиля по умолчанию - DS
@@ -922,6 +918,36 @@ BYTE* CPdfReader::GetWidgets()
             oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
         }
         oHighlighting.free();
+
+        // Значение аннотации из текущего внешнего вида
+        /*
+        Object oAP, oAppearance;
+        if (oField.dictLookup("AP", &oAP)->isDict())
+        {
+            Object oN;
+            oAP.dictLookup("N", &oN);
+            if (oN.isDict())
+            {
+                Object oAS;
+                if (oField.dictLookup("AS", &oAS)->isName())
+                    oN.dictLookup(oAS.getName(), &oAppearance);
+                else if (oN.dictGetLength() == 1)
+                    oN.dictGetVal(0, &oAppearance);
+                else
+                    oN.dictLookup("Off", &oAppearance);
+                oAS.free();
+            }
+            else
+                oN.copy(&oAppearance);
+            oN.free();
+        }
+        oAP.free();
+
+        if (oAppearance.isStream())
+        {
+        }
+        oAppearance.free();
+        */
 
         // Значение поля - V
         int nValueLength;
@@ -1065,24 +1091,7 @@ BYTE* CPdfReader::GetWidgets()
             }
 
             Object oOpt;
-            if (!oField.dictLookup("Opt", &oOpt) || !oOpt.isArray())
-            {
-                int nDepth = 0;
-                Object oParentObj;
-                oField.dictLookup("Parent", &oParentObj);
-                while (oParentObj.isDict() && nDepth < 50)
-                {
-                    if (oParentObj.dictLookup("Opt", &oOpt) && oOpt.isArray())
-                        break;
-
-                    Object oParentObj2;
-                    oParentObj.dictLookup("Parent", &oParentObj2);
-                    oParentObj.free();
-                    oParentObj = oParentObj2;
-                    ++nDepth;
-                }
-                oParentObj.free();
-            }
+            pField->fieldLookup("Opt", &oOpt);
             // 11 - Список значений
             if (oOpt.isArray())
             {
@@ -1145,7 +1154,8 @@ BYTE* CPdfReader::GetWidgets()
 
         // 20 - Action - A
         Object oAA;
-        if (oField.dictLookup("AA", &oAA) && oAA.isDict())
+        pField->fieldLookup("AA", &oAA);
+        if (oAA.isDict())
         {
             nFlags |= (1 << 19);
             int nLength = oAA.dictGetLength();
@@ -1164,22 +1174,48 @@ BYTE* CPdfReader::GetWidgets()
                     continue;
                 }
 
+                LinkAction* oAct = LinkAction::parseAction(&oAction);
+                if (!oAct)
+                    continue;
+
+                LinkActionKind kind = oAct->getKind();
+
+                RELEASEOBJECT(oAct);
+
                 std::string sName(oType.getName());
                 oRes.WriteString((BYTE*)sName.c_str(), sName.length());
                 oType.free();
                 if (sName == "JavaScript")
                 {
                     // 21 - JS
-                    Object oJS;
-                    if (oAction.dictLookup("JS", &oJS) && oJS.isString())
+                    DICT_LOOKUP_STRING(oAction, "JS", 20);
+                }
+                else if (sName == "GoTo")
+                {
+                    // 21 - D
+                    if (oAction.dictLookup("D", &oObj))
                     {
-                        TextString* s = new TextString(oJS.getString());
-                        std::string sJS = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                        delete s;
-                        nFlags |= (1 << 20);
-                        oRes.WriteString((BYTE*)sJS.c_str(), sJS.length());
+                        std::string sD;
+                        if (oObj.isString() || oObj.isName() || oObj.isArray())
+                        {
+                            //LinkAction* oDest =
+                            //LinkGoTo* oDest = new LinkGoTo(oObj);
+                        }
+                        {
+                            if (oObj.isString())
+                            {
+                                TextString* s = new TextString(oObj.getString());
+                                sD = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                                delete s;
+                            }
+                            else
+                                sD = oObj.getName();
+
+                            //nFlags |= (1 << 20);
+                            //oRes.WriteString((BYTE*)sJS.c_str(), sJS.length());
+                        }
                     }
-                    oJS.free();
+                    oObj.free();
                 }
                 oAction.free();
             }

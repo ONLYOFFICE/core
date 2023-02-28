@@ -725,11 +725,12 @@ AcroFormField *AcroFormField::load(AcroForm *acroFormA, Object *fieldRefA) {
 
   //----- check for a radio button
 
+  // BUG
   // this is a kludge: if we see a Btn-type field with kids, and the
   // Ff entry is missing, assume the kids are radio buttons
-  if (typeFromParentA && !typeStr->cmp("Btn") && !haveFlags) {
-    flagsA = acroFormFlagRadio;
-  }
+  // if (typeFromParentA && !typeStr->cmp("Btn") && !haveFlags) {
+  //   flagsA = acroFormFlagRadio;
+  // }
 
   //----- determine field type
 
@@ -3123,7 +3124,11 @@ Object *AcroFormField::fieldLookup(Dict *dict, const char *key, Object *obj) {
   int depth;
 
   if (!dict->lookup(key, obj)->isNull()) {
-    return obj;
+    if (obj->isDict()) {
+      if (obj->dictGetLength())
+          return obj;
+    } else
+      return obj;
   }
   obj->free();
 

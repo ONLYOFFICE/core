@@ -5,6 +5,8 @@
 #include "../../Common/OfficeFileFormatChecker.h"
 #include "../../DesktopEditor/common/File.h"
 
+#ifndef _QT
+
 #if defined(_WIN64)
 	#pragma comment(lib, "../../build/bin/icu/win_64/icuuc.lib")
 #elif defined (_WIN32)
@@ -18,6 +20,8 @@
 		#pragma comment(lib, "../../build/lib/win_32/kernel.lib")
 	#endif
 	#pragma comment(lib, "../../build/bin/icu/win_32/icuuc.lib")
+#endif
+
 #endif
 
 int _tmain(int argc, _TCHAR* argv[])

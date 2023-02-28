@@ -1723,7 +1723,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
 	{
-		if (NULL == pPath || nClipMode != CombineModeIntersect)
+		if (NULL == pPath /*|| nClipMode != CombineModeIntersect*/)
 			return;
 
 		m_wsLastClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);

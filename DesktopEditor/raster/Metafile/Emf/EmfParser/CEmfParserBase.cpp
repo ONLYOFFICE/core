@@ -1452,7 +1452,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_ANGLEARC(TEmfPointL &oCenter, unsigned int &unRadius, double &dStartAngle, double &dSweepAngle)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ANGLEARC(oCenter, unRadius, dStartAngle, dSweepAngle);
 
 		ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
@@ -1461,7 +1461,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_ARC(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ARC(oBox, oStart, oEnd);
 
 		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
@@ -1488,7 +1488,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_ARCTO(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ARCTO(oBox, oStart, oEnd);
 
 		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
@@ -1502,7 +1502,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_CHORD(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_CHORD(oBox, oStart, oEnd);
 
 		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
@@ -1518,7 +1518,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_ELLIPSE(TEmfRectL &oBox)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ELLIPSE(oBox);
 
 		oBox.Update(IsViewportFlippedX(),	IsViewportFlippedY()); // Если ширина отрицательная, то не нарисуется
@@ -1554,7 +1554,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_LINETO(TEmfPointL &oPoint)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_LINETO(oPoint);
 
 		LineTo(oPoint);
@@ -1562,7 +1562,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_PIE(TEmfRectL &oBox, TEmfPointL &oStart, TEmfPointL &oEnd)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_PIE(oBox, oStart, oEnd);
 
 		double dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
@@ -1576,7 +1576,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_RECTANGLE(TEmfRectL &oBox)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_RECTANGLE(oBox);
 
 		if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
@@ -1599,7 +1599,7 @@ namespace MetaFile
 
 	void CEmfParserBase::HANDLE_EMR_ROUNDRECT(TEmfRectL &oBox, TEmfSizeL &oCorner)
 	{
-		if (NULL != m_pInterpretator)
+		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_ROUNDRECT(oBox, oCorner);
 
 		int lBoxW = oBox.lRight - oBox.lLeft;

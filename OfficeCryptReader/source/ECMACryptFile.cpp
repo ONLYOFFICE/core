@@ -1150,10 +1150,11 @@ bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::ws
 		
 		std::shared_ptr<CFCPP::CFStream> pAddit = pStorage->RootStorage()->GetStream(addit_name);
 
-		if (!pAddit)
+		if (pAddit)
 		{
-			pAddit = pStorage->RootStorage()->AddStream(addit_name);
+			pStorage->RootStorage()->Delete(addit_name);
 		}
+		pAddit = pStorage->RootStorage()->AddStream(addit_name);
 
 		pAddit->Write(addit_info.c_str(), 0, addit_info.size());
 		pStorage->Commit(true);

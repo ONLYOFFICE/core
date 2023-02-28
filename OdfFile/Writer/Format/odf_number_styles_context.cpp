@@ -850,16 +850,23 @@ void odf_number_styles_context::create_text_style(number_format_state & state, o
 {
 	create_element(L"number", L"text-style", root_elm, odf_context_);
 }
-
+static std::wstring replace_unwanted(boost::wsmatch const & what)
+{
+	return L"";
+}
 void odf_number_styles_context::detect_format(number_format_state & state)
 {
 	if (state.ods_type != office_value_type::Custom) return;
-	if (state.format_code.empty())return;
+	if (state.format_code.empty()) return;
+
+	boost::wregex re_unwanted(L"([\"'])(.+?)\\1");
+	
+	std::wstring strFormatCode = boost::regex_replace(state.format_code[0], re_unwanted, &replace_unwanted,	boost::match_default | boost::format_all);
 
  	//find [$<Currency String>-<language info>].
 	boost::wregex re(L"(?:\\[)(?:\\$)(\\S+)?\-(\\S+)(?:\\])");
 	boost::wsmatch result;
-	bool b = boost::regex_search(state.format_code[0], result, re);
+	bool b = boost::regex_search(strFormatCode, result, re);
 	
 	if (b && result.size() >= 3)
 	{
@@ -879,48 +886,43 @@ void odf_number_styles_context::detect_format(number_format_state & state)
 		state.ods_type = office_value_type::Currency;
 		return;
 	}
-
-	//if (state.format_code.size() == 2)//>0, <0
-	//{
-
-	//}
-	//else if (state.format_code.size() == 3)//>0, <0, ==0
-	//{
-	//}
-
 	if (state.format_code.size() > 0) //any
 	{
-		std::wstring tmp = state.format_code[0]; 
-		XmlUtils::GetLower(tmp);
+		boost::wregex re1(L"([mMhHs{2,}S{2,}]+)");
+		boost::wregex re2(L"([mMdDy{2,}Y{2,}]+)");
 
-		if (std::wstring::npos != tmp.find(L"at") || 
-			std::wstring::npos != tmp.find(L"pm") ||
-			std::wstring::npos != tmp.find(L"h") || 
-			std::wstring::npos != tmp.find(L"s") || state.language_code == 0xF400)
+		std::wstring tmp = strFormatCode;
+		
+		std::list<std::wstring> result1;
+		bool b1 = boost::regex_split(std::back_inserter(result1), tmp, re1);
+
+		tmp = strFormatCode;
+		std::list<std::wstring> result2;
+		bool b2 = boost::regex_split(std::back_inserter(result2), tmp, re2);
+		
+		if (b1 && b2 && result1.size() > 2 && result2.size() > 2)
 		{
 			state.ods_type = office_value_type::DateTime;
-			if (b)
-				state.format_code[0] = boost::regex_replace( state.format_code[0], re, L"");
 			return;
 		}
-		if (std::wstring::npos != tmp.find(L"y") || 
-			std::wstring::npos != tmp.find(L"d") || 
-			std::wstring::npos != tmp.find(L"m") || state.language_code == 0xF800)//minutes отсеялись выше
+		if (b1 && result1.size() > 2)
+		{
+			state.ods_type = office_value_type::Time;
+			return;
+		}
+		if (b2 && result2.size() > 2)
 		{
 			state.ods_type = office_value_type::Date;
-
-			if (b)
-				state.format_code[0] = boost::regex_replace( state.format_code[0], re, L"");
 			return;
-		}		
-		if (std::wstring::npos != tmp.find(L"%"))
+		}
+		if (std::wstring::npos != strFormatCode.find(L"%"))
 		{
 			state.ods_type = office_value_type::Percentage;
 			return;
 		}
-		if (std::wstring::npos != tmp.find(L"#") || 
-			std::wstring::npos != tmp.find(L"?") || 
-			std::wstring::npos != tmp.find(L"0"))
+		if (std::wstring::npos != strFormatCode.find(L"#") ||
+			std::wstring::npos != strFormatCode.find(L"?") ||
+			std::wstring::npos != strFormatCode.find(L"0"))
 		{
 			state.ods_type = office_value_type::Float;
 			return;

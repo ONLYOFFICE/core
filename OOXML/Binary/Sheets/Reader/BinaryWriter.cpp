@@ -2817,7 +2817,7 @@ void BinaryWorkbookTableWriter::WriteConnectionWebPr(const OOX::Spreadsheet::CWe
 	if (webPr.m_oHtmlFormat.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSerWebPrTypes::HtmlFormat);
-		m_oBcw.m_oStream.WriteBOOL(*webPr.m_oHtmlTables);
+		m_oBcw.m_oStream.WriteLONG(webPr.m_oHtmlFormat->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }

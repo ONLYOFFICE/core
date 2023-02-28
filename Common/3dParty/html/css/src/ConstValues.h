@@ -2023,7 +2023,7 @@ namespace NSCSS
                     if (sValue.empty())
                         return BorderSide();
 
-                    const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(sValue, L" ");
+					const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(NS_STATIC_FUNCTIONS::NormalizeRGB(sValue), L" ");
                     BorderSide oBorderSide;
                     for (std::wstring sValue : arValues)
                     {

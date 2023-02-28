@@ -56,7 +56,7 @@ class CompoundFile_impl;
 class CompoundFile
 {
 public:
-    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters = Default);
+    CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters = Default);
     CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags);
     CompoundFile(const std::wstring &fileName);
     CompoundFile(Stream stream);

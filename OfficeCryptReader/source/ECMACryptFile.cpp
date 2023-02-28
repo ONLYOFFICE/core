@@ -1145,9 +1145,8 @@ bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::ws
 {
 	try
 	{
-		CFCPP::CompoundFile *pStorage = new CFCPP::CompoundFile(file_name, CFCPP::Update);
+		CFCPP::CompoundFile *pStorage = new CFCPP::CompoundFile(file_name, CFCPP::Update, (CFCPP::SectorRecycle | CFCPP::NoValidationException | CFCPP::EraseFreeSectors));
 		if (!pStorage)return false;
-		
 		std::shared_ptr<CFCPP::CFStream> pAddit = pStorage->RootStorage()->GetStream(addit_name);
 
 		if (pAddit)
@@ -1157,7 +1156,7 @@ bool ECMACryptFile::WriteAdditional(const std::wstring &file_name, const std::ws
 		pAddit = pStorage->RootStorage()->AddStream(addit_name);
 
 		pAddit->Write(addit_info.c_str(), 0, addit_info.size());
-		pStorage->Commit(true);
+		pStorage->Commit();
 //todooo_2 flush
 		pStorage->Save(file_name + L"~");
 		pStorage->Close();

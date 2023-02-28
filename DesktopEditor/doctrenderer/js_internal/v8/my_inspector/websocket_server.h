@@ -18,7 +18,7 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 class WebSocketServer
 {
 public:
-  WebSocketServer(int port, std::function<void(std::string)> onMessage);
+  WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning);
   ~WebSocketServer();
 
   void run();
@@ -31,6 +31,7 @@ private:
 
   int port_;
   std::function<void(std::string)> onMessage_;
+  std::function<bool(void)> isScriptRunning_;
   std::unique_ptr<websocket::stream<tcp::socket>> ws_ = nullptr;
 };
 

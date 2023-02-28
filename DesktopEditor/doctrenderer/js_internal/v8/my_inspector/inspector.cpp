@@ -10,7 +10,8 @@ Inspector::Inspector(JSSmart<NSJSBase::CJSContext> context, const std::string& s
 	websocket_server_ = std::unique_ptr<WebSocketServer>(
 			new WebSocketServer(
 					port_,
-					std::bind(&Inspector::onMessage, this, std::placeholders::_1)
+					std::bind(&Inspector::onMessage, this, std::placeholders::_1),
+					std::bind(&Inspector::isScriptRunning, this)
 				)
 			);
 	inspector_client_ = std::unique_ptr<V8InspectorClientImpl>(
@@ -48,6 +49,11 @@ void Inspector::sendMessage(const std::string& message) {
 
 void Inspector::startAgent() {
 	websocket_server_->run();
+}
+
+bool Inspector::isScriptRunning()
+{
+	return jscontext_->m_internal->m_bRunningInInspector;
 }
 
 int Inspector::waitForFrontendMessage() {

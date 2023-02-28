@@ -1,19 +1,14 @@
 #include "websocket_server.h"
 
-WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMessage)
+WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning)
 {
 	port_ = port;
 	onMessage_ = std::move(onMessage);
+	isScriptRunning_ = std::move(isScriptRunning);
 }
 
 WebSocketServer::~WebSocketServer()
 {
-	try {
-		ws_->close(beast::websocket::normal);
-	}  catch (beast::system_error const& se) {
-		std::cerr << "Error: " << se.code().message() << std::endl;
-	}
-	ws_->next_layer().close();
 }
 
 void WebSocketServer::run() {
@@ -46,8 +41,7 @@ void WebSocketServer::sendMessage(const std::string &message)
 	} catch(beast::system_error const& se) {
 		if (se.code() != websocket::error::closed)
 			std::cerr << "Error: " << se.code().message() << std::endl;
-	} catch(std::exception const& e)
-	{
+	} catch(std::exception const& e) {
 		std::cerr << "Error: " << e.what() << std::endl;
 	}
 }
@@ -56,9 +50,11 @@ void WebSocketServer::startListening()
 {
 	try {
 		ws_->accept();
-		while (true) {
+		while (isScriptRunning_()) {
 			waitFrontendMessage();
 		}
+		// TODO: move to shutdown() with some extra-checks
+		ws_->close(beast::websocket::close_code::normal);
 	} catch(beast::system_error const& se) {
 		if (se.code() != websocket::error::closed)
 			std::cerr << "Error: " << se.code() << std::endl;

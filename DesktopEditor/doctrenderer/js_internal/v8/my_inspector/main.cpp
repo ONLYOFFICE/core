@@ -1,8 +1,7 @@
 #include "../../js_base.h"
 #include "../v8_base.h"
 
-#include "inspector.h"
-#include "v8_inspector_listener_impl.h"
+#include "utils.h"
 
 using namespace NSJSBase;
 int main()
@@ -13,15 +12,11 @@ int main()
 	{
 		CJSContextScope scope(pContext);
 
-		pContext->runScript("var special = 42;\n");
-
-		Inspector inspector(pContext, readFileContent("../example/code.js"));
-		inspector.addListener(new BaseV8InspectorListenerImpl());
-		inspector.startAgent();
+		pContext->runScript(readFileContent("../example/code.js"));
 
 		std::cout << "LAST LINE" << std::endl;
 
-		// NOTE: now programm crashes if you close/refresh CDT tab in browser
+		// TODO: for now programm crashes on deleting WebsocketServer. Need to fix it somehow.
 	}
 
 	return 0;

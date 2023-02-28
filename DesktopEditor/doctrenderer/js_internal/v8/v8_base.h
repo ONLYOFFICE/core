@@ -4,6 +4,10 @@
 #ifdef V8_INSPECTOR
 #include "inspector/inspector_interface.h"
 #endif
+#ifdef V8_MY_INSPECTOR
+#include "my_inspector/inspector.h"
+#include "my_inspector/v8_inspector_listener_impl.h"
+#endif
 
 #include <stack>
 
@@ -770,6 +774,10 @@ namespace NSJSBase
 
 		v8::Persistent<v8::Context>     m_contextPersistent;
 		v8::Local<v8::Context>			m_context;
+
+#ifdef V8_MY_INSPECTOR
+		bool m_bRunningInInspector = false;
+#endif
 
     public:
 		CJSContextPrivate() : m_oWorker(), m_isolate(NULL)

@@ -352,6 +352,19 @@ namespace NSJSBase
 #ifdef V8_INSPECTOR
 		v8_debug::before(m_internal->m_context, CV8Worker::getInitializer().getPlatform(), "");
 #endif
+
+#ifdef V8_MY_INSPECTOR
+		if (!m_internal->m_bRunningInInspector)
+		{
+			m_internal->m_bRunningInInspector = true;
+			Inspector inspector(this, script);
+			inspector.addListener(new BaseV8InspectorListenerImpl());
+			inspector.startAgent();
+			// TODO: it won't work if we will use return value in caller function.
+			return new CJSValueV8();
+		}
+#endif
+
 		LOGGER_START
 
 		v8::Local<v8::String> _source = CreateV8String(CV8Worker::GetCurrent(), script.c_str());
@@ -388,6 +401,10 @@ namespace NSJSBase
 			_return->value = retValue.ToLocalChecked();
 
 		LOGGER_LAP("run")
+
+#ifdef V8_MY_INSPECTOR
+		m_internal->m_bRunningInInspector = false;
+#endif
 
 		return _return;
 	}

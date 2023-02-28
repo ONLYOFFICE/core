@@ -18,6 +18,7 @@ public:
 
 	void addListener(V8InspectorListener* listener);
 	void startAgent();
+	bool isScriptRunning();
 private:
 	void onMessage(const std::string& message);
 	void sendMessage(const std::string& message);
@@ -29,7 +30,7 @@ private:
 	v8::Handle<v8::Context> context_;
 	std::unique_ptr<WebSocketServer> websocket_server_;
 	std::unique_ptr<V8InspectorClientImpl> inspector_client_;
-	std::string script_;
+	const std::string& script_;
 	std::list<V8InspectorListener*> listeners_;
 };
 

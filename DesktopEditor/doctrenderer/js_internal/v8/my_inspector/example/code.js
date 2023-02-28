@@ -14,4 +14,3 @@ var sayHi = function (name) {
 };
 main();
 sayHi('Foo');
-console.log(special);

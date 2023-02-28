@@ -6,7 +6,7 @@
 #include "../../js_base.h"
 
 struct V8InspectorListener {
-	virtual void onConnected(const v8::Local<v8::Context>& context) = 0;
+	virtual void onConnected(JSSmart<NSJSBase::CJSContext> context, const std::string& script) = 0;
 };
 
 #endif //V8_INSPECTOR_LISTENER_H

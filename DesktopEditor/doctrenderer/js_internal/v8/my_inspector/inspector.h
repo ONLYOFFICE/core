@@ -5,6 +5,8 @@
 #include <functional>
 #include <vector>
 #include <list>
+
+#include "../../js_base.h"
 #include "websocket_server.h"
 #include "v8_inspector_client.h"
 #include "v8_inspector_listener.h"
@@ -12,7 +14,7 @@
 
 class Inspector {
 public:
-	Inspector(v8::Platform* platform, const v8::Local<v8::Context> &context, int webSocketPort);
+	Inspector(JSSmart<NSJSBase::CJSContext> context, const std::string& script);
 
 	void addListener(V8InspectorListener* listener);
 	void startAgent();
@@ -21,10 +23,13 @@ private:
 	void sendMessage(const std::string& message);
 	int waitForFrontendMessage();
 
+	int port_ = 8080;
+
+	JSSmart<NSJSBase::CJSContext> jscontext_;
 	v8::Handle<v8::Context> context_;
 	std::unique_ptr<WebSocketServer> websocket_server_;
 	std::unique_ptr<V8InspectorClientImpl> inspector_client_;
-	std::vector<std::string> scripts = {};
+	std::string script_;
 	std::list<V8InspectorListener*> listeners_;
 };
 

@@ -19,6 +19,7 @@ class WebSocketServer
 {
 public:
   WebSocketServer(int port, std::function<void(std::string)> onMessage);
+  ~WebSocketServer();
 
   void run();
   void sendMessage(const std::string &message);

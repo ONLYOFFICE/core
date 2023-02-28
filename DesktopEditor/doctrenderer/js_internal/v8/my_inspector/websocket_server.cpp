@@ -6,6 +6,16 @@ WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMe
 	onMessage_ = std::move(onMessage);
 }
 
+WebSocketServer::~WebSocketServer()
+{
+	try {
+		ws_->close(beast::websocket::normal);
+	}  catch (beast::system_error const& se) {
+		std::cerr << "Error: " << se.code().message() << std::endl;
+	}
+	ws_->next_layer().close();
+}
+
 void WebSocketServer::run() {
 	try
 	{
@@ -50,10 +60,10 @@ void WebSocketServer::startListening()
 			waitFrontendMessage();
 		}
 	} catch(beast::system_error const& se) {
-		if(se.code() != websocket::error::closed)
-			std::cerr << "Error: " << se.code().message() << std::endl;
+		if (se.code() != websocket::error::closed)
+			std::cerr << "Error: " << se.code() << std::endl;
 	} catch(std::exception const& e) {
-		std::cerr << "Error: " << e.what() << std::endl;
+		std::cerr << "System error: " << e.what() << std::endl;
 	}
 }
 

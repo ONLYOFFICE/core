@@ -1,19 +1,21 @@
 #include "inspector.h"
 
-Inspector::Inspector(
-		v8::Platform* platform,
-		const v8::Local<v8::Context> &context,
-		const int webSocketPort) {
-	context_ = context;
+#include "../v8_base.h"
+
+Inspector::Inspector(JSSmart<NSJSBase::CJSContext> context, const std::string& script)
+	: jscontext_(context)
+	, script_(script)
+{
+	context_ = context->m_internal->m_context;
 	websocket_server_ = std::unique_ptr<WebSocketServer>(
 			new WebSocketServer(
-					webSocketPort,
+					port_,
 					std::bind(&Inspector::onMessage, this, std::placeholders::_1)
 				)
 			);
 	inspector_client_ = std::unique_ptr<V8InspectorClientImpl>(
 			new V8InspectorClientImpl(
-					platform,
+					CV8Worker::getInitializer().getPlatform(),
 					context_,
 					std::bind(&Inspector::sendMessage, this, std::placeholders::_1),
 					std::bind(&Inspector::waitForFrontendMessage, this)
@@ -31,10 +33,10 @@ void Inspector::onMessage(const std::string& message) {
 		std::string method = getPropertyFromJson(context_->GetIsolate(), jsonObject, "method");
 		if (method == "Runtime.runIfWaitingForDebugger") {
 			inspector_client_->schedulePauseOnNextStatement(convertToStringView("For testing purpose!"));
-			inspector_client_->waitFrontendMessageOnPause();
-			std::for_each(listeners_.begin(), listeners_.end(), [this](V8InspectorListener* listener) {
-				listener->onConnected(context_);
-			});
+//			inspector_client_->waitFrontendMessageOnPause();
+			for (auto listener : listeners_) {
+				listener->onConnected(jscontext_, script_);
+			}
 		}
 	}
 }

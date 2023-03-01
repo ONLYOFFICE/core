@@ -11,24 +11,34 @@
 #include "v8_inspector_client.h"
 #include "utils.h"
 
-class Inspector {
-public:
-	Inspector(NSJSBase::CJSContext* context, const std::string& script);
+class Inspector
+{
+private:
+	// TODO: make static and increment for all next contexts
+	int port_ = 8080;
+	// pointer to CJSContext instance in which scripts/functions are executed
+	NSJSBase::CJSContext* jscontext_;
+	// reference to executed script
+	const std::string& script_;
+	// V8 context
+	v8::Handle<v8::Context> context_;
+	// JS value, returned by script
+	JSSmart<NSJSBase::CJSValue> ret_;
 
-	void startAgent();
-	bool isScriptRunning();
+	std::unique_ptr<WebSocketServer> websocket_server_;
+	std::unique_ptr<V8InspectorClientImpl> inspector_client_;
+
 private:
 	void onMessage(const std::string& message);
 	void sendMessage(const std::string& message);
 	int waitForFrontendMessage();
 
-	int port_ = 8080;
+public:
+	Inspector(NSJSBase::CJSContext* context, const std::string& script);
 
-	NSJSBase::CJSContext* jscontext_;
-	v8::Handle<v8::Context> context_;
-	std::unique_ptr<WebSocketServer> websocket_server_;
-	std::unique_ptr<V8InspectorClientImpl> inspector_client_;
-	const std::string& script_;
+	void startAgent();
+	bool isScriptRunning();
+	JSSmart<NSJSBase::CJSValue> getReturnValue();
 };
 
 

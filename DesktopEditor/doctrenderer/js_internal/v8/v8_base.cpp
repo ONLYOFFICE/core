@@ -357,10 +357,9 @@ namespace NSJSBase
 		if (!m_internal->m_bRunningInInspector)
 		{
 			m_internal->m_bRunningInInspector = true;
-			Inspector inspector(this, script);
-			inspector.startAgent();
-			// TODO: it won't work if we will use return value in caller function.
-			return new CJSValueV8();
+			Inspector oInspector(this, script);
+			oInspector.startAgent();
+			return oInspector.getReturnValue();
 		}
 #endif
 

@@ -19,13 +19,11 @@ class WebSocketServer
 {
 private:
 	int port_;
-
 	// boost stuff
 	tcp::endpoint endpoint_;
 	net::io_context ioc_{1};
 	tcp::acceptor acceptor_;
 	std::unique_ptr<websocket::stream<tcp::socket>> ws_;
-
 	// callbacks
 	std::function<void(std::string)> onMessage_;
 	std::function<bool(void)> isScriptRunning_;
@@ -37,7 +35,6 @@ private:
 
 public:
 	WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning);
-	~WebSocketServer() = default;
 
 	void run();
 	void sendMessage(const std::string &message);

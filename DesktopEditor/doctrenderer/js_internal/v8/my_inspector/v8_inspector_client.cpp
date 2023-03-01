@@ -21,35 +21,43 @@ V8InspectorClientImpl::V8InspectorClientImpl(
 	run_nested_loop_ = false;
 }
 
-void V8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView &message_view) {
+void V8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView &message_view)
+{
 	session_->dispatchProtocolMessage(message_view);
 }
 
-void V8InspectorClientImpl::runMessageLoopOnPause(int contextGroupId) {
-	if (run_nested_loop_) {
+void V8InspectorClientImpl::runMessageLoopOnPause(int contextGroupId)
+{
+	if (run_nested_loop_)
+	{
 		return;
 	}
 	terminated_ = false;
 	run_nested_loop_ = true;
-	while (!terminated_ && onWaitFrontendMessageOnPause_()) {
+	while (!terminated_ && onWaitFrontendMessageOnPause_())
+	{
 		while (v8::platform::PumpMessageLoop(platform_, isolate_)) {}
 	}
 	terminated_ = true;
 	run_nested_loop_ = false;
 }
 
-void V8InspectorClientImpl::quitMessageLoopOnPause() {
+void V8InspectorClientImpl::quitMessageLoopOnPause()
+{
 	terminated_ = true;
 }
 
-v8::Local<v8::Context> V8InspectorClientImpl::ensureDefaultContextInGroup(int contextGroupId) {
+v8::Local<v8::Context> V8InspectorClientImpl::ensureDefaultContextInGroup(int contextGroupId)
+{
 	return context_;
 }
 
-void V8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView &reason) {
+void V8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView &reason)
+{
 	session_->schedulePauseOnNextStatement(reason, reason);
 }
 
-void V8InspectorClientImpl::waitFrontendMessageOnPause() {
+void V8InspectorClientImpl::waitFrontendMessageOnPause()
+{
 	terminated_ = false;
 }

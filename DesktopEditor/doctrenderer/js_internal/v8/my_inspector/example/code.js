@@ -9,8 +9,10 @@ function main() {
     var c = a * b;
     console.log(a + " * " + b + " = " + c);
 }
+
 var sayHi = function (name) {
-    console.log("Hi, " + name);
+    return "Hi, " + name;
 };
+
 main();
 sayHi('Foo');

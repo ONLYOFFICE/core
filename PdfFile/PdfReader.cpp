@@ -749,8 +749,8 @@ BYTE* CPdfReader::GetWidgets()
         // Полное имя поля - T (parent_full_name.child_name)
         int nLengthName;
         Unicode* uName = pField->getName(&nLengthName);
-        std::string sName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
-        oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+        std::string sTName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
+        oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
         gfree(uName);
 
         // Номер страницы - P
@@ -1163,7 +1163,7 @@ oObj.free();\
             for (int j = 0; j < nLength; ++j)
             {
                 std::string sAA(oAA.dictGetKey(j));
-                oRes.WriteString((BYTE*)sAA.c_str(), sAA.length());
+                oRes.WriteString((BYTE*)sAA.c_str(), (unsigned int)sAA.length());
 
                 Object oAction, oType;
                 if (!oAA.dictGetVal(j, &oAction) || !oAction.isDict() || !oAction.dictLookup("S", &oType) || !oType.isName())
@@ -1173,50 +1173,107 @@ oObj.free();\
                     oType.free();
                     continue;
                 }
+                std::string sSName(oType.getName());
+                oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
 
                 LinkAction* oAct = LinkAction::parseAction(&oAction);
                 if (!oAct)
                     continue;
 
                 LinkActionKind kind = oAct->getKind();
-
-                RELEASEOBJECT(oAct);
-
-                std::string sName(oType.getName());
-                oRes.WriteString((BYTE*)sName.c_str(), sName.length());
-                oType.free();
-                if (sName == "JavaScript")
+                switch (kind)
+                {
+                // Переход внутри файла
+                case actionGoTo:
+                {
+                    GString* str = ((LinkGoTo*)oAct)->getNamedDest();
+                    LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)oAct)->getDest();
+                    if (!pLinkDest)
+                        break;
+                    // 21 - GoTo
+                    int pg;
+                    if (pLinkDest->isPageRef())
+                    {
+                        Ref pageRef = pLinkDest->getPageRef();
+                        pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+                    }
+                    else
+                        pg = pLinkDest->getPageNum();
+                    nFlags |= (1 << 20);
+                    std::string sLink = "#" + std::to_string(pg - 1);
+                    double dy = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
+                    oRes.WriteString((BYTE*)sLink.c_str(), (unsigned int)sLink.length());
+                    oRes.AddDouble(dy);
+                    break;
+                }
+                // Переход к внешнему файлу
+                case actionGoToR:
+                {
+                    break;
+                }
+                // Запуск стороннего приложения
+                case actionLaunch:
+                {
+                    break;
+                }
+                // Внешняя ссылка
+                case actionURI:
+                {
+                    // 21 - URI
+                    TextString* s = new TextString(((LinkURI*)oAct)->getURI());
+                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                    nFlags |= (1 << 20);
+                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                    delete s;
+                    break;
+                }
+                // Нестандартно именованные действия
+                case actionNamed:
+                {
+                    // 21 - Named
+                    TextString* s = new TextString(((LinkNamed*)oAct)->getName());
+                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                    nFlags |= (1 << 20);
+                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                    delete s;
+                    break;
+                }
+                // Воспроизведение фильма
+                case actionMovie:
+                {
+                    break;
+                }
+                // JavaScript
+                case actionJavaScript:
                 {
                     // 21 - JS
-                    DICT_LOOKUP_STRING(oAction, "JS", 20);
+                    TextString* s = new TextString(((LinkJavaScript*)oAct)->getJS());
+                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                    nFlags |= (1 << 20);
+                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                    delete s;
+                    break;
                 }
-                else if (sName == "GoTo")
+                // Отправка формы
+                case actionSubmitForm:
                 {
-                    // 21 - D
-                    if (oAction.dictLookup("D", &oObj))
-                    {
-                        std::string sD;
-                        if (oObj.isString() || oObj.isName() || oObj.isArray())
-                        {
-                            //LinkAction* oDest =
-                            //LinkGoTo* oDest = new LinkGoTo(oObj);
-                        }
-                        {
-                            if (oObj.isString())
-                            {
-                                TextString* s = new TextString(oObj.getString());
-                                sD = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                                delete s;
-                            }
-                            else
-                                sD = oObj.getName();
-
-                            //nFlags |= (1 << 20);
-                            //oRes.WriteString((BYTE*)sJS.c_str(), sJS.length());
-                        }
-                    }
-                    oObj.free();
+                    break;
                 }
+                // Скрытие аннотаций
+                case actionHide:
+                {
+                    break;
+                }
+                // Неизвестное действие
+                case actionUnknown:
+                default:
+                {
+                    break;
+                }
+                }
+
+                oType.free();
+                RELEASEOBJECT(oAct);
                 oAction.free();
             }
         }

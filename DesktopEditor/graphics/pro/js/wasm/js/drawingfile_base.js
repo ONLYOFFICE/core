@@ -526,6 +526,24 @@
 						if (flags & (1 << 20))
 							rec["AA"][AAType]["JS"] = reader.readString();
 					}
+					else if (SType == "GoTo")
+					{
+						if (flags & (1 << 20))
+						{
+							rec["AA"][AAType]["GoTo"]["link"] = reader.readString();
+							rec["AA"][AAType]["GoTo"]["dest"] = reader.readDouble();
+						}
+					}
+					else if (SType == "Named")
+					{
+						if (flags & (1 << 20))
+							rec["AA"][AAType]["N"] = reader.readString();
+					}
+					else if (SType == "URI")
+					{
+						if (flags & (1 << 20))
+							rec["AA"][AAType]["URI"] = reader.readString();
+					}
 				}
 			}
 

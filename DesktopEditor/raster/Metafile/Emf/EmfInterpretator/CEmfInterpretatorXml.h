@@ -121,7 +121,8 @@ namespace MetaFile
 		void HANDLE_EMR_SETPIXELV(const TEmfPointL& oPoint, const TEmfColor& oColor) override ;
 		void HANDLE_EMR_SMALLTEXTOUT(const TEmfSmallTextout& oText) override ;
 		void HANDLE_EMR_STROKEANDFILLPATH(const TEmfRectL& oBounds) override ;
-		void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override ;
+		void HANDLE_EMR_STROKEPATH(const TEmfRectL& oBounds) override;
+		void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>& arVertex, const std::vector<std::pair<int, int>>& arIndexes, unsigned int unFillMode) override;
 
 		void HANDLE_EMR_UNKNOWN(CDataStream &oDataStream) override;
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects) override;

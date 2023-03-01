@@ -717,6 +717,17 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TTriVertex& oVertex)
+		{
+			*this >> oVertex.nX;
+			*this >> oVertex.nY;
+			*this >> oVertex.ushRed;
+			*this >> oVertex.ushGreen;
+			*this >> oVertex.ushBlue;
+			*this >> oVertex.ushAlpha;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfPlusRect& oRect)
 		{
 			*this >> oRect.shX;

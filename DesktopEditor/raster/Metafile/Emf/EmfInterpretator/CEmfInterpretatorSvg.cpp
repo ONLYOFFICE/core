@@ -143,6 +143,11 @@ namespace MetaFile
 		CInterpretatorSvgBase::ResetClip();
 	}
 
+	void CEmfInterpretatorSvg::HANDLE_EMR_SETMETARGN()
+	{
+		CInterpretatorSvgBase::ResetClip();
+	}
+
 	void CEmfInterpretatorSvg::HANDLE_EMR_INTERSECTCLIPRECT(const TEmfRectL &oClip)
 	{
 		CInterpretatorSvgBase::ResetClip();
@@ -1117,6 +1122,50 @@ namespace MetaFile
 			WriteNodeEnd(L"g");
 	}
 
+	void CEmfInterpretatorSvg::HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex> &arVertex, const std::vector<std::pair<int, int> > &arIndexes, unsigned int unFillMode)
+	{
+		if (arVertex.empty())
+			return;
+
+		NodeAttributes arAttributes;
+
+		AddFill(arAttributes);
+		AddTransform(arAttributes);
+
+		NodeAttributes arGAttributes;
+		AddClip(arGAttributes);
+
+		if (!m_wsLastClipId.empty())
+			WriteNodeBegin(L"g", arGAttributes);
+
+		if (4 == arVertex.size())
+		{
+			arAttributes.push_back({L"x",      std::to_wstring(std::min(arVertex[0].nX, arVertex[1].nX))});
+			arAttributes.push_back({L"y",      std::to_wstring(std::min(arVertex[0].nY, arVertex[2].nY))});
+			arAttributes.push_back({L"width",  std::to_wstring(std::abs(arVertex[1].nX - arVertex[0].nX))});
+			arAttributes.push_back({L"height", std::to_wstring(std::abs(arVertex[2].nY - arVertex[0].nY))});
+			WriteNode(L"rect" , arAttributes);
+		}
+		else if (3 == arVertex.size())
+		{
+			CEmfPath oPath;
+			oPath.MoveTo(arVertex[0].nX, arVertex[0].nY);
+			oPath.LineTo(arVertex[1].nX, arVertex[1].nY);
+			oPath.LineTo(arVertex[2].nX, arVertex[2].nY);
+			oPath.Close();
+
+			std::wstring wsValue = CreatePath(&oPath);
+
+			if (!wsValue.empty())
+				arAttributes.push_back({L"d", wsValue});
+
+			WriteNode(L"path" , arAttributes);
+		}
+
+		if (!m_wsLastClipId.empty())
+			WriteNodeEnd(L"g");
+	}
+
 	void CEmfInterpretatorSvg::HANDLE_EMR_FILLRGN(const TEmfRectL &oBounds, unsigned int unIhBrush, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
 	{
 		if (0x00000020 != oRegionDataHeader.unSize || 0x00000001 != oRegionDataHeader.unType || arRects.empty())
@@ -1726,8 +1775,6 @@ namespace MetaFile
 		if (NULL == pPath /*|| nClipMode != CombineModeIntersect*/)
 			return;
 
-		m_wsLastClipId = L"PATHCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-
 		CEmfPath *pEmfPath = dynamic_cast<CEmfPath*>(pPath);
 
 		if (NULL == pEmfPath)
@@ -1738,7 +1785,9 @@ namespace MetaFile
 		if (wsPath.empty())
 			return;
 
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\"><path d=\"" + wsPath + L"\" clip-rule=\"evenodd\"/></clipPath>";
+		InitClip();
+
+		m_wsDefs.insert(m_wsDefs.length() - 11, L"<path d=\"" + wsPath + L"\" clip-rule=\"evenodd\"/>");
 	}
 
 	TRectD CEmfInterpretatorSvg::TranslateRect(const TEmfRectL &oRect) const

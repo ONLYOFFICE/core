@@ -389,6 +389,8 @@ namespace MetaFile
 		void HANDLE_EMR_STROKEANDFILLPATH(TEmfRectL& oBounds);
 		void HANDLE_EMR_STROKEPATH(TEmfRectL& oBounds);
 
+		void HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex>& arVertex, const std::vector<std::pair<int, int>>& arIndexes, unsigned int unFillMode);
+
 		void HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize);
 		void HANDLE_EMR_FILLRGN(const TEmfRectL& oBounds, unsigned int unIhBrush, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);
 		void HANDLE_EMR_PAINTRGN(const TEmfRectL& oBounds, const TRegionDataHeader& oRegionDataHeader, const std::vector<TEmfRectL>& arRects);

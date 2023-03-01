@@ -404,6 +404,15 @@ namespace MetaFile
 			m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 
+	void CInterpretatorSvgBase::InitClip()
+	{
+		if (m_wsLastClipId.empty())
+		{
+			m_wsLastClipId = L"CLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+			m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\"></clipPath>";
+		}
+	}
+
 	void CInterpretatorSvgBase::ResetClip()
 	{
 		m_wsLastClipId.clear();
@@ -411,27 +420,28 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
 	{
-		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+		InitClip();
 
 		TXForm *pTransform = m_pParser->GetTransform();
 
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>" +
-		            L"</clipPath>";
+		std::wstring wsClip = L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) +
+		                      L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>";
+
+		m_wsDefs.insert(m_wsDefs.length() - 11, wsClip);
 	}
 
 	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
-		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+		InitClip();
 
 		TXForm *pTransform = m_pParser->GetTransform();
 
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
-		            ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
-		            ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
-		            ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>" +
-		            L"</clipPath>";
+		std::wstring wsClip = L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
+		                      ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
+		                      ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
+		                      ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>";
+
+		m_wsDefs.insert(m_wsDefs.length() - 11, wsClip);
 	}
 
 	void CInterpretatorSvgBase::AddStroke(NodeAttributes &arAttributes) const
@@ -543,13 +553,15 @@ namespace MetaFile
 		if (NULL == pBrush)
 			pBrush = m_pParser->GetBrush();
 
-		if (NULL == pBrush || BS_NULL == pBrush->GetStyle())
+		unsigned int unBrushStyle = pBrush->GetStyle();
+
+		if (NULL == pBrush || BS_NULL == unBrushStyle)
 		{
 			arAttributes.push_back({L"fill", L"none"});
 			return;
 		}
 
-		switch (pBrush->GetStyle())
+		switch (unBrushStyle)
 		{
 			case BS_SOLID:
 			{
@@ -692,6 +704,8 @@ namespace MetaFile
 
 		if (NULL != pClip)
 			pClip->ClipOnRenderer((CInterpretatorSvgBase*)this);
+		else
+			m_wsLastClipId.clear();
 	}
 
 	void CInterpretatorSvgBase::AddNoneFill(NodeAttributes &arAttributes) const

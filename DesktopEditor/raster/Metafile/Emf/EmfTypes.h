@@ -847,6 +847,16 @@ namespace MetaFile
 		int           cySrc;
 	};
 
+	struct TTriVertex
+	{
+		int nX;
+		int nY;
+		unsigned short ushRed;
+		unsigned short ushGreen;
+		unsigned short ushBlue;
+		unsigned short ushAlpha;
+	};
+
 	const unsigned int c_nTEmfAlphaBlendSize = 100;
 };
 #endif //_METAFILE_EMF_EMFTYPES_H

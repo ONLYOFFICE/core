@@ -1706,6 +1706,63 @@ namespace MetaFile
 		}
 	}
 
+	void CEmfParserBase::HANDLE_EMR_GRADIENTFILL(const std::vector<TTriVertex> &arVertex, const std::vector<std::pair<int, int> > &arIndexes, unsigned int unFillMode)
+	{
+		if (3 > arVertex.size() || arVertex.size() > 4 || INT_MIN == arVertex[0].nX || INT_MIN == arVertex[0].nY || NULL == m_pInterpretator ||
+		    0 == (arVertex[1].nX - arVertex[0].nX))
+			return;
+
+		CEmfPlusBrush oBrush;
+		oBrush.Style = BS_LINEARGRADIENT;
+
+		oBrush.Color.chRed   = arVertex[0].ushRed   / 255.;
+		oBrush.Color.chGreen = arVertex[0].ushGreen / 255.;
+		oBrush.Color.chBlue  = arVertex[0].ushBlue  / 255.;
+		oBrush.Color.chAlpha = 255;
+
+		if (GRADIENT_FILL_RECT_H == unFillMode || GRADIENT_FILL_TRIANGLE == unFillMode)
+		{
+			if (arVertex[1].nX - arVertex[0].nX != 1)
+			{
+				oBrush.ColorBack.chRed   = arVertex[1].ushRed   / 255.;
+				oBrush.ColorBack.chGreen = arVertex[1].ushGreen / 255.;
+				oBrush.ColorBack.chBlue  = arVertex[1].ushBlue  / 255.;
+			}
+			else
+				oBrush.Style = BS_SOLID;
+		}
+		else if (GRADIENT_FILL_RECT_V == unFillMode)
+		{
+			if (arVertex[2].nY - arVertex[0].nY != 1)
+			{
+				oBrush.ColorBack.chRed   = arVertex[2].ushRed   / 255.;
+				oBrush.ColorBack.chGreen = arVertex[2].ushGreen / 255.;
+				oBrush.ColorBack.chBlue  = arVertex[2].ushBlue  / 255.;
+			}
+			else
+				oBrush.Style = BS_SOLID;
+		}
+		oBrush.ColorBack.chAlpha = 255;
+
+		IBrush* pBrush = m_pDC->GetBrush();
+		m_pDC->SetBrush(&oBrush);
+
+		MoveTo(arVertex[0].nX, arVertex[0].nY);
+		LineTo(arVertex[1].nX, arVertex[1].nY);
+		LineTo(arVertex[2].nX, arVertex[2].nY);
+		if (4 == arVertex.size())
+			LineTo(arVertex[3].nX, arVertex[3].nY);
+
+		ClosePath();
+		DrawPath(false, true);
+
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->HANDLE_EMR_GRADIENTFILL(arVertex, arIndexes, unFillMode);
+
+		m_pDC->RemoveBrush(&oBrush);
+		m_pDC->SetBrush(pBrush);
+	}
+
 	void CEmfParserBase::HANDLE_EMR_UNKNOWN(const unsigned int& unRecordSize)
 	{
 		if (NULL != m_pInterpretator)

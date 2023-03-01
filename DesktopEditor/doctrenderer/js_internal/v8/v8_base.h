@@ -6,7 +6,6 @@
 #endif
 #ifdef V8_MY_INSPECTOR
 #include "my_inspector/inspector.h"
-#include "my_inspector/v8_inspector_listener_impl.h"
 #endif
 
 #include <stack>

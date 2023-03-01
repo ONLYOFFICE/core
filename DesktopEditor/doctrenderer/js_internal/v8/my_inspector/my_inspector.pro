@@ -41,8 +41,6 @@ HEADERS += \
     utils.h\
     v8_inspector_channel.h \
     v8_inspector_client.h \
-    v8_inspector_listener.h \
-    v8_inspector_listener_impl.h \
     websocket_server.h
 
 DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"

@@ -17,22 +17,31 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
 class WebSocketServer
 {
-public:
-  WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning);
-  ~WebSocketServer();
-
-  void run();
-  void sendMessage(const std::string &message);
-  void waitForFrontendMessageOnPause();
 private:
-  void startListening();
-  void printListeningMessage();
-  void waitFrontendMessage();
+	int port_;
 
-  int port_;
-  std::function<void(std::string)> onMessage_;
-  std::function<bool(void)> isScriptRunning_;
-  std::unique_ptr<websocket::stream<tcp::socket>> ws_ = nullptr;
+	// boost stuff
+	tcp::endpoint endpoint_;
+	net::io_context ioc_{1};
+	tcp::acceptor acceptor_;
+	std::unique_ptr<websocket::stream<tcp::socket>> ws_;
+
+	// callbacks
+	std::function<void(std::string)> onMessage_;
+	std::function<bool(void)> isScriptRunning_;
+
+private:
+	void startListening();
+	void printListeningMessage();
+	void waitFrontendMessage();
+
+public:
+	WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning);
+	~WebSocketServer() = default;
+
+	void run();
+	void sendMessage(const std::string &message);
+	void waitForFrontendMessageOnPause();
 };
 
 #endif // WEBSOCKETSERVER_H

@@ -2,7 +2,7 @@
 
 #include "../v8_base.h"
 
-Inspector::Inspector(JSSmart<NSJSBase::CJSContext> context, const std::string& script)
+Inspector::Inspector(NSJSBase::CJSContext* context, const std::string& script)
 	: jscontext_(context)
 	, script_(script)
 {
@@ -34,10 +34,7 @@ void Inspector::onMessage(const std::string& message) {
 		std::string method = getPropertyFromJson(context_->GetIsolate(), jsonObject, "method");
 		if (method == "Runtime.runIfWaitingForDebugger") {
 			inspector_client_->schedulePauseOnNextStatement(convertToStringView("For testing purpose!"));
-//			inspector_client_->waitFrontendMessageOnPause();
-			for (auto listener : listeners_) {
-				listener->onConnected(jscontext_, script_);
-			}
+			jscontext_->runScript(script_);
 		}
 	}
 }
@@ -59,8 +56,4 @@ bool Inspector::isScriptRunning()
 int Inspector::waitForFrontendMessage() {
 	websocket_server_->waitForFrontendMessageOnPause();
 	return 1;
-}
-
-void Inspector::addListener(V8InspectorListener* listener) {
-	listeners_.emplace_back(listener);
 }

@@ -358,7 +358,6 @@ namespace NSJSBase
 		{
 			m_internal->m_bRunningInInspector = true;
 			Inspector inspector(this, script);
-			inspector.addListener(new BaseV8InspectorListenerImpl());
 			inspector.startAgent();
 			// TODO: it won't work if we will use return value in caller function.
 			return new CJSValueV8();

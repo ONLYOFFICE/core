@@ -1,9 +1,14 @@
 #include "v8_inspector_client.h"
 
-V8InspectorClientImpl::V8InspectorClientImpl(v8::Platform* platform, const v8::Local<v8::Context> &context, const std::function<void(std::string)> &onResponse, const std::function<int(void)> &onWaitFrontendMessageOnPause) {
-	platform_ = platform;
-	context_ = context;
-	onWaitFrontendMessageOnPause_ = onWaitFrontendMessageOnPause;
+V8InspectorClientImpl::V8InspectorClientImpl(
+	v8::Platform* platform,
+	const v8::Local<v8::Context> &context,
+	const std::function<void(std::string)> &onResponse,
+	const std::function<int(void)> &onWaitFrontendMessageOnPause)
+	: platform_(platform)
+	, context_(context)
+	, onWaitFrontendMessageOnPause_(std::move(onWaitFrontendMessageOnPause))
+{
 	isolate_ = context_->GetIsolate();
 	channel_.reset(new V8InspectorChannelImpl(isolate_, onResponse));
 	inspector_ = v8_inspector::V8Inspector::create(isolate_, this);

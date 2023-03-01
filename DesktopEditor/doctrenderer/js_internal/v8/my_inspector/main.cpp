@@ -11,13 +11,10 @@ int main()
 
 	{
 		CJSContextScope scope(pContext);
-
 		pContext->runScript(readFileContent("../example/code.js"));
-
-		std::cout << "LAST LINE" << std::endl;
-
-		// TODO: for now programm crashes on deleting WebsocketServer. Need to fix it somehow.
 	}
+
+	std::cout << "AFTER INSPECTOR" << std::endl;
 
 	return 0;
 }

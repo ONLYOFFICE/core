@@ -9,7 +9,7 @@
  * - reformat to satisfy codestyle
  * - rename `my_inspector` to `inspector`
  * - dispose inspector on CJSContext::Exit() ???
- * - close websocket when script is finish running
+ * - test for old version of V8
  */
 
 using namespace NSJSBase;
@@ -73,6 +73,23 @@ int main()
 			std::cout << "ERROR!" << std::endl;
 		}
 	}
+
+//	{
+//		CJSContextScope oScope(pContext1);
+
+//		JSSmart<CJSObject> pGlobal = pContext1->GetGlobal();
+//		JSSmart<CJSValue> pRet = pGlobal->call_func("f");
+
+//		std::cout << "RESULT: ";
+//		if (pRet->isString())
+//		{
+//			std::cout << pRet->toStringA() << std::endl;
+//		}
+//		else
+//		{
+//			std::cout << "ERROR!" << std::endl;
+//		}
+//	}
 
 	pContext1->Dispose();
 	std::cout << "AFTER CONTEXT1 DISPOSE" << std::endl;

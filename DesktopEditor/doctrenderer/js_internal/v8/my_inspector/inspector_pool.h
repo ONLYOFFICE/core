@@ -1,17 +1,18 @@
 #ifndef INSPECTORPOOL_H
 #define INSPECTORPOOL_H
 
-#include "inspector.h"
 #include <unordered_map>
+
+#include "inspector.h"
 
 class CInspectorPool
 {
-	using storage_t = std::unordered_map<NSJSBase::CJSContext*, Inspector>;
+	using storage_t = std::unordered_map<v8::Isolate*, Inspector>;
 
 	storage_t m_Inspectors;
 
 	// add new inspector
-	Inspector& addInspector(NSJSBase::CJSContext* context);
+	Inspector& addInspector(v8::Isolate* isolate);
 
 	// port for server
 	static uint16_t getPort();
@@ -30,10 +31,10 @@ public:
 
 	// get instance
 	static CInspectorPool& get();
-	// get inspector by JSContext
-	Inspector& getInspector(NSJSBase::CJSContext* context);
-	// remove inspector from JSContext
-	void disposeInspector(NSJSBase::CJSContext* context);
+	// get inspector by isolate
+	Inspector& getInspector(v8::Isolate* isolate);
+	// remove inspector from isolate
+	void disposeInspector(v8::Isolate* isolate);
 };
 
 #endif // INSPECTORPOOL_H

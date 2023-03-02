@@ -39,6 +39,7 @@ public:
 
 	void init();
 	void run();
+	void stop();
 	void sendMessage(const std::string &message);
 	void waitForFrontendMessageOnPause();
 };

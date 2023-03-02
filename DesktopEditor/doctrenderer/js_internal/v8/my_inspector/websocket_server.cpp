@@ -12,8 +12,7 @@ WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMe
 
 WebSocketServer::~WebSocketServer()
 {
-	// close the connection
-	ws_->close(beast::websocket::close_code::normal);
+	// closeConnection();
 	acceptor_.close();
 }
 
@@ -49,6 +48,11 @@ void WebSocketServer::run()
 	}
 }
 
+void WebSocketServer::stop()
+{
+	ws_->close(beast::websocket::close_code::normal);
+}
+
 void WebSocketServer::sendMessage(const std::string &message)
 {
 	try
@@ -75,10 +79,11 @@ void WebSocketServer::startListening()
 	try
 	{
 		ws_->accept();
-		while (isScriptRunning_())
+		while (!isScriptRunning_())
 		{
 			waitFrontendMessage();
 		}
+
 	}
 	catch(beast::system_error const& se)
 	{

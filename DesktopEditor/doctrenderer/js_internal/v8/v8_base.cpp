@@ -207,7 +207,7 @@ namespace NSJSBase
 		v8_debug::disposeInspector(m_internal->m_context);
 #endif
 #ifdef V8_MY_INSPECTOR
-		CInspectorPool::get().disposeInspector(this);
+		CInspectorPool::get().disposeInspector(m_internal->m_isolate);
 #endif
 		m_internal->m_contextPersistent.Reset();
 		m_internal->m_isolate->Dispose();
@@ -354,9 +354,7 @@ namespace NSJSBase
 #endif
 
 #ifdef V8_MY_INSPECTOR
-		m_internal->m_bRunningInInspector = true;
-		Inspector& oInspector = CInspectorPool::get().getInspector(this);
-		oInspector.startAgent();
+		CInspectorPool::get().getInspector(m_internal->m_isolate).startAgent();
 #endif
 
 		LOGGER_START
@@ -395,6 +393,10 @@ namespace NSJSBase
 			_return->value = retValue.ToLocalChecked();
 
 		LOGGER_LAP("run")
+
+#ifdef V8_MY_INSPECTOR
+		CInspectorPool::get().getInspector(m_internal->m_isolate).stopAgent();
+#endif
 
 		return _return;
 	}

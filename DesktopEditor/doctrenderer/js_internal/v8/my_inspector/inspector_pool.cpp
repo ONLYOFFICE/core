@@ -1,12 +1,14 @@
 #include "inspector_pool.h"
 
-Inspector& CInspectorPool::addInspector(NSJSBase::CJSContext* context)
+#include "../v8_base.h"
+
+Inspector& CInspectorPool::addInspector(v8::Isolate* isolate)
 {
 	std::pair<storage_t::iterator, bool> result = m_Inspectors.emplace(
 				std::piecewise_construct
-				, std::forward_as_tuple(context)
+				, std::forward_as_tuple(isolate)
 				, std::forward_as_tuple(
-					context
+					isolate
 					, getPort()
 					, getContextGroupId()
 				)
@@ -28,19 +30,19 @@ int CInspectorPool::getContextGroupId()
 }
 
 Inspector&
-CInspectorPool::getInspector(NSJSBase::CJSContext* context)
+CInspectorPool::getInspector(v8::Isolate* isolate)
 {
-	storage_t::iterator iter = m_Inspectors.find(context);
+	storage_t::iterator iter = m_Inspectors.find(isolate);
 	if (iter == m_Inspectors.end())
 	{
-		return addInspector(context);
+		return addInspector(isolate);
 	}
 	return iter->second;
 }
 
-void CInspectorPool::disposeInspector(NSJSBase::CJSContext* context)
+void CInspectorPool::disposeInspector(v8::Isolate* isolate)
 {
-	storage_t::iterator iter = m_Inspectors.find(context);
+	storage_t::iterator iter = m_Inspectors.find(isolate);
 	if (m_Inspectors.end() != iter)
 	{
 		m_Inspectors.erase(iter);

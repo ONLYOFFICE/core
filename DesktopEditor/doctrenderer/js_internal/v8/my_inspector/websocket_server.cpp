@@ -7,16 +7,27 @@ WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMe
 	, onMessage_(std::move(onMessage))
 	, isScriptRunning_(std::move(isScriptRunning))
 {
+	init();
 }
 
-void WebSocketServer::run()
+void WebSocketServer::init()
 {
 	try
 	{
 		acceptor_.open(endpoint_.protocol());
 		acceptor_.bind(endpoint_);
 		acceptor_.listen(1);
+	}
+	catch (const std::exception& e)
+	{
+		std::cerr << "Error on init the server: " << e.what() << std::endl;
+	}
+}
 
+void WebSocketServer::run()
+{
+	try
+	{
 		printListeningMessage();
 
 		tcp::socket socket(ioc_);

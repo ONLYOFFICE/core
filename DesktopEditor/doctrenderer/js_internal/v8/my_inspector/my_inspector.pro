@@ -30,6 +30,7 @@ core_linux {
 }
 
 SOURCES += \
+    inspector_pool.cpp \
     main.cpp \
     inspector.cpp \
     v8_inspector_channel.cpp \
@@ -38,6 +39,7 @@ SOURCES += \
 
 HEADERS += \
     inspector.h \
+    inspector_pool.h \
     utils.h\
     v8_inspector_channel.h \
     v8_inspector_client.h \

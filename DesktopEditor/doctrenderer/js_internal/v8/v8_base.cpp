@@ -206,6 +206,9 @@ namespace NSJSBase
 #ifdef V8_INSPECTOR
 		v8_debug::disposeInspector(m_internal->m_context);
 #endif
+#ifdef V8_MY_INSPECTOR
+		CInspectorPool::get().disposeInspector(this);
+#endif
 		m_internal->m_contextPersistent.Reset();
 		m_internal->m_isolate->Dispose();
 		m_internal->m_isolate = NULL;
@@ -243,9 +246,6 @@ namespace NSJSBase
 	{
 #ifdef LOG_TO_COUT
 		std::cout << "Exiting isolate \t" << m_internal->m_isolate << std::endl;
-#endif
-#ifdef V8_INSPECTOR
-		v8_debug::disposeInspector(m_internal->m_context);
 #endif
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Exit();
@@ -357,7 +357,8 @@ namespace NSJSBase
 		if (!m_internal->m_bRunningInInspector)
 		{
 			m_internal->m_bRunningInInspector = true;
-			Inspector oInspector(this, script);
+			Inspector& oInspector = CInspectorPool::get().getInspector(this);
+			oInspector.setScriptSource(script);
 			oInspector.startAgent();
 			return oInspector.getReturnValue();
 		}

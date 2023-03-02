@@ -1,5 +1,5 @@
-#ifndef V8_INSPECTOR_EXAMPLE_INSPECTOR_H
-#define V8_INSPECTOR_EXAMPLE_INSPECTOR_H
+#ifndef V8_INSPECTOR_H
+#define V8_INSPECTOR_H
 
 #include <iostream>
 #include <functional>
@@ -14,16 +14,15 @@
 class Inspector
 {
 private:
-	// TODO: make static and increment for all next contexts
-	int port_ = 8080;
 	// pointer to CJSContext instance in which scripts/functions are executed
 	NSJSBase::CJSContext* jscontext_;
-	// reference to executed script
-	const std::string& script_;
-	// V8 context
-	v8::Handle<v8::Context> context_;
+	// executed script source
+	// TODO: change to pointer/reference_wrapper
+	std::string script_;
 	// JS value, returned by script
 	JSSmart<NSJSBase::CJSValue> ret_;
+	// server port
+	int port_;
 
 	std::unique_ptr<WebSocketServer> websocket_server_;
 	std::unique_ptr<V8InspectorClientImpl> inspector_client_;
@@ -34,12 +33,13 @@ private:
 	int waitForFrontendMessage();
 
 public:
-	Inspector(NSJSBase::CJSContext* context, const std::string& script);
+	Inspector(NSJSBase::CJSContext* context, int port, int contextGroupId);
 
+	void setScriptSource(const std::string& script);
 	void startAgent();
 	bool isScriptRunning();
 	JSSmart<NSJSBase::CJSValue> getReturnValue();
 };
 
 
-#endif //V8_INSPECTOR_EXAMPLE_INSPECTOR_H
+#endif //V8_INSPECTOR_H

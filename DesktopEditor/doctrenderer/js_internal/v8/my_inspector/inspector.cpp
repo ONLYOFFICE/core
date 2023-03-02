@@ -2,11 +2,10 @@
 
 #include "../v8_base.h"
 
-Inspector::Inspector(NSJSBase::CJSContext* context, const std::string& script)
+Inspector::Inspector(NSJSBase::CJSContext* context, int port, int contextGroupId)
 	: jscontext_(context)
-	, script_(script)
+	, port_(port)
 {
-	context_ = context->m_internal->m_context;
 	websocket_server_.reset(
 		new WebSocketServer(
 			port_,
@@ -17,11 +16,17 @@ Inspector::Inspector(NSJSBase::CJSContext* context, const std::string& script)
 	inspector_client_.reset(
 		new V8InspectorClientImpl(
 			CV8Worker::getInitializer().getPlatform(),
-			context_,
+			jscontext_->m_internal->m_isolate,
+			contextGroupId,
 			std::bind(&Inspector::sendMessage, this, std::placeholders::_1),
 			std::bind(&Inspector::waitForFrontendMessage, this)
 		)
 	);
+}
+
+void Inspector::setScriptSource(const std::string& script)
+{
+	script_ = script;
 }
 
 void Inspector::onMessage(const std::string& message)
@@ -30,10 +35,10 @@ void Inspector::onMessage(const std::string& message)
 	v8_inspector::StringView protocolMessage = convertToStringView(message);
 	inspector_client_->dispatchProtocolMessage(protocolMessage);
 
-	v8::Local<v8::Object> jsonObject = parseJson(context_, message);
+	v8::Local<v8::Object> jsonObject = parseJson(jscontext_->m_internal->m_context, message);
 	if (!jsonObject.IsEmpty())
 	{
-		std::string method = getPropertyFromJson(context_->GetIsolate(), jsonObject, "method");
+		std::string method = getPropertyFromJson(jscontext_->m_internal->m_isolate, jsonObject, "method");
 		if (method == "Runtime.runIfWaitingForDebugger")
 		{
 			inspector_client_->schedulePauseOnNextStatement(convertToStringView("For testing purpose!"));

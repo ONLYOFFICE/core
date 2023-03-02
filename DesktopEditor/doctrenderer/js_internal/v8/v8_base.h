@@ -5,7 +5,7 @@
 #include "inspector/inspector_interface.h"
 #endif
 #ifdef V8_MY_INSPECTOR
-#include "my_inspector/inspector.h"
+#include "my_inspector/inspector_pool.h"
 #endif
 
 #include <stack>

@@ -35,15 +35,25 @@ You need to create an xml configuration file. It must contain:
 
 		# params in any order, in any place, delimiter is unicode code in hex
 		# encoding is case sensitive
-		# input file with csv:
+		# usage csv:
 		filename[cp(codepage)][del%(unicode code)]
 		# example:
 		some_csv_file[cpUTF-8][del%3b].csv
 
-		# same with txt file, but only encoding:
+		# usage txt:
 		filename[cp(codepage)]
 		# example
 		some_txt_file[cpUTF-8].txt
+
+	# (non-required) is take password from filename (default - 1).
+	<filenamePassword> </filenamePassword>
+
+		# in any order, in any place
+		# usage:
+		filename[pass(password)]
+
+		# example:
+		some_file[pass123].txt
 
 	# (non-required) default encoding for csv/txt files, if filenameCsvTxtParams is 0, or no param in filename (default - UTF-8)
 	<defaultCsvTxtEncoding> </defaultCsvTxtEncoding>

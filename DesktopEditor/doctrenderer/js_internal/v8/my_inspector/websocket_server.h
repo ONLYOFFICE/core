@@ -35,6 +35,7 @@ private:
 
 public:
 	WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning);
+	~WebSocketServer();
 
 	void init();
 	void run();

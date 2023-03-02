@@ -354,14 +354,9 @@ namespace NSJSBase
 #endif
 
 #ifdef V8_MY_INSPECTOR
-		if (!m_internal->m_bRunningInInspector)
-		{
-			m_internal->m_bRunningInInspector = true;
-			Inspector& oInspector = CInspectorPool::get().getInspector(this);
-			oInspector.setScriptSource(script);
-			oInspector.startAgent();
-			return oInspector.getReturnValue();
-		}
+		m_internal->m_bRunningInInspector = true;
+		Inspector& oInspector = CInspectorPool::get().getInspector(this);
+		oInspector.startAgent();
 #endif
 
 		LOGGER_START
@@ -400,10 +395,6 @@ namespace NSJSBase
 			_return->value = retValue.ToLocalChecked();
 
 		LOGGER_LAP("run")
-
-#ifdef V8_MY_INSPECTOR
-		m_internal->m_bRunningInInspector = false;
-#endif
 
 		return _return;
 	}

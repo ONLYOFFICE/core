@@ -16,9 +16,6 @@ class Inspector
 private:
 	// pointer to CJSContext instance in which scripts/functions are executed
 	NSJSBase::CJSContext* jscontext_;
-	// executed script source
-	// TODO: change to pointer/reference_wrapper
-	std::string script_;
 	// JS value, returned by script
 	JSSmart<NSJSBase::CJSValue> ret_;
 	// server port
@@ -35,7 +32,6 @@ private:
 public:
 	Inspector(NSJSBase::CJSContext* context, int port, int contextGroupId);
 
-	void setScriptSource(const std::string& script);
 	void startAgent();
 	bool isScriptRunning();
 	JSSmart<NSJSBase::CJSValue> getReturnValue();

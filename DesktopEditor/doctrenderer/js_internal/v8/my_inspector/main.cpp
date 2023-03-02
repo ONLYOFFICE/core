@@ -7,11 +7,9 @@
  * - implement inspector in CJSObjectV8::call_func() method
  * - wrap all inspector code in a namespace ???
  * - reformat to satisfy codestyle
- * - close websocket in ~WebsocketServer()
- * - store pointer to string in Inspector instead of whole string itself
- * - try to continue C++ runScript() method code when Runtime.runIfWaitingForDebugger() recieved (like in older code)
  * - rename `my_inspector` to `inspector`
  * - dispose inspector on CJSContext::Exit() ???
+ * - close websocket when script is finish running
  */
 
 using namespace NSJSBase;
@@ -26,7 +24,8 @@ int main()
 	{
 		CJSContextScope oScope(pContext1);
 
-		JSSmart<CJSValue> pRet = pContext1->runScript("var special = 42;\nspecial;");
+		JSSmart<CJSValue> pRet = pContext1->runScript("var special = 42;\n"
+													  "special;\n");
 
 		{
 			CJSContextScope oScope(pContext2);
@@ -49,6 +48,25 @@ int main()
 		if (pRet->isNumber())
 		{
 			std::cout << pRet->toInt32() << std::endl;
+		}
+		else
+		{
+			std::cout << "ERROR!" << std::endl;
+		}
+	}
+
+	{
+		CJSContextScope oScope(pContext1);
+
+		JSSmart<CJSValue> pRet = pContext1->runScript("function f() {\n"
+													  "  return special;\n"
+													  "}\n"
+													  "\n"
+													  "'special is: ' + f()\n");
+		std::cout << "RESULT: ";
+		if (pRet->isString())
+		{
+			std::cout << pRet->toStringA() << std::endl;
 		}
 		else
 		{

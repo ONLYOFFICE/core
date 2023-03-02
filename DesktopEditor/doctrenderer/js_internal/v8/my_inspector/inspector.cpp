@@ -24,11 +24,6 @@ Inspector::Inspector(NSJSBase::CJSContext* context, int port, int contextGroupId
 	);
 }
 
-void Inspector::setScriptSource(const std::string& script)
-{
-	script_ = script;
-}
-
 void Inspector::onMessage(const std::string& message)
 {
 //	std::cout << "CDT message: " << message << std::endl;
@@ -42,7 +37,7 @@ void Inspector::onMessage(const std::string& message)
 		if (method == "Runtime.runIfWaitingForDebugger")
 		{
 			inspector_client_->schedulePauseOnNextStatement(convertToStringView("For testing purpose!"));
-			ret_ = jscontext_->runScript(script_);
+			jscontext_->m_internal->m_bRunningInInspector = false;
 		}
 	}
 }

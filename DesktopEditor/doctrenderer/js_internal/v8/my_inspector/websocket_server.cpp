@@ -10,11 +10,19 @@ WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMe
 	init();
 }
 
+WebSocketServer::~WebSocketServer()
+{
+	// close the connection
+	ws_->close(beast::websocket::close_code::normal);
+	acceptor_.close();
+}
+
 void WebSocketServer::init()
 {
 	try
 	{
 		acceptor_.open(endpoint_.protocol());
+		acceptor_.set_option(tcp::acceptor::reuse_address(true));
 		acceptor_.bind(endpoint_);
 		acceptor_.listen(1);
 	}
@@ -71,8 +79,6 @@ void WebSocketServer::startListening()
 		{
 			waitFrontendMessage();
 		}
-		// close the connection
-		ws_->close(beast::websocket::close_code::normal);
 	}
 	catch(beast::system_error const& se)
 	{

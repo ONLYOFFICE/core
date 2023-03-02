@@ -43,9 +43,9 @@ namespace odf_writer {
 ///////////////////////////////////////
 void text_list_style_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:name",					style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:name", style_name_);
 	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:display-name", style_display_name_);
-    CP_XML_ATTR_OPT(L"text:consecutive-numbering",	text_consecutive_numbering_);
+    CP_XML_ATTR_OPT(L"text:consecutive-numbering", text_consecutive_numbering_);
  }
 
 void text_list_level_style_number_attr::serialize(CP_ATTR_NODE)
@@ -335,7 +335,7 @@ void text_outline_style::serialize(std::wostream & strm)
 	{
 		CP_XML_NODE_SIMPLE()
 		{
-			CP_XML_ATTR(L"style:name", style_name_);
+			CP_XML_ATTR(L"style:name", XmlUtils::EncodeXmlString(style_name_));
 			
 			for (size_t i = 0; i < content_.size(); i++)
 			{

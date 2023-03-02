@@ -707,11 +707,11 @@ void office_automatic_styles::serialize(std::wostream & strm)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void style_master_page_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:name",				style_name_);
-    CP_XML_ATTR_OPT(L"style:display-name",		style_display_name_);
-    CP_XML_ATTR_OPT(L"style:page-layout-name",	style_page_layout_name_);
-    CP_XML_ATTR_OPT(L"draw:style-name",			draw_style_name_);
-    CP_XML_ATTR_OPT(L"style:next-style-name",	style_next_style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:name", style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:display-name", style_display_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:page-layout-name", style_page_layout_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:style-name", draw_style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:next-style-name",	style_next_style_name_);
 }
 
 
@@ -1120,8 +1120,8 @@ void style_footer_style::serialize(std::wostream & strm)
 //////////////////////////////////////////////////////////////////////////////////////////////////
 void style_page_layout_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:name",				style_name_);
-    CP_XML_ATTR_OPT(L"style:page-usage",		style_page_usage_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"style:name", style_name_);
+	CP_XML_ATTR_OPT(L"style:page-usage", style_page_usage_);
 }
 const wchar_t * style_page_layout::ns = L"style";
 const wchar_t * style_page_layout::name = L"page-layout";
@@ -1438,7 +1438,7 @@ void style_presentation_page_layout::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"style:name", style_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"style:name", style_name_);
 			
 			for (size_t i = 0; i < content_.size(); i++)
 			{
@@ -1484,7 +1484,7 @@ void style_font_face::serialize(std::wostream & strm)
     {
 		CP_XML_NODE_SIMPLE()
         {
-			CP_XML_ATTR_OPT(L"style:name",					style_name_);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"style:name",	style_name_);
 			CP_XML_ATTR_OPT(L"style:font-adornments",		style_font_adornments_);
 			CP_XML_ATTR_OPT(L"style:font-family-generic",	style_font_family_generic_);
 			CP_XML_ATTR_OPT(L"style:font-pitch",			style_font_pitch_);

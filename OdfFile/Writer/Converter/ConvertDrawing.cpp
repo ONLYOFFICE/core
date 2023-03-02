@@ -1255,10 +1255,14 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
             }
             else if (oox_bitmap_fill->blip->link.IsInit())
 			{
-                sID  = pathImage = oox_bitmap_fill->blip->link->get();
+                sID  = oox_bitmap_fill->blip->link->get();
 
-                odf_context()->drawing_context()->set_bitmap_link(pathImage);
-				//...
+				pathImage = find_link_by_id(sID, 1); //reconstruction.pptx 
+
+				if (pathImage.empty())
+					pathImage = sID;
+
+                odf_context()->drawing_context()->set_bitmap_link(pathImage, true);
 			}
 			for (size_t i = 0 ; i < oox_bitmap_fill->blip->Effects.size(); i++)
 			{

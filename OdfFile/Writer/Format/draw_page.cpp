@@ -46,11 +46,11 @@ namespace odf_writer {
 
 void draw_page_attr::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"draw:id",					draw_id_);
+    CP_XML_ATTR_OPT(L"draw:id", draw_id_);
 
 	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name", draw_name_);
-    CP_XML_ATTR_OPT(L"draw:style-name",			draw_style_name_);
-	CP_XML_ATTR_OPT(L"draw:master-page-name",	draw_master_page_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:style-name", draw_style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:master-page-name",	draw_master_page_name_);
     
  	CP_XML_ATTR_OPT(L"style:page-layout-name",	style_page_layout_name_); 
 	

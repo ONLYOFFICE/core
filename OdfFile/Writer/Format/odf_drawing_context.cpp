@@ -3806,10 +3806,18 @@ void odf_drawing_context::set_image_client_rect_inch(double l, double t, double 
 	impl_->current_graphic_properties->fo_clip_ = str_stream.str();
 
 }
-void odf_drawing_context::set_bitmap_link(std::wstring file_path)
+void odf_drawing_context::set_bitmap_link(std::wstring path, bool bExternal)
 {
 	std::wstring odf_ref_name ;	
-	impl_->odf_context_->mediaitems()->add_or_find(file_path, _mediaitems::typeImage, odf_ref_name);
+
+	if (bExternal)
+	{
+		odf_ref_name = path;
+	}
+	else
+	{
+		impl_->odf_context_->mediaitems()->add_or_find(path, _mediaitems::typeImage, odf_ref_name);
+	}
 	
 	if (impl_->current_drawing_state_.oox_shape_preset_ == 3000)
 	{

@@ -1,18 +1,17 @@
 #include "websocket_server.h"
 
-WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning)
+WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMessage)
 	: port_(port)
 	, endpoint_(net::ip::make_address("127.0.0.1"), port_)
 	, acceptor_(ioc_)
 	, onMessage_(std::move(onMessage))
-	, isScriptRunning_(std::move(isScriptRunning))
 {
 	init();
 }
 
 WebSocketServer::~WebSocketServer()
 {
-	// closeConnection();
+	ws_->close(beast::websocket::close_code::normal);
 	acceptor_.close();
 }
 
@@ -31,7 +30,7 @@ void WebSocketServer::init()
 	}
 }
 
-void WebSocketServer::run()
+void WebSocketServer::connect()
 {
 	try
 	{
@@ -40,17 +39,13 @@ void WebSocketServer::run()
 		tcp::socket socket(ioc_);
 		acceptor_.accept(socket);
 		ws_.reset(new websocket::stream<tcp::socket>(std::move(socket)));
+
 		startListening();
 	}
 	catch (const std::exception& e)
 	{
-		std::cerr << "Error on running the server: " << e.what() << std::endl;
+		std::cerr << "Error on connecting to server: " << e.what() << std::endl;
 	}
-}
-
-void WebSocketServer::stop()
-{
-	ws_->close(beast::websocket::close_code::normal);
 }
 
 void WebSocketServer::sendMessage(const std::string &message)
@@ -66,7 +61,7 @@ void WebSocketServer::sendMessage(const std::string &message)
 	catch(beast::system_error const& se)
 	{
 		if (se.code() != websocket::error::closed)
-			std::cerr << "Error: " << se.code().message() << std::endl;
+			std::cerr << "Error on message send: " << se.code().message() << std::endl;
 	}
 	catch(std::exception const& e)
 	{
@@ -79,16 +74,15 @@ void WebSocketServer::startListening()
 	try
 	{
 		ws_->accept();
-		while (!isScriptRunning_())
+		while (!isServerReady_)
 		{
 			waitFrontendMessage();
 		}
-
 	}
 	catch(beast::system_error const& se)
 	{
 		if (se.code() != websocket::error::closed)
-			std::cerr << "Error: " << se.code() << std::endl;
+			std::cerr << "Error: " << se.code().message() << std::endl;
 	}
 	catch(std::exception const& e)
 	{

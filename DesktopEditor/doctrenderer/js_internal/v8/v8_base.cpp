@@ -394,10 +394,6 @@ namespace NSJSBase
 
 		LOGGER_LAP("run")
 
-#ifdef V8_MY_INSPECTOR
-		CInspectorPool::get().getInspector(m_internal->m_isolate).stopAgent();
-#endif
-
 		return _return;
 	}
 

@@ -9,8 +9,7 @@ Inspector::Inspector(v8::Isolate* isolate, int port, int contextGroupId)
 	websocket_server_.reset(
 		new WebSocketServer(
 			port_,
-			std::bind(&Inspector::onMessage, this, std::placeholders::_1),
-			std::bind(&Inspector::isReadyToRun, this)
+			std::bind(&Inspector::onMessage, this, std::placeholders::_1)
 		)
 	);
 	inspector_client_.reset(
@@ -22,6 +21,7 @@ Inspector::Inspector(v8::Isolate* isolate, int port, int contextGroupId)
 			std::bind(&Inspector::waitForFrontendMessage, this)
 		)
 	);
+	websocket_server_->connect();
 }
 
 void Inspector::onMessage(const std::string& message)
@@ -36,8 +36,7 @@ void Inspector::onMessage(const std::string& message)
 		std::string method = getPropertyFromJson(isolate_, jsonObject, "method");
 		if (method == "Runtime.runIfWaitingForDebugger")
 		{
-			inspector_client_->schedulePauseOnNextStatement(convertToStringView("For testing purpose!"));
-			isReadyToRun_ = true;
+			websocket_server_->isServerReady_ = true;
 		}
 	}
 }
@@ -50,18 +49,7 @@ void Inspector::sendMessage(const std::string& message)
 
 void Inspector::startAgent()
 {
-	isReadyToRun_ = false;
-	websocket_server_->run();
-}
-
-void Inspector::stopAgent()
-{
-	websocket_server_->stop();
-}
-
-bool Inspector::isReadyToRun()
-{
-	return isReadyToRun_;
+	inspector_client_->schedulePauseOnNextStatement(convertToStringView("debugging"));
 }
 
 int Inspector::waitForFrontendMessage()

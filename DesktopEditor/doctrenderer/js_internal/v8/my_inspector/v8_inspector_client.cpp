@@ -9,16 +9,15 @@ V8InspectorClientImpl::V8InspectorClientImpl(
 	v8::Platform* platform,
 	v8::Isolate* isolate,
 	int contextGroupId,
-	const std::function<void(std::string)> &onResponse,
-	const std::function<int(void)> &onWaitFrontendMessageOnPause)
+	const std::function<void(std::string)>& onResponse,
+	const std::function<int(void)>& onWaitFrontendMessageOnPause)
 	: platform_(platform)
+	, isolate_(isolate)
 	, contextGroupId_(contextGroupId)
 	, onWaitFrontendMessageOnPause_(std::move(onWaitFrontendMessageOnPause))
 {
-	isolate_ = isolate;
-	// Here might be a problem for different CJSContextScopes ???
 	v8::Local<v8::Context> context = isolate_->GetCurrentContext();
-
+	// initialize all V8 inspector stuff
 	channel_.reset(new V8InspectorChannelImpl(isolate_, onResponse));
 	inspector_ = v8_inspector::V8Inspector::create(isolate_, this);
 	session_ = inspector_->connect(contextGroupId_, channel_.get(), v8_inspector::StringView());
@@ -26,8 +25,6 @@ V8InspectorClientImpl::V8InspectorClientImpl(
 
 	v8_inspector::StringView contextName = convertToStringView("inspector" + std::to_string(contextGroupId));
 	inspector_->contextCreated(v8_inspector::V8ContextInfo(context, contextGroupId_, contextName));
-	terminated_ = true;
-	run_nested_loop_ = false;
 }
 
 void V8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView &message_view)
@@ -63,7 +60,7 @@ v8::Local<v8::Context> V8InspectorClientImpl::ensureDefaultContextInGroup(int co
 
 void V8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView &reason)
 {
-	session_->schedulePauseOnNextStatement(reason, reason);
+	session_->schedulePauseOnNextStatement(reason, {});
 }
 
 void V8InspectorClientImpl::waitFrontendMessageOnPause()

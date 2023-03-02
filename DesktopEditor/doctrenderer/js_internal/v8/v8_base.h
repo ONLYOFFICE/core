@@ -445,7 +445,12 @@ namespace NSJSBase
         {
 #ifdef V8_INSPECTOR
 			v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer().getPlatform(), "");
+#endif	
+
+#ifdef V8_MY_INSPECTOR
+		CInspectorPool::get().getInspector(V8IsolateOneArg).startAgent();
 #endif
+
             LOGGER_START
 
             v8::Local<v8::String> _name = CreateV8String(CV8Worker::GetCurrent(), name);

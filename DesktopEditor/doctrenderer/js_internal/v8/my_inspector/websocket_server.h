@@ -26,20 +26,22 @@ private:
 	std::unique_ptr<websocket::stream<tcp::socket>> ws_;
 	// callbacks
 	std::function<void(std::string)> onMessage_;
-	std::function<bool(void)> isScriptRunning_;
 
 private:
+	void init();
 	void startListening();
 	void printListeningMessage();
 	void waitFrontendMessage();
 
 public:
-	WebSocketServer(int port, std::function<void(std::string)> onMessage, std::function<bool(void)> isScriptRunning);
+	// flag that is `true` when server finishes initial connection and script is ready to be executed in V8
+	bool isServerReady_ = false;
+
+public:
+	WebSocketServer(int port, std::function<void(std::string)> onMessage);
 	~WebSocketServer();
 
-	void init();
-	void run();
-	void stop();
+	void connect();
 	void sendMessage(const std::string &message);
 	void waitForFrontendMessageOnPause();
 };

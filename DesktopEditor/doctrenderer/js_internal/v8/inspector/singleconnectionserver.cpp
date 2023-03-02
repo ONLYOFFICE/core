@@ -141,6 +141,14 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::listen()
         return false;
     }
 
+	//set address reuse
+	m_ConnectionAcceptor.set_option(tcp::acceptor::reuse_address(true), errCode);
+	//check for error
+	if (errCode) {
+		reportError(errCode, "while setting reuse address");
+		return false;
+	}
+
     //bind acceptor to endpoint
     m_ConnectionAcceptor.bind(m_Endpoint, errCode);
     //check for error
@@ -253,22 +261,7 @@ bool NSJSBase::v8_debug::internal::CSingleConnectionServer::shutdown()
         return false;
     }
 
-    //discard pending messages until receiving close frame
-    while (true) {
-        //read and get error_code
-		errCode = discardData();
-
-		//close frame is delivered as closed error
-		if (errCode == beast::websocket::error::closed) {
-			return true;
-		}
-
-		//any other errors
-		if (errCode) {
-			reportError(errCode, "while waiting for close responce at close");
-			return false;
-		}
-	}
+	return true;
 }
 
 void NSJSBase::v8_debug::internal::CSingleConnectionServer::pause()

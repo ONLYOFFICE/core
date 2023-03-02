@@ -135,17 +135,18 @@ void NSJSBase::v8_debug::internal::CInspectorClient::checkFrontendMessage(const 
             m_bResumeOnBreakpointCame = true;
             //если сообщение об изменении брейкпойнтов пришло до этого, снимаемся с паузы
             if (m_bBreakpointAlterMethodCame) {
-                return resumeDebuggingSession();
+				return resumeDebuggingSession();
             }
             return;
         } else {
-            return resumeDebuggingSession();
+//            return resumeDebuggingSession();
+			return;
         }
     }
 
     //проверяем скрипт
     if (scriptResumeMessage == method) {
-        return resumeDebuggingSession();
+//        return resumeDebuggingSession();
     }
 }
 

@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 		try_catch->Check();
 		std::cout << "after zero\n";
 
-#if 0
+#if 1
 		// one
 		pJSContext->runScript("function f1()\n"
 							  "{\n"

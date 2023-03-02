@@ -204,7 +204,8 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 	m_bIsErrorsOnly = false;
 	m_bIsTimestamp = true;
 	m_bIsDeleteOk = false;
-	m_bIsfilenameCsvTxtParams = true;
+	m_bIsFilenameCsvTxtParams = true;
+	m_bIsFilenamePassword = true;
 	m_defaultCsvDelimiter = L";";
 	m_defaultCsvTxtEndcoding = L"UTF-8";
 	m_inputFormatsList.SetDefault();
@@ -296,7 +297,8 @@ void Cx2tTester::SetConfig(const std::wstring& configPath)
 			else if(name == L"timestamp" && !node.GetText().empty()) m_bIsTimestamp = std::stoi(node.GetText());
 			else if(name == L"deleteOk" && !node.GetText().empty()) m_bIsDeleteOk = std::stoi(node.GetText());
 			else if(name == L"timeout" && !node.GetText().empty()) m_timeout = std::stoi(node.GetText());
-			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty())  m_bIsfilenameCsvTxtParams = std::stoi(node.GetText());
+			else if(name == L"filenameCsvTxtParams" && !node.GetText().empty()) m_bIsFilenameCsvTxtParams = std::stoi(node.GetText());
+			else if(name == L"filenamePassword" && !node.GetText().empty()) m_bIsFilenamePassword = std::stoi(node.GetText());
 			else if(name == L"defaultCsvTxtEncoding" && !node.GetText().empty()) m_defaultCsvTxtEndcoding = node.GetText();
 			else if(name == L"defaultCsvDelimiter" && !node.GetText().empty()) m_defaultCsvDelimiter = (wchar_t)std::stoi(node.GetText(), nullptr, 16);
 			else if(name == L"inputFilesList" && !node.GetText().empty())
@@ -477,7 +479,7 @@ void Cx2tTester::Start()
 		std::wstring csvDelimiter = m_defaultCsvDelimiter;
 
 		// setup csv & txt additional params
-		if(m_bIsfilenameCsvTxtParams
+		if(m_bIsFilenameCsvTxtParams
 				|| input_format == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT
 				|| input_format == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
 		{
@@ -496,7 +498,7 @@ void Cx2tTester::Start()
 				break;
 			}
 
-		if(m_bIsfilenameCsvTxtParams || input_format == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
+		if(m_bIsFilenameCsvTxtParams || input_format == AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV)
 		{
 			std::wstring find_str = L"[del%";
 			size_t pos1 = input_filename.find(find_str);
@@ -505,11 +507,21 @@ void Cx2tTester::Start()
 				csvDelimiter = (wchar_t)std::stoi(input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size()), nullptr, 16);
 		}
 
+		std::wstring password;
+		if(m_bIsFilenamePassword)
+		{
+			std::wstring find_str = L"[pass";
+			size_t pos1 = input_filename.find(find_str);
+			size_t pos2 = input_filename.find(L"]", pos1 + 1);
+			if(pos1 != std::wstring::npos && pos2 != std::wstring::npos)
+				password = input_filename.substr(pos1 + find_str.size(), pos2 - pos1 - find_str.size());
+		}
+
 		// waiting...
 		do
 		{
 			NSThreads::Sleep(50);
-		}while(IsAllBusy());
+		} while(IsAllBusy());
 
 		m_coresCS.Enter();
 
@@ -526,6 +538,7 @@ void Cx2tTester::Start()
 		converter->SetXmlErrorsDirectory(m_errorsXmlDirectory);
 		converter->SetCsvTxtEncoding(csvTxtEncoding);
 		converter->SetCsvDelimiter(csvDelimiter);
+		converter->SetPassword(password);
 		converter->SetTimeout(m_timeout);
 		converter->SetFilesCount(files.size(), i + 1);
 		converter->DestroyOnFinish();
@@ -679,6 +692,10 @@ void CConverter::SetCsvDelimiter(const std::wstring& csvDelimiter)
 {
 	m_csvDelimiter = csvDelimiter;
 }
+void CConverter::SetPassword(const std::wstring& password)
+{
+	m_password = password;
+}
 void CConverter::SetTimeout(unsigned long timeout)
 {
 	m_timeout = timeout;
@@ -783,6 +800,14 @@ DWORD CConverter::ThreadProc()
 			builder.WriteString(L"<m_nCsvDelimiterChar>");
 			builder.WriteEncodeXmlString(m_csvDelimiter);
 			builder.WriteString(L"</m_nCsvDelimiterChar>");
+		}
+
+		// password
+		if(!m_password.empty())
+		{
+			builder.WriteString(L"<m_sPassword>");
+			builder.WriteEncodeXmlString(m_password);
+			builder.WriteString(L"</m_sPassword>");
 		}
 
 		builder.WriteString(L"<m_sJsonParams>{&quot;spreadsheetLayout&quot;:{&quot;gridLines&quot;:true,&quot;headings&quot;:true,&quot;fitToHeight&quot;:1,&quot;fitToWidth&quot;:1,&quot;orientation&quot;:&quot;landscape&quot;}}</m_sJsonParams>");

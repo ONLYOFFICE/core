@@ -126,7 +126,8 @@ private:
 	bool m_bIsErrorsOnly;
 	bool m_bIsTimestamp;
 	bool m_bIsDeleteOk;
-	bool m_bIsfilenameCsvTxtParams;
+	bool m_bIsFilenameCsvTxtParams;
+	bool m_bIsFilenamePassword;
 
 	std::wstring m_defaultCsvTxtEndcoding;
 	std::wstring m_defaultCsvDelimiter;
@@ -154,6 +155,7 @@ public:
 	void SetXmlErrorsDirectory(const std::wstring& errorsXmlDirectory);
 	void SetCsvTxtEncoding(int csvTxtEncoding);
 	void SetCsvDelimiter(const std::wstring& csvDelimiter);
+	void SetPassword(const std::wstring& password);
 	void SetTimeout(unsigned long timeout);
 	void SetFilesCount(int totalFiles, int currFile);
 
@@ -176,6 +178,7 @@ private:
 
 	int m_csvTxtEncoding;
 	std::wstring m_csvDelimiter;
+	std::wstring m_password;
 
 	bool m_bIsErrorsOnly;
 	bool m_bIsDeleteOk;

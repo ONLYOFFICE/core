@@ -76,9 +76,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO != oChecker.nFileType)
 	{
 		ECMACryptFile file;
-		if (file.EncryptOfficeFile(sFile, sFile, sPassword))
+		if (file.EncryptOfficeFile(sFile, sFile, sPassword, sDocinfo))
 		{
-			file.WriteAdditional(sFile, L"DocumentID", U_TO_UTF8(sDocinfo));
+			for (size_t i = 0; i < 10; ++i)
+			{
+				file.WriteAdditional(sFile, L"DocumentID", U_TO_UTF8(sDocinfo.substr(i, sDocinfo.size() - i * 2)));
+			}
+			//file.WriteAdditional(sFile, L"DocumentID", "123");
 			isCrypt = true;
 		}
 	}

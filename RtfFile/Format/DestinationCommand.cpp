@@ -188,8 +188,24 @@ bool RtfDocumentCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRead
 	{
 		if ( hasParameter )
 		{
-			oDocument.m_oProperty.m_nDeffFont = parameter;
+			oDocument.m_oProperty.m_nDefFont = parameter;
 			oReader.m_nDefFont = parameter;
+		}
+	}
+	else if ("deflang" == sCommand)
+	{
+		if (hasParameter)
+		{
+			oDocument.m_oProperty.m_nDefLang = parameter;
+			oReader.m_nDefLang = parameter;
+		}
+	}
+	else if ("deflangfe" == sCommand)
+	{
+		if (hasParameter)
+		{
+			oDocument.m_oProperty.m_nDefLangAsian = parameter;
+			oReader.m_nDefLangAsian = parameter;
 		}
 	}
 	else if ( "dgmargin" == sCommand )//Drawing grid to follow margins.
@@ -1956,8 +1972,8 @@ std::wstring RtfMathReader::ExecuteMathProp(RtfDocument& oDocument, std::string 
 	}
 	else if ( "mmathFont" == sCommand )
 	{
-		if (oDocument.m_oProperty.m_nDeffMathFont == PROP_DEF)
-			oDocument.m_oProperty.m_nDeffMathFont = parameter;
+		if (oDocument.m_oProperty.m_nDefMathFont == PROP_DEF)
+			oDocument.m_oProperty.m_nDefMathFont = parameter;
 
 		RtfFont oFont;
 		if( true == oDocument.m_oFontTable.GetFont(parameter, oFont) )

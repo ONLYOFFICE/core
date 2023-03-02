@@ -77,6 +77,10 @@ namespace NSCustomVML
                 repeate = value & 0x0FFF;
                 value &= 0xFF00;
             }
+			else
+			{
+				value;
+			}
 
             m_nCount = 0;
             switch (value)
@@ -94,26 +98,26 @@ namespace NSCustomVML
                 m_nCount = 3;
                 break;
             case 0xb300: // arcto
-                m_eRuler = ODRAW::rtArc;
-                m_nCount = 2;
+			//case 0xb100: // arcto ??
+				m_eRuler = ODRAW::rtArc;
+                m_nCount = 0;
                 break;
-            case 0xac00:
-            case 0xaa00: // nofill
-            case 0xad00:
-                m_eRuler = ODRAW::rtNoFill;
-                break;
-            case 0xab00: // nostroke
-                m_eRuler = ODRAW::rtNoStroke;
-                break;
-            case 0x6001: // close
+			case 0xac00:
+			case 0xaa00: // nofill
+				m_eRuler = ODRAW::rtNoFill;
+				break;
+			case 0xab00: // nostroke
+				m_eRuler = ODRAW::rtNoStroke;
+				break;
+			case 0x6001: // close
                 m_eRuler = ODRAW::rtClose;
                 break;
             case 0x8000: // end
                 m_eRuler = ODRAW::rtEnd;
                 break;
-            default: // given number of lineto elements
-                m_eRuler = ODRAW::rtLineTo;
-                m_nCount = value;
+            default: 
+                //m_eRuler = ODRAW::rtLineTo;
+                //m_nCount = value;
                 break;
             }
             return (std::max)(1, repeate);

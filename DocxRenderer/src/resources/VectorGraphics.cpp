@@ -43,7 +43,7 @@ namespace NSDocxRenderer
 		return m_dBottom;
 	}
 
-	std::vector<CVectorGraphics::PathCommand> CVectorGraphics::GetData() const
+	const std::vector<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
 	{
 		return m_arData;
 	}

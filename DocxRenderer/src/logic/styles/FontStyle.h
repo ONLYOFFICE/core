@@ -23,12 +23,10 @@ namespace NSDocxRenderer
 		~CFontStyle(){}
 
 		CFontStyle& operator=(const CFontStyle& oSrc);
+
 		void CopyFormat(const CFontStyle& oSrc);
-
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
-
 		bool IsEqual(std::shared_ptr<CFontStyle> oSrc);
-
 		std::wstring GetStyleId() {return m_strStyleId;}
 	};
 }

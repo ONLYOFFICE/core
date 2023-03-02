@@ -611,6 +611,7 @@ namespace NSFontManager
 		oFormat.ulCodeRange1 = new UINT(dwCodePage1);
 		oFormat.ulCodeRange2 = new UINT(dwCodePage2);
 
+		// ???
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
 

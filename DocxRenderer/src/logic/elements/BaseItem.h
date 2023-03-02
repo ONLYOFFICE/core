@@ -4,6 +4,7 @@
 
 namespace NSDocxRenderer
 {
+	// взаимное расположение по вертикали со следующим объектом
 	enum class eVerticalCrossingType
 	{
 		vctUnknown,
@@ -19,6 +20,7 @@ namespace NSDocxRenderer
 		vctNoCrossingCurrentBelowNext
 	};
 
+	// взаимное расположение по горизонтали со следующим объектом
 	enum class eHorizontalCrossingType
 	{
 		hctUnknown,

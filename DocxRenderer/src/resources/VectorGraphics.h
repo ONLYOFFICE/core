@@ -27,17 +27,16 @@ namespace NSDocxRenderer
 		};
 
 	public:
-		std::vector<PathCommand> GetData() const;
+		CVectorGraphics();
+		~CVectorGraphics();
 
 	public:
+		const std::vector<PathCommand>& GetData() const;
+
 		double GetLeft() const noexcept;
 		double GetTop() const noexcept;
 		double GetRight() const noexcept;
 		double GetBottom() const noexcept;
-
-	public:
-		CVectorGraphics();
-		~CVectorGraphics();
 
 	public:
 		void MoveTo(const double& x1, const double& y1);

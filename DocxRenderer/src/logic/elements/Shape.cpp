@@ -29,25 +29,8 @@ namespace NSDocxRenderer
 	void CShape::Clear()
 	{
 		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			auto pObj = m_arOutputObjects[i];
+			m_arOutputObjects[i]->Clear();
 
-			switch(pObj->m_eType)
-			{
-			case CBaseItem::ElemType::etParagraph:
-				dynamic_cast<CParagraph*>(pObj)->Clear();
-				break;
-			case CBaseItem::ElemType::etTable:
-				dynamic_cast<CTable*>(pObj)->Clear();
-				break;
-			case CBaseItem::ElemType::etShape:
-				dynamic_cast<CShape*>(pObj)->Clear();
-				break;
-			default:
-				pObj->Clear();
-				break;
-			}
-		}
 		m_arOutputObjects.clear();
 	}
 

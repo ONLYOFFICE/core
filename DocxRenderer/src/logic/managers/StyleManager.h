@@ -7,7 +7,6 @@ namespace NSDocxRenderer
 	{
 	public:
 		std::vector<std::shared_ptr<CFontStyle>> m_arStyles;
-
 		std::shared_ptr<CFontStyle> m_pCurrentStyle;
 
 	public:
@@ -15,9 +14,7 @@ namespace NSDocxRenderer
 		virtual ~CStyleManager();
 
 		void Clear();
-
 		void NewDocument();
-
 		std::shared_ptr<CFontStyle> GetStyle();
 	};
 }

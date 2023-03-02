@@ -384,7 +384,7 @@ namespace NSDocxRenderer
 		double dBaseLinePos = dTextY + fBaseLineOffset;
 		dTextH = m_pFontManager->GetFontHeight();
 
-		auto pCont = new CContText(&m_oFontManagerLight, m_pStyleManager);
+		auto pCont = new CContText(&m_oFontManagerLight);
 
 		pCont->m_dLeft = dTextX;
 		pCont->m_dBaselinePos = dBaseLinePos;

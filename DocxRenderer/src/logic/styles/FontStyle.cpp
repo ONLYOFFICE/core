@@ -80,15 +80,11 @@ namespace NSDocxRenderer
 		bool bIf13 = m_strPickFontName == oSrc->m_strPickFontName;
 		bool bIf14 = m_lPickFontStyle == oSrc->m_lPickFontStyle;
 
-		if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 &&
+		return (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 &&
 				bIf7 && bIf8 && bIf9 && bIf10 && bIf11 && bIf12 &&
-				bIf13 && bIf14)
-		{
-			return true;
-		}
-		return false;
+				bIf13 && bIf14);
 	}
-	\
+
 	void CFontStyle::ToXml(NSStringUtils::CStringBuilder& oWriter)
 	{
 		if (m_bIsNotNecessaryToUse)

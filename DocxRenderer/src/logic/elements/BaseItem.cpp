@@ -155,24 +155,16 @@ namespace NSDocxRenderer
 	{
 		eVerticalCrossingType eVType = GetVerticalCrossingType(pObj);
 
-		if (eVType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-				eVType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext)
-		{
-			return true;
-		}
-		return false;
+		return (eVType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+				eVType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
 	}
 
 	bool CBaseItem::AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj)
 	{
 		eHorizontalCrossingType eHType = GetHorizontalCrossingType(pObj);
 
-		if (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-				eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext)
-		{
-			return true;
-		}
-		return false;
+		return (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
+				eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext);
 	}
 
 	double CBaseItem::CalculateBeforeSpacing(double dPreviousBaseline)

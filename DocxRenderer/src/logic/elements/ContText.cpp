@@ -5,8 +5,8 @@
 
 namespace NSDocxRenderer
 {
-	CContText::CContText(CFontManagerLight* pManagerLight, CStyleManager* pStyleManager):
-		CBaseItem(ElemType::etContText), m_pManagerLight(pManagerLight), m_pStyleManager(pStyleManager)
+	CContText::CContText(CFontManagerLight* pManagerLight):
+		CBaseItem(ElemType::etContText), m_pManagerLight(pManagerLight)
 	{
 	}
 
@@ -60,7 +60,6 @@ namespace NSDocxRenderer
 		m_eVertAlignType = rCont.m_eVertAlignType;
 
 		m_pManagerLight = rCont.m_pManagerLight;
-		m_pStyleManager = rCont.m_pStyleManager;
 
 		m_pShape = rCont.m_pShape;
 		m_pCont = rCont.m_pCont;
@@ -310,12 +309,8 @@ namespace NSDocxRenderer
 		bool bIf14 = m_eVertAlignType == eVertAlignType::vatUnknown && pCont->m_eVertAlignType == eVertAlignType::vatBase;
 		bool bIf15 = m_eVertAlignType == eVertAlignType::vatBase && pCont->m_eVertAlignType == eVertAlignType::vatUnknown;
 
-		if (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
-				bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15))
-		{
-			return true;
-		}
-		return false;
+		return (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
+				bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15));
 	}
 
 	UINT CContText::GetNumberOfFeatures()

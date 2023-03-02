@@ -1386,19 +1386,19 @@ private:
         LONG nIndex1 = 0;
         LONG nIndex2 = 0;
 
-        for (size_t j = 0; j < oSlice.m_arPoints.size(); j+=4)
+        for (size_t j = 0; j < oSlice.m_arPoints.size() - 1; j += 4) 
         {
             pCurPoint		= oSlice.m_arPoints[j];
             pCurPointType	= oSlice.m_arPointsType[j];
-            pCurPoint1		= oSlice.m_arPoints[j+1];
-            pCurPointType1	= oSlice.m_arPointsType[j+1];
+            pCurPoint1		= oSlice.m_arPoints[j + 1];
+            pCurPointType1	= oSlice.m_arPointsType[j + 1];
 
-            //длина сторон
+	//длина сторон
             m_lIndexSrc++;
             ConvertSum(pCurPoint1.x, pCurPointType1.x, 0, ptValue, pCurPoint.x, pCurPointType.x, false, true, false, m_oGuidsRes);
             ConvertSum(pCurPoint1.y, pCurPointType1.y, 0, ptValue, pCurPoint.y, pCurPointType.y, false, true, false, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //координаты центра
+	//координаты центра
             nIndex = m_arIndexDst[m_lIndexSrc];
 
             m_lIndexSrc++;
@@ -1408,28 +1408,30 @@ private:
             ConvertSum(pCurPoint.x, pCurPointType.x, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true, m_oGuidsRes);
             ConvertSum(pCurPoint.y, pCurPointType.y, m_lIndexDst-2, ptFormula, 0, ptValue, false, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //рассчет для stAng---------------------------
-            //расположение текущей точки по четвертям 3 4
-            //										  2 1
-
-            pCurPoint = oSlice.m_arPoints[j+2];
-            pCurPointType = oSlice.m_arPointsType[j+2];
-            nIndex = m_arIndexDst[m_lIndexSrc];
-
+ 			
+	//рассчет для stAng---------------------------
+	//расположение текущей точки по четвертям 3 4
+	//										  2 1
+			if (j + 2 < oSlice.m_arPoints.size())
+			{
+				pCurPoint = oSlice.m_arPoints[j + 2];
+				pCurPointType = oSlice.m_arPointsType[j + 2];
+				nIndex = m_arIndexDst[m_lIndexSrc];
+			}
             m_lIndexSrc++;
             ConvertSum(pCurPoint.x, pCurPointType.x, 0, ptValue, nIndex-1, ptFormula, false, true, true, m_oGuidsRes);
             ConvertSum(pCurPoint.y, pCurPointType.y, 0, ptValue, nIndex, ptFormula, false, true, true, m_oGuidsRes);
             ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
             ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //угол между Ох и радиус-вектором к точке
+	//угол между Ох и радиус-вектором к точке
             nIndex = m_arIndexDst[m_lIndexSrc];
 
             m_lIndexSrc++;
             ConvertProd(nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true, m_oGuidsRes);
             ConvertAt2(1, ptValue, m_lIndexDst-1, ptFormula, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //радиус к точке
+	//радиус к точке
             nIndex = m_arIndexDst[m_lIndexSrc];
             nIndex1 = m_arIndexDst[m_lIndexSrc-2];
 
@@ -1448,13 +1450,13 @@ private:
             ConvertSqrt(m_lIndexDst-1, ptFormula, true, m_oGuidsRes);
             ConvertProd(nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);//r
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //если точка во 2 и 3 четвертях, прибавляем по 180grad
+	//если точка во 2 и 3 четвертях, прибавляем по 180grad
             nIndex = m_arIndexDst[m_lIndexSrc-2];
 
             m_lIndexSrc++;
             ConvertIf(nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //угол до 1 точки (stAngle)
+	//угол до 1 точки (stAngle)
             nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
             nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
             nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
@@ -1468,7 +1470,7 @@ private:
 
             ConvertSum(m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //координаты стартовой точки
+	//координаты стартовой точки
             nIndex = m_arIndexDst[m_lIndexSrc-2];
             nIndex1 = m_arIndexDst[m_lIndexSrc-4];
             nIndex2 = m_arIndexDst[m_lIndexSrc-5];
@@ -1485,14 +1487,18 @@ private:
             ConvertProd(nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);
             ConvertSum(nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//y
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //рассчет для swAng---------------------------
-            //расположение текущей точки по четвертям 3 4
-            //										  2 1
+           
+			
+	//рассчет для swAng---------------------------
+	//расположение текущей точки по четвертям 3 4
+	//										  2 1
+			if (j + 3 < oSlice.m_arPoints.size())
+			{
+				pCurPoint = oSlice.m_arPoints[j + 3];
+				pCurPointType = oSlice.m_arPointsType[j + 3];
+			}
 
-            pCurPoint = oSlice.m_arPoints[j+3];
-            pCurPointType = oSlice.m_arPointsType[j+3];
-
-            nIndex = m_arIndexDst[m_lIndexSrc-6];
+            nIndex = m_arIndexDst[m_lIndexSrc - 6];
 
             m_lIndexSrc++;
             ConvertSum(pCurPoint.x, pCurPointType.x, 0, ptValue, nIndex-1, ptFormula, false, true, true, m_oGuidsRes);
@@ -1500,14 +1506,14 @@ private:
             ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
             ConvertIf(m_lIndexDst-2, ptFormula, 1, ptValue, -1, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //угол между Ох и радиус-вектором к точке
+	//угол между Ох и радиус-вектором к точке
             nIndex = m_arIndexDst[m_lIndexSrc];
 
             m_lIndexSrc++;
             ConvertProd(nIndex-2, ptFormula, 1, ptValue, nIndex-3, ptFormula, true, true, true, m_oGuidsRes);
             ConvertAt2(1, ptValue, m_lIndexDst-1, ptFormula, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //радиус к точке
+	//радиус к точке
             nIndex = m_arIndexDst[m_lIndexSrc];
             nIndex1 = m_arIndexDst[m_lIndexSrc-8];
 
@@ -1526,13 +1532,13 @@ private:
             ConvertSqrt(m_lIndexDst-1, ptFormula, true, m_oGuidsRes);
             ConvertProd(nIndex1-3, ptFormula, nIndex1-2, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //если точка во 2 и 3 четвертях, прибавляем по 180grad
+	//если точка во 2 и 3 четвертях, прибавляем по 180grad
             nIndex = m_arIndexDst[m_lIndexSrc-2];
 
             m_lIndexSrc++;
             ConvertIf(nIndex-3, ptFormula, 0, ptValue, 10800000, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //угол до 2 точки
+	//угол до 2 точки
             nIndex = m_arIndexDst[m_lIndexSrc-2];//угол между ох и радиусом
             nIndex1 = m_arIndexDst[m_lIndexSrc-3];//расположение точки по четвертям
             nIndex2 = m_arIndexDst[m_lIndexSrc];//прибавка 180 или 0
@@ -1546,7 +1552,7 @@ private:
 
             ConvertSum(m_lIndexDst-1, ptFormula, nIndex2, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //координаты конечной точки
+	//координаты конечной точки
             nIndex = m_arIndexDst[m_lIndexSrc-2];
             nIndex1 = m_arIndexDst[m_lIndexSrc-4];
             nIndex2 = m_arIndexDst[m_lIndexSrc-11];
@@ -1563,7 +1569,7 @@ private:
             ConvertProd(nIndex1, ptFormula, m_lIndexDst-1, ptFormula, 1, ptValue, true, true, true, m_oGuidsRes);
             ConvertSum(nIndex2, ptFormula, m_lIndexDst-1, ptFormula, 0, ptValue, true, true, true, m_oGuidsRes);//y
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //swAngle
+	//swAngle
             nIndex = m_arIndexDst[m_lIndexSrc-1]; //2 угол
             nIndex1 = m_arIndexDst[m_lIndexSrc-7]; //1 угол
 
@@ -1577,14 +1583,14 @@ private:
             ConvertIf(m_lIndexDst-4, ptFormula, m_lIndexDst-3, ptFormula, m_lIndexDst-1, ptFormula, true, true, true, m_oGuidsRes);
 
             m_arIndexDst.push_back(m_lIndexDst-1);
-            //wR,hR
+	//wR,hR
             nIndex = m_arIndexDst[m_lIndexSrc-14];
             m_lIndexSrc++;
             ConvertProd(nIndex-1, ptFormula, 1, ptValue, 2, ptValue, true, true, true, m_oGuidsRes);
             ConvertProd(nIndex, ptFormula, 1, ptValue, 2, ptValue, true, true, true, m_oGuidsRes);
             m_arIndexDst.push_back(m_lIndexDst-1);
 
-            //---------------------------------------------------------
+//---------------------------------------------------------
             nIndex = m_arIndexDst[m_lIndexSrc-8];//координаты стартовой точки
             nIndex1 = m_arIndexDst[m_lIndexSrc-9];//stAng
             nIndex2 = m_arIndexDst[m_lIndexSrc-1];//swAng
@@ -1625,16 +1631,14 @@ private:
                 m_oPathRes.WriteString(L"\" swAng=\"");
                 GetValue(nIndex2, ptFormula, true, m_oPathRes);
                 m_oPathRes.WriteString(L"\" />");
-            }
+            }            
+ /*//старт
+			LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
+			strPathRes += L"<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + L"\" y=\"") + GetValue(nIndex3, ptFormula, true) +
+			+ L"\" /></a:lnTo>");
+*/
 
-            //старт
-            /*
-                                    LONG nIndex3 = m_arIndexDst[m_lIndexSrc-14];
-                                    strPathRes += L"<a:moveTo><a:pt x=\"0\" y=\"0\" /></a:moveTo><a:lnTo><a:pt x=\"") + GetValue(nIndex3-1, ptFormula, true) + L"\" y=\"") + GetValue(nIndex3, ptFormula, true) +
-                                            + L"\" /></a:lnTo>");
-                                    */
-
-            //текущая точка
+     //текущая точка
             nIndex = m_arIndexDst[m_lIndexSrc-2];
             ConvertVal(nIndex-5, ptFormula, true, m_oGuidsRes);
             ConvertVal(nIndex, ptFormula, true, m_oGuidsRes);

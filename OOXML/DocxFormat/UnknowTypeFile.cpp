@@ -52,7 +52,7 @@ namespace OOX
 	}
 	const FileType UnknowTypeFile::type() const
 	{
-		return FileTypes::Unknow;
+		return FileTypes::Unknown;
 	}
 	const CPath UnknowTypeFile::DefaultDirectory() const
 	{

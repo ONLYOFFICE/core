@@ -83,7 +83,8 @@ namespace OOX
 		{
 			if (!oRels.m_arRelations[i]) continue;
 
-			std::wstring pathFile = (oPath / oRels.m_arRelations[i]->Target()).GetPath();
+			std::wstring pathFile = oRels.m_arRelations[i]->IsExternal() ? oRels.m_arRelations[i]->Target().GetPath() :
+									(oPath / oRels.m_arRelations[i]->Target()).GetPath();
 			if (m_pMainDocument)
 			{
 				std::map<std::wstring, smart_ptr<OOX::File>>::iterator pFind = m_pMainDocument->m_mapContent.find(pathFile);
@@ -100,7 +101,7 @@ namespace OOX
 			if (m_bSpreadsheets)
 				pFile = OOX::Spreadsheet::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
 
-			if (pFile.IsInit() == false || pFile->type() == FileTypes::Unknow)
+			if (pFile.IsInit() == false || pFile->type() == FileTypes::Unknown)
 				pFile = OOX::CreateFile(oRootPath, oPath, oRels.m_arRelations[i], m_pMainDocument);
 
 			Add(oRels.m_arRelations[i]->rId(), pFile);

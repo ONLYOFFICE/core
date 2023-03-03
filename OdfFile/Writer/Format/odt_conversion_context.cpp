@@ -723,12 +723,35 @@ void odt_conversion_context::set_field_instr()
 		current_fields.back().in_span = false;
 		
 		std::wstring ref;
-		boost::match_results<std::wstring::const_iterator> res;
-		boost::wregex r2 (L"(\".*?\")+");	
-        if (boost::regex_search(instr, res, r2))
+		boost::wregex r2 (L"([\"'])(.+?)\\1");			
+
+		std::list<std::wstring> result1;
+		bool b1 = boost::regex_split(std::back_inserter(result1), instr, r2);
+
+		if (b1 && !result1.empty())
         {
-            ref = res[1].str();
-			current_fields.back().value = ref.substr(1, ref.length() - 2);
+			std::list<std::wstring>::iterator it = result1.begin();
+			it++;
+
+			if (it != result1.end())
+			{
+				ref = *it;
+				if (ref.size() > 2)
+					current_fields.back().value = ref;
+
+				it++;
+				if (it != result1.end())
+				{
+					it++;
+					if (it != result1.end())
+					{
+						std::wstring ref2 = *it;
+
+						if (ref2.size() > 2)
+							current_fields.back().value += L"#" + ref2;
+					}
+				}
+			}
         }
 	}
 	res1 = instr.find(L"NUMPAGES");

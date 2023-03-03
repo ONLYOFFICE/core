@@ -322,7 +322,11 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
-			pathImage = oox_picture->blipFill.blip->link->get();	
+			std::wstring sID = oox_picture->blipFill.blip->link->get();
+			pathImage = find_link_by_id(sID, 1);
+
+			if (pathImage.empty()) pathImage = sID;
+
 			bEmbedded = false;
 		}
 	}

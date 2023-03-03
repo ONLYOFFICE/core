@@ -24,13 +24,11 @@ Inspector::Inspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId)
 	m_pWebsocketServer->connect();
 }
 
-void Inspector::onMessage(const std::string& sMessage)
+void Inspector::onMessage(std::string& sMessage)
 {
 //	std::cout << "CDT message: " << message << std::endl;
-	v8_inspector::StringView oProtocolMessage = convertToStringView(sMessage);
-	m_pIspectorClient->dispatchProtocolMessage(oProtocolMessage);
-
 	v8::Local<v8::Object> oJsonObject = parseJson(m_pIsolate->GetCurrentContext(), sMessage);
+
 	if (!oJsonObject.IsEmpty())
 	{
 		std::string sMethod = getPropertyFromJson(m_pIsolate, oJsonObject, "method");
@@ -38,7 +36,21 @@ void Inspector::onMessage(const std::string& sMessage)
 		{
 			m_pWebsocketServer->isServerReady_ = true;
 		}
+#ifdef V8_VERSION_89_PLUS
+
+#else
+		// In older version of V8 there is an eror "Either url or urlRegex must be specified." on trying to set a breakpoint in CDT.
+		// So we have to specify it explicitly before "lineNumber" param
+		else if (sMethod == "Debugger.setBreakpointByUrl" && sMessage.find("\"url") == sMessage.npos)
+		{
+			int pos = sMessage.find("\"lineNumber\"");
+			sMessage.insert(pos, "\"url\":\"\",");
+		}
+#endif
 	}
+
+	v8_inspector::StringView oProtocolMessage = convertToStringView(sMessage);
+	m_pIspectorClient->dispatchProtocolMessage(oProtocolMessage);
 }
 
 void Inspector::sendMessage(const std::string& sMessage)

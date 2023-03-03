@@ -21,7 +21,7 @@ private:
 	tcp::acceptor m_oAcceptor;
 	std::unique_ptr<websocket::stream<tcp::socket>> m_oWs;
 	// callbacks
-	std::function<void(std::string)> m_fOnMessage;
+	std::function<void(std::string&)> m_fOnMessage;
 
 private:
 	void init();
@@ -34,7 +34,7 @@ public:
 	bool isServerReady_ = false;
 
 public:
-	WebSocketServer(int nPort, std::function<void(std::string)> fOnMessage);
+	WebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage);
 	~WebSocketServer();
 
 	void connect();

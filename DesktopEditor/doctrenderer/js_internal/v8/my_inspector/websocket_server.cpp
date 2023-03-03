@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-WebSocketServer::WebSocketServer(int nPort, std::function<void(std::string)> fOnMessage)
+WebSocketServer::WebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage)
 	: m_nPort(nPort)
 	, m_oEndpoint(net::ip::make_address("127.0.0.1"), m_nPort)
 	, m_oAcceptor(m_oIoContext)
@@ -108,5 +108,5 @@ void WebSocketServer::waitFrontendMessage()
 	beast::flat_buffer oBuffer;
 	m_oWs->read(oBuffer);
 	std::string message = boost::beast::buffers_to_string(oBuffer.data());
-	m_fOnMessage(std::move(message));
+	m_fOnMessage(message);
 }

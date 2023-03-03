@@ -7,8 +7,8 @@
 /** TODO:
  * - implement InspectorInterface ???
  * - wrap all inspector code in a namespace ???
+ * - handle exceptions in more safe way ???
  * - rename `my_inspector` to `inspector` and remove all old inspector stuff
- * - test for old version of V8
  */
 
 using namespace NSJSBase;

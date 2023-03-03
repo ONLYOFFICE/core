@@ -20,7 +20,7 @@ private:
 	std::unique_ptr<V8InspectorClientImpl> m_pIspectorClient;
 
 private:
-	void onMessage(const std::string& sMessage);
+	void onMessage(std::string& sMessage);
 	void sendMessage(const std::string& sMessage);
 	bool waitForFrontendMessage();
 

@@ -14,6 +14,7 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 CONFIG += v8_use_inspector
+#CONFIG += v8_version_89
 include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base.pri)
 DEFINES -= V8_INSPECTOR
 DEFINES += V8_MY_INSPECTOR

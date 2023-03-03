@@ -1,69 +1,68 @@
 #include "v8_inspector_client.h"
 
-#include <iostream>
 #include <libplatform/libplatform.h>
 
 #include "utils.h"
 
 V8InspectorClientImpl::V8InspectorClientImpl(
-	v8::Platform* platform,
-	v8::Isolate* isolate,
-	int contextGroupId,
-	const std::function<void(std::string)>& onResponse,
-	const std::function<int(void)>& onWaitFrontendMessageOnPause)
-	: platform_(platform)
-	, isolate_(isolate)
-	, contextGroupId_(contextGroupId)
-	, onWaitFrontendMessageOnPause_(std::move(onWaitFrontendMessageOnPause))
+	v8::Platform* pPlatform,
+	v8::Isolate* pIsolate,
+	int nContextGroupId,
+	const std::function<void(std::string)>& fOnResponse,
+	const std::function<bool(void)>& fOnWaitFrontendMessageOnPause)
+	: m_pPlatform(pPlatform)
+	, m_pIsolate(pIsolate)
+	, m_nContextGroupId(nContextGroupId)
+	, m_fOnWaitFrontendMessageOnPause(std::move(fOnWaitFrontendMessageOnPause))
 {
-	v8::Local<v8::Context> context = isolate_->GetCurrentContext();
+	v8::Local<v8::Context> context = m_pIsolate->GetCurrentContext();
 	// initialize all V8 inspector stuff
-	channel_.reset(new V8InspectorChannelImpl(isolate_, onResponse));
-	inspector_ = v8_inspector::V8Inspector::create(isolate_, this);
-	session_ = inspector_->connect(contextGroupId_, channel_.get(), v8_inspector::StringView());
+	m_pChannel.reset(new V8InspectorChannelImpl(m_pIsolate, fOnResponse));
+	m_pInspector = v8_inspector::V8Inspector::create(m_pIsolate, this);
+	m_pSession = m_pInspector->connect(m_nContextGroupId, m_pChannel.get(), v8_inspector::StringView());
 	context->SetAlignedPointerInEmbedderData(1, this);
 
-	v8_inspector::StringView contextName = convertToStringView("inspector" + std::to_string(contextGroupId));
-	inspector_->contextCreated(v8_inspector::V8ContextInfo(context, contextGroupId_, contextName));
+	v8_inspector::StringView oContextName = convertToStringView("inspector" + std::to_string(nContextGroupId));
+	m_pInspector->contextCreated(v8_inspector::V8ContextInfo(context, m_nContextGroupId, oContextName));
 }
 
-void V8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView &message_view)
+void V8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView& oMessage)
 {
-	session_->dispatchProtocolMessage(message_view);
+	m_pSession->dispatchProtocolMessage(oMessage);
 }
 
-void V8InspectorClientImpl::runMessageLoopOnPause(int contextGroupId)
+void V8InspectorClientImpl::runMessageLoopOnPause(int nContextGroupId)
 {
-	if (run_nested_loop_)
+	if (m_bRunNestedLoop)
 	{
 		return;
 	}
-	terminated_ = false;
-	run_nested_loop_ = true;
-	while (!terminated_ && onWaitFrontendMessageOnPause_())
+	m_bTerminated = false;
+	m_bRunNestedLoop = true;
+	while (!m_bTerminated && m_fOnWaitFrontendMessageOnPause())
 	{
-		while (v8::platform::PumpMessageLoop(platform_, isolate_)) {}
+		while (v8::platform::PumpMessageLoop(m_pPlatform, m_pIsolate)) {}
 	}
-	terminated_ = true;
-	run_nested_loop_ = false;
+	m_bTerminated = true;
+	m_bRunNestedLoop = false;
 }
 
 void V8InspectorClientImpl::quitMessageLoopOnPause()
 {
-	terminated_ = true;
+	m_bTerminated = true;
 }
 
-v8::Local<v8::Context> V8InspectorClientImpl::ensureDefaultContextInGroup(int contextGroupId)
+v8::Local<v8::Context> V8InspectorClientImpl::ensureDefaultContextInGroup(int nContextGroupId)
 {
-	return isolate_->GetCurrentContext();
+	return m_pIsolate->GetCurrentContext();
 }
 
-void V8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView &reason)
+void V8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView& oReason)
 {
-	session_->schedulePauseOnNextStatement(reason, {});
+	m_pSession->schedulePauseOnNextStatement(oReason, {});
 }
 
 void V8InspectorClientImpl::waitFrontendMessageOnPause()
 {
-	terminated_ = false;
+	m_bTerminated = false;
 }

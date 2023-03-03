@@ -1,13 +1,13 @@
 #include "../../js_base.h"
 
+#include <iostream>
+
 #include "utils.h"	// for readFileContent()
 
 /** TODO:
  * - implement InspectorInterface ???
  * - wrap all inspector code in a namespace ???
- * - reformat to satisfy codestyle
  * - rename `my_inspector` to `inspector` and remove all old inspector stuff
- * - dispose inspector in CJSContext::Exit() ???
  * - test for old version of V8
  */
 

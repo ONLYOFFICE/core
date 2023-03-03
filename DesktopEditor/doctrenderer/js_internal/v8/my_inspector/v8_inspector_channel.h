@@ -8,15 +8,15 @@
 class V8InspectorChannelImpl final: public v8_inspector::V8Inspector::Channel
 {
 private:
-	v8::Isolate* isolate_;
-	std::function<void(std::string)> onResponse_;
+	v8::Isolate* m_pIsolate;
+	std::function<void(std::string)> m_fOnResponce;
 
 public:
-	V8InspectorChannelImpl(v8::Isolate* isolate, const std::function<void(std::string)> &onResponse);
+	V8InspectorChannelImpl(v8::Isolate* pIsolate, const std::function<void(std::string)>& fOnResponse);
 
 	// overriden interface methods
-	void sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message) override;
-	void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message) override;
+	void sendResponse(int nCallId, std::unique_ptr<v8_inspector::StringBuffer> pMessage) override;
+	void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> pMessage) override;
 	void flushProtocolNotifications() override;
 };
 

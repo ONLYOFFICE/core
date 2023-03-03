@@ -12,20 +12,20 @@ class Inspector
 {
 private:
 	// pointer to CJSContext instance in which scripts/functions are executed
-	v8::Isolate* isolate_;
+	v8::Isolate* m_pIsolate;
 	// server port
-	int port_;
+	const int m_nPort;
 
-	std::unique_ptr<WebSocketServer> websocket_server_;
-	std::unique_ptr<V8InspectorClientImpl> inspector_client_;
+	std::unique_ptr<WebSocketServer> m_pWebsocketServer;
+	std::unique_ptr<V8InspectorClientImpl> m_pIspectorClient;
 
 private:
-	void onMessage(const std::string& message);
-	void sendMessage(const std::string& message);
-	int waitForFrontendMessage();
+	void onMessage(const std::string& sMessage);
+	void sendMessage(const std::string& sMessage);
+	bool waitForFrontendMessage();
 
 public:
-	Inspector(v8::Isolate* isolate, int port, int contextGroupId);
+	Inspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId);
 
 	void startAgent();
 };

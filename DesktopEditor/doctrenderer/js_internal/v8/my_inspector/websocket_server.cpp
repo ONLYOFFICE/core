@@ -1,28 +1,30 @@
 #include "websocket_server.h"
 
-WebSocketServer::WebSocketServer(int port, std::function<void(std::string)> onMessage)
-	: port_(port)
-	, endpoint_(net::ip::make_address("127.0.0.1"), port_)
-	, acceptor_(ioc_)
-	, onMessage_(std::move(onMessage))
+#include <iostream>
+
+WebSocketServer::WebSocketServer(int nPort, std::function<void(std::string)> fOnMessage)
+	: m_nPort(nPort)
+	, m_oEndpoint(net::ip::make_address("127.0.0.1"), m_nPort)
+	, m_oAcceptor(m_oIoContext)
+	, m_fOnMessage(std::move(fOnMessage))
 {
 	init();
 }
 
 WebSocketServer::~WebSocketServer()
 {
-	ws_->close(beast::websocket::close_code::normal);
-	acceptor_.close();
+	m_oWs->close(beast::websocket::close_code::normal);
+	m_oAcceptor.close();
 }
 
 void WebSocketServer::init()
 {
 	try
 	{
-		acceptor_.open(endpoint_.protocol());
-		acceptor_.set_option(tcp::acceptor::reuse_address(true));
-		acceptor_.bind(endpoint_);
-		acceptor_.listen(1);
+		m_oAcceptor.open(m_oEndpoint.protocol());
+		m_oAcceptor.set_option(tcp::acceptor::reuse_address(true));
+		m_oAcceptor.bind(m_oEndpoint);
+		m_oAcceptor.listen(1);
 	}
 	catch (const std::exception& e)
 	{
@@ -36,9 +38,9 @@ void WebSocketServer::connect()
 	{
 		printListeningMessage();
 
-		tcp::socket socket(ioc_);
-		acceptor_.accept(socket);
-		ws_.reset(new websocket::stream<tcp::socket>(std::move(socket)));
+		tcp::socket oSocket(m_oIoContext);
+		m_oAcceptor.accept(oSocket);
+		m_oWs.reset(new websocket::stream<tcp::socket>(std::move(oSocket)));
 
 		startListening();
 	}
@@ -48,15 +50,15 @@ void WebSocketServer::connect()
 	}
 }
 
-void WebSocketServer::sendMessage(const std::string &message)
+void WebSocketServer::sendMessage(const std::string& sMessage)
 {
 	try
 	{
-		boost::beast::multi_buffer b;
-		boost::beast::ostream(b) << message;
+		boost::beast::multi_buffer oBuffer;
+		boost::beast::ostream(oBuffer) << sMessage;
 
-		ws_->text(ws_->got_text());
-		ws_->write(b.data());
+		m_oWs->text(m_oWs->got_text());
+		m_oWs->write(oBuffer.data());
 	}
 	catch(beast::system_error const& se)
 	{
@@ -73,7 +75,7 @@ void WebSocketServer::startListening()
 {
 	try
 	{
-		ws_->accept();
+		m_oWs->accept();
 		while (!isServerReady_)
 		{
 			waitFrontendMessage();
@@ -82,7 +84,7 @@ void WebSocketServer::startListening()
 	catch(beast::system_error const& se)
 	{
 		if (se.code() != websocket::error::closed)
-			std::cerr << "Error: " << se.code().message() << std::endl;
+			std::cerr << "Error on listening: " << se.code().message() << std::endl;
 	}
 	catch(std::exception const& e)
 	{
@@ -93,7 +95,7 @@ void WebSocketServer::startListening()
 void WebSocketServer::printListeningMessage()
 {
 	std::cout << "WebSocket based Inspector Agent started" << std::endl;
-	std::cout << "Open the following link in your Chrome/Chromium browser: devtools://devtools/bundled/inspector.html?ws=127.0.0.1:" <<  port_ << std::endl;
+	std::cout << "Open the following link in your Chrome/Chromium browser: devtools://devtools/bundled/inspector.html?ws=127.0.0.1:" <<  m_nPort << std::endl;
 }
 
 void WebSocketServer::waitForFrontendMessageOnPause()
@@ -103,8 +105,8 @@ void WebSocketServer::waitForFrontendMessageOnPause()
 
 void WebSocketServer::waitFrontendMessage()
 {
-	beast::flat_buffer buffer;
-	ws_->read(buffer);
-	std::string message = boost::beast::buffers_to_string(buffer.data());
-	onMessage_(std::move(message));
+	beast::flat_buffer oBuffer;
+	m_oWs->read(oBuffer);
+	std::string message = boost::beast::buffers_to_string(oBuffer.data());
+	m_fOnMessage(std::move(message));
 }

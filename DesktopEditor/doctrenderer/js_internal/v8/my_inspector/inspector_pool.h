@@ -12,7 +12,7 @@ class CInspectorPool
 	storage_t m_Inspectors;
 
 	// add new inspector
-	Inspector& addInspector(v8::Isolate* isolate);
+	Inspector& addInspector(v8::Isolate* pIsolate);
 
 	// port for server
 	static uint16_t getPort();
@@ -32,9 +32,9 @@ public:
 	// get instance
 	static CInspectorPool& get();
 	// get inspector by isolate
-	Inspector& getInspector(v8::Isolate* isolate);
+	Inspector& getInspector(v8::Isolate* pIsolate);
 	// remove inspector from isolate
-	void disposeInspector(v8::Isolate* isolate);
+	void disposeInspector(v8::Isolate* pIsolate);
 };
 
 #endif // INSPECTORPOOL_H

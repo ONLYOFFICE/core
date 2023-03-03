@@ -33,6 +33,7 @@ SOURCES += \
     inspector_pool.cpp \
     main.cpp \
     inspector.cpp \
+    utils.cpp \
     v8_inspector_channel.cpp \
     v8_inspector_client.cpp \
     websocket_server.cpp

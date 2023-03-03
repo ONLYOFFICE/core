@@ -2,58 +2,58 @@
 
 #include "../v8_base.h"
 
-Inspector::Inspector(v8::Isolate* isolate, int port, int contextGroupId)
-	: isolate_(isolate)
-	, port_(port)
+Inspector::Inspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId)
+	: m_pIsolate(pIsolate)
+	, m_nPort(nPort)
 {
-	websocket_server_.reset(
+	m_pWebsocketServer.reset(
 		new WebSocketServer(
-			port_,
+			m_nPort,
 			std::bind(&Inspector::onMessage, this, std::placeholders::_1)
 		)
 	);
-	inspector_client_.reset(
+	m_pIspectorClient.reset(
 		new V8InspectorClientImpl(
 			CV8Worker::getInitializer().getPlatform(),
-			isolate_,
-			contextGroupId,
+			m_pIsolate,
+			nContextGroupId,
 			std::bind(&Inspector::sendMessage, this, std::placeholders::_1),
 			std::bind(&Inspector::waitForFrontendMessage, this)
 		)
 	);
-	websocket_server_->connect();
+	m_pWebsocketServer->connect();
 }
 
-void Inspector::onMessage(const std::string& message)
+void Inspector::onMessage(const std::string& sMessage)
 {
 //	std::cout << "CDT message: " << message << std::endl;
-	v8_inspector::StringView protocolMessage = convertToStringView(message);
-	inspector_client_->dispatchProtocolMessage(protocolMessage);
+	v8_inspector::StringView oProtocolMessage = convertToStringView(sMessage);
+	m_pIspectorClient->dispatchProtocolMessage(oProtocolMessage);
 
-	v8::Local<v8::Object> jsonObject = parseJson(isolate_->GetCurrentContext(), message);
-	if (!jsonObject.IsEmpty())
+	v8::Local<v8::Object> oJsonObject = parseJson(m_pIsolate->GetCurrentContext(), sMessage);
+	if (!oJsonObject.IsEmpty())
 	{
-		std::string method = getPropertyFromJson(isolate_, jsonObject, "method");
-		if (method == "Runtime.runIfWaitingForDebugger")
+		std::string sMethod = getPropertyFromJson(m_pIsolate, oJsonObject, "method");
+		if (sMethod == "Runtime.runIfWaitingForDebugger")
 		{
-			websocket_server_->isServerReady_ = true;
+			m_pWebsocketServer->isServerReady_ = true;
 		}
 	}
 }
 
-void Inspector::sendMessage(const std::string& message)
+void Inspector::sendMessage(const std::string& sMessage)
 {
 //	std::cout << "Message to frontend: " << message << std::endl;
-	websocket_server_->sendMessage(message);
+	m_pWebsocketServer->sendMessage(sMessage);
 }
 
 void Inspector::startAgent()
 {
-	inspector_client_->schedulePauseOnNextStatement(convertToStringView("debugging"));
+	m_pIspectorClient->schedulePauseOnNextStatement(convertToStringView("debugging"));
 }
 
-int Inspector::waitForFrontendMessage()
+bool Inspector::waitForFrontendMessage()
 {
-	websocket_server_->waitForFrontendMessageOnPause();
-	return 1;
+	m_pWebsocketServer->waitForFrontendMessageOnPause();
+	return true;
 }

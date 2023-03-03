@@ -2,25 +2,25 @@
 #include "v8_inspector_channel.h"
 #include "utils.h"
 
-V8InspectorChannelImpl::V8InspectorChannelImpl(v8::Isolate *isolate, const std::function<void(std::string)> &onResponse)
+V8InspectorChannelImpl::V8InspectorChannelImpl(v8::Isolate* pIsolate, const std::function<void(std::string)>& fOnResponse)
+	: m_pIsolate(pIsolate)
+	, m_fOnResponce(fOnResponse)
 {
-	isolate_ = isolate;
-	onResponse_ = onResponse;
 }
 
-void V8InspectorChannelImpl::sendResponse(int callId, std::unique_ptr<v8_inspector::StringBuffer> message)
+void V8InspectorChannelImpl::sendResponse(int nCallId, std::unique_ptr<v8_inspector::StringBuffer> pMessage)
 {
-	const std::string response = convertToString(isolate_, message->string());
-	onResponse_(response);
+	const std::string response = convertToString(m_pIsolate, pMessage->string());
+	m_fOnResponce(response);
 }
 
-void V8InspectorChannelImpl::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> message)
+void V8InspectorChannelImpl::sendNotification(std::unique_ptr<v8_inspector::StringBuffer> pMessage)
 {
-	const std::string notification = convertToString(isolate_, message->string());
-	onResponse_(notification);
+	const std::string notification = convertToString(m_pIsolate, pMessage->string());
+	m_fOnResponce(notification);
 }
 
 void V8InspectorChannelImpl::flushProtocolNotifications()
 {
-	// flush protocol notification
+	// does nothing
 }

@@ -9,39 +9,39 @@
 class V8InspectorClientImpl final: public v8_inspector::V8InspectorClient
 {
 private:
-	v8::Platform* platform_;
+	v8::Platform* m_pPlatform;
 	// V8 Inspector stuff
-	std::unique_ptr<v8_inspector::V8Inspector> inspector_;
-	std::unique_ptr<v8_inspector::V8InspectorSession> session_;
-	std::unique_ptr<V8InspectorChannelImpl> channel_;
+	std::unique_ptr<v8_inspector::V8Inspector> m_pInspector;
+	std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession;
+	std::unique_ptr<V8InspectorChannelImpl> m_pChannel;
 	// V8 isolate
-	v8::Isolate* isolate_;
+	v8::Isolate* m_pIsolate;
 	// context group id
-	const int contextGroupId_;
+	const int m_nContextGroupId;
 	// callbacks
-	std::function<int(void)> onWaitFrontendMessageOnPause_;
+	std::function<bool(void)> m_fOnWaitFrontendMessageOnPause;
 	// server message loop terminate flag
-	bool terminated_ = false;
+	bool m_bTerminated = false;
 	// flag for preventing server from falling into two loops
-	bool run_nested_loop_ = false;
+	bool m_bRunNestedLoop = false;
 
 private:
-	v8::Local<v8::Context> ensureDefaultContextInGroup(int contextGroupId) override;
+	v8::Local<v8::Context> ensureDefaultContextInGroup(int nContextGroupId) override;
 
 public:
 	V8InspectorClientImpl(
-		v8::Platform* platform,
-		v8::Isolate* isolate,
-		int contextGroupId,
-		const std::function<void(std::string)> &onResponse,
-		const std::function<int(void)> &onWaitFrontendMessageOnPause);
+		v8::Platform* pPlatform,
+		v8::Isolate* pIsolate,
+		int nContextGroupId,
+		const std::function<void(std::string)>& fOnResponse,
+		const std::function<bool(void)>& fOnWaitFrontendMessageOnPause);
 	// send message to V8 internals
-	void dispatchProtocolMessage(const v8_inspector::StringView &message_view);
+	void dispatchProtocolMessage(const v8_inspector::StringView& oMessage);
 	// overriden interface methods
-	void runMessageLoopOnPause(int contextGroupId) override;
+	void runMessageLoopOnPause(int nContextGroupId) override;
 	void quitMessageLoopOnPause() override;
 	// pause on next statement
-	void schedulePauseOnNextStatement(const v8_inspector::StringView &reason);
+	void schedulePauseOnNextStatement(const v8_inspector::StringView& oReason);
 	// wait for message from frontend
 	void waitFrontendMessageOnPause();
 

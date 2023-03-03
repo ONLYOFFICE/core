@@ -2,47 +2,47 @@
 
 #include "../v8_base.h"
 
-Inspector& CInspectorPool::addInspector(v8::Isolate* isolate)
+Inspector& CInspectorPool::addInspector(v8::Isolate* pIsolate)
 {
 	std::pair<storage_t::iterator, bool> result = m_Inspectors.emplace(
 				std::piecewise_construct
-				, std::forward_as_tuple(isolate)
+				, std::forward_as_tuple(pIsolate)
 				, std::forward_as_tuple(
-					isolate
+					pIsolate
 					, getPort()
 					, getContextGroupId()
 				)
 			);
-	Inspector& inspector = result.first->second;
-	return inspector;
+	Inspector& oInspector = result.first->second;
+	return oInspector;
 }
 
 uint16_t CInspectorPool::getPort()
 {
-	static uint16_t initialPort{8080};
-	return initialPort++;
+	static uint16_t nInitialPort{8080};
+	return nInitialPort++;
 }
 
 int CInspectorPool::getContextGroupId()
 {
-	static int initialId{1};
-	return initialId++;
+	static int nInitialId{1};
+	return nInitialId++;
 }
 
 Inspector&
-CInspectorPool::getInspector(v8::Isolate* isolate)
+CInspectorPool::getInspector(v8::Isolate* pIsolate)
 {
-	storage_t::iterator iter = m_Inspectors.find(isolate);
+	storage_t::iterator iter = m_Inspectors.find(pIsolate);
 	if (iter == m_Inspectors.end())
 	{
-		return addInspector(isolate);
+		return addInspector(pIsolate);
 	}
 	return iter->second;
 }
 
-void CInspectorPool::disposeInspector(v8::Isolate* isolate)
+void CInspectorPool::disposeInspector(v8::Isolate* pIsolate)
 {
-	storage_t::iterator iter = m_Inspectors.find(isolate);
+	storage_t::iterator iter = m_Inspectors.find(pIsolate);
 	if (m_Inspectors.end() != iter)
 	{
 		m_Inspectors.erase(iter);
@@ -52,6 +52,6 @@ void CInspectorPool::disposeInspector(v8::Isolate* isolate)
 CInspectorPool&
 CInspectorPool::get()
 {
-	static CInspectorPool pool;
-	return pool;
+	static CInspectorPool oPool;
+	return oPool;
 }

@@ -2,15 +2,11 @@
 #define WEBSOCKETSERVER_H
 
 #include <functional>
-#include <iostream>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/ip/tcp.hpp>
-#include <thread>
-#include <vector>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
-namespace http = beast::http;           // from <boost/beast/http.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
@@ -18,14 +14,14 @@ using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 class WebSocketServer
 {
 private:
-	int port_;
+	int m_nPort;
 	// boost stuff
-	tcp::endpoint endpoint_;
-	net::io_context ioc_{1};
-	tcp::acceptor acceptor_;
-	std::unique_ptr<websocket::stream<tcp::socket>> ws_;
+	tcp::endpoint m_oEndpoint;
+	net::io_context m_oIoContext{1};
+	tcp::acceptor m_oAcceptor;
+	std::unique_ptr<websocket::stream<tcp::socket>> m_oWs;
 	// callbacks
-	std::function<void(std::string)> onMessage_;
+	std::function<void(std::string)> m_fOnMessage;
 
 private:
 	void init();
@@ -38,11 +34,11 @@ public:
 	bool isServerReady_ = false;
 
 public:
-	WebSocketServer(int port, std::function<void(std::string)> onMessage);
+	WebSocketServer(int nPort, std::function<void(std::string)> fOnMessage);
 	~WebSocketServer();
 
 	void connect();
-	void sendMessage(const std::string &message);
+	void sendMessage(const std::string& sMessage);
 	void waitForFrontendMessageOnPause();
 };
 

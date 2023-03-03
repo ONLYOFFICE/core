@@ -6,14 +6,14 @@
 
 #include "v8_inspector_channel.h"
 
-class V8InspectorClientImpl final: public v8_inspector::V8InspectorClient
+class CV8InspectorClientImpl final: public v8_inspector::V8InspectorClient
 {
 private:
 	v8::Platform* m_pPlatform;
 	// V8 Inspector stuff
 	std::unique_ptr<v8_inspector::V8Inspector> m_pInspector;
 	std::unique_ptr<v8_inspector::V8InspectorSession> m_pSession;
-	std::unique_ptr<V8InspectorChannelImpl> m_pChannel;
+	std::unique_ptr<CV8InspectorChannelImpl> m_pChannel;
 	// V8 isolate
 	v8::Isolate* m_pIsolate;
 	// context group id
@@ -29,7 +29,7 @@ private:
 	v8::Local<v8::Context> ensureDefaultContextInGroup(int nContextGroupId) override;
 
 public:
-	V8InspectorClientImpl(
+	CV8InspectorClientImpl(
 		v8::Platform* pPlatform,
 		v8::Isolate* pIsolate,
 		int nContextGroupId,

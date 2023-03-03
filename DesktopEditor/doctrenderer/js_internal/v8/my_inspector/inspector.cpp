@@ -2,29 +2,29 @@
 
 #include "../v8_base.h"
 
-Inspector::Inspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId)
+CInspector::CInspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId)
 	: m_pIsolate(pIsolate)
 	, m_nPort(nPort)
 {
 	m_pWebsocketServer.reset(
-		new WebSocketServer(
+		new CWebSocketServer(
 			m_nPort,
-			std::bind(&Inspector::onMessage, this, std::placeholders::_1)
+			std::bind(&CInspector::onMessage, this, std::placeholders::_1)
 		)
 	);
 	m_pIspectorClient.reset(
-		new V8InspectorClientImpl(
+		new CV8InspectorClientImpl(
 			CV8Worker::getInitializer().getPlatform(),
 			m_pIsolate,
 			nContextGroupId,
-			std::bind(&Inspector::sendMessage, this, std::placeholders::_1),
-			std::bind(&Inspector::waitForFrontendMessage, this)
+			std::bind(&CInspector::sendMessage, this, std::placeholders::_1),
+			std::bind(&CInspector::waitForFrontendMessage, this)
 		)
 	);
 	m_pWebsocketServer->connect();
 }
 
-void Inspector::onMessage(std::string& sMessage)
+void CInspector::onMessage(std::string& sMessage)
 {
 //	std::cout << "CDT message: " << message << std::endl;
 	v8::Local<v8::Object> oJsonObject = parseJson(m_pIsolate->GetCurrentContext(), sMessage);
@@ -53,18 +53,18 @@ void Inspector::onMessage(std::string& sMessage)
 	m_pIspectorClient->dispatchProtocolMessage(oProtocolMessage);
 }
 
-void Inspector::sendMessage(const std::string& sMessage)
+void CInspector::sendMessage(const std::string& sMessage)
 {
 //	std::cout << "Message to frontend: " << message << std::endl;
 	m_pWebsocketServer->sendMessage(sMessage);
 }
 
-void Inspector::startAgent()
+void CInspector::startAgent()
 {
 	m_pIspectorClient->schedulePauseOnNextStatement(convertToStringView("debugging"));
 }
 
-bool Inspector::waitForFrontendMessage()
+bool CInspector::waitForFrontendMessage()
 {
 	m_pWebsocketServer->waitForFrontendMessageOnPause();
 	return true;

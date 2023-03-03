@@ -7,12 +7,12 @@
 
 class CInspectorPool
 {
-	using storage_t = std::unordered_map<v8::Isolate*, Inspector>;
+	using storage_t = std::unordered_map<v8::Isolate*, CInspector>;
 
 	storage_t m_Inspectors;
 
 	// add new inspector
-	Inspector& addInspector(v8::Isolate* pIsolate);
+	CInspector& addInspector(v8::Isolate* pIsolate);
 
 	// port for server
 	static uint16_t getPort();
@@ -32,7 +32,7 @@ public:
 	// get instance
 	static CInspectorPool& get();
 	// get inspector by isolate
-	Inspector& getInspector(v8::Isolate* pIsolate);
+	CInspector& getInspector(v8::Isolate* pIsolate);
 	// remove inspector from isolate
 	void disposeInspector(v8::Isolate* pIsolate);
 };

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-WebSocketServer::WebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage)
+CWebSocketServer::CWebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage)
 	: m_nPort(nPort)
 	, m_oEndpoint(net::ip::make_address("127.0.0.1"), m_nPort)
 	, m_oAcceptor(m_oIoContext)
@@ -11,13 +11,13 @@ WebSocketServer::WebSocketServer(int nPort, std::function<void(std::string&)> fO
 	init();
 }
 
-WebSocketServer::~WebSocketServer()
+CWebSocketServer::~CWebSocketServer()
 {
 	m_oWs->close(beast::websocket::close_code::normal);
 	m_oAcceptor.close();
 }
 
-void WebSocketServer::init()
+void CWebSocketServer::init()
 {
 	try
 	{
@@ -32,7 +32,7 @@ void WebSocketServer::init()
 	}
 }
 
-void WebSocketServer::connect()
+void CWebSocketServer::connect()
 {
 	try
 	{
@@ -50,7 +50,7 @@ void WebSocketServer::connect()
 	}
 }
 
-void WebSocketServer::sendMessage(const std::string& sMessage)
+void CWebSocketServer::sendMessage(const std::string& sMessage)
 {
 	try
 	{
@@ -71,7 +71,7 @@ void WebSocketServer::sendMessage(const std::string& sMessage)
 	}
 }
 
-void WebSocketServer::startListening()
+void CWebSocketServer::startListening()
 {
 	try
 	{
@@ -92,18 +92,18 @@ void WebSocketServer::startListening()
 	}
 }
 
-void WebSocketServer::printListeningMessage()
+void CWebSocketServer::printListeningMessage()
 {
 	std::cout << "WebSocket based Inspector Agent started" << std::endl;
 	std::cout << "Open the following link in your Chrome/Chromium browser: devtools://devtools/bundled/inspector.html?ws=127.0.0.1:" <<  m_nPort << std::endl;
 }
 
-void WebSocketServer::waitForFrontendMessageOnPause()
+void CWebSocketServer::waitForFrontendMessageOnPause()
 {
 	waitFrontendMessage();
 }
 
-void WebSocketServer::waitFrontendMessage()
+void CWebSocketServer::waitFrontendMessage()
 {
 	beast::flat_buffer oBuffer;
 	m_oWs->read(oBuffer);

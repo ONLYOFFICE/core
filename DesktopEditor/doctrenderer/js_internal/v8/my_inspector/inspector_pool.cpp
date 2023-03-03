@@ -2,7 +2,7 @@
 
 #include "../v8_base.h"
 
-Inspector& CInspectorPool::addInspector(v8::Isolate* pIsolate)
+CInspector& CInspectorPool::addInspector(v8::Isolate* pIsolate)
 {
 	std::pair<storage_t::iterator, bool> result = m_Inspectors.emplace(
 				std::piecewise_construct
@@ -13,7 +13,7 @@ Inspector& CInspectorPool::addInspector(v8::Isolate* pIsolate)
 					, getContextGroupId()
 				)
 			);
-	Inspector& oInspector = result.first->second;
+	CInspector& oInspector = result.first->second;
 	return oInspector;
 }
 
@@ -29,7 +29,7 @@ int CInspectorPool::getContextGroupId()
 	return nInitialId++;
 }
 
-Inspector&
+CInspector&
 CInspectorPool::getInspector(v8::Isolate* pIsolate)
 {
 	storage_t::iterator iter = m_Inspectors.find(pIsolate);

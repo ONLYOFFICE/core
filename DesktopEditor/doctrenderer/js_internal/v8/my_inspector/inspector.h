@@ -8,7 +8,7 @@
 #include "v8_inspector_client.h"
 #include "utils.h"
 
-class Inspector
+class CInspector
 {
 private:
 	// pointer to CJSContext instance in which scripts/functions are executed
@@ -16,8 +16,8 @@ private:
 	// server port
 	const int m_nPort;
 
-	std::unique_ptr<WebSocketServer> m_pWebsocketServer;
-	std::unique_ptr<V8InspectorClientImpl> m_pIspectorClient;
+	std::unique_ptr<CWebSocketServer> m_pWebsocketServer;
+	std::unique_ptr<CV8InspectorClientImpl> m_pIspectorClient;
 
 private:
 	void onMessage(std::string& sMessage);
@@ -25,7 +25,7 @@ private:
 	bool waitForFrontendMessage();
 
 public:
-	Inspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId);
+	CInspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId);
 
 	void startAgent();
 };

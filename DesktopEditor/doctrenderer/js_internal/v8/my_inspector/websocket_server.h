@@ -11,7 +11,7 @@ namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
 namespace net = boost::asio;            // from <boost/asio.hpp>
 using tcp = boost::asio::ip::tcp;       // from <boost/asio/ip/tcp.hpp>
 
-class WebSocketServer
+class CWebSocketServer
 {
 private:
 	int m_nPort;
@@ -34,8 +34,8 @@ public:
 	bool isServerReady_ = false;
 
 public:
-	WebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage);
-	~WebSocketServer();
+	CWebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage);
+	~CWebSocketServer();
 
 	void connect();
 	void sendMessage(const std::string& sMessage);

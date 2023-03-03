@@ -4,7 +4,7 @@
 
 #include "utils.h"
 
-V8InspectorClientImpl::V8InspectorClientImpl(
+CV8InspectorClientImpl::CV8InspectorClientImpl(
 	v8::Platform* pPlatform,
 	v8::Isolate* pIsolate,
 	int nContextGroupId,
@@ -17,7 +17,7 @@ V8InspectorClientImpl::V8InspectorClientImpl(
 {
 	v8::Local<v8::Context> context = m_pIsolate->GetCurrentContext();
 	// initialize all V8 inspector stuff
-	m_pChannel.reset(new V8InspectorChannelImpl(m_pIsolate, fOnResponse));
+	m_pChannel.reset(new CV8InspectorChannelImpl(m_pIsolate, fOnResponse));
 	m_pInspector = v8_inspector::V8Inspector::create(m_pIsolate, this);
 	m_pSession = m_pInspector->connect(m_nContextGroupId, m_pChannel.get(), v8_inspector::StringView());
 	context->SetAlignedPointerInEmbedderData(1, this);
@@ -26,12 +26,12 @@ V8InspectorClientImpl::V8InspectorClientImpl(
 	m_pInspector->contextCreated(v8_inspector::V8ContextInfo(context, m_nContextGroupId, oContextName));
 }
 
-void V8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView& oMessage)
+void CV8InspectorClientImpl::dispatchProtocolMessage(const v8_inspector::StringView& oMessage)
 {
 	m_pSession->dispatchProtocolMessage(oMessage);
 }
 
-void V8InspectorClientImpl::runMessageLoopOnPause(int nContextGroupId)
+void CV8InspectorClientImpl::runMessageLoopOnPause(int nContextGroupId)
 {
 	if (m_bRunNestedLoop)
 	{
@@ -47,22 +47,22 @@ void V8InspectorClientImpl::runMessageLoopOnPause(int nContextGroupId)
 	m_bRunNestedLoop = false;
 }
 
-void V8InspectorClientImpl::quitMessageLoopOnPause()
+void CV8InspectorClientImpl::quitMessageLoopOnPause()
 {
 	m_bTerminated = true;
 }
 
-v8::Local<v8::Context> V8InspectorClientImpl::ensureDefaultContextInGroup(int nContextGroupId)
+v8::Local<v8::Context> CV8InspectorClientImpl::ensureDefaultContextInGroup(int nContextGroupId)
 {
 	return m_pIsolate->GetCurrentContext();
 }
 
-void V8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView& oReason)
+void CV8InspectorClientImpl::schedulePauseOnNextStatement(const v8_inspector::StringView& oReason)
 {
 	m_pSession->schedulePauseOnNextStatement(oReason, {});
 }
 
-void V8InspectorClientImpl::waitFrontendMessageOnPause()
+void CV8InspectorClientImpl::waitFrontendMessageOnPause()
 {
 	m_bTerminated = false;
 }

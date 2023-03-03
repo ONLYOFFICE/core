@@ -578,39 +578,55 @@ int main(int argc, char* argv[])
 							i += nPathLength;
 						}
 					}
-                    else if (sType == "GoTo")
-                    {
-                        if (nFlags & (1 << 20))
-                        {
-                            nPathLength = READ_INT(pWidgets + i);
-                            i += 4;
-                            std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
-                            i += nPathLength;
-                            nPathLength = READ_INT(pWidgets + i);
-                            i += 4;
-                            std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
-                        }
-                    }
-                    else if (sType == "Named")
-                    {
-                        if (nFlags & (1 << 20))
-                        {
-                            nPathLength = READ_INT(pWidgets + i);
-                            i += 4;
-                            std::cout << "Named " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-                            i += nPathLength;
-                        }
-                    }
-                    else if (sType == "URI")
-                    {
-                        if (nFlags & (1 << 20))
-                        {
-                            nPathLength = READ_INT(pWidgets + i);
-                            i += 4;
-                            std::cout << "URL " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-                            i += nPathLength;
-                        }
-                    }
+					else if (sType == "GoTo")
+					{
+						if (nFlags & (1 << 20))
+						{
+							nPathLength = READ_INT(pWidgets + i);
+							i += 4;
+							std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
+							i += nPathLength;
+							nPathLength = READ_INT(pWidgets + i);
+							i += 4;
+							std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
+						}
+					}
+					else if (sType == "Named")
+					{
+						if (nFlags & (1 << 20))
+						{
+							nPathLength = READ_INT(pWidgets + i);
+							i += 4;
+							std::cout << "Named " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+							i += nPathLength;
+						}
+					}
+					else if (sType == "URI")
+					{
+						if (nFlags & (1 << 20))
+						{
+							nPathLength = READ_INT(pWidgets + i);
+							i += 4;
+							std::cout << "URL " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+							i += nPathLength;
+						}
+					}
+					else if (sType == "Hide")
+					{
+						if (nFlags & (1 << 20))
+						{
+							std::cout << "Hide flag " << (nFlags & (1 << 21)) << ", ";
+							int nHideLength = READ_INT(pWidgets + i);
+							i += 4;
+							for (int j = 0; j < nHideLength; ++j)
+							{
+								nPathLength = READ_INT(pWidgets + i);
+								i += 4;
+								std::cout << std::to_string(j) << " THide " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+								i += nPathLength;
+							}
+						}
+					}
 				}
 			}
 			std::cout << std::endl;

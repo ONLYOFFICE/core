@@ -1262,6 +1262,52 @@ oObj.free();\
                 // Скрытие аннотаций
                 case actionHide:
                 {
+                    // 21 - Hide
+                    nFlags |= (1 << 20);
+                    // 22 - Hide flag
+                    if (((LinkHide*)oAct)->getHideFlag())
+                        nFlags |= (1 << 21);
+                    Object* oHideObj = ((LinkHide*)oAct)->getFields();
+                    int nHide = 1, k = 0;
+                    if (oHideObj->isArray())
+                        nHide = oHideObj->arrayGetLength();
+                    oRes.AddInt(nHide);
+                    Object oHide;
+                    oHideObj->copy(&oHide);
+                    do
+                    {
+                        if (oHideObj->isArray())
+                        {
+                            oHide.free();
+                            oHideObj->arrayGetNF(k, &oHide);
+                        }
+                        if (oHide.isString())
+                        {
+                            TextString* s = new TextString(oHide.getString());
+                            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                            delete s;
+                        }
+                        else if (oHide.isRef())
+                        {
+                            for (int m = 0; m < nNum; ++m)
+                            {
+                                 AcroFormField* pSField = pAcroForms->getField(i);
+                                 Object oSFieldRef;
+                                 if (pSField->getFieldRef(&oSFieldRef) && oSFieldRef.isRef() && oSFieldRef.getRefGen() == oHide.getRefGen() && oSFieldRef.getRefNum() == oHide.getRefNum())
+                                 {
+                                     int nLengthName;
+                                     Unicode* uName = pSField->getName(&nLengthName);
+                                     std::string sTName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
+                                     oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
+                                     gfree(uName);
+                                     break;
+                                 }
+                            }
+                        }
+                        k++;
+                    } while (k < nHide);
+                    oHide.free();
                     break;
                 }
                 // Неизвестное действие

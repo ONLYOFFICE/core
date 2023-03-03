@@ -544,6 +544,17 @@
 						if (flags & (1 << 20))
 							rec["AA"][AAType]["URI"] = reader.readString();
 					}
+					else if (SType == "Hide")
+					{
+						if (flags & (1 << 20))
+						{
+							rec["AA"][AAType]["Hide"]["H"] = flags & (1 << 21);
+							let m = reader.readInt();
+					        rec["AA"][AAType]["Hide"]["T"] = [];
+					        for (let j = 0; j < m; ++j)
+								rec["AA"][AAType]["Hide"]["T"].push(reader.readString());
+						}
+					}
 				}
 			}
 

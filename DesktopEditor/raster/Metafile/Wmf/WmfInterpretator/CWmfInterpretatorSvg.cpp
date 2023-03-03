@@ -71,7 +71,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
-		m_oXmlWriter.WriteString(m_wsDefs);
+		m_oXmlWriter.WriteString(L"<defs>" + m_wsDefs + L"</defs>");
 		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
 	}
 

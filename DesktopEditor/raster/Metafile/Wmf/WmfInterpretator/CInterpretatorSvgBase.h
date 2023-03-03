@@ -67,8 +67,6 @@ namespace MetaFile
 		void WriteNodeEnd(const std::wstring& wsNodeName);
 		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRect& oBounds = TRect(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
 
-		void InitClip();
-
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;
 		void ExcludeClip(const TRectD& oClip, const TRectD& oBB) override;
@@ -93,7 +91,12 @@ namespace MetaFile
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;
 
-		std::wstring         m_wsLastClipId;
+		struct
+		{
+			std::wstring m_wsId;
+			std::wstring m_wsValue;
+			unsigned int m_unPosition;
+		} m_oClip;
 
 		unsigned int         m_unNumberDefs;
 		std::wstring         m_wsDefs;

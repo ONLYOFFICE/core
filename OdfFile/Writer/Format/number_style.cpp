@@ -345,6 +345,30 @@ void number_currency_style::serialize(std::wostream & strm)
 		}
 	}
 }
+// number:boolean-style
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * number_boolean_style::ns = L"number";
+const wchar_t * number_boolean_style::name = L"boolean-style";
+
+void number_boolean_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_boolean_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
+void number_boolean_style::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
+			number_style_base::serialize(CP_GET_XML_NODE());	//attr
+			number_style_base::serialize(CP_XML_STREAM());		//nodes
+		}
+	}
+}
 // number:text-content
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_text_content::ns = L"number";

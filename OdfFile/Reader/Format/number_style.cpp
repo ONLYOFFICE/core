@@ -201,14 +201,18 @@ void number_style_base::add_child_element( xml::sax * Reader, const std::wstring
         CP_CREATE_ELEMENT(content_);
     }
 }
-
+//-------------------------------------------------------------------
 // number:number-style
-//////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_number_style::ns = L"number";
 const wchar_t * number_number_style::name = L"number-style";
 
+//-------------------------------------------------------------------
+// number:boolean-style
+const wchar_t * number_boolean_style::ns = L"number";
+const wchar_t * number_boolean_style::name = L"boolean-style";
+
+//-------------------------------------------------------------------
 // number:text
-//////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_text::ns = L"number";
 const wchar_t * number_text::name = L"text";
 
@@ -747,6 +751,15 @@ void number_am_pm::oox_convert(oox::num_format_context & Context)
     strm << L"AM/PM";
 }
 
+// number:boolean
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * number_boolean::ns = L"number";
+const wchar_t * number_boolean::name = L"boolean";
+
+void number_boolean::oox_convert(oox::num_format_context & Context)
+{
+	Context.type(odf_types::office_value_type::Boolean);
+}
 // number:fraction
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_fraction::ns		= L"number";

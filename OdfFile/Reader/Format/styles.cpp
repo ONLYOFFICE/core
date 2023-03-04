@@ -632,7 +632,7 @@ void styles::add_child_element( xml::sax * Reader, const std::wstring & Ns, cons
         CP_CHECK_NAME(L"number", L"date-style")		||
         CP_CHECK_NAME(L"number", L"time-style")		||
         CP_CHECK_NAME(L"number", L"text-style")		||
-        CP_CHECK_NAME(L"number", L"number-boolean-style")
+		CP_CHECK_NAME(L"number", L"boolean-style")
         )
     {
         CP_CREATE_ELEMENT_SIMPLE(number_styles_);

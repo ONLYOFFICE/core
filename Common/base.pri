@@ -361,12 +361,8 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 # COMPILER
 CONFIG += c++11
 
-greaterThan(QT_MAJOR_VERSION, 5) {
-    !core_windows {
-        QMAKE_CXXFLAGS += -Wno-register
-        QMAKE_CFLAGS += -Wno-register
-    }
-}
+QMAKE_CXXFLAGS += -Wno-register
+QMAKE_CFLAGS += -Wno-register
 
 core_linux {
 core_static_link_libstd {

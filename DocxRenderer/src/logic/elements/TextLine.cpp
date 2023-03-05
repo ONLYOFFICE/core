@@ -138,15 +138,10 @@ namespace NSDocxRenderer
 
 	bool CTextLine::IsShadingPresent(const CTextLine *pLine)
 	{
-		if (m_pDominantShape && pLine->m_pDominantShape &&
+		return (m_pDominantShape && pLine->m_pDominantShape &&
 				m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
 				fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-				fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM)
-		{
-			return true;
-		}
-
-		return false;
+				fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM);
 	}
 
 	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter)
@@ -180,15 +175,14 @@ namespace NSDocxRenderer
 			{
 				// просто текст на тексте или сменились настройки (font/brush)
 				pPrev->ToXml(oWriter);
-				pPrev = pCurrent;
 			}
 			else
 			{
 				// расстояние слишком большое. нужно сделать большой пробел
 				pPrev->ToXml(oWriter);
 				pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
-				pPrev = pCurrent;
 			}
+			pPrev = pCurrent;
 		}
 
 		pPrev->ToXml(oWriter);

@@ -168,7 +168,7 @@ namespace NSDocxRenderer
 				{
 					m_eSimpleLineType = eSimpleLineType::sltHDash;
 				}
-				else //максимальна точка - 0.5mm
+				else //максимальная точка - 0.5mm
 				{
 					m_eSimpleLineType = eSimpleLineType::sltHDot;
 				}

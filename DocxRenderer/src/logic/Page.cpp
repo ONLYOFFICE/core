@@ -1182,11 +1182,6 @@ namespace NSDocxRenderer
 
 	void CPage::AddDiacriticalSymbols()
 	{
-		if (m_arDiacriticalSymbol.empty())
-		{
-			return;
-		}
-
 		for (size_t i = 0; i < m_arDiacriticalSymbol.size(); ++i)
 		{
 			auto pDiacriticalCont = m_arDiacriticalSymbol[i];
@@ -1238,19 +1233,16 @@ namespace NSDocxRenderer
 						if ((bIf1 && bIf6) || (bIf2 && bIf7) || (bIf4 && bIf8) || (bIf5 && bIf7))
 						{
 							pCurrCont->m_oText += pDiacriticalCont->m_oText;
-							pDiacriticalCont->m_bIsNotNecessaryToUse = true;
-							isBreak = true;
-							break;
 						}
 						else if (bIf3 && bIf7)
 						{
 							NSStringUtils::CStringUTF32 oText(pDiacriticalCont->m_oText);
 							oText += pCurrCont->m_oText;
 							pCurrCont->m_oText = oText;
-							pDiacriticalCont->m_bIsNotNecessaryToUse = true;
-							isBreak = true;
-							break;
 						}
+						pDiacriticalCont->m_bIsNotNecessaryToUse = true;
+						isBreak = true;
+						break;
 					}
 				}
 				if (isBreak)

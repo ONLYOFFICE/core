@@ -80,19 +80,19 @@ namespace NSDocxRenderer
 
 	void CVectorGraphics::Close()
 	{
-		VectorGraphicsType type = vgtCurve;
+		VectorGraphicsType type = vgtClose;
 		m_arData.push_back({type, {}});
 	}
 
 	void CVectorGraphics::Clear()
 	{
 		m_arData.clear();
+		ResetBorders();
 	}
 
 	void CVectorGraphics::End()
 	{
 		Clear();
-		ResetBorders();
 	}
 
 	void CVectorGraphics::CheckPoint(const Point& point)

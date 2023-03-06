@@ -60,7 +60,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-    CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false);
+    CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL);
     ~CPdfWriter();
     int          SaveToFile(const std::wstring& wsPath);
     void         SetPassword(const std::wstring& wsPassword);
@@ -212,9 +212,10 @@ private:
     PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
     bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
     bool DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY);
+    bool DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY);
     bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
-    void UpdateFont();
-    void GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
+    bool UpdateFont();
+    bool GetFontPath(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, std::wstring& wsFontPath, LONG& lFaceIndex);
     PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontPath, const LONG& lFontIndex);
     PdfWriter::CFontCidTrueType* GetFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic);
     void UpdateTransform();
@@ -231,6 +232,7 @@ private:
 
 private:
     NSFonts::IFontManager*       m_pFontManager;
+    IRenderer*                   m_pRenderer;
 
     PdfWriter::CFontCidTrueType* m_pFont;
     PdfWriter::CShading*         m_pShading;

@@ -194,7 +194,12 @@ namespace MetaFile
 
 		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
 
-		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale);
+		std::vector<double> arDx(0);
+
+		if (NULL != pDx)
+			arDx = std::vector<double>(pDx, pDx + wsText.length());
+
+		WriteText(wsText, TPointD(shX, shY), oRectangle, oScale, arDx);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)
@@ -486,17 +491,17 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXCLUDECLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		ResetClip();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_INTERSECTCLIPRECT(short shLeft, short shTop, short shRight, short shBottom)
 	{
-		ResetClip();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RESTOREDC()
 	{
-		ResetClip();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
 	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
@@ -563,31 +568,16 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::ResetClip()
 	{
-		m_wsLastClipId.clear();
+		CInterpretatorSvgBase::ResetClip();
 	}
 
-	void CWmfInterpretatorSvg::IntersectClip(const TRectD& oClip)
+	void CWmfInterpretatorSvg::IntersectClip(const TRectD &oClip)
 	{
-		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<rect x=\"" + ConvertToWString(oClip.dLeft, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop, 0) + L"\" width=\"" + ConvertToWString(oClip.dRight - oClip.dLeft, 0) + L"\" height=\"" + ConvertToWString(oClip.dBottom - oClip.dTop, 0) + L"\"/>" +
-		            L"</clipPath>";
+		CInterpretatorSvgBase::IntersectClip(oClip);
 	}
 
 	void CWmfInterpretatorSvg::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
-		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-
-		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
-		            L"<path d=\"M" + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dTop) + L", L" + ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dTop) + L", " +
-		            ConvertToWString(oBB.dRight) + L' ' + ConvertToWString(oBB.dBottom) + L", " + ConvertToWString(oBB.dLeft) + L' ' + ConvertToWString(oBB.dBottom) + L", M" +
-		            ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dTop) + L", L" + ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dTop) + L", " +
-		            ConvertToWString(oClip.dRight) + L' ' + ConvertToWString(oClip.dBottom) + L", " + ConvertToWString(oClip.dLeft) + L' ' + ConvertToWString(oClip.dLeft) + L"\" clip-rule=\"evenodd\"/>" +
-		            L"</clipPath>";
-	}
-
-	void CWmfInterpretatorSvg::PathClip(IPath *pPath, int nClipMode, TXForm *pTransform)
-	{
+		CInterpretatorSvgBase::ExcludeClip(oClip, oBB);
 	}
 }

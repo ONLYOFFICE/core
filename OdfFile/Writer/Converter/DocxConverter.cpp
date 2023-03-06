@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,6 +46,8 @@
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
 #include "../../../OOXML/DocxFormat/HeaderFooter.h"
 
+#include "../../../OOXML/DocxFormat/Logic/Vml.h"
+
 #include "../../../OOXML/DocxFormat/External/HyperLink.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
 #include "../../../OOXML/DocxFormat/Logic/Sdt.h"
@@ -58,6 +60,7 @@
 #include "../../../OOXML/DocxFormat/Logic/Dir.h"
 #include "../../../OOXML/DocxFormat/Logic/SmartTag.h"
 #include "../../../OOXML/DocxFormat/Logic/ParagraphProperty.h"
+#include "../../../OOXML/DocxFormat/Logic/SectionProperty.h"
 #include "../../../OOXML/DocxFormat/Logic/FldSimple.h"
 #include "../../../OOXML/DocxFormat/Logic/Run.h"
 #include "../../../OOXML/DocxFormat/Logic/RunProperty.h"
@@ -2899,6 +2902,15 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		if (odf_border.length() > 0)
 			text_properties->content_.common_border_attlist_.fo_border_ = odf_border;
 	}
+	if (oox_run_pr->m_oShd.IsInit())
+	{
+		_CP_OPT(odf_types::color) odf_color;
+		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
+		if (odf_color)
+		{
+			text_properties->content_.fo_background_color_= *odf_color;
+		}
+	}
 	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
 	{
 		if (oox_run_pr->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
@@ -2914,16 +2926,6 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 				text_properties->content_.fo_background_color_ = odf_types::color(strColor);
 				delete oRgbColor;
 			}
-		}
-	}
-	
-	if (oox_run_pr->m_oShd.IsInit())
-	{
-		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
-		if (odf_color)
-		{
-			text_properties->content_.fo_background_color_= *odf_color;
 		}
 	}
 	if ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()))

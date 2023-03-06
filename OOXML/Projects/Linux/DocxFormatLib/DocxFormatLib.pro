@@ -60,6 +60,7 @@ SOURCES += \
 	../../../DocxFormat/Logic/Shape.cpp \
 	../../../DocxFormat/External/ExternalHyperLink.cpp \
 	../../../DocxFormat/External/External.cpp \
+	../../../DocxFormat/Media/ActiveX.cpp \
 	../../../DocxFormat/Media/Media.cpp \
 	../../../DocxFormat/Media/VbaProject.cpp \
 	../../../DocxFormat/Media/JsaProject.cpp \
@@ -207,7 +208,6 @@ HEADERS += \
 	../../../Common/ComplexTypes.h \
 	../../../Common/SimpleTypes_Base.h \
 	../../../Common/SimpleTypes_Drawing.h \
-	../../../Common/SimpleTypes_Enums.h \
 	../../../Common/SimpleTypes_OMath.h \
 	../../../Common/SimpleTypes_Shared.h \
 	../../../Common/SimpleTypes_Vml.h \
@@ -247,12 +247,14 @@ HEADERS += \
 	../../../DocxFormat/Math/oMathBottomNodes.h \
 	../../../DocxFormat/Math/oMathContent.h \
 	../../../DocxFormat/Math/oMathPara.h \
+	../../../DocxFormat/Media/ActiveX.h \
 	../../../DocxFormat/Media/Audio.h \
 	../../../DocxFormat/Media/Image.h \
 	../../../DocxFormat/Media/Media.h \
 	../../../DocxFormat/Media/OleObject.h \
 	../../../DocxFormat/Media/Video.h \
 	../../../DocxFormat/Media/JsaProject.h \
+	../../../DocxFormat/Media/VbaProject.h \
 	../../../DocxFormat/Settings/Settings.h \
 	../../../DocxFormat/Settings/WebSettings.h \
 	../../../DocxFormat/App.h \
@@ -284,6 +286,7 @@ HEADERS += \
 	../../../DocxFormat/Styles.h \
 	../../../DocxFormat/Unit.h \
 	../../../DocxFormat/UnknowTypeFile.h \
+	../../../DocxFormat/VmlDrawing.h \
 	../../../DocxFormat/WritingElement.h \
 	../../../SystemUtility/SystemUtility.h \
 	../../../Base/codecvt.h \
@@ -364,7 +367,7 @@ HEADERS += \
 	../../../XlsxFormat/ExternalLinks/ExternalLinks.h \
 	../../../XlsxFormat/Worksheets/Sparkline.h \
 	../../../XlsxFormat/Ole/OleObjects.h \
-	../../../DocxFormat/ Diagram/DiagramColors.h \
+	../../../DocxFormat/Diagram/DiagramColors.h \
 	../../../DocxFormat/Diagram/DiagramData.h \
 	../../../DocxFormat/Diagram/DiagramDrawing.h \
 	../../../DocxFormat/Diagram/DiagramLayout.h \

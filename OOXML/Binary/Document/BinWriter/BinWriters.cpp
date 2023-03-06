@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -9474,14 +9474,18 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 	if ((pDocx) && (pDocx->m_pApp))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::App);
-		pDocx->m_pApp->ToPptxApp()->toPPTY(&oBufferedStream);
+		PPTX::App* pAppTmp = pDocx->m_pApp->ToPptxApp();
+		pAppTmp->toPPTY(&oBufferedStream);
+		delete pAppTmp;
 		this->WriteTableEnd(nCurPos);
 	}
 
 	if ((pDocx) && (pDocx->m_pCore))
 	{
 		nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::Core);
-		pDocx->m_pCore->ToPptxCore()->toPPTY(&oBufferedStream);
+		PPTX::Core* pCoreTmp = pDocx->m_pCore->ToPptxCore();
+		pCoreTmp->toPPTY(&oBufferedStream);
+		delete pCoreTmp;
 		this->WriteTableEnd(nCurPos);
 	}
 	if (NULL != m_oParamsWriter.m_pTheme)

@@ -16,9 +16,6 @@
     <Filter Include="OOXElements">
       <UniqueIdentifier>{434c148a-dd1c-4c20-9ec2-462bf41b094b}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OOXElements\ppt shapes">
-      <UniqueIdentifier>{07ef31dd-8f40-4607-8b27-6104a24bc093}</UniqueIdentifier>
-    </Filter>
     <Filter Include="OOXWriter">
       <UniqueIdentifier>{41fc709e-386b-4e1e-80c0-546932a2a480}</UniqueIdentifier>
     </Filter>
@@ -27,6 +24,12 @@
     </Filter>
     <Filter Include="Converter">
       <UniqueIdentifier>{878f1451-aaec-42bc-9b15-a4faba99af16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OOXElements\PptShape">
+      <UniqueIdentifier>{bf95ed7e-3227-430e-95ee-f04212b13386}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OOXElements\PptShape\ppt shapes">
+      <UniqueIdentifier>{07ef31dd-8f40-4607-8b27-6104a24bc093}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -658,7 +661,7 @@
       <Filter>Records</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PptFile\Drawing\Shapes\Shape.h">
-      <Filter>OOXElements\ppt shapes</Filter>
+      <Filter>OOXElements\PptShape\ppt shapes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PptFile\Drawing\Animations.h">
       <Filter>OOXElements</Filter>

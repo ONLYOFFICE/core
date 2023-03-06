@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -834,5 +834,46 @@ namespace OOX
 			nullable<CDataRefs>	m_oDataRefs;
 
 		};
+		class CUserProtectedRange : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CUserProtectedRange)
+			CUserProtectedRange();
+			virtual ~CUserProtectedRange();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			nullable_string				m_oName;
+			nullable_string				m_oSqref;
+			nullable_string				m_oText;
+
+			std::vector<std::wstring>	m_arUsersId;
+			std::vector<std::wstring>	m_arUsersGroupsId;
+		};
+
+		class CUserProtectedRanges : public WritingElementWithChilds<CUserProtectedRange>
+		{
+		public:
+			WritingElement_AdditionMethods(CUserProtectedRanges)
+			CUserProtectedRanges();
+			virtual ~CUserProtectedRanges();
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+		};
+
 	} //Spreadsheet
 } // namespace OOX

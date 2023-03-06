@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,11 +32,25 @@
 #pragma once
 
 #include "PptShape.h"
-#include "PresetShapesHeader.h"
+#include "../../../DocFile/OfficeDrawing/PresetShapeTypes.h"
+
+#include <boost/lexical_cast.hpp>
+
+//-------------------------------------------------------------------------------
+//#define CREATE_BY_SPT(SHAPE_TYPE, CLASS_SHAPE_NAME)							\
+//	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\
+//-------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------
 #define CREATE_BY_SPT(SHAPE_TYPE, CLASS_SHAPE_NAME)								\
-	case SHAPE_TYPE: { pShape = new CLASS_SHAPE_NAME(); break; }				\
+	case SHAPE_TYPE:															\
+	{																			\
+		pShapeType = new CLASS_SHAPE_NAME();									\
+		pShape = CreateByShapeType(pShapeType);									\
+		delete pShapeType;														\
+		pShapeType = NULL;														\
+		break;																	\
+	}																			\
 //-------------------------------------------------------------------------------
 
 using namespace ODRAW;
@@ -443,7 +457,7 @@ void CPPTShape::ReCalculate()
 		LoadPathList(m_strPath);
 	}
 }
-const ClassType CPPTShape::GetClassType()const
+const ClassType CPPTShape::GetClassType() const
 {
 	return NSBaseShape::ppt;
 }
@@ -585,202 +599,298 @@ bool CPPTShape::GetPos(std::wstring str, LONG& lValue)
 
 	return true;
 }
-CBaseShapePtr CPPTShape::CreateByType(PPTShapes::ShapeType type)
+CPPTShape* CPPTShape::CreateByShapeType(DocFileFormat::ShapeType* pShapeType)
 {
 	CPPTShape* pShape = NULL;
+
+	if (pShapeType)
+	{
+		pShape = new CPPTShape();
+
+		// Path
+		pShape->m_strPath = pShapeType->Path;
+
+		// ConcentricFill
+		pShape->m_bConcentricFill = pShapeType->ShapeConcentricFill;
+
+		pShape->m_bIsFilled = pShapeType->Filled;
+		pShape->m_bIsStroked = pShapeType->Stroked;
+
+		// Join
+		switch(pShapeType->Joins)
+		{
+			case DocFileFormat::miter:
+				pShape->m_eJoin = ODRAW::lineJoinMiter;
+				break;
+			case DocFileFormat::round:
+				pShape->m_eJoin = ODRAW::lineJoinRound;
+				break;
+			case DocFileFormat::bevel:
+			pShape->m_eJoin = ODRAW::lineJoinBevel;
+				break;
+		}
+
+		// Connectors
+		if (pShapeType->ConnectorLocations.length())
+		{
+			pShape->LoadConnectorsList(pShapeType->ConnectorLocations);
+		}
+
+		// TextRect
+		if (pShapeType->TextBoxRectangle.length())
+		{
+			pShape->LoadTextRect(pShapeType->TextBoxRectangle);
+		}
+
+		// Handles
+		for (std::list<DocFileFormat::Handle>::iterator iter = pShapeType->Handles.begin(); iter != pShapeType->Handles.end(); ++iter)
+		{
+			CHandle_ oHandle;
+			oHandle.position = iter->position;
+			oHandle.xrange = iter->xrange;
+			oHandle.yrange = iter->yrange;
+			oHandle.switchHandle = iter->switchHandle;
+			oHandle.polar = iter->polar;
+			oHandle.radiusrange = iter->radiusrange;
+
+			pShape->m_arHandles.push_back(oHandle);
+		}
+
+		// Formulas / Guides
+		for (std::list<std::wstring>::iterator iter = pShapeType->Formulas.begin(); iter != pShapeType->Formulas.end(); ++iter)
+		{
+			pShape->AddGuide(iter->c_str());
+		}
+
+		// Adjustments
+		if (pShapeType->AdjustmentValues.length())
+		{
+			std::vector<std::wstring> adjArray;
+			boost::algorithm::split(adjArray, pShapeType->AdjustmentValues, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < adjArray.size(); ++i)
+			{
+				pShape->m_arAdjustments.push_back(boost::lexical_cast<double>(adjArray[i].c_str()));
+			}
+		}
+
+		// ConnectorAngles
+		if (pShapeType->ConnectorAngles.length())
+		{
+			std::vector<std::wstring> anglesArray;
+			boost::algorithm::split(anglesArray, pShapeType->ConnectorAngles, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			for (size_t i = 0; i < anglesArray.size(); ++i)
+			{
+				pShape->m_arConnectorAngles.push_back(boost::lexical_cast<LONG>(anglesArray[i].c_str()));
+			}
+		}
+
+		// Limo
+		if (pShapeType->Limo.length())
+		{
+			std::vector<std::wstring> limoArray;
+			boost::algorithm::split(limoArray, pShapeType->Limo, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
+			if (limoArray.size() == 2)
+			{
+				pShape->m_lLimoX = boost::lexical_cast<long>(limoArray[0].c_str());
+				pShape->m_lLimoY = boost::lexical_cast<long>(limoArray[1].c_str());
+			}
+		}
+	}
+
+	return pShape;
+}
+CBaseShapePtr CPPTShape::CreateByType(PPTShapes::ShapeType type)
+{	
+	CPPTShape* pShape = NULL;
+	DocFileFormat::ShapeType* pShapeType = NULL;
+
 	switch (type)
 	{
-// msosptNotchedCircularArrow	0x00000064 A value that SHOULD NOT be used.
-// msosptHostControl			0x000000C9 A value that SHOULD NOT be used.
+		// msosptNotchedCircularArrow	0x00000064 A value that SHOULD NOT be used.
+		// msosptHostControl			0x000000C9 A value that SHOULD NOT be used.
 
-	case sptHostControl:		
-			{ pShape = new CPPTShape();  pShape->m_eType = type; break; }
-	case 0: { pShape = new CRectangleType(); break; }
-	
-	case sptNotchedCircularArrow:
-	case sptPictureFrame: { pShape = new CRectangleType(); pShape->m_eType = type; break; }
+		case sptHostControl:
+		{ pShape = new CPPTShape();  pShape->m_eType = type; break; }
 
-		CREATE_BY_SPT(sptAccentBorderCallout90, CAccentBorderCallout90Type)
-		CREATE_BY_SPT(sptAccentBorderCallout1, CAccentBorderCallout1Type)
-		CREATE_BY_SPT(sptAccentBorderCallout2, CAccentBorderCallout2Type)
-		CREATE_BY_SPT(sptAccentBorderCallout3, CAccentBorderCallout3Type)
-
-		CREATE_BY_SPT(sptAccentCallout90, CAccentCallout90Type)
-		CREATE_BY_SPT(sptAccentCallout1, CAccentCallout1Type)
-		CREATE_BY_SPT(sptAccentCallout2, CAccentCallout2Type)
-		CREATE_BY_SPT(sptAccentCallout3, CAccentCallout3Type)
-
-		CREATE_BY_SPT(sptBorderCallout90, CBorderCallout90Type)
-		CREATE_BY_SPT(sptBorderCallout1, CBorderCallout1Type)
-		CREATE_BY_SPT(sptBorderCallout2, CBorderCallout2Type)
-		CREATE_BY_SPT(sptBorderCallout3, CBorderCallout3Type)
-
-		CREATE_BY_SPT(sptCallout90, CCallout90Type)
-		CREATE_BY_SPT(sptCallout1, CCallout1Type)
-		CREATE_BY_SPT(sptCallout2, CCallout2Type)
-		CREATE_BY_SPT(sptCallout3, CCallout3Type)
-
-		CREATE_BY_SPT(sptActionButtonBlank, CActionButtonBlankType)
-		CREATE_BY_SPT(sptActionButtonHome, CActionButtonHomeType)
-		CREATE_BY_SPT(sptActionButtonHelp, CActionButtonHelpType)
-		CREATE_BY_SPT(sptActionButtonInformation, CActionButtonInfoType)
-		CREATE_BY_SPT(sptActionButtonBackPrevious, CActionButtonBackType)
-		CREATE_BY_SPT(sptActionButtonForwardNext, CActionButtonNextType)
-		CREATE_BY_SPT(sptActionButtonBeginning, CActionButtonBeginType)
-		CREATE_BY_SPT(sptActionButtonEnd, CActionButtonEndType)
-		CREATE_BY_SPT(sptActionButtonReturn, CActionButtonReturnType)
-		CREATE_BY_SPT(sptActionButtonDocument, CActionButtonDocType)
-		CREATE_BY_SPT(sptActionButtonSound, CActionButtonSoundType)
-		CREATE_BY_SPT(sptActionButtonMovie, CActionButtonMovieType)
+		CREATE_BY_SPT(0, DocFileFormat::RectangleType)
 		
-		CREATE_BY_SPT(sptArc, CArcType)
-		CREATE_BY_SPT(sptLine, CLineType)
+		case sptNotchedCircularArrow:
+		CREATE_BY_SPT(sptPictureFrame, DocFileFormat::RectangleType)
 
-		CREATE_BY_SPT(sptBentArrow, CBentArrowType)
-		CREATE_BY_SPT(sptBentUpArrow, CBentUpArrowType)
-		CREATE_BY_SPT(sptBevel, CBevelType)
-		CREATE_BY_SPT(sptBlockArc, CBlockArcType)
-		CREATE_BY_SPT(sptBracePair, CBracePairType)
-		CREATE_BY_SPT(sptBracketPair, CBracketPairType)
+		CREATE_BY_SPT(sptAccentBorderCallout90, DocFileFormat::AccentBorderCallout90)
+		CREATE_BY_SPT(sptAccentBorderCallout1, DocFileFormat::AccentBorderCallout1)
+		CREATE_BY_SPT(sptAccentBorderCallout2, DocFileFormat::AccentBorderCallout2)
+		CREATE_BY_SPT(sptAccentBorderCallout3, DocFileFormat::AccentBorderCallout3)
+
+		CREATE_BY_SPT(sptAccentCallout90, DocFileFormat::AccentCallout90)
+		CREATE_BY_SPT(sptAccentCallout1, DocFileFormat::AccentCallout1)
+		CREATE_BY_SPT(sptAccentCallout2, DocFileFormat::AccentCallout2)
+		CREATE_BY_SPT(sptAccentCallout3, DocFileFormat::AccentCallout3)
+
+		CREATE_BY_SPT(sptBorderCallout90, DocFileFormat::BorderCallout90)
+		CREATE_BY_SPT(sptBorderCallout1, DocFileFormat::BorderCallout1)
+		CREATE_BY_SPT(sptBorderCallout2, DocFileFormat::BorderCallout2)
+		CREATE_BY_SPT(sptBorderCallout3, DocFileFormat::BorderCallout3)
+
+		CREATE_BY_SPT(sptCallout90, DocFileFormat::Callout90)
+		CREATE_BY_SPT(sptCallout1, DocFileFormat::Callout1)
+		CREATE_BY_SPT(sptCallout2, DocFileFormat::Callout2)
+		CREATE_BY_SPT(sptCallout3, DocFileFormat::Callout3)
+
+		CREATE_BY_SPT(sptActionButtonBlank, DocFileFormat::ActionButtonBlank)
+		CREATE_BY_SPT(sptActionButtonHome, DocFileFormat::ActionButtonHome)
+		CREATE_BY_SPT(sptActionButtonHelp, DocFileFormat::ActionButtonHelp)
+		CREATE_BY_SPT(sptActionButtonInformation, DocFileFormat::ActionButtonInfo)
+		CREATE_BY_SPT(sptActionButtonBackPrevious, DocFileFormat::ActionButtonBack)
+		CREATE_BY_SPT(sptActionButtonForwardNext, DocFileFormat::ActionButtonNext)
+		CREATE_BY_SPT(sptActionButtonBeginning, DocFileFormat::ActionButtonBegin)
+		CREATE_BY_SPT(sptActionButtonEnd, DocFileFormat::ActionButtonEnd)
+		CREATE_BY_SPT(sptActionButtonReturn, DocFileFormat::ActionButtonReturn)
+		CREATE_BY_SPT(sptActionButtonDocument, DocFileFormat::ActionButtonDoc)
+		CREATE_BY_SPT(sptActionButtonSound, DocFileFormat::ActionButtonSound)
+		CREATE_BY_SPT(sptActionButtonMovie, DocFileFormat::ActionButtonMovie)
 		
-		CREATE_BY_SPT(sptCan, CCanType)
-		CREATE_BY_SPT(sptChevron, CChevronType)
-		CREATE_BY_SPT(sptCircularArrow, CCircularArrowType)
-		CREATE_BY_SPT(sptCloudCallout, CCloudCalloutType)
-		CREATE_BY_SPT(sptCube, CCubeType)
-		CREATE_BY_SPT(sptCurvedDownArrow, CCurvedDownArrowType)
-		CREATE_BY_SPT(sptCurvedLeftArrow, CCurvedLeftArrowType)
-		CREATE_BY_SPT(sptCurvedRightArrow, CCurvedRightArrowType)
-		CREATE_BY_SPT(sptCurvedUpArrow, CCurvedUpArrowType)
+		CREATE_BY_SPT(sptArc, DocFileFormat::ArcType)
+		CREATE_BY_SPT(sptLine, DocFileFormat::LineType)
 
-		CREATE_BY_SPT(sptDiamond, CDiamondType)
-		CREATE_BY_SPT(sptDonut, CDonutType)
-		CREATE_BY_SPT(sptDownArrowCallout, CDownArrowCalloutType)
-		CREATE_BY_SPT(sptDownArrow, CDownArrowType)
+		CREATE_BY_SPT(sptBentArrow, DocFileFormat::BentArrow)
+		CREATE_BY_SPT(sptBentUpArrow, DocFileFormat::BentUpArrow)
+		CREATE_BY_SPT(sptBevel, DocFileFormat::BevelType)
+		CREATE_BY_SPT(sptBlockArc, DocFileFormat::BlockArcType)
+		CREATE_BY_SPT(sptBracePair, DocFileFormat::BracePairType)
+		CREATE_BY_SPT(sptBracketPair, DocFileFormat::BracketPairType)
+		
+		CREATE_BY_SPT(sptCan, DocFileFormat::CanType)
+		CREATE_BY_SPT(sptChevron, DocFileFormat::Chevron)
+		CREATE_BY_SPT(sptCircularArrow, DocFileFormat::CircularArrow)
+		CREATE_BY_SPT(sptCloudCallout, DocFileFormat::CloudCallout)
+		CREATE_BY_SPT(sptCube, DocFileFormat::CubeType)
+		CREATE_BY_SPT(sptCurvedDownArrow, DocFileFormat::CurvedDownArrow)
+		CREATE_BY_SPT(sptCurvedLeftArrow, DocFileFormat::CurvedLeftArrow)
+		CREATE_BY_SPT(sptCurvedRightArrow, DocFileFormat::CurvedRightArrow)
+		CREATE_BY_SPT(sptCurvedUpArrow, DocFileFormat::CurvedUpArrow)
 
-		CREATE_BY_SPT(sptEllipse, CEllipseType)
-		CREATE_BY_SPT(sptEllipseRibbon, CEllipceRibbonType)
-		CREATE_BY_SPT(sptEllipseRibbon2, CEllipceRibbon2Type)
+		CREATE_BY_SPT(sptDiamond, DocFileFormat::DiamondType)
+		CREATE_BY_SPT(sptDonut, DocFileFormat::DonutType)
+		CREATE_BY_SPT(sptDownArrowCallout, DocFileFormat::DownArrowCallout)
+		CREATE_BY_SPT(sptDownArrow, DocFileFormat::DownArrowType)
 
-		CREATE_BY_SPT(sptFlowChartAlternateProcess, CFlowChartAlternateProcessType)
-		CREATE_BY_SPT(sptFlowChartCollate, CFlowChartCollateType)
-		CREATE_BY_SPT(sptFlowChartConnector, CFlowChartConnectorType)
-		CREATE_BY_SPT(sptFlowChartDecision, CFlowChartDecisionType)
-		CREATE_BY_SPT(sptFlowChartDisplay, CFlowChartDisplayType)
-		CREATE_BY_SPT(sptFlowChartDelay, CFlowChartDelayType)
-		CREATE_BY_SPT(sptFlowChartDocument, CFlowChartDocumentType)
-		CREATE_BY_SPT(sptFlowChartExtract, CFlowChartExtractType)
-		CREATE_BY_SPT(sptFlowChartInputOutput, CFlowChartInputOutputType)
-		CREATE_BY_SPT(sptFlowChartInternalStorage, CFlowChartInternalStorageType)
-		CREATE_BY_SPT(sptFlowChartMagneticDisk, CFlowChartMagneticDiskType)
-		CREATE_BY_SPT(sptFlowChartMagneticDrum, CFlowChartMagneticDrumType)
-		CREATE_BY_SPT(sptFlowChartMagneticTape, CFlowChartMagneticTapeType)
-		CREATE_BY_SPT(sptFlowChartManualInput, CFlowChartManualInputType)
-		CREATE_BY_SPT(sptFlowChartManualOperation, CFlowChartManualOperationType)
-		CREATE_BY_SPT(sptFlowChartMerge, CFlowChartMergeType)
-		CREATE_BY_SPT(sptFlowChartMultidocument, CFlowChartMultidocumentType)
-		CREATE_BY_SPT(sptFlowChartOffpageConnector, CFlowChartOffpageConnectorType)
-		CREATE_BY_SPT(sptFlowChartOnlineStorage, CFlowChartOnlineStorageType)
-		CREATE_BY_SPT(sptFlowChartOr, CFlowChartOrType)
-		CREATE_BY_SPT(sptFlowChartPredefinedProcess, CFlowChartPredefinedProcessType)
-		CREATE_BY_SPT(sptFlowChartPreparation, CFlowChartPreparationType)
-		CREATE_BY_SPT(sptFlowChartProcess, CFlowChartProcessType)
-		CREATE_BY_SPT(sptFlowChartPunchedCard, CFlowChartPunchedCardType)
-		CREATE_BY_SPT(sptFlowChartPunchedTape, CFlowChartPunchedTapeType)
-		CREATE_BY_SPT(sptFlowChartSort, CFlowChartSortType)
-		CREATE_BY_SPT(sptFlowChartSummingJunction, CFlowChartSummingJunctionType)
-		CREATE_BY_SPT(sptFlowChartTerminator, CFlowChartTerminatorType)
-		CREATE_BY_SPT(sptFoldedCorner, CFoldedCornerType)
+		CREATE_BY_SPT(sptEllipse, DocFileFormat::OvalType)
+		CREATE_BY_SPT(sptEllipseRibbon, DocFileFormat::EllipseRibbon)
+		CREATE_BY_SPT(sptEllipseRibbon2, DocFileFormat::EllipseRibbon2)
 
-		CREATE_BY_SPT(sptHeart, CHeartType)
-		CREATE_BY_SPT(sptHexagon, CHexagonType)
-		CREATE_BY_SPT(sptHomePlate, CHomePlateType)
+		CREATE_BY_SPT(sptFlowChartAlternateProcess, DocFileFormat::FlowChartAlternateProcess)
+		CREATE_BY_SPT(sptFlowChartCollate, DocFileFormat::FlowChartCollate)
+		CREATE_BY_SPT(sptFlowChartConnector, DocFileFormat::FlowChartConnector)
+		CREATE_BY_SPT(sptFlowChartDecision, DocFileFormat::FlowChartDecision)
+		CREATE_BY_SPT(sptFlowChartDisplay, DocFileFormat::FlowChartDisplay)
+		CREATE_BY_SPT(sptFlowChartDelay, DocFileFormat::FlowChartDelay)
+		CREATE_BY_SPT(sptFlowChartDocument, DocFileFormat::FlowChartDocument)
+		CREATE_BY_SPT(sptFlowChartExtract, DocFileFormat::FlowChartExtract)
+		CREATE_BY_SPT(sptFlowChartInputOutput, DocFileFormat::FlowChartInputOutput)
+		CREATE_BY_SPT(sptFlowChartInternalStorage, DocFileFormat::FlowChartInternalStorage)
+		CREATE_BY_SPT(sptFlowChartMagneticDisk, DocFileFormat::FlowChartMagneticDisk)
+		CREATE_BY_SPT(sptFlowChartMagneticDrum, DocFileFormat::FlowChartMagneticDrum)
+		CREATE_BY_SPT(sptFlowChartMagneticTape, DocFileFormat::FlowChartMagneticTape)
+		CREATE_BY_SPT(sptFlowChartManualInput, DocFileFormat::FlowChartManualInput)
+		CREATE_BY_SPT(sptFlowChartManualOperation, DocFileFormat::FlowChartManualOperation)
+		CREATE_BY_SPT(sptFlowChartMerge, DocFileFormat::FlowChartMerge)
+		CREATE_BY_SPT(sptFlowChartMultidocument, DocFileFormat::FlowChartMultidocument)
+		CREATE_BY_SPT(sptFlowChartOffpageConnector, DocFileFormat::FlowChartOffpageConnector)
+		CREATE_BY_SPT(sptFlowChartOnlineStorage, DocFileFormat::FlowChartOnlineStorage)
+		CREATE_BY_SPT(sptFlowChartOr, DocFileFormat::FlowChartOr)
+		CREATE_BY_SPT(sptFlowChartPredefinedProcess, DocFileFormat::FlowChartPredefinedProcess)
+		CREATE_BY_SPT(sptFlowChartPreparation, DocFileFormat::FlowChartPreparation)
+		CREATE_BY_SPT(sptFlowChartProcess, DocFileFormat::FlowChartProcess)
+		CREATE_BY_SPT(sptFlowChartPunchedCard, DocFileFormat::FlowChartPunchedCard)
+		CREATE_BY_SPT(sptFlowChartPunchedTape, DocFileFormat::FlowChartPunchedTape)
+		CREATE_BY_SPT(sptFlowChartSort, DocFileFormat::FlowChartSort)
+		CREATE_BY_SPT(sptFlowChartSummingJunction, DocFileFormat::FlowChartSummingJunction)
+		CREATE_BY_SPT(sptFlowChartTerminator, DocFileFormat::FlowChartTerminator)
+		CREATE_BY_SPT(sptFoldedCorner, DocFileFormat::FoldedCornerlType)
 
-		CREATE_BY_SPT(sptIrregularSeal1, CIrregularSealOneType)
-		CREATE_BY_SPT(sptIrregularSeal2, CIrregularSealTwo)
-		CREATE_BY_SPT(sptIsocelesTriangle, CIsoscelesTriangleType)
+		CREATE_BY_SPT(sptHeart, DocFileFormat::HeartType)
+		CREATE_BY_SPT(sptHexagon, DocFileFormat::HexagonType)
+		CREATE_BY_SPT(sptHomePlate, DocFileFormat::HomePlate)
 
-		CREATE_BY_SPT(sptLeftArrowCallout, CLeftArrowCalloutType)
-		CREATE_BY_SPT(sptLeftArrow, CLeftArrowType)
-		CREATE_BY_SPT(sptLeftBrace, CLeftBraceType)
-		CREATE_BY_SPT(sptLeftBracket, CLeftBracketType)
-		CREATE_BY_SPT(sptLeftRightArrowCallout, CLeftRightArrowCalloutType)
-		CREATE_BY_SPT(sptLeftRightArrow, CLeftRightArrowType)
-		CREATE_BY_SPT(sptLeftRightUpArrow, CLeftRightUpArrow)
-		CREATE_BY_SPT(sptLeftUpArrow, CLeftUpArrowType)
-		CREATE_BY_SPT(sptLightningBolt, CLightningBoltType)
+		CREATE_BY_SPT(sptIrregularSeal1, DocFileFormat::IrregularSeal1)
+		CREATE_BY_SPT(sptIrregularSeal2, DocFileFormat::IrregularSeal2)
+		CREATE_BY_SPT(sptIsocelesTriangle, DocFileFormat::IsoscelesTriangleType)
 
-		CREATE_BY_SPT(sptMoon, CMoonType)
+		CREATE_BY_SPT(sptLeftArrowCallout, DocFileFormat::LeftArrowCallout)
+		CREATE_BY_SPT(sptLeftArrow, DocFileFormat::LeftArrowType)
+		CREATE_BY_SPT(sptLeftBrace, DocFileFormat::LeftBraceType)
+		CREATE_BY_SPT(sptLeftBracket, DocFileFormat::LeftBracketType)
+		CREATE_BY_SPT(sptLeftRightArrowCallout, DocFileFormat::LeftRightArrowCallout)
+		CREATE_BY_SPT(sptLeftRightArrow, DocFileFormat::LeftRightArrow)
+		CREATE_BY_SPT(sptLeftRightUpArrow, DocFileFormat::LeftRightUpArrow)
+		CREATE_BY_SPT(sptLeftUpArrow, DocFileFormat::LeftUpArrow)
+		CREATE_BY_SPT(sptLightningBolt, DocFileFormat::LightningBoltType)
 
-		CREATE_BY_SPT(sptNoSmoking, CNoSmokingType)
-		CREATE_BY_SPT(sptNotchedRightArrow, CNotchedRightArrowType)
+		CREATE_BY_SPT(sptMoon, DocFileFormat::MoonType)
 
-		CREATE_BY_SPT(sptOctagon, COctagonType)
+		CREATE_BY_SPT(sptNoSmoking, DocFileFormat::NoSmokingType)
+		CREATE_BY_SPT(sptNotchedRightArrow, DocFileFormat::NotchedRightArrow)
 
-		CREATE_BY_SPT(sptParallelogram, CParallelogramType)
-		CREATE_BY_SPT(sptPentagon, CPentagonType)
-		CREATE_BY_SPT(sptPlaque, CPlaqueType)
-		CREATE_BY_SPT(sptPlus, CPlusType)
+		CREATE_BY_SPT(sptOctagon, DocFileFormat::OctagonType)
 
-		CREATE_BY_SPT(sptQuadArrowCallout, CQuadArrowCalloutType)
-		CREATE_BY_SPT(sptQuadArrow, CQuadArrowType)
+		CREATE_BY_SPT(sptParallelogram, DocFileFormat::ParallelogramType)
+		CREATE_BY_SPT(sptPentagon, DocFileFormat::PentagonType)
+		CREATE_BY_SPT(sptPlaque, DocFileFormat::PlaqueType)
+		CREATE_BY_SPT(sptPlus, DocFileFormat::PlusType)
 
-		CREATE_BY_SPT(sptRectangle, CRectangleType)
-		CREATE_BY_SPT(sptRibbon, CRibbonDownType)
-		CREATE_BY_SPT(sptRibbon2, CRibbonUpType)
-		CREATE_BY_SPT(sptRightArrowCallout, CRightArrowCalloutType)
-		CREATE_BY_SPT(sptArrow, CRightArrowType)
-		CREATE_BY_SPT(sptRightBrace, CRightBracetype)
-		CREATE_BY_SPT(sptRightBracket, CRightBracketType)
-		CREATE_BY_SPT(sptRightTriangle, CRightTriangleType)
-		CREATE_BY_SPT(sptRoundRectangle, CRoundedRectangleType)
+		CREATE_BY_SPT(sptQuadArrowCallout, DocFileFormat::QuadArrowCallout)
+		CREATE_BY_SPT(sptQuadArrow, DocFileFormat::QuadArrow)
 
-		CREATE_BY_SPT(sptSeal16, CSeal16Type)
-		CREATE_BY_SPT(sptSeal24, CSeal24Type)
-		CREATE_BY_SPT(sptSeal32, CSeal32Type)
-		CREATE_BY_SPT(sptSeal4, CSeal4Type)
-		CREATE_BY_SPT(sptSeal8, CSeal8Type)
-		CREATE_BY_SPT(sptSmileyFace, CSmileyFaceType)
-		CREATE_BY_SPT(sptStar, CStarType)
-		CREATE_BY_SPT(sptStraightConnector1, CStraightConnectorType)
-		CREATE_BY_SPT(sptStripedRightArrow, CStripedRightArrowType)
-		CREATE_BY_SPT(sptSun, CSunType)
+		CREATE_BY_SPT(sptRectangle, DocFileFormat::RectangleType)
+		CREATE_BY_SPT(sptRibbon, DocFileFormat::Ribbon)
+		CREATE_BY_SPT(sptRibbon2, DocFileFormat::Ribbon2)
+		CREATE_BY_SPT(sptRightArrowCallout, DocFileFormat::RightArrowCallout)
+		CREATE_BY_SPT(sptArrow, DocFileFormat::ArrowType)
+		CREATE_BY_SPT(sptRightBrace, DocFileFormat::RightBraceType)
+		CREATE_BY_SPT(sptRightBracket, DocFileFormat::RightBracketType)
+		CREATE_BY_SPT(sptRightTriangle, DocFileFormat::RightTriangleType)
+		CREATE_BY_SPT(sptRoundRectangle, DocFileFormat::RoundedRectangleType)
 
-		CREATE_BY_SPT(sptTextBox, CTextboxType)
-		CREATE_BY_SPT(sptTrapezoid, CTrapezoidType)
+		CREATE_BY_SPT(sptSeal16, DocFileFormat::Seal16)
+		CREATE_BY_SPT(sptSeal24, DocFileFormat::Seal24)
+		CREATE_BY_SPT(sptSeal32, DocFileFormat::Seal32)
+		CREATE_BY_SPT(sptSeal4, DocFileFormat::Seal4)
+		CREATE_BY_SPT(sptSeal8, DocFileFormat::Seal8)
+		CREATE_BY_SPT(sptSmileyFace, DocFileFormat::SmileyFaceType)
+		CREATE_BY_SPT(sptStar, DocFileFormat::StarType)
+		CREATE_BY_SPT(sptStraightConnector1, DocFileFormat::StraightConnector)
+		CREATE_BY_SPT(sptStripedRightArrow, DocFileFormat::StripedRightArrow)
+		CREATE_BY_SPT(sptSun, DocFileFormat::SunType)
 
-		CREATE_BY_SPT(sptUpArrowCallout, CUpArrowCalloutType)
-		CREATE_BY_SPT(sptUpArrow, CUpArrowType)
-		CREATE_BY_SPT(sptUpDownArrowCallout, CUpDownArrowCalloutType)
-		CREATE_BY_SPT(sptUpDownArrow, CUpDownArrowType)
-		CREATE_BY_SPT(sptUturnArrow, CUturnArrowType)
+		CREATE_BY_SPT(sptTextBox, DocFileFormat::TextboxType)
+		CREATE_BY_SPT(sptTrapezoid, DocFileFormat::TrapezoidType)
 
-		CREATE_BY_SPT(sptVerticalScroll, CVerticalScrollType)
-		CREATE_BY_SPT(sptHorizontalScroll, CHorizontalScrollType)
+		CREATE_BY_SPT(sptUpArrowCallout, DocFileFormat::UpArrowCallout)
+		CREATE_BY_SPT(sptUpArrow, DocFileFormat::UpArrowType)
+		CREATE_BY_SPT(sptUpDownArrowCallout, DocFileFormat::UpDownArrowCallout)
+		CREATE_BY_SPT(sptUpDownArrow, DocFileFormat::UpDownArrow)
+		CREATE_BY_SPT(sptUturnArrow, DocFileFormat::UturnArrow)
 
-		CREATE_BY_SPT(sptWedgeEllipseCallout, CWedgeEllipseCalloutType)
-		CREATE_BY_SPT(sptWedgeRectCallout, CWedgeRectCalloutType)
-		CREATE_BY_SPT(sptWedgeRRectCallout, CWedgeRoundedRectCalloutType)
+		CREATE_BY_SPT(sptVerticalScroll, DocFileFormat::VerticalScroll)
+		CREATE_BY_SPT(sptHorizontalScroll, DocFileFormat::HorizontalScroll)
 
-		CREATE_BY_SPT(sptWave, CWaveType)
-		CREATE_BY_SPT(sptDoubleWave, CWaveDoubleType)
+		CREATE_BY_SPT(sptWedgeEllipseCallout, DocFileFormat::WedgeEllipseCallout)
+		CREATE_BY_SPT(sptWedgeRectCallout, DocFileFormat::WedgeRectCallout)
+		CREATE_BY_SPT(sptWedgeRRectCallout, DocFileFormat::WedgeRRectCallout)
+
+		CREATE_BY_SPT(sptWave, DocFileFormat::Wave)
+		CREATE_BY_SPT(sptDoubleWave, DocFileFormat::DoubleWave)
 
 		case sptBentConnector2:
 		case sptBentConnector3:    
 		case sptBentConnector4:
-		case sptBentConnector5:
-			{
-				pShape = new CBentConnectorType(); 
-				break;
-			}
+		CREATE_BY_SPT(sptBentConnector5, DocFileFormat::BentConnector)
+
 		case sptCurvedConnector2:
 		case sptCurvedConnector3:    
 		case sptCurvedConnector4:
-		case sptCurvedConnector5:
-			{
-				pShape = new CCurvedConnectorType();
-				break;
-			}
+		CREATE_BY_SPT(sptCurvedConnector5, DocFileFormat::CurvedConnector)
 
 		case sptTextPlainText:    
 		case sptTextStop:  
@@ -821,10 +931,7 @@ CBaseShapePtr CPPTShape::CreateByType(PPTShapes::ShapeType type)
 		case sptTextSlantUp:    
 		case sptTextSlantDown:   
 		case sptTextCanUp:   
-		case sptTextCanDown:
-		{
-			pShape = new CTextboxType();
-		}
+		CREATE_BY_SPT(sptTextCanDown, DocFileFormat::TextboxType)
 
 		default: break;
 	};

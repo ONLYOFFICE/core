@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,10 +35,14 @@
 
 #include "../../Common/utils.h"
 
+#include "../../../OOXML/DocxFormat/VmlDrawing.h"
 #include "../../../OOXML/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../OOXML/DocxFormat/Drawing/DrawingExt.h"
+#include "../../../OOXML/DocxFormat/Logic/Vml.h"
 #include "../../../OOXML/XlsxFormat/Chart/ChartDrawing.h"
 #include "../../../OOXML/XlsxFormat/Chart/Chart.h"
 #include "../../../OOXML/PPTXFormat/Slide.h"
+#include "../../../OOXML/PPTXFormat/SlideMaster.h"
 #include "../../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
 #include "../../../OOXML/PPTXFormat/Logic/GraphicFrame.h"
 #include "../../../OOXML/PPTXFormat/Logic/Shape.h"
@@ -535,7 +539,7 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 			oox_current_child_document = pChart ? dynamic_cast<OOX::IFileContainer*>(pChart) : dynamic_cast<OOX::IFileContainer*>(pChartEx);	
 			
 			OOX::CChartDrawing* pChartDrawing = NULL;
-			if ( (pChart) && ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id)) )
+			if ( (pChart) && ((pChart->m_oChartSpace.m_userShapes) && (pChart->m_oChartSpace.m_userShapes->m_id.IsInit())) )
 			{
 				oFile = find_file_by_id (*pChart->m_oChartSpace.m_userShapes->m_id);
 				pChartDrawing = dynamic_cast<OOX::CChartDrawing*>(oFile.GetPointer());
@@ -560,12 +564,12 @@ void OoxConverter::convert(PPTX::Logic::ChartRec *oox_chart)
 		
 					if (pChart)
 					{
-						OoxConverter::convert(pChart->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(pChart->m_oChartSpace.m_spPr.GetPointer());					
 						OoxConverter::convert(&pChart->m_oChartSpace);
 					}
 					else if (pChartEx)
 					{
-						OoxConverter::convert(pChartEx->m_oChartSpace.m_oSpPr.GetPointer());					
+						OoxConverter::convert(pChartEx->m_oChartSpace.m_spPr.GetPointer());					
 						OoxConverter::convert(&pChartEx->m_oChartSpace);
 					}
 				odf_context()->end_chart();

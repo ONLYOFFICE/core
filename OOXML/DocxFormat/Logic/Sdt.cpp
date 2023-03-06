@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -35,6 +35,7 @@
 #include "Run.h"
 #include "RunProperty.h"
 #include "ParagraphProperty.h"
+#include "SectionProperty.h"
 #include "FldSimple.h"
 #include "Bdo.h"
 #include "Table.h"
@@ -591,8 +592,11 @@ namespace OOX
 					AssignPtrXmlContent(pItem, COMath, oReader)
 				else if ( L"m:oMathPara" == sName )
 					AssignPtrXmlContent(pItem, COMathPara, oReader)
-				else if ( L"w:p" == sName )
-					AssignPtrXmlContent(pItem, CParagraph, oReader)
+				else if (L"w:p" == sName)
+				{
+					pItem = new CParagraph(document, this);
+					pItem->fromXML(oReader); 
+				}
 				else if ( L"w:permEnd" == sName )
 					AssignPtrXmlContent(pItem, CPermEnd, oReader)
 				else if ( L"w:permStart" == sName )
@@ -600,7 +604,10 @@ namespace OOX
 				else if ( L"w:proofErr" == sName )
 					AssignPtrXmlContent(pItem, CProofErr, oReader)
 				else if ( L"w:r" == sName )
-					AssignPtrXmlContent(pItem, CRun, oReader)
+				{
+					pItem = new CRun(document, this);
+					pItem->fromXML(oReader);
+				}
 				else if ( L"w:sdt" == sName )
 					AssignPtrXmlContent(pItem, CSdt, oReader)
 				else if ( L"w:smartTag" == sName )

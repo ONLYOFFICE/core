@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,8 +44,9 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMI;
+		_CP_OPT(std::wstring)		text_;
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 		virtual void add_child_element(const office_element_ptr & child_element);
@@ -57,7 +58,6 @@ namespace cpdoccore {
 		odf_types::common_math_style_attlist	common_attlist_;
    
 		office_element_ptr_array    content_;
-		_CP_OPT(std::wstring)		text_;
 	};
 
 	CP_REGISTER_OFFICE_ELEMENT2(math_mi);
@@ -68,13 +68,14 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMO;
 
 		_CP_OPT(Bool)				accent_;
 		_CP_OPT(Bool)				fence_;
 		_CP_OPT(std::wstring)		form_;
 		_CP_OPT(Bool)				stretchy_;
+		_CP_OPT(std::wstring)		text_;
 	private:
 		virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 		virtual void add_child_element(const office_element_ptr & child_element);
@@ -86,7 +87,6 @@ namespace cpdoccore {
 		odf_types::common_math_style_attlist	common_attlist_;
 
 		office_element_ptr_array    content_;
-		_CP_OPT(std::wstring)		text_;
 	};
 
 	CP_REGISTER_OFFICE_ELEMENT2(math_mo);
@@ -97,7 +97,8 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		_CP_OPT(std::wstring)		text_;
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMN;
 
 	
@@ -112,7 +113,6 @@ namespace cpdoccore {
 		odf_types::common_math_style_attlist	common_attlist_;
 
 		office_element_ptr_array    content_;
-		_CP_OPT(std::wstring)		text_;
 	};
 
 	CP_REGISTER_OFFICE_ELEMENT2(math_mn);
@@ -123,8 +123,9 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMText;
+		_CP_OPT(std::wstring)		text_;
 
 
 	private:
@@ -138,7 +139,6 @@ namespace cpdoccore {
 		odf_types::common_math_style_attlist	common_attlist_;
 
 		office_element_ptr_array    content_;
-		_CP_OPT(std::wstring)		text_;
 	};
 
 	CP_REGISTER_OFFICE_ELEMENT2(math_mtext);
@@ -149,7 +149,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMSpace;
 
 
@@ -173,7 +173,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMS;
 
 
@@ -197,7 +197,7 @@ namespace cpdoccore {
 	public:
 		static const wchar_t * ns;
 		static const wchar_t * name;
-	
+		static const xml::NodeType xml_type = xml::typeElement;
 		static const ElementType type = typeMGlyph;
 
 

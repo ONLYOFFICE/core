@@ -30,6 +30,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormatLib", "..\..\..\OOXML\Projects\Windows\PPTXFormatLib\PPTXFormat.vcxproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BinaryFormatLib", "..\..\..\OOXML\Projects\Windows\BinaryFormatLib\BinaryFormatLib.vcxproj", "{CD359215-E183-4EA7-B986-42868B10D8B8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+		{36636678-AE25-4BE6-9A34-2561D1BCF302} = {36636678-AE25-4BE6-9A34-2561D1BCF302}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsXlsxConverter", "..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsXlsxConverter.vcxproj", "{CBEDD0D1-10A8-45C1-AF81-8492F40964CA}"
 EndProject
@@ -46,9 +50,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oox2OdfConverter", "..\..\..\OdfFile\Projects\Windows\Oox2OdfConverter.vcxproj", "{BEE01B53-244A-44E6-8947-ED9342D9247E}"
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64

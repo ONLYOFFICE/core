@@ -267,6 +267,7 @@ core_ios {
         QMAKE_CFLAGS += -fembed-bitcode
         QMAKE_CXXFLAGS += -fembed-bitcode
         QMAKE_LFLAGS += -fembed-bitcode
+        QMAKE_CXXFLAGS += -fobjc-arc
 
         bundle_xcframeworks {
             xcframework_platform_ios_simulator {
@@ -360,12 +361,8 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 # COMPILER
 CONFIG += c++11
 
-greaterThan(QT_MAJOR_VERSION, 5) {
-    !core_windows {
-        QMAKE_CXXFLAGS += -Wno-register
-        QMAKE_CFLAGS += -Wno-register
-    }
-}
+QMAKE_CXXFLAGS += -Wno-register
+QMAKE_CFLAGS += -Wno-register
 
 core_linux {
 core_static_link_libstd {

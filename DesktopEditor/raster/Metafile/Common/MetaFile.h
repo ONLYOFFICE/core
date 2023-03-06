@@ -102,7 +102,9 @@ namespace MetaFile
 			this->Close();
 
 			NSFile::CFileBinary oFile;
-			oFile.OpenFile(wsFilePath);
+			if (!oFile.OpenFile(wsFilePath))
+				return false;
+
 			int lFileSize = oFile.GetFileSize();
 
 			m_bIsExternalBuffer = false;

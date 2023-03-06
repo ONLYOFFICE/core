@@ -182,6 +182,13 @@ namespace PdfWriter
 
 		return (!!GetGID(m_pFace, unUnicode));
 	}
+	unsigned int CFontCidTrueType::GetChar(const unsigned int &unUnicode)
+	{
+		if (!OpenFontFace())
+			return 0;
+
+		return GetGID(m_pFace, unUnicode);
+	}
 	unsigned int   CFontCidTrueType::GetWidth(unsigned short ushCode)
 	{
 		if (ushCode >= m_vWidths.size())

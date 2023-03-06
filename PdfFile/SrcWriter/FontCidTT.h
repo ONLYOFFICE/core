@@ -105,6 +105,7 @@ namespace PdfWriter
 		unsigned short EncodeGID(const unsigned int& unGID, const unsigned int* pUnicodes, const unsigned int& unCount);
 
 		bool           HaveChar(const unsigned int& unUnicode);
+		unsigned int   GetChar(const unsigned int& unUnicode);
 		unsigned int   GetWidth(unsigned short ushCode);
 		unsigned int   GetGlyphWidth(unsigned short ushCode);
 		bool           IsItalic();

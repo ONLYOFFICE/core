@@ -396,7 +396,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
         return false;
     // Создание writer для редактирования
     RELEASEOBJECT(m_pInternal->pWriter);
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts);
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
     if (!wsDstFile.empty())
         NSFile::CFileBinary::Copy(m_pInternal->wsSrcFile, wsDstFile);
 
@@ -816,7 +816,7 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
 void CPdfFile::CreatePdf(bool isPDFA)
 {
     RELEASEOBJECT(m_pInternal->pWriter);
-    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA);
+    m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {

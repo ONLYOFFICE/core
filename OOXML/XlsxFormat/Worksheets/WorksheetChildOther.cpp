@@ -2415,7 +2415,7 @@ namespace OOX
 			{
 				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-				if (L"userProtectedRanges" == sName)
+				if (L"userProtectedRange" == sName)
 				{
 					CUserProtectedRange *newItem = new CUserProtectedRange();
 					newItem->fromXML(oReader);

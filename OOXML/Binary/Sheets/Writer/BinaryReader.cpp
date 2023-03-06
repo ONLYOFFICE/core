@@ -6403,7 +6403,7 @@ int BinaryWorksheetsTableReader::ReadUserProtectedRanges(BYTE type, long length,
 	if (c_oSer_UserProtectedRange::UserProtectedRange == type)
 	{
 		OOX::Spreadsheet::CUserProtectedRange* pUserProtectedRange = new OOX::Spreadsheet::CUserProtectedRange();
-		READ1_DEF(length, res, this->ReadUserProtectedRange, pUserProtectedRange);
+		READ2_DEF_SPREADSHEET(length, res, this->ReadUserProtectedRange, pUserProtectedRange);
 		pUserProtectedRanges->m_arrItems.push_back(pUserProtectedRange);
 	}
 	else

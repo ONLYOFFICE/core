@@ -2,6 +2,7 @@
 #include "../../../BgraFrame.h"
 
 #include <algorithm>
+#include <numeric>
 #include <cmath>
 
 #ifndef MININT32
@@ -311,13 +312,19 @@ namespace MetaFile
 
 		if (ulTextAlign == TA_RIGHT)
 		{
-			arNodeAttributes.push_back({L"text-anchor", L"end"});
+			if (arDx.empty())
+				arNodeAttributes.push_back({L"text-anchor", L"end"});
+			else
+				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0);
 		}
 		else if (ulTextAlign == TA_CENTER)
 		{
-			arNodeAttributes.push_back({L"text-anchor", L"middle"});
+			if (arDx.empty())
+				arNodeAttributes.push_back({L"text-anchor", L"middle"});
+			else
+				dXCoord -= std::accumulate(arDx.begin(), arDx.end(), 0) / 2;
 		}
-		else //if (ulTextAlign & TA_LEFT)
+		else  //if (ulTextAlign & TA_LEFT)
 		{
 			// Ничего не делаем
 		}
@@ -343,14 +350,10 @@ namespace MetaFile
 
 		AddTransform(arNodeAttributes, &oTransform);
 
-		arNodeAttributes.push_back({L"xml:space", L"preserve"});
+		if (!bWriteG)
+			AddClip(arNodeAttributes);
 
-		if (!m_oClip.m_wsId.empty() && !bWriteG)
-		{
-			NodeAttributes arGAttributes;
-			AddClip(arGAttributes);
-			WriteNodeBegin(L"g", arGAttributes);
-		}
+		arNodeAttributes.push_back({L"xml:space", L"preserve"});
 
 		size_t unPosLineBreak = wsText.find(L"\n");
 
@@ -400,7 +403,7 @@ namespace MetaFile
 			WriteNodeEnd(L"text");
 		}
 
-		if (bWriteG || !m_oClip.m_wsId.empty())
+		if (bWriteG)
 			m_oXmlWriter.WriteNodeEnd(L"g");
 	}
 

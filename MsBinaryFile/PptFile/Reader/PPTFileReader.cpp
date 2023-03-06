@@ -171,14 +171,21 @@ XLS::CFStreamPtr CPPTFileReader::GetStreamByName(const std::wstring & name)
 
 	if (m_bDualStorage)	stream_name = std::wstring(PP97_DUALSTORAGE) + std::wstring(L"/");
 
-	POLE::Stream *pStream = new POLE::Stream(m_pStorage, stream_name + name);
-
-	if (pStream->fail())
+	try
 	{
-		RELEASEOBJECT(pStream);
+		POLE::Stream *pStream = new POLE::Stream(m_pStorage, stream_name + name);
+
+		if (pStream->fail())
+		{
+			RELEASEOBJECT(pStream);
+			return XLS::CFStreamPtr();
+		}
+		return XLS::CFStreamPtr(new XLS::CFStream(pStream));
+	}
+	catch (...)
+	{
 		return XLS::CFStreamPtr();
 	}
-	return XLS::CFStreamPtr( new XLS::CFStream(pStream));
 }
 XLS::CFStreamPtr CPPTFileReader::GetEncryptedSummaryStream()
 { 

@@ -345,6 +345,11 @@ namespace MetaFile
 			if (m_pParser->GetTransform()->M22 < 0)
 				dEscapement = -dEscapement;
 
+			double dSin = std::sin(dEscapement * M_PI / 180.);
+
+			dXCoord -= dFontHeight * dSin;
+			dYCoord -= dFontHeight * dSin;
+
 			arNodeAttributes.push_back({L"transform", L"rotate(" + ConvertToWString(dEscapement) + L' ' + ConvertToWString(dXCoord) + L' ' + ConvertToWString(dYCoord) + L')'});
 		}
 

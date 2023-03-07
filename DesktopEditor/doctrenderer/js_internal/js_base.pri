@@ -81,6 +81,3 @@ use_javascript_core {
     DEFINES += JS_ENGINE_JAVASCRIPTCORE
 
 }
-
-# cout logs
-DEFINES += LOG_TO_COUT

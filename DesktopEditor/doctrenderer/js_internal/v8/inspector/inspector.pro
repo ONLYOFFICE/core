@@ -29,3 +29,6 @@ core_linux {
 }
 
 SOURCES += main.cpp
+
+# cout logs
+DEFINES += LOG_TO_COUT

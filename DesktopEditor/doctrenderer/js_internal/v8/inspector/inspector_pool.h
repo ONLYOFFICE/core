@@ -1,40 +1,45 @@
-#ifndef INSPECTORPOOL_H
-#define INSPECTORPOOL_H
+#ifndef INSPECTOR_POOL_H
+#define INSPECTOR_POOL_H
 
 #include <unordered_map>
 
 #include "inspector.h"
 
-class CInspectorPool
+namespace NSJSBase
 {
-	using storage_t = std::unordered_map<v8::Isolate*, CInspector>;
 
-	storage_t m_Inspectors;
+	class CInspectorPool
+	{
+		using storage_t = std::unordered_map<v8::Isolate*, CInspector>;
 
-	// add new inspector
-	CInspector& addInspector(v8::Isolate* pIsolate);
+		storage_t m_Inspectors;
 
-	// port for server
-	static uint16_t getPort();
-	// group id for V8 internals
-	static int getContextGroupId();
+		// add new inspector
+		CInspector& addInspector(v8::Isolate* pIsolate);
 
-	// private due to singleton pattern
-	CInspectorPool() = default;
-	~CInspectorPool() = default;
+		// port for server
+		static uint16_t getPort();
+		// group id for V8 internals
+		static int getContextGroupId();
 
-public:
-	CInspectorPool(const CInspectorPool&) = delete;
-	CInspectorPool(CInspectorPool&&) = delete;
-	CInspectorPool& operator=(const CInspectorPool&) = delete;
-	CInspectorPool& operator=(CInspectorPool&&) = delete;
+		// private due to singleton pattern
+		CInspectorPool() = default;
+		~CInspectorPool() = default;
 
-	// get instance
-	static CInspectorPool& get();
-	// get inspector by isolate
-	CInspector& getInspector(v8::Isolate* pIsolate);
-	// remove inspector from isolate
-	void disposeInspector(v8::Isolate* pIsolate);
-};
+	public:
+		CInspectorPool(const CInspectorPool&) = delete;
+		CInspectorPool(CInspectorPool&&) = delete;
+		CInspectorPool& operator=(const CInspectorPool&) = delete;
+		CInspectorPool& operator=(CInspectorPool&&) = delete;
 
-#endif // INSPECTORPOOL_H
+		// get instance
+		static CInspectorPool& get();
+		// get inspector by isolate
+		CInspector& getInspector(v8::Isolate* pIsolate);
+		// remove inspector from isolate
+		void disposeInspector(v8::Isolate* pIsolate);
+	};
+
+}
+
+#endif // INSPECTOR_POOL_H

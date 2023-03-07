@@ -2,111 +2,116 @@
 
 #include <iostream>
 
-CWebSocketServer::CWebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage)
-	: m_nPort(nPort)
-	, m_oEndpoint(net::ip::make_address("127.0.0.1"), m_nPort)
-	, m_oAcceptor(m_oIoContext)
-	, m_fOnMessage(std::move(fOnMessage))
+namespace NSJSBase
 {
-	init();
-}
 
-CWebSocketServer::~CWebSocketServer()
-{
-	m_oWs->close(beast::websocket::close_code::normal);
-	m_oAcceptor.close();
-}
-
-void CWebSocketServer::init()
-{
-	try
+	CWebSocketServer::CWebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage)
+		: m_nPort(nPort)
+		, m_oEndpoint(net::ip::make_address("127.0.0.1"), m_nPort)
+		, m_oAcceptor(m_oIoContext)
+		, m_fOnMessage(std::move(fOnMessage))
 	{
-		m_oAcceptor.open(m_oEndpoint.protocol());
-		m_oAcceptor.set_option(tcp::acceptor::reuse_address(true));
-		m_oAcceptor.bind(m_oEndpoint);
-		m_oAcceptor.listen(1);
+		init();
 	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "Error on init the server: " << e.what() << std::endl;
-	}
-}
 
-void CWebSocketServer::connect()
-{
-	try
+	CWebSocketServer::~CWebSocketServer()
 	{
-		printListeningMessage();
-
-		tcp::socket oSocket(m_oIoContext);
-		m_oAcceptor.accept(oSocket);
-		m_oWs.reset(new websocket::stream<tcp::socket>(std::move(oSocket)));
-
-		startListening();
+		m_oWs->close(beast::websocket::close_code::normal);
+		m_oAcceptor.close();
 	}
-	catch (const std::exception& e)
-	{
-		std::cerr << "Error on connecting to server: " << e.what() << std::endl;
-	}
-}
 
-void CWebSocketServer::sendMessage(const std::string& sMessage)
-{
-	try
+	void CWebSocketServer::init()
 	{
-		boost::beast::multi_buffer oBuffer;
-		boost::beast::ostream(oBuffer) << sMessage;
-
-		m_oWs->text(m_oWs->got_text());
-		m_oWs->write(oBuffer.data());
-	}
-	catch(beast::system_error const& se)
-	{
-		if (se.code() != websocket::error::closed)
-			std::cerr << "Error on message send: " << se.code().message() << std::endl;
-	}
-	catch(std::exception const& e)
-	{
-		std::cerr << "System error: " << e.what() << std::endl;
-	}
-}
-
-void CWebSocketServer::startListening()
-{
-	try
-	{
-		m_oWs->accept();
-		while (!isServerReady_)
+		try
 		{
-			waitFrontendMessage();
+			m_oAcceptor.open(m_oEndpoint.protocol());
+			m_oAcceptor.set_option(tcp::acceptor::reuse_address(true));
+			m_oAcceptor.bind(m_oEndpoint);
+			m_oAcceptor.listen(1);
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "Error on init the server: " << e.what() << std::endl;
 		}
 	}
-	catch(beast::system_error const& se)
+
+	void CWebSocketServer::connect()
 	{
-		if (se.code() != websocket::error::closed)
-			std::cerr << "Error on listening: " << se.code().message() << std::endl;
+		try
+		{
+			printListeningMessage();
+
+			tcp::socket oSocket(m_oIoContext);
+			m_oAcceptor.accept(oSocket);
+			m_oWs.reset(new websocket::stream<tcp::socket>(std::move(oSocket)));
+
+			startListening();
+		}
+		catch (const std::exception& e)
+		{
+			std::cerr << "Error on connecting to server: " << e.what() << std::endl;
+		}
 	}
-	catch(std::exception const& e)
+
+	void CWebSocketServer::sendMessage(const std::string& sMessage)
 	{
-		std::cerr << "System error: " << e.what() << std::endl;
+		try
+		{
+			boost::beast::multi_buffer oBuffer;
+			boost::beast::ostream(oBuffer) << sMessage;
+
+			m_oWs->text(m_oWs->got_text());
+			m_oWs->write(oBuffer.data());
+		}
+		catch(beast::system_error const& se)
+		{
+			if (se.code() != websocket::error::closed)
+				std::cerr << "Error on message send: " << se.code().message() << std::endl;
+		}
+		catch(std::exception const& e)
+		{
+			std::cerr << "System error: " << e.what() << std::endl;
+		}
 	}
-}
 
-void CWebSocketServer::printListeningMessage()
-{
-	std::cout << "WebSocket based Inspector Agent started" << std::endl;
-	std::cout << "Open the following link in your Chrome/Chromium browser: devtools://devtools/bundled/inspector.html?ws=127.0.0.1:" <<  m_nPort << std::endl;
-}
+	void CWebSocketServer::startListening()
+	{
+		try
+		{
+			m_oWs->accept();
+			while (!isServerReady_)
+			{
+				waitFrontendMessage();
+			}
+		}
+		catch(beast::system_error const& se)
+		{
+			if (se.code() != websocket::error::closed)
+				std::cerr << "Error on listening: " << se.code().message() << std::endl;
+		}
+		catch(std::exception const& e)
+		{
+			std::cerr << "System error: " << e.what() << std::endl;
+		}
+	}
 
-void CWebSocketServer::waitForFrontendMessageOnPause()
-{
-	waitFrontendMessage();
-}
+	void CWebSocketServer::printListeningMessage()
+	{
+		std::cout << "WebSocket based Inspector Agent started" << std::endl;
+		std::cout << "Open the following link in your Chrome/Chromium browser: devtools://devtools/bundled/inspector.html?ws=127.0.0.1:" <<  m_nPort << std::endl;
+	}
 
-void CWebSocketServer::waitFrontendMessage()
-{
-	beast::flat_buffer oBuffer;
-	m_oWs->read(oBuffer);
-	std::string message = boost::beast::buffers_to_string(oBuffer.data());
-	m_fOnMessage(message);
+	void CWebSocketServer::waitForFrontendMessageOnPause()
+	{
+		waitFrontendMessage();
+	}
+
+	void CWebSocketServer::waitFrontendMessage()
+	{
+		beast::flat_buffer oBuffer;
+		m_oWs->read(oBuffer);
+		std::string message = boost::beast::buffers_to_string(oBuffer.data());
+		m_fOnMessage(message);
+	}
+
 }

@@ -1,23 +1,28 @@
-#ifndef V8INSPECTORCHANNELIMPL_H
-#define V8INSPECTORCHANNELIMPL_H
+#ifndef V8_INSPECTOR_CHANNEL_IMPL_H
+#define V8_INSPECTOR_CHANNEL_IMPL_H
 
 #include <functional>
 #include <v8.h>
 #include <v8-inspector.h>
 
-class CV8InspectorChannelImpl final: public v8_inspector::V8Inspector::Channel
+namespace NSJSBase
 {
-private:
-	v8::Isolate* m_pIsolate;
-	std::function<void(std::string)> m_fOnResponce;
 
-public:
-	CV8InspectorChannelImpl(v8::Isolate* pIsolate, const std::function<void(std::string)>& fOnResponse);
+	class CV8InspectorChannelImpl final: public v8_inspector::V8Inspector::Channel
+	{
+	private:
+		v8::Isolate* m_pIsolate;
+		std::function<void(std::string)> m_fOnResponce;
 
-	// overriden interface methods
-	void sendResponse(int nCallId, std::unique_ptr<v8_inspector::StringBuffer> pMessage) override;
-	void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> pMessage) override;
-	void flushProtocolNotifications() override;
-};
+	public:
+		CV8InspectorChannelImpl(v8::Isolate* pIsolate, const std::function<void(std::string)>& fOnResponse);
 
-#endif // V8INSPECTORCHANNELIMPL_H
+		// overriden interface methods
+		void sendResponse(int nCallId, std::unique_ptr<v8_inspector::StringBuffer> pMessage) override;
+		void sendNotification(std::unique_ptr<v8_inspector::StringBuffer> pMessage) override;
+		void flushProtocolNotifications() override;
+	};
+
+}
+
+#endif // V8_INSPECTOR_CHANNEL_IMPL_H

@@ -12,8 +12,7 @@ namespace MetaFile
 	struct TSvgConditional
 	{
 		IMetaFileBase *m_pParser = NULL;
-		std::wstring m_wsClipId;
-		std::wstring m_wsClip;
+		CSvgClip       m_oClip;
 	};
 
 	class CEmfInterpretatorSvg : public CEmfInterpretatorBase, public CInterpretatorSvgBase

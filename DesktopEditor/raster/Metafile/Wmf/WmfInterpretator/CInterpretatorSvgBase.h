@@ -46,6 +46,32 @@ namespace MetaFile
 		NSStringUtils::CStringBuilder m_oStringBuilder;
 	};
 
+	class CSvgClip
+	{
+	public:
+		CSvgClip();
+
+		void Reset();
+
+		void BeginClip();
+		void CloseClip();
+
+		bool StartClip() const;
+		bool EndClip()   const;
+		bool Empty()     const;
+
+		void AddClipValue(const std::wstring& wsId, const std::wstring& wsValue, int nClipMode = RGN_AND);
+
+		std::wstring GetClip()   const;
+		std::wstring GetClipId() const;
+	private:
+		typedef std::vector< std::tuple<std::wstring, std::wstring, int> > ClipValue;
+		ClipValue m_arValues;
+
+		bool m_bStartClip;
+		bool m_bEndClip;
+	};
+
 	class CInterpretatorSvgBase : public IOutputDevice
 	{
 	public:
@@ -74,7 +100,7 @@ namespace MetaFile
 		void AddStroke(NodeAttributes &arAttributes) const;
 		void AddFill(NodeAttributes &arAttributes, double dWidth = 0, double dHeight = 0);
 		void AddTransform(NodeAttributes &arAttributes, TXForm* pTransform = NULL) const;
-		void AddClip(NodeAttributes &arAttributes);
+		void AddClip();
 		void UpdateClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
@@ -91,18 +117,13 @@ namespace MetaFile
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;
 
-		struct
-		{
-			std::wstring m_wsId;
-			std::wstring m_wsValue;
-			unsigned int m_unPosition;
-		} m_oClip;
-
 		unsigned int         m_unNumberDefs;
 		std::wstring         m_wsDefs;
 
 		IMetaFileBase       *m_pParser;
 		XmlUtils::CXmlWriter m_oXmlWriter;
+
+		CSvgClip             m_oClip;
 
 		friend class CEmfInterpretatorSvg;
 		friend class CWmfInterpretatorSvg;

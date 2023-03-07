@@ -208,6 +208,8 @@ namespace MetaFile
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
 
+		AddClip();
+
 		NodeAttributes arNodeAttributes;
 
 		double dXCoord = oCoord.x;
@@ -228,10 +230,7 @@ namespace MetaFile
 		{
 			std::wstring wsFillRect = L"rgb(" + INTCOLOR_TO_RGB(m_pParser->GetTextBgColor()) + L')';
 
-			NodeAttributes arGAttributes;
-			AddClip(arGAttributes);
-
-			WriteNodeBegin(L"g", arGAttributes);
+			WriteNodeBegin(L"g", {});
 			bWriteG = true;
 
 			WriteNode(L"rect", {{L"x",      ConvertToWString(oBounds.nLeft)},
@@ -355,9 +354,6 @@ namespace MetaFile
 
 		AddTransform(arNodeAttributes, &oTransform);
 
-		if (!bWriteG)
-			AddClip(arNodeAttributes);
-
 		arNodeAttributes.push_back({L"xml:space", L"preserve"});
 
 		size_t unPosLineBreak = wsText.find(L"\n");
@@ -414,34 +410,38 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::ResetClip()
 	{
-		m_oClip.m_wsId.clear();
-		m_oClip.m_wsValue.clear();
-		m_oClip.m_unPosition = 0;
+		if (m_oClip.StartClip() && !m_oClip.EndClip())
+		{
+			WriteNodeEnd(L"g");
+			m_oClip.CloseClip();
+		}
+
+		m_oClip.Reset();
 	}
 
 	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
 	{
 		TXForm *pTransform = m_pParser->GetTransform();
 
-		m_oClip.m_wsId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+		ResetClip();
 
-		m_oClip.m_wsValue += L"<clipPath id=\"" + m_oClip.m_wsId + L"\">" +
-		                     L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>" +
-		                     L"</clipPath>";
+		const std::wstring wsId    = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>";
+
+		m_oClip.AddClipValue(wsId, wsValue);
 	}
 
 	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
 		TXForm *pTransform = m_pParser->GetTransform();
 
-		m_oClip.m_wsId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+		const std::wstring wsId    = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+		const std::wstring wsValue = L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
+		                             ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
+		                             ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
+		                             ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>";
 
-		m_oClip.m_wsValue += L"<clipPath id=\"" + m_oClip.m_wsId + L"\">" +
-		                     L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
-		                     ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
-		                     ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
-		                     ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>" +
-		                     L"</clipPath>";
+		m_oClip.AddClipValue(wsId, wsValue);
 	}
 
 	void CInterpretatorSvgBase::AddStroke(NodeAttributes &arAttributes) const
@@ -686,16 +686,21 @@ namespace MetaFile
 			arAttributes.push_back({L"transform", wsValue});
 	}
 
-	void CInterpretatorSvgBase::AddClip(NodeAttributes &arAttributes)
+	void CInterpretatorSvgBase::AddClip()
 	{
 		if (NULL == m_pParser)
 			return;
 
-		if (m_oClip.m_wsId.empty())
+		if (!m_oClip.StartClip())
+		{
 			UpdateClip();
 
-		if (!m_oClip.m_wsId.empty())
-			arAttributes.push_back({L"clip-path", L"url(#" + m_oClip.m_wsId + L')'});
+			if (!m_oClip.Empty())
+			{
+				WriteNodeBegin(L"g", {{L"clip-path", L"url(#" + m_oClip.GetClipId() + L')'}});
+				m_oClip.BeginClip();
+			}
+		}
 	}
 
 	void CInterpretatorSvgBase::UpdateClip()
@@ -705,7 +710,7 @@ namespace MetaFile
 		if (NULL != pClip)
 		{
 			pClip->ClipOnRenderer((CInterpretatorSvgBase*)this);
-			m_wsDefs += m_oClip.m_wsValue;
+			m_wsDefs += m_oClip.GetClip();
 		}
 		else
 			ResetClip();
@@ -1537,4 +1542,120 @@ namespace MetaFile
 	{
 		m_oStringBuilder.WriteNodeEnd(L"pattern");
 	}
+
+	CSvgClip::CSvgClip()
+	{}
+
+	void CSvgClip::Reset()
+	{
+		if (StartClip() && !EndClip())
+			CloseClip();
+
+		m_bStartClip = false;
+		m_bEndClip   = false;
+		m_arValues.clear();
+	}
+
+	void CSvgClip::BeginClip()
+	{
+		m_bStartClip = true;
+	}
+
+	void CSvgClip::CloseClip()
+	{
+		m_bEndClip = true;
+	}
+
+	bool CSvgClip::StartClip() const
+	{
+		return m_bStartClip;
+	}
+
+	bool CSvgClip::EndClip() const
+	{
+		return m_bEndClip;
+	}
+
+	bool CSvgClip::Empty() const
+	{
+		return m_arValues.empty();
+	}
+
+	void CSvgClip::AddClipValue(const std::wstring &wsId, const std::wstring &wsValue, int nClipMode)
+	{
+		m_arValues.push_back(std::make_tuple(wsId, wsValue, nClipMode));
+	}
+
+	std::wstring CSvgClip::GetClip() const
+	{
+		if (m_arValues.empty())
+			return std::wstring();
+
+		std::wstring wsClip;
+
+		std::wstring wsId;
+
+		for (ClipValue::const_iterator oIter = m_arValues.begin(); oIter != m_arValues.end(); ++oIter)
+		{
+			wsId = std::get<0>(*oIter);
+
+			switch (std::get<2>(*oIter))
+			{
+			case RGN_AND:
+			{
+				size_t unPosition = wsClip.find(L">", wsClip.rfind(L"<clipPath"));
+
+				if (std::wstring::npos != unPosition)
+					wsClip.insert(unPosition, L" clip-path=\"url(#" + wsId + L")\"");
+
+				wsClip += L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+				break;
+			}
+			case RGN_OR:
+			{
+				if (wsClip.empty())
+					wsClip += L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+				else
+					wsClip.insert(wsClip.length() - 11, std::get<1>(*oIter));
+				break;
+			}
+			case RGN_XOR:
+			{
+				size_t unPosition = wsClip.find(L">", wsClip.rfind(L"<clipPath"));
+
+				if (std::wstring::npos != unPosition)
+					wsClip.insert(unPosition, L" clip-rule=\"evenodd\"");
+
+				if (wsClip.empty())
+					wsClip += L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+				else
+					wsClip.insert(wsClip.length() - 11, std::get<1>(*oIter));
+			}
+			case RGN_COPY:
+			{
+				wsClip = L"<clipPath id=\"" + wsId + L"\">" + std::get<1>(*oIter) + L"</clipPath>";
+				break;
+			}
+			}
+		}
+
+		return wsClip;
+	}
+
+	std::wstring CSvgClip::GetClipId() const
+	{
+		if (m_arValues.empty())
+			return std::wstring();
+
+		std::wstring wsId = std::get<0>(m_arValues.front());
+
+		for (ClipValue::const_iterator oIter = m_arValues.begin() + 1; oIter != m_arValues.end(); ++oIter)
+		{
+			if (RGN_COPY == std::get<2>(*oIter))
+				wsId = std::get<0>(*oIter);
+		}
+
+		return wsId;
+	}
+
 }

@@ -11,7 +11,7 @@
 class CInspector
 {
 private:
-	// pointer to CJSContext instance in which scripts/functions are executed
+	// pointer to V8 isolate in which scripts/functions are executed
 	v8::Isolate* m_pIsolate;
 	// server port
 	const int m_nPort;
@@ -27,7 +27,7 @@ private:
 public:
 	CInspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId);
 
-	void startAgent();
+	void startAgent(bool bIsBreakOnStart = true);
 };
 
 

@@ -1,68 +1,57 @@
 #include "inspector_pool.h"
 
-NSJSBase::v8_debug::internal::CInspectorPool::CInspectorPool() = default;
+#include "../v8_base.h"
 
-NSJSBase::v8_debug::internal::CInspectorPool::~CInspectorPool() = default;
-
-NSJSBase::v8_debug::internal::CInspectorImpl&
-NSJSBase::v8_debug::internal::CInspectorPool::addInspector(v8::Local<v8::Context> context
-                                                           , v8::Platform *platform
-                                                           , const std::string &contextName)
+CInspector& CInspectorPool::addInspector(v8::Isolate* pIsolate)
 {
-    std::pair<storage_t::iterator, bool> result = m_Inspectors.emplace(
-                std::piecewise_construct
-                , std::forward_as_tuple(context)
-                , std::forward_as_tuple(
-                    context
-                    , platform
-                    , getPort()
-                    , getContextGroupId()
-                    , contextName
-                    , m_bLog
-                    )
-                );
-    CInspectorImpl &inspector = result.first->second;
-    inspector.prepareServer();
-    return inspector;
+	std::pair<storage_t::iterator, bool> result = m_Inspectors.emplace(
+				std::piecewise_construct
+				, std::forward_as_tuple(pIsolate)
+				, std::forward_as_tuple(
+					pIsolate
+					, getPort()
+					, getContextGroupId()
+				)
+			);
+	CInspector& oInspector = result.first->second;
+	return oInspector;
 }
 
-uint16_t NSJSBase::v8_debug::internal::CInspectorPool::getPort()
+uint16_t CInspectorPool::getPort()
 {
-	static std::atomic<uint16_t> initialPort{8080};
-    return initialPort++;
+	static uint16_t nInitialPort{8080};
+	return nInitialPort++;
 }
 
-int NSJSBase::v8_debug::internal::CInspectorPool::getContextGroupId()
+int CInspectorPool::getContextGroupId()
 {
-    static std::atomic<int> initialId{1};
-    return initialId++;
+	static int nInitialId{1};
+	return nInitialId++;
 }
 
-NSJSBase::v8_debug::internal::CInspectorImpl&
-NSJSBase::v8_debug::internal::CInspectorPool::getInspector(v8::Local<v8::Context> context
-                                                           , v8::Platform *platform
-                                                           , const std::string &contextName)
+CInspector&
+CInspectorPool::getInspector(v8::Isolate* pIsolate)
 {
-    std::lock_guard<std::mutex> lock{m_Mutex};
-    storage_t::iterator iter = m_Inspectors.find(context);
-    if (m_Inspectors.end() == iter) {
-        return addInspector(context, platform, contextName);
-    }
-    return iter->second;
+	storage_t::iterator iter = m_Inspectors.find(pIsolate);
+	if (iter == m_Inspectors.end())
+	{
+		return addInspector(pIsolate);
+	}
+	return iter->second;
 }
 
-void NSJSBase::v8_debug::internal::CInspectorPool::disposeInspector(v8::Local<v8::Context> context)
+void CInspectorPool::disposeInspector(v8::Isolate* pIsolate)
 {
-    std::lock_guard<std::mutex> lock{m_Mutex};
-    storage_t::iterator iter = m_Inspectors.find(context);
-    if (m_Inspectors.end() != iter) {
-        m_Inspectors.erase(iter);
-    }
+	storage_t::iterator iter = m_Inspectors.find(pIsolate);
+	if (m_Inspectors.end() != iter)
+	{
+		m_Inspectors.erase(iter);
+	}
 }
 
-NSJSBase::v8_debug::internal::CInspectorPool&
-NSJSBase::v8_debug::internal::CInspectorPool::get()
+CInspectorPool&
+CInspectorPool::get()
 {
-    static CInspectorPool pool;
-    return pool;
+	static CInspectorPool oPool;
+	return oPool;
 }

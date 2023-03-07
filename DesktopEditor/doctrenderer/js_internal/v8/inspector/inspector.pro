@@ -16,8 +16,6 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 CONFIG += v8_use_inspector
 #CONFIG += v8_version_89
 include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base.pri)
-DEFINES -= V8_INSPECTOR
-DEFINES += V8_MY_INSPECTOR
 
 ############### destination path ###############
 DESTDIR = $$PWD/build
@@ -30,21 +28,4 @@ core_linux {
     LIBS += -ldl
 }
 
-SOURCES += \
-    inspector_pool.cpp \
-    main.cpp \
-    inspector.cpp \
-    utils.cpp \
-    v8_inspector_channel.cpp \
-    v8_inspector_client.cpp \
-    websocket_server.cpp
-
-HEADERS += \
-    inspector.h \
-    inspector_pool.h \
-    utils.h\
-    v8_inspector_channel.h \
-    v8_inspector_client.h \
-    websocket_server.h
-
-DEFINES += CURR_DIR=\\\"$$PWD_ROOT_DIR\\\"
+SOURCES += main.cpp

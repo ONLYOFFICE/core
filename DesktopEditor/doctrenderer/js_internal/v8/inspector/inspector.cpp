@@ -26,7 +26,6 @@ CInspector::CInspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId)
 
 void CInspector::onMessage(std::string& sMessage)
 {
-//	std::cout << "CDT message: " << message << std::endl;
 	v8::Local<v8::Object> oJsonObject = parseJson(m_pIsolate->GetCurrentContext(), sMessage);
 
 	if (!oJsonObject.IsEmpty())
@@ -55,13 +54,15 @@ void CInspector::onMessage(std::string& sMessage)
 
 void CInspector::sendMessage(const std::string& sMessage)
 {
-//	std::cout << "Message to frontend: " << message << std::endl;
 	m_pWebsocketServer->sendMessage(sMessage);
 }
 
-void CInspector::startAgent()
+void CInspector::startAgent(bool bIsBreakOnStart)
 {
-	m_pIspectorClient->schedulePauseOnNextStatement(convertToStringView("debugging"));
+	if (bIsBreakOnStart)
+	{
+		m_pIspectorClient->schedulePauseOnNextStatement(convertToStringView("debugging"));
+	}
 }
 
 bool CInspector::waitForFrontendMessage()

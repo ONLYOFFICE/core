@@ -33,23 +33,21 @@ SOURCES += $$PWD/js_logger.cpp
         V8_INSPECTOR_PATH = $$PWD/v8/inspector
 
         #inspector files
-        HEADERS += \
-            $$V8_INSPECTOR_PATH/channel.h \
-            $$V8_INSPECTOR_PATH/client.h \
-            $$V8_INSPECTOR_PATH/inspector_impl.h \
-            $$V8_INSPECTOR_PATH/singleconnectionserver.h \
-            $$V8_INSPECTOR_PATH/singlethreadutils.h \
-            $$V8_INSPECTOR_PATH/inspector_pool.h \
-            $$V8_INSPECTOR_PATH/inspector_interface.h
-
         SOURCES += \
-            $$V8_INSPECTOR_PATH/channel.cpp \
-            $$V8_INSPECTOR_PATH/client.cpp \
-            $$V8_INSPECTOR_PATH/inspector_impl.cpp \
-            $$V8_INSPECTOR_PATH/singleconnectionserver.cpp \
-            $$V8_INSPECTOR_PATH/singlethreadutils.cpp \
             $$V8_INSPECTOR_PATH/inspector_pool.cpp \
-            $$V8_INSPECTOR_PATH/inspector_interface.cpp
+            $$V8_INSPECTOR_PATH/inspector.cpp \
+            $$V8_INSPECTOR_PATH/utils.cpp \
+            $$V8_INSPECTOR_PATH/v8_inspector_channel.cpp \
+            $$V8_INSPECTOR_PATH/v8_inspector_client.cpp \
+            $$V8_INSPECTOR_PATH/websocket_server.cpp
+
+        HEADERS += \
+            $$V8_INSPECTOR_PATH/inspector.h \
+            $$V8_INSPECTOR_PATH/inspector_pool.h \
+            $$V8_INSPECTOR_PATH/utils.h\
+            $$V8_INSPECTOR_PATH/v8_inspector_channel.h \
+            $$V8_INSPECTOR_PATH/v8_inspector_client.h \
+            $$V8_INSPECTOR_PATH/websocket_server.h
 
 
         #to include inspector files

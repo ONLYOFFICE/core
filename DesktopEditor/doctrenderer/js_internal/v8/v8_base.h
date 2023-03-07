@@ -2,10 +2,7 @@
 #define _BUILD_NATIVE_CONTROL_V8_BASE_H_
 
 #ifdef V8_INSPECTOR
-#include "inspector/inspector_interface.h"
-#endif
-#ifdef V8_MY_INSPECTOR
-#include "my_inspector/inspector_pool.h"
+#include "inspector/inspector_pool.h"
 #endif
 
 #include <stack>
@@ -444,11 +441,7 @@ namespace NSJSBase
         virtual JSSmart<CJSValue> call_func(const char* name, const int argc = 0, JSSmart<CJSValue> argv[] = NULL)
         {
 #ifdef V8_INSPECTOR
-			v8_debug::before(V8ContextFirstArg CV8Worker::getInitializer().getPlatform(), "");
-#endif	
-
-#ifdef V8_MY_INSPECTOR
-		CInspectorPool::get().getInspector(V8IsolateOneArg).startAgent();
+		CInspectorPool::get().getInspector(V8IsolateOneArg).startAgent(false);
 #endif
 
             LOGGER_START

@@ -1,64 +1,40 @@
-#ifndef CINSPECTORPOOL_H
-#define CINSPECTORPOOL_H
+#ifndef INSPECTORPOOL_H
+#define INSPECTORPOOL_H
 
-#include "inspector_impl.h"//inspector itself
-#include <map>//to hold inspectors
-#include <mutex>//may be used in multithread environment
+#include <unordered_map>
 
-namespace NSJSBase {
-namespace v8_debug {
-namespace internal {
+#include "inspector.h"
 
 class CInspectorPool
 {
-    struct ContextLess
-    {
-        inline bool operator()(const v8::Local<v8::Context> &lhs, const v8::Local<v8::Context> &rhs) const {
-            if (lhs == rhs) {
-                return false;
-            }
-            return std::less<v8::Context*>{}(*lhs, *rhs);
-        }
-    };
-	using storage_t = std::map<v8::Local<v8::Context>, CInspectorImpl, ContextLess>;
+	using storage_t = std::unordered_map<v8::Isolate*, CInspector>;
 
-    std::mutex m_Mutex{};
-    storage_t m_Inspectors{};
+	storage_t m_Inspectors;
 
-	const bool m_bLog = false;
+	// add new inspector
+	CInspector& addInspector(v8::Isolate* pIsolate);
 
-    //добавить новый инспектор
-    CInspectorImpl& addInspector(v8::Local<v8::Context> context
-                                 , v8::Platform *platform
-                                 , const std::string &contextName);
+	// port for server
+	static uint16_t getPort();
+	// group id for V8 internals
+	static int getContextGroupId();
 
-    //порт для сервака, id для v8
-    static uint16_t getPort();
-    static int getContextGroupId();
-
-    //всё приватное, синглтон по классике
-    CInspectorPool();
-    ~CInspectorPool();
+	// private due to singleton pattern
+	CInspectorPool() = default;
+	~CInspectorPool() = default;
 
 public:
-    CInspectorPool(const CInspectorPool&) = delete;
-    CInspectorPool(CInspectorPool&&) = delete;
-    CInspectorPool& operator=(const CInspectorPool&) = delete;
-    CInspectorPool& operator=(CInspectorPool&&) = delete;
+	CInspectorPool(const CInspectorPool&) = delete;
+	CInspectorPool(CInspectorPool&&) = delete;
+	CInspectorPool& operator=(const CInspectorPool&) = delete;
+	CInspectorPool& operator=(CInspectorPool&&) = delete;
 
-    //инстанс пула
-    static CInspectorPool& get();
-
-    //достать инспектор для контекста
-    CInspectorImpl& getInspector(v8::Local<v8::Context> context
-                                 , v8::Platform *platform
-                                 , const std::string &contextName);
-    //удалить инспектор для контекста
-    void disposeInspector(v8::Local<v8::Context> context);
+	// get instance
+	static CInspectorPool& get();
+	// get inspector by isolate
+	CInspector& getInspector(v8::Isolate* pIsolate);
+	// remove inspector from isolate
+	void disposeInspector(v8::Isolate* pIsolate);
 };
 
-}//namespace internal
-}//namespace v8_debug
-}//namespace NSJSBase
-
-#endif // CINSPECTORPOOL_H
+#endif // INSPECTORPOOL_H

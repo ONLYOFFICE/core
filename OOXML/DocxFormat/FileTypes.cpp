@@ -376,7 +376,7 @@ namespace OOX
 												L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.glossary+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/glossaryDocument");
 
-		const FileType Unknow				(L"", L"", L"", L"");
+		const FileType Unknown				(L"", L"", L"", L"");
 
 	} // namespace FileTypes
 } // namespace OOX

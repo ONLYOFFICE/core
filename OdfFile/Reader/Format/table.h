@@ -647,6 +647,16 @@ public:
 	//_CP_OPT(bool)	format_cells;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
+//----------------------------------------------------------
+class loext_table_protection : public table_table_protection
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableTableProtection;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_table_protection);
 //--------------------------------------------------------------------------------------------
 class table_table : public office_element_impl<table_table>
 {

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- 
-XML Security Library example: Original XML doc file for sign2 example. 
--->
-<Envelope xmlns="urn:envelope">
-  <Data>
-	Hello, World!
-  </Data>
-</Envelope>

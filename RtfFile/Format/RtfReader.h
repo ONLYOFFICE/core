@@ -65,7 +65,9 @@ public:
     RtfLex              m_oLex;
     int                 m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
     int                 m_nDefFont;
-    std::wstring		m_sTempFolder;
+	int					m_nDefLang;
+	int					m_nDefLangAsian;
+	std::wstring		m_sTempFolder;
 
 	RtfReader(RtfDocument& oDocument, std::wstring sFilename );
 	~RtfReader();

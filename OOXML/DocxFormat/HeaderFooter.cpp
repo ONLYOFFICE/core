@@ -259,7 +259,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		else if ( et_w_ftr == m_eType )
 			return FileTypes::Footer;
 
-		return FileTypes::Unknow;
+		return FileTypes::Unknown;
 	}
 	const CPath CHdrFtr::DefaultDirectory() const
 	{

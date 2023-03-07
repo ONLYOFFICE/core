@@ -195,7 +195,7 @@ namespace OOX
 
 		extern const FileType GlossaryDocument;
 
-		extern const FileType Unknow;
+		extern const FileType Unknown;
 
 	} // namespace FileTypes
 } // namespace OOX

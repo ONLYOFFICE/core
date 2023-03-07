@@ -94,6 +94,21 @@ public:
 	virtual void serialize(std::wostream & strm);
 };
 CP_REGISTER_OFFICE_ELEMENT2(number_currency_style)
+//------------------------------------------------------------------------------------------------------
+class number_boolean_style : public office_element_impl<number_boolean_style>, number_style_base
+{
+public:
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
+	static const wchar_t * name;
+
+	static const ElementType type = typeNumberBooleanStyle;
+
+	virtual void serialize(std::wostream & strm);
+};
+CP_REGISTER_OFFICE_ELEMENT2(number_boolean_style)
 
 //------------------------------------------------------------------------------------------------------
 class number_text_style : public office_element_impl<number_text_style>, public number_style_base

@@ -35,6 +35,8 @@
 #include <iostream>
 #include "../../../../3dParty/socketio/socket.io-client-cpp/src/internal/sio_packet.h"
 #include "../../../../3dParty/socketio/socket.io-client-cpp/src/sio_client.h"
+#include <memory>
+#include "../../../../../DesktopEditor/graphics/BaseThread.h"
 
 namespace NSNetwork
 {
@@ -43,38 +45,56 @@ namespace NSNetwork
         class CIOWebSocket_private_tls : public CIOWebSocket_private
         {
         public:
-            sio::client m_socket;
+            std::shared_ptr<sio::client> m_socket;
+            // проблема закрытия сокета, пока он не приконнектился
+            bool m_connecting_in_process;
+            bool m_closing_in_progress;
 
         public:
             CIOWebSocket_private_tls(CIOWebSocket* base) : CIOWebSocket_private(base)
             {
+                m_connecting_in_process = false;
+                m_closing_in_progress = false;
                 m_base = base;
             }
             ~CIOWebSocket_private_tls()
             {
-                m_socket.close();
+                close();
             }
 
         public:
             void event_onConnected()
             {
-                m_base->listener->onOpen();
+                CTemporaryCS oCS(&m_oCS_Events);
+                m_connecting_in_process = false;
+
+                if (!m_closing_in_progress)
+                    m_base->listener->onOpen();
             }
             void event_onClose(sio::client::close_reason const& reason)
             {
-                m_base->listener->onClose(0, "");
+                CTemporaryCS oCS(&m_oCS_Events);
+                m_connecting_in_process = false;
+
+                if (!m_closing_in_progress)
+                    m_base->listener->onClose(0, "");
             }
             void event_onFail()
             {
-                m_base->listener->onError("");
+                CTemporaryCS oCS(&m_oCS_Events);
+                m_connecting_in_process = false;
+
+                if (!m_closing_in_progress)
+                    m_base->listener->onError("");
             }
 
         public:
             virtual void open(const std::map<std::string, std::string>& query) override
             {
-                m_socket.set_open_listener (std::bind(&CIOWebSocket_private_tls::event_onConnected, this));
-                m_socket.set_close_listener(std::bind(&CIOWebSocket_private_tls::event_onClose, this, std::placeholders::_1));
-                m_socket.set_fail_listener (std::bind(&CIOWebSocket_private_tls::event_onFail, this));
+                m_socket = std::make_shared<sio::client>();
+                m_socket->set_open_listener (std::bind(&CIOWebSocket_private_tls::event_onConnected, this));
+                m_socket->set_close_listener(std::bind(&CIOWebSocket_private_tls::event_onClose, this, std::placeholders::_1));
+                m_socket->set_fail_listener (std::bind(&CIOWebSocket_private_tls::event_onFail, this));
 
                 sio::message::ptr objAuth = sio::object_message::create();
                 //std::string sAuth;
@@ -89,10 +109,14 @@ namespace NSNetwork
                 }
 
                 //webSocket.connect(url, queryDst, sio::string_message::create(sAuth));
-                m_socket.connect(m_base->url, queryDst, objAuth);
+                m_connecting_in_process = true;
+                m_socket->connect(m_base->url, queryDst, objAuth);
 
-                m_socket.socket()->on("message", [&](sio::event& event){
-                    CTemporaryCS oCS(&m_oCS);
+                m_socket->socket()->on("message", [&](sio::event& event){
+                    CTemporaryCS oCS(&m_oCS_Events);
+                    if (m_closing_in_progress)
+                        return;
+
                     const sio::message::ptr& message = event.get_message();
                     if (!message)
                         return;
@@ -184,19 +208,27 @@ namespace NSNetwork
                     manager.put_payload("42" + message_str);
                     manager.reset();
 
-                    m_socket.socket()->emit("message", message);
+                    m_socket->socket()->emit("message", message);
                 }
                 else
                 {
-                    m_socket.socket()->emit("message", sio::string_message::create(message_str));
+                    m_socket->socket()->emit("message", sio::string_message::create(message_str));
                 }
             }
 
             virtual void close() override
             {
-                //CTemporaryCS (&m_internal->m_oCS);
-                m_socket.socket()->off_all();
-                m_socket.sync_close();
+                CTemporaryCS oCS(&m_oCS);
+
+                m_oCS_Events.Enter();
+                m_closing_in_progress = true;
+                m_oCS_Events.Leave();
+
+                // https://github.com/socketio/socket.io-client-cpp/issues/254
+                while (m_connecting_in_process)
+                    NSThreads::Sleep(50);
+
+                m_socket.reset();
             }
         };
     }

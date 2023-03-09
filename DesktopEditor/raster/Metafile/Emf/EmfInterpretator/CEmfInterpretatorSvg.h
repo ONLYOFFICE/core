@@ -131,7 +131,7 @@ namespace MetaFile
 		void HANDLE_EMFPLUS_COMMENT(CDataStream& oStream, unsigned int unSize) override {};
 
 		// 2.3.3 Control Record Types
-		void HANDLE_EMFPLUS_ENDOFFILE() override {};
+		void HANDLE_EMFPLUS_ENDOFFILE() override;
 		void HANDLE_EMFPLUS_GETDC() override {};
 		void HANDLE_EMFPLUS_HEADER(unsigned int unEmfPlusFlags, unsigned int m_unLogicalDpiX, unsigned int m_unLogicalDpiY) override {};
 

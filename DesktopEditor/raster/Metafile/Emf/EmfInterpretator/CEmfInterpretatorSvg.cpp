@@ -1033,6 +1033,11 @@ namespace MetaFile
 		CInterpretatorSvgBase::ResetClip();
 	}
 
+	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_ENDOFFILE()
+	{
+		CInterpretatorSvgBase::ResetClip();
+	}
+
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_CLEAR(const TEmfPlusARGB &oARGB)
 	{
 

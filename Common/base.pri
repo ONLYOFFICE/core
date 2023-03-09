@@ -361,8 +361,10 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 # COMPILER
 CONFIG += c++11
 
-QMAKE_CXXFLAGS += -Wno-register
-QMAKE_CFLAGS += -Wno-register
+!core_windows {
+    QMAKE_CXXFLAGS += -Wno-register
+	QMAKE_CFLAGS += -Wno-register
+}
 
 core_linux {
 core_static_link_libstd {

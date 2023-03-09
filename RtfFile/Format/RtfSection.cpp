@@ -57,8 +57,10 @@ void RtfDocumentProperty::SetDefault()
 {
 	m_eCodePage					= cp_ansi;
 	m_nTabWidth					= 720; //todo -1
-	m_nDeffFont					= PROP_DEF;
-	m_nDeffMathFont				= PROP_DEF;
+	m_nDefFont					= PROP_DEF;
+	m_nDefMathFont				= PROP_DEF;
+	m_nDefLang					= PROP_DEF;
+	m_nDefLangAsian				= PROP_DEF;
 	m_bHypCaps					= PROP_DEF;
 	m_bAutoHyp					= PROP_DEF;
 	m_nMaxHypen					= PROP_DEF;

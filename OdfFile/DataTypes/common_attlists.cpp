@@ -774,7 +774,7 @@ void common_shape_draw_attlist::apply_from(const common_shape_draw_attlist & Oth
 void common_shape_draw_attlist::serialize(CP_ATTR_NODE)
 {
 	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:name", draw_name_);
-    CP_XML_ATTR_OPT(L"draw:style-name",		draw_style_name_);
+	CP_XML_ATTR_OPT_ENCODE_STRING(L"draw:style-name", draw_style_name_);
     CP_XML_ATTR_OPT(L"draw:class-names",	draw_class_names_);
     CP_XML_ATTR_OPT(L"draw:id",				draw_id_);
     CP_XML_ATTR_OPT(L"draw:z-index",		draw_z_index_);

@@ -47,7 +47,7 @@ using namespace CFCPP;
 CompoundFile::CompoundFile() : _impl(new CFCPP::CompoundFile_impl())
 {
 }
-CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters) :
+CompoundFile::CompoundFile(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters) :
     _impl(new CFCPP::CompoundFile_impl(fileName, updateMode, configParameters))
 {
 }
@@ -115,7 +115,7 @@ CompoundFile_impl::CompoundFile_impl() :
     CompoundFile_impl(CFSVersion::Ver_3, CFSConfiguration::Default)
 {}
 
-CompoundFile_impl::CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
+CompoundFile_impl::CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters)
 {
     configuration = configParameters;
     isValidationExceptionEnabled = !(configParameters & CFSConfiguration::NoValidationException);
@@ -1796,7 +1796,6 @@ _INT32 CompoundFile_impl::GetSectorSize()
 {
     return 2 << (header->sectorShift - 1);
 }
-
 void CompoundFile_impl::Dispose(bool disposing)
 {
     try

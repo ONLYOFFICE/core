@@ -102,7 +102,7 @@ void table_database_range::xlsx_convert(oox::xlsx_conversion_context & Context)
 		pFind->second++;
 	}	
 	
-	if (Context.get_table_context().start_database_range(name, *table_target_range_address_))
+	if (Context.get_table_context().start_database_range(name, *table_target_range_address_, content_.empty()))
 	{	
 		if (table_display_filter_buttons_)
 			Context.get_table_context().set_database_filter(table_display_filter_buttons_->get());

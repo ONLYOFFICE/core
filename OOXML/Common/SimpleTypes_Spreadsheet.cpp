@@ -141,8 +141,8 @@ namespace SimpleTypes
 		EHtmlFormat CHtmlFormat::FromString(const std::wstring &sValue)
 		{
 			if      ( L"none"		== sValue )	this->m_eValue = htmlNone;
-			else if ( L"veryHidden" == sValue )	this->m_eValue = htmlRtf;
-			else if ( L"visible"	== sValue ) this->m_eValue = htmlAll;
+			else if ( L"rtf" == sValue )	this->m_eValue = htmlRtf;
+			else if ( L"all"	== sValue ) this->m_eValue = htmlAll;
 			else this->m_eValue = htmlNone;
 
 			return this->m_eValue;

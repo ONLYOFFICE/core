@@ -1008,7 +1008,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				{
 					oCurFont.m_nID = oParam.oRtf->m_oFontTable.GetCount() + 1;
 					oCurFont.m_sName = sFont;
-					oParam.oRtf->m_oFontTable.DirectAddItem( oCurFont );
+					oParam.oRtf->m_oFontTable.AddFont( oCurFont );
 				}
 				RtfFieldPtr oNewField ( new RtfField() );
 				

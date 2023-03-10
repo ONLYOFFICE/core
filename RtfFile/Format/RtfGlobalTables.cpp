@@ -32,10 +32,9 @@
 #include "RtfGlobalTables.h"
 #include "RtfDocument.h"
 
-int RtfFontTable::DirectAddItem( RtfFont piRend)
+void RtfFontTable::AddFont( RtfFont piRend)
 {
 	m_aArray.push_back(piRend);
-	return (int)m_aArray.size() - 1;
 }
 bool RtfFontTable::GetFont( int nId, RtfFont& oFont)
 {
@@ -43,6 +42,7 @@ bool RtfFontTable::GetFont( int nId, RtfFont& oFont)
 	{
 		if( nId == m_aArray[i].m_nID )
 		{
+			m_aArray[i].m_bUsed = true;
 			oFont =  m_aArray[i];
 			return true;
 		}
@@ -55,6 +55,7 @@ bool RtfFontTable::GetFont( std::wstring sName, RtfFont& oFont )
 	{
 		if( sName == m_aArray[i].m_sName )
 		{
+			m_aArray[i].m_bUsed = true;
 			oFont =  m_aArray[i];
 			return true;
 		}
@@ -66,8 +67,11 @@ std::wstring RtfFontTable::RenderToOOX(RenderParameter oRenderParameter)
 	std::wstring sResult;
 	if( !m_aArray.empty())
 	{
-		for (size_t i = 0; i < m_aArray.size(); i++ )
-			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+		for (size_t i = 0; i < m_aArray.size(); i++)
+		{
+			if (m_aArray[i].m_bUsed)
+				sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+		}
 
 	}
 	return sResult;
@@ -106,10 +110,9 @@ std::wstring RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 RtfColorTable::RtfColorTable()
 {
 }
-int RtfColorTable::DirectAddItem( RtfColor piRend)
+void RtfColorTable::AddColor( RtfColor piRend)
 {
 	m_aArray.push_back(piRend);
-	return (int)m_aArray.size() - 1;
 }
 int RtfColorTable::AddItem( RtfColor piRend)
 {

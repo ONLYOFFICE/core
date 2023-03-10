@@ -142,18 +142,13 @@ std::wstring RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 }
 std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 {
-	if( IsValid() == false) return L"";
+	if ( IsValid() == false) return L"";
 
     std::wstring sResult;
 	
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
     std::wstring sFontName = m_sName;
 
-    if ((sFontName.length() > 0 ) && (sFontName[0] == 0x00b9 || sFontName[0] > 0xff00) )//fondj.rtf
-	{
-        if (m_sAltName.length() > 0) sFontName = m_sAltName;
-        else sFontName.clear();
-	}
     if( sFontName.empty() )
 	{
 		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDefFont )

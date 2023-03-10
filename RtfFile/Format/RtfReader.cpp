@@ -280,7 +280,7 @@ std::wstring RtfAbstractReader::ExecuteTextInternal(RtfDocument& oDocument, RtfR
 }
 void RtfAbstractReader::ExecuteTextInternal2(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 {
-	if (oReader.m_oState->m_sCurText.length() > 0)
+	if (false == oReader.m_oState->m_sCurText.empty())
 	{
 		std::string str;
 		ExecuteTextInternalSkipChars(oReader.m_oState->m_sCurText, oReader, str, nSkipChars);
@@ -393,7 +393,14 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 			nCodepage = msLCID2DefCodePage(oDocument.m_nUserLCID);
 		}
 
-        sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
+		if (m_bUseGlobalCodepage && nCodepage == 0)
+		{
+			sResult = std::wstring(sCharString.begin(), sCharString.end());
+		}
+		else
+		{
+			sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
+		}
 
 		//if (!sCharString.empty() && sResult.empty())
 		//{

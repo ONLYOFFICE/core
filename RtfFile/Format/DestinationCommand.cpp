@@ -2345,7 +2345,7 @@ void RtfFieldReader::TryToPepairResult( RtfDocument& oDocument, RtfReader& oRead
 			oSymbolFont.m_nID = oDocument.m_oFontTable.GetCount() + 1;
 			oSymbolFont.m_nCodePage = CP_SYMBOL;
 			oReader.m_oState->m_oCharProp.m_nFont = oSymbolFont.m_nID;
-			oDocument.m_oFontTable.DirectAddItem( oSymbolFont );
+			oDocument.m_oFontTable.AddFont( oSymbolFont );
 		}
 
 		int nSkipChar = 0;
@@ -3298,7 +3298,7 @@ void RtfFontTableReader::ExecuteTextInternal2( RtfDocument& oDocument, RtfReader
 		oDocument.m_oProperty.m_nAnsiCodePage = m_oFont.m_nCodePage;
 	}
 
-	if (m_oFont.m_nCharset > 2 && oDocument.m_oProperty.m_nAnsiCodePage == 0)
+	if (m_oFont.m_nCharset != PROP_DEF && m_oFont.m_nCharset >= 0 && oDocument.m_oProperty.m_nAnsiCodePage == 0)
 	{
 		oDocument.m_oProperty.m_nAnsiCodePage = RtfUtility::CharsetToCodepage(m_oFont.m_nCharset);
 	}
@@ -3345,7 +3345,7 @@ void RtfFontTableReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader,
 			}
 
 			//todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
-			oDocument.m_oFontTable.DirectAddItem( m_oFont );
+			oDocument.m_oFontTable.AddFont( m_oFont );
 
 			m_oFont.SetDefaultRtf();
 		}
@@ -3414,7 +3414,7 @@ void RtfColorTableReader::ExecuteText( RtfDocument& oDocument, RtfReader& oReade
 	{
 		if( true == m_bIsSet )
 		{
-			oDocument.m_oColorTable.DirectAddItem( oCurColor );
+			oDocument.m_oColorTable.AddColor( oCurColor );
 		}
 		else
 		{
@@ -3422,7 +3422,7 @@ void RtfColorTableReader::ExecuteText( RtfDocument& oDocument, RtfReader& oReade
 			//{\colortbl\red0\blue159\green82;\red0\blue0\green0;\red255\blue255\green255;\red0\blue156\green90;\red169\blue86\green0;}
 			//{\colortbl;\red0\green0\blue0;\red0\green0\blue255;\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;
 			oCurColor.SetAuto();
-			oDocument.m_oColorTable.DirectAddItem( oCurColor );
+			oDocument.m_oColorTable.AddColor( oCurColor );
 		}
 		oCurColor.SetDefaultRtf();
 		m_bIsSet = false;

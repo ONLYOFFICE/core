@@ -36,7 +36,7 @@
 class RtfFontTable : public IDocumentElement, public ItemSingleContainer<RtfFont>
 {
 public:
-	int DirectAddItem( RtfFont piRend);
+	void AddFont( RtfFont piRend);
 
 	bool GetFont( int nId, RtfFont& oFont);
 	bool GetFont( std::wstring sName, RtfFont& oFont );
@@ -50,7 +50,7 @@ class RtfColorTable : public IDocumentElement, public ItemSingleContainer<RtfCol
 public: 
 	RtfColorTable();
 
-	int DirectAddItem( RtfColor piRend);
+	void AddColor( RtfColor piRend);
 	int AddItem( RtfColor piRend);
 
 	bool GetColor( int nId, RtfColor& oColor);

@@ -71,7 +71,9 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EOF()
 	{
-		m_oXmlWriter.WriteString(m_wsDefs);
+		ResetClip();
+		if (!m_wsDefs.empty())
+			m_oXmlWriter.WriteString(L"<defs>" + m_wsDefs + L"</defs>");
 		m_oXmlWriter.WriteNodeEnd(L"svg", false, false);
 	}
 
@@ -102,7 +104,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"path" , arAttributes);
 	}
@@ -128,7 +130,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"ellipse", arAttributes);
 	}
@@ -231,7 +233,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -257,7 +259,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"line", arAttributes);
 	}
@@ -278,7 +280,7 @@ namespace MetaFile
 
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -302,7 +304,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"path", arAttributes);
 	}
@@ -322,7 +324,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"polyline", arAttributes);
 	}
@@ -342,7 +344,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"polygon", arAttributes);
 	}
@@ -369,7 +371,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		arAttributes.push_back({L"fill-rule", L"evenodd"});
 
@@ -393,7 +395,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -417,7 +419,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
 		AddTransform(arAttributes);
-		AddClip(arAttributes);
+		AddClip();
 
 		WriteNode(L"rect", arAttributes);
 	}
@@ -557,7 +559,7 @@ namespace MetaFile
 			                               {L"xlink:href", L"data:image/png;base64," + wsValue}};
 
 			AddTransform(arAttributes);
-			AddClip(arAttributes);
+			AddClip();
 
 			WriteNode(L"image", arAttributes);
 		}

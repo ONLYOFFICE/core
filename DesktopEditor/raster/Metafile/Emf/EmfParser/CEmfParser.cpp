@@ -131,9 +131,10 @@ namespace MetaFile
 			case EMR_SMALLTEXTOUT:      Read_EMR_SMALLTEXTOUT(); break;
 			case EMR_STROKEANDFILLPATH: Read_EMR_STROKEANDFILLPATH(); break;
 			case EMR_STROKEPATH:        Read_EMR_STROKEPATH(); break;
-			case EMR_PAINTRGN:			Read_EMR_PAINTRGN(); break;
+			case EMR_PAINTRGN:          Read_EMR_PAINTRGN(); break;
 			case EMR_FILLRGN:           Read_EMR_FILLRGN(); break;
 			case EMR_FRAMERGN:          Read_EMR_FRAMERGN(); break;
+			case EMR_GRADIENTFILL:      Read_EMR_GRADIENTFILL(); break;
 				//-----------------------------------------------------------
 				// 2.3.7 Object Creation
 				//-----------------------------------------------------------
@@ -1428,6 +1429,39 @@ namespace MetaFile
 
 		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
 			HANDLE_EMR_STROKEPATH(oBounds);
+	}
+
+	void CEmfParser::Read_EMR_GRADIENTFILL()
+	{
+		TEmfRectL oBounds;
+		unsigned int unVer, unTri, unMode;
+
+		m_oStream >> oBounds;
+		m_oStream >> unVer;
+		m_oStream >> unTri;
+		m_oStream >> unMode;
+
+		if (3 > unVer || 4 < unVer || 0 == unTri)
+			return;
+
+		std::vector<TTriVertex> arVertex(unVer);
+
+		for (TTriVertex& oVertexObject : arVertex)
+			m_oStream >> oVertexObject;
+
+		std::vector<std::pair<int, int>> arVertexIndexes(unTri);
+
+		for (std::pair<int, int>& oIndexes : arVertexIndexes)
+		{
+			m_oStream >> oIndexes.first;
+			m_oStream >> oIndexes.second;
+		}
+
+		if (4 == unVer)
+			m_oStream.Skip(unTri * 4);
+
+		if (NULL == m_pEmfPlusParser || !m_pEmfPlusParser->GetBanEMFProcesses())
+			HANDLE_EMR_GRADIENTFILL(arVertex, arVertexIndexes, unMode);
 	}
 
 	void CEmfParser::Read_EMR_COMMENT()

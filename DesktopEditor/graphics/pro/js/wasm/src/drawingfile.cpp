@@ -431,35 +431,36 @@ int main(int argc, char* argv[])
 				std::cout << "DS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 				i += nPathLength;
 			}
-			int nBorderType = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "Border type " << nBorderType << " ";
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "width " << (double)nPathLength / 100.0 << ", ";
-			if (nBorderType == 1)
-			{
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
-				nPathLength = READ_INT(pWidgets + i);
-				i += 4;
-				std::cout << (double)nPathLength / 100.0 << ", ";
-			}
 			if (nFlags & (1 << 2))
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "BE C " << (double)nPathLength / 100.0 << ", ";
 			}
-			else
-				std::cout << "BE S, ";
 			if (nFlags & (1 << 3))
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
 				std::cout << "H " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 				i += nPathLength;
+			}
+			if (nFlags & (1 << 4))
+			{
+				int nBorderType = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "Border type " << nBorderType << " ";
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "width " << (double)nPathLength / 100.0 << ", ";
+				if (nBorderType == 1)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Dash Pattern " << (double)nPathLength / 100.0 << " ";
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << (double)nPathLength / 100.0 << ", ";
+				}
 			}
 			if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 			{

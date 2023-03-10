@@ -419,22 +419,25 @@
 			// Строка стиля по умолчанию (в формате CSS2) - DS
 			if (flags & (1 << 1))
 				rec["defaultStyle"] = reader.readString();
-			// Границы - Border/BS
-			rec["borderStyle"] = reader.readInt();
-			rec["borderWidth"] = reader.readDouble();
-			// Dash Pattern границы
-			if (rec["borderStyle"] == 1)
-			{
-				rec["dashed"] = [];
-				rec["dashed"].push(reader.readDouble());
-				rec["dashed"].push(reader.readDouble());
-			}
 			// Эффекты границы - BE
 			if (flags & (1 << 2))
 				rec["borderCloudy"] = reader.readDouble();
 			// Режим выделения - H
 			if (flags & (1 << 3))
 				rec["highlight"] = reader.readString();
+			// Границы - Border/BS
+			if (flags & (1 << 4))
+			{
+				rec["borderStyle"] = reader.readInt();
+				rec["borderWidth"] = reader.readDouble();
+				// Dash Pattern границы
+				if (rec["borderStyle"] == 1)
+				{
+					rec["dashed"] = [];
+					rec["dashed"].push(reader.readDouble());
+					rec["dashed"].push(reader.readDouble());
+				}
+			}
 
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton" || rec["type"] == "button")
 			{

@@ -831,11 +831,30 @@ oObj.free();\
         // 2 - Строка стиля по умолчанию - DS
         DICT_LOOKUP_STRING(oField, "DS", 1);
 
-        // Границы и Dash Pattern - Border/BS
+        // 3 - Эффекты границы - BE
+        Object oBE, oBorderBE, oBorderBEI;
+        if (oField.dictLookup("BE", &oBE)->isDict() && oBE.dictLookup("S", &oBorderBE)->isName("C") && oBE.dictLookup("I", &oBorderBEI)->isNum())
+        {
+            nFlags |= (1 << 2);
+            oRes.AddDouble(oBorderBEI.getNum());
+        }
+        oBE.free(); oBorderBE.free(); oBorderBEI.free();
+
+        // 4 - Режим выделения - H
+        Object oHighlighting;
+        if (oField.dictLookup("H", &oHighlighting)->isName())
+        {
+            nFlags |= (1 << 3);
+            std::string sName(oHighlighting.getName());
+            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
+        }
+        oHighlighting.free();
+
+        // 5 - Границы и Dash Pattern - Border/BS
         Object oBorder;
-        AnnotBorderType nBorderType = annotBorderSolid;
+        unsigned int nBorderType = 5;
         double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
-        if (oField.dictLookup("BS", &oBorder) && oBorder.isDict())
+        if (oField.dictLookup("BS", &oBorder)->isDict())
         {
             Object oV;
             if (oBorder.dictLookup("S", &oV)->isName())
@@ -850,6 +869,8 @@ oObj.free();\
                     nBorderType = annotBorderInset;
                 else if (oV.isName("U"))
                     nBorderType = annotBorderUnderlined;
+                else
+                    nBorderType = annotBorderSolid;
             }
             oV.free();
             if (oBorder.dictLookup("W", &oV)->isNum())
@@ -872,21 +893,22 @@ oObj.free();\
         else
         {
             oBorder.free();
-            if (oField.dictLookup("Border", &oBorder) && oBorder.isArray() && oBorder.arrayGetLength() > 2)
+            if (oField.dictLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
             {
+                nBorderType = annotBorderSolid;
                 Object oV;
                 if (oBorder.arrayGet(2, &oV) && oV.isNum())
                     dBorderWidth = oV.getNum();
                 oV.free();
 
-                if (oBorder.arrayGetLength() > 3 && oBorder.arrayGet(3, &oV) && oV.isArray() && oV.arrayGetLength() > 1)
+                if (oBorder.arrayGetLength() > 3 && oBorder.arrayGet(3, &oV)->isArray() && oV.arrayGetLength() > 1)
                 {
                     nBorderType = annotBorderDashed;
                     Object oV1;
-                    if (oV.arrayGet(0, &oV1) && oV1.isNum())
+                    if (oV.arrayGet(0, &oV1)->isNum())
                         dDashesAlternating = oV1.getNum();
                     oV1.free();
-                    if (oV.arrayGet(1, &oV1) && oV1.isNum())
+                    if (oV.arrayGet(1, &oV1)->isNum())
                         dGaps = oV1.getNum();
                     oV1.free();
                 }
@@ -894,32 +916,17 @@ oObj.free();\
             }
         }
         oBorder.free();
-        oRes.AddInt(nBorderType);
-        oRes.AddDouble(dBorderWidth);
-        if (nBorderType == annotBorderDashed)
+        if (nBorderType != 5)
         {
-            oRes.AddDouble(dDashesAlternating);
-            oRes.AddDouble(dGaps);
+            nFlags |= (1 << 4);
+            oRes.AddInt(nBorderType);
+            oRes.AddDouble(dBorderWidth);
+            if (nBorderType == annotBorderDashed)
+            {
+                oRes.AddDouble(dDashesAlternating);
+                oRes.AddDouble(dGaps);
+            }
         }
-
-        // 3 - Эффекты границы - BE
-        Object oBorderBE, oBorderBEI;
-        if (oField.dictLookup("BE", &oBorder) && oBorder.isDict() && oBorder.dictLookup("S", &oBorderBE)->isName("C") && oBorder.dictLookup("I", &oBorderBEI)->isNum())
-        {
-            nFlags |= (1 << 2);
-            oRes.AddDouble(oBorderBEI.getNum());
-        }
-        oBorder.free(); oBorderBE.free(); oBorderBEI.free();
-
-        // 4 - Режим выделения - H
-        Object oHighlighting;
-        if (oField.dictLookup("H", &oHighlighting) && oBorder.isName())
-        {
-            nFlags |= (1 << 3);
-            std::string sName(oBorder.getName());
-            oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
-        }
-        oHighlighting.free();
 
         // Значение аннотации из текущего внешнего вида
         /*
@@ -973,6 +980,7 @@ oObj.free();\
                 nFlags |= (1 << 9);
 
             // Если Checkbox/RadioButton наследует Opt, то состояние соответствует порядковому в массиве Kids из Opt
+            /*
             int nDepth = 0;
             Object oParentObj;
             oField.dictLookup("Parent", &oParentObj);
@@ -1005,6 +1013,7 @@ oObj.free();\
                 ++nDepth;
             }
             oParentObj.free();
+            */
 
             Object oMK;
             if (oField.dictLookup("MK", &oMK) && oMK.isDict())

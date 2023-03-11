@@ -427,6 +427,8 @@ namespace Oox2Odf
 		std::wstring pathImage;
 		double Width = 0, Height = 0;
 
+		bool bExternal = false;
+
 		std::wstring sID;
 		if (vml_image_data->m_rId.IsInit())	sID = vml_image_data->m_rId->GetValue();
 		else if (vml_image_data->m_oRelId.IsInit())	sID = vml_image_data->m_oRelId->GetValue();
@@ -434,7 +436,7 @@ namespace Oox2Odf
 
 		if (!sID.empty())
 		{
-			pathImage = find_link_by_id(sID, 1);
+			pathImage = find_link_by_id(sID, 1, bExternal);
 		}
 
 		//что именно нужно заливка объекта или картинка - разрулится внутри drawing_context
@@ -445,7 +447,7 @@ namespace Oox2Odf
 		odf_context()->drawing_context()->start_area_properties();
 		odf_context()->drawing_context()->start_bitmap_style();
 
-		odf_context()->drawing_context()->set_bitmap_link(pathImage);
+		odf_context()->drawing_context()->set_bitmap_link(pathImage, bExternal);
 		odf_context()->drawing_context()->set_image_style_repeat(1);//stretch
 
 		double gain = vml_image_data->m_oGain.get_value_or(0);
@@ -512,6 +514,8 @@ namespace Oox2Odf
 
 		std::wstring sID;
 
+		bool bExternal = false;
+
 		if (vml_fill->m_rId.IsInit())			sID = vml_fill->m_rId->GetValue();
 		else if (vml_fill->m_oRelId.IsInit())	sID = vml_fill->m_oRelId->GetValue();
 		else if (vml_fill->m_sId.IsInit())		sID = *vml_fill->m_sId;
@@ -523,11 +527,11 @@ namespace Oox2Odf
 			{
 				double Width = 0, Height = 0;
 
-				sImagePath = find_link_by_id(sID, 1);
+				sImagePath = find_link_by_id(sID, 1, bExternal);
 
 				if (!sImagePath.empty())
 				{
-					odf_context()->drawing_context()->set_bitmap_link(sImagePath);
+					odf_context()->drawing_context()->set_bitmap_link(sImagePath, bExternal);
 					_graphics_utils_::GetResolution(sImagePath.c_str(), Width, Height);
 				}
 				odf_context()->drawing_context()->set_image_style_repeat(1);

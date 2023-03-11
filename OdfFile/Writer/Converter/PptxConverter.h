@@ -123,7 +123,7 @@ namespace Oox2Odf
 		virtual PPTX::Theme								*oox_theme();
 		virtual PPTX::Logic::ClrMap						*oox_clrMap();
        
-		virtual std::wstring							find_link_by_id (const std::wstring & sId, int t);
+		virtual std::wstring							find_link_by_id (const std::wstring & sId, int t, bool & bExternal);
 		virtual NSCommon::smart_ptr<OOX::File>			find_file_by_id	(const std::wstring & sId);
 
 		void convert(OOX::WritingElement *oox_unknown);

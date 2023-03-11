@@ -481,23 +481,37 @@ office_element_ptr odf_conversion_context::start_tabs()
 	create_element(L"style", L"tab-stops", temporary_.elm, this, true);
 	return temporary_.elm;
 }
-std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name)
+std::wstring odf_conversion_context::add_image(const std::wstring & image_file_name, bool bExternal)
 {
 	if (image_file_name.empty()) return L"";
 	
-	std::wstring odf_ref_name ;	
-	mediaitems()->add_or_find(image_file_name,_mediaitems::typeImage, odf_ref_name);
+	if (bExternal)
+	{
+		return image_file_name;
+	}
+	else
+	{
+		std::wstring odf_ref_name;
+		mediaitems()->add_or_find(image_file_name, _mediaitems::typeImage, odf_ref_name);
 
-	return odf_ref_name;
+		return odf_ref_name;
+	}
 }
-std::wstring odf_conversion_context::add_media(const std::wstring & file_name)
+std::wstring odf_conversion_context::add_media(const std::wstring & file_name, bool bExternal)
 {
 	if (file_name.empty()) return L"";
 	
-	std::wstring odf_ref_name ;	
-	mediaitems()->add_or_find(file_name,_mediaitems::typeMedia, odf_ref_name);
+	if (bExternal)
+	{
+		return file_name;
+	}
+	else
+	{
+		std::wstring odf_ref_name;
+		mediaitems()->add_or_find(file_name, _mediaitems::typeMedia, odf_ref_name);
 
-	return odf_ref_name;
+		return odf_ref_name;
+	}
 }
 std::wstring odf_conversion_context::add_imageobject(const std::wstring & file_name)
 {

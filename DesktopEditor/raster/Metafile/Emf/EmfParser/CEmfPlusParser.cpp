@@ -1015,9 +1015,9 @@ namespace MetaFile
 				{
 					if (unIndex + 2 >= unPathPointCount) break;
 
-					pPath->CurveTo(arPoints[unIndex].X, arPoints[unIndex].Y,
-					               arPoints[unIndex].X, arPoints[unIndex].Y,
-					               arPoints[unIndex].X, arPoints[unIndex].Y);
+					pPath->CurveTo(arPoints[unIndex + 0].X, arPoints[unIndex + 0].Y,
+					               arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
+					               arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
 					unIndex += 2;
 					break;
 				}

@@ -132,15 +132,17 @@ public:
 		
 	typedef enum {ff_none, ff_fnil ,ff_froman ,ff_fswiss ,ff_fmodern ,ff_fscript ,ff_fdecor ,ff_ftech ,ff_fbidi} FontFamily;
 	
+	bool			m_bUsed = false;
+
     FontTheme       m_eFontTheme;
     FontFamily      m_eFontFamily;
     std::wstring    m_sPanose;
-    _INT32             m_nID;
+    _INT32			m_nID;
     std::wstring	m_sName;
     std::wstring	m_sAltName;
-    _INT32             m_nCharset;
-    _INT32             m_nCodePage;
-    _INT32             m_nPitch;
+    _INT32			m_nCharset;
+    _INT32			m_nCodePage;
+    _INT32			m_nPitch;
 
 	RtfFont();
 

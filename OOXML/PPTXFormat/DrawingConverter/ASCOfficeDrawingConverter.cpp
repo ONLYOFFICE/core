@@ -3639,7 +3639,6 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
     else        pTree->m_lGroupIndex = 1;
 
 	XmlUtils::CXmlNodes oNodes;
-	XmlUtils::CXmlNode oNodeBinData;
 	
 	//сначала shape type
     if (oNode.GetNodes(L"*", oNodes))
@@ -3668,11 +3667,7 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 
 			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
 
-			if (L"binData" == strNameP)
-			{
-				oNodeBinData = oNode;
-			}
-			else if (L"shape"	== strNameP ||
+			if (L"shape"	== strNameP ||
                 L"rect"         == strNameP ||
                 L"oval"         == strNameP ||
                 L"line"         == strNameP ||
@@ -3680,6 +3675,17 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
                 L"background"   == strNameP ||
                 L"roundrect"    == strNameP)
 			{
+				XmlUtils::CXmlNode oNodeBinData;
+
+				if (i + 1 < nCount)
+				{
+					oNodes.GetAt(i + 1, oNodeBinData);
+					if (L"binData" != XmlUtils::GetNameNoNS(oNodeBinData.GetName()))
+					{
+						oNodeBinData.Clear();
+					}
+				}
+
 				PPTX::Logic::SpTreeElem _el; 
 				if (oNodeBinData.IsValid())
 				{
@@ -5118,7 +5124,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 	{
         XmlUtils::CXmlNode oNodeFillID = oNode.ReadNode(L"v:imagedata");
 
-		if (oNodeFillID.IsValid())
+		if (oNodeFillID.IsValid() || oElem->m_binaryData.IsInit())
 		{
 			nullable_string sRid;
             XmlMacroReadAttributeBase(oNodeFillID, L"r:id", sRid);

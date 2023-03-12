@@ -41,6 +41,8 @@ namespace DocFileFormat
 		virtual int GetCPStart() const = 0;
 		virtual int GetCPEnd() const = 0;
 		virtual ~ITableCellElement() {}
+
+		virtual void AddCP(int _cpStart = 0, int _cpEnd = 0) = 0;
 	};
 
 	typedef NSCommon::smart_ptr<ITableCellElement> ITableCellElementPtr;
@@ -60,6 +62,8 @@ namespace DocFileFormat
 		void Clear();
 		void Convert( IMapping* mapping, TablePropertyExceptions* tapx, const std::vector<short>* grid, int& gridIndex, int cellIndex );
 		~TableCell();
+
+		ITableCellElementPtr GetLast() { return cellElements.back(); }
 
 	private:
 
@@ -105,6 +109,7 @@ namespace DocFileFormat
 		virtual IVirtualConstructor* Clone() const;
 		virtual void Convert( IMapping* mapping );
 		virtual ~DocParagraph();
+		virtual void AddCP(int _cpStart = 0, int _cpEnd = 0);
 
 	private:
 
@@ -142,6 +147,7 @@ namespace DocFileFormat
 		virtual IVirtualConstructor* Clone() const;
 		virtual void Convert( IMapping* mapping );
 		virtual ~Table();
+		virtual void AddCP(int _cpStart = 0, int _cpEnd = 0);
 
 	private:
 

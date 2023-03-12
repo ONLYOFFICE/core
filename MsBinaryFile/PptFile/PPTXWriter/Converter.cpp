@@ -1349,13 +1349,15 @@ void CPPTXWriter::WriteColorScheme(CStringWriter& oStringWriter, const std::wstr
 
 void CPPTXWriter::WriteBackground(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground)
 {
-    oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
-
     m_pShapeWriter->SetRelsGenerator(&oRels);
-    {
-        oWriter.WriteString(m_pShapeWriter->ConvertBrush(oBackground));
-    }
-    oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
+	std::wstring sBg = m_pShapeWriter->ConvertBrush(oBackground);
+    
+	if (false == sBg.empty())
+	{
+		oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
+		oWriter.WriteString(sBg);
+		oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
+	}
 }
 void CPPTXWriter::WriteGroup(CStringWriter& oWriter, CRelsGenerator& oRels, CElementPtr pElement, CLayout* pLayout)
 {

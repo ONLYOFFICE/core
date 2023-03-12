@@ -2132,13 +2132,17 @@ std::wstring PPT::CShapeWriter::ConvertImage()
                               std::to_wstring(pImageElement->m_bChildAnchorEnabled ? (int)pImageElement->m_rcChildAnchor.top : (int)pImageElement->m_rcAnchor.top) +
                               L"\"/>");
 
-        double width	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth();
-        double height	= pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight();
+		_INT64 width	= (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetWidth() : pImageElement->m_rcAnchor.GetWidth());
+		_INT64 height	= (_INT64)(pImageElement->m_bChildAnchorEnabled ? pImageElement->m_rcChildAnchor.GetHeight() : pImageElement->m_rcAnchor.GetHeight());
 
-        if ( width > 0 || height > 0 )
+        if (( width > 0 || height > 0 ) && ((_UINT64)width) < 0xffffffffffff && ((_UINT64)height) < 0xffffffffffff)
         {
-            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring((int)width) + L"\" cy=\"" + std::to_wstring((int)height) + L"\"/>");
+            m_oWriter.WriteString(L"<a:ext cx=\"" + std::to_wstring(width) + L"\" cy=\"" + std::to_wstring(height) + L"\"/>");
         }
+		else
+		{
+			m_oWriter.WriteString(L"<a:ext cx=\"0\" cy=\"0\"/>");
+		}
         m_oWriter.WriteString(std::wstring(L"</a:xfrm>"));
     }
     m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>"));

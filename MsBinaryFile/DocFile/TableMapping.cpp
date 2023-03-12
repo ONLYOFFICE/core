@@ -265,12 +265,15 @@ namespace DocFileFormat
 	DocParagraph::~DocParagraph()
 	{
 	}
-
+	void DocParagraph::AddCP(int _cpStart, int _cpEnd)
+	{
+		if (_cpStart < cpStart) cpStart = _cpStart;
+		if (_cpEnd > cpEnd) cpEnd = _cpEnd;
+	}
 	int DocParagraph::GetCPStart() const
 	{
 		return cpStart;
 	}
-
 	void DocParagraph::SetCPStart( int _cpStart )
 	{
 		cpStart = _cpStart;  
@@ -342,7 +345,6 @@ namespace DocFileFormat
 			if (papx_1 == papx_2)
 			{
 				bBadMarker = true;
-				return false;
 			}
 			return true;
 		}
@@ -414,6 +416,7 @@ namespace DocFileFormat
 			TableRow	tableRow	( documentMapping, _cp );
 			TableCell	tableCell	( documentMapping, _cp );
 
+			bool bBadMarker = false;
 			do
 			{
 				fc = documentMapping->m_document->FindFileCharPos(_cp);
@@ -442,18 +445,37 @@ namespace DocFileFormat
 				}
 				else
 				{
-					bool bBadMarker = false;
-					if ( IsCellMarker( _cp, bBadMarker) )
+					bool bBad = false;
+					if (IsCellMarker(_cp, bBad))
 					{
-						lastCellCP = _cp;
-						tableCell.SetCP( _cp );
-						tableCell.SetDepth( _depth );
+						if (bBad)
+						{
+							tableCell.AddItem(DocParagraph(documentMapping, paragraphBeginCP, _cp));
+							_cp++;
+							paragraphBeginCP = (_cp + 1);
 
-						tableCell.AddItem( DocParagraph( documentMapping, paragraphBeginCP, _cp ) );  
+							bBadMarker = bBad;
+						}
+						else
+						{
+							lastCellCP = _cp;
+							tableCell.SetCP(_cp);
+							tableCell.SetDepth(_depth);
 
-						tableRow.AddCell( tableCell );
-						tableCell.Clear();
-						paragraphBeginCP = ( _cp + 1 );
+							DocParagraph para(documentMapping, paragraphBeginCP, _cp);
+							//if (bBadMarker && !tableCell.IsEmpty())
+							//{
+							//	tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
+							//}
+							//else
+								tableCell.AddItem(para);
+
+							bBadMarker = false;
+
+							tableRow.AddCell(tableCell);
+							tableCell.Clear();
+							paragraphBeginCP = (_cp + 1);
+						}
 					}
 					else if ( IsRowMarker( _cp ) )
 					{
@@ -462,7 +484,15 @@ namespace DocFileFormat
 							tableCell.SetCP(_cp);
 							tableCell.SetDepth(_depth);
 
-							tableCell.AddItem(DocParagraph(documentMapping, paragraphBeginCP, _cp));
+							DocParagraph para(documentMapping, paragraphBeginCP, _cp);
+							//if (bBadMarker && !tableCell.IsEmpty())
+							//{
+							//	tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
+							//}
+							//else
+								tableCell.AddItem(para);
+
+							bBadMarker = false;
 
 							tableRow.AddCell(tableCell);
 							tableCell.Clear();
@@ -474,10 +504,18 @@ namespace DocFileFormat
 						tableRow.Clear();
 						paragraphBeginCP++;
 					}
-					else if ( !bBadMarker && IsParagraphMarker( _cp ) )
+					else if ( IsParagraphMarker( _cp ) )
 					{
-						tableCell.AddItem( DocParagraph( documentMapping, paragraphBeginCP, _cp ) );
+						DocParagraph para(documentMapping, paragraphBeginCP, _cp);
+						//if (bBadMarker && !tableCell.IsEmpty())
+						//{
+						//	tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
+						//}
+						//else 
+							tableCell.AddItem(para);
+						
 						paragraphBeginCP = ( _cp + 1 );
+						bBadMarker = false;
 					}
 					_cp++;
 				}
@@ -500,7 +538,11 @@ namespace DocFileFormat
 	{
 		cpStart = _cpStart;  
 	}
-
+	void Table::AddCP(int _cpStart, int _cpEnd)
+	{
+		if (_cpStart < cpStart) cpStart = _cpStart;
+		if (_cpEnd > cpEnd) cpEnd = _cpEnd;
+	}
 	int Table::GetCPEnd() const
 	{
 		return cpEnd;

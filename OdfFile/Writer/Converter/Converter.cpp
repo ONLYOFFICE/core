@@ -802,8 +802,10 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
         _CP_LOG << L"[error] :  no convert element(" << (oox_unknown ? oox_unknown->getType() : -1 ) << L")\n";
 	}
 }
-std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
+std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type, bool & bExternal)
 {
+	bExternal = false;
+
 	if (!oFile.IsInit()) return L"";
 	
     std::wstring ref;
@@ -814,6 +816,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pImage)
 		{
 			ref = pImage->filename().GetPath();
+			bExternal = pImage->IsExternal();
 		}
 	}
 	if (type == 2 && OOX::FileTypes::HyperLink == oFile->type())
@@ -823,6 +826,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pHyperlink && pHyperlink->bHyperlink)
 		{
 			ref = pHyperlink->Uri().GetPath();
+			bExternal = true;
 		}
 	}
 	if (type == 3)
@@ -832,6 +836,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pMedia)
 		{
 			ref = pMedia->filename().GetPath();
+			bExternal = pMedia->IsExternal();
 		}
 	}
 	if (type == 4)
@@ -841,6 +846,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type)
 		if (pOleObject)
 		{
 			ref = pOleObject->filename().GetPath();
+			bExternal = pOleObject->IsExternal();
 		}
 	}
 	return ref;

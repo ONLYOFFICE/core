@@ -153,7 +153,7 @@ namespace Oox2Odf
 		virtual OOX::IFileContainer					*current_document();
 		virtual odf_writer::odf_conversion_context	*odf_context();		
 		virtual PPTX::Theme							*oox_theme();
-        virtual std::wstring						find_link_by_id (const std::wstring & sId, int t);
+        virtual std::wstring						find_link_by_id (const std::wstring & sId, int t, bool & bExternal);
 		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id (const std::wstring & sId);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);

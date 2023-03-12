@@ -9,7 +9,7 @@
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
 #endif
 
-#ifdef GRADIENT_FILL_RECT_H
+#ifndef GRADIENT_FILL_RECT_H
 #define GRADIENT_FILL_RECT_H    0x00000000
 #define GRADIENT_FILL_RECT_V    0x00000001
 #define GRADIENT_FILL_TRIANGLE  0x00000002

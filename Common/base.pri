@@ -135,6 +135,13 @@ mac {
     }
 }
 
+gcc {
+    COMPILER_VERSION = $$system($$QMAKE_CXX " -dumpversion")
+    COMPILER_MAJOR_VERSION = $$str_member($$COMPILER_VERSION)
+    lessThan(COMPILER_MAJOR_VERSION, 5): CONFIG += build_gcc_less_5
+    lessThan(COMPILER_MAJOR_VERSION, 6): CONFIG += build_gcc_less_6
+}
+
 # DEFINES
 core_windows {
     DEFINES += WIN32 _WIN32

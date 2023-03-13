@@ -734,6 +734,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   enablePathSimplification = gFalse;
   drawAnnotations = gTrue;
   drawFormFields = gTrue;
+  drawContent = gTrue;
   overprintPreview = gFalse;
   paperColor = new GString("#ffffff");
   matteColor = new GString("#808080");
@@ -3158,6 +3159,15 @@ GBool GlobalParams::getDrawFormFields() {
   return draw;
 }
 
+GBool GlobalParams::getDrawContent() {
+  GBool draw;
+
+  lockGlobalParams;
+  draw = drawContent;
+  unlockGlobalParams;
+  return draw;
+}
+
 
 
 GString *GlobalParams::getPaperColor() {
@@ -3704,9 +3714,21 @@ void GlobalParams::setScreenWhiteThreshold(double thresh) {
   unlockGlobalParams;
 }
 
+void GlobalParams::setDrawAnnotations(GBool draw) {
+  lockGlobalParams;
+  drawAnnotations = draw;
+  unlockGlobalParams;
+}
+
 void GlobalParams::setDrawFormFields(GBool draw) {
   lockGlobalParams;
   drawFormFields = draw;
+  unlockGlobalParams;
+}
+
+void GlobalParams::setDrawContent(GBool draw) {
+  lockGlobalParams;
+  drawContent = draw;
   unlockGlobalParams;
 }
 

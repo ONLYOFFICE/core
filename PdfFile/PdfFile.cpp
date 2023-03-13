@@ -34,6 +34,7 @@
 #include "PdfReader.h"
 
 #include "../DesktopEditor/common/File.h"
+#include "../HtmlRenderer/include/HTMLRendererText.h"
 #include "lib/xpdf/PDFDoc.h"
 
 #ifndef BUILDING_WASM_MODULE
@@ -814,7 +815,14 @@ BYTE* CPdfFile::GetWidgets()
 {
     if (!m_pInternal->pReader)
         return NULL;
-    return m_pInternal->pReader->GetWidgets();
+
+    NSHtmlRenderer::CHTMLRendererText* pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
+    pTextRenderer->Init(this, 8);
+
+    BYTE* bRes = m_pInternal->pReader->GetWidgets(pTextRenderer);
+    RELEASEOBJECT(pTextRenderer);
+
+    return bRes;
 }
 
 // ------------------------------------------------------------------------

@@ -325,6 +325,7 @@ public:
   GBool getEnablePathSimplification();
   GBool getDrawAnnotations();
   GBool getDrawFormFields();
+  GBool getDrawContent();
   GBool getOverprintPreview() { return overprintPreview; }
   GString *getPaperColor();
   GString *getMatteColor();
@@ -391,7 +392,9 @@ public:
   void setScreenGamma(double gamma);
   void setScreenBlackThreshold(double thresh);
   void setScreenWhiteThreshold(double thresh);
+  void setDrawAnnotations(GBool draw);
   void setDrawFormFields(GBool draw);
+  void setDrawContent(GBool draw);
   void setOverprintPreview(GBool preview);
   void setMapNumericCharNames(GBool map);
   void setMapUnknownCharNames(GBool map);
@@ -569,6 +572,7 @@ private:
     enablePathSimplification;
   GBool drawAnnotations;	// draw annotations or not
   GBool drawFormFields;		// draw form fields or not
+  GBool drawContent;        // draw content or not
   GBool overprintPreview;	// enable overprint preview
   GString *paperColor;		// paper (page background) color
   GString *matteColor;		// matte (background outside of page) color

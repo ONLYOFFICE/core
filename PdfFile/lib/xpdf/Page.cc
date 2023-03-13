@@ -373,7 +373,8 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
   contents.fetch(xref, &obj);
   if (!obj.isNull()) {
     gfx->saveState();
-    gfx->display(&contents);
+    if (globalParams->getDrawContent())
+      gfx->display(&contents);
     gfx->endOfPage();
   }
   obj.free();

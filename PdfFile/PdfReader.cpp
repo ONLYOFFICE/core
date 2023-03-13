@@ -717,7 +717,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
-BYTE* CPdfReader::GetWidgets()
+BYTE* CPdfReader::GetWidgets(IRenderer* pRenderer)
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
@@ -728,6 +728,23 @@ BYTE* CPdfReader::GetWidgets()
 
     NSWasm::CData oRes;
     oRes.SkipLen();
+
+    PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
+    oRendererOut.NewPDF(m_pPDFDocument->getXRef());
+    oRendererOut.SetBreak(NULL);
+
+    globalParams->setDrawFormFields(gTrue);
+    globalParams->setDrawAnnotations(gFalse);
+    globalParams->setDrawContent(gFalse);
+
+    for (int i = 0, nPage = m_pPDFDocument->getNumPages(); i < nPage; ++i)
+    {
+        m_pPDFDocument->displayPage(&oRendererOut, i + 1, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
+    }
+
+    globalParams->setDrawFormFields(gFalse);
+    globalParams->setDrawAnnotations(gTrue);
+    globalParams->setDrawContent(gTrue);
 
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {

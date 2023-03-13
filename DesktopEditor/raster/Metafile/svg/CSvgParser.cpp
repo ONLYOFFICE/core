@@ -131,9 +131,7 @@ namespace SVG
 			if (!AddObject(pText, pContainer, pFile))
 				return false;
 
-			ReadChildrens(oElement, pText, pFile, pText);
-
-			return true;
+			return ReadChildrens(oElement, pText, pFile, pText);
 		}
 		else if (L"tspan" == wsElementName)
 		{
@@ -142,9 +140,7 @@ namespace SVG
 			if (!AddObject(pTSpan, pContainer, pFile))
 				return false;
 
-			ReadChildrens(oElement, pTSpan, pFile, pTSpan);
-
-			return true;
+			return ReadChildrens(oElement, pTSpan, pFile, pTSpan);
 		}
 		else if (L"polyline" == wsElementName)
 			pObject = new CPolyline(oElement, pParent);

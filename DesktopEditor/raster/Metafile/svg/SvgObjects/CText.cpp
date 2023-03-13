@@ -18,6 +18,7 @@ namespace SVG
 	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent, NSFonts::IFontManager* pFontManager)
 	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager)
 	{
+		m_oFont.UpdateSize(16);
 		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 
 		if (!m_oX.SetValue(oNode.GetAttribute(L"x"), 1, true))
@@ -98,16 +99,18 @@ namespace SVG
 		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
 		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 
-		StartPath(pRenderer, pDefs, bIsClip);
-
 		ApplyFont(pRenderer, dX, dY);
+
+		int nPathType = 0;
+		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
+		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
 		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
 			pTSpan->Draw(pRenderer, pDefs, bIsClip);
 
-		EndPath(pRenderer,pDefs, bIsClip);
+		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 		return true;
 	}
@@ -137,10 +140,18 @@ namespace SVG
 
 	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const
 	{
-		std::wstring wsFontFamily = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
-		double dFontSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+		std::wstring wsFontFamily = DefaultFontFamily;
+		double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
 
-		wsFontFamily = DefaultFontFamily;
+		if (!m_oFont.GetFamily().Empty())
+		{
+			wsFontFamily = m_oFont.GetFamily().ToWString();
+
+			std::vector<std::wstring> arCommonFonFamily({L"serif", L"sans-serif", L"monospace", L"cursive", L"fantasy", L"system-ui", L"emoji", L"math", L"fangsong", L"inherit", L"initial", L"unset"});
+
+			if (arCommonFonFamily.end() != std::find(arCommonFonFamily.begin(), arCommonFonFamily.end(), wsFontFamily))
+				wsFontFamily = L"Arial";
+		}
 
 		pRenderer->put_FontName(wsFontFamily);
 		pRenderer->put_FontSize(dFontSize);
@@ -233,7 +244,7 @@ namespace SVG
 		oBounds.m_dLeft   = m_oX.ToDouble(NSCSS::Pixel);
 		oBounds.m_dTop    = m_oY.ToDouble(NSCSS::Pixel);
 		oBounds.m_dRight  = oBounds.m_dLeft + GetWidth();
-		oBounds.m_dBottom = oBounds.m_dTop + ((!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.);
+		oBounds.m_dBottom = oBounds.m_dTop  + m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
 
 		if (!m_arObjects.empty())
 		{
@@ -254,7 +265,7 @@ namespace SVG
 	double CTSpan::GetWidth() const
 	{
 		std::wstring wsName = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
-		double dSize = (!m_oFont.GetSize().Empty()) ? m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4 : 18.;
+		double dSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
 
 		m_pFontManager->LoadFontByName(wsName, dSize, 0, 72, 72);
 
@@ -267,25 +278,28 @@ namespace SVG
 
 	void CTSpan::Normalize()
 	{
-		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetValue();
+		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetFinalValue();
 
-		double dM11 = oMatrix.sx();
-		double dM22 = oMatrix.sy();
+		if (0 != oMatrix.rotation())
+			return;
 
-		if (dM11 < 0.05 || dM11 > 100)
+		double dM11 = 1.;
+		double dM22 = 1.;
+
+		if (std::abs(oMatrix.sx()) < 0.05 || std::abs(oMatrix.sx()) > 100)
 		{
+			dM11  = oMatrix.sx();
 			m_oX *= dM11;
-			dM11 /= std::abs(dM11);
 		}
 
-		if (dM22 < 0.05 || dM22 > 100)
+		if (std::abs(oMatrix.sy()) < 0.05 || std::abs(oMatrix.sy()) > 100)
 		{
+			dM22 = oMatrix.sy();
 			m_oY *= dM22;
 			m_oFont.UpdateSize(m_oFont.GetSize().ToDouble(NSCSS::Pixel) * dM22);
-			dM22 /= std::abs(dM22);
 		}
 
-		oMatrix.SetElements(dM11, oMatrix.shy(), oMatrix.shx(), dM22, oMatrix.tx(), oMatrix.ty());
+		oMatrix.Scale(1. / std::abs(dM11), 1. / std::abs(dM22));
 
 		m_oTransform.SetMatrix(oMatrix);
 	}

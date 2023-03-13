@@ -186,23 +186,24 @@ namespace NSCSS
 
 	typedef enum
 	{
-		TransformNone,
 		TransformMatrix,
 		TransformTranslate,
 		TransformScale,
 		TransformRotate
 	} TransformType;
 
-	class CMatrix : public CValue<Aggplus::CMatrix>
+	typedef std::vector<std::pair<std::vector<double>, TransformType>> MatrixValues;
+
+	class CMatrix : public CValue<MatrixValues>
 	{
-		TransformType m_enType;
 		std::vector<std::wstring> CutTransforms(const std::wstring& wsValue) const;
 	public:
 		CMatrix();
-		CMatrix(const Aggplus::CMatrix& oValue, unsigned int unLevel, bool bImportant = false);
+		CMatrix(const MatrixValues& oValue, unsigned int unLevel, bool bImportant = false);
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		bool SetMatrix(const Aggplus::CMatrix& oValue);
+		bool SetMatrixs(const MatrixValues& oValue);
 
 		bool Empty() const override;
 		void Clear() override;
@@ -211,8 +212,7 @@ namespace NSCSS
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
 
-		Aggplus::CMatrix GetValue() const;
-		TransformType GetType() const;
+		Aggplus::CMatrix GetFinalValue(const Aggplus::CMatrix* pPrevMatrix = NULL) const;
 
 		bool operator==(const CMatrix& oMatrix) const;
 	};

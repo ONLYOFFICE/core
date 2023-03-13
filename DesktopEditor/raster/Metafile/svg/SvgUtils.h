@@ -310,9 +310,10 @@ namespace SVG
 
 		static std::wstring TrimExtraEnding(const std::wstring& wsString)
 		{
+			std::wstring::const_iterator itBeginPos = std::find_if(wsString.begin(), wsString.end(), [](const wchar_t& wChar){ return !iswspace(wChar);});
 			std::wstring::const_reverse_iterator itEndPos =  std::find_if(wsString.rbegin(), wsString.rend(), [](const wchar_t& wChar){ return !iswspace(wChar);});
 
-			return std::wstring(wsString.begin(), itEndPos.base());
+			return std::wstring(itBeginPos, itEndPos.base());
 		}
 	};
 

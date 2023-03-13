@@ -423,7 +423,8 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
-		CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure);
+		if (!CUnitMeasureConverter::GetValue(wsValue, m_oValue, m_enUnitMeasure))
+			return false;
 
 		m_unLevel    = unLevel;
 		m_bImportant = bImportant;
@@ -660,11 +661,11 @@ namespace NSCSS
 	}
 
 	CMatrix::CMatrix()
-	    : CValue(Aggplus::CMatrix(1., 0., 0., 1., 0., 0.), 0, false), m_enType(TransformNone)
+	    : CValue({}, 0, false)
 	{}
 
-	CMatrix::CMatrix(const Aggplus::CMatrix &oValue, unsigned int unLevel, bool bImportant)
-	    : CValue(oValue, unLevel, bImportant), m_enType(TransformNone)
+	CMatrix::CMatrix(const MatrixValues &oValue, unsigned int unLevel, bool bImportant)
+	    : CValue(oValue, unLevel, bImportant)
 	{}
 
 	bool CMatrix::SetValue(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -681,69 +682,71 @@ namespace NSCSS
 		if (m_bImportant && !bImportant)
 			return false;
 
+		if (unLevel == m_unLevel)
+			m_oValue.clear();
+
 		std::vector<std::wstring> arTransforms = CutTransforms(wsNewValue);
+		TransformType enType;
 
 		for (const std::wstring& wsTransform : arTransforms)
 		{
 			if (std::wstring::npos != wsTransform.find(L"matrix"))
-				m_enType = TransformMatrix;
+				enType = TransformMatrix;
 			else if (std::wstring::npos != wsTransform.find(L"translate"))
-				m_enType = TransformTranslate;
+				enType = TransformTranslate;
 			else if (std::wstring::npos != wsTransform.find(L"scale"))
-				m_enType = TransformScale;
+				enType = TransformScale;
 			else if (std::wstring::npos != wsTransform.find(L"rotate"))
-				m_enType = TransformRotate;
+				enType = TransformRotate;
 			else
-				return false;
+				continue;
 
 			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform);
 
 			if (arValues.empty())
 				return false;
 
-			switch (m_enType)
+			switch (enType)
 			{
 				case TransformMatrix:
 				{
 					if (6 != arValues.size())
-						return false;
+						continue;
 
-					Aggplus::CMatrix oTempMatrix(arValues[0], arValues[1], arValues[2], arValues[3], arValues[4], arValues[5]);
-
-					m_oValue.Multiply(&oTempMatrix, Aggplus::MatrixOrderAppend);
+					m_oValue.push_back(std::make_pair(arValues, TransformMatrix));
 					break;
 				}
 				case TransformTranslate:
 				{
 					if (2 != arValues.size())
-						return false;
+						continue;
 
-					m_oValue.Shear(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
+					m_oValue.push_back(std::make_pair(arValues, TransformTranslate));
 					break;
 				}
 				case TransformScale:
 				{
 					if (2 != arValues.size())
-						return false;
+						continue;
 
-					m_oValue.Scale(arValues[0], arValues[1], Aggplus::MatrixOrderAppend);
+					m_oValue.push_back(std::make_pair(arValues, TransformScale));
 					break;
 				}
 				case TransformRotate:
 				{
-					if (3 == arValues.size())
-						m_oValue.RotateAt(arValues[0], arValues[1], arValues[2], Aggplus::MatrixOrderAppend);
+					if (1 == arValues.size())
+						m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0], 0., 0.}, TransformRotate));
+					else if (3 == arValues.size())
+						m_oValue.push_back(std::make_pair(arValues, TransformRotate));
 					else
-						m_oValue.RotateAt(arValues[0], 0., 0., Aggplus::MatrixOrderAppend);
+						continue;
+
 					break;
 				}
 			}
 		}
 
-		if (1 < arTransforms.size())
-			m_enType = TransformMatrix;
-
-		if (m_enType == TransformNone)
+		if (Empty())
 			return false;
 
 		m_unLevel    = unLevel;
@@ -754,19 +757,19 @@ namespace NSCSS
 
 	bool CMatrix::SetMatrix(const Aggplus::CMatrix &oValue)
 	{
-		m_oValue = oValue;
+		m_oValue.clear();
+		m_oValue.push_back(std::make_pair(std::vector<double>{oValue.sx(), oValue.shy(), oValue.shx(), oValue.sy(), oValue.tx(), oValue.ty()}, TransformMatrix));
 		return true;
 	}
 
 	bool CMatrix::Empty() const
 	{
-		return m_oValue.IsIdentity();
+		return m_oValue.empty();
 	}
 
 	void CMatrix::Clear()
 	{
-		m_oValue.SetElements(1., 0., 0., 1., 0., 0.);
-		m_enType = TransformNone;
+		m_oValue.clear();
 	}
 
 	int CMatrix::ToInt() const
@@ -781,36 +784,39 @@ namespace NSCSS
 
 	std::wstring CMatrix::ToWString() const
 	{
-		if (TransformNone == m_enType)
+		if (Empty())
 			return std::wstring();
 
+		Aggplus::CMatrix oMatrix = GetFinalValue();
+
+		TransformType enType = (1 == m_oValue.size()) ? m_oValue[0].second : TransformMatrix;
 		std::wstring wsValue;
 
-		switch (m_enType)
+		switch (enType)
 		{
 			case TransformMatrix:
 			{
 				wsValue = L"matrix(";
-				wsValue += std::to_wstring(m_oValue.sx())  + L',';
-				wsValue += std::to_wstring(m_oValue.shx()) + L',';
-				wsValue += std::to_wstring(m_oValue.shy()) + L',';
-				wsValue += std::to_wstring(m_oValue.sy())  + L',';
-				wsValue += std::to_wstring(m_oValue.tx())  + L',';
-				wsValue += std::to_wstring(m_oValue.ty())  + L')';
+				wsValue += std::to_wstring(oMatrix.sx())  + L',';
+				wsValue += std::to_wstring(oMatrix.shx()) + L',';
+				wsValue += std::to_wstring(oMatrix.shy()) + L',';
+				wsValue += std::to_wstring(oMatrix.sy())  + L',';
+				wsValue += std::to_wstring(oMatrix.tx())  + L',';
+				wsValue += std::to_wstring(oMatrix.ty())  + L')';
 				break;
 			}
 			case TransformTranslate:
 			{
 				wsValue = L"translate(";
-				wsValue += std::to_wstring(m_oValue.tx())  + L',';
-				wsValue += std::to_wstring(m_oValue.ty())  + L')';
+				wsValue += std::to_wstring(oMatrix.tx())  + L',';
+				wsValue += std::to_wstring(oMatrix.ty())  + L')';
 				break;
 			}
 			case TransformScale:
 			{
 				wsValue = L"scale(";
-				wsValue += std::to_wstring(m_oValue.sx())  + L',';
-				wsValue += std::to_wstring(m_oValue.sy())  + L')';
+				wsValue += std::to_wstring(oMatrix.sx())  + L',';
+				wsValue += std::to_wstring(oMatrix.sy())  + L')';
 				break;
 			}
 			case TransformRotate:
@@ -824,19 +830,61 @@ namespace NSCSS
 		return wsValue;
 	}
 
-	Aggplus::CMatrix CMatrix::GetValue() const
+	Aggplus::CMatrix CMatrix::GetFinalValue(const Aggplus::CMatrix* pPrevMatrix) const
 	{
-		return m_oValue;
-	}
+		Aggplus::CMatrix oMatrix;
 
-	TransformType CMatrix::GetType() const
-	{
-		return m_enType;
+		if(NULL != pPrevMatrix)
+			oMatrix = *pPrevMatrix;
+
+		for (const std::pair<std::vector<double>, TransformType>& oElement : m_oValue)
+		{
+			switch(oElement.second)
+			{
+				case TransformMatrix:
+				{
+					Aggplus::CMatrix oTempMatrix(oElement.first[0], oElement.first[1], oElement.first[2], oElement.first[3], oElement.first[4], oElement.first[5]);
+
+					oMatrix.Multiply(&oTempMatrix, Aggplus::MatrixOrderAppend);
+					break;
+				}
+				case TransformTranslate:
+				{
+					oMatrix.Translate(oElement.first[0], oElement.first[1], Aggplus::MatrixOrderAppend);
+					break;
+				}
+				case TransformScale:
+				{
+					oMatrix.Scale(oElement.first[0], oElement.first[1], Aggplus::MatrixOrderAppend);
+					break;
+				}
+				case TransformRotate:
+				{
+					oMatrix.RotateAt(oElement.first[0], oMatrix.tx() + oElement.first[1] * oMatrix.sx(), oMatrix.ty() + oElement.first[2] * oMatrix.sy(), Aggplus::MatrixOrderAppend);
+					break;
+				}
+			}
+		}
+
+		return oMatrix;
 	}
 
 	bool CMatrix::operator==(const CMatrix &oMatrix) const
 	{
-		return Aggplus::CMatrix::IsEqual(&m_oValue, &oMatrix.m_oValue);
+		if (Empty() && oMatrix.Empty())
+			return true;
+
+		if (m_oValue.size() != oMatrix.m_oValue.size())
+			return false;
+
+		for (unsigned int unIndex = 0; unIndex < m_oValue.size(); ++unIndex)
+		{
+			if (m_oValue[unIndex].second != oMatrix.m_oValue[unIndex].second ||
+			    m_oValue[unIndex].first != oMatrix.m_oValue[unIndex].first)
+				return false;
+		}
+
+		return true;
 	}
 
 	// DISPLAY
@@ -1780,7 +1828,6 @@ namespace NSCSS
 	}
 
 	CFont::CFont()
-	    : m_oSize(24., 0)
 	{}
 
 	void CFont::Equation(CFont &oFirstFont, CFont &oSecondFont)
@@ -1820,7 +1867,8 @@ namespace NSCSS
 				continue;
 			}
 
-			if (ushPosition < 4 && m_oWeight.Empty() && SetWeight(wsWord, unLevel, bHardMode))
+			if (ushPosition < 4 && m_oWeight.Empty() && (SetWeight(wsWord, unLevel, bHardMode) ||
+			                                             L"normal" == wsWord || L"bold" == wsWord || L"bolder" == wsWord || L"lighter " == wsWord))
 			{
 				++ushPosition;
 				continue;
@@ -1832,28 +1880,28 @@ namespace NSCSS
 				continue;
 			}
 
-			if (SetSize(wsValue, unLevel, bHardMode))
+			if (ushPosition < 5 && SetSize(wsWord, unLevel, bHardMode))
 			{
 				ushPosition = 5;
 				continue;
 			}
 
-			if (ushPosition == 5 && SetLineHeight(wsValue, unLevel, bHardMode))
+			if (ushPosition == 5 && SetLineHeight(wsWord, unLevel, bHardMode))
 			{
 				++ushPosition;
 				continue;
 			}
 
-			if (ushPosition >= 5 && SetFamily(wsValue, unLevel, bHardMode))
+			if (ushPosition >= 5 && SetFamily(wsWord, unLevel, bHardMode))
 				continue;
 		}
 
-		if (ushPosition > 5)
+		if (ushPosition >= 5)
 			return true;
 		else
 			Clear();
 
-		return false;
+		return true;
 	}
 
 	bool CFont::SetSize(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)

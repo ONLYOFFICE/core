@@ -198,10 +198,7 @@ namespace SVG
 
 		oOldMatrix.SetElements(dM11, dM12, dM21, dM22, dRx, dRy);
 
-		Aggplus::CMatrix oMatrix(oOldMatrix);
-		Aggplus::CMatrix oNewMatrix(m_oTransform.GetMatrix().GetValue());
-
-		oMatrix.Multiply(&oNewMatrix);
+		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetFinalValue(&oOldMatrix);
 
 		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 	}

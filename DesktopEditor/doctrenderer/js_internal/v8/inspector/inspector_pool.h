@@ -1,9 +1,9 @@
 #ifndef INSPECTOR_POOL_H
 #define INSPECTOR_POOL_H
 
-#include <unordered_map>
-
 #include "inspector.h"
+
+#include <unordered_map>
 
 namespace NSJSBase
 {
@@ -17,8 +17,6 @@ namespace NSJSBase
 		// add new inspector
 		CInspector& addInspector(v8::Isolate* pIsolate);
 
-		// port for server
-		static uint16_t getPort();
 		// group id for V8 internals
 		static int getContextGroupId();
 

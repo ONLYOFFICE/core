@@ -12,18 +12,11 @@ namespace NSJSBase
 					, std::forward_as_tuple(pIsolate)
 					, std::forward_as_tuple(
 						pIsolate
-						, getPort()
 						, getContextGroupId()
 					)
 				);
 		CInspector& oInspector = result.first->second;
 		return oInspector;
-	}
-
-	uint16_t CInspectorPool::getPort()
-	{
-		static uint16_t nInitialPort{8080};
-		return nInitialPort++;
 	}
 
 	int CInspectorPool::getContextGroupId()

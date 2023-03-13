@@ -15,8 +15,6 @@ namespace NSJSBase
 	v8::Local<v8::Object> parseJson(const v8::Local<v8::Context>& context, const std::string& sJson);
 	// get specified property value from JSON object
 	std::string getPropertyFromJson(v8::Isolate* pIsolate, const v8::Local<v8::Object>& jsonObject, const std::string& sPropertyName);
-	// get content of file as a string
-	std::string readFileContent(const std::string& sFilename);
 
 }
 

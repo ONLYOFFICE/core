@@ -13,15 +13,12 @@ CORE_ROOT_DIR = $$PWD/../../../../../../core
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
-CONFIG += v8_use_inspector
-#CONFIG += v8_version_89
-include($$CORE_ROOT_DIR/DesktopEditor/doctrenderer/js_internal/js_base.pri)
 
 ############### destination path ###############
 DESTDIR = $$PWD/build
 ################################################
 
-ADD_DEPENDENCY(kernel, UnicodeConverter)
+ADD_DEPENDENCY(kernel, UnicodeConverter, doctrenderer)
 
 core_linux {
     LIBS += -Wl,-unresolved-symbols=ignore-in-shared-libs

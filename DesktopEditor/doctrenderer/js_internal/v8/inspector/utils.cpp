@@ -1,8 +1,5 @@
 #include "utils.h"
 
-#include <iostream>
-#include <fstream>
-
 #include "../v8_base.h"
 
 namespace NSJSBase
@@ -42,18 +39,6 @@ namespace NSJSBase
 		v8::Local<v8::Value> property = jsonObject->Get(pIsolate->GetCurrentContext(), CreateV8String(pIsolate, sPropertyName)).ToLocalChecked();
 		v8::String::Utf8Value utf8Value(V8IsolateFirstArg property);
 		return *utf8Value;
-	}
-
-	std::string readFileContent(const std::string& sFilename)
-	{
-		std::ifstream oFile(sFilename);
-		if (!oFile.is_open())
-		{
-			std:: cerr << "Could not open the file: " << sFilename << std::endl;
-			return "";
-		}
-		std::string sContent((std::istreambuf_iterator<char>(oFile)), std::istreambuf_iterator<char>());
-		return sContent;
 	}
 
 }

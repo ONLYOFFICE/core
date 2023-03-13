@@ -1,8 +1,19 @@
 #include "../../js_base.h"
 
 #include <iostream>
+#include <fstream>
 
-#include "utils.h"	// for readFileContent()
+std::string readFileContent(const std::string& sFilename)
+{
+	std::ifstream oFile(sFilename);
+	if (!oFile.is_open())
+	{
+		std:: cerr << "Could not open the file: " << sFilename << std::endl;
+		return "";
+	}
+	std::string sContent((std::istreambuf_iterator<char>(oFile)), std::istreambuf_iterator<char>());
+	return sContent;
+}
 
 using namespace NSJSBase;
 int main()

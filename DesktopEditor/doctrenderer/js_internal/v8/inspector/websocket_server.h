@@ -1,10 +1,11 @@
 #ifndef WEBSOCKET_SERVER_H
 #define WEBSOCKET_SERVER_H
 
-#include <functional>
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>
 #include <boost/asio/ip/tcp.hpp>
+
+#include <functional>
 
 namespace beast = boost::beast;         // from <boost/beast.hpp>
 namespace websocket = beast::websocket; // from <boost/beast/websocket.hpp>
@@ -37,7 +38,7 @@ namespace NSJSBase
 		bool isServerReady_ = false;
 
 	public:
-		CWebSocketServer(int nPort, std::function<void(std::string&)> fOnMessage);
+		CWebSocketServer(std::function<void(std::string&)> fOnMessage);
 		~CWebSocketServer();
 
 		void connect();

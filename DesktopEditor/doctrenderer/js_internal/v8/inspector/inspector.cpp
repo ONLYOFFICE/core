@@ -1,17 +1,16 @@
 #include "inspector.h"
 
 #include "../v8_base.h"
+#include "utils.h"
 
 namespace NSJSBase
 {
 
-	CInspector::CInspector(v8::Isolate* pIsolate, int nPort, int nContextGroupId)
+	CInspector::CInspector(v8::Isolate* pIsolate, int nContextGroupId)
 		: m_pIsolate(pIsolate)
-		, m_nPort(nPort)
 	{
 		m_pWebsocketServer.reset(
 			new CWebSocketServer(
-				m_nPort,
 				std::bind(&CInspector::onMessage, this, std::placeholders::_1)
 			)
 		);

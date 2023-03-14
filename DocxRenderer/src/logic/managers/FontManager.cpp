@@ -255,7 +255,7 @@ namespace NSDocxRenderer
 		m_dBaselineOffset	= oSrc.m_dBaselineOffset;
 		m_dSpaceWidthMM		= oSrc.m_dSpaceWidthMM;
 
-		m_strFamilyName		= oSrc.m_strFamilyName;
+		m_strGeneratedName		= oSrc.m_strGeneratedName;
 
 		for(int i = 0; i < 10; i++)
 			m_arPANOSE[i] = oSrc.m_arPANOSE[i];
@@ -283,35 +283,16 @@ namespace NSDocxRenderer
 	{
 		m_oFontAdvanced.m_oFont = oFont;
 	}
-	void CFontManager::SetTransform(const Aggplus::CMatrix* pTransform)
-	{
-		m_pTransform = pTransform;
-	}
 
 	void CFontManager::LoadFont()
 	{
 		if (nullptr == m_pManager)
 			return;
 
-		double dSize = m_oFontAdvanced.m_oFont.Size;
-		double dSizeFont = dSize * ((m_pTransform->sx() + m_pTransform->sy()) / 2);
-		double dPix = m_oFontAdvanced.m_oFont.CharSpace / c_dPixToMM;
-
-		m_oFontAdvanced.m_oFont.Size = dSizeFont;
-
-		if (m_oFontAdvanced.m_oFont.IsEqual2(&m_oFontAdvanced.m_oFont))
-		{
-			m_oFontAdvanced.m_oFont.Size = dSize;
-			m_pManager->SetCharSpacing(dPix);
-			return;
-		}
-
-		m_oFontAdvanced.m_oFont.Size = dSize;
-
 		if (m_oFontAdvanced.m_oFont.Path.empty())
 			LoadFontByName(m_oFontAdvanced.m_oFont.Name, m_oFontAdvanced.m_oFont.Size, m_oFontAdvanced.m_oFont.GetStyle(), c_dDpiX, c_dDpiY);
 		else
-			LoadFontByFile(m_oFontAdvanced.m_oFont.Path, m_oFontAdvanced.m_oFont.Size, c_dDpiX, c_dDpiY, 0);
+			LoadFontByFile(m_oFontAdvanced.m_oFont.Path, m_oFontAdvanced.m_oFont.Size, c_dDpiX, c_dDpiY, m_oFontAdvanced.m_oFont.FaceIndex);
 
 		int bIsGID = m_pManager->GetStringGID();
 		m_pManager->SetStringGID(FALSE);
@@ -386,6 +367,11 @@ namespace NSDocxRenderer
 		dBoxHeight	*= c_dPixToMM;
 	}
 
+	CFontAdvanced CFontManager::GetFontAdvanced()
+	{
+		return m_oFontAdvanced;
+	}
+
 	double CFontManager::GetFontHeight()
 	{
 		return c_dPtToMM * (m_oFontAdvanced.m_dLineSpacing * m_oFontAdvanced.m_oFont.Size ) / m_oFontAdvanced.m_dEmHeight;
@@ -421,11 +407,6 @@ namespace NSDocxRenderer
 		LoadFontMetrics();
 		LoadFontParams();
 		m_oFontAdvanced.m_lAvgWidth = -1;
-
-		m_oFontAdvanced.m_oFont.Name = m_pManager->GetName();
-		m_oFontAdvanced.m_strFamilyName = m_oFontAdvanced.m_oFont.Name;
-
-
 
 		bool bIsCID = false;
 		std::wstring sFileExt = NSFile::GetFileExtention(strPath);
@@ -500,9 +481,9 @@ namespace NSDocxRenderer
 		if (nullptr == m_pManager || nullptr == m_pManager->GetFile())
 			return;
 
-		m_oFontAdvanced.m_strFamilyName = m_oFontAdvanced.m_oFont.Name;
 		m_oFontAdvanced.m_oFont.Bold = m_pManager->GetFile()->IsBold();
 		m_oFontAdvanced.m_oFont.Italic = m_pManager->GetFile()->IsItalic();
+		m_oFontAdvanced.m_oFont.Name = m_pManager->GetName();
 
 		// PANOSE
 		BYTE pPanose[10];
@@ -603,17 +584,19 @@ namespace NSDocxRenderer
 		NSFonts::CFontSelectFormat oFormat;
 
 		std::wstring sFontNameSelect = L"";
-		if (m_oFontAdvanced.m_strFamilyName.empty() && !m_oFontAdvanced.m_oFont.Path.empty())
+		if (m_oFontAdvanced.m_oFont.Name.empty() && !m_oFontAdvanced.m_oFont.Path.empty())
 			sFontNameSelect = m_strDefaultFont;
 		else
-			sFontNameSelect = m_oFontAdvanced.m_strFamilyName;
+			sFontNameSelect = m_oFontAdvanced.m_oFont.Name;
 
 		bool bSelectBold = false;
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
 		oFormat.wsName = new std::wstring(sFontNameSelect);
-		oFormat.pPanose = m_oFontAdvanced.m_arPANOSE;
+		oFormat.pPanose = new BYTE[10];
+		for(int i = 0; i < 10; i++)
+			oFormat.pPanose[i] = m_oFontAdvanced.m_arPANOSE[i];
 
 		oFormat.bBold = new INT(m_oFontAdvanced.m_oFont.Bold);
 		oFormat.bItalic = new INT(m_oFontAdvanced.m_oFont.Italic);
@@ -646,6 +629,9 @@ namespace NSDocxRenderer
 //		m_lCurrentPictFontStyle = oPick.m_lPickStyle;
 
 //		m_arListPicUps.push_front(oPick);
+		m_oFontAdvanced.m_oFont.Bold = pInfo->m_bBold;
+		m_oFontAdvanced.m_oFont.Italic = pInfo->m_bItalic;
+		m_oFontAdvanced.m_strGeneratedName = pInfo->m_wsFontName;
 		return true;
 	}
 

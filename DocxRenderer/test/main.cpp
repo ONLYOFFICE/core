@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-	sSourceFiles.push_back(L"C:\\Work\\TestDocxR\\tests\\CHIN_CHAN.pdf");
+	sSourceFiles.push_back(L"C:\\Work\\TestDocxR\\tests\\test.pdf");
 
 	std::wstring sTextDirOut = L"C:\\Work\\TestDocxR\\text";
     if (!NSDirectory::Exists(sTextDirOut))

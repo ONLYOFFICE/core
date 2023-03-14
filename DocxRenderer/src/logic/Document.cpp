@@ -942,7 +942,7 @@ namespace NSDocxRenderer
 				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
 				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
-		CFontTable* pFontTable = &m_oFontManager.m_oFontTable;
+		/*CFontTable* pFontTable = &m_oFontManager.m_oFontTable;
 		for (std::map<std::wstring, CFontTableEntry>::iterator iterFont = pFontTable->m_mapTable.begin(); iterFont != pFontTable->m_mapTable.end(); ++iterFont)
 		{
 			CFontTableEntry& oEntry = iterFont->second;
@@ -982,7 +982,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"\"/>");
 
 			oWriter.WriteString(L"</w:font>");
-		}
+		}*/
 
 		oWriter.WriteString(L"</w:fonts>");
 		NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/fontTable.xml", oWriter.GetData());

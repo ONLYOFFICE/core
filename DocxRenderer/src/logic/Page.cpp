@@ -343,13 +343,11 @@ namespace NSDocxRenderer
 
 		if ((pUnicodes != nullptr) && (pGids != nullptr))
 			for (unsigned int i = 0; i < nCount; ++i)
-				if (!IsUnicodeSymbol( pUnicodes[i]))
+				if (!IsUnicodeSymbol(pUnicodes[i]))
 					oText[i] = ' ';
 
 
 		m_pFontManager->SetFont(*m_pFont);
-		m_pFontManager->SetTransform(m_pTransform);
-
 		m_pFontManager->LoadFont();
 		m_pFontManager->GenerateFontName(oText);
 
@@ -396,7 +394,7 @@ namespace NSDocxRenderer
 		m_pStyleManager->m_pCurrentStyle->m_oFont = oFontAdvanced.m_oFont;
 		m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
 
-		m_pStyleManager->m_pCurrentStyle->m_strPickFontName = oFontAdvanced.m_strFamilyName;
+		m_pStyleManager->m_pCurrentStyle->m_strPickFontName = oFontAdvanced.m_strGeneratedName;
 		m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = oFontAdvanced.m_oFont.GetStyle2();
 
 		//первичное получение стиля для текущего символа

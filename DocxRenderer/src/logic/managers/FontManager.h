@@ -36,6 +36,8 @@ namespace NSDocxRenderer
 		void CheckRange(const int& symbol, int& Range1, int& Range2, int& Range3, int& Range4);
 	};
 
+	// замена pickup
+	// убрать m_oFont?
 	class CFontAdvanced
 	{
 	public:
@@ -50,7 +52,7 @@ namespace NSDocxRenderer
 		double							m_dSpaceWidthMM {0.0};
 
 		// font params
-		std::wstring					m_strFamilyName {L""};
+		std::wstring					m_strGeneratedName {L""};
 		BYTE							m_arPANOSE[10] {};
 		std::vector<UINT>   			m_arSignature;
 		SHORT							m_lAvgWidth {-1};
@@ -79,21 +81,18 @@ namespace NSDocxRenderer
 		void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
 		void LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex);
 
-		void SetFont(const NSStructures::CFont& oFont);
-		void SetTransform(const Aggplus::CMatrix* pTransform);
-
-		CFontAdvanced GetFontAdvanced() const noexcept;
-
-		void SetDefaultFont(const std::wstring& strName);
-
 		bool GenerateFontName(NSStringUtils::CStringUTF32& oText);
 
+		void SetFont(const NSStructures::CFont& oFont);
+		void SetDefaultFont(const std::wstring& strName);
+
+		CFontAdvanced GetFontAdvanced();
 
 		void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY,
 						   double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
 
 		void MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y,
-							   double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
+							   double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType) ;
 
 		double GetFontHeight();
 		void SetStringGid(const LONG& lGid);
@@ -103,7 +102,6 @@ namespace NSDocxRenderer
 		std::wstring					m_strDefaultFont;
 
 		CFontAdvanced					m_oFontAdvanced;
-		const Aggplus::CMatrix*			m_pTransform;
 
 		// для подбора шрифтов
 		CUnicodeRanges                  m_oRanges;

@@ -447,6 +447,17 @@
 				for (let i = 0; i < n; ++i)
 					rec["BC"].push(reader.readDouble());
 			}
+			// Поворот аннотации относительно страницы - R
+			if (flags & (1 << 6))
+				rec["rotate"] = reader.readInt();
+			// Цвет фона аннотации - BG
+			if (flags & (1 << 7))
+			{
+				let n = reader.readInt();
+				rec["BG"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["BG"].push(reader.readDouble());
+			}
 
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton" || rec["type"] == "button")
 			{

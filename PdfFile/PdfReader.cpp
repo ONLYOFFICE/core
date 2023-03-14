@@ -975,6 +975,29 @@ oObj.free();\
                 }
             }
             oObj.free();
+
+            // 7 - Поворот аннотации относительно страницы - R
+            if (oMK.dictLookup("R", &oObj)->isInt())
+            {
+                nFlags |= (1 << 6);
+                oRes.AddInt(oObj.getInt());
+            }
+            oObj.free();
+
+            // 8 - Цвет фона - BG
+            if (oMK.dictLookup("BG", &oObj)->isArray())
+            {
+                nFlags |= (1 << 7);
+                int nBGLength = oObj.arrayGetLength();
+                oRes.AddInt(nBGLength);
+                for (int j = 0; j < nBGLength; ++j)
+                {
+                    Object oBGj;
+                    oRes.AddDouble(oObj.arrayGet(j, &oBGj)->isNum() ? oBGj.getNum() : 0.0);
+                    oBGj.free();
+                }
+            }
+            oObj.free();
         }
         oMK.free();
 

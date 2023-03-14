@@ -815,14 +815,7 @@ BYTE* CPdfFile::GetWidgets()
 {
     if (!m_pInternal->pReader)
         return NULL;
-
-    NSHtmlRenderer::CHTMLRendererText* pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
-    pTextRenderer->Init(this, 8);
-
-    BYTE* bRes = m_pInternal->pReader->GetWidgets(pTextRenderer);
-    RELEASEOBJECT(pTextRenderer);
-
-    return bRes;
+    return m_pInternal->pReader->GetWidgets();
 }
 
 // ------------------------------------------------------------------------

@@ -438,6 +438,15 @@
 					rec["dashed"].push(reader.readDouble());
 				}
 			}
+			// Цвет границ - BC. Даже если граница не задана BS/Border, то при наличии BC предоставляется граница по-умолчанию (сплошная, толщиной 1)
+			// При наличии MaxLen у text-аннотации границы появляются у каждого символа
+			if (flags & (1 << 5))
+			{
+				let n = reader.readInt();
+				rec["BC"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["BC"].push(reader.readDouble());
+			}
 
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton" || rec["type"] == "button")
 			{

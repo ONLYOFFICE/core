@@ -717,7 +717,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
-BYTE* CPdfReader::GetWidgets(IRenderer* pRenderer)
+BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
@@ -728,23 +728,6 @@ BYTE* CPdfReader::GetWidgets(IRenderer* pRenderer)
 
     NSWasm::CData oRes;
     oRes.SkipLen();
-
-    PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
-    oRendererOut.NewPDF(m_pPDFDocument->getXRef());
-    oRendererOut.SetBreak(NULL);
-
-    globalParams->setDrawFormFields(gTrue);
-    globalParams->setDrawAnnotations(gFalse);
-    globalParams->setDrawContent(gFalse);
-
-    for (int i = 0, nPage = m_pPDFDocument->getNumPages(); i < nPage; ++i)
-    {
-        m_pPDFDocument->displayPage(&oRendererOut, i + 1, 72.0, 72.0, 0, gFalse, gTrue, gFalse);
-    }
-
-    globalParams->setDrawFormFields(gFalse);
-    globalParams->setDrawAnnotations(gTrue);
-    globalParams->setDrawContent(gTrue);
 
     for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
     {
@@ -974,6 +957,26 @@ oObj.free();\
         }
         oAppearance.free();
         */
+
+        Object oMK;
+        if (oField.dictLookup("MK", &oMK) && oMK.isDict())
+        {
+            // 6 - Цвет границ - BC. Даже если граница не задана BS/Border, то при наличии BC предоставляется граница по-умолчанию (сплошная, толщиной 1)
+            if (oMK.dictLookup("BC", &oObj)->isArray())
+            {
+                nFlags |= (1 << 5);
+                int nBCLength = oObj.arrayGetLength();
+                oRes.AddInt(nBCLength);
+                for (int j = 0; j < nBCLength; ++j)
+                {
+                    Object oBCj;
+                    oRes.AddDouble(oObj.arrayGet(j, &oBCj)->isNum() ? oBCj.getNum() : 0.0);
+                    oBCj.free();
+                }
+            }
+            oObj.free();
+        }
+        oMK.free();
 
         // Значение поля - V
         int nValueLength;

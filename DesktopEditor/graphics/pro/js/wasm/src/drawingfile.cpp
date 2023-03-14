@@ -462,6 +462,19 @@ int main(int argc, char* argv[])
 					std::cout << (double)nPathLength / 100.0 << ", ";
 				}
 			}
+			if (nFlags & (1 << 5))
+			{
+				int nBCLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "BC ";
+				for (int j = 0; j < nBCLength; ++j)
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << (double)nPathLength / 100.0 << " ";
+				}
+				std::cout << ", ";
+			}
 			if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 			{
 				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";

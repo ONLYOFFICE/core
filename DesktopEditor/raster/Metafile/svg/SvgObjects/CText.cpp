@@ -11,6 +11,8 @@
 #define MININT8     ((char)~MAXINT8)
 #endif
 
+#define ISZERO(value) (std::abs(value) < 0.0000001)
+
 namespace SVG
 {
 #define DefaultFontFamily L"Times New Roman"
@@ -85,8 +87,6 @@ namespace SVG
 
 		if (mAttributes.end() != mAttributes.find(L"text-decoration"))
 			m_oText.SetDecoration(mAttributes.at(L"text-decoration"), ushLevel, bHardMode);
-
-		Normalize();
 	}
 
 	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
@@ -99,11 +99,11 @@ namespace SVG
 		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
 		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 
-		ApplyFont(pRenderer, dX, dY);
-
 		int nPathType = 0;
 		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
 		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
+
+		ApplyFont(pRenderer, dX, dY);
 
 		pRenderer->CommandDrawText(m_wsText, dX, dY, 0, 0);
 
@@ -142,6 +142,8 @@ namespace SVG
 	{
 		std::wstring wsFontFamily = DefaultFontFamily;
 		double dFontSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
+
+		Normalize(pRenderer, dX, dY, dFontSize);
 
 		if (!m_oFont.GetFamily().Empty())
 		{
@@ -276,32 +278,35 @@ namespace SVG
 		return dWidth;
 	}
 
-	void CTSpan::Normalize()
+	void CTSpan::Normalize(IRenderer *pRenderer, double &dX, double &dY, double &dFontHeight) const
 	{
-		Aggplus::CMatrix oMatrix = m_oTransform.GetMatrix().GetFinalValue();
-
-		if (0 != oMatrix.rotation())
+		if (NULL == pRenderer)
 			return;
 
-		double dM11 = 1.;
-		double dM22 = 1.;
+		double dM11, dM12, dM21, dM22, dDx, dDy;
 
-		if (std::abs(oMatrix.sx()) < 0.05 || std::abs(oMatrix.sx()) > 100)
-		{
-			dM11  = oMatrix.sx();
-			m_oX *= dM11;
-		}
+		pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
 
-		if (std::abs(oMatrix.sy()) < 0.05 || std::abs(oMatrix.sy()) > 100)
-		{
-			dM22 = oMatrix.sy();
-			m_oY *= dM22;
-			m_oFont.UpdateSize(m_oFont.GetSize().ToDouble(NSCSS::Pixel) * dM22);
-		}
+		double dXScale = 1., dYScale = 1.;
 
-		oMatrix.Scale(1. / std::abs(dM11), 1. / std::abs(dM22));
+		double dModuleM11 = std::abs(dM11);
+		double dModuleM22 = std::abs(dM22);
 
-		m_oTransform.SetMatrix(oMatrix);
+		if (!ISZERO(dModuleM11) && (dModuleM11 < 0.05 || dModuleM11 > 100))
+			dXScale /= dModuleM11;
+
+		if (!ISZERO(dModuleM22) && (dModuleM22 < 0.05 || dModuleM22 > 100))
+			dYScale /= dModuleM22;
+
+		dX          /= dXScale;
+		dY          /= dYScale;
+		dFontHeight /= dYScale;
+
+		Aggplus::CMatrix oMatrix(dM11, dM12, dM21, dM22, dDx, dDy);
+
+		oMatrix.Scale(dXScale, dYScale);
+
+		pRenderer->SetTransform(oMatrix.sx(), oMatrix.shy(), oMatrix.shx(), oMatrix.sy(), oMatrix.tx(), oMatrix.ty());
 	}
 
 	CText::CText(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)

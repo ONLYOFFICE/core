@@ -203,7 +203,8 @@ namespace NSCSS
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
 		bool SetMatrix(const Aggplus::CMatrix& oValue);
-		bool SetMatrixs(const MatrixValues& oValue);
+
+		bool AddValue(const std::vector<double>& arValues, TransformType enType);
 
 		bool Empty() const override;
 		void Clear() override;

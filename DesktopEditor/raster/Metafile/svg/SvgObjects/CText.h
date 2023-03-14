@@ -34,7 +34,7 @@ namespace SVG
 
 		double GetWidth() const;
 
-		void Normalize();
+		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
 
 		NSFonts::IFontManager* m_pFontManager;
 

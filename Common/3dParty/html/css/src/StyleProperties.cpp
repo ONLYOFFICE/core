@@ -699,50 +699,20 @@ namespace NSCSS
 			else if (std::wstring::npos != wsTransform.find(L"rotate"))
 				enType = TransformRotate;
 			else
-				continue;
+			{
+				Clear();
+				return false;
+			}
 
 			std::vector<double> arValues = NS_STATIC_FUNCTIONS::ReadDoubleValues(wsTransform);
 
 			if (arValues.empty())
 				return false;
 
-			switch (enType)
+			if (!AddValue(arValues, enType))
 			{
-				case TransformMatrix:
-				{
-					if (6 != arValues.size())
-						continue;
-
-					m_oValue.push_back(std::make_pair(arValues, TransformMatrix));
-					break;
-				}
-				case TransformTranslate:
-				{
-					if (2 != arValues.size())
-						continue;
-
-					m_oValue.push_back(std::make_pair(arValues, TransformTranslate));
-					break;
-				}
-				case TransformScale:
-				{
-					if (2 != arValues.size())
-						continue;
-
-					m_oValue.push_back(std::make_pair(arValues, TransformScale));
-					break;
-				}
-				case TransformRotate:
-				{
-					if (1 == arValues.size())
-						m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0], 0., 0.}, TransformRotate));
-					else if (3 == arValues.size())
-						m_oValue.push_back(std::make_pair(arValues, TransformRotate));
-					else
-						continue;
-
-					break;
-				}
+				Clear();
+				return false;
 			}
 		}
 
@@ -762,6 +732,56 @@ namespace NSCSS
 		return true;
 	}
 
+	bool CMatrix::AddValue(const std::vector<double> &arValues, TransformType enType)
+	{
+		switch (enType)
+		{
+			case TransformMatrix:
+			{
+				if (6 != arValues.size())
+					return false;
+
+				m_oValue.push_back(std::make_pair(arValues, TransformMatrix));
+				break;
+			}
+			case TransformTranslate:
+			{
+				if (1 == arValues.size())
+					m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0], 0.}, TransformTranslate));
+				else if (2 == arValues.size())
+					m_oValue.push_back(std::make_pair(arValues, TransformTranslate));
+				else
+					return false;
+
+				break;
+			}
+			case TransformScale:
+			{
+				if (1 == arValues.size())
+					m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0], arValues[0]}, TransformScale));
+				else if (2 == arValues.size())
+					m_oValue.push_back(std::make_pair(arValues, TransformScale));
+				else
+					return false;
+
+				break;
+			}
+			case TransformRotate:
+			{
+				if (1 == arValues.size())
+					m_oValue.push_back(std::make_pair(std::vector<double>{arValues[0], 0., 0.}, TransformRotate));
+				else if (3 == arValues.size())
+					m_oValue.push_back(std::make_pair(arValues, TransformRotate));
+				else
+					return false;
+
+				break;
+			}
+		}
+
+		return true;
+	}
+
 	bool CMatrix::Empty() const
 	{
 		return m_oValue.empty();
@@ -770,6 +790,8 @@ namespace NSCSS
 	void CMatrix::Clear()
 	{
 		m_oValue.clear();
+		m_unLevel    = 0;
+		m_bImportant = false;
 	}
 
 	int CMatrix::ToInt() const
@@ -850,12 +872,17 @@ namespace NSCSS
 				}
 				case TransformTranslate:
 				{
-					oMatrix.Translate(oElement.first[0], oElement.first[1], Aggplus::MatrixOrderAppend);
+					double dX = oElement.first[0];
+					double dY = oElement.first[1];
+
+					oMatrix.TransformPoint(dX, dY);
+					oMatrix.Translate(dX - oMatrix.tx(), dY - oMatrix.ty(), Aggplus::MatrixOrderAppend);
 					break;
 				}
 				case TransformScale:
 				{
 					oMatrix.Scale(oElement.first[0], oElement.first[1], Aggplus::MatrixOrderAppend);
+					oMatrix.Translate(oMatrix.tx() * (1. / oElement.first[0] - 1), oMatrix.ty() * (1. / oElement.first[1] - 1), Aggplus::MatrixOrderAppend);
 					break;
 				}
 				case TransformRotate:

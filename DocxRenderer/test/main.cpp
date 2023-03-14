@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
-	std::wstring sTempDir = L"";
-	std::wstring sTempDirOut = L"";
+	std::wstring sTempDir = L"C:\\Work\\TestDocxR\\temp";
+	std::wstring sTempDirOut = L"C:\\Work\\TestDocxR\\temp\\output";
 
     if (!NSDirectory::Exists(sTempDir))
         NSDirectory::CreateDirectory(sTempDir);
@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-	sSourceFiles.push_back(L"");
+	sSourceFiles.push_back(L"C:\\Work\\TestDocxR\\tests\\CHIN_CHAN.pdf");
 
-	std::wstring sTextDirOut = L"";
+	std::wstring sTextDirOut = L"C:\\Work\\TestDocxR\\text";
     if (!NSDirectory::Exists(sTextDirOut))
         NSDirectory::CreateDirectory(sTextDirOut);
 
@@ -166,9 +166,9 @@ int main(int argc, char *argv[])
 
         // проверить все режимы
         NSDocxRenderer::eTextAssociationType taType;
-		taType = NSDocxRenderer::eTextAssociationType::tatPlainLine;
+		//taType = NSDocxRenderer::eTextAssociationType::tatPlainLine;
 		//taType = NSDocxRenderer::eTextAssociationType::tatShapeLine;
-		//taType = NSDocxRenderer::eTextAssociationType::tatPlainParagraph;
+		taType = NSDocxRenderer::eTextAssociationType::tatPlainParagraph;
 		//taType = NSDocxRenderer::eTextAssociationType::tatParagraphToShape;
 
         oDocxRenderer.SetTextAssociationType(taType);

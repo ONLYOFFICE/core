@@ -37,7 +37,6 @@ HEADERS += \
     src/logic/elements/TextLine.h \
     src/logic/managers/ImageManager.h \
     src/logic/managers/FontManager.h \
-    src/logic/managers/FontManagerBase.h \
     src/logic/managers/StyleManager.h \
     src/logic/styles/BaseStyle.h \
     src/logic/styles/FontStyle.h \
@@ -64,7 +63,6 @@ SOURCES += \
     src/logic/elements/Table.cpp \
     src/logic/elements/TextLine.cpp \
     src/logic/managers/FontManager.cpp \
-    src/logic/managers/FontManagerBase.cpp \
     src/logic/managers/ImageManager.cpp \
     src/logic/managers/StyleManager.cpp \
     src/logic/styles/FontStyle.cpp \

@@ -7,7 +7,7 @@
 
 namespace NSDocxRenderer
 {
-	CPage::CPage(NSFonts::IApplicationFonts* pFonts) : m_oFontManagerLight(pFonts)
+	CPage::CPage(NSFonts::IApplicationFonts* pFonts)
 	{
 	}
 
@@ -250,21 +250,21 @@ namespace NSDocxRenderer
 
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
-		double left, right, top, bottom;
-		left = m_oVector.GetLeft();
-		right = m_oVector.GetRight();
-		top = m_oVector.GetTop();
-		bottom = m_oVector.GetBottom();
-		if ((left <= right) && (top <= bottom))
+		double dLeft, dRight, dTop, dBottom;
+		dLeft = m_oVector.GetLeft();
+		dRight = m_oVector.GetRight();
+		dTop = m_oVector.GetTop();
+		dBottom = m_oVector.GetBottom();
+		if ((dLeft <= dRight) && (dTop <= dBottom))
 		{
 			if (!m_arShapes.empty())
 			{
 				auto pLastShape = m_arShapes.back();
 
-				if (pLastShape->m_dLeft == left &&
-						pLastShape->m_dTop == top &&
-						pLastShape->m_dWidth == right - left &&
-						pLastShape->m_dHeight == bottom - top)
+				if (pLastShape->m_dLeft == dLeft &&
+						pLastShape->m_dTop == dTop &&
+						pLastShape->m_dWidth == dRight - dLeft &&
+						pLastShape->m_dHeight == dBottom - dTop)
 				{
 					if (0x00 != (lType & 0x01))
 					{
@@ -305,7 +305,7 @@ namespace NSDocxRenderer
 
 			if (pShape->m_bIsNoStroke)
 			{
-				if ((fabs(left - right) < 0.3) || (fabs(top - bottom) < 0.3))
+				if ((fabs(dLeft - dRight) < 0.3) || (fabs(dTop - dBottom) < 0.3))
 				{
 					pShape->m_oPen.Color = m_pBrush->Color1;
 					pShape->m_oPen.Alpha = m_pBrush->Alpha1;
@@ -342,22 +342,16 @@ namespace NSDocxRenderer
 		NSStringUtils::CStringUTF32 oText((uint32_t*)pUnicodes, nCount);
 
 		if ((pUnicodes != nullptr) && (pGids != nullptr))
-		{
 			for (unsigned int i = 0; i < nCount; ++i)
-			{
-				if ( !IsUnicodeSymbol( pUnicodes[i] ) )
-				{
+				if (!IsUnicodeSymbol( pUnicodes[i]))
 					oText[i] = ' ';
-				}
-			}
-		}
 
-		bool bIsPath = ((nullptr == pGids) && !bIsPDFAnalyzer) ? false : true;
 
-		m_pFontManager->LoadFont(0, !bIsPath);
+		m_pFontManager->SetFont(*m_pFont);
+		m_pFontManager->SetTransform(m_pTransform);
 
-		if (!bIsPath)
-			m_pFontManager->GenerateFontName2(oText);
+		m_pFontManager->LoadFont();
+		m_pFontManager->GenerateFontName(oText);
 
 		if (fabs(dTextW) < 0.01 || (dTextW > 10))
 		{
@@ -384,12 +378,14 @@ namespace NSDocxRenderer
 		double dBaseLinePos = dTextY + fBaseLineOffset;
 		dTextH = m_pFontManager->GetFontHeight();
 
-		auto pCont = new CContText(&m_oFontManagerLight);
+		auto pCont = new CContText(m_pFontManager);
 
 		pCont->m_dLeft = dTextX;
 		pCont->m_dBaselinePos = dBaseLinePos;
 
-		pCont->m_dTop       = dBaseLinePos - dTextH - m_pFontManager->m_oFontAdvanced.m_dBaselineOffset;
+		CFontAdvanced oFontAdvanced = m_pFontManager->GetFontAdvanced();
+
+		pCont->m_dTop       = dBaseLinePos - dTextH - oFontAdvanced.m_dBaselineOffset;
 		pCont->m_dWidth     = dTextW;
 		pCont->m_dHeight    = dTextH;
 		pCont->m_dRight     = dTextX + dTextW;
@@ -397,31 +393,24 @@ namespace NSDocxRenderer
 		pCont->m_oText = oText;
 
 		//Первичное заполнение стилей
-		m_pStyleManager->m_pCurrentStyle->m_oFont = m_pFontManager->m_oFontAdvanced.m_oFont;
+		m_pStyleManager->m_pCurrentStyle->m_oFont = oFontAdvanced.m_oFont;
 		m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
 
-		if (!bIsPath)
-		{
-			m_pStyleManager->m_pCurrentStyle->m_strPickFontName = m_pFontManager->m_strCurrentPickFont;
-			m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = m_pFontManager->m_lCurrentPictFontStyle;
-		}
+		m_pStyleManager->m_pCurrentStyle->m_strPickFontName = oFontAdvanced.m_strFamilyName;
+		m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = oFontAdvanced.m_oFont.GetStyle2();
 
 		//первичное получение стиля для текущего символа
 		//при дальнейшем анализе может измениться
 		pCont->m_pFontStyle = m_pStyleManager->GetStyle();
+		pCont->m_dSpaceWidthMM = oFontAdvanced.m_dSpaceWidthMM;
 
-		pCont->m_dSpaceWidthMM = m_pFontManager->m_dSpaceWidthMM;
-
+		// собираем отдельно, т.к. такие символы не имею размера m_dWidth
 		if (nCount == 1 && IsDiacriticalMark(*pUnicodes))
-		{
-			//собираем отдельно, т.к. такие символы не имею размера m_dWidth
 			m_arDiacriticalSymbol.push_back(pCont);
-		}
+
+		// остальные символы сразу добавляем в текстовые линии
 		else
-		{
-			//остальные символы сразу добавляем в текстовые линии
 			AddContToTextLine(pCont);
-		}
 	}
 
 	void CPage::AddContToTextLine(CContText *pCont)

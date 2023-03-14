@@ -1,96 +1,119 @@
 ﻿#pragma once
-#include "FontManagerBase.h"
+#include <list>
+#include <vector>
+
 #include "../DesktopEditor/graphics/Matrix.h"
+#include "../DesktopEditor/graphics/structures.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/common/StringUTF32.h"
 
 namespace NSDocxRenderer
 {
-	using namespace NSFontManager;
-
-	class CFontTableEntry
+	class CUnicodeRange
 	{
 	public:
-		std::wstring    	m_strFamilyName {L""};
-		std::wstring		m_strPANOSE {L""};
-		LONG				m_lStyle {0};
-		std::vector<UINT>	m_arSignature;
-		bool				m_bIsFixedWidth {false};
+		BYTE RangeNum {0};
+		BYTE Range {0};
 
-	public:
-		CFontTableEntry(){}
-		virtual ~CFontTableEntry(){}
+		int Start {0};
+		int End {0};
 
-		CFontTableEntry(const CFontTableEntry& oSrc);
-
-		CFontTableEntry& operator =(const CFontTableEntry& oSrc);
+		CUnicodeRange(const int& _start = 0,
+					  const int& _end = 0,
+					  const BYTE& _range = 0,
+					  const BYTE& _rangenum = 0);
 	};
 
-	class CFontTable
+	// класс для проставления Ranges для подбора шрифта по символу
+	class CUnicodeRanges
 	{
 	public:
-		std::map<std::wstring, CFontTableEntry> m_mapTable;
+		std::list<CUnicodeRange> m_arRanges;
 
 	public:
-		CFontTable() : m_mapTable(){}
+		CUnicodeRanges();
+		void CheckRange(const int& symbol, BYTE& Range, BYTE& RangeNum);
+		void CheckRange(const int& symbol, int& Range1, int& Range2, int& Range3, int& Range4);
 	};
 
-	class CFontManager : public CFontManagerBase
+	class CFontAdvanced
 	{
 	public:
-		NSStructures::CFont*    m_pFont {nullptr};
-		Aggplus::CMatrix*       m_pTransform {nullptr};
-		double                  m_dSpaceWidthMM {0.0};
+		NSStructures::CFont m_oFont;
+
+		// font metrics
+		double							m_dAscent {0.0};
+		double							m_dDescent {0.0};
+		double							m_dLineSpacing {0.0};
+		double							m_dEmHeight {0.0};
+		double							m_dBaselineOffset {0.0};
+		double							m_dSpaceWidthMM {0.0};
+
+		// font params
+		std::wstring					m_strFamilyName {L""};
+		BYTE							m_arPANOSE[10] {};
+		std::vector<UINT>   			m_arSignature;
+		SHORT							m_lAvgWidth {-1};
+		bool							m_bIsFixedWidth {false};
 
 	public:
-		CFontTable              m_oFontTable;
+		CFontAdvanced();
+		CFontAdvanced(const CFontAdvanced& oSrc);
+		CFontAdvanced& operator=(const CFontAdvanced& oSrc);
+	};
 
+	class CFontManager
+	{
 	public:
+		enum MeasureType
+		{
+			mtGlyph	= 0,
+			mtPosition	= 1
+		};
+
 		CFontManager(NSFonts::IApplicationFonts* pFonts);
-		virtual ~CFontManager(){}
+		virtual ~CFontManager();
 
-	public:
-		void Init();
+		void LoadFont();
 
-		void AddFontToMap();
+		void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
+		void LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex);
 
-	public:
-		virtual void LoadFont(long lFaceIndex = 0, bool bNeedAddToMap = true);
+		void SetFont(const NSStructures::CFont& oFont);
+		void SetTransform(const Aggplus::CMatrix* pTransform);
 
-		virtual void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY,
-								   double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
+		CFontAdvanced GetFontAdvanced() const noexcept;
+
+		void SetDefaultFont(const std::wstring& strName);
+
+		bool GenerateFontName(NSStringUtils::CStringUTF32& oText);
+
+
+		void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY,
+						   double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
 
 		void MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y,
 							   double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
 
-		double GetBaseLineOffset();
-
 		double GetFontHeight();
-
 		void SetStringGid(const LONG& lGid);
 
-		void GenerateFontName2(NSStringUtils::CStringUTF32& oText);
-	};
-
-	class CFontManagerLight
-	{
 	private:
-		std::wstring m_strFontName {L""};
-		LONG	m_lFontStyle {0};
-		double	m_dSize {0.0};
+		NSFonts::IFontManager*          m_pManager;
+		std::wstring					m_strDefaultFont;
 
-		double	m_dSpaceWidth {0.0};
+		CFontAdvanced					m_oFontAdvanced;
+		const Aggplus::CMatrix*			m_pTransform;
 
-		NSFonts::IFontManager*	m_pManager {nullptr};
+		// для подбора шрифтов
+		CUnicodeRanges                  m_oRanges;
 
-	public:
-		CFontManagerLight(NSFonts::IApplicationFonts* pFonts);
-		virtual ~CFontManagerLight();
+		void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange);
 
-		double GetSpaceWidth();
+		void LoadFontMetrics();
+		void LoadFontParams();
 
-	public:
-		void LoadFont(std::wstring& strFontName, LONG& lStyle, const double &dSize, const bool& bIsGID);
-
-		double MeasureStringWidth(const std::wstring& sText);
+		bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle);
+		void CheckFontNamePDF(std::wstring& sName, bool& bBold, bool& bItalic);
 	};
-
 }

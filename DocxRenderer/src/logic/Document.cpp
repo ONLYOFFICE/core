@@ -6,9 +6,6 @@ namespace NSDocxRenderer
 		m_pAppFonts(pFonts), m_oCurrentPage(pFonts), m_oFontManager(pFonts)
 	{
 		m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
-
-		m_oFontManager.m_pFont      = &m_oFont;
-		m_oFontManager.m_pTransform = &m_oTransform;
 	}
 	void CDocument::Clear()
 	{
@@ -773,7 +770,8 @@ namespace NSDocxRenderer
 	{
 		if (nullptr == m_pFontManager)
 		{
-			m_pFontManager = NSFontManager::CreateFontManager(m_pAppFonts);
+			m_pFontManager = m_pAppFonts->GenerateFontManager();
+			m_pFontManager->CreateOwnerCache(8);
 		}
 
 		double dPix = m_oFont.CharSpace * m_dDpiX / 25.4;
@@ -817,7 +815,6 @@ namespace NSDocxRenderer
 
 		m_oImageManager.NewDocument();
 		m_oStyleManager.NewDocument();
-		m_oFontManager.Init();
 
 		// media
 		m_oImageManager.m_strDstMedia = m_strTempDirectory + L"/word/media";

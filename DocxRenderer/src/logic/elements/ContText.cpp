@@ -5,8 +5,8 @@
 
 namespace NSDocxRenderer
 {
-	CContText::CContText(CFontManagerLight* pManagerLight):
-		CBaseItem(ElemType::etContText), m_pManagerLight(pManagerLight)
+	CContText::CContText(CFontManager* pManager):
+		CBaseItem(ElemType::etContText), m_pManager(pManager)
 	{
 	}
 
@@ -59,7 +59,7 @@ namespace NSDocxRenderer
 
 		m_eVertAlignType = rCont.m_eVertAlignType;
 
-		m_pManagerLight = rCont.m_pManagerLight;
+		m_pManager = rCont.m_pManager;
 
 		m_pShape = rCont.m_pShape;
 		m_pCont = rCont.m_pCont;
@@ -91,10 +91,17 @@ namespace NSDocxRenderer
 					m_eVertAlignType != eVertAlignType::vatSuperscript)
 			{
 				// нужно перемерять...
-				m_pManagerLight->LoadFont(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, m_pFontStyle->m_oFont.Size, false);
-				double dWidth = m_pManagerLight->MeasureStringWidth(m_oText.ToStdWString());
+				m_pManager->LoadFontByName(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, m_pFontStyle->m_oFont.Size,
+										   c_dDpiX, c_dDpiY);
+				m_pManager->GenerateFontName(m_oText);
 
-				double dSpacing = (m_dWidth - dWidth) / (m_oText.length());
+				double dBoxX;
+				double dBoxY;
+				double dBoxWidth;
+				double dBoxHeight;
+				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+
+				double dSpacing = (m_dWidth - dBoxWidth) / (m_oText.length());
 				dSpacing *= c_dMMToDx;
 
 				lCalculatedSpacing = static_cast<LONG>(dSpacing);
@@ -206,7 +213,7 @@ namespace NSDocxRenderer
 		double dSpaceMMSize = m_dSpaceWidthMM;
 		if (!m_pFontStyle->m_strPickFontName.empty())
 		{
-			dSpaceMMSize = m_pManagerLight->GetSpaceWidth();
+			dSpaceMMSize = m_pManager->GetFontAdvanced().m_dSpaceWidthMM;
 		}
 
 		LONG lCalculatedSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);

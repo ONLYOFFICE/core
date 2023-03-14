@@ -44,7 +44,6 @@ namespace NSDocxRenderer
 		CTextLine*               m_pCurrentLine {nullptr};
 		CRow*                    m_pCurrentRow {nullptr};
 
-		CFontManagerLight        m_oFontManagerLight;
 
 		eTextAssociationType     m_eTextAssociationType {eTextAssociationType::tatPlainParagraph};
 

@@ -203,6 +203,7 @@ public:
 template<class T> class ItemSingleContainer: public ItemContainer<T>
 {
 public: 
+	//todooo -> to map with hash
     int AddItem( T piRend)
 	{
         for( int i = 0; i < (int)ItemContainer<T>::m_aArray.size(); i++ )

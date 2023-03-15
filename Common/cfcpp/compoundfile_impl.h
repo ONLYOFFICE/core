@@ -49,7 +49,7 @@ class DirectoryEntry;
 class CompoundFile_impl
 {
 public:
-    CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters = Default);
+    CompoundFile_impl(const std::wstring &fileName, CFSUpdateMode updateMode, int configParameters = Default);
     CompoundFile_impl(CFSVersion cfsVersion, CFSConfiguration configFlags);
     CompoundFile_impl(const std::wstring &fileName);
     CompoundFile_impl(Stream stream);
@@ -61,7 +61,6 @@ public:
 
     void Save(std::wstring wFileName);
     void Save(Stream stream);
-
 
     void Commit(bool releaseMemory = false);
     bool HasSourceStream() const;
@@ -140,7 +139,7 @@ private:
     CFSVersion getVersion() const;
 
 public:
-    CFSConfiguration configuration = Default;
+    int configuration = Default;
     std::unique_ptr<Header> header;
     Stream sourceStream;
 

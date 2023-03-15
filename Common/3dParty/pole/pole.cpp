@@ -537,16 +537,27 @@ std::vector<uint64> AllocTable::follow( uint64 start )
   if( start >= count() ) return chain; 
 
   uint64 p = start;
-  while( p < count() )
-  {
-    if( p == (uint64)Eof ) break;
-    if( p == (uint64)Bat ) break;
-    if( p == (uint64)MetaBat ) break;
-    if( p >= count() ) break;
-    chain.push_back( p );
-    if( data[p] >= count() ) break;
-    p = data[ p ];
-  }
+
+	std::map<uint64, char> used;
+	used.insert(std::make_pair(start, (char)0));
+	
+	while (p < count())
+	{
+		if (p == (uint64)Eof) break;
+		if (p == (uint64)Bat) break;
+		if (p == (uint64)MetaBat) break;
+		if (p >= count()) break;
+		chain.push_back(p);
+		if (data[p] >= count()) break;
+
+		if (used.find(data[p]) != used.end())
+		{
+			//cycle
+			break;
+		}
+		p = data[p];
+		used.insert(std::make_pair(p, (char)0));
+	}
 
   return chain;
 }

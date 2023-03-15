@@ -62,6 +62,8 @@ RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ) : m_oDocum
 	m_oState = ReaderStatePtr(new ReaderState());
 	m_nFootnote = PROP_DEF;
 	m_nDefFont = PROP_DEF;
+	m_nDefLang = PROP_DEF;
+	m_nDefLangAsian = PROP_DEF;
 	m_convertationManager = NULL;
 }
 bool RtfReader::Load()
@@ -88,6 +90,12 @@ void RtfReader::PushState()
 
 	if( PROP_DEF == m_oState->m_oCharProp.m_nFont )
 		m_oState->m_oCharProp.m_nFont = m_nDefFont;
+	
+	if (PROP_DEF == m_oState->m_oCharProp.m_nLanguage)
+		m_oState->m_oCharProp.m_nLanguage = m_nDefLang;
+	
+	if (PROP_DEF == m_oState->m_oCharProp.m_nLanguageAsian)
+		m_oState->m_oCharProp.m_nLanguageAsian = m_nDefLangAsian;
 }
 void RtfReader::PopState()
 {
@@ -272,7 +280,7 @@ std::wstring RtfAbstractReader::ExecuteTextInternal(RtfDocument& oDocument, RtfR
 }
 void RtfAbstractReader::ExecuteTextInternal2(RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 {
-	if (oReader.m_oState->m_sCurText.length() > 0)
+	if (false == oReader.m_oState->m_sCurText.empty())
 	{
 		std::string str;
 		ExecuteTextInternalSkipChars(oReader.m_oState->m_sCurText, oReader, str, nSkipChars);
@@ -344,16 +352,16 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 
         //применяем параметры codepage от текущего шрифта todo associated fonts.
         RtfFont oFont;
-        if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) && !m_bUseGlobalCodepage)
+        if ( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) && !m_bUseGlobalCodepage)
         {
-            if( PROP_DEF != oFont.m_nCharset && oFont.m_nCharset > 1)
-            {
-                nCodepage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
-            }
-            else if( PROP_DEF != oFont.m_nCodePage )
+            if( PROP_DEF != oFont.m_nCodePage )
             {
                 nCodepage = oFont.m_nCodePage;
             }
+			else if (PROP_DEF != oFont.m_nCharset && (PROP_DEF == oDocument.m_oProperty.m_nAnsiCodePage || 0 == oDocument.m_oProperty.m_nAnsiCodePage))
+			{
+				nCodepage = RtfUtility::CharsetToCodepage(oFont.m_nCharset);
+			}
         }
         //от настроек документа
         if( -1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage )
@@ -385,7 +393,14 @@ std::wstring RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharS
 			nCodepage = msLCID2DefCodePage(oDocument.m_nUserLCID);
 		}
 
-        sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
+		if (m_bUseGlobalCodepage && nCodepage == 0)
+		{
+			sResult = std::wstring(sCharString.begin(), sCharString.end());
+		}
+		else
+		{
+			sResult = RtfUtility::convert_string_icu(sCharString.begin(), sCharString.end(), nCodepage);
+		}
 
 		//if (!sCharString.empty() && sResult.empty())
 		//{

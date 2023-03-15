@@ -325,7 +325,7 @@ namespace OOX
 			else if (L"m:oMathPara" == sName )
 				pItem = new Logic::COMathPara( document );
 			else if (L"p" == sName )
-				pItem = new Logic::CParagraph( document );
+				pItem = new Logic::CParagraph( document, this );
 			else if (L"permEnd" == sName )
 				pItem = new Logic::CPermEnd( document );
 			else if (L"permStart" == sName )
@@ -384,14 +384,15 @@ namespace OOX
 			else if (L"docParts" == sName && !oReader.IsEmptyNode())
 			{
 				WritingElement *pItem = new OOX::Logic::CDocParts(WritingElement::m_pMainDocument);
-				m_arrItems.push_back(pItem);
+				
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ( pItem )
 			{
-				m_arrItems.push_back( pItem );
 				pItem->fromXML(oReader);
+				m_arrItems.push_back( pItem );
 			}
 		}
 	}

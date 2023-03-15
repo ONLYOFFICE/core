@@ -191,14 +191,22 @@ void CSVWriter::Close()
 		impl_->Close();
 }
 //---------------------------------------------------------------------------------------------------------------------------------
+static std::wstring replace_unwanted(boost::wsmatch const & what)
+{
+	return L"";
+}
 int CSVWriter::Impl::detect_format(std::wstring & format_code)
 {
 	if (format_code.empty()) return SimpleTypes::Spreadsheet::celltypeStr;
 
+	boost::wregex re_unwanted(L"([\"'])(.+?)\\1");
+
+	std::wstring strFormatCode = boost::regex_replace(format_code, re_unwanted, &replace_unwanted, boost::match_default | boost::format_all);
+
 	//find [$<Currency String>-<language info>].
 	boost::wregex re(L"(?:\\[)(?:\\$)(\\S+)?\-(\\S+)(?:\\])");
 	boost::wsmatch result;
-	bool b = boost::regex_search(format_code, result, re);
+	bool b = boost::regex_search(strFormatCode, result, re);
 
 	std::wstring currency_str;
 
@@ -223,30 +231,37 @@ int CSVWriter::Impl::detect_format(std::wstring & format_code)
 
 	if (false == format_code.empty()) //any
 	{
-		std::wstring tmp = format_code;
-		XmlUtils::GetLower(tmp);
+		boost::wregex re1(L"([mMhHs{2,}S{2,}]+)");
+		boost::wregex re2(L"([mMdDy{2,}Y{2,}]+)");
 
-		if (std::wstring::npos != tmp.find(L"at") ||
-			std::wstring::npos != tmp.find(L"pm") ||
-			(std::wstring::npos != tmp.find(L"h") && std::wstring::npos != tmp.find(L"s")) ||
-			language_code == 0xF400)
+		std::wstring tmp = strFormatCode;
+
+		std::list<std::wstring> result1;
+		bool b1 = boost::regex_split(std::back_inserter(result1), tmp, re1);
+
+		tmp = strFormatCode;
+		std::list<std::wstring> result2;
+		bool b2 = boost::regex_split(std::back_inserter(result2), tmp, re2);
+
+		if (b1 && b2 && result1.size() > 2 && result2.size() > 2)
+		{
+			return SimpleTypes::Spreadsheet::celltypeDateTime;
+		}
+		if (b1 && result1.size() > 2)
 		{
 			return SimpleTypes::Spreadsheet::celltypeTime;
 		}
-		if ((std::wstring::npos != tmp.find(L"y") && std::wstring::npos != tmp.find(L"d")) ||
-			(std::wstring::npos != tmp.find(L"d") && std::wstring::npos != tmp.find(L"m")) ||
-			(std::wstring::npos != tmp.find(L"y") && std::wstring::npos != tmp.find(L"m")) ||
-			language_code == 0xF800)
+		if (b2 && result2.size() > 2)
 		{
 			return SimpleTypes::Spreadsheet::celltypeDate;
 		}
-		if (std::wstring::npos != tmp.find(L"%"))
+		if (std::wstring::npos != strFormatCode.find(L"%"))
 		{
 			return SimpleTypes::Spreadsheet::celltypePercentage;
 		}
-		if (std::wstring::npos != tmp.find(L"#") ||
-			std::wstring::npos != tmp.find(L"?") ||
-			std::wstring::npos != tmp.find(L"0"))
+		if (std::wstring::npos != strFormatCode.find(L"#") ||
+			std::wstring::npos != strFormatCode.find(L"?") ||
+			std::wstring::npos != strFormatCode.find(L"0"))
 		{
 			return SimpleTypes::Spreadsheet::celltypeNumber;
 		}

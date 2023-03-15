@@ -42,7 +42,7 @@ namespace NSCustomVML
     class CSegment
     {
     public:
-		ODRAW::RulesType m_eRuler;
+        ODRAW::RulesType m_eRuler;
         WORD m_nCount;
 
     public:
@@ -333,7 +333,7 @@ namespace NSCustomVML
     class CGuide
     {
     public:
-		NSGuidesVML::FormulaType m_eType;
+        NSGuidesVML::FormulaType m_eType;
 
         BYTE m_param_type1;
         BYTE m_param_type2;
@@ -480,21 +480,21 @@ namespace NSCustomVML
     class CCustomVML
     {
     private:
-		ODRAW::RulesType m_ePath;
+        ODRAW::RulesType m_ePath;
 
         std::vector<Aggplus::POINT>		m_arVertices;
         std::vector<CSegment>			m_arSegments;
         std::vector<CGuide>				m_arGuides;
         std::vector<LONG>*				m_pAdjustValues;
         std::vector<Aggplus::POINT>		m_arConnectionSites;
-		std::vector<Aggplus::RECT>		m_arInscribe;
+        std::vector<Aggplus::RECT>		m_arInscribe;
         std::vector<double>				m_arConnectionSitesDir;
 
         bool m_bIsVerticesPresent;
         bool m_bIsPathPresent;
 
-		ODRAW::CBrush	m_oBrush;
-		ODRAW::CPen	m_oPen;
+        ODRAW::CBrush	m_oBrush;
+        ODRAW::CPen	m_oPen;
 
     public:
         CCustomVML() : m_pAdjustValues(NULL)
@@ -580,21 +580,21 @@ namespace NSCustomVML
                 m_arVertices.push_back(oPoint);
             }
         }
-		void LoadConnectionSitesDir(CProperty* pProperty)
+        void LoadConnectionSitesDir(CProperty* pProperty)
         {
             ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arConnectionSitesDir.clear();
-           
-			WORD lCount = (WORD)(pProperty->m_lValue / 4);
-            
-			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
+
+            WORD lCount = (WORD)(pProperty->m_lValue / 4);
+
+            for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
             {
                 _UINT32 v = oReader.ReadLONG();
-				double val = (double)((WORD)(v >> 16) + ((WORD)(v) / 65536.0));
-				m_arConnectionSitesDir.push_back(val);
-			}
-		}
-		void LoadConnectionSites(CProperty* pProperty)
+                double val = (double)((WORD)(v >> 16) + ((WORD)(v) / 65536.0));
+                m_arConnectionSitesDir.push_back(val);
+            }
+        }
+        void LoadConnectionSites(CProperty* pProperty)
         {
             ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arConnectionSites.clear();
@@ -636,7 +636,7 @@ namespace NSCustomVML
 
                 m_arConnectionSites.push_back(oPoint);
             }
-		}
+        }
         void LoadVertices(CProperty* pProperty)
         {
             ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
@@ -763,8 +763,8 @@ namespace NSCustomVML
                 m_arGuides.push_back(oInfo);
             }
         }
-		void LoadInscribe(CProperty* pProperty)
-		{
+        void LoadInscribe(CProperty* pProperty)
+        {
             ODRAW::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
             m_arInscribe.clear();
 
@@ -781,19 +781,19 @@ namespace NSCustomVML
                 {
                     oRect.left		= (short)oReader.ReadWORD();
                     oRect.right		= (short)oReader.ReadWORD();
-					oRect.top		= (short)oReader.ReadWORD();
-					oRect.bottom	= (short)oReader.ReadWORD();
+                    oRect.top		= (short)oReader.ReadWORD();
+                    oRect.bottom	= (short)oReader.ReadWORD();
                }
                 else
                 {
                     oRect.left		= (short)oReader.ReadLONG();
                     oRect.right		= (short)oReader.ReadLONG();
-					oRect.top		= (short)oReader.ReadLONG();
-					oRect.bottom	= (short)oReader.ReadLONG();
+                    oRect.top		= (short)oReader.ReadLONG();
+                    oRect.bottom	= (short)oReader.ReadLONG();
                 }
                 m_arInscribe.push_back(oRect);
             }
-		}
+        }
         void LoadAdjusts(LONG lIndex, LONG lValue)
         {
             if (NULL == m_pAdjustValues)

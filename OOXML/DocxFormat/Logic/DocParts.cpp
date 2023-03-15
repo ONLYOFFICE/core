@@ -64,9 +64,9 @@ namespace OOX
 				if (L"w:docPart" == sName)
 				{
 					CDocPart *pItem = new CDocPart(m_pMainDocument);
-					m_arrItems.push_back(pItem);
-
 					pItem->fromXML(oReader);
+
+					m_arrItems.push_back(pItem);
 				}
 			}
 		}
@@ -221,6 +221,8 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 
+			OOX::Document* document = WritingElement::m_pMainDocument;
+
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
 			{
@@ -228,66 +230,69 @@ namespace OOX
 				WritingElement *pItem = NULL;
 
 				if (L"w:bookmarkEnd" == sName)
-					pItem = new CBookmarkEnd(oReader);
+					pItem = new CBookmarkEnd(document);
 				else if (L"w:bookmarkStart" == sName)
-					pItem = new CBookmarkStart(oReader);
+					pItem = new CBookmarkStart(document);
 				else if (L"w:commentRangeEnd" == sName)
-					pItem = new CCommentRangeEnd(oReader);
+					pItem = new CCommentRangeEnd(document);
 				else if (L"w:commentRangeStart" == sName)
-					pItem = new CCommentRangeStart(oReader);
+					pItem = new CCommentRangeStart(document);
 				//else if ( L"w:customXml" == sName )
 				//	pItem = new CCustomXml( oReader );
 				else if (L"w:customXmlDelRangeEnd" == sName)
-					pItem = new CCustomXmlDelRangeEnd(oReader);
+					pItem = new CCustomXmlDelRangeEnd(document);
 				else if (L"w:customXmlDelRangeStart" == sName)
-					pItem = new CCustomXmlDelRangeStart(oReader);
+					pItem = new CCustomXmlDelRangeStart(document);
 				else if (L"w:customXmlInsRangeEnd" == sName)
-					pItem = new CCustomXmlInsRangeEnd(oReader);
+					pItem = new CCustomXmlInsRangeEnd(document);
 				else if (L"w:customXmlInsRangeStart" == sName)
-					pItem = new CCustomXmlInsRangeStart(oReader);
+					pItem = new CCustomXmlInsRangeStart(document);
 				else if (L"w:customXmlMoveFromRangeEnd" == sName)
-					pItem = new CCustomXmlMoveFromRangeEnd(oReader);
+					pItem = new CCustomXmlMoveFromRangeEnd(document);
 				else if (L"w:customXmlMoveFromRangeStart" == sName)
-					pItem = new CCustomXmlMoveFromRangeStart(oReader);
+					pItem = new CCustomXmlMoveFromRangeStart(document);
 				else if (L"w:customXmlMoveToRangeEnd" == sName)
-					pItem = new CCustomXmlMoveToRangeEnd(oReader);
+					pItem = new CCustomXmlMoveToRangeEnd(document);
 				else if (L"w:customXmlMoveToRangeStart" == sName)
-					pItem = new CCustomXmlMoveToRangeStart(oReader);
+					pItem = new CCustomXmlMoveToRangeStart(document);
 				else if (L"w:del" == sName)
-					pItem = new CDel(oReader);
+					pItem = new CDel(document);
 				else if (L"w:ins" == sName)
-					pItem = new CIns(oReader);
+					pItem = new CIns(document);
 				else if (L"w:moveFrom" == sName)
-					pItem = new CMoveFrom(oReader);
+					pItem = new CMoveFrom(document);
 				else if (L"w:moveFromRangeEnd" == sName)
-					pItem = new CMoveFromRangeEnd(oReader);
+					pItem = new CMoveFromRangeEnd(document);
 				else if (L"w:moveFromRangeStart" == sName)
-					pItem = new CMoveFromRangeStart(oReader);
+					pItem = new CMoveFromRangeStart(document);
 				else if (L"w:moveTo" == sName)
-					pItem = new CMoveTo(oReader);
+					pItem = new CMoveTo(document);
 				else if (L"w:moveToRangeEnd" == sName)
-					pItem = new CMoveToRangeEnd(oReader);
+					pItem = new CMoveToRangeEnd(document);
 				else if (L"w:moveToRangeStart" == sName)
-					pItem = new CMoveToRangeStart(oReader);
+					pItem = new CMoveToRangeStart(document);
 				else if (L"m:oMath" == sName)
-					pItem = new COMath(oReader);
+					pItem = new COMath(document);
 				else if (L"m:oMathPara" == sName)
-					pItem = new COMathPara(oReader);
+					pItem = new COMathPara(document);
 				else if (L"w:p" == sName)
-					pItem = new CParagraph(oReader);
+					pItem = new CParagraph(document, this);
 				else if (L"w:permEnd" == sName)
-					pItem = new CPermEnd(oReader);
+					pItem = new CPermEnd(document);
 				else if (L"w:permStart" == sName)
-					pItem = new CPermStart(oReader);
+					pItem = new CPermStart(document);
 				else if (L"w:proofErr" == sName)
-					pItem = new CProofErr(oReader);
+					pItem = new CProofErr(document);
 				else if (L"w:sdt" == sName)
-					pItem = new CSdt(oReader);
+					pItem = new CSdt(document);
 				else if (L"w:tbl" == sName)
-					pItem = new CTbl(oReader);
+					pItem = new CTbl(document);
 
 				if (pItem)
+				{
+					pItem->fromXML(oReader);
 					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		std::wstring CDocPartBody::toXML() const

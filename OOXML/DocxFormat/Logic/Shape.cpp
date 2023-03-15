@@ -146,7 +146,7 @@ namespace OOX
 				else if (L"m:oMathPara" == sName )
 					pItem = new COMathPara( document );
 				else if (L"w:p" == sName )
-					pItem = new CParagraph( document );
+					pItem = new CParagraph( document, this );
 				else if (L"w:permEnd" == sName )
 					pItem = new CPermEnd( document );
 				else if (L"w:permStart" == sName )
@@ -160,8 +160,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}

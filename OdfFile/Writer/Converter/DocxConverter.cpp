@@ -173,8 +173,9 @@ NSCommon::smart_ptr<OOX::File> DocxConverter::find_file_by_id(const std::wstring
 	return oFile;
 }
 
-std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
+std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type, bool & bExternal)
 {
+	bExternal = false;
 
     std::wstring			ref;
 	smart_ptr<OOX::File>	oFile;
@@ -182,7 +183,7 @@ std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
     if (oox_current_child_document)
 	{
 		oFile	= oox_current_child_document->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
+		ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 	}
 	if (!ref.empty()) return ref;
 
@@ -190,7 +191,7 @@ std::wstring DocxConverter::find_link_by_id (const std::wstring & sId, int type)
 	if (docx_document->m_oMain.document == NULL) return L"";
 	
 	oFile	= docx_document->m_oMain.document->Find(sId);
-	ref		= OoxConverter::find_link_by(oFile, type);
+	ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 
 	return ref;
 }
@@ -2896,6 +2897,15 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		if (odf_border.length() > 0)
 			text_properties->content_.common_border_attlist_.fo_border_ = odf_border;
 	}
+	if (oox_run_pr->m_oShd.IsInit())
+	{
+		_CP_OPT(odf_types::color) odf_color;
+		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
+		if (odf_color)
+		{
+			text_properties->content_.fo_background_color_= *odf_color;
+		}
+	}
 	if (oox_run_pr->m_oHighlight.IsInit() && oox_run_pr->m_oHighlight->m_oVal.IsInit())
 	{
 		if (oox_run_pr->m_oHighlight->m_oVal->GetValue() != SimpleTypes::highlightcolorNone)
@@ -2911,16 +2921,6 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 				text_properties->content_.fo_background_color_ = odf_types::color(strColor);
 				delete oRgbColor;
 			}
-		}
-	}
-	
-	if (oox_run_pr->m_oShd.IsInit())
-	{
-		_CP_OPT(odf_types::color) odf_color;
-		convert(oox_run_pr->m_oShd.GetPointer(), odf_color);
-		if (odf_color)
-		{
-			text_properties->content_.fo_background_color_= *odf_color;
 		}
 	}
 	if ((oox_run_pr->m_oOutline.IsInit()) && (oox_run_pr->m_oOutline->m_oVal.ToBool()))
@@ -3052,10 +3052,11 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 	if (oox_obj->m_oOleObject.IsInit())
 	{
 		std::wstring pathOle;
+		bool bExternal = false;
 
 		if (oox_obj->m_oOleObject->m_oId.IsInit())
 		{
-			pathOle = find_link_by_id(oox_obj->m_oOleObject->m_oId->GetValue(), 4);
+			pathOle = find_link_by_id(oox_obj->m_oOleObject->m_oId->GetValue(), 4, bExternal);
 		}
 		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
 
@@ -3070,7 +3071,7 @@ void DocxConverter::convert(OOX::Logic::CObject* oox_obj)
 			}
 			std::wstring sIdImageFileCache = GetImageIdFromVmlShape(oox_obj->m_oShape.GetPointer());
 			
-			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1);
+			std::wstring pathImage = find_link_by_id(sIdImageFileCache, 1, bExternal);
 			std::wstring odf_ref_image = odf_context()->add_imageobject(pathImage);
 			
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
@@ -3574,10 +3575,11 @@ void DocxConverter::convert(OOX::Logic::CHyperlink *oox_hyperlink)
 	if (oox_hyperlink == NULL)return;
 
 	std::wstring link, location;
+	bool bExternal = false;
 
 	if (oox_hyperlink->m_oId.IsInit()) //гиперлинк
 	{
-		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2);
+		link = find_link_by_id(oox_hyperlink->m_oId->GetValue(), 2, bExternal);
 	}
 	else if (oox_hyperlink->m_sDestinition.IsInit()) //гиперлинк
 	{

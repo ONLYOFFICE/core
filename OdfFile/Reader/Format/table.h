@@ -379,7 +379,7 @@ public:
     void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
-    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties) ;
+    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content_ptr text_properties, bool need_cache = true) ;
     bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
     office_element_ptr_array	elements_; 
@@ -647,6 +647,16 @@ public:
 	//_CP_OPT(bool)	format_cells;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_protection);
+//----------------------------------------------------------
+class loext_table_protection : public table_table_protection
+{
+public:
+	static const wchar_t * ns;
+	static const wchar_t * name;
+	static const xml::NodeType xml_type = xml::typeElement;
+	static const ElementType type = typeTableTableProtection;
+};
+CP_REGISTER_OFFICE_ELEMENT2(loext_table_protection);
 //--------------------------------------------------------------------------------------------
 class table_table : public office_element_impl<table_table>
 {

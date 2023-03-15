@@ -295,7 +295,7 @@ namespace OOX
 				else if ( _T("w:proofErr") == sName )
 					pItem = new CProofErr( document );
 				else if ( _T("w:r") == sName )
-					pItem = new CRun( document );
+					pItem = new CRun( document, this );
 				else if ( _T("w:sdt") == sName )
 					pItem = new CSdt( document );
 				else if ( _T("w:smartTag") == sName )
@@ -305,8 +305,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}

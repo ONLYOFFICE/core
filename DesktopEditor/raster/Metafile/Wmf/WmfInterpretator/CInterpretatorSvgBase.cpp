@@ -192,7 +192,7 @@ namespace MetaFile
 		m_oXmlWriter.WriteNodeEnd(wsNodeName, false, false);
 	}
 
-	void CInterpretatorSvgBase::WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRect& oBounds, const TPointD& oScale)
+	void CInterpretatorSvgBase::WriteText(const std::wstring &wsText, const TPointD &oCoord, const TRect &oBounds, const TPointD &oScale, const std::vector<double>& arDx)
 	{
 		if (NULL == m_pParser || NULL == m_pParser->GetFont())
 			return;
@@ -342,9 +342,25 @@ namespace MetaFile
 
 		size_t unPosLineBreak = wsText.find(L"\n");
 
+		std::wstring wsXCoord;
+
+		if (arDx.empty() || arDx.size() < wsText.length())
+			wsXCoord = ConvertToWString(dXCoord);
+		else
+		{
+			std::vector<double> arXCoords(wsText.length());
+
+			arXCoords[0] = dXCoord;
+
+			for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
+				arXCoords[unIndex] = arDx[unIndex - 1] + arXCoords[unIndex - 1];
+
+			wsXCoord = ConvertToWString(arXCoords);
+		}
+
 		if (std::wstring::npos == unPosLineBreak)
 		{
-			arNodeAttributes.push_back({L"x", ConvertToWString(dXCoord)});
+			arNodeAttributes.push_back({L"x", wsXCoord});
 			arNodeAttributes.push_back({L"y", ConvertToWString(dYCoord)});
 
 			WriteNode(L"text", arNodeAttributes, StringNormalization(wsText));
@@ -360,7 +376,7 @@ namespace MetaFile
 			{
 				std::wstring wsTemp = StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart));
 
-				WriteNode(L"tspan", {{L"x", ConvertToWString(dXCoord)},
+				WriteNode(L"tspan", {{L"x", wsXCoord},
 				                     {L"y", ConvertToWString(dYNewCoord)}}, StringNormalization(wsText.substr(unStart, unPosLineBreak - unStart)));
 
 				dYNewCoord += dFontHeight * 1.6;
@@ -374,6 +390,36 @@ namespace MetaFile
 
 		if (bWriteG || !m_wsLastClipId.empty())
 			m_oXmlWriter.WriteNodeEnd(L"g");
+	}
+
+	void CInterpretatorSvgBase::ResetClip()
+	{
+		m_wsLastClipId.clear();
+	}
+
+	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
+	{
+		m_wsLastClipId = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		TXForm *pTransform = m_pParser->GetTransform();
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<rect x=\"" + ConvertToWString(oClip.dLeft * pTransform->M11, 0) + L"\" y=\"" + ConvertToWString(oClip.dTop * pTransform->M22, 0) + L"\" width=\"" + ConvertToWString((oClip.dRight - oClip.dLeft) * pTransform->M11, 0) + L"\" height=\"" + ConvertToWString((oClip.dBottom - oClip.dTop) * pTransform->M22, 0) + L"\"/>" +
+		            L"</clipPath>";
+	}
+
+	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
+	{
+		m_wsLastClipId = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
+
+		TXForm *pTransform = m_pParser->GetTransform();
+
+		m_wsDefs += L"<clipPath id=\"" + m_wsLastClipId + L"\">" +
+		            L"<path d=\"M" + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M22) + L", L" + ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dTop * pTransform->M11) + L", " +
+		            ConvertToWString(oBB.dRight * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", " + ConvertToWString(oBB.dLeft * pTransform->M11) + L' ' + ConvertToWString(oBB.dBottom * pTransform->M22) + L", M" +
+		            ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", L" + ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dTop * pTransform->M22) + L", " +
+		            ConvertToWString(oClip.dRight * pTransform->M11) + L' ' + ConvertToWString(oClip.dBottom * pTransform->M22) + L", " + ConvertToWString(oClip.dLeft * pTransform->M11) + L' ' + ConvertToWString(oClip.dLeft * pTransform->M22) + L"\" clip-rule=\"evenodd\"/>" +
+		            L"</clipPath>";
 	}
 
 	void CInterpretatorSvgBase::AddStroke(NodeAttributes &arAttributes) const
@@ -618,6 +664,22 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::AddClip(NodeAttributes &arAttributes)
 	{
+		if (NULL == m_pParser)
+			return;
+
+		if (m_wsLastClipId.empty())
+			UpdateClip();
+
+		if (!m_wsLastClipId.empty())
+			arAttributes.push_back({L"clip-path", L"url(#" + m_wsLastClipId + L')'});
+	}
+
+	void CInterpretatorSvgBase::UpdateClip()
+	{
+		IClip* pClip = m_pParser->GetClip();
+
+		if (NULL != pClip)
+			pClip->ClipOnRenderer((CInterpretatorSvgBase*)this);
 	}
 
 	void CInterpretatorSvgBase::AddNoneFill(NodeAttributes &arAttributes) const
@@ -1446,5 +1508,4 @@ namespace MetaFile
 	{
 		m_oStringBuilder.WriteNodeEnd(L"pattern");
 	}
-
 }

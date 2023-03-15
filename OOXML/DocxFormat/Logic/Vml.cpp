@@ -189,8 +189,8 @@ namespace OOX
 
 			if (NULL != pItem)
 			{
-				m_arrItems.push_back(pItem);
 				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
 			}
 
 			if ((image_data) && (image_data->m_rId.IsInit()))
@@ -799,8 +799,8 @@ namespace OOX
 
 				if ( NULL != pItem )
 				{
-					m_arrElements.push_back( pItem );
 					pItem->fromXML(oReader);
+					m_arrElements.push_back( pItem );
 				}
 			}
 		}

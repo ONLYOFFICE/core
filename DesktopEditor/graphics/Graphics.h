@@ -309,6 +309,8 @@ public:
 	int m_nTextRenderMode;
 	unsigned int m_nBlendMode;
 
+	bool m_bIs0PenWidthAs1px;
+
 public:
 
 	CGraphics();

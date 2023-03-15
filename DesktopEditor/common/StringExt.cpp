@@ -442,6 +442,10 @@ namespace NSStringExt
     {
         m_internal = new CStringUnicodeIterator_private(string);
     }
+    CStringUnicodeIterator::~CStringUnicodeIterator()
+    {
+        delete m_internal;
+    }
 
     bool CStringUnicodeIterator::Check()
     {

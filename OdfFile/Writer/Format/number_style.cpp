@@ -50,8 +50,8 @@ namespace cpdoccore {
 
 namespace odf_writer {
 	
-const wchar_t * number_style_base::ns = L"number";
-const wchar_t * number_style_base::name = L"base-style";
+//const wchar_t * number_style_base::ns = L"number";
+//const wchar_t * number_style_base::name = L"base-style";
 
 std::wstring number_style_base::get_style_name() const
 {
@@ -106,19 +106,19 @@ void number_time_style::serialize(std::wostream & strm)
 		}
 	}
 }
-void number_style_base::create_child_element( const std::wstring & Ns, const std::wstring & Name)
+void number_style_base::create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context *Context)
 {
     if CP_CHECK_NAME(L"style", L"text-properties")
     {
-        CP_CREATE_ELEMENT(style_text_properties_);
+        CP_CREATE_ELEMENT_SIMPLE(style_text_properties_);
     }
     else if CP_CHECK_NAME(L"style", L"map")
     {
-        CP_CREATE_ELEMENT(style_map_);
+		CP_CREATE_ELEMENT_SIMPLE(style_map_);
     }
     else
     {
-        CP_CREATE_ELEMENT(content_);
+		CP_CREATE_ELEMENT_SIMPLE(content_);
     }
 }
 void number_style_base::add_child_element( const office_element_ptr & child_element)
@@ -144,6 +144,14 @@ void number_style_base::add_child_element( const office_element_ptr & child_elem
 const wchar_t * number_number_style::ns = L"number";
 const wchar_t * number_number_style::name = L"number-style";
 
+void number_number_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_number_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
 void number_number_style::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
@@ -318,12 +326,44 @@ void number_currency_symbol::add_text(const std::wstring & Text)
 const wchar_t * number_currency_style::ns = L"number";
 const wchar_t * number_currency_style::name = L"currency-style";
 
+void number_currency_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_currency_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
 void number_currency_style::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE_SIMPLE()
         {  
+			number_style_base::serialize(CP_GET_XML_NODE());	//attr
+			number_style_base::serialize(CP_XML_STREAM());		//nodes
+		}
+	}
+}
+// number:boolean-style
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * number_boolean_style::ns = L"number";
+const wchar_t * number_boolean_style::name = L"boolean-style";
+
+void number_boolean_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_boolean_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
+void number_boolean_style::serialize(std::wostream & strm)
+{
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE_SIMPLE()
+		{
 			number_style_base::serialize(CP_GET_XML_NODE());	//attr
 			number_style_base::serialize(CP_XML_STREAM());		//nodes
 		}
@@ -359,6 +399,14 @@ void number_text_content::add_text(const std::wstring & Text)
 const wchar_t * number_text_style::ns = L"number";
 const wchar_t * number_text_style::name = L"text-style";
 
+void number_text_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_text_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
 void number_text_style::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
@@ -375,6 +423,14 @@ void number_text_style::serialize(std::wostream & strm)
 const wchar_t * number_percentage_style::ns = L"number";
 const wchar_t * number_percentage_style::name = L"percentage-style";
 
+void number_percentage_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_percentage_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
 void number_percentage_style::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)
@@ -517,11 +573,28 @@ void number_year::serialize(std::wostream & strm)
 const wchar_t * number_date_style::ns = L"number";
 const wchar_t * number_date_style::name = L"date-style";
 
+void number_date_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_date_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
+
 // number:time-style
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_time_style::ns = L"number";
 const wchar_t * number_time_style::name = L"time-style";
 
+void number_time_style::create_child_element(const std::wstring & Ns, const std::wstring & Name)
+{
+	number_style_base::create_child_element(Ns, Name, getContext());
+}
+void number_time_style::add_child_element(const office_element_ptr & child)
+{
+	number_style_base::add_child_element(child);
+}
 // number:hours
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * number_hours::ns = L"number";

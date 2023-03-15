@@ -161,7 +161,7 @@ namespace OOX
 				else if ( _T("m:oMathPara") == sName )
 					pItem = new Logic::COMathPara( document );
 				else if ( _T("w:p") == sName )
-					pItem = new Logic::CParagraph( document );
+					pItem = new Logic::CParagraph( document, this );
 				else if ( _T("w:permEnd") == sName )
 					pItem = new Logic::CPermEnd( document );
 				else if ( _T("w:permStart") == sName )
@@ -175,9 +175,8 @@ namespace OOX
 
 				if ( pItem )
 				{
-					m_arrItems.push_back( pItem );
-
 					pItem->fromXML(oReader);
+					m_arrItems.push_back( pItem );
 				}
 			}
 		}
@@ -260,7 +259,7 @@ mc:Ignorable=\"w14 w15 wp14\">");
 		else if ( et_w_ftr == m_eType )
 			return FileTypes::Footer;
 
-		return FileTypes::Unknow;
+		return FileTypes::Unknown;
 	}
 	const CPath CHdrFtr::DefaultDirectory() const
 	{

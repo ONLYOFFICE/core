@@ -38,13 +38,13 @@ namespace oox {
 
 struct _rect
 {
-	_rect() : x(0), y(0), cx(0), cy(0) {}
+	_rect(){}
 	_rect(double cx_, double cy_, double x_, double y_) : x(x_), y(y_), cx(cx_), cy(cy_) {}
 
-    double cx;
-    double cy;
-    double x;
-    double y;
+    double cx = 0;
+    double cy = 0;
+    double x = 0;
+    double y = 0;
 };
 enum _anchor_rel
 {

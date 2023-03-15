@@ -65,7 +65,7 @@ public:
     void end_covered_cell();
 
     void start_cell_content();    
-    int	end_cell_content();
+    int	end_cell_content(bool need_cache);
 
     void set_current_cell_style_id(unsigned int xfId);
     int get_current_cell_style_id();
@@ -117,7 +117,7 @@ public:
 	void dump_rels_hyperlinks	(rels & Rels);
 	void dump_rels_ole_objects	(rels & Rels);
 
-	bool start_database_range(const std::wstring &table_name, const std::wstring &ref);
+	bool start_database_range(const std::wstring &table_name, const std::wstring &ref, bool bNamedRangeOnly);
 		void set_database_orientation	(bool val);
 		void set_database_header		(bool val);
 		void set_database_filter		(bool val);

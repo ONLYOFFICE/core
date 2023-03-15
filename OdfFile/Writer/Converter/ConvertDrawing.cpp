@@ -310,20 +310,23 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
-	bool bEmbedded = true;
+	bool bExternal = false;
 	std::wstring pathImage;
+
 	if (oox_picture->blipFill.blip.IsInit())
 	{
 		if (oox_picture->blipFill.blip->embed.IsInit())
 		{
 			std::wstring sID = oox_picture->blipFill.blip->embed->get();
-			pathImage = find_link_by_id(sID, 1);
+			pathImage = find_link_by_id(sID, 1, bExternal);
 			
 		}
 		else if (oox_picture->blipFill.blip->link.IsInit())
 		{
-			pathImage = oox_picture->blipFill.blip->link->get();	
-			bEmbedded = false;
+			std::wstring sID = oox_picture->blipFill.blip->link->get();
+			pathImage = find_link_by_id(sID, 1, bExternal);
+
+			if (pathImage.empty()) pathImage = sID;
 		}
 	}
 //--------------------------------------------------------------------------------------
@@ -335,8 +338,8 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		{
 			PPTX::Logic::MediaFile & media = oox_picture->nvPicPr.nvPr.media.as<PPTX::Logic::MediaFile>();
 
-			std::wstring sID		= media.link.get();
-			std::wstring pathMedia	= find_link_by_id(sID, 3);
+			std::wstring sID = media.link.get();
+			std::wstring pathMedia = find_link_by_id(sID, 3, bExternal);
 
 			double start = -1, end = -1;
 
@@ -345,14 +348,14 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				PPTX::Logic::Ext & ext = oox_picture->nvPicPr.nvPr.extLst[i];
 				if (pathMedia.empty() && ext.link.IsInit())
 				{
-					pathMedia = find_link_by_id(ext.link->get(), 3);
+					pathMedia = find_link_by_id(ext.link->get(), 3, bExternal);
 					//например файлики mp3
 				}
 				if (ext.st.IsInit())	start	= *ext.st;
 				if (ext.end.IsInit())	end		= *ext.end;
 			}
 			
-			std::wstring odf_ref_media = odf_context()->add_media(pathMedia);
+			std::wstring odf_ref_media = odf_context()->add_media(pathMedia, bExternal);
 
 			if (!odf_ref_media.empty())
 			{
@@ -362,7 +365,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 				OoxConverter::convert(&oox_picture->nvPicPr.cNvPr);		
 				OoxConverter::convert(&oox_picture->spPr, oox_picture->style.GetPointer());
 
-				odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
+				odf_ref_image = bExternal ? pathImage : odf_context()->add_image(pathImage);
 				odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 				
 				odf_context()->drawing_context()->end_media();
@@ -381,7 +384,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 	
 		if (oox_picture->oleObject->m_oId.IsInit())
 		{
-			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4);
+			pathOle = find_link_by_id(oox_picture->oleObject->m_oId->get(), 4, bExternal);
 		}
 		std::wstring odf_ref_ole = odf_context()->add_oleobject(pathOle);
 
@@ -429,7 +432,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 
 			}
 
-			odf_ref_image = bEmbedded ? odf_context()->add_imageobject(pathImage) : pathImage; 			
+			odf_ref_image = bExternal ? pathImage : odf_context()->add_imageobject(pathImage);
 			odf_context()->drawing_context()->set_image_replacement(odf_ref_image);
 
 			odf_context()->drawing_context()->end_object_ole();
@@ -437,7 +440,7 @@ void OoxConverter::convert(PPTX::Logic::Pic *oox_picture)
 		}
 	}
 //--------------------------------------------------------------------------------------
-	odf_ref_image = bEmbedded ? odf_context()->add_image(pathImage) : pathImage;
+	odf_ref_image = bExternal ? pathImage : odf_context()->add_image(pathImage);
 	
 	odf_context()->drawing_context()->start_image(odf_ref_image);
 	{
@@ -1239,14 +1242,15 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
 		{
             std::wstring sID, pathImage;
             
+			bool bExternal = false;
 			if (oox_bitmap_fill->blip->embed.IsInit())
             {
                 sID         = oox_bitmap_fill->blip->embed->get();
-                pathImage   = find_link_by_id(sID, 1);
+                pathImage   = find_link_by_id(sID, 1, bExternal);
 
                 if (!pathImage.empty())
                 {
-                    odf_context()->drawing_context()->set_bitmap_link(pathImage);
+                    odf_context()->drawing_context()->set_bitmap_link(pathImage, bExternal);
                     _graphics_utils_::GetResolution(pathImage.c_str(), Width, Height);
 
 					Width /= 96; //to inch (current dpi file)
@@ -1255,10 +1259,14 @@ void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)
             }
             else if (oox_bitmap_fill->blip->link.IsInit())
 			{
-                sID  = pathImage = oox_bitmap_fill->blip->link->get();
+                sID  = oox_bitmap_fill->blip->link->get();
 
-                odf_context()->drawing_context()->set_bitmap_link(pathImage);
-				//...
+				pathImage = find_link_by_id(sID, 1, bExternal); //reconstruction.pptx 
+
+				if (pathImage.empty())
+					pathImage = sID;
+
+                odf_context()->drawing_context()->set_bitmap_link(pathImage, bExternal);
 			}
 			for (size_t i = 0 ; i < oox_bitmap_fill->blip->Effects.size(); i++)
 			{
@@ -1625,11 +1633,12 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 	}
 	if (oox_cnvPr->hlinkClick.IsInit())
 	{
+		bool bExternal = false;
 		if (odf_context()->drawing_context()->is_current_empty())
 		{
 			if (oox_cnvPr->hlinkClick->id.IsInit())
 			{
-				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
+				std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
 				
 				odf_context()->drawing_context()->start_link_object(hlink);	
 			}
@@ -1640,14 +1649,14 @@ void OoxConverter::convert(PPTX::Logic::CNvPr *oox_cnvPr)
 
 				if (oox_cnvPr->hlinkClick->snd.IsInit())
 				{
-					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3);
+					std::wstring sound = find_link_by_id(oox_cnvPr->hlinkClick->snd->embed.get(), 3, bExternal);
 
-					std::wstring href = odf_context()->add_media(sound);				
+					std::wstring href = odf_context()->add_media(sound, bExternal);
 					odf_context()->drawing_context()->add_sound(href);	
 				}
 				if (oox_cnvPr->hlinkClick->id.IsInit())
 				{
-					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2);
+					std::wstring hlink = find_link_by_id(oox_cnvPr->hlinkClick->id.get(), 2, bExternal);
 					
 					odf_context()->drawing_context()->add_link(hlink);	
 				}
@@ -1733,23 +1742,23 @@ void OoxConverter::convert_list_level(PPTX::Logic::TextParagraphPr	*oox_para_pro
 		const PPTX::Logic::BuBlip & buBlip = bullet.as<PPTX::Logic::BuBlip>();
 		
 		std::wstring odf_ref;
-		bool bEmbedded = true;
+		bool bExternal = false;
 			
 		if (buBlip.blip.embed.IsInit())
 		{
 			std::wstring sID = buBlip.blip.embed->get();
 			
-			std::wstring pathImage = find_link_by_id(sID, 1);
+			std::wstring pathImage = find_link_by_id(sID, 1, bExternal);
 
 			if (pathImage.empty())
 				pathImage = buBlip.blip.GetFullPicName(); // only for presentation merge shapes !!
 			
-			odf_ref = odf_context()->add_image(pathImage);
+			odf_ref = odf_context()->add_image(pathImage, bExternal);
 		}
 		else if (buBlip.blip.link.IsInit())
 		{
 			odf_ref = buBlip.blip.link->get();	
-			bEmbedded = false;
+			bExternal = true;
 		}
 		
 		if (!odf_ref.empty())
@@ -2405,7 +2414,8 @@ void OoxConverter::convert(PPTX::Logic::Run *oox_run)
 		text_properties->content_.style_text_underline_type_	= odf_types::line_type::Single;
 		text_properties->content_.style_text_underline_style_	= odf_types::line_style::Solid;
 		
-		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2);
+		bool bExternal = false;
+		std::wstring hlink = find_link_by_id(oox_run->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
 		text_context->add_hyperlink(hlink, oox_run->GetText(), location);
 	}
@@ -2440,7 +2450,8 @@ void OoxConverter::convert(PPTX::Logic::Fld *oox_fld)
 
 	if ((oox_fld->rPr.IsInit()) && (oox_fld->rPr->hlinkClick.IsInit()) && (oox_fld->rPr->hlinkClick->id.IsInit()))
 	{
-		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2);
+		bool bExternal = false;
+		std::wstring hlink = find_link_by_id(oox_fld->rPr->hlinkClick->id.get(), 2, bExternal);
 		std::wstring location;
 		
 		odf_context()->text_context()->add_hyperlink(hlink, oox_fld->GetText(), location);

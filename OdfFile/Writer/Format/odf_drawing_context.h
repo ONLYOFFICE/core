@@ -285,7 +285,7 @@ public:
 	void end_hatch_style();
 ////////////////////////////////////////////////////////////////////////////////////////
 	void start_bitmap_style();
-		void set_bitmap_link(std::wstring link);
+		void set_bitmap_link(std::wstring link, bool bExternal = false);
 	void end_bitmap_style();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_image_style_repeat		(int style);

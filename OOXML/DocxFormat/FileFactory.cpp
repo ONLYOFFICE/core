@@ -74,10 +74,18 @@ namespace OOX
 	{
 		OOX::CPath oRelationFilename = oRelation.Filename();
 		CPath oFileName;
-		if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
-			oFileName = oRootPath / oRelationFilename;
+		
+		if (oRelation.IsExternal())
+		{
+			oFileName = oRelationFilename;
+		}
 		else
-			oFileName = oPath / oRelationFilename;
+		{
+			if (oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
+				oFileName = oRootPath / oRelationFilename;
+			else
+				oFileName = oPath / oRelationFilename;
+		}
 
 		if ( oRelation.Type() == FileTypes::Document || oRelation.Type() == FileTypes::DocumentMacro)
 			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName ));
@@ -199,10 +207,18 @@ namespace OOX
 
 		OOX::CPath oRelationFilename = pRelation->Filename();
 		CPath oFileName;
-		if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
-			oFileName = oRootPath / oRelationFilename;
+
+		if (pRelation->IsExternal())
+		{
+			oFileName = oRelationFilename;
+		}
 		else
-			oFileName = oPath / oRelationFilename;
+		{
+			if (oRelationFilename.GetIsRoot() && oRootPath.GetPath().length() > 0)
+				oFileName = oRootPath / oRelationFilename;
+			else
+				oFileName = oPath / oRelationFilename;
+		}
 
 		if ( pRelation->Type() == FileTypes::Document)
 			return smart_ptr<OOX::File>(new CDocument( pMain, oRootPath, oFileName, FileTypes::Document));

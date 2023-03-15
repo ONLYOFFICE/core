@@ -126,22 +126,24 @@ smart_ptr<OOX::File> XlsxConverter::find_file_by_id(const std::wstring & sId)
 		
 	return oFile;
 }
-std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type)
+std::wstring XlsxConverter::find_link_by_id (const std::wstring & sId, int type, bool & bExternal)
 {
-    smart_ptr<OOX::File>	oFile;
+	bExternal = false;
+	
+	smart_ptr<OOX::File>	oFile;
 	std::wstring			ref;
 
 	if (oox_current_child_document)
 	{
 		oFile	= oox_current_child_document->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
+		ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 	}	
 	if (!ref.empty()) return ref;
 
 	if (xlsx_current_container)
 	{
 		oFile	= xlsx_current_container->Find(sId);
-		ref		= OoxConverter::find_link_by(oFile, type);
+		ref		= OoxConverter::find_link_by(oFile, type, bExternal);
 	}
 	return ref;
 }
@@ -597,9 +599,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CLegacyDrawingHFWorksheet *oox_bac
 					odf_writer::office_element_ptr fill_image_element;
 					
 					std::wstring pathImage, href, sID = pImage->m_oId.IsInit() ? pImage->m_rId->GetValue() : (pImage->m_oRelId.IsInit() ? pImage->m_oRelId->GetValue() : L"");
-
-					pathImage   = find_link_by_id(sID, 1);
-					href		= ods_context->add_image(pathImage);
+					
+					bool bExternal = false;
+					pathImage   = find_link_by_id(sID, 1, bExternal);
+					href		= ods_context->add_image(pathImage, bExternal);
 
 					if (false == href.empty())
 					{
@@ -968,8 +971,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPictureWorksheet *oox_background)
 
 	std::wstring pathImage, href, sID = oox_background->m_oId->GetValue();
 
-	pathImage   = find_link_by_id(sID, 1);
-	href		= ods_context->add_image(pathImage);
+	bool bExternal = false;
+
+	pathImage   = find_link_by_id(sID, 1, bExternal);
+	href		= ods_context->add_image(pathImage, bExternal);
 
 	if (href.empty()) return;
 
@@ -2891,11 +2896,12 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 				ods_context->drawing_context()->set_drawings_rect(x1, y1, x2 - x1, y2 - y1);
 			}
 		}
+		bool bExternal = false;
 		if (object->m_oRid.IsInit())
 		{
 			std::wstring sID = object->m_oRid->GetValue();
 			
-			std::wstring pathOle = find_link_by_id(sID, 4);
+			std::wstring pathOle = find_link_by_id(sID, 4, bExternal);
 
 			odf_ref_object = odf_context()->add_oleobject(pathOle);
 		}
@@ -2903,7 +2909,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::COleObjects *oox_objects, OOX::Spr
 		{
 			std::wstring sID = object->m_oObjectPr->m_oRid->GetValue();
 			
-			std::wstring pathImage = find_link_by_id(sID, 1);
+			std::wstring pathImage = find_link_by_id(sID, 1, bExternal);
 					
 			odf_ref_image = odf_context()->add_imageobject(pathImage);
 		}

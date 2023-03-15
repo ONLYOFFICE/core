@@ -59,7 +59,7 @@ xlsx_table_state_ptr xlsx_table_context::state()
 		return xlsx_table_state_ptr();
 }
 
-bool xlsx_table_context::start_database_range(const std::wstring & name, const std::wstring & ref)
+bool xlsx_table_context::start_database_range(const std::wstring & name, const std::wstring & ref, bool bNamedRangeOnly)
 {	
 	formulasconvert::odf2oox_converter convert;	
 	std::wstring oox_ref = convert.convert_named_ref(ref);
@@ -101,7 +101,7 @@ bool xlsx_table_context::start_database_range(const std::wstring & name, const s
 		
 		xlsx_data_ranges_.push_back(xlsx_data_range_ptr(new xlsx_data_range()));
 		
-		if (/*name.find(L"__Anonymous_Sheet_DB__") != std::wstring::npos ||*/ col1 == col2)
+		if (/*name.find(L"__Anonymous_Sheet_DB__") != std::wstring::npos ||*/ col1 == col2 || bNamedRangeOnly)
 		{//check range in pivots
 			xlsx_data_ranges_.back()->bTablePart = false;
 		}
@@ -272,9 +272,9 @@ void xlsx_table_context::start_cell_content()
     xlsx_text_context_.start_cell_content();
 }
 
-int xlsx_table_context::end_cell_content()
+int xlsx_table_context::end_cell_content(bool need_cache)
 {
-    return xlsx_text_context_.end_cell_content();
+    return xlsx_text_context_.end_cell_content(need_cache);
 }
 
 void xlsx_table_context::start_covered_cell()

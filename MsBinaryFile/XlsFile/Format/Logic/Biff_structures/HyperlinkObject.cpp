@@ -98,6 +98,10 @@ std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
 
 	if (size < 1) return L"";
 
+	_INT32 size_record = record.getDataSize() - record.getRdPtr();
+	if (size > size_record)
+		size = size_record;
+
 #if defined(_WIN32) || defined(_WIN64)
 		result = std::wstring(record.getCurData<wchar_t>(), size);
 #else

@@ -137,7 +137,10 @@ void table_table_source::add_child_element( xml::sax * Reader, const std::wstrin
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // table:table-protection
-const wchar_t * table_table_protection::ns = L"loext"; //?? table odf 1.3
+const wchar_t * loext_table_protection::ns = L"loext"; 
+const wchar_t * loext_table_protection::name = L"table-protection";
+
+const wchar_t * table_table_protection::ns = L"table";
 const wchar_t * table_table_protection::name = L"table-protection";
 
 void table_table_protection::add_attributes( const xml::attributes_wc_ptr & Attributes )

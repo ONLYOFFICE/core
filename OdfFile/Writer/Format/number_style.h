@@ -43,14 +43,10 @@
 namespace cpdoccore { 
 namespace odf_writer {
 
-class number_style_base : public office_element_impl<number_style_base>
+class number_style_base
 {
 public:
-	static const wchar_t * ns;
-	static const wchar_t * name;
-	static const ElementType type = typeNumberBaseStyle;
-
-    virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name, odf_conversion_context *Context);
 	virtual void add_child_element( const office_element_ptr & child);
 	
 	virtual void serialize(std::wostream & strm);
@@ -67,15 +63,16 @@ public:
 };
 
 //------------------------------------------------------------------------------------------------------
-class number_number_style : public number_style_base
+class number_number_style : public office_element_impl<number_number_style>, public number_style_base
 {
 public:
-    static const wchar_t * ns;
+	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberNumberStyle;
-    
-
+    static const ElementType type = typeNumberNumberStyle;  
 	
 	virtual void serialize(std::wostream & strm);
 
@@ -83,45 +80,63 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(number_number_style)
 
 //------------------------------------------------------------------------------------------------------
-class number_currency_style : public number_style_base
+class number_currency_style : public office_element_impl<number_currency_style>, number_style_base
 {
 public:
-    static const wchar_t * ns;
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
     static const wchar_t * name;
 
     static const ElementType type = typeNumberCurrencyStyle;
-    
-
 
 	virtual void serialize(std::wostream & strm);
 };
 CP_REGISTER_OFFICE_ELEMENT2(number_currency_style)
-
 //------------------------------------------------------------------------------------------------------
-class number_text_style : public number_style_base
+class number_boolean_style : public office_element_impl<number_boolean_style>, number_style_base
 {
 public:
-    static const wchar_t * ns;
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
+	static const wchar_t * name;
+
+	static const ElementType type = typeNumberBooleanStyle;
+
+	virtual void serialize(std::wostream & strm);
+};
+CP_REGISTER_OFFICE_ELEMENT2(number_boolean_style)
+
+//------------------------------------------------------------------------------------------------------
+class number_text_style : public office_element_impl<number_text_style>, public number_style_base
+{
+public:
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
     static const wchar_t * name;
 
     static const ElementType type = typeNumberTextStyle;
-    
-
 
 	virtual void serialize(std::wostream & strm);
 };
 CP_REGISTER_OFFICE_ELEMENT2(number_text_style)
 
 //------------------------------------------------------------------------------------------------------
-class number_date_style : public number_style_base
+class number_date_style : public office_element_impl<number_date_style>, public number_style_base
 {
 public:
-    static const wchar_t * ns;
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberDataStyle;
-    
-
+    static const ElementType type = typeNumberDataStyle;  
 
 	virtual void serialize(std::wostream & strm);
 
@@ -130,10 +145,13 @@ public:
 CP_REGISTER_OFFICE_ELEMENT2(number_date_style)
 
 //------------------------------------------------------------------------------------------------------
-class number_percentage_style : public number_style_base
+class number_percentage_style : public office_element_impl<number_percentage_style>, public number_style_base
 {
 public:
-    static const wchar_t * ns;
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
     static const wchar_t * name;
 
     static const ElementType type = typeNumberPercentageStyle;
@@ -143,10 +161,13 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(number_percentage_style)
 
-class number_time_style : public number_style_base
+class number_time_style : public office_element_impl<number_time_style>, public number_style_base
 {
 public:
-    static const wchar_t * ns;
+	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
+	virtual void add_child_element(const office_element_ptr & child);
+
+	static const wchar_t * ns;
     static const wchar_t * name;
 
     static const ElementType type = typeNumberTimeStyle;
@@ -164,13 +185,10 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberText;
-    
+    static const ElementType type = typeNumberText;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
-
     virtual void serialize(std::wostream & strm);
-
     virtual void add_text(const std::wstring & Text);
 
 private:
@@ -185,8 +203,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberNumber;
-    
+    static const ElementType type = typeNumberNumber;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element( const office_element_ptr & child);
@@ -213,8 +230,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberEmbeddedText;
-    
+    static const ElementType type = typeNumberEmbeddedText;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -234,8 +250,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberScientificNumber;
-    
+    static const ElementType type = typeNumberScientificNumber;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -261,8 +276,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberCurrencySymbol;
-    
+    static const ElementType type = typeNumberCurrencySymbol;    
 
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -284,8 +298,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberTextContent;
-    
+    static const ElementType type = typeNumberTextContent;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 
@@ -304,8 +317,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberDayOfWeek;
-    
+    static const ElementType type = typeNumberDayOfWeek;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -322,8 +334,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberQuarter;
-    
+    static const ElementType type = typeNumberQuarter;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -340,8 +351,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberDay;
-    
+    static const ElementType type = typeNumberDay;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -359,8 +369,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberMonth;
-    
+    static const ElementType type = typeNumberMonth;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -381,7 +390,6 @@ public:
 
     static const ElementType type = typeNumberYear;
     
-
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
 
@@ -397,8 +405,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberHours;
-    
+    static const ElementType type = typeNumberHours;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -415,8 +422,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberMinutes;
-    
+    static const ElementType type = typeNumberMinutes;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -433,8 +439,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberSeconds;
-    
+    static const ElementType type = typeNumberSeconds;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -452,8 +457,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberAmPm;
-    
+    static const ElementType type = typeNumberAmPm;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);
@@ -467,8 +471,7 @@ public:
     static const wchar_t * ns;
     static const wchar_t * name;
 
-    static const ElementType type = typeNumberFraction;
-    
+    static const ElementType type = typeNumberFraction;    
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name){}
 	virtual void serialize(std::wostream & strm);

@@ -46,8 +46,10 @@ public:
 	}	m_eCodePage;
 
     int m_nAnsiCodePage;
-	int m_nDeffFont;
-	int m_nDeffMathFont;
+	int m_nDefFont;
+	int m_nDefMathFont;
+	int m_nDefLang;
+	int m_nDefLangAsian;
 	
 	int m_bRtlGutter; 
 	int m_bRtl;

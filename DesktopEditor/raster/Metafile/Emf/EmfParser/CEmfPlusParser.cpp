@@ -71,12 +71,12 @@
 
 #include "CEmfParser.h"
 #include "../../Wmf/WmfFile.h"
-#include "../../Wmf/WmfInterpretator/CWmfInterpretatorSvg.h""
+#include "../../Wmf/WmfInterpretator/CWmfInterpretatorSvg.h"
 
 #include "../EmfInterpretator/CEmfInterpretator.h"
 #include "../EmfInterpretator/CEmfInterpretatorSvg.h"
 #include "../EmfInterpretator/CEmfInterpretatorArray.h"
-#include "../EmfInterpretator/CEmfInterpretatorRender.h""
+#include "../EmfInterpretator/CEmfInterpretatorRender.h"
 
 #ifdef METAFILE_SUPPORT_WMF_EMF_XML
 #include "../EmfInterpretator/CEmfInterpretatorXml.h"
@@ -377,7 +377,7 @@ namespace MetaFile
 
 			m_oStream >> unTotalSize;
 
-			pImage->SetSizeData(unTotalSize - 16);
+			pImage->SetSize(unTotalSize - 16);
 
 			ReadImage(*pImage, false);
 
@@ -441,7 +441,7 @@ namespace MetaFile
 		if (unMetafileSize < m_ulRecordSize - 16)
 			unMetafileSize = m_ulRecordSize - 16;
 
-		oImage.SetSizeData(unMetafileSize);
+		oImage.SetSize(unMetafileSize);
 
 		if (!bReadData) return;
 
@@ -957,10 +957,11 @@ namespace MetaFile
 
 		m_oStream >> unPathPointFlags;
 
+		CEmfPlusPath *pPath = new CEmfPlusPath;
+
 		if ((unPathPointFlags >>(20)) & 1 )
 		{
 			//Определен флаг R (С игнорируется)
-			return NULL;
 		}
 		else if ((unPathPointFlags >>(14)) & 1 )
 		{
@@ -968,11 +969,11 @@ namespace MetaFile
 			std::vector<TEmfPlusPoint> arPoints     = ReadPoints<TEmfPlusPoint>(unPathPointCount);
 			std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
-			CEmfPlusPath *pPath = new CEmfPlusPath();
+			pPath->MoveTo(arPoints[0].x, arPoints[0].y);
 
-			for (unsigned int unIndex = 0; unIndex < unPathPointCount; ++unIndex)
+			for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
 			{
-				switch (ExpressValue(arPointTypes[unIndex], 0, 3))
+				switch (arPointTypes[unIndex] & 0xf)
 				{
 				case PathPointTypeStart:  pPath->MoveTo(arPoints[unIndex].x, arPoints[unIndex].y); break;
 				case PathPointTypeLine:   pPath->LineTo(arPoints[unIndex].x, arPoints[unIndex].y); break;
@@ -981,36 +982,32 @@ namespace MetaFile
 					if (unIndex + 2 >= unPathPointCount) break;
 
 					pPath->CurveTo(arPoints[unIndex + 0].x, arPoints[unIndex + 0].y,
-							arPoints[unIndex + 1].x, arPoints[unIndex + 1].y,
-							arPoints[unIndex + 2].x, arPoints[unIndex + 2].y);
+					               arPoints[unIndex + 1].x, arPoints[unIndex + 1].y,
+					               arPoints[unIndex + 2].x, arPoints[unIndex + 2].y);
 					unIndex += 2;
 					break;
 				}
 				}
 
-				if (ExpressValue(arPointTypes[unIndex], 4, 7) == 0x08)
-				{
+				if ((((unsigned int)(arPointTypes[unIndex])) & 0xf0) == 0x80)
 					pPath->Close();
-				}
 			}
 
 			unsigned int unSkip = 4 - (12 + 5 * unPathPointCount) % 4;
 
 			if (unSkip < 4)
 				m_oStream.Skip(unSkip);
-
-			return pPath;
 		}
 		else
 		{
 			std::vector<TEmfPlusPointF> arPoints    = ReadPoints<TEmfPlusPointF>(unPathPointCount);
 			std::vector<char> arPointTypes          = ReadPointTypes(unPathPointCount);
 
-			CEmfPlusPath *pPath = new CEmfPlusPath();
+			pPath->MoveTo(arPoints[0].X, arPoints[0].Y);
 
-			for (unsigned int unIndex = 0; unIndex < unPathPointCount; ++unIndex)
+			for (unsigned int unIndex = 1; unIndex < unPathPointCount; ++unIndex)
 			{
-				switch (ExpressValue(arPointTypes[unIndex], 0, 3))
+				switch (arPointTypes[unIndex] & 0xf)
 				{
 				case PathPointTypeStart:  pPath->MoveTo(arPoints[unIndex].X, arPoints[unIndex].Y); break;
 				case PathPointTypeLine:   pPath->LineTo(arPoints[unIndex].X, arPoints[unIndex].Y); break;
@@ -1019,29 +1016,53 @@ namespace MetaFile
 					if (unIndex + 2 >= unPathPointCount) break;
 
 					pPath->CurveTo(arPoints[unIndex + 0].X, arPoints[unIndex + 0].Y,
-							arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
-							arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
+					               arPoints[unIndex + 1].X, arPoints[unIndex + 1].Y,
+					               arPoints[unIndex + 2].X, arPoints[unIndex + 2].Y);
 					unIndex += 2;
 					break;
 				}
 				}
 
-				if (ExpressValue(arPointTypes[unIndex], 4, 7) == 0x08)
-				{
+				if ((((unsigned int)(arPointTypes[unIndex])) & 0xf0) == 0x80)
 					pPath->Close();
-				}
 			}
 
 			unsigned int unSkip = 4 - (12 + 9 * unPathPointCount) % 4;
 
 			if (unSkip < 4)
 				m_oStream.Skip(unSkip);
-
-			return pPath;
-
 			//Оба флага не определены
 		}
 		//TODO: реализовать
+
+		return pPath;
+	}
+
+	void CEmfPlusParser::ReadBufferPath(CEmfPlusBuffer *pDataPath)
+	{
+		if (NULL == pDataPath)
+			return;
+
+		unsigned int unTotalSize;
+		m_oStream >> unTotalSize;
+
+		if (0 == pDataPath->GetSize())
+			pDataPath->SetSize(unTotalSize - 8);
+		else
+			m_oStream.Skip(4);
+
+		pDataPath->AddData(m_oStream.GetCurPtr(), m_ulRecordSize - 8);
+		m_oStream.Skip(m_ulRecordSize - 8);
+	}
+
+	CEmfPlusBuffer *CEmfPlusParser::GetBuffer(unsigned int unPathIndex)
+	{
+		EmfPlusObjects::const_iterator oFoundElement = m_mObjects.find(unPathIndex);
+
+		if (m_mObjects.end() != oFoundElement && oFoundElement->second->GetObjectType() == ObjectTypeBuffer)
+			return (CEmfPlusBuffer*)oFoundElement->second;
+
+		return NULL;
 	}
 
 	CEmfPlusPath *CEmfPlusParser::GetPath(unsigned int unPathIndex)
@@ -2872,9 +2893,42 @@ namespace MetaFile
 		{
 			LOGGING(L"Object Path with index: " << shObjectIndex)
 
-			CEmfPlusPath* pPath = ReadPath();
+			if ((unShFlags >>(15)) & 1)
+			{
+				CEmfPlusBuffer *pPathBuffer = GetBuffer(shObjectIndex);
+				bool bRegister = true;
 
-			RegisterObject(pPath, shObjectIndex);
+				if (NULL == pPathBuffer)
+					pPathBuffer = new CEmfPlusBuffer();
+				else
+					bRegister = false;
+
+				ReadBufferPath(pPathBuffer);
+
+				if (bRegister)
+					RegisterObject(pPathBuffer, shObjectIndex);
+
+				if (0 == pPathBuffer->GetUnreadSize())
+				{
+					CDataStream oTempStream = m_oStream;
+
+					BYTE* pTempPathBuffer;
+					unsigned int unPathBufferSize;
+					pPathBuffer->GetData(pTempPathBuffer, unPathBufferSize);
+
+					m_oStream.SetStream(pTempPathBuffer, unPathBufferSize);
+
+					CEmfPlusPath* pPath = ReadPath();
+					RegisterObject(pPath, shObjectIndex);
+
+					m_oStream = oTempStream;
+				}
+			}
+			else
+			{
+				CEmfPlusPath* pPath = ReadPath();
+				RegisterObject(pPath, shObjectIndex);
+			}
 
 			break;
 		}

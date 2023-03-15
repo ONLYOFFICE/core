@@ -473,8 +473,8 @@ public:
        
 		cpdoccore::odf_writer::package::odf_document		*output_document;
 
-				std::wstring						find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type);
-		virtual std::wstring						find_link_by_id(const std::wstring & sId, int type) = 0;
+				std::wstring						find_link_by (NSCommon::smart_ptr<OOX::File> & oFile, int type, bool & bExternal);
+		virtual std::wstring						find_link_by_id(const std::wstring & sId, int type, bool & bExternal) = 0;
 		virtual NSCommon::smart_ptr<OOX::File>		find_file_by_id(const std::wstring & sId) = 0;
 		
 		OOX::IFileContainer							*oox_current_child_document;

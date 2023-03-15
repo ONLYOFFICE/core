@@ -515,26 +515,26 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & _fileName)
 
 		bEmptyFile = (dwReadBytes < 1);
 
-		if (isOOXFlatFormatFile(buffer, sizeRead))
+		if (isBinaryDoctFormatFile(buffer, sizeRead)) // min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
+		}
+		else if (isBinaryXlstFormatFile(buffer, sizeRead))// min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
+		}
+		else if (isBinaryPpttFormatFile(buffer, sizeRead))// min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
+		}
+		else if (isOOXFlatFormatFile(buffer, sizeRead))
 		{
 			//nFileType;
 		}
 		else if ( isRtfFormatFile(buffer,sizeRead) ) // min size - 5
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF;
-		}
-		else if ( isBinaryDoctFormatFile(buffer,sizeRead) ) // min size - 4
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_WORD;
-		}
-		else if ( isBinaryXlstFormatFile(buffer,sizeRead) )// min size - 4
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET;
-		}
-		else if ( isBinaryPpttFormatFile(buffer,sizeRead) )// min size - 4
-		{
-			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
-		}        
+		}		     
         else if (isPdfFormatFile(buffer,sizeRead, sDocumentID) )// min size - 5
         {
             nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;

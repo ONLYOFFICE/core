@@ -456,9 +456,9 @@ namespace OOX
 		void CWebPr::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<webPr");
-			WritingStringNullableAttrString(L"url", m_oUrl, *m_oUrl)
-				WritingStringNullableAttrString(L"post", m_oPost, *m_oPost)
-				WritingStringNullableAttrString(L"editPage", m_oEditPage, *m_oEditPage)
+				WritingStringNullableAttrEncodeXmlString(L"url", m_oUrl, *m_oUrl)
+				WritingStringNullableAttrEncodeXmlString(L"post", m_oPost, *m_oPost)
+				WritingStringNullableAttrEncodeXmlString(L"editPage", m_oEditPage, *m_oEditPage)
 				WritingStringNullableAttrString(L"htmlFormat", m_oHtmlFormat, m_oHtmlFormat->ToString())
 				WritingStringNullableAttrBool2(L"sourceData", m_oSourceData)
 				WritingStringNullableAttrBool2(L"consecutive", m_oConsecutive)

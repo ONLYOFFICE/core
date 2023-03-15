@@ -246,7 +246,7 @@ namespace OOX
 	}
 	void CRels::Registration(const RId& rId, const FileType& oType, const CPath& oPath, bool bExternal)
 	{
-		if( FileTypes::Unknow == oType ) return;
+		if( FileTypes::Unknown == oType ) return;
 
 		std::wstring strFileName = oPath.m_strFilename;
 

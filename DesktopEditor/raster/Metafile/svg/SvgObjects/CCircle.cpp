@@ -7,7 +7,11 @@ namespace SVG
 {
 	CCircle::CCircle(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
+		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
+		m_oR .SetValue(oNode.GetAttribute(L"r"));
+	}
 
 	void CCircle::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -15,15 +19,6 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"cx"))
-			m_oCx.SetValue(mAttributes.at(L"cx"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"cy"))
-			m_oCy.SetValue(mAttributes.at(L"cy"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"r"))
-			m_oR.SetValue(mAttributes.at(L"r"), ushLevel, bHardMode);
 	}
 
 	bool CCircle::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

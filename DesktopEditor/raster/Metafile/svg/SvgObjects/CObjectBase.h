@@ -92,10 +92,7 @@ namespace SVG
 				SetData(mAttributes, ushLevel, bHardMode);
 		};
 
-		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false)
-		{
-
-		};
+		virtual void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) = 0;
 
 		std::wstring GetId() const
 		{

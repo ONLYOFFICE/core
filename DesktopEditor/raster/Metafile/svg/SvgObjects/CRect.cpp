@@ -7,7 +7,15 @@ namespace SVG
 {
 	CRect::CRect(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
+		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
+		m_oRect.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
+		m_oRect.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+
+		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
+		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+	}
 
 	void CRect::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -15,24 +23,6 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oRect.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oRect.m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"width"))
-			m_oRect.m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"height"))
-			m_oRect.m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"rx"))
-			m_oRx.SetValue(mAttributes.at(L"rx"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"ry"))
-			m_oRy.SetValue(mAttributes.at(L"ry"), ushLevel, bHardMode);
 	}
 
 	bool CRect::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

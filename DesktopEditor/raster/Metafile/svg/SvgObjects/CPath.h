@@ -37,10 +37,18 @@ namespace SVG
 		virtual ~IPathElement() {};
 
 		virtual EPathElement GetType() const = 0;
-		virtual bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) = 0;
 		virtual void Draw(IRenderer* pRenderer) const = 0;
-
 		virtual IPathElement* Copy() const = 0;
+
+		template<typename ElementType>
+		static ElementType* CreateFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL)
+		{
+			ElementType* pElement = new ElementType;
+			if (!pElement->ReadFromArray(arValues, bRelativeCoordinate, pPrevElement))
+				RELEASEOBJECT(pElement);
+
+			return pElement;
+		}
 
 		TBounds GetBounds() const
 		{
@@ -58,6 +66,7 @@ namespace SVG
 		}
 
 	private:
+		virtual bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) = 0;
 		virtual Point GetPoint(int nIndex) const = 0;
 
 		friend class CMoveElement;
@@ -84,23 +93,19 @@ namespace SVG
 			return EPathElement::Move;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty())
+			if (arValues.size() < 2)
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
-
-			if (arValues.empty() || 0 != (arValues.size() % 2))
-				return false;
-
-			Point oTranslatePoint = {0, 0};
+			Point oTranslatePoint{0., 0.};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
 				oTranslatePoint = pPrevElement->GetPoint(-1);
 
-			for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-				m_arPoints.push_back(Point{arValues[unIndex] + oTranslatePoint.dX, arValues[unIndex + 1] + oTranslatePoint.dY});
+			m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
+
+			arValues.erase(arValues.begin(), arValues.begin() + 2);
 
 			return true;
 		}
@@ -123,7 +128,7 @@ namespace SVG
 		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return Point{0, 0};
+				return Point{0., 0.};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -139,39 +144,27 @@ namespace SVG
 			return EPathElement::Line;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty())
+			if (arValues.size() < 2)
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
+			Point oTranslatePoint{0., 0.};
 
-			if (arValues.empty() || 0 != (arValues.size() % 2))
-				return false;
+			if (bRelativeCoordinate && NULL != pPrevElement)
+				oTranslatePoint = pPrevElement->GetPoint(-1);
 
-			if (!bRelativeCoordinate || NULL == pPrevElement)
+			while (arValues.size() > 1)
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-					m_arPoints.push_back(Point{arValues[unIndex], arValues[unIndex + 1]});
+				m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
 
-				return true;
-			}
-			else if(bRelativeCoordinate && NULL != pPrevElement)
-			{
-				Point oCurrentPoint = pPrevElement->GetPoint(-1);
+				if (bRelativeCoordinate)
+					oTranslatePoint = m_arPoints.back();
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-				{
-					oCurrentPoint.dX += arValues[unIndex];
-					oCurrentPoint.dY += arValues[unIndex + 1];
-
-					m_arPoints.push_back(oCurrentPoint);
-				}
-
-				return true;
+				arValues.erase(arValues.begin(), arValues.begin() + 2);
 			}
 
-			return false;
+			return true;
 		}
 
 		void Draw(IRenderer* pRenderer) const override
@@ -191,7 +184,7 @@ namespace SVG
 		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return Point{0, 0};
+				return Point{0., 0.};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -207,39 +200,27 @@ namespace SVG
 			return EPathElement::VLine;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty())
-				return false;
-
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
-
 			if (arValues.empty())
 				return false;
 
-			Point oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : Point{0, 0});
+			Point oTranslatePoint{0., 0.};
 
-			if (!bRelativeCoordinate || NULL == pPrevElement)
+			if (bRelativeCoordinate && NULL != pPrevElement)
+				oTranslatePoint = pPrevElement->GetPoint(-1);
+
+			while (!arValues.empty())
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-					m_arPoints.push_back(Point{oPrevPoint.dX, arValues[unIndex]});
+				m_arPoints.push_back(Point{0, arValues[0]} + oTranslatePoint);
 
-				return true;
-			}
-			else if(bRelativeCoordinate && NULL != pPrevElement)
-			{
-				Point oCurrentPoint = oPrevPoint;
+				if (bRelativeCoordinate)
+					oTranslatePoint = m_arPoints.back();
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-				{
-					oCurrentPoint.dY += arValues[unIndex];
-					m_arPoints.push_back(oCurrentPoint);
-				}
-
-				return true;
+				arValues.erase(arValues.begin());
 			}
 
-			return false;
+			return true;
 		}
 
 		CVLineElement* Copy() const override
@@ -258,39 +239,27 @@ namespace SVG
 			return EPathElement::HLine;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty())
-				return false;
-
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
-
 			if (arValues.empty())
 				return false;
 
-			Point oPrevPoint = ((NULL != pPrevElement) ? pPrevElement->GetPoint(-1) : Point{0, 0});
+			Point oTranslatePoint{0., 0.};
 
-			if (!bRelativeCoordinate || NULL == pPrevElement)
+			if (bRelativeCoordinate && NULL != pPrevElement)
+				oTranslatePoint = pPrevElement->GetPoint(-1);
+
+			while (!arValues.empty())
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-					m_arPoints.push_back(Point{arValues[unIndex], oPrevPoint.dY});
+				m_arPoints.push_back(Point{arValues[0], 0} + oTranslatePoint);
 
-				return true;
-			}
-			else if(bRelativeCoordinate && NULL != pPrevElement)
-			{
-				Point oCurrentPoint = oPrevPoint;
+				if (bRelativeCoordinate)
+					oTranslatePoint = m_arPoints.back();
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-				{
-					oCurrentPoint.dX += arValues[unIndex];
-					m_arPoints.push_back(oCurrentPoint);
-				}
-
-				return true;
+				arValues.erase(arValues.begin());
 			}
 
-			return false;
+			return true;
 		}
 
 		CHLineElement* Copy() const override
@@ -324,51 +293,32 @@ namespace SVG
 			return EPathElement::CBezier;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty())
+			if (arValues.size() < 6)
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
+			Point oTranslatePoint{0., 0.};
 
-			if (arValues.empty() || 0 != (arValues.size() % 6))
-				return false;
+			if (bRelativeCoordinate && NULL != pPrevElement)
+				oTranslatePoint = pPrevElement->GetPoint(-1);
 
-			if (!bRelativeCoordinate || NULL == pPrevElement)
+			while (arValues.size() > 5)
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 6)
-				{
-					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arPoints.push_back(Point{arValues[unIndex + 2], arValues[unIndex + 3]});
-					m_arPoints.push_back(Point{arValues[unIndex + 4], arValues[unIndex + 5]});
-				}
+				m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[2], arValues[3]} + oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[4], arValues[5]} + oTranslatePoint);
 
-				return true;
+				if (bRelativeCoordinate)
+					oTranslatePoint = m_arPoints.back();
+
+				arValues.erase(arValues.begin(), arValues.begin() + 6);
 			}
-			else if (bRelativeCoordinate && NULL != pPrevElement)
-			{
-				Point oPoint1{0, 0};
-				Point oPoint2{0, 0};
-				Point oCurrentPoint = pPrevElement->GetPoint(-1);
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 6)
-				{
-					oPoint1 = oCurrentPoint + Point{arValues[unIndex + 0], arValues[unIndex + 1]};
-				    oPoint2 = oCurrentPoint + Point{arValues[unIndex + 2], arValues[unIndex + 3]};
-			        oCurrentPoint += Point{arValues[unIndex + 4], arValues[unIndex + 5]};
+			return true;
+		}
 
-		            m_arPoints.push_back(oPoint1);
-					m_arPoints.push_back(oPoint2);
-					m_arPoints.push_back(oCurrentPoint);
-	            }
-
-	            return true;
-            }
-
-            return false;
-        }
-
-        void Draw(IRenderer* pRenderer) const override
+		void Draw(IRenderer* pRenderer) const override
 		{
 			if (m_arPoints.empty() || 0 != (m_arPoints.size() % 3))
 				return;
@@ -377,18 +327,6 @@ namespace SVG
 				pRenderer->PathCommandCurveTo(m_arPoints[unIndex + 0].dX, m_arPoints[unIndex + 0].dY,
 				                              m_arPoints[unIndex + 1].dX, m_arPoints[unIndex + 1].dY,
 				                              m_arPoints[unIndex + 2].dX, m_arPoints[unIndex + 2].dY);
-
-//			pRenderer->PathCommandMoveTo(m_arPoints.back().dX, m_arPoints.back().dY);
-//			pRenderer->PathCommandArcTo(m_arPoints.back().dX - 1, m_arPoints.back().dY - 1, 2, 2, 0, 360);
-//			pRenderer->PathCommandMoveTo(m_arPoints.front().dX, m_arPoints.front().dY);
-
-//			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() - 1; ++unIndex)
-//			{
-//				pRenderer->PathCommandLineTo(m_arPoints[unIndex].dX, m_arPoints[unIndex].dY);
-
-//				pRenderer->PathCommandArcTo(m_arPoints[unIndex].dX - 1, m_arPoints[unIndex].dY - 1, 2, 2, 0, 360);
-//				pRenderer->PathCommandMoveTo(m_arPoints[unIndex].dX, m_arPoints[unIndex].dY);
-//			}
 		}
 
 		CCBezierElement* Copy() const override
@@ -398,18 +336,12 @@ namespace SVG
 
 		void Rotate(double dAngle, Point oCenter)
 		{
-//			Matrix rotate = Matrix::Rotate(Point{oCenter.dX, oCenter.dY}, -dAngle * M_PI / 180);
-
-//			for (unsigned int unIndex = 0; unIndex < m_arPoints.size() - 1; ++unIndex)
-//			{
-//				m_arPoints[unIndex] = rotate.Transform(m_arPoints[unIndex]);
-//			}
 		}
 	private:
 		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return Point{0, 0};
+				return Point{0., 0.};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -425,17 +357,15 @@ namespace SVG
 			return EPathElement::SBezier;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty() || NULL == pPrevElement)
+			if (arValues.size() < 4)
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
+			Point oFirstPoint{0., 0.}, oTranslatePoint{0., 0.};
 
-			if (arValues.empty() || 0 != (arValues.size() % 4))
-				return false;
-
-			Point oFirstPoint = pPrevElement->GetPoint(-1);
+			if (bRelativeCoordinate && NULL != pPrevElement)
+				oTranslatePoint = oFirstPoint = pPrevElement->GetPoint(-1);
 
 			if (EPathElement::SBezier == pPrevElement->GetType() ||
 			    EPathElement::CBezier == pPrevElement->GetType())
@@ -445,41 +375,22 @@ namespace SVG
 				oFirstPoint += oFirstPoint - oPoint;
 			}
 
-			if (!bRelativeCoordinate)
+			while (arValues.size() > 3)
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
-				{
-					m_arPoints.push_back(oFirstPoint);
-					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arPoints.push_back(Point{arValues[unIndex + 2], arValues[unIndex + 3]});
-				}
+				m_arPoints.push_back(oFirstPoint + oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[2], arValues[3]} + oTranslatePoint);
 
-				return true;
+				if (bRelativeCoordinate)
+					oTranslatePoint = m_arPoints.back();
+
+				arValues.erase(arValues.begin(), arValues.begin() + 4);
 			}
-			else
-			{
-				Point oPoint1 = oFirstPoint;
-				Point oPoint2{0, 0};
-				Point oCurrentPoint = pPrevElement->GetPoint(-1);
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
-				{
-					oPoint1 += oCurrentPoint;
-					oPoint2 = oCurrentPoint + Point{arValues[unIndex + 0], arValues[unIndex + 1]};
-				    oCurrentPoint += Point{arValues[unIndex + 2], arValues[unIndex + 3]};
+			return true;
+		}
 
-			        m_arPoints.push_back(oPoint1);
-					m_arPoints.push_back(oPoint2);
-					m_arPoints.push_back(oCurrentPoint);
-		        }
-
-		        return true;
-	        }
-
-	        return false;
-	    }
-
-	    void Draw(IRenderer* pRenderer) const override
+		void Draw(IRenderer* pRenderer) const override
 		{
 			if (m_arPoints.empty() || 0 != (m_arPoints.size() % 3))
 				return;
@@ -498,7 +409,7 @@ namespace SVG
 		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return Point{0, 0};
+				return Point{0., 0.};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -514,53 +425,38 @@ namespace SVG
 			return EPathElement::QBezier;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty() || NULL == pPrevElement)
+			if (arValues.size() < 4)
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
+			Point oLastPoint{0., 0.}, oTranslatePoint{0., 0.};
 
-			if (arValues.empty() || 0 != (arValues.size() % 4))
-				return false;
-
-			Point oLastPoint = pPrevElement->GetPoint(-1);
-
-			if (!bRelativeCoordinate)
+			if (NULL != pPrevElement)
 			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
-				{
-					m_arPoints.push_back(oLastPoint);
-					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
-					m_arPoints.push_back(Point{arValues[unIndex + 2], arValues[unIndex + 3]});
-				}
-
-				return true;
+				oLastPoint = pPrevElement->GetPoint(-1);
+				if (bRelativeCoordinate)
+					oTranslatePoint = oLastPoint;
 			}
-			else
+
+			while (arValues.size() > 3)
 			{
-				Point oPoint1 = oLastPoint;
-				Point oPoint2{0, 0};
-				Point oCurrentPoint = oLastPoint;
+				m_arPoints.push_back(oLastPoint);
+				m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[2], arValues[3]} + oTranslatePoint);
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 4)
-				{
-					oPoint1 += oCurrentPoint;
-					oPoint2 = oCurrentPoint + Point{arValues[unIndex + 0], arValues[unIndex + 1]};
-				    oCurrentPoint += Point{arValues[unIndex + 2], arValues[unIndex + 3]};
+				oLastPoint = m_arPoints.back();
 
-			        m_arPoints.push_back(oPoint1);
-					m_arPoints.push_back(oPoint2);
-					m_arPoints.push_back(oCurrentPoint);
-		        }
+				if (bRelativeCoordinate)
+					oTranslatePoint = oLastPoint;
 
-		        return true;
-	        }
+				arValues.erase(arValues.begin(), arValues.begin() + 4);
+			}
 
-	        return false;
-	    }
+			return true;
+		}
 
-	    void Draw(IRenderer* pRenderer) const override
+		void Draw(IRenderer* pRenderer) const override
 		{
 			if (m_arPoints.empty() || 0 != (m_arPoints.size() % 3))
 				return;
@@ -579,7 +475,7 @@ namespace SVG
 		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return Point{0, 0};
+				return Point{0., 0.};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -595,68 +491,53 @@ namespace SVG
 			return EPathElement::TBezier;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty() || NULL == pPrevElement)
+			if (arValues.empty())
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
+			Point oFirstPoint{0., 0.}, oSecondPoint{0., 0.}, oTranslatePoint{0., 0.};
 
-			if (arValues.empty() || 0 != (arValues.size() % 2))
-				return false;
-
-			Point oFirstPoint  = pPrevElement->GetPoint(-1);
+			if (NULL != pPrevElement)
+			{
+				oFirstPoint  = pPrevElement->GetPoint(-1);
+				oSecondPoint = pPrevElement->GetPoint(-2);
+				if (bRelativeCoordinate)
+					oTranslatePoint = oFirstPoint;
+			}
 
 			if (EPathElement::TBezier != pPrevElement->GetType() &&
 			    EPathElement::QBezier != pPrevElement->GetType())
 			{
-				Point oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
+				oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
 
 			    if (bRelativeCoordinate)
 					oSecondPoint += oFirstPoint;
 
+				m_arPoints.push_back(oFirstPoint);
 				m_arPoints.push_back(oFirstPoint);
 				m_arPoints.push_back(oSecondPoint);
 
 				return true;
 		    }
 
-		    Point oSecondPoint = pPrevElement->GetPoint(-2);
+		    while (!arValues.empty())
+		    {
+			    oSecondPoint = oFirstPoint + (oFirstPoint - oSecondPoint);
 
-			oSecondPoint = oFirstPoint + (oFirstPoint - oSecondPoint);
+				m_arPoints.push_back(oFirstPoint + oTranslatePoint);
+				m_arPoints.push_back(oSecondPoint + oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
 
-			if (!bRelativeCoordinate)
-			{
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-				{
-					m_arPoints.push_back(oFirstPoint);
-					m_arPoints.push_back(oSecondPoint);
-					m_arPoints.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
-				}
+				oFirstPoint = m_arPoints.back();
 
-				return true;
-			}
-			else
-	        {
-			    Point oPoint1 = oFirstPoint;
-				Point oPoint2 = oSecondPoint;
-				Point oCurrentPoint = oFirstPoint;
+				if (bRelativeCoordinate)
+					oTranslatePoint = oFirstPoint;
 
-				for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 2)
-				{
-					oPoint1 += oCurrentPoint;
-					oPoint2 = oCurrentPoint;
-					oCurrentPoint += Point{arValues[unIndex + 0], arValues[unIndex + 1]};
+				arValues.erase(arValues.begin());
+		    }
 
-				    m_arPoints.push_back(oPoint1);
-					m_arPoints.push_back(oPoint2);
-					m_arPoints.push_back(oCurrentPoint);
-	            }
-
-	                return true;
-	        }
-
-	    return false;
+		    return true;
 	    }
 
 	    void Draw(IRenderer* pRenderer) const override
@@ -678,7 +559,7 @@ namespace SVG
 		Point GetPoint(int nIndex) const override
 		{
 			if (m_arPoints.empty())
-				return Point{0, 0};
+				return Point{0., 0.};
 
 			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
@@ -694,20 +575,15 @@ namespace SVG
 			return EPathElement::Arc;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (wsValue.empty())
+			if (arValues.size() < 7)
 				return false;
 
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsValue);
-
-			if (arValues.empty() || 0 != (arValues.size() % 7))
-				return false;
-
-			Point oLastPoint{0, 0};
+			Point oTranslatePoint{0., 0.};
 
 			if (NULL != pPrevElement)
-				oLastPoint = pPrevElement->GetPoint(-1);
+				oTranslatePoint = pPrevElement->GetPoint(-1);
 
 			for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 7)
 			{
@@ -716,18 +592,16 @@ namespace SVG
 				m_arLargeArcFlag.push_back(arValues[unIndex + 3]);
 				m_arSweepFlag.push_back(arValues[unIndex + 4]);
 
-				m_arPoints.push_back(oLastPoint);
+				m_arPoints.push_back(oTranslatePoint);
+				m_arPoints.push_back(Point{arValues[unIndex + 5], arValues[unIndex + 6]} + oTranslatePoint);
 
 				if (bRelativeCoordinate)
-					oLastPoint += Point{arValues[unIndex + 5], arValues[unIndex + 6]};
-			    else
-			        oLastPoint = Point{arValues[unIndex + 5], arValues[unIndex + 6]};
+					oTranslatePoint = m_arPoints.back();
 
-		        m_arPoints.push_back(oLastPoint);
-	        }
+				arValues.erase(arValues.begin(), arValues.begin() + 7);
+			}
 
-
-			return false;
+			return true;
 		}
 
 		void Draw(IRenderer* pRenderer) const override
@@ -1107,7 +981,7 @@ namespace SVG
 			return EPathElement::Close;
 		}
 
-		bool ReadFromString(const std::wstring& wsValue, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
+		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
 			if (NULL != pPrevElement)
 				m_arPoints.push_back(pPrevElement->GetPoint(-1));

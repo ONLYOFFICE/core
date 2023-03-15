@@ -9,29 +9,19 @@ namespace SVG
 {
 	CImage::CImage(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_oRect.m_oX     .SetValue(oNode.GetAttribute(L"x"));
+		m_oRect.m_oY     .SetValue(oNode.GetAttribute(L"y"));
+		m_oRect.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
+		m_oRect.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+
+		m_wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href")); // TODO:: В дальнейшем возможно стоит реализовать отдельный класс CHref для всех типов ссылок
+	}
 
 	void CImage::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oRect.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oRect.m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"width"))
-			m_oRect.m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"height"))
-			m_oRect.m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"href")) // TODO:: В дальнейшем возможно стоит реализовать
-			m_wsHref = mAttributes.at(L"href");             // отдельный класс CHref для всех типов ссылок
-		else if (mAttributes.end() != mAttributes.find(L"xlink:href"))
-			m_wsHref = mAttributes.at(L"xlink:href");
 	}
 
 	bool CImage::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

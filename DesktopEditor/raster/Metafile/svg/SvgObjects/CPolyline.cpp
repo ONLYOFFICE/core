@@ -4,7 +4,9 @@ namespace SVG
 {
 	CPolyline::CPolyline(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(oNode.GetAttribute(L"points"));
+	}
 
 	void CPolyline::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -12,9 +14,6 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"points"))
-			m_arValues = NSCSS::NS_STATIC_FUNCTIONS::ReadDoubleValues(mAttributes.at(L"points"));
 	}
 
 	bool CPolyline::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

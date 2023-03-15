@@ -7,25 +7,18 @@ namespace SVG
 {
 	CLine::CLine(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_oX1.SetValue(oNode.GetAttribute(L"x1"));
+		m_oY1.SetValue(oNode.GetAttribute(L"y1"));
+		m_oX2.SetValue(oNode.GetAttribute(L"x2"));
+		m_oY2.SetValue(oNode.GetAttribute(L"y2"));
+	}
 
 	void CLine::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		SetTransform(mAttributes, ushLevel, bHardMode);
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"x1"))
-			m_oX1.SetValue(mAttributes.at(L"x1"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y1"))
-			m_oY1.SetValue(mAttributes.at(L"y1"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"x2"))
-			m_oX2.SetValue(mAttributes.at(L"x2"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y2"))
-			m_oY2.SetValue(mAttributes.at(L"y2"), ushLevel, bHardMode);
 	}
 
 	bool CLine::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

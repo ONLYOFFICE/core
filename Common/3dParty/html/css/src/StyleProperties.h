@@ -81,7 +81,7 @@ namespace NSCSS
 		CDigit(double dValue);
 		CDigit(double dValue, unsigned int unLevel, bool bImportant = false);
 
-		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
+		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 
 		bool Empty() const override;
 		bool Zero() const;
@@ -168,8 +168,8 @@ namespace NSCSS
 	public:
 		CColor();
 
-		bool SetValue(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode) override;
-		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode);
+		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
+		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);
 
 		bool Empty() const override;
 		void Clear() override;

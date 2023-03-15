@@ -7,36 +7,33 @@ namespace SVG
 {
 	CGraphicsContainer::CGraphicsContainer(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_oWindow.m_oX     .SetValue(oNode.GetAttribute(L"x"));
+		m_oWindow.m_oY     .SetValue(oNode.GetAttribute(L"y"));
+		m_oWindow.m_oWidth .SetValue(oNode.GetAttribute(L"width"));
+		m_oWindow.m_oHeight.SetValue(oNode.GetAttribute(L"height"));
+
+		const std::wstring wsViewBox = oNode.GetAttribute(L"viewBox");
+
+		if (!wsViewBox.empty())
+		{
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(wsViewBox);
+			if (4 == arValues.size())
+			{
+				m_oViewBox.m_oX      = arValues[0];
+				m_oViewBox.m_oY      = arValues[1];
+				m_oViewBox.m_oWidth  = arValues[2];
+				m_oViewBox.m_oHeight = arValues[3];
+			}
+		}
+	}
 
 	CGraphicsContainer::CGraphicsContainer(double dWidth, double dHeight, XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent), m_oWindow{0, 0, dWidth, dHeight}
 	{}
 
 	void CGraphicsContainer::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
-	{
-		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oWindow.m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oWindow.m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"width"))
-			m_oWindow.m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"height"))
-			m_oWindow.m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"viewBox"))
-		{
-			std::vector<double> arValues = StrUtils::ReadDoubleValues(mAttributes.at(L"viewBox"));
-
-			m_oViewBox.m_oX      = arValues[0];
-			m_oViewBox.m_oY      = arValues[1];
-			m_oViewBox.m_oWidth  = arValues[2];
-			m_oViewBox.m_oHeight = arValues[3];
-		}
-	}
+	{}
 
 	bool CGraphicsContainer::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{

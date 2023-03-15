@@ -19,6 +19,11 @@ namespace SVG
 					m_pUsedObject = pFoundObj->Copy();
 			}
 		}
+
+		m_oX     .SetValue(oNode.GetAttribute(L"x"));
+		m_oY     .SetValue(oNode.GetAttribute(L"y"));
+		m_oWidth .SetValue(oNode.GetAttribute(L"width"));
+		m_oHeight.SetValue(oNode.GetAttribute(L"height"));
 	}
 
 	CUse::~CUse()
@@ -29,18 +34,6 @@ namespace SVG
 
 	void CUse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
-		if (mAttributes.end() != mAttributes.find(L"x"))
-			m_oX.SetValue(mAttributes.at(L"x"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"y"))
-			m_oY.SetValue(mAttributes.at(L"y"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"width"))
-			m_oWidth.SetValue(mAttributes.at(L"width"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"height"))
-			m_oHeight.SetValue(mAttributes.at(L"height"), ushLevel, bHardMode);
-
 		if (NULL != m_pUsedObject)
 			m_pUsedObject->SetData(mAttributes, 0, false);
 	}
@@ -58,6 +51,11 @@ namespace SVG
 		pRenderer->SetTransform(dM11, dM12, dM21, dM22, dRx, dRy);
 
 		return true;
+	}
+
+	CSvgGraphicsObject *CUse::Copy() const
+	{
+		return new CUse(*this);
 	}
 
 	void CUse::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int &nTypePath, Aggplus::CMatrix &oOldMatrix) const

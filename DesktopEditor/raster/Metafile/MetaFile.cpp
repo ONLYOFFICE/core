@@ -486,7 +486,6 @@ namespace MetaFile
 		#ifdef METAFILE_SUPPORT_SVG
 			case c_lMetaSvg:
 			{
-//				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
 				m_oSvgFile2.Draw(pRenderer, dX, dY, dWidth, dHeight);
 				break;
 			}

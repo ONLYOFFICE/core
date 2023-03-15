@@ -7,7 +7,12 @@ namespace SVG
 {
 	CEllipse::CEllipse(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		m_oCx.SetValue(oNode.GetAttribute(L"cx"));
+		m_oCy.SetValue(oNode.GetAttribute(L"cy"));
+		m_oRx.SetValue(oNode.GetAttribute(L"rx"));
+		m_oRy.SetValue(oNode.GetAttribute(L"ry"));
+	}
 
 	void CEllipse::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
@@ -15,18 +20,6 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"cx"))
-			m_oCx.SetValue(mAttributes.at(L"cx"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"cy"))
-			m_oCy.SetValue(mAttributes.at(L"cy"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"rx"))
-			m_oRx.SetValue(mAttributes.at(L"rx"), ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"ry"))
-			m_oRy.SetValue(mAttributes.at(L"ry"), ushLevel, bHardMode);
 	}
 
 	bool CEllipse::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const

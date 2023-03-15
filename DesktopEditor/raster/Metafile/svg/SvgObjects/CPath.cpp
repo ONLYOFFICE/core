@@ -4,9 +4,13 @@
 
 namespace SVG
 {
+    #define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
+
 	CPath::CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
-	{}
+	{
+		ReadFromString(oNode.GetAttribute(L"d"));
+	}
 
 	CPath::~CPath()
 	{
@@ -20,9 +24,6 @@ namespace SVG
 		SetStroke(mAttributes, ushLevel, bHardMode);
 		SetFill(mAttributes, ushLevel, bHardMode);
 		SetClip(mAttributes, ushLevel, bHardMode);
-
-		if (mAttributes.end() != mAttributes.find(L"d"))
-			ReadFromString(mAttributes.at(L"d"));
 	}
 
 	bool CPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
@@ -60,7 +61,6 @@ namespace SVG
 		ApplyStroke(pRenderer, nTypePath);
 		ApplyFill(pRenderer, pDefs, nTypePath);
 	}
-
 	TBounds CPath::GetBounds() const
 	{
 		TBounds oBounds{0., 0., 0., 0.}, oTempBounds;
@@ -83,8 +83,8 @@ namespace SVG
 		std::wstring::const_iterator oFirstPos = wsValue.begin();
 		std::wstring::const_iterator oSecondPos = oFirstPos;
 
-		IPathElement *pLastElement = NULL;
 		IPathElement *pMoveElement = NULL;
+		IPathElement *pElement     = NULL;
 
 		while (true)
 		{
@@ -95,18 +95,26 @@ namespace SVG
 
 			oSecondPos = std::find_if(oFirstPos + 1, wsValue.end(), iswalpha );
 
+			std::vector<double> arValues = StrUtils::ReadDoubleValues(std::wstring(oFirstPos + 1, oSecondPos));
+
 			switch(*oFirstPos)
 			{
 				case L'M':
 				case L'm':
 				{
-					IPathElement *pElement = new CMoveElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
+					pElement = IPathElement::CreateFromArray<CMoveElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 
-					m_arElements.push_back(pElement);
+					if (NULL != pElement)
+					{
+						pMoveElement = pElement;
 
-					pLastElement = pElement;
-					pMoveElement = pElement;
+						if (arValues.size() > 1)
+						{
+							pElement = IPathElement::CreateFromArray<CLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+							if (NULL != pElement)
+								m_arElements.push_back(pMoveElement);
+						}
+					}
 
 					break;
 				}
@@ -116,13 +124,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CLineElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'H':
@@ -131,13 +133,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CHLineElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CHLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'V':
@@ -146,13 +142,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CVLineElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CVLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'C':
@@ -161,13 +151,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CCBezierElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CCBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'S':
@@ -176,13 +160,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CSBezierElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CSBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'Q':
@@ -191,13 +169,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CQBezierElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CQBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'T':
@@ -206,13 +178,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CTBezierElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CTBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'A':
@@ -221,13 +187,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CArcElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pLastElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pElement;
-
+					pElement = IPathElement::CreateFromArray<CArcElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 					break;
 				}
 				case L'Z':
@@ -236,16 +196,15 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					IPathElement *pElement = new CCloseElement();
-					pElement->ReadFromString(std::wstring(oFirstPos + 1, oSecondPos), iswlower(*oFirstPos), pMoveElement);
-
-					m_arElements.push_back(pElement);
-
-					pLastElement = pMoveElement;
-
+					pElement = IPathElement::CreateFromArray<CCloseElement>(arValues, iswlower(*oFirstPos), pMoveElement);
+					if (NULL != pElement)
+						pMoveElement = NULL;
 					break;
 				}
 			}
+
+			if (NULL != pElement)
+				m_arElements.push_back(pElement);
 
 			oFirstPos = oSecondPos;
 		}

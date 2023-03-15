@@ -2436,6 +2436,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			if (NULL != m_strRef)
 				delete m_strRef;
 		}
+		std::wstring CT_Tx::toXML() const
+		{
+			return L"";
+		}
+		void CT_Tx::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXML(L"c:tx", writer);
+		}
 		void CT_Tx::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			if (oReader.IsEmptyNode())
@@ -2570,7 +2578,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 			}
 		}
-		void CT_StrData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const 
+		std::wstring CT_StrData::toXML() const
+		{
+			return L"";
+		}
+		void CT_StrData::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXML(L"c:strData", writer);
+		}
+		void CT_StrData::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
 			writer.WriteString(sNodeName);
@@ -3511,6 +3527,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 				}
 			}
 		}
+		std::wstring CT_Marker::toXML() const
+		{
+			return L"";
+		}
+		void CT_Marker::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXML(L"c:marker", writer);
+		}
 		void CT_Marker::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
 			writer.WriteString(L"<");
@@ -4259,7 +4283,15 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		}
 		void CT_DLbl::toXMLEntry(const std::wstring& sNodeNS, NSStringUtils::CStringBuilder& writer) const
 		{
-			m_idx.toXML(sNodeNS + L":idx", writer);
+			if (m_idx.IsInit())
+			{
+				if (*m_idx > 0x7fffffff)
+				{
+					writer.WriteString(L"<" + sNodeNS + L":idx val=\"" + std::to_wstring((_INT32)*m_idx) + L"\"/>");
+				}
+				else
+					m_idx.toXML(sNodeNS + L":idx", writer);
+			}
 
 			for (size_t i = 0; i < m_Items.size(); ++i)
 			{
@@ -4277,6 +4309,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			{
 				writer.WriteString(m_extLst->toXMLWithNS(sNodeNS + L":"));
 			}
+		}
+		std::wstring CT_DLbl::toXML() const
+		{
+			return L"";
+		}
+		void CT_DLbl::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXML(L"c:dlbl", writer);
 		}
 		void CT_DLbl::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
@@ -5228,6 +5268,14 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 					m_strRef = pNewElem;
 				}
 			}
+		}
+		std::wstring CT_AxDataSource::toXML() const
+		{
+			return L"";
+		}
+		void CT_AxDataSource::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			toXML(L"c:cat", writer);
 		}
 		void CT_AxDataSource::toXML(const std::wstring& sNodeName, NSStringUtils::CStringBuilder& writer) const
 		{
@@ -9641,6 +9689,363 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 		EElementType AlternateContentFallback::getType()
 		{
 			return et_ct_alternatecontentfallback;
+		}
+//-------------------------------------------------------------------------------------------
+		CSeriesDataLabelsRange::CSeriesDataLabelsRange() {}
+		CSeriesDataLabelsRange::~CSeriesDataLabelsRange()
+		{
+		}
+		void CSeriesDataLabelsRange::fromXML(XmlUtils::CXmlNode& node) {}
+		void CSeriesDataLabelsRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"f" == sName)
+				{
+					m_f = oReader.GetText2();
+				}
+				else if (L"dlblRangeCache" == sName)
+				{
+					m_dlblRangeCache = oReader;
+				}
+			}
+		}
+		void CSeriesDataLabelsRange::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<c15:datalabelsRange>");
+
+			if (m_f.IsInit())
+			{
+				writer.WriteString(L"<c15:f>" + *m_f + L"</c15:f>");
+			}
+			if (m_dlblRangeCache.IsInit())
+			{
+				m_dlblRangeCache->toXML(L"c15:dlblRangeCache", writer);
+			}
+			writer.WriteString(L"</c15:datalabelsRange>");
+		}
+		std::wstring CSeriesDataLabelsRange::toXML() const
+		{
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
+		}
+		EElementType CSeriesDataLabelsRange::getType() const
+		{
+			return et_ct_SeriesDataLabelsRange;
+		}
+		CCategoryFilterException::CCategoryFilterException() {}
+		CCategoryFilterException::~CCategoryFilterException()
+		{
+		}
+		void CCategoryFilterException::fromXML(XmlUtils::CXmlNode& node) {}
+		void CCategoryFilterException::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"sqref" == sName)
+				{
+					m_sqref = oReader.GetText2();
+				}
+				else if (L"spPr" == sName)
+				{
+					m_spPr = oReader;
+				}
+				else if (L"explosion" == sName)
+				{
+					m_explosion = oReader;
+				}
+				else if (L"marker" == sName)
+				{
+					m_marker = oReader;
+				}
+				else if (L"invertIfNegative" == sName)
+				{
+					m_invertIfNegative = oReader;
+				}
+				else if (L"bubble3D" == sName)
+				{
+					m_bubble3D = oReader;
+				}
+				else if (L"dLbl" == sName)
+				{
+					m_dLbl = oReader;
+				}
+			}
+		}
+		void CCategoryFilterException::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			writer.WriteString(L"<c15:categoryFilterException>");
+
+			if (m_sqref.IsInit())
+			{
+				writer.WriteString(L"<c15:sqref>" + *m_sqref + L"</c15:sqref>");
+			}
+			if (m_spPr.IsInit())
+			{
+				writer.WriteString(m_spPr->toXML());
+			}
+			m_explosion.toXML(L"c15:explosion", writer);
+			m_invertIfNegative.toXML(L"c15:invertIfNegative", writer);
+			m_bubble3D.toXML(L"c15:bubble3D", writer);
+			if (m_marker.IsInit())
+			{
+				m_marker->toXML(L"c15:marker", writer);
+			}
+			if (m_dLbl.IsInit())
+			{
+				m_dLbl->toXML(L"c15:dLbl", writer);
+			}
+			writer.WriteString(L"</c15:categoryFilterException>");
+		}
+		std::wstring CCategoryFilterException::toXML() const
+		{
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
+		}
+		EElementType CCategoryFilterException::getType() const
+		{
+			return et_ct_CategoryFilterException;
+		}
+		CCategoryFilterExceptions::CCategoryFilterExceptions() {}
+		CCategoryFilterExceptions::~CCategoryFilterExceptions()
+		{
+		}
+		void CCategoryFilterExceptions::fromXML(XmlUtils::CXmlNode& node) {}
+		void CCategoryFilterExceptions::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"categoryFilterException" == sName)
+				{
+					CCategoryFilterException* pException = new CCategoryFilterException();
+					pException->fromXML(oReader);
+					m_arrItems.push_back(pException);
+				}
+			}
+		}
+		void CCategoryFilterExceptions::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			if (m_arrItems.empty()) return;
+			
+			writer.WriteString(L"<c15:categoryFilterExceptions>");
+			for (size_t i = 0; i < m_arrItems.size(); ++i)
+			{
+				if (m_arrItems[i])
+				{
+					m_arrItems[i]->toXML(writer);
+				}
+			}
+			writer.WriteString(L"</c15:categoryFilterExceptions>");
+		}
+		std::wstring CCategoryFilterExceptions::toXML() const
+		{
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
+		}
+		EElementType CCategoryFilterExceptions::getType() const
+		{
+			return et_ct_CategoryFilterExceptions;
+		}
+		CSeriesFiltering::CSeriesFiltering() {}
+		CSeriesFiltering::~CSeriesFiltering()
+		{
+		}
+		void CSeriesFiltering::fromXML(XmlUtils::CXmlNode& node) {}
+		void CSeriesFiltering::fromXML(XmlUtils::CXmlLiteReader& oReader)
+		{
+			if (oReader.IsEmptyNode())
+				return;
+
+			int nParentDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nParentDepth))
+			{
+				std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if (L"datalabelsRange" == sName)
+				{
+					m_dataLabelsRange = oReader;
+				}
+				else if (L"filteredSeriesTitle" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"tx" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredSeriesTitle = oReader;
+				}
+				else if (L"filteredCategoryTitle" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"cat" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredCategoryTitle = oReader;
+				}
+				else if (L"filteredLineSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredLineSeries = oReader;
+				}
+				else if (L"filteredScatterSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredScatterSeries = oReader;
+				}
+				else if (L"filteredBarSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredBarSeries = oReader;
+				}
+				else if (L"filteredAreaSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredAreaSeries = oReader;
+				}
+				else if (L"filteredBubbleSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredBubbleSeries = oReader;
+				}
+				else if (L"filteredSurfaceSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredSurfaceSeries = oReader;
+				}
+				else if (L"filteredPieSeries" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"ser" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_filteredPieSeries = oReader;
+				}
+				else if (L"fullRef" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"sqref" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_fullRef = oReader.GetText2();
+				}
+				else if (L"levelRef" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"sqref" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_levelRef = oReader.GetText2();
+				}
+				else if (L"formulaRef" == sName)
+				{
+					if (oReader.ReadNextSiblingNode(nParentDepth + 1) && L"sqref" == XmlUtils::GetNameNoNS(oReader.GetName()))
+						m_formulaRef = oReader.GetText2();
+				}
+				else if (L"categoryFilterExceptions" == sName)
+				{
+					m_categoryFilterExceptions = oReader;
+				}
+			}
+		}
+		void CSeriesFiltering::toXML(NSStringUtils::CStringBuilder& writer) const
+		{
+			if (m_dataLabelsRange.IsInit())
+			{
+				m_dataLabelsRange->toXML(writer);
+			}
+			if (m_filteredSeriesTitle.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredSeriesTitle>");
+					m_filteredSeriesTitle->toXML(L"c15:tx", writer);
+				writer.WriteString(L"</c15:filteredSeriesTitle>");
+			}
+			if (m_filteredCategoryTitle.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredCategoryTitle>");
+					m_filteredCategoryTitle->toXML(L"c15:cat", writer);
+				writer.WriteString(L"</c15:filteredCategoryTitle>");
+			}
+			if (m_filteredLineSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredLineSeries>");
+				m_filteredLineSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredLineSeries>");
+			}
+			if (m_filteredScatterSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredScatterSeries>");
+				m_filteredScatterSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredScatterSeries>");
+			}
+			if (m_filteredRadarSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredRadarSeries>");
+				m_filteredRadarSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredRadarSeries>");
+			}
+			if (m_filteredBarSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredBarSeries>");
+				m_filteredBarSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredBarSeries>");
+			}
+			if (m_filteredAreaSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredAreaSeries>");
+				m_filteredAreaSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredAreaSeries>");
+			}
+			if (m_filteredBubbleSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredBubbleSeries>");
+				m_filteredBubbleSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredBubbleSeries>");
+			}
+			if (m_filteredSurfaceSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredSurfaceSeries>");
+				m_filteredSurfaceSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredSurfaceSeries>");
+			}
+			if (m_filteredPieSeries.IsInit())
+			{
+				writer.WriteString(L"<c15:filteredPieSeries>");
+				m_filteredPieSeries->toXML(L"c15:ser", writer);
+				writer.WriteString(L"</c15:filteredPieSeries>");
+			}
+			if (m_fullRef.IsInit())
+			{
+				writer.WriteString(L"<c15:fullRef>");
+				writer.WriteString(L"<c15:sqref>" + *m_fullRef + L"</c15:sqref>");
+				writer.WriteString(L"</c15:fullRef>");
+			}
+			if (m_levelRef.IsInit())
+			{
+				writer.WriteString(L"<c15:levelRef>");
+				writer.WriteString(L"<c15:sqref>" + *m_levelRef + L"</c15:sqref>");
+				writer.WriteString(L"</c15:levelRef>");
+			}
+			if (m_formulaRef.IsInit())
+			{
+				writer.WriteString(L"<c15:formulaRef>");
+				writer.WriteString(L"<c15:sqref>" + *m_formulaRef + L"</c15:sqref>");
+				writer.WriteString(L"</c15:formulaRef>");
+			}
+			if (m_categoryFilterExceptions.IsInit())
+			{
+				m_categoryFilterExceptions->toXML(writer);
+			}
+		}
+		std::wstring CSeriesFiltering::toXML() const
+		{
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
+		}
+		EElementType CSeriesFiltering::getType() const
+		{
+			return et_ct_SeriesFiltering;
 		}
 	}
 }

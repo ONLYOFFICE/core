@@ -52,6 +52,14 @@ namespace SVG
 		return pNew;
 	}
 
+	IPathElement *CPath::operator[](int nIndex) const
+	{
+		if (m_arElements.empty())
+			return NULL;
+
+		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
+	}
+
 	void CPath::ApplyStyle(IRenderer *pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const
 	{
 		if (NULL == pRenderer)
@@ -59,7 +67,7 @@ namespace SVG
 
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyStroke(pRenderer, nTypePath);
-		ApplyFill(pRenderer, pDefs, nTypePath);
+		ApplyFill(pRenderer, pDefs, nTypePath, true);
 	}
 	TBounds CPath::GetBounds() const
 	{
@@ -110,7 +118,7 @@ namespace SVG
 
 						if (arValues.size() > 1)
 						{
-							pElement = IPathElement::CreateFromArray<CLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+							pElement = IPathElement::CreateFromArray<CLineElement>(arValues, iswlower(*oFirstPos), pMoveElement);
 							if (NULL != pElement)
 								m_arElements.push_back(pMoveElement);
 						}

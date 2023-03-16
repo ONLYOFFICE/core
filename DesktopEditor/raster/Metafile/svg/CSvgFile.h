@@ -26,8 +26,11 @@ class GRAPHICS_DECL CSvgFile
 
 		void SetFontManager(NSFonts::IFontManager* pFontManager);
 
+		void AddMarkedObject(const SVG::CSvgGraphicsObject* pObject);
 		void AddStyles(const std::wstring& wsStyles);
 		void AddDefs(XmlUtils::CXmlNode& oNode);
+
+		const SVG::CSvgGraphicsObject* GetMarkedObject(const std::wstring& wsId) const;
 
 		bool Draw(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 	private:
@@ -36,6 +39,9 @@ class GRAPHICS_DECL CSvgFile
 		SVG::CGraphicsContainer  *m_pContainer;
 		SVG::CDefs               m_oDefs;
 		SVG::CSvgCalculator      m_oSvgCalculator;
+
+		typedef std::map<std::wstring, const SVG::CSvgGraphicsObject*> MarkedMap;
+		MarkedMap m_mMarkedObjects;
 };
 
 #endif // CSVGFILE_H

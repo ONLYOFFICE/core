@@ -65,9 +65,16 @@ namespace SVG
 			return oBounds;
 		}
 
+		virtual Point operator[](int nIndex) const
+		{
+			if (m_arPoints.empty())
+				return Point{0., 0.};
+
+			return m_arPoints[(nIndex >= 0) ? nIndex : m_arPoints.size() + nIndex];
+		};
+
 	private:
 		virtual bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) = 0;
-		virtual Point GetPoint(int nIndex) const = 0;
 
 		friend class CMoveElement;
 		friend class CLineElement;
@@ -101,7 +108,7 @@ namespace SVG
 			Point oTranslatePoint{0., 0.};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
-				oTranslatePoint = pPrevElement->GetPoint(-1);
+				oTranslatePoint = (*pPrevElement)[-1];
 
 			m_arPoints.push_back(Point{arValues[0], arValues[1]} + oTranslatePoint);
 
@@ -115,7 +122,7 @@ namespace SVG
 			if (m_arPoints.empty())
 				return;
 
-			Point oPoint = GetPoint(-1);
+			Point oPoint = (*this)[-1];
 
 			pRenderer->PathCommandMoveTo(oPoint.dX, oPoint.dY);
 		}
@@ -123,14 +130,6 @@ namespace SVG
 		CMoveElement* Copy() const override
 		{
 			return new CMoveElement(*this);
-		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0., 0.};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
 		}
 	};
 
@@ -152,7 +151,7 @@ namespace SVG
 			Point oTranslatePoint{0., 0.};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
-				oTranslatePoint = pPrevElement->GetPoint(-1);
+				oTranslatePoint = (*pPrevElement)[-1];
 
 			while (arValues.size() > 1)
 			{
@@ -180,14 +179,6 @@ namespace SVG
 		{
 			return new CLineElement(*this);
 		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0., 0.};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
-		}
 	};
 
 	class CVLineElement : public CLineElement
@@ -208,7 +199,7 @@ namespace SVG
 			Point oTranslatePoint{0., 0.};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
-				oTranslatePoint = pPrevElement->GetPoint(-1);
+				oTranslatePoint = (*pPrevElement)[-1];
 
 			while (!arValues.empty())
 			{
@@ -247,7 +238,7 @@ namespace SVG
 			Point oTranslatePoint{0., 0.};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
-				oTranslatePoint = pPrevElement->GetPoint(-1);
+				oTranslatePoint = (*pPrevElement)[-1];
 
 			while (!arValues.empty())
 			{
@@ -301,7 +292,7 @@ namespace SVG
 			Point oTranslatePoint{0., 0.};
 
 			if (bRelativeCoordinate && NULL != pPrevElement)
-				oTranslatePoint = pPrevElement->GetPoint(-1);
+				oTranslatePoint = (*pPrevElement)[-1];
 
 			while (arValues.size() > 5)
 			{
@@ -337,14 +328,6 @@ namespace SVG
 		void Rotate(double dAngle, Point oCenter)
 		{
 		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0., 0.};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
-		}
 	};
 
 	class CSBezierElement : public IPathElement
@@ -364,16 +347,16 @@ namespace SVG
 
 			Point oFirstPoint{0., 0.}, oTranslatePoint{0., 0.};
 
-			if (bRelativeCoordinate && NULL != pPrevElement)
-				oTranslatePoint = oFirstPoint = pPrevElement->GetPoint(-1);
+			if (NULL != pPrevElement)
+			{
+				oFirstPoint = (*pPrevElement)[-1];
+				if (bRelativeCoordinate)
+					oTranslatePoint = oFirstPoint;
+			}
 
 			if (EPathElement::SBezier == pPrevElement->GetType() ||
 			    EPathElement::CBezier == pPrevElement->GetType())
-			{
-				Point oPoint = pPrevElement->GetPoint(-2);
-
-				oFirstPoint += oFirstPoint - oPoint;
-			}
+				oFirstPoint += oFirstPoint - (*pPrevElement)[-2];
 
 			while (arValues.size() > 3)
 			{
@@ -405,14 +388,6 @@ namespace SVG
 		{
 			return new CSBezierElement(*this);
 		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0., 0.};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
-		}
 	};
 
 	class CQBezierElement : public IPathElement
@@ -434,7 +409,7 @@ namespace SVG
 
 			if (NULL != pPrevElement)
 			{
-				oLastPoint = pPrevElement->GetPoint(-1);
+				oLastPoint = (*pPrevElement)[-1];
 				if (bRelativeCoordinate)
 					oTranslatePoint = oLastPoint;
 			}
@@ -471,14 +446,6 @@ namespace SVG
 		{
 			return new CQBezierElement(*this);
 		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0., 0.};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
-		}
 	};
 
 	class CTBezierElement : public IPathElement
@@ -493,15 +460,15 @@ namespace SVG
 
 		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
-			if (arValues.empty())
+			if (arValues.size() < 2)
 				return false;
 
 			Point oFirstPoint{0., 0.}, oSecondPoint{0., 0.}, oTranslatePoint{0., 0.};
 
 			if (NULL != pPrevElement)
 			{
-				oFirstPoint  = pPrevElement->GetPoint(-1);
-				oSecondPoint = pPrevElement->GetPoint(-2);
+				oFirstPoint  = (*pPrevElement)[-1];
+				oSecondPoint = (*pPrevElement)[-2];
 				if (bRelativeCoordinate)
 					oTranslatePoint = oFirstPoint;
 			}
@@ -521,7 +488,7 @@ namespace SVG
 				return true;
 		    }
 
-		    while (!arValues.empty())
+		    while (arValues.size() > 1)
 		    {
 			    oSecondPoint = oFirstPoint + (oFirstPoint - oSecondPoint);
 
@@ -534,7 +501,7 @@ namespace SVG
 				if (bRelativeCoordinate)
 					oTranslatePoint = oFirstPoint;
 
-				arValues.erase(arValues.begin());
+				arValues.erase(arValues.begin(), arValues.begin() + 2);
 		    }
 
 		    return true;
@@ -555,14 +522,6 @@ namespace SVG
 		{
 			return new CTBezierElement(*this);
 		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0., 0.};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
-		}
 	};
 
 	class CArcElement : public IPathElement
@@ -582,18 +541,18 @@ namespace SVG
 
 			Point oTranslatePoint{0., 0.};
 
-			if (NULL != pPrevElement)
-				oTranslatePoint = pPrevElement->GetPoint(-1);
+			if (bRelativeCoordinate && NULL != pPrevElement)
+				oTranslatePoint = (*pPrevElement)[-1];
 
-			for (unsigned int unIndex = 0; unIndex < arValues.size(); unIndex += 7)
+			while(arValues.size() > 6)
 			{
-				m_arRadius.push_back(Point{arValues[unIndex + 0], arValues[unIndex + 1]});
-				m_arXAxisRotation.push_back(arValues[unIndex + 2]);
-				m_arLargeArcFlag.push_back(arValues[unIndex + 3]);
-				m_arSweepFlag.push_back(arValues[unIndex + 4]);
+				m_arRadius.push_back(Point{arValues[0], arValues[1]});
+				m_arXAxisRotation.push_back(arValues[2]);
+				m_arLargeArcFlag.push_back(arValues[3]);
+				m_arSweepFlag.push_back(arValues[4]);
 
-				m_arPoints.push_back(oTranslatePoint);
-				m_arPoints.push_back(Point{arValues[unIndex + 5], arValues[unIndex + 6]} + oTranslatePoint);
+				m_arPoints.push_back((NULL != pPrevElement) ? (*pPrevElement)[-1] : Point{0., 0.});
+				m_arPoints.push_back(Point{arValues[5], arValues[6]} + oTranslatePoint);
 
 				if (bRelativeCoordinate)
 					oTranslatePoint = m_arPoints.back();
@@ -636,13 +595,6 @@ namespace SVG
 			return new CArcElement(*this);
 		}
 	private:
-	    Point GetPoint(int nIndex) const override
-		{
-			if (m_arPoints.empty())
-				return Point{0, 0};
-
-			return m_arPoints[(nIndex > 0) ? nIndex : m_arPoints.size() + nIndex];
-		}
 
 		// Данная часть кода взята из GraphicsPath.cpp
 		CCBezierElement ConvertToCBezier(double dX, double dY, double dWidth, double dHeight, double dStartAngle, double dSweepAngle) const
@@ -984,7 +936,7 @@ namespace SVG
 		bool ReadFromArray(std::vector<double>& arValues, bool bRelativeCoordinate, IPathElement* pPrevElement = NULL) override
 		{
 			if (NULL != pPrevElement)
-				m_arPoints.push_back(pPrevElement->GetPoint(-1));
+				m_arPoints.push_back((*pPrevElement)[-1]);
 
 			return true;
 		}
@@ -997,11 +949,6 @@ namespace SVG
 		CCloseElement* Copy() const override
 		{
 			return new CCloseElement(*this);
-		}
-	private:
-		Point GetPoint(int nIndex) const override
-		{
-			return (m_arPoints.empty()) ? Point{0, 0} : m_arPoints.back();
 		}
 	};
 
@@ -1016,6 +963,8 @@ namespace SVG
 		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
 
 		CPath* Copy() const override;
+
+		IPathElement* operator[](int nIndex) const;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 

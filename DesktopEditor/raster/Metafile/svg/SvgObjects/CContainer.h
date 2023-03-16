@@ -41,6 +41,28 @@ namespace SVG
 			}
 			return false;
 		};
+
+		virtual TypeObject* GetObject(const std::wstring& wsId) const
+		{
+			if (wsId.empty() || m_arObjects.empty())
+				return NULL;
+
+			std::wstring wsNewId = wsId;
+
+			size_t unFound = wsNewId.find(L'#');
+
+			if (std::wstring::npos != unFound)
+				wsNewId.erase(0, unFound + 1);
+
+			std::transform(wsNewId.begin(), wsNewId.end(), wsNewId.begin(), std::towlower);
+
+			std::vector<TypeObject*>::const_iterator oFound = std::find_if(m_arObjects.begin(), m_arObjects.end(), [&wsNewId](TypeObject* pObject){ if (wsNewId == pObject->GetId()) return true; else return false;});
+
+			if (m_arObjects.end() != oFound)
+				return *oFound;
+
+			return NULL;
+		}
 	private:
 		std::vector<TypeObject*> m_arObjects;
 
@@ -50,6 +72,7 @@ namespace SVG
 		friend class CPattern;
 		friend class CGradient;
 		friend class CClipPath;
+		friend class CTextPath;
 		friend class CGraphicsContainer;
 	};
 
@@ -65,8 +88,6 @@ namespace SVG
 
 		TRect GetWindow() const;
 		TRect GetViewBox() const;
-
-		CSvgGraphicsObject* GetObject(const std::wstring& wsId) const;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
 

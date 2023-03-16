@@ -544,6 +544,7 @@ namespace NSCSS
 		{
 			if (wsNewValue == L"transparent")
 			{
+				m_oValue.SetNone();
 				m_unLevel    = unLevel;
 				m_bImportant = bImportant;
 				return true;

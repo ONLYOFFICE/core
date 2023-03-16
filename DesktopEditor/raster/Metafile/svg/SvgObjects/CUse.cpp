@@ -1,23 +1,18 @@
 #include "CUse.h"
+#include "../CSvgFile.h"
 
 namespace SVG
 {
-	CUse::CUse(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent)
+	CUse::CUse(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, const CSvgFile* pFile)
 	    : CSvgGraphicsObject(oNode, pParent), m_pUsedObject(NULL)
 	{
-		if (NULL != pParent)
+		if (NULL != pFile)
 		{
-			CGraphicsContainer *pContainer = dynamic_cast<CGraphicsContainer*>(pParent);
-			if (NULL != pContainer)
-			{
-				std::wstring wsHref;
-				wsHref = oNode.GetAttribute(L"href",       wsHref);
-				wsHref = oNode.GetAttribute(L"xlink:href", wsHref);
+			std::wstring wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
 
-				CSvgGraphicsObject *pFoundObj = pContainer->GetObject(wsHref);
-				if (NULL != pFoundObj)
-					m_pUsedObject = pFoundObj->Copy();
-			}
+			const CSvgGraphicsObject *pFoundObj = pFile->GetMarkedObject(wsHref);
+			if (NULL != pFoundObj)
+				m_pUsedObject = pFoundObj->Copy();
 		}
 
 		m_oX     .SetValue(oNode.GetAttribute(L"x"));

@@ -313,6 +313,9 @@ namespace SVG
 			std::wstring::const_iterator itBeginPos = std::find_if(wsString.begin(), wsString.end(), [](const wchar_t& wChar){ return !iswspace(wChar);});
 			std::wstring::const_reverse_iterator itEndPos =  std::find_if(wsString.rbegin(), wsString.rend(), [](const wchar_t& wChar){ return !iswspace(wChar);});
 
+			if (wsString.end() == itBeginPos)
+				return std::wstring();
+
 			return std::wstring(itBeginPos, itEndPos.base());
 		}
 	};

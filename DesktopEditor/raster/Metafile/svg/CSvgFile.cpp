@@ -67,6 +67,12 @@ void CSvgFile::SetFontManager(NSFonts::IFontManager *pFontManager)
 	m_oParser.SetFontManager(pFontManager);
 }
 
+void CSvgFile::AddMarkedObject(const SVG::CSvgGraphicsObject *pObject)
+{
+	if (NULL != pObject && !pObject->GetId().empty())
+		m_mMarkedObjects[pObject->GetId()] = pObject;
+}
+
 void CSvgFile::AddStyles(const std::wstring &wsStyles)
 {
 	m_oSvgCalculator.AddStyles(wsStyles);
@@ -75,6 +81,16 @@ void CSvgFile::AddStyles(const std::wstring &wsStyles)
 void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
 {
 	m_oParser.ReadDefs(oNode, &m_oDefs, this);
+}
+
+const SVG::CSvgGraphicsObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
+{
+	MarkedMap::const_iterator oFound = m_mMarkedObjects.find(wsId);
+
+	if (oFound != m_mMarkedObjects.end())
+		return oFound->second;
+
+	return NULL;
 }
 
 bool CSvgFile::Draw(IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)

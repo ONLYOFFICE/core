@@ -2,8 +2,10 @@
 
 #include "../CSvgParser.h"
 #include "../SvgUtils.h"
+#include "../CSvgFile.h"
 #include "CContainer.h"
 #include "CStyle.h"
+#include "CPath.h"
 
 #ifndef MININT8
 #define MAXUINT8    ((unsigned char)~((unsigned char)0))
@@ -23,13 +25,13 @@ namespace SVG
 		m_oFont.UpdateSize(16);
 		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 
-		if (!m_oX.SetValue(oNode.GetAttribute(L"x"), 1, true))
+		if (!m_oX.SetValue(oNode.GetAttribute(L"x")) && NULL != dynamic_cast<CText*>(m_pParent))
 		{
 			TBounds oBounds = pParent->GetBounds();
 			m_oX = pParent->m_oX + oBounds.m_dRight - oBounds.m_dLeft;
 		}
 
-		if (!m_oY.SetValue(oNode.GetAttribute(L"y"), 1, true))
+		if (!m_oY.SetValue(oNode.GetAttribute(L"y")) && NULL != dynamic_cast<CText*>(m_pParent))
 			m_oY = pParent->m_oY;
 	}
 
@@ -42,6 +44,21 @@ namespace SVG
 
 		if (NULL == pTSpanParent)
 			return NULL;
+
+		return new CTSpan(oNode, pTSpanParent, pFontManager);
+	}
+
+	CTSpan *CTSpan::Create(const std::wstring &wsValue, Point oPosition, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	{
+		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
+
+		if (NULL == pTSpanParent || wsValue.empty())
+			return NULL;
+
+		const std::wstring wsXmlNode = L"<tspan x=\"" + std::to_wstring(oPosition.dX) + L"\" y=\"" + std::to_wstring(oPosition.dY) + L"\">" + wsValue + L"</tspan>";
+
+		XmlUtils::CXmlNode oNode;
+		oNode.FromXmlString(wsXmlNode);
 
 		return new CTSpan(oNode, pTSpanParent, pFontManager);
 	}
@@ -125,6 +142,20 @@ namespace SVG
 		return true;
 	}
 
+	void CTSpan::InheritStyles(const CTSpan *pTSpan)
+	{
+		if (NULL != pTSpan)
+		{
+			m_oFill       = pTSpan->m_oFill;
+			m_oStroke     = pTSpan->m_oStroke;
+			m_oTransform  = pTSpan->m_oTransform;
+			m_oClip       = pTSpan->m_oClip;
+
+			m_oFont = pTSpan->m_oFont;
+			m_oText = pTSpan->m_oText;
+		}
+	}
+
 	CTSpan *CTSpan::Copy() const
 	{
 		return new CTSpan(*this);
@@ -168,10 +199,10 @@ namespace SVG
 			nStyle |= (1 << 2);
 
 		// Вычиления размеров текста
-		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 96., 96.);
+		m_pFontManager->LoadFontByName(wsFontFamily, dFontSize, nStyle, 72., 72.);
 		m_pFontManager->SetCharSpacing(0);
 
-		double dKoef     = 25.4 / 96.;
+		double dKoef     = 25.4 / 72.;
 		double dFHeight  = dFontSize;
 
 		NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
@@ -348,4 +379,66 @@ namespace SVG
 		}
 		return false;
 	}
+
+	CTextPath::CTextPath(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
+	    : CText(oNode, pParent, pFontManager), m_pPath(NULL)
+	{
+		if (NULL != pFile)
+		{
+			std::wstring wsHref = oNode.GetAttribute(L"href", oNode.GetAttribute(L"xlink:href"));
+			size_t unPosition = wsHref.find(L'#');
+
+			if (std::wstring::npos != unPosition)
+				wsHref.erase(0, unPosition + 1);
+
+			m_pPath = dynamic_cast<const CPath*>(pFile->GetMarkedObject(wsHref));
+
+			if (NULL != m_pPath)
+			{
+				IPathElement *pFirstElement = (*m_pPath)[0];
+				if (NULL != pFirstElement)
+				{
+					Point oFirstPoint = (*pFirstElement)[0];
+					m_oX = oFirstPoint.dX;
+					m_oY = oFirstPoint.dY;
+				}
+
+				DevideByTSpan(m_wsText);
+			}
+		}
+	}
+
+	bool CTextPath::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	{
+		if (NULL == pRenderer || bIsClip || NULL == m_pPath)
+			return false;
+
+		for (const CSvgGraphicsObject* pTSpan : m_arObjects)
+			pTSpan->Draw(pRenderer, pDefs, bIsClip);
+
+		return true;
+	}
+
+	CTextPath* CTextPath::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
+	{
+		if (NULL == dynamic_cast<CText*>(pParent))
+			return NULL;
+
+		return new CTextPath(oNode, pParent, pFontManager, pFile);
+	}
+
+	void CTextPath::DevideByTSpan(const std::wstring& wsText)
+	{
+		TBounds oBounds = GetBounds();
+
+		double dXStep = (oBounds.m_dRight - oBounds.m_dLeft) / wsText.length();
+		Point oPosition{m_oX.ToDouble(NSCSS::Pixel), m_oY.ToDouble(NSCSS::Pixel)};
+
+		for (const wchar_t& oWChar : wsText)
+		{
+			AddObject(CTSpan::Create(std::wstring(1, oWChar), oPosition, this, m_pFontManager));
+			oPosition.dX += dXStep;
+		}
+	}
+
 }

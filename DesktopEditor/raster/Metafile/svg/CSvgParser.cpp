@@ -124,6 +124,15 @@ namespace SVG
 			pObject = new CEllipse(oElement, pParent);
 		else if (L"path" == wsElementName)
 			pObject = new CPath(oElement, pParent);
+		else if (L"textPath" == wsElementName)
+		{
+			CTextPath *pTextPath = CTextPath::Create(oElement, pParent, m_pFontManager, pFile);
+
+			if (!AddObject(pTextPath, pContainer, pFile))
+				return false;
+
+			return ReadChildrens(oElement, pTextPath, pFile, pTextPath);
+		}
 		else if (L"text" == wsElementName)
 		{
 			CText *pText = CText::Create(oElement, pParent, m_pFontManager);
@@ -149,7 +158,7 @@ namespace SVG
 		else if (L"image" == wsElementName)
 			pObject = new CImage(oElement, pParent);
 		else if (L"use" == wsElementName)
-			pObject = new CUse(oElement, pParent);
+			pObject = new CUse(oElement, pParent, pFile);
 
 		return AddObject(pObject, pContainer, pFile);
 	}
@@ -268,6 +277,8 @@ namespace SVG
 
 		if (NULL == pFile)
 			return true;
+
+		pFile->AddMarkedObject(dynamic_cast<CSvgGraphicsObject*>(pObject));
 
 		const CSvgCalculator *pSvgCalculator = pFile->GetSvgCalculator();
 

@@ -9,7 +9,7 @@ namespace SVG
 	class CUse : public CSvgGraphicsObject
 	{
 	public:
-		CUse(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL);
+		CUse(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, const CSvgFile* pFile = NULL);
 		virtual ~CUse();
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;

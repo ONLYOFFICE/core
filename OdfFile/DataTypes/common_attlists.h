@@ -243,6 +243,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
     _CP_OPT(writing_mode) style_writing_mode_;
+	_CP_OPT(writing_mode) loext_writing_mode_;
 };
 
 /// common-draw-data-attlist

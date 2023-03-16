@@ -53,6 +53,7 @@ public:
         Rl,
         Tb,
         Page,
+		BtLr
     };
 
     writing_mode() {}

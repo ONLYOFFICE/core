@@ -206,6 +206,7 @@ public:
     odf_types::common_border_line_width_attlist common_border_line_width_attlist_;
     odf_types::common_padding_attlist			common_padding_attlist_;
     odf_types::common_rotation_angle_attlist	common_rotation_angle_attlist_;
+	odf_types::common_writing_mode_attlist		common_writing_mode_attlist_;
 
     _CP_OPT(odf_types::vertical_align)		style_vertical_align_;
     _CP_OPT(odf_types::text_align_source)	style_text_align_source_;

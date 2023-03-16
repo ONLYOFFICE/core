@@ -295,6 +295,7 @@ void style_table_cell_properties_attlist::add_attributes( const xml::attributes_
     common_background_color_attlist_.add_attributes(Attributes);
     common_border_attlist_.add_attributes(Attributes);
     common_border_line_width_attlist_.add_attributes(Attributes);
+	common_writing_mode_attlist_.add_attributes(Attributes);
     
 	CP_APPLY_ATTR(L"style:diagonal-tl-br"			, style_diagonal_tl_br_);
     CP_APPLY_ATTR(L"style:diagonal-tl-br-widths"	, style_diagonal_tl_br_widths_);
@@ -624,7 +625,7 @@ void style_table_cell_properties_attlist::docx_convert(oox::docx_conversion_cont
         const std::wstring w_fill = (common_background_color_attlist_.fo_background_color_->get_type() == background_color::Enabled 
             ? common_background_color_attlist_.fo_background_color_->get_color().get_hex_value() : L"auto");
 
-        strm << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\" />";        
+        strm << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\"/>";        
     }
 
     if (common_padding_attlist_.fo_padding_ || 
@@ -657,6 +658,35 @@ void style_table_cell_properties_attlist::docx_convert(oox::docx_conversion_cont
         }
         strm << L"</w:tcMar>";
     }
+	bool bVertical = (style_direction_ ? style_direction_->get_type() == direction::Ttb : false);
+
+	if (common_writing_mode_attlist_.loext_writing_mode_ || common_writing_mode_attlist_.style_writing_mode_)
+	{
+		writing_mode type = common_writing_mode_attlist_.loext_writing_mode_.get_value_or(common_writing_mode_attlist_.style_writing_mode_.get_value_or(writing_mode::LrTb));
+		switch (type.get_type())
+		{
+		case writing_mode::TbRl:
+		{
+			strm << (bVertical ? L"<w:textDirection w:val=\"tbRlV\"/>" : L"<w:textDirection w:val=\"tbRl\"/>");
+		}break;
+		case writing_mode::LrTb:
+		{
+			strm << (bVertical ? L"<w:textDirection w:val=\"lrTbV\"/>" : L"<w:textDirection w:val=\"lrTb\"/>");
+
+		}break;
+		case writing_mode::BtLr:
+		{
+			strm << L"<w:textDirection w:val=\"btLr\"/>";
+		}break;
+		default:
+		{
+			if (bVertical)
+			{
+				strm << L"<w:textDirection w:val=\"tbRlV\"/>";
+			}
+		}break;
+		}
+	}
 }
 
 void style_table_cell_properties_attlist::pptx_serialize(oox::pptx_conversion_context & Context, std::wostream & strm)
@@ -705,9 +735,10 @@ void style_table_cell_properties_attlist::apply_from(const style_table_cell_prop
      _CP_APPLY_PROP(style_direction_					, Other.style_direction_);
      _CP_APPLY_PROP(style_glyph_orientation_vertical_	, Other.style_glyph_orientation_vertical_);
     
-    common_shadow_attlist_.apply_from			(Other.common_shadow_attlist_);
-    common_background_color_attlist_.apply_from	(Other.common_background_color_attlist_);
-    common_border_attlist_.apply_from			(Other.common_border_attlist_);
+    common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
+    common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
+    common_border_attlist_.apply_from(Other.common_border_attlist_);
+	common_writing_mode_attlist_.apply_from(Other.common_writing_mode_attlist_);
 
     _CP_APPLY_PROP(style_diagonal_tl_br_			, Other.style_diagonal_tl_br_);
     _CP_APPLY_PROP(style_diagonal_tl_br_widths_		, Other.style_diagonal_tl_br_widths_);

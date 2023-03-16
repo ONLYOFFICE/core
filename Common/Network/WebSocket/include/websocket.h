@@ -49,6 +49,7 @@ namespace NSNetwork
             virtual void send(const std::string& message) = 0;
             virtual void close() = 0;
             virtual void setUrl(const std::string& url) = 0;
+            virtual bool setReconnectInfo(const int& attemtCount, const int& delay, const int& delayMax) { return false; }
             virtual ~IWebSocket() {}
         };
 

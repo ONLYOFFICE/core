@@ -1162,7 +1162,7 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	odt_context->start_field(true);
 	{	
 		if (oox_fld->m_sInstr.IsInit())	
-			odt_context->add_field_instr(oox_fld->m_sInstr.get2());
+			odt_context->add_field_instr(*oox_fld->m_sInstr);
 		
 		odt_context->separate_field();
 

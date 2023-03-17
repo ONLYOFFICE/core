@@ -5288,6 +5288,7 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 {
 	int res = c_oSerConstants::ReadOk;
 	OOX::Logic::CFldChar* pFldChar = static_cast<OOX::Logic::CFldChar*>(poResult);
+	
 	if ( c_oSer_FldSimpleType::CharType == type )
 	{
 		pFldChar->m_oFldCharType.Init();
@@ -5298,6 +5299,10 @@ int Binary_DocumentTableReader::ReadFldChar(BYTE type, long length, void* poResu
 		pFldChar->m_oFFData.Init();
 		READ1_DEF(length, res, this->ReadFFData, pFldChar->m_oFFData.GetPointer());
 	}
+	else if (c_oSer_FldSimpleType::PrivateData == type)
+	{
+		pFldChar->m_sPrivateData = m_oBufferedStream.GetString3(length);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5306,8 +5311,11 @@ int Binary_DocumentTableReader::ReadFldSimple(BYTE type, long length, void* poRe
 {
 	int res = c_oSerConstants::ReadOk;
 	CFldSimple* pFldSimple = static_cast<CFldSimple*>(poResult);
-	if ( c_oSer_FldSimpleType::Instr == type )
+	
+	if (c_oSer_FldSimpleType::Instr == type)
+	{
 		pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
+	}
 	else if ( c_oSer_FldSimpleType::Content == type )
 	{
 		NSStringUtils::CStringBuilder* pPrevWriter = m_pCurWriter;
@@ -5320,6 +5328,11 @@ int Binary_DocumentTableReader::ReadFldSimple(BYTE type, long length, void* poRe
 		OOX::Logic::CFFData oFFData;
 		READ1_DEF(length, res, this->ReadFFData, &oFFData);
 		pFldSimple->writer.WriteString(oFFData.toXML());
+	}
+	else if (c_oSer_FldSimpleType::PrivateData == type)
+	{
+		std::wstring sVal = m_oBufferedStream.GetString3(length);
+		pFldSimple->writer.WriteString(L"<w:fldData xml:space=\"preserve\">" + sVal + L"</w:fldData>");
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

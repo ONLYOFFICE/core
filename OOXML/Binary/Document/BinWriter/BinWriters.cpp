@@ -4076,11 +4076,16 @@ void BinaryDocumentTableWriter::WriteFldChar(OOX::Logic::CFldChar* pFldChar)
 		m_oBcw.m_oStream.WriteBYTE((BYTE)pFldChar->m_oFldCharType->GetValue());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-//FFData
 	if (pFldChar->m_oFFData.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
 		WriteFFData(pFldChar->m_oFFData.get());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	if (pFldChar->m_sPrivateData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::PrivateData);
+		m_oBcw.m_oStream.WriteStringW3(*pFldChar->m_sPrivateData);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -4099,19 +4104,25 @@ void BinaryDocumentTableWriter::WriteFldSimple(OOX::Logic::CFldSimple* pFldSimpl
 void BinaryDocumentTableWriter::WriteFldSimpleContent(OOX::Logic::CFldSimple* pFldSimple)
 {
 	int nCurPos = 0;
-	//порядок записи важен
-	//Instr
+
+//порядок записи важен
+
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Instr);
 		m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sInstr);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);
-	//FFData
 	if(pFldSimple->m_oFFData.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::FFData);
 		WriteFFData(pFldSimple->m_oFFData.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
-	//Content
+	if (pFldSimple->m_sPrivateData.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::PrivateData);
+		m_oBcw.m_oStream.WriteStringW3(*pFldSimple->m_sPrivateData);
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+
 	nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Content);
 		WriteParagraphContent(pFldSimple->m_arrItems);
 	m_oBcw.WriteItemWithLengthEnd(nCurPos);

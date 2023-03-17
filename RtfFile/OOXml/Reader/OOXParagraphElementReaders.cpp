@@ -255,7 +255,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 			pNewChar->m_bRtfEncode = false;
 			if (pFldSimple->m_sInstr.IsInit())
 			{
-				pNewChar->setText( pFldSimple->m_sInstr.get2() );
+				pNewChar->setText( *pFldSimple->m_sInstr);
 			}
 			RtfParagraphPtr oNewInsertParagraph ( new RtfParagraph() );
 			oNewInsertParagraph->AddItem( pNewChar );

@@ -55,8 +55,9 @@
 
 #include <vector>
 
-CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
+CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts, IOfficeDrawingFile* pRenderer)
 {
+    m_pRenderer    = pRenderer;
     m_wsTempFolder = L"";
     m_pPDFDocument = NULL;
     m_nFileLength  = 0;
@@ -717,7 +718,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
-BYTE* CPdfReader::GetWidgets()
+BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH)
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
@@ -725,6 +726,29 @@ BYTE* CPdfReader::GetWidgets()
     AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
     if (!pAcroForms)
         return NULL;
+
+    GBool bDrawContent     = globalParams->getDrawContent();
+    GBool bDrawAnnotations = globalParams->getDrawAnnotations();
+    GBool bDrawFormFileds  = globalParams->getDrawFormFields();
+
+    globalParams->setDrawContent(gFalse);
+    globalParams->setDrawAnnotations(gFalse);
+    globalParams->setDrawFormFields(gTrue);
+
+    BYTE* pPixData = m_pRenderer->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, 0, false);
+
+    globalParams->setDrawContent(bDrawContent);
+    globalParams->setDrawAnnotations(bDrawAnnotations);
+    globalParams->setDrawFormFields(bDrawFormFileds);
+
+    CBgraFrame oFrame;
+    oFrame.put_Data(pPixData);
+    oFrame.put_Width(nRasterW);
+    oFrame.put_Height(nRasterH);
+    oFrame.put_Stride(4 * nRasterW);
+    oFrame.put_IsRGBA(true);
+    oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res2.png", _CXIMAGE_FORMAT_PNG);
+    oFrame.ClearNoAttack();
 
     NSWasm::CData oRes;
     oRes.SkipLen();
@@ -734,7 +758,7 @@ BYTE* CPdfReader::GetWidgets()
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
         XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
+        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict() || pField->getPageNum() != nPageIndex + 1)
         {
             oFieldRef.free(); oField.free();
             continue;
@@ -755,14 +779,10 @@ BYTE* CPdfReader::GetWidgets()
         oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
         gfree(uName);
 
-        // Номер страницы - P
-        int nPage = pField->getPageNum();
-        oRes.AddInt(nPage - 1);
-
         // Координаты - BBox
         double dx1, dy1, dx2, dy2;
         pField->getBBox(&dx1, &dy1, &dx2, &dy2);
-        double height = m_pPDFDocument->getPageCropHeight(nPage);
+        double height = m_pPDFDocument->getPageCropHeight(nPageIndex + 1);
         oRes.AddDouble(dx1);
         oRes.AddDouble(height - dy1);
         oRes.AddDouble(dx2);
@@ -801,8 +821,8 @@ BYTE* CPdfReader::GetWidgets()
         // pField->getColor(&r, &g, &b);
 
         // Шрифт и размер шрифта - операторы Tf и Tm в DA
-        // Ref pFontRef; double dFontSize;
-        // pField->getFont(&pFontRef, &dFontSize);
+        Ref pFontRef; double dFontSize;
+        pField->getFont(&pFontRef, &dFontSize);
 
         // Флаг - Ff
         unsigned int nFieldFlag = pField->getFlags();
@@ -1382,6 +1402,7 @@ oObj.free();\
         oRes.AddInt(nFlags, nFlagPos);
     }
 
+    RELEASEARRAYOBJECTS(pPixData);
     oRes.WriteLen();
     BYTE* bRes = oRes.GetBuffer();
     oRes.ClearWithoutAttack();

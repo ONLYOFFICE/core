@@ -34,6 +34,7 @@
 
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
 #include "SrcReader/RendererOutputDev.h"
 
 class PDFDoc;
@@ -41,7 +42,7 @@ class CPdfReader
 {
 public:
 
-    CPdfReader(NSFonts::IApplicationFonts* pAppFonts);
+    CPdfReader(NSFonts::IApplicationFonts* pAppFonts, IOfficeDrawingFile* pRenderer);
     ~CPdfReader();
 
     bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
@@ -69,9 +70,10 @@ public:
 
     BYTE* GetStructure();
     BYTE* GetLinks(int nPageIndex);
-    BYTE* GetWidgets();
+    BYTE* GetWidgets(int nPageIndex, int nRasterW, int nRasterH);
 
 private:
+    IOfficeDrawingFile* m_pRenderer;
     PDFDoc*            m_pPDFDocument;
     std::wstring       m_wsTempFolder;
     NSFonts::IFontManager* m_pFontManager;

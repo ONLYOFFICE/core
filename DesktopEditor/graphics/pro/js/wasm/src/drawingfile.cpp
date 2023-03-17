@@ -150,9 +150,9 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetStructure();
 }
-WASM_EXPORT BYTE* GetInteractiveForms(CGraphicsFileDrawing* pGraphics)
+WASM_EXPORT BYTE* GetInteractiveForms(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
 {
-	return pGraphics->GetInteractiveForms();
+	return pGraphics->GetInteractiveForms(nPageIndex, nRasterW, nRasterH);
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
-		BYTE* pWidgets = GetInteractiveForms(pGrFile);
+		BYTE* pWidgets = GetInteractiveForms(pGrFile, nTestPage, nWidth, nHeight);
 		nLength = READ_INT(pWidgets);
 		DWORD i = 4;
 		nLength -= 4;
@@ -387,9 +387,6 @@ int main(int argc, char* argv[])
 			i += 4;
 			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
-			nPathLength = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "Page " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "X1 " << (double)nPathLength / 100.0 << ", ";

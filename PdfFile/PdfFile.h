@@ -124,7 +124,7 @@ public:
     virtual std::wstring GetInfo();
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks(int nPageIndex);
-    BYTE* GetWidgets();
+    BYTE* GetWidgets(int nPageIndex, int nRasterW, int nRasterH);
 
     // --- WRITER ---
 

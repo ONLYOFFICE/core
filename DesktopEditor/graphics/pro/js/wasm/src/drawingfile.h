@@ -110,10 +110,10 @@ public:
     {
         return pReader->GetStructure();
     }
-    BYTE* GetInteractiveForms()
+    BYTE* GetInteractiveForms(int nPageIndex, int nRasterW, int nRasterH)
     {
         if (nType == 0)
-            return ((CPdfFile*)pReader)->GetWidgets();
+            return ((CPdfFile*)pReader)->GetWidgets(nPageIndex, nRasterW, nRasterH);
         return NULL;
     }
     std::wstring GetInfo()

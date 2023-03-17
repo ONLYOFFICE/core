@@ -702,7 +702,7 @@ void CPdfFile::SetCMapFile(const std::wstring& sFile)
 
 bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
-    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
+    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts, this);
     if (!m_pInternal->pReader)
         return false;
     m_pInternal->wsSrcFile  = file;
@@ -713,7 +713,7 @@ bool CPdfFile::LoadFromFile(const std::wstring& file, const std::wstring& option
 }
 bool CPdfFile::LoadFromMemory(BYTE* data, DWORD length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
 {
-    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
+    m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts, this);
     if (!m_pInternal->pReader)
         return false;
     m_pInternal->wsSrcFile  = L"";
@@ -811,11 +811,11 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
         return NULL;
     return m_pInternal->pReader->GetLinks(nPageIndex);
 }
-BYTE* CPdfFile::GetWidgets()
+BYTE* CPdfFile::GetWidgets(int nPageIndex, int nRasterW, int nRasterH)
 {
     if (!m_pInternal->pReader)
         return NULL;
-    return m_pInternal->pReader->GetWidgets();
+    return m_pInternal->pReader->GetWidgets(nPageIndex, nRasterW, nRasterH);
 }
 
 // ------------------------------------------------------------------------

@@ -230,9 +230,6 @@ namespace NSDocxRenderer
 		}
 	}
 
-	CFontSelectParams::CFontSelectParams()
-	{
-	}
 	CFontSelectParams::CFontSelectParams(const CFontSelectParams& oOther) : CFontSelectParams()
 	{
 		*this = oOther;
@@ -256,6 +253,25 @@ namespace NSDocxRenderer
 			arSignature[i] = oOther.arSignature[i];
 
 		return *this;
+	}
+	bool CFontSelectParams::operator==(const CFontSelectParams& oOther)
+	{
+		bool bEqual = true;
+
+		bEqual &= wsDefaultName == oOther.wsDefaultName;
+		bEqual &= bDefaultBold == oOther.bDefaultBold;
+		bEqual &= bDefaultItalic == oOther.bDefaultItalic;
+
+		bEqual &= lAvgWidth == oOther.lAvgWidth;
+		bEqual &= bIsFixedWidth == oOther.bIsFixedWidth;
+
+		for(int i = 0; i < 10; i++)
+			bEqual &= arPANOSE[i] == oOther.arPANOSE[i];
+
+		for(int i = 0; i < arSignature.size(); i++)
+			bEqual &= arSignature[i] == oOther.arSignature[i];
+
+		return bEqual;
 	}
 
 	CFontSelector::CFontSelector(NSFonts::IApplicationFonts* pApplication)
@@ -281,37 +297,39 @@ namespace NSDocxRenderer
 		return m_bIsSelectedItalic;
 	}
 
+	const std::list<CFontSelector::CFontSelectInfo>& CFontSelector::GetCache() const
+	{
+		return m_arParamsCache;
+	}
+
 	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams, NSStringUtils::CStringUTF32& oText)
 	{
 		BYTE lRangeNum	= 0xFF;
 		BYTE lRange		= 0xFF;
 
 		m_oRanges.CheckRange(oText[0], lRange, lRangeNum);
-//		std::list<CFontPickUp>::iterator posStart, pos;
-//		posStart = pos = m_arListPicUps.begin();
 
-//		while (m_arListPicUps.end() != pos)
-//		{
-//			std::list<CFontPickUp>::iterator posOld = pos;
-//			CFontPickUp& oPick = *(pos++);
-//			if ((oPick.m_oFont.m_oFont.IsEqual2(&m_oFontAdvanced.m_oFont)) && (lRangeNum == oPick.m_lRangeNum) && (lRange == oPick.m_lRange))
-//			{
-//				// нашли! ничего подбирать не нужно
-//				// нужно просто выкинуть этот шрифт наверх
-//				m_arListPicUps.splice(m_arListPicUps.begin(), m_arListPicUps, posOld);
-//				m_strCurrentPickFont = oPick.m_strPickFont;
-//				m_lCurrentPictFontStyle = oPick.m_lPickStyle;
-//				return false;
-//			}
-//		}
+		for(auto it = m_arParamsCache.begin(); it != m_arParamsCache.end(); it++)
+		{
+			// нашли в кэше, ничего не подбираем, выкинем наверх
+			if(it->oFontSelectParams == oFontSelectParams && it->lRange == lRange && it->lRangeNum == lRangeNum)
+			{
+				m_bIsSelectedBold = it->bIsSelectedBold;
+				m_bIsSelectedItalic = it->bIsSelectedItalic;
+				m_wsSelectedName = it->wsSelectedName;
 
-//		// не нашли...
-//		CFontPickUp oPick;
-//		oPick.m_lRangeNum	= lRangeNum;
-//		oPick.m_lRange		= lRange;
-//		oPick.m_oFont		= m_oFontAdvanced;
-//		oPick.m_strPickFont	= m_oFontAdvanced.m_strFamilyName;
-//		oPick.m_lPickStyle	= m_oFontAdvanced.m_lStyle;
+				m_arParamsCache.push_front(*it);
+				m_arParamsCache.erase(it);
+				return;
+			}
+		}
+
+
+		// не нашли...
+		CFontSelectInfo oInfoCache;
+		oInfoCache.oFontSelectParams = oFontSelectParams;
+		oInfoCache.lRange = lRange;
+		oInfoCache.lRangeNum = lRangeNum;
 
 		UINT dwR1 = oFontSelectParams.arSignature[0];
 		UINT dwR2 = oFontSelectParams.arSignature[1];
@@ -344,7 +362,7 @@ namespace NSDocxRenderer
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
-		oFormat.wsName = NULL;
+		oFormat.wsName = new std::wstring(sFontNameSelect);
 		oFormat.pPanose = new BYTE[10];
 		for(int i = 0; i < 10; i++)
 			oFormat.pPanose[i] = oFontSelectParams.arPANOSE[i];
@@ -363,7 +381,6 @@ namespace NSDocxRenderer
 		oFormat.ulCodeRange1 = new UINT(dwCodePage1);
 		oFormat.ulCodeRange2 = new UINT(dwCodePage2);
 
-		// ???
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
 
@@ -371,20 +388,15 @@ namespace NSDocxRenderer
 
 		NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
 
-//		oPick.m_strPickFont = pInfo->m_wsFontName;
-//		oPick.m_lPickStyle = 0;
-//		if (pInfo->m_bBold)
-//			oPick.m_lPickStyle |= 0x01;
-//		if (pInfo->m_bItalic)
-//			oPick.m_lPickStyle |= 0x02;
-
-//		m_strCurrentPickFont = oPick.m_strPickFont;
-//		m_lCurrentPictFontStyle = oPick.m_lPickStyle;
-
-//		m_arListPicUps.push_front(oPick);
 		m_bIsSelectedBold = pInfo->m_bBold;
 		m_bIsSelectedItalic = pInfo->m_bItalic;
 		m_wsSelectedName = pInfo->m_wsFontName;
+
+		// закинем в кэш, чтобы потом не подбирать
+		oInfoCache.bIsSelectedBold = m_bIsSelectedBold;
+		oInfoCache.bIsSelectedItalic = m_bIsSelectedItalic;
+		oInfoCache.wsSelectedName = m_wsSelectedName;
+		m_arParamsCache.push_back(oInfoCache);
 		return;
 	}
 

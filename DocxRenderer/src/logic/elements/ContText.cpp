@@ -219,6 +219,7 @@ namespace NSDocxRenderer
 		}
 
 		LONG lCalculatedSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);
+
 		//note принудительно уменьшаем spacing чтобы текстовые линии не выходили за правую границу
 		lCalculatedSpacing -= 1;
 		if (lCalculatedSpacing != 0)

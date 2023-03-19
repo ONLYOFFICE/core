@@ -61,8 +61,7 @@ namespace NSDocxRenderer
 
 			//todo возможно стоит доработать логику
 			bool bIsEqual = pFirst->IsEqual(pCurrent);
-			bool bIsBigDelta = ((pFirst->m_dRight < pCurrent->m_dLeft) && ((pCurrent->m_dLeft - pFirst->m_dRight) < pCurrent->m_dSpaceWidthMM)) ||
-					fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pCurrent->CalculateThinSpace();
+			bool bIsBigDelta = (fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pCurrent->CalculateThinSpace());
 			bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateWideSpace();
 
 			if (bIsVeryBigDelta)
@@ -169,19 +168,10 @@ namespace NSDocxRenderer
 			}
 
 			dDelta = pCurrent->m_dLeft - pPrev->m_dRight;
-
-			if (dDelta < pPrev->CalculateWideSpace() ||
-					pPrev->m_bSpaceIsNotNeeded)
-			{
-				// просто текст на тексте или сменились настройки (font/brush)
-				pPrev->ToXml(oWriter);
-			}
-			else
-			{
-				// расстояние слишком большое. нужно сделать большой пробел
-				pPrev->ToXml(oWriter);
+			pPrev->ToXml(oWriter);
+			if (!(dDelta < pPrev->CalculateWideSpace() || pPrev->m_bSpaceIsNotNeeded))
 				pPrev->AddWideSpaceToXml(dDelta, oWriter, pPrev->IsEqual(pCurrent));
-			}
+
 			pPrev = pCurrent;
 		}
 

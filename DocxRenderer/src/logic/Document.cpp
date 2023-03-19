@@ -942,25 +942,29 @@ namespace NSDocxRenderer
 				xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
 				mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh\">");
 
-		/*CFontTable* pFontTable = &m_oFontManager.m_oFontTable;
-		for (std::map<std::wstring, CFontTableEntry>::iterator iterFont = pFontTable->m_mapTable.begin(); iterFont != pFontTable->m_mapTable.end(); ++iterFont)
+		auto oFonts = m_oFontSelector.GetCache();
+		for (auto& val : oFonts)
 		{
-			CFontTableEntry& oEntry = iterFont->second;
-
-			if (oEntry.m_strFamilyName.empty())
-			{
+			if (val.wsSelectedName.empty())
 				continue;
-			}
 
 			oWriter.WriteString(L"<w:font w:name=\"");
-			oWriter.WriteEncodeXmlString(oEntry.m_strFamilyName);
+			oWriter.WriteEncodeXmlString(val.wsSelectedName);
 			oWriter.WriteString(L"\">");
 
 			oWriter.WriteString(L"<w:panose1 w:val=\"");
-			oWriter.WriteString(oEntry.m_strPANOSE);
+			std::wstring strPANOSE = L"";
+			for(auto& uc : val.oFontSelectParams.arPANOSE)
+			{
+				char c1 = (char)(uc >> 4);
+				char c2 = (char)(uc & 0x0F);
+				strPANOSE += (wchar_t)((c1 < 10) ? ('0' + c1) : ('A' + c1 - 10));
+				strPANOSE += (wchar_t)((c2 < 10) ? ('0' + c2) : ('A' + c2 - 10));
+			}
+			oWriter.WriteString(strPANOSE);
 			oWriter.WriteString(L"\"/>");
 
-			if (oEntry.m_bIsFixedWidth)
+			if (val.oFontSelectParams.bIsFixedWidth)
 				oWriter.WriteString(L"<w:pitch w:val=\"fixed\" />");
 			else
 				oWriter.WriteString(L"<w:pitch w:val=\"variable\" />");
@@ -968,21 +972,21 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:charset w:val=\"00\"/>");
 
 			oWriter.WriteString(L"<w:sig w:usb0=\"");
-			oWriter.WriteHexInt4(oEntry.m_arSignature[0]);
+			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[0]);
 			oWriter.WriteString(L"\" w:usb1=\"");
-			oWriter.WriteHexInt4(oEntry.m_arSignature[1]);
+			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[1]);
 			oWriter.WriteString(L"\" w:usb2=\"");
-			oWriter.WriteHexInt4(oEntry.m_arSignature[2]);
+			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[2]);
 			oWriter.WriteString(L"\" w:usb3=\"");
-			oWriter.WriteHexInt4(oEntry.m_arSignature[3]);
+			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[3]);
 			oWriter.WriteString(L"\" w:csb0=\"");
-			oWriter.WriteHexInt4(oEntry.m_arSignature[4]);
+			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[4]);
 			oWriter.WriteString(L"\" w:csb1=\"");
-			oWriter.WriteHexInt4(oEntry.m_arSignature[5]);
+			oWriter.WriteHexInt4(val.oFontSelectParams.arSignature[5]);
 			oWriter.WriteString(L"\"/>");
 
 			oWriter.WriteString(L"</w:font>");
-		}*/
+		}
 
 		oWriter.WriteString(L"</w:fonts>");
 		NSFile::CFileBinary::SaveToFile(m_strTempDirectory + L"/word/fontTable.xml", oWriter.GetData());

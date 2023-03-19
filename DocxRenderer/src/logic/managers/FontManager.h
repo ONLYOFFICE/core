@@ -2,7 +2,6 @@
 #include <list>
 #include <vector>
 
-#include "../DesktopEditor/graphics/Matrix.h"
 #include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/common/StringUTF32.h"
@@ -58,15 +57,28 @@ namespace NSDocxRenderer
 		BYTE							arPANOSE[10] {};
 		std::vector<UINT>   			arSignature;
 
-		CFontSelectParams();
+		CFontSelectParams() = default;
 		CFontSelectParams(const CFontSelectParams& oOther);
 		CFontSelectParams& operator=(const CFontSelectParams& oOther);
+		bool operator==(const CFontSelectParams& oOther);
 	};
 
 	// подбирает шрифт по параметрам
 	class CFontSelector
 	{
 	public:
+		// структура для хранения уже подобранных шрифтов
+		struct CFontSelectInfo
+		{
+			CFontSelectParams oFontSelectParams;
+			BYTE lRangeNum;
+			BYTE lRange;
+
+			std::wstring wsSelectedName;
+			bool bIsSelectedBold;
+			bool bIsSelectedItalic;
+		};
+
 		CFontSelector(NSFonts::IApplicationFonts* pApplication);
 		~CFontSelector();
 
@@ -75,7 +87,11 @@ namespace NSDocxRenderer
 		bool IsSelectedBold() const noexcept;
 		bool IsSelectedItalic() const noexcept;
 
+		const std::list<CFontSelectInfo>& GetCache() const;
+
 	private:
+		std::list<CFontSelectInfo> m_arParamsCache;
+
 		NSFonts::IFontManager* m_pManager;
 		std::wstring m_wsSelectedName;
 		bool m_bIsSelectedBold;

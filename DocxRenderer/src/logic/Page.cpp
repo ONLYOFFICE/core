@@ -13,7 +13,8 @@ namespace NSDocxRenderer
 
 	void CPage::Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 					 NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-					 Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager *pFontManager)
+					 Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager *pFontManager,
+					 CFontSelector* pFontSelector)
 	{
 		m_pFont     = pFont;
 		m_pPen      = pPen;
@@ -26,6 +27,7 @@ namespace NSDocxRenderer
 
 		m_pStyleManager = pStyleManager;
 		m_pFontManager = pFontManager;
+		m_pFontSelector = pFontSelector;
 
 		m_pCurrentLine = nullptr;
 		m_pCurrentRow = nullptr;
@@ -347,9 +349,7 @@ namespace NSDocxRenderer
 					oText[i] = ' ';
 
 
-		m_pFontManager->SetFont(*m_pFont);
-		m_pFontManager->LoadFont();
-		m_pFontManager->GenerateFontName(oText);
+		m_pFontManager->LoadFontByFile(*m_pFont);
 
 		if (fabs(dTextW) < 0.01 || (dTextW > 10))
 		{
@@ -381,9 +381,12 @@ namespace NSDocxRenderer
 		pCont->m_dLeft = dTextX;
 		pCont->m_dBaselinePos = dBaseLinePos;
 
-		CFontAdvanced oFontAdvanced = m_pFontManager->GetFontAdvanced();
+		auto oMetrics = m_pFontManager->GetFontMetrics();
+		auto oParams = m_pFontManager->GetFontSelectParams();
 
-		pCont->m_dTop       = dBaseLinePos - dTextH - oFontAdvanced.m_dBaselineOffset;
+		m_pFontSelector->SelectFont(oParams, oText);
+
+		pCont->m_dTop       = dBaseLinePos - dTextH - oMetrics.dBaselineOffset;
 		pCont->m_dWidth     = dTextW;
 		pCont->m_dHeight    = dTextH;
 		pCont->m_dRight     = dTextX + dTextW;
@@ -391,16 +394,21 @@ namespace NSDocxRenderer
 		pCont->m_oText = oText;
 
 		//Первичное заполнение стилей
-		m_pStyleManager->m_pCurrentStyle->m_oFont = oFontAdvanced.m_oFont;
+		m_pStyleManager->m_pCurrentStyle->m_oFont = *m_pFont;
 		m_pStyleManager->m_pCurrentStyle->m_oBrush = *m_pBrush;
 
-		m_pStyleManager->m_pCurrentStyle->m_strPickFontName = oFontAdvanced.m_strGeneratedName;
-		m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle  = oFontAdvanced.m_oFont.GetStyle2();
+		m_pStyleManager->m_pCurrentStyle->m_strPickFontName = m_pFontSelector->GetSelectedName();
+
+		long lStyle = 0;
+		if (m_pFontSelector->IsSelectedBold()) lStyle |= 0x01;
+		if (m_pFontSelector->IsSelectedItalic()) lStyle |= 0x02;
+
+		m_pStyleManager->m_pCurrentStyle->m_lPickFontStyle = lStyle;
 
 		//первичное получение стиля для текущего символа
 		//при дальнейшем анализе может измениться
 		pCont->m_pFontStyle = m_pStyleManager->GetStyle();
-		pCont->m_dSpaceWidthMM = oFontAdvanced.m_dSpaceWidthMM;
+		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
 
 		// собираем отдельно, т.к. такие символы не имею размера m_dWidth
 		if (nCount == 1 && IsDiacriticalMark(*pUnicodes))

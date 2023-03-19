@@ -3,7 +3,7 @@
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-		m_pAppFonts(pFonts), m_oCurrentPage(pFonts), m_oFontManager(pFonts)
+		m_pAppFonts(pFonts), m_oCurrentPage(pFonts), m_oFontManager(pFonts), m_oFontSelector(pFonts)
 	{
 		m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 	}
@@ -811,7 +811,7 @@ namespace NSDocxRenderer
 		Clear();
 
 		m_lCurrentCommandType = 0;
-		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oStyleManager, &m_oFontManager);
+		m_oCurrentPage.Init(&m_oFont, &m_oPen, &m_oBrush, &m_oShadow, &m_oEdge, &m_oTransform, &m_oSimpleGraphicsConverter, &m_oStyleManager, &m_oFontManager, &m_oFontSelector);
 
 		m_oImageManager.NewDocument();
 		m_oStyleManager.NewDocument();

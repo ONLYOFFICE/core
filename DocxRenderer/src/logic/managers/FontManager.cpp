@@ -230,303 +230,59 @@ namespace NSDocxRenderer
 		}
 	}
 
-	CFontAdvanced::CFontAdvanced()
+	CFontSelectParams::CFontSelectParams()
 	{
-		m_oFont.SetDefaultParams();
-		m_arSignature.clear();			
 	}
-
-	CFontAdvanced::CFontAdvanced(const CFontAdvanced& oSrc)
+	CFontSelectParams::CFontSelectParams(const CFontSelectParams& oOther) : CFontSelectParams()
 	{
-		*this = oSrc;
+		*this = oOther;
 	}
-
-	CFontAdvanced& CFontAdvanced::operator=(const CFontAdvanced& oSrc)
+	CFontSelectParams& CFontSelectParams::operator=(const CFontSelectParams& oOther)
 	{
-		if (this == &oSrc)
-			return *this;
+		wsDefaultName = oOther.wsDefaultName;
+		bDefaultBold = oOther.bDefaultBold;
+		bDefaultItalic = oOther.bDefaultItalic;
 
-		m_oFont				= oSrc.m_oFont;
-
-		m_dAscent			= oSrc.m_dAscent;
-		m_dDescent			= oSrc.m_dDescent;
-		m_dLineSpacing		= oSrc.m_dLineSpacing;
-		m_dEmHeight			= oSrc.m_dEmHeight;
-		m_dBaselineOffset	= oSrc.m_dBaselineOffset;
-		m_dSpaceWidthMM		= oSrc.m_dSpaceWidthMM;
-
-		m_strGeneratedName		= oSrc.m_strGeneratedName;
+		lAvgWidth = oOther.lAvgWidth;
+		bIsFixedWidth = oOther.bIsFixedWidth;
 
 		for(int i = 0; i < 10; i++)
-			m_arPANOSE[i] = oSrc.m_arPANOSE[i];
+			arPANOSE[i] = oOther.arPANOSE[i];
 
-		m_arSignature       = oSrc.m_arSignature;
-		m_bIsFixedWidth		= oSrc.m_bIsFixedWidth;
-		m_lAvgWidth			= oSrc.m_lAvgWidth;
+		arSignature.clear();
+		arSignature.resize(oOther.arSignature.size());
+
+		for(int i = 0; i < arSignature.size(); i++)
+			arSignature[i] = oOther.arSignature[i];
 
 		return *this;
 	}
 
-	CFontManager::CFontManager(NSFonts::IApplicationFonts* pApplication)
+	CFontSelector::CFontSelector(NSFonts::IApplicationFonts* pApplication)
 	{
 		m_pManager = pApplication->GenerateFontManager();
 		m_pManager->CreateOwnerCache(8);
-		SetDefaultFont(L"Arial");
 	}
-
-	CFontManager::~CFontManager()
+	CFontSelector::~CFontSelector()
 	{
 		RELEASEINTERFACE(m_pManager);
 	}
 
-	void CFontManager::SetFont(const NSStructures::CFont& oFont)
+	std::wstring CFontSelector::GetSelectedName() const noexcept
 	{
-		m_oFontAdvanced.m_oFont = oFont;
+		return m_wsSelectedName;
+	}
+	bool CFontSelector::IsSelectedBold() const noexcept
+	{
+		return m_bIsSelectedBold;
+	}
+	bool CFontSelector::IsSelectedItalic() const noexcept
+	{
+		return m_bIsSelectedItalic;
 	}
 
-	void CFontManager::LoadFont()
+	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams, NSStringUtils::CStringUTF32& oText)
 	{
-		if (nullptr == m_pManager)
-			return;
-
-		if (m_oFontAdvanced.m_oFont.Path.empty())
-			LoadFontByName(m_oFontAdvanced.m_oFont.Name, m_oFontAdvanced.m_oFont.Size, m_oFontAdvanced.m_oFont.GetStyle(), c_dDpiX, c_dDpiY);
-		else
-			LoadFontByFile(m_oFontAdvanced.m_oFont.Path, m_oFontAdvanced.m_oFont.Size, c_dDpiX, c_dDpiY, m_oFontAdvanced.m_oFont.FaceIndex);
-
-		int bIsGID = m_pManager->GetStringGID();
-		m_pManager->SetStringGID(FALSE);
-
-		m_pManager->LoadString2(L" ", 0, 0);
-		TBBox bbox = m_pManager->MeasureString2();
-
-		m_oFontAdvanced.m_dSpaceWidthMM = (double)(bbox.fMaxX - bbox.fMinX) * c_dPixToMM;
-		if (0 >= m_oFontAdvanced.m_dSpaceWidthMM)
-			m_oFontAdvanced.m_dSpaceWidthMM = 1.0;
-
-		m_pManager->SetStringGID(bIsGID);
-	}
-
-	void CFontManager::MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-	{
-		dBoxX		= 0;
-		dBoxY		= 0;
-		dBoxWidth	= 0;
-		dBoxHeight	= 0;
-
-		if (nullptr == m_pManager)
-			return;
-
-		m_pManager->LoadString1(sText, (float)x, (float)y);
-
-		TBBox bbox;
-		if (mtGlyph == measureType)
-			bbox = m_pManager->MeasureString();
-		else if (mtPosition == measureType)
-			bbox = m_pManager->MeasureString2();
-
-		dBoxX		= (double)bbox.fMinX;
-		dBoxY		= (double)bbox.fMinY;
-		dBoxWidth	= (double)(bbox.fMaxX - bbox.fMinX);
-		dBoxHeight	= (double)(bbox.fMaxY - bbox.fMinY);
-
-		// переводим в миллиметры
-		dBoxX		*= c_dPixToMM;
-		dBoxY		*= c_dPixToMM;
-		dBoxWidth	*= c_dPixToMM;
-		dBoxHeight	*= c_dPixToMM;
-	}
-
-	void CFontManager::MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y, double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType)
-	{
-		dBoxX		= 0;
-		dBoxY		= 0;
-		dBoxWidth	= 0;
-		dBoxHeight	= 0;
-
-		if (nullptr == m_pManager)
-			return;
-
-		m_pManager->LoadString1(pGids, count, (float)x, (float)y);
-
-		TBBox bbox;
-		if (mtGlyph == measureType)
-			bbox = m_pManager->MeasureString();
-		else if (mtPosition == measureType)
-			bbox = m_pManager->MeasureString2();
-
-		dBoxX		= (double)bbox.fMinX;
-		dBoxY		= (double)bbox.fMinY;
-		dBoxWidth	= (double)(bbox.fMaxX - bbox.fMinX);
-		dBoxHeight	= (double)(bbox.fMaxY - bbox.fMinY);
-
-		// переводим в миллиметры
-		dBoxX		*= c_dPixToMM;
-		dBoxY		*= c_dPixToMM;
-		dBoxWidth	*= c_dPixToMM;
-		dBoxHeight	*= c_dPixToMM;
-	}
-
-	CFontAdvanced CFontManager::GetFontAdvanced()
-	{
-		return m_oFontAdvanced;
-	}
-
-	double CFontManager::GetFontHeight()
-	{
-		return c_dPtToMM * (m_oFontAdvanced.m_dLineSpacing * m_oFontAdvanced.m_oFont.Size ) / m_oFontAdvanced.m_dEmHeight;
-	}
-
-	void CFontManager::SetStringGid(const LONG& lGid)
-	{
-		if (nullptr != m_pManager)
-			m_pManager->SetStringGID(lGid);
-	}
-
-	void CFontManager::SetDefaultFont(const std::wstring& strName)
-	{
-		m_strDefaultFont = strName;
-	}
-
-
-	void CFontManager::LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
-	{
-		m_pManager->LoadFontByName(strName, (float)dSize, lStyle, dDpiX, dDpiY);
-		m_pManager->AfterLoad();
-
-		LoadFontMetrics();
-		LoadFontParams();
-		m_oFontAdvanced.m_lAvgWidth = -1;
-	}
-
-	void CFontManager::LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex)
-	{
-		m_pManager->LoadFontFromFile(strPath, (int)lFaceIndex, (float)dSize, dDpiX, dDpiY);
-		m_pManager->AfterLoad();
-
-		LoadFontMetrics();
-		LoadFontParams();
-		m_oFontAdvanced.m_lAvgWidth = -1;
-
-		bool bIsCID = false;
-		std::wstring sFileExt = NSFile::GetFileExtention(strPath);
-		if (std::wstring::npos != sFileExt.find(L"cid"))
-			bIsCID = true;
-
-		std::wstring sFileName = NSFile::GetFileName(strPath);
-		std::wstring::size_type pos = sFileName.rfind('.');
-		if (std::wstring::npos != pos)
-			sFileName = sFileName.substr(0, pos);
-		std::wstring sEncFilePath = NSFile::GetDirectoryName(strPath) + L"/" + sFileName + L".enc";
-
-		XmlUtils::CXmlNode oMainNode;
-		oMainNode.FromXmlFile(sEncFilePath);
-
-		if (L"PDF-resources" == oMainNode.GetName())
-		{
-			if (bIsCID)
-			{
-				XmlUtils::CXmlNode oType0Node;
-				if ( oMainNode.GetNode( L"Type0", oType0Node ) )
-				{
-					XmlUtils::CXmlNode oNode;
-					if ( oType0Node.GetNode( L"DescendantFonts", oNode ) )
-					{
-						XmlUtils::CXmlNode oDescNode;
-						if ( oNode.GetNode( L"FontDescriptor", oDescNode ) )
-						{
-							XmlUtils::CXmlNode oCurNode;
-							if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
-							{
-								std::wstring sValue = oCurNode.GetAttribute(L"value");
-								try {
-									m_oFontAdvanced.m_lAvgWidth = (SHORT)std::stol(sValue);
-								} catch (std::invalid_argument &) {}
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				XmlUtils::CXmlNode oNode;
-				if ( oMainNode.GetNode( L"FontDescriptor", oNode ) )
-				{
-					XmlUtils::CXmlNode oCurNode;
-					if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
-					{
-						std::wstring sValue = oCurNode.GetAttribute(L"value");
-						try {
-							m_oFontAdvanced.m_lAvgWidth = (SHORT)std::stol(sValue);
-						} catch (std::invalid_argument &) {}
-					}
-				}
-			}
-		}
-	}
-
-	void CFontManager::LoadFontMetrics()
-	{
-		m_oFontAdvanced.m_dAscent = m_pManager->GetAscender();
-		m_oFontAdvanced.m_dDescent = m_pManager->GetDescender();
-		m_oFontAdvanced.m_dLineSpacing = m_pManager->GetLineHeight();
-		m_oFontAdvanced.m_dEmHeight = m_pManager->GetUnitsPerEm();
-
-		m_oFontAdvanced.m_dBaselineOffset = (c_dPtToMM * m_oFontAdvanced.m_dDescent * m_oFontAdvanced.m_oFont.Size / m_oFontAdvanced.m_dEmHeight);
-	}
-
-	void CFontManager::LoadFontParams()
-	{
-		// читаем и выставляем все настройки шрифта
-		if (nullptr == m_pManager || nullptr == m_pManager->GetFile())
-			return;
-
-		m_oFontAdvanced.m_oFont.Bold = m_pManager->GetFile()->IsBold();
-		m_oFontAdvanced.m_oFont.Italic = m_pManager->GetFile()->IsItalic();
-		m_oFontAdvanced.m_oFont.Name = m_pManager->GetName();
-
-		// PANOSE
-		BYTE pPanose[10];
-		m_pManager->GetFile()->GetPanose(pPanose);
-
-		for(int i = 0; i < 10; ++i)
-			m_oFontAdvanced.m_arPANOSE[i] = pPanose[i];
-
-		// IsFixed
-		m_oFontAdvanced.m_bIsFixedWidth = m_pManager->GetFile()->IsFixedWidth();
-
-		// Signature
-		m_oFontAdvanced.m_arSignature.clear();
-
-		for ( unsigned int i = 0; i < 6; ++i )
-		{
-			DWORD value = 0;
-			for ( unsigned long bit = 0; bit < 32; ++bit )
-				if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
-					value |= ( 1 << bit );
-
-			m_oFontAdvanced.m_arSignature.push_back(value);
-		}
-	}
-
-	void CFontManager::CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange)
-	{
-		if (0 == lRangeNum)
-			lRange1 |= 1 << lRange;
-		else if (1 == lRangeNum)
-			lRange2 |= 1 << lRange;
-		else if (2 == lRangeNum)
-			lRange3 |= 1 << lRange;
-		else
-			lRange4 |= 1 << lRange;
-	}
-
-	bool CFontManager::GenerateFontName(NSStringUtils::CStringUTF32& oText)
-	{
-		if (m_oFontAdvanced.m_oFont.Path.empty() || oText.empty())
-			return false;
-
-
 		BYTE lRangeNum	= 0xFF;
 		BYTE lRange		= 0xFF;
 
@@ -557,10 +313,10 @@ namespace NSDocxRenderer
 //		oPick.m_strPickFont	= m_oFontAdvanced.m_strFamilyName;
 //		oPick.m_lPickStyle	= m_oFontAdvanced.m_lStyle;
 
-		UINT dwR1 = m_oFontAdvanced.m_arSignature[0];
-		UINT dwR2 = m_oFontAdvanced.m_arSignature[1];
-		UINT dwR3 = m_oFontAdvanced.m_arSignature[2];
-		UINT dwR4 = m_oFontAdvanced.m_arSignature[3];
+		UINT dwR1 = oFontSelectParams.arSignature[0];
+		UINT dwR2 = oFontSelectParams.arSignature[1];
+		UINT dwR3 = oFontSelectParams.arSignature[2];
+		UINT dwR4 = oFontSelectParams.arSignature[3];
 		UINT dwCodePage1	= 0;
 		UINT dwCodePage2	= 0;
 
@@ -582,27 +338,24 @@ namespace NSDocxRenderer
 		}
 
 		NSFonts::CFontSelectFormat oFormat;
-
-		std::wstring sFontNameSelect = L"";
-		if (m_oFontAdvanced.m_oFont.Name.empty() && !m_oFontAdvanced.m_oFont.Path.empty())
-			sFontNameSelect = m_strDefaultFont;
-		else
-			sFontNameSelect = m_oFontAdvanced.m_oFont.Name;
+		std::wstring sFontNameSelect = oFontSelectParams.wsDefaultName;
 
 		bool bSelectBold = false;
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
-		oFormat.wsName = new std::wstring(sFontNameSelect);
+		oFormat.wsName = NULL;
 		oFormat.pPanose = new BYTE[10];
 		for(int i = 0; i < 10; i++)
-			oFormat.pPanose[i] = m_oFontAdvanced.m_arPANOSE[i];
+			oFormat.pPanose[i] = oFontSelectParams.arPANOSE[i];
 
-		oFormat.bBold = new INT(m_oFontAdvanced.m_oFont.Bold);
-		oFormat.bItalic = new INT(m_oFontAdvanced.m_oFont.Italic);
-		oFormat.bFixedWidth = new INT(m_oFontAdvanced.m_bIsFixedWidth ? 1 : 0);
-		if (-1 != m_oFontAdvanced.m_lAvgWidth)
-			oFormat.shAvgCharWidth = new SHORT((SHORT)m_oFontAdvanced.m_lAvgWidth);
+		oFormat.bBold = new INT(oFontSelectParams.bDefaultBold);
+		oFormat.bItalic = new INT(oFontSelectParams.bDefaultItalic);
+		oFormat.bFixedWidth = new INT(oFontSelectParams.bIsFixedWidth ? 1 : 0);
+
+		if (-1 != oFontSelectParams.lAvgWidth)
+			oFormat.shAvgCharWidth = new SHORT((SHORT)oFontSelectParams.lAvgWidth);
+
 		oFormat.ulRange1 = new UINT(dwR1);
 		oFormat.ulRange2 = new UINT(dwR2);
 		oFormat.ulRange3 = new UINT(dwR3);
@@ -614,7 +367,7 @@ namespace NSDocxRenderer
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
 
-		oFormat.wsDefaultName = new std::wstring(L"Arial");
+		oFormat.wsDefaultName = new std::wstring(oFontSelectParams.wsDefaultName);
 
 		NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
 
@@ -629,45 +382,20 @@ namespace NSDocxRenderer
 //		m_lCurrentPictFontStyle = oPick.m_lPickStyle;
 
 //		m_arListPicUps.push_front(oPick);
-		m_oFontAdvanced.m_oFont.Bold = pInfo->m_bBold;
-		m_oFontAdvanced.m_oFont.Italic = pInfo->m_bItalic;
-		m_oFontAdvanced.m_strGeneratedName = pInfo->m_wsFontName;
-		return true;
+		m_bIsSelectedBold = pInfo->m_bBold;
+		m_bIsSelectedItalic = pInfo->m_bItalic;
+		m_wsSelectedName = pInfo->m_wsFontName;
+		return;
 	}
 
-	bool CFontManager::CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle)
+	void CFontSelector::CheckFontNamePDF(std::wstring& wsName, bool& bBold, bool& bItalic)
 	{
-		size_t nPos = 0;
-		size_t nLenReplace = sStyle.length();
-		bool bRet = false;
-
-		std::wstring sName2 = sName;
-		NSStringExt::ToLower(sName2);
-
-		while (std::wstring::npos != (nPos = sName2.find(sStyle, nPos)))
-		{
-			size_t nOffset = 0;
-			if ((nPos > 0) && sName2.at(nPos - 1) == '-')
-			{
-				--nPos;
-				++nOffset;
-			}
-
-			bRet = true;
-			sName.erase(nPos, nLenReplace + nOffset);
-			sName2.erase(nPos, nLenReplace + nOffset);
-		}
-		return bRet;
-	}
-
-	void CFontManager::CheckFontNamePDF(std::wstring& sName, bool& bBold, bool& bItalic)
-	{
-		if (sName.length() > 7 && sName.at(6) == '+')
+		if (wsName.length() > 7 && wsName.at(6) == '+')
 		{
 			bool bIsRemove = true;
 			for (int nIndex = 0; nIndex < 6; ++nIndex)
 			{
-				wchar_t nChar = sName.at(nIndex);
+				wchar_t nChar = wsName.at(nIndex);
 				if (nChar < 'A' || nChar > 'Z')
 				{
 					bIsRemove = false;
@@ -676,28 +404,301 @@ namespace NSDocxRenderer
 			}
 			if (bIsRemove)
 			{
-				sName.erase(0, 7);
+				wsName.erase(0, 7);
 			}
 		}
 
-		CheckFontNameStyle(sName, L"regular");
-		CheckFontNameStyle(sName, L"condensed");
-		CheckFontNameStyle(sName, L"condensedlight");
-		//CheckFontNameStyle(sName, L"light");
+		CheckFontNameStyle(wsName, L"regular");
+		CheckFontNameStyle(wsName, L"condensed");
+		CheckFontNameStyle(wsName, L"condensedlight");
+		//CheckFontNameStyle(wsName, L"light");
 
-		CheckFontNameStyle(sName, L"condensedbold");
-		CheckFontNameStyle(sName, L"semibold");
-		if (CheckFontNameStyle(sName, L"boldmt")) bBold = true;
-		if (CheckFontNameStyle(sName, L"bold")) bBold = true;
+		CheckFontNameStyle(wsName, L"condensedbold");
+		CheckFontNameStyle(wsName, L"semibold");
+		if (CheckFontNameStyle(wsName, L"boldmt")) bBold = true;
+		if (CheckFontNameStyle(wsName, L"bold")) bBold = true;
 
-		if (CheckFontNameStyle(sName, L"italicmt")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"italic")) bItalic = true;
-		if (CheckFontNameStyle(sName, L"oblique")) bItalic = true;
+		if (CheckFontNameStyle(wsName, L"italicmt")) bItalic = true;
+		if (CheckFontNameStyle(wsName, L"italic")) bItalic = true;
+		if (CheckFontNameStyle(wsName, L"oblique")) bItalic = true;
 
-		if (CheckFontNameStyle(sName, L"bolditalicmt")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bolditalic")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bold_italic")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"boldoblique")) { bBold = true; bItalic = true; }
-		if (CheckFontNameStyle(sName, L"bold_oblique")) { bBold = true; bItalic = true; }
+		if (CheckFontNameStyle(wsName, L"bolditalicmt")) { bBold = true; bItalic = true; }
+		if (CheckFontNameStyle(wsName, L"bolditalic")) { bBold = true; bItalic = true; }
+		if (CheckFontNameStyle(wsName, L"bold_italic")) { bBold = true; bItalic = true; }
+		if (CheckFontNameStyle(wsName, L"boldoblique")) { bBold = true; bItalic = true; }
+		if (CheckFontNameStyle(wsName, L"bold_oblique")) { bBold = true; bItalic = true; }
+	}
+	bool CFontSelector::CheckFontNameStyle(std::wstring& wsName, const std::wstring& sStyle)
+	{
+		size_t nPos = 0;
+		size_t nLenReplace = sStyle.length();
+		bool bRet = false;
+
+		std::wstring wsName2 = wsName;
+		NSStringExt::ToLower(wsName2);
+
+		while (std::wstring::npos != (nPos = wsName2.find(sStyle, nPos)))
+		{
+			size_t nOffset = 0;
+			if ((nPos > 0) && wsName2.at(nPos - 1) == '-')
+			{
+				--nPos;
+				++nOffset;
+			}
+
+			bRet = true;
+			wsName.erase(nPos, nLenReplace + nOffset);
+			wsName2.erase(nPos, nLenReplace + nOffset);
+		}
+		return bRet;
+	}
+
+	void CFontSelector::CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange)
+	{
+		if (0 == lRangeNum)
+			lRange1 |= 1 << lRange;
+		else if (1 == lRangeNum)
+			lRange2 |= 1 << lRange;
+		else if (2 == lRangeNum)
+			lRange3 |= 1 << lRange;
+		else
+			lRange4 |= 1 << lRange;
+	}
+
+	CFontManager::CFontManager(NSFonts::IApplicationFonts* pApplication)
+	{
+		m_pManager = pApplication->GenerateFontManager();
+		m_pManager->CreateOwnerCache(8);
+	}
+	CFontManager::~CFontManager()
+	{
+		RELEASEINTERFACE(m_pManager);
+	}
+
+	void CFontManager::LoadFontByFile(const NSStructures::CFont& oFont)
+	{
+		m_oFont = oFont;
+		m_pManager->LoadFontFromFile(m_oFont.Path, (int)m_oFont.FaceIndex, (float)m_oFont.Size, c_dDpiX, c_dDpiY);
+		m_pManager->AfterLoad();
+
+		LoadFontMetrics();
+		LoadFontSelectParams();
+
+		CheckPdfResources();
+	}
+	void CFontManager::LoadFontByName(const NSStructures::CFont& oFont)
+	{
+		m_oFont = oFont;
+		m_pManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle2(), c_dDpiX, c_dDpiY);
+		m_pManager->AfterLoad();
+
+		LoadFontMetrics();
+		LoadFontSelectParams();
+	}
+
+	CFontSelectParams CFontManager::GetFontSelectParams() const noexcept
+	{
+		return m_oFontSelectParams;
+	}
+	CFontMetrics CFontManager::GetFontMetrics() const noexcept
+	{
+		return m_oFontMetrics;
+	}
+
+	double CFontManager::GetFontHeight() const
+	{
+		return c_dPtToMM * (m_oFontMetrics.dLineSpacing * m_oFont.Size ) / m_oFontMetrics.dEmHeight;
+	}
+	double CFontManager::GetSpaceWidthMM() const
+	{
+		double dSpaceWidthMM = 0.0;
+		int bIsGID = m_pManager->GetStringGID();
+		m_pManager->SetStringGID(FALSE);
+
+		m_pManager->LoadString2(L" ", 0, 0);
+		TBBox bbox = m_pManager->MeasureString2();
+
+		dSpaceWidthMM = (double)(bbox.fMaxX - bbox.fMinX) * c_dPixToMM;
+		if (0 >= dSpaceWidthMM)
+			dSpaceWidthMM = 1.0;
+
+		m_pManager->SetStringGID(bIsGID);
+		return dSpaceWidthMM;
+	}
+
+	void CFontManager::SetStringGid(const LONG& lGid)
+	{
+		if (nullptr != m_pManager)
+			m_pManager->SetStringGID(lGid);
+	}
+
+	void CFontManager::MeasureString(const std::wstring& wsText,
+									 double x,
+									 double y,
+									 double& dBoxX,
+									 double& dBoxY,
+									 double& dBoxWidth,
+									 double& dBoxHeight,
+									 MeasureType measureType) const
+	{
+		dBoxX		= 0;
+		dBoxY		= 0;
+		dBoxWidth	= 0;
+		dBoxHeight	= 0;
+
+		if (nullptr == m_pManager)
+			return;
+
+		m_pManager->LoadString1(wsText, (float)x, (float)y);
+
+		TBBox bbox;
+		if (mtGlyph == measureType) bbox = m_pManager->MeasureString();
+		else if (mtPosition == measureType) bbox = m_pManager->MeasureString2();
+
+		dBoxX		= (double)bbox.fMinX;
+		dBoxY		= (double)bbox.fMinY;
+		dBoxWidth	= (double)(bbox.fMaxX - bbox.fMinX);
+		dBoxHeight	= (double)(bbox.fMaxY - bbox.fMinY);
+
+		// переводим в миллиметры
+		dBoxX		*= c_dPixToMM;
+		dBoxY		*= c_dPixToMM;
+		dBoxWidth	*= c_dPixToMM;
+		dBoxHeight	*= c_dPixToMM;
+	}
+	void CFontManager::MeasureStringGids(unsigned int* pGids,
+										 unsigned int count,
+										 double x,
+										 double y,
+										 double& dBoxX,
+										 double& dBoxY,
+										 double& dBoxWidth,
+										 double& dBoxHeight,
+										 MeasureType measureType) const
+	{
+		dBoxX		= 0;
+		dBoxY		= 0;
+		dBoxWidth	= 0;
+		dBoxHeight	= 0;
+
+		if (nullptr == m_pManager)
+			return;
+
+		m_pManager->LoadString1(pGids, count, (float)x, (float)y);
+
+		TBBox bbox;
+		if (mtGlyph == measureType) bbox = m_pManager->MeasureString();
+		else if (mtPosition == measureType) bbox = m_pManager->MeasureString2();
+
+		dBoxX		= (double)bbox.fMinX;
+		dBoxY		= (double)bbox.fMinY;
+		dBoxWidth	= (double)(bbox.fMaxX - bbox.fMinX);
+		dBoxHeight	= (double)(bbox.fMaxY - bbox.fMinY);
+
+		// переводим в миллиметры
+		dBoxX		*= c_dPixToMM;
+		dBoxY		*= c_dPixToMM;
+		dBoxWidth	*= c_dPixToMM;
+		dBoxHeight	*= c_dPixToMM;
+	}
+
+	void CFontManager::LoadFontMetrics()
+	{
+		m_oFontMetrics.dAscent = m_pManager->GetAscender();
+		m_oFontMetrics.dDescent = m_pManager->GetDescender();
+		m_oFontMetrics.dLineSpacing = m_pManager->GetLineHeight();
+		m_oFontMetrics.dEmHeight = m_pManager->GetUnitsPerEm();
+		m_oFontMetrics.dBaselineOffset = (c_dPtToMM * m_oFontMetrics.dDescent * m_oFont.Size / m_oFontMetrics.dEmHeight);
+	}
+	void CFontManager::LoadFontSelectParams()
+	{
+		if (nullptr == m_pManager || nullptr == m_pManager->GetFile())
+			return;
+
+		m_oFontSelectParams.bDefaultBold = m_pManager->GetFile()->IsBold();
+		m_oFontSelectParams.bDefaultItalic = m_pManager->GetFile()->IsItalic();
+		m_oFontSelectParams.wsDefaultName = m_pManager->GetName();
+
+		// PANOSE
+		BYTE pPanose[10];
+		m_pManager->GetFile()->GetPanose(pPanose);
+
+		for(int i = 0; i < 10; ++i)
+			m_oFontSelectParams.arPANOSE[i] = pPanose[i];
+
+		// IsFixed
+		m_oFontSelectParams.bIsFixedWidth = m_pManager->GetFile()->IsFixedWidth();
+
+		// Signature
+		m_oFontSelectParams.arSignature.clear();
+
+		for ( unsigned int i = 0; i < 6; ++i )
+		{
+			DWORD value = 0;
+			for ( unsigned long bit = 0; bit < 32; ++bit )
+				if (m_pManager->GetFile()->IsUnicodeRangeAvailable(bit, i))
+					value |= ( 1 << bit );
+
+			m_oFontSelectParams.arSignature.push_back(value);
+		}
+	}
+
+	void CFontManager::CheckPdfResources()
+	{
+		bool bIsCID = false;
+		std::wstring sFileExt = NSFile::GetFileExtention(m_oFont.Path);
+		if (std::wstring::npos != sFileExt.find(L"cid"))
+			bIsCID = true;
+
+		std::wstring sFileName = NSFile::GetFileName(m_oFont.Path);
+		std::wstring::size_type pos = sFileName.rfind('.');
+		if (std::wstring::npos != pos)
+			sFileName = sFileName.substr(0, pos);
+		std::wstring sEncFilePath = NSFile::GetDirectoryName(m_oFont.Path) + L"/" + sFileName + L".enc";
+
+		XmlUtils::CXmlNode oMainNode;
+		oMainNode.FromXmlFile(sEncFilePath);
+
+		if (L"PDF-resources" == oMainNode.GetName())
+		{
+			if (bIsCID)
+			{
+				XmlUtils::CXmlNode oType0Node;
+				if ( oMainNode.GetNode( L"Type0", oType0Node ) )
+				{
+					XmlUtils::CXmlNode oNode;
+					if ( oType0Node.GetNode( L"DescendantFonts", oNode ) )
+					{
+						XmlUtils::CXmlNode oDescNode;
+						if ( oNode.GetNode( L"FontDescriptor", oDescNode ) )
+						{
+							XmlUtils::CXmlNode oCurNode;
+							if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
+							{
+								std::wstring sValue = oCurNode.GetAttribute(L"value");
+								try {
+									m_oFontSelectParams.lAvgWidth = (SHORT)std::stol(sValue);
+								} catch (std::invalid_argument &) {}
+							}
+						}
+					}
+				}
+			}
+			else
+			{
+				XmlUtils::CXmlNode oNode;
+				if ( oMainNode.GetNode( L"FontDescriptor", oNode ) )
+				{
+					XmlUtils::CXmlNode oCurNode;
+					if ( oNode.GetNode( L"AvgWidth", oCurNode ) )
+					{
+						std::wstring sValue = oCurNode.GetAttribute(L"value");
+						try {
+							m_oFontSelectParams.lAvgWidth = (SHORT)std::stol(sValue);
+						} catch (std::invalid_argument &) {}
+					}
+				}
+			}
+		}
 	}
 }

@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
 
-	std::wstring sTempDir = L"C:\\Work\\TestDocxR\\temp";
-	std::wstring sTempDirOut = L"C:\\Work\\TestDocxR\\temp\\output";
+	std::wstring sTempDir = L"";
+	std::wstring sTempDirOut = L"";
 
     if (!NSDirectory::Exists(sTempDir))
         NSDirectory::CreateDirectory(sTempDir);
@@ -91,9 +91,9 @@ int main(int argc, char *argv[])
     //std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
     std::vector<std::wstring> sSourceFiles;
     //Или добавляем любой нужный файл
-	sSourceFiles.push_back(L"C:\\Work\\TestDocxR\\tests\\test.pdf");
+	sSourceFiles.push_back(L"");
 
-	std::wstring sTextDirOut = L"C:\\Work\\TestDocxR\\text";
+	std::wstring sTextDirOut = L"";
     if (!NSDirectory::Exists(sTextDirOut))
         NSDirectory::CreateDirectory(sTextDirOut);
 

@@ -91,9 +91,11 @@ namespace NSDocxRenderer
 					m_eVertAlignType != eVertAlignType::vatSuperscript)
 			{
 				// нужно перемерять...
-				m_pManager->LoadFontByName(m_pFontStyle->m_strPickFontName, m_pFontStyle->m_lPickFontStyle, m_pFontStyle->m_oFont.Size,
-										   c_dDpiX, c_dDpiY);
-				m_pManager->GenerateFontName(m_oText);
+				NSStructures::CFont oFont;
+				oFont.Name = m_pFontStyle->m_strPickFontName;
+				oFont.SetStyle(m_pFontStyle->m_lPickFontStyle);
+				oFont.Size = m_pFontStyle->m_oFont.Size;
+				m_pManager->LoadFontByName(oFont);
 
 				double dBoxX;
 				double dBoxY;
@@ -213,7 +215,7 @@ namespace NSDocxRenderer
 		double dSpaceMMSize = m_dSpaceWidthMM;
 		if (!m_pFontStyle->m_strPickFontName.empty())
 		{
-			dSpaceMMSize = m_pManager->GetFontAdvanced().m_dSpaceWidthMM;
+			dSpaceMMSize = m_pManager->GetSpaceWidthMM();
 		}
 
 		LONG lCalculatedSpacing = static_cast<LONG>((dSpacingMM - dSpaceMMSize) * c_dMMToDx);

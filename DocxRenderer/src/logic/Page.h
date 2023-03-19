@@ -22,6 +22,7 @@ namespace NSDocxRenderer
 
 		CStyleManager*              m_pStyleManager {nullptr};
 		CFontManager*               m_pFontManager {nullptr};
+		CFontSelector*				m_pFontSelector {nullptr};
 		CVectorGraphics             m_oVector;
 
 		double m_dWidth {0.0};
@@ -54,7 +55,8 @@ namespace NSDocxRenderer
 		~CPage();
 		void Init(NSStructures::CFont* pFont, NSStructures::CPen* pPen, NSStructures::CBrush* pBrush,
 				  NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
-				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager* pFontManager);
+				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager *pFontManager,
+				  CFontSelector* pFontSelector);
 
 		void Clear();
 		void ClearImages();

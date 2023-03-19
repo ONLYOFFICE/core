@@ -36,34 +36,59 @@ namespace NSDocxRenderer
 		void CheckRange(const int& symbol, int& Range1, int& Range2, int& Range3, int& Range4);
 	};
 
-	// замена pickup
-	// убрать m_oFont?
-	class CFontAdvanced
+	struct CFontMetrics
 	{
-	public:
-		NSStructures::CFont m_oFont;
-
-		// font metrics
-		double							m_dAscent {0.0};
-		double							m_dDescent {0.0};
-		double							m_dLineSpacing {0.0};
-		double							m_dEmHeight {0.0};
-		double							m_dBaselineOffset {0.0};
-		double							m_dSpaceWidthMM {0.0};
-
-		// font params
-		std::wstring					m_strGeneratedName {L""};
-		BYTE							m_arPANOSE[10] {};
-		std::vector<UINT>   			m_arSignature;
-		SHORT							m_lAvgWidth {-1};
-		bool							m_bIsFixedWidth {false};
-
-	public:
-		CFontAdvanced();
-		CFontAdvanced(const CFontAdvanced& oSrc);
-		CFontAdvanced& operator=(const CFontAdvanced& oSrc);
+		double							dAscent {0.0};
+		double							dDescent {0.0};
+		double							dLineSpacing {0.0};
+		double							dEmHeight {0.0};
+		double							dBaselineOffset {0.0};
 	};
 
+	struct CFontSelectParams
+	{
+		// изначальные параметры, которые могут быть нам известны
+		std::wstring					wsDefaultName {L""};
+		bool							bDefaultBold {false};
+		bool							bDefaultItalic {false};
+
+		SHORT							lAvgWidth {-1};
+		bool							bIsFixedWidth {false};
+
+		BYTE							arPANOSE[10] {};
+		std::vector<UINT>   			arSignature;
+
+		CFontSelectParams();
+		CFontSelectParams(const CFontSelectParams& oOther);
+		CFontSelectParams& operator=(const CFontSelectParams& oOther);
+	};
+
+	// подбирает шрифт по параметрам
+	class CFontSelector
+	{
+	public:
+		CFontSelector(NSFonts::IApplicationFonts* pApplication);
+		~CFontSelector();
+
+		void SelectFont(const CFontSelectParams& oFontSelectParams, NSStringUtils::CStringUTF32& oText);
+		std::wstring GetSelectedName() const noexcept;
+		bool IsSelectedBold() const noexcept;
+		bool IsSelectedItalic() const noexcept;
+
+	private:
+		NSFonts::IFontManager* m_pManager;
+		std::wstring m_wsSelectedName;
+		bool m_bIsSelectedBold;
+		bool m_bIsSelectedItalic;
+
+		CUnicodeRanges m_oRanges;
+		void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange);
+
+		void CheckFontNamePDF(std::wstring& wsName, bool& bBold, bool& bItalic);
+		bool CheckFontNameStyle(std::wstring& wsName, const std::wstring& sStyle);
+	};
+
+	// грузит шрифт, его параметры и метрики + измеряет шрифт
 	class CFontManager
 	{
 	public:
@@ -74,44 +99,48 @@ namespace NSDocxRenderer
 		};
 
 		CFontManager(NSFonts::IApplicationFonts* pFonts);
-		virtual ~CFontManager();
+		~CFontManager();
 
-		void LoadFont();
+		void LoadFontByFile(const NSStructures::CFont& oFont);
+		void LoadFontByName(const NSStructures::CFont& oFont);
 
-		void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
-		void LoadFontByFile(const std::wstring& strPath, const double& dSize, const double& dDpiX, const double& dDpiY, const LONG& lFaceIndex);
+		CFontSelectParams GetFontSelectParams() const noexcept;
+		CFontMetrics GetFontMetrics() const noexcept;
 
-		bool GenerateFontName(NSStringUtils::CStringUTF32& oText);
+		double GetFontHeight() const;
+		double GetSpaceWidthMM() const;
 
-		void SetFont(const NSStructures::CFont& oFont);
-		void SetDefaultFont(const std::wstring& strName);
-
-		CFontAdvanced GetFontAdvanced();
-
-		void MeasureString(const std::wstring& sText, double x, double y, double& dBoxX, double& dBoxY,
-						   double& dBoxWidth, double& dBoxHeight, MeasureType measureType);
-
-		void MeasureStringGids(unsigned int* pGids, unsigned int count, double x, double y,
-							   double& dBoxX, double& dBoxY, double& dBoxWidth, double& dBoxHeight, MeasureType measureType) ;
-
-		double GetFontHeight();
 		void SetStringGid(const LONG& lGid);
 
+		void MeasureString(const std::wstring& wsText,
+						   double x,
+						   double y,
+						   double& dBoxX,
+						   double& dBoxY,
+						   double& dBoxWidth,
+						   double& dBoxHeight,
+						   MeasureType measureType) const;
+
+		void MeasureStringGids(unsigned int* pGids,
+							   unsigned int count,
+							   double x,
+							   double y,
+							   double& dBoxX,
+							   double& dBoxY,
+							   double& dBoxWidth,
+							   double& dBoxHeight,
+							   MeasureType measureType) const;
 	private:
 		NSFonts::IFontManager*          m_pManager;
-		std::wstring					m_strDefaultFont;
 
-		CFontAdvanced					m_oFontAdvanced;
-
-		// для подбора шрифтов
-		CUnicodeRanges                  m_oRanges;
-
-		void CheckRanges(UINT& lRange1, UINT& lRange2, UINT& lRange3, UINT& lRange4, BYTE& lRangeNum, BYTE& lRange);
+		NSStructures::CFont				m_oFont;
+		CFontMetrics					m_oFontMetrics;
+		CFontSelectParams				m_oFontSelectParams;
 
 		void LoadFontMetrics();
-		void LoadFontParams();
+		void LoadFontSelectParams();
 
-		bool CheckFontNameStyle(std::wstring& sName, const std::wstring& sStyle);
-		void CheckFontNamePDF(std::wstring& sName, bool& bBold, bool& bItalic);
+		void CheckPdfResources();
+
 	};
 }

@@ -33,6 +33,7 @@ namespace NSDocxRenderer
 		CImageManager                   m_oImageManager;
 		CStyleManager                   m_oStyleManager;
 		CFontManager                    m_oFontManager;
+		CFontSelector					m_oFontSelector;
 
 		double                          m_dWidth {0.0};
 		double                          m_dHeight {0.0};

@@ -49,6 +49,7 @@ namespace NSDocxRenderer
 		eTextAssociationType     m_eTextAssociationType {eTextAssociationType::tatPlainParagraph};
 
 		bool m_bIsDeleteTextClipPage {true};
+		bool m_bIsRecalcFontSize {true};
 
 	public:
 		CPage(NSFonts::IApplicationFonts* pFonts);

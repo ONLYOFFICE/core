@@ -348,7 +348,12 @@ namespace NSDocxRenderer
 				if (!IsUnicodeSymbol(pUnicodes[i]))
 					oText[i] = ' ';
 
-
+		// иногда приходит неверный? размер, нужно перемерить
+		if(m_bIsRecalcFontSize)
+		{
+			m_pFont->Size *= ((m_pTransform->sx() + m_pTransform->sy()) / 2);
+			m_bIsRecalcFontSize = false;
+		}
 		m_pFontManager->LoadFontByFile(*m_pFont);
 
 		if (fabs(dTextW) < 0.01 || (dTextW > 10))

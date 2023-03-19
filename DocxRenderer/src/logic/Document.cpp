@@ -316,6 +316,7 @@ namespace NSDocxRenderer
 	HRESULT CDocument::put_FontSize(double dSize)
 	{
 		m_oFont.Size = dSize;
+		m_oCurrentPage.m_bIsRecalcFontSize = true;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontStyle(LONG* lStyle)

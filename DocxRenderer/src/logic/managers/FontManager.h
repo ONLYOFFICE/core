@@ -17,10 +17,7 @@ namespace NSDocxRenderer
 		int Start {0};
 		int End {0};
 
-		CUnicodeRange(const int& _start = 0,
-					  const int& _end = 0,
-					  const BYTE& _range = 0,
-					  const BYTE& _rangenum = 0);
+		CUnicodeRange(const int& _start = 0, const int& _end = 0, const BYTE& _range = 0, const BYTE& _rangenum = 0);
 	};
 
 	// класс для проставления Ranges для подбора шрифта по символу
@@ -37,25 +34,25 @@ namespace NSDocxRenderer
 
 	struct CFontMetrics
 	{
-		double							dAscent {0.0};
-		double							dDescent {0.0};
-		double							dLineSpacing {0.0};
-		double							dEmHeight {0.0};
-		double							dBaselineOffset {0.0};
+		double dAscent {0.0};
+		double dDescent {0.0};
+		double dLineSpacing {0.0};
+		double dEmHeight {0.0};
+		double dBaselineOffset {0.0};
 	};
 
 	struct CFontSelectParams
 	{
 		// изначальные параметры, которые могут быть нам известны
-		std::wstring					wsDefaultName {L""};
-		bool							bDefaultBold {false};
-		bool							bDefaultItalic {false};
+		std::wstring wsDefaultName {L""};
+		bool bDefaultBold {false};
+		bool bDefaultItalic {false};
 
-		SHORT							lAvgWidth {-1};
-		bool							bIsFixedWidth {false};
+		SHORT lAvgWidth {-1};
+		bool bIsFixedWidth {false};
 
-		BYTE							arPANOSE[10] {};
-		std::vector<UINT>   			arSignature;
+		BYTE arPANOSE[10] {};
+		std::vector<UINT> arSignature;
 
 		CFontSelectParams() = default;
 		CFontSelectParams(const CFontSelectParams& oOther);
@@ -147,11 +144,11 @@ namespace NSDocxRenderer
 							   double& dBoxHeight,
 							   MeasureType measureType) const;
 	private:
-		NSFonts::IFontManager*          m_pManager;
+		NSFonts::IFontManager* m_pManager;
 
-		NSStructures::CFont				m_oFont;
-		CFontMetrics					m_oFontMetrics;
-		CFontSelectParams				m_oFontSelectParams;
+		NSStructures::CFont m_oFont;
+		CFontMetrics m_oFontMetrics;
+		CFontSelectParams m_oFontSelectParams;
 
 		void LoadFontMetrics();
 		void LoadFontSelectParams();

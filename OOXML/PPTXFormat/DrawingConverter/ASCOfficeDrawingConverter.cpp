@@ -3657,7 +3657,10 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 			}
 		}
 	}
-    if (oNode.GetNodes(L"*", oNodes))
+	
+	XmlUtils::CXmlNode oNodeBinData;
+
+	if (oNode.GetNodes(L"*", oNodes))
 	{
 		int nCount = oNodes.GetCount();
 		for (int i = 0; i < nCount; ++i)
@@ -3667,7 +3670,7 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 
 			std::wstring strNameP = XmlUtils::GetNameNoNS(oNodeT.GetName());
 
-			if (L"shape"	== strNameP ||
+			if (L"shape"		== strNameP ||
                 L"rect"         == strNameP ||
                 L"oval"         == strNameP ||
                 L"line"         == strNameP ||
@@ -3675,17 +3678,16 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
                 L"background"   == strNameP ||
                 L"roundrect"    == strNameP)
 			{
-				XmlUtils::CXmlNode oNodeBinData;
-
-				if (i + 1 < nCount)
+				if (false == oNodeBinData.IsValid() && i + 1 < nCount)
 				{
 					oNodes.GetAt(i + 1, oNodeBinData);
 					if (L"binData" != XmlUtils::GetNameNoNS(oNodeBinData.GetName()))
 					{
-						oNodeBinData.Clear();
+						i++;
 					}
+					else
+						oNodeBinData.Clear();
 				}
-
 				PPTX::Logic::SpTreeElem _el; 
 				if (oNodeBinData.IsValid())
 				{
@@ -3697,7 +3699,11 @@ void CDrawingConverter::ConvertGroup(PPTX::Logic::SpTreeElem *result, XmlUtils::
 				if (_el.is_init())
 					pTree->SpTreeElems.push_back(_el);
 			}
-            else if (L"group" == strNameP)
+			else if (L"binData" == strNameP)
+			{
+				oNodeBinData = oNodeT;
+			}
+			else if (L"group" == strNameP)
 			{
 				PPTX::Logic::SpTreeElem _el;
 				ConvertGroup(&_el, oNodeT, pMainProps, false);

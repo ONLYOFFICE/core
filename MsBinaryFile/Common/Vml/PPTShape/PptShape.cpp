@@ -76,10 +76,10 @@ CPPTShape::CPPTShape() : CBaseShape(), m_arStringTextRects()
 {
     m_eType = PPTShapes::sptMin;
 
-    m_arStringTextRects.push_back(L"0,0,21600,21600");
-
+	m_arStringTextRects.clear();
     m_strPathLimoX.clear();
     m_strPathLimoY.clear();
+
     m_bIsShapeType = false;
 
     m_bIsFilled = true;

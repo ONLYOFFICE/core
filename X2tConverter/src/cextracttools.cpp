@@ -108,6 +108,17 @@ namespace NExtractTools
                
 				switch (OfficeFileFormatChecker.nFileType)
 				{
+				case AVS_OFFICESTUDIO_FILE_DOCUMENT_XML:
+				{
+					if (0 == sExt2.compare(_T(".docx")))
+					{
+						res = TCD_TXT2DOCX;
+					}
+					else if (0 == sExt2.compare(_T(".xlsx")))
+					{
+						res = TCD_XML2XLSX;
+					}
+				}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:

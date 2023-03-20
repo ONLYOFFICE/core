@@ -1479,6 +1479,26 @@ namespace NExtractTools
 
 		return nRes;
 	}
+//xml -> xlsx
+	_UINT32 xml2xlsx(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		std::wstring sResultXlsxDir = sTemp + FILE_SEPARATOR_STR + _T("xlsx_unpacked");
+		NSDirectory::CreateDirectory(sResultXlsxDir);
+		_UINT32 nRes = xml2xlsx_dir(sFrom, sResultXlsxDir, sTemp, params);
+		
+		if (SUCCEEDED_X2T(nRes))
+		{
+			nRes = dir2zipMscrypt(sResultXlsxDir, sTo, sTemp, params);
+		}
+		return nRes;
+	}
+	_UINT32 xml2xlsx_dir(const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
+	{
+		_UINT32 nRes = AVS_FILEUTILS_ERROR_CONVERT;
+
+
+		return nRes;
+	}
 // csv -> xslx
     _UINT32 csv2xlsx (const std::wstring &sFrom, const std::wstring &sTo, const std::wstring &sTemp, InputParams& params)
     {
@@ -5467,6 +5487,10 @@ namespace NExtractTools
 			case TCD_UNZIPDIR:
 			{
 				result =  zip2dir (sFileFrom, sFileTo);
+			}break;
+			case TCD_XML2XLSX:
+			{
+				result = xml2xlsx(sFileFrom, sFileTo, sTempDir, oInputParams);
 			}break;
 			case TCD_CSV2XLSX:
 			{

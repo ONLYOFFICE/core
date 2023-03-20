@@ -368,10 +368,10 @@
 		Module["_free"](ext);
 		return res;
 	};
-	CFile.prototype["getInteractiveForms"] = function()
+	CFile.prototype["getInteractiveForms"] = function(pageIndex, width, height)
 	{
 		var res = [];
-		var ext = Module["_GetInteractiveForms"](this.nativeFile);
+		var ext = Module["_GetInteractiveForms"](this.nativeFile, pageIndex, width, height);
 		if (ext == 0)
 			return res;
 		
@@ -401,8 +401,7 @@
 			rec["locked"]   = rec["annotflag"] & (1 << 7); // Locked
 			rec["lockedC"]  = rec["annotflag"] & (1 << 9); // LockedContents
 
-			rec["name"] = reader.readString();
-			rec["page"] = reader.readInt();
+			rec["name"] = reader.readString(); 
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["x1"] = reader.readDouble();
 			rec["y1"] = reader.readDouble();

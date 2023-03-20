@@ -735,7 +735,7 @@ BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH)
     globalParams->setDrawAnnotations(gFalse);
     globalParams->setDrawFormFields(gTrue);
 
-    BYTE* pPixData = m_pRenderer->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, 0, false);
+    BYTE* pPixData = m_pRenderer->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, 0, false, 0);
 
     globalParams->setDrawContent(bDrawContent);
     globalParams->setDrawAnnotations(bDrawAnnotations);
@@ -783,10 +783,42 @@ BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH)
         double dx1, dy1, dx2, dy2;
         pField->getBBox(&dx1, &dy1, &dx2, &dy2);
         double height = m_pPDFDocument->getPageCropHeight(nPageIndex + 1);
+        double width  = m_pPDFDocument->getPageCropWidth (nPageIndex + 1);
+        double dTemp = dy1;
+        dy1 = height - dy2;
+        dy2 = height - dTemp;
         oRes.AddDouble(dx1);
-        oRes.AddDouble(height - dy1);
+        oRes.AddDouble(dy1);
         oRes.AddDouble(dx2);
-        oRes.AddDouble(height - dy2);
+        oRes.AddDouble(dy2);
+
+        // Получение пикселей внешнего вида виджета
+        int nRx1 = dx1 * (double)nRasterW / width;
+        int nRx2 = dx2 * (double)nRasterW / width + 1;
+        int nRy1 = dy1 * (double)nRasterH / height;
+        int nRy2 = dy2 * (double)nRasterH / height + 1;
+        if (nRx1 < 0) nRx1 = 0;
+        if (nRy1 < 0) nRy1 = 0;
+        if (nRx2 > nRasterW) nRx1 = nRasterW;
+        if (nRy2 > nRasterH) nRy1 = nRasterH;
+
+        BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
+        int p = 0;
+        unsigned int* pTemp = (unsigned int*)pPixData;
+        unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
+        for (int y = nRy1; y < nRy2; ++y)
+            for (int x = nRx1; x < nRx2; ++x)
+                pSubTemp[p++] = pTemp[y * nRasterW + x];
+
+        CBgraFrame oFrame;
+        oFrame.put_Data(pSubMatrix);
+        oFrame.put_Width(nRx2 - nRx1);
+        oFrame.put_Height(nRy2 - nRy1);
+        oFrame.put_Stride(4 * (nRx2 - nRx1));
+        oFrame.put_IsRGBA(true);
+        oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
+        oFrame.ClearNoAttack();
+        RELEASEARRAYOBJECTS(pSubMatrix);
 
         // Выравнивание текста - Q
         Object oQ;

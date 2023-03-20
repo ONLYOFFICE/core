@@ -183,6 +183,15 @@ int READ_INT(BYTE* x)
 
 int main(int argc, char* argv[])
 {
+    /* тест сериализации указателя - 8 байт на x64
+    int* p = new int;
+    *p = 15;
+
+    std::cout << p << std::endl;
+    std::cout << *p << std::endl;
+    delete p;
+    */
+
 	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";

@@ -10,6 +10,13 @@ namespace NSDocxRenderer
 {
 	CVectorGraphics::CVectorGraphics()
 	{
+		m_arData.resize(500);
+
+		m_dLeftDefault = std::numeric_limits<double>().max();
+		m_dTopDefault = std::numeric_limits<double>().max();
+		m_dRightDefault = std::numeric_limits<double>().min();
+		m_dBottomDefault = std::numeric_limits<double>().min();
+
 		ResetBorders();
 	}
 
@@ -20,10 +27,10 @@ namespace NSDocxRenderer
 
 	void CVectorGraphics::ResetBorders()
 	{
-		m_dLeft = std::numeric_limits<double>().max();
-		m_dTop = std::numeric_limits<double>().max();
-		m_dRight = std::numeric_limits<double>().min();
-		m_dBottom = std::numeric_limits<double>().min();
+		m_dLeft = m_dLeftDefault;
+		m_dTop = m_dTopDefault;
+		m_dRight = m_dRightDefault;
+		m_dBottom = m_dBottomDefault;
 	}
 
 	double CVectorGraphics::GetLeft() const noexcept

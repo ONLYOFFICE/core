@@ -57,6 +57,11 @@ namespace NSDocxRenderer
 		double m_dRight;
 		double m_dBottom;
 
+		double m_dLeftDefault;
+		double m_dTopDefault;
+		double m_dRightDefault;
+		double m_dBottomDefault;
+
 		void ResetBorders();
 	};
 }

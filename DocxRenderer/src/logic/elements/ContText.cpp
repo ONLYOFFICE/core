@@ -104,7 +104,7 @@ namespace NSDocxRenderer
 				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
 
 				double dSpacing = (m_dWidth - dBoxWidth) / (m_oText.length());
-				dSpacing *= c_dMMToDx;
+				// dSpacing *= c_dMMToDx;
 
 				lCalculatedSpacing = static_cast<LONG>(dSpacing);
 			}

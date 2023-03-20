@@ -54,7 +54,7 @@ namespace SVG
 
 	IPathElement *CPath::operator[](int nIndex) const
 	{
-		if (m_arElements.empty())
+		if (m_arElements.empty() || (nIndex > 0 && nIndex >= m_arElements.size()) || (nIndex < 0 && -nIndex > m_arElements.size()))
 			return NULL;
 
 		return m_arElements[(nIndex >= 0) ? nIndex : m_arElements.size() + nIndex];
@@ -92,7 +92,6 @@ namespace SVG
 		std::wstring::const_iterator oSecondPos = oFirstPos;
 
 		IPathElement *pMoveElement = NULL;
-		IPathElement *pElement     = NULL;
 
 		while (true)
 		{
@@ -110,19 +109,10 @@ namespace SVG
 				case L'M':
 				case L'm':
 				{
-					pElement = IPathElement::CreateFromArray<CMoveElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					pMoveElement = CMoveElement::CreateFromArray(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
 
-					if (NULL != pElement)
-					{
-						pMoveElement = pElement;
-
-						if (arValues.size() > 1)
-						{
-							pElement = IPathElement::CreateFromArray<CLineElement>(arValues, iswlower(*oFirstPos), pMoveElement);
-							if (NULL != pElement)
-								m_arElements.push_back(pMoveElement);
-						}
-					}
+					if (AddElement(pMoveElement) && arValues.size() > 1)
+						AddElements<CLineElement>(arValues, iswlower(*oFirstPos));
 
 					break;
 				}
@@ -132,7 +122,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CLineElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'H':
@@ -141,7 +131,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CHLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CHLineElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'V':
@@ -150,7 +140,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CVLineElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CVLineElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'C':
@@ -159,7 +149,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CCBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CCBezierElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'S':
@@ -168,7 +158,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CSBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CSBezierElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'Q':
@@ -177,7 +167,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CQBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CQBezierElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'T':
@@ -186,7 +176,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CTBezierElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CTBezierElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'A':
@@ -195,7 +185,7 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CArcElement>(arValues, iswlower(*oFirstPos), LASTELEMENT(m_arElements));
+					AddElements<CArcElement>(arValues, iswlower(*oFirstPos));
 					break;
 				}
 				case L'Z':
@@ -204,18 +194,156 @@ namespace SVG
 					if (NULL == pMoveElement)
 						return;
 
-					pElement = IPathElement::CreateFromArray<CCloseElement>(arValues, iswlower(*oFirstPos), pMoveElement);
-					if (NULL != pElement)
-						pMoveElement = NULL;
+					AddElement(new CCloseElement);
+					pMoveElement = NULL;
+
 					break;
 				}
 			}
-
-			if (NULL != pElement)
-				m_arElements.push_back(pElement);
 
 			oFirstPos = oSecondPos;
 		}
 	}
 
+	bool CPath::AddElement(IPathElement *pElement)
+	{
+		if (NULL == pElement)
+			return false;
+
+		m_arElements.push_back(pElement);
+		return true;
+	}
+
+	template<typename TypeElement>
+	void CPath::AddElements(std::vector<double> &arValues, bool bRelativeCoordinate)
+	{
+		while(AddElement(TypeElement::CreateFromArray(arValues, bRelativeCoordinate, LASTELEMENT(m_arElements))));
+	}
+
+	CMovingPath::CMovingPath(const CPath *pPath)
+	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}, m_oLastPoint{0, 0}, m_dAngle(0), m_pCurrentElement(NULL), m_unIndexElement(0), m_dCurveIndex(0), m_dStartAngle(0), m_dEndAngle(0)
+	{
+		if (NULL != m_pPath)
+			m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+	}
+
+	bool CMovingPath::Move(double dX)
+	{
+		if (NULL == m_pCurrentElement)
+			return false;
+
+		while (dX != 0)
+		{
+			switch (m_pCurrentElement->GetType())
+			{
+			case EPathElement::Move:
+			case  EPathElement::Close:
+			{
+				m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
+				m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+				return Move(dX);
+			}
+			case EPathElement::Line:
+			case EPathElement::VLine:
+			case EPathElement::HLine:
+			{
+				Point oPoint{(*m_pCurrentElement)[0]};
+
+				double dDx = oPoint.dX - m_oPosition.dX;
+				double dDy = oPoint.dY - m_oPosition.dY;
+
+				double dLineLength = std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2));
+				m_dAngle           = std::atan2(dDy, dDx);
+
+				if (dLineLength > dX)
+				{
+					m_oLastPoint = m_oPosition;
+					m_oPosition += {std::cos(m_dAngle) * dX, std::sin(m_dAngle) * dX};
+					return true;
+				}
+				else
+				{
+					m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+					m_oPosition = oPoint;
+					return Move(dX - dLineLength);
+				}
+			}
+			case EPathElement::CBezier:
+			case EPathElement::SBezier:
+			case EPathElement::QBezier:
+			case EPathElement::TBezier:
+			{
+				Point oCurvePoint{0., 0.};
+				for (;m_dCurveIndex <= 1. && dX > 0; m_dCurveIndex += 0.05)
+				{
+					oCurvePoint.dX = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dX + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dX + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dX + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dX;
+					oCurvePoint.dY = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dY + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dY + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dY + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dY;
+
+					UpdatePosition(oCurvePoint, dX);
+				}
+
+				return NextMove(dX, (*m_pCurrentElement)[1]);
+			}
+			case EPathElement::Arc:
+			{
+				CArcElement *pArcElement = (CArcElement*)m_pCurrentElement;
+				if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
+				{
+					Point Center  = pArcElement->GetCenter (pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, pArcElement->m_oRadius, (*pArcElement)[0], (*pArcElement)[1]);
+
+					m_dStartAngle = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
+					m_dEndAngle   = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
+
+					if (m_dStartAngle > m_dEndAngle)
+						std::swap(m_dStartAngle, m_dEndAngle);
+
+					m_oLastPoint = Center;
+				}
+
+				// TODO:: На самом деле точки вычисляются с небольшим смещением (по углу)
+				// поэтому необходимо разобраться в этом
+				for (; m_dStartAngle < m_dEndAngle && dX > 0; ++m_dStartAngle)
+					UpdatePosition(m_oLastPoint + pArcElement->GetPoint(m_dStartAngle), dX);
+
+				return NextMove(dX, (*m_pCurrentElement)[1]);
+			}
+			default: return false;
+
+			}
+		}
+
+		return false;
+	}
+
+	Point CMovingPath::GetPosition() const
+	{
+		return m_oPosition;
+	}
+
+	double CMovingPath::GetAngle() const
+	{
+		return m_dAngle;
+	}
+
+	void CMovingPath::UpdatePosition(const Point &oPoint, double &dX)
+	{
+		double dDx = oPoint.dX - m_oPosition.dX;
+		double dDy = oPoint.dY - m_oPosition.dY;
+
+		dX -= std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2));
+		m_dAngle = std::atan2(dDy, dDx);
+
+		m_oPosition = oPoint;
+	}
+
+	bool CMovingPath::NextMove(double dX, const Point &oPoint)
+	{
+		if (dX <= 0)
+			return true;
+
+		m_dCurveIndex = m_dStartAngle = m_dEndAngle = 0.;
+		m_oPosition = m_oLastPoint = oPoint;
+		m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+		return Move(dX);
+	}
 }

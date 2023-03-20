@@ -170,6 +170,7 @@ namespace SVG
 		friend class CPolygon;
 		friend class CEllipse;
 		friend class CPolyline;
+		friend class CTextPath;
 
 		//Styles
 		SvgColor     m_oFill;

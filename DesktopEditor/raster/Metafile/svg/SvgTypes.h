@@ -33,6 +33,11 @@ namespace SVG
 		double dX;
 		double dY;
 
+		bool operator==(const Point& oPoint)
+		{
+			return dX == oPoint.dX && dY == oPoint.dY;
+		}
+
 		Point& operator+=(const Point& oPoint)
 		{
 			dX += oPoint.dX;

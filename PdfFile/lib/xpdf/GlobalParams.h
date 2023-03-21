@@ -326,6 +326,7 @@ public:
   GBool getDrawAnnotations();
   GBool getDrawFormFields();
   GBool getDrawContent();
+  int getDrawFormField();
   GBool getOverprintPreview() { return overprintPreview; }
   GString *getPaperColor();
   GString *getMatteColor();
@@ -395,6 +396,7 @@ public:
   void setDrawAnnotations(GBool draw);
   void setDrawFormFields(GBool draw);
   void setDrawContent(GBool draw);
+  void setDrawFormField(int formField);
   void setOverprintPreview(GBool preview);
   void setMapNumericCharNames(GBool map);
   void setMapUnknownCharNames(GBool map);
@@ -594,6 +596,7 @@ private:
   GBool printCommands;		// print the drawing commands
   GBool errQuiet;		// suppress error messages?
   GString *debugLogFile;	// path for debug log file
+  int drawFormField;
 
   CharCodeToUnicodeCache *cidToUnicodeCache;
   CharCodeToUnicodeCache *unicodeToUnicodeCache;

@@ -754,6 +754,7 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   printCommands = gFalse;
   errQuiet = gFalse;
   debugLogFile = NULL;
+  drawFormField = -1;
 
   cidToUnicodeCache = new CharCodeToUnicodeCache(cidToUnicodeCacheSize);
   unicodeToUnicodeCache =
@@ -3168,7 +3169,14 @@ GBool GlobalParams::getDrawContent() {
   return draw;
 }
 
+int GlobalParams::getDrawFormField() {
+  int formField;
 
+  lockGlobalParams;
+  formField = drawFormField;
+  unlockGlobalParams;
+  return formField;
+}
 
 GString *GlobalParams::getPaperColor() {
   GString *s;
@@ -3729,6 +3737,12 @@ void GlobalParams::setDrawFormFields(GBool draw) {
 void GlobalParams::setDrawContent(GBool draw) {
   lockGlobalParams;
   drawContent = draw;
+  unlockGlobalParams;
+}
+
+void GlobalParams::setDrawFormField(int formField) {
+  lockGlobalParams;
+  drawFormField = formField;
   unlockGlobalParams;
 }
 

@@ -150,9 +150,9 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetStructure();
 }
-WASM_EXPORT BYTE* GetInteractiveForms(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH)
+WASM_EXPORT BYTE* GetInteractiveForms(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
-	return pGraphics->GetInteractiveForms(nPageIndex, nRasterW, nRasterH);
+	return pGraphics->GetInteractiveForms(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
@@ -173,7 +173,7 @@ WASM_EXPORT void SetCMapData(CGraphicsFileDrawing* pGraphics, BYTE* data, int si
 
 #ifdef TEST_CPP_BINARY
 
-int READ_INT(BYTE* x)
+unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
 }
@@ -183,14 +183,6 @@ int READ_INT(BYTE* x)
 
 int main(int argc, char* argv[])
 {
-    /* тест сериализации указателя - 8 байт на x64
-    int* p = new int;
-    *p = 15;
-
-    std::cout << p << std::endl;
-    std::cout << *p << std::endl;
-    delete p;
-    */
 
 	// CHECK SYSTEM FONTS
 	CApplicationFontsWorker oWorker;
@@ -383,7 +375,7 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
-		BYTE* pWidgets = GetInteractiveForms(pGrFile, nTestPage, nWidth, nHeight);
+		BYTE* pWidgets = GetInteractiveForms(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
 		nLength = READ_INT(pWidgets);
 		DWORD i = 4;
 		nLength -= 4;
@@ -408,6 +400,28 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
+			int nWidgetWidth = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "W " << nWidgetWidth << ", ";
+			int nWidgetHeight = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "H " << nWidgetHeight << ", ";
+			unsigned long long npBgraData1 = READ_INT(pWidgets + i);
+			i += 4;
+			unsigned long long npBgraData2 = READ_INT(pWidgets + i);
+			i += 4;
+
+			BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+			CBgraFrame oFrame;
+			oFrame.put_Data(res);
+			oFrame.put_Width(nWidgetWidth);
+			oFrame.put_Height(nWidgetHeight);
+			oFrame.put_Stride(4 * nWidgetWidth);
+			oFrame.put_IsRGBA(true);
+			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
+			oFrame.ClearNoAttack();
+			RELEASEARRAYOBJECTS(res);
+
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Q " << nPathLength << ", ";

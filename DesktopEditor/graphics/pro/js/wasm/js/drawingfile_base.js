@@ -368,10 +368,10 @@
 		Module["_free"](ext);
 		return res;
 	};
-	CFile.prototype["getInteractiveForms"] = function(pageIndex, width, height)
+	CFile.prototype["getInteractiveForms"] = function(pageIndex, width, height, backgroundColor)
 	{
 		var res = [];
-		var ext = Module["_GetInteractiveForms"](this.nativeFile, pageIndex, width, height);
+		var ext = Module["_GetInteractiveForms"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
 		if (ext == 0)
 			return res;
 		
@@ -407,6 +407,15 @@
 			rec["y1"] = reader.readDouble();
 			rec["x2"] = reader.readDouble();
 			rec["y2"] = reader.readDouble();
+			
+			// Внешний вид аннотации
+			rec["wAP"] = reader.readInt();
+			rec["hAP"] = reader.readInt();
+			let np1 = reader.readInt();
+			let np2 = reader.readInt();
+			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
+			rec["retValueWidget"] = np2 << 32 | np1;
+			
 			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();

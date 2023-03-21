@@ -31,6 +31,7 @@
 #include "UTF8.h"
 #include "PDF417Barcode.h"
 #include "AcroForm.h"
+#include "GlobalParams.h"
 
 //------------------------------------------------------------------------
 
@@ -561,7 +562,10 @@ void AcroForm::scanField(Object *fieldRef) {
 void AcroForm::draw(int pageNum, Gfx *gfx, GBool printing) {
   int i;
 
+  int formField = globalParams->getDrawFormField();
   for (i = 0; i < fields->getLength(); ++i) {
+    if (formField >= 0 && formField != i)
+      continue;
     ((AcroFormField *)fields->get(i))->draw(pageNum, gfx, printing);
   }
 }

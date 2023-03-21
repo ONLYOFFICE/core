@@ -3,6 +3,7 @@
 
 #include <v8.h>
 #include <v8-inspector.h>
+#include <string>
 
 namespace NSJSBase
 {

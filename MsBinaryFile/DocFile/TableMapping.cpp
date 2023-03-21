@@ -215,7 +215,6 @@ namespace DocFileFormat
 			ParagraphPropertyExceptions* papxBackup = documentMapping->_lastValidPapx;
 			SectionPropertyExceptions* sepxBackup = documentMapping->_lastValidSepx;
 
-			//start w:tr
 			documentMapping->GetXMLWriter()->WriteNodeBegin( L"w:tr" );
 
 			//convert the properties
@@ -248,7 +247,6 @@ namespace DocFileFormat
 				}
 			}
 
-			//end w:tr
 			documentMapping->GetXMLWriter()->WriteNodeEnd( L"w:tr" );
 
 			RELEASEOBJECT( chpxs );
@@ -450,8 +448,8 @@ namespace DocFileFormat
 					{
 						if (bBad)
 						{
+							documentMapping->m_document->m_mapBadCP.insert(std::make_pair(_cp, (char)1));
 							tableCell.AddItem(DocParagraph(documentMapping, paragraphBeginCP, _cp));
-							_cp++;
 							paragraphBeginCP = (_cp + 1);
 
 							bBadMarker = bBad;
@@ -463,11 +461,11 @@ namespace DocFileFormat
 							tableCell.SetDepth(_depth);
 
 							DocParagraph para(documentMapping, paragraphBeginCP, _cp);
-							//if (bBadMarker && !tableCell.IsEmpty())
-							//{
-							//	tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
-							//}
-							//else
+							if (bBadMarker && !tableCell.IsEmpty())
+							{
+								tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
+							}
+							else
 								tableCell.AddItem(para);
 
 							bBadMarker = false;
@@ -485,11 +483,11 @@ namespace DocFileFormat
 							tableCell.SetDepth(_depth);
 
 							DocParagraph para(documentMapping, paragraphBeginCP, _cp);
-							//if (bBadMarker && !tableCell.IsEmpty())
-							//{
-							//	tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
-							//}
-							//else
+							if (bBadMarker && !tableCell.IsEmpty())
+							{
+								tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
+							}
+							else
 								tableCell.AddItem(para);
 
 							bBadMarker = false;
@@ -507,11 +505,11 @@ namespace DocFileFormat
 					else if ( IsParagraphMarker( _cp ) )
 					{
 						DocParagraph para(documentMapping, paragraphBeginCP, _cp);
-						//if (bBadMarker && !tableCell.IsEmpty())
-						//{
-						//	tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
-						//}
-						//else 
+						if (bBadMarker && !tableCell.IsEmpty())
+						{
+							tableCell.GetLast()->AddCP(paragraphBeginCP, _cp);
+						}
+						else 
 							tableCell.AddItem(para);
 						
 						paragraphBeginCP = ( _cp + 1 );

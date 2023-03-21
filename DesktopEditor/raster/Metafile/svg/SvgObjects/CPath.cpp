@@ -5,6 +5,11 @@
 namespace SVG
 {
     #define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
+    #define EPSILON 0.05
+    #define CURVESTEP 0.05
+    #define MINCURVESTEP 0.001
+    #define ARCSTEP 0.1
+    #define MINARCSTEP 0.01
 
 	CPath::CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
 	    : CSvgGraphicsObject(oNode, pParent)
@@ -221,7 +226,7 @@ namespace SVG
 	}
 
 	CMovingPath::CMovingPath(const CPath *pPath)
-	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}, m_oLastPoint{0, 0}, m_dAngle(0), m_pCurrentElement(NULL), m_unIndexElement(0), m_dCurveIndex(0), m_dStartAngle(0), m_dEndAngle(0)
+	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}, m_oLastPoint{0, 0}, m_dAngle(0), m_pCurrentElement(NULL), m_unIndexElement(0), m_dCurveIndex(0), m_dCurveStep(CURVESTEP), m_dStartAngle(0), m_dEndAngle(0), m_dArcStep(ARCSTEP)
 	{
 		if (NULL != m_pPath)
 			m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
@@ -274,13 +279,33 @@ namespace SVG
 			case EPathElement::TBezier:
 			{
 				Point oCurvePoint{0., 0.};
-				for (;m_dCurveIndex <= 1. && dX > 0; m_dCurveIndex += 0.05)
+
+				double dPrevValue = dX;
+
+				while(std::abs(dX) > EPSILON && m_dCurveIndex <= 1 )
 				{
+					if (MINCURVESTEP > m_dCurveStep)
+						return true;
+
+					if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
+						m_dCurveStep /= 2.;
+
+					if (dX > 0.)
+						m_dCurveIndex += m_dCurveStep;
+					else if (dX < 0. && m_dCurveIndex > 0.)
+						m_dCurveIndex -= m_dCurveStep;
+					else
+						return false;
+
 					oCurvePoint.dX = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dX + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dX + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dX + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dX;
 					oCurvePoint.dY = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dY + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dY + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dY + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dY;
 
+					dPrevValue = dX;
+
 					UpdatePosition(oCurvePoint, dX);
 				}
+
+				m_dCurveStep = CURVESTEP;
 
 				return NextMove(dX, (*m_pCurrentElement)[1]);
 			}
@@ -297,13 +322,34 @@ namespace SVG
 					if (m_dStartAngle > m_dEndAngle)
 						std::swap(m_dStartAngle, m_dEndAngle);
 
+					m_oPosition = Center + pArcElement->GetPoint(m_dStartAngle);
+
 					m_oLastPoint = Center;
 				}
 
 				// TODO:: На самом деле точки вычисляются с небольшим смещением (по углу)
 				// поэтому необходимо разобраться в этом
-				for (; m_dStartAngle < m_dEndAngle && dX > 0; ++m_dStartAngle)
+				double dPrevValue = dX;
+
+				while(std::abs(dX) > EPSILON && m_dStartAngle < m_dEndAngle)
+				{
+					if (MINARCSTEP > m_dArcStep)
+						return true;
+
+					if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
+						m_dArcStep /= 2.;
+
+					if (dX > 0.)
+						m_dStartAngle += m_dArcStep;
+					else if (dX < 0)
+						m_dStartAngle -= m_dArcStep;
+					else
+						return false;
+
+					dPrevValue = dX;
+
 					UpdatePosition(m_oLastPoint + pArcElement->GetPoint(m_dStartAngle), dX);
+				}
 
 				return NextMove(dX, (*m_pCurrentElement)[1]);
 			}
@@ -330,7 +376,7 @@ namespace SVG
 		double dDx = oPoint.dX - m_oPosition.dX;
 		double dDy = oPoint.dY - m_oPosition.dY;
 
-		dX -= std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2));
+		dX -= std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2)) * ((dX < 0) ? (-1) : 1);
 		m_dAngle = std::atan2(dDy, dDx);
 
 		m_oPosition = oPoint;
@@ -338,7 +384,7 @@ namespace SVG
 
 	bool CMovingPath::NextMove(double dX, const Point &oPoint)
 	{
-		if (dX <= 0)
+		if (std::abs(dX) < EPSILON)
 			return true;
 
 		m_dCurveIndex = m_dStartAngle = m_dEndAngle = 0.;

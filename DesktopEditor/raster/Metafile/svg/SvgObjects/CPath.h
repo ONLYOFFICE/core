@@ -690,10 +690,12 @@ namespace SVG
 
 		// Необходимо при рабое с кривыми Безье
 		double        m_dCurveIndex;
+		double        m_dCurveStep;
 
 		// Необходимо при работе с Дугой
 		double        m_dStartAngle;
 		double        m_dEndAngle;
+		double        m_dArcStep;
 	};
 }
 

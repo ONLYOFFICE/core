@@ -688,6 +688,7 @@ namespace SVG
 		IPathElement *m_pCurrentElement;
 		unsigned int  m_unIndexElement;
 
+		double        m_dSkeepAngle;
 		// Необходимо при рабое с кривыми Безье
 		double        m_dCurveIndex;
 		double        m_dCurveStep;

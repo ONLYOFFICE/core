@@ -16,7 +16,7 @@ namespace SVG
 		virtual ~CTSpan();
 
 		static CTSpan* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
-		static CTSpan* Create(const std::wstring& wsValue, Point oPosition, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
+		static CTSpan* Create(const std::wstring& wsValue, const Point& oPosition, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 
@@ -29,6 +29,7 @@ namespace SVG
 		CTSpan* Copy() const override;
 	private:
 		void ApplyStyle(IRenderer* pRenderer, const CDefs *pDefs, int& nTypePath, Aggplus::CMatrix& oOldMatrix) const override;
+
 		void ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const;
 
 		TBounds GetBounds() const override;
@@ -36,6 +37,7 @@ namespace SVG
 		double GetWidth() const;
 
 		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
+		void SetPosition(const Point& oPosition);
 
 		NSFonts::IFontManager* m_pFontManager;
 
@@ -72,8 +74,6 @@ namespace SVG
 
 		static CTextPath* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
 	private:
-		void DevideByTSpan(const std::wstring& wsText);
-
 		const CPath        *m_pPath;
 	};
 }

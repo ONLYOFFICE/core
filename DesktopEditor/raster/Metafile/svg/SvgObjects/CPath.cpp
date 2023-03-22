@@ -8,7 +8,7 @@ namespace SVG
     #define EPSILON 0.05
     #define CURVESTEP 0.05
     #define MINCURVESTEP 0.001
-    #define ARCSTEP 0.1
+    #define ARCSTEP 0.5
     #define MINARCSTEP 0.01
 
 	CPath::CPath(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent)
@@ -229,7 +229,10 @@ namespace SVG
 	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}, m_oLastPoint{0, 0}, m_dAngle(0), m_pCurrentElement(NULL), m_unIndexElement(0), m_dCurveIndex(0), m_dCurveStep(CURVESTEP), m_dStartAngle(0), m_dEndAngle(0), m_dArcStep(ARCSTEP)
 	{
 		if (NULL != m_pPath)
+		{
 			m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+			m_oPosition       = (*m_pCurrentElement)[0];
+		}
 	}
 
 	bool CMovingPath::Move(double dX)
@@ -237,7 +240,7 @@ namespace SVG
 		if (NULL == m_pCurrentElement)
 			return false;
 
-		while (dX != 0)
+		while (true)
 		{
 			switch (m_pCurrentElement->GetType())
 			{
@@ -253,6 +256,7 @@ namespace SVG
 			case EPathElement::HLine:
 			{
 				Point oPoint{(*m_pCurrentElement)[0]};
+				m_dSkeepAngle = 0.;
 
 				double dDx = oPoint.dX - m_oPosition.dX;
 				double dDy = oPoint.dY - m_oPosition.dY;
@@ -260,16 +264,17 @@ namespace SVG
 				double dLineLength = std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2));
 				m_dAngle           = std::atan2(dDy, dDx);
 
-				if (dLineLength > dX)
+				if (dLineLength >= dX)
 				{
 					m_oLastPoint = m_oPosition;
 					m_oPosition += {std::cos(m_dAngle) * dX, std::sin(m_dAngle) * dX};
+					m_dAngle *= 180. / M_PI;
 					return true;
 				}
 				else
 				{
 					m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
-					m_oPosition = oPoint;
+					m_oPosition = m_oLastPoint = oPoint;
 					return Move(dX - dLineLength);
 				}
 			}
@@ -279,16 +284,26 @@ namespace SVG
 			case EPathElement::TBezier:
 			{
 				Point oCurvePoint{0., 0.};
+				m_dSkeepAngle = 0.;
 
 				double dPrevValue = dX;
 
 				while(std::abs(dX) > EPSILON && m_dCurveIndex <= 1 )
 				{
 					if (MINCURVESTEP > m_dCurveStep)
+					{
+						m_dCurveStep  = CURVESTEP;
 						return true;
+					}
 
-					if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
+					if ((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX))
+					{
+						if (0. > dPrevValue && 0. < dX)
+							m_dSkeepAngle = 0;
+						else
+							m_dSkeepAngle = 180;
 						m_dCurveStep /= 2.;
+					}
 
 					if (dX > 0.)
 						m_dCurveIndex += m_dCurveStep;
@@ -305,12 +320,14 @@ namespace SVG
 					UpdatePosition(oCurvePoint, dX);
 				}
 
-				m_dCurveStep = CURVESTEP;
+				m_dCurveStep  = CURVESTEP;
 
 				return NextMove(dX, (*m_pCurrentElement)[1]);
 			}
 			case EPathElement::Arc:
 			{
+				m_dSkeepAngle = 0.;
+
 				CArcElement *pArcElement = (CArcElement*)m_pCurrentElement;
 				if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
 				{
@@ -319,10 +336,10 @@ namespace SVG
 					m_dStartAngle = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
 					m_dEndAngle   = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
 
-					if (m_dStartAngle > m_dEndAngle)
-						std::swap(m_dStartAngle, m_dEndAngle);
-
 					m_oPosition = Center + pArcElement->GetPoint(m_dStartAngle);
+
+					if (m_dStartAngle > m_dEndAngle)
+						m_dArcStep *= -1;
 
 					m_oLastPoint = Center;
 				}
@@ -331,10 +348,13 @@ namespace SVG
 				// поэтому необходимо разобраться в этом
 				double dPrevValue = dX;
 
-				while(std::abs(dX) > EPSILON && m_dStartAngle < m_dEndAngle)
+				while(std::abs(m_dEndAngle - m_dStartAngle) > ARCSTEP)
 				{
-					if (MINARCSTEP > m_dArcStep)
+					if (MINARCSTEP > std::abs(m_dArcStep))
+					{
+						m_dArcStep = ARCSTEP * ((m_dStartAngle > m_dEndAngle) ? -1 : 1);
 						return true;
+					}
 
 					if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
 						m_dArcStep /= 2.;
@@ -368,7 +388,7 @@ namespace SVG
 
 	double CMovingPath::GetAngle() const
 	{
-		return m_dAngle;
+		return m_dAngle + m_dSkeepAngle;
 	}
 
 	void CMovingPath::UpdatePosition(const Point &oPoint, double &dX)
@@ -377,7 +397,7 @@ namespace SVG
 		double dDy = oPoint.dY - m_oPosition.dY;
 
 		dX -= std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2)) * ((dX < 0) ? (-1) : 1);
-		m_dAngle = std::atan2(dDy, dDx);
+		m_dAngle = std::atan2(dDy, dDx) * 180. / M_PI;
 
 		m_oPosition = oPoint;
 	}

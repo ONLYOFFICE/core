@@ -189,7 +189,8 @@ namespace NSCSS
 		TransformMatrix,
 		TransformTranslate,
 		TransformScale,
-		TransformRotate
+		TransformRotate,
+		TransformNone
 	} TransformType;
 
 	typedef std::vector<std::pair<std::vector<double>, TransformType>> MatrixValues;
@@ -213,7 +214,7 @@ namespace NSCSS
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
 
-		Aggplus::CMatrix GetFinalValue(const Aggplus::CMatrix* pPrevMatrix = NULL) const;
+		Aggplus::CMatrix GetFinalValue(const Aggplus::CMatrix* pPrevMatrix = NULL, TransformType oWithoutType = TransformNone) const;
 
 		bool operator==(const CMatrix& oMatrix) const;
 	};

@@ -853,7 +853,7 @@ namespace NSCSS
 		return wsValue;
 	}
 
-	Aggplus::CMatrix CMatrix::GetFinalValue(const Aggplus::CMatrix* pPrevMatrix) const
+	Aggplus::CMatrix CMatrix::GetFinalValue(const Aggplus::CMatrix* pPrevMatrix, TransformType oWithoutType) const
 	{
 		Aggplus::CMatrix oMatrix;
 
@@ -862,6 +862,9 @@ namespace NSCSS
 
 		for (const std::pair<std::vector<double>, TransformType>& oElement : m_oValue)
 		{
+			if (oWithoutType == oElement.second)
+				continue;
+
 			switch(oElement.second)
 			{
 				case TransformMatrix:

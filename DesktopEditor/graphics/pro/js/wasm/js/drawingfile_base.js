@@ -409,12 +409,13 @@
 			rec["y2"] = reader.readDouble();
 			
 			// Внешний вид аннотации
-			rec["wAP"] = reader.readInt();
-			rec["hAP"] = reader.readInt();
+			rec["AP"] = {};
+			rec["AP"]["w"] = reader.readInt();
+			rec["AP"]["h"] = reader.readInt();
 			let np1 = reader.readInt();
 			let np2 = reader.readInt();
 			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-			rec["retValueWidget"] = np2 << 32 | np1;
+			rec["AP"]["retValue"] = rnp2 << 32 | np1;
 			
 			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();

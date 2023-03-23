@@ -1438,7 +1438,7 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
     unsigned int nSize = (unsigned int)(nWidth * nHeight);
     unsigned int* pTemp = (unsigned int*)pBgraData;
     for (unsigned int i = 0; i < nSize; ++i)
-        *pTemp++ = nColor;
+        *pTemp++ = 0xFF000000 | nColor;
 
     CBgraFrame* pFrame = new CBgraFrame();
     pFrame->put_Data(pBgraData);
@@ -1496,7 +1496,10 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         {
             for (int x = nRx1; x < nRx2; ++x)
             {
-                pSubTemp[p++] = pTemp[y * nWidth + x];
+                if (pTemp[y * nWidth + x] == (0xFF000000 | nColor))
+                    pSubTemp[p++] = nColor;
+                else
+                    pSubTemp[p++] = pTemp[y * nWidth + x];
                 pTemp[y * nWidth + x] = 0;
             }
         }

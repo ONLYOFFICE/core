@@ -360,6 +360,7 @@ namespace BinXlsxRW
 		int ReadSlicers(BYTE type, long length, void* poResult);
 		int ReadUserProtectedRanges(BYTE type, long length, void* poResult);
 		int ReadUserProtectedRange(BYTE type, long length, void* poResult);
+		int ReadUserProtectedRangeDesc(BYTE type, long length, void* poResult);
 
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);

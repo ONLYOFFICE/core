@@ -2301,8 +2301,8 @@ namespace OOX
 		void CUserProtectedRange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start(oReader)
-				WritingElement_ReadAttributes_Read_if(oReader, (L"name"), m_oName)
-				WritingElement_ReadAttributes_Read_else_if(oReader, (L"sqref"), m_oSqref)
+				WritingElement_ReadAttributes_Read_if(oReader, L"name", m_oName)
+				WritingElement_ReadAttributes_Read_else_if(oReader, L"sqref", m_oSqref)
 			WritingElement_ReadAttributes_End(oReader)
 		}		
 		void CUserProtectedRange::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -2329,11 +2329,12 @@ namespace OOX
 						std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
 						if (L"user" == sName2)
 						{
-							std::wstring id;
+							_UsersGroupsDesc desc;
 							WritingElement_ReadAttributes_Start(oReader)
-								WritingElement_ReadAttributes_ReadSingle(oReader, L"id", id)
+								WritingElement_ReadAttributes_Read_if(oReader, L"id", desc.id)
+								WritingElement_ReadAttributes_Read_else_if(oReader, L"name", desc.name)
 							WritingElement_ReadAttributes_End(oReader)
-							m_arUsersId.push_back(id);
+							m_arUsers.push_back(desc);
 						}
 					}
 				}
@@ -2345,11 +2346,12 @@ namespace OOX
 						std::wstring sName2 = XmlUtils::GetNameNoNS(oReader.GetName());
 						if (L"usersGroup" == sName2)
 						{
-							std::wstring id;
+							_UsersGroupsDesc desc;
 							WritingElement_ReadAttributes_Start(oReader)
-								WritingElement_ReadAttributes_ReadSingle(oReader, L"id", id)
+								WritingElement_ReadAttributes_Read_if(oReader, L"id", desc.id)
+								WritingElement_ReadAttributes_Read_else_if(oReader, L"name", desc.name)
 							WritingElement_ReadAttributes_End(oReader)
-							m_arUsersGroupsId.push_back(id);
+							m_arUsersGroups.push_back(desc);
 						}
 					}
 				}
@@ -2368,21 +2370,27 @@ namespace OOX
 				writer.WriteString(*m_oText);
 				writer.WriteString(L"</text>");
 			}
-			if (false == m_arUsersId.empty())
+			if (false == m_arUsers.empty())
 			{
 				writer.WriteString(L"<users>");
-				for (size_t i = 0; i < m_arUsersId.size(); ++i)
+				for (size_t i = 0; i < m_arUsers.size(); ++i)
 				{
-					writer.WriteString(L"<user id=\"" + m_arUsersId[i] + L"\"/>");
+					writer.WriteString(L"<user");
+					WritingStringNullableAttrEncodeXmlString2(L"id", m_arUsers[i].id);
+					WritingStringNullableAttrEncodeXmlString2(L"name", m_arUsers[i].name);
+					writer.WriteString(L"\"/>");
 				}
 				writer.WriteString(L"</users>");
 			}
-			if (false == m_arUsersGroupsId.empty())
+			if (false == m_arUsersGroups.empty())
 			{
 				writer.WriteString(L"<usersGroups>");
-				for (size_t i = 0; i < m_arUsersGroupsId.size(); ++i)
+				for (size_t i = 0; i < m_arUsersGroups.size(); ++i)
 				{
-					writer.WriteString(L"<usersGroup id=\"" + m_arUsersGroupsId[i] + L"\"/>");
+					writer.WriteString(L"<usersGroup");
+					WritingStringNullableAttrEncodeXmlString2(L"id", m_arUsersGroups[i].id);
+					WritingStringNullableAttrEncodeXmlString2(L"name", m_arUsersGroups[i].name);
+					writer.WriteString(L"\"/>");
 				}
 				writer.WriteString(L"</usersGroups>");
 			}

@@ -7007,37 +7007,52 @@ void BinaryWorksheetTableWriter::WriteUserProtectedRanges(const OOX::Spreadsheet
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
+void BinaryWorksheetTableWriter::WriteUserProtectedRangeDesc(const OOX::Spreadsheet::CUserProtectedRange::_UsersGroupsDesc& desc)
+{
+	if (desc.id.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Id);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.id);
+	}
+	if (desc.name.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRangeDesc::Name);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*desc.name);
+	}
+}
 void BinaryWorksheetTableWriter::WriteUserProtectedRange(const OOX::Spreadsheet::CUserProtectedRange& oUserProtectedRange)
 {
 	if (oUserProtectedRange.m_oName.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Name);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Name);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oName);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oSqref.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Sqref);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Sqref);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oSqref);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 	if (oUserProtectedRange.m_oText.IsInit())
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::Text);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::Text);
 		m_oBcw.m_oStream.WriteStringW(*oUserProtectedRange.m_oText);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	for (size_t i = 0; i < oUserProtectedRange.m_arUsersId.size(); ++i)
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsers.size(); ++i)
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::UserId);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(oUserProtectedRange.m_arUsersId[i]);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::User);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsers[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	for (size_t i = 0; i < oUserProtectedRange.m_arUsersGroupsId.size(); ++i)
+	for (size_t i = 0; i < oUserProtectedRange.m_arUsersGroups.size(); ++i)
 	{
-		m_oBcw.m_oStream.WriteBYTE(c_oSer_UserProtectedRange::UsersGroup);
-		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
-		m_oBcw.m_oStream.WriteStringW(oUserProtectedRange.m_arUsersGroupsId[i]);
+		int nCurPos = m_oBcw.WriteItemStart(c_oSer_UserProtectedRange::UsersGroup);
+		WriteUserProtectedRangeDesc(oUserProtectedRange.m_arUsersGroups[i]);
+		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
 void BinaryWorksheetTableWriter::WriteDataValidationsContent(const OOX::Spreadsheet::CDataValidations& oDataValidations)

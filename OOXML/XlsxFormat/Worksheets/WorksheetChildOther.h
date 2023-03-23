@@ -837,6 +837,12 @@ namespace OOX
 		class CUserProtectedRange : public WritingElement
 		{
 		public:
+			struct _UsersGroupsDesc
+			{
+				nullable_string id;
+				nullable_string name;
+			};
+
 			WritingElement_AdditionMethods(CUserProtectedRange)
 			CUserProtectedRange();
 			virtual ~CUserProtectedRange();
@@ -851,12 +857,12 @@ namespace OOX
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
-			nullable_string				m_oName;
-			nullable_string				m_oSqref;
-			nullable_string				m_oText;
+			nullable_string m_oName;
+			nullable_string m_oSqref;
+			nullable_string m_oText;
 
-			std::vector<std::wstring>	m_arUsersId;
-			std::vector<std::wstring>	m_arUsersGroupsId;
+			std::vector<_UsersGroupsDesc> m_arUsers;
+			std::vector<_UsersGroupsDesc> m_arUsersGroups;
 		};
 
 		class CUserProtectedRanges : public WritingElementWithChilds<CUserProtectedRange>

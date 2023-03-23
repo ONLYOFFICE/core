@@ -55,18 +55,19 @@ namespace SVG
 	void CSvgGraphicsObject::SetClip(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
 	{
 		if (mAttributes.end() != mAttributes.find(L"clip-path"))
-			m_oClip.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
+			m_oClip.m_oHref.SetValue(mAttributes.at(L"clip-path"), ushLevel, bHardMode);
+		if (mAttributes.end() != mAttributes.find(L"clip-rule"))
+			m_oClip.m_oRule.SetValue(mAttributes.at(L"clip-rule"), std::vector<std::wstring>{L"nonzero", L"evenodd"}, ushLevel, bHardMode);
 	}
 
 	void CSvgGraphicsObject::StartPath(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
-		(bIsClip) ? StartClipPath(pRenderer) : StartStandardPath(pRenderer, pDefs);
+		ApplyClip(pRenderer, pDefs);
+		(bIsClip) ? StartClipPath(pRenderer) : StartStandardPath(pRenderer);
 	}
 
-	void CSvgGraphicsObject::StartStandardPath(IRenderer *pRenderer, const CDefs *pDefs) const
+	void CSvgGraphicsObject::StartStandardPath(IRenderer *pRenderer) const
 	{
-		ApplyClip(pRenderer, pDefs);
-
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
 	}
@@ -74,7 +75,6 @@ namespace SVG
 	void CSvgGraphicsObject::StartClipPath(IRenderer *pRenderer) const
 	{
 		pRenderer->BeginCommand(c_nClipType);
-		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
 	}
 
@@ -98,7 +98,6 @@ namespace SVG
 
 	void CSvgGraphicsObject::EndClipPath(IRenderer *pRenderer) const
 	{
-		pRenderer->EndCommand(c_nPathType);
 		pRenderer->EndCommand(c_nClipType);
 		pRenderer->PathCommandEnd();
 	}
@@ -179,10 +178,21 @@ namespace SVG
 
 	void CSvgGraphicsObject::ApplyClip(IRenderer *pRenderer, const CDefs *pDefs) const
 	{
-		if (NULL == pRenderer || NULL == pDefs || m_oClip.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != m_oClip.GetType())
+		if (NULL == pRenderer || NULL == pDefs)
 			return;
 
-		CDefObject *pClipObject = pDefs->GetDef(m_oClip.ToWString());
+		pRenderer->BeginCommand(c_nResetClipType);
+		pRenderer->EndCommand(c_nResetClipType);
+
+		if (m_oClip.m_oRule == L"evenodd")
+			pRenderer->put_ClipMode(c_nClipRegionTypeEvenOdd);
+		else
+			pRenderer->put_ClipMode(c_nClipRegionTypeWinding);
+
+		if (m_oClip.m_oHref.Empty() || NSCSS::NSProperties::ColorType::ColorUrl != m_oClip.m_oHref.GetType())
+			return;
+
+		CDefObject *pClipObject = pDefs->GetDef(m_oClip.m_oHref.ToWString());
 
 		if (NULL == pClipObject)
 			return;

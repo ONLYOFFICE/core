@@ -143,7 +143,7 @@ namespace SVG
 		void SetClip(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false);
 
 		void StartPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
-		void StartStandardPath(IRenderer* pRenderer, const CDefs *pDefs) const;
+		void StartStandardPath(IRenderer* pRenderer) const;
 		void StartClipPath(IRenderer* pRenderer) const;
 		void EndPath(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
 		void EndStandardPath(IRenderer* pRenderer, const CDefs *pDefs) const;
@@ -171,12 +171,17 @@ namespace SVG
 		friend class CEllipse;
 		friend class CPolyline;
 		friend class CTextPath;
+		friend class CClipPath;
 
 		//Styles
 		SvgColor     m_oFill;
 		TStroke      m_oStroke;
 		SvgTransform m_oTransform;
-		SvgColor     m_oClip;
+		struct
+		{
+			SvgColor  m_oHref;
+			SvgString m_oRule;
+		} m_oClip;
 	};
 
 //	class CObjectBase

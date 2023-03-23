@@ -173,6 +173,7 @@ namespace SVG
 		ApplyTransform(pRenderer, oOldMatrix);
 		ApplyFill(pRenderer, pDefs, nTypePath, true);
 		ApplyStroke(pRenderer, nTypePath, true);
+		ApplyClip(pRenderer, pDefs);
 	}
 
 	void CTSpan::ApplyFont(IRenderer* pRenderer, double& dX, double& dY) const

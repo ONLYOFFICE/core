@@ -70,7 +70,8 @@ public:
 
     BYTE* GetStructure();
     BYTE* GetLinks(int nPageIndex);
-    BYTE* GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor);
+    BYTE* GetWidgets();
+    BYTE* GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor);
 
 private:
     IOfficeDrawingFile* m_pRenderer;

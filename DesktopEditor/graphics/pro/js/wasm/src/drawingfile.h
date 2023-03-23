@@ -110,10 +110,16 @@ public:
     {
         return pReader->GetStructure();
     }
-    BYTE* GetInteractiveForms(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+    BYTE* GetInteractiveFormsInfo()
     {
         if (nType == 0)
-            return ((CPdfFile*)pReader)->GetWidgets(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
+            return ((CPdfFile*)pReader)->GetWidgets();
+        return NULL;
+    }
+    BYTE* GetInteractiveFormsAP(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+    {
+        if (nType == 0)
+            return ((CPdfFile*)pReader)->GetAPWidgets(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
         return NULL;
     }
     std::wstring GetInfo()

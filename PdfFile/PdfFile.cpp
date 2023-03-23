@@ -811,11 +811,17 @@ BYTE* CPdfFile::GetLinks(int nPageIndex)
         return NULL;
     return m_pInternal->pReader->GetLinks(nPageIndex);
 }
-BYTE* CPdfFile::GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+BYTE* CPdfFile::GetWidgets()
 {
     if (!m_pInternal->pReader)
         return NULL;
-    return m_pInternal->pReader->GetWidgets(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
+    return m_pInternal->pReader->GetWidgets();
+}
+BYTE* CPdfFile::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+{
+    if (!m_pInternal->pReader)
+        return NULL;
+    return m_pInternal->pReader->GetAPWidgets(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
 }
 
 // ------------------------------------------------------------------------

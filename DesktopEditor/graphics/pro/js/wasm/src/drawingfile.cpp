@@ -150,9 +150,13 @@ WASM_EXPORT BYTE* GetStructure(CGraphicsFileDrawing* pGraphics)
 {
 	return pGraphics->GetStructure();
 }
-WASM_EXPORT BYTE* GetInteractiveForms(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+WASM_EXPORT BYTE* GetInteractiveFormsInfo(CGraphicsFileDrawing* pGraphics)
 {
-	return pGraphics->GetInteractiveForms(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
+	return pGraphics->GetInteractiveFormsInfo();
+}
+WASM_EXPORT BYTE* GetInteractiveFormsAP(CGraphicsFileDrawing* pGraphics, int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+{
+	return pGraphics->GetInteractiveFormsAP(nPageIndex, nRasterW, nRasterH, nBackgroundColor);
 }
 WASM_EXPORT void DestroyTextInfo(CGraphicsFileDrawing* pGraphics)
 {
@@ -375,7 +379,7 @@ int main(int argc, char* argv[])
 	// INTERACTIVE FORMS
 	if (true)
 	{
-		BYTE* pWidgets = GetInteractiveForms(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
+		BYTE* pWidgets = GetInteractiveFormsInfo(pGrFile);
 		nLength = READ_INT(pWidgets);
 		DWORD i = 4;
 		nLength -= 4;
@@ -383,11 +387,17 @@ int main(int argc, char* argv[])
 		{
 			DWORD nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Annot Flag " << nPathLength << ", ";
+			std::cout << "Annot - AP " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Flag " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Name " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Page " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "X1 " << (double)nPathLength / 100.0 << ", ";
@@ -400,28 +410,6 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
-			int nWidgetWidth = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "W " << nWidgetWidth << ", ";
-			int nWidgetHeight = READ_INT(pWidgets + i);
-			i += 4;
-			std::cout << "H " << nWidgetHeight << ", ";
-			unsigned long long npBgraData1 = READ_INT(pWidgets + i);
-			i += 4;
-			unsigned long long npBgraData2 = READ_INT(pWidgets + i);
-			i += 4;
-
-			BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
-			CBgraFrame oFrame;
-			oFrame.put_Data(res);
-			oFrame.put_Width(nWidgetWidth);
-			oFrame.put_Height(nWidgetHeight);
-			oFrame.put_Stride(4 * nWidgetWidth);
-			oFrame.put_IsRGBA(true);
-			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
-			oFrame.ClearNoAttack();
-			RELEASEARRAYOBJECTS(res);
-
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Q " << nPathLength << ", ";
@@ -689,6 +677,42 @@ int main(int argc, char* argv[])
 
 		if (pWidgets)
 			free(pWidgets);
+
+		BYTE* pWidgetsAP = GetInteractiveFormsAP(pGrFile, nTestPage, nWidth, nHeight, 0xFFFFFF);
+		nLength = READ_INT(pWidgetsAP);
+		i = 4;
+		nLength -= 4;
+
+		while (i < nLength)
+		{
+			DWORD nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "AP " << nPathLength << ", ";
+			int nWidgetWidth = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "W " << nWidgetWidth << ", ";
+			int nWidgetHeight = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "H " << nWidgetHeight << ", ";
+			unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
+			i += 4;
+			unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
+			i += 4;
+
+			BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+			CBgraFrame oFrame;
+			oFrame.put_Data(res);
+			oFrame.put_Width(nWidgetWidth);
+			oFrame.put_Height(nWidgetHeight);
+			oFrame.put_Stride(4 * nWidgetWidth);
+			oFrame.put_IsRGBA(true);
+			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
+			oFrame.ClearNoAttack();
+			RELEASEARRAYOBJECTS(res);
+		}
+
+		if (pWidgetsAP)
+			free(pWidgetsAP);
 	}
 
 	Close(pGrFile);

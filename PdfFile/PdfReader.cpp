@@ -718,7 +718,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
-BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
@@ -726,53 +726,6 @@ BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBa
     AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
     if (!pAcroForms)
         return NULL;
-
-    GBool bDrawContent     = globalParams->getDrawContent();
-    GBool bDrawAnnotations = globalParams->getDrawAnnotations();
-    GBool bDrawFormFileds  = globalParams->getDrawFormFields();
-
-    globalParams->setDrawContent(gFalse);
-    globalParams->setDrawAnnotations(gFalse);
-    globalParams->setDrawFormFields(gTrue);
-
-    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
-    pRenderer->SetFontManager(m_pFontManager);
-
-    double dPageDpiX, dPageDpiY;
-    double dWidth, dHeight;
-    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
-
-    int nWidth  = (nRasterW > 0) ? nRasterW : (int)((int)dWidth  * 96 / dPageDpiX);
-    int nHeight = (nRasterH > 0) ? nRasterH : (int)((int)dHeight * 96 / dPageDpiY);
-
-    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
-    if (!pBgraData)
-    {
-        RELEASEOBJECT(pRenderer);
-        globalParams->setDrawContent(bDrawContent);
-        globalParams->setDrawAnnotations(bDrawAnnotations);
-        globalParams->setDrawFormFields(bDrawFormFileds);
-        return NULL;
-    }
-
-    unsigned int nColor = (unsigned int)nBackgroundColor;
-    unsigned int nSize = (unsigned int)(nWidth * nHeight);
-    unsigned int* pTemp = (unsigned int*)pBgraData;
-    for (unsigned int i = 0; i < nSize; ++i)
-        *pTemp++ = nColor;
-
-    CBgraFrame* pFrame = new CBgraFrame();
-    pFrame->put_Data(pBgraData);
-    pFrame->put_Width(nWidth);
-    pFrame->put_Height(nHeight);
-    pFrame->put_Stride(4 * nWidth);
-
-    pRenderer->CreateFromBgraFrame(pFrame);
-    pRenderer->SetSwapRGB(true);
-    pRenderer->put_Width(dWidth * 25.4 / dPageDpiX);
-    pRenderer->put_Height(dHeight * 25.4 / dPageDpiX);
-    if (nBackgroundColor != 0xFFFFFF)
-        pRenderer->CommandLong(c_nDarkMode, 1);
 
     NSWasm::CData oRes;
     oRes.SkipLen();
@@ -782,11 +735,14 @@ BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBa
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
         XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict() || pField->getPageNum() != nPageIndex + 1)
+        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
         {
             oFieldRef.free(); oField.free();
             continue;
         }
+
+        // Номер аннотации для сопоставления с AP
+        oRes.AddInt(i);
 
         // Флаг аннотации - F
         Object oFlag;
@@ -803,6 +759,14 @@ BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBa
         oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
         gfree(uName);
 
+        // Номер страницы - P
+        int nPage = pField->getPageNum();
+        oRes.AddInt(nPage - 1);
+
+        double dPageDpiX, dPageDpiY;
+        double dWidth, dHeight;
+        GetPageInfo(nPage - 1, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
         // Координаты - BBox
         double dx1, dy1, dx2, dy2;
         pField->getBBox(&dx1, &dy1, &dx2, &dy2);
@@ -813,40 +777,6 @@ BYTE* CPdfReader::GetWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBa
         oRes.AddDouble(dy1);
         oRes.AddDouble(dx2);
         oRes.AddDouble(dy2);
-
-        globalParams->setDrawFormField(i);
-        bool bBreak = false;
-        m_pRenderer->DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-        // Получение пикселей внешнего вида виджета
-        int nRx1 = dx1 * (double)nWidth / dWidth;
-        int nRx2 = dx2 * (double)nWidth / dWidth + 1;
-        int nRy1 = dy1 * (double)nHeight / dHeight;
-        int nRy2 = dy2 * (double)nHeight / dHeight + 1;
-        if (nRx1 < 0) nRx1 = 0;
-        if (nRy1 < 0) nRy1 = 0;
-        if (nRx2 > nWidth) nRx1 = nWidth;
-        if (nRy2 > nHeight) nRy1 = nHeight;
-
-        BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
-        int p = 0;
-        unsigned int* pTemp = (unsigned int*)pBgraData;
-        unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
-        for (int y = nRy1; y < nRy2; ++y)
-        {
-            for (int x = nRx1; x < nRx2; ++x)
-            {
-                pSubTemp[p++] = pTemp[y * nWidth + x];
-                pTemp[y * nWidth + x] = 0;
-            }
-        }
-
-        oRes.AddInt(nRx2 - nRx1);
-        oRes.AddInt(nRy2 - nRy1);
-        unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;
-        unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-        oRes.AddInt(npSubMatrix1);
-        oRes.AddInt(npSubMatrix >> 32);
 
         // Выравнивание текста - Q
         Object oQ;
@@ -1460,6 +1390,126 @@ oObj.free();\
         oAA.free();
 
         oRes.AddInt(nFlags, nFlagPos);
+    }
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
+}
+BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
+{
+    if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+        return NULL;
+
+    AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+    if (!pAcroForms)
+        return NULL;
+
+    GBool bDrawContent     = globalParams->getDrawContent();
+    GBool bDrawAnnotations = globalParams->getDrawAnnotations();
+    GBool bDrawFormFileds  = globalParams->getDrawFormFields();
+
+    globalParams->setDrawContent(gFalse);
+    globalParams->setDrawAnnotations(gFalse);
+    globalParams->setDrawFormFields(gTrue);
+
+    NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
+    pRenderer->SetFontManager(m_pFontManager);
+
+    double dPageDpiX, dPageDpiY;
+    double dWidth, dHeight;
+    GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+    int nWidth  = (nRasterW > 0) ? nRasterW : (int)((int)dWidth  * 96 / dPageDpiX);
+    int nHeight = (nRasterH > 0) ? nRasterH : (int)((int)dHeight * 96 / dPageDpiY);
+
+    BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+    if (!pBgraData)
+    {
+        RELEASEOBJECT(pRenderer);
+        globalParams->setDrawContent(bDrawContent);
+        globalParams->setDrawAnnotations(bDrawAnnotations);
+        globalParams->setDrawFormFields(bDrawFormFileds);
+        return NULL;
+    }
+
+    unsigned int nColor = (unsigned int)nBackgroundColor;
+    unsigned int nSize = (unsigned int)(nWidth * nHeight);
+    unsigned int* pTemp = (unsigned int*)pBgraData;
+    for (unsigned int i = 0; i < nSize; ++i)
+        *pTemp++ = nColor;
+
+    CBgraFrame* pFrame = new CBgraFrame();
+    pFrame->put_Data(pBgraData);
+    pFrame->put_Width(nWidth);
+    pFrame->put_Height(nHeight);
+    pFrame->put_Stride(4 * nWidth);
+
+    pRenderer->CreateFromBgraFrame(pFrame);
+    pRenderer->SetSwapRGB(true);
+    pRenderer->put_Width(dWidth * 25.4 / dPageDpiX);
+    pRenderer->put_Height(dHeight * 25.4 / dPageDpiX);
+    if (nBackgroundColor != 0xFFFFFF)
+        pRenderer->CommandLong(c_nDarkMode, 1);
+
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+
+    for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
+    {
+        AcroFormField* pField = pAcroForms->getField(i);
+        Object oFieldRef, oField;
+        XRef* xref = m_pPDFDocument->getXRef();
+        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict() || pField->getPageNum() != nPageIndex + 1)
+        {
+            oFieldRef.free(); oField.free();
+            continue;
+        }
+
+        // Координаты - BBox
+        double dx1, dy1, dx2, dy2;
+        pField->getBBox(&dx1, &dy1, &dx2, &dy2);
+        double dTemp = dy1;
+        dy1 = dHeight - dy2;
+        dy2 = dHeight - dTemp;
+
+        globalParams->setDrawFormField(i);
+        bool bBreak = false;
+        m_pRenderer->DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
+
+        // Получение пикселей внешнего вида виджета
+        int nRx1 = dx1 * (double)nWidth / dWidth;
+        int nRx2 = dx2 * (double)nWidth / dWidth + 1;
+        int nRy1 = dy1 * (double)nHeight / dHeight;
+        int nRy2 = dy2 * (double)nHeight / dHeight + 1;
+        if (nRx1 < 0) nRx1 = 0;
+        if (nRy1 < 0) nRy1 = 0;
+        if (nRx2 > nWidth) nRx1 = nWidth;
+        if (nRy2 > nHeight) nRy1 = nHeight;
+
+        BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
+        int p = 0;
+        unsigned int* pTemp = (unsigned int*)pBgraData;
+        unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
+        for (int y = nRy1; y < nRy2; ++y)
+        {
+            for (int x = nRx1; x < nRx2; ++x)
+            {
+                pSubTemp[p++] = pTemp[y * nWidth + x];
+                pTemp[y * nWidth + x] = 0;
+            }
+        }
+
+        // Номер аннотации для сопоставления с AP
+        oRes.AddInt(i);
+
+        oRes.AddInt(nRx2 - nRx1);
+        oRes.AddInt(nRy2 - nRy1);
+        unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;
+        unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+        oRes.AddInt(npSubMatrix1);
+        oRes.AddInt(npSubMatrix >> 32);
     }
 
     globalParams->setDrawContent(bDrawContent);

@@ -374,7 +374,7 @@
 		var ext = Module["_GetInteractiveForms"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
 		if (ext == 0)
 			return res;
-		
+
 		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
 		if (lenArray == null)
 			return res;
@@ -386,10 +386,13 @@
 
 		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
 		var reader = new CBinaryReader(buffer, 0, len);
-		
+
 		while (reader.isValid())
 		{
 			var rec = {};
+			rec["AP"] = {};
+			// Номер для сопоставление с AP
+			rec["AP"]["i"] = reader.readInt();
 			rec["annotflag"] = reader.readInt();
 			// 12.5.3
 			rec["hidden"]   = rec["annotflag"] & (1 << 1); // Hidden
@@ -401,22 +404,13 @@
 			rec["locked"]   = rec["annotflag"] & (1 << 7); // Locked
 			rec["lockedC"]  = rec["annotflag"] & (1 << 9); // LockedContents
 
-			rec["name"] = reader.readString(); 
+			rec["name"] = reader.readString();
+			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["x1"] = reader.readDouble();
 			rec["y1"] = reader.readDouble();
 			rec["x2"] = reader.readDouble();
 			rec["y2"] = reader.readDouble();
-			
-			// Внешний вид аннотации
-			rec["AP"] = {};
-			rec["AP"]["w"] = reader.readInt();
-			rec["AP"]["h"] = reader.readInt();
-			let np1 = reader.readInt();
-			let np2 = reader.readInt();
-			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
-			rec["AP"]["retValue"] = np2 << 32 | np1;
-			
 			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();
@@ -590,6 +584,44 @@
 				}
 			}
 
+			res.push(rec);
+		}
+
+		Module["_free"](ext);
+		return res;
+	};
+	CFile.prototype["getInteractiveFormsAP"] = function(pageIndex, width, height, backgroundColor)
+	{
+		var res = [];
+		var ext = Module["_GetInteractiveFormsAP"](this.nativeFile, pageIndex, width, height, backgroundColor === undefined ? 0xFFFFFF : backgroundColor);
+		if (ext == 0)
+			return res;
+
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, ext, 4);
+		if (lenArray == null)
+			return res;
+
+		var len = lenArray[0];
+		len -= 4;
+		if (len <= 0)
+			return res;
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, ext + 4, len);
+		var reader = new CBinaryReader(buffer, 0, len);
+
+		while (reader.isValid())
+		{
+			// Внешний вид аннотации
+			var rec = {};
+			// Номер для сопоставление с AP
+			rec["i"] = reader.readInt();
+			rec["w"] = reader.readInt();
+			rec["h"] = reader.readInt();
+			let np1 = reader.readInt();
+			let np2 = reader.readInt();
+			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
+			rec["retValue"] = np2 << 32 | np1;
+			
 			res.push(rec);
 		}
 

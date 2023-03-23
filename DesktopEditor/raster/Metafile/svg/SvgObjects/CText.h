@@ -12,11 +12,11 @@ namespace SVG
 	class CTSpan : public CSvgGraphicsObject, public CContainer<CSvgGraphicsObject>
 	{
 	public:
-		CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
+		CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
 		virtual ~CTSpan();
 
 		static CTSpan* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
-		static CTSpan* Create(const std::wstring& wsValue, const Point& oPosition, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
+		static CTSpan* Create(const std::wstring& wsValue, const Point& oPosition, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
 
 		void SetData(const std::map<std::wstring, std::wstring>& mAttributes, unsigned short ushLevel, bool bHardMode = false) override;
 

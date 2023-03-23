@@ -19,13 +19,14 @@ namespace SVG
 {
 #define DefaultFontFamily L"Times New Roman"
 
-	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent, NSFonts::IFontManager* pFontManager)
+	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
 	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager)
 	{
 		m_oFont.UpdateSize(16);
-		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
 
-		if (!oNode.GetText().empty() && m_wsText.empty())
+		if (bCheckText)
+			m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
+		else
 			m_wsText = oNode.GetText();
 
 		if (!m_oX.SetValue(oNode.GetAttribute(L"x")) && NULL != dynamic_cast<CText*>(m_pParent))
@@ -51,7 +52,7 @@ namespace SVG
 		return new CTSpan(oNode, pTSpanParent, pFontManager);
 	}
 
-	CTSpan *CTSpan::Create(const std::wstring &wsValue, const Point& oPosition, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	CTSpan *CTSpan::Create(const std::wstring &wsValue, const Point& oPosition, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, bool bCheckText)
 	{
 		CTSpan *pTSpanParent = dynamic_cast<CTSpan*>(pParent);
 
@@ -63,7 +64,7 @@ namespace SVG
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlString(wsXmlNode);
 
-		return new CTSpan(oNode, pTSpanParent, pFontManager);
+		return new CTSpan(oNode, pTSpanParent, pFontManager, bCheckText);
 	}
 
 	void CTSpan::SetData(const std::map<std::wstring, std::wstring> &mAttributes, unsigned short ushLevel, bool bHardMode)
@@ -111,7 +112,7 @@ namespace SVG
 
 	bool CTSpan::Draw(IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
 	{
-		if (NULL == pRenderer || m_wsText.empty() || bIsClip)
+		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || bIsClip)
 			return false;
 
 		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
@@ -445,7 +446,7 @@ namespace SVG
 
 		for (const wchar_t& wsSymbol : m_wsText)
 		{
-			CTSpan *pTSpan = CTSpan::Create(std::wstring(1, wsSymbol), {0., 0.}, (CText*)this, m_pFontManager);
+			CTSpan *pTSpan = CTSpan::Create(std::wstring(1, wsSymbol), {0., 0.}, (CText*)this, m_pFontManager, false);
 
 			if (NULL == pTSpan)
 				continue;
@@ -465,7 +466,6 @@ namespace SVG
 
 			pTSpan->SetPosition(oPoint);
 			pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
-
 			pTSpan->Draw(pRenderer, pDefs, bIsClip);
 
 			delete pTSpan;

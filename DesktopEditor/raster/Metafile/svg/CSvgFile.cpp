@@ -85,7 +85,11 @@ void CSvgFile::AddDefs(XmlUtils::CXmlNode &oNode)
 
 const SVG::CSvgGraphicsObject *CSvgFile::GetMarkedObject(const std::wstring &wsId) const
 {
-	MarkedMap::const_iterator oFound = m_mMarkedObjects.find(wsId);
+	std::wstring wsLowerId = wsId;
+
+	std::transform(wsLowerId.begin(), wsLowerId.end(), wsLowerId.begin(), std::towlower);
+
+	MarkedMap::const_iterator oFound = m_mMarkedObjects.find(wsLowerId);
 
 	if (oFound != m_mMarkedObjects.end())
 		return oFound->second;

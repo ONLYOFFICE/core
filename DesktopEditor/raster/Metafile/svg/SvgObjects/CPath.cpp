@@ -5,6 +5,7 @@
 namespace SVG
 {
     #define LASTELEMENT(array) (array.empty()) ? NULL : array.back()
+    #define RANGEALIGMENT(value, left, rigth) if (value < left) value = left; else if (value > rigth) value = rigth;
     #define EPSILON 0.05
     #define CURVESTEP 0.05
     #define MINCURVESTEP 0.001
@@ -240,142 +241,137 @@ namespace SVG
 		if (NULL == m_pCurrentElement)
 			return false;
 
-		while (true)
+		switch (m_pCurrentElement->GetType())
 		{
-			switch (m_pCurrentElement->GetType())
+		case EPathElement::Move:
+		case  EPathElement::Close:
+		{
+			m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
+			m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+			return Move(dX);
+		}
+		case EPathElement::Line:
+		case EPathElement::VLine:
+		case EPathElement::HLine:
+		{
+			Point oPoint{(*m_pCurrentElement)[0]};
+
+			double dDx = oPoint.dX - m_oPosition.dX;
+			double dDy = oPoint.dY - m_oPosition.dY;
+
+			double dLineLength = std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2));
+			m_dAngle           = std::atan2(dDy, dDx);
+
+			if (dLineLength >= dX)
 			{
-			case EPathElement::Move:
-			case  EPathElement::Close:
-			{
-				m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
-				m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
-				return Move(dX);
+				m_oLastPoint = m_oPosition;
+				m_oPosition += {std::cos(m_dAngle) * dX, std::sin(m_dAngle) * dX};
+				m_dAngle *= 180. / M_PI;
+				return true;
 			}
-			case EPathElement::Line:
-			case EPathElement::VLine:
-			case EPathElement::HLine:
+			else
 			{
-				Point oPoint{(*m_pCurrentElement)[0]};
-				m_dSkeepAngle = 0.;
+				m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+				m_oPosition = m_oLastPoint = oPoint;
+				return Move(dX - dLineLength);
+			}
+		}
+		case EPathElement::CBezier:
+		case EPathElement::SBezier:
+		case EPathElement::QBezier:
+		case EPathElement::TBezier:
+		{
+			Point oCurvePoint{0., 0.};
+			double dPrevValue = dX;
 
-				double dDx = oPoint.dX - m_oPosition.dX;
-				double dDy = oPoint.dY - m_oPosition.dY;
-
-				double dLineLength = std::sqrt(std::pow(dDx, 2) + std::pow(dDy, 2));
-				m_dAngle           = std::atan2(dDy, dDx);
-
-				if (dLineLength >= dX)
+			while((dX < 0 && m_dCurveIndex > 0) || (dX > 0 && m_dCurveIndex < 1))
+			{
+				if (MINCURVESTEP > m_dCurveStep)
 				{
-					m_oLastPoint = m_oPosition;
-					m_oPosition += {std::cos(m_dAngle) * dX, std::sin(m_dAngle) * dX};
-					m_dAngle *= 180. / M_PI;
+					m_dCurveStep  = CURVESTEP;
 					return true;
 				}
+
+				if ((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX))
+					m_dCurveStep /= 2.;
+
+				if (dX > 0.)
+					m_dCurveIndex += m_dCurveStep;
+				else if (dX < 0. && m_dCurveIndex > 0.)
+					m_dCurveIndex -= m_dCurveStep;
 				else
-				{
-					m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
-					m_oPosition = m_oLastPoint = oPoint;
-					return Move(dX - dLineLength);
-				}
+					return false;
+
+				RANGEALIGMENT(m_dCurveIndex, 0., 1.);
+
+				oCurvePoint.dX = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dX + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dX + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dX + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dX;
+				oCurvePoint.dY = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dY + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dY + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dY + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dY;
+
+				dPrevValue = dX;
+
+				UpdatePosition(oCurvePoint, dX);
 			}
-			case EPathElement::CBezier:
-			case EPathElement::SBezier:
-			case EPathElement::QBezier:
-			case EPathElement::TBezier:
+
+			m_dCurveStep  = CURVESTEP;
+
+			return NextMove(dX, (*m_pCurrentElement)[-1]);
+		}
+		case EPathElement::Arc:
+		{
+			CArcElement *pArcElement = (CArcElement*)m_pCurrentElement;
+			if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
 			{
-				Point oCurvePoint{0., 0.};
-				m_dSkeepAngle = 0.;
+				Point Center  = pArcElement->GetCenter (pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, pArcElement->m_oRadius, (*pArcElement)[0], (*pArcElement)[1]);
 
-				double dPrevValue = dX;
+				m_dStartAngle = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
+				m_dEndAngle   = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
 
-				while(std::abs(dX) > EPSILON && m_dCurveIndex <= 1 )
-				{
-					if (MINCURVESTEP > m_dCurveStep)
-					{
-						m_dCurveStep  = CURVESTEP;
-						return true;
-					}
+				double dSweep = 0.;
 
-					if ((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX))
-					{
-						if (0. > dPrevValue && 0. < dX)
-							m_dSkeepAngle = 0;
-						else
-							m_dSkeepAngle = 180;
-						m_dCurveStep /= 2.;
-					}
+				if (!pArcElement->GetArcAngles(pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, m_dStartAngle, m_dEndAngle, dSweep))
+					return NextMove(dX, (*m_pCurrentElement)[-1]);
 
-					if (dX > 0.)
-						m_dCurveIndex += m_dCurveStep;
-					else if (dX < 0. && m_dCurveIndex > 0.)
-						m_dCurveIndex -= m_dCurveStep;
-					else
-						return false;
+				m_dEndAngle = m_dStartAngle + dSweep;
 
-					oCurvePoint.dX = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dX + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dX + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dX + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dX;
-					oCurvePoint.dY = std::pow((1. - m_dCurveIndex), 3) * m_oLastPoint.dY + 3 * std::pow((1. - m_dCurveIndex), 2) * m_dCurveIndex * (*m_pCurrentElement)[0].dY + 3 * (1. - m_dCurveIndex)* std::pow(m_dCurveIndex, 2) * (*m_pCurrentElement)[1].dY + std::pow(m_dCurveIndex, 3) * (*m_pCurrentElement)[2].dY;
+				m_oPosition = Center + pArcElement->GetPoint(m_dStartAngle);
 
-					dPrevValue = dX;
+				if (m_dStartAngle > m_dEndAngle)
+					m_dArcStep *= -1;
 
-					UpdatePosition(oCurvePoint, dX);
-				}
-
-				m_dCurveStep  = CURVESTEP;
-
-				return NextMove(dX, (*m_pCurrentElement)[1]);
+				m_oLastPoint = Center;
 			}
-			case EPathElement::Arc:
+
+			// TODO:: На самом деле точки вычисляются с небольшим смещением (по углу)
+			// поэтому необходимо разобраться в этом
+			double dPrevValue = dX;
+
+			while(std::abs(m_dEndAngle - m_dStartAngle) > ARCSTEP)
 			{
-				m_dSkeepAngle = 0.;
-
-				CArcElement *pArcElement = (CArcElement*)m_pCurrentElement;
-				if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
+				if (MINARCSTEP > std::abs(m_dArcStep))
 				{
-					Point Center  = pArcElement->GetCenter (pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, pArcElement->m_oRadius, (*pArcElement)[0], (*pArcElement)[1]);
-
-					m_dStartAngle = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
-					m_dEndAngle   = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
-
-					m_oPosition = Center + pArcElement->GetPoint(m_dStartAngle);
-
-					if (m_dStartAngle > m_dEndAngle)
-						m_dArcStep *= -1;
-
-					m_oLastPoint = Center;
+					m_dArcStep = ARCSTEP * ((m_dStartAngle > m_dEndAngle) ? -1 : 1);
+					return true;
 				}
 
-				// TODO:: На самом деле точки вычисляются с небольшим смещением (по углу)
-				// поэтому необходимо разобраться в этом
-				double dPrevValue = dX;
+				if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
+					m_dArcStep /= 2.;
 
-				while(std::abs(m_dEndAngle - m_dStartAngle) > ARCSTEP)
-				{
-					if (MINARCSTEP > std::abs(m_dArcStep))
-					{
-						m_dArcStep = ARCSTEP * ((m_dStartAngle > m_dEndAngle) ? -1 : 1);
-						return true;
-					}
+				if (dX > 0.)
+					m_dStartAngle += m_dArcStep;
+				else if (dX < 0)
+					m_dStartAngle -= m_dArcStep;
+				else
+					return false;
 
-					if (((0. < dPrevValue && 0. > dX) || (0. > dPrevValue && 0. < dX)))
-						m_dArcStep /= 2.;
+				dPrevValue = dX;
 
-					if (dX > 0.)
-						m_dStartAngle += m_dArcStep;
-					else if (dX < 0)
-						m_dStartAngle -= m_dArcStep;
-					else
-						return false;
-
-					dPrevValue = dX;
-
-					UpdatePosition(m_oLastPoint + pArcElement->GetPoint(m_dStartAngle), dX);
-				}
-
-				return NextMove(dX, (*m_pCurrentElement)[1]);
+				UpdatePosition(m_oLastPoint + pArcElement->GetPoint(m_dStartAngle), dX);
 			}
-			default: return false;
 
-			}
+			return NextMove(dX, (*m_pCurrentElement)[-1]);
+		}
+		default: return false;
+
 		}
 
 		return false;
@@ -388,7 +384,7 @@ namespace SVG
 
 	double CMovingPath::GetAngle() const
 	{
-		return m_dAngle + m_dSkeepAngle;
+		return m_dAngle;
 	}
 
 	void CMovingPath::UpdatePosition(const Point &oPoint, double &dX)
@@ -405,7 +401,10 @@ namespace SVG
 	bool CMovingPath::NextMove(double dX, const Point &oPoint)
 	{
 		if (std::abs(dX) < EPSILON)
+		{
+			m_dCurveStep  = CURVESTEP;
 			return true;
+		}
 
 		m_dCurveIndex = m_dStartAngle = m_dEndAngle = 0.;
 		m_oPosition = m_oLastPoint = oPoint;

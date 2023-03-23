@@ -2378,7 +2378,7 @@ namespace OOX
 					writer.WriteString(L"<user");
 					WritingStringNullableAttrEncodeXmlString2(L"id", m_arUsers[i].id);
 					WritingStringNullableAttrEncodeXmlString2(L"name", m_arUsers[i].name);
-					writer.WriteString(L"\"/>");
+					writer.WriteString(L"/>");
 				}
 				writer.WriteString(L"</users>");
 			}
@@ -2390,7 +2390,7 @@ namespace OOX
 					writer.WriteString(L"<usersGroup");
 					WritingStringNullableAttrEncodeXmlString2(L"id", m_arUsersGroups[i].id);
 					WritingStringNullableAttrEncodeXmlString2(L"name", m_arUsersGroups[i].name);
-					writer.WriteString(L"\"/>");
+					writer.WriteString(L"/>");
 				}
 				writer.WriteString(L"</usersGroups>");
 			}

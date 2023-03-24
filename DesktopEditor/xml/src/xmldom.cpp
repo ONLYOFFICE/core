@@ -156,11 +156,20 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-	CXmlNodes::CXmlNodes() : m_nodes()
+    class CXmlNodes::Impl
+    {
+    public:
+        std::vector<CXmlNode> m_nodes;
+    };
+    CXmlNodes::CXmlNodes() :impl_(NULL)
 	{
+        impl_ = new Impl();
 	}
     CXmlNodes::~CXmlNodes()
     {
+        if (impl_)
+            delete impl_;
+        impl_ = NULL;
     }
 	bool CXmlNodes::IsValid()
 	{
@@ -168,16 +177,25 @@ namespace XmlUtils
 	}
 	int CXmlNodes::GetCount()
 	{
-		return (int)m_nodes.size();
+        if (impl_)
+            return (int) impl_->m_nodes.size();
+        else
+            return 0;
 	}
 	bool CXmlNodes::GetAt(int nIndex, CXmlNode& oXmlNode)
 	{
 		if (nIndex < 0 || nIndex >= GetCount())
 			return false;
 
-		oXmlNode = m_nodes[nIndex];
+        if (impl_)
+            oXmlNode = impl_->m_nodes[nIndex];
 		return true;
 	}
+    void CXmlNodes::push_back(CXmlNode &oNode)
+    {
+        if (impl_)
+            impl_->m_nodes.insert(impl_->m_nodes.end(), oNode);
+    }
 }
 
 namespace XmlUtils
@@ -748,7 +766,8 @@ namespace XmlUtils
 	CXmlNodes CXmlNode::ReadNodesNoNS(const std::wstring& sName)
 	{
 		CXmlNodes oNodes;
-		if (IsValid())
+
+        if (IsValid())
 		{
 			bool bGetAll = false;
 			if (L"*" == sName)
@@ -761,7 +780,8 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -791,7 +811,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -812,7 +832,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oXmlNodes.m_nodes.insert(oXmlNodes.m_nodes.end(), oNode);
+                    oXmlNodes.push_back(oNode);
 				}
 			}
 		}

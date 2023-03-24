@@ -151,7 +151,8 @@ namespace XmlUtils
 	class KERNEL_DECL CXmlNodes
 	{
 	private:
-		std::vector<CXmlNode> m_nodes;
+        class Impl;
+        Impl *impl_;
 
 	public:
 		CXmlNodes();
@@ -159,6 +160,8 @@ namespace XmlUtils
 		bool IsValid();
 		int GetCount();
 		bool GetAt(int nIndex, CXmlNode& oXmlNode);
+
+        void push_back(CXmlNode &node);
 
 		friend class CXmlNode;
 	};

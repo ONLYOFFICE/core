@@ -42,13 +42,13 @@
 
 #define _CP_OPT(V1)  boost::optional<V1>
 
-typedef struct 
+typedef struct _frmSize
 {
 	_UINT32 Width = 0;
 	_UINT32 Height = 0;
 } frmSize;
 
-typedef struct
+typedef struct _fmPosition
 {
 	_UINT32 Top = 0;
 	_UINT32 Left = 0;

@@ -34,8 +34,8 @@
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/HtmlRenderer.lib")
-		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfReader.lib")
-		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfWriter.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/DocxRenderer.lib")
+		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/XpsFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/EpubFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/DjVuFile.lib")
@@ -45,7 +45,7 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel_network.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/kernel.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/UnicodeConverter.lib")
-#else
+	#else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/PdfFile.lib")

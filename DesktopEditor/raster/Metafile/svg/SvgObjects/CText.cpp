@@ -29,13 +29,10 @@ namespace SVG
 		else
 			m_wsText = oNode.GetText();
 
-		if (!m_oX.SetValue(oNode.GetAttribute(L"x")) && NULL != dynamic_cast<CText*>(m_pParent))
-		{
-			TBounds oBounds = pParent->GetBounds();
-			m_oX = pParent->m_oX + oBounds.m_dRight - oBounds.m_dLeft;
-		}
+		if (!m_oX.SetValue(oNode.GetAttribute(L"x")) && NULL != pParent)
+			m_oX = pParent->m_oX.ToDouble(NSCSS::Pixel) + pParent->GetWidth();
 
-		if (!m_oY.SetValue(oNode.GetAttribute(L"y")) && NULL != dynamic_cast<CText*>(m_pParent))
+		if (!m_oY.SetValue(oNode.GetAttribute(L"y")) && NULL != pParent)
 			m_oY = pParent->m_oY;
 	}
 
@@ -136,9 +133,9 @@ namespace SVG
 		return true;
 	}
 
-	bool CTSpan::AddObject(CSvgGraphicsObject *pObject)
+	bool CTSpan::AddObject(CTSpan *pObject)
 	{
-		if (NULL == dynamic_cast<CTSpan*>(pObject))
+		if (NULL == pObject)
 			return false;
 
 		m_arObjects.push_back(pObject);
@@ -190,7 +187,7 @@ namespace SVG
 			std::vector<std::wstring> arCommonFonFamily({L"serif", L"sans-serif", L"monospace", L"cursive", L"fantasy", L"system-ui", L"emoji", L"math", L"fangsong", L"inherit", L"initial", L"unset"});
 
 			if (arCommonFonFamily.end() != std::find(arCommonFonFamily.begin(), arCommonFonFamily.end(), wsFontFamily))
-				wsFontFamily = L"Arial";
+				wsFontFamily = DefaultFontFamily;
 		}
 
 		pRenderer->put_FontName(wsFontFamily);
@@ -242,6 +239,7 @@ namespace SVG
 		if (m_oText.Underline() || m_oText.LineThrough() || m_oText.Overline())
 		{
 			pRenderer->put_PenSize((double)fUndSize);
+			pRenderer->put_PenColor(m_oStroke.m_oColor.ToInt());
 			pRenderer->put_PenLineEndCap(0);
 			pRenderer->put_PenLineStartCap(0);
 
@@ -307,14 +305,36 @@ namespace SVG
 		if (m_wsText.empty())
 			return 0.;
 
-		std::wstring wsName = (!m_oFont.GetFamily().Empty()) ? m_oFont.GetFamily().ToWString() : DefaultFontFamily;
+		std::wstring wsName = DefaultFontFamily;
 		double dSize = m_oFont.GetSize().ToDouble(NSCSS::Pixel) * 72. / 25.4;
 
-		m_pFontManager->LoadFontByName(wsName, dSize, 0., 72., 72.);
+		if (!m_oFont.GetFamily().Empty())
+		{
+			wsName = m_oFont.GetFamily().ToWString();
+
+			std::vector<std::wstring> arCommonFonFamily({L"serif", L"sans-serif", L"monospace", L"cursive", L"fantasy", L"system-ui", L"emoji", L"math", L"fangsong", L"inherit", L"initial", L"unset"});
+
+			if (arCommonFonFamily.end() != std::find(arCommonFonFamily.begin(), arCommonFonFamily.end(), wsName))
+				wsName = DefaultFontFamily;
+		}
+
+		int nStyle = 0;
+
+		if (m_oFont.GetWeight().ToWString() == L"bold")
+			nStyle |= 0x01;
+		if (m_oFont.GetStyle() .ToWString() == L"italic")
+			nStyle |= 0x02;
+		if (m_oText.Underline())
+			nStyle |= (1 << 2);
+
+		m_pFontManager->LoadFontByName(wsName, dSize, nStyle, 72., 72.);
 
 		m_pFontManager->LoadString1(m_wsText, 0., 0.);
 		TBBox oBox = m_pFontManager->MeasureString2();
 		double dWidth = 25.4 / 72.0 * (oBox.fMaxX - oBox.fMinX);
+
+		for (const CTSpan* oTSpan : m_arObjects)
+			dWidth += oTSpan->GetWidth();
 
 		return dWidth;
 	}
@@ -388,17 +408,6 @@ namespace SVG
 			pTSpan->Draw(pRenderer, pDefs, bIsClip);
 
 		return true;
-	}
-
-	bool CText::AddObject(CSvgGraphicsObject *pObject)
-	{
-		CTSpan *pTSpan = dynamic_cast<CTSpan*>(pObject);
-		if (NULL != pTSpan)
-		{
-			m_arObjects.push_back(pTSpan);
-			return true;
-		}
-		return false;
 	}
 
 	CTextPath::CTextPath(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)

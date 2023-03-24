@@ -316,7 +316,7 @@ namespace SVG
 			if (wsString.end() == itBeginPos)
 				return std::wstring();
 
-			return std::wstring(itBeginPos, itEndPos.base());
+			return std::wstring(itBeginPos, itEndPos.base()) + ((wsString.end() != itEndPos.base()) ? L" " : L"");
 		}
 	};
 

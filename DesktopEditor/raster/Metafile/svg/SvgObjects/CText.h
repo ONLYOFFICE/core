@@ -9,7 +9,7 @@
 
 namespace SVG
 {
-	class CTSpan : public CSvgGraphicsObject, public CContainer<CSvgGraphicsObject>
+	class CTSpan : public CSvgGraphicsObject, public CContainer<CTSpan>
 	{
 	public:
 		CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
@@ -22,7 +22,7 @@ namespace SVG
 
 		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
 
-		bool AddObject(CSvgGraphicsObject* pObject) override;
+		bool AddObject(CTSpan* pObject) override;
 
 		void InheritStyles(const CTSpan* pTSpan);
 
@@ -61,8 +61,6 @@ namespace SVG
 		static CText* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
 
 		bool Draw(IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip = false) const override;
-
-		bool AddObject(CSvgGraphicsObject* pObject) override;
 	};
 
 	class CTextPath : public CText

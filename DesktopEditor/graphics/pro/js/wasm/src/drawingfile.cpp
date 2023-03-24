@@ -688,6 +688,12 @@ int main(int argc, char* argv[])
 			DWORD nPathLength = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "AP " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "X " << nPathLength << ", ";
+			nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "Y " << nPathLength << ", ";
 			int nWidgetWidth = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "W " << nWidgetWidth << ", ";

@@ -1479,10 +1479,10 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         m_pRenderer->DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
         // Получение пикселей внешнего вида виджета
-        int nRx1 = dx1 * (double)nWidth / dWidth;
-        int nRx2 = dx2 * (double)nWidth / dWidth + 1;
-        int nRy1 = dy1 * (double)nHeight / dHeight;
-        int nRy2 = dy2 * (double)nHeight / dHeight + 1;
+        int nRx1 = (int)round(dx1 * (double)nWidth / dWidth);
+        int nRx2 = (int)round(dx2 * (double)nWidth / dWidth + 1);
+        int nRy1 = (int)round(dy1 * (double)nHeight / dHeight);
+        int nRy2 = (int)round(dy2 * (double)nHeight / dHeight + 1);
         if (nRx1 < 0) nRx1 = 0;
         if (nRy1 < 0) nRy1 = 0;
         if (nRx2 > nWidth) nRx1 = nWidth;
@@ -1507,6 +1507,8 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         // Номер аннотации для сопоставления с AP
         oRes.AddInt(i);
 
+        oRes.AddInt(nRx1);
+        oRes.AddInt(nRy1);
         oRes.AddInt(nRx2 - nRx1);
         oRes.AddInt(nRy2 - nRy1);
         unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;

@@ -407,10 +407,11 @@
 			rec["name"] = reader.readString();
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
-			rec["x1"] = reader.readDouble();
-			rec["y1"] = reader.readDouble();
-			rec["x2"] = reader.readDouble();
-			rec["y2"] = reader.readDouble();
+			rec["rect"] = {};
+			rec["rect"]["x1"] = reader.readDouble();
+			rec["rect"]["y1"] = reader.readDouble();
+			rec["rect"]["x2"] = reader.readDouble();
+			rec["rect"]["y2"] = reader.readDouble();
 			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();
@@ -615,6 +616,8 @@
 			var AP = {};
 			// Номер для сопоставление с AP
 			AP["i"] = reader.readInt();
+			AP["x"] = reader.readInt();
+			AP["y"] = reader.readInt();
 			AP["w"] = reader.readInt();
 			AP["h"] = reader.readInt();
 			let np1 = reader.readInt();

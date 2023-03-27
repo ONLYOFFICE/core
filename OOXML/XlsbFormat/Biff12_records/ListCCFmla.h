@@ -32,8 +32,8 @@
 #pragma once
 
 #include "../../XlsxFormat/WritingElement.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ListParsedFormula.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
+#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/ListParsedFormula.h"
 
 namespace XLSB
 {

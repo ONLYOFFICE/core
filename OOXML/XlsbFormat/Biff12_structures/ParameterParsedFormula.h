@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ParsedFormula.h"
+#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/ParsedFormula.h"
 
 namespace XLSB
 {

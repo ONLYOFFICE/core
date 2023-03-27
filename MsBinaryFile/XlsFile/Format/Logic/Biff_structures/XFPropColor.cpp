@@ -31,9 +31,10 @@
  */
 
 #include "XFPropColor.h"
-#include "../../../Common/simple_xml_writer.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../../Common/Utils/simple_xml_writer.h"
+
+#include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace XLS
 {

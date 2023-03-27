@@ -34,7 +34,7 @@
 #include "../../XlsxFormat/WritingElement.h"
 
 #include "../Biff12_structures/Cell.h"
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 #include "../Biff12_structures/XLWideString.h"
 
 namespace XLSB

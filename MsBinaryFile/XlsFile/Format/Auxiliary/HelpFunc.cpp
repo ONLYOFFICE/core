@@ -310,16 +310,17 @@ const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 
 	guid.Data3 = hex_str2int(guid_str_copy.substr(14, 4));
 
-	guid.Data4[0] = hex_str2int(guid_str_copy.substr(19, 2));
-	guid.Data4[1] = hex_str2int(guid_str_copy.substr(21, 2));
+	BYTE data4[8];
+	data4[0] = hex_str2int(guid_str_copy.substr(19, 2));
+	data4[1] = hex_str2int(guid_str_copy.substr(21, 2));
 
-	guid.Data4[2] = hex_str2int(guid_str_copy.substr(24, 2));
-	guid.Data4[3] = hex_str2int(guid_str_copy.substr(26, 2));
-	guid.Data4[4] = hex_str2int(guid_str_copy.substr(28, 2));
-	guid.Data4[5] = hex_str2int(guid_str_copy.substr(30, 2));
-	guid.Data4[6] = hex_str2int(guid_str_copy.substr(32, 2));
-	guid.Data4[7] = hex_str2int(guid_str_copy.substr(34, 2));
-
+	data4[2] = hex_str2int(guid_str_copy.substr(24, 2));
+	data4[3] = hex_str2int(guid_str_copy.substr(26, 2));
+	data4[4] = hex_str2int(guid_str_copy.substr(28, 2));
+	data4[5] = hex_str2int(guid_str_copy.substr(30, 2));
+	data4[6] = hex_str2int(guid_str_copy.substr(32, 2));
+	data4[7] = hex_str2int(guid_str_copy.substr(34, 2));
+	memcpy(&guid.Data4, data4, 8);
 	return false;
 }
 

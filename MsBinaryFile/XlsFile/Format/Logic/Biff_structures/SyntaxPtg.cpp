@@ -39,7 +39,7 @@
 #include <boost/algorithm/string/replace.hpp>
 #include "PtgList.h"
 
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {

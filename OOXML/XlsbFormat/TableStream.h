@@ -29,16 +29,13 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef TABLESTREAM_H
-#define TABLESTREAM_H
-
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
+#include "../../DesktopEditor/common/Types.h"
+#include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 namespace XLSB
 {
@@ -63,6 +60,3 @@ namespace XLSB
     };
 
 }
-
-#endif // TABLESTREAM_H
-

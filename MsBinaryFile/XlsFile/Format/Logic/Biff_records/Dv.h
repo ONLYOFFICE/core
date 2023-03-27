@@ -35,8 +35,8 @@
 #include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/DVParsedFormula.h"
 #include "../Biff_structures/SqRefU.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/FRTHeader.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/FRTHeader.h"
 
 namespace XLS
 {

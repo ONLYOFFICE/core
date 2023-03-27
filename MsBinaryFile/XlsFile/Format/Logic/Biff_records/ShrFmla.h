@@ -34,7 +34,7 @@
 #include "BiffRecord.h"
 #include "../Biff_structures/CellRangeRef.h"
 #include "../Biff_structures/SharedParsedFormula.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {

@@ -32,8 +32,9 @@
 
 #include "XFPropGradient.h"
 #include "Xnum.h"
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+
+#include "../../../../../OOXML/Base/Unit.h"
+#include "../../../../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace XLS
 {

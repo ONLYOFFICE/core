@@ -34,7 +34,7 @@
 #include "Ptg.h"
 #include "CellRangeRef.h"
 #include "Boolean.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/SxSu.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/SxSu.h"
 
 namespace XLS
 {

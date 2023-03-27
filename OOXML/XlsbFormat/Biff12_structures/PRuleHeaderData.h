@@ -32,10 +32,10 @@
 
 #pragma once
 
-#include  "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/BiffStructure.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include  "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
 #include "CellRangeRef.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/SxAxis.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/SxAxis.h"
 
 namespace XLSB
 {

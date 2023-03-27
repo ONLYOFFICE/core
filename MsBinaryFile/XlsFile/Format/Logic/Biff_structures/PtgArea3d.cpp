@@ -34,7 +34,7 @@
 #include "RevExtern.h"
 #include "CellRangeRef.h"
 
-#include "../../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
 {

@@ -34,7 +34,7 @@
 #include "BiffRecord.h"
 #include "../Biff_structures/BiffString.h"
 #include "../Biff_structures/NameParsedFormula.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/XLWideString.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/XLWideString.h"
 
 
 namespace XLS

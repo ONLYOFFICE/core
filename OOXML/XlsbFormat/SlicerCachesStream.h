@@ -30,15 +30,13 @@
  *
  */
 
-#ifndef SLICERCACHESSTREAM_H
-#define SLICERCACHESSTREAM_H
+#pragma once
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
+#include "../../DesktopEditor/common/Types.h"
+#include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
 
 namespace XLSB
 {
@@ -64,5 +62,4 @@ namespace XLSB
 
 }
 
-#endif // SLICERCACHESSTREAM_H
 

@@ -37,7 +37,7 @@
 #include "../Biff12_unions/CELL.h"
 #include "../Biff12_records/EndSheetData.h"
 #include "../Biff12_records/CommonRecords.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRangeRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRangeRef.h"
 
 using namespace XLS;
 

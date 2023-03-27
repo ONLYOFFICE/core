@@ -39,7 +39,7 @@
 #include "../Biff_structures/FontIndex.h"
 #include "Font.h"
 #include "Format.h"
-#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Theme.h"
+#include "../../../../../OOXML/PPTXFormat/Theme.h"
 
 namespace XLS
 {

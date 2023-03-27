@@ -31,7 +31,7 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 #include "../../XlsxFormat/WritingElement.h"
 
 namespace XLSB

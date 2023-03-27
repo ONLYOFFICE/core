@@ -30,15 +30,16 @@
  *
  */
 
-#ifndef EXTERNALLINKSTREAM_H
-#define EXTERNALLINKSTREAM_H
+#pragma once
 
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
+#include "../../DesktopEditor/common/Types.h"
+#include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include <memory.h>
+#include <iostream>
+#include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+
 typedef BYTE *LPBYTE;
 
 namespace XLSB
@@ -65,5 +66,4 @@ namespace XLSB
 
 }
 
-#endif // EXTERNALLINKSTREAM_H
 

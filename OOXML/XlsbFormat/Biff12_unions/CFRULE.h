@@ -31,8 +31,8 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 
 namespace XLSB
 {

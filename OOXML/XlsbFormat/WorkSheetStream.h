@@ -29,16 +29,14 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
 
-#ifndef WORKSHEETSTREAM_H
-#define WORKSHEETSTREAM_H
-
-
-#include "../../../../DesktopEditor/common/Types.h"
-#include "../Base/Types_32.h"
+#include "../../DesktopEditor/common/Types.h"
+#include "../Base/Base.h"
 #include "../XlsxFormat/WritingElement.h"
 #include <string>
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/CompositeObject.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/CompositeObject.h"
+
 typedef BYTE *LPBYTE;
 
 namespace XLSB
@@ -101,6 +99,3 @@ namespace XLSB
     };
 
 }
-
-#endif // WORKSHEETSTREAM_H
-

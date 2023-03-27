@@ -36,7 +36,7 @@
 
 #include "../XlsElementsType.h"
 
-#include "../../../Common/common.h"
+#include "../../../../Common/Utils/OptPtr.h"
 #include "../../Logging/Log.h"
 
 #include "../../Binary/CFRecord.h"

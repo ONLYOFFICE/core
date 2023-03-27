@@ -35,7 +35,7 @@
 #include "CellRef.h"
 #include <stack>
 #include <queue>
-#include "../../../Common/common.h"
+#include "../../../../Common/Utils/OptPtr.h"
 
 namespace XLS
 {

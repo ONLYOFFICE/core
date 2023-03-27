@@ -34,7 +34,7 @@
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
 #include "CFRecordType.h"
-#include "../../../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
+#include "../../../../OOXML/Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace XLS
 {

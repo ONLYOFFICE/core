@@ -32,7 +32,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/UncheckedSqRfX.h"
 #include "../Biff_structures/CellRangeRef.h"
 #include "../Biff_structures/PaneType.h"
 

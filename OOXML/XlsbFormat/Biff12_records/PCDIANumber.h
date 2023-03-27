@@ -31,10 +31,10 @@
  */
 #pragma once
 
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_records/BiffRecord.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BiffRecord.h"
 #include "../../XlsxFormat/WritingElement.h"
 #include "../Biff12_structures/PCDIAddlInfo.h"
-#include "../../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/Xnum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 
 namespace XLSB
 {

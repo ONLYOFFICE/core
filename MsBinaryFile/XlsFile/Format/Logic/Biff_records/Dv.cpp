@@ -32,10 +32,11 @@
 
 #include "Dv.h"
 
-#include "../../../Common/utils.h"
+#include "../../../../../OOXML/Base/Unit.h"
 #include <boost/algorithm/string.hpp>
 
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/DValStrings.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/DValStrings.h"
+
 
 namespace XLS
 {
@@ -261,12 +262,12 @@ int Dv::serialize(std::wostream & stream)
 			if (!sFormula1.empty())
 			{
 				//XmlUtils::replace_all( sFormula1 , "\0", L",");
-				CP_XML_NODE(L"formula1") {CP_XML_STREAM() << xml::utils::replace_text_to_xml(sFormula1);}
+				CP_XML_NODE(L"formula1") {CP_XML_STREAM() << XmlUtils::EncodeXmlString(sFormula1);}
 			}
 			if (!sFormula2.empty())
 			{
 				//XmlUtils::replace_all( sFormula2 , "\0", L",");
-				CP_XML_NODE(L"formula2") {CP_XML_STREAM() << xml::utils::replace_text_to_xml(sFormula2);}
+				CP_XML_NODE(L"formula2") {CP_XML_STREAM() << XmlUtils::EncodeXmlString(sFormula2);}
 			}
 		}
 	}

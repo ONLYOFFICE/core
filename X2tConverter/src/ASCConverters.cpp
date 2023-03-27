@@ -1124,7 +1124,7 @@ namespace NExtractTools
 
             OOX::CContentTypes oContentTypes;
             oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
-            oXlsb.ReadSheetData(true);
+            oXlsb.ReadSheetData();
 
 			nRes = oXlsb.WriteNative(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 		}

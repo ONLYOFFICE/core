@@ -34,7 +34,7 @@
 #include "OperandPtg.h"
 #include "CellRangeRef.h"
 #include "BitMarkedStructs.h"
-#include "../../../../../Common/DocxFormat/Source/XlsbFormat/Biff12_structures/CellRangeRef.h"
+#include "../../../../../OOXML/XlsbFormat/Biff12_structures/CellRangeRef.h"
 
 namespace XLS
 {

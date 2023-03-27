@@ -41,14 +41,17 @@
 #include "../XlsxFormat/Pivot/PivotTable.h"
 #include "../XlsxFormat/Pivot/PivotCacheDefinition.h"
 #include "../XlsxFormat/Pivot/PivotCacheRecords.h"
+#include "../XlsxFormat/Styles/Fonts.h"
 
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/GlobalWorkbookInfo.h"
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/WorkbookStreamObject.h"
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheReader.h"
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Binary/CFStreamCacheWriter.h"
-#include "../../../../ASCOfficeXlsFile2/source/XlsFormat/Logic/BinProcessor.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
+#include "../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
+#include "../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/BinProcessor.h"
 
-#include "../../../../DesktopEditor/common/SystemUtils.h"
+#include "../Binary/Presentation/BinaryFileReaderWriter.h"
+
+#include "../../DesktopEditor/common/SystemUtils.h"
 
 #include "Biff12_unions/CELLTABLE.h"
 
@@ -99,7 +102,7 @@ bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oFilePath, XLS::BaseObject* 
 	XLS::StreamCacheWriterPtr writer(new XLS::BinaryStreamCacheWriter(m_binaryWriter, xls_global_info));
 	XLS::BinWriterProcessor proc(writer, objStream);
 	proc.mandatory(*objStream);
-	m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), m_binaryWriter->GetPosition());	
+	m_binaryWriter->WriteFile(m_binaryWriter->GetBuffer(), (static_cast<NSBinPptxRW::CBinaryFileWriter*>(m_binaryWriter.get()))->GetPosition());
 	m_binaryWriter->CloseFile();
 
 	return true;

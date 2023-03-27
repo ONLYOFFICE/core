@@ -17,7 +17,8 @@ core_ios:DEFINES -= MAC
 core_windows:DEFINES -= UNICODE _UNICODE
 
 DEFINES += CRYPTOPP_DISABLE_ASM
-DEFINES += DISABLE_TYPE_MISMATCH
+DEFINES += DISABLE_TYPE_MISMATCH\
+DEFINES += USE_PRECOMPILED_HEADERS
 
 core_android {
     INCLUDEPATH += $$(ANDROID_NDK_ROOT)/sources/android/cpufeatures
@@ -28,17 +29,20 @@ HEADERS += \
     ../adler32.h \
     ../adv_simd.h \
     ../aes.h \
+    ../aes_armv4.h \
     ../algebra.h \
     ../algparam.h \
     ../allocate.h \
     ../arc4.h \
     ../aria.h \
     ../argnames.h \
+    ../arm_simd.h \
     ../asn.h \
     ../authenc.h \
     ../base32.h \
     ../base64.h \
     ../basecode.h \
+    ../bench.h \
     ../blake2.h \
     ../blowfish.h \
     ../blumshub.h \
@@ -70,6 +74,7 @@ HEADERS += \
     ../des.h \
     ../dh.h \
     ../dh2.h \
+    ../dll.h \
     ../dmac.h \
     ../drbg.h \
     ../donna.h \
@@ -86,6 +91,7 @@ HEADERS += \
     ../emsa2.h \
     ../eprecomp.h \
     ../esign.h \
+    ../factory.h \
     ../files.h \
     ../filters.h \
     ../fips140.h \
@@ -98,6 +104,7 @@ HEADERS += \
     ../gfpcrypt.h \
     ../gost.h \
     ../gzip.h \
+    ../hashfwd.h \
     ../hc128.h \
     ../hc256.h \
     ../hex.h \
@@ -121,6 +128,7 @@ HEADERS += \
     ../md4.h \
     ../md5.h \
     ../mdc.h \
+    ../mersenne.h \
     ../misc.h \
     ../modarith.h \
     ../modes.h \
@@ -133,12 +141,14 @@ HEADERS += \
     ../oaep.h \
     ../oids.h \
     ../osrng.h \
+    ../ossig.h \
     ../padlkrng.h \
     ../panama.h \
     ../pch.h \
     ../pkcspad.h \
     ../poly1305.h \
     ../polynomi.h \
+    ../ppc_simd.h \
     ../pssr.h \
     ../pubkey.h \
     ../pwdbased.h \
@@ -150,6 +160,7 @@ HEADERS += \
     ../rc5.h \
     ../rc6.h \
     ../rdrand.h \
+    ../resource.h \
     ../rijndael.h \
     ../ripemd.h \
     ../rng.h \
@@ -164,8 +175,12 @@ HEADERS += \
     ../seckey.h \
     ../seed.h \
     ../serpent.h \
+    ../serpentp.h \
     ../sha.h \
+    ../sha1_armv4.h \
+    ../sha256_armv4.h \
     ../sha3.h \
+    ../sha512_armv4.h \
     ../shacal2.h \
     ../shake.h \
     ../shark.h \
@@ -190,6 +205,7 @@ HEADERS += \
     ../ttmac.h \
     ../tweetnacl.h \
     ../twofish.h \
+    ../validate.h \
     ../vmac.h \
     ../wake.h \
     ../whrlpool.h \
@@ -206,6 +222,9 @@ HEADERS += \
 SOURCES += \
     ../cryptlib.cpp \
     ../cpu.cpp \
+    ../eccrypto.cpp \
+    ../eprecomp.cpp \
+    ../fipsalgt.cpp \
     ../integer.cpp \
     ../3way.cpp \
     ../adler32.cpp \
@@ -248,6 +267,7 @@ SOURCES += \
     ../dessp.cpp \
     ../dh.cpp \
     ../dh2.cpp \
+    ../dll.cpp \
     ../donna_32.cpp \
     ../donna_64.cpp \
     ../donna_sse.cpp \
@@ -257,11 +277,11 @@ SOURCES += \
     ../ecp.cpp \
     ../elgamal.cpp \
     ../emsa2.cpp \
+    ../eprecomp.cpp \
     ../esign.cpp \
     ../files.cpp \
     ../filters.cpp \
     ../fips140.cpp \
-    ../fipstest.cpp \
     ../gcm.cpp \
     ../gcm_simd.cpp \
     ../gf256.cpp \
@@ -304,13 +324,19 @@ SOURCES += \
     ../mqueue.cpp \
     ../mqv.cpp \
     ../nbtheory.cpp \
+    ../neon_simd.cpp \
     ../oaep.cpp \
     ../osrng.cpp \
     ../padlkrng.cpp \
     ../panama.cpp \
+    ../pch.cpp \
     ../pkcspad.cpp \
     ../poly1305.cpp \
     ../polynomi.cpp \
+    ../power7_ppc.cpp \
+    ../power8_ppc.cpp \
+    ../power9_ppc.cpp \
+    ../ppc_simd.cpp \
     ../pssr.cpp \
     ../pubkey.cpp \
     ../queue.cpp \

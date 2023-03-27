@@ -3,6 +3,7 @@
 
 #include "../../../graphics/pro/Fonts.h"
 
+#include "CPath.h"
 #include "CContainer.h"
 #include "CObjectBase.h"
 #include "../SvgTypes.h"
@@ -12,7 +13,7 @@ namespace SVG
 	class CTSpan : public CSvgGraphicsObject, public CContainer<CTSpan>
 	{
 	public:
-		CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
+		CTSpan(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, bool bCheckText = true);
 		virtual ~CTSpan();
 
 		static CTSpan* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL);
@@ -39,6 +40,8 @@ namespace SVG
 		void Normalize(IRenderer* pRenderer, double& dX, double& dY, double& dFontHeight) const;
 		void SetPosition(const Point& oPosition);
 
+		std::vector<CTSpan*> Split() const;
+
 		NSFonts::IFontManager* m_pFontManager;
 
 		SvgDigit     m_oX;
@@ -48,6 +51,8 @@ namespace SVG
 
 		SvgFont m_oFont;
 		SvgText m_oText;
+
+		CTSpan *pPrevElement;
 
 		friend class CText;
 		friend class CTextPath;
@@ -72,6 +77,8 @@ namespace SVG
 
 		static CTextPath* Create(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent = NULL, NSFonts::IFontManager* pFontManager = NULL, const CSvgFile* pFile = NULL);
 	private:
+		void DrawGlyph(CTSpan* pTSpan, CMovingPath& oMovingPath, IRenderer* pRenderer, const CDefs *pDefs, bool bIsClip) const;
+
 		const CPath        *m_pPath;
 	};
 }

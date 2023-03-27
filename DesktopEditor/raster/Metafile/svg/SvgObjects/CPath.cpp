@@ -227,13 +227,9 @@ namespace SVG
 	}
 
 	CMovingPath::CMovingPath(const CPath *pPath)
-	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}, m_oLastPoint{0, 0}, m_dAngle(0), m_pCurrentElement(NULL), m_unIndexElement(0), m_dCurveIndex(0), m_dCurveStep(CURVESTEP), m_dStartAngle(0), m_dEndAngle(0), m_dArcStep(ARCSTEP)
+	    : m_pPath(pPath), m_oPosition{DBL_MIN, DBL_MIN}
 	{
-		if (NULL != m_pPath)
-		{
-			m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
-			m_oPosition       = (*m_pCurrentElement)[0];
-		}
+		ToStart();
 	}
 
 	bool CMovingPath::Move(double dX)
@@ -375,6 +371,19 @@ namespace SVG
 		}
 
 		return false;
+	}
+
+	void CMovingPath::ToStart()
+	{
+		if (NULL == m_pPath)
+			return;
+
+		m_unIndexElement = 0;
+		m_pCurrentElement = (*m_pPath)[m_unIndexElement++];
+		m_oPosition = m_oLastPoint = (*m_pCurrentElement)[0];
+		m_dAngle = m_dCurveIndex = m_dStartAngle = m_dEndAngle = 0.;
+		m_dCurveStep = CURVESTEP;
+		m_dArcStep = ARCSTEP;
 	}
 
 	Point CMovingPath::GetPosition() const

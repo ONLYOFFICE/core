@@ -675,6 +675,7 @@ namespace SVG
 		CMovingPath(const CPath* pPath);
 
 		bool Move(double dX);
+		void ToStart();
 		Point GetPosition() const;
 		double GetAngle() const;
 	private:

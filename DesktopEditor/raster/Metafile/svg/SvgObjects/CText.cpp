@@ -5,7 +5,6 @@
 #include "../CSvgFile.h"
 #include "CContainer.h"
 #include "CStyle.h"
-#include "CPath.h"
 
 #ifndef MININT8
 #define MAXUINT8    ((unsigned char)~((unsigned char)0))
@@ -19,8 +18,8 @@ namespace SVG
 {
 #define DefaultFontFamily L"Times New Roman"
 
-	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CTSpan* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
-	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager)
+	CTSpan::CTSpan(XmlUtils::CXmlNode& oNode, CSvgGraphicsObject* pParent, NSFonts::IFontManager* pFontManager, bool bCheckText)
+	    : CSvgGraphicsObject(oNode, pParent), m_pFontManager(pFontManager), pPrevElement(NULL)
 	{
 		m_oFont.UpdateSize(16);
 
@@ -29,11 +28,29 @@ namespace SVG
 		else
 			m_wsText = oNode.GetText();
 
-		if (!m_oX.SetValue(oNode.GetAttribute(L"x")) && NULL != pParent)
-			m_oX = pParent->m_oX.ToDouble(NSCSS::Pixel) + pParent->GetWidth();
+		m_oX.SetValue(oNode.GetAttribute(L"x"));
+		m_oY.SetValue(oNode.GetAttribute(L"y"));
 
-		if (!m_oY.SetValue(oNode.GetAttribute(L"y")) && NULL != pParent)
-			m_oY = pParent->m_oY;
+		if (NULL != pParent)
+		{
+			TBounds oBounds = pParent->GetBounds();
+
+			CTSpan *pTSpan = dynamic_cast<CTSpan*>(pParent);
+
+			if (NULL == pTSpan)
+				return;
+
+			if (m_oX.Empty())
+			{
+				if (!pTSpan->m_arObjects.empty())
+					pTSpan = pTSpan->m_arObjects.back();
+
+				m_oX = pTSpan->m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft) + pTSpan->GetWidth();
+			}
+
+			if (m_oY.Empty())
+				m_oY = pTSpan->m_oY;
+		}
 	}
 
 	CTSpan::~CTSpan()
@@ -112,9 +129,9 @@ namespace SVG
 		if (NULL == pRenderer || (m_wsText.empty() && m_arObjects.empty()) || bIsClip)
 			return false;
 
-		TBounds oBounds = (NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.};
+		TBounds oBounds{(NULL != m_pParent) ? m_pParent->GetBounds() : TBounds{0., 0., 0., 0.}};
 
-		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
+		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight - oBounds.m_dLeft);
 		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
 
 		int nPathType = 0;
@@ -381,17 +398,30 @@ namespace SVG
 		m_oY = oPosition.dY;
 	}
 
-	CText::CText(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
-	    : CTSpan(oNode, NULL, pFontManager)
+	std::vector<CTSpan*> CTSpan::Split() const
 	{
-		m_pParent = pParent;
+		std::vector<CTSpan*> arGlyphs(m_wsText.length());
 
-		m_wsText = StrUtils::TrimExtraEnding(oNode.GetText());
+		Point oPosition{m_oX.ToDouble(NSCSS::Pixel), m_oY.ToDouble(NSCSS::Pixel)};
+
+		for (unsigned int unIndex = 0; unIndex < m_wsText.length(); ++unIndex)
+		{
+			arGlyphs[unIndex] = CTSpan::Create(std::wstring(1, m_wsText[unIndex]), oPosition, m_pParent, m_pFontManager, false);
+			oPosition.dX += arGlyphs[unIndex]->GetWidth();
+		}
+
+		return arGlyphs;
 	}
+
+	CText::CText(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
+	    : CTSpan(oNode, pParent, pFontManager)
+	{}
 
 	CText *CText::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager)
 	{
-		if (NULL != dynamic_cast<CText*>(pParent))
+		CTSpan* pTSpan = dynamic_cast<CTSpan*>(pParent);
+
+		if (NULL != pTSpan)
 			return NULL;
 
 		return new CText(oNode, pParent, pFontManager);
@@ -422,17 +452,14 @@ namespace SVG
 				wsHref.erase(0, unPosition + 1);
 
 			m_pPath = dynamic_cast<const CPath*>(pFile->GetMarkedObject(wsHref));
+		}
 
-			if (NULL != m_pPath)
-			{
-				IPathElement *pFirstElement = (*m_pPath)[0];
-				if (NULL != pFirstElement)
-				{
-					Point oFirstPoint = (*pFirstElement)[0];
-					m_oX = oFirstPoint.dX;
-					m_oY = oFirstPoint.dY;
-				}
-			}
+		if (NULL != pParent)
+		{
+			CTSpan *pTSpan = dynamic_cast<CTSpan*>(pParent);
+
+			if (NULL != pTSpan)
+				m_oX = pTSpan->m_oX;
 		}
 	}
 
@@ -441,50 +468,23 @@ namespace SVG
 		if (NULL == pRenderer || bIsClip || NULL == m_pPath)
 			return false;
 
-		TBounds oBounds{0., 0., 0., 0.};
-
-		double dX = m_oX.ToDouble(NSCSS::Pixel, oBounds.m_dRight  - oBounds.m_dLeft);
-		double dY = m_oY.ToDouble(NSCSS::Pixel, oBounds.m_dBottom - oBounds.m_dTop);
-
-		int nPathType = 0;
-		Aggplus::CMatrix oOldMatrix(1., 0., 0., 1., 0, 0);
-		ApplyStyle(pRenderer, pDefs, nPathType, oOldMatrix);
-
-		ApplyFont(pRenderer, dX, dY);
-
 		CMovingPath oMovingPath(m_pPath);
 
-		for (const wchar_t& wsSymbol : m_wsText)
+		oMovingPath.Move(m_oX.ToDouble(NSCSS::Pixel));
+
+		for (CTSpan* pTSpan : Split())
+			DrawGlyph(pTSpan, oMovingPath, pRenderer, pDefs, bIsClip);
+
+		for (const CTSpan* pTSpan : m_arObjects)
 		{
-			CTSpan *pTSpan = CTSpan::Create(std::wstring(1, wsSymbol), {0., 0.}, (CText*)this, m_pFontManager, false);
-
-			if (NULL == pTSpan)
-				continue;
-
-			pTSpan->InheritStyles(this);
-
-			double dWidthSpan = pTSpan->GetWidth();
-
-			if (!oMovingPath.Move(dWidthSpan / 2))
+			if (!pTSpan->m_oX.Empty())
 			{
-				delete pTSpan;
-				break;
+				oMovingPath.ToStart();
+				oMovingPath.Move(pTSpan->m_oX.ToDouble(NSCSS::Pixel));
 			}
-
-			double dAngle = oMovingPath.GetAngle();
-			Point oPoint = oMovingPath.GetPosition() - Point{(dWidthSpan / 2.) * std::cos(dAngle / 180 * M_PI), (dWidthSpan / 2.) * std::sin(dAngle / 180 * M_PI)};
-
-			pTSpan->SetPosition(oPoint);
-			pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
-			pTSpan->Draw(pRenderer, pDefs, bIsClip);
-
-			delete pTSpan;
-
-			if (!oMovingPath.Move(dWidthSpan / 2))
-				break;
+			for (CTSpan* pGlyphs : pTSpan->Split())
+				DrawGlyph(pGlyphs, oMovingPath, pRenderer, pDefs, bIsClip);
 		}
-
-		pRenderer->SetTransform(oOldMatrix.sx(), oOldMatrix.shy(), oOldMatrix.shx(), oOldMatrix.sy(), oOldMatrix.tx(), oOldMatrix.ty());
 
 		return true;
 
@@ -492,9 +492,38 @@ namespace SVG
 
 	CTextPath* CTextPath::Create(XmlUtils::CXmlNode &oNode, CSvgGraphicsObject *pParent, NSFonts::IFontManager *pFontManager, const CSvgFile* pFile)
 	{
-		if (NULL == dynamic_cast<CText*>(pParent))
+		CTSpan *pTSpan = dynamic_cast<CText*>(pParent);
+
+		if (NULL == pTSpan)
 			return NULL;
 
-		return new CTextPath(oNode, pParent, pFontManager, pFile);
+		return new CTextPath(oNode, pTSpan, pFontManager, pFile);
+	}
+
+	void CTextPath::DrawGlyph(CTSpan* pTSpan, CMovingPath &oMovingPath, IRenderer *pRenderer, const CDefs *pDefs, bool bIsClip) const
+	{
+		if (NULL == pTSpan)
+			return;
+
+		pTSpan->InheritStyles(this);
+
+		double dWidthSpan = pTSpan->GetWidth();
+
+		if (!oMovingPath.Move(dWidthSpan / 2))
+		{
+			delete pTSpan;
+			return;
+		}
+
+		double dAngle = oMovingPath.GetAngle();
+		Point oPoint = oMovingPath.GetPosition() - Point{(dWidthSpan / 2.) * std::cos(dAngle / 180 * M_PI), (dWidthSpan / 2.) * std::sin(dAngle / 180 * M_PI)};
+
+		pTSpan->SetPosition(oPoint);
+		pTSpan->SetTransform({std::make_pair(L"transform", L"rotate(" + std::to_wstring(dAngle) + L',' + std::to_wstring(oPoint.dX) + L',' + std::to_wstring(oPoint.dY) + L')')}, 0, true);
+		pTSpan->Draw(pRenderer, pDefs, bIsClip);
+
+		delete pTSpan;
+
+		oMovingPath.Move(dWidthSpan / 2);
 	}
 }

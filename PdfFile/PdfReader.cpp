@@ -773,10 +773,14 @@ BYTE* CPdfReader::GetWidgets()
         double dTemp = dy1;
         dy1 = dHeight - dy2;
         dy2 = dHeight - dTemp;
-        oRes.AddDouble(dx1);
-        oRes.AddDouble(dy1);
-        oRes.AddDouble(dx2);
-        oRes.AddDouble(dy2);
+        std::string sX1 = std::to_string(dx1);
+        std::string sY1 = std::to_string(dy1);
+        std::string sX2 = std::to_string(dx2);
+        std::string sY2 = std::to_string(dy2);
+        oRes.WriteString((BYTE*)sX1.c_str(), (unsigned int)sX1.length());
+        oRes.WriteString((BYTE*)sY1.c_str(), (unsigned int)sY1.length());
+        oRes.WriteString((BYTE*)sX2.c_str(), (unsigned int)sX2.length());
+        oRes.WriteString((BYTE*)sY2.c_str(), (unsigned int)sY2.length());
 
         // Выравнивание текста - Q
         Object oQ;
@@ -938,38 +942,9 @@ oObj.free();\
             }
         }
 
-        // Значение аннотации из текущего внешнего вида
-        /*
-        Object oAP, oAppearance;
-        if (oField.dictLookup("AP", &oAP)->isDict())
-        {
-            Object oN;
-            oAP.dictLookup("N", &oN);
-            if (oN.isDict())
-            {
-                Object oAS;
-                if (oField.dictLookup("AS", &oAS)->isName())
-                    oN.dictLookup(oAS.getName(), &oAppearance);
-                else if (oN.dictGetLength() == 1)
-                    oN.dictGetVal(0, &oAppearance);
-                else
-                    oN.dictLookup("Off", &oAppearance);
-                oAS.free();
-            }
-            else
-                oN.copy(&oAppearance);
-            oN.free();
-        }
-        oAP.free();
-
-        if (oAppearance.isStream())
-        {
-        }
-        oAppearance.free();
-        */
 
         Object oMK;
-        if (oField.dictLookup("MK", &oMK) && oMK.isDict())
+        if (oField.dictLookup("MK", &oMK)->isDict())
         {
             // 6 - Цвет границ - BC. Даже если граница не задана BS/Border, то при наличии BC предоставляется граница по-умолчанию (сплошная, толщиной 1)
             if (oMK.dictLookup("BC", &oObj)->isArray())
@@ -1010,6 +985,17 @@ oObj.free();\
             oObj.free();
         }
         oMK.free();
+
+        // 9 - Значение по-умолчанию
+        if (pField->fieldLookup("DV", &oObj)->isString())
+        {
+            TextString* s = new TextString(oObj.getString());
+            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+            nFlags |= (1 << 8);
+            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+            delete s;
+        }
+        oObj.free();
 
         // Значение поля - V
         int nValueLength;
@@ -1204,6 +1190,14 @@ oObj.free();\
                 }
             }
             oOpt.free();
+
+            // 12 - Индекс верхнего элемента - TI
+            if (pField->fieldLookup("TI", &oObj)->isInt())
+            {
+                nFlags |= (1 << 11);
+                oRes.AddInt(oObj.getInt());
+            }
+            oObj.free();
 
             break;
         }
@@ -1515,6 +1509,10 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
         oRes.AddInt(npSubMatrix1);
         oRes.AddInt(npSubMatrix >> 32);
+
+        BYTE* pTextFormField = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
+        ((GlobalParamsAdaptor*)globalParams)->ClearTextFormField();
+        unsigned int nLength = NSWasm::CData::GetLen(pTextFormField);
     }
 
     globalParams->setDrawContent(bDrawContent);

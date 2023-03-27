@@ -562,10 +562,12 @@ void AcroForm::scanField(Object *fieldRef) {
 void AcroForm::draw(int pageNum, Gfx *gfx, GBool printing) {
   int i;
 
-  int formField = globalParams->getDrawFormField();
   for (i = 0; i < fields->getLength(); ++i) {
+#ifdef BUILDING_WASM_MODULE
+    int formField = globalParams->getDrawFormField();
     if (formField >= 0 && formField != i)
       continue;
+#endif
     ((AcroFormField *)fields->get(i))->draw(pageNum, gfx, printing);
   }
 }

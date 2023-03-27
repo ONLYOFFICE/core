@@ -408,10 +408,10 @@
 			rec["page"] = reader.readInt();
 			// Необходимо смещение полученных координат как у getStructure и viewer.navigate
 			rec["rect"] = {};
-			rec["rect"]["x1"] = reader.readDouble();
-			rec["rect"]["y1"] = reader.readDouble();
-			rec["rect"]["x2"] = reader.readDouble();
-			rec["rect"]["y2"] = reader.readDouble();
+			rec["rect"]["x1"] = parseFloat(reader.readString());
+			rec["rect"]["y1"] = parseFloat(reader.readString());
+			rec["rect"]["x2"] = parseFloat(reader.readString());
+			rec["rect"]["y2"] = parseFloat(reader.readString());
 			rec["alignment"] = reader.readInt();
 			rec["type"] = reader.readString();
 			rec["flag"] = reader.readInt();
@@ -462,6 +462,9 @@
 				for (let i = 0; i < n; ++i)
 					rec["BG"].push(reader.readDouble());
 			}
+			// Значение по-умолчанию - DV
+			if (flags & (1 << 8))
+				rec["defaultValue"] = reader.readString();
 
 			if (rec["type"] == "checkbox" || rec["type"] == "radiobutton" || rec["type"] == "button")
 			{
@@ -527,6 +530,9 @@
 							rec["opt"].push([opt1, opt2]);
 					}
 				}
+				// Индекс верхнего элемента - TI
+				if (flags & (1 << 11))
+					rec["TI"] = reader.readInt();
 				// 12.7.4.4
 				rec["editable"]          = rec["flag"] & (1 << 18); // Edit
 				rec["multipleSelection"] = rec["flag"] & (1 << 21); // MultiSelect

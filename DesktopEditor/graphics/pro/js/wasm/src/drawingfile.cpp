@@ -400,16 +400,20 @@ int main(int argc, char* argv[])
 			std::cout << "Page " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "X1 " << (double)nPathLength / 100.0 << ", ";
+			std::cout << "X1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Y1 " << (double)nPathLength / 100.0 << ", ";
+			std::cout << "Y1 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "X2 " << (double)nPathLength / 100.0 << ", ";
+			std::cout << "X2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Y2 " << (double)nPathLength / 100.0 << ", ";
+			std::cout << "Y2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "Q " << nPathLength << ", ";
@@ -502,6 +506,13 @@ int main(int argc, char* argv[])
 				}
 				std::cout << ", ";
 			}
+			if (nFlags & (1 << 8))
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "DV " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
 			if (sType == "checkbox" || sType == "radiobutton" || sType == "button")
 			{
 				std::cout << (nFlags & (1 << 9) ? "Yes" : "Off") << ", ";
@@ -590,6 +601,12 @@ int main(int argc, char* argv[])
 						std::cout << std::to_string(j) << " Opt2 " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 						i += nPathLength;
 					}
+				}
+				if (nFlags & (1 << 11))
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "TI " << nPathLength << ", ";
 				}
 			}
 			if (nFlags & (1 << 19))

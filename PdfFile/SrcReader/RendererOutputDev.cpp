@@ -3922,9 +3922,16 @@ namespace PdfReader
 								return;
 							}
 							m_pRenderer->put_FontPath(wsFileName);
+                            sFontPath = wsFileName;
 						}
                     }
                 }
+            }
+            if (globalParams->getDrawFormField() >= 0)
+            {
+                double dFontSize;
+                m_pRenderer->get_FontSize(&dFontSize);
+                ((GlobalParamsAdaptor*)globalParams)->AddTextFormField(wsUnicodeText, sFontPath, dFontSize);
             }
         #endif
 

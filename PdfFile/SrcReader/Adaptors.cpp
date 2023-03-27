@@ -32,6 +32,7 @@
 #include "Adaptors.h"
 #include "../lib/xpdf/NameToCharCode.h"
 #include "../lib/xpdf/TextString.h"
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
 
 void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
@@ -184,6 +185,39 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
     }
 
     return false;
+}
+
+void GlobalParamsAdaptor::AddTextFormField(const std::wstring& sText, const std::wstring& sFontName, double dFontSize)
+{
+    if (!m_arrTextFormField.empty())
+    {
+        TextFormField& tFF = m_arrTextFormField.back();
+        if (tFF.sFontName == sFontName && tFF.dFontSize == dFontSize)
+        {
+            tFF.sText += sText;
+            return;
+        }
+    }
+    m_arrTextFormField.push_back({sText, sFontName, dFontSize});
+}
+BYTE* GlobalParamsAdaptor::GetTextFormField()
+{
+    NSWasm::CData oRes;
+    oRes.SkipLen();
+
+    for (TextFormField& tFF : m_arrTextFormField)
+    {
+        std::string sText = U_TO_UTF8(tFF.sText);
+        std::string sFontName = U_TO_UTF8(tFF.sFontName);
+        oRes.WriteString((BYTE*)sText.c_str(), (unsigned int)sText.length());
+        oRes.WriteString((BYTE*)sFontName.c_str(), (unsigned int)sFontName.length());
+        oRes.AddDouble(tFF.dFontSize);
+    }
+
+    oRes.WriteLen();
+    BYTE* bRes = oRes.GetBuffer();
+    oRes.ClearWithoutAttack();
+    return bRes;
 }
 
 bool operator==(const Ref &a, const Ref &b)

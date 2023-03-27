@@ -188,6 +188,10 @@ namespace NSWasm
             unsigned int len = (unsigned int)m_lSizeCur;
             memcpy(m_pData, &len, sizeof(unsigned int));
         }
+        static unsigned int GetLen(BYTE* x)
+        {
+            return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
+        }
     };
 
     class CHChar

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -113,7 +113,7 @@ CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)
 			int nEmpty = 0;
 			for (int nIndex = 0, nGlyphIndex = 0; nIndex < m_nGlyphsCount; ++nIndex, ++nGlyphIndex)
 			{
-				int code = (int)pWchars[nIndex];
+                unsigned int code = (unsigned int)pWchars[nIndex];
 				if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < m_nGlyphsCount)
 				{
 					++nIndex;
@@ -130,7 +130,7 @@ CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)
 		{
 			for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
 			{
-				m_pGlyphsBuffer[nIndex].lUnicode = (long)pWchars[nIndex];
+                m_pGlyphsBuffer[nIndex].lUnicode = (unsigned int)pWchars[nIndex];
 				m_pGlyphsBuffer[nIndex].bBitmap  = false;
 			}
 		}
@@ -177,7 +177,7 @@ void CGlyphString::SetString(const unsigned int* pGids, const unsigned int& nGid
 
         for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
         {
-            m_pGlyphsBuffer[nIndex].lUnicode = (long)pGids[nIndex];
+            m_pGlyphsBuffer[nIndex].lUnicode = pGids[nIndex];
             m_pGlyphsBuffer[nIndex].bBitmap  = false;
         }
     }
@@ -226,7 +226,7 @@ void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 		{
 			for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
 			{
-				m_pGlyphsBuffer[nIndex].lUnicode = (long)pWchars[nIndex];
+                m_pGlyphsBuffer[nIndex].lUnicode = (unsigned int)pWchars[nIndex];
 				m_pGlyphsBuffer[nIndex].bBitmap  = false;
 			}
 		}
@@ -237,7 +237,7 @@ void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 	}
 }
 
-void CGlyphString::SetStringGID(const LONG& gid, float fX, float fY)
+void CGlyphString::SetStringGID(const unsigned int& gid, float fX, float fY)
 {
 	m_fX = fX + m_fTransX;
 	m_fY = fY + m_fTransY;

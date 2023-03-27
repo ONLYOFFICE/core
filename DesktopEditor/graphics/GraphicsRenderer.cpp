@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,7 +31,10 @@
  */
 #include "GraphicsRenderer.h"
 #include <algorithm>
+
+#ifndef GRAPHICS_DISABLE_METAFILE
 #include "../raster/Metafile/MetaFile.h"
+#endif
 
 #if 0
 static void LOGGING(char* buffer, ...)
@@ -698,7 +701,8 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
 	put_BrushType(c_BrushTypeSolid);
-		
+
+    m_oFont.StringGID = FALSE;
 	_SetFont();
 
 	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				
@@ -868,13 +872,14 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 	switch (lFillType)
 	{
 	case c_nWindingFillMode:
+    case c_nEvenOddFillMode:
 		{
-			m_pPath->SetRuler(false);
+            m_pPath->SetRuler((lFillType == c_nWindingFillMode) ? false : true);
 
 			CCacheImage* pCacheImage	= NULL;
 			Aggplus::CBrush* pBrush		= NULL;
 			
-			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
+			if (m_oBrush.Type == c_BrushTypeTexture)
 			{
 				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
 				switch (m_oBrush.TextureMode)
@@ -939,19 +944,21 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 					}
 				#else
 					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
-				#endif
+                #endif
 				}
 
 				if( pTextureBrush )
 				{
-					if( m_oBrush.Type == c_BrushTypePattern )
-					{
-						pTextureBrush->m_bUsePattern = TRUE;
-						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
-						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
-					}
-                    
 					pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
+
+                    if (m_oBrush.Rectable == 1)
+                    {
+                        pTextureBrush->m_bUseBounds = true;
+                        pTextureBrush->m_oBounds.left = m_oBrush.Rect.X;
+                        pTextureBrush->m_oBounds.top = m_oBrush.Rect.Y;
+                        pTextureBrush->m_oBounds.right = pTextureBrush->m_oBounds.left + m_oBrush.Rect.Width;
+                        pTextureBrush->m_oBounds.bottom = pTextureBrush->m_oBounds.top + m_oBrush.Rect.Height;
+                    }
 				}
 
 				pBrush = pTextureBrush;
@@ -965,104 +972,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 			RELEASEOBJECT(pBrush);
 			RELEASEINTERFACE(pCacheImage);
 			break;
-		}
-	case c_nEvenOddFillMode:
-		{
-			m_pPath->SetRuler(true);
-
-			CCacheImage* pCacheImage	= NULL;
-			Aggplus::CBrush* pBrush		= NULL;
-			
-			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
-			{
-				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
-				switch (m_oBrush.TextureMode)
-				{
-				case c_BrushTextureModeTile:
-					oMode = Aggplus::WrapModeTile;
-					break;
-				case c_BrushTextureModeTileCenter:
-					oMode = Aggplus::WrapModeTile;
-					break;
-				default:
-					break;
-				}
-				Aggplus::CBrushTexture* pTextureBrush = NULL;
-				
-				if (NULL != m_pCache)
-				{
-                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
-
-					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
-				}
-				else
-				{
-				#ifdef BUILDING_WASM_MODULE
-					if (m_oBrush.TexturePath.find(L"data:") == 0)
-					{
-						bool bIsOnlyOfficeHatch = false;
-						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
-							bIsOnlyOfficeHatch = true;
-						std::string sBase64MultyByte(m_oBrush.TexturePath.begin(), m_oBrush.TexturePath.end());
-						sBase64MultyByte.erase(0, sBase64MultyByte.find(',') + 1);
-						int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
-						BYTE* pImageData = new BYTE[nDecodeLen + 64];
-						if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
-						{
-							CBgraFrame oFrame;
-							if (bIsOnlyOfficeHatch)
-							{
-								int nSize = (int)sqrt(nDecodeLen >> 2);
-								oFrame.put_IsRGBA(true);
-								oFrame.put_Data(pImageData);
-								oFrame.put_Width(nSize);
-								oFrame.put_Height(nSize);
-								oFrame.put_Stride(4 * nSize);
-							}
-							else
-							{
-								oFrame.put_IsRGBA(false);
-								oFrame.Decode(pImageData, nDecodeLen);
-								RELEASEARRAYOBJECTS(pImageData);
-							}
-							// pImage отдается pTextureBrush и освобождается вместе с pBrush
-							Aggplus::CImage* pImage = new Aggplus::CImage();
-							pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
-							oFrame.ClearNoAttack();
-							pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
-							pTextureBrush->m_bReleaseImage = TRUE;
-						}
-						else
-							RELEASEARRAYOBJECTS(pImageData);
-					}
-				#else
-					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
-				#endif
-				}
-
-				if( pTextureBrush )
-				{
-					if( m_oBrush.Type == c_BrushTypePattern )
-					{
-						pTextureBrush->m_bUsePattern = TRUE;
-						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
-						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
-					}
-				}
-
-				pBrush = pTextureBrush;
-			}
-			else
-			{
-				pBrush = CreateBrush(&m_oBrush);
-			}
-
-			m_pRenderer->FillPath(pBrush, m_pPath);
-			RELEASEOBJECT(pBrush);
-			RELEASEINTERFACE(pCacheImage);
-
-			break;
-		}
+        }
 	default:
 		break;
 	};
@@ -1246,6 +1156,11 @@ HRESULT CGraphicsRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
     if (c_nDarkMode == lType && m_pRenderer)
         m_pRenderer->m_bIsDarkMode = (1 == lCommand);
+	if (c_nUseDictionaryFonts == lType && m_pFontManager)
+		m_pFontManager->SetUseCorrentFontByName((1 == lCommand) ? true : false);
+	if (c_nPenWidth0As1px == lType && m_pRenderer)
+		m_pRenderer->m_bIs0PenWidthAs1px = (1 == lCommand) ? true : false;
+
 	return S_OK;
 }
 HRESULT CGraphicsRenderer::CommandDouble(const LONG& lType, const double& dCommand)
@@ -1531,4 +1446,11 @@ void CGraphicsRenderer::Restore()
     }
 
     RELEASEOBJECT(pState);
+}
+void CGraphicsRenderer::put_BlendMode(const unsigned int nBlendMode)
+{
+    if (NULL != m_pRenderer)
+    {
+        m_pRenderer->m_nBlendMode = nBlendMode;
+    }
 }

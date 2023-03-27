@@ -28,3 +28,11 @@ SOURCES += \
     $$CORE_ROOT_DIR/Common/DocxFormat/Source/Base/unicode_util.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build
+
+#CONFIG += use_test_html_renderer
+use_test_html_renderer {
+    DEFINES += TEST_FOR_HTML_RENDERER_TEXT
+
+    HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
+	SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
+}

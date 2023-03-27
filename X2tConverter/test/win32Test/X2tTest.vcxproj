@@ -22,28 +22,29 @@
     <ProjectGuid>{355A22F4-1394-4B82-B2F1-FF0ECFB9E3EF}</ProjectGuid>
     <RootNamespace>X2tTest</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -66,14 +67,14 @@
     <_ProjectFileVersion>14.0.23107.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <OutDir>$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(IncludePath)</IncludePath>
     <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\..\Common\3dParty\boost\build\win_64\include;$(IncludePath)</IncludePath>
@@ -83,6 +84,8 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>..\..\..\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\..\Common\3dParty\boost\build\win_32\lib;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);$(NETFXKitsDir)Lib\um\x86</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -92,15 +95,14 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_RWSTD_NO_SETRLIMIT;WIN32;_DEBUG;_CONSOLE;FILE_FORMAT_CHECKER_WITH_MACRO;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <AdditionalIncludeDirectories>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <ProgramDataBaseFileName>$(IntDir)X2tTestD.pdb</ProgramDataBaseFileName>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;_RWSTD_NO_SETRLIMIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -114,33 +116,29 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_RWSTD_NO_SETRLIMIT;_DEBUG;_CONSOLE;FILE_FORMAT_CHECKER_WITH_MACRO;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;DONT_WRITE_EMBEDDED_FONTS;CRYPTOPP_DISABLE_ASM;DISABLE_TYPE_MISMATCH;CRYPTOPP_BOOL_ALIGN16_ENABLED;__WORDSIZE=32;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
+      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;_RWSTD_NO_SETRLIMIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX64</TargetMachine>
       <AdditionalOptions>/INCREMENTAL:NO %(AdditionalOptions)</AdditionalOptions>
-      <ImportLibrary>
-      </ImportLibrary>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DONT_WRITE_EMBEDDED_FONTS;_RWSTD_NO_SETRLIMIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>C:\_Work\core\Common\3dParty\boost\build\win_32\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -170,174 +168,76 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\CustomXmlWriter.cpp" />
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.cpp" />
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="..\..\..\Common\3dParty\pole\pole.cpp" />
     <ClCompile Include="..\..\..\Common\OfficeFileFormatChecker2.cpp" />
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Common\Common.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Reader\BinaryWriter.cpp" />
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Reader\CommonWriter.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Reader\CSVReader.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Writer\BinaryReader.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="..\..\..\XlsxSerializerCom\Writer\CSVWriter.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-      </PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\..\src\ASCConverters.cpp" />
     <ClCompile Include="..\..\src\cextracttools.cpp" />
     <ClCompile Include="X2tTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\ReaderClasses.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\Readers.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinEquationWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinReaderWriterDefines.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\BinWriter\BinWriters.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\ChartWriter.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.h" />
-    <ClInclude Include="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Common\BinReaderWriterDefines.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Common\Common.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Reader\BinaryWriter.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Reader\CommonWriter.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Reader\CSVReader.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Writer\BinaryCommonReader.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Writer\BinaryReader.h" />
-    <ClInclude Include="..\..\..\XlsxSerializerCom\Writer\CSVWriter.h" />
     <ClInclude Include="..\..\src\ASCConverters.h" />
     <ClInclude Include="..\..\src\cextracttools.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ASCOfficeDocFile\DocFormatLib\Win32\DocFormatLib.vcxproj">
+    <ProjectReference Include="..\..\..\Common\3dParty\cryptopp\vs2019\cryptlib.vcxproj">
+      <Project>{c39f4b46-6e89-4074-902e-ca57073044d2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\cfcpp\CompoundFileLib.vcxproj">
+      <Project>{fa22bab4-e93e-459d-8a5f-16764fbbed40}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\MsBinaryFile\Projects\DocFormatLib\Windows\DocFormatLib.vcxproj">
       <Project>{c5371405-338f-4b70-83bd-2a5cdf64f383}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFileW\source\win32\OdfFormat.vcxproj">
-      <Project>{e5a67556-44da-4481-8f87-0a3aedbd20dd}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFileW\source\win32\Oox2OdfConverter.vcxproj">
-      <Project>{bee01b53-244a-44e6-8947-ed9342d9247e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\cpcommon.vcxproj">
-      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\cpodf.vcxproj">
-      <Project>{50e20601-4a8d-4afb-8870-63828d328429}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\cpxml.vcxproj">
-      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeOdfFile\win32\formulasconvert.vcxproj">
-      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficePPTFile\PPTFormatLib\Win32\PPTFormatLib.vcxproj">
+    <ProjectReference Include="..\..\..\MsBinaryFile\Projects\PPTFormatLib\Windows\PPTFormatLib.vcxproj">
       <Project>{7b27e40e-f70a-4a74-a77c-0944d7931d15}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficePPTXFile\PPTXLib\PPTXFormat.vcxproj">
-      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
+    <ProjectReference Include="..\..\..\MsBinaryFile\Projects\VbaFormatLib\Windows\VbaFormat.vcxproj">
+      <Project>{041dd428-2d5c-4d97-8ab7-7207f3d5b801}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeRtfFile\RtfFormatLib\Win32\RtfFormatLib.vcxproj">
-      <Project>{af2d00a7-a351-4700-ae88-c1d9ade29345}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeTxtFile\TxtXmlFormatLib\Win32\TxtXmlFormatLib.vcxproj">
-      <Project>{dacbe6ca-e089-47d1-8ce7-c7db59c15417}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\XlsFormat.vcxproj">
+    <ProjectReference Include="..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsFormat.vcxproj">
       <Project>{77ddc8d7-5b12-4ff2-9629-26aebca8436d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\ASCOfficeXlsFile2\source\win32\XlsXlsxConverter.vcxproj">
+    <ProjectReference Include="..\..\..\MsBinaryFile\Projects\XlsFormatLib\Windows\XlsXlsxConverter.vcxproj">
       <Project>{cbedd0d1-10a8-45c1-af81-8492f40964ca}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\3dParty\cryptopp\cryptlib.vcxproj">
-      <Project>{3423ec9a-52e4-4a4d-9753-edebc38785ef}</Project>
+    <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\cpcommon.vcxproj">
+      <Project>{609ed938-3ca8-4bed-b363-25096d4c4812}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\DocxFormat\Projects\DocxFormatLib.vcxproj">
-      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+    <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\cpodf.vcxproj">
+      <Project>{50e20601-4a8d-4afb-8870-63828d328429}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\DocxFormat\Projects\XlsbFormatLib.vcxproj">
-      <Project>{13e13907-49da-482e-ad58-026d06a5cd11}</Project>
+    <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\cpxml.vcxproj">
+      <Project>{41bed424-4eaf-4053-8a5f-1e2a387d53d1}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\formulasconvert.vcxproj">
+      <Project>{94954a67-a853-43b1-a727-6ef2774c5a6a}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\OdfFormatW.vcxproj">
+      <Project>{e5a67556-44da-4481-8f87-0a3aedbd20dd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OdfFile\Projects\Windows\Oox2OdfConverter.vcxproj">
+      <Project>{bee01b53-244a-44e6-8947-ed9342d9247e}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\OfficeCryptReader\win32\ECMACryptReader.vcxproj">
       <Project>{c27e9a9f-3a17-4482-9c5f-bf15c01e747c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OOXML\Projects\Windows\BinaryFormatLib\BinaryFormatLib.vcxproj">
+      <Project>{cd359215-e183-4ea7-b986-42868b10d8b8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OOXML\Projects\Windows\DocxFormatLib\DocxFormatLib.vcxproj">
+      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OOXML\Projects\Windows\PPTXFormatLib\PPTXFormat.vcxproj">
+      <Project>{36636678-ae25-4be6-9a34-2561d1bcf302}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\OOXML\Projects\Windows\XlsbFormatLib\XlsbFormatLib.vcxproj">
+      <Project>{13e13907-49da-482e-ad58-026d06a5cd11}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\RtfFile\Projects\Windows\Win32\RtfFormatLib.vcxproj">
+      <Project>{af2d00a7-a351-4700-ae88-c1d9ade29345}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TxtFile\Projects\Windows\TxtXmlFormatLib.vcxproj">
+      <Project>{dacbe6ca-e089-47d1-8ce7-c7db59c15417}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

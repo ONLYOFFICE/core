@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -51,10 +51,6 @@
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 
-#ifdef BUILDING_WASM_MODULE
-#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-#endif
-
 class CDjVuFileImplementation
 {
 private:
@@ -77,12 +73,11 @@ public:
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
     void         ConvertToPdf(const std::wstring& wsDstPath);
+    std::wstring GetInfo();
 
-#ifdef BUILDING_WASM_MODULE
     BYTE*        GetStructure();
     BYTE*        GetPageGlyphs(int nPageIndex);
     BYTE*        GetPageLinks (int nPageIndex);
-#endif
 
 private:
 

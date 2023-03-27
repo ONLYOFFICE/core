@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,7 +34,7 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 
-#include "../PdfWriter/PdfRenderer.h"
+#include "../PdfFile/PdfFile.h"
 
 #include "../DesktopEditor/graphics/pro/Fonts.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
@@ -47,9 +47,10 @@
 
 #include <vector>
 
+#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+
 #ifdef BUILDING_WASM_MODULE
 #define DISABLE_TEMP_DIRECTORY
-#include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 #endif
 
 namespace NSDjvu
@@ -235,7 +236,8 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 }
 void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 {
-    CPdfRenderer oPdf(m_pApplicationFonts);
+    CPdfFile oPdf(m_pApplicationFonts);
+    oPdf.CreatePdf();
 	
 	bool bBreak = false;
 	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)
@@ -258,8 +260,25 @@ void CDjVuFileImplementation::ConvertToPdf(const std::wstring& wsDstPath)
 
 	oPdf.SaveToFile(wsDstPath);
 }
+std::wstring CDjVuFileImplementation::GetInfo()
+{
+    std::wstring sRes = L"{";
 
-#ifdef BUILDING_WASM_MODULE
+    double nW = 0;
+    double nH = 0;
+    double nDpi = 0;
+    GetPageInfo(0, &nW, &nH, &nDpi, &nDpi);
+    sRes += L"\"PageWidth\":";
+    sRes += std::to_wstring((int)(nW * 100));
+    sRes += L",\"PageHeight\":";
+    sRes += std::to_wstring((int)(nH * 100));
+    sRes += L",\"NumberOfPages\":";
+    sRes += std::to_wstring(GetPagesCount());
+    sRes += L"}";
+
+    return sRes;
+}
+
 void getBookmars(const GP<DjVmNav>& nav, int& pos, int count, NSWasm::CData& out, int level)
 {
     while (count > 0 && pos < nav->getBookMarkCount())
@@ -404,7 +423,6 @@ BYTE* CDjVuFileImplementation::GetPageLinks(int nPageIndex)
     catch (...) {}
     return NULL;
 }
-#endif
 
 void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {
@@ -624,7 +642,7 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 	LONG lImageWidth  = pPage->get_real_width();
 	LONG lImageHeight = pPage->get_real_height();
 
-	CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+	CPdfFile* pPdf = (CPdfFile*)pRenderer;
 
 	if (pPage->is_legal_photo())
 	{

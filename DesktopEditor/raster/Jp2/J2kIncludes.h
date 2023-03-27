@@ -26,330 +26,206 @@ namespace Jpeg2000
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// Jpeg2000 -> Image
 	//-------------------------------------------------------------------------------------------------------------------------------
+    Image* Jp2ToImage(CReader *pStream, DecoderParams* pDecoderParams)
+    {
+        DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
+        if (!pDInfo)
+            return NULL;
+
+        pDInfo->bIsDecompressor = true;
+        pDInfo->pJp2 = (void*)Jp2_CreateDecompress((PCommon)pDInfo);
+        if (!pDInfo->pJp2)
+        {
+            Free(pDInfo);
+            return NULL;
+        }
+
+        pDInfo->pJ2k = NULL;
+        pDInfo->eCodecFormat = codecJP2;
+
+        Jp2_SetupDecoder((Jp2Stream*)pDInfo->pJp2, pDecoderParams);
+        if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
+        {
+            Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
+            Free(pDInfo);
+            return NULL;
+        }
+
+        Image *pImage = Jp2_Decode((Jp2Stream*)pDInfo->pJp2, pStream); // в случае ошибки pImage = NULL
+        Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
+
+        Free(pDInfo);
+        return pImage;
+    }
+    Image* J2kToImage(CReader *pStream, DecoderParams* pDecoderParams)
+    {
+        DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
+        if (!pDInfo)
+            return NULL;
+
+        pDInfo->bIsDecompressor = true;
+        pDInfo->pJ2k = (void*)J2k_CreateDecompress((PCommon)pDInfo);
+        if (!pDInfo->pJ2k)
+        {
+            Free(pDInfo);
+            return NULL;
+        }
+
+        pDInfo->pJp2 = NULL;
+        pDInfo->eCodecFormat = codecJ2K;
+
+        J2k_SetupDecoder((J2kCodestream*)pDInfo->pJ2k, pDecoderParams);
+        if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
+        {
+            J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
+            Free(pDInfo);
+            return NULL;
+        }
+
+        Image *pImage = J2k_Decode((J2kCodestream*)pDInfo->pJ2k, pStream); // в случае ошибки pImage = NULL
+        J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
+
+        Free(pDInfo);
+
+        return pImage;
+    }
+    Image* JptToImage(CReader *pStream, DecoderParams* pDecoderParams)
+    {
+        DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
+        if (!pDInfo)
+            return NULL;
+
+        pDInfo->bIsDecompressor = true;
+        pDInfo->pJ2k = (void*)J2k_CreateDecompress((PCommon)pDInfo);
+        if (!pDInfo->pJ2k)
+        {
+            Free(pDInfo);
+            return NULL;
+        }
+
+        pDInfo->pJp2 = NULL;
+        pDInfo->eCodecFormat = codecJPT;
+
+        J2k_SetupDecoder((J2kCodestream*)pDInfo->pJ2k, pDecoderParams);
+        if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
+        {
+            J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
+            Free(pDInfo);
+            return NULL;
+        }
+
+        Image *pImage = J2k_DecodeJptStream((J2kCodestream*)pDInfo->pJ2k, pStream); // в случае ошибки pImage = NULL
+        J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
+
+        Free(pDInfo);
+        return pImage;
+    }
+    Image* Mj2ToImage(CReader *pStream, DecoderParams* pDecoderParams)
+    {
+        DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
+        if (!pDInfo)
+            return NULL;
+
+        pDInfo->bIsDecompressor = true;
+        pDInfo->pMj2 = (void*)Mj2_CreateDecompress((PCommon)pDInfo);
+        if (!pDInfo->pMj2)
+        {
+            Free(pDInfo);
+            return NULL;
+        }
+
+        pDInfo->pJ2k         = ((Mj2_Movie*)pDInfo->pMj2)->pJ2k;
+        pDInfo->eCodecFormat = codecMj2;
+
+        Mj2_SetupDecoder((Mj2_Movie*)pDInfo->pMj2, pDecoderParams);
+        if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
+        {
+            Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
+            Free(pDInfo);
+            return NULL;
+        }
+
+        Image *pImage = Mj2_Decode((Mj2_Movie*)pDInfo->pMj2, pStream); // в случае ошибки pImage = NULL
+        Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
+
+        Free(pDInfo);
+        return pImage;
+    }
+
+    // From files
 	Image* Jp2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pJp2 = (void*)Jp2_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pJp2)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJ2k = NULL;
-		pDInfo->eCodecFormat = codecJP2;
-
-		Jp2_SetupDecoder((Jp2Stream*)pDInfo->pJp2, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
-		if (!pStream)
-		{
-			Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = Jp2_Decode((Jp2Stream*)pDInfo->pJp2, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
-
-		Free(pDInfo);
-		return pImage;
+        CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
+        if (!pStream)
+            return NULL;
+        Image* pImage = Jp2ToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	Image* J2kToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pJ2k = (void*)J2k_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pJ2k)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJp2 = NULL;
-		pDInfo->eCodecFormat = codecJ2K;
-
-		J2k_SetupDecoder((J2kCodestream*)pDInfo->pJ2k, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
-
-		if (!pStream)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = J2k_Decode((J2kCodestream*)pDInfo->pJ2k, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-
-		Free(pDInfo);
-
-		return pImage;
+        CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
+        if (!pStream)
+            return NULL;
+        Image* pImage = J2kToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	Image* JptToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pJ2k = (void*)J2k_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pJ2k)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJp2 = NULL;
-		pDInfo->eCodecFormat = codecJPT;
-
-		J2k_SetupDecoder((J2kCodestream*)pDInfo->pJ2k, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
-		if (!pStream)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = J2k_DecodeJptStream((J2kCodestream*)pDInfo->pJ2k, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-
-		Free(pDInfo);
-		return NULL;
+        CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
+        if (!pStream)
+            return NULL;
+        Image* pImage = JptToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	Image* Mj2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pMj2 = (void*)Mj2_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pMj2)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJ2k         = ((Mj2_Movie*)pDInfo->pMj2)->pJ2k;
-		pDInfo->eCodecFormat = codecMj2;
-
-		Mj2_SetupDecoder((Mj2_Movie*)pDInfo->pMj2, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
-		if (!pStream)
-		{
-			Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = Mj2_Decode((Mj2_Movie*)pDInfo->pMj2, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
-
-		Free(pDInfo);
-		return pImage;
+        CReader *pStream = (CReader *)new CReaderFile(wsFileName, 1);
+        if (!pStream)
+            return NULL;
+        Image* pImage = Mj2ToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 
+    // From buffer
 	Image* Jp2ToImage(BYTE* pBuffer, int nSize, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pJp2 = (void*)Jp2_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pJp2)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJ2k = NULL;
-		pDInfo->eCodecFormat = codecJP2;
-
-		Jp2_SetupDecoder((Jp2Stream*)pDInfo->pJp2, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
-		if (!pStream)
-		{
-			Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = Jp2_Decode((Jp2Stream*)pDInfo->pJp2, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
-
-		Free(pDInfo);
-		return pImage;
+        CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
+        if (!pStream)
+            return NULL;
+        Image* pImage = Jp2ToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	Image* J2kToImage(BYTE* pBuffer, int nSize, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pJ2k = (void*)J2k_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pJ2k)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJp2 = NULL;
-		pDInfo->eCodecFormat = codecJ2K;
-
-		J2k_SetupDecoder((J2kCodestream*)pDInfo->pJ2k, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
-
-		if (!pStream)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = J2k_Decode((J2kCodestream*)pDInfo->pJ2k, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-
-		Free(pDInfo);
-
-		return pImage;
+        CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
+        if (!pStream)
+            return NULL;
+        Image* pImage = J2kToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	Image* JptToImage(BYTE* pBuffer, int nSize, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pJ2k = (void*)J2k_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pJ2k)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJp2 = NULL;
-		pDInfo->eCodecFormat = codecJPT;
-
-		J2k_SetupDecoder((J2kCodestream*)pDInfo->pJ2k, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
-		if (!pStream)
-		{
-			J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = J2k_DecodeJptStream((J2kCodestream*)pDInfo->pJ2k, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
-
-		Free(pDInfo);
-		return NULL;
+        CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
+        if (!pStream)
+            return NULL;
+        Image* pImage = JptToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	Image* Mj2ToImage(BYTE* pBuffer, int nSize, DecoderParams* pDecoderParams)
 	{
-		DInfo *pDInfo = (DInfo*)Malloc(sizeof(DInfo));
-		if (!pDInfo)
-			return NULL;
-
-		pDInfo->bIsDecompressor = true;
-		pDInfo->pMj2 = (void*)Mj2_CreateDecompress((PCommon)pDInfo);
-		if (!pDInfo->pMj2)
-		{
-			Free(pDInfo);
-			return NULL;
-		}
-
-		pDInfo->pJ2k = ((Mj2_Movie*)pDInfo->pMj2)->pJ2k;
-		pDInfo->eCodecFormat = codecMj2;
-
-		Mj2_SetupDecoder((Mj2_Movie*)pDInfo->pMj2, pDecoderParams);
-		if (JP2_ERROR_NO_ERROR != pDInfo->nErrorCode)
-		{
-			Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
-		if (!pStream)
-		{
-			Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
-			Free(pDInfo);
-			return NULL;
-		}
-
-		Image *pImage = Mj2_Decode((Mj2_Movie*)pDInfo->pMj2, pStream); // в случае ошибки pImage = NULL
-		delete (pStream);
-		Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
-
-		Free(pDInfo);
-		return pImage;
+        CReader *pStream = (CReader *)new CReaderStream(pBuffer, nSize);
+        if (!pStream)
+            return NULL;
+        Image* pImage = Mj2ToImage(pStream, pDecoderParams);
+        delete pStream;
+        return pImage;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// Image -> Jpeg2000

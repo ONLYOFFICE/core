@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,17 +32,14 @@
 #include "./MetafileToGraphicsRenderer.h"
 #include "./MetafileToRendererCheck.h"
 #include "GraphicsRenderer.h"
+#include "../common/StringExt.h"
 
 namespace NSOnlineOfficeBinToPdf
 {
     class CMetafileToRenderterRaster_private
     {
     public:
-        std::wstring wsHtmlPlace;
-        std::wstring wsThemesPlace;
-        std::wstring wsTempDir;
-
-        CApplicationFonts* appFonts;
+		NSFonts::IApplicationFonts* appFonts;
 
         int m_nRasterFormat;
         int m_nSaveType; // 0 = stretch, 1 = aspect (width == maxsize)
@@ -54,16 +51,9 @@ namespace NSOnlineOfficeBinToPdf
         double m_dDpiX;
         double m_dDpiY;
 
-        std::vector<std::wstring> m_arTempFiles;
-
     public:
         CMetafileToRenderterRaster_private()
         {
-            wsHtmlPlace = L"";
-            wsThemesPlace = L"";
-
-            wsTempDir = L"";
-
             appFonts = NULL;
 
             m_nRasterFormat = 4;
@@ -78,14 +68,8 @@ namespace NSOnlineOfficeBinToPdf
             m_dDpiY = 96.0;
         }
 
-        ~CMetafileToRenderterRaster_private()
+		~CMetafileToRenderterRaster_private()
         {
-            for (std::vector<std::wstring>::iterator i = m_arTempFiles.begin(); i != m_arTempFiles.end(); i++)
-            {
-                std::wstring sPath = *i;
-                if (NSFile::CFileBinary::Exists(sPath))
-                    NSFile::CFileBinary::Remove(sPath);
-            }
         }
     };
 
@@ -96,92 +80,6 @@ namespace NSOnlineOfficeBinToPdf
     CMetafileToRenderterRaster::~CMetafileToRenderterRaster()
     {
         RELEASEOBJECT(m_internal);
-    }
-
-    std::wstring CMetafileToRenderterRaster::GetImagePath(const std::wstring& sImagePath)
-    {
-        std::wstring wsTempString = sImagePath;
-        if (0 == wsTempString.find(L"data:"))
-        {
-            try
-            {
-                int nFind = wsTempString.find(L",");
-                wsTempString = wsTempString.substr(nFind + 1);
-
-                std::wstring sTempDirectory = m_internal->wsTempDir;
-                if (sTempDirectory.empty())
-                    sTempDirectory = NSFile::CFileBinary::GetTempPath();
-
-                std::wstring sTempFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(sTempDirectory, L"IMG");
-                m_internal->m_arTempFiles.push_back(sTempFilePath);
-
-                std::wstring wsBase64TempFile = sTempFilePath;
-                std::string sBase64MultyByte(wsTempString.begin(), wsTempString.end());
-
-                int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
-                BYTE* pImageBuffer = new BYTE[nBufferLen + 64];
-
-                if (NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageBuffer, &nBufferLen))
-                {
-                    NSFile::CFileBinary oFile;
-                    if (oFile.CreateFileW(wsBase64TempFile))
-                    {
-                        oFile.WriteFile(pImageBuffer, nBufferLen);
-                        oFile.CloseFile();
-                        wsTempString = wsBase64TempFile;
-                    }
-                }
-                else throw;
-            }
-            catch (...)
-            {
-            }
-        }
-        else
-        {
-            if (0 != wsTempString.find(L"http:")
-                && 0 != wsTempString.find(L"https:")
-                && 0 != wsTempString.find(L"ftp:")
-                && 0 != wsTempString.find(L"file:"))
-            {
-                if (0 == wsTempString.find(L"theme"))
-                {
-                    if (L"" != m_internal->wsThemesPlace)
-                        wsTempString = m_internal->wsThemesPlace + L"/" + wsTempString;
-                }
-                else
-                {
-                    if (m_internal->wsHtmlPlace.length() > 0)
-                    {
-                        if (0 == wsTempString.find(L"media") || NSFile::CFileBinary::Exists(m_internal->wsHtmlPlace + L"/" + wsTempString))
-                            wsTempString = m_internal->wsHtmlPlace + L"/" + wsTempString;
-                        else
-                            wsTempString = m_internal->wsHtmlPlace + L"/media/" + wsTempString;
-                    }
-
-                    std::wstring wsSvgExt(L".svg");
-                    if (0 == wsTempString.compare(wsTempString.length() - wsSvgExt.length(), std::wstring::npos, wsSvgExt))
-                    {
-                        std::wstring wsTestPath = wsTempString.substr(0, wsTempString.length() - wsSvgExt.length());
-                        if (NSFile::CFileBinary::Exists(wsTestPath + L".emf"))
-                            wsTempString = wsTestPath + L".emf";
-                        else if (NSFile::CFileBinary::Exists(wsTestPath + L".wmf"))
-                            wsTempString = wsTestPath + L".wmf";
-                    }
-                }
-
-                NSStringExt::Replace(wsTempString, L"\\", L"/");
-            }
-
-            if (0 == wsTempString.find(L"file:///"))
-            {
-                // TODO: под linux код неправильный
-                NSStringExt::Replace(wsTempString, L"file:///", L"");
-                NSStringExt::Replace(wsTempString, L"\\", L"/");
-            }
-        }
-
-        return wsTempString;
     }
 
     bool CMetafileToRenderterRaster::ConvertBuffer(BYTE* pBuffer, LONG lBufferLen)
@@ -208,8 +106,8 @@ namespace NSOnlineOfficeBinToPdf
         if (m_internal->m_bIsOnlyFirst)
             nPagesCount = 1;
 
-        CFontManager* pFontManager = (CFontManager*)m_internal->appFonts->GenerateFontManager();
-        CFontsCache* pFontsCache = new CFontsCache();
+		NSFonts::IFontManager* pFontManager = m_internal->appFonts->GenerateFontManager();
+		NSFonts::IFontsCache* pFontsCache = NSFonts::NSFontCache::Create();
         pFontsCache->SetStreams(m_internal->appFonts->GetStreams());
         pFontManager->SetOwnerCache(pFontsCache);
 
@@ -220,6 +118,10 @@ namespace NSOnlineOfficeBinToPdf
             CBgraFrame oFrame;
             int nRasterW = m_internal->m_nRasterW;
             int nRasterH = m_internal->m_nRasterH;
+
+            int nOffsetX = 0;
+            int nResultW = nRasterW;
+            int nResultH = nRasterH;
 
             if (1 == m_internal->m_nSaveType)
             {
@@ -241,6 +143,24 @@ namespace NSOnlineOfficeBinToPdf
 
                 nRasterW = (int)((w * m_internal->m_dDpiX / 25.4) + 0.5);
                 nRasterH = (int)((h * m_internal->m_dDpiY / 25.4) + 0.5);
+            }
+            else if (3 == m_internal->m_nSaveType)
+            {
+                double w = oInfo.arSizes[nPageIndex].width;
+                double h = oInfo.arSizes[nPageIndex].height;
+
+                double dKoef1 = nRasterW / w;
+                double dKoef2 = nRasterH / h;
+
+                if (dKoef1 > dKoef2)
+                {
+                    nRasterH = (int)(dKoef1 * h) + 1;
+                }
+                else
+                {
+                    nRasterW = (int)(dKoef2 * w) + 1;
+                    nOffsetX = (nRasterW - nResultW) >> 1;
+                }
             }
 
             oFrame.put_Width(nRasterW);
@@ -264,6 +184,36 @@ namespace NSOnlineOfficeBinToPdf
             LONG nLen = lBufferLen - ((LONG)(pBufferPage - pBuffer));
             NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pBufferPage, nLen, this);
 
+            if (3 == m_internal->m_nSaveType)
+            {
+                int nStride = 4 * nResultW;
+                BYTE* pDataResult = new BYTE[nStride * nResultH];
+
+                if (0 == nOffsetX)
+                {
+                    memcpy(pDataResult, pDataRaster, nStride * nResultH);
+                }
+                else
+                {
+                    BYTE* pDataCopy = pDataRaster + 4 * nOffsetX;
+                    BYTE* pDataDst = pDataResult;
+                    int nStrideSrc = 4 * nRasterW;
+                    for (int i = 0; i < nResultH; ++i)
+                    {
+                        memcpy(pDataDst, pDataCopy, nStride);
+                        pDataCopy += nStrideSrc;
+                        pDataDst += nStride;
+                    }
+                }
+
+                oFrame.put_Data(pDataResult);
+                oFrame.put_Width(nResultW);
+                oFrame.put_Height(nResultH);
+                oFrame.put_Stride(nStride);
+
+                RELEASEARRAYOBJECTS(pDataRaster);
+            }
+
             if (m_internal->m_bIsOnlyFirst)
                 oFrame.SaveFile(sMain + sExt, m_internal->m_nRasterFormat);
             else
@@ -274,33 +224,6 @@ namespace NSOnlineOfficeBinToPdf
         RELEASEINTERFACE(pImagesCache);
 
         return true;
-    }
-
-    std::wstring CMetafileToRenderterRaster::GetHtmlPlace()
-    {
-        return m_internal->wsHtmlPlace;
-    }
-    void CMetafileToRenderterRaster::SetHtmlPlace(const std::wstring& value)
-    {
-        m_internal->wsHtmlPlace = value;
-    }
-
-    std::wstring CMetafileToRenderterRaster::GetThemesPlace()
-    {
-        return m_internal->wsThemesPlace;
-    }
-    void CMetafileToRenderterRaster::SetThemesPlace(const std::wstring& value)
-    {
-        m_internal->wsThemesPlace = value;
-    }
-
-    std::wstring CMetafileToRenderterRaster::GetTempDir()
-    {
-        return m_internal->wsTempDir;
-    }
-    void CMetafileToRenderterRaster::SetTempDir(const std::wstring& value)
-    {
-        m_internal->wsTempDir = value;
     }
 
     std::wstring CMetafileToRenderterRaster::GetFileName()
@@ -314,7 +237,7 @@ namespace NSOnlineOfficeBinToPdf
 
     void CMetafileToRenderterRaster::SetApplication(NSFonts::IApplicationFonts* pFonts)
     {
-        m_internal->appFonts = (CApplicationFonts*)pFonts;
+		m_internal->appFonts = pFonts;
     }
 
     int CMetafileToRenderterRaster::GetRasterFormat()

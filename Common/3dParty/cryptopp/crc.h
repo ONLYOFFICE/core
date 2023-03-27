@@ -12,7 +12,7 @@ NAMESPACE_BEGIN(CryptoPP)
 
 const word32 CRC32_NEGL = 0xffffffffL;
 
-#ifdef CRYPTOPP_LITTLE_ENDIAN
+#if (CRYPTOPP_LITTLE_ENDIAN)
 #define CRC32_INDEX(c) (c & 0xff)
 #define CRC32_SHIFTED(c) (c >> 8)
 #else
@@ -25,16 +25,24 @@ const word32 CRC32_NEGL = 0xffffffffL;
 class CRC32 : public HashTransformation
 {
 public:
-	CRYPTOPP_CONSTANT(DIGESTSIZE = 4)
+	CRYPTOPP_CONSTANT(DIGESTSIZE = 4);
 	CRC32();
 	void Update(const byte *input, size_t length);
 	void TruncatedFinal(byte *hash, size_t size);
 	unsigned int DigestSize() const {return DIGESTSIZE;}
-    CRYPTOPP_STATIC_CONSTEXPR const char* StaticAlgorithmName() {return "CRC32";}
-    std::string AlgorithmName() const {return StaticAlgorithmName();}
+	CRYPTOPP_STATIC_CONSTEXPR const char* StaticAlgorithmName() {return "CRC32";}
+	std::string AlgorithmName() const {return StaticAlgorithmName();}
 
+	/// \brief Updates a CRC with additional input
+	/// \param b the additional input as a byte
 	void UpdateByte(byte b) {m_crc = m_tab[CRC32_INDEX(m_crc) ^ b] ^ CRC32_SHIFTED(m_crc);}
-	byte GetCrcByte(size_t i) const {return ((byte *)&(m_crc))[i];}
+
+	/// \brief Retrieves the i-th byte of the CRC
+	/// \param i the additional input as a byte
+	/// \return the byte at the i-th position
+	byte GetCrcByte(size_t i) const {return reinterpret_cast<const byte *>(&m_crc)[i];}
+
+	std::string AlgorithmProvider() const;
 
 protected:
 	void Reset() {m_crc = CRC32_NEGL;}
@@ -50,16 +58,24 @@ private:
 class CRC32C : public HashTransformation
 {
 public:
-	CRYPTOPP_CONSTANT(DIGESTSIZE = 4)
+	CRYPTOPP_CONSTANT(DIGESTSIZE = 4);
 	CRC32C();
 	void Update(const byte *input, size_t length);
 	void TruncatedFinal(byte *hash, size_t size);
 	unsigned int DigestSize() const {return DIGESTSIZE;}
-    CRYPTOPP_STATIC_CONSTEXPR const char* StaticAlgorithmName() {return "CRC32C";}
-    std::string AlgorithmName() const {return StaticAlgorithmName();}
+	CRYPTOPP_STATIC_CONSTEXPR const char* StaticAlgorithmName() {return "CRC32C";}
+	std::string AlgorithmName() const {return StaticAlgorithmName();}
 
+	/// \brief Updates a CRC with additional input
+	/// \param b the additional input as a byte
 	void UpdateByte(byte b) {m_crc = m_tab[CRC32_INDEX(m_crc) ^ b] ^ CRC32_SHIFTED(m_crc);}
-	byte GetCrcByte(size_t i) const {return ((byte *)&(m_crc))[i];}
+
+	/// \brief Retrieves the i-th byte of the CRC
+	/// \param i the additional input as a byte
+	/// \return the byte at the i-th position
+	byte GetCrcByte(size_t i) const {return reinterpret_cast<const byte *>(&m_crc)[i];}
+
+	std::string AlgorithmProvider() const;
 
 protected:
 	void Reset() {m_crc = CRC32_NEGL;}

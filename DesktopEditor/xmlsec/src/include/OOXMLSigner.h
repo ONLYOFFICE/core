@@ -1,10 +1,10 @@
 #ifndef _XML_OOXMLSIGNER_H_
 #define _XML_OOXMLSIGNER_H_
 
-#include "./XmlCertificate.h"
+#include "./Certificate.h"
 
 class COOXMLSigner_private;
-class Q_DECL_EXPORT COOXMLSigner
+class OPENSSL_DECL COOXMLSigner
 {
 public:
     COOXMLSigner(const std::wstring& sFolder,               ICertificate* pContext);

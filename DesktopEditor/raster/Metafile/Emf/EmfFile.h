@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -50,19 +50,26 @@ namespace MetaFile
 	{
 	public:
 		CEmfFile() : m_pParser(new CEmfParser)
-		{};
+		{}
 
 		~CEmfFile()
 		{
-			if (NULL != m_pParser)
-				delete m_pParser;
+			RELEASEOBJECT(m_pParser);
+		}
+
+		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize)
+		{
+			if (NULL == m_pParser || NULL == pBuffer || 0 == unSize)
+				return false;
+
+			return m_pParser->ReadFromBuffer(pBuffer, unSize);
 		}
 
 		bool OpenFromEmfFile(const wchar_t* wsFilePath)
 		{
-			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfxParser)
+			if (NULL != m_pParser && m_pParser->GetType() != EmfParserType::EmfParser)
 			{
-				CFontManager *pFont = m_pParser->GetFontManager();
+				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 				delete m_pParser;
 				m_pParser = new CEmfParser();
 				m_pParser->SetFontManager(pFont);
@@ -71,11 +78,12 @@ namespace MetaFile
 			return m_pParser->OpenFromFile(wsFilePath);
 		}
 
+	#ifdef METAFILE_SUPPORT_WMF_EMF_XML
 		bool OpenFromXmlFile(const wchar_t* wsFilePath)
 		{
 			if (NULL != m_pParser && m_pParser->GetType() == EmfParserType::EmfParser)
 			{
-				CFontManager *pFont = m_pParser->GetFontManager();
+				NSFonts::IFontManager* pFont = m_pParser->GetFontManager();
 				delete m_pParser;
 				m_pParser = new CEmfxParser();
 				m_pParser->SetFontManager(pFont);
@@ -83,6 +91,7 @@ namespace MetaFile
 
 			return m_pParser->OpenFromFile(wsFilePath);
 		}
+	#endif
 
 		CEmfParserBase* GetEmfParser()
 		{
@@ -104,7 +113,7 @@ namespace MetaFile
 			m_pParser->Close();
 		}
 
-		void SetFontManager(CFontManager* pFontManager)
+		void SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pParser->SetFontManager(pFontManager);
 		}
@@ -119,14 +128,19 @@ namespace MetaFile
 			m_pParser->SetInterpretator(pOutput);
 		}
 
-		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType)
+		void SetOutputDevice(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
 		{
-			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType);
+			m_pParser->SetInterpretator(wsFilePath, oInterpretatorType, unWidth, unHeight);
 		}
 
 		void SetOutputDevice(IOutputDevice* pOutput, const wchar_t *wsFilePath)
 		{
 			m_pParser->SetInterpretator(pOutput, wsFilePath);
+		}
+
+		void SetOutputDevice(InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0)
+		{
+			m_pParser->SetInterpretator(oInterpretatorType, unWidth, unHeight);
 		}
 
 		TEmfRectL* GetBounds()

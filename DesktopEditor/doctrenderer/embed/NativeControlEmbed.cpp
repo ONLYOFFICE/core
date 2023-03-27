@@ -24,15 +24,7 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFileId()
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFileBinary(JSSmart<CJSValue> file)
 {
-    BYTE* pData = NULL;
-    DWORD len = 0;
-    m_pInternal->getFileData(file->toStringW(), pData, len);
-
-    if (0 == len)
-        return CJSContext::createNull();
-
-    // TODO: copy (use gc)
-    return CJSContext::createUint8Array(pData, (int)len);
+    return CJSContext::createUint8Array(file->toStringW());
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFontBinary(JSSmart<CJSValue> file)
@@ -57,15 +49,7 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFontBinary(JSSmart<CJSValue> file)
             sFile = m_pInternal->m_sDefaultFont;
     }
 
-    BYTE* pData = NULL;
-    DWORD len = 0;
-    m_pInternal->getFileData(sFile, pData, len);
-
-    if (0 == len)
-        return CJSContext::createNull();
-
-    // TODO: copy (use gc)
-    return CJSContext::createUint8Array(pData, (int)len);
+    return CJSContext::createUint8Array(sFile);
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFontsDirectory()
@@ -75,17 +59,7 @@ JSSmart<CJSValue> CNativeControlEmbed::GetFontsDirectory()
 
 JSSmart<CJSValue> CNativeControlEmbed::GetFileString(JSSmart<CJSValue> file)
 {
-    BYTE* pData = NULL;
-    DWORD len = 0;
-    m_pInternal->getFileData(file->toStringW(), pData, len);
-
-    if (pData != NULL && len > 0)
-    {
-        JSSmart<CJSValue> _ret = CJSContext::createUint8Array((BYTE* )pData, (int)len);
-        return _ret;
-    }
-
-    return CJSContext::createNull();
+    return CJSContext::createUint8Array(file->toStringW());
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::GetEditorType()
@@ -130,7 +104,7 @@ JSSmart<CJSValue> CNativeControlEmbed::Save_AllocNative(JSSmart<CJSValue> nLen)
 {
     int Len = nLen->toInt32();
     m_pInternal->Save_Alloc(Len);
-    return CJSContext::createUint8Array(m_pInternal->m_pSaveBinary, m_pInternal->m_nSaveLen);
+    return CJSContext::createUint8Array(m_pInternal->m_pSaveBinary, m_pInternal->m_nSaveLen, true);
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::Save_ReAllocNative(JSSmart<CJSValue> pos, JSSmart<CJSValue> len)
@@ -138,7 +112,7 @@ JSSmart<CJSValue> CNativeControlEmbed::Save_ReAllocNative(JSSmart<CJSValue> pos,
     int _pos = pos->toInt32();
     int _len = len->toInt32();
     m_pInternal->Save_ReAlloc(_pos, _len);
-    return CJSContext::createUint8Array(m_pInternal->m_pSaveBinary, m_pInternal->m_nSaveLen);
+    return CJSContext::createUint8Array(m_pInternal->m_pSaveBinary, m_pInternal->m_nSaveLen, true);
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::Save_End(JSSmart<CJSValue> pos, JSSmart<CJSValue> len)
@@ -215,10 +189,7 @@ JSSmart<CJSValue> CNativeControlEmbed::zipGetFileAsString(JSSmart<CJSValue> name
 
 JSSmart<CJSValue> CNativeControlEmbed::zipGetFileAsBinary(JSSmart<CJSValue> name)
 {
-    BYTE* pData = NULL;
-    DWORD len = 0;
-    m_pInternal->m_oZipWorker.GetFileData(name->toStringW(), pData, len);
-    return CJSContext::createUint8Array(pData, (int)len);
+    return CJSContext::createUint8Array(m_pInternal->m_oZipWorker.m_sTmpFolder + L"/" + name->toStringW());
 }
 
 JSSmart<CJSValue> CNativeControlEmbed::zipCloseFile()
@@ -242,4 +213,22 @@ JSSmart<CJSValue> CNativeControlEmbed::GetImageUrl(JSSmart<CJSValue> sUrl)
 JSSmart<CJSValue> CNativeControlEmbed::GetImagesPath()
 {
     return CJSContext::createString(m_pInternal->m_strImagesDirectory);
+}
+
+#include "./../../graphics/MetafileToRenderer.h"
+#include "./../../raster/BgraFrame.h"
+JSSmart<CJSValue> CNativeControlEmbed::GetImageOriginalSize(JSSmart<CJSValue> sUrl)
+{
+	IMetafileToRenderter oRenderer(NULL);
+	oRenderer.SetMediaDirectory(NSDirectory::GetFolderPath(m_pInternal->m_strImagesDirectory));
+	std::wstring sPath = oRenderer.GetImagePath(sUrl->toStringW());
+	CBgraFrame oFrame;
+	if (oFrame.OpenFile(sPath))
+	{
+		JSSmart<CJSObject> ret = CJSContext::createObject();
+		ret->set("W", oFrame.get_Width());
+		ret->set("H", oFrame.get_Height());
+		return ret->toValue();
+	}
+	return CJSContext::createUndefined();
 }

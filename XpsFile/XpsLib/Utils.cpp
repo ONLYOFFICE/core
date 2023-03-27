@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1452,7 +1452,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"MatrixTransform")
 			{
 				ReadMatrixTransform(oReader, wsTransform, pwsKey);
@@ -1497,7 +1497,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry.Transform" && wsTransform.empty())
 				ReadTransform(oReader, wsTransform);
 			else if (wsNodeName == L"PathFigure" && wsData.empty())
@@ -1525,7 +1525,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			wsText.empty();
 			if (L"PolyLineSegment" == wsNodeName)
 			{
@@ -1596,7 +1596,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"GradientStop")
 			{				
 				double dPos = 0;
@@ -1637,7 +1637,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry")
 			{
 				CWString wsTransform;

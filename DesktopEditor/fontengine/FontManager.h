@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -81,39 +81,14 @@ private:
     std::list<std::string>              m_arFiles;
     int m_lCacheSize;
 
-    // обезопасим лок файлов с ограниченным кэшем и режимом без квадратов
-    NSFonts::IFontFile* m_pSafeFont;
+    FT_Library m_pLibrary;
     
 public:
-    CFontsCache() : NSFonts::IFontsCache()
-    {
-        m_pApplicationFontStreams = NULL;
-        m_lCacheSize = -1;
-        m_pSafeFont = NULL;
-    }
-    virtual ~CFontsCache()
-    {
-        Clear();
-    }
-    virtual void Clear()
-    {
-        for (std::map<std::string, CFontFile*>::iterator iter = m_mapFiles.begin(); iter != m_mapFiles.end(); ++iter)
-        {
-            CFontFile* pFile = iter->second;
-            RELEASEOBJECT(pFile);
-        }
-        m_mapFiles.clear();
-
-        if (-1 != m_lCacheSize)
-            m_arFiles.clear();
-    }
-    virtual void SetCacheSize(const int& lMaxSize)
-    {
-        if (lMaxSize <= 0)
-            m_lCacheSize = -1;
-        else
-            m_lCacheSize = lMaxSize;
-    }
+    CFontsCache();
+    virtual ~CFontsCache();
+    virtual void Clear();
+    virtual void SetCacheSize(const int& lMaxSize);
+    FT_Library GetLibrary();
 
 public:
     virtual void SetStreams(NSFonts::IApplicationFontStreams* pStreams) { m_pApplicationFontStreams = pStreams; }
@@ -126,8 +101,6 @@ class CFontManager : public NSFonts::IFontManager
 	friend class CApplicationFonts;
 
 public:
-	FT_Library		m_pLibrary;
-	
 	CFontFile*		m_pFont;
 	CGlyphString	m_oString;
 
@@ -144,6 +117,8 @@ public:
 
     int m_nLOAD_MODE;
     int m_nRENDER_MODE;
+
+	bool m_bCorrectFontByName;
 
 	CApplicationFonts*	m_pApplication;
 	CFontsCache*		m_pOwnerCache;
@@ -186,7 +161,7 @@ public:
     virtual INT LoadString2C(const int& wsBuffer, const float& fX, const float& fY);
 
     virtual int GetKerning(UINT unPrevGID, UINT unGID);
-    virtual INT GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
+    virtual int GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
 
     virtual TFontCacheSizes MeasureChar(const LONG& lUnicode);
 
@@ -216,6 +191,8 @@ public:
     
     virtual void GetFace(double& d0, double& d1, double& d2);
     virtual void GetLimitsY(double& dMin, double& dMax);
+
+	virtual void SetUseCorrentFontByName(const bool& use);
 
     CFontFile* GetFontFileBySymbol(CFontFile* pFile, int code);
 };

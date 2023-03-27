@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -38,7 +38,7 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 
 #ifndef DISABLE_PDF_CONVERTATION
-#include "../PdfWriter/PdfRenderer.h"
+#include "../PdfFile/PdfFile.h"
 #endif
 
 #include "../OfficeUtils/src/OfficeUtils.h"
@@ -180,11 +180,16 @@ void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pB
 
     m_pInternal->m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
+std::wstring CXpsFile::GetInfo()
+{
+    return m_pInternal->m_pDocument->GetInfo();
+}
 
 #ifndef DISABLE_PDF_CONVERTATION
 void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 {
-    CPdfRenderer oPdf(m_pInternal->m_pAppFonts);
+	CPdfFile oPdf(m_pInternal->m_pAppFonts);
+	oPdf.CreatePdf();
 	bool bBreak = false;
 
 	int nPagesCount = GetPagesCount();
@@ -216,7 +221,6 @@ void CXpsFile::ConvertToPdf(const std::wstring& wsPath)
 }
 #endif
 
-#ifdef BUILDING_WASM_MODULE
 BYTE* CXpsFile::GetStructure()
 {
 	return m_pInternal->m_pDocument->GetStructure();
@@ -225,4 +229,3 @@ BYTE* CXpsFile::GetLinks (int nPageIndex)
 {
 	return m_pInternal->m_pDocument->GetPageLinks(nPageIndex);
 }
-#endif

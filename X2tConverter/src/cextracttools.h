@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,8 +34,8 @@
 
 #include "../../Common/OfficeFileErrorDescription.h"
 #include "../../Common/OfficeFileFormatChecker.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../OOXML/SystemUtility/SystemUtility.h"
+#include "../../OOXML/Base/Unit.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
@@ -49,7 +49,7 @@
 #include <iostream>
 #include <fstream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes))
 
 namespace NExtractTools
 {
@@ -197,6 +197,8 @@ namespace NExtractTools
 
 		TCD_MITCRYPT2,
 
+		TCD_VBAPROJECT2XML,
+
 //
 		TCD_HTML2DOCX,
 		TCD_HTML2DOCT,
@@ -343,6 +345,7 @@ namespace NExtractTools
 		int* format;
 		int* aspect;
 		bool* first;
+		bool* zip;
 		int* width;
 		int* height;
 		InputParamsThumbnail()
@@ -350,6 +353,7 @@ namespace NExtractTools
 			format = NULL;
 			aspect = NULL;
 			first = NULL;
+			zip = NULL;
 			width = NULL;
 			height = NULL;
 		}
@@ -358,6 +362,7 @@ namespace NExtractTools
 			RELEASEOBJECT(format);
 			RELEASEOBJECT(aspect);
 			RELEASEOBJECT(first);
+			RELEASEOBJECT(zip);
 			RELEASEOBJECT(width);
 			RELEASEOBJECT(height);
 		}
@@ -382,6 +387,8 @@ namespace NExtractTools
 								aspect = new int(XmlUtils::GetInteger(sValue));
 							else if(_T("first") == sName)
 								first = new bool(XmlUtils::GetBoolean2(sValue));
+							else if(_T("zip") == sName)
+								zip = new bool(XmlUtils::GetBoolean2(sValue));
 							else if(_T("width") == sName)
 								width = new int(XmlUtils::GetInteger(sValue));
 							else if(_T("height") == sName)
@@ -475,7 +482,8 @@ namespace NExtractTools
 		bool* m_bIsNoBase64;
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
 		bool* m_bIsPDFA;
-		bool* m_bConvertToOrigin;
+		std::wstring* m_sConvertToOrigin;
+		std::wstring* m_sScriptsCacheDirectory;
 		//output params
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
@@ -508,7 +516,8 @@ namespace NExtractTools
 			m_sTempDir = NULL;
 			m_bIsNoBase64 = NULL;
 			m_bIsPDFA = NULL;
-			m_bConvertToOrigin = NULL;
+			m_sConvertToOrigin = NULL;
+			m_sScriptsCacheDirectory = NULL;
 
 			m_bOutputConvertCorrupted = false;
 			m_bMacro = false;
@@ -541,7 +550,8 @@ namespace NExtractTools
 			RELEASEOBJECT(m_sTempDir);
 			RELEASEOBJECT(m_bIsNoBase64);
 			RELEASEOBJECT(m_bIsPDFA);
-			RELEASEOBJECT(m_bConvertToOrigin);
+			RELEASEOBJECT(m_sConvertToOrigin);
+			RELEASEOBJECT(m_sScriptsCacheDirectory);
 		}
 		
 		bool FromXmlFile(const std::wstring& sFilename)
@@ -721,10 +731,15 @@ namespace NExtractTools
 									RELEASEOBJECT(m_bIsPDFA);
 									m_bIsPDFA = new bool(XmlUtils::GetBoolean2(sValue));
 								}
-								else if(_T("m_bConvertToOrigin") == sName)
+								else if(_T("m_sConvertToOrigin") == sName)
 								{
-									RELEASEOBJECT(m_bConvertToOrigin);
-									m_bConvertToOrigin = new bool(XmlUtils::GetBoolean2(sValue));
+									RELEASEOBJECT(m_sConvertToOrigin);
+									m_sConvertToOrigin = new std::wstring(sValue);
+								}
+								else if (_T("m_sScriptsCacheDirectory") == sName)
+								{
+									RELEASEOBJECT(m_sScriptsCacheDirectory);
+									m_sScriptsCacheDirectory = new std::wstring(sValue);
 								}
 							}
 							else if(_T("m_nCsvDelimiterChar") == sName)
@@ -810,9 +825,16 @@ namespace NExtractTools
 		{
 			return (NULL != m_bIsPDFA) ? (*m_bIsPDFA) : false;
 		}
-		bool getConvertToOrigin() const
+		std::wstring getConvertToOrigin() const
 		{
-			return (NULL != m_bConvertToOrigin) ? (*m_bConvertToOrigin) : false;
+			return (NULL != m_sConvertToOrigin) ? (*m_sConvertToOrigin) : L"";
+		}
+		bool needConvertToOrigin(long nFormatFrom) const
+		{
+			COfficeFileFormatChecker FileFormatChecker;
+			std::wstring sExt = FileFormatChecker.GetExtensionByType(nFormatFrom);
+			size_t index = getConvertToOrigin().find(sExt);
+			return std::wstring::npos != index;
 		}
         std::wstring getXmlOptions()
 		{
@@ -921,7 +943,9 @@ namespace NExtractTools
 					eRes = TCD_MITCRYPT2;
                 else if(AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
                     eRes = TCD_UNZIPDIR;
-                else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
+				else if (AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT == nFormatFrom && AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatTo)
+					eRes = TCD_VBAPROJECT2XML;
+				else if(AVS_OFFICESTUDIO_FILE_UNKNOWN == nFormatFrom && AVS_OFFICESTUDIO_FILE_OTHER_ZIP == nFormatTo)
                     eRes = TCD_ZIPDIR;
             }
 			else
@@ -1159,6 +1183,20 @@ namespace NExtractTools
             return NULL != m_bDontSaveAdditional && *m_bDontSaveAdditional;
         }
 		bool checkInputLimits();
+		bool getFromChanges()
+		{
+			return (NULL != m_bFromChanges) ? (*m_bFromChanges) : false;
+
+		}
+		void setFromChanges(bool bVal)
+		{
+			RELEASEOBJECT(m_bFromChanges);
+			m_bFromChanges = new bool(bVal);
+		}
+		std::wstring getTitle() const
+		{
+			return (NULL != m_sTitle) ? (*m_sTitle) : L"";
+		}
 	};
 
     static std::wstring string_replaceAll(std::wstring str, const std::wstring& from, const std::wstring& to)
@@ -1341,7 +1379,7 @@ namespace NExtractTools
 	}
     std::wstring getMailMergeXml(const std::wstring& sJsonPath, int nRecordFrom, int nRecordTo, const std::wstring& sField);
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
-                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
+                            const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params);
     _UINT32 apply_changes(const std::wstring &sBinFrom, const std::wstring &sToResult, NSDoctRenderer::DoctRendererFormat::FormatFile eType, const std::wstring &sThemeDir, std::wstring &sBinTo, const InputParams& params);
 }

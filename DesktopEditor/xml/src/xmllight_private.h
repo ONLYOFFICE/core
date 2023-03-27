@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,7 +34,7 @@
 
 #include "../../common/File.h"
 #include "../../common/StringExt.h"
-
+#include "../../../UnicodeConverter/UnicodeConverter.h"
 #ifdef _IOS
     #include <libxml2/libxml/xmlreader.h>
     #include <libxml2/libxml/c14n.h>
@@ -100,9 +100,94 @@ namespace XmlUtils
             DWORD dwRead = 0;
             oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
             oFile.CloseFile();
+     //trim left
 
-            reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
+            LONG pos_start = 0;
 
+            while(pos_start < m_lStreamLen)
+            {
+                if (((char*)m_pStream)[pos_start]!= 0 &&
+                    ((char*)m_pStream)[pos_start] != '\n' &&
+                    ((char*)m_pStream)[pos_start] != '\t' &&
+                    ((char*)m_pStream)[pos_start] != ' ')
+                    break;
+                pos_start++;
+            }
+
+     //encoding check
+            std::string start_stream((char*)m_pStream + pos_start, (std::min)(m_lStreamLen - pos_start, (LONG)256));
+            size_t pos_find_encoding = start_stream.find("encoding=");
+
+            bool bUtf = true;
+            int code_page = 0;
+            std::string encoding;
+            if (pos_find_encoding != std::string::npos)
+            {
+                pos_find_encoding = start_stream.find("\"", pos_find_encoding);
+                size_t pos_find_encoding_end = start_stream.find("\"", pos_find_encoding + 1);
+                if (pos_find_encoding_end != std::string::npos)
+                {
+                    encoding = start_stream.substr(pos_find_encoding + 1, pos_find_encoding_end - pos_find_encoding - 1);
+                    std::transform(encoding.begin(), encoding.end(), encoding.begin(), tolower);
+
+                    if ((int)encoding.find("utf") < 0)
+                    {
+                        bUtf = false;
+
+                        size_t pos = encoding.find("windows");
+                        if (pos != std::string::npos)
+                        {
+                            code_page = std::stoi(encoding.substr(pos + 8));
+                        }
+                    }
+                }
+            }
+            if (!bUtf)
+            {
+                std::string input((char*)m_pStream + pos_start, m_lStreamLen - pos_start);
+                NSUnicodeConverter::CUnicodeConverter oConverter;
+                std::wstring output;
+
+                if (code_page > 0)
+                {
+                    output = oConverter.toUnicode(input, code_page);
+                }
+                else
+                {
+                    output = oConverter.toUnicode(input, encoding.c_str());
+                }
+
+                input.clear();
+                BYTE* pData = NULL;
+                LONG lLen = 0;
+
+                NSFile::CUtf8Converter::GetUtf8StringFromUnicode(output.c_str(), (LONG)output.length(), pData, lLen);
+
+                if (pData)
+                {
+                    pos_start = 0;
+
+                    while (pos_start < lLen)
+                    {
+                        if (pData [pos_start] == '>')
+                            break;
+                        pos_start++;
+                    }
+                    pos_start++;
+                    std::string start_utf8("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+
+                    delete []m_pStream;
+                    m_lStreamLen = lLen + start_utf8.size() - pos_start;
+                    m_pStream = new BYTE[m_lStreamLen];
+
+                    memcpy(m_pStream, start_utf8.c_str(), start_utf8.size());
+                    memcpy(m_pStream + start_utf8.size(), pData + pos_start, lLen - pos_start);
+
+                    delete []pData;
+                    pos_start = 0;
+                }
+            }
+            reader = xmlReaderForMemory((char*)m_pStream + pos_start, m_lStreamLen - pos_start, NULL, NULL, 0);
             return true;
         }
         inline bool FromString(const wchar_t* sXml)
@@ -302,6 +387,22 @@ namespace XmlUtils
             std::string sRet((char*)pName);
             return sRet;
         }
+        std::wstring GetNameNoNS()
+        {
+            std::wstring sName = GetName();
+            std::wstring::size_type pos = sName.find(':');
+            if (std::wstring::npos != pos && ((pos + 1) < sName.length()))
+                sName = sName.substr(pos + 1);
+            return sName;
+        }
+        std::string GetNameNoNSA()
+        {
+            std::string sName = GetNameA();
+            std::string::size_type pos = sName.find(':');
+            if (std::string::npos != pos && ((pos + 1) < sName.length()))
+                sName = sName.substr(pos + 1);
+            return sName;
+        }
         const char* GetNameChar()
         {
             if (!IsValid())
@@ -458,13 +559,13 @@ namespace XmlUtils
         }
         void CheckBufferSize(unsigned int nOffset, unsigned int nRequired, wchar_t*& sBuffer, long& nSize)
         {
-            if(nOffset + nRequired > nSize)
+            if(nOffset + nRequired > (unsigned int)nSize)
             {
                 if(0 == nSize)
                 {
                     nSize = nOffset + nRequired;
                 }
-                while(nOffset + nRequired > nSize)
+                while(nOffset + nRequired > (unsigned int)nSize)
                 {
                     nSize *= 2;
                 }

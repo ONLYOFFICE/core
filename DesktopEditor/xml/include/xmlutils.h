@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,20 +32,7 @@
 #ifndef _BUILD_XMLUTILS_CROSSPLATFORM_H_
 #define _BUILD_XMLUTILS_CROSSPLATFORM_H_
 
-#include <vector>
-#include <list>
-#include <map>
-#include <string>
-
-#ifdef _MSC_VER
-   #pragma warning (disable: 4100 4189)
-#endif
-
-#include "../../common/StringBuilder.h"
-
-#ifndef XML_UNUSED
-#define XML_UNUSED( arg )  ( (arg) = (arg) )
-#endif
+#include "xmlwriter.h"
 
 namespace XmlUtils
 {
@@ -72,11 +59,11 @@ namespace XmlUtils
 		_XmlNodeType_Last = 17
 	} XmlNodeType;
 
-    typedef enum {
-        XML_C14N_1_0            = 0,    /* Origianal C14N 1.0 spec */
-        XML_C14N_EXCLUSIVE_1_0  = 1,    /* Exclusive C14N 1.0 spec */
-        XML_C14N_1_1            = 2     /* C14N 1.1 spec */
-    } xmlC14NMode;
+	typedef enum {
+		XML_C14N_1_0            = 0,    /* Origianal C14N 1.0 spec */
+		XML_C14N_EXCLUSIVE_1_0  = 1,    /* Exclusive C14N 1.0 spec */
+		XML_C14N_1_1            = 2     /* C14N 1.1 spec */
+	} xmlC14NMode;
 
 	class CXmlLiteReader_Private;
 	class KERNEL_DECL CXmlLiteReader
@@ -88,7 +75,7 @@ namespace XmlUtils
 		CXmlLiteReader();
 		virtual ~CXmlLiteReader();
 		
-        public:
+	public:
 
 		void Clear();
 		bool IsValid();
@@ -108,18 +95,21 @@ namespace XmlUtils
 		bool ReadTillEnd(int nDepth = -2);
 		
 		std::wstring	GetName();
-                std::string     GetNameA();
-                const char*     GetNameChar();
-                int             GetDepth();
-                bool            IsEmptyNode();
+		std::string     GetNameA();
+        std::wstring	GetNameNoNS();
+        std::string     GetNameNoNSA();
+
+		const char*     GetNameChar();
+		int             GetDepth();
+		bool            IsEmptyNode();
 
 		std::wstring	GetText();
-                std::string     GetTextA();
-                const char*		GetTextChar();
+		std::string     GetTextA();
+		const char*		GetTextChar();
 		std::wstring	GetAttributeTextWithHHHH();
 
 		std::wstring	GetText2();
-                std::string     GetText2A();
+		std::string     GetText2A();
 		
 		std::wstring	GetText3();
 		void GetTextWithHHHH(bool bPreserve, wchar_t*& sBuffer, long& nSize, long& nLen);
@@ -133,11 +123,11 @@ namespace XmlUtils
 		bool MoveToNextAttribute();
 		bool MoveToElement();
 
-                bool IsEmptyElement();
+		bool IsEmptyElement();
 
-                std::wstring GetNamespacePrefix();
-                XmlNodeType GetNodeType();
-                bool IsDefaultAttribute();
+		std::wstring GetNamespacePrefix();
+		XmlNodeType GetNodeType();
+		bool IsDefaultAttribute();
 	};
 
 	class KERNEL_DECL IXmlDOMDocument
@@ -161,7 +151,8 @@ namespace XmlUtils
 	class KERNEL_DECL CXmlNodes
 	{
 	private:
-		std::vector<CXmlNode> m_nodes;
+        class Impl;
+        Impl *impl_;
 
 	public:
 		CXmlNodes();
@@ -169,6 +160,8 @@ namespace XmlUtils
 		bool IsValid();
 		int GetCount();
 		bool GetAt(int nIndex, CXmlNode& oXmlNode);
+
+        void push_back(CXmlNode &node);
 
 		friend class CXmlNode;
 	};
@@ -266,34 +259,6 @@ namespace XmlUtils
 		std::wstring GetNameNoNS(const std::wstring& strNodeName);
 	};
 
-
-	class KERNEL_DECL CXmlWriter
-	{
-	private:
-		std::wstring m_str;
-	
-	public:
-
-		CXmlWriter();
-		
-		std::wstring GetXmlString();
-		void SetXmlString(const std::wstring& strValue);
-		
-		bool SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/);
-		void WriteString(const std::wstring& strValue);
-		void WriteInteger(int Value);
-		void WriteDouble(double Value);
-		void WriteBoolean(bool Value);
-		void WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed = false);
-		void WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode = false, bool bEndNode = true);
-		void WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue);
-		void WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = L"");
-		void WriteNode(const std::wstring& strNodeName, double dValue);
-		void WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue);
-		void WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue = L"", const std::wstring& strTextAfterValue = (L""));
-		void WriteAttribute(const std::wstring& strAttributeName, double dValue);
-	};
-
 	std::wstring KERNEL_DECL GetNameNoNS(const std::wstring & strNodeName);
 	KERNEL_DECL const char* GetNameNoNS(const char* strNodeName);
 	std::wstring KERNEL_DECL GetNamespace(const std::wstring& strNodeName);
@@ -335,6 +300,9 @@ namespace XmlUtils
         std::string KERNEL_DECL Execute(const std::string& sXml, int mode = XML_C14N_1_0, bool withComments = false);
         std::string KERNEL_DECL Execute(const std::wstring& sXmlFile, int mode = XML_C14N_1_0, bool withComments = false);
     }
+
+    // UTF-8 BOM, UTF-16BE BOM, UTF-16LE BOM, UTF-32BE BOM, UTF-32LE BOM
+    std::string KERNEL_DECL GetUtf8FromFileContent(unsigned char* pData, unsigned int len);
 }
 
 #endif // _BUILD_XMLUTILS_CROSSPLATFORM_H_

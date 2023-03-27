@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -40,9 +40,9 @@
 #include "../Emf/EmfObjects.h"
 #include "../Emf/EmfPlusObjects.h"
 #include "../Wmf/WmfObjects.h"
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
 
 #include <algorithm>
+#include <cfloat>
 
 namespace MetaFile
 {
@@ -59,6 +59,33 @@ namespace MetaFile
 			b = 0;
 		}
 	};
+	struct TSvgViewport
+	{
+		double dLeft;
+		double dTop;
+		double dRight;
+		double dBottom;
+
+		TSvgViewport() : dLeft(DBL_MAX), dTop(DBL_MAX), dRight(DBL_MIN), dBottom(DBL_MIN) {}
+
+		bool Empty() const
+		{
+			return DBL_MAX == dLeft || DBL_MAX == dTop || DBL_MIN == dRight || DBL_MIN == dBottom || dRight == dLeft || dBottom == dTop;
+		}
+
+		double GetWidth() const
+		{
+			return (DBL_MAX == dLeft || DBL_MIN == dRight) ? 0 : dRight - dLeft;
+		}
+
+		double GetHeight() const
+		{
+			return (DBL_MAX == dTop || DBL_MIN == dBottom) ? 0 : dBottom - dTop;
+		}
+	};
+
+	typedef std::pair<const std::wstring, std::wstring>     NodeAttribute;
+	typedef std::vector<NodeAttribute>                      NodeAttributes;
 
 	class CDataStream
 	{
@@ -389,15 +416,15 @@ namespace MetaFile
 		{
 			if (oFont.IsFixedLength())
 			{
-			    *this >> oFont.LogFontEx.LogFont;
-			    ReadBytes(oFont.LogFontEx.FullName, 64);
-			    ReadBytes(oFont.LogFontEx.Style, 32);
-			    ReadBytes(oFont.LogFontEx.Script, 18);
+				*this >> oFont.LogFontEx.LogFont;
+				ReadBytes(oFont.LogFontEx.FullName, 64);
+				ReadBytes(oFont.LogFontEx.Style, 32);
+				ReadBytes(oFont.LogFontEx.Script, 18);
 			}
 			else
 			{
-			    *this >> oFont.LogFontEx;
-			    *this >> oFont.DesignVector;
+				*this >> oFont.LogFontEx;
+				*this >> oFont.DesignVector;
 			}
 
 			return *this;
@@ -510,6 +537,16 @@ namespace MetaFile
 			*this >> oEntry.Blue;
 			*this >> oEntry.Green;
 			*this >> oEntry.Red;
+			return *this;
+		}
+		CDataStream& operator>>(TRegionDataHeader& oRegionDataHeader)
+		{
+			*this >> oRegionDataHeader.unSize;
+			*this >> oRegionDataHeader.unType;
+			*this >> oRegionDataHeader.unCountRects;
+			*this >> oRegionDataHeader.unRgnSize;
+			*this >> oRegionDataHeader.oBounds;
+
 			return *this;
 		}
 		CDataStream& operator>>(CEmfLogPalette& oPalette)
@@ -680,6 +717,17 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TTriVertex& oVertex)
+		{
+			*this >> oVertex.nX;
+			*this >> oVertex.nY;
+			*this >> oVertex.ushRed;
+			*this >> oVertex.ushGreen;
+			*this >> oVertex.ushBlue;
+			*this >> oVertex.ushAlpha;
+
+			return *this;
+		}
 		CDataStream& operator>>(TEmfPlusRect& oRect)
 		{
 			*this >> oRect.shX;
@@ -753,80 +801,28 @@ namespace MetaFile
 
 			return *this;
 		}
-		CDataStream& operator>>(CEmfPlusRegionNode& oEmfPlusRegionNode)
+		CDataStream& operator>>(CEmfPlusStringFormat& oStringFormat)
 		{
-			unsigned int unType;
+			Skip(4); // Version
+			*this >> oStringFormat.unStringFormatFlags;
+			Skip(4); // Language
+			*this >> oStringFormat.unStringAlignment;
+			*this >> oStringFormat.unLineAlign;
+			Skip(8); // DigitSubstitution, DigitLanguage
+			*this >> oStringFormat.dFirstTabOffset;
+			Skip(4); // HotkeyPrefix
+			*this >> oStringFormat.dLeadingMargin;
+			*this >> oStringFormat.dTrailingMargin;
+			*this >> oStringFormat.dTracking;
+			*this >> oStringFormat.unTrimming;
 
-			*this >> unType;
+			int nTabStopCount, nRangeCount;
 
-			switch (unType)
-			{
-				case RegionNodeDataTypeAnd:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeAnd;
-					break;
-				}
-				case RegionNodeDataTypeOr:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeOr;
-					break;
-				}
-				case RegionNodeDataTypeXor:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeXor;
-					break;
-				}
-				case RegionNodeDataTypeExclude:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeExclude;
-					break;
-				}
-				case RegionNodeDataTypeComplement:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeComplement;
-					break;
-				}
-				case RegionNodeDataTypeRect:
-				{
-					oEmfPlusRegionNode.pRect = new TEmfPlusRectF;
+			*this >> nTabStopCount;
+			*this >> nRangeCount;
 
-					*this >> *oEmfPlusRegionNode.pRect;
-
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeRect;
-					break;
-				}
-				case RegionNodeDataTypePath:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypePath;
-					break;
-				}
-				case RegionNodeDataTypeEmpty:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeEmpty;
-					break;
-				}
-				case RegionNodeDataTypeInfinite:
-				{
-					oEmfPlusRegionNode.eType = RegionNodeDataTypeInfinite;
-					break;
-				}
-			}
-
-			return *this;
-		}
-		CDataStream& operator>>(CEmfPlusRegion& oEmfPlusRegion)
-		{
-			unsigned int unVersion, unRegionCount;
-
-			*this >> unVersion;
-			*this >> unRegionCount;
-
-			oEmfPlusRegion.arNodes.resize(unRegionCount + 1);
-
-			for (unsigned int unIndex = 0; unIndex <= unRegionCount; ++unIndex)
-				*this >> oEmfPlusRegion.arNodes[unIndex];
-
-			//TODO: реализовать
+			Skip(nTabStopCount * 4); // TabStops
+			Skip(nRangeCount * 8);   // CharRange
 
 			return *this;
 		}
@@ -847,6 +843,43 @@ namespace MetaFile
 			*this >> oAttributes.nObjectClamp;
 
 			Skip(4); //Reserved 2 (4 bytes)
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusCustomLineCapArrowData& oLineCapData)
+		{
+			*this >> oLineCapData.dWidth;
+			*this >> oLineCapData.dHeight;
+			*this >> oLineCapData.dMiddleInset;
+
+			unsigned int unTempValue;
+			*this >> unTempValue;
+
+			oLineCapData.bFillState = ((1 == unTempValue) ? true : false);
+
+			*this >> oLineCapData.unLineStartCap;
+			*this >> oLineCapData.unLineEndCap;
+			*this >> oLineCapData.unLineJoin;
+			*this >> oLineCapData.dLineMiterLimit;
+			*this >> oLineCapData.dWidthScale;
+			*this >> oLineCapData.oFillHotSpot;
+			*this >> oLineCapData.oLineHotSpot;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPlusCustomLineCapData& oLineCapData)
+		{
+			*this >> oLineCapData.unCustomLineCapDataFlags;
+			*this >> oLineCapData.unBaseCap;
+			*this >> oLineCapData.dBaseInset;
+			*this >> oLineCapData.unStrokeStartCap;
+			*this >> oLineCapData.unStrokeEndCap;
+			*this >> oLineCapData.unStrokeJoin;
+			*this >> oLineCapData.dStrokeMiterLimit;
+			*this >> oLineCapData.dWidthScale;
+			*this >> oLineCapData.oFillHotSpot;
+			*this >> oLineCapData.oStrokeHotSpot;
+
+			return *this;
 		}
 		CDataStream& operator>>(TWmfRect& oRect)
 		{
@@ -967,7 +1000,7 @@ namespace MetaFile
 			*this >> oScan.Top;
 			*this >> oScan.Bottom;
 
-			if (oScan.Count > 0 && oScan.Count & 1) // Должно делиться на 2
+			if (oScan.Count > 0 && !(oScan.Count & 1)) // Должно делиться на 2
 			{
 				unsigned short ushCount = oScan.Count >> 1;
 				oScan.ScanLines = new TWmfScanLine[ushCount];
@@ -996,6 +1029,11 @@ namespace MetaFile
 		{
 			*this >> pRegion->nextInChain;
 			*this >> pRegion->ObjectType;
+
+			if (0x0006 != pRegion->ObjectType)
+				return *this;
+
+			*this >> pRegion->ObjectCount;
 			*this >> pRegion->RegionSize;
 			*this >> pRegion->ScanCount;
 			*this >> pRegion->MaxScan;
@@ -1148,7 +1186,7 @@ namespace MetaFile
 
 			// Читаем OutputString
 			const unsigned int unCharsCount = oText.Chars;
-			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText 
+			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText
 			Skip(nSkip);
 			T* pString = new T[unCharsCount + 1];
 			if (pString)
@@ -1189,6 +1227,11 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
-    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
+	std::wstring GetTempFilename(const std::wstring& sFolder = L"");
+
+	std::wstring StringNormalization(std::wstring wsString);
+
+	std::wstring ConvertToWString(double dValue, int nAccuracy = -1);
+	std::wstring ConvertToWString(const std::vector<double>& arValues, int nAccuracy = -1);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

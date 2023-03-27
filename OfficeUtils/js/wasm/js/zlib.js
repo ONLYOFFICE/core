@@ -1,409 +1,394 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
+
 (function(window, undefined){
 
-var printErr = undefined;
-var print    = undefined;
+	//desktop_fetch
 
-var fetch = self.fetch;
-var getBinaryPromise = null;
-if (self.AscDesktopEditor && document.currentScript && 0 == document.currentScript.src.indexOf("file:///"))
-{
-    fetch = undefined; // fetch not support file:/// scheme
-    getBinaryPromise = function()
+	//string_utf8
+
+	//module
+
+	/**
+	 * Class representing a zip archive creator/reader.
+	 * @constructor
+	 */
+	function ZLib()
 	{
-        var wasmPath = "ascdesktop://zlib/" + wasmBinaryFile.substr(8);
-        return new Promise(function (resolve, reject)
-		{
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', wasmPath, true);
-            xhr.responseType = 'arraybuffer';
-
-            if (xhr.overrideMimeType)
-                xhr.overrideMimeType('text/plain; charset=x-user-defined');
-            else
-                xhr.setRequestHeader('Accept-Charset', 'x-user-defined');
-
-            xhr.onload = function ()
-			{
-                if (this.status == 200)
-                    resolve(new Uint8Array(this.response));
-            };
-            xhr.send(null);
-        });
-    }
-}
-else
-{
-    getBinaryPromise = function() { return getBinaryPromise2(); }
-}
-
-//module
-
-var readFromUtf8 = function(buffer, start, len)
-{
-    var result = "";
-    var index  = start;
-    var end = start + len;
-    while (index < end) 
-    {
-        var u0 = buffer[index++];
-        if (!(u0 & 128)) 
-        {
-            result += String.fromCharCode(u0);
-            continue;
-        }
-        var u1 = buffer[index++] & 63;
-        if ((u0 & 224) == 192) 
-        {
-            result += String.fromCharCode((u0 & 31) << 6 | u1);
-            continue;
-        }
-        var u2 = buffer[index++] & 63;
-        if ((u0 & 240) == 224) 
-            u0 = (u0 & 15) << 12 | u1 << 6 | u2;
-        else 
-            u0 = (u0 & 7) << 18 | u1 << 12 | u2 << 6 | buffer[index++] & 63;
-        if (u0 < 65536) 
-            result += String.fromCharCode(u0);
-        else 
-        {
-            var ch = u0 - 65536;
-            result += String.fromCharCode(55296 | ch >> 10, 56320 | ch & 1023);
-        }
-    }
-    return result;
-};
-
-var allocString = function(string)
-{
-    var inputLen = string.length;
-    var testLen  = 6 * inputLen + 1;
-    var tmpStrings = new ArrayBuffer(testLen);
-
-    var code  = 0;
-    var index = 0;
-
-    var outputIndex = 0;
-    var outputDataTmp = new Uint8Array(tmpStrings);
-    var outputData = outputDataTmp;
-
-    while (index < inputLen)
-    {
-        code = string.charCodeAt(index++);
-        if (code >= 0xD800 && code <= 0xDFFF && index < inputLen)
-            code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & string.charCodeAt(index++)));
-
-        if (code < 0x80)
-            outputData[outputIndex++] = code;
-        else if (code < 0x0800)
-        {
-            outputData[outputIndex++] = 0xC0 | (code >> 6);
-            outputData[outputIndex++] = 0x80 | (code & 0x3F);
-        }
-        else if (code < 0x10000)
-        {
-            outputData[outputIndex++] = 0xE0 | (code >> 12);
-            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
-            outputData[outputIndex++] = 0x80 | (code & 0x3F);
-        }
-        else if (code < 0x1FFFFF)
-        {
-            outputData[outputIndex++] = 0xF0 | (code >> 18);
-            outputData[outputIndex++] = 0x80 | ((code >> 12) & 0x3F);
-            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
-            outputData[outputIndex++] = 0x80 | (code & 0x3F);
-        }
-        else if (code < 0x3FFFFFF)
-        {
-            outputData[outputIndex++] = 0xF8 | (code >> 24);
-            outputData[outputIndex++] = 0x80 | ((code >> 18) & 0x3F);
-            outputData[outputIndex++] = 0x80 | ((code >> 12) & 0x3F);
-            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
-            outputData[outputIndex++] = 0x80 | (code & 0x3F);
-        }
-        else if (code < 0x7FFFFFFF)
-        {
-            outputData[outputIndex++] = 0xFC | (code >> 30);
-            outputData[outputIndex++] = 0x80 | ((code >> 24) & 0x3F);
-            outputData[outputIndex++] = 0x80 | ((code >> 18) & 0x3F);
-            outputData[outputIndex++] = 0x80 | ((code >> 12) & 0x3F);
-            outputData[outputIndex++] = 0x80 | ((code >> 6) & 0x3F);
-            outputData[outputIndex++] = 0x80 | (code & 0x3F);
-        }
-    }
-
-    outputData[outputIndex++] = 0;
-
-    var tmpBuffer = new Uint8Array(tmpStrings, 0, outputIndex);
-    return { length : outputIndex, buf : tmpBuffer };
-};
-
-function Zlib()
-{
-    this.zipFile = null;
-	this.memory  = null;
-    this.isInit  = false;
-    this.files = [];
-	
-	this.GetZip = function()
-	{
-		if (!this.isInit)  return null;
-		if (!this.zipFile) return null;
-		this.GetFilesInZip();
-		
-		// вычисление длины дерева
-		var _paths = [];
-		var nLength = 4;
-		for (var i = 0; i < this.files.length; i++)
-		{
-			_paths.push(allocString(this.files[i].path));
-			nLength += 4;
-			nLength += _paths[i].length;
-
-			nLength += 4;
-			nLength += this.files[i].length;
-		}
-		// создание дерева файлов
-		var tmpBuffer = new Uint8Array(nLength);
-		tmpBuffer.set([
-			(nLength >>  0) & 0xFF,
-			(nLength >>  8) & 0xFF,
-			(nLength >> 16) & 0xFF,
-			(nLength >> 24) & 0xFF
-		], 0);
-		var index = 4;
-		for (var i = 0; i < this.files.length; i++)
-		{
-			tmpBuffer.set([
-				(_paths[i].length >>  0) & 0xFF,
-				(_paths[i].length >>  8) & 0xFF,
-				(_paths[i].length >> 16) & 0xFF,
-				(_paths[i].length >> 24) & 0xFF
-			], index);
-			index += 4;
-			tmpBuffer.set(_paths[i].buf, index);
-			index += _paths[i].length;
-			
-			tmpBuffer.set([
-				(this.files[i].length >>  0) & 0xFF,
-				(this.files[i].length >>  8) & 0xFF,
-				(this.files[i].length >> 16) & 0xFF,
-				(this.files[i].length >> 24) & 0xFF
-			], index);
-			index += 4;
-			tmpBuffer.set(this.files[i].file, index);
-			index += this.files[i].length;
-		}
-		
-		var pointer = Module["_Zlib_Malloc"](tmpBuffer.length);
-		if (!pointer) return null;
-		Module["HEAP8"].set(tmpBuffer, pointer);
-		var pointerZip = Module["_Zlib_CompressFiles"](this.zipFile, pointer);
-		if (!pointerZip) return null;
-		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerZip, 4);
-        var len = _lenFile[0];
-		var zip = new Uint8Array(Module["HEAP8"].buffer, pointerZip + 4, len);
-		Module["_Zlib_Free"](pointer);
-		return zip;
-	}
-	
-	this.CreateZipFromFiles = function(_files)
-	{
-		if (!this.isInit) return null;
-		if (this.zipFile) this.CloseZip();
-		this.zipFile = Module["_Zlib_Create"]();
-		for (var i = 0; i < _files.length; i++)
-			this.files.push({
-				path   : _files[i].path,
-				length : _files[i].length,
-				file   : _files[i].file
-			});
+		this.engine = 0; // указатель на нативный класс Zlib
+		this.files = {};
 	}
 
-	this.AddFileInZip = function(_file)
-	{
-		if (!this.isInit)  return false;
-		if (!this.zipFile) return false;
-		if (!this.files.length) this.GetFilesInZip();
-		else if (!this.files[0].length) this.GetFilesInZip();
-		
-		var findFile = this.files.find(o => o.path == _file.path);
-		if (findFile && findFile.length != _file.length)
-		{
-			this.DeleteFileInZip(findFile.path)
-			this.files.push(_file);
-		}
-		else if (!findFile)
-			this.files.push(_file);
-		return true;
-	}
-	
-	this.DeleteFileInZip = function(_path)
-	{
-		if (!this.isInit)  return false;
-		if (!this.zipFile) return false;
-		if (!this.files.length) this.GetFilesInZip();
-		else if (!this.files[0].length) this.GetFilesInZip();
-		
-		for (var i = 0; i < this.files.length; i++)
-		{
-			if (this.files[i].path == _path)
-			{
-				this.files.splice(i, 1);
-				return true;
-			}
-		}
-		return false;
-	}
+	/**
+	 * Check loaded wasm/asmjs module
+	 */
+	ZLib.prototype.isModuleInit = false;
 
-    this.GetPathsInZip = function()
-    {
-		if (!this.isInit || !this.zipFile) return null;
-		if (this.files.length)
+	/**
+	 * Open archive from bytes
+	 * @param {Uint8Array | ArrayBuffer} buf
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.open = function(buf)
+	{
+		if (!this.isModuleInit)
+			return false;
+
+		if (this.engine)
+			this.close();
+
+		if (!buf)
+			return false;
+
+		var arrayBuffer = (undefined !== buf.byteLength) ? new Uint8Array(buf) : buf;
+
+		// TODO: открыли архив, и заполнили this.files
+		// объектами { path : null }
+
+		// копируем память в память webasm
+		var FileRawDataSize = arrayBuffer.length;
+		var FileRawData = Module["_Zlib_Malloc"](FileRawDataSize);
+		if (0 == FileRawData)
+			return false;
+		Module["HEAP8"].set(arrayBuffer, FileRawData);
+
+		// грузим данные
+		this.engine = Module["_Zlib_Open"](FileRawData, FileRawDataSize);
+		if (0 == this.engine)
 		{
-			var _paths = [];
-			for (var i = 0; i < this.files.length; i++)
-				_paths.push(this.files[i].path);
-			return _paths;
+			Module["_Zlib_Free"](FileRawData);
+			return false;
 		}
-		
+
 		// получаем пути в архиве
-        var pointer = Module["_Zlib_GetPathsInArchive"](this.zipFile);
-        if (!pointer)
-        {
-            Module["_Zlib_Destroy"](this.zipFile);
-            Module["_Zlib_Free"](this.memory);
-            return null;
-        }
-        var lenArray = new Int32Array(Module["HEAP8"].buffer, pointer, 4);
-        var len = lenArray[0];
-        len -= 4;
-        
-        var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
-        var index = 0;
-		var _paths = [];
-        while (index < len)
-        {
-            var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
-            index += 4;
-			var _path = readFromUtf8(buffer, index, lenRec);			
-			var findPath = this.files.find(o => o.path === _path);
-			if (!findPath)
-			{
-				this.files.push({
-					path   : _path,
-					length : 0,
-					file   : null
-				});
-				_paths.push(_path);
-			}
+		var pointer = Module["_Zlib_GetPaths"](this.engine);
+		if (0 == pointer)
+		{
+			Module["_Zlib_Close"](this.engine);
+			Module["_Zlib_Free"](FileRawData);
+			return false;
+		}
+		var lenArray = new Int32Array(Module["HEAP8"].buffer, pointer, 4);
+		var len = lenArray[0];
+		len -= 4;
+
+		var buffer = new Uint8Array(Module["HEAP8"].buffer, pointer + 4, len);
+		var index = 0;
+		while (index < len)
+		{
+			var lenRec = buffer[index] | buffer[index + 1] << 8 | buffer[index + 2] << 16 | buffer[index + 3] << 24;
+			index += 4;
+			var _path = "".fromUtf8(buffer, index, lenRec);
+			this.files[_path] = null;
 			index += lenRec;
-        }
-		return _paths;
-    }
-    
-	this.GetFilesInZip = function()
+		}
+		Module["_Zlib_Free"](FileRawData);
+		Module["_Zlib_Free"](pointer);
+		return true;
+	};
+
+	/**
+	 * Create new archive
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.create = function()
 	{
-		if (!this.isInit)  return [];
-		if (!this.zipFile) return [];
+		if (!this.isModuleInit)
+			return false;
+
+		if (this.engine)
+			this.close();
+
+		this.engine = Module["_Zlib_Create"]();
+		return !!this.engine;
+	};
+
+	/**
+	 * Save archive from current files
+	 * @returns {Uint8Array | null} zip-archive bytes, or null if error
+	 */
+	ZLib.prototype.save = function()
+	{
+		if (!this.isModuleInit || !this.engine)
+			return null;
+
+		var pointerZip = Module["_Zlib_Save"](this.engine);
+		if (0 == pointerZip)
+			return null;
+
+		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerZip, 4);
+		var len = _lenFile[0];
+		var zip = new Uint8Array(Module["HEAP8"].buffer, pointerZip + 4, len);
+		return zip;
+	};
+
+	/**
+	 * Get all file paths in archive
+	 * @returns {Array}
+	 */
+	ZLib.prototype.getPaths = function()
+	{
+		var retFiles = [];
+		if (!this.files)
+			return retFiles;
+
+		for (var path in this.files) 
+		{
+			if (this.files.hasOwnProperty(path))
+				retFiles.push(path);
+		}
+		return retFiles;
+	};
+
+	/**
+	 * Get uncomressed file from archive
+	 * @param {string} path
+	 * @returns {Uint8Array | null} bytes of uncompressed data, or null if error
+	 */
+	ZLib.prototype.getFile = function(path)
+	{
+		if (!this.isModuleInit || !this.engine)
+			return null;
+
+		// проверяем - есть ли файл вообще?
+		if (undefined === this.files[path])
+			return null;
+
+		// проверяем - может мы уже его разжимали?
+		if (null !== this.files[path])
+		{
+			if (this.files[path].l > 0)
+			{
+				return new Uint8Array(Module["HEAP8"].buffer, this.files[path].p, this.files[path].l);
+			}
+			else
+			{
+				var _lenFile = new Int32Array(Module["HEAP8"].buffer, this.files[path].p, 4);
+				var len = _lenFile[0];
+				return new Uint8Array(Module["HEAP8"].buffer, this.files[path].p + 4, len);
+			}
+		}
+
+		var tmp = path.toUtf8();
+		var pointer = Module["_Zlib_Malloc"](tmp.length);
+		if (0 == pointer)
+			return null;
+		Module["HEAP8"].set(tmp, pointer);
+
+		var pointerFile = Module["_Zlib_GetFile"](this.engine, pointer);
+		if (0 == pointerFile) 
+		{
+			Module["_Zlib_Free"](pointer);
+			return null;
+		}
+
+		var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
+		var len = _lenFile[0];
+
+		Module["_Zlib_Free"](pointer);
+		this.files[path] = { p : pointerFile, l : 0};
+		return new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
+	};
+
+	/**
+	 * Add uncomressed file to archive
+	 * @param {string} path
+	 * @param {Uint8Array} new file in archive
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.addFile = function(path, data)
+	{
+		if (!this.isModuleInit || !this.engine)
+			return false;
+
+		if (!data)
+			return false;
+
+		// проверяем - может такой файл уже есть? тогда его надо сначала удалить?
+		if (undefined !== this.files[path])
+			this.removeFile(path);
+
+		var tmp = path.toUtf8();
+		var pointer = Module["_Zlib_Malloc"](tmp.length);
+		if (0 == pointer)
+			return false;
+		Module["HEAP8"].set(tmp, pointer);
+
+		var arrayBuffer = (undefined !== data.byteLength) ? new Uint8Array(data) : data;
+
+		var FileRawDataSize = arrayBuffer.length;
+		var FileRawData = Module["_Zlib_Malloc"](FileRawDataSize);
+		if (0 == FileRawData)
+		{
+			Module["_Zlib_Free"](pointer);
+			return false;
+		}
+		Module["HEAP8"].set(arrayBuffer, FileRawData);
 		
-		var _paths = this.GetPathsInZip();
-		var _files = [];
-		for (var i = 0; i < _paths.length; i++)
-			_files.push(this.GetFileInZip(_paths[i]));
-		return _files;
-	}
-	
-    this.GetFileInZip = function(_path)
-    {
-        if (!this.isInit)  return null;
-        if (!this.zipFile) return null;
-        
-        var findFile = this.files.find(o => o.path === _path);
-        if (findFile && findFile.file) return findFile;
-        
-        var tmp = allocString(_path);
-        var pointer = Module["_Zlib_Malloc"](tmp.length);
-		if (!pointer) return null;
-        Module["HEAP8"].set(tmp.buf, pointer);
-        
-        var pointerFile = Module["_Zlib_GetFileFromArchive"](this.zipFile, pointer);
-        if (!pointerFile) 
-        {
-            Module["_Zlib_Free"](pointer);
-            return null;
-        }
-            
-        var _lenFile = new Int32Array(Module["HEAP8"].buffer, pointerFile, 4);
-        var len = _lenFile[0];
-        
-        var buffer = new Uint8Array(Module["HEAP8"].buffer, pointerFile + 4, len);
-        if (findFile)
+		Module["_Zlib_AddFile"](this.engine, pointer, FileRawData, FileRawDataSize);
+
+		this.files[path] = { p : FileRawData, l : FileRawDataSize};
+		Module["_Zlib_Free"](pointer);
+		return true;
+	};
+
+	/**
+	 * Remove file from archive
+	 * @param {string} path
+	 * @returns {boolean} success or not
+	 */
+	ZLib.prototype.removeFile = function(path)
+	{
+		if (!this.isModuleInit || !this.engine)
+			return false;
+
+		// проверяем - может такого файла и нет?
+		if (undefined === this.files[path])
+			return false;
+			
+		var tmp = path.toUtf8();
+		var pointer = Module["_Zlib_Malloc"](tmp.length);
+		if (0 == pointer)
+			return false;
+		Module["HEAP8"].set(tmp, pointer);
+		
+		Module["_Zlib_RemoveFile"](this.engine, pointer);
+
+		if (this.files[path] && this.files[path].p)
 		{
-			findFile.length = len;
-			findFile.file = buffer;
-			findFile = {
-				path   : _path,
-				length : len,
-				file   : buffer
-			};
+			Module["_Zlib_Free"](this.files[path].p);
+			delete this.files[path];
 		}
-		else
+		Module["_Zlib_Free"](pointer);
+		return true;
+	};
+
+	/**
+	 * Close & remove all used memory in archive
+	 * @returns {undefined}
+	 */
+	ZLib.prototype.close = function()
+	{
+		if (!this.isModuleInit || !this.engine)
+			return;
+
+		for (var i in this.files)
 		{
-			findFile = {
-				path   : _path,
-				length : len,
-				file   : buffer
-			};
-			this.files.push(findFile);
+			if (this.files[i] && this.files[i].p)
+				Module["_Zlib_Free"](this.files[i].p);
 		}
 
-        Module["_Zlib_Free"](pointer);
-        return findFile;
-    }
-    
-    this.OpenZipFromBuffer = function(dataBuffer)
-    {
-		var uint8DataBuffer = new Uint8Array(dataBuffer);
-		return this.OpenZipFromUint8Array(uint8DataBuffer);
-    }
-	
-	this.OpenZipFromUint8Array = function(dataBuffer)
-    {
-        if (!this.isInit) return null;
-		if (this.zipFile) this.CloseZip();
+		this.files = {};
+		if (this.engine)
+			Module["_Zlib_Free"](this.engine);
+		this.engine = 0;
+	};
 
-        // копируем память в память webasm
-        var FileRawDataSize = dataBuffer.length;
-        this.memory = Module["_Zlib_Malloc"](FileRawDataSize);
-        if (!this.memory) return null;
-        Module["HEAP8"].set(dataBuffer, this.memory);
+	/**
+	 * Get image type
+	 * @returns {Number}
+	 */
+	ZLib.prototype.getImageType = function(path)
+	{
+		let fileData = this.getFile(path);
+		return Module["_Image_GetFormat"](this.files[path].p + 4, fileData.length);
+	};
 
-        // грузим данные
-        this.zipFile = Module["_Zlib_Load"](this.memory, FileRawDataSize);
-        if (!this.zipFile)
-        {
-            Module["_Zlib_Free"](this.memory);
-            return null;
-        }
-		this.GetPathsInZip();
-        return this;
-    }
+	/**
+	 * Get image in needed format
+	 * @returns {Uint8Array}
+	 */
+	ZLib.prototype.getImageAsFormat = function(path, format)
+	{
+		let fileData = this.getFile(path);
+		let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, format);
+		let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+		let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
 
-    this.CloseZip = function()
-    {
-        if (!this.isInit) return;
-        if (this.zipFile) Module["_Zlib_Destroy"](this.zipFile);
-		if (this.memory)  Module["_Zlib_Free"](this.memory);
-        this.zipFile = null;
-		this.memory  = null;
-        this.files = [];
-    }
-}
+		let copyData = new Uint8Array(encodedSize);
+		copyData.set(new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize));
 
-window.nativeZlibEngine = new Zlib();
-window.onEngineInit = function()
-{
-    window.nativeZlibEngine.isInit = true;
-};
+		Module["_Raster_DestroyEncodedData"](encodedData);
+
+		return copyData;
+	};
+	/**
+	 * Get image as svg (for simple test)
+	 * @returns {string}
+	 */
+	ZLib.prototype.getImageAsSvg = function(path)
+	{
+		let fileData = this.getFile(path);
+		let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, 24);
+		let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+		let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
+
+		let string = String.prototype.fromUtf8(new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize));
+
+		Module["_Raster_DestroyEncodedData"](encodedData);
+
+		return string;
+	};
+	/**
+	 * Get image blob for browser
+	 * @returns {Blob}
+	 */
+	ZLib.prototype.getImageBlob = function(path)
+	{
+		let imageType = this.getImageType(path);
+		if (imageType != 10 && imageType != 21)
+		{
+			return new Blob([this.getFile(path)], {type:AscCommon.openXml.GetMimeType(AscCommon.GetFileExtension(path))});
+		}
+
+		let fileData = this.getFile(path);
+		let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, 24);
+		let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+		let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
+
+		let blob = new Blob([new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize)], {type : AscCommon.openXml.GetMimeType("svg")});
+
+		Module["_Raster_DestroyEncodedData"](encodedData);
+
+		return blob;
+	};
+
+	window.AscCommon = window.AscCommon || {};
+	window.AscCommon.CZLibEngineJS = ZLib;
+	window.onZlibEngineInit = function()
+	{
+		ZLib.prototype.isModuleInit = true;
+		window["ZLibModule_onLoad"] && window["ZLibModule_onLoad"]();
+	};
 
 })(window, undefined);
+

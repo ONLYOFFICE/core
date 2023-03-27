@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -37,7 +37,7 @@
 #include "../../DesktopEditor/common/File.h"
 
 #ifndef DISABLE_PDF_CONVERTATION
-#include "../../PdfWriter/PdfRenderer.h"
+#include "../../PdfFile/PdfFile.h"
 #endif
 
 #ifndef M_PI
@@ -106,7 +106,7 @@ namespace XPS
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
-			wsNodeName = oReader.GetName();
+			wsNodeName = oReader.GetNameNoNS();
 			if (wsNodeName == L"PathGeometry")
 			{				
 				CWString wsKey, wsValue, wsTrasform;
@@ -155,6 +155,9 @@ namespace XPS
 	}
 	bool CImageBrush::SetToRenderer(IRenderer* pRenderer)
 	{
+		if (!m_wsRoot)
+			return false;
+
 		std::wstring wsPath = m_wsPath.c_stdstr();
 		if (!m_wsRoot->exists(wsPath))
 		{
@@ -201,7 +204,7 @@ namespace XPS
 
 		if (c_nPDFWriter == lRendererType)
 		{
-			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+			CPdfFile* pPdf = (CPdfFile*)pRenderer;
 			pPdf->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);
 			pPdf->SetLinearGradient(m_dX0, m_dY0, m_dX1, m_dY1);
 		}
@@ -228,7 +231,7 @@ namespace XPS
 
 		if (c_nPDFWriter == lRendererType)
 		{
-			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+			CPdfFile* pPdf = (CPdfFile*)pRenderer;
 			pPdf->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);
             pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
 		}
@@ -244,7 +247,7 @@ namespace XPS
 	CBrush* ReadBrushNode(XmlUtils::CXmlLiteReader& oReader, const double& dCurOpacity, CWString* pwsKey)
 	{
 		CBrush* pBrush = NULL;
-		CWString wsNodeName = oReader.GetName();
+		CWString wsNodeName = oReader.GetNameNoNS();
 		if (wsNodeName == L"SolidColorBrush")
 		{
 			int nBgr = 0, nAlpha = 255;
@@ -398,7 +401,7 @@ namespace XPS
 				int nGrDepth = oReader.GetDepth();
 				while (oReader.ReadNextSiblingNode(nGrDepth))
 				{
-					wsNodeName = oReader.GetName();
+					wsNodeName = oReader.GetNameNoNS();
 					if ((wsNodeName == L"LinearGradientBrush.GradientStops" && bLinearGradient)
 						|| (wsNodeName == L"RadialGradientBrush.GradientStops" && !bLinearGradient))
 					{
@@ -407,7 +410,7 @@ namespace XPS
 				}
 			}
 
-            LONG lCount = std::min(vColors.size(), vPositions.size());
+			LONG lCount = std::min(vColors.size(), vPositions.size());
 			if (lCount <= 0)
 			{
 				delete pBrush;

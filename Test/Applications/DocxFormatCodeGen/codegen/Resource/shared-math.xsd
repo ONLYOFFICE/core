@@ -488,7 +488,26 @@
   </xsd:group>
   <xsd:group name="EG_OMathElements">
     <xsd:choice>
-      <xsd:element name="todo_EG_OMathMathElements" type="CT_String" minOccurs="0"/>
+      <xsd:element name="acc" type="CT_Acc"/>
+      <xsd:element name="bar" type="CT_Bar"/>
+      <xsd:element name="box" type="CT_Box"/>
+      <xsd:element name="borderBox" type="CT_BorderBox"/>
+      <xsd:element name="d" type="CT_D"/>
+      <xsd:element name="eqArr" type="CT_EqArr"/>
+      <xsd:element name="f" type="CT_F"/>
+      <xsd:element name="func" type="CT_Func"/>
+      <xsd:element name="groupChr" type="CT_GroupChr"/>
+      <xsd:element name="limLow" type="CT_LimLow"/>
+      <xsd:element name="limUpp" type="CT_LimUpp"/>
+      <xsd:element name="m" type="CT_M"/>
+      <xsd:element name="nary" type="CT_Nary"/>
+      <xsd:element name="phant" type="CT_Phant"/>
+      <xsd:element name="rad" type="CT_Rad"/>
+      <xsd:element name="sPre" type="CT_SPre"/>
+      <xsd:element name="sSub" type="CT_SSub"/>
+      <xsd:element name="sSubSup" type="CT_SSubSup"/>
+      <xsd:element name="sSup" type="CT_SSup"/>
+      <xsd:element name="r" type="CT_R"/>
       <xsd:group ref="w:EG_PContentMath"/>
     </xsd:choice>
   </xsd:group>
@@ -500,7 +519,27 @@
   <xsd:complexType name="CT_OMathArg">
     <xsd:sequence>
       <xsd:element name="argPr" type="CT_OMathArgPr" minOccurs="0"/>
-      <xsd:element name="todo_EG_OMathElements" type="CT_String" minOccurs="0"/>
+      <xsd:element name="acc" type="CT_Acc"/>
+      <xsd:element name="bar" type="CT_Bar"/>
+      <xsd:element name="box" type="CT_Box"/>
+      <xsd:element name="borderBox" type="CT_BorderBox"/>
+      <xsd:element name="d" type="CT_D"/>
+      <xsd:element name="eqArr" type="CT_EqArr"/>
+      <xsd:element name="f" type="CT_F"/>
+      <xsd:element name="func" type="CT_Func"/>
+      <xsd:element name="groupChr" type="CT_GroupChr"/>
+      <xsd:element name="limLow" type="CT_LimLow"/>
+      <xsd:element name="limUpp" type="CT_LimUpp"/>
+      <xsd:element name="m" type="CT_M"/>
+      <xsd:element name="nary" type="CT_Nary"/>
+      <xsd:element name="phant" type="CT_Phant"/>
+      <xsd:element name="rad" type="CT_Rad"/>
+      <xsd:element name="sPre" type="CT_SPre"/>
+      <xsd:element name="sSub" type="CT_SSub"/>
+      <xsd:element name="sSubSup" type="CT_SSubSup"/>
+      <xsd:element name="sSup" type="CT_SSup"/>
+      <xsd:element name="r" type="CT_R"/>
+      <xsd:group ref="w:EG_PContentMath"/>
       <xsd:element name="ctrlPr" type="CT_CtrlPr" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>

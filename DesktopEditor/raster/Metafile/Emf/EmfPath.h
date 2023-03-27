@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,10 +32,9 @@
 #ifndef _METAFILE_EMF_EMFPATH_H
 #define _METAFILE_EMF_EMFPATH_H
 
+#include "../Common/MetaFileObjects.h"
 #include "EmfTypes.h"
-#include "../Wmf/WmfTypes.h"
 #include <vector>
-#include "../Common/IOutputDevice.h"
 
 namespace MetaFile
 {
@@ -58,7 +57,7 @@ namespace MetaFile
 		virtual ~CEmfPathCommandBase()
 		{
 		}
-		virtual EEmfPathCommandType GetType() = 0;
+		virtual EEmfPathCommandType GetType() const = 0;
 	};
 	class CEmfPathMoveTo : public CEmfPathCommandBase
 	{
@@ -71,7 +70,7 @@ namespace MetaFile
 		virtual ~CEmfPathMoveTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_MOVETO;
 		}
@@ -92,7 +91,7 @@ namespace MetaFile
 		virtual ~CEmfPathLineTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_LINETO;
 		}
@@ -117,7 +116,7 @@ namespace MetaFile
 		virtual ~CEmfPathCurveTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_CURVETO;
 		}
@@ -146,7 +145,7 @@ namespace MetaFile
 		virtual ~CEmfPathArcTo()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_ARCTO;
 		}
@@ -169,7 +168,7 @@ namespace MetaFile
 		virtual ~CEmfPathClose()
 		{
 		}
-		virtual EEmfPathCommandType GetType()
+		virtual EEmfPathCommandType GetType() const override
 		{
 			return EMF_PATHCOMMAND_CLOSE;
 		}
@@ -177,7 +176,7 @@ namespace MetaFile
 	public:
 	};
 
-	class CEmfPath
+	class CEmfPath : public IPath
 	{
 	public:
 
@@ -190,7 +189,7 @@ namespace MetaFile
 		bool CurveTo(double dX1, double dY1, double dX2, double dY2, double dXE, double dYE);
 		bool ArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep);
 		bool Close();
-		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
+		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, int nClipMode = -1) override;
 		void DrawWithoutClean(IOutputDevice* pOutput, bool bStroke, bool bFill);
 	protected:
 

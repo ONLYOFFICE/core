@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -597,6 +597,9 @@ namespace NSEditorApi
         js_wrapper<std::string>		m_sBase64;	
         js_wrapper<CAscBinaryData>	m_oBinaryData;
         js_wrapper<std::wstring>    m_sAdditionalParams;
+        js_wrapper<int>             m_nPositionX;
+        js_wrapper<int>             m_nPositionY;
+        js_wrapper<int>             m_nWrapType;
         
     public:
         CAscInsertImage()
@@ -612,6 +615,9 @@ namespace NSEditorApi
         LINK_PROPERTY_STRINGA_JS(Base64)
         LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
         LINK_PROPERTY_STRING_JS(AdditionalParams)
+        LINK_PROPERTY_INT_JS(PositionX)
+        LINK_PROPERTY_INT_JS(PositionY)
+        LINK_PROPERTY_INT_JS(WrapType)
     };
 }
 
@@ -2740,6 +2746,25 @@ namespace NSEditorApi
         }
     };
     
+    class CAscPageScrollInfo : public IMenuEventDataBase
+    {
+    public:
+        int status;
+        int page;
+        int pages;
+        
+    public:
+        CAscPageScrollInfo()
+        {
+            status = 0;
+            page = 0;
+            pages = 0;
+        }
+        virtual ~CAscPageScrollInfo()
+        {
+        }
+    };
+
     class CAscStatisticInfo : public IMenuEventDataBase
     {
     public:

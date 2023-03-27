@@ -1,0 +1,35 @@
+{
+	"name": "hyphen",
+	"res_folder": "../deploy/engine",
+	"wasm": true,
+	"asm": true,
+	"embed_mem_file": true,
+	"run_before": "",
+	"run_after": "after.py",
+	"base_js_content": "../module.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-fno-exceptions",
+		"-fno-rtti",
+		"-Wno-unused-command-line-argument",
+		"-sALLOW_MEMORY_GROWTH"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+		"_hyphenCreateApplication",
+		"_hyphenDestroyApplication",
+		"_hyphenLoadDictionary",
+		"_hyphenWord"
+	],
+	"include_path": ["../src"],
+	"define": [],
+	"compile_files_array": [
+	{
+		"name": "s",
+		"folder": "../src",
+		"files": ["ExportedFunctions.cpp", "HyphenApplication.cpp", "../../hyphen/hnjalloc.c"]
+	}
+	]
+}

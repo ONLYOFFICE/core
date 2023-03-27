@@ -13,7 +13,6 @@ PWD_ROOT_DIR = $$PWD
 include(../Common/base.pri)
 
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
-ADD_DEPENDENCY(kernel)
 
 core_linux {    
     QMAKE_LFLAGS += "-Wl,-rpath,\'\$$ORIGIN\'"

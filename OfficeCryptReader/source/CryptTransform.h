@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -99,8 +99,7 @@ struct _ecmaCryptData
 	int			hashSize	= 0x14;
 	int			blockSize	= 0x10;
 	int			saltSize	= 0x10;
-
-	std::string dataSaltValue;
+	
 	std::string saltValue;
 	std::string encryptedKeyValue;
 	std::string encryptedVerifierInput;
@@ -108,6 +107,15 @@ struct _ecmaCryptData
 	  
 	std::string encryptedHmacKey;
 	std::string encryptedHmacValue;
+
+//---------------------------------------------------------------------------------------------
+	CRYPT_METHOD::_hashAlgorithm	dataHashAlgorithm = CRYPT_METHOD::SHA1;
+	CRYPT_METHOD::_cipherAlgorithm	dataCipherAlgorithm = CRYPT_METHOD::AES_CBC;
+	std::string dataSaltValue;
+	int			dataKeySize = 0x10;
+	int			dataHashSize = 0x14;
+	int			dataBlockSize = 0x10;
+	int			dataSaltSize = 0x10;
 
 	bool bAgile	= true;
 

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -126,9 +126,14 @@ namespace NSGraphics
         // test
 
         virtual void put_BrushGradInfo(const NSStructures::GradientInfo &_ginfo) = 0;
+        virtual void put_BlendMode(const unsigned int nBlendMode) = 0;
     };
 
     GRAPHICS_DECL IGraphicsRenderer* Create();
+
+	GRAPHICS_DECL std::string GetHatchBase64(const std::wstring& name,
+											 unsigned char r1, unsigned char g1, unsigned char b1, unsigned char a1,
+											 unsigned char r2, unsigned char g2, unsigned char b2, unsigned char a2);
 }
 
 

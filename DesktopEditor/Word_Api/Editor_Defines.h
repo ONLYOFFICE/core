@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -689,6 +689,12 @@
 #define c_oAscContentControlSpecificTypeDateTime      5
 #define c_oAscContentControlSpecificTypeTOC           10
 
+#define c_oAscEDocProtectComments 0
+#define c_oAscEDocProtectForms 1
+#define c_oAscEDocProtectNone 2
+#define c_oAscEDocProtectReadOnly 3
+#define c_oAscEDocProtectTrackedChanges 4
+
 #define INSERT_PAGE_NUM_PARAM(AlignV, AlignH)	((AlignV << 16) | AlignH)
 
 // MENU COMMANDS
@@ -772,6 +778,7 @@
 #define ASC_MENU_EVENT_TYPE_USER_ZOOM               301
 
 #define ASC_MENU_EVENT_TYPE_INSERT_CHART            400
+#define ASC_MENU_EVENT_TYPE_INSERT_SCREEN_IMAGE     401
 #define ASC_MENU_EVENT_TYPE_ADD_CHART_DATA          440
 #define ASC_MENU_EVENT_TYPE_GET_CHART_DATA          450
 #define ASC_MENU_EVENT_TYPE_SET_CHART_DATA          460
@@ -784,6 +791,8 @@
 #define ASC_MENU_EVENT_TYPE_CHANGE_COLOR_SCHEME     2415    //  SET(int)
 #define ASC_MENU_EVENT_TYPE_GET_COLOR_SCHEME        2416    //  GET(int)
 #define ASC_MENU_EVENT_TYPE_THEMECOLORS             2417
+
+#define ASC_MENU_EVENT_TYPE_CHANGE_MOBILE_MODE      2500
 
 #define ASC_MENU_EVENT_TYPE_GO_TO_INTERNAL_LINK     5000
 
@@ -800,6 +809,8 @@
 
 #define ASC_COAUTH_EVENT_TYPE_INSERT_URL_IMAGE      21000
 #define ASC_COAUTH_EVENT_TYPE_LOAD_URL_IMAGE        21001
+#define ASC_COAUTH_EVENT_TYPE_REPLACE_URL_IMAGE     21002
+#define ASC_COAUTH_EVENT_TYPE_INSERT_SCREEN_URL_IMAGE 21003
 
 #define ASC_MENU_EVENT_TYPE_ADVANCED_OPTIONS        22000
 #define ASC_MENU_EVENT_TYPE_SET_PASSWORD            22001

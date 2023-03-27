@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -376,7 +376,7 @@ namespace NSStructures
 			TextureAlpha = dNewAlpha;
 		}
 
-		INT IsEqual(CBrush *pBrush)
+        INT IsEqual(const CBrush *pBrush)
 		{
 			if (NULL == pBrush)
 				return FALSE;
@@ -385,7 +385,7 @@ namespace NSStructures
 					(Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
 					(Alpha1 == pBrush->Alpha1) && (Alpha2 == pBrush->Alpha2) && (LinearAngle == pBrush->LinearAngle) &&
 					(TexturePath == pBrush->TexturePath) && (TextureAlpha == pBrush->TextureAlpha) && (TextureMode == pBrush->TextureMode) &&
-					(Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
+                    (Rectable == pBrush->Rectable) && (Rect.Equals(pBrush->Rect)));
 		}
 
 		void SetDefaultParams()
@@ -444,6 +444,7 @@ namespace NSStructures
 
 			LinearAngle = other.LinearAngle;
 			m_arrSubColors = other.m_arrSubColors;
+            m_oGradientInfo = other.m_oGradientInfo;
 		}
 		CBrush &operator=(const CBrush &other)
 		{
@@ -464,6 +465,7 @@ namespace NSStructures
 
 			LinearAngle = other.LinearAngle;
 			m_arrSubColors = other.m_arrSubColors;
+            m_oGradientInfo = other.m_oGradientInfo;
 
 			return *this;
 		}
@@ -501,7 +503,7 @@ namespace NSStructures
 
 		int FaceIndex;
 
-		int IsEqual(CFont *pFont)
+        int IsEqual(const CFont *pFont)
 		{
 			if (NULL == pFont)
 				return FALSE;
@@ -511,7 +513,7 @@ namespace NSStructures
 					(Underline == pFont->Underline) && (Strikeout == pFont->Strikeout));
 		}
 
-		int IsEqual2(CFont *pFont)
+        int IsEqual2(const CFont *pFont)
 		{
 			if (NULL == pFont)
 				return FALSE;
@@ -582,6 +584,19 @@ namespace NSStructures
 			return 4;
 		}
 
+        LONG GetTextFontStyle() const
+        {
+            if ((0 == Bold) && (0 == Italic))
+                return 0;
+            if ((0 == Bold) && (1 == Italic))
+                return 1;
+            if ((1 == Bold) && (0 == Italic))
+                return 2;
+            if ((1 == Bold) && (1 == Italic))
+                return 3;
+            return 4;
+        }
+
 		CFont()
 		{
 			SetDefaultParams();
@@ -592,7 +607,7 @@ namespace NSStructures
 		}
 		CFont &operator=(const CFont &other)
 		{
-			Name = other.Name;
+            Name = other.Name;
 			Path = other.Path;
 			Size = other.Size;
 			Bold = other.Bold;

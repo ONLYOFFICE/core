@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -31,6 +31,8 @@
  */
 #include <iostream>
 #include <iomanip>
+#include <sstream>
+#include <boost/format.hpp>
 
 #include "CryptTransform.h"
 
@@ -51,9 +53,8 @@
 #include "../../Common/3dParty/cryptopp/zinflate.h"
 #include "../../Common/3dParty/cryptopp/zdeflate.h"
 
-#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#include "../../Common/DocxFormat/Source/Base/Types_32.h"
-#include "../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../OOXML/Base/unicode_util.h"
+#include "../../OOXML/Base/Base.h"
 
 #include "../../DesktopEditor/common/File.h"
 static const unsigned char encrVerifierHashInputBlockKey[8]			= { 0xfe, 0xa7, 0xd2, 0x76, 0x3b, 0x4b, 0x9e, 0x79 };
@@ -728,20 +729,20 @@ bool ECMADecryptor::CheckDataIntegrity(unsigned char* data, int  size)
 	_buf secretKey;
 	DecryptCipher( agileKey, pSalt, pKeyValue, secretKey, cryptData.cipherAlgorithm);  
 //----			
-	_buf iv1 = HashAppend(pDataSalt, pBlockHmacKey, cryptData.hashAlgorithm);
-	CorrectHashSize(iv1, cryptData.blockSize, 0x36);
+	_buf iv1 = HashAppend(pDataSalt, pBlockHmacKey, cryptData.dataHashAlgorithm);
+	CorrectHashSize(iv1, cryptData.dataBlockSize, 0x36);
 	
-	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.hashAlgorithm);
-	CorrectHashSize(iv2, cryptData.blockSize, 0x36);
+	_buf iv2 = HashAppend(pDataSalt, pBlockHmacValue, cryptData.dataHashAlgorithm);
+	CorrectHashSize(iv2, cryptData.dataBlockSize, 0x36);
 
 	_buf pSaltHmac;
-	DecryptCipher(secretKey,  iv1, pEncHmacKey, pSaltHmac, cryptData.cipherAlgorithm);
+	DecryptCipher(secretKey,  iv1, pEncHmacKey, pSaltHmac, cryptData.dataCipherAlgorithm);
 	
 	_buf expected;
-	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.cipherAlgorithm);
+	DecryptCipher(secretKey,  iv2, pEncHmacValue, expected, cryptData.dataCipherAlgorithm);
 
 	std::string sData((char*)data, size);
-	_buf hmac = Hmac(pSaltHmac, cryptData.hashAlgorithm, sData);
+	_buf hmac = Hmac(pSaltHmac, cryptData.dataHashAlgorithm, sData);
 		
 	return (hmac == expected);
 }
@@ -783,9 +784,9 @@ void ECMADecryptor::Decrypt(unsigned char* data_inp, int  size, unsigned char*& 
 				sz = size - pos;
 			
 			_buf pIndex((unsigned char*)&i, 4);
-			iv = HashAppend(pDataSalt, pIndex, cryptData.hashAlgorithm);
+			iv = HashAppend(pDataSalt, pIndex, cryptData.dataHashAlgorithm);
 
-			CorrectHashSize(iv, cryptData.blockSize, 0x36);
+			CorrectHashSize(iv, cryptData.dataBlockSize, 0x36);
 			
 			_buf pInp(data_inp + pos, sz, false);
 			_buf pOut(data_out + pos, sz, false);
@@ -871,7 +872,7 @@ void ECMAWriteProtect::Generate()
 
 	_buf pHashBuf = HashAppend(pSalt, pPassword, data.hashAlgorithm);
 		
-	for (int i = 0; i < data.spinCount; i++)
+	for (_UINT32 i = 0; i < data.spinCount; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashBuf = HashAppend(pHashBuf, iterator, data.hashAlgorithm);
@@ -900,8 +901,10 @@ bool ECMAWriteProtect::VerifyWrike()
     wPasswordHash ^= (0x8000 | ('N' << 8) | 'K');
     wPasswordHash ^= p.length();
 
-	std::string sPasswordHash = XmlUtils::IntToString(wPasswordHash, "%4.4X");
-	
+	std::stringstream sstream;
+	sstream << boost::format("%4.4X") % wPasswordHash;
+	std::string sPasswordHash(sstream.str());
+
 	return data.hashValue == sPasswordHash;
 }
 bool ECMAWriteProtect::Verify()
@@ -913,7 +916,7 @@ bool ECMAWriteProtect::Verify()
 
 	_buf pHashTest = HashAppend(pSalt, pPassword, data.hashAlgorithm);
 		
-	for (int i = 0; i < data.spinCount; i++)
+	for (_UINT32 i = 0; i < data.spinCount; i++)
 	{
         _buf iterator((unsigned char*)&i, 4, false);
         pHashTest = HashAppend(pHashTest, iterator, data.hashAlgorithm);

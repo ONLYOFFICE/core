@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -75,19 +75,19 @@ namespace NSFontDictionary
 					bool bIsEqual = true;
 					for (int j = 1; j < nNameLen; ++j)
 					{
-						if ('\0' == _name[j] && j != (nNameLen - 1))
-						{
-							bIsEqual = false;
-							break;
-						}
-						if (pName[j] != (wchar_t)_name[j])
+                        if ('\0' == _name[j]) // короче чем нужно
+                        {
+                            bIsEqual = false;
+                            break;
+                        }
+                        if (pName[j] != (wchar_t)_name[j])
 						{
 							bIsEqual = false;
 							break;
 						}
 					}
 
-					if (bIsEqual)
+                    if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
 					{
 						nIndex = i;
 						break;
@@ -175,7 +175,7 @@ namespace NSFontDictionary
 				bool bIsEqual = true;
 				for (int j = 1; j < nNameLen; ++j)
 				{
-					if (((wchar_t)'\0') == _name[j] && j != (nNameLen - 1))
+                    if ('\0' == _name[j]) // короче чем нужно
 					{
 						bIsEqual = false;
 						break;
@@ -187,7 +187,7 @@ namespace NSFontDictionary
 					}
 				}
 
-				if (bIsEqual)
+                if (bIsEqual && _name[nNameLen] == '\0') // чтобы не длиннее, чем нужно
 				{
 					nIndex = i;
 					break;

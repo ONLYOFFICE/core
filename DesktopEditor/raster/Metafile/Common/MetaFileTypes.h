@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -48,6 +48,7 @@ typedef unsigned char BYTE;
 #endif
 
 #define METAFILE_RGBA(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(0) << 24 ) ) )
+#define INTCOLOR_TO_RGB(color) std::to_wstring(color >> 0 & 0xFF) + L", " + std::to_wstring(color >> 8 & 0xFF) + L", " + std::to_wstring(color >> 16 & 0xFF)
 
 #if !defined (_WIN32) && !defined(_WIN64)
 	#define BLACKONWHITE                 1
@@ -182,6 +183,20 @@ typedef unsigned char BYTE;
 #define TA_BOTTOM                    8
 #define TA_BASELINE                  24
 
+#if (WINVER >= 0x0400)
+#define TA_RTLREADING                256
+#define TA_MASK       (TA_BASELINE+TA_CENTER+TA_UPDATECP+TA_RTLREADING)
+#else
+#define TA_MASK       (TA_BASELINE+TA_CENTER+TA_UPDATECP)
+#endif
+
+#define VTA_BASELINE TA_BASELINE
+#define VTA_LEFT     TA_BOTTOM
+#define VTA_RIGHT    TA_TOP
+#define VTA_CENTER   TA_CENTER
+#define VTA_BOTTOM   TA_RIGHT
+#define VTA_TOP      TA_LEFT
+
 /* Binary raster ops */
 #define R2_BLACK            1   /*  0       */
 #define R2_NOTMERGEPEN      2   /* DPon     */
@@ -278,8 +293,71 @@ typedef unsigned char BYTE;
 #define GM_COMPATIBLE       1
 #define GM_ADVANCED         2
 
+// BRUSH STYLES
+#define HS_05Percent        6
+#define HS_10Percent        7
+#define HS_20Percent        8
+#define HS_25Percent        9
+#define HS_30Percent        10
+#define HS_40Percent        11
+#define HS_50Percent        12
+#define HS_60Percent        13
+#define HS_70Percent        14
+#define HS_75Percent        15
+#define HS_80Percent        16
+#define HS_90Percent        17
+
+#define HS_LTDOWNWARDDIAG   18
+#define HS_LTUPWARDDIAG     19
+#define HS_DNDOWNWARDDIAG   20
+#define HS_DNUPWARDDIAG     21
+#define HS_WDOWNWARDDIAG    22
+#define HS_WUPWARDDIAG      23
+
+#define HS_LTVERTICAL       24
+#define HS_LTHORIZONTAL     25
+#define HS_NVERTICAL        26
+#define HS_NHORIZONTAL      27
+#define HS_DNVERTICAL       28
+#define HS_DNHORIZONTAL     29
+
+#define HS_DASHDOWNWARDDIAG 30
+#define HS_DASHUPWARDDIAG   31
+#define HS_DASHHORIZONTAL   32
+#define HS_DASHVERTICAL     33
+
+#define HS_SMALLCONFETTI    34
+#define HS_LARGECONFETTI    35
+#define HS_ZIGZAG           36
+#define HS_WAVE             37
+#define HS_DIAGBRICK        38
+#define HS_HORIZBRICK       39
+#define HS_WEAVE            40
+#define HS_PLAID            41
+#define HS_DIVOT            42
+#define HS_DOTGRID          43
+#define HS_DOTDIAMOND       44
+#define HS_SHINGLE          45
+#define HS_TRELLIS          46
+#define HS_SPHERE           47
+#define HS_SGRID            48
+#define HS_SCHECHERBOARD    49
+#define HS_LCHECHERBOARD    50
+#define HS_OUTLINEDDIAMOND  51
+#define HS_SOLIDDIAMOND     52
+
 namespace MetaFile
 {
+        enum InterpretatorType
+        {
+                Emf,
+                Wmf,
+                Render,
+                XML,
+                Svg,
+                Array
+        };
+
 	enum EMetaFileBitCount
 	{
 		BI_BITCOUNT_0 = 0x0000,
@@ -294,6 +372,7 @@ namespace MetaFile
 	struct TEmfPointL;
 	struct TWmfPointS;
     struct TWmfRect;
+	struct TEmfRectL;
 
 	struct TRect
 	{
@@ -303,7 +382,12 @@ namespace MetaFile
 		int  nBottom;
 
 		TRect();
+		TRect(int nNewLeft, int nNewTop, int nNewRight, int nNewBottom);
+		TRect(const TWmfRect& oRect);
+		TRect(const TEmfRectL& oRect);
 		TRect& operator=(TWmfRect& oRect);
+		friend bool operator!=(const TRect& oLeftRect, const TRect& oRightRect);
+		friend bool operator==(const TRect& oLeftRect, const TRect& oRightRect);
     };
 
 	struct TRectD
@@ -320,6 +404,10 @@ namespace MetaFile
 			dRight  = 1024;
 			dBottom = 1024;
 		}
+		TRectD(double dNewLeft, double dNewTop, double dNewRight, double dNewBottom)
+		    : dLeft(dNewLeft), dTop(dNewTop), dRight(dNewRight), dBottom(dNewBottom)
+		{}
+
 		TRectD(TRect& oRect)
 		{
 			dLeft   = (double)oRect.nLeft;
@@ -342,6 +430,22 @@ namespace MetaFile
 			dRight  *= dValue;
 			dBottom *= dValue;
 			return *this;
+		}
+		void Update(bool bFlipedX, double bFlipedY)
+		{
+			if ((dTop > dBottom && !bFlipedY) || (dTop < dBottom && bFlipedY))
+			{
+				double dTemp = dBottom;
+				dBottom = dTop;
+				dTop = dTemp;
+			}
+
+			if ((dLeft > dRight && !bFlipedX) || (dLeft < dRight && bFlipedX))
+			{
+				double dTemp = dRight;
+				dRight = dLeft;
+				dLeft = dTemp;
+			}
 		}
     };
 
@@ -443,7 +547,7 @@ namespace MetaFile
 			Dy  = 0;
 		}
 
-		void Copy(TXForm* pOther)
+		void Copy(const TXForm* pOther)
 		{
 			M11 = pOther->M11;
 			M12	= pOther->M12;

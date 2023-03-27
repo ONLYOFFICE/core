@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -44,19 +44,36 @@ class GRAPHICS_DECL IMetafileToRenderter
 {
 public:
 	IRenderer* m_pRenderer;
-    void* m_pPicker;
+	void* m_pPicker;
+
+protected:
+	std::wstring m_sTempDir;
+	std::vector<std::wstring> m_arTempFiles;
+
+	std::wstring m_sThemesDir;
+	std::wstring m_sMediaDir;
+	std::wstring m_sInternalMediaDir;
 
 public:
-    IMetafileToRenderter(IRenderer* pRenderer);
-    virtual ~IMetafileToRenderter();
+	IMetafileToRenderter(IRenderer* pRenderer);
+	virtual ~IMetafileToRenderter();
 
 public:
-	virtual std::wstring GetImagePath(const std::wstring& sPath) = 0;
-    virtual void EnableBrushRect(bool bValue);
-    virtual void SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1);
-    virtual void SetRadialGradiant(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1);
-    virtual void InitPicker(const std::wstring& sFontsFolder);
-    virtual void InitPicker(NSFonts::IApplicationFonts* pFonts);
+	virtual std::wstring GetImagePath(const std::wstring& sPath);
+	virtual void SetLinearGradiant(const double& x0, const double& y0, const double& x1, const double& y1);
+	virtual void SetRadialGradiant(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1);
+	virtual void InitPicker(const std::wstring& sFontsFolder);
+	virtual void InitPicker(NSFonts::IApplicationFonts* pFonts);
+
+	void SetTempDirectory(const std::wstring& sDir);
+	std::wstring GetTempDirectory();
+
+	void SetMediaDirectory(const std::wstring& sDir);
+	std::wstring GetMediaDirectory();
+	void SetInternalMediaDirectory(const std::wstring& sDir);
+	std::wstring GetInternalMediaDirectory();
+	void SetThemesDirectory(const std::wstring& sDir);
+	std::wstring GetThemesDirectory();
 };
 
 namespace NSOnlineOfficeBinToPdf
@@ -84,12 +101,13 @@ namespace NSOnlineOfficeBinToPdf
 		ctBrushColor2					= 23,
 		ctBrushAlpha1					= 24,
 		ctBrushAlpha2					= 25,
-		ctBrushTexturePath				= 26,
+		ctBrushTexturePathOld			= 26, // для совместимости
 		ctBrushTextureAlpha			    = 27,
 		ctBrushTextureMode				= 28,
 		ctBrushRectable				    = 29,
 		ctBrushRectableEnabled 		    = 30,
 		ctBrushGradient                 = 31,
+		ctBrushTexturePath              = 32,
 
 		// font
 		ctFontXML						= 40,
@@ -119,6 +137,7 @@ namespace NSOnlineOfficeBinToPdf
 		// text
 		ctDrawText						= 80,
 		ctDrawTextEx					= 81,
+		ctDrawTextCodeGid				= 83,
 
 		// pathcommands
 		ctPathCommandMoveTo			    = 91,
@@ -159,6 +178,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctHyperlink                     = 160,
 		ctLink                          = 161,
 		ctFormField                     = 162,
+		ctDocInfo                       = 163,
 
 		ctPageWidth                     = 200,
 		ctPageHeight                    = 201,
@@ -177,7 +197,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctError						    = 255
 	};
 
-    bool GRAPHICS_DECL ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector);
+	bool GRAPHICS_DECL ConvertBufferToRenderer(BYTE* pBuffer, LONG lBufferLen, IMetafileToRenderter* pCorrector);
 }
 
 #endif // _BUILD_METAFILE_TO_IRENDERER_H_

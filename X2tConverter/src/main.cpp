@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,36 +46,7 @@ using namespace NExtractTools;
 #if !defined(_WIN32) && !defined (_WIN64)
 static std::wstring utf8_to_unicode(const char *src)
 {
-	if (src == NULL) return _T("");
-    std::string temp = src;
-
-	unsigned int nLength = temp.length();
-
-    UTF32 *pStrUtf32 = new UTF32 [nLength+1];
-    memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
-
-
-    UTF8 *pStrUtf8 = (UTF8 *) src;
-
-    // this values will be modificated
-    const UTF8 *pStrUtf8_Conv = pStrUtf8;
-    UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-    ConversionResult eUnicodeConversionResult = ConvertUTF8toUTF32 (&pStrUtf8_Conv,
-                                                                    &pStrUtf8[nLength]
-                                                                    , &pStrUtf32_Conv
-                                                                    , &pStrUtf32 [nLength]
-                                                                    , strictConversion);
-
-    if (conversionOK != eUnicodeConversionResult)
-    {
-        delete [] pStrUtf32;
-        return L"";
-    }
-    std::wstring wsEntryName ((wchar_t *) pStrUtf32);
-
-    delete [] pStrUtf32;
-    return wsEntryName;
+    return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)src, (LONG)strlen(src));
 }
 #endif
 
@@ -94,7 +65,12 @@ static std::wstring utf8_to_unicode(const char *src)
 #endif
 #endif
 {
-   // check arguments
+//#define __CRTDBG_MAP_ALLOC
+//#include <crtdbg.h>
+//#define DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+//#define new DEBUG_NEW
+		
+// check arguments
     if (argc < 2)
     {
         // print out help topic
@@ -132,7 +108,7 @@ static std::wstring utf8_to_unicode(const char *src)
 #if !defined(_WIN32) && !defined (_WIN64)
     sExePath    = utf8_to_unicode(argv [0]);
     sArg1       = utf8_to_unicode(argv [1]);
-	if (argc >= 3) sArg2   = utf8_to_unicode(argv [2]);
+    if (argc >= 3) sArg2   = utf8_to_unicode(argv [2]);
 #else
 	sExePath	= std::wstring(argv [0]);
     sArg1		= std::wstring(argv [1]);
@@ -158,9 +134,9 @@ static std::wstring utf8_to_unicode(const char *src)
 		std::wstring sArg3, sArg4, sArg5;
 
 #if !defined(_WIN32) && !defined (_WIN64)
-		if (argc >= 4) sArg3   = utf8_to_unicode(argv [3]);
-		if (argc >= 5) sArg4   = utf8_to_unicode(argv [4]);
-		if (argc >= 6) sArg5   = utf8_to_unicode(argv [5]);
+        if (argc >= 4) sArg3   = utf8_to_unicode(argv [3]);
+        if (argc >= 5) sArg4   = utf8_to_unicode(argv [4]);
+        if (argc >= 6) sArg5   = utf8_to_unicode(argv [5]);
 #else
 		if (argc >= 4) sArg3 = std::wstring(argv [3]);
 		if (argc >= 5) sArg4 = std::wstring(argv [4]);
@@ -172,6 +148,11 @@ static std::wstring utf8_to_unicode(const char *src)
 			oInputParams.m_sFileFrom	= new std::wstring(sArg2);
 			
 			result = NExtractTools::detectMacroInFile(oInputParams);
+		}
+		else if (sArg1 == L"-create-js-cache")
+		{
+			NExtractTools::createJSCaches();
+			return 0;
 		}
 		else
 		{
@@ -191,6 +172,6 @@ static std::wstring utf8_to_unicode(const char *src)
 			result = NExtractTools::fromInputParams(oInputParams);
 		}
 	}
-
+	//_CrtDumpMemoryLeaks(); 
 	return getReturnErrorCode(result);
 }

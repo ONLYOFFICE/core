@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -49,54 +49,56 @@ private:
 
 	BYTE* m_pData;
 
-    BYTE* m_pPalette;
-    int m_lPaletteColors;
+	BYTE* m_pPalette;
+	int m_lPaletteColors;
 
-    bool m_bIsGrayScale;
-    double m_dJpegSaveQuality;
+	bool m_bIsGrayScale;
+	double m_dJpegSaveQuality;
 
-    bool m_bIsRGBA;
+	bool m_bIsRGBA;
 
 public:
-    CBgraFrame();
-    ~CBgraFrame();
+	CBgraFrame();
+	~CBgraFrame();
 
-    void Destroy();
-    void Clear();
+	void Destroy();
+	void Clear();
 
-    void ClearNoAttack();
+	void ClearNoAttack();
 
-    int get_Width();
-    void put_Width(const int& lWidth);
+	int get_Width();
+	void put_Width(const int& lWidth);
 
-    int get_Height();
-    void put_Height(const int& lHeight);
+	int get_Height();
+	void put_Height(const int& lHeight);
 
-    int get_Stride();
-    void put_Stride(const int& lStride);
+	int get_Stride();
+	void put_Stride(const int& lStride);
 
-    BYTE* get_Data();
-    void put_Data(BYTE* pData);
+	BYTE* get_Data();
+	void put_Data(BYTE* pData);
 
-    void put_Palette(BYTE* pDataColors, const int& colors);
+	void put_Palette(BYTE* pDataColors, const int& colors);
 
-    bool IsGrayScale();
+	bool IsGrayScale();
 
-    void put_IsRGBA(const bool& bIsRGBA);
-    bool get_IsRGBA();
+	void put_IsRGBA(const bool& bIsRGBA);
+	bool get_IsRGBA();
 
-    void SetJpegQuality(const double& value);
+	void SetJpegQuality(const double& value);
 
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
-    bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
-    bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
-    bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
-    
+
+	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
+	bool Decode(BYTE*  pBuffer, int  nSize, unsigned int nFileType = 0);
+	bool Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType);
+	static void FreeEncodedMemory(void* pMemory);
+
 	bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
 
 	bool ReColorPatternImage(const std::wstring& strFileName, unsigned int rgbColorBack, unsigned int rgbColorFore);
 
-    void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
+	void FromImage(IGrObject* pGraphics, bool bIsCopy = true);
 };
 
 #endif

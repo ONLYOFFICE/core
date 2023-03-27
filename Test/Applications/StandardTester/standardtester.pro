@@ -8,7 +8,7 @@ TARGET = standardtester
 SOURCES += \
     $$PWD/../../../../core/Common/OfficeFileFormatChecker2.cpp \
     $$PWD/../../../../core/Common/3dParty/pole/pole.cpp \
-    $$PWD/../../../../core/Common/DocxFormat/Source/Base/unicode_util.cpp
+    $$PWD/../../../../core/OOXML/Base/unicode_util.cpp
 
 SOURCES += main.cpp
 

@@ -1,9 +1,8 @@
 #include "CXmlOutput.h"
 #include "../../common/Base64.h"
-#include "../../../Common/DocxFormat/Source/Base/Base.h"
 
 #ifdef _DEBUG
-    #include <iostream>
+#include <iostream>
 #endif
 
 namespace MetaFile
@@ -14,7 +13,7 @@ namespace MetaFile
 
         try
         {
-            return _wtoi(string.c_str());
+			return std::stoi(string);
         }
         catch(...)
         {
@@ -22,32 +21,12 @@ namespace MetaFile
 
         try
         {
-            return static_cast<int>(_wtoi64(string.c_str()));
+			return static_cast<int>(std::stoll(string));
         }
         catch(...)
         {
             return 0;
         }
-    }
-    std::wstring StringNormalization(std::wstring wsString)
-    {
-        std::wstring wsText;
-        for (wchar_t wChar : wsString)
-            if (wChar == L'<')
-                   wsText += L"&lt;";
-            else if (wChar == L'>')
-                   wsText += L"&gt;";
-            else if (wChar == L'&')
-                   wsText += L"&amp;";
-            else if (wChar == L'\'')
-                   wsText += L"&apos;";
-            else if (wChar == L'"')
-                   wsText += L"&quot;";
-            else if (wChar == 0x00)
-                   return wsText;
-
-            else wsText += wChar;
-        return wsText;
     }
 
     CXmlOutput::CXmlOutput(TypeXmlOutput oTypeXmlOutput) :
@@ -67,10 +46,8 @@ namespace MetaFile
 
     void CXmlOutput::Clear()
     {
-        if (NULL != m_pXmlWriter)
-            delete m_pXmlWriter;
-        else if (NULL != m_pXmlLiteReader)
-            delete m_pXmlLiteReader;
+            RELEASEOBJECT(m_pXmlWriter);
+            RELEASEOBJECT(m_pXmlLiteReader);
     }
 
     bool CXmlOutput::IsWriter() const
@@ -384,6 +361,15 @@ namespace MetaFile
             WriteNodeEnd(wsNameNode);
     }
 
+    void CXmlOutput::WriteNode(const std::wstring &wsNameNode, const TRegionDataHeader &oRegionDataHeader, const std::vector<TEmfRectL> &arRects)
+    {
+            WriteNodeBegin(wsNameNode);
+                WriteTRegionDataHeader(oRegionDataHeader);
+                for (unsigned int unIndex = 0; unIndex < arRects.size(); ++unIndex)
+                        WriteNode(L"Rect" + std::to_wstring(unIndex + 1), arRects[unIndex]);
+            WriteNodeEnd(wsNameNode);
+    }
+
     void CXmlOutput::WriteTEmfRectL(const TEmfRectL &oTEmfRectL)
     {
         WriteNode(L"Left",     oTEmfRectL.lLeft);
@@ -628,6 +614,12 @@ namespace MetaFile
         std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oTEmfSmallTextout.TextString, oTEmfSmallTextout.cChars);
 
         WriteNode(L"Text",          StringNormalization(wsText));
+    }
+
+    void CXmlOutput::WriteTRegionDataHeader(const TRegionDataHeader &oTRegionDataHeader)
+    {
+            WriteNode(L"CountRects", oTRegionDataHeader.unCountRects);
+            WriteNode(L"Bounds ",    oTRegionDataHeader.oBounds);
     }
 
     void CXmlOutput::WriteEmfLogBrushEx(const CEmfLogBrushEx &oEmfLogBrushEx)
@@ -1139,6 +1131,22 @@ namespace MetaFile
                 TEmfPointS oPoint;
                 ReadPoint(oPoint);
                 arPoints.push_back(oPoint);
+            }
+            while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
+    }
+
+    void CXmlOutput::operator>>(std::vector<TEmfRectL> &arRects)
+    {
+            if (!m_pXmlLiteReader->ReadNextNode())
+                return;
+
+            unsigned int unDepth = m_pXmlLiteReader->GetDepth();
+
+            do
+            {
+                TEmfRectL oRect;
+                *this >> oRect;
+                arRects.push_back(oRect);
             }
             while (m_pXmlLiteReader->ReadNextSiblingNode(unDepth - 1));
     }

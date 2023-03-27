@@ -1,0 +1,53 @@
+{
+	"name": "engine",
+	"res_folder": "./deploy",
+	"wasm": true,
+	"asm": true,
+	"embed_mem_file": true,
+	"run_before": "before.py",
+	"run_after": "after.py",
+	"base_js_content": "./engine_base.js",
+
+	"compiler_flags": [
+		"-O3",
+		"-Wno-unused-command-line-argument",
+		"-s ALLOW_MEMORY_GROWTH=1",
+		"-s FILESYSTEM=0",
+		"-s ENVIRONMENT='web'",
+		"-s ASSERTIONS",
+		"-s LLD_REPORT_UNDEFINED"
+	],
+	"exported_functions": [
+		"_malloc",
+		"_free",
+		"_Crypto_Malloc",
+		"_Crypto_Free",
+		"_Crypto_CreateKeys",
+		"_Crypto_Sign",
+		"_Crypto_ChangePassword"
+	],
+	"include_path": [
+		"./../../3rdParty/openssl/include", "./../../3rdParty/openssl", "emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
+	],
+	"define": [
+		"__linux__", "_LINUX", "DISABLE_XMLSEC"
+	],
+	"compile_files_array": [
+	{
+		"name": "a",
+		"folder": "../../../../../common/",
+		"files": ["Base64.cpp", "File.cpp"]
+	},
+	{
+		"name": "b",
+		"folder": "../../../../../../Common/3dParty/openssl/common/",
+		"files": ["common_openssl.cpp"]
+	},
+	{
+		"name": "c",
+		"folder": "./",
+		"files": ["main.cpp"]
+	}
+	],
+	"sources": ["./../../3rdParty/openssl/libcrypto.a"]
+}

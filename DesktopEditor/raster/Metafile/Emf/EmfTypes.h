@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -302,8 +302,8 @@ namespace MetaFile
 		{
 			lX = 0;
 			lY = 0;
-			ulW = 1024;
-			ulH = 1024;
+			ulW = 1;
+			ulH = 1;
 		}
 
 		void Copy(TEmfWindow* pOther)
@@ -332,16 +332,16 @@ namespace MetaFile
 			lBottom = oRect.nBottom;
 		}
 
-		void Update(bool bFlipedX, double bFlipedY)
+		void Update(bool bFlipedX, bool bFlipedY)
 		{
-			if ((lTop > lBottom && !bFlipedY) || (lTop < lBottom && bFlipedY))
+			if (lTop > lBottom && bFlipedY)
 			{
 				int nTemp = lBottom;
 				lBottom = lTop;
 				lTop = nTemp;
 			}
 
-			if ((lLeft > lRight && !bFlipedX) || (lLeft < lRight && bFlipedX))
+			if (lLeft < lRight && bFlipedX)
 			{
 				int nTemp = lRight;
 				lRight = lLeft;
@@ -366,6 +366,11 @@ namespace MetaFile
 			y = oPoint.y;
 
 			return *this;
+		}
+
+		bool operator==(const TEmfPointL& oPoint)
+		{
+			return ((x == oPoint.x) && (y == oPoint.y));
 		}
 	};
 
@@ -436,6 +441,14 @@ namespace MetaFile
 		int          cyDest;
 	};
 
+	struct TRegionDataHeader
+	{
+		unsigned int unSize;
+		unsigned int unType;
+		unsigned int unCountRects;
+		unsigned int unRgnSize;
+		TEmfRectL    oBounds;
+	};
 
 #define TEmfXForm TXForm
 	//struct TEmfXForm
@@ -832,6 +845,16 @@ namespace MetaFile
 		unsigned int  cbBitsSrc;
 		int           cxSrc;
 		int           cySrc;
+	};
+
+	struct TTriVertex
+	{
+		int nX;
+		int nY;
+		unsigned short ushRed;
+		unsigned short ushGreen;
+		unsigned short ushBlue;
+		unsigned short ushAlpha;
 	};
 
 	const unsigned int c_nTEmfAlphaBlendSize = 100;

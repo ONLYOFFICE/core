@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -34,9 +34,69 @@
 
 #include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/StringExt.h"
 
 namespace XPS
 {
+    void RemoveLastSlashes(std::wstring& sPath)
+    {
+        size_t nLen = sPath.length();
+        if (nLen > 0)
+        {
+            if (sPath[nLen - 1] == '/' || sPath[nLen - 1] == '\\')
+                sPath.erase(nLen - 1);
+        }
+
+        if (std::wstring::npos == sPath.find('%'))
+            return;
+
+        std::wstring result;
+        result.reserve(nLen);
+        for (size_t i = 0; i < nLen; ++i)
+        {
+            if (i < nLen - 2 && sPath[i] == '%')
+            {
+                wchar_t a = sPath[i + 1];
+                int aInt = -1;
+                if (a >= '0' && a <= '9')
+                    aInt = a - '0';
+                else if (a >= 'a' && a <= 'f')
+                    aInt = 10 + a - 'a';
+                else if (a >= 'A' && a <= 'F')
+                    aInt = 10 + a - 'A';
+
+                if (aInt < 0)
+                {
+                    result.push_back(sPath[i]);
+                    continue;
+                }
+
+                wchar_t b = sPath[i + 2];
+                int bInt = -1;
+                if (b >= '0' && b <= '9')
+                    bInt = b - '0';
+                else if (b >= 'a' && b <= 'f')
+                    bInt = 10 + b - 'a';
+                else if (b >= 'A' && b <= 'F')
+                    bInt = 10 + b - 'A';
+
+                if (bInt < 0)
+                {
+                    result.push_back(sPath[i]);
+                    continue;
+                }
+
+                result.push_back((wchar_t)((aInt << 4) | bInt));
+                i += 2;
+            }
+            else
+            {
+                result.push_back(sPath[i]);
+            }
+        }
+        sPath = result;
+    }
+
     CDocument::CDocument(NSFonts::IFontManager* pFontManager)
 	{		
 		m_pFontManager = pFontManager;
@@ -61,14 +121,14 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return false;
 
-		std::wstring wsName = oReader.GetName();
+		std::wstring wsName = oReader.GetNameNoNS();
 		if (L"Relationships" != wsName)
 			return false;
 
 		std::wstring wsTargetFile;
 		while (oReader.ReadNextNode())
 		{
-			wsName = oReader.GetName();
+			wsName = oReader.GetNameNoNS();
 			if (L"Relationship" == wsName)
 			{
 				std::wstring wsAttr;
@@ -85,15 +145,16 @@ namespace XPS
 			}
 		}
 
+        RemoveLastSlashes(wsTargetFile);
 		if (wsTargetFile.empty())
 			return false;
 
 		oReader.Clear();
 
-		if (!m_wsPath->exists(wsTargetFile))
+        if (!m_wsPath->existsXml(wsTargetFile))
 		{
 			wsTargetFile = GetPath(L"_rels/.rels") + wsTargetFile;
-			if (!m_wsPath->exists(wsTargetFile))
+            if (!m_wsPath->existsXml(wsTargetFile))
 				return false;
 		}
 		
@@ -103,14 +164,14 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return false;
 
-		wsName = oReader.GetName();
+		wsName = oReader.GetNameNoNS();
 		if (L"FixedDocumentSequence" != wsName)
 			return false;
 
 		std::wstring wsSourceFile;
 		while (oReader.ReadNextNode())
 		{
-			wsName = oReader.GetName();
+			wsName = oReader.GetNameNoNS();
 			if (L"DocumentReference" == wsName)
 			{
 				ReadAttribute(oReader, L"Source", wsSourceFile);
@@ -118,30 +179,30 @@ namespace XPS
 			}
 		}
 
+        RemoveLastSlashes(wsSourceFile);
 		if (wsSourceFile.empty())
 			return false;
 
-		if (!m_wsPath->exists(wsSourceFile))
+        if (!m_wsPath->existsXml(wsSourceFile))
 		{
 			wsSourceFile = GetPath(wsTargetFile) + wsSourceFile;
-			if (!m_wsPath->exists(wsSourceFile))
+            if (!m_wsPath->existsXml(wsSourceFile))
 				return false;
 		}
 
 		std::wstring wsFilePath = GetPath(wsSourceFile);
 
-	#ifdef BUILDING_WASM_MODULE
 		// Оглавление, содержание, structure
 		oReader.Clear();
 
 		std::wstring wsStructureTargetFile = wsFilePath + L"_rels/" + NSFile::GetFileName(wsSourceFile) + L".rels";
 		std::wstring wsStructureFile;
 		if (m_wsPath->exists(wsStructureTargetFile) && oReader.FromStringA(m_wsPath->readXml(wsStructureTargetFile))
-				&& oReader.ReadNextNode() && oReader.GetName() == L"Relationships")
+				&& oReader.ReadNextNode() && oReader.GetNameNoNS() == L"Relationships")
 		{
 			while (oReader.ReadNextNode())
 			{
-				if (L"Relationship" == oReader.GetName())
+				if (L"Relationship" == oReader.GetNameNoNS())
 				{
 					std::wstring wsAttr;
 					ReadAttribute(oReader, L"Type", wsAttr);
@@ -172,15 +233,15 @@ namespace XPS
 		if (!wsFullStructureFile.empty())
 		{
 			oReader.Clear();
-			if (oReader.FromStringA(m_wsPath->readXml(wsFullStructureFile)) && oReader.ReadNextNode() && oReader.GetName() == L"DocumentStructure")
+			if (oReader.FromStringA(m_wsPath->readXml(wsFullStructureFile)) && oReader.ReadNextNode() && oReader.GetNameNoNS() == L"DocumentStructure")
 			{
 				while (oReader.ReadNextNode())
 				{
-					if (L"DocumentStructure.Outline" == oReader.GetName() && oReader.ReadNextNode() && oReader.GetName() == L"DocumentOutline")
+					if (L"DocumentStructure.Outline" == oReader.GetNameNoNS() && oReader.ReadNextNode() && oReader.GetNameNoNS() == L"DocumentOutline")
 					{
 						while (oReader.ReadNextNode())
 						{
-							if (oReader.GetName() == L"OutlineEntry")
+							if (oReader.GetNameNoNS() == L"OutlineEntry")
 							{
 								CDocumentStructure oStructure;
 								oStructure.nLevel = 1; // OutlineLevel по умолчанию имеет значение 1
@@ -209,7 +270,6 @@ namespace XPS
 				}
 			}
 		}
-	#endif
 
 		oReader.Clear();
 
@@ -219,7 +279,7 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return false;
 
-		wsName = oReader.GetName();
+		wsName = oReader.GetNameNoNS();
 		if (L"FixedDocument" != wsName)
 			return false;
 
@@ -228,46 +288,48 @@ namespace XPS
 		int nIndex = 0;
 		while (oReader.ReadNextNode())
 		{
-			wsName = oReader.GetName();
+			wsName = oReader.GetNameNoNS();
 
 			if (L"PageContent" == wsName)
 			{
 				ReadAttribute(oReader, L"Source", wsSource);
 
 				std::wstring wsPagePath = wsSource;
-				if (!m_wsPath->exists(wsPagePath))
+                RemoveLastSlashes(wsPagePath);
+                if (!m_wsPath->existsXml(wsPagePath))
 				{
 					wsPagePath = wsFilePath + wsSource;
-					if (!m_wsPath->exists(wsPagePath))
+                    if (!m_wsPath->existsXml(wsPagePath))
 						continue;
 				}
 
-			#ifdef BUILDING_WASM_MODULE
-				int nDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nDepth))
-				{
-					if (oReader.GetName() == L"PageContent.LinkTargets")
-					{
-						int nLinkDepth = oReader.GetDepth();
-						while (oReader.ReadNextSiblingNode(nLinkDepth))
-						{
-							if (oReader.GetName() == L"LinkTarget")
-							{
-								std::wstring wsNameTarget;
-								ReadAttribute(oReader, L"Name", wsNameTarget);
-								if (!wsNameTarget.empty())
-								{
-									std::vector<CDocumentStructure>::iterator find = std::find_if(m_vStructure.begin(), m_vStructure.end(), [wsNameTarget](const CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
-									if (find != m_vStructure.end())
-										find->nPage = nIndex;
-									else
-										m_mInternalLinks.insert(std::pair<std::wstring, int>(wsNameTarget, nIndex));
-								}
-							}
-						}
-					}
-				}
-			#endif
+                if (!oReader.IsEmptyElement())
+                {
+                    int nDepth = oReader.GetDepth();
+                    while (oReader.ReadNextSiblingNode(nDepth))
+                    {
+                        if (oReader.GetNameNoNS() == L"PageContent.LinkTargets")
+                        {
+                            int nLinkDepth = oReader.GetDepth();
+                            while (oReader.ReadNextSiblingNode(nLinkDepth))
+                            {
+                                if (oReader.GetNameNoNS() == L"LinkTarget")
+                                {
+                                    std::wstring wsNameTarget;
+                                    ReadAttribute(oReader, L"Name", wsNameTarget);
+                                    if (!wsNameTarget.empty())
+                                    {
+                                        std::vector<CDocumentStructure>::iterator find = std::find_if(m_vStructure.begin(), m_vStructure.end(), [wsNameTarget](const CDocumentStructure& str){ return str.wsTarget == wsNameTarget; });
+                                        if (find != m_vStructure.end())
+                                            find->nPage = nIndex;
+                                        else
+                                            m_mInternalLinks.insert(std::pair<std::wstring, int>(wsNameTarget, nIndex));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
 				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, m_wsPath, &m_oFontList, m_pFontManager, this)));
 			}
@@ -286,7 +348,6 @@ namespace XPS
 		if (oIter != m_mPages.end())
 			oIter->second->GetSize(nW, nH);
 	}
-#ifdef BUILDING_WASM_MODULE
 	BYTE* CDocument::GetStructure()
 	{
         NSWasm::CData oRes;
@@ -310,7 +371,6 @@ namespace XPS
             return oIter->second->m_oLinks.Serialize();
 		return NULL;
 	}
-#endif
 	void CDocument::DrawPage(int nPageIndex, IRenderer* pRenderer, bool* pbBreak)
 	{
 		std::map<int, XPS::Page*>::const_iterator oIter = m_mPages.find(nPageIndex);
@@ -346,5 +406,72 @@ namespace XPS
 		CStaticResource* pStaticResource = new CStaticResource(m_wsPath->readXml(wsPath));
 		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
 		return pStaticResource;
+	}
+
+	std::wstring CDocument::GetInfo()
+	{
+		XmlUtils::CXmlLiteReader oReader;
+		std::wstring sRes = L"{";
+
+		if (oReader.FromStringA(m_wsPath->readXml(L"_rels/.rels")) && oReader.ReadNextNode() && L"Relationships" == oReader.GetNameNoNS())
+		{
+			std::wstring wsCoreFile;
+			while (oReader.ReadNextNode())
+			{
+				if (L"Relationship" == oReader.GetNameNoNS())
+				{
+					std::wstring wsAttr;
+					ReadAttribute(oReader, L"Type", wsAttr);
+
+					if (wsAttr.find(L"core-properties") != std::wstring::npos)
+					{
+						ReadAttribute(oReader, L"Target", wsCoreFile);
+						break;
+					}
+				}
+			}
+
+			if (!wsCoreFile.empty() && m_wsPath->exists(wsCoreFile))
+			{
+				oReader.Clear();
+				if (oReader.FromStringA(m_wsPath->readXml(wsCoreFile)) && oReader.ReadNextNode() && oReader.GetNameNoNS() == L"coreProperties")
+				{
+					while (oReader.ReadNextNode())
+					{
+						std::wstring sName = oReader.GetName();
+						if (sName == L"dc:title")
+							sName = L"Title";
+						else if (sName == L"dc:subject")
+							sName = L"Subject";
+						else if (sName == L"dc:creator")
+                            sName = L"Author";
+						else if (sName == L"dcterms:created")
+							sName = L"CreationDate";
+						else if (sName == L"dcterms:modified")
+							sName = L"ModDate";
+
+						sRes += L"\"";
+						sRes += sName;
+						sRes += L"\":\"";
+						sName = oReader.GetText2();
+						NSStringExt::Replace(sName, L"\"", L"\\\"");
+                        sRes += sName;
+						sRes += L"\",";
+					}
+				}
+			}
+		}
+		int nW = 0;
+		int nH = 0;
+		GetPageSize(0, nW, nH);
+        sRes += L"\"PageWidth\":";
+        sRes += std::to_wstring((int)(nW * 100));
+        sRes += L",\"PageHeight\":";
+        sRes += std::to_wstring((int)(nH * 100));
+        sRes += L",\"NumberOfPages\":";
+        sRes += std::to_wstring(GetPageCount());
+        sRes += L"}";
+
+		return sRes;
 	}
 }

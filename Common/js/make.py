@@ -32,6 +32,8 @@ def exec_wasm(data, work, compiler_flags, wasm):
     compiler_flags.append("-DBUILDING_ASMJS_MODULE")
     compiler_flags.append("-D_ARM_ALIGN_")
 
+  compiler_flags.append("-Wno-deprecated-register")
+
   # arguments
   arguments = ""
   for item in compiler_flags:
@@ -139,7 +141,8 @@ for param in argv:
     base.delete_dir(work_dir + "/o")
   if json_data["asm"]:
     flags = json_data["compiler_flags"][:]
-    flags.append("-s WASM=0")    
+    flags.append("-s WASM=0")
+    flags.append("-s MIN_IE_VERSION=11")
     if "embed_mem_file" in json_data and (json_data["embed_mem_file"]):
       flags.append("--memory-init-file 0")
     exec_wasm(json_data, work_dir, flags, False)

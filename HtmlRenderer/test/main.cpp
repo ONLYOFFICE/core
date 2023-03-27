@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,6 +46,9 @@
 
 #include "../include/ASCSVGWriter.h"
 
+#include "../../Common/Network/FileTransporter/include/FileTransporter.h"
+
+
 void Download_OnComplete(int error)
 {
     int y = error;
@@ -54,17 +57,75 @@ void Download_OnComplete(int error)
 
 //#define RASTER_TEST
 //#define METAFILE_TEST
+//#define METAFILE_TEST_X2T
 //#define METAFILE_TEST_RASTER
 //#define ONLINE_WORD_TO_PDF
 //#define TO_PDF
-#define TO_HTML_RENDERER
+//#define TO_HTML_RENDERER
 //#define ONLY_TEXT
-//#define DOWNLOADER_TEST
+#define DOWNLOADER_TEST
+
+#include "Windows.h"
+#include <wininet.h>
+#undef CreateDirectory
+
+bool DownloadFilePS(const std::wstring& sFileURL, const std::wstring& strFileOutput)
+{
+	STARTUPINFO sturtupinfo;
+	ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
+	sturtupinfo.cb = sizeof(STARTUPINFO);
+
+	std::wstring sFileDst = strFileOutput;
+	size_t posn = 0;
+	while (std::wstring::npos != (posn = sFileDst.find('\\', posn)))
+	{
+		sFileDst.replace(posn, 1, L"/");
+		posn += 1;
+	}
+
+	std::wstring sApp = L"powershell.exe –c \"(new-object System.Net.WebClient).DownloadFile('" + sFileURL + L"','" + sFileDst + L"')\"";
+
+	wchar_t* pCommandLine = new wchar_t[sApp.length() + 1];
+	memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
+	pCommandLine[sApp.length()] = (wchar_t)'\0';
+
+	HANDLE ghJob = CreateJobObject(NULL, NULL);
+
+	if (ghJob)
+	{
+		JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
+
+		// Configure all child processes associated with the job to terminate when the
+		jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+		if ( 0 == SetInformationJobObject( ghJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli)))
+		{
+			CloseHandle(ghJob);
+			ghJob = NULL;
+		}
+	}
+
+	PROCESS_INFORMATION processinfo;
+	ZeroMemory(&processinfo,sizeof(PROCESS_INFORMATION));
+	BOOL bResult = CreateProcessW(NULL, pCommandLine, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sturtupinfo, &processinfo);
+
+	if (bResult && ghJob)
+	{
+		AssignProcessToJobObject(ghJob, processinfo.hProcess);
+	}
+
+	::WaitForSingleObject(processinfo.hProcess, INFINITE);
+
+	RELEASEARRAYOBJECTS(pCommandLine);
+
+	return NSFile::CFileBinary::Exists(sFileDst);
+}
 
 int main(int argc, char *argv[])
 {
+	DownloadFilePS(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", L"D:/222.jpg");
+
 #ifdef DOWNLOADER_TEST
-    CFileDownloader oDownloader(L"https://download.onlyoffice.com/assets/fb/fb_icon_325x325.jpg", false);
+	NSNetwork::NSFileTransport::CFileDownloader oDownloader(L"https://natworld.info/wp-content/uploads/2018/02/vodosvinka-ili-kapibara.jpg", false);
     oDownloader.SetFilePath(L"D:\\111.jpg");
     oDownloader.SetEvent_OnComplete(Download_OnComplete);
     oDownloader.DownloadSync();
@@ -86,6 +147,74 @@ int main(int argc, char *argv[])
         NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 
     NSFonts::IApplicationFonts* pFonts = oWorker.Check();
+
+#ifdef METAFILE_TEST_X2T
+
+    MetaFile::IMetaFile* pMetafile = MetaFile::Create(pFonts);
+    if (pMetafile->LoadFromFile(L"image.emf"))
+    {
+        NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
+
+        double x = 0, y = 0, w = 0, h = 0;
+        pMetafile->GetBounds(&x, &y, &w, &h);
+
+        double _max = (w >= h) ? w : h;
+        double dKoef = 1000.0 / _max;
+
+        int WW = (int)(dKoef * w + 0.5);
+        int HH = (int)(dKoef * h + 0.5);
+
+        NSHtmlRenderer::CASCSVGWriter oWriterSVG;
+        oWriterSVG.SetFontManager(pFontManager);
+        oWriterSVG.put_Width(WW);
+        oWriterSVG.put_Height(HH);
+
+        bool bRes = true;
+        bool bIsBigestSVG = false;
+        bool bIsRaster = true;
+        try
+        {
+            bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, WW, HH);
+        }
+        catch (...)
+        {
+            bRes = false;
+        }
+
+        if (bRes)
+        {
+            oWriterSVG.IsRaster(&bIsRaster);
+
+            LONG lSvgDataSize = 0;
+            oWriterSVG.GetSVGDataSize(&lSvgDataSize);
+
+            bIsBigestSVG = (lSvgDataSize > 5 * 1024 * 1024);
+        }
+
+        if (bIsRaster || bIsBigestSVG || !bRes)
+        {
+            int nWidth = 0;
+            int nHeight = 0;
+
+            int nMaxPixSize = 1000;
+
+            double dKoef = nMaxPixSize / _max;
+
+            nWidth = (int)(dKoef * w + 0.5);
+            nHeight = (int)(dKoef * h + 0.5);
+
+            pMetafile->ConvertToRaster(L"image.png", 4 /*CXIMAGE_FORMAT_PNG*/,  nWidth, nHeight);
+        }
+        else
+        {
+            oWriterSVG.SaveFile(L"image.svg");
+        }
+
+        RELEASEINTERFACE(pFontManager);
+    }
+    RELEASEOBJECT(pMetafile);
+
+#endif
 
 #ifdef METAFILE_TEST
 
@@ -194,7 +323,7 @@ int main(int argc, char *argv[])
 #else
     //std::wstring sFile = L"D:\\ddd\\ZfAvCwDsowJALpClgmE_\\source\\ZfAvCwDsowJALpClgmE_.pdf";
     //std::wstring sFile = L"D:\\2.pdf";
-    std::wstring sFile = L"D:\\PDF 1-7 (756p).pdf";
+    std::wstring sFile = L"D:\\OoPdfFormExample2.pdf";
 #endif
 
 #ifdef WIN32
@@ -209,7 +338,7 @@ int main(int argc, char *argv[])
     //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
     //std::wstring sDst = L"/home/oleg/activex/1";
 
-    NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
+    //NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
     IOfficeDrawingFile* pReader = NULL;
     pReader = new PdfReader::CPdfReader(pFonts);
@@ -219,7 +348,7 @@ int main(int argc, char *argv[])
     pReader->SetTempDirectory(sDst);
     pReader->LoadFromFile(sFile);
 
-    pReader->ConvertToRaster(1, L"D:\\111.png", 4);
+    pReader->ConvertToRaster(0, L"D:\\111.png", 4);
 
 #ifdef TO_HTML_RENDERER
     NSHtmlRenderer::CASCHTMLRenderer3 oRenderer;

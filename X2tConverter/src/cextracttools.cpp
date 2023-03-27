@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -87,7 +87,6 @@ namespace NExtractTools
 			}
 			else
 			{
-				// zip -> dir
 				return TCD_UNZIPDIR;
 			}
 		}
@@ -348,12 +347,16 @@ namespace NExtractTools
                                  0 == sExt2.compare(_T(".xlsm")) ||
                                  0 == sExt2.compare(_T(".pptm")))		res = TCD_ODF_FLAT2OOX;
                     }break;
+				case AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT:
+					{
+						res = TCD_VBAPROJECT2XML;
+					}break;
 				case AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO:
 					{
-							 if (0 == sExt2.compare(_T(".doct")))		res = TCD_MSCRYPT2DOCT;
-                        else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
-                        else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
- 						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
+						if (0 == sExt2.compare(_T(".doct")))			res = TCD_MSCRYPT2DOCT;
+						else if (0 == sExt2.compare(_T(".xlst")))		res = TCD_MSCRYPT2XLST;
+						else if (0 == sExt2.compare(_T(".pptt")))		res = TCD_MSCRYPT2PPTT;
+						else if (0 == sExt2.compare(_T(".bin")))		res = TCD_MSCRYPT2BIN;
 					}break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML_IN_CONTAINER:
 					{
@@ -400,7 +403,7 @@ namespace NExtractTools
         return oBuilder.GetData();
     }
     std::wstring getDoctXml(NSDoctRenderer::DoctRendererFormat::FormatFile eFromType, NSDoctRenderer::DoctRendererFormat::FormatFile eToType,
-                            const std::wstring& sTFileDir, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
+                            const std::wstring& sTFileSrc, const std::wstring& sPdfBinFile, const std::wstring& sImagesDirectory,
                             const std::wstring& sThemeDir, int nTopIndex, const std::wstring& sMailMerge, const InputParams& params)
     {
         NSStringUtils::CStringBuilder oBuilder;
@@ -409,7 +412,7 @@ namespace NExtractTools
         oBuilder.WriteString(_T("</SrcFileType><DstFileType>"));
         oBuilder.AddInt((int)eToType);
         oBuilder.WriteString(_T("</DstFileType><SrcFilePath>"));
-        oBuilder.WriteEncodeXmlString(sTFileDir.c_str());
+        oBuilder.WriteEncodeXmlString(sTFileSrc.c_str());
         oBuilder.WriteString(_T("</SrcFilePath><DstFilePath>"));
         oBuilder.WriteEncodeXmlString(sPdfBinFile.c_str());
         oBuilder.WriteString(_T("</DstFilePath><FontsDirectory>"));
@@ -444,10 +447,16 @@ namespace NExtractTools
 			oBuilder.WriteEncodeXmlString(sJsonParams);
 			oBuilder.WriteString(_T("</JsonParams>"));
 		}
+		if (NULL != params.m_sScriptsCacheDirectory)
+		{
+			oBuilder.WriteString(_T("<ScriptsCacheDirectory>"));
+			oBuilder.WriteEncodeXmlString(*params.m_sScriptsCacheDirectory);
+			oBuilder.WriteString(_T("</ScriptsCacheDirectory>"));
+		}
         oBuilder.WriteString(_T("<Changes TopItem=\""));
         oBuilder.AddInt(nTopIndex);
         oBuilder.WriteString(_T("\">"));
-        std::wstring sChangesDir = sTFileDir + FILE_SEPARATOR_STR + _T("changes");
+        std::wstring sChangesDir = NSDirectory::GetFolderPath(sTFileSrc) + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
             std::vector<std::wstring> aChangesFiles;
@@ -480,14 +489,16 @@ namespace NExtractTools
 		std::wstring sChangesDir = sBinDir + FILE_SEPARATOR_STR + _T("changes");
         if (NSDirectory::Exists(sChangesDir))
         {
-			sBinTo = sBinDir + FILE_SEPARATOR_STR + _T("EditorWithChanges.bin");
+			std::wstring sBinFromFileName = NSFile::GetFileName(sBinFrom);
+			std::wstring sBinFromExt = NSFile::GetFileExtention(sBinFromFileName);
+			sBinTo = sBinDir + FILE_SEPARATOR_STR + sBinFromFileName.substr(0, sBinFromFileName.length() - sBinFromExt.length() - 1) + _T("WithChanges.") + sBinFromExt;
 			std::wstring sImagesDirectory = sBinDir + FILE_SEPARATOR_STR + _T("media");
            
 			NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : _T(""));
             int nChangeIndex = -1;
             while (true)
             {
-                std::wstring sXml = getDoctXml(eType, eType, sBinDir, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, _T(""), params);
+                std::wstring sXml = getDoctXml(eType, eType, sBinFrom, sBinTo, sImagesDirectory, sThemeDir, nChangeIndex, _T(""), params);
 				std::wstring sResult;
                 oDoctRenderer.Execute(sXml, sResult);
                 bool bContinue = false;
@@ -501,7 +512,7 @@ namespace NExtractTools
                     {
                         nErrorIndexStart = sResult.find(_T("\""), nErrorIndexStart + 1);
                         int nErrorIndexEnd = sResult.find(_T("\""), nErrorIndexStart + 1);
-						nErrorIndex = _wtoi(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1).c_str());
+                        nErrorIndex = XmlUtils::GetInteger(sResult.substr(nErrorIndexStart + 1, nErrorIndexEnd - nErrorIndexStart - 1));
                     }
                     if (nErrorIndex > 0 && nChangeIndex != nErrorIndex)
                     {

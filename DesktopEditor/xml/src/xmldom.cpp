@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -156,11 +156,20 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-	CXmlNodes::CXmlNodes() : m_nodes()
+    class CXmlNodes::Impl
+    {
+    public:
+        std::vector<CXmlNode> m_nodes;
+    };
+    CXmlNodes::CXmlNodes() :impl_(NULL)
 	{
+        impl_ = new Impl();
 	}
     CXmlNodes::~CXmlNodes()
     {
+        if (impl_)
+            delete impl_;
+        impl_ = NULL;
     }
 	bool CXmlNodes::IsValid()
 	{
@@ -168,16 +177,25 @@ namespace XmlUtils
 	}
 	int CXmlNodes::GetCount()
 	{
-		return (int)m_nodes.size();
+        if (impl_)
+            return (int) impl_->m_nodes.size();
+        else
+            return 0;
 	}
 	bool CXmlNodes::GetAt(int nIndex, CXmlNode& oXmlNode)
 	{
 		if (nIndex < 0 || nIndex >= GetCount())
 			return false;
 
-		oXmlNode = m_nodes[nIndex];
+        if (impl_)
+            oXmlNode = impl_->m_nodes[nIndex];
 		return true;
 	}
+    void CXmlNodes::push_back(CXmlNode &oNode)
+    {
+        if (impl_)
+            impl_->m_nodes.insert(impl_->m_nodes.end(), oNode);
+    }
 }
 
 namespace XmlUtils
@@ -748,7 +766,8 @@ namespace XmlUtils
 	CXmlNodes CXmlNode::ReadNodesNoNS(const std::wstring& sName)
 	{
 		CXmlNodes oNodes;
-		if (IsValid())
+
+        if (IsValid())
 		{
 			bool bGetAll = false;
 			if (L"*" == sName)
@@ -761,7 +780,8 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -791,7 +811,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+                    oNodes.push_back(oNode);
 				}
 			}
 		}
@@ -812,7 +832,7 @@ namespace XmlUtils
 					CXmlNode oNode;
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
 					oNode.SetBase(pBase);
-					oXmlNodes.m_nodes.insert(oXmlNodes.m_nodes.end(), oNode);
+                    oXmlNodes.push_back(oNode);
 				}
 			}
 		}
@@ -900,106 +920,6 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-    CXmlWriter::CXmlWriter()
-    {
-    }
-
-    std::wstring CXmlWriter::GetXmlString()
-    {
-        return m_str;
-    }
-    void CXmlWriter::SetXmlString(const std::wstring& strValue)
-    {
-        m_str = strValue;
-    }
-
-    bool CXmlWriter::SaveToFile(const std::wstring& strFilePath/*, bool bEncodingToUTF8 = false*/)
-    {
-        return NSFile::CFileBinary::SaveToFile(strFilePath, m_str);
-    }
-    void CXmlWriter::WriteString(const std::wstring& strValue)
-    {
-        m_str += strValue;
-    }
-    void CXmlWriter::WriteInteger(int Value)
-    {
-        m_str += std::to_wstring(Value);
-    }
-    void CXmlWriter::WriteDouble(double Value)
-    {
-        m_str += std::to_wstring(Value);
-    }
-    void CXmlWriter::WriteBoolean(bool Value)
-    {
-        if (Value)
-            m_str += (L"true");
-        else
-            m_str += (L"false");
-    }
-    void CXmlWriter::WriteNodeBegin(const std::wstring& strNodeName, bool bAttributed)
-    {
-        m_str += (L"<") + strNodeName;
-
-        if (!bAttributed)
-            m_str += (L">");
-    }
-    void CXmlWriter::WriteNodeEnd(const std::wstring& strNodeName, bool bEmptyNode, bool bEndNode)
-    {
-        if (bEmptyNode)
-        {
-            if (bEndNode)
-                m_str += (L" />");
-            else
-                m_str += (L">");
-        }
-        else
-            m_str += (L"</") + strNodeName + (L">");
-    }
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, const std::wstring& strNodeValue)
-    {
-        if (strNodeValue.empty())
-            m_str += L"<" + strNodeName + L"/>";
-        else
-            m_str += L"<" + strNodeName + L">" + strNodeValue + L"</" + strNodeName + L">";
-    }
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
-    {
-        WriteNodeBegin(strNodeName);
-        WriteString(strTextBeforeValue);
-        WriteInteger(nValue);
-        WriteString(strTextAfterValue);
-        WriteNodeEnd(strNodeName);
-    }
-    void CXmlWriter::WriteNode(const std::wstring& strNodeName, double dValue)
-    {
-        WriteNodeBegin(strNodeName);
-        WriteDouble(dValue);
-        WriteNodeEnd(strNodeName);
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const std::wstring& strAttributeValue)
-    {
-        m_str += L" " + strAttributeName + L"=\"" + strAttributeValue + L"\"";
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, int nValue, const std::wstring& strTextBeforeValue, const std::wstring& strTextAfterValue)
-    {
-        WriteString(L" " + strAttributeName + L"=");
-        WriteString(L"\"");
-        WriteString(strTextBeforeValue);
-        WriteInteger(nValue);
-        WriteString(strTextAfterValue);
-        WriteString(L"\"");
-    }
-    void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, double dValue)
-    {
-        WriteString(L" " + strAttributeName + L"=");
-        WriteString(L"\"");
-        WriteDouble(dValue);
-        WriteString(L"\"");
-    }
-}
-
-namespace XmlUtils
-{
     class CXmlBuffer
     {
     public:
@@ -1046,6 +966,7 @@ namespace XmlUtils
 
     std::string NSXmlCanonicalizator::Execute(const std::string& sXml, int mode, bool withComments)
     {
+#ifdef LIBXML_C14N_ENABLED
         xmlDocPtr xmlDoc = xmlParseMemory((char*)sXml.c_str(), (int)sXml.length());
 
         CXmlBuffer bufferC14N;
@@ -1059,6 +980,9 @@ namespace XmlUtils
         xmlOutputBufferClose(_buffer);
 
         return bufferC14N.builder.GetData();
+#else
+		return "";
+#endif
     }
     std::string NSXmlCanonicalizator::Execute(const std::wstring& sXmlFile, int mode, bool withComments)
     {
@@ -1066,4 +990,93 @@ namespace XmlUtils
         NSFile::CFileBinary::ReadAllTextUtf8A(sXmlFile, sXml);
         return Execute(sXml, mode, withComments);
     }
+}
+
+std::string XmlUtils::GetUtf8FromFileContent(unsigned char* pData, unsigned int len)
+{
+    if (4 > len)
+        return std::string((char*)pData, (size_t)len);
+
+    if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xFE && pData[3] == 0xBF)
+    {
+        return std::string((char*)pData + 3, (size_t)(len - 3));
+    }
+
+    char markerUtf16 = 0;
+    if (pData[0] == 0xFF && pData[1] == 0xFE && !(pData[2] == 0x00 && pData[3] == 0x00))
+        markerUtf16 = 1;
+    if (pData[0] == 0xFE && pData[1] == 0xFF)
+        markerUtf16 = 2;
+
+    if (0 != markerUtf16)
+    {
+        int nCountSymbols = (len - 2) >> 1;
+        int nCountSymbolsNatural = 0;
+
+        unsigned int* pUnicodes = new unsigned int[nCountSymbols];
+        unsigned char* pCurrent = pData + 2;
+
+        for (int i = 0; i < nCountSymbols; ++i)
+        {
+            unsigned short nLeading = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
+            pCurrent += 2;
+
+            if (nLeading < 0xD800 || nLeading > 0xDFFF)
+            {
+                pUnicodes[nCountSymbolsNatural++] = nLeading;
+            }
+            else
+            {
+                i++;
+                if (i == nCountSymbols)
+                    break;
+
+                unsigned short nTrailing = (markerUtf16 == 1) ? (pCurrent[0] | (pCurrent[1] << 8)) : (pCurrent[1] | (pCurrent[0] << 8));
+                pCurrent += 2;
+
+                if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
+                {
+                    pUnicodes[nCountSymbolsNatural++] = 0x10000 + (((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
+                }
+            }
+        }
+
+        std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
+
+        RELEASEARRAYOBJECTS(pUnicodes);
+        return sRet;
+    }
+
+    char markerUtf32 = 0;
+    if (pData[0] == 0xFF && pData[1] == 0xFE && pData[2] == 0x00 && pData[3] == 0x00)
+        markerUtf32 = 1;
+    if (pData[0] == 0 && pData[1] == 0 && pData[2] == 0xFE && pData[3] == 0xFF)
+        markerUtf32 = 2;
+
+    if (0 != markerUtf16)
+    {
+        int nCountSymbols = (len - 4) >> 2;
+        int nCountSymbolsNatural = 0;
+
+        unsigned int* pUnicodes = new unsigned int[nCountSymbols];
+        unsigned char* pCurrent = pData + 4;
+
+        if (markerUtf32 == 1)
+        {
+            for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
+                pUnicodes[nCountSymbolsNatural++] = (pCurrent[0] | (pCurrent[1] << 8) | (pCurrent[2] << 16) | (pCurrent[3] << 24));
+        }
+        else
+        {
+            for (int i = 0; i < nCountSymbols; ++i, pCurrent += 4)
+                pUnicodes[nCountSymbolsNatural++] = (pCurrent[3] | (pCurrent[2] << 8) | (pCurrent[1] << 16) | (pCurrent[0] << 24));
+        }
+
+        std::string sRet = NSStringExt::CConverter::GetUtf8FromUTF32(pUnicodes, nCountSymbolsNatural);
+
+        RELEASEARRAYOBJECTS(pUnicodes);
+        return sRet;
+    }
+
+    return std::string((char*)pData, (size_t)len);
 }

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,6 +33,7 @@
 
 #include "../../DesktopEditor/graphics/GraphicsPath.h"
 #include "VectorGraphicsWriter2.h"
+#include "../../DesktopEditor/graphics/pro/Graphics.h"
 
 namespace NSHtmlRenderer
 {
@@ -53,7 +54,6 @@ namespace NSHtmlRenderer
 		m_dTransformAngle = 0.0;
 
 		m_pFontManager = NULL;
-		m_bDeleteFontManager = true;
 		m_pPen = new NSStructures::CPen();
 		m_pBrush = new NSStructures::CBrush();
 		m_pFont = new NSStructures::CFont();
@@ -79,8 +79,6 @@ namespace NSHtmlRenderer
 	CASCSVGWriter::~CASCSVGWriter()
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
-		if(m_bDeleteFontManager)
-            NSBase::Release(m_pFontManager);
 		RELEASEOBJECT(m_pPen);
 		RELEASEOBJECT(m_pBrush);
 		RELEASEOBJECT(m_pFont);
@@ -89,6 +87,8 @@ namespace NSHtmlRenderer
 		RELEASEOBJECT(m_pTransform);
 		RELEASEOBJECT(m_pFullTransform);
 		RELEASEOBJECT(m_pVectorWriter);
+
+		RELEASEINTERFACE(m_pFontManager);
 	}
 	void CASCSVGWriter::Reset()
 	{
@@ -675,8 +675,18 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::DrawPath(const long&  nType)
 	{
-		if (m_pBrush->Type == c_BrushTypeTexture)
-			m_bIsRaster = true;
+		switch (m_pBrush->Type)
+		{
+			case c_BrushTypeTexture:
+			case c_BrushTypePathGradient1:
+			case c_BrushTypePathGradient2:
+			{
+				m_bIsRaster = true;
+				break;
+			}
+		default:
+			break;
+		}
 
 		if (m_bIsRaster)
 			return S_OK;
@@ -714,7 +724,7 @@ namespace NSHtmlRenderer
         int _c = (int)c;
 
         _SetFont();
-        m_pSimpleGraphicsConverter->PathCommandText2(&_c, NULL, 0, m_pFontManager, x, y, w, h);
+		m_pSimpleGraphicsConverter->PathCommandText2(&_c, NULL, 1, m_pFontManager, x, y, w, h);
         return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
@@ -861,7 +871,8 @@ namespace NSHtmlRenderer
 		if(oFile.CreateFileW(strFileSave))
         {
             NSStringUtils::CStringBuilder oBuilder;
-            WriteFormatted(L"<svg width=\"", (int)(m_dWidth / 100), L"px\" height=\"", (int)(m_dHeight / 100), L"px\" viewBox=\"0 0 ", (int)m_dWidth, L" ", (int)m_dHeight,
+            WriteFormatted(L"<svg width=\"", (int)(m_dWidth), L"px\" height=\"", (int)(m_dHeight), L"px\" viewBox=\"0 0 ",
+                           (int)(m_dWidth * SVG_WRITER_SCALE), L" ", (int)(m_dHeight * SVG_WRITER_SCALE),
                            L"\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n", &oBuilder);
 
             oFile.WriteStringUTF8(oBuilder.GetData());
@@ -933,13 +944,12 @@ namespace NSHtmlRenderer
 	// --------------------------------------------------------------------------------------------
     void CASCSVGWriter::SetFontManager(NSFonts::IFontManager* pFontManager)
 	{
-		if(NULL != pFontManager)
-		{
-			if(m_bDeleteFontManager)
-                NSBase::Release(m_pFontManager);
-			m_pFontManager = pFontManager;
-			m_bDeleteFontManager = false;
-		}
+		if (NULL == pFontManager)
+			return;
+
+		RELEASEINTERFACE(m_pFontManager);
+		m_pFontManager = pFontManager;
+		ADDREFINTERFACE(m_pFontManager);
 	}
 	void CASCSVGWriter::CalculateFullTransform()
 	{

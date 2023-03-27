@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -51,14 +51,14 @@ namespace MetaFile
 			{
 				case WMF_CLIPCOMMAND_INTERSECT:
 				{
-					CWmfClipCommandIntersect* pI = (CWmfClipCommandIntersect*)pCommand;
-					pNewCommand = new CWmfClipCommandIntersect(pI->m_dL, pI->m_dT, pI->m_dR, pI->m_dB);
+					CWmfClipCommandIntersect* pIntersect = (CWmfClipCommandIntersect*)pCommand;
+					pNewCommand = new CWmfClipCommandIntersect(pIntersect->m_oClip);
 					break;
 				}
 				case WMF_CLIPCOMMAND_EXCLUDE:
 				{
-					CWmfClipCommandExclude* pE = (CWmfClipCommandExclude*)pCommand;
-					pNewCommand = new CWmfClipCommandExclude(pE->m_dL, pE->m_dT, pE->m_dR, pE->m_dB, pE->m_dWindowL, pE->m_dWindowT, pE->m_dWindowR, pE->m_dWindowB);
+					CWmfClipCommandExclude* pExclude = (CWmfClipCommandExclude*)pCommand;
+					pNewCommand = new CWmfClipCommandExclude(pExclude->m_oClip, pExclude->m_oBB);
 					break;
 				}
 			}
@@ -71,18 +71,18 @@ namespace MetaFile
 	{
 		Clear();
 	}
-	bool CWmfClip::Intersect(double dL, double dT, double dR, double dB)
+	bool CWmfClip::Intersect(const TRectD& oClip)
 	{
-		CWmfClipCommandBase* pCommand = new CWmfClipCommandIntersect(dL, dT, dR, dB);
+		CWmfClipCommandBase* pCommand = new CWmfClipCommandIntersect(oClip);
 		if (!pCommand)
 			return false;
 
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
-	bool CWmfClip::Exclude(double dL, double dT, double dR, double dB, double dWindowL, double dWindowT, double dWindowR, double dWindowB)
+	bool CWmfClip::Exclude(const TRectD& oClip, const TRectD& oBB)
 	{
-		CWmfClipCommandBase* pCommand = new CWmfClipCommandExclude(dL, dT, dR, dB, dWindowL, dWindowT, dWindowR, dWindowB);
+		CWmfClipCommandBase* pCommand = new CWmfClipCommandExclude(oClip, oBB);
 		if (!pCommand)
 			return false;
 
@@ -112,38 +112,13 @@ namespace MetaFile
 					case WMF_CLIPCOMMAND_INTERSECT:
 					{
 						CWmfClipCommandIntersect* pIntersect = (CWmfClipCommandIntersect*)pCommand;
-
-						pOutput->StartClipPath(RGN_AND, ALTERNATE);
-						pOutput->MoveTo(pIntersect->m_dL, pIntersect->m_dT);
-						pOutput->LineTo(pIntersect->m_dR, pIntersect->m_dT);
-						pOutput->LineTo(pIntersect->m_dR, pIntersect->m_dB);
-						pOutput->LineTo(pIntersect->m_dL, pIntersect->m_dB);
-						pOutput->ClosePath();
-						pOutput->EndClipPath(RGN_AND);
-
+						pOutput->IntersectClip(pIntersect->m_oClip);
 						break;
 					}
 					case WMF_CLIPCOMMAND_EXCLUDE:
 					{
 						CWmfClipCommandExclude* pExclude = (CWmfClipCommandExclude*)pCommand;
-
-						pOutput->StartClipPath(RGN_AND, ALTERNATE);
-
-						pOutput->MoveTo(pExclude->m_dL, pExclude->m_dT);
-						pOutput->LineTo(pExclude->m_dR, pExclude->m_dT);
-						pOutput->LineTo(pExclude->m_dR, pExclude->m_dB);
-						pOutput->LineTo(pExclude->m_dL, pExclude->m_dB);
-						pOutput->ClosePath();
-
-						pOutput->MoveTo(pExclude->m_dWindowL, pExclude->m_dWindowT);
-						pOutput->LineTo(pExclude->m_dWindowR, pExclude->m_dWindowT);
-						pOutput->LineTo(pExclude->m_dWindowR, pExclude->m_dWindowB);
-						pOutput->LineTo(pExclude->m_dWindowL, pExclude->m_dWindowB);
-						pOutput->ClosePath();
-
-
-						pOutput->EndClipPath(RGN_AND);
-
+						pOutput->ExcludeClip(pExclude->m_oClip, pExclude->m_oBB);
 						break;
 					}
 				}

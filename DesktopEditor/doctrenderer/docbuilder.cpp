@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,30 +33,39 @@
 
 namespace NSDoctRenderer
 {
-    CDocBuilder::CDocBuilder()
-    {
-        m_pInternal = new CDocBuilder_Private();
-        m_pInternal->m_pParent = this;
-    }
-    CDocBuilder::~CDocBuilder()
-    {
-        RELEASEOBJECT(m_pInternal);
-    }
+	CDocBuilder::CDocBuilder()
+	{
+		m_pInternal = new CDocBuilder_Private();
+		m_pInternal->m_pParent = this;
 
-    int CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
-    {
-        m_pInternal->m_nFileType = -1;
-        if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
-            NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
+		std::wstring sWorkDirectory = NSDoctRenderer::CDocBuilder_Private::m_sExternalDirectory;
+		if (!sWorkDirectory.empty())
+			this->SetProperty("--work-directory", sWorkDirectory.c_str());
+	}
+	CDocBuilder::~CDocBuilder()
+	{
+		RELEASEOBJECT(m_pInternal);
+	}
 
-        return m_pInternal->OpenFile(path, params);
-    }
-    int CDocBuilder::SaveFile(const int& type, const wchar_t* path, const wchar_t* params)
-    {
-        return m_pInternal->SaveFile(type, path, params);
-    }    
-    bool CDocBuilder::ExecuteCommand(const wchar_t* command, CDocBuilderValue* retValue)
-    {
-        return m_pInternal->ExecuteCommand(command, retValue);
-    }
+	int CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
+	{
+		m_pInternal->m_nFileType = -1;
+		if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
+			NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
+
+		return m_pInternal->OpenFile(path, params);
+	}
+	int CDocBuilder::SaveFile(const int& type, const wchar_t* path, const wchar_t* params)
+	{
+		return m_pInternal->SaveFile(type, path, params);
+	}
+	bool CDocBuilder::ExecuteCommand(const wchar_t* command, CDocBuilderValue* retValue)
+	{
+		return m_pInternal->ExecuteCommand(command, retValue);
+	}
+
+	CDocBuilderContext CDocBuilder::GetContext()
+	{
+		return m_pInternal->GetContext();
+	}
 }

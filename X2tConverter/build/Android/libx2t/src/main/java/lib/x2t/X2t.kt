@@ -20,6 +20,7 @@ class X2t private constructor() {
         const val CONVERTER_CODE_FAIL = -1
         const val CONVERTER_CODE_SUCCESS = 0
         const val CONVERTER_CODE_EXIST = 1
+        const val CONVERTER_CODE_ERROR_XML = 88
         const val CONVERTED_CODE_PASSWORD = 90
         const val CONVERTER_CODE_INVALID_PASSWORD = 91
 
@@ -73,38 +74,39 @@ class X2t private constructor() {
     /*
     * Context mTo form paths
     * */
-    private var mContext: Context? = null
+    private var context: Context? = null
 
     /*
     * ConvertType type
     * */
-    private var mConvertType: String? = null
+    private var convertType: String? = null
 
     /*
     * Input params for native converter (passed mTo x2t.jni).
     * */
-    private var mInputParams = InputParams()
+    private var inputParams = InputParams()
 
     /*
     * Clear temp data after converting
     * */
-    private var mIsClearTemp = false
+    private var isClearTemp = false
 
     /*
     * Cleat temp data after converting
     * */
-    private var mIsOverwrite = false
+    private var isOverwrite = false
 
     /*
     * File name to converting
     * */
-    private var mConvertFileName: String = "Editor.bin"
+    private var convertFileName: String = "Editor.bin"
 
     /*
     * Folder name to converting
     * */
-    private var mConvertFolderName: String? = null
+    private var convertFolderName: String? = null
 
+    private var isSave: Boolean = false;
 
     /*
     * Helpers for convert
@@ -165,68 +167,74 @@ class X2t private constructor() {
     inner class Builder {
 
         fun setContext(value: Context): Builder {
-            mContext = value
+            context = value
             return this
         }
 
         fun setIsClearTemp(value: Boolean): Builder {
-            mIsClearTemp = value
+            isClearTemp = value
             return this
         }
 
         fun setIsOverwrite(value: Boolean): Builder {
-            mIsOverwrite = value
+            isOverwrite = value
             return this
         }
 
         fun setConvertType(value: String?): Builder {
-            mConvertType = value
+            convertType = value
             return this
         }
 
         fun setFromPath(value: String): Builder {
-            mInputParams.from = value
+            inputParams.from = value
             return this
         }
 
         fun setToPath(value: String): Builder {
-            mInputParams.to = value
+            inputParams.to = value
             return this
         }
 
         fun setToName(value: String = "Editor.bin"): Builder {
-            mConvertFileName = value
+            convertFileName = value
             return this
         }
 
         fun setToFolder(value: String? = null): Builder {
-            mConvertFolderName = value
+            convertFolderName = value
             return this
         }
 
         fun setInputParams(value: InputParams): Builder {
-            mInputParams = value
+            inputParams = value
             return this
         }
 
-        fun getInputParams() = mInputParams
+        fun setSave(isSave: Boolean): Builder {
+            this@X2t.isSave = isSave
+            return this
+        }
+
+
+        fun getInputParams() = inputParams
 
 
         @SuppressLint("MissingPermission")
         fun convert(): ConvertResult {
-            if (mContext == null) {
+            if (context == null) {
                 throw RuntimeException("Context for convertation must be set!")
             }
 
-            if (mConvertType == null) {
+            if (convertType == null) {
                 throw RuntimeException("Converter type must be set!")
             }
 
-            if (mInputParams.from == null) {
+            if (inputParams.from == null) {
                 throw RuntimeException("Converted file must be set!")
             }
 
-            return this@X2t.convert(mContext!!)
+            return this@X2t.convert(context!!)
         }
 
     }
@@ -236,17 +244,17 @@ class X2t private constructor() {
     fun convert(context: Context): ConvertResult {
         val result = ConvertResult()
 
-        FileUtils.getCache(context, mConvertFileName, mConvertFolderName)?.let { cache ->
-            result.to = mInputParams.to ?: cache.to
+        FileUtils.getCache(context, convertFileName, convertFolderName)?.let { cache ->
+            result.to = inputParams.to ?: cache.to
             result.root = File(result.to ?: "").parent
 
-            mInputParams.to = mInputParams.to ?: cache.to
-            mInputParams.temp = mInputParams.temp ?: cache.temp
-            mInputParams.themes = mInputParams.themes ?: "${cache.root}/themes"
-            mInputParams.xml = mInputParams.xml ?: "${cache.temp}/param.xml"
+            inputParams.to = inputParams.to ?: cache.to
+            inputParams.temp = inputParams.temp ?: cache.temp
+            inputParams.themes = inputParams.themes ?: "${cache.root}/themes"
+            inputParams.xml = inputParams.xml ?: "${cache.temp}/param.xml"
 
-            if (File(mInputParams.to ?: "").exists()) {
-                if (mIsOverwrite) {
+            if (File(inputParams.to ?: "").exists()) {
+                if (isOverwrite) {
                     FileUtils.deletePath(result.to!!)
                 } else {
                     result.code = CONVERTER_CODE_EXIST
@@ -255,18 +263,18 @@ class X2t private constructor() {
             }
 
             FileUtils.createPath(result.root!!)
-            FileUtils.createPath(mInputParams.temp!!)
+            FileUtils.createPath(inputParams.temp!!)
 
-            mInputParams.themes?.let { theme ->
+            inputParams.themes?.let { theme ->
                 FileUtils.createPath(theme)
             }
 
-            mInputParams.key = UUID.randomUUID().toString()
-            with(mInputParams)
+            inputParams.key = UUID.randomUUID().toString()
+            with(inputParams)
             {
                 setIcuDataPath(icu)
                 setFonts(arrayOf(fontsJs), fontsDir)
-                createXmlFileTransform(xml, key, mConvertType, from, to, temp, fontsDir, themes, password,
+                createXmlFileTransform(xml, key, convertType, from, to, temp, fontsDir, themes, password,
                     delimiterCode.equals(
                         InputParams.DELIMITER_CODE_NONE
                     ).let {
@@ -288,7 +296,7 @@ class X2t private constructor() {
 
             FileUtils.deletePath(cache.temp!!)
 
-            if (mIsClearTemp) {
+            if (isClearTemp) {
                 FileUtils.deletePath(cache.root!!)
             }
         }
@@ -345,6 +353,9 @@ class X2t private constructor() {
 
             password?.let{
                 insertParam(xmlSerializer,"m_sPassword", password )
+                if (isSave && password.isNotEmpty()) {
+                    insertParam(xmlSerializer,"m_sSavePassword", password)
+                }
             }
 
             insertParam(xmlSerializer,"m_bIsPDFA", null, hashMapOf("xsi:nil" to """true"""))

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,7 +33,7 @@
 
 namespace NSBase64
 {
-    int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags)
+	int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags)
 	{
 		T_LONG64 nSrcLen4 = static_cast<T_LONG64>(nSrcLen)*4;
 		if (nSrcLen4 > INT_MAX)
@@ -61,12 +61,12 @@ namespace NSBase64
 		return nRet;
 	}
 
-    int Base64DecodeGetRequiredLength(int nSrcLen)
+	int Base64DecodeGetRequiredLength(int nSrcLen)
 	{
 		return nSrcLen;
 	}
 
-    int Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags)
+	int Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags)
 	{
 		static const char s_chBase64EncodingTable[64] = {
 			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
@@ -153,7 +153,7 @@ namespace NSBase64
 		return TRUE;
 	}
 
-    int DecodeBase64Char(unsigned int ch)
+	int DecodeBase64Char(unsigned int ch)
 	{
 		// returns -1 if the character is invalid
 		// or should be skipped
@@ -172,7 +172,8 @@ namespace NSBase64
 		return -1;
 	}
 
-    int Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen)
+	template<class T>
+	int Base64DecodeBase(const T* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen)
 	{
 		// walk the source buffer
 		// each four character sequence is converted to 3 bytes
@@ -182,7 +183,7 @@ namespace NSBase64
 		if (szSrc == NULL || pnDestLen == NULL)
 			return FALSE;
 		
-		const char* szSrcEnd = szSrc + nSrcLen;
+		const T* szSrcEnd = szSrc + nSrcLen;
 		int nWritten = 0;
 		
 		INT bOverflow = (pbDest == NULL) ? TRUE : FALSE;
@@ -196,7 +197,7 @@ namespace NSBase64
 			{
 				if (szSrc >= szSrcEnd)
 					break;
-				int nCh = DecodeBase64Char(*szSrc);
+				int nCh = DecodeBase64Char((unsigned int)*szSrc);
 				szSrc++;
 				if (nCh == -1)
 				{
@@ -233,10 +234,19 @@ namespace NSBase64
 		if(bOverflow)
 		{
 			// if (pbDest != NULL) ATLASSERT(FALSE);
-		
+
 			return FALSE;
 		}
 		
 		return TRUE;
+	}
+
+	int Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen)
+	{
+		return Base64DecodeBase(szSrc, nSrcLen, pbDest, pnDestLen);
+	}
+	int Base64Decode(const wchar_t* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen)
+	{
+		return Base64DecodeBase(szSrc, nSrcLen, pbDest, pnDestLen);
 	}
 }

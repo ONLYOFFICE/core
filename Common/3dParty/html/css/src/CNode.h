@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 namespace NSCSS
 {
@@ -12,6 +13,7 @@ namespace NSCSS
         std::wstring m_sClass; // Класс тэга
         std::wstring m_sId;    // Id тэга
         std::wstring m_sStyle; // Стиль тэга
+        std::map<std::wstring, std::wstring> m_mAttrs; // Остальные аттрибуты тэга
 
         CNode(){};
         CNode(std::wstring sName, std::wstring sClass, std::wstring sId) : m_sName(sName), m_sClass(sClass), m_sId(sId){};

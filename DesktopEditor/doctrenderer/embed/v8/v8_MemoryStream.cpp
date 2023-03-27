@@ -57,6 +57,8 @@ namespace NSMemoryStream
         v8::Local<v8::Object> obj = MemoryObjectTemplate->NewInstance(isolate->GetCurrentContext()).ToLocalChecked();
         obj->SetInternalField(0, v8::External::New(CV8Worker::GetCurrent(), pMemoryObject));
 
+        NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
+
         args.GetReturnValue().Set(obj);
     }
   }

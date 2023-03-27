@@ -20,9 +20,10 @@ ADD_DEPENDENCY(kernel)
 
 DEFINES -= UNICODE
 HEADERS += \
-    include/XmlCertificate.h \
+    include/Certificate.h \
+	include/CertificateCommon.h \
     include/OOXMLSigner.h \
-    include/OOXMLVerifier.h
+	include/OOXMLVerifier.h
 
 HEADERS += \
     src/XmlCanonicalizator.h \
@@ -31,12 +32,13 @@ HEADERS += \
 
 SOURCES += \
     src/XmlTransform.cpp \
-    src/XmlCertificate.cpp \
+	src/CertificateCommon.cpp \
     src/OOXMLSigner.cpp \
-    src/OOXMLVerifier.cpp
+	src/OOXMLVerifier.cpp
 
 core_windows {
-    CONFIG += windows_use_mscrypto
+    DEFINES += SUPPORT_MS_CRYPTO
+    HEADERS += src/Certificate_mscrypto.h
 
     LIBS += -lcrypt32
     LIBS += -lcryptui
@@ -45,16 +47,12 @@ core_windows {
     LIBS += -lUser32
 }
 
-windows_use_mscrypto {
+DEFINES += SUPPORT_OPENSSL
+HEADERS += src/Certificate_openssl.h
 
-    DEFINES += USE_MS_CRYPTO
-    HEADERS += src/XmlSigner_mscrypto.h
-
-} else {
-
-    HEADERS += src/XmlSigner_openssl.h
-    SOURCES += src/XmlSigner_openssl.cpp
-
+support_oform {
+    DEFINES += SUPPORT_OFORM
+	HEADERS += src/Certificate_oform.h
 }
 
 CONFIG += open_ssl_common

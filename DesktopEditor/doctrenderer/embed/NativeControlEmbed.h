@@ -43,6 +43,7 @@ public:
     JSSmart<CJSValue> zipCloseFile();
     JSSmart<CJSValue> GetImageUrl(JSSmart<CJSValue> sUrl);
     JSSmart<CJSValue> GetImagesPath();
+	JSSmart<CJSValue> GetImageOriginalSize(JSSmart<CJSValue> sUrl);
 
     static void CreateObjectInContext(const std::string& name, JSSmart<CJSContext> context);
     static void CreateObjectBuilderInContext(const std::string& name, JSSmart<CJSContext> context);

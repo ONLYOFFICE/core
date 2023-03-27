@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -46,15 +46,16 @@ namespace NSBase64
 
 	#define _BASE64_INT_MAX				2147483647
 	
-    KERNEL_DECL int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
+	KERNEL_DECL int Base64EncodeGetRequiredLength(int nSrcLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
 
-    KERNEL_DECL int Base64DecodeGetRequiredLength(int nSrcLen);
+	KERNEL_DECL int Base64DecodeGetRequiredLength(int nSrcLen);
 
-    KERNEL_DECL int Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
+	KERNEL_DECL int Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE);
 
-    KERNEL_DECL int DecodeBase64Char(unsigned int ch);
+	KERNEL_DECL int DecodeBase64Char(unsigned int ch);
 
-    KERNEL_DECL int Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen);
+	KERNEL_DECL int Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen);
+	KERNEL_DECL int Base64Decode(const wchar_t* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen);
 }
 
 #endif//_BUILD_BASE64_CROSSPLATFORM_DEFINE

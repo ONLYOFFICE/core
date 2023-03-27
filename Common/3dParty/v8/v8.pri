@@ -3,7 +3,11 @@ v8_version_89 {
     CONFIG += c++14
     CONFIG += use_v8_monolith
     DEFINES += V8_VERSION_89_PLUS
-    DEFINES += V8_COMPRESS_POINTERS
+
+    core_win_32:CONFIG += build_platform_32
+    core_linux_32:CONFIG += build_platform_32
+    !build_platform_32:DEFINES += V8_COMPRESS_POINTERS
+
     CORE_V8_PATH_OVERRIDE = $$PWD/../v8_89
 }
 
@@ -19,6 +23,7 @@ core_windows {
 
     use_v8_monolith {
         LIBS += -L$$CORE_V8_PATH_LIBS -lv8_monolith
+		core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
     } else {
         LIBS += -L$$CORE_V8_PATH_LIBS -lv8_base -lv8_libplatform -lv8_libbase -lv8_snapshot -lv8_libsampler
         LIBS += -L$$CORE_V8_PATH_LIBS/third_party/icu -licui18n -licuuc

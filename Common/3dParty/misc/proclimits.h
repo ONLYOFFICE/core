@@ -47,6 +47,9 @@ void limit_memory (size_t limit)
 
 void limit_memory (size_t limit)
 {
+    if (sizeof(size_t) < 8)
+        return;
+
     SYSTEM_INFO info;
     GetSystemInfo (&info);
 

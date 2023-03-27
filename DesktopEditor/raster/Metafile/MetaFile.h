@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,14 +32,22 @@
 #ifndef _METAFILE_H
 #define _METAFILE_H
 
-#include "../../fontengine/ApplicationFonts.h"
+#include "../../graphics/pro/Fonts.h"
 #include "../../graphics/IRenderer.h"
 #include "../../graphics/pro/Image.h"
 
+#ifdef METAFILE_SUPPORT_WMF_EMF
 #include "Wmf/WmfFile.h"
 #include "Emf/EmfFile.h"
+#endif
+
+#ifdef METAFILE_SUPPORT_SVM
 #include "StarView/SvmFile.h"
+#endif
+
+#ifdef METAFILE_SUPPORT_SVG
 #include "svg/SVGTransformer.h"
+#endif
 
 namespace MetaFile
 {
@@ -50,29 +58,44 @@ namespace MetaFile
 		virtual ~CMetaFile();
 
 		bool LoadFromFile(const wchar_t* wsFilePath);
+		bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void Close();
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
 		int GetType();
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
+
 		NSFonts::IFontManager* get_FontManager();
 
+		//конвертация в Svg
+		std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0);
+
 		//Для тестов
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		void ConvertToXml(const wchar_t *wsFilePath);
 		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
-		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
-
 		bool LoadFromXmlFile(const wchar_t* wsFilePath);
-
+		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void ConvertToEmf(const wchar_t* wsFilePath);
-	private:
+	#endif
 
-		CApplicationFonts* m_pAppFonts;
-		CFontManager*      m_pFontManager;
+
+	private:
+		NSFonts::IApplicationFonts* m_pAppFonts;
+		NSFonts::IFontManager*      m_pFontManager;
+
+	#ifdef METAFILE_SUPPORT_WMF_EMF
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVM
 		CSvmFile           m_oSvmFile;
+	#endif
+
+	#ifdef METAFILE_SUPPORT_SVG
 		CSVGTransformer    m_oSvgFile;
+	#endif
 
 		int                m_lType;
 	};

@@ -164,7 +164,11 @@
       <xsd:element name="positionV" type="CT_PosV"/>
       <xsd:element name="extent" type="a:CT_PositiveSize2D"/>
       <xsd:element name="effectExtent" type="CT_EffectExtent" minOccurs="0"/>
-      <xsd:group ref="EG_WrapType"/>
+      <xsd:element name="wrapNone" type="CT_WrapNone" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="wrapSquare" type="CT_WrapSquare" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="wrapTight" type="CT_WrapTight" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="wrapThrough" type="CT_WrapThrough" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="wrapTopAndBottom" type="CT_WrapTopBottom" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="docPr" type="a:CT_NonVisualDrawingProps" minOccurs="1" maxOccurs="1"/>
       <xsd:element name="cNvGraphicFramePr" type="a:CT_NonVisualGraphicFrameProperties"
         minOccurs="0" maxOccurs="1"/>

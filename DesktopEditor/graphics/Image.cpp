@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -75,14 +75,33 @@ namespace Aggplus
 
 		oFrame.ClearNoAttack();
 	}
-	void CImage::Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride)
+	void CImage::Decode(BYTE* pBuffer, unsigned int unSize)
+	{
+		Destroy();
+
+		CBgraFrame oFrame;
+		bool bOpen = oFrame.Decode(pBuffer, (int)unSize);
+
+		if (bOpen)
+		{
+			m_pImgData = oFrame.get_Data();
+			m_dwWidth = (DWORD)oFrame.get_Width();
+			m_dwHeight = (DWORD)oFrame.get_Height();
+
+			m_nStride = oFrame.get_Stride();
+			m_Status = Ok;
+		}
+
+		oFrame.ClearNoAttack();
+	}
+	void CImage::Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride, bool bExternalBuffer)
 	{
 		m_pImgData = pImgData;
 		m_dwWidth = dwWidth;
 		m_dwHeight = dwHeight;
 		m_nStride = nStride;
 
-		m_bExternalBuffer = false;
+		m_bExternalBuffer = bExternalBuffer;
 		m_Status = Ok;
 	}
 

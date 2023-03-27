@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -32,8 +32,11 @@
 #pragma once
 
 #include "SvmPlayer.h"
-
 #include "../Common/MetaFile.h"
+
+#if defined(DrawText)
+#undef DrawText
+#endif
 
 namespace MetaFile
 {
@@ -192,6 +195,26 @@ class CSvmFile : virtual public IMetaFileBase
 	bool         IsWindowFlippedX()
 	{
 		return false;
+	}
+
+	unsigned int GetMapMode()
+	{
+		return MM_ANISOTROPIC;
+	}
+
+	double GetDpi()
+	{
+		return 96.;
+	}
+
+	IRegion* GetRegion()
+	{
+		return NULL;
+	}
+
+	unsigned int GetArcDirection()
+	{
+		return AD_CLOCKWISE;
 	}
 
  private:

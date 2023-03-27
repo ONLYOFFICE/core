@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -36,7 +36,8 @@
 #include "MetaFileUtils.h"
 #include "MetaFileObjects.h"
 #include "MetaFileClip.h"
-#include "../../../fontengine/FontManager.h"
+
+#include "../../../graphics/pro/Fonts.h"
 
 namespace MetaFile
 {
@@ -46,6 +47,7 @@ namespace MetaFile
 		IMetaFileBase()
 		{
 			m_pBufferData = NULL;
+			m_bIsExternalBuffer = false;
 			m_bError      = false;
 			m_pOutput     = NULL;
 			m_oStream.SetStream(NULL, 0);
@@ -61,7 +63,7 @@ namespace MetaFile
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;
 		virtual int          GetTextColor() = 0;
- 		virtual IFont*       GetFont() = 0;
+		virtual IFont*       GetFont() = 0;
 		virtual IBrush*      GetBrush() = 0;
 		virtual IPen*        GetPen() = 0;
 		virtual unsigned int GetTextAlign() = 0;
@@ -77,15 +79,35 @@ namespace MetaFile
 		virtual int          GetCharSpace() = 0;
 		virtual bool         IsWindowFlippedY() = 0;
 		virtual bool         IsWindowFlippedX() = 0;
+		virtual unsigned int GetMapMode() = 0;
+		virtual double       GetDpi() = 0;
+		virtual IRegion*     GetRegion() = 0;
+		virtual unsigned int GetArcDirection() = 0;
 
-		bool          OpenFromFile(const wchar_t* wsFilePath)
+		bool ReadFromBuffer(BYTE* pBuffer, unsigned int unSize, const bool& bIsExternal = true)
+		{
+			if (NULL == pBuffer || 0 == unSize)
+				return false;
+
+			this->ClearFile();
+
+			m_pBufferData = pBuffer;
+			m_bIsExternalBuffer = bIsExternal;
+			m_oStream.SetStream(pBuffer, unSize);
+
+			return true;
+		}
+		bool OpenFromFile(const wchar_t* wsFilePath)
 		{
 			this->Close();
 
 			NSFile::CFileBinary oFile;
-			oFile.OpenFile(wsFilePath);
+			if (!oFile.OpenFile(wsFilePath))
+				return false;
+
 			int lFileSize = oFile.GetFileSize();
 
+			m_bIsExternalBuffer = false;
 			m_pBufferData = new BYTE[lFileSize];
 			if (!m_pBufferData)
 				return false;
@@ -100,7 +122,9 @@ namespace MetaFile
 		}
 		void          Close()
 		{
-			RELEASEARRAYOBJECTS(m_pBufferData);
+			if (!m_bIsExternalBuffer)
+				RELEASEARRAYOBJECTS(m_pBufferData);
+
 			m_pOutput = NULL;
 			m_oStream.SetStream(NULL, 0);
 			m_bError = false;
@@ -116,11 +140,11 @@ namespace MetaFile
 
 			this->ClearFile();
 		}
-		CFontManager* GetFontManager()
+		NSFonts::IFontManager* GetFontManager()
 		{
 			return m_pFontManager;
 		}
-		void          SetFontManager(CFontManager* pFontManager)
+		void          SetFontManager(NSFonts::IFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
@@ -143,9 +167,10 @@ namespace MetaFile
 		IOutputDevice* m_pOutput;
 
 	private:
+		NSFonts::IFontManager*  m_pFontManager;
 
-		BYTE*          m_pBufferData;		
-		CFontManager*  m_pFontManager;
+		BYTE*          m_pBufferData;
+		bool           m_bIsExternalBuffer;
 		bool           m_bError;
 	};
 }

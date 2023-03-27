@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\external_items.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\mediaitems_utils.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\namespaces.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_content_type.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_package.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\oox_rels.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\XlsConverter.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_chart_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_comments_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_drawings.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_external_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_output_xml.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_package.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_protection.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.cpp" />
+    <ClCompile Include="..\..\..\XlsFile\Converter\xlsx_textcontext.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\XlsFile\Converter\ConvertXls2Xlsx.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\external_items.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\mediaitems_utils.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\namespaces.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_content_type.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_package.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\oox_rels.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\progressCallback.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\ShapeType.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\XlsConverter.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_activeX_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_chart_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_comments_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_conversion_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawing_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_drawings.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_external_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_hyperlinks.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_output_xml.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_package.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_pivots_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_protection.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_sheet_context.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_tablecontext.h" />
+    <ClInclude Include="..\..\..\XlsFile\Converter\xlsx_textcontext.h" />
+  </ItemGroup>
+</Project>

@@ -30,16 +30,18 @@ public:
 	/// \param attachment a BufferedTransformation to attach to this object
 	/// \param padding the character to use as padding
 	/// \pre log2base must be between 1 and 7 inclusive
-	/// \throws InvalidArgument if log2base is not between 1 and 7
+	/// \throw InvalidArgument if log2base is not between 1 and 7
 	BaseN_Encoder(const byte *alphabet, int log2base, BufferedTransformation *attachment=NULLPTR, int padding=-1)
 		: m_alphabet(NULLPTR), m_padding(0), m_bitsPerChar(0)
 		, m_outputBlockSize(0), m_bytePos(0), m_bitPos(0)
 	{
 		Detach(attachment);
-		IsolatedInitialize(MakeParameters(Name::EncodingLookupArray(), alphabet)
-			(Name::Log2Base(), log2base)
-			(Name::Pad(), padding != -1)
-			(Name::PaddingByte(), byte(padding)));
+		BaseN_Encoder::IsolatedInitialize(
+			MakeParameters
+				(Name::EncodingLookupArray(), alphabet)
+				(Name::Log2Base(), log2base)
+				(Name::Pad(), padding != -1)
+				(Name::PaddingByte(), byte(padding)));
 	}
 
 	void IsolatedInitialize(const NameValuePairs &parameters);
@@ -61,7 +63,7 @@ public:
 	/// \details padding is set to -1, which means use default padding. If not
 	///   required, then the value must be set via IsolatedInitialize().
 	BaseN_Decoder(BufferedTransformation *attachment=NULLPTR)
-		: m_lookup(NULLPTR), m_padding(0), m_bitsPerChar(0)
+		: m_lookup(NULLPTR), m_bitsPerChar(0)
 		, m_outputBlockSize(0), m_bytePos(0), m_bitPos(0)
 			{Detach(attachment);}
 
@@ -74,11 +76,14 @@ public:
 	/// \details padding is set to -1, which means use default padding. If not
 	///   required, then the value must be set via IsolatedInitialize().
 	BaseN_Decoder(const int *lookup, int log2base, BufferedTransformation *attachment=NULLPTR)
-		: m_lookup(NULLPTR), m_padding(0), m_bitsPerChar(0)
+		: m_lookup(NULLPTR), m_bitsPerChar(0)
 		, m_outputBlockSize(0), m_bytePos(0), m_bitPos(0)
 	{
 		Detach(attachment);
-		IsolatedInitialize(MakeParameters(Name::DecodingLookupArray(), lookup)(Name::Log2Base(), log2base));
+		BaseN_Decoder::IsolatedInitialize(
+			MakeParameters
+				(Name::DecodingLookupArray(), lookup)
+				(Name::Log2Base(), log2base));
 	}
 
 	void IsolatedInitialize(const NameValuePairs &parameters);
@@ -98,7 +103,7 @@ public:
 
 private:
 	const int *m_lookup;
-	int m_padding, m_bitsPerChar, m_outputBlockSize;
+	int m_bitsPerChar, m_outputBlockSize;
 	int m_bytePos, m_bitPos;
 	SecByteBlock m_outBuf;
 };
@@ -121,9 +126,11 @@ public:
 		: m_groupSize(0), m_counter(0)
 	{
 		Detach(attachment);
-		IsolatedInitialize(MakeParameters(Name::GroupSize(), groupSize)
-			(Name::Separator(), ConstByteArrayParameter(separator))
-			(Name::Terminator(), ConstByteArrayParameter(terminator)));
+		Grouper::IsolatedInitialize(
+			MakeParameters
+				(Name::GroupSize(), groupSize)
+				(Name::Separator(), ConstByteArrayParameter(separator))
+				(Name::Terminator(), ConstByteArrayParameter(terminator)));
 	}
 
 	void IsolatedInitialize(const NameValuePairs &parameters);

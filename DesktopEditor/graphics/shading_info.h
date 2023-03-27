@@ -1,3 +1,34 @@
+/*
+ * (c) Copyright Ascensio System SIA 2010-2023
+ *
+ * This program is a free software product. You can redistribute it and/or
+ * modify it under the terms of the GNU Affero General Public License (AGPL)
+ * version 3 as published by the Free Software Foundation. In accordance with
+ * Section 7(a) of the GNU AGPL its Section 15 shall be amended to the effect
+ * that Ascensio System SIA expressly excludes the warranty of non-infringement
+ * of any third-party rights.
+ *
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
+ * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
+ *
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
+ * street, Riga, Latvia, EU, LV-1050.
+ *
+ * The  interactive user interfaces in modified source and object code versions
+ * of the Program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU AGPL version 3.
+ *
+ * Pursuant to Section 7(b) of the License you must retain the original Product
+ * logo when distributing the program. Pursuant to Section 7(e) we decline to
+ * grant you any rights under trademark law for use of our trademarks.
+ *
+ * All the Product's GUI elements, including illustrations and icon sets, as
+ * well as technical writing content are licensed under the terms of the
+ * Creative Commons Attribution-ShareAlike 4.0 International. See the License
+ * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
+ *
+ */
 #include <iostream>
 #include <math.h>
 
@@ -47,9 +78,9 @@ namespace NSStructures
 
         {
             values = std::vector<std::vector<ColorT>>(1, std::vector<ColorT>(RESOLUTION));
-            for (int i = 0; i < RESOLUTION; i++)
+            for (size_t i = 0; i < RESOLUTION; i++)
             {
-                unsigned int value = 255 - (255 * ((float)i / RESOLUTION));
+                unsigned int value = (unsigned int)(255 - (255 * ((float)i / RESOLUTION)));
                 values[0][i] = ColorT(value, value, value);
             }
         }
@@ -57,11 +88,11 @@ namespace NSStructures
         ColorFunction(size_t res, float xmin, float xmax, float ymin, float ymax) : RESOLUTION(res), x_domain_min(xmin), x_domain_max(xmax), y_domain_min(ymin), y_domain_max(ymax)
         {
             values = std::vector<std::vector<ColorT>>(RESOLUTION, std::vector<ColorT>(RESOLUTION));
-            for (int i = 0; i < RESOLUTION; i++)
+            for (size_t i = 0; i < RESOLUTION; i++)
             {
-                for (int j = 0; j < RESOLUTION; j++)
+                for (size_t j = 0; j < RESOLUTION; j++)
                 {
-                    unsigned int value = 255 * sin(i * j * M_PI / RESOLUTION);
+                    unsigned int value = (unsigned int)(255 * sin(i * j * M_PI / RESOLUTION));
                     values[j][i] = ColorT(255, 0, 0, 255);
                 }
             }
@@ -228,7 +259,7 @@ namespace NSStructures
     {
         Point():x(0),y(0){}
         Point(const float& _x, const float& _y):x(_x),y(_y){}
-        Point(const int& _x, const int& _y):x((int)_x),y((int)_y){}
+        Point(const int& _x, const int& _y):x((float)_x),y((float)_y){}
         Point(const double& _x, const double& _y):x((float)_x),y((float)_y){}
         float x, y;
 

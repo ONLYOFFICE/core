@@ -11,8 +11,9 @@ def apply_patch(file, patch):
   index1 = patch_content.find("<<<<<<<")
   index2 = patch_content.find("=======")
   index3 = patch_content.find(">>>>>>>")
-  file_content_old = patch_content[index1 + 7:index2]
-  file_content_new = "\n#if 0" + file_content_old + "#else" + patch_content[index2 + 7:index3] + "#endif\n"
+  file_content_old = patch_content[index1 + 7:index2].strip()
+  file_content_new = patch_content[index2 + 7:index3].strip()
+  #file_content_new = "\n#if 0" + file_content_old + "#else" + file_content_new + "#endif\n"
   base.replaceInFile(file, file_content_old, file_content_new)
   return
 

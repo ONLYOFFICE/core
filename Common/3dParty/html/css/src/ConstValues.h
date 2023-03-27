@@ -19,6 +19,43 @@ namespace NSCSS
         Peak
     } UnitMeasure;
 
+    typedef enum
+    {
+        ScalingDirectionNone = 0,
+        ScalingDirectionX = 1,
+        ScalingDirectionY = 2
+    } ScalingDirection;
+
+    struct CSizeWindow
+    {
+            unsigned short m_ushWidth;
+            unsigned short m_ushHeight;
+
+            CSizeWindow()
+                    : m_ushWidth(0), m_ushHeight(0) {};
+            CSizeWindow(unsigned short unWidth, unsigned short unHeight)
+                    : m_ushWidth(unWidth), m_ushHeight(unHeight) {};
+
+            bool Empty() const
+            {
+                    return ((0 == m_ushWidth) && (0 == m_ushHeight));
+            }
+
+            void Clear()
+            {
+                    m_ushWidth = m_ushHeight = 0;
+            }
+
+            bool operator==(const CSizeWindow& oSizeWindow) const
+            {
+                    return ((m_ushWidth == oSizeWindow.m_ushWidth) && (m_ushHeight == oSizeWindow.m_ushHeight));
+            }
+            bool operator!=(const CSizeWindow& oSizeWindow) const
+            {
+                    return ((m_ushWidth != oSizeWindow.m_ushWidth) || (m_ushHeight != oSizeWindow.m_ushHeight));
+            }
+    };
+
     struct StatistickElement
     {
         enum TypeElement
@@ -120,6 +157,31 @@ namespace NSCSS
                 {L"windowtext",         L"000000"},  {L"transparent",           L"000000"}
             };
         }
+
+        static const std::vector<std::wstring> arDisplayValues =
+        {
+                /* <display-outside> values */
+                L"block", L"inline", L"run-in",
+                /* <display-inside> values */
+                L"flow", L"flow-root", L"table", L"flex", L"grid", L"ruby",
+                /* <display-outside> plus <display-inside> values */
+                L"block flow", L"inline table", L"flex run-in",
+                /* <display-listitem> values */
+                L"list-item", L"list-item block", L"list-item inline", L"list-item flow",
+                L"list-item flow-root", L"list-item block flow",
+                L"list-item block flow-root", L"flow list-item block",
+                /* <display-internal> values */
+                L"table-row-group", L"table-header-group", L"table-footer-group",
+                L"table-row", L"table-cell", L"table-column-group", L"table-column",
+                L"table-caption", L"ruby-base", L"ruby-text", L"ruby-base-container",
+                L"ruby-text-container",
+                /* <display-box> values */
+                L"contents", L"none",
+                /* <display-legacy> values */
+                L"inline-block", L"inline-table", L"inline-flex", L"inline-grid",
+                /* Global values */
+                L"inherit", L"initial", L"unset"
+        };
 
         namespace NSProperties {
 
@@ -244,7 +306,7 @@ namespace NSCSS
 
             public:
 
-                Font() : fSize      (fNoneValue),
+                Font() : fSize      (24.0f),
                          enStretch  (FontStretch::none),
                          enStyle    (FontStyle::none),
                          enVariant  (FontVariant::none),
@@ -824,11 +886,14 @@ namespace NSCSS
 
                 void SetLineHeight(const std::wstring &sLineHeight, const unsigned int& unLevel, const bool& bHardMode = false)
                 {
-                    if (sLineHeight.empty() || (bImportants[5] && !bHardMode))
+                    if (sLineHeight.empty() || (bImportants[5] && !bHardMode) || unLevel < arLevels[5])
                         return;
 
                     if (sLineHeight == L"normal")
-                        fLineHeight = 1.2;
+                    {
+                        arLevels[5] = unLevel;
+                        fLineHeight = 24;
+                    }
                     else
                     {
                         const float fValue = wcstof(sLineHeight.c_str(), NULL);
@@ -1049,9 +1114,6 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    if (!bPermission)
-                        return true;
-
                     return fTopSide == fNoneValue && fRightSide == fNoneValue && fBottomSide == fNoneValue && fLeftSide == fNoneValue;
                 };
 
@@ -1260,33 +1322,70 @@ namespace NSCSS
                     fLeftSide += wcstof(sLeftMargin.c_str(), NULL);
                 }
 
-                std::wstring GetTopSide() const
+                bool GetPermission() const
                 {
-                    if (fTopSide < 0 || !bPermission)
+                        return bPermission;
+                }
+
+                double GetTopSide() const
+                {
+                        if (fTopSide < 0)
+                                return 0;
+
+                        return fTopSide;
+                }
+
+                std::wstring GetTopSideW() const
+                {
+                    if (fTopSide < 0)
                         return std::wstring();
 
                     return std::to_wstring(static_cast<short int>(fTopSide  * 10.0f + 0.5f));
                 }
 
-                std::wstring GetRightSide() const
+                double GetRightSide() const
                 {
-                    if (fRightSide < 0 || !bPermission)
+                        if (fRightSide < 0)
+                                return 0;
+
+                        return fRightSide;
+                }
+
+                std::wstring GetRightSideW() const
+                {
+                    if (fRightSide < 0)
                         return std::wstring();
 
                     return (fRightSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fRightSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
                 }
 
-                std::wstring GetBottomSide() const
+                double GetBottomSide() const
                 {
-                    if (fBottomSide < 0 || !bPermission)
+                        if (fBottomSide < 0)
+                                return 0;
+
+                        return fBottomSide;
+                }
+
+                std::wstring GetBottomSideW() const
+                {
+                    if (fBottomSide < 0)
                         return std::wstring();
 
                     return std::to_wstring(static_cast<short int>(fBottomSide  * 10.0f + 0.5f));
                 }
 
-                std::wstring GetLeftSide() const
+                double GetLeftSide() const
                 {
-                    if (fLeftSide < 0 || !bPermission)
+                        if (fLeftSide < 0)
+                                return 0;
+
+                        return fLeftSide;
+                }
+
+                std::wstring GetLeftSideW() const
+                {
+                    if (fLeftSide < 0)
                         return std::wstring();
 
                     return (fLeftSide >= -128.0f) ? std::to_wstring(static_cast<short int>(fLeftSide  * 10.0f + ((fLeftSide > 0) ? 0.5f : -0.5f))) : L"-1280";
@@ -1301,7 +1400,7 @@ namespace NSCSS
                 normal
             };
 
-            enum class TextAlign
+            enum class Align
             {
                 none = 0,
                 left,
@@ -1313,7 +1412,7 @@ namespace NSCSS
             class Text
             {
                 float fIndent;
-                TextAlign enAlign;
+                Align enAlign;
                 TextDecoration enDecoration;
                 std::wstring sColor; //HEX color
 
@@ -1323,7 +1422,7 @@ namespace NSCSS
             public:
 
                 Text() : fIndent        (fNoneValue),
-                         enAlign        (TextAlign::none),
+                         enAlign        (Align::none),
                          enDecoration   (TextDecoration::none),
                          bImportants    ({false, false, false, false}),
                          arLevels       ({0, 0, 0, 0}){}
@@ -1337,7 +1436,7 @@ namespace NSCSS
                 {
                     if (oText.fIndent != fNoneValue)
                         fIndent = oText.fIndent;
-                    if (oText.enAlign != TextAlign::none)
+                    if (oText.enAlign != Align::none)
                         enAlign = oText.enAlign;
                     if (oText.enDecoration != TextDecoration::none)
                         enDecoration = oText.enDecoration;
@@ -1363,16 +1462,16 @@ namespace NSCSS
                             oSecondText.fIndent = fNoneValue;
                     }
 
-                    if (oFirstText.bImportants[1] && !oSecondText.bImportants[1] && oFirstText.enAlign != TextAlign::none)
-                        oSecondText.enAlign = TextAlign::none;
-                    else if (oSecondText.bImportants[1] && !oFirstText.bImportants[1] && oSecondText.enAlign != TextAlign::none)
-                        oFirstText.enAlign = TextAlign::none;
-                    else if (oFirstText.enAlign != TextAlign::none && oSecondText.enAlign != TextAlign::none)
+                    if (oFirstText.bImportants[1] && !oSecondText.bImportants[1] && oFirstText.enAlign != Align::none)
+                        oSecondText.enAlign = Align::none;
+                    else if (oSecondText.bImportants[1] && !oFirstText.bImportants[1] && oSecondText.enAlign != Align::none)
+                        oFirstText.enAlign = Align::none;
+                    else if (oFirstText.enAlign != Align::none && oSecondText.enAlign != Align::none)
                     {
                         if (oFirstText.arLevels[1] < oSecondText.arLevels[1])
-                            oFirstText.enAlign = TextAlign::none;
+                            oFirstText.enAlign = Align::none;
                         else
-                            oSecondText.enAlign = TextAlign::none;
+                            oSecondText.enAlign = Align::none;
                     }
 
                     if (oFirstText.bImportants[2] && !oSecondText.bImportants[2] && oFirstText.enDecoration != TextDecoration::none)
@@ -1410,34 +1509,34 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fIndent == fNoneValue && enAlign == TextAlign::none &&
+                    return fIndent == fNoneValue && enAlign == Align::none &&
                            enDecoration == TextDecoration::none && sColor.empty();
                 }
 
                 void SetAlign(const std::wstring& sAlign, const unsigned int& unLevel, const bool& bHardMode = false)
                 {
-                    if (sAlign.empty() || (bImportants[1] && !bHardMode))
+                    if (sAlign.empty() || (bImportants[1] && !bHardMode) || unLevel < arLevels[1])
                         return;
 
                     if (sAlign == L"center")
                     {
                         arLevels[1] = unLevel;
-                        enAlign = NSConstValues::NSCssProperties::TextAlign::center;
+                        enAlign = NSConstValues::NSCssProperties::Align::center;
                     }
                     else if(sAlign == L"justify")
                     {
                         arLevels[1] = unLevel;
-                        enAlign = NSConstValues::NSCssProperties::TextAlign::justify;
+                        enAlign = NSConstValues::NSCssProperties::Align::justify;
                     }
                     else if(sAlign == L"left" || sAlign == L"start")
                     {
                         arLevels[1] = unLevel;
-                        enAlign = NSConstValues::NSCssProperties::TextAlign::left;
+                        enAlign = NSConstValues::NSCssProperties::Align::left;
                     }
                     else if(sAlign == L"right" || sAlign == L"end")
                     {
                         arLevels[1] = unLevel;
-                        enAlign = NSConstValues::NSCssProperties::TextAlign::right;
+                        enAlign = NSConstValues::NSCssProperties::Align::right;
                     }
                 }
 
@@ -1560,13 +1659,13 @@ namespace NSCSS
 
                 std::wstring GetAlign() const
                 {
-                    if (enAlign == TextAlign::left)
+                    if (enAlign == Align::left)
                         return L"left";
-                    if (enAlign == TextAlign::center)
+                    if (enAlign == Align::center)
                         return L"center";
-                    if (enAlign == TextAlign::right)
+                    if (enAlign == Align::right)
                         return L"right";
-                    if (enAlign == TextAlign::justify)
+                    if (enAlign == Align::justify)
                         return L"both";
 
                     return std::wstring();
@@ -1701,7 +1800,7 @@ namespace NSCSS
 
                 bool Empty() const
                 {
-                    return fWidth  <= 0;
+                    return fWidth < 0;
                 }
 
                 void SetWidthWithoutChecking(const float& fWidth, const unsigned int& unLevel, const bool &bHardMode = false)
@@ -1889,7 +1988,10 @@ namespace NSCSS
 
                 std::wstring GetStyle() const
                 {
-                    return (bBlock) ? L"auto" : sStyle;
+                    if (bBlock) return L"auto";
+                    if (0 == fWidth) return L"none";
+                    else if (L"auto" == sStyle) return L"single";
+                    else return sStyle;
                 }
 
                 std::wstring GetColor() const
@@ -1921,7 +2023,7 @@ namespace NSCSS
                     if (sValue.empty())
                         return BorderSide();
 
-                    const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(sValue, L" ");
+					const std::vector<std::wstring> arValues = NS_STATIC_FUNCTIONS::GetWordsW(NS_STATIC_FUNCTIONS::NormalizeRGB(sValue), L" ");
                     BorderSide oBorderSide;
                     for (std::wstring sValue : arValues)
                     {
@@ -1942,7 +2044,7 @@ namespace NSCSS
                         else if (iswdigit(sValue[0]))
                         {
                             const float fWidth = wcstof(sValue.c_str(), NULL);
-                            if (fWidth > 0.0f)
+                            if (fWidth >= 0.0f)
                                 oBorderSide.fWidth = fWidth;
                         }
                         else if (sValue.substr(0, 3) == L"rgb")
@@ -2425,7 +2527,7 @@ namespace NSCSS
                 std::vector<unsigned int> arLevels;
             public:
 
-                Background() : bImportants({false}), arLevels({0}), bInBorder(false){}
+                Background() : bInBorder(false), bImportants({false}), arLevels({0}){}
 
                 void ClearImportants()
                 {
@@ -2444,8 +2546,10 @@ namespace NSCSS
 
                 Background operator+=(const Background& oBackground)
                 {
-                    if (oBackground.sColor.empty())
-                        sColor = oBackground.sColor;
+                    if (oBackground.sColor.empty() || (bImportants[0] && !oBackground.bImportants[0]))
+                        return *this;
+
+                    sColor = oBackground.sColor;
 
                     return *this;
                 }
@@ -2585,6 +2689,263 @@ namespace NSCSS
                             return oIter->first;
 
                     return L"";
+                }
+            };
+
+            class Display
+            {
+                std::wstring wsDisplay;
+                int nWidth;
+                int nHeight;
+                std::wstring wsAlign;
+                std::wstring wsVerticalAlign;
+
+                std::vector<bool> bImportants;
+                std::vector<unsigned int> arLevels;
+
+            public:
+                Display() : wsDisplay(L"inline"), nWidth(-1), nHeight(-1), wsAlign(), bImportants{false, false, false, false, false}, arLevels{0, 0, 0, 0, 0} {};
+
+                void ClearImportants()
+                {
+                    bImportants = {false, false, false, false, false};
+                }
+
+                Display operator+=(const Display& oDisplay)
+                {
+                    if (oDisplay.Empty())
+                        return *this;
+
+                    wsDisplay   = oDisplay.wsDisplay;
+                    nWidth      = oDisplay.nWidth;
+                    nHeight     = oDisplay.nHeight;
+                    wsAlign     = oDisplay.wsAlign;
+
+                    return *this;
+                }
+
+                static void DisplayEquation(Display &oFirstDisplay, Display &oSecondDisplay)
+                {
+                    if (oFirstDisplay.bImportants[0] && !oSecondDisplay.bImportants[0] && !oFirstDisplay.wsDisplay.empty())
+                        oSecondDisplay.wsDisplay.clear();
+                    else if (oSecondDisplay.bImportants[0] && !oFirstDisplay.bImportants[0] && !oSecondDisplay.wsDisplay.empty())
+                        oFirstDisplay.wsDisplay.clear();
+                    else if (!oSecondDisplay.wsDisplay.empty())
+                    {
+                        if (oFirstDisplay.arLevels[0] < oSecondDisplay.arLevels[0])
+                            oFirstDisplay.wsDisplay.clear();
+                        else
+                            oSecondDisplay.wsDisplay.clear();
+                    }
+
+                    if (oFirstDisplay.bImportants[1] && !oSecondDisplay.bImportants[1] && oFirstDisplay.nWidth > 0)
+                        oSecondDisplay.nWidth = -1;
+                    else if (oSecondDisplay.bImportants[1] && !oFirstDisplay.bImportants[1] && oSecondDisplay.nWidth > 0)
+                        oFirstDisplay.nWidth = -1;
+                    else if (oSecondDisplay.nWidth > 0)
+                    {
+                        if (oFirstDisplay.arLevels[1] < oSecondDisplay.arLevels[1])
+                            oFirstDisplay.nWidth = -1;
+                        else
+                            oSecondDisplay.nWidth = -1;
+                    }
+
+                    if (oFirstDisplay.bImportants[2] && !oSecondDisplay.bImportants[2] && oFirstDisplay.nHeight > 0)
+                        oSecondDisplay.nHeight = -1;
+                    else if (oSecondDisplay.bImportants[2] && !oFirstDisplay.bImportants[2] && oSecondDisplay.nHeight > 0)
+                        oFirstDisplay.nHeight = -1;
+                    else if (oSecondDisplay.nHeight > 0)
+                    {
+                        if (oFirstDisplay.arLevels[2] < oSecondDisplay.arLevels[2])
+                            oFirstDisplay.nHeight = -1;
+                        else
+                            oSecondDisplay.nHeight = -1;
+                    }
+
+                    if (oFirstDisplay.bImportants[3] && !oSecondDisplay.bImportants[3] && !oFirstDisplay.wsAlign.empty())
+                        oSecondDisplay.wsAlign.clear();
+                    else if (oSecondDisplay.bImportants[3] && !oFirstDisplay.bImportants[3] && !oSecondDisplay.wsAlign.empty())
+                        oFirstDisplay.wsAlign.clear();
+                    else if (!oSecondDisplay.wsAlign.empty())
+                    {
+                        if (oFirstDisplay.arLevels[3] < oSecondDisplay.arLevels[3])
+                            oFirstDisplay.wsAlign.clear();
+                        else
+                            oSecondDisplay.wsAlign.clear();
+                    }
+
+                    if (oFirstDisplay.bImportants[4] && !oSecondDisplay.bImportants[4] && !oFirstDisplay.wsVerticalAlign.empty())
+                        oSecondDisplay.wsVerticalAlign.clear();
+                    else if (oSecondDisplay.bImportants[4] && !oFirstDisplay.bImportants[4] && !oSecondDisplay.wsVerticalAlign.empty())
+                        oFirstDisplay.wsVerticalAlign.clear();
+                    else if (!oSecondDisplay.wsVerticalAlign.empty())
+                    {
+                        if (oFirstDisplay.arLevels[4] < oSecondDisplay.arLevels[4])
+                            oFirstDisplay.wsVerticalAlign.clear();
+                        else
+                            oSecondDisplay.wsVerticalAlign.clear();
+                    }
+                }
+
+                bool operator==(const Display& oDisplay) const
+                {
+                    return wsDisplay == oDisplay.wsDisplay && nWidth == oDisplay.nWidth && nHeight == oDisplay.nHeight &&
+                           wsAlign == oDisplay.wsAlign && wsVerticalAlign == oDisplay.wsVerticalAlign;
+                }
+
+                bool Empty() const
+                {
+                    return (L"inline" == wsDisplay || wsDisplay.empty()) && (nWidth < 0) && (nHeight < 0) &&
+                           (wsAlign.empty()) && (wsVerticalAlign.empty());
+                }
+
+                void SetImportantAll(const bool &bImportant)
+                {
+                    bImportants = {bImportant, bImportant, bImportant, bImportant, bImportant};
+                }
+
+                void SetImportantDisplay(const bool &bImportant)
+                {
+                    bImportants[0] = bImportant;
+                }
+
+                void SetImportantWidth(const bool &bImportant)
+                {
+                    bImportants[1] = bImportant;
+                }
+
+                void SetImportantHeight(const bool &bImportant)
+                {
+                    bImportants[2] = bImportant;
+                }
+
+                void SetImportantAlign(const bool& bImportant)
+                {
+                    bImportants[3] = bImportant;
+                }
+
+                void SetImportantVerticalAlign(const bool& bImportant)
+                {
+                    bImportants[4] = bImportant;
+                }
+
+                void SetDisplay(const std::wstring& wsNewDisplay, const unsigned int& unLevel, const bool &bHardMode = false)
+                {
+                    if (wsNewDisplay.empty() || (bImportants[0] && !bHardMode))
+                        return;
+
+                    if (arDisplayValues.end() != std::find(arDisplayValues.begin(), arDisplayValues.end(), wsNewDisplay))
+                    {
+                        wsDisplay = wsNewDisplay;
+                        arLevels[0] = unLevel;
+                    }
+                }
+
+                void SetWidth(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
+                {
+                    if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[1] && !bHardMode))
+                        return;
+
+                    arLevels[1] = unLevel;
+                    nWidth = std::stoi(wsNewValue);
+                }
+
+                void SetWidth(int nValue, const unsigned int& unLevel, const bool &bHardMode = false)
+                {
+                    if (bImportants[1] && !bHardMode)
+                        return;
+
+                    arLevels[1] = unLevel;
+                    nWidth = nValue;
+                }
+
+                void SetHeight(const std::wstring& wsNewValue, const unsigned int& unLevel, const bool &bHardMode = false)
+                {
+                    if (wsNewValue.empty() || !iswdigit(wsNewValue[0]) || (bImportants[2] && !bHardMode))
+                        return;
+
+                    arLevels[2] = unLevel;
+                    nHeight = std::stoi(wsNewValue);
+                }
+
+                void SetHeight(int nValue, const unsigned int& unLevel, const bool &bHardMode = false)
+                {
+                    if (bImportants[2] && !bHardMode)
+                        return;
+
+                    arLevels[2] = unLevel;
+                    nHeight = nValue;
+                }
+
+                void SetAlign(const std::wstring& sAlign, const unsigned int& unLevel, const bool& bHardMode = false)
+                {
+                    if (sAlign.empty() || (bImportants[3] && !bHardMode))
+                        return;
+
+                    if (L"center" == sAlign || L"left" == sAlign || L"start" == sAlign ||
+                        L"right" == sAlign || L"end" == sAlign)
+                    {
+                         arLevels[3] = unLevel;
+                         wsAlign = sAlign;
+                    }
+                }
+
+                void SetVerticalAlign(const std::wstring& sVerticalAlign, const unsigned int& unLevel, const bool& bHardMode = false)
+                {
+                    if (sVerticalAlign.empty() || (bImportants[4] && !bHardMode))
+                        return;
+
+                    if (L"top" == sVerticalAlign || L"baseline" == sVerticalAlign || L"text-top" == sVerticalAlign)
+                    {
+                        wsVerticalAlign = L"top";
+                        arLevels[4] = unLevel;
+                    }
+                        else if (L"bottom" == sVerticalAlign || L"text-bottom" == sVerticalAlign)
+                    {
+                        wsVerticalAlign = L"bottom";
+                        arLevels[4] = unLevel;
+                    }
+                    else if (L"middle" == sVerticalAlign)
+                    {
+                        wsVerticalAlign = sVerticalAlign;
+                        arLevels[4] = unLevel;
+                    }
+                }
+
+                std::wstring GetDisplay() const
+                {
+                    return wsDisplay;
+                }
+
+                std::wstring GetWidthW() const
+                {
+                    if (nWidth < 0)
+                            return std::wstring();
+
+                    return std::to_wstring(nWidth);
+                }
+
+                int GetWidth() const
+                {
+                    return nWidth;
+                }
+
+                std::wstring GetHeightW() const
+                {
+                    if (nHeight < 0)
+                            return std::wstring();
+
+                    return std::to_wstring(nHeight);
+                }
+
+                std::wstring GetAlign() const
+                {
+                    return wsAlign;
+                }
+
+                std::wstring GetVerticalAlign() const
+                {
+                    return wsVerticalAlign;
                 }
             };
         }

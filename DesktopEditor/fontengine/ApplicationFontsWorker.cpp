@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -1464,6 +1464,106 @@ public:
             RELEASEOBJECT(pRenderer);            
 
             oFrame.SaveFile(strThumbnailPath, 4);
+
+            LONG lBinarySize = lWidthPix * lHeightPix;
+            BYTE* pBinaryFormat = new BYTE[lBinarySize + 12];
+
+            pBinaryFormat[0] = 0xFF & (lWidthPix >> 24);
+            pBinaryFormat[1] = 0xFF & (lWidthPix >> 16);
+            pBinaryFormat[2] = 0xFF & (lWidthPix >> 8);
+            pBinaryFormat[3] = 0xFF & (lWidthPix >> 0);
+            pBinaryFormat[4] = 0xFF & (lH1_px >> 24);
+            pBinaryFormat[5] = 0xFF & (lH1_px >> 16);
+            pBinaryFormat[6] = 0xFF & (lH1_px >> 8);
+            pBinaryFormat[7] = 0xFF & (lH1_px >> 0);
+            pBinaryFormat[8] = 0xFF & (nCountFonts >> 24);
+            pBinaryFormat[9] = 0xFF & (nCountFonts >> 16);
+            pBinaryFormat[10] = 0xFF & (nCountFonts >> 8);
+            pBinaryFormat[11] = 0xFF & (nCountFonts >> 0);
+
+            BYTE* pBinaryFormatCur = pBinaryFormat + 12;
+            BYTE* pImageDataAlpha = pImageData + 3;
+            LONG nIndexCur = 0;
+            while (nIndexCur < lBinarySize)
+            {
+                *pBinaryFormatCur++ = *pImageDataAlpha;
+
+                if (0 != *pImageDataAlpha)
+                {
+                    ++nIndexCur;
+                    pImageDataAlpha += 4;
+                }
+                else
+                {
+                    LONG nIndexCur0 = nIndexCur;
+                    LONG nIndexCurLimit = nIndexCur0 + 255;
+                    if (nIndexCurLimit > lBinarySize)
+                        nIndexCurLimit = lBinarySize;
+
+                    while (nIndexCur < nIndexCurLimit)
+                    {
+                        ++nIndexCur;
+                        pImageDataAlpha += 4;
+
+                        if (0 != *pImageDataAlpha)
+                            break;
+                    }
+
+                    *pBinaryFormatCur++ = nIndexCur - nIndexCur0;
+                }
+            }
+
+#if 0
+            BYTE* pPixelsValues = new BYTE[4 * lWidthPix * lHeightPix];
+            memset(pPixelsValues, 0x00, 4 * lWidthPix * lHeightPix);
+
+            CBgraFrame oFrameTest;
+            oFrameTest.put_Data(pPixelsValues);
+            oFrameTest.put_Width((int)lWidthPix);
+            oFrameTest.put_Height((int)lHeightPix);
+            oFrameTest.put_Stride(4 * (int)lWidthPix);
+
+            BYTE* binaryAlpha = pBinaryFormat;
+            LONG binaryIndex = 12;
+            LONG binaryLen = (LONG)(pBinaryFormatCur - pBinaryFormat);
+            BYTE* imagePixels = pPixelsValues;
+            LONG alphaIndex = 3;
+
+            int len0 = 0;
+            while (binaryIndex < binaryLen)
+            {
+                imagePixels[alphaIndex] = binaryAlpha[binaryIndex];
+                binaryIndex++;
+                alphaIndex += 4;
+
+                if (0 == binaryAlpha[binaryIndex - 1])
+                {
+                    len0 = binaryAlpha[binaryIndex++] - 1;
+
+                    while (len0 > 0)
+                    {
+                        len0--;
+                        imagePixels[alphaIndex] = 0;
+                        alphaIndex += 4;
+                    }
+                }
+                else
+                {
+                    imagePixels[alphaIndex - 5] = imagePixels[alphaIndex - 6] = imagePixels[alphaIndex - 7] = 0xFF - binaryAlpha[binaryIndex - 1];
+                }
+            }
+
+            oFrameTest.SaveFile(L"FILE", 4);
+#endif
+
+            NSFile::CFileBinary oThumbnailBinary;
+            if (oThumbnailBinary.CreateFileW(strThumbnailPath + L".bin"))
+            {
+                oThumbnailBinary.WriteFile(pBinaryFormat, (DWORD)(pBinaryFormatCur - pBinaryFormat));
+                oThumbnailBinary.CloseFile();
+            }
+
+            RELEASEARRAYOBJECTS(pBinaryFormat);
         }
 
         RELEASEOBJECT(pManager);

@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -262,25 +262,25 @@ const std::string bin2str(const char* buf, const size_t nbuf)
 }
 
 
-const std::wstring  guid2bstr(const _GUID_ guid)
+const std::wstring  guid2bstr(_GUID_ & guid)
 {
 	std::wstring  guid_ret=L"{";
 
 	guid_ret += int2hex_wstr(guid.Data1, 4) + L"-" + 
 				int2hex_wstr(guid.Data2, 2) + L"-" + 
 				int2hex_wstr(guid.Data3, 2) + L"-" +
-				int2hex_wstr(guid.Data4[0], 1) + int2hex_wstr(guid.Data4[1], 1) + L"-" +
-				int2hex_wstr(guid.Data4[2], 1) + int2hex_wstr(guid.Data4[3], 1) +
-				int2hex_wstr(guid.Data4[4], 1) + int2hex_wstr(guid.Data4[5], 1) +
-				int2hex_wstr(guid.Data4[6], 1) + int2hex_wstr(guid.Data4[7], 1);
+				int2hex_wstr((guid.getData4())[0], 1) + int2hex_wstr((guid.getData4())[1], 1) + L"-" +
+				int2hex_wstr((guid.getData4())[2], 1) + int2hex_wstr((guid.getData4())[3], 1) +
+				int2hex_wstr((guid.getData4())[4], 1) + int2hex_wstr((guid.getData4())[5], 1) +
+				int2hex_wstr((guid.getData4())[6], 1) + int2hex_wstr((guid.getData4())[7], 1);
 	return guid_ret + L"}";
 }
 
 
-const std::string guid2str(const _GUID_ guid)
+const std::string guid2str(_GUID_ & guid)
 {
 	std::wstring s = guid2bstr(guid);
-	return std::string(s.begin(),s.end());
+	return std::string(s.begin(), s.end());
 }
 
 const std::wstring guidFromStr(const std::wstring & guid_str)
@@ -645,32 +645,32 @@ const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabL
 	{
 		return L"#REF";
 	}
-	static boost::wregex correct_sheet_name(L"^\\'.+?\\'$");
-    static boost::wregex test_sheet_name(L"[\\s)(\\!\\'&:-]+"); //.??? 6442946.xls
+	static boost::wregex correct_table_name(L"^\\'.+?\\'$");
+    static boost::wregex test_table_name(L"([\\s)(\\!\\'&:-]+)|(^[\\d]+)"); //.??? 6442946.xls 5558608.xls
 	
-	std::wstring sheet_first = prefix + tab2sheet_name(tabFirst, names);
+	std::wstring table_name = tab2sheet_name(tabFirst, names); 
+	std::wstring sheet_first = prefix + table_name;
 	
-	if(!boost::regex_search(sheet_first.begin(), sheet_first.end(), correct_sheet_name))
+	if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
 	{	
-		if(boost::regex_search(sheet_first.begin(), sheet_first.end(), test_sheet_name) || (!prefix.empty() && prefix[0] == L'[')) // 5558608.xls
+		if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name)) 
 		{
 			sheet_first = boost::algorithm::replace_all_copy(sheet_first, L"'", L"''"); 
 			sheet_first = std::wstring(L"'") + sheet_first + std::wstring(L"'");
 		}
 	}
-
-
 	std::wstring sheet_last;
 	if (tabLast != tabFirst)
 	{
-		sheet_last = std::wstring(L":") + prefix + tab2sheet_name(tabLast, names);
+		table_name = tab2sheet_name(tabLast, names);
+		sheet_last = std::wstring(L":") + prefix + table_name;
 		
-		if(!boost::regex_search(sheet_last.begin(), sheet_last.end(), correct_sheet_name))
+		if(!boost::regex_search(table_name.begin(), table_name.end(), correct_table_name))
 		{	
-			if(boost::regex_search(sheet_last.begin(), sheet_last.end(), test_sheet_name))
+			if(boost::regex_search(table_name.begin(), table_name.end(), test_table_name))
 			{	
 				sheet_last = boost::algorithm::replace_all_copy(sheet_last, L"'", L"''"); 
-				sheet_last = std::wstring(L"\'") + sheet_last + std::wstring(L"\'");
+				sheet_last = std::wstring(L"'") + sheet_last + std::wstring(L"'");
 			}
 		}
 	}

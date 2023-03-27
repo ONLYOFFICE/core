@@ -296,11 +296,19 @@ void CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<IN
 	}
 	else
 	{
-		pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
-		pCell->m_oRichText.Init();
-		OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
-		pText->m_sText = sText;
-		pCell->m_oRichText->m_arrItems.push_back(pText);
+		if (sText[0] == L'='/* && bCalcFormulas*/)
+		{
+			pCell->m_oFormula.Init();
+			pCell->m_oFormula->m_sText = sText;
+		}
+		else
+		{
+			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+			pCell->m_oRichText.Init();
+			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
+			pText->m_sText = sText;
+			pCell->m_oRichText->m_arrItems.push_back(pText);
+		}
 	}
 
 	if (bIsWrap)

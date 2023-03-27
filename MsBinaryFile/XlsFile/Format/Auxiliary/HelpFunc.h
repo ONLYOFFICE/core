@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -33,15 +33,7 @@
 
 #include <string>
 #include <vector>
-#include "../../../../Common/DocxFormat/Source/Base/Types_32.h"
-
-typedef struct  
-{
-	_UINT32 Data1;
-	_UINT16 Data2;
-	_UINT16 Data3;
-    unsigned char  Data4[ 8 ];
-} _GUID_;
+#include "../../../../Common/cfcpp/guid.h"
 
 namespace XLS
 {
@@ -69,8 +61,8 @@ namespace STR
 	const std::wstring	int2wstr	(const int val, const int radix = 10);
 	const std::wstring	double2str	(const double val);
 	const std::string	bin2str		(const char* buf, const size_t nbuf);
-	const std::wstring  guid2bstr	(const _GUID_ guid);
-	const std::string	guid2str	(const _GUID_ guid);
+	const std::wstring  guid2bstr	(_GUID_ & guid);
+	const std::string	guid2str	(_GUID_ & guid);
     const std::wstring	guidFromStr	(const std::wstring & guid_str);
 	const bool			bstr2guid	(const std::wstring & guid_str, _GUID_& guid);
 	const std::wstring	int2hex_wstr(const int val, const size_t size_of = 4);

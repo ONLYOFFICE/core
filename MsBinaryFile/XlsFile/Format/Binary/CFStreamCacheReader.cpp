@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2019
+ * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -12,7 +12,7 @@
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR  PURPOSE. For
  * details, see the GNU AGPL at: http://www.gnu.org/licenses/agpl-3.0.html
  *
- * You can contact Ascensio System SIA at 20A-12 Ernesta Birznieka-Upisha
+ * You can contact Ascensio System SIA at 20A-6 Ernesta Birznieka-Upish
  * street, Riga, Latvia, EU, LV-1050.
  *
  * The  interactive user interfaces in modified source and object code versions
@@ -70,16 +70,18 @@ const bool StreamCacheReader::checkNextRecord(const CFRecordType::TypeId desirab
 
 // Seek to the next substream (Read all records till EOF then skip EOF)
 // Doesn't generate EndOfStreamReached if the stream is the last one
-void StreamCacheReader::SkipRecord()
+void StreamCacheReader::SkipRecord(bool log_debug)
 {
 	if (records_cache.begin() != records_cache.end())
 	{
+		if (log_debug)
+		{
 		CFRecordType::TypeString rec_name = records_cache.front()->getTypeString();
-
 		if (rec_name.empty())
 			Log::warning(L"The extracted record has obsoleted or unknown type(0x" + STR::int2hex_wstr(records_cache.front()->getTypeId(), sizeof(CFRecordType::TypeId)) + L")");
 		else
 			Log::warning("The record has been skipped (" + rec_name + ")");
+		}
 		records_cache.pop_front(); 
 	}
 
@@ -150,7 +152,8 @@ CFRecordPtr CFStreamCacheReader::getNextRecord(const CFRecordType::TypeId desira
 
 		//Log::warning(rec_name);
 
-		if (desirable_type == rt_MsoDrawingGroup)	// объединяем rt_MsoDrawingGroup + rt_Continue в один блок 
+		if (desirable_type == rt_MsoDrawingGroup ||
+			desirable_type == rt_GelFrame)	// объединяем c rt_Continue в один блок 
 		{
 			if (checkNextRecord(desirable_type, 1))
 			{				

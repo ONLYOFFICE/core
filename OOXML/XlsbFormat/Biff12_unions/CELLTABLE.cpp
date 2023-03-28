@@ -116,9 +116,6 @@ namespace XLSB
                                 shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
-	Parenthesis_CELLTABLE::Parenthesis_CELLTABLE() : shared_formulas_locations_ref_(std::vector<CellRangeRef>())
-	{
-	}
     Parenthesis_CELLTABLE::~Parenthesis_CELLTABLE()
     {
     }

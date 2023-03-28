@@ -29,6 +29,6 @@ core_windows {
     core_boost_date_time:LIBS += -L$$CORE_BOOST_LIBS -llibboost_date_time$$BOOST_POSTFIX
 } else {
     core_boost_libs:LIBS += -L$$CORE_BOOST_LIBS -lboost_system -lboost_filesystem -lboost_date_time
-    core_boost_regex:LIBS += -L$$CORE_BOOST_LIBS -lboost_regex
+    core_boost_regex:LIBS += -L$$CORE_BOOST_LIBS -lboost_regex -lboost_date_time
     core_boost_date_time:LIBS += -L$$CORE_BOOST_LIBS -lboost_date_time
 }

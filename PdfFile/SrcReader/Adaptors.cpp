@@ -147,11 +147,6 @@ void GlobalParamsAdaptor::SetCMapMemory(BYTE* pData, DWORD nSizeData)
         m_nCMapDataLength = nSizeData;
     }
 }
-
-DWORD GetLength(BYTE* x)
-{
-    return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
-}
 bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int& nSize)
 {
     if (!m_bCMapData)
@@ -165,12 +160,12 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
     DWORD i = 0;
     while (i < m_nCMapDataLength)
     {
-        DWORD nPathLength = GetLength(m_bCMapData + i);
+        DWORD nPathLength = NSWasm::CData::GetLen(m_bCMapData + i);
         i += 4;
         std::string sName1 = std::string((char*)(m_bCMapData + i), nPathLength);
         i += nPathLength;
 
-        nPathLength = GetLength(m_bCMapData + i);
+        nPathLength = NSWasm::CData::GetLen(m_bCMapData + i);
         i += 4;
         if (sName1 == std::string(sName))
         {
@@ -205,6 +200,7 @@ BYTE* GlobalParamsAdaptor::GetTextFormField()
     NSWasm::CData oRes;
     oRes.SkipLen();
 
+    oRes.AddInt(m_arrTextFormField.size());
     for (TextFormField& tFF : m_arrTextFormField)
     {
         std::string sText = U_TO_UTF8(tFF.sText);
@@ -213,6 +209,7 @@ BYTE* GlobalParamsAdaptor::GetTextFormField()
         oRes.WriteString((BYTE*)sFontName.c_str(), (unsigned int)sFontName.length());
         oRes.AddDouble(tFF.dFontSize);
     }
+    m_arrTextFormField.clear();
 
     oRes.WriteLen();
     BYTE* bRes = oRes.GetBuffer();

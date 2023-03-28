@@ -711,10 +711,10 @@ int main(int argc, char* argv[])
 			nPathLength = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "Y " << nPathLength << ", ";
-			int nWidgetWidth = READ_INT(pWidgetsAP + i);
+			unsigned int nWidgetWidth = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "W " << nWidgetWidth << ", ";
-			int nWidgetHeight = READ_INT(pWidgetsAP + i);
+			unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "H " << nWidgetHeight << ", ";
 			unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
@@ -732,6 +732,23 @@ int main(int argc, char* argv[])
 			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
 			oFrame.ClearNoAttack();
 			RELEASEARRAYOBJECTS(res);
+
+			unsigned int nTextSize = READ_INT(pWidgetsAP + i);
+			i += 4;
+			for (unsigned int j = 0; j < nTextSize; ++j)
+			{
+				nPathLength = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << j << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+				i += nPathLength;
+				nPathLength = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+				i += nPathLength;
+				nPathLength = READ_INT(pWidgetsAP + i);
+				i += 4;
+				std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
+			}
 		}
 
 		if (pWidgetsAP)

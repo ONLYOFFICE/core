@@ -141,6 +141,8 @@ namespace NSWasm
         }
         void Write(BYTE* value, unsigned int len)
         {
+            if (!value || len == 0)
+                return;
             AddSize(len);
             memcpy(m_pDataCur, value, len);
             m_pDataCur += len;

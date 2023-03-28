@@ -630,7 +630,17 @@
 			let np2 = reader.readInt();
 			// Указатель на память, аналогичный возвращаемому getPagePixmap. Память необходимо освободить
 			AP["retValue"] = np2 << 32 | np1;
-			
+			let n = reader.readInt();
+			AP["fontInfo"] = [];
+			for (let i = 0; i < n; ++i)
+			{
+				let text = {};
+				text["text"] = reader.readString();
+				text["fontName"] = reader.readString();
+				text["fontSize"] = reader.readDouble();
+				AP["fontInfo"].push(text);
+			}
+
 			res.push(AP);
 		}
 

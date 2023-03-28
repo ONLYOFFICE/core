@@ -97,7 +97,6 @@ public:
 
     void AddTextFormField(const std::wstring& sText, const std::wstring& sFontName, double dFontSize);
     BYTE* GetTextFormField();
-    void ClearTextFormField() { m_arrTextFormField.clear(); };
 private:
 
 	void AddNameToUnicode(const char* sFile);

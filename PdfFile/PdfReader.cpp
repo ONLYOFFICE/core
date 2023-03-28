@@ -1511,8 +1511,10 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         oRes.AddInt(npSubMatrix >> 32);
 
         BYTE* pTextFormField = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
-        ((GlobalParamsAdaptor*)globalParams)->ClearTextFormField();
         unsigned int nLength = NSWasm::CData::GetLen(pTextFormField);
+        nLength -= 4;
+        oRes.Write(pTextFormField + 4, nLength);
+        RELEASEARRAYOBJECTS(pTextFormField);
     }
 
     globalParams->setDrawContent(bDrawContent);

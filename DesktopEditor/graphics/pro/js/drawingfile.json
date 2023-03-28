@@ -12,6 +12,7 @@
 		"-O3", 
 		"-fexceptions", 
 		"-Wno-unused-command-line-argument", 
+		"-Wno-register",
 		"-s ALLOW_MEMORY_GROWTH=1", 
 		"-s FILESYSTEM=0", 
 		"-s ENVIRONMENT='web'", 

@@ -530,7 +530,6 @@
 							rec["opt"].push([opt1, opt2]);
 					}
 				}
-				// Индекс верхнего элемента - TI
 				if (flags & (1 << 11))
 					rec["TI"] = reader.readInt();
 				// 12.7.4.4
@@ -634,13 +633,12 @@
 			AP["fontInfo"] = [];
 			for (let i = 0; i < n; ++i)
 			{
-				let text = {};
-				text["text"] = reader.readString();
-				text["fontName"] = reader.readString();
-				text["fontSize"] = reader.readDouble();
-				AP["fontInfo"].push(text);
+				let fontInfo = {};
+				fontInfo["text"] = reader.readString();
+				fontInfo["fontName"] = reader.readString();
+				fontInfo["fontSize"] = reader.readDouble();
+				AP["fontInfo"].push(fontInfo);
 			}
-
 			res.push(AP);
 		}
 

@@ -19,7 +19,7 @@ include(../../Common/base.pri)
 ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network)
 
 #CONFIG += build_xp
-
+CONFIG += v8_version_89
 core_ios {
     CONFIG += doct_renderer_empty
 }

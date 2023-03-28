@@ -222,10 +222,9 @@ HEADERS += \
 SOURCES += \
     ../cryptlib.cpp \
     ../cpu.cpp \
+    ../integer.cpp \
     ../eccrypto.cpp \
     ../eprecomp.cpp \
-    ../fipsalgt.cpp \
-    ../integer.cpp \
     ../3way.cpp \
     ../adler32.cpp \
     ../algebra.cpp \

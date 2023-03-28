@@ -236,7 +236,7 @@ static void deserialize_val_prop(XmlUtils::CXmlLiteReader& oReader, const std::w
 			}
 			else if (typeName == L"BIFF_WORD")
 			{
-				UINT16 word = 0;
+				unsigned short word = 0;
 
 				if (L"baseline" == value) word = 0;
 				else if (L"superscript" == value) word = 1;

@@ -46,11 +46,6 @@ namespace XLSB
     {
     }
 
-	FMLACELL::FMLACELL()
-		: shared_formulas_locations_ref_(std::vector<CellRangeRef>()), isShared(false), m_sharedIndex(-1)
-	{
-	}
-
     FMLACELL::~FMLACELL()
     {
     }

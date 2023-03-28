@@ -45,11 +45,6 @@ namespace XLSB
     {
     }
 
-	SHRFMLACELL::SHRFMLACELL()
-		: shared_formulas_locations_ref_(std::vector<CellRangeRef>()), m_sharedIndex(-1)
-	{
-	}
-
     SHRFMLACELL::~SHRFMLACELL()
     {
     }

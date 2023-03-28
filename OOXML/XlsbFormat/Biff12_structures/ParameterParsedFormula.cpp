@@ -59,7 +59,7 @@ void ParameterParsedFormula::load(XLS::CFRecord& record)
 		rgcb.load(record, rgce.getPtgs(), true);
 }
 
-void ParameterParsedFormula::save(CFRecord& record)
+void ParameterParsedFormula::save(XLS::CFRecord& record)
 {
 	_UINT32 size = 0;
 

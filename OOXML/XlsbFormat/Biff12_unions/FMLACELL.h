@@ -41,7 +41,6 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(FMLACELL)
     public:
         FMLACELL(_INT32 row, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-		FMLACELL();
         ~FMLACELL();
 
         XLS::BaseObjectPtr clone();

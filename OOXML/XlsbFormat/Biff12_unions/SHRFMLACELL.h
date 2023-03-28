@@ -43,7 +43,6 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(SHRFMLACELL)
     public:
         SHRFMLACELL(_INT32 row, _INT32 col, std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-		SHRFMLACELL();
         ~SHRFMLACELL();
 
         XLS::BaseObjectPtr clone();

@@ -65,13 +65,12 @@ namespace ODRAW
 		m_oBounds.right	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("bounds-right"),	_T("0")));
 		m_oBounds.bottom	= XmlUtils::GetDouble(oXmlNode.GetAttributeOrValue(_T("bounds-bottom"),	_T("0")));
 
-		XmlUtils::CXmlNodes oNodes;
+		std::vector<XmlUtils::CXmlNode> oNodes;
 		oXmlNode.GetNodes(_T("part"), oNodes);
-		for (int nIndex = 0; nIndex < oNodes.GetCount(); ++nIndex)
+		for (size_t nIndex = 0; nIndex < oNodes.size(); ++nIndex)
 		{
 			CPart oPart;
-			XmlUtils::CXmlNode oNode;
-			oNodes.GetAt(nIndex, oNode);
+			XmlUtils::CXmlNode & oNode = oNodes[nIndex];
 			oPart.FromXmlNode(oNode);
 			m_arParts.push_back(oPart);
 		}

@@ -3114,13 +3114,13 @@ namespace SVG
 
 			m_gradientUnits	=	oXml.GetAttributeOrValue(L"gradientUnits", L"");
 
-			XmlUtils::CXmlNodes comList;
+            std::vector<XmlUtils::CXmlNode> comList;
 			if (oXml.GetNodes(L"*", comList))
 			{
-				for (int i = 0; i < comList.GetCount(); ++i)
+                for (size_t i = 0; i < comList.size(); ++i)
 				{
-					XmlUtils::CXmlNode oXml2;
-					if (comList.GetAt(i, oXml2))
+                    XmlUtils::CXmlNode & oXml2 = comList[i];
+                    if (oXml2.IsValid())
 					{
 						if (L"stop" == oXml2.GetName())
 						{
@@ -3278,19 +3278,19 @@ namespace SVG
 
 			m_gradientUnits	= oXml.GetAttributeOrValue(L"gradientUnits", L"");
 
-			XmlUtils::CXmlNodes comList;
+            std::vector<XmlUtils::CXmlNode> comList;
 			if (oXml.GetNodes(L"*", comList))
 			{
-				for (int i = 0; i < comList.GetCount(); ++i)
+                for (size_t i = 0; i < comList.size(); ++i)
 				{
-					XmlUtils::CXmlNode oXml2;
-					if (comList.GetAt(i, oXml2))
-					{
+                    XmlUtils::CXmlNode & oXml2 = comList[i];
+                    if (oXml2.IsValid())
+                    {
 						if (L"stop" == oXml2.GetName())
 						{
 							m_Color.Add(oXml2);
 						}
-					}
+                    }
 				}
 			}
 
@@ -4292,13 +4292,13 @@ namespace SVG
 		{
 			Load (oXml);
 
-			XmlUtils::CXmlNodes oXmlNodes;
+            std::vector<XmlUtils::CXmlNode> oXmlNodes;
 			if (oXml.GetNodes(L"*", oXmlNodes))
 			{
-				for (int i = 0; i < oXmlNodes.GetCount(); ++i)
+                for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
-					XmlUtils::CXmlNode oChild;
-					if (oXmlNodes.GetAt(i, oChild))
+                    XmlUtils::CXmlNode & oChild = oXmlNodes[i];
+                    if (oChild.IsValid())
 					{
 						if (!Explore(oChild))
 						{
@@ -4439,13 +4439,13 @@ namespace SVG
 		{
 			Load (oXml);
 
-			XmlUtils::CXmlNodes oXmlNodes;
+            std::vector<XmlUtils::CXmlNode> oXmlNodes;
 			if (oXml.GetNodes(L"*", oXmlNodes))
 			{
-				for (int i = 0; i < oXmlNodes.GetCount(); ++i)
+                for (size_t i = 0; i < oXmlNodes.size(); ++i)
 				{
-					XmlUtils::CXmlNode oChild;
-					if (oXmlNodes.GetAt(i, oChild))
+                    XmlUtils::CXmlNode & oChild = oXmlNodes[i];
+                    if (oChild.IsValid())
 					{
 						if (!Explore(oChild))
 						{
@@ -4711,13 +4711,13 @@ namespace SVG
 		{
 			LoadElement ( oXmlNode );
 
-			XmlUtils::CXmlNodes oXmlNodes;
+            std::vector<XmlUtils::CXmlNode> oXmlNodes;
 			if ( oXmlNode.GetNodes ( L"*", oXmlNodes ) )
 			{
-				for ( int i = 0; i < oXmlNodes.GetCount(); ++i )
+                for ( size_t i = 0; i < oXmlNodes.size(); ++i )
 				{
-					XmlUtils::CXmlNode oXmlNode2;
-					if ( oXmlNodes.GetAt ( i, oXmlNode2 ) )
+                    XmlUtils::CXmlNode & oXmlNode2 = oXmlNodes[i];
+                    if ( oXmlNode2.IsValid() )
 					{
 						if ( L"g" == oXmlNode2.GetName() )
 						{
@@ -4882,13 +4882,13 @@ namespace SVG
 		{
 			if (ESymbol == pReference->nodeType())
 			{
-				XmlUtils::CXmlNodes oXmlNodes;
+                std::vector<XmlUtils::CXmlNode> oXmlNodes;
 				if (oXml.GetNodes(L"*", oXmlNodes))
 				{
-					for (int i = 0; i < oXmlNodes.GetCount(); ++i)
+                    for (size_t i = 0; i < oXmlNodes.size(); ++i)
 					{
-						XmlUtils::CXmlNode oXml2;
-						if (oXmlNodes.GetAt(i,oXml2))
+                        XmlUtils::CXmlNode & oXml2 = oXmlNodes[i];
+                        if (oXml2.IsValid())
 						{
 							((Symbol*)pReference)->AddContent(Create(oXml2, false));
 						}
@@ -5778,14 +5778,13 @@ namespace SVG
 			}
 			else if (L"xml" == strXmlNode)
 			{
-				XmlUtils::CXmlNodes oNodes;
+                std::vector<XmlUtils::CXmlNode> oNodes;
 
 				if (oXml.GetNodes(L"*", oNodes))
 				{
-					if (oNodes.GetCount() > 1)
+                    if (oNodes.size() > 1)
 					{
-						XmlUtils::CXmlNode oXmlSub;
-						oNodes.GetAt(0, oXmlSub);
+                        XmlUtils::CXmlNode & oXmlSub = oNodes[0];
 
 						if (false == Explore(oXmlSub))
 							return false;
@@ -5820,13 +5819,13 @@ namespace SVG
 
 			if (readInnerNodes)
 			{
-				XmlUtils::CXmlNodes oXmlNodes;
+                std::vector<XmlUtils::CXmlNode> oXmlNodes;
 				if (oXml.GetNodes(L"*", oXmlNodes))
 				{
-					for (long i = 0; i < oXmlNodes.GetCount(); ++i)
+                    for (size_t i = 0; i < oXmlNodes.size(); ++i)
 					{
-						XmlUtils::CXmlNode oXmlNode2;
-						if (oXmlNodes.GetAt(i, oXmlNode2))
+                        XmlUtils::CXmlNode & oXmlNode2 = oXmlNodes[i];
+                        if (oXmlNode2.IsValid())
 						{
 							if (false == Explore(oXmlNode2))
 							{
@@ -6028,13 +6027,13 @@ namespace SVG
 		{
 			if (ESymbol == pReference->nodeType())
 			{
-				XmlUtils::CXmlNodes oXmlNodes;
+                std::vector<XmlUtils::CXmlNode> oXmlNodes;
 				if (oXml.GetNodes(L"*", oXmlNodes))
 				{
-					for (long i = 0; i < oXmlNodes.GetCount(); ++i)
+                    for (size_t i = 0; i < oXmlNodes.size(); ++i)
 					{
-						XmlUtils::CXmlNode oXml2;
-						if (oXmlNodes.GetAt(i,oXml2))
+                        XmlUtils::CXmlNode & oXml2 = oXmlNodes[i];
+                        if (oXml2.IsValid())
 						{
 							((Symbol*)pReference)->AddContent(Create(oXml2, false));
 						}

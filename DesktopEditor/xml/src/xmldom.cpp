@@ -156,51 +156,7 @@ namespace XmlUtils
 
 namespace XmlUtils
 {
-    class CXmlNodes::Impl
-    {
-    public:
-        std::vector<CXmlNode> m_nodes;
-    };
-    CXmlNodes::CXmlNodes() :impl_(NULL)
-	{
-        impl_ = new Impl();
-	}
-    CXmlNodes::~CXmlNodes()
-    {
-        if (impl_)
-            delete impl_;
-        impl_ = NULL;
-    }
-	bool CXmlNodes::IsValid()
-	{
-		return true;
-	}
-	int CXmlNodes::GetCount()
-	{
-        if (impl_)
-            return (int) impl_->m_nodes.size();
-        else
-            return 0;
-	}
-	bool CXmlNodes::GetAt(int nIndex, CXmlNode& oXmlNode)
-	{
-		if (nIndex < 0 || nIndex >= GetCount())
-			return false;
-
-        if (impl_)
-            oXmlNode = impl_->m_nodes[nIndex];
-		return true;
-	}
-    void CXmlNodes::push_back(CXmlNode &oNode)
-    {
-        if (impl_)
-            impl_->m_nodes.insert(impl_->m_nodes.end(), oNode);
-    }
-}
-
-namespace XmlUtils
-{
-	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
+ 	class CXmlDOMDocument : public IXmlDOMDocument, public CXmlLiteReader_Private
 	{
 	public:
 		CXmlNodeBase* m_pNode;
@@ -763,9 +719,9 @@ namespace XmlUtils
 		}
 		return node;
 	}
-	CXmlNodes CXmlNode::ReadNodesNoNS(const std::wstring& sName)
+	std::vector<CXmlNode> CXmlNode::ReadNodesNoNS(const std::wstring& sName)
 	{
-		CXmlNodes oNodes;
+		std::vector<CXmlNode> oNodes;
 
         if (IsValid())
 		{
@@ -795,9 +751,9 @@ namespace XmlUtils
 		GetNode(sName, oNode);
 		return oNode;
 	}
-	CXmlNodes CXmlNode::GetNodes(const std::wstring& sName)
+	std::vector<CXmlNode> CXmlNode::GetNodes(const std::wstring& sName)
 	{
-		CXmlNodes oNodes;
+		std::vector<CXmlNode> oNodes;
 		if (IsValid())
 		{
 			bool bGetAll = false;
@@ -818,7 +774,7 @@ namespace XmlUtils
 
 		return oNodes;
 	}
-	bool CXmlNode::GetChilds(CXmlNodes& oXmlNodes)
+	bool CXmlNode::GetChilds(std::vector<CXmlNode>& oXmlNodes)
 	{
 		bool bRes = false;
 		if (IsValid())
@@ -858,10 +814,10 @@ namespace XmlUtils
 		}
 		return bRes;
 	}
-	bool CXmlNode::GetNodes(const std::wstring& sName, CXmlNodes& oNodes)
+    bool CXmlNode::GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes)
 	{
 		oNodes = GetNodes(sName);
-		return (0 != oNodes.GetCount());
+        return (0 != oNodes.size());
 	}
 
 	CXmlNode& CXmlNode::operator=(const CXmlNode& oSrc)

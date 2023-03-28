@@ -152,15 +152,13 @@ namespace NSDoctRenderer
 			{
 				m_nCountChangesItems = oNodeChanges.ReadAttributeInt(L"TopItem", -1);
 
-				XmlUtils::CXmlNodes oNodes;
+                std::vector<XmlUtils::CXmlNode> oNodes;
 				oNodeChanges.GetNodes(L"Change", oNodes);
 
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
+                size_t nCount = oNodes.size();
+                for (size_t i = 0; i < nCount; ++i)
 				{
-					XmlUtils::CXmlNode _node;
-					oNodes.GetAt(i, _node);
-
+                    XmlUtils::CXmlNode & _node = oNodes[i];
 					m_arChanges.push_back(_node.GetText());
 				}
 			}

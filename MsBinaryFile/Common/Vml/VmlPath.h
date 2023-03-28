@@ -294,7 +294,7 @@ namespace ODRAW
 
 		CPath();
 
-		void FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager);
+		void FromXML(std::vector<XmlUtils::CXmlNode>& list, NSGuidesOOXML::CFormulaManager& pManager);
 		void FromXML(std::wstring strPath, NSGuidesVML::CFormulasManager& pManager);
 
 		std::wstring ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, NSBaseShape::ClassType ClassType);

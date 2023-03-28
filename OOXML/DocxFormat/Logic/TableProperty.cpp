@@ -1465,14 +1465,14 @@ namespace OOX
 			if ( L"w:headers" != oNode.GetName() )
 				return;
 
-			XmlUtils::CXmlNodes oHeaders;
+			std::vector<XmlUtils::CXmlNode> oHeaders;
 
 			if ( oNode.GetNodes( L"w:header", oHeaders ) )
 			{
-				XmlUtils::CXmlNode oHeader;
-				for ( int nIndex = 0; nIndex < oHeaders.GetCount(); nIndex++ )
+				for ( size_t nIndex = 0; nIndex < oHeaders.size(); nIndex++ )
 				{
-					if ( oHeaders.GetAt( nIndex, oHeader ) )
+					XmlUtils::CXmlNode& oHeader = oHeaders[nIndex];
+					if ( oHeader.IsValid() )
 					{
 						ComplexTypes::Word::String *oHead = new ComplexTypes::Word::String();
 						*oHead = oHeader;

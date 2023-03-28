@@ -341,17 +341,16 @@ bool CPPTShape::LoadGuidesList(const std::wstring& xml)
 
 	if (L"v:formulas" == oNodeGuides.GetName())
 	{
-		int lCount = 0;
+		size_t lCount = 0;
 		m_oManager.Clear();
 
-		XmlUtils::CXmlNodes oList;
+		std::vector<XmlUtils::CXmlNode> oList;
 		if (oNodeGuides.GetNodes(L"v:f", oList))
 		{
-			lCount = oList.GetCount();
-			for (int nIndex = 0; nIndex < lCount; ++nIndex)
+			lCount = oList.size();
+			for (size_t nIndex = 0; nIndex < lCount; ++nIndex)
 			{
-				XmlUtils::CXmlNode oNodeFormula;
-				oList.GetAt(nIndex, oNodeFormula);
+				XmlUtils::CXmlNode & oNodeFormula = oList[nIndex];
 
 				m_oManager.AddFormula(oNodeFormula.GetAttributeOrValue(L"eqn"));
 			}
@@ -375,14 +374,13 @@ void CPPTShape::LoadAHList(XmlUtils::CXmlNode& oNode)
 {
 	m_arHandles.clear();
 
-	XmlUtils::CXmlNodes oNodes;
+	std::vector<XmlUtils::CXmlNode> oNodes;
 	if (oNode.GetNodes(_T("v:h"), oNodes))
 	{
-		int nCount = oNodes.GetCount();
+		size_t nCount = oNodes.size();
 		for (int i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode oNodeH;
-			oNodes.GetAt(i, oNodeH);
+			XmlUtils::CXmlNode & oNodeH = oNodes[i];
 
 			CHandle_ oH;
 			oH.polar = oNodeH.GetAttribute(_T("polar"));

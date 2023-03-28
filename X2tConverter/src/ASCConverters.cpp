@@ -3510,13 +3510,13 @@ namespace NExtractTools
            if(TRUE == oRoot.FromXmlString(sResult))
            {
                XmlUtils::CXmlNode oMailMergeFields = oRoot.ReadNode(_T("MailMergeFields"));
-               XmlUtils::CXmlNodes oXmlNodes;
+               std::vector<XmlUtils::CXmlNode> oXmlNodes;
                if(TRUE == oMailMergeFields.GetChilds(oXmlNodes))
                {
-                   for(int i = 0; i < oXmlNodes.GetCount(); ++i)
+                   for(size_t i = 0; i < oXmlNodes.size(); ++i)
                    {
-                       XmlUtils::CXmlNode oXmlNode;
-                       if(oXmlNodes.GetAt(i, oXmlNode))
+                       XmlUtils::CXmlNode & oXmlNode = oXmlNodes[i];
+                       if(oXmlNode.IsValid())
                        {
                            std::wstring sFilePathIn             = oXmlNode.GetAttribute(L"path");
                            std::wstring wsFilePathInFilename    = NSSystemPath::GetFileName(sFilePathIn);

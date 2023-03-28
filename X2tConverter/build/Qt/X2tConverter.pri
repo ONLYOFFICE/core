@@ -13,6 +13,8 @@ PWD_ROOT_DIR = $$PWD
 
 CONFIG += core_static_link_libstd
 CONFIG += core_x2t
+CONFIG += core_boost_date_time
+
 include(../../../Common/base.pri)
 include(../../../Common/3dParty/icu/icu.pri)
 

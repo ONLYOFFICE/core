@@ -146,27 +146,7 @@ namespace XmlUtils
 		static void EnableOutput();
 	};
 
-	class CXmlNodeBase;
-	class CXmlNode;
-	class KERNEL_DECL CXmlNodes
-	{
-	private:
-        class Impl;
-        Impl *impl_;
-
-	public:
-		CXmlNodes();
-		~CXmlNodes();
-		bool IsValid();
-		int GetCount();
-		bool GetAt(int nIndex, CXmlNode& oXmlNode);
-
-        void push_back(CXmlNode &node);
-
-		friend class CXmlNode;
-	};
-
-
+    class CXmlNodeBase;
 	class KERNEL_DECL CXmlNode
 	{
 	private:
@@ -236,14 +216,14 @@ namespace XmlUtils
 		CXmlNode ReadNode(const wchar_t* strNodeName);
 		CXmlNode ReadNode(const std::wstring& strNodeName);
 		CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
-		CXmlNodes ReadNodesNoNS(const std::wstring& strNodeName);
+		std::vector<CXmlNode> ReadNodesNoNS(const std::wstring& strNodeName);
 
 		CXmlNode GetNode(const std::wstring& sName);
-		CXmlNodes GetNodes(const std::wstring& sName);
-		bool GetChilds(CXmlNodes& oXmlNodes);
+		std::vector<CXmlNode> GetNodes(const std::wstring& sName);
+        bool GetChilds(std::vector<CXmlNode>& oXmlNodes);
 
 		bool GetNode(const std::wstring& sName, CXmlNode& oNode);
-		bool GetNodes(const std::wstring& sName, CXmlNodes& oNodes);
+		bool GetNodes(const std::wstring& sName, std::vector<CXmlNode>& oNodes);
 
 		CXmlNode& operator=(const CXmlNode& oSrc);
 
@@ -265,15 +245,14 @@ namespace XmlUtils
 
     #define XmlMacroLoadArray(node, name, list, type)   \
     {                                                   \
-        XmlUtils::CXmlNodes oNodes;                     \
+        std::vector<XmlUtils::CXmlNode> oNodes;			\
         if (node.GetNodes(name, oNodes))                \
         {                                               \
-            int nCount = oNodes.GetCount();             \
-            for (int i = 0; i < nCount; ++i)            \
+            int nCount = oNodes.size();					\
+            for (size_t i = 0; i < nCount; ++i)			\
             {                                           \
-                XmlUtils::CXmlNode oItem;               \
-                oNodes.GetAt(i, oItem);                 \
-                list.push_back(type());                 \
+                XmlUtils::CXmlNode & oItem = oNodes[i]; \
+                 list.push_back(type());				\
                 list[i].fromXML(oItem);                 \
             }                                           \
         }                                               \

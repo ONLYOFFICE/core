@@ -18,7 +18,7 @@ core_windows:DEFINES -= UNICODE _UNICODE
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 DEFINES += DISABLE_TYPE_MISMATCH\
-DEFINES += USE_PRECOMPILED_HEADERS
+#DEFINES += USE_PRECOMPILED_HEADERS
 
 core_android {
     INCLUDEPATH += $$(ANDROID_NDK_ROOT)/sources/android/cpufeatures
@@ -223,8 +223,6 @@ SOURCES += \
     ../cryptlib.cpp \
     ../cpu.cpp \
     ../integer.cpp \
-    ../eccrypto.cpp \
-    ../eprecomp.cpp \
     ../3way.cpp \
     ../adler32.cpp \
     ../algebra.cpp \
@@ -274,6 +272,8 @@ SOURCES += \
     ../eax.cpp \
     ../ec2n.cpp \
     ../ecp.cpp \
+    ../eccrypto.cpp \
+    ../eprecomp.cpp \
     ../elgamal.cpp \
     ../emsa2.cpp \
     ../eprecomp.cpp \

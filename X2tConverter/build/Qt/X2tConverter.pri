@@ -71,8 +71,6 @@ HEADERS +=  ../../src/cextracttools.h \
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
-#Xls file
-LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
 # odf format
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lOdfFormatLib
 #doc file
@@ -91,6 +89,8 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lPPTXFormatLib
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lDocxFormatLib
 #xlsbformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsbFormatLib
+#Xls file
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lXlsFormatLib
 #cf
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCompoundFileLib
 

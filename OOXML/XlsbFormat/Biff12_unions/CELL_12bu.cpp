@@ -49,13 +49,6 @@ namespace XLSB
         : m_Row(row), shared_formulas_locations_ref_(shared_formulas_locations_ref)
     {
     }
-
-
-	CELL::CELL()
-		:shared_formulas_locations_ref_(std::vector<CellRangeRef>())
-	{
-	}
-
     CELL::~CELL()
     {
     }

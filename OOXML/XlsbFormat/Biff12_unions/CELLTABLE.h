@@ -62,7 +62,6 @@ namespace XLSB
         BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_CELLTABLE)
     public:
         Parenthesis_CELLTABLE(std::vector<XLS::CellRangeRef>& shared_formulas_locations_ref);
-		Parenthesis_CELLTABLE();
         ~Parenthesis_CELLTABLE();
 
         XLS::BaseObjectPtr clone();

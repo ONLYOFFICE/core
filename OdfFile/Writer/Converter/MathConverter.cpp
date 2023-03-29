@@ -305,7 +305,11 @@ namespace Oox2Odf
 	returnValues OoxConverter::convert(OOX::Logic::CCtrlPr *oox_ctrl_pr)
 	{
 		returnValues result;
-		if (!oox_ctrl_pr) result.auxFlag = false;		
+		if (!oox_ctrl_pr)
+		{
+			result.auxFlag = false;
+			return result;
+		}
 
 		convert(oox_ctrl_pr->m_oARPr.GetPointer());
 		convert(oox_ctrl_pr->m_oDel.GetPointer());

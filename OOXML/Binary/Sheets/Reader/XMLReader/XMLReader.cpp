@@ -51,10 +51,7 @@ constexpr auto SheetName = L"Sheet ";
 
 _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx)
 {
-    XmlUtils::CXmlLiteReader reader;
-	if (!reader.FromFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT_READ_FILE;
-
-    XmlUtils::CXmlLiteReader reader {};
+    XmlUtils::CXmlLiteReader reader = {};
     if(!reader.FromFile(sFileName))
     {
         return AVS_FILEUTILS_ERROR_CONVERT_READ_FILE;

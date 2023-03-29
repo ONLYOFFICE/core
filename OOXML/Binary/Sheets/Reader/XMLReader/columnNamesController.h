@@ -34,7 +34,7 @@
 #include "../../../../Base/Base.h"
 
 #include <set>
-#include <WString.h>
+#include <string>
 
 /// @brief класс контролирующий уникальность имен столбцов при открытии  xml документов
 class ColumnNameController

@@ -29,18 +29,6 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../XlsxFormat/Xlsx.h"
+#include "XML2TableConverter.h"
 
-/// @brief класс считывающий xml документы в xlsl
-class XMLReader
-{
-public:
-
-    /// @brief Считывание документа
-    /// @param FileName имя xml файла который будет считан
-    /// @param oXlsx объект Xlsx таблицы в которую считается xml
-    /// @return код выполнения операции
-	_UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx);
-};

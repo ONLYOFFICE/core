@@ -460,17 +460,16 @@ namespace SVG
 			if (m_arPoints.size() != 2)
 				return;
 
-			//TODO: данные вычисления необходимо проверить
+			Point oRadius{m_oRadius};
+			Point oCenter = GetCenter(m_arPoints[0], m_arPoints[1], oRadius, 0, m_bLargeArcFlag, m_bSweepFlag);
 
-			Point Center		=	GetCenter ( m_bLargeArcFlag, m_bSweepFlag, m_oRadius, m_arPoints[0], m_arPoints[1]);
-
-			double dStartAngle	=	GetAngle ( Center.dX, Center.dY, m_arPoints[0].dX, m_arPoints[0].dY);
-			double dEndAngle	=	GetAngle ( Center.dX, Center.dY, m_arPoints[1].dX, m_arPoints[1].dY);
+			double dStartAngle	=	GetAngle (oCenter.dX, oCenter.dY, m_arPoints[0].dX, m_arPoints[0].dY);
+			double dEndAngle	=	GetAngle (oCenter.dX, oCenter.dY, m_arPoints[1].dX, m_arPoints[1].dY);
 
 			double dSweep		=	0.0;
 
 			if (GetArcAngles ( m_bLargeArcFlag, m_bSweepFlag, dStartAngle, dEndAngle, dSweep ))
-				pRenderer->PathCommandArcTo(Center.dX - m_oRadius.dX, Center.dY - m_oRadius.dY, m_oRadius.dX * 2.0, m_oRadius.dY * 2.0, dStartAngle, dSweep);
+				pRenderer->PathCommandArcTo(oCenter.dX - oRadius.dX, oCenter.dY - oRadius.dY, oRadius.dX * 2.0, oRadius.dY * 2.0, dStartAngle, dSweep);
 		}
 
 		CArcElement* Copy() const override
@@ -480,36 +479,31 @@ namespace SVG
 	private:
 		friend class CMovingPath;
 
-		Point GetPoint(double dAngle) const
+		static Point GetPoint(const Point& oRadius, double dAngle)
 		{
-			return Point{m_oRadius.dX * std::cos(dAngle * M_PI / 180), m_oRadius.dY * std::sin(dAngle * M_PI / 180)};
+			return Point{oRadius.dX * std::cos(dAngle * M_PI / 180), oRadius.dY * std::sin(dAngle * M_PI / 180)};
 		}
 
-		Point GetCenter(int LargeFlag, int SweepFlag, Point Radi, Point P1, Point P2) const
+		static Point GetCenter(const Point& oFirst, const Point& oSecond, Point& oRadius, double dAngle, bool bLargeArc, bool bSweep)
 		{
-			double RadF	=	Radi.dY / Radi.dX;
+			double dXp = ((oFirst.dX - oSecond.dX) / 2 * std::cos(dAngle)) + ((oFirst.dY - oSecond.dY) / 2 * std::sin(dAngle));
+			double dYp = ((oFirst.dX - oSecond.dX) / 2 * -std::sin(dAngle)) + ((oFirst.dY - oSecond.dY) / 2 * std::cos(dAngle));
 
-			Point Begin	=	Point { P1.dX * RadF, P1.dY };
-			Point End	=	Point { P2.dX * RadF, P2.dY };
+			int nSign = (bLargeArc == bSweep) ? -1 : 1;
 
-			Point Mid	=	Point { ( Begin.dX + End.dX ) * 0.5, ( Begin.dY + End.dY ) * 0.5 };
-			Point Vec	=	Point { Begin.dX - End.dX, Begin.dY - End.dY };
+			double dLambda = ((dXp * dXp) / (oRadius.dX * oRadius.dX)) + ((dYp * dYp) / (oRadius.dY * oRadius.dY));
+			if(dLambda > 1)
+			{
+				oRadius.dX *= std::sqrt(dLambda);
+				oRadius.dY *= std::sqrt(dLambda);
+			}
 
-			double HChord	=  sqrt ( Vec.dX * Vec.dX + Vec.dY * Vec.dY ) * 0.5;
+			double dC0 = nSign * std::sqrt(((std::pow(oRadius.dX, 2) * std::pow(oRadius.dY, 2)) - (std::pow(oRadius.dX, 2) * std::pow(dYp, 2)) - (std::pow(oRadius.dY, 2) * std::pow(dXp, 2))) / ((std::pow(oRadius.dX, 2) * std::pow(dYp, 2)) + (std::pow(oRadius.dY, 2) * std::pow(dXp, 2))));
 
-			Point Rot;
+			double dCp1 = dC0 * oRadius.dX * dYp / oRadius.dY;
+			double dCp2 = -dC0 * oRadius.dY * dXp / oRadius.dX;
 
-			if ( LargeFlag == SweepFlag )
-				Rot		=	Point { -Vec.dY, Vec.dX };
-			else
-				Rot		=	Point { Vec.dY, -Vec.dX };
-
-			Rot.dX		/=	( HChord * 2.0 );
-			Rot.dY		/=	( HChord * 2.0 );
-
-			double Ch	=	sqrt ( abs ( Radi.dY * Radi.dY - HChord * HChord ) );
-
-			return Point { ( Mid.dX + Ch * Rot.dX ) / RadF, Mid.dY + Ch * Rot.dY };
+			return Point{dCp1 * std::cos(dAngle) - dCp2 * std::sin(dAngle) + (oFirst.dX + oSecond.dX) / 2., dCp1 * std::sin(dAngle) + dCp2 * std::cos(dAngle) + (oFirst.dY + oSecond.dY) / 2.};
 		}
 
 		double GetAngle(const Point& oFirstPoint, const Point& oSecondPoint) const

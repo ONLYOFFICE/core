@@ -315,12 +315,14 @@ namespace SVG
 		case EPathElement::Arc:
 		{
 			CArcElement *pArcElement = (CArcElement*)m_pCurrentElement;
+			Point oRadius{pArcElement->m_oRadius};
+
 			if (0. == m_dStartAngle && m_dStartAngle == m_dEndAngle)
 			{
-				Point Center  = pArcElement->GetCenter (pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag, pArcElement->m_oRadius, (*pArcElement)[0], (*pArcElement)[1]);
+				Point oCenter = CArcElement::GetCenter( (*pArcElement)[0], (*pArcElement)[1], oRadius, 0, pArcElement->m_bLargeArcFlag, pArcElement->m_bSweepFlag);
 
-				m_dStartAngle = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
-				m_dEndAngle   = pArcElement->GetAngle ( Center.dX, Center.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
+				m_dStartAngle = pArcElement->GetAngle (oCenter.dX, oCenter.dY, (*pArcElement)[0].dX, (*pArcElement)[0].dY);
+				m_dEndAngle   = pArcElement->GetAngle (oCenter.dX, oCenter.dY, (*pArcElement)[1].dX, (*pArcElement)[1].dY);
 
 				double dSweep = 0.;
 
@@ -329,12 +331,12 @@ namespace SVG
 
 				m_dEndAngle = m_dStartAngle + dSweep;
 
-				m_oPosition = Center + pArcElement->GetPoint(m_dStartAngle);
+				m_oPosition = oCenter + CArcElement::GetPoint(oRadius, m_dStartAngle);
 
 				if (m_dStartAngle > m_dEndAngle)
 					m_dArcStep *= -1;
 
-				m_oLastPoint = Center;
+				m_oLastPoint = oCenter;
 			}
 
 			// TODO:: На самом деле точки вычисляются с небольшим смещением (по углу)
@@ -361,7 +363,7 @@ namespace SVG
 
 				dPrevValue = dX;
 
-				UpdatePosition(m_oLastPoint + pArcElement->GetPoint(m_dStartAngle), dX);
+				UpdatePosition(m_oLastPoint + CArcElement::GetPoint(oRadius, m_dStartAngle), dX);
 			}
 
 			return NextMove(dX, (*m_pCurrentElement)[-1]);

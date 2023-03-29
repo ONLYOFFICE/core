@@ -395,7 +395,7 @@ public:
         size_t nCountNodes = oNodes.size();
         for (size_t nIndex = 0; nIndex < nCountNodes; ++nIndex)
         {
-            XmlUtils::CXmlNode & oCurrentRecord = oNodesnIndex[];
+            XmlUtils::CXmlNode & oCurrentRecord = oNodes[nIndex];
 
             if (L"Default" == oCurrentRecord.GetName() && oCurrentRecord.GetAttributeA("Extension") == "sigs")
                 continue;

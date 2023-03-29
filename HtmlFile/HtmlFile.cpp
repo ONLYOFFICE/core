@@ -201,19 +201,19 @@ static bool IsLinuxXVFB()
     XmlUtils::CXmlNode oNode;
     if (oNode.FromXmlFile(sPathConfig))
     {
-        XmlUtils::CXmlNodes oNodes;
+        std::vector<XmlUtils::CXmlNode> oNodes;
         if (oNode.GetNodes(L"htmlnoxvfb", oNodes))
         {
-            if (oNodes.GetCount() == 1)
+            if (oNodes.size() == 1)
                 return false;
         }
     }
     else if (oNode.FromXmlFile(sProcess + L"converter/DoctRenderer.config"))
     {
-        XmlUtils::CXmlNodes oNodes;
+        std::vector<XmlUtils::CXmlNode> oNodes;
         if (oNode.GetNodes(L"htmlnoxvfb", oNodes))
         {
-            if (oNodes.GetCount() == 1)
+            if (oNodes.size() == 1)
                 return false;
         }
     }
@@ -228,14 +228,13 @@ static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
     if (!oNode.FromXmlFile(sPathConfig))
         return;
 
-    XmlUtils::CXmlNodes oNodesFiles;
+    std::vector<XmlUtils::CXmlNode> oNodesFiles;
     if (oNode.GetNodes(L"file", oNodesFiles))
     {
-        int nCount = oNodesFiles.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oNodesFiles.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode _node;
-            oNodesFiles.GetAt(i, _node);
+            XmlUtils::CXmlNode &_node = oNodesFiles[i];
 
             std::wstring sFile = _node.GetText();
 
@@ -256,14 +255,13 @@ static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
             }
         }
     }
-    XmlUtils::CXmlNodes oNodesHtmlFiles;
+    std::vector<XmlUtils::CXmlNode> oNodesHtmlFiles;
     if (oNode.GetNodes(L"htmlfile", oNodesHtmlFiles))
     {
-        int nCount = oNodesHtmlFiles.GetCount();
+        size_t nCount = oNodesHtmlFiles.size();
         for (int i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode _node;
-            oNodesHtmlFiles.GetAt(i, _node);
+            XmlUtils::CXmlNode &_node = oNodesHtmlFiles[i];
 
             std::wstring sFile = _node.GetText();
 
@@ -279,14 +277,13 @@ static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
     }
 
     XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
-    XmlUtils::CXmlNodes oNodes;
+    std::vector<XmlUtils::CXmlNode> oNodes;
     if (oNodeSdk.GetNodes(L"file", oNodes))
     {
-        int nCount = oNodes.GetCount();
-        XmlUtils::CXmlNode _node;
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = oNodes.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            oNodes.GetAt(i, _node);
+            XmlUtils::CXmlNode &_node = oNodes[i];
             std::wstring sPath = _node.GetText();
 
             if (!NSFile::CFileBinary::Exists(sPath) || NSFile::CFileBinary::Exists(sProcess + sPath))
@@ -590,14 +587,13 @@ static std::vector<std::wstring> ParseEpub(const std::wstring& sPackagePath, std
         std::wstring sDescription   = oNodeMeta.ReadValueString(L"dc:description");
         std::wstring sCoverage      = oNodeMeta.ReadValueString(L"dc:coverage");
 
-        XmlUtils::CXmlNodes oMetaNodes = oNodeMeta.ReadNodesNoNS(L"meta");
+        std::vector<XmlUtils::CXmlNode> oMetaNodes = oNodeMeta.ReadNodesNoNS(L"meta");
         if (oMetaNodes.IsValid())
         {
-            int nCountMeta = oMetaNodes.GetCount();
-            for (int i = 0; i < nCountMeta; ++i)
+            size_t nCountMeta = oMetaNodes.size();
+            for (size_t i = 0; i < nCountMeta; ++i)
             {
-                XmlUtils::CXmlNode oNodeTmp;
-                oMetaNodes.GetAt(i, oNodeTmp);
+                XmlUtils::CXmlNode &oNodeTmp = oMetaNodes[i];
 
                 std::wstring sName = oNodeTmp.GetAttribute(L"name");
                 if (sName == L"cover")
@@ -658,16 +654,15 @@ static std::vector<std::wstring> ParseEpub(const std::wstring& sPackagePath, std
     if (!oNodeRoot.IsValid())
         return arHtmls;
 
-    XmlUtils::CXmlNodes oNodesItemRef = oNodeSpine.ReadNodesNoNS(L"itemref");
+    std::vector<XmlUtils::CXmlNode> oNodesItemRef = oNodeSpine.ReadNodesNoNS(L"itemref");
     if (!oNodeSpine.IsValid())
         return arHtmls;
 
     std::vector<std::wstring> sIds;
-    int nCountRefs = oNodesItemRef.GetCount();
-    for (int i = 0; i < nCountRefs; ++i)
+    size_t nCountRefs = oNodesItemRef.size();
+    for (size_t i = 0; i < nCountRefs; ++i)
     {
-        XmlUtils::CXmlNode oNodeTmp;
-        oNodesItemRef.GetAt(i, oNodeTmp);
+        XmlUtils::CXmlNode &oNodeTmp = oNodesItemRef[i];
 
         std::wstring sId = oNodeTmp.GetAttribute(L"idref");
         if (!sId.empty())
@@ -680,7 +675,7 @@ static std::vector<std::wstring> ParseEpub(const std::wstring& sPackagePath, std
     XmlUtils::CXmlNode oNodeManifest = oNodeRoot.ReadNodeNoNS(L"manifest");
     if (!oNodeRoot.IsValid())
         return arHtmls;
-    XmlUtils::CXmlNodes oNodesItems = oNodeManifest.ReadNodesNoNS(L"item");
+    std::vector<XmlUtils::CXmlNode> oNodesItems = oNodeManifest.ReadNodesNoNS(L"item");
     if (!oNodeManifest.IsValid())
         return arHtmls;
 
@@ -690,11 +685,10 @@ static std::vector<std::wstring> ParseEpub(const std::wstring& sPackagePath, std
         sPackagePathDir = sPackagePath.substr(0, pos + 1);
 
     std::map<std::wstring, std::wstring> mapHtmls;
-    int nCountItems = oNodesItems.GetCount();
-    for (int i = 0; i < nCountItems; ++i)
+    size_t nCountItems = oNodesItems.size();
+    for (size_t i = 0; i < nCountItems; ++i)
     {
-        XmlUtils::CXmlNode oNodeTmp;
-        oNodesItems.GetAt(i, oNodeTmp);
+        XmlUtils::CXmlNode &oNodeTmp = oNodesItems[i];
 
         std::wstring sMime = oNodeTmp.GetAttribute(L"media-type");
         std::wstring sHRef = oNodeTmp.GetAttribute(L"href");
@@ -758,15 +752,14 @@ int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo,
 
     std::wstring sPackagePathXml;
 
-    XmlUtils::CXmlNodes oNodesRootFile = oNodeRootFiles.ReadNodesNoNS(L"rootfile");
+    std::vector<XmlUtils::CXmlNode> oNodesRootFile = oNodeRootFiles.ReadNodesNoNS(L"rootfile");
     if (!oNodeRootFiles.IsValid())
         return 1;
 
-    int nCount = oNodesRootFile.GetCount();
-    for (int i = 0; i < nCount; ++i)
+    size_t nCount = oNodesRootFile.size();
+    for (size_t i = 0; i < nCount; ++i)
     {
-        XmlUtils::CXmlNode oNodeRF;
-        oNodesRootFile.GetAt(i, oNodeRF);
+        XmlUtils::CXmlNode &oNodeRF = oNodesRootFile[i];
 
         std::wstring sMime = oNodeRF.GetAttribute(L"media-type");
         std::wstring sPackagePath = oNodeRF.GetAttribute(L"full-path");

@@ -188,12 +188,11 @@ public:
             XmlUtils::CXmlNode oNodeRels = m_pFolder->getNodeFromFile(*iter);
             if (!oNodeRels.IsValid())
                 continue;
-            XmlUtils::CXmlNodes oNodesRels = oNodeRels.GetNodes(L"Relationship");
-            int nCount = oNodesRels.GetCount();
-            for (int nIndex = 0; nIndex < nCount; nIndex++)
+            std::vector<XmlUtils::CXmlNode> oNodesRels = oNodeRels.GetNodes(L"Relationship");
+            size_t nCount = oNodesRels.size();
+            for (size_t nIndex = 0; nIndex < nCount; nIndex++)
             {
-                XmlUtils::CXmlNode oNodeRel;
-                oNodesRels.GetAt(nIndex, oNodeRel);
+                XmlUtils::CXmlNode & oNodeRel = oNodesRels[nIndex];
 
                 std::wstring sTarget = oNodeRel.GetAttribute(L"Target");
                 if (!sTarget.empty() && arSigFiles.find(sTarget) == arSigFiles.end() && m_pFolder->exists(folder + L"/" + sTarget))
@@ -261,26 +260,24 @@ public:
     {
         XmlUtils::CXmlNode oNode = m_pFolder->getNodeFromFile(L"/[Content_Types].xml");
 
-        XmlUtils::CXmlNodes nodesDefaults;
+        std::vector<XmlUtils::CXmlNode> nodesDefaults;
         oNode.GetNodes(L"Default", nodesDefaults);
 
-        XmlUtils::CXmlNodes nodesOverrides;
+        std::vector<XmlUtils::CXmlNode> nodesOverrides;
         oNode.GetNodes(L"Override", nodesOverrides);
 
-        int nCount = nodesDefaults.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        size_t nCount = nodesDefaults.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode node;
-            nodesDefaults.GetAt(i, node);
+            XmlUtils::CXmlNode & node = nodesDefaults[i];
 
             m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("Extension"), node.GetAttribute("ContentType")));
         }
 
-        nCount = nodesOverrides.GetCount();
-        for (int i = 0; i < nCount; ++i)
+        nCount = nodesOverrides.size();
+        for (size_t i = 0; i < nCount; ++i)
         {
-            XmlUtils::CXmlNode node;
-            nodesOverrides.GetAt(i, node);
+            XmlUtils::CXmlNode & node = nodesOverrides[i];
 
             m_content_types.insert(std::pair<std::wstring, std::wstring>(node.GetAttribute("PartName"), node.GetAttribute("ContentType")));
         }
@@ -393,13 +390,12 @@ public:
 
         oBuilder.WriteNodeEnd(oNode.GetName(), true, false);
 
-        XmlUtils::CXmlNodes oNodes = oNode.GetNodes(L"*");
+        std::vector<XmlUtils::CXmlNode> oNodes = oNode.GetNodes(L"*");
 
-        int nCountNodes = oNodes.GetCount();
-        for (int nIndex = 0; nIndex < nCountNodes; ++nIndex)
+        size_t nCountNodes = oNodes.size();
+        for (size_t nIndex = 0; nIndex < nCountNodes; ++nIndex)
         {
-            XmlUtils::CXmlNode oCurrentRecord;
-            oNodes.GetAt(nIndex, oCurrentRecord);
+            XmlUtils::CXmlNode & oCurrentRecord = oNodesnIndex[];
 
             if (L"Default" == oCurrentRecord.GetName() && oCurrentRecord.GetAttributeA("Extension") == "sigs")
                 continue;

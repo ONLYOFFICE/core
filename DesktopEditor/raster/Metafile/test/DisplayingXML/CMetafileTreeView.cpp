@@ -98,17 +98,17 @@ bool CMetafileTreeView::SaveInXmlFile(const std::wstring& wsSaveFilePath)
 
 void CMetafileTreeView::ReadXmlNode(XmlUtils::CXmlNode& oXmlNode, QStandardItem* oStandartItem, unsigned int unLevel)
 {
-        XmlUtils::CXmlNodes oXmlChilds;
+    std::vector<XmlUtils::CXmlNode> oXmlChilds;
 
         if (oXmlNode.GetChilds(oXmlChilds))
         {
                 if (unLevel == 2)
                         oStandartItem->setData("Record", 3);
 
-                for (unsigned int i = 0; i < oXmlChilds.GetCount(); ++i)
+                for (size_t i = 0; i < oXmlChilds.size(); ++i)
                 {
-                        XmlUtils::CXmlNode oXmlChild;
-                        if (oXmlChilds.GetAt(i, oXmlChild))
+                        XmlUtils::CXmlNode & oXmlChild = oXmlChilds[i];
+                        if (XmlChild.IsValid())
                         {
                                 QStandardItem *pStandardItem = new QStandardItem(QString("<%1>").arg(QString::fromStdWString(oXmlChild.GetName())));
 

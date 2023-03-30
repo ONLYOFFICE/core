@@ -30,7 +30,6 @@
  *
  */
 #include "XMLReader.h"
-#include "columnNamesController.h"
 #include "XLSXTableController.h"
 
 #include "../../../../DesktopEditor/common/File.h"
@@ -45,7 +44,6 @@
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 
 #include <memory>
-
 
 constexpr auto SheetName = L"Sheet ";
 

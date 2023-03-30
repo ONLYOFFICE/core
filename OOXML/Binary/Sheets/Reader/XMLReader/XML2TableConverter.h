@@ -32,8 +32,6 @@
 
 #pragma once
 
-#include "columnNamesController.h"
-
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 
 #include <string>
@@ -72,7 +70,6 @@ private:
     /// @brief считывает аттрибуты текущей ноды
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
     void insertValue(const std::wstring &key, const std::wstring &value, _UINT32 depth);
-
 
     /// @return текущая глубина
     _UINT32 depth_;

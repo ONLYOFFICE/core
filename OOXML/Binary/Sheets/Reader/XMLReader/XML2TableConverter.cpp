@@ -32,3 +32,42 @@
 
 #include "XML2TableConverter.h"
 
+bool XML2TableConverter::GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data)
+{
+    readAttributes(reader);
+    depth_ = reader.GetDepth();
+    while(readSiblings(reader, depth_))
+    {
+        depth_++;
+    }
+    data = std::move(data_);
+    return true;
+}
+
+void XML2TableConverter::readAttributes(XmlUtils::CXmlLiteReader &reader)
+{
+    if(!reader.GetAttributesCount())
+    {
+        return;
+    }
+    reader.MoveToFirstAttribute();
+
+    insertValue(reader.GetName(), reader.GetText(),depth_);
+
+    while(reader.MoveToNextAttribute())
+    {
+        insertValue(reader.GetName(), reader.GetText(),depth_);
+    }
+
+    reader.MoveToElement();
+}
+
+void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring &value, _UINT32 depth)
+{
+    if(data_.at(depth).find(key) == data_.at(depth).end())
+    {
+        data_.at(depth).insert({key, std::vector<std::wstring>{}});
+    }
+
+    data_.at(depth)[key].push_back(value);
+}

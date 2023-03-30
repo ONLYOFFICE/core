@@ -32,7 +32,7 @@
 
 #include "columnNamesController.h"
 
-std::wstring ColumnNameController::GetColumnName(const std::wstring column)
+std::wstring ColumnNameController::GetColumnName(const std::wstring &column)
 {
 
     if(colNames_.find(column) == colNames_.end())

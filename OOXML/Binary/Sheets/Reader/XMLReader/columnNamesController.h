@@ -44,7 +44,7 @@ public:
     /// @brief Получение уникального имени столбца
     /// @param column строка с именем столбца
     /// @return уникальное имя столбца, если вводимое название повторялось, к нему добавится индекс
-    std::wstring GetColumnName(const std::wstring column);
+    std::wstring GetColumnName(const std::wstring &column);
 
 private:
 

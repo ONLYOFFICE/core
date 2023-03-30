@@ -41,32 +41,39 @@
 #include <map>
 #include "../../../../Base/Base.h"
 
+using XmlData = std::vector<std::map<std::wstring, std::vector<std::wstring>>>;
+
 /// @brief класс -обертка над xmlLiteReader для превращения xml нод в табличные строки
 class XML2TableConverter
 {
 public:
 
-    /// @brief загрузка xmlLiteReader
-    void LoadReader(XmlUtils::CXmlLiteReader &reader);
-
-    /// @brief метод, считывающий строки со значениями и заполняющий строку названий
+    /// @brief метод, преобразующий xml документ в формат, удобный для табличного размещения
+    /// @param reader xmlLiteReader с загруженным в него xml документом
     /// @param cells map из номеров ячеек в качестве ключей и текстовых значений ячеек
-    /// @return номер считанной строки в случае успеха и 0 в случае неудачного чтения
-    _UINT32 ReadNextString(std::map<uint32_t, std::wstring> &cells);
-
-    /// @brief метод, возвращающий текущее значение строки с названиями столбцов
-    /// @param cells map из номеров ячеек в качестве ключей и текстовых значений ячеек
-    /// @return номер считанной строки в случае успеха(1) и 0 в случае неудачного чтения
-    _UINT32 GetColumnNames(std::map<uint32_t, std::wstring> &cells);
+    /// @return true в случае успеха, иначе false
+    bool GetTableData(XmlUtils::CXmlLiteReader &reader, XmlData &data);
 
 private:
 
-    XmlUtils::CXmlLiteReader reader_;
+    /// @brief считывает аттрибуты текущей ноды
+    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
+    void readAttributes(XmlUtils::CXmlLiteReader &reader);
 
-    /// @brief контроллер имен столбцов, обеспечивающи их уникальность
-    ColumnNameController namesController_;
+    /// @brief считывает потомков xml на выбранном уровне помещая их данные в структуру
+    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
+    /// @return true если удалось считать хоть одну ноду, иначе false
+    bool readSiblings(XmlUtils::CXmlLiteReader &reader, _UINT32 depth);
 
-    /// @brief имена столбцов, заполняемые по мере считывания таблицы
-    std::map<uint32_t, std::wstring> columnNames_;
+    /// @brief считывает аттрибуты текущей ноды
+    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
+    void insertValue(const std::wstring &key, const std::wstring &value, _UINT32 depth);
+
+
+    /// @return текущая глубина
+    _UINT32 depth_;
+
+    /// @return данные собранные с xml
+    XmlData data_;
 
 };

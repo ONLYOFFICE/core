@@ -71,3 +71,29 @@ void XML2TableConverter::insertValue(const std::wstring &key, const std::wstring
 
     data_.at(depth)[key].push_back(value);
 }
+
+void XML2TableConverter::processNode(XmlUtils::CXmlLiteReader &reader)
+{
+    readAttributes(reader);
+    auto text = reader.GetText();
+    if(text.c_str())
+    {
+        insertValue(reader.GetName(), text, depth_);
+    }
+}
+
+bool XML2TableConverter::readSiblings(XmlUtils::CXmlLiteReader &reader, _UINT32 depth)
+{
+    if(!reader.ReadNextSiblingNode(depth))
+    {
+        return false;
+    }
+
+    processNode(reader);
+
+    while(reader.ReadNextSiblingNode(depth))
+    {
+        processNode(reader);
+    }
+    return true;
+}

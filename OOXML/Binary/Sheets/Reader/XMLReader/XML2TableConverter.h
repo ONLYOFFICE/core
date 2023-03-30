@@ -60,6 +60,10 @@ private:
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
     void readAttributes(XmlUtils::CXmlLiteReader &reader);
 
+    /// @brief обрабатывает текущую ноду - считывает её атрибуты и текст
+    /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
+    void processNode(XmlUtils::CXmlLiteReader &reader);
+
     /// @brief считывает потомков xml на выбранном уровне помещая их данные в структуру
     /// @param reader xmlLiteReader аттрибуты ноды которого нажуно считать
     /// @return true если удалось считать хоть одну ноду, иначе false

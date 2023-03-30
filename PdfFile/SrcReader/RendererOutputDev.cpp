@@ -678,6 +678,15 @@ namespace PdfReader
         int     nSize  = 0;
         double  dStart = 0;
         pGState->getLineDash(&pDash, &nSize, &dStart);
+        bool bOffCopy = nSize == 1;
+        if (bOffCopy)
+        {
+            double* pDashTemp = new double[2];
+            pDashTemp[0] = pDash[0];
+            pDashTemp[1] = pDash[0];
+            pDash = pDashTemp;
+            nSize = 2;
+        }
 
         if (0 == nSize) // Solid
         {
@@ -695,6 +704,8 @@ namespace PdfReader
             m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
             m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
         }
+        if (bOffCopy)
+            delete[] pDash;
     }
     void RendererOutputDev::updateFlatness(GfxState *pGState)
     {

@@ -718,6 +718,149 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
+void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, int& nFlags, Object* oAction, int nAnnot)
+{
+    AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
+    if (!pAcroForms)
+        return;
+
+    LinkAction* oAct = LinkAction::parseAction(oAction);
+    if (!oAct)
+        return;
+
+    LinkActionKind kind = oAct->getKind();
+    switch (kind)
+    {
+    // Переход внутри файла
+    case actionGoTo:
+    {
+        GString* str = ((LinkGoTo*)oAct)->getNamedDest();
+        LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)oAct)->getDest();
+        if (!pLinkDest)
+        {
+            oRes.WriteString(NULL, 0);
+            oRes.AddDouble(0.0);
+            break;
+        }
+        int pg;
+        if (pLinkDest->isPageRef())
+        {
+            Ref pageRef = pLinkDest->getPageRef();
+            pg = pdfDoc->findPage(pageRef.num, pageRef.gen);
+        }
+        else
+            pg = pLinkDest->getPageNum();
+        std::string sLink = "#" + std::to_string(pg - 1);
+        double dy = pdfDoc->getPageCropHeight(pg) - pLinkDest->getTop();
+        oRes.WriteString((BYTE*)sLink.c_str(), (unsigned int)sLink.length());
+        oRes.AddDouble(dy);
+        break;
+    }
+    // Переход к внешнему файлу
+    case actionGoToR:
+    {
+        break;
+    }
+    // Запуск стороннего приложения
+    case actionLaunch:
+    {
+        break;
+    }
+    // Внешняя ссылка
+    case actionURI:
+    {
+        TextString* s = new TextString(((LinkURI*)oAct)->getURI());
+        std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+        delete s;
+        break;
+    }
+    // Нестандартно именованные действия
+    case actionNamed:
+    {
+        TextString* s = new TextString(((LinkNamed*)oAct)->getName());
+        std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+        delete s;
+        break;
+    }
+    // Воспроизведение фильма
+    case actionMovie:
+    {
+        break;
+    }
+    // JavaScript
+    case actionJavaScript:
+    {
+        TextString* s = new TextString(((LinkJavaScript*)oAct)->getJS());
+        std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+        oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+        delete s;
+        break;
+    }
+    // Отправка формы
+    case actionSubmitForm:
+    {
+        break;
+    }
+    // Скрытие аннотаций
+    case actionHide:
+    {
+        oRes.AddInt(((LinkHide*)oAct)->getHideFlag());
+        Object* oHideObj = ((LinkHide*)oAct)->getFields();
+        int nHide = 1, k = 0;
+        if (oHideObj->isArray())
+            nHide = oHideObj->arrayGetLength();
+        oRes.AddInt(nHide);
+        Object oHide;
+        oHideObj->copy(&oHide);
+        do
+        {
+            if (oHideObj->isArray())
+            {
+                oHide.free();
+                oHideObj->arrayGetNF(k, &oHide);
+            }
+            if (oHide.isString())
+            {
+                TextString* s = new TextString(oHide.getString());
+                std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+                oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
+                delete s;
+            }
+            else if (oHide.isRef())
+            {
+                for (int m = 0, nNum = pAcroForms->getNumFields(); m < nNum; ++m)
+                {
+                     AcroFormField* pSField = pAcroForms->getField(nAnnot);
+                     Object oSFieldRef;
+                     if (pSField->getFieldRef(&oSFieldRef)->isRef() && oSFieldRef.getRefGen() == oHide.getRefGen() && oSFieldRef.getRefNum() == oHide.getRefNum())
+                     {
+                         // TODO нельзя однозначно идентифицировать аннотацию по Т-имени, лучше использовать i из сопоставления с AP
+                         int nLengthName;
+                         Unicode* uName = pSField->getName(&nLengthName);
+                         std::string sTName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
+                         oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
+                         gfree(uName);
+                         break;
+                     }
+                }
+            }
+            k++;
+        } while (k < nHide);
+        oHide.free();
+        break;
+    }
+    // Неизвестное действие
+    case actionUnknown:
+    default:
+    {
+        break;
+    }
+    }
+
+    RELEASEOBJECT(oAct);
+};
 BYTE* CPdfReader::GetWidgets()
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
@@ -735,8 +878,10 @@ BYTE* CPdfReader::GetWidgets()
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
         XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict())
+        if (!xref || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict())
         {
+            // TODO Если ошибочная аннотация
+            oRes.AddInt(0xFFFFFFFF);
             oFieldRef.free(); oField.free();
             continue;
         }
@@ -744,12 +889,12 @@ BYTE* CPdfReader::GetWidgets()
         // Номер аннотации для сопоставления с AP
         oRes.AddInt(i);
 
+        Object oObj;
         // Флаг аннотации - F
-        Object oFlag;
         int nAnnotFlag = 0;
-        if (oField.dictLookup("F", &oFlag) && oFlag.isInt())
-            nAnnotFlag = oFlag.getInt();
-        oFlag.free();
+        if (pField->fieldLookup("F", &oObj)->isInt())
+            nAnnotFlag = oObj.getInt();
+        oObj.free();
         oRes.AddInt(nAnnotFlag);
 
         // Полное имя поля - T (parent_full_name.child_name)
@@ -783,12 +928,10 @@ BYTE* CPdfReader::GetWidgets()
         oRes.WriteString((BYTE*)sY2.c_str(), (unsigned int)sY2.length());
 
         // Выравнивание текста - Q
-        Object oQ;
-        pField->fieldLookup("Q", &oQ);
         int nQ = 0;
-        if (oQ.isInt())
-            nQ = oQ.getInt();
-        oQ.free();
+        if (pField->fieldLookup("Q", &oObj)->isInt())
+            nQ = oObj.getInt();
+        oObj.free();
         oRes.AddInt(nQ);
 
         // Тип - FT + флаги
@@ -810,14 +953,6 @@ BYTE* CPdfReader::GetWidgets()
         }
         oRes.WriteString((BYTE*)sType.c_str(), (unsigned int)sType.length());
 
-        // Цвет - оператор g/rg в DA
-        // double r, g, b;
-        // pField->getColor(&r, &g, &b);
-
-        // Шрифт и размер шрифта - операторы Tf и Tm в DA
-        Ref pFontRef; double dFontSize;
-        pField->getFont(&pFontRef, &dFontSize);
-
         // Флаг - Ff
         unsigned int nFieldFlag = pField->getFlags();
         oRes.AddInt(nFieldFlag);
@@ -826,11 +961,9 @@ BYTE* CPdfReader::GetWidgets()
         int nFlagPos = oRes.GetSize();
         oRes.AddInt(nFlags);
 
-        // 1 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-        Object oObj;
-#define DICT_LOOKUP_STRING(field, sName, byte) \
+#define DICT_LOOKUP_STRING(func, sName, byte) \
 {\
-if (field.dictLookup(sName, &oObj)->isString())\
+if (func(sName, &oObj)->isString())\
 {\
     TextString* s = new TextString(oObj.getString());\
     std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());\
@@ -840,29 +973,29 @@ if (field.dictLookup(sName, &oObj)->isString())\
 }\
 oObj.free();\
 }
-        DICT_LOOKUP_STRING(oField, "TU", 0);
+        // 1 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
+        DICT_LOOKUP_STRING(pField->fieldLookup, "TU", 0);
 
         // 2 - Строка стиля по умолчанию - DS
-        DICT_LOOKUP_STRING(oField, "DS", 1);
+        DICT_LOOKUP_STRING(pField->fieldLookup, "DS", 1);
 
         // 3 - Эффекты границы - BE
-        Object oBE, oBorderBE, oBorderBEI;
-        if (oField.dictLookup("BE", &oBE)->isDict() && oBE.dictLookup("S", &oBorderBE)->isName("C") && oBE.dictLookup("I", &oBorderBEI)->isNum())
+        Object oBorderBE, oBorderBEI;
+        if (oField.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
         {
             nFlags |= (1 << 2);
             oRes.AddDouble(oBorderBEI.getNum());
         }
-        oBE.free(); oBorderBE.free(); oBorderBEI.free();
+        oObj.free(); oBorderBE.free(); oBorderBEI.free();
 
         // 4 - Режим выделения - H
-        Object oHighlighting;
-        if (oField.dictLookup("H", &oHighlighting)->isName())
+        if (oField.dictLookup("H", &oObj)->isName())
         {
             nFlags |= (1 << 3);
-            std::string sName(oHighlighting.getName());
+            std::string sName(oObj.getName());
             oRes.WriteString((BYTE*)sName.c_str(), (unsigned int)sName.length());
         }
-        oHighlighting.free();
+        oObj.free();
 
         // 5 - Границы и Dash Pattern - Border/BS
         Object oBorder;
@@ -870,6 +1003,7 @@ oObj.free();\
         double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
         if (oField.dictLookup("BS", &oBorder)->isDict())
         {
+            nBorderType = annotBorderSolid;
             Object oV;
             if (oBorder.dictLookup("S", &oV)->isName())
             {
@@ -883,8 +1017,6 @@ oObj.free();\
                     nBorderType = annotBorderInset;
                 else if (oV.isName("U"))
                     nBorderType = annotBorderUnderlined;
-                else
-                    nBorderType = annotBorderSolid;
             }
             oV.free();
             if (oBorder.dictLookup("W", &oV)->isNum())
@@ -942,7 +1074,6 @@ oObj.free();\
             }
         }
 
-
         Object oMK;
         if (oField.dictLookup("MK", &oMK)->isDict())
         {
@@ -987,15 +1118,7 @@ oObj.free();\
         oMK.free();
 
         // 9 - Значение по-умолчанию
-        if (pField->fieldLookup("DV", &oObj)->isString())
-        {
-            TextString* s = new TextString(oObj.getString());
-            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-            nFlags |= (1 << 8);
-            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-            delete s;
-        }
-        oObj.free();
+        DICT_LOOKUP_STRING(pField->fieldLookup, "DV", 8);
 
         // Значение поля - V
         int nValueLength;
@@ -1010,7 +1133,7 @@ oObj.free();\
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
-            if (oField.dictLookup("AS", &oObj) && oObj.isName())
+            if (oField.dictLookup("AS", &oObj)->isName())
                 sValue = oObj.getName();
             oObj.free();
 
@@ -1055,21 +1178,21 @@ oObj.free();\
             */
 
             Object oMK;
-            if (oField.dictLookup("MK", &oMK) && oMK.isDict())
+            if (oField.dictLookup("MK", &oMK)->isDict())
             {
                 // 11 - Заголовок - СА
-                DICT_LOOKUP_STRING(oMK, "CA", 10);
+                DICT_LOOKUP_STRING(oMK.dictLookup, "CA", 10);
 
                 // 12 - Заголовок прокрутки - RC
                 // 13 - Альтернативный заголовок - AC
                 if (oType == acroFormFieldPushbutton)
                 {
-                    DICT_LOOKUP_STRING(oMK, "RC", 11);
-                    DICT_LOOKUP_STRING(oMK, "AC", 12);
+                    DICT_LOOKUP_STRING(oMK.dictLookup, "RC", 11);
+                    DICT_LOOKUP_STRING(oMK.dictLookup, "AC", 12);
                 }
 
                 // 14 - Положение заголовка - TP
-                if (oMK.dictLookup("TP", &oObj) && oObj.isInt())
+                if (oMK.dictLookup("TP", &oObj)->isInt())
                 {
                     nFlags |= (1 << 13);
                     oRes.AddInt(oObj.getInt());
@@ -1082,7 +1205,7 @@ oObj.free();\
 
             // 15 - Имя вкл состояния - AP - N - Yes
             Object oNorm;
-            if (oField.dictLookup("AP", &oObj) && oObj.isDict() && oObj.dictLookup("N", &oNorm) && oNorm.isDict())
+            if (oField.dictLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict())
             {
                 for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
                 {
@@ -1125,7 +1248,7 @@ oObj.free();\
             // RichText
             if (nFieldFlag & (1 << 25))
             {
-                DICT_LOOKUP_STRING(oField, "RV", 11);
+                DICT_LOOKUP_STRING(pField->fieldLookup, "RV", 11);
             }
 
             break;
@@ -1141,9 +1264,8 @@ oObj.free();\
             }
 
             Object oOpt;
-            pField->fieldLookup("Opt", &oOpt);
             // 11 - Список значений
-            if (oOpt.isArray())
+            if (pField->fieldLookup("Opt", &oOpt)->isArray())
             {
                 nFlags |= (1 << 10);
                 int nOptLength = oOpt.arrayGetLength();
@@ -1163,14 +1285,14 @@ oObj.free();\
                     if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1)
                     {
                         Object oOptJ2;
-                        if (oOptJ.arrayGet(0, &oOptJ2) && oOptJ2.isString())
+                        if (oOptJ.arrayGet(0, &oOptJ2)->isString())
                         {
                             TextString* s = new TextString(oOptJ2.getString());
                             sOpt1 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
                             delete s;
                         }
                         oOptJ2.free();
-                        if (oOptJ.arrayGet(1, &oOptJ2) && oOptJ2.isString())
+                        if (oOptJ.arrayGet(1, &oOptJ2)->isString())
                         {
                             TextString* s = new TextString(oOptJ2.getString());
                             sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
@@ -1210,179 +1332,75 @@ oObj.free();\
         }
         oFieldRef.free(); oField.free();
 
-        // 20 - Action - A
-        Object oAA;
-        pField->fieldLookup("AA", &oAA);
-        if (oAA.isDict())
+        // 16 - Альтернативный текст - Contents
+        DICT_LOOKUP_STRING(pField->fieldLookup, "Contents", 15);
+
+        // 17 - Специальный цвет для аннотации - C
+        if (pField->fieldLookup("C", &oObj)->isArray())
         {
-            nFlags |= (1 << 19);
+            nFlags |= (1 << 16);
+            int nCLength = oObj.arrayGetLength();
+            oRes.AddInt(nCLength);
+            for (int j = 0; j < nCLength; ++j)
+            {
+                Object oCj;
+                oRes.AddDouble(oObj.arrayGet(j, &oCj)->isNum() ? oCj.getNum() : 0.0);
+                oCj.free();
+            }
+        }
+        oObj.free();
+
+        int nActionPos = oRes.GetSize();
+        unsigned int nActionLength = 0;
+        oRes.AddInt(nActionLength);
+
+        // Action - A
+        Object oAction, oActType;
+        if (pField->fieldLookup("A", &oAction)->isDict() && oAction.dictLookup("S", &oActType)->isName())
+        {
+            nActionLength++;
+
+            std::string sAA = "A";
+            oRes.WriteString((BYTE*)sAA.c_str(), (unsigned int)sAA.length());
+
+            std::string sSName(oActType.getName());
+            oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
+            oActType.free();
+
+            getAction(m_pPDFDocument, oRes, nFlags, &oAction, i);
+        }
+        oAction.free(); oActType.free();
+
+        // Actions - AA
+        Object oAA;
+        if (pField->fieldLookup("AA", &oAA)->isDict())
+        {
             int nLength = oAA.dictGetLength();
-            oRes.AddInt(nLength);
+            nActionLength += nLength;
             for (int j = 0; j < nLength; ++j)
             {
                 std::string sAA(oAA.dictGetKey(j));
                 oRes.WriteString((BYTE*)sAA.c_str(), (unsigned int)sAA.length());
 
-                Object oAction, oType;
-                if (!oAA.dictGetVal(j, &oAction) || !oAction.isDict() || !oAction.dictLookup("S", &oType) || !oType.isName())
+                if (!oAA.dictGetVal(j, &oAction)->isDict() || !oAction.dictLookup("S", &oActType)->isName())
                 {
                     oRes.WriteString(NULL, 0);
                     oAction.free();
-                    oType.free();
+                    oActType.free();
                     continue;
                 }
-                std::string sSName(oType.getName());
+
+                std::string sSName(oActType.getName());
                 oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
+                oActType.free();
 
-                LinkAction* oAct = LinkAction::parseAction(&oAction);
-                if (!oAct)
-                    continue;
-
-                LinkActionKind kind = oAct->getKind();
-                switch (kind)
-                {
-                // Переход внутри файла
-                case actionGoTo:
-                {
-                    GString* str = ((LinkGoTo*)oAct)->getNamedDest();
-                    LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)oAct)->getDest();
-                    if (!pLinkDest)
-                        break;
-                    // 21 - GoTo
-                    int pg;
-                    if (pLinkDest->isPageRef())
-                    {
-                        Ref pageRef = pLinkDest->getPageRef();
-                        pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
-                    }
-                    else
-                        pg = pLinkDest->getPageNum();
-                    nFlags |= (1 << 20);
-                    std::string sLink = "#" + std::to_string(pg - 1);
-                    double dy = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
-                    oRes.WriteString((BYTE*)sLink.c_str(), (unsigned int)sLink.length());
-                    oRes.AddDouble(dy);
-                    break;
-                }
-                // Переход к внешнему файлу
-                case actionGoToR:
-                {
-                    break;
-                }
-                // Запуск стороннего приложения
-                case actionLaunch:
-                {
-                    break;
-                }
-                // Внешняя ссылка
-                case actionURI:
-                {
-                    // 21 - URI
-                    TextString* s = new TextString(((LinkURI*)oAct)->getURI());
-                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                    nFlags |= (1 << 20);
-                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                    delete s;
-                    break;
-                }
-                // Нестандартно именованные действия
-                case actionNamed:
-                {
-                    // 21 - Named
-                    TextString* s = new TextString(((LinkNamed*)oAct)->getName());
-                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                    nFlags |= (1 << 20);
-                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                    delete s;
-                    break;
-                }
-                // Воспроизведение фильма
-                case actionMovie:
-                {
-                    break;
-                }
-                // JavaScript
-                case actionJavaScript:
-                {
-                    // 21 - JS
-                    TextString* s = new TextString(((LinkJavaScript*)oAct)->getJS());
-                    std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                    nFlags |= (1 << 20);
-                    oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                    delete s;
-                    break;
-                }
-                // Отправка формы
-                case actionSubmitForm:
-                {
-                    break;
-                }
-                // Скрытие аннотаций
-                case actionHide:
-                {
-                    // 21 - Hide
-                    nFlags |= (1 << 20);
-                    // 22 - Hide flag
-                    if (((LinkHide*)oAct)->getHideFlag())
-                        nFlags |= (1 << 21);
-                    Object* oHideObj = ((LinkHide*)oAct)->getFields();
-                    int nHide = 1, k = 0;
-                    if (oHideObj->isArray())
-                        nHide = oHideObj->arrayGetLength();
-                    oRes.AddInt(nHide);
-                    Object oHide;
-                    oHideObj->copy(&oHide);
-                    do
-                    {
-                        if (oHideObj->isArray())
-                        {
-                            oHide.free();
-                            oHideObj->arrayGetNF(k, &oHide);
-                        }
-                        if (oHide.isString())
-                        {
-                            TextString* s = new TextString(oHide.getString());
-                            std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-                            oRes.WriteString((BYTE*)sStr.c_str(), (unsigned int)sStr.length());
-                            delete s;
-                        }
-                        else if (oHide.isRef())
-                        {
-                            for (int m = 0; m < nNum; ++m)
-                            {
-                                 AcroFormField* pSField = pAcroForms->getField(i);
-                                 Object oSFieldRef;
-                                 if (pSField->getFieldRef(&oSFieldRef) && oSFieldRef.isRef() && oSFieldRef.getRefGen() == oHide.getRefGen() && oSFieldRef.getRefNum() == oHide.getRefNum())
-                                 {
-                                     int nLengthName;
-                                     Unicode* uName = pSField->getName(&nLengthName);
-                                     std::string sTName = NSStringExt::CConverter::GetUtf8FromUTF32(uName, nLengthName);
-                                     oRes.WriteString((BYTE*)sTName.c_str(), (unsigned int)sTName.length());
-                                     gfree(uName);
-                                     break;
-                                 }
-                            }
-                        }
-                        k++;
-                    } while (k < nHide);
-                    oHide.free();
-                    break;
-                }
-                // Неизвестное действие
-                case actionUnknown:
-                default:
-                {
-                    break;
-                }
-                }
-
-                oType.free();
-                RELEASEOBJECT(oAct);
+                getAction(m_pPDFDocument, oRes, nFlags, &oAction, i);
                 oAction.free();
             }
         }
         oAA.free();
 
+        oRes.AddInt(nActionLength, nActionPos);
         oRes.AddInt(nFlags, nFlagPos);
     }
 
@@ -1455,8 +1473,10 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         AcroFormField* pField = pAcroForms->getField(i);
         Object oFieldRef, oField;
         XRef* xref = m_pPDFDocument->getXRef();
-        if (!xref || !pField->getFieldRef(&oFieldRef) || !oFieldRef.isRef() || !oFieldRef.fetch(xref, &oField) || !oField.isDict() || pField->getPageNum() != nPageIndex + 1)
+        if (!xref || !pField->getFieldRef(&oFieldRef)->isRef() || !oFieldRef.fetch(xref, &oField)->isDict() || pField->getPageNum() != nPageIndex + 1)
         {
+            // TODO Если ошибочная аннотация
+            oRes.AddInt(0xFFFFFFFF);
             oFieldRef.free(); oField.free();
             continue;
         }

@@ -609,81 +609,85 @@ int main(int argc, char* argv[])
 					std::cout << "TI " << nPathLength << ", ";
 				}
 			}
-			if (nFlags & (1 << 19))
+			if (nFlags & (1 << 15))
 			{
-				int nActLength = READ_INT(pWidgets + i);
+				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
-				for (int j = 0; j < nActLength; ++j)
+				std::cout << "Contents " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+			}
+			if (nFlags & (1 << 16))
+			{
+				int nCLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << "C ";
+				for (int j = 0; j < nCLength; ++j)
 				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
-					std::cout << std::to_string(j) << " AA " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-					i += nPathLength;
+					std::cout << (double)nPathLength / 100.0 << " ";
+				}
+				std::cout << ", ";
+			}
+			int nActLength = READ_INT(pWidgets + i);
+			i += 4;
+			for (int j = 0; j < nActLength; ++j)
+			{
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << std::to_string(j) << " Action " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
 
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::string sType((char*)(pWidgets + i), nPathLength);
+				std::cout << "Type " << sType << ", ";
+				i += nPathLength;
+
+				if (sType == "JavaScript")
+				{
 					nPathLength = READ_INT(pWidgets + i);
 					i += 4;
-					std::string sType((char*)(pWidgets + i), nPathLength);
-					std::cout << "Type " << sType << ", ";
+					std::cout << "JS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 					i += nPathLength;
-
-					if (sType == "JavaScript")
+				}
+				else if (sType == "GoTo")
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
+					i += nPathLength;
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
+				}
+				else if (sType == "Named")
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Named " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				else if (sType == "URI")
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "URL " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+					i += nPathLength;
+				}
+				else if (sType == "Hide")
+				{
+					nPathLength = READ_INT(pWidgets + i);
+					i += 4;
+					std::cout << "Hide flag " << nPathLength << ", ";
+					int nHideLength = READ_INT(pWidgets + i);
+					i += 4;
+					for (int j = 0; j < nHideLength; ++j)
 					{
-						if (nFlags & (1 << 20))
-						{
-							nPathLength = READ_INT(pWidgets + i);
-							i += 4;
-							std::cout << "JS " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-							i += nPathLength;
-						}
-					}
-					else if (sType == "GoTo")
-					{
-						if (nFlags & (1 << 20))
-						{
-							nPathLength = READ_INT(pWidgets + i);
-							i += 4;
-							std::cout << "GoTo " << std::string((char*)(pWidgets + i), nPathLength) << " ";
-							i += nPathLength;
-							nPathLength = READ_INT(pWidgets + i);
-							i += 4;
-							std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
-						}
-					}
-					else if (sType == "Named")
-					{
-						if (nFlags & (1 << 20))
-						{
-							nPathLength = READ_INT(pWidgets + i);
-							i += 4;
-							std::cout << "Named " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-							i += nPathLength;
-						}
-					}
-					else if (sType == "URI")
-					{
-						if (nFlags & (1 << 20))
-						{
-							nPathLength = READ_INT(pWidgets + i);
-							i += 4;
-							std::cout << "URL " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-							i += nPathLength;
-						}
-					}
-					else if (sType == "Hide")
-					{
-						if (nFlags & (1 << 20))
-						{
-							std::cout << "Hide flag " << (nFlags & (1 << 21)) << ", ";
-							int nHideLength = READ_INT(pWidgets + i);
-							i += 4;
-							for (int j = 0; j < nHideLength; ++j)
-							{
-								nPathLength = READ_INT(pWidgets + i);
-								i += 4;
-								std::cout << std::to_string(j) << " THide " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
-								i += nPathLength;
-							}
-						}
+						nPathLength = READ_INT(pWidgets + i);
+						i += 4;
+						std::cout << std::to_string(j) << " THide " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+						i += nPathLength;
 					}
 				}
 			}

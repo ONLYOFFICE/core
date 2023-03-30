@@ -542,51 +542,50 @@
 			rec["readonly"] = rec["flag"] & (1 << 0); // ReadOnly
 			rec["required"] = rec["flag"] & (1 << 1); // Required
 			rec["noexport"] = rec["flag"] & (1 << 2); // NoExport
-			
-			if (flags & (1 << 19))
+			// Альтернативный текст аннотации - Contents
+			if (flags & (1 << 15))
+				rec["Contents"] = reader.readString();
+			// Специальный цвет аннотации - С
+			if (flags & (1 << 16))
 			{
 				let n = reader.readInt();
-				rec["AA"] = {};
+				rec["C"] = [];
 				for (let i = 0; i < n; ++i)
+					rec["C"].push(reader.readDouble());
+			}
+			let nAction = reader.readInt();
+			if (nAction > 0)
+				rec["AA"] = {};
+			for (let i = 0; i < nAction; ++i)
+			{
+				var AAType = reader.readString();
+				rec["AA"][AAType] = {};
+				var SType = reader.readString();
+				rec["AA"][AAType]["S"] = SType;
+				if (SType == "JavaScript")
 				{
-					var AAType = reader.readString();
-					rec["AA"][AAType] = {};
-					var SType = reader.readString();
-					rec["AA"][AAType]["S"] = SType;
-					if (SType == "JavaScript")
-					{
-						if (flags & (1 << 20))
-							rec["AA"][AAType]["JS"] = reader.readString();
-					}
-					else if (SType == "GoTo")
-					{
-						if (flags & (1 << 20))
-						{
-							rec["AA"][AAType]["GoTo"]["link"] = reader.readString();
-							rec["AA"][AAType]["GoTo"]["dest"] = reader.readDouble();
-						}
-					}
-					else if (SType == "Named")
-					{
-						if (flags & (1 << 20))
-							rec["AA"][AAType]["N"] = reader.readString();
-					}
-					else if (SType == "URI")
-					{
-						if (flags & (1 << 20))
-							rec["AA"][AAType]["URI"] = reader.readString();
-					}
-					else if (SType == "Hide")
-					{
-						if (flags & (1 << 20))
-						{
-							rec["AA"][AAType]["Hide"]["H"] = flags & (1 << 21);
-							let m = reader.readInt();
-					        rec["AA"][AAType]["Hide"]["T"] = [];
-					        for (let j = 0; j < m; ++j)
-								rec["AA"][AAType]["Hide"]["T"].push(reader.readString());
-						}
-					}
+					rec["AA"][AAType]["JS"] = reader.readString();
+				}
+				else if (SType == "GoTo")
+				{
+					rec["AA"][AAType]["GoTo"]["link"] = reader.readString();
+					rec["AA"][AAType]["GoTo"]["dest"] = reader.readDouble();
+				}
+				else if (SType == "Named")
+				{
+					rec["AA"][AAType]["N"] = reader.readString();
+				}
+				else if (SType == "URI")
+				{
+					rec["AA"][AAType]["URI"] = reader.readString();
+				}
+				else if (SType == "Hide")
+				{
+					rec["AA"][AAType]["Hide"]["H"] = reader.readInt();
+					let m = reader.readInt();
+				    rec["AA"][AAType]["Hide"]["T"] = [];
+				    for (let j = 0; j < m; ++j)
+						rec["AA"][AAType]["Hide"]["T"].push(reader.readString());
 				}
 			}
 

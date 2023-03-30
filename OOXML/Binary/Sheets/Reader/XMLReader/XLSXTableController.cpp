@@ -62,7 +62,7 @@ OOX::Spreadsheet::CXlsx XLSXTableController::GetBook()
 }
 
 
-void XLSXTableController::AddCell(std::wstring &sText, INT nRow, INT nCol)
+void XLSXTableController::AddCell(const std::wstring &sText, INT nRow, INT nCol)
 {
 
 	size_t length = sText.length();

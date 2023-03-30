@@ -31,6 +31,7 @@
  */
 #include "XMLReader.h"
 #include "XLSXTableController.h"
+#include "XML2TableConverter.h"
 
 #include "../../../../DesktopEditor/common/File.h"
 #include "../../../Base/unicode_util.h"
@@ -54,5 +55,36 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
     {
         return AVS_FILEUTILS_ERROR_CONVERT_READ_FILE;
     }
+
+    /// @brief переводим xml в считываемый вид
+    XML2TableConverter converter = {};
+    XmlData data = {};
+    if(!converter.GetTableData(reader, data))
+    {
+        return AVS_FILEUTILS_ERROR_CONVERT;
+    }
+
+    /// @brief заполняем xlsx таблицу из полученной структуры
+    XLSXTableController table = {};
+    _UINT32 rowIndex = 1;
+    _UINT32 colIndex = 1;
+    for (_UINT32 i = 0; i < data.size(); i++)
+    {
+        for(auto dataColumn = data.at(i).begin(); dataColumn != data.at(i).end(); dataColumn++)
+        {
+            table.AddCell(dataColumn->first, rowIndex, colIndex);
+            rowIndex++;
+            for(_UINT32 j = 0; j < dataColumn->second.size(); j++, rowIndex++)
+            {
+                table.AddCell(dataColumn->second[j], rowIndex, colIndex);
+            }
+            rowIndex = 1;
+            colIndex++;
+        }
+
+    }
+
+    oXlsx = table.GetBook();
+    return 0;
 
 }

@@ -51,7 +51,7 @@ public:
     /// @param nRow номер строки
     /// @param nCol номер столбца
     /// @param bIsWrap признак свернутости
-    void AddCell(std::wstring &sText, INT nRow, INT nCol);
+    void AddCell(const std::wstring &sText, INT nRow, INT nCol);
 
     /// @brief получение документа xlsx
     /// @return xlsx документ сформированный с помощью методов класса

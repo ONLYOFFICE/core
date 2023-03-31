@@ -12,9 +12,6 @@ CONFIG += c++11
 
 CONFIG += core_static_link_libstd
 
-CONFIG += doct_renderer_empty
-CONFIG += v8_version_89
-
 CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include(../../Common/base.pri)

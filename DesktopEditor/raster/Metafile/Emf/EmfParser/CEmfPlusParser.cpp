@@ -3307,10 +3307,7 @@ namespace MetaFile
 	{
 		m_bBanEmfProcessing = true;
 
-		TEmfPlusXForm oMatrix(1, 0, 0, 1, 0, 0);
-		UpdateMatrix(oMatrix);
-
-		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
+		m_pDC->GetClip()->Reset();
 		UpdateOutputDC();
 
 		if (NULL != m_pInterpretator)

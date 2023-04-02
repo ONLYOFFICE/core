@@ -35,6 +35,12 @@ namespace NSDocxRenderer
 		CShape::ResetRelativeHeight();
 	}
 
+	void CPage::BeginCommand(DWORD lType)
+	{
+		m_lLastCommand = m_lCurrentCommand;
+		m_lCurrentCommand = lType;
+	}
+
 	void CPage::Clear()
 	{
 		ClearTextData();
@@ -250,6 +256,7 @@ namespace NSDocxRenderer
 		m_oVector.Close();
 	}
 
+
 	void CPage::DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo)
 	{
 		double dLeft, dRight, dTop, dBottom;
@@ -314,9 +321,14 @@ namespace NSDocxRenderer
 				}
 			}
 
-			pShape->GetDataFromVector(m_oVector);
+			pShape->SetVector(std::move(m_oVector));
 
-			m_arShapes.push_back(pShape);
+			bool bIsMerged = false;
+//			if(!m_arShapes.empty() && m_lLastCommand == m_lCurrentCommand)
+//				bIsMerged = m_arShapes.back()->TryMergeShape(pShape);
+
+			if(!bIsMerged)
+				m_arShapes.push_back(pShape);
 		}
 	}
 

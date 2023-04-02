@@ -50,6 +50,7 @@ namespace NSDocxRenderer
 
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};
+		LONG m_lLastCommand = 0;
 
 	public:
 		CPage(NSFonts::IApplicationFonts* pFonts);
@@ -58,6 +59,9 @@ namespace NSDocxRenderer
 				  NSStructures::CShadow* pShadow, NSStructures::CEdgeText* pEdge, Aggplus::CMatrix* pMatrix,
 				  Aggplus::CGraphicsPathSimpleConverter* pSimple, CStyleManager* pStyleManager, CFontManager *pFontManager,
 				  CFontSelector* pFontSelector);
+
+
+		void BeginCommand(DWORD lType);
 
 		void Clear();
 		void ClearImages();
@@ -82,6 +86,7 @@ namespace NSDocxRenderer
 		void Start();
 		void End();
 		void Close();
+
 		//набивается содержимым вектор m_arShapes
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 

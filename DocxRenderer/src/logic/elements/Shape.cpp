@@ -15,7 +15,7 @@ namespace NSDocxRenderer
 	}
 
 	CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) : CBaseItem(ElemType::etShape),
-		m_strPath(strDstMedia), m_pImageInfo(pInfo)
+		m_strDstMedia(strDstMedia), m_pImageInfo(pInfo)
 	{
 		m_nRelativeHeight = m_gRelativeHeight;
 		m_gRelativeHeight += c_iStandartRelativeHeight;
@@ -46,12 +46,41 @@ namespace NSDocxRenderer
 		m_gRelativeHeight = c_iStandartRelativeHeight;
 	}
 
-	void CShape::GetDataFromVector(const CVectorGraphics& oVector)
+	void CShape::SetVector(CVectorGraphics&& oVector)
 	{
-		m_dLeft = oVector.GetLeft();
-		m_dTop = oVector.GetTop();
-		m_dWidth = oVector.GetRight() - m_dLeft;
-		m_dHeight = oVector.GetBottom() - m_dTop;
+		m_oVector = std::move(oVector);
+
+		m_dLeft = m_oVector.GetLeft();
+		m_dTop = m_oVector.GetTop();
+		m_dWidth = m_oVector.GetRight() - m_dLeft;
+		m_dHeight = m_oVector.GetBottom() - m_dTop;
+
+		auto arData = m_oVector.GetData();
+
+		size_t nPeacks = 0;
+		size_t nCurves = 0;
+
+		for(auto& path_command : arData)
+			switch (path_command.type)
+			{
+			case CVectorGraphics::vgtMove:
+				nPeacks++;
+				break;
+
+			case CVectorGraphics::vgtLine:
+				nPeacks++;
+				break;
+
+			case CVectorGraphics::vgtCurve:
+				nCurves++;
+				break;
+
+			case CVectorGraphics::vgtClose:
+			default:
+				break;
+			}
+
+		DetermineGraphicsType(m_dWidth, m_dHeight, nPeacks, nCurves);
 
 		if (m_dWidth < 0.0001)
 			m_dWidth = 0.0001;
@@ -60,27 +89,48 @@ namespace NSDocxRenderer
 
 		m_dBaselinePos = m_dTop + m_dHeight;
 		m_dRight = m_dLeft + m_dWidth;
-
-		WritePath(oVector);
 	}
 
-	void CShape::WritePath(const CVectorGraphics& oVector)
+	bool CShape::TryMergeShape(CShape* pShape)
 	{
-		auto arData = oVector.GetData();
+		if((pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+				pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
-		double dWidth = oVector.GetRight() - oVector.GetLeft();
-		double dHeight = oVector.GetBottom() - oVector.GetTop();
+				(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+				this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+
+				pShape->m_eType == this->m_eType &&
+				pShape->m_oPen.IsEqual(&m_oPen) &&
+				pShape->m_oBrush.IsEqual(&m_oBrush) &&
+				pShape->m_bIsNoFill == m_bIsNoFill &&
+				pShape->m_bIsNoStroke == m_bIsNoStroke &&
+				pShape->m_pImageInfo == nullptr &&
+				this->m_pImageInfo == nullptr)
+		{
+			CBaseItem::AddContent(pShape);
+			auto arData = pShape->m_oVector.GetData();
+
+			for(auto& command : arData)
+				m_oVector.Add(command);
+
+			this->m_eGraphicsType = eGraphicsType::gtComplicatedFigure;
+
+			return true;
+		}
+		return false;
+	}
+
+	std::wstring CShape::PathToStr()
+	{
+		auto arData = m_oVector.GetData();
 
 		NSStringUtils::CStringBuilder oWriter;
 
 		oWriter.WriteString(L"<a:path w=\"");
-		oWriter.AddInt(static_cast<int>(dWidth * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
 		oWriter.WriteString(L"\" h=\"");
-		oWriter.AddInt(static_cast<int>(dHeight * c_dMMToEMU));
+		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
 		oWriter.WriteString(L"\">");
-
-		size_t nPeacks = 0;
-		size_t nCurves = 0;
 
 		for(auto& path_command : arData)
 		{
@@ -119,17 +169,14 @@ namespace NSDocxRenderer
 			{
 			case CVectorGraphics::vgtMove:
 				oWriter.WriteString(L"</a:moveTo>");
-				nPeacks++;
 				break;
 
 			case CVectorGraphics::vgtLine:
 				oWriter.WriteString(L"</a:lnTo>");
-				nPeacks++;
 				break;
 
 			case CVectorGraphics::vgtCurve:
 				oWriter.WriteString(L"</a:cubicBezTo>");
-				nCurves++;
 				break;
 
 			case CVectorGraphics::vgtClose:
@@ -141,9 +188,9 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<a:close/>");
 		oWriter.WriteString(L"</a:path>");
 
-		m_strPath = oWriter.GetData();
-		DetermineGraphicsType(dWidth, dHeight, nPeacks, nCurves);
+		std::wstring strPath = oWriter.GetData();
 		oWriter.ClearNoAttack();
+		return strPath.empty() ? m_strDstMedia : strPath;
 	}
 
 	void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves)
@@ -791,6 +838,7 @@ namespace NSDocxRenderer
 
 	void CShape::BuildGraphicProperties(NSStringUtils::CStringBuilder &oWriter)
 	{
+		std::wstring strPath = std::move(PathToStr());
 		//отвечает за размеры прямоугольного фрейма шейпа
 		oWriter.WriteString(L"<a:xfrm");
 		if (fabs(m_dRotate) > 0.01)
@@ -810,7 +858,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:xfrm>");
 
 		//Если просто текст без графики
-		if (m_strPath.empty())
+		if (strPath.empty())
 		{
 			oWriter.WriteString(L"<a:prstGeom prst=\"rect\">");
 			oWriter.WriteString(L"<a:avLst/>");
@@ -826,7 +874,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<a:cxnLst/>");
 			oWriter.WriteString(L"<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>");
 			oWriter.WriteString(L"<a:pathLst>");
-			oWriter.WriteString(m_strPath);
+			oWriter.WriteString(strPath);
 			oWriter.WriteString(L"</a:pathLst>");
 			oWriter.WriteString(L"</a:custGeom>");
 		}

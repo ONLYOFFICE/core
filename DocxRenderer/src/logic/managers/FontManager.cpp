@@ -514,11 +514,11 @@ namespace NSDocxRenderer
 		LoadFontSelectParams();
 	}
 
-	CFontSelectParams CFontManager::GetFontSelectParams() const noexcept
+	const CFontSelectParams& CFontManager::GetFontSelectParams() const noexcept
 	{
 		return m_oFontSelectParams;
 	}
-	CFontMetrics CFontManager::GetFontMetrics() const noexcept
+	const CFontMetrics& CFontManager::GetFontMetrics() const noexcept
 	{
 		return m_oFontMetrics;
 	}

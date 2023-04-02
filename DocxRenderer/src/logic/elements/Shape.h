@@ -31,7 +31,9 @@ namespace NSDocxRenderer
 
 	public:
 		eShapeType              m_eType {eShapeType::stUnknown};
-		std::wstring            m_strPath {L""};
+		//std::wstring            m_strPath {L""};
+		CVectorGraphics			m_oVector;
+		std::wstring			m_strDstMedia;
 		NSStructures::CBrush    m_oBrush;
 		NSStructures::CPen      m_oPen;
 		double                  m_dRotate {0.0};
@@ -64,8 +66,9 @@ namespace NSDocxRenderer
 		virtual void AddContent(CBaseItem* pObj) override final{};
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) override final;
 
-		void GetDataFromVector(const CVectorGraphics& oVector);
-		void WritePath(const CVectorGraphics& oVector);
+		void SetVector(CVectorGraphics&& oVector);
+		bool TryMergeShape(CShape* pShape);
+		std::wstring PathToStr();
 		void DetermineGraphicsType(double dWidth, double dHeight, size_t nPeacks, size_t nCurves);
 		bool IsItFitLine();
 		bool IsCorrelated(const CShape* pShape);

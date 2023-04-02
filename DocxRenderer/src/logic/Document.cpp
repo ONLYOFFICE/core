@@ -526,7 +526,7 @@ namespace NSDocxRenderer
 			return S_OK;
 
 		m_lCurrentCommandType = (LONG)lType;
-		m_oCurrentPage.m_lCurrentCommand	= m_lCurrentCommandType;
+		m_oCurrentPage.BeginCommand(lType);
 
 		return S_OK;
 	}

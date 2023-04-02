@@ -117,8 +117,8 @@ namespace NSDocxRenderer
 		void LoadFontByFile(const NSStructures::CFont& oFont);
 		void LoadFontByName(const NSStructures::CFont& oFont);
 
-		CFontSelectParams GetFontSelectParams() const noexcept;
-		CFontMetrics GetFontMetrics() const noexcept;
+		const CFontSelectParams& GetFontSelectParams() const noexcept;
+		const CFontMetrics& GetFontMetrics() const noexcept;
 
 		double GetFontHeight() const;
 		double GetSpaceWidthMM() const;

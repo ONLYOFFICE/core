@@ -30,6 +30,8 @@ namespace NSDocxRenderer
 		CVectorGraphics();
 		~CVectorGraphics();
 
+		CVectorGraphics& operator=(CVectorGraphics&& other);
+
 	public:
 		const std::vector<PathCommand>& GetData() const;
 
@@ -44,6 +46,8 @@ namespace NSDocxRenderer
 		void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);
 		void Close();
 		void End();
+
+		void Add(const PathCommand& command);
 
 		void Clear();
 		void CheckPoint(const Point& point);

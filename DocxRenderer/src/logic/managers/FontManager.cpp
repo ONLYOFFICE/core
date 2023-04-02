@@ -302,7 +302,9 @@ namespace NSDocxRenderer
 		return m_arParamsCache;
 	}
 
-	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams, NSStringUtils::CStringUTF32& oText)
+	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams,
+								   const CFontMetrics& oFontMetrics,
+								   NSStringUtils::CStringUTF32& oText)
 	{
 		BYTE lRangeNum	= 0xFF;
 		BYTE lRange		= 0xFF;
@@ -362,7 +364,6 @@ namespace NSDocxRenderer
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
-		oFormat.wsName = new std::wstring(sFontNameSelect);
 		oFormat.pPanose = new BYTE[10];
 		for(int i = 0; i < 10; i++)
 			oFormat.pPanose[i] = oFontSelectParams.arPANOSE[i];
@@ -381,10 +382,13 @@ namespace NSDocxRenderer
 		oFormat.ulCodeRange1 = new UINT(dwCodePage1);
 		oFormat.ulCodeRange2 = new UINT(dwCodePage2);
 
+//		oFormat.shAscent = new SHORT(oFontMetrics.dAscent);
+//		oFormat.shDescent = new SHORT(oFontMetrics.dDescent);
+
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
 
-		oFormat.wsDefaultName = new std::wstring(L"Arial");
+		oFormat.wsDefaultName = new std::wstring(sFontNameSelect);
 
 		NSFonts::CFontInfo* pInfo = m_pManager->GetFontInfoByParams(oFormat);
 

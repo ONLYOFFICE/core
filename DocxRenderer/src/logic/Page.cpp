@@ -403,7 +403,7 @@ namespace NSDocxRenderer
 		auto oMetrics = m_pFontManager->GetFontMetrics();
 		auto oParams = m_pFontManager->GetFontSelectParams();
 
-		m_pFontSelector->SelectFont(oParams, oText);
+		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
 
 		pCont->m_dTop       = dBaseLinePos - dTextH - oMetrics.dBaselineOffset;
 		pCont->m_dWidth     = dTextW;

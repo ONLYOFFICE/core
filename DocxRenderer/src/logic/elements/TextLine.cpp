@@ -59,10 +59,13 @@ namespace NSDocxRenderer
 				continue;
 			}
 
+			double dSpaceDefaultSize = pCurrent->CalculateThinSpace();
+			double dSpaceWideSize = pCurrent->CalculateWideSpace();
+
 			//todo возможно стоит доработать логику
 			bool bIsEqual = pFirst->IsEqual(pCurrent);
-			bool bIsBigDelta = (fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pCurrent->CalculateThinSpace());
-			bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > pFirst->CalculateWideSpace();
+			bool bIsBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > dSpaceDefaultSize;
+			bool bIsVeryBigDelta = fabs(pFirst->m_dRight - pCurrent->m_dLeft) > dSpaceWideSize;
 
 			if (bIsVeryBigDelta)
 			{
@@ -72,7 +75,7 @@ namespace NSDocxRenderer
 			}
 			else if (bIsEqual)
 			{
-				if (fabs(pFirst->m_dRight - pCurrent->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM)
+				if (fabs(pFirst->m_dRight - pCurrent->m_dLeft) < dSpaceDefaultSize)
 				{
 					pFirst->m_oText += pCurrent->m_oText;
 				}

@@ -324,11 +324,13 @@ namespace NSDocxRenderer
 			pShape->SetVector(std::move(m_oVector));
 
 			bool bIsMerged = false;
-//			if(!m_arShapes.empty() && m_lLastCommand == m_lCurrentCommand)
-//				bIsMerged = m_arShapes.back()->TryMergeShape(pShape);
+			if(!m_arShapes.empty() && m_lLastCommand == m_lCurrentCommand)
+				bIsMerged = m_arShapes.back()->TryMergeShape(pShape);
 
 			if(!bIsMerged)
 				m_arShapes.push_back(pShape);
+			else
+				delete pShape;
 		}
 	}
 

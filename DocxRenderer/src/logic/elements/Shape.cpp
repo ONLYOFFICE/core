@@ -49,13 +49,12 @@ namespace NSDocxRenderer
 	void CShape::SetVector(CVectorGraphics&& oVector)
 	{
 		m_oVector = std::move(oVector);
+		auto arData = m_oVector.GetData();
 
 		m_dLeft = m_oVector.GetLeft();
 		m_dTop = m_oVector.GetTop();
 		m_dWidth = m_oVector.GetRight() - m_dLeft;
 		m_dHeight = m_oVector.GetBottom() - m_dTop;
-
-		auto arData = m_oVector.GetData();
 
 		size_t nPeacks = 0;
 		size_t nCurves = 0;
@@ -93,28 +92,40 @@ namespace NSDocxRenderer
 
 	bool CShape::TryMergeShape(CShape* pShape)
 	{
-		if((pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+		// можно попробовать подбирать динамически, например в зависимости от размера
+		double dHorNearby = 30;
+		double dVerNearby = 30;
+
+		if(
+				// только для фигур
+				(pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
 				pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
 				(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
 				this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
+				// все совпадает
 				pShape->m_eType == this->m_eType &&
 				pShape->m_oPen.IsEqual(&m_oPen) &&
 				pShape->m_oBrush.IsEqual(&m_oBrush) &&
 				pShape->m_bIsNoFill == m_bIsNoFill &&
 				pShape->m_bIsNoStroke == m_bIsNoStroke &&
+
+				// не картинка
 				pShape->m_pImageInfo == nullptr &&
-				this->m_pImageInfo == nullptr)
+				this->m_pImageInfo == nullptr &&
+
+				// недалеко друг от друга по горизонтали
+				(fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
+				 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby) &&
+
+				// недалеко друг от друга по вертикали
+				fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby)
 		{
 			CBaseItem::AddContent(pShape);
-			auto arData = pShape->m_oVector.GetData();
-
-			for(auto& command : arData)
-				m_oVector.Add(command);
+			m_oVector.Join(std::move(pShape->m_oVector));
 
 			this->m_eGraphicsType = eGraphicsType::gtComplicatedFigure;
-
 			return true;
 		}
 		return false;
@@ -123,6 +134,9 @@ namespace NSDocxRenderer
 	std::wstring CShape::PathToStr()
 	{
 		auto arData = m_oVector.GetData();
+
+		if(arData.empty())
+			return m_strDstMedia;
 
 		NSStringUtils::CStringBuilder oWriter;
 
@@ -190,7 +204,7 @@ namespace NSDocxRenderer
 
 		std::wstring strPath = oWriter.GetData();
 		oWriter.ClearNoAttack();
-		return strPath.empty() ? m_strDstMedia : strPath;
+		return strPath;
 	}
 
 	void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves)

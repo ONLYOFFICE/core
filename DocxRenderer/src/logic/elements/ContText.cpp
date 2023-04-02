@@ -114,7 +114,7 @@ namespace NSDocxRenderer
 		//note 1 -> 0.5pt
 		lCalculatedSpacing -= 1;
 
-		if (lCalculatedSpacing != 0)
+		if (lCalculatedSpacing > 0)
 		{
 			oWriter.WriteString(L"<w:spacing w:val=\"");
 			oWriter.AddInt(lCalculatedSpacing);

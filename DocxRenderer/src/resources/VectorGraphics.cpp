@@ -63,7 +63,7 @@ namespace NSDocxRenderer
 		return m_dBottom;
 	}
 
-	const std::vector<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
+	const std::list<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
 	{
 		return m_arData;
 	}
@@ -90,7 +90,7 @@ namespace NSDocxRenderer
 								  const double &x2, const double &y2,
 								  const double &x3, const double &y3)
 	{
-		std::vector<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
+		std::list<Point> points = {{x1, y1}, {x2, y2}, {x3, y3}};
 		VectorGraphicsType type = vgtCurve;
 		m_arData.push_back({type, points});
 
@@ -117,6 +117,13 @@ namespace NSDocxRenderer
 	void CVectorGraphics::Add(const PathCommand& command)
 	{
 		m_arData.push_back(command);
+	}
+	void CVectorGraphics::Join(CVectorGraphics&& other)
+	{
+		CheckPoint(other.m_dLeft, other.m_dTop);
+		CheckPoint(other.m_dRight, other.m_dBottom);
+		m_arData.splice(m_arData.end(), std::move(other.m_arData));
+		other.Clear();
 	}
 
 	void CVectorGraphics::CheckPoint(const Point& point)

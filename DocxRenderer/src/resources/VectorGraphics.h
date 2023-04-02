@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include <list>
 
 namespace NSDocxRenderer
 {
@@ -23,7 +23,7 @@ namespace NSDocxRenderer
 		struct PathCommand
 		{
 			VectorGraphicsType type;
-			std::vector<Point> points;
+			std::list<Point> points;
 		};
 
 	public:
@@ -33,7 +33,7 @@ namespace NSDocxRenderer
 		CVectorGraphics& operator=(CVectorGraphics&& other);
 
 	public:
-		const std::vector<PathCommand>& GetData() const;
+		const std::list<PathCommand>& GetData() const;
 
 		double GetLeft() const noexcept;
 		double GetTop() const noexcept;
@@ -48,13 +48,14 @@ namespace NSDocxRenderer
 		void End();
 
 		void Add(const PathCommand& command);
+		void Join(CVectorGraphics&& other);
 
 		void Clear();
 		void CheckPoint(const Point& point);
 		void CheckPoint(const double& x, const double& y);
 
 	private:
-		std::vector<PathCommand> m_arData;
+		std::list<PathCommand> m_arData;
 
 		double m_dLeft;
 		double m_dTop;

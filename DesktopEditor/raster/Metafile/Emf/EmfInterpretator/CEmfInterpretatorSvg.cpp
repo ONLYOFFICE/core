@@ -1165,15 +1165,24 @@ namespace MetaFile
 		else if (pFont->IsStrikeOut())
 			arNodeAttributes.push_back({L"text-decoration", L"line-through"});
 
-		std::wstring wsValue;
-
-		for (unsigned int unIndex = 0; unIndex < arGlyphPos.size(); ++unIndex)
-			wsValue += L"<tspan x=\"" + ConvertToWString(arGlyphPos[unIndex].x) + L"\" y=\"" + ConvertToWString(arGlyphPos[unIndex].y) + L"\">" + StringNormalization(std::wstring(1, wsString[unIndex])) + L"</tspan>";
-
 		AddTransform(arNodeAttributes);
 		AddClip();
 
-		WriteNode(L"text", arNodeAttributes, wsValue);
+		std::wstring wsX, wsY;
+
+		for (const TPointD& oPoint : arGlyphPos)
+		{
+			wsX += ConvertToWString(oPoint.x) + L' ';
+			wsY += ConvertToWString(oPoint.y) + L' ';
+		}
+
+		wsX.pop_back();
+		wsY.pop_back();
+
+		arNodeAttributes.push_back({L"x", wsX});
+		arNodeAttributes.push_back({L"y", wsY});
+
+		WriteNode(L"text", arNodeAttributes, wsString);
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_DRAWELLIPSE(short shOgjectIndex, const TEmfPlusRectF &oRect)

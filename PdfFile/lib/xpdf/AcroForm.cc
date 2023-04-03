@@ -1129,9 +1129,10 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
     annotFlags = 0;
   }
   obj1.free();
-  if ((annotFlags & annotFlagHidden) ||
+  if (globalParams->getDrawFormField() < 0 &&
+      ((annotFlags & annotFlagHidden) ||
       (printing && !(annotFlags & annotFlagPrint)) ||
-      (!printing && (annotFlags & annotFlagNoView))) {
+      (!printing && (annotFlags & annotFlagNoView)))) {
     return;
   }
 

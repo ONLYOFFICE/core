@@ -527,7 +527,7 @@
 						if (opt1 == "")
 							rec["opt"].push(opt2);
 						else
-							rec["opt"].push([opt1, opt2]);
+							rec["opt"].push([opt2, opt1]);
 					}
 				}
 				if (flags & (1 << 11))

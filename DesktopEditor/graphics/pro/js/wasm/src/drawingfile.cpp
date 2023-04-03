@@ -704,6 +704,7 @@ int main(int argc, char* argv[])
 		i = 4;
 		nLength -= 4;
 
+		int k = 0;
 		while (i < nLength)
 		{
 			DWORD nPathLength = READ_INT(pWidgetsAP + i);
@@ -733,7 +734,7 @@ int main(int argc, char* argv[])
 			oFrame.put_Height(nWidgetHeight);
 			oFrame.put_Stride(4 * nWidgetWidth);
 			oFrame.put_IsRGBA(true);
-			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3.png", _CXIMAGE_FORMAT_PNG);
+			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3" + std::to_wstring(k++) + L".png", _CXIMAGE_FORMAT_PNG);
 			oFrame.ClearNoAttack();
 			RELEASEARRAYOBJECTS(res);
 
@@ -753,6 +754,7 @@ int main(int argc, char* argv[])
 				i += 4;
 				std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
 			}
+			std::cout << std::endl;
 		}
 
 		if (pWidgetsAP)

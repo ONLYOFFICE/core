@@ -30,8 +30,8 @@
  *
  */
 #include "../oox_shape_defines.h"
-//	shapetypeIrregularSeal1,
-//	shapetypeIrregularSeal2,
+//+	shapetypeIrregularSeal1,
+//+	shapetypeIrregularSeal2,
 //+	shapetypeSun,
 //+	shapetypeMoon,
 //+	shapetypeHeart,
@@ -625,7 +625,6 @@ public:
 		add(L"f197", L"if(?f34, ?f174, ?f189)");
 	}
 };
-
 class oox_shape_LeftBrace : public oox_shape
 {
 public:
@@ -837,7 +836,6 @@ public:
 		add(L"f195", L"if(?f32, ?f172, ?f187)");
 	}
 };
-
 class oox_shape_RightBracket : public oox_shape
 {
 public:
@@ -1100,7 +1098,6 @@ public:
 		add(L"f113", L"if(?f27, ?f90, ?f105)");
 	}
 };
-
 class oox_shape_BracePair : public oox_shape
 {
 public:
@@ -1440,8 +1437,6 @@ public:
 		add(L"f324", L"if(?f28, ?f301, ?f316)");
 	}
 };
-
-
 class oox_shape_BracketPair : public oox_shape
 {
 public:
@@ -1650,6 +1645,93 @@ public:
 		add(L"f193", L"if(?f21, ?f170, ?f185)");
 	}
 };
+class oox_shape_IrregularSeal1 : public oox_shape
+{
+public:
+	oox_shape_IrregularSeal1()
+	{
+		odf_type_name = L"ooxml-irregularSeal1";
 
+		enhanced_path = L"M 10800 5800 L 14522 0 14155 5325 18380 4457 16702 7315 21097 8137 17607 10475 21600 13290 16837 12942 18145 18095 14020 14457 13247 19737 10532 14935 8485 21600 7715 15627 4762 17617 5667 13937 135 14587 3722 11775 0 8615 4627 7617 370 2295 7312 6320 8352 2295 Z N";
+		text_areas = L"?f24 ?f26 ?f25 ?f27";
+		glue_points = L"?f16 ?f17 ?f18 ?f19 ?f20 ?f21 ?f22 ?f23";
+		view_box = L"0 0 21600 21600";
+
+		add(L"f0", L"10800000");
+		add(L"f0", L"left");
+		add(L"f1", L"right");
+		add(L"f2", L"top");
+		add(L"f3", L"bottom");
+		add(L"f4", L"?f3 - ?f2");
+		add(L"f5", L"?f1 - ?f0");
+		add(L"f6", L"?f5 / 21600");
+		add(L"f7", L"?f4 / 21600");
+		add(L"f8", L"?f5 * 4627 / 21600");
+		add(L"f9", L"?f5 * 8485 / 21600");
+		add(L"f10", L"?f5 * 16702 / 21600");
+		add(L"f11", L"?f5 * 14522 / 21600");
+		add(L"f12", L"?f4 * 6320 / 21600");
+		add(L"f13", L"?f4 * 8615 / 21600");
+		add(L"f14", L"?f4 * 13937 / 21600");
+		add(L"f15", L"?f4 * 13290 / 21600");
+		add(L"f16", L"?f11 / ?f6");
+		add(L"f17", L"?f2 / ?f7");
+		add(L"f18", L"?f0 / ?f6");
+		add(L"f19", L"?f13 / ?f7");
+		add(L"f20", L"?f9 / ?f6");
+		add(L"f21", L"?f3 / ?f7");
+		add(L"f22", L"?f1 / ?f6");
+		add(L"f23", L"?f15 / ?f7");
+		add(L"f24", L"?f8 / ?f6");
+		add(L"f25", L"?f10 / ?f6");
+		add(L"f26", L"?f12 / ?f7");
+		add(L"f27", L"?f14 / ?f7");
+	}
+};
+class oox_shape_IrregularSeal2 : public oox_shape
+{
+public:
+	oox_shape_IrregularSeal2()
+	{
+		odf_type_name = L"ooxml-irregularSeal2";
+
+		enhanced_path = L"M 11462 4342 L 14790 0 14525 5777 18007 3172 16380 6532 21600 6645 16985 9402 18270 11290 16380 12310 18877 15632 14640 14350 14942 17370 12180 15935 11612 18842 9872 17370 8700 19712 7527 18125 4917 21600 4805 18240 1285 17825 3330 15370 0 12877 3935 11592 1172 8270 5372 7817 4502 3625 8550 6382 9722 1887 Z N";
+		text_areas = L"?f26 ?f28 ?f27 ?f29";
+		glue_points = L"?f18 ?f19 ?f20 ?f21 ?f22 ?f23 ?f24 ?f25";
+		view_box = L"0 0 21600 21600";
+
+		add(L"f0", L"10800000");
+		add(L"f0", L"left");
+		add(L"f1", L"right");
+		add(L"f2", L"top");
+		add(L"f3", L"bottom");
+		add(L"f4", L"?f3 - ?f2");
+		add(L"f5", L"?f1 - ?f0");
+		add(L"f6", L"?f5 / 21600");
+		add(L"f7", L"?f4 / 21600");
+		add(L"f8", L"?f5 * 9722 / 21600");
+		add(L"f9", L"?f5 * 5372 / 21600");
+		add(L"f10", L"?f5 * 11612 / 21600");
+		add(L"f11", L"?f5 * 14640 / 21600");
+		add(L"f12", L"?f4 * 1887 / 21600");
+		add(L"f13", L"?f4 * 6382 / 21600");
+		add(L"f14", L"?f4 * 12877 / 21600");
+		add(L"f15", L"?f4 * 18842 / 21600");
+		add(L"f16", L"?f4 * 15935 / 21600");
+		add(L"f17", L"?f4 * 6645 / 21600");
+		add(L"f18", L"?f8 / ?f6");
+		add(L"f19", L"?f12 / ?f7");
+		add(L"f20", L"?f0 / ?f6");
+		add(L"f21", L"?f14 / ?f7");
+		add(L"f22", L"?f10 / ?f6");
+		add(L"f23", L"?f15 / ?f7");
+		add(L"f24", L"?f1 / ?f6");
+		add(L"f25", L"?f17 / ?f7");
+		add(L"f26", L"?f9 / ?f6");
+		add(L"f27", L"?f11 / ?f6");
+		add(L"f28", L"?f13 / ?f7");
+		add(L"f29", L"?f16 / ?f7");
+	}
+};
 
 }

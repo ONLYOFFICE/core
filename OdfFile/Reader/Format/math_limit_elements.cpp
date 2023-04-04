@@ -262,7 +262,7 @@ void math_munderover::add_child_element( xml::sax * Reader, const std::wstring &
 void math_munderover::oox_convert(oox::math_context & Context)
 {//3 elements (+1)
 	if (content_.size() < 4)
-	{
+	{//??? 
 		return;
 	}
 	std::wstringstream strmTemp; 
@@ -355,18 +355,27 @@ void math_mover::oox_convert(oox::math_context & Context)
 
 	office_math_element* math_element = NULL;
 
+	int index_lim = content_.size() > 1 ? 1 : 0;
+	int index_e = content_.size() > 1 ? 0 : -1;
+
 	strm << L"<m:limUpp>";	
 		strm << L"<m:limUppPr/>";
 		strm << L"<m:e>";
 	
 		Context.is_need_e_ = false;
 
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_e && index_e >= 0)
+		{
+			math_element = dynamic_cast<office_math_element*>(content_[index_e].get());
+			math_element->oox_convert(Context);
+		}
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_lim && index_lim >= 0)
+		{
+			math_element = dynamic_cast<office_math_element*>(content_[index_lim].get());
+			math_element->oox_convert(Context);
+		}
 		strm << L"</m:lim>";
 	strm << L"</m:limUpp>";
 }
@@ -395,16 +404,25 @@ void math_munder::oox_convert(oox::math_context & Context)
 	}
 	Context.is_need_e_ = false;
 
+	int index_lim = content_.size() > 1 ? 1 : 0;
+	int index_e = content_.size() > 1 ? 0 : -1;
+
 	office_math_element* math_element = NULL;
 	strm << L"<m:limLow>";	
 		strm << L"<m:limLowPr/>";
 		strm << L"<m:e>";
-			math_element = dynamic_cast<office_math_element*>(content_[0].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_e && index_e >= 0)
+		{
+			math_element = dynamic_cast<office_math_element*>(content_[index_e].get());
+			math_element->oox_convert(Context);
+		}
 		strm << L"</m:e>";
 		strm << L"<m:lim>";
-			math_element = dynamic_cast<office_math_element*>(content_[1].get());
-			math_element->oox_convert(Context);		
+		if (content_.size() > index_lim && index_lim >= 0)
+		{
+			math_element = dynamic_cast<office_math_element*>(content_[index_lim].get());
+			math_element->oox_convert(Context);
+		}
 		strm << L"</m:lim>";
 	strm << L"</m:limLow>";
 

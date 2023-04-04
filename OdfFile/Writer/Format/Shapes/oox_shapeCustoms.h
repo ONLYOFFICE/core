@@ -1657,7 +1657,6 @@ public:
 		glue_points = L"?f16 ?f17 ?f18 ?f19 ?f20 ?f21 ?f22 ?f23";
 		view_box = L"0 0 21600 21600";
 
-		add(L"f0", L"10800000");
 		add(L"f0", L"left");
 		add(L"f1", L"right");
 		add(L"f2", L"top");
@@ -1700,7 +1699,6 @@ public:
 		glue_points = L"?f18 ?f19 ?f20 ?f21 ?f22 ?f23 ?f24 ?f25";
 		view_box = L"0 0 21600 21600";
 
-		add(L"f0", L"10800000");
 		add(L"f0", L"left");
 		add(L"f1", L"right");
 		add(L"f2", L"top");

@@ -718,7 +718,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
     return oLinks.Serialize();
 }
 
-void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, int& nFlags, Object* oAction, int nAnnot)
+void getAction(PDFDoc* pdfDoc, NSWasm::CData& oRes, Object* oAction, int nAnnot)
 {
     AcroForm* pAcroForms = pdfDoc->getCatalog()->getForm();
     if (!pAcroForms)
@@ -981,7 +981,7 @@ oObj.free();\
 
         // 3 - Эффекты границы - BE
         Object oBorderBE, oBorderBEI;
-        if (oField.dictLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
+        if (pField->fieldLookup("BE", &oObj)->isDict() && oObj.dictLookup("S", &oBorderBE)->isName("C") && oObj.dictLookup("I", &oBorderBEI)->isNum())
         {
             nFlags |= (1 << 2);
             oRes.AddDouble(oBorderBEI.getNum());
@@ -989,7 +989,7 @@ oObj.free();\
         oObj.free(); oBorderBE.free(); oBorderBEI.free();
 
         // 4 - Режим выделения - H
-        if (oField.dictLookup("H", &oObj)->isName())
+        if (pField->fieldLookup("H", &oObj)->isName())
         {
             nFlags |= (1 << 3);
             std::string sName(oObj.getName());
@@ -1001,7 +1001,7 @@ oObj.free();\
         Object oBorder;
         unsigned int nBorderType = 5;
         double dBorderWidth = 1, dDashesAlternating = 3, dGaps = 3;
-        if (oField.dictLookup("BS", &oBorder)->isDict())
+        if (pField->fieldLookup("BS", &oBorder)->isDict())
         {
             nBorderType = annotBorderSolid;
             Object oV;
@@ -1039,7 +1039,7 @@ oObj.free();\
         else
         {
             oBorder.free();
-            if (oField.dictLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
+            if (pField->fieldLookup("Border", &oBorder)->isArray() && oBorder.arrayGetLength() > 2)
             {
                 nBorderType = annotBorderSolid;
                 Object oV;
@@ -1075,7 +1075,7 @@ oObj.free();\
         }
 
         Object oMK;
-        if (oField.dictLookup("MK", &oMK)->isDict())
+        if (pField->fieldLookup("MK", &oMK)->isDict())
         {
             // 6 - Цвет границ - BC. Даже если граница не задана BS/Border, то при наличии BC предоставляется граница по-умолчанию (сплошная, толщиной 1)
             if (oMK.dictLookup("BC", &oObj)->isArray())
@@ -1133,7 +1133,7 @@ oObj.free();\
         case acroFormFieldRadioButton:
         case acroFormFieldCheckbox:
         {
-            if (oField.dictLookup("AS", &oObj)->isName())
+            if (pField->fieldLookup("AS", &oObj)->isName())
                 sValue = oObj.getName();
             oObj.free();
 
@@ -1178,7 +1178,7 @@ oObj.free();\
             */
 
             Object oMK;
-            if (oField.dictLookup("MK", &oMK)->isDict())
+            if (pField->fieldLookup("MK", &oMK)->isDict())
             {
                 // 11 - Заголовок - СА
                 DICT_LOOKUP_STRING(oMK.dictLookup, "CA", 10);
@@ -1205,7 +1205,7 @@ oObj.free();\
 
             // 15 - Имя вкл состояния - AP - N - Yes
             Object oNorm;
-            if (oField.dictLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict())
+            if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict())
             {
                 for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
                 {
@@ -1325,6 +1325,24 @@ oObj.free();\
         }
         case acroFormFieldSignature:
         {
+            int nSigFlag = 0;
+            if (pField->fieldLookup("SigFlags", &oObj)->isInt())
+                nSigFlag = oObj.getInt();
+            oObj.free();
+            oRes.AddInt(nSigFlag);
+
+            if (pField->fieldLookup("Lock", &oObj)->isDict())
+            {
+
+            }
+            oObj.free();
+
+            if (pField->fieldLookup("SV", &oObj)->isDict())
+            {
+
+            }
+            oObj.free();
+
             break;
         }
         default:
@@ -1367,7 +1385,7 @@ oObj.free();\
             oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
             oActType.free();
 
-            getAction(m_pPDFDocument, oRes, nFlags, &oAction, i);
+            getAction(m_pPDFDocument, oRes, &oAction, i);
         }
         oAction.free(); oActType.free();
 
@@ -1394,7 +1412,7 @@ oObj.free();\
                 oRes.WriteString((BYTE*)sSName.c_str(), (unsigned int)sSName.length());
                 oActType.free();
 
-                getAction(m_pPDFDocument, oRes, nFlags, &oAction, i);
+                getAction(m_pPDFDocument, oRes, &oAction, i);
                 oAction.free();
             }
         }
@@ -1481,16 +1499,15 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
             continue;
         }
 
+        // Номер аннотации для сопоставления с AP
+        oRes.AddInt(i);
+
         // Координаты - BBox
         double dx1, dy1, dx2, dy2;
         pField->getBBox(&dx1, &dy1, &dx2, &dy2);
         double dTemp = dy1;
         dy1 = dHeight - dy2;
         dy2 = dHeight - dTemp;
-
-        globalParams->setDrawFormField(i);
-        bool bBreak = false;
-        m_pRenderer->DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
         // Получение пикселей внешнего вида виджета
         int nRx1 = (int)round(dx1 * (double)nWidth / dWidth);
@@ -1501,6 +1518,30 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         if (nRy1 < 0) nRy1 = 0;
         if (nRx2 > nWidth) nRx1 = nWidth;
         if (nRy2 > nHeight) nRy1 = nHeight;
+        oRes.AddInt(nRx1);
+        oRes.AddInt(nRy1);
+        oRes.AddInt(nRx2 - nRx1);
+        oRes.AddInt(nRy2 - nRy1);
+
+        // Отрисовка всех внешних видов аннотации
+        Object oAP, oNorm;
+        if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oNorm)->isDict())
+        {
+            for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
+            {
+                std::string sNormName(oNorm.dictGetKey(j));
+                if (sNormName != "Off")
+                {
+                    //oRes.WriteString((BYTE*)sNormName.c_str(), (unsigned int)sNormName.length());
+                    break;
+                }
+            }
+        }
+        oNorm.free(); oAP.free();
+
+        globalParams->setDrawFormField(i);
+        bool bBreak = false;
+        m_pRenderer->DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
 
         BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
         int p = 0;
@@ -1518,13 +1559,6 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
             }
         }
 
-        // Номер аннотации для сопоставления с AP
-        oRes.AddInt(i);
-
-        oRes.AddInt(nRx1);
-        oRes.AddInt(nRy1);
-        oRes.AddInt(nRx2 - nRx1);
-        oRes.AddInt(nRy2 - nRy1);
         unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;
         unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
         oRes.AddInt(npSubMatrix1);

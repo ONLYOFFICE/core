@@ -3938,7 +3938,7 @@ namespace PdfReader
                     }
                 }
             }
-            if (globalParams->getDrawFormField() >= 0)
+            if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField())
             {
                 double dFontSize;
                 m_pRenderer->get_FontSize(&dFontSize);

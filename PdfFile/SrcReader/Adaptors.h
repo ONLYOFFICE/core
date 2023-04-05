@@ -66,6 +66,7 @@ class GlobalParamsAdaptor : public GlobalParams
         double dFontSize;
     };
     std::vector<TextFormField> m_arrTextFormField;
+    bool drawFormField;
 
 public:
     NSFonts::IFontManager *m_pFontManager;
@@ -73,6 +74,7 @@ public:
     {
         m_bCMapData = NULL;
         m_nCMapDataLength = 0;
+        drawFormField = false;
     }
     ~GlobalParamsAdaptor()
     {
@@ -97,6 +99,8 @@ public:
 
     void AddTextFormField(const std::wstring& sText, const std::wstring& sFontName, double dFontSize);
     BYTE* GetTextFormField();
+    void setDrawFormField(bool bDrawFormField) { drawFormField = bDrawFormField; }
+    bool getDrawFormField() { return drawFormField; }
 private:
 
 	void AddNameToUnicode(const char* sFile);

@@ -734,7 +734,6 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   enablePathSimplification = gFalse;
   drawAnnotations = gTrue;
   drawFormFields = gTrue;
-  drawContent = gTrue;
   overprintPreview = gFalse;
   paperColor = new GString("#ffffff");
   matteColor = new GString("#808080");
@@ -754,7 +753,6 @@ GlobalParams::GlobalParams(const char *cfgFileName) {
   printCommands = gFalse;
   errQuiet = gFalse;
   debugLogFile = NULL;
-  drawFormField = -1;
 
   cidToUnicodeCache = new CharCodeToUnicodeCache(cidToUnicodeCacheSize);
   unicodeToUnicodeCache =
@@ -3160,23 +3158,7 @@ GBool GlobalParams::getDrawFormFields() {
   return draw;
 }
 
-GBool GlobalParams::getDrawContent() {
-  GBool draw;
 
-  lockGlobalParams;
-  draw = drawContent;
-  unlockGlobalParams;
-  return draw;
-}
-
-int GlobalParams::getDrawFormField() {
-  int formField;
-
-  lockGlobalParams;
-  formField = drawFormField;
-  unlockGlobalParams;
-  return formField;
-}
 
 GString *GlobalParams::getPaperColor() {
   GString *s;
@@ -3722,27 +3704,9 @@ void GlobalParams::setScreenWhiteThreshold(double thresh) {
   unlockGlobalParams;
 }
 
-void GlobalParams::setDrawAnnotations(GBool draw) {
-  lockGlobalParams;
-  drawAnnotations = draw;
-  unlockGlobalParams;
-}
-
 void GlobalParams::setDrawFormFields(GBool draw) {
   lockGlobalParams;
   drawFormFields = draw;
-  unlockGlobalParams;
-}
-
-void GlobalParams::setDrawContent(GBool draw) {
-  lockGlobalParams;
-  drawContent = draw;
-  unlockGlobalParams;
-}
-
-void GlobalParams::setDrawFormField(int formField) {
-  lockGlobalParams;
-  drawFormField = formField;
   unlockGlobalParams;
 }
 

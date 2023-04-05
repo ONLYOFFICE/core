@@ -31,7 +31,6 @@
 #include "UTF8.h"
 #include "PDF417Barcode.h"
 #include "AcroForm.h"
-#include "GlobalParams.h"
 
 //------------------------------------------------------------------------
 
@@ -563,11 +562,6 @@ void AcroForm::draw(int pageNum, Gfx *gfx, GBool printing) {
   int i;
 
   for (i = 0; i < fields->getLength(); ++i) {
-#ifdef BUILDING_WASM_MODULE
-    int formField = globalParams->getDrawFormField();
-    if (formField >= 0 && formField != i)
-      continue;
-#endif
     ((AcroFormField *)fields->get(i))->draw(pageNum, gfx, printing);
   }
 }
@@ -1103,7 +1097,8 @@ void AcroFormField::draw(int pageNum, Gfx *gfx, GBool printing) {
 }
 
 void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
-			      Object *annotRef, Object *annotObj) {
+				  Object *annotRef, Object *annotObj,
+				  const char* AP, const char* AS, GBool hide) {
   Object obj1, obj2;
   double xMin, yMin, xMax, yMax, t;
   int annotFlags;
@@ -1129,8 +1124,7 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
     annotFlags = 0;
   }
   obj1.free();
-  if (globalParams->getDrawFormField() < 0 &&
-      ((annotFlags & annotFlagHidden) ||
+  if (hide && ((annotFlags & annotFlagHidden) ||
       (printing && !(annotFlags & annotFlagPrint)) ||
       (!printing && (annotFlags & annotFlagNoView)))) {
     return;
@@ -1197,7 +1191,7 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
 		      xMin, yMin, xMax, yMax);
   } else {
     drawExistingAppearance(gfx, annotObj->getDict(),
-			   xMin, yMin, xMax, yMax);
+			   xMin, yMin, xMax, yMax, AP, AS);
   }
 }
 
@@ -1205,15 +1199,20 @@ void AcroFormField::drawAnnot(int pageNum, Gfx *gfx, GBool printing,
 // attached to this field.
 void AcroFormField::drawExistingAppearance(Gfx *gfx, Dict *annot,
 					   double xMin, double yMin,
-					   double xMax, double yMax) {
+					   double xMax, double yMax,
+					   const char* AP, const char* AS) {
   Object apObj, asObj, appearance, obj1;
 
   //----- get the appearance stream
 
-  if (annot->lookup("AP", &apObj)->isDict()) {
-    apObj.dictLookup("N", &obj1);
+  if (!strcmp("MK", AP) && annot->lookup("MK", &apObj)->isDict()) {
+    apObj.dictLookupNF(AS, &appearance);
+  } else if (annot->lookup("AP", &apObj)->isDict()) {
+    apObj.dictLookup(AP, &obj1);
     if (obj1.isDict()) {
-      if (annot->lookup("AS", &asObj)->isName()) {
+      if (AS) {
+    obj1.dictLookupNF(AS, &appearance);
+      } else if (annot->lookup("AS", &asObj)->isName()) {
 	obj1.dictLookupNF(asObj.getName(), &appearance);
       } else if (obj1.dictGetLength() == 1) {
 	obj1.dictGetValNF(0, &appearance);
@@ -1222,7 +1221,7 @@ void AcroFormField::drawExistingAppearance(Gfx *gfx, Dict *annot,
       }
       asObj.free();
     } else {
-      apObj.dictLookupNF("N", &appearance);
+      apObj.dictLookupNF(AP ? AP : "N", &appearance);
     }
     obj1.free();
   }

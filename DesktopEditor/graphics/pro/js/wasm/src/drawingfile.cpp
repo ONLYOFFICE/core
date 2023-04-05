@@ -704,13 +704,12 @@ int main(int argc, char* argv[])
 		i = 4;
 		nLength -= 4;
 
-		int k = 0;
 		while (i < nLength)
 		{
-			DWORD nPathLength = READ_INT(pWidgetsAP + i);
+			DWORD nAP = READ_INT(pWidgetsAP + i);
 			i += 4;
-			std::cout << "AP " << nPathLength << ", ";
-			nPathLength = READ_INT(pWidgetsAP + i);
+			std::cout << "AP " << nAP << ", ";
+			DWORD nPathLength = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "X " << nPathLength << ", ";
 			nPathLength = READ_INT(pWidgetsAP + i);
@@ -722,37 +721,52 @@ int main(int argc, char* argv[])
 			unsigned int nWidgetHeight = READ_INT(pWidgetsAP + i);
 			i += 4;
 			std::cout << "H " << nWidgetHeight << ", ";
-			unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
+			unsigned int nAPLength = READ_INT(pWidgetsAP + i);
 			i += 4;
-			unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
-			i += 4;
-
-			BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
-			CBgraFrame oFrame;
-			oFrame.put_Data(res);
-			oFrame.put_Width(nWidgetWidth);
-			oFrame.put_Height(nWidgetHeight);
-			oFrame.put_Stride(4 * nWidgetWidth);
-			oFrame.put_IsRGBA(true);
-			oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res3" + std::to_wstring(k++) + L".png", _CXIMAGE_FORMAT_PNG);
-			oFrame.ClearNoAttack();
-			RELEASEARRAYOBJECTS(res);
-
-			unsigned int nTextSize = READ_INT(pWidgetsAP + i);
-			i += 4;
-			for (unsigned int j = 0; j < nTextSize; ++j)
+			for (unsigned int j = 0; j < nAPLength; j++)
 			{
+				std::cout << std::endl;
 				nPathLength = READ_INT(pWidgetsAP + i);
 				i += 4;
-				std::cout << j << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+				std::string sAPName = std::string((char*)(pWidgetsAP + i), nPathLength);
 				i += nPathLength;
 				nPathLength = READ_INT(pWidgetsAP + i);
 				i += 4;
-				std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+				sAPName += ("." + std::string((char*)(pWidgetsAP + i), nPathLength));
 				i += nPathLength;
-				nPathLength = READ_INT(pWidgetsAP + i);
+				std::cout << "APName " << sAPName << ", ";
+				unsigned long long npBgraData1 = READ_INT(pWidgetsAP + i);
 				i += 4;
-				std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
+				unsigned long long npBgraData2 = READ_INT(pWidgetsAP + i);
+				i += 4;
+
+				BYTE* res = (BYTE*)(npBgraData2 << 32 | npBgraData1);
+				CBgraFrame oFrame;
+				oFrame.put_Data(res);
+				oFrame.put_Width(nWidgetWidth);
+				oFrame.put_Height(nWidgetHeight);
+				oFrame.put_Stride(4 * nWidgetWidth);
+				oFrame.put_IsRGBA(true);
+				oFrame.SaveFile(NSFile::GetProcessDirectory() + L"/res_" + std::to_wstring(nAP) + L"_" + UTF8_TO_U(sAPName) + L".png", _CXIMAGE_FORMAT_PNG);
+				oFrame.ClearNoAttack();
+				RELEASEARRAYOBJECTS(res);
+
+				unsigned int nTextSize = READ_INT(pWidgetsAP + i);
+				i += 4;
+				for (unsigned int k = 0; k < nTextSize; ++k)
+				{
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+					i += nPathLength;
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+					i += nPathLength;
+					nPathLength = READ_INT(pWidgetsAP + i);
+					i += 4;
+					std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
+				}
 			}
 			std::cout << std::endl;
 		}

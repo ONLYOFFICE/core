@@ -100,6 +100,9 @@ public:
   Object *getParentRef(Object *parent);
   Object *fieldLookup(const char *key, Object *obj);
   GBool getTypeFromParent() { return typeFromParent; }
+  void drawAnnot(int pageNum, Gfx *gfx, GBool printing,
+		 Object *annotRef, Object *annotObj,
+		 const char* AP = "N", const char* AS = 0, GBool hide = gTrue);
 
 private:
 
@@ -108,11 +111,10 @@ private:
 		Guint flagsA, GBool typeFromParentA, XFAField *xfaFieldA);
   Ref findFontName(char *fontTag);
   void draw(int pageNum, Gfx *gfx, GBool printing);
-  void drawAnnot(int pageNum, Gfx *gfx, GBool printing,
-		 Object *annotRef, Object *annotObj);
   void drawExistingAppearance(Gfx *gfx, Dict *annot,
 			      double xMin, double yMin,
-			      double xMax, double yMax);
+			      double xMax, double yMax,
+			      const char* AP, const char* AS);
   void drawNewAppearance(Gfx *gfx, Dict *annot,
 			 double xMin, double yMin,
 			 double xMax, double yMax);

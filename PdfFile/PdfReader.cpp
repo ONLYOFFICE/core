@@ -1427,22 +1427,70 @@ oObj.free();\
     oRes.ClearWithoutAttack();
     return bRes;
 }
+void WriteAppearance(int nRx1, int nRx2, int nRy1, int nRy2, BYTE* pBgraData, int nWidth, unsigned int nColor, NSWasm::CData& oRes)
+{
+    BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
+    int p = 0;
+    unsigned int* pTemp = (unsigned int*)pBgraData;
+    unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
+    for (int y = nRy1; y < nRy2; ++y)
+    {
+        for (int x = nRx1; x < nRx2; ++x)
+        {
+            if (pTemp[y * nWidth + x] == (0xFF000000 | nColor))
+                pSubTemp[p++] = nColor;
+            else
+                pSubTemp[p++] = pTemp[y * nWidth + x];
+            pTemp[y * nWidth + x] = 0;
+        }
+    }
+
+    unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;
+    unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+    oRes.AddInt(npSubMatrix1);
+    oRes.AddInt(npSubMatrix >> 32);
+
+    BYTE* pTextFormField = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
+    BYTE* x = pTextFormField;
+    unsigned int nLength = x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
+    nLength -= 4;
+    oRes.Write(pTextFormField + 4, nLength);
+    RELEASEARRAYOBJECTS(pTextFormField);
+}
+void DrawAppearance(PDFDoc* pdfDoc, int nPage, AcroFormField* pField, Gfx* gfx, const char* sAPName, const char* sASName)
+{
+    XRef* xref = pdfDoc->getXRef();
+    Object oFieldRef, oField;
+    pField->getFieldRef(&oFieldRef);
+    oFieldRef.fetch(xref, &oField);
+
+    Object kidsObj, annotRef, annotObj;
+    if (oField.dictLookup("Kids", &kidsObj)->isArray())
+    {
+        for (int j = 0; j < kidsObj.arrayGetLength(); ++j)
+        {
+            kidsObj.arrayGetNF(j, &annotRef);
+            annotRef.fetch(xref, &annotObj);
+            pField->drawAnnot(nPage, gfx, gFalse, &annotRef, &annotObj, sAPName, sASName, gFalse);
+            annotObj.free();
+            annotRef.free();
+        }
+    }
+    else
+        pField->drawAnnot(nPage, gfx, gFalse, &oFieldRef, &oField, sAPName, sASName, gFalse);
+    kidsObj.free();
+
+    oFieldRef.free(); oField.free();
+}
 BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int nBackgroundColor)
 {
     if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
         return NULL;
 
     AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
-    if (!pAcroForms)
+    Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1);
+    if (!pAcroForms || !pPage)
         return NULL;
-
-    GBool bDrawContent     = globalParams->getDrawContent();
-    GBool bDrawAnnotations = globalParams->getDrawAnnotations();
-    GBool bDrawFormFileds  = globalParams->getDrawFormFields();
-
-    globalParams->setDrawContent(gFalse);
-    globalParams->setDrawAnnotations(gFalse);
-    globalParams->setDrawFormFields(gTrue);
 
     NSGraphics::IGraphicsRenderer* pRenderer = NSGraphics::Create();
     pRenderer->SetFontManager(m_pFontManager);
@@ -1458,9 +1506,6 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
     if (!pBgraData)
     {
         RELEASEOBJECT(pRenderer);
-        globalParams->setDrawContent(bDrawContent);
-        globalParams->setDrawAnnotations(bDrawAnnotations);
-        globalParams->setDrawFormFields(bDrawFormFileds);
         return NULL;
     }
 
@@ -1483,6 +1528,23 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
     if (nBackgroundColor != 0xFFFFFF)
         pRenderer->CommandLong(c_nDarkMode, 1);
 
+    PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
+    oRendererOut.NewPDF(m_pPDFDocument->getXRef());
+
+    // Создание Gfx
+    GBool crop = gTrue;
+    PDFRectangle box;
+    int rotate = pPage->getRotate();
+    if (rotate >= 360) {
+      rotate -= 360;
+    } else if (rotate < 0) {
+      rotate += 360;
+    }
+    pPage->makeBox(72.0, 72.0, rotate, gFalse, oRendererOut.upsideDown(), -1, -1, -1, -1, &box, &crop);
+    PDFRectangle* cropBox = pPage->getCropBox();
+
+    Gfx* gfx = new Gfx(m_pPDFDocument, &oRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, rotate, NULL, NULL);
+
     NSWasm::CData oRes;
     oRes.SkipLen();
 
@@ -1498,6 +1560,7 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
             oFieldRef.free(); oField.free();
             continue;
         }
+        oFieldRef.free(); oField.free();
 
         // Номер аннотации для сопоставления с AP
         oRes.AddInt(i);
@@ -1509,7 +1572,7 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         dy1 = dHeight - dy2;
         dy2 = dHeight - dTemp;
 
-        // Получение пикселей внешнего вида виджета
+        // Размеры внешнего вида
         int nRx1 = (int)round(dx1 * (double)nWidth / dWidth);
         int nRx2 = (int)round(dx2 * (double)nWidth / dWidth + 1);
         int nRy1 = (int)round(dy1 * (double)nHeight / dHeight);
@@ -1523,59 +1586,77 @@ BYTE* CPdfReader::GetAPWidgets(int nPageIndex, int nRasterW, int nRasterH, int n
         oRes.AddInt(nRx2 - nRx1);
         oRes.AddInt(nRy2 - nRy1);
 
+        int nAPPos = oRes.GetSize();
+        unsigned int nAPLength = 0;
+        oRes.AddInt(nAPLength);
+
         // Отрисовка всех внешних видов аннотации
-        Object oAP, oNorm;
-        if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictLookup("N", &oNorm)->isDict())
+        Object oAP;
+        ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
+        if (pField->fieldLookup("AP", &oAP)->isDict())
         {
-            for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
+            std::vector<const char*> arrAPName { "N", "D", "R" };
+            for (unsigned int j = 0; j < arrAPName.size(); ++j)
             {
-                std::string sNormName(oNorm.dictGetKey(j));
-                if (sNormName != "Off")
+                std::string sAPName(arrAPName[j]);
+                Object oObj;
+                if (oAP.dictLookup(sAPName.c_str(), &oObj)->isDict())
                 {
-                    //oRes.WriteString((BYTE*)sNormName.c_str(), (unsigned int)sNormName.length());
-                    break;
+                    for (int k = 0, nJLength = oObj.dictGetLength(); k < nJLength; ++k)
+                    {
+                        std::string sASName(oObj.dictGetKey(k));
+                        oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
+                        oRes.WriteString((BYTE*)sASName.c_str(), sASName.length());
+                        DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), sASName.c_str());
+                        nAPLength++;
+                        WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
+                    }
                 }
+                else if (!oObj.isNull())
+                {
+                    oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.length());
+                    oRes.WriteString(NULL, 0);
+                    DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, sAPName.c_str(), NULL);
+                    nAPLength++;
+                    WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
+                }
+                oObj.free();
             }
         }
-        oNorm.free(); oAP.free();
+        oAP.free();
+        ((GlobalParamsAdaptor*)globalParams)->setDrawFormField(false);
 
-        globalParams->setDrawFormField(i);
-        bool bBreak = false;
-        m_pRenderer->DrawPageOnRenderer(pRenderer, nPageIndex, &bBreak);
-
-        BYTE* pSubMatrix = new BYTE[(nRx2 - nRx1) * (nRy2 - nRy1) * 4];
-        int p = 0;
-        unsigned int* pTemp = (unsigned int*)pBgraData;
-        unsigned int* pSubTemp = (unsigned int*)pSubMatrix;
-        for (int y = nRy1; y < nRy2; ++y)
+        if (pField->fieldLookup("MK", &oAP)->isDict())
         {
-            for (int x = nRx1; x < nRx2; ++x)
+            std::vector<const char*> arrAPName { "I", "RI", "IX" };
+            for (unsigned int j = 0; j < arrAPName.size(); ++j)
             {
-                if (pTemp[y * nWidth + x] == (0xFF000000 | nColor))
-                    pSubTemp[p++] = nColor;
-                else
-                    pSubTemp[p++] = pTemp[y * nWidth + x];
-                pTemp[y * nWidth + x] = 0;
+                std::string sMK = "MK";
+                std::string sAPName(arrAPName[j]);
+
+                Object oObj;
+                if (!oAP.dictLookup(sAPName.c_str(), &oObj)->isStream())
+                {
+                    oObj.free();
+                    continue;
+                }
+                oObj.free();
+
+                // TODO Должна быть не drawAnnot, а drawForm
+                // Необходима обработка словаря стрима и применение модификаторов и ограничений
+                oRes.WriteString((BYTE*)sMK.c_str(), sMK.size());
+                oRes.WriteString((BYTE*)sAPName.c_str(), sAPName.size());
+                DrawAppearance(m_pPDFDocument, nPageIndex + 1, pField, gfx, "MK", sAPName.c_str());
+                nAPLength++;
+                WriteAppearance(nRx1, nRx2, nRy1, nRy2, pBgraData, nWidth, nColor, oRes);
             }
         }
+        oAP.free();
 
-        unsigned long long npSubMatrix = (unsigned long long)pSubMatrix;
-        unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-        oRes.AddInt(npSubMatrix1);
-        oRes.AddInt(npSubMatrix >> 32);
-
-        BYTE* pTextFormField = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
-        BYTE* x = pTextFormField;
-        unsigned int nLength = x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
-        nLength -= 4;
-        oRes.Write(pTextFormField + 4, nLength);
-        RELEASEARRAYOBJECTS(pTextFormField);
+        oRes.AddInt(nAPLength, nAPPos);
     }
 
-    globalParams->setDrawContent(bDrawContent);
-    globalParams->setDrawAnnotations(bDrawAnnotations);
-    globalParams->setDrawFormFields(bDrawFormFileds);
-    globalParams->setDrawFormField(-1);
+    delete gfx;
     RELEASEOBJECT(pFrame);
     RELEASEOBJECT(pRenderer);
 
